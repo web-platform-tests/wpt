@@ -87,7 +87,7 @@ promise_test(async t => {
     assert_equals(viewInfo.byteLength, 1, 'third view.byteLength should be 1');
   }
 
-}, 'ReadableStream with byte source: fill(), then read()');
+}, 'ReadableStream with byte source: read({ atLeast }), then read()');
 
 promise_test(async t => {
   let pullCount = 0;
@@ -130,7 +130,7 @@ promise_test(async t => {
   assert_equals(viewInfo.byteOffset, 1, 'first view.byteOffset should be 1');
   assert_equals(viewInfo.byteLength, 2, 'first view.byteLength should be 2');
 
-}, 'ReadableStream with byte source: enqueue(), then fill()');
+}, 'ReadableStream with byte source: enqueue(), then read({ atLeast })');
 
 promise_test(async t => {
   let pullCount = 0;
@@ -183,7 +183,7 @@ promise_test(async t => {
     assert_equals(viewInfo.byteLength, 1, 'second view.byteLength should be 1');
   }
 
-}, 'ReadableStream with byte source: fill(), then multiple enqueue()');
+}, 'ReadableStream with byte source: read({ atLeast }), then multiple enqueue()');
 
 promise_test(async t => {
   const stream = new ReadableStream({
@@ -220,7 +220,7 @@ promise_test(async t => {
   assert_equals(view2.byteOffset, 8, 'result2.value.byteOffset');
   assert_equals(view2.byteLength, 8, 'result2.value.byteLength');
   assert_equals(view2[0], 0x02, 'result2.value[0]');
-}, 'ReadableStream with byte source: enqueue(), fill() partially, then read()');
+}, 'ReadableStream with byte source: enqueue(), read({ atLeast }) partially, then read()');
 
 promise_test(async () => {
   let pullCount = 0;
@@ -253,7 +253,7 @@ promise_test(async () => {
   assert_true(byobRequestDefined[0], 'byobRequest must not be null before respondWithNewView()');
   assert_false(byobRequestDefined[1], 'byobRequest must be null after respondWithNewView()');
   assert_false(byobRequestViewDefined, 'view of initial byobRequest must be null after respondWithNewView()');
-}, 'ReadableStream with byte source: fill(), then respondWithNewView() with a transferred ArrayBuffer');
+}, 'ReadableStream with byte source: read({ atLeast }), then respondWithNewView() with a transferred ArrayBuffer');
 
 promise_test(async t => {
   const stream = new ReadableStream({
@@ -271,7 +271,7 @@ promise_test(async t => {
   assert_typed_array_equals(result.value, new Uint8Array([0x01]).subarray(0, 0), 'result.value');
 
   await reader.closed;
-}, 'ReadableStream with byte source: fill() on a closed stream');
+}, 'ReadableStream with byte source: read({ atLeast }) on a closed stream');
 
 promise_test(async t => {
   let pullCount = 0;
@@ -297,7 +297,7 @@ promise_test(async t => {
   assert_equals(pullCount, 2, 'pull() must have been called 2 times');
 
   await reader.closed;
-}, 'ReadableStream with byte source: fill() when closed before view is filled');
+}, 'ReadableStream with byte source: read({ atLeast }) when closed before view is filled');
 
 promise_test(async t => {
   let pullCount = 0;
@@ -325,7 +325,7 @@ promise_test(async t => {
   assert_equals(pullCount, 2, 'pull() must have been called 2 times');
 
   await reader.closed;
-}, 'ReadableStream with byte source: fill() when closed immediately after view is filled');
+}, 'ReadableStream with byte source: read({ atLeast }) when closed immediately after view is filled');
 
 promise_test(async t => {
   const error1 = new Error('error1');
@@ -341,10 +341,10 @@ promise_test(async t => {
   const read = reader.read(new Uint8Array(1), { atLeast: 1 });
 
   await Promise.all([
-    promise_rejects_exactly(t, error1, read, 'fill() must fail'),
+    promise_rejects_exactly(t, error1, read, 'read() must fail'),
     promise_rejects_exactly(t, error1, reader.closed, 'closed must fail')
   ]);
-}, 'ReadableStream with byte source: fill() on an errored stream');
+}, 'ReadableStream with byte source: read({ atLeast }) on an errored stream');
 
 promise_test(async t => {
   const error1 = new Error('error1');
@@ -362,10 +362,10 @@ promise_test(async t => {
   controller.error(error1);
 
   await Promise.all([
-    promise_rejects_exactly(t, error1, read, 'fill() must fail'),
+    promise_rejects_exactly(t, error1, read, 'read() must fail'),
     promise_rejects_exactly(t, error1, reader.closed, 'closed must fail')
   ]);
-}, 'ReadableStream with byte source: fill(), then error()');
+}, 'ReadableStream with byte source: read({ atLeast }), then error()');
 
 promise_test(t => {
   let cancelCount = 0;
@@ -401,7 +401,7 @@ promise_test(t => {
   });
 
   return Promise.all([readPromise, cancelPromise]);
-}, 'ReadableStream with byte source: getReader(), fill(), then cancel()');
+}, 'ReadableStream with byte source: getReader(), read({ atLeast }), then cancel()');
 
 promise_test(async t => {
   let pullCount = 0;
@@ -440,7 +440,7 @@ promise_test(async t => {
   assert_equals(pullCount, 1, 'pull() must only be called once');
 
   await reader.closed;
-}, 'ReadableStream with byte source: cancel() with partially filled pending fill() request');
+}, 'ReadableStream with byte source: cancel() with partially filled pending read({ atLeast }) request');
 
 promise_test(async () => {
   let pullCalled = false;
@@ -476,7 +476,7 @@ promise_test(async () => {
   assert_equals(view2.byteOffset, 0, 'result2.value.byteOffset');
   assert_equals(view2.byteLength, 8, 'result2.value.byteLength');
   assert_equals(view2[7], 0x02, 'result2.value[7]');
-}, 'ReadableStream with byte source: enqueue(), then fill() with smaller views');
+}, 'ReadableStream with byte source: enqueue(), then read({ atLeast }) with smaller views');
 
 promise_test(async t => {
   const stream = new ReadableStream({
@@ -490,9 +490,9 @@ promise_test(async t => {
 
   const reader = stream.getReader({ mode: 'byob' });
 
-  await promise_rejects_js(t, TypeError, reader.read(new Uint16Array(2), { atLeast: 2 }), 'fill() must fail');
+  await promise_rejects_js(t, TypeError, reader.read(new Uint16Array(2), { atLeast: 2 }), 'read() must fail');
   await promise_rejects_js(t, TypeError, reader.closed, 'reader.closed should reject');
-}, 'ReadableStream with byte source: 3 byte enqueue(), then close(), then fill() with 2-element Uint16Array must fail');
+}, 'ReadableStream with byte source: 3 byte enqueue(), then close(), then read({ atLeast }) with 2-element Uint16Array must fail');
 
 promise_test(async t => {
   let controller;
@@ -505,14 +505,14 @@ promise_test(async t => {
   });
 
   const reader = stream.getReader({ mode: 'byob' });
-  const fillPromise = reader.read(new Uint16Array(2), { atLeast: 2 });
+  const readPromise = reader.read(new Uint16Array(2), { atLeast: 2 });
 
   controller.enqueue(new Uint8Array([0xaa, 0xbb, 0xcc]));
   assert_throws_js(TypeError, () => controller.close(), 'controller.close() must throw');
 
-  await promise_rejects_js(t, TypeError, fillPromise, 'fill(view) must fail');
+  await promise_rejects_js(t, TypeError, readPromise, 'read() must fail');
   await promise_rejects_js(t, TypeError, reader.closed, 'reader.closed must reject');
-}, 'ReadableStream with byte source: fill() with 2-element Uint16Array, then 3 byte enqueue(), then close() must fail');
+}, 'ReadableStream with byte source: read({ atLeast }) with 2-element Uint16Array, then 3 byte enqueue(), then close() must fail');
 
 promise_test(async t => {
   let pullCount = 0;
@@ -553,11 +553,11 @@ promise_test(async t => {
   byobRequest2.respond(2);
 
   const result1 = await read1;
-  assert_false(result1.done, 'branch1 fill() should not be done');
-  assert_typed_array_equals(result1.value, new Uint8Array([0x01, 0x02, 0x03]), 'branch1 fill() value');
+  assert_false(result1.done, 'branch1 read() should not be done');
+  assert_typed_array_equals(result1.value, new Uint8Array([0x01, 0x02, 0x03]), 'branch1 read() value');
 
   const result3 = await reader2.read(new Uint8Array(2));
   assert_equals(pullCount, 2, 'pull() must only be called 2 times');
   assert_false(result3.done, 'branch2 second read() should not be done');
   assert_typed_array_equals(result3.value, new Uint8Array([0x02, 0x03]), 'branch2 second read() value');
-}, 'ReadableStream with byte source: tee() with fill() from branch1 and read() from branch2');
+}, 'ReadableStream with byte source: tee() with read({ atLeast }) from branch1 and read() from branch2');

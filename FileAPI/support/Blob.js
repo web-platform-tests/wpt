@@ -30,7 +30,7 @@ self.test_blob_binary = (fn, expectations) => {
     assert_true(result instanceof ArrayBuffer,
                   "Result should be an ArrayBuffer");
     assert_array_equals(new Uint8Array(result), expected);
-  });
+  }, desc);
 };
 
 // Assert that two TypedArray objects have the same byte values

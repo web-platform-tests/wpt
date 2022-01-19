@@ -147,4 +147,4 @@ class ChromiumBrowser(WebDriverBrowser):
         return [self.webdriver_binary,
                 cmd_arg("port", str(self.port)),
                 cmd_arg("url-base", self.base_path) if self.base_path else "",
-                cmd_arg("enable-chrome-logs")] + self._webdriver_args
+                cmd_arg("enable-chrome-logs")] + self.webdriver_args

@@ -815,7 +815,6 @@ product_setup = {
     "chromium": Chromium,
     "chrome_android": ChromeAndroid,
     "chrome_ios": ChromeiOS,
-    "chromium": Chromium,
     "edgechromium": EdgeChromium,
     "edge": Edge,
     "edge_webdriver": EdgeWebDriver,

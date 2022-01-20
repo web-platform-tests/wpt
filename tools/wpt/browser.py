@@ -516,23 +516,19 @@ class FirefoxAndroid(Browser):
         return None
 
 
-class Chrome(Browser):
-    """Chrome-specific interface.
-
-    Includes webdriver installation, and wptrunner setup methods.
+class ChromeChromiumBase(Browser):
+    """
+    Chromium base class for shared functionality between Chrome and Chromium testing.
     """
 
-    product = "chrome"
-    requirements = "requirements_chrome.txt"
+    requirements = "requirements_chromium.txt"
+
     platforms = {
         "Linux": "Linux",
         "Windows": "Win",
         "Darwin": "Mac",
     }
-
-    def __init__(self, logger):
-        super(Chrome, self).__init__(logger)
-        self._last_change = None
+    _last_change = None
 
     def download(self, dest=None, channel=None, rename=None):
         if channel != "nightly":
@@ -808,6 +804,22 @@ class Chrome(Browser):
             self.logger.warning("Failed to extract version from: %s" % version_string)
             return None
         return m.group(1)
+
+
+class Chrome(ChromeChromiumBase):
+    """Chrome-specific interface.
+    Includes webdriver installation, and wptrunner setup methods.
+    """
+
+    product = "chrome"
+    
+
+class Chromium(ChromeChromiumBase):
+    """Chromium-specific interface.
+    Includes webdriver installation, and wptrunner setup methods.
+    """
+
+    product = "chromium"
 
 
 class ChromeAndroidBase(Browser):

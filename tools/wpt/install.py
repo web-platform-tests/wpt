@@ -6,8 +6,8 @@ latest_channels = {
     'android_webview': 'dev',
     'firefox': 'nightly',
     'chrome': 'nightly',
-    'chromium': 'nightly',
     'chrome_android': 'dev',
+    'chromium': 'nightly',
     'edgechromium': 'dev',
     'safari': 'preview',
     'servo': 'nightly',
@@ -54,7 +54,8 @@ def get_parser():
     parser.add_argument('-d', '--destination',
                         help='filesystem directory to place the component')
     parser.add_argument('--browser-version',
-                        help="install specific version of browser (currently only supported by Chromium)")
+                        help=("install specific version of a browser "
+                              "or webdriver (currently only supported by Chrome and Chromium)"))
     return parser
 
 
@@ -85,6 +86,10 @@ def run(venv, **kwargs):
         else:
             raise argparse.ArgumentError(None,
                                          "No --destination argument, and no default for the environment")
+    
+    if "browser_version" in kwargs and browser not in ("chrome", "chromium"):
+        raise argparse.ArgumentError(
+            None, "--browser-version argument only supported by chrome and chromium.")
 
     install(browser, kwargs["component"], destination, channel, logger=logger,
             download_only=kwargs["download_only"], rename=kwargs["rename"],

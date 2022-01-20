@@ -59,7 +59,7 @@ def test_install_chromedriver_nightly():
     if sys.platform == "win32":
         chromedriver_path = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "Scripts", "chromedriver.exe")
     else:
-        chromedriver_path = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "bin", "chrome", "chromedriver")
+        chromedriver_path = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "bin", "chromium", "chromedriver")
     if os.path.exists(chromedriver_path):
         os.unlink(chromedriver_path)
     with pytest.raises(SystemExit) as excinfo:

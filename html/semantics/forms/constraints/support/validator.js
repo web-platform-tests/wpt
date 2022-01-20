@@ -461,14 +461,12 @@ var validator = {
           }
 
           prefix = "[" + testee[i].tag.toUpperCase() + " in " + testee[i].types[typ].toUpperCase() + " status] ";
-          if (ele.type != testee[i].types[typ]) {
-            this.test_support_type(
-              ele,
-              testee[i].types[typ],
-              prefix + "The " + testee[i].types[typ] + " type must be supported."
-            );
-            continue;
-          }
+
+          this.test_support_type(
+            ele,
+            testee[i].types[typ],
+            prefix + "The " + testee[i].types[typ] + " type must be supported."
+          );
 
           for (var j = 0; j < testee[i].testData.length; j++) {
             testee[i].testData[j].name = testee[i].testData[j].name.replace(/\[.*\]\s/g, prefix);

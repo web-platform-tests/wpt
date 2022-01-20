@@ -628,3 +628,57 @@ promise_test(t => {
   });
 
 }, 'Errors must be propagated backward: erroring via the controller errors once pending write completes');
+
+promise_test(async t => {
+  let resolvePullCalled;
+  const pullCalledPromise = new Promise(resolve => {
+    resolvePullCalled = resolve;
+  });
+  const rs = recordingReadableStream({
+    pull: t.step_func(() => {
+      resolvePullCalled();
+    })
+  }, { highWaterMark: 0 });
+
+  let resolveWriteCalled;
+  const writeCalledPromise = new Promise(resolve => {
+    resolveWriteCalled = resolve;
+  });
+  let resolveWrite;
+  const writePromise = new Promise(resolve => {
+    resolveWrite = resolve;
+  });
+  const ws = recordingWritableStream({
+    write: t.step_func(() => {
+      resolveWriteCalled();
+      return writePromise;
+    }),
+  }, { highWaterMark: Infinity });
+
+  rs.controller.enqueue('a');
+  assert_array_equals(rs.events, [], 'pull() has not yet been called');
+
+  const pipePromise = rs.pipeTo(ws, { preventCancel: true });
+
+  // The pipe must start writing the first chunk.
+  await writeCalledPromise;
+  assert_array_equals(ws.events, ['write', 'a'], 'write() must have been called once');
+  // The pipe must immediately try to read the next chunk, since the destination desired more chunks.
+  await pullCalledPromise;
+  assert_array_equals(rs.events, ['pull'], 'pull() must have been called once');
+
+  // Error the destination.
+  // Any chunks enqueued after erroring must not be piped to the destination.
+  ws.controller.error(error1);
+  rs.controller.enqueue('b');
+  resolveWrite();
+
+  await promise_rejects_exactly(t, error1, pipePromise, 'pipeTo() should reject with writable error');
+  assert_array_equals(rs.events, ['pull'], 'pull() must have been called once');
+  assert_array_equals(ws.events, ['write', 'a'], 'write() must have been called once');
+
+  rs.controller.close();
+  const reader = rs.getReader();
+  const result = await reader.read();
+  assert_object_equals(result, { value: 'b', done: false }, 'first read after pipeTo() should be correct');
+}, 'Errors must be propagated backward: becomes errored immediately before source receives a chunk; preventCancel = true');

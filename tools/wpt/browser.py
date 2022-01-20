@@ -569,12 +569,14 @@ class ChromeChromiumBase(Browser):
         # Make sure we use the same revision in an invocation.
         if self.revision_used is None and revision is None:
             # No revision provided, use last change.
-            revision_url = f"https://storage.googleapis.com/chromium-browser-snapshots/{architecture}/LAST_CHANGE"
+            revision_url = ("https://storage.googleapis.com/chromium-browser-snapshots/"
+                            f"{architecture}/LAST_CHANGE")
             self.revision_used = get(revision_url).text.strip()
         elif revision:
             self.revision_used = revision
 
-        return f"https://storage.googleapis.com/chromium-browser-snapshots/{architecture}/{self.revision_used}/"
+        return ("https://storage.googleapis.com/chromium-browser-snapshots/"
+                f"{architecture}/{self.revision_used}/")
 
     def _get_chromium_url_by_version(self, filename, version=None):
         if version and version.lower() != "latest":
@@ -615,7 +617,8 @@ class ChromeChromiumBase(Browser):
         # http://chromedriver.chromium.org/downloads/version-selection
         parts = version.split(".")
         assert len(parts) == 4
-        latest_url = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_%s.%s.%s" % tuple(parts[:-1])
+        latest_url = ("https://chromedriver.storage.googleapis.com/LATEST_RELEASE_"
+                      f"{'.'.join(parts[:-1])}")
         try:
             latest = get(latest_url).text.strip()
         except requests.RequestException:
@@ -650,7 +653,8 @@ class ChromeChromiumBase(Browser):
             assert chrome_version, "Cannot determine the version of Chrome"
             # Remove channel suffixes (e.g. " dev").
             chrome_version = chrome_version.split(' ')[0]
-            url = f"https://storage.googleapis.com/chrome-wpt-mojom/{chrome_version}/linux64/mojojs.zip"
+            url = ("https://storage.googleapis.com/chrome-wpt-mojom/"
+                   f"{chrome_version}/linux64/mojojs.zip")
 
         extracted = os.path.join(dest, "mojojs", "gen")
         last_url_file = os.path.join(extracted, "DOWNLOADED_FROM")
@@ -662,7 +666,7 @@ class ChromeChromiumBase(Browser):
                 return extracted
             rmtree(extracted)
 
-        self.logger.info("Downloading Mojo bindings from %s" % url)
+        self.logger.info(f"Downloading Mojo bindings from {url}")
         unzip(get(url).raw, dest)
         with open(last_url_file, "wt") as f:
             f.write(url)
@@ -711,19 +715,19 @@ class ChromeChromiumBase(Browser):
         try:
             version_string = call(binary, "--version").strip()
         except (subprocess.CalledProcessError, OSError) as e:
-            self.logger.warning("Failed to call %s: %s" % (binary, e))
+            self.logger.warning(f"Failed to call {binary}: {e}")
             return None
         m = re.match(r"(?:Google Chrome|Chromium) (.*)", version_string)
         if not m:
-            self.logger.warning("Failed to extract version from: %s" % version_string)
+            self.logger.warning(f"Failed to extract version from: {version_string}")
             return None
         return m.group(1)
 
     def webdriver_supports_browser(self, webdriver_binary, browser_binary, browser_channel):
         chromedriver_version = self.webdriver_version(webdriver_binary)
         if not chromedriver_version:
-            self.logger.warning("Unable to get version for ChromeDriver %s, rejecting it" %
-                                (webdriver_binary))
+            self.logger.warning("Unable to get version for ChromeDriver "
+                                f"{webdriver_binary}, rejecting it")
             return False
 
         browser_version = self.version(browser_binary)
@@ -740,11 +744,11 @@ class ChromeChromiumBase(Browser):
             # it switches between beta and tip-of-tree, so we accept version+1
             # too for dev.
             if browser_channel == "dev" and chromedriver_major == (browser_major + 1):
-                self.logger.debug("Accepting ChromeDriver %s for Chrome/Chromium Dev %s" %
-                                  (chromedriver_version, browser_version))
+                self.logger.debug(f"Accepting ChromeDriver {chromedriver_version} "
+                                  f"for Chrome/Chromium Dev {browser_version}")
                 return True
-            self.logger.warning("ChromeDriver %s does not match Chrome/Chromium %s" %
-                                (chromedriver_version, browser_version))
+            self.logger.warning(f"ChromeDriver {chromedriver_version} does not match "
+                                f"Chrome/Chromium {browser_version}")
             return False
         return True
 
@@ -755,11 +759,11 @@ class ChromeChromiumBase(Browser):
         try:
             version_string = call(webdriver_binary, "--version").strip()
         except (subprocess.CalledProcessError, OSError) as e:
-            self.logger.warning("Failed to call %s: %s" % (webdriver_binary, e))
+            self.logger.warning(f"Failed to call {webdriver_binary}: {e}")
             return None
         m = re.match(r"ChromeDriver ([0-9][0-9.]*)", version_string)
         if not m:
-            self.logger.warning("Failed to extract version from: %s" % version_string)
+            self.logger.warning(f"Failed to extract version from: {version_string}")
             return None
         return m.group(1)
 
@@ -841,7 +845,7 @@ class Chrome(ChromeChromiumBase):
             suffix = ""
             if channel in ("beta", "dev", "canary"):
                 suffix = " " + channel.capitalize()
-            return "/Applications/Google Chrome%s.app/Contents/MacOS/Google Chrome%s" % (suffix, suffix)
+            return f"/Applications/Google Chrome{suffix}.app/Contents/MacOS/Google Chrome{suffix}"
         if uname[0] == "Windows":
             path = os.path.expandvars(r"$SYSTEMDRIVE\Program Files (x86)\Google\Chrome\Application\chrome.exe")
             if not os.path.exists(path):

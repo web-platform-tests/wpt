@@ -86,8 +86,8 @@ def run(venv, **kwargs):
         else:
             raise argparse.ArgumentError(None,
                                          "No --destination argument, and no default for the environment")
-    
-    if "browser_version" in kwargs and browser not in ("chrome", "chromium"):
+
+    if kwargs.get("browser_version", None) is not None and browser not in ("chrome", "chromium"):
         raise argparse.ArgumentError(
             None, "--browser-version argument only supported by chrome and chromium.")
 

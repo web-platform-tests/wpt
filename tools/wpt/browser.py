@@ -585,9 +585,7 @@ class ChromeChromiumBase(Browser):
             try:
                 # Try to find the Chromium build with the same revision.
                 omaha = get(f"https://omahaproxy.appspot.com/deps.json?version={chrome_version}").json()
-                print(f"TRYING TO MATCH VERSION {chrome_version}")
                 detected_revision = omaha['chromium_base_position']
-                print(f"{detected_revision=}")
                 url = ("https://storage.googleapis.com/chromium-browser-snapshots/"
                        f"{self._chromium_platform_string()}/{detected_revision}/"
                        f"chromedriver_{self._chromedriver_platform_string()}.zip")
@@ -607,7 +605,6 @@ class ChromeChromiumBase(Browser):
             except requests.RequestException:
                 self.logger.debug("Unsuccessful attempt to download chromedriver "
                                   "based on given revision")
-                print("given revision didn't work...")
         # Fall back to the tip-of-tree Chromium build.
         return (f"{self._format_chromium_snapshot_url()}"
                 f"chromedriver_{self._chromedriver_platform_string()}.zip")
@@ -668,7 +665,6 @@ class ChromeChromiumBase(Browser):
         if revision:
             url = self._get_webdriver_url(None, revision)
         else:
-            print("no revision (of course)")
             url = self._get_webdriver_url(version)
         self.logger.info(f"Downloading ChromeDriver from {url}")
         unzip(get(url).raw, dest)

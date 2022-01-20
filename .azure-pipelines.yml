@@ -55,6 +55,7 @@ jobs:
   condition: eq(variables['Build.Reason'], 'PullRequest')
   pool:
     vmImage: 'macOS-11'
+  timeoutInMinutes: 180
   steps:
   - task: UsePythonVersion@0
     inputs:

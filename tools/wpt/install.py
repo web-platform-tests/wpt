@@ -86,6 +86,10 @@ def run(venv, **kwargs):
         else:
             raise argparse.ArgumentError(None,
                                          "No --destination argument, and no default for the environment")
+    
+    if "browser_version" in kwargs and browser not in ("chrome", "chromium"):
+        raise argparse.ArgumentError(
+            None, "--browser-version argument only supported by chrome and chromium.")
 
     install(browser, kwargs["component"], destination, channel, logger=logger,
             download_only=kwargs["download_only"], rename=kwargs["rename"],

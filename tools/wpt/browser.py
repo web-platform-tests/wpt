@@ -577,7 +577,6 @@ class ChromeChromiumBase(Browser):
         return f"https://storage.googleapis.com/chromium-browser-snapshots/{architecture}/{self.revision_used}/"
 
     def _get_chromium_url_by_version(self, filename, version=None):
-        filename = f"chromedriver_{self._chromedriver_platform_string()}.zip"
         if version and version.lower() != "latest":
             try:
                 detected_revision = self._get_revision_from_version(version)

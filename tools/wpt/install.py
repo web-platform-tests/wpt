@@ -53,6 +53,9 @@ def get_parser():
                         "(only with --download-only)")
     parser.add_argument('-d', '--destination',
                         help='filesystem directory to place the component')
+    parser.add_argument('--browser-version',
+                        help=("install specific version of a browser "
+                              "or webdriver (currently only supported by Chrome and Chromium)"))
     return parser
 
 
@@ -85,15 +88,15 @@ def run(venv, **kwargs):
                                          "No --destination argument, and no default for the environment")
 
     install(browser, kwargs["component"], destination, channel, logger=logger,
-            download_only=kwargs["download_only"], rename=kwargs["rename"])
+            download_only=kwargs["download_only"], rename=kwargs["rename"],
+            version=kwargs["browser_version"])
 
 
 def install(name, component, destination, channel="nightly", logger=None, download_only=False,
-            rename=None):
+            rename=None, version=None):
     if logger is None:
         import logging
         logger = logging.getLogger("install")
-
     prefix = "download" if download_only else "install"
     suffix = "_webdriver" if component == 'webdriver' else ""
 
@@ -104,6 +107,10 @@ def install(name, component, destination, channel="nightly", logger=None, downlo
     kwargs = {}
     if download_only and rename:
         kwargs["rename"] = rename
+
+    if version:
+        kwargs["version"] = version
+
     path = getattr(browser_cls(logger), method)(dest=destination, channel=channel, **kwargs)
     if path:
         logger.info('Binary %s as %s', "downloaded" if download_only else "installed", path)

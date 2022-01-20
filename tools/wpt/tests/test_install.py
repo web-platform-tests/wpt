@@ -40,7 +40,7 @@ def test_install_chromedriver_official():
     chrome = browser.Chrome(logging.getLogger("Chrome"))
     if sys.platform == "win32":
         dest = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "Scripts")
-        chromedriver_path = os.path.join(dest, "chromedriver.exe")
+        chromedriver_path = os.path.join(dest, "chrome", "chromedriver.exe")
     else:
         dest = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "bin")
         chromedriver_path = os.path.join(dest, "chrome", "chromedriver")
@@ -57,7 +57,7 @@ def test_install_chromedriver_official():
 @pytest.mark.remote_network
 def test_install_chromedriver_nightly():
     if sys.platform == "win32":
-        chromedriver_path = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "Scripts", "chromedriver.exe")
+        chromedriver_path = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "Scripts", "chromium", "chromedriver.exe")
     else:
         chromedriver_path = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "bin", "chromium", "chromedriver")
     if os.path.exists(chromedriver_path):

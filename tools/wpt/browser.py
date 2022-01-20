@@ -785,7 +785,7 @@ class Chromium(ChromeChromiumBase):
     def download(self, dest=None, channel=None, rename=None, version=None):
         if channel != "nightly" and version is None:
             raise NotImplementedError("We can only download Chrome Nightly (Chromium ToT) for you.")
- 
+
         if dest is None:
             dest = self._get_dest(None, channel)
 

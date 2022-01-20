@@ -106,7 +106,7 @@ def install(name, component, destination, channel="nightly", logger=None, downlo
     kwargs = {}
     if download_only and rename:
         kwargs["rename"] = rename
-    
+
     if version:
         kwargs["version"] = version
 

@@ -766,8 +766,8 @@ class ChromeChromiumBase(Browser):
 
 class Chromium(ChromeChromiumBase):
     """Chromium-specific interface.
-
-    Includes webdriver installation, and wptrunner setup methods.
+    Includes browser binary installation and detection.
+    Webdriver installation and wptrunner setup shared in base class with Chrome
     """
 
     product = "chromium"
@@ -784,7 +784,8 @@ class Chromium(ChromeChromiumBase):
 
     def download(self, dest=None, channel=None, rename=None, version=None):
         if channel != "nightly" and version is None:
-            raise NotImplementedError("We can only download Chrome Nightly (Chromium ToT) for you.")
+            raise NotImplementedError(
+                "Only Chromium Nightly (Chromium ToT) can be downloaded without specifying version")
 
         if dest is None:
             dest = self._get_dest(None, channel)
@@ -804,7 +805,8 @@ class Chromium(ChromeChromiumBase):
 
     def install(self, dest=None, channel=None, version=None):
         if channel != "nightly" and version is None:
-            raise NotImplementedError("We can only install Chrome Nightly (Chromium ToT) for you.")
+            raise NotImplementedError(
+                "Only Chromium Nightly (Chromium ToT) can be installed without specifying version")
         dest = self._get_dest(dest, channel)
         installer_path = self.download(dest, channel, version=version)
         with open(installer_path, "rb") as f:
@@ -815,8 +817,8 @@ class Chromium(ChromeChromiumBase):
 
 class Chrome(ChromeChromiumBase):
     """Chrome-specific interface.
-
-    Includes webdriver installation, and wptrunner setup methods.
+    Includes browser binary installation and detection.
+    Webdriver installation and wptrunner setup shared in base class with Chromium.
     """
 
     product = "chrome"

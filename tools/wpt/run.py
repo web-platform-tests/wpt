@@ -407,7 +407,7 @@ class Chromium(BrowserSetup):
             if binary:
                 kwargs["binary"] = binary
             else:
-                raise WptrunError("Unable to locate Chrome binary")
+                raise WptrunError("Unable to locate Chromium binary")
 
         if kwargs["mojojs_path"]:
             kwargs["enable_mojojs"] = True

@@ -585,8 +585,8 @@ class ChromeChromiumBase(Browser):
                 get(url)
                 return url
             except requests.RequestException:
-                self.logger.debug("Unsuccessful attempt to download chromedriver "
-                                  "based on detected version")
+                raise requests.RequestException("404: Unsuccessful attempt to download binary "
+                                                f"based on version. {url}")
 
         # Fall back to the tip-of-tree Chromium build.
         return f"{self._format_chromium_snapshot_url()}{filename}"
@@ -639,7 +639,7 @@ class ChromeChromiumBase(Browser):
 
     def find_webdriver(self, venv_path=None, channel=None, browser_binary=None):
         if venv_path:
-            venv_path = os.path.join(venv_path, "bin")
+            venv_path = os.path.join(venv_path, "bin", self.product)
         return find_executable("chromedriver", path=venv_path)
 
     def install_mojojs(self, dest, channel, browser_binary):
@@ -678,6 +678,7 @@ class ChromeChromiumBase(Browser):
         if dest is None:
             dest = os.pwd
 
+        dest = os.path.join(dest, self.product)
         self._remove_existing_chromedriver_binary(dest)
 
         url = self._get_webdriver_url(version)
@@ -770,7 +771,6 @@ class Chromium(ChromeChromiumBase):
     """
 
     product = "chromium"
-    requirements = "requirements_chromium.txt"
 
     def _find_binary_in_directory(self, directory):
         if uname[0] == "Darwin":
@@ -803,7 +803,7 @@ class Chromium(ChromeChromiumBase):
         return self._find_binary_in_directory(dest)
 
     def install(self, dest=None, channel=None, version=None):
-        if channel != "nightly":
+        if channel != "nightly" and version is None:
             raise NotImplementedError("We can only install Chrome Nightly (Chromium ToT) for you.")
         dest = self._get_dest(dest, channel)
         installer_path = self.download(dest, channel, version=version)
@@ -820,12 +820,6 @@ class Chrome(ChromeChromiumBase):
     """
 
     product = "chrome"
-    requirements = "requirements_chromium.txt"
-    platform = {
-        "Linux": "Linux",
-        "Windows": "Win",
-        "Darwin": "Mac",
-    }.get(uname[0])
 
     def download(self, dest=None, channel=None, rename=None):
         raise NotImplementedError("Downloading of Chrome browser binary not implemented.")

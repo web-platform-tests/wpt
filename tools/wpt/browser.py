@@ -559,21 +559,19 @@ class ChromeChromiumBase(Browser):
         architecture = self._chromium_platform_string()
         # Make sure we use the same revision in an invocation.
         if self.revision_used is None and revision is None:
-            # No revision provided, use last change.
-            revision_url = ("https://storage.googleapis.com/chromium-browser-snapshots/"
-                            f"{architecture}/LAST_CHANGE")
-            self.revision_used = get(revision_url).text.strip()
+            # No revision provided or previously used. use latest revision.
+            self.revision_used = self._get_latest_chromium_revision(architecture)
         elif revision:
             self.revision_used = revision
 
         return ("https://storage.googleapis.com/chromium-browser-snapshots/"
                 f"{architecture}/{self.revision_used}/")
 
-    def _get_chromium_url_by_version(self, filename, version=None):
+    def _get_chromium_url_by_version(self, version=None):
         if version and version.lower() != "latest":
             try:
                 detected_revision = self._get_revision_from_version(version)
-                url = f"{self._format_chromium_snapshot_url(detected_revision)}{filename}"
+                url = f"{self._format_chromium_snapshot_url(detected_revision)}"
                 # Check the status without downloading the content (this is a streaming request).
                 get(url)
                 return url
@@ -582,7 +580,12 @@ class ChromeChromiumBase(Browser):
                                                 f"based on version. {url}")
 
         # Fall back to the tip-of-tree Chromium build.
-        return f"{self._format_chromium_snapshot_url()}{filename}"
+        return f"{self._format_chromium_snapshot_url()}"
+    
+    def _get_latest_chromium_revision(self, architecture):
+        revision_url = ("https://storage.googleapis.com/chromium-browser-snapshots/"
+                        f"{architecture}/LAST_CHANGE")
+        return get(revision_url).text.strip()
 
     def _get_revision_from_version(self, version):
         # Remove channel suffixes (e.g. " dev").
@@ -600,7 +603,7 @@ class ChromeChromiumBase(Browser):
     def _get_webdriver_url(self, version):
         filename = f"chromedriver_{self._chromedriver_platform_string()}.zip"
         if version is None:
-            return self._get_chromium_url_by_version(filename)
+            return f"{self._get_chromium_url_by_version()}{filename}"
 
         # Remove channel suffixes (e.g. " dev").
         version = version.split(' ')[0]
@@ -618,7 +621,7 @@ class ChromeChromiumBase(Browser):
                 latest = get(latest_url).text.strip()
             except requests.RequestException:
                 # Chromium ToT if all else fails
-                return self._get_chromium_url_by_version(filename)
+                return f"{self._get_chromium_url_by_version()}{filename}"
         return f"https://chromedriver.storage.googleapis.com/{latest}/{filename}"
 
     def _remove_existing_chromedriver_binary(self, dest):
@@ -633,12 +636,12 @@ class ChromeChromiumBase(Browser):
 
     def find_webdriver(self, venv_path=None, channel=None, browser_binary=None):
         if venv_path:
-            venv_path = os.path.join(venv_path, "bin", self.product)
+            venv_path = os.path.join(venv_path, self.product)
         return find_executable("chromedriver", path=venv_path)
 
     def install_mojojs(self, dest, channel, browser_binary):
         if channel == "nightly" or channel == "canary":
-            url = self._get_chromium_url_by_version("mojojs.zip")
+            url = f"{self._get_chromium_url_by_version()}mojojs.zip"
         else:
             chrome_version = self.version(binary=browser_binary)
             assert chrome_version, "Cannot determine the version of Chrome"
@@ -744,6 +747,9 @@ class ChromeChromiumBase(Browser):
         return True
 
     def webdriver_version(self, webdriver_binary):
+        if webdriver_binary is None:
+            self.logger.warning("No valid webdriver supplied to detect version.")
+            return None
         if uname[0] == "Windows":
             return _get_fileversion(webdriver_binary, self.logger)
 
@@ -786,7 +792,7 @@ class Chromium(ChromeChromiumBase):
             dest = self._get_dest(None, channel)
 
         filename = f"{self._chromium_package_name()}.zip"
-        url = self._get_chromium_url_by_version(filename, version)
+        url = f"{self._get_chromium_url_by_version(version)}{filename}"
         self.logger.info(f"Downloading Chromium from {url}")
         resp = get(url)
         installer_path = os.path.join(dest, filename)
@@ -1229,6 +1235,9 @@ class EdgeChromium(Browser):
         return m.group(1)
 
     def webdriver_version(self, webdriver_binary):
+        if webdriver_binary is None:
+            self.logger.warning("No valid webdriver supplied to detect version.")
+            return None
         if self.platform == "win":
             return _get_fileversion(webdriver_binary, self.logger)
 

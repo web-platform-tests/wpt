@@ -158,11 +158,12 @@ class BrowserSetup(object):
     name = None  # type: ClassVar[str]
     browser_cls = None  # type: ClassVar[Type[browser.Browser]]
 
-    def __init__(self, venv, name, browser_cls, prompt=True):
+    def __init__(self, venv, name, browser_cls, experimental_channels, prompt=True):
         self.venv = venv
         self.name = name
         self.browser_cls = browser_cls
         self.browser = self.browser_cls(logger)
+        self.experimental_channels = experimental_channels
         self.prompt = prompt
 
     def prompt_install(self, component):

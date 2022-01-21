@@ -62,10 +62,11 @@ class Browser(object):
     def _get_dest(self, dest, channel):
         if dest is None:
             # os.getcwd() doesn't include the venv path
-            if os.path.isdir(os.path.join(os.getcwd(), "_venv")):
-                dest = os.path.join(os.getcwd(), "_venv")
-            else:
-                dest = os.path.join(os.getcwd(), "_venv3")
+            dest = os.path.join(os.getcwd(), "_venv")
+            # if os.path.isdir(os.path.join(os.getcwd(), "_venv")):
+            #     dest = os.path.join(os.getcwd(), "_venv")
+            # else:
+            #     dest = os.path.join(os.getcwd(), "_venv3")
 
         dest = os.path.join(dest, "browsers", channel)
 

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test the sequence of events when reporting image timing.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+  promise_test(async t => {
+    const iframe = document.createElement('iframe');
+    t.add_cleanup(() => iframe.remove());
+    await new Promise(resolve => {
+      iframe.addEventListener('load', resolve);
+      iframe.src = 'resources/iframe-with-delay.html';
+      document.body.appendChild(iframe);
+    });
+
+    const entries = performance.getEntriesByName(iframe.src);
+    assert_equals(entries.length, 1);
+    console.log(entries)
+    assert_greater_than(performance.now(), entries[0].responseEnd + 500);
+  }, "An iframe should report its RT entry when the response is done and before it is completely loaded");
+      
+  </script>

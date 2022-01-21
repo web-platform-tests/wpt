@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<meta name=variant content="">
+<meta name=variant content="monthweek">
 <title>The constraint validation API Test: element.willValidate</title>
 <link rel="author" title="Intel" href="http://www.intel.com/">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-cva-willvalidate">
@@ -45,7 +47,7 @@
     //(with the assumption that the readonly attribute applies).
     {
       tag: "input",
-      types: ["text", "search", "tel", "url", "email", "password", "datetime-local", "date", "month", "week", "time"],
+      types: ["text", "search", "tel", "url", "email", "password", "datetime-local", "date", "time"],
       testData: [
         {conditions: {disabled: true}, expected: false, name: "[target] Must be barred from the constraint validation if it is disabled"},
         {conditions: {disabled: false, readOnly: false}, expected: true, name: "[target] The willValidate attribute must be true if an element is mutable"},
@@ -92,6 +94,22 @@
       ]
     }
   ];
+
+  const monthWeekTestElements = [
+    {
+      tag: "input",
+      types: ["month", "week"],
+      testData: [
+        {conditions: {disabled: true}, expected: false, name: "[target] Must be barred from the constraint validation if it is disabled"},
+        {conditions: {disabled: false, readOnly: false}, expected: true, name: "[target] The willValidate attribute must be true if an element is mutable"},
+        {conditions: {readOnly: true}, expected: false, name: "[target] Must be barred from the constraint validation if it is readonly"},
+        {conditions: {disabled: false, readOnly: false}, expected: false, name: "[target] The willValidate attribute must be false if it has a datalist ancestor", ancestor: "datalist"},
+      ]
+    },
+  ];
+  if (location.search && location.search === '?monthweek') {
+    testElements = monthWeekTestElements;
+  }
 
   validator.run_test(testElements, "willValidate");
 </script>

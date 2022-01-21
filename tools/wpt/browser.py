@@ -643,6 +643,7 @@ class ChromeChromiumBase(Browser):
     def find_webdriver(self, venv_path=None, channel=None, browser_binary=None):
         if venv_path:
             venv_path = os.path.join(venv_path, "bin", self.product)
+        print(f"find webdriver, venv_path={venv_path}")
         return find_executable("chromedriver", path=venv_path)
 
     def install_mojojs(self, dest, channel, browser_binary):
@@ -724,6 +725,7 @@ class ChromeChromiumBase(Browser):
         return m.group(1)
 
     def webdriver_supports_browser(self, webdriver_binary, browser_binary, browser_channel):
+        print(f"webdriver_supports_version, webdriver_binary={webdriver_binary}")
         chromedriver_version = self.webdriver_version(webdriver_binary)
         if not chromedriver_version:
             self.logger.warning("Unable to get version for ChromeDriver "

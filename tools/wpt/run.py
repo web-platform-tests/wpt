@@ -360,6 +360,7 @@ class ChromiumBasedBrowser(BrowserSetup):
             webdriver_binary = None
             if not kwargs["install_webdriver"]:
                 print(f"self.venv.path={self.venv.path}")
+                print(f"self.browser={self.browser}")
                 webdriver_binary = self.browser.find_webdriver(venv_path=self.venv.path)
                 if self.name in ("chrome", "chromium"):
                     valid_webdriver = self.browser.webdriver_supports_browser(webdriver_binary,

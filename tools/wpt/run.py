@@ -360,6 +360,7 @@ class Chrome(BrowserSetup):
             webdriver_binary = None
             if not kwargs["install_webdriver"]:
                 webdriver_binary = self.browser.find_webdriver()
+                print(f"webdriver found at {webdriver_binary}")
                 if webdriver_binary and not self.browser.webdriver_supports_browser(
                         webdriver_binary, kwargs["binary"], browser_channel):
                     webdriver_binary = None

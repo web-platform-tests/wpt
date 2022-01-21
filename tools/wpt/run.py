@@ -158,9 +158,12 @@ class BrowserSetup(object):
     name = None  # type: ClassVar[str]
     browser_cls = None  # type: ClassVar[Type[browser.Browser]]
 
-    def __init__(self, venv, prompt=True):
-        self.browser = self.browser_cls(logger)
+    def __init__(self, venv, name, browser_cls, experimental_channels, prompt=True):
         self.venv = venv
+        self.name = name
+        self.browser_cls = browser_cls
+        self.browser = self.browser_cls(logger)
+        self.experimental_channels = experimental_channels
         self.prompt = prompt
 
     def prompt_install(self, component):
@@ -199,8 +202,6 @@ def safe_unsetenv(env_var):
 
 
 class Firefox(BrowserSetup):
-    name = "firefox"
-    browser_cls = browser.Firefox
 
     def setup_kwargs(self, kwargs):
         if kwargs["binary"] is None:
@@ -271,8 +272,6 @@ Consider installing certutil via your OS package manager or directly.""")
 
 
 class FirefoxAndroid(BrowserSetup):
-    name = "firefox_android"
-    browser_cls = browser.FirefoxAndroid
 
     def setup_kwargs(self, kwargs):
         from . import android
@@ -326,47 +325,52 @@ class FirefoxAndroid(BrowserSetup):
                                   (app, device_serial))
 
 
-class Chrome(BrowserSetup):
-    name = "chrome"
-    browser_cls = browser.Chrome
-    experimental_channels = ("dev", "canary", "nightly")
+class ChromiumBasedBrowser(BrowserSetup):
 
     def setup_kwargs(self, kwargs):
         browser_channel = kwargs["browser_channel"]
         if kwargs["binary"] is None:
             binary = self.browser.find_binary(venv_path=self.venv.path, channel=browser_channel)
             if binary:
+                logger.info(f"Using {self.name} binary {binary}")
                 kwargs["binary"] = binary
             else:
-                raise WptrunError("Unable to locate Chrome binary")
+                raise WptrunError(f"Unable to locate {self.name} binary")
 
-        if kwargs["mojojs_path"]:
-            kwargs["enable_mojojs"] = True
-            logger.info("--mojojs-path is provided, enabling MojoJS")
-        # TODO(Hexcles): Enable this everywhere when Chrome 86 becomes stable.
-        elif browser_channel in self.experimental_channels:
-            try:
-                path = self.browser.install_mojojs(
-                    dest=self.venv.path,
-                    channel=browser_channel,
-                    browser_binary=kwargs["binary"],
-                )
-                kwargs["mojojs_path"] = path
+        if self.name in ("chrome", "chromium"):
+            if kwargs["mojojs_path"]:
                 kwargs["enable_mojojs"] = True
-                logger.info("MojoJS enabled automatically (mojojs_path: %s)" % path)
-            except Exception as e:
-                logger.error("Cannot enable MojoJS: %s" % e)
+                logger.info("--mojojs-path is provided, enabling MojoJS")
+            # TODO(Hexcles): Enable this everywhere when Chrome 86 becomes stable.
+            elif browser_channel in self.experimental_channels:
+                try:
+                    path = self.browser.install_mojojs(
+                        dest=self.venv.path,
+                        channel=browser_channel,
+                        browser_binary=kwargs["binary"],
+                    )
+                    kwargs["mojojs_path"] = path
+                    kwargs["enable_mojojs"] = True
+                    logger.info("MojoJS enabled automatically (mojojs_path: %s)" % path)
+                except Exception as e:
+                    logger.error("Cannot enable MojoJS: %s" % e)
 
         if kwargs["webdriver_binary"] is None:
             webdriver_binary = None
             if not kwargs["install_webdriver"]:
-                webdriver_binary = self.browser.find_webdriver(venv_path=self.venv.path)
-                if webdriver_binary and not self.browser.webdriver_supports_browser(
-                        webdriver_binary, kwargs["binary"], browser_channel):
+                webdriver_binary = self.browser.find_webdriver(venv_path=self.venv.bin_path)
+                if self.name in ("chrome", "chromium"):
+                    valid_webdriver = self.browser.webdriver_supports_browser(webdriver_binary,
+                                                                              kwargs["binary"],
+                                                                              browser_channel)
+                else:
+                    valid_webdriver = self.browser.webdriver_supports_browser(webdriver_binary,
+                                                                              kwargs["binary"])
+                if webdriver_binary and not valid_webdriver:
                     webdriver_binary = None
 
             if webdriver_binary is None:
-                install = self.prompt_install("chromedriver")
+                install = self.prompt_install(f"{self.name} webdriver")
 
                 if install:
                     webdriver_binary = self.browser.install_webdriver(
@@ -375,98 +379,31 @@ class Chrome(BrowserSetup):
                         browser_binary=kwargs["binary"],
                     )
             else:
-                logger.info("Using webdriver binary %s" % webdriver_binary)
+                logger.info(f"Using webdriver binary {webdriver_binary}")
 
             if webdriver_binary:
                 kwargs["webdriver_binary"] = webdriver_binary
             else:
-                raise WptrunError("Unable to locate or install matching ChromeDriver binary")
+                raise WptrunError("Unable to locate or install matching webdriver binary")
+
         if browser_channel in self.experimental_channels:
-            logger.info(
-                "Automatically turning on experimental features for Chrome Dev/Canary or Chromium trunk")
+            logger.info(f"Automatically turning on experimental features for {self.name} "
+                        f"{'/'.join(self.experimental_channels)}")
             kwargs["binary_args"].append("--enable-experimental-web-platform-features")
-            # HACK(Hexcles): work around https://github.com/web-platform-tests/wpt/issues/16448
-            kwargs["webdriver_args"].append("--disable-build-check")
-            # To start the WebTransport over HTTP/3 test server.
-            kwargs["enable_webtransport_h3"] = True
-        if os.getenv("TASKCLUSTER_ROOT_URL"):
-            # We are on Taskcluster, where our Docker container does not have
-            # enough capabilities to run Chrome with sandboxing. (gh-20133)
-            kwargs["binary_args"].append("--no-sandbox")
 
+            if self.name in ("chrome", "chromium"):
+                # HACK(Hexcles): work around https://github.com/web-platform-tests/wpt/issues/16448
+                kwargs["webdriver_args"].append("--disable-build-check")
+                # To start the WebTransport over HTTP/3 test server.
+                kwargs["enable_webtransport_h3"] = True
 
-class Chromium(BrowserSetup):
-    name = "chromium"
-    browser_cls = browser.Chromium
-    experimental_channels = ("dev", "canary", "nightly")
-
-    def setup_kwargs(self, kwargs):
-        browser_channel = kwargs["browser_channel"]
-        if kwargs["binary"] is None:
-            binary = self.browser.find_binary(venv_path=self.venv.path, channel=browser_channel)
-            if binary:
-                kwargs["binary"] = binary
-            else:
-                raise WptrunError("Unable to locate Chromium binary")
-
-        if kwargs["mojojs_path"]:
-            kwargs["enable_mojojs"] = True
-            logger.info("--mojojs-path is provided, enabling MojoJS")
-        # TODO(Hexcles): Enable this everywhere when Chrome 86 becomes stable.
-        elif browser_channel in self.experimental_channels:
-            try:
-                path = self.browser.install_mojojs(
-                    dest=self.venv.path,
-                    channel=browser_channel,
-                    browser_binary=kwargs["binary"],
-                )
-                kwargs["mojojs_path"] = path
-                kwargs["enable_mojojs"] = True
-                logger.info("MojoJS enabled automatically (mojojs_path: %s)" % path)
-            except Exception as e:
-                logger.error("Cannot enable MojoJS: %s" % e)
-
-        if kwargs["webdriver_binary"] is None:
-            webdriver_binary = None
-            if not kwargs["install_webdriver"]:
-                webdriver_binary = self.browser.find_webdriver(venv_path=self.venv.path)
-                if webdriver_binary and not self.browser.webdriver_supports_browser(
-                        webdriver_binary, kwargs["binary"], browser_channel):
-                    webdriver_binary = None
-
-            if webdriver_binary is None:
-                install = self.prompt_install("chromedriver")
-
-                if install:
-                    webdriver_binary = self.browser.install_webdriver(
-                        dest=self.venv.bin_path,
-                        channel=browser_channel,
-                        browser_binary=kwargs["binary"],
-                    )
-            else:
-                logger.info("Using webdriver binary %s" % webdriver_binary)
-
-            if webdriver_binary:
-                kwargs["webdriver_binary"] = webdriver_binary
-            else:
-                raise WptrunError("Unable to locate or install matching ChromeDriver binary")
-        if browser_channel in self.experimental_channels:
-            logger.info(
-                "Automatically turning on experimental features for Chrome Dev/Canary or Chromium trunk")
-            kwargs["binary_args"].append("--enable-experimental-web-platform-features")
-            # HACK(Hexcles): work around https://github.com/web-platform-tests/wpt/issues/16448
-            kwargs["webdriver_args"].append("--disable-build-check")
-            # To start the WebTransport over HTTP/3 test server.
-            kwargs["enable_webtransport_h3"] = True
-        if os.getenv("TASKCLUSTER_ROOT_URL"):
+        if self.name in ("chrome", "chromium") and os.getenv("TASKCLUSTER_ROOT_URL"):
             # We are on Taskcluster, where our Docker container does not have
             # enough capabilities to run Chrome with sandboxing. (gh-20133)
             kwargs["binary_args"].append("--no-sandbox")
 
 
 class ChromeAndroid(BrowserSetup):
-    name = "chrome_android"
-    browser_cls = browser.ChromeAndroid
 
     def setup_kwargs(self, kwargs):
         if kwargs.get("device_serial"):
@@ -505,8 +442,6 @@ class ChromeAndroid(BrowserSetup):
 
 
 class ChromeiOS(BrowserSetup):
-    name = "chrome_ios"
-    browser_cls = browser.ChromeiOS
 
     def setup_kwargs(self, kwargs):
         if kwargs["webdriver_binary"] is None:
@@ -514,9 +449,6 @@ class ChromeiOS(BrowserSetup):
 
 
 class AndroidWeblayer(BrowserSetup):
-    name = "android_weblayer"
-    browser_cls = browser.AndroidWeblayer
-    experimental_channels = ("dev", "canary")
 
     def setup_kwargs(self, kwargs):
         if kwargs.get("device_serial"):
@@ -548,8 +480,6 @@ class AndroidWeblayer(BrowserSetup):
 
 
 class AndroidWebview(BrowserSetup):
-    name = "android_webview"
-    browser_cls = browser.AndroidWebview
 
     def setup_kwargs(self, kwargs):
         if kwargs.get("device_serial"):
@@ -577,8 +507,6 @@ class AndroidWebview(BrowserSetup):
 
 
 class Opera(BrowserSetup):
-    name = "opera"
-    browser_cls = browser.Opera
 
     def setup_kwargs(self, kwargs):
         if kwargs["webdriver_binary"] is None:
@@ -603,51 +531,7 @@ class Opera(BrowserSetup):
                 raise WptrunError("Unable to locate or install operadriver binary")
 
 
-class EdgeChromium(BrowserSetup):
-    name = "MicrosoftEdge"
-    browser_cls = browser.EdgeChromium
-
-    def setup_kwargs(self, kwargs):
-        browser_channel = kwargs["browser_channel"]
-        if kwargs["binary"] is None:
-            binary = self.browser.find_binary(channel=browser_channel)
-            if binary:
-                logger.info("Using Edge binary %s" % binary)
-                kwargs["binary"] = binary
-            else:
-                raise WptrunError("Unable to locate Edge binary")
-
-        if kwargs["webdriver_binary"] is None:
-            webdriver_binary = None
-            if not kwargs["install_webdriver"]:
-                webdriver_binary = self.browser.find_webdriver()
-                if (webdriver_binary and not self.browser.webdriver_supports_browser(
-                    webdriver_binary, kwargs["binary"])):
-                    webdriver_binary = None
-
-            if webdriver_binary is None:
-                install = self.prompt_install("msedgedriver")
-
-                if install:
-                    logger.info("Downloading msedgedriver")
-                    webdriver_binary = self.browser.install_webdriver(
-                        dest=self.venv.bin_path,
-                        channel=browser_channel)
-            else:
-                logger.info("Using webdriver binary %s" % webdriver_binary)
-
-            if webdriver_binary:
-                kwargs["webdriver_binary"] = webdriver_binary
-            else:
-                raise WptrunError("Unable to locate or install msedgedriver binary")
-        if browser_channel in ("dev", "canary"):
-            logger.info("Automatically turning on experimental features for Edge Dev/Canary")
-            kwargs["binary_args"].append("--enable-experimental-web-platform-features")
-
-
 class Edge(BrowserSetup):
-    name = "edge"
-    browser_cls = browser.Edge
 
     def install(self, channel=None):
         raise NotImplementedError
@@ -666,14 +550,7 @@ https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
             kwargs["webdriver_binary"] = webdriver_binary
 
 
-class EdgeWebDriver(Edge):
-    name = "edge_webdriver"
-    browser_cls = browser.EdgeWebDriver
-
-
 class InternetExplorer(BrowserSetup):
-    name = "ie"
-    browser_cls = browser.InternetExplorer
 
     def install(self, channel=None):
         raise NotImplementedError
@@ -693,8 +570,6 @@ https://selenium-release.storage.googleapis.com/index.html
 
 
 class Safari(BrowserSetup):
-    name = "safari"
-    browser_cls = browser.Safari
 
     def install(self, channel=None):
         raise NotImplementedError
@@ -710,8 +585,6 @@ class Safari(BrowserSetup):
 
 
 class Sauce(BrowserSetup):
-    name = "sauce"
-    browser_cls = browser.Sauce
 
     def install(self, channel=None):
         raise NotImplementedError
@@ -725,8 +598,6 @@ class Sauce(BrowserSetup):
 
 
 class Servo(BrowserSetup):
-    name = "servo"
-    browser_cls = browser.Servo
 
     def install(self, channel=None):
         if self.prompt_install(self.name):
@@ -741,14 +612,7 @@ class Servo(BrowserSetup):
             kwargs["binary"] = binary
 
 
-class ServoWebDriver(Servo):
-    name = "servodriver"
-    browser_cls = browser.ServoWebDriver
-
-
 class WebKit(BrowserSetup):
-    name = "webkit"
-    browser_cls = browser.WebKit
 
     def install(self, channel=None):
         raise NotImplementedError
@@ -758,8 +622,6 @@ class WebKit(BrowserSetup):
 
 
 class WebKitGTKMiniBrowser(BrowserSetup):
-    name = "webkitgtk_minibrowser"
-    browser_cls = browser.WebKitGTKMiniBrowser
 
     def install(self, channel=None):
         if self.prompt_install(self.name):
@@ -784,8 +646,6 @@ class WebKitGTKMiniBrowser(BrowserSetup):
 
 
 class Epiphany(BrowserSetup):
-    name = "epiphany"
-    browser_cls = browser.Epiphany
 
     def install(self, channel=None):
         raise NotImplementedError
@@ -807,26 +667,33 @@ class Epiphany(BrowserSetup):
 
 
 product_setup = {
-    "android_weblayer": AndroidWeblayer,
-    "android_webview": AndroidWebview,
-    "firefox": Firefox,
-    "firefox_android": FirefoxAndroid,
-    "chrome": Chrome,
-    "chrome_android": ChromeAndroid,
-    "chrome_ios": ChromeiOS,
-    "chromium": Chromium,
-    "edgechromium": EdgeChromium,
-    "edge": Edge,
-    "edge_webdriver": EdgeWebDriver,
-    "ie": InternetExplorer,
-    "safari": Safari,
-    "servo": Servo,
-    "servodriver": ServoWebDriver,
-    "sauce": Sauce,
-    "opera": Opera,
-    "webkit": WebKit,
-    "webkitgtk_minibrowser": WebKitGTKMiniBrowser,
-    "epiphany": Epiphany,
+    "android_weblayer": (AndroidWeblayer, browser.AndroidWeblayer),
+    "android_webview": (AndroidWebview, browser.AndroidWebview),
+    "firefox": (Firefox, browser.Firefox),
+    "firefox_android": (FirefoxAndroid, browser.FirefoxAndroid),
+    "chrome": (ChromiumBasedBrowser, browser.Chrome),
+    "chrome_android": (ChromeAndroid, browser.ChromeAndroid),
+    "chrome_ios": (ChromeiOS, browser.ChromeiOS),
+    "chromium": (ChromiumBasedBrowser, browser.Chromium),
+    "edgechromium": (ChromiumBasedBrowser, browser.EdgeChromium),
+    "edge": (Edge, browser.Edge),
+    "edge_webdriver": (Edge, browser.EdgeWebDriver),
+    "ie": (InternetExplorer, browser.InternetExplorer),
+    "safari": (Safari, browser.Safari),
+    "servo": (Servo, browser.Servo),
+    "servodriver": (Servo, browser.ServoWebDriver),
+    "sauce": (Sauce, browser.Sauce),
+    "opera": (Opera, browser.Opera),
+    "webkit": (WebKit, browser.WebKit),
+    "webkitgtk_minibrowser": (WebKitGTKMiniBrowser, browser.WebKitGTKMiniBrowser),
+    "epiphany": (Epiphany, browser.Epiphany),
+}
+
+experimental_channels = {
+    "android_weblayer": ("dev", "canary"),
+    "chrome": ("dev", "canary", "nightly"),
+    "chromium": ("dev", "canary", "nightly"),
+    "edgechromium": ("dev", "canary")
 }
 
 
@@ -861,7 +728,9 @@ def setup_wptrunner(venv, **kwargs):
     if kwargs["product"] not in product_setup:
         raise WptrunError("Unsupported product %s" % kwargs["product"])
 
-    setup_cls = product_setup[kwargs["product"]](venv, kwargs["prompt"])
+    setup, browser_cls = product_setup[kwargs["product"]]
+    channels = experimental_channels.get(kwargs["product"], None)
+    setup_cls = setup(venv, kwargs["product"], browser_cls, channels, kwargs["prompt"])
     setup_cls.install_requirements()
 
     affected_revish = kwargs.get("affected")

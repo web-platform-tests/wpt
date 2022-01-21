@@ -724,7 +724,6 @@ class ChromeChromiumBase(Browser):
         return m.group(1)
 
     def webdriver_supports_browser(self, webdriver_binary, browser_binary, browser_channel):
-        print(f"webdriver_supports_version, webdriver_binary={webdriver_binary}")
         chromedriver_version = self.webdriver_version(webdriver_binary)
         if not chromedriver_version:
             self.logger.warning("Unable to get version for ChromeDriver "
@@ -754,6 +753,9 @@ class ChromeChromiumBase(Browser):
         return True
 
     def webdriver_version(self, webdriver_binary):
+        if webdriver_binary is None:
+            self.logger.warning("No valid webdriver supplied to detect version.")
+            return None
         if uname[0] == "Windows":
             return _get_fileversion(webdriver_binary, self.logger)
 
@@ -1236,6 +1238,9 @@ class EdgeChromium(Browser):
         return m.group(1)
 
     def webdriver_version(self, webdriver_binary):
+        if webdriver_binary is None:
+            self.logger.warning("No valid webdriver supplied to detect version.")
+            return None
         if self.platform == "win":
             return _get_fileversion(webdriver_binary, self.logger)
 

@@ -538,6 +538,9 @@ class ChromeChromiumBase(Browser):
     }.get(uname[0])
     revision_used = None
 
+    def __init__(self, product):
+        self.product = product
+
     def _chromedriver_platform_string(self):
         if self.platform is None:
             raise ValueError("Unable to construct a valid Chrome package name for current platform")
@@ -753,6 +756,10 @@ class ChromeChromiumBase(Browser):
         return True
 
     def webdriver_version(self, webdriver_binary):
+        if webdriver_binary is None:
+            self.logger.warning(f"No valid webdriver path given.")
+            return None
+
         if uname[0] == "Windows":
             return _get_fileversion(webdriver_binary, self.logger)
 
@@ -774,7 +781,8 @@ class Chromium(ChromeChromiumBase):
     Webdriver installation and wptrunner setup shared in base class with Chrome
     """
 
-    product = "chromium"
+    def __init__():
+        super().__init__("chromium")
 
     def _find_binary_in_directory(self, directory):
         if uname[0] == "Darwin":
@@ -825,7 +833,8 @@ class Chrome(ChromeChromiumBase):
     Webdriver installation and wptrunner setup shared in base class with Chromium.
     """
 
-    product = "chrome"
+    def __init__(self):
+        super().__init__("chrome")
 
     def download(self, dest=None, channel=None, rename=None):
         raise NotImplementedError("Downloading of Chrome browser binary not implemented.")

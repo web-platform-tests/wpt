@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <head>
-    <script>
-        const channel = new BroadcastChannel(new URLSearchParams(location.search).get('channel'));
-        document.addEventListener('error', error => channel.postMessage('error', error));
-        const log = (...args) => channel.postMessage({action: 'log', args});
-        channel.postMessage({action: 'didChangeState', args: document.prerendering ? 'prerender' : 'discarded'});
-
-        document.addEventListener('prerenderingchange', e =>
-            channel.postMessage({action: 'didChangeState', args: 'activated'}));
-
-        channel.addEventListener('message', async ({data: {action, args}}) => {
-          switch (action) {
-            case 'eval':
-              const result = await (eval(`(${args})`))({log});
-              channel.postMessage({action: 'didEval', args: result});
-              break;
-  
-            case 'close':
-              channel.close();
-              window.close();
-              break;
+  <script src="/common/utils.js"></script>
+  <script src="utils.js"></script>
+  <script>
+      const params = new URLSearchParams(window.location.search);
+      const uuid = params.get('uuid');
+      const logChannel = new PrerenderChannel(uuid, 'log');
+      window.prerender_log = (...args) => logChannel.postMessage(args);
+      new PrerenderChannel(uuid, 'exec').addEventListener('message',
+        async ({detail: {fn, args, receiver}}) => {
+          prerender_log({fn, args, receiver})
+          const receiverChannel = new PrerenderChannel(uuid, receiver);
+          try {
+            const result = await (eval(`(${fn})`)(args)) || null;
+            receiverChannel.postMessage({result});
+          } catch (error) {
+            receiverChannel.postMessage({error});
           }
-        })
+        });
+
+      window.addEventListener('error', error =>
+        logChannel.postMessage('[Prerendered Page Error]', {message: error.message, stack: error.stack}));
+
+      window.prerender_log('Channel Created');
+      new PrerenderChannel(uuid, 'ready').postMessage({});
     </script>
 </head>

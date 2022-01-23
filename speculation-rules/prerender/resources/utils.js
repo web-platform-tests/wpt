@@ -144,56 +144,61 @@ function createFrame(url) {
     });
 }
 
-async function prerenderScript(script, t) {
-  const uid = token();
-  const channelName =  `prerender-channel-${uid}`;
-  const channel = new BroadcastChannel(channelName);
+class PrerenderChannel extends EventTarget {
+  broadcastChannel = null;
 
-  channel.addEventListener('message', ({data: {action, args}}) => {
-    if (action === 'log')
-      console.log(args);
+  constructor(uid, name) {
+    super();
+    this.broadcastChannel = new BroadcastChannel(`${uid}-${name}`);
+    this.broadcastChannel.addEventListener('message', e => {
+      this.dispatchEvent(new CustomEvent('message', {detail: e.data}));
+    });
+  }
+
+  postMessage(message) {
+    this.broadcastChannel.postMessage(message);
+  }
+
+  close() {
+    this.broadcastChannel.close();
+  }
+};
+
+async function create_prerendered_page(t) {
+  const uuid = token();
+  new PrerenderChannel(uuid, 'log').addEventListener('message', message =>
+    console.log('[From Prerendered]', ...message.detail));
+
+  const execChannel = new PrerenderChannel(uuid, 'exec');
+  const initChannel = new PrerenderChannel(uuid, 'initiator');
+  const exec = (func, args = []) => {
+      const receiver = token();
+      execChannel.postMessage({receiver, fn: func.toString(), args});
+      return new Promise((resolve, reject) => {
+        const channel = new PrerenderChannel(uuid, receiver);
+        channel.addEventListener('message', ({detail}) => {
+          channel.close();
+          if (detail.error)
+            reject(detail.error)
+          else
+            resolve(detail.result);
+        });
+      })
+    };
+
+  window.open(`/speculation-rules/prerender/resources/eval-init.html?uuid=${uuid}`, '_blank', 'noopener');
+  t.add_cleanup(() => initChannel.postMessage('close'));
+  t.add_cleanup(() => exec(() => window.close()));
+  await new Promise(resolve => {
+    const channel = new PrerenderChannel(uuid, 'ready');
+    channel.addEventListener('message', () => {
+      channel.close();
+      resolve();
+    });
   });
 
-  const waitForEvent = name => new Promise((resolve, reject) => {
-    const listener = ({data: {action, args}}) => {
-      if (action === 'error')
-        reject(args);
-      else if (action === name)
-        resolve(args);
-      else
-        return;
-
-      channel.removeEventListener('message', listener);
-    }
-
-    channel.addEventListener('message', listener);
-  });
-
-  window.open(`/speculation-rules/prerender/resources/eval-init.html?channel=${channelName}`, '_blank', 'noopener');
-  await waitForEvent('ready');
-  const state = await waitForEvent('didChangeState');
-  assert_equals(state, 'prerender');
-  console.log(script.toString());
-  channel.postMessage({action: 'eval', args: script.toString()});
-  const result = await waitForEvent('didEval');
-
-  t.add_cleanup(() => channel.postMessage({action: 'close'}));
-  return {result, activate: async (script = (() => null)) => {
-    channel.postMessage({action: 'activate'});
-    const state = await waitForEvent('didChangeState');
-    assert_equals(state, 'activated');
-    channel.postMessage({action: 'eval', args: script.toString()});
-    return await waitForEvent('didEval');
-  }};
-}
-
-async function prerender_activation_test([prerender, onPrerender, activateScript, onActivate], label) {
-  setup(() => assertSpeculationRulesIsSupported());
-  
-  promise_test(async t => {
-    const {result, activate} = await prerenderScript(prerender, t);
-    onPrerender(result);
-    const result2 = await activate(activateScript);
-    onActivate?.(result2);
-  }, label);
+  return {
+    exec,
+    activate: () => initChannel.postMessage('activate')
+  };
 }

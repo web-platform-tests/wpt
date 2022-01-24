@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Resource Timing Entry For hyperlink audit (ping)</title>
+<link rel="help" href="https://w3c.github.io/resource-timing/"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+    async_test(t => {
+        const link = document.createElement('a');
+        const delay = 500;
+        const ping = new URL(`/xhr/resources/delay.py?ms=${delay}`, location.href).toString();
+        link.setAttribute('href', 'resources/close.html');
+        link.setAttribute('target', '_blank');
+        link.setAttribute('ping', ping);
+        link.innerText = 'Link';
+        document.body.appendChild(link);
+        new PerformanceObserver(t.step_func(() => {
+            const entries = performance.getEntriesByName(ping);
+            assert_equals(entries.length, 1);
+            const [entry] = entries;
+            assert_equals(entry.initiatorType, 'ping');
+            assert_greater_than(entry.duration, delay);
+            t.done();
+        })).observe({"type": "resource"});
+        link.click();
+    }, "Hyperlink auditing (<a ping>) should have a resource timing entry");
+</script>
+</body>
+</html>

@@ -169,7 +169,7 @@ async function create_prerendered_page(t) {
   new PrerenderChannel(uuid, 'log').addEventListener('message', message => {
     if(window.console)
       console['log']('[From Prerendered]', ...message.detail);
-  }
+  });
 
   const execChannel = new PrerenderChannel(uuid, 'exec');
   const initChannel = new PrerenderChannel(uuid, 'initiator');

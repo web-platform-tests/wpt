@@ -169,8 +169,6 @@ class Executor {
       }
 
       const task = JSON.parse(await receive(this.uuid));
-      if (window.prerender_log)
-        window.prerender_log(task.fn);
 
       let response;
       try {
@@ -185,8 +183,6 @@ class Executor {
           value: e.message
         });
       }
-      if (window.prerender_log)
-        window.prerender_log(response);
       await send(task.receiver, response);
     }
   }

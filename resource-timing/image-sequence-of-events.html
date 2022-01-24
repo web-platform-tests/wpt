@@ -18,13 +18,12 @@
       image.src = src;
     });
   }
-  promise_test(t => test_image_sequence('resources/blue.png', 'load', t), 
+  promise_test(t => test_image_sequence('resources/blue.png', 'load', t),
   "An image should receive its load event after the ResourceTiming entry is available");
-  
-  promise_test(t => test_image_sequence('resources/nothing-at-all.png', 'error', t), 
+
+  promise_test(t => test_image_sequence('resources/nothing-at-all.png', 'error', t),
   "A non-existent (404) image should receive its error event after the ResourceTiming entry is available");
-    
-  promise_test(t => test_image_sequence('resources/invalid.png', 'error', t), 
+
+  promise_test(t => test_image_sequence('resources/invalid.png', 'error', t),
   "An invalid image should receive its error event after the ResourceTiming entry is available");
-    
-  </script>
+</script>

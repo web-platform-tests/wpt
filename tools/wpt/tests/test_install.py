@@ -35,7 +35,14 @@ def test_install_chromium():
 
 @pytest.mark.slow
 @pytest.mark.remote_network
-def test_install_chromedriver_official():
+def test_install_chrome():
+    with pytest.raises(NotImplementedError):
+        wpt.main(argv=["install", "chrome", "browser"])
+
+
+@pytest.mark.slow
+@pytest.mark.remote_network
+def test_install_chromedriver_by_version():
     # This is not technically an integration test as we do not want to require Chrome Stable to run it.
     chrome = browser.Chrome(logging.getLogger("Chrome"))
     if sys.platform == "win32":

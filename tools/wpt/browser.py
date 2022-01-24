@@ -581,7 +581,7 @@ class ChromeChromiumBase(Browser):
 
         # Fall back to the tip-of-tree Chromium build.
         return f"{self._format_chromium_snapshot_url()}"
-    
+
     def _get_latest_chromium_revision(self, architecture):
         revision_url = ("https://storage.googleapis.com/chromium-browser-snapshots/"
                         f"{architecture}/LAST_CHANGE")

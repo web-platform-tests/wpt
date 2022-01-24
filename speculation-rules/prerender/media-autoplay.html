@@ -18,11 +18,11 @@
       video.autoplay = true;
       video.muted = true;
       window.video = video;
-      prerender_log('hello2'); 
+      prerender_log('hello2');
       document.body.appendChild(video);
     });
 
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => t.step_timeout(resolve, 500));
 
     const before_activation = await exec(() => ({
       readyState: video.readyState,
@@ -31,7 +31,7 @@
     }));
 
     await activate();
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => t.step_timeout(resolve, 500));
     const after_activation = await exec(() => ({
       readyState: video.readyState,
       paused: video.paused,

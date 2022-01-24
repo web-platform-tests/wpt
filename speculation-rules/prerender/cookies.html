@@ -21,7 +21,7 @@ cookie_test(async t => {
     const result = document.cookie;
     prerender_log(result);
     document.cookie = "prerender_cookie=exist;path=/;";
-    return result;  
+    return result;
   });
 
   assert_equals(

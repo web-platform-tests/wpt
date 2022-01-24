@@ -21,7 +21,7 @@ promise_test(async t => {
   const result = await exec(async () => {
     await import_script_to_prerendered_page("indexedb-utils.js");
     const db = await openIndexedDatabase();
-  
+
     await addData(db, PRERENDER_KEY, PRERENDER_VALUE);
     const result = await readData(db, INITIATOR_KEY);
     db.close();

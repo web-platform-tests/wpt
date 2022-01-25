@@ -6,18 +6,19 @@
 <body>
 <script>
   promise_test(async t => {
+    const delay = 500;
     const iframe = document.createElement('iframe');
     t.add_cleanup(() => iframe.remove());
     await new Promise(resolve => {
       iframe.addEventListener('load', resolve);
-      iframe.src = 'resources/iframe-with-delay.html';
+      iframe.src = `resources/iframe-with-delay.sub.html?delay=${delay}`;
       document.body.appendChild(iframe);
     });
 
     const entries = performance.getEntriesByName(iframe.src);
     const navigationEntry = iframe.contentWindow.performance.getEntriesByType('navigation')[0];
     assert_equals(entries.length, 1);
-    assert_greater_than(performance.now(), entries[0].responseEnd + 500);
+    assert_greater_than(performance.now(), entries[0].responseEnd + delay);
     const domContentLoadedEventAbsoluteTime = navigationEntry.domContentLoadedEventStart + iframe.contentWindow.performance.timeOrigin;
     const iframeResponseEndAbsoluteTime = entries[0].responseEnd + performance.timeOrigin;
     assert_greater_than(domContentLoadedEventAbsoluteTime, iframeResponseEndAbsoluteTime);

@@ -11,7 +11,7 @@
 setup(() => assertSpeculationRulesIsSupported());
 
 test_prerender_restricted(
-  () => navigator.clipboard.writeText(location.href), 
+  () => navigator.clipboard.writeText(location.href),
   "NotAllowedError", "prerendering pages should not be able to access the clipboard via the Async Clipboard API");
 
 test_prerender_restricted(async () => {
@@ -25,10 +25,10 @@ test_prerender_restricted(async () => {
   document.body.appendChild(div);
   await div.requestFullscreen();
 }, "TypeError", "prerendering pages should not be able to access the FullScreen API");
-  
+
 test_prerender_defer(() => new Promise(
-  resolve => navigator.geolocation.getCurrentPosition(p => resolve(p.toString()))), 
+  resolve => navigator.geolocation.getCurrentPosition(p => resolve(p.toString()))),
   "Geolocation API should be deferred");
-  
+
 </script>
 </body>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://bugs.chromium.org/p/chromium/issues/detail?id=1011688">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+
+<body>
+<script>
+async_test(t => {
+  const channelName = token();
+  const channel = new BroadcastChannel(channelName);
+  window.open(
+    'support/noopener-size-position-popup.html?' + channelName,
+    null,
+    'noopener=1,height=200,width=200,top=100,left=100');
+  channel.onmessage = t.step_func_done(e => {
+    channel.postMessage(null); // close the popup
+    assert_equals(e.data.width, 200, 'width');
+    assert_equals(e.data.height, 200, 'height');
+    assert_equals(e.data.top, 100, 'top');
+    assert_equals(e.data.left, 100, 'left');
+  });
+}, `Verifies that width, height, top, and left are honored when making popups with noopener.`);
+</script>

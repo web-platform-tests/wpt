@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<body>
+<script>
+  const channelName = location.search.substr(1);
+  const channel = new BroadcastChannel(channelName);
+  window.onload = () => {
+    channel.postMessage({
+      width: window.innerWidth,
+      height: window.innerHeight,
+      top: window.screenY,
+      left: window.screenX
+    });
+    channel.onmessage = () => window.close();
+  };
+</script>

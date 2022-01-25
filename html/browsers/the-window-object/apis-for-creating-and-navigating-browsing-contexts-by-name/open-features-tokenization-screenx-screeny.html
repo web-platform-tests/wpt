@@ -23,7 +23,7 @@ var height = 'height=402,';
   ',screenx=141,,',
   'SCREENX=141',
   'screenX=141'
-].forEach((features, idx, arr) => {
+].forEach(features => {
   async_test(t => {
     var prefixedMessage = new PrefixedMessageTest();
     prefixedMessage.onMessage(t.step_func_done((data, e) => {
@@ -41,7 +41,7 @@ var height = 'height=402,';
   ',screeny=142,,',
   'SCREENY=142',
   'screenY=142'
-].forEach((features, idx, arr) => {
+].forEach(features => {
   async_test(t => {
     var prefixedMessage = new PrefixedMessageTest();
     prefixedMessage.onMessage(t.step_func_done((data, e) => {

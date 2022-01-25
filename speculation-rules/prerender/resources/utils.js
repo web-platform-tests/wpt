@@ -167,6 +167,8 @@ class PrerenderChannel extends EventTarget {
 async function create_prerendered_page(t) {
   const uuid = token();
   new PrerenderChannel(uuid, 'log').addEventListener('message', message => {
+    // Calling it with ['log'] to avoid lint issue. This log should be used for debugging
+    // the prerendered context, not testing.
     if(window.console)
       console['log']('[From Prerendered]', ...message.detail);
   });

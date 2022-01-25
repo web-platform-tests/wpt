@@ -204,6 +204,62 @@ but sometimes use a wrapper e.g. mozrunner.</p>
 <dd><p>An enumeration.</p>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="wptrunner.browsers.base.WebDriverBrowser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptrunner.browsers.base.</span></span><span class="sig-name descname"><span class="pre">WebDriverBrowser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">webdriver_binary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">webdriver_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'127.0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.WebDriverBrowser" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="wptrunner.browsers.base.WebDriverBrowser.cleanup">
+<span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.WebDriverBrowser.cleanup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Browser-specific cleanup that is run after the testrun is finished</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wptrunner.browsers.base.WebDriverBrowser.create_output_handler">
+<span class="sig-name descname"><span class="pre">create_output_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.WebDriverBrowser.create_output_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an instance of the class used to handle application output.</p>
+<p>This can be overridden by subclasses which have particular requirements
+for parsing, or otherwise using, the output.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wptrunner.browsers.base.WebDriverBrowser.executor_browser">
+<span class="sig-name descname"><span class="pre">executor_browser</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.WebDriverBrowser.executor_browser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the ExecutorBrowser subclass for this Browser subclass and the keyword arguments
+with which it should be instantiated</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wptrunner.browsers.base.WebDriverBrowser.is_alive">
+<span class="sig-name descname"><span class="pre">is_alive</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.WebDriverBrowser.is_alive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean indicating whether the browser process is still running</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wptrunner.browsers.base.WebDriverBrowser.make_command">
+<span class="sig-name descname"><span class="pre">make_command</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.WebDriverBrowser.make_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the full command for starting the server process as a list.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="wptrunner.browsers.base.WebDriverBrowser.pid">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pid</span></span><a class="headerlink" href="#wptrunner.browsers.base.WebDriverBrowser.pid" title="Permalink to this definition">¶</a></dt>
+<dd><p>pid of the browser process or None if there is no pid</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wptrunner.browsers.base.WebDriverBrowser.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_metadata</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.WebDriverBrowser.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Launch the browser object and get it into a state where is is ready to run tests</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wptrunner.browsers.base.WebDriverBrowser.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.WebDriverBrowser.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the running browser process.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="wptrunner.browsers.base.certificate_domain_list">
 <span class="sig-prename descclassname"><span class="pre">wptrunner.browsers.base.</span></span><span class="sig-name descname"><span class="pre">certificate_domain_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_of_domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">certificate_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.certificate_domain_list" title="Permalink to this definition">¶</a></dt>
@@ -235,6 +291,14 @@ websockets servers</p>
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptrunner.environment.</span></span><span class="sig-name descname"><span class="pre">TestEnvironmentError</span></span><a class="headerlink" href="#wptrunner.environment.TestEnvironmentError" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="wptrunner.environment.wait_for_service">
+<span class="sig-prename descclassname"><span class="pre">wptrunner.environment.</span></span><span class="sig-name descname"><span class="pre">wait_for_service</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.environment.wait_for_service" title="Permalink to this definition">¶</a></dt>
+<dd><p>Waits until network service given as a tuple of (host, port) becomes
+available or the <cite>timeout</cite> duration is reached, at which point
+<code class="docutils literal notranslate"><span class="pre">socket.error</span></code> is raised.</p>
+</dd></dl>
+
 <span class="target" id="module-wptrunner.executors.base"></span><dl class="py class">
 <dt class="sig sig-object py" id="wptrunner.executors.base.CallbackHandler">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptrunner.executors.base.</span></span><span class="sig-name descname"><span class="pre">CallbackHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_window</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.CallbackHandler" title="Permalink to this definition">¶</a></dt>
@@ -242,99 +306,6 @@ websockets servers</p>
 <p>The default implementation here makes sense for things that are roughly like
 WebDriver. Things that are more different to WebDriver may need to create a
 fully custom implementation.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="wptrunner.executors.base.ConnectionlessBaseProtocolPart">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptrunner.executors.base.</span></span><span class="sig-name descname"><span class="pre">ConnectionlessBaseProtocolPart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ConnectionlessBaseProtocolPart" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="wptrunner.executors.base.ConnectionlessBaseProtocolPart.execute_script">
-<span class="sig-name descname"><span class="pre">execute_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">script</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ConnectionlessBaseProtocolPart.execute_script" title="Permalink to this definition">¶</a></dt>
-<dd><p>Execute javascript in the current Window.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>script</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – The js source to execute. This is implicitly wrapped in a function.</p></li>
-<li><p><strong>asynchronous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a>) – Whether the script is asynchronous in the webdriver
-sense i.e. whether the return value is the result of
-the initial function call or if it waits for some callback.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The result of the script execution.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wptrunner.executors.base.ConnectionlessBaseProtocolPart.load">
-<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ConnectionlessBaseProtocolPart.load" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load a url in the current browsing context</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>url</strong> – The url to load</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wptrunner.executors.base.ConnectionlessBaseProtocolPart.set_timeout">
-<span class="sig-name descname"><span class="pre">set_timeout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ConnectionlessBaseProtocolPart.set_timeout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the timeout for script execution.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>timeout</strong> – Script timeout in seconds</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wptrunner.executors.base.ConnectionlessBaseProtocolPart.set_window">
-<span class="sig-name descname"><span class="pre">set_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ConnectionlessBaseProtocolPart.set_window" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the top level browsing context to one specified by a given handle.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>handle</strong> – A protocol-specific handle identifying a top level browsing
-context.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wptrunner.executors.base.ConnectionlessBaseProtocolPart.wait">
-<span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ConnectionlessBaseProtocolPart.wait" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wait indefinitely for the browser to close.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>True to re-run the test, or False to continue with the next test</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wptrunner.executors.base.ConnectionlessBaseProtocolPart.window_handles">
-<span class="sig-name descname"><span class="pre">window_handles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ConnectionlessBaseProtocolPart.window_handles" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a list of handles to top-level browsing contexts</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="wptrunner.executors.base.ConnectionlessProtocol">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptrunner.executors.base.</span></span><span class="sig-name descname"><span class="pre">ConnectionlessProtocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">executor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">browser</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ConnectionlessProtocol" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="wptrunner.executors.base.ConnectionlessProtocol.after_connect">
-<span class="sig-name descname"><span class="pre">after_connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ConnectionlessProtocol.after_connect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run any post-connection steps. This happens after the ProtocolParts are
-initalized so can depend on a fully-populated object.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wptrunner.executors.base.ConnectionlessProtocol.connect">
-<span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ConnectionlessProtocol.connect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make a connection to the remote browser</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -432,7 +403,7 @@ browser instance</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wptrunner.executors.base.WdspecExecutor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptrunner.executors.base.</span></span><span class="sig-name descname"><span class="pre">WdspecExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">browser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">webdriver_binary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">webdriver_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_multiplier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capabilities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">environ</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecExecutor" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptrunner.executors.base.</span></span><span class="sig-name descname"><span class="pre">WdspecExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">browser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">webdriver_binary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">webdriver_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_multiplier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capabilities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="wptrunner.executors.base.WdspecExecutor.do_test">
 <span class="sig-name descname"><span class="pre">do_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecExecutor.do_test" title="Permalink to this definition">¶</a></dt>
@@ -445,6 +416,12 @@ specific test.</p>
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="wptrunner.executors.base.WdspecExecutor.protocol_cls">
+<span class="sig-name descname"><span class="pre">protocol_cls</span></span><a class="headerlink" href="#wptrunner.executors.base.WdspecExecutor.protocol_cls" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">wptrunner.executors.protocol.WdspecProtocol</span></code></p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="wptrunner.executors.base.WdspecExecutor.setup">
 <span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">runner</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecExecutor.setup" title="Permalink to this definition">¶</a></dt>
@@ -455,42 +432,6 @@ browser instance</p>
 <dd class="field-odd"><p><strong>runner</strong> – TestRunner instance that is going to run the tests</p>
 </dd>
 </dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="wptrunner.executors.base.WdspecProtocol">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptrunner.executors.base.</span></span><span class="sig-name descname"><span class="pre">WdspecProtocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">executor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">browser</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecProtocol" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="wptrunner.executors.base.WdspecProtocol.after_connect">
-<span class="sig-name descname"><span class="pre">after_connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecProtocol.after_connect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run any post-connection steps. This happens after the ProtocolParts are
-initalized so can depend on a fully-populated object.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wptrunner.executors.base.WdspecProtocol.connect">
-<span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecProtocol.connect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Connect to browser via the HTTP server.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wptrunner.executors.base.WdspecProtocol.is_alive">
-<span class="sig-name descname"><span class="pre">is_alive</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecProtocol.is_alive" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test that the connection is still alive.</p>
-<p>Because the remote communication happens over HTTP we need to
-make an explicit request to the remote.  It is allowed for
-WebDriver spec tests to not have a WebDriver session, since this
-may be what is tested.</p>
-<p>An HTTP request to an invalid path that results in a 404 is
-proof enough to us that the server is alive and kicking.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wptrunner.executors.base.WdspecProtocol.teardown">
-<span class="sig-name descname"><span class="pre">teardown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecProtocol.teardown" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run cleanup steps after the tests are finished.</p>
 </dd></dl>
 
 </dd></dl>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=1290093">
+<style>
+  .c1 {
+    float: left;
+  }
+  .c1:last-child {
+    column-count: 2;
+  }
+  .c2 {
+    position: relative;
+  }
+  .c3 {
+    position: absolute;
+  }
+  .c4, .c5 {
+    column-span: all;
+  }
+  .c5::first-letter {
+    color: red;
+  }
+</style>
+<script type="text/javascript">
+  var nodes = Array();
+  {
+    nodes[0] = document.createElement('tfoot');
+    document.documentElement.appendChild(nodes[0]);
+
+    nodes[1] = document.createElement('label');
+    nodes[1].setAttribute('class', 'c1');
+    nodes[0].appendChild(nodes[1]);
+
+    nodes[2] = document.createElement('code');
+    nodes[2].setAttribute('class', 'c2');
+    try { nodes[1].appendChild(nodes[2]); } catch (e) { }
+
+    nodes[3] = document.createElement('kbd');
+    nodes[3].setAttribute('class', 'c3');
+    nodes[2].appendChild(nodes[3]);
+
+    nodes[4] = document.createElement('legend');
+    nodes[4].setAttribute('class', 'c4');
+    nodes[2].appendChild(nodes[4]);
+    setTimeout("try { nodes[4].setAttribute('class', 'c5'); } catch(e) {}", 100);
+  }
+</script>

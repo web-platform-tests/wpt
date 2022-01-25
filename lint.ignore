@@ -305,6 +305,7 @@ GENERATE_TESTS: shadow-dom/untriaged/shadow-trees/upper-boundary-encapsulation/w
 # Intentional use of setTimeout
 SET TIMEOUT: common/security-features/resources/common.sub.js
 SET TIMEOUT: common/dispatcher/dispatcher.js
+SET TIMEOUT: css/css-break/fragmented-oof-in-inline-crash.html
 SET TIMEOUT: css/css-fonts/font-display/font-display.html
 SET TIMEOUT: css/css-fonts/font-display/font-display-change.html
 SET TIMEOUT: css/css-fonts/font-display/font-display-change-ref.html

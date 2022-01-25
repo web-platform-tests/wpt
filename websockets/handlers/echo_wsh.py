@@ -1,10 +1,13 @@
 #!/usr/bin/python
 
 from mod_pywebsocket import common
+import time
 
 _GOODBYE_MESSAGE = u'Goodbye'
 
 def web_socket_do_extra_handshake(request):
+    # Turn off permessage-deflate, otherwise it shrinks our 8MB buffer to 8KB.
+    request.ws_extension_processors = []
     # This example handler accepts any request. See origin_check_wsh.py for how
     # to reject access from untrusted scripts based on origin value.
     if request.ws_requested_protocols:
@@ -14,6 +17,7 @@ def web_socket_do_extra_handshake(request):
 
 def web_socket_transfer_data(request):
     while True:
+        time.sleep(1);
         line = request.ws_stream.receive_message()
         if line is None:
             return

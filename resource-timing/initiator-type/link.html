@@ -20,10 +20,6 @@
 <link rel="manifest" href="/resource-timing/resources/manifest.json">
 <link rel="modulepreload" href="resources/empty.js?id=modulePreload">
 <script>
-  const link = document.createElement('link');
-  link.rel = 'modulepreload';
-  link.href = modulePreloadURL;
-  document.head.appendChild(link);
   initiator_type_test("nested.css", "link", "<link>");
 
   // Verify there are enries for each of nested.css' nested resources.

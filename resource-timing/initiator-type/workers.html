@@ -12,18 +12,12 @@
 </head>
 
 <script>
-  const moduleWorkerURL = 'resources/empty.js?id=moduleWorker';
-  const modulePreloadURL = 'resources/empty.js?modulePreload';
+  const moduleWorkerURL = 'resources/empty.js?moduleWorker';
   const workerURL = 'resources/empty.js?worker';
-  const link = document.createElement('link');
-  link.rel = 'modulepreload';
-  link.href = modulePreloadURL;
-  document.head.appendChild(link);
   new Worker(moduleWorkerURL, {type: "module"});
   new Worker(workerURL, {type: "module"});
   initiator_type_test(workerURL, "other", "classic worker");
   initiator_type_test(moduleWorkerURL, "other", "module worker");
-  initiator_type_test(modulePreloadURL, "other", "module preload");
 </script>
 </body>
 </html>

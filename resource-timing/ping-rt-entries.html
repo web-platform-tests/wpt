@@ -6,10 +6,11 @@
 <link rel="help" href="https://w3c.github.io/resource-timing/"/>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resource-timing/resources/observe-entry.js"></script>
 </head>
 <body>
 <script>
-    async_test(t => {
+    promise_test(async t => {
         const link = document.createElement('a');
         const delay = 500;
         const ping = new URL(`/xhr/resources/delay.py?ms=${delay}`, location.href).toString();
@@ -18,15 +19,10 @@
         link.setAttribute('ping', ping);
         link.innerText = 'Link';
         document.body.appendChild(link);
-        new PerformanceObserver(t.step_func(() => {
-            const entries = performance.getEntriesByName(ping);
-            assert_equals(entries.length, 1);
-            const [entry] = entries;
-            assert_equals(entry.initiatorType, 'ping');
-            assert_greater_than(entry.duration, delay);
-            t.done();
-        })).observe({"type": "resource"});
         link.click();
+        const entry = await observe_entry(ping);
+        assert_equals(entry.initiatorType, 'ping');
+        assert_greater_than(entry.duration, delay);
     }, "Hyperlink auditing (<a ping>) should have a resource timing entry");
 </script>
 </body>

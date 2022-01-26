@@ -32,18 +32,6 @@
         document.body.appendChild(script);
         t.add_cleanup(() => script.remove());
     }, "The RT entry for a non-existent script should be available when the script 'error' event fires");
-
-    async_test(t => {
-        const url = new URL('resources/empty.js?worker', location.href).toString();
-        const myWorker = new Worker(url);
-        t.step_timeout(() => {
-            const entries = performance.getEntriesByName(url);
-            assert_equals(entries.length, 1);
-            assert_equals(entries[0].initiatorType, "other");
-            t.done();
-        }, 100);
-    }, "Dedicated worker scripts should have an RT entry");
-
 </script>
 </body>
 </html>

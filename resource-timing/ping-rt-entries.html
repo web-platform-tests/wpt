@@ -13,7 +13,7 @@
     promise_test(async t => {
         const link = document.createElement('a');
         const delay = 500;
-        const ping = new URL(`/xhr/resources/delay.py?ms=${delay}`, location.href).toString();
+        const ping = `/xhr/resources/delay.py?ms=${delay}`;
         link.setAttribute('href', 'resources/close.html');
         link.setAttribute('target', '_blank');
         link.setAttribute('ping', ping);

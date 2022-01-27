@@ -15,7 +15,7 @@
   const moduleWorkerURL = 'resources/empty.js?moduleWorker';
   const workerURL = 'resources/empty.js?worker';
   new Worker(moduleWorkerURL, {type: "module"});
-  new Worker(workerURL, {type: "module"});
+  new Worker(workerURL, {type: "classic"});
   initiator_type_test(workerURL, "other", "classic worker");
   initiator_type_test(moduleWorkerURL, "other", "module worker");
 </script>

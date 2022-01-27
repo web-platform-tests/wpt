@@ -13,7 +13,6 @@
   const {REMOTE_ORIGIN} = get_host_info();
 
   promise_test(async t => {
-    const delay = 500;
     const iframe = document.createElement('iframe');
     t.add_cleanup(() => iframe.remove());
     iframe.src = `${REMOTE_ORIGIN}/resource-timing/resources/green.html`;
@@ -23,7 +22,6 @@
   }, "A cross-origin iframe should report an opaque RT entry");
 
   promise_test(async t => {
-    const delay = 500;
     const iframe = document.createElement('iframe');
     t.add_cleanup(() => iframe.remove());
     iframe.src = `${REMOTE_ORIGIN}/resource-timing/resources/TAOResponse.py?tao=wildcard`;

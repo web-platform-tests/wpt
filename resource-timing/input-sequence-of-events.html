@@ -11,7 +11,6 @@
     const absoluteURL = new URL('resources/blue.png', location.href).toString();
     t.add_cleanup(() => input.remove());
     input.addEventListener('load', t.step_func(() => {
-      debugger;
       assert_equals(performance.getEntriesByName(absoluteURL).length, 1);
       t.done();
     }));

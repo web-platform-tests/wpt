@@ -31,6 +31,9 @@
   initiator_type_test("resource_timing_test0.css?id=preload", "link", "<link preload>");
   initiator_type_test("green.html?id=prerender", "link", "<link prerender>");
   initiator_type_test("manifest.json", "link", "<link manifest>");
+
+  // This should be "link" rather than "other" - but all implementations currently use "other"
+  // TODO: fix in the spec and revise the test & implementation.
   initiator_type_test("resources/empty.js?id=modulePreload", "other", "module preload");
 </script>
 <ol>This content forces a font to get fetched</ol>

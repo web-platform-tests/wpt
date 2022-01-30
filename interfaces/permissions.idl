@@ -56,19 +56,3 @@ enum PermissionName {
   "speaker-selection",
   "xr-spatial-tracking",
 };
-
-dictionary PushPermissionDescriptor : PermissionDescriptor {
-  boolean userVisibleOnly = false;
-};
-
-dictionary MidiPermissionDescriptor : PermissionDescriptor {
-  boolean sysex = false;
-};
-
-dictionary DevicePermissionDescriptor : PermissionDescriptor {
-  DOMString deviceId;
-};
-
-dictionary CameraDevicePermissionDescriptor : DevicePermissionDescriptor {
-  boolean panTiltZoom = false;
-};

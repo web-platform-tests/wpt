@@ -138,30 +138,30 @@ test(function () {
 
 test(function () {
   const headers = new Headers();
-  assert_equals(headers.getSetCookie(), []);
+  assert_array_equals(headers.getSetCookie(), []);
 }, "Headers.prototype.getSetCookie with no headers present");
 
 test(function () {
   const headers = new Headers([headerList[0]]);
-  assert_equals(headers.getSetCookie(), ["foo=bar"]);
+  assert_array_equals(headers.getSetCookie(), ["foo=bar"]);
 }, "Headers.prototype.getSetCookie with one header");
 
 test(function () {
   const headers = new Headers(headerList);
-  assert_equals(headers.getSetCookie(), [
+  assert_array_equals(headers.getSetCookie(), [
     "foo=bar",
     "fizz=buzz; domain=example.com",
   ]);
 }, "Headers.prototype.getSetCookie with multiple headers");
 
 test(function () {
-  const headers = new Headers(["set-cookie", ""]);
-  assert_equals(headers.getSetCookie(), [""]);
+  const headers = new Headers([["set-cookie", ""]]);
+  assert_array_equals(headers.getSetCookie(), [""]);
 }, "Headers.prototype.getSetCookie with an empty header");
 
 test(function () {
-  const headers = new Headers(["set-cookie", "x"], ["set-cookie", "x"]);
-  assert_equals(headers.getSetCookie(), ["x", "x"]);
+  const headers = new Headers([["set-cookie", "x"], ["set-cookie", "x"]]);
+  assert_array_equals(headers.getSetCookie(), ["x", "x"]);
 }, "Headers.prototype.getSetCookie with two equal headers");
 
 test(function () {
@@ -170,7 +170,7 @@ test(function () {
     ["set-cookie", "y"],
     ["set-cookie2", "z"],
   ]);
-  assert_equals(headers.getSetCookie(), ["y"]);
+  assert_array_equals(headers.getSetCookie(), ["y"]);
 }, "Headers.prototype.getSetCookie ignores set-cookie2 headers");
 
 test(function () {
@@ -181,5 +181,5 @@ test(function () {
     ["set-cookie", "a=a"],
     ["set-cookie", "n=n"],
   ]);
-  assert_equals(headers.getSetCookie(), ["z=z", "a=a", "n=n"]);
+  assert_array_equals(headers.getSetCookie(), ["z=z", "a=a", "n=n"]);
 }, "Headers.prototype.getSetCookie preserves header ordering");

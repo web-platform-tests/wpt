@@ -13,7 +13,7 @@
         frame.src = `resources/iframe-with-delay.sub.html?delay=${delay}`;
         frameset.appendChild(frame);
       });
-  
+
       const entries = window.parent.performance.getEntriesByName(frame.src);
       const navigationEntry = frame.contentWindow.performance.getEntriesByType('navigation')[0];
       assert_equals(entries.length, 1);
@@ -37,14 +37,13 @@
           frame.src = 'resources/green.html?1';
           parentDocument.querySelector('frameset').appendChild(frame);
         });
-    
+
         await new Promise(resolve => {
           frame.addEventListener('load', resolve);
           frame.src = 'resources/green.html?2';
         });
-    
+
         const entries = window.parent.performance.getEntries().filter(e => e.name.includes('green.html'));
         assert_equals(entries.length, 2);
       }, "A frame should report separate RT entries if its src changed from the outside");
     </script>
-  

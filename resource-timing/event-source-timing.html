@@ -10,7 +10,7 @@
 </script>
 <script>
     async_test(t => {
-        const delay = 100;
+        const delay = 10;
         const repetitions = 4;
         const url = new URL(`/eventsource/resources/message.py?sleep=${delay}`, location.href);
         const eventSource = new EventSource(url);

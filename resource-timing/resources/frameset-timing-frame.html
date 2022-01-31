@@ -1,0 +1,50 @@
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+    promise_test(async t => {
+      const parentDocument = window.parent.document;
+      const frameset = parentDocument.querySelector('frameset');
+      const delay = 500;
+      const frame = parentDocument.createElement('frame');
+      t.add_cleanup(() => frame.remove());
+      await new Promise(resolve => {
+        frame.addEventListener('load', resolve);
+        frame.src = `resources/iframe-with-delay.sub.html?delay=${delay}`;
+        frameset.appendChild(frame);
+      });
+  
+      const entries = window.parent.performance.getEntriesByName(frame.src);
+      const navigationEntry = frame.contentWindow.performance.getEntriesByType('navigation')[0];
+      assert_equals(entries.length, 1);
+      assert_equals(entries[0].initiatorType, 'frame');
+      assert_greater_than(window.parent.performance.now(), entries[0].responseEnd + delay);
+      const domContentLoadedEventAbsoluteTime = navigationEntry.domContentLoadedEventStart + frame.contentWindow.performance.timeOrigin;
+      const frameResponseEndAbsoluteTime = entries[0].responseEnd + window.parent.performance.timeOrigin;
+      assert_greater_than(domContentLoadedEventAbsoluteTime, frameResponseEndAbsoluteTime);
+    }, "A frameset should report its RT entry when the response is done and before it is completely loaded");
+
+    promise_test(async t => {
+        const parentDocument = window.parent.document;
+        const frame = parentDocument.createElement('frame');
+        t.add_cleanup(() => frame.remove());
+        await new Promise(resolve => {
+          const done = () => {
+            resolve();
+            frame.removeEventListener('load', done);
+          }
+          frame.addEventListener('load', done);
+          frame.src = 'resources/green.html?1';
+          parentDocument.querySelector('frameset').appendChild(frame);
+        });
+    
+        await new Promise(resolve => {
+          frame.addEventListener('load', resolve);
+          frame.src = 'resources/green.html?2';
+        });
+    
+        const entries = window.parent.performance.getEntries().filter(e => e.name.includes('green.html'));
+        assert_equals(entries.length, 2);
+      }, "A frame should report separate RT entries if its src changed from the outside");
+    </script>
+  

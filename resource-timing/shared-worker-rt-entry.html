@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Resource Timing Entry for Shared Workers</title>
+<link rel="help" href="https://w3c.github.io/resource-timing/"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+</head>
+<body>
+<script>
+    promise_test(async () => {
+        const url = new URL(`resources/shared-worker.js?${token()}`, location.href).toString();
+        const worker = new SharedWorker(url, 'name');
+        const {data} = await new Promise(resolve => { 
+            worker.port.onmessage = resolve;
+        });
+
+        const timeOrigin = data;
+        const entries = performance.getEntriesByName(url);
+        assert_equals(entries.length, 1, "SharedWorker should have a ResourceTiming entry");
+        assert_greater_than(timeOrigin, entries[0].startTime + entries[0].duration + performance.timeOrigin, "SharedWorker timeOrigin should be after the response arrived");
+    }, "Shared workers should generate Resource Timing Entries");
+</script>
+</body>
+</html>

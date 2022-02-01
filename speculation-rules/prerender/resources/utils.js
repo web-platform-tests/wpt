@@ -234,7 +234,7 @@ function test_prerender_restricted(fn, expected, label) {
   }, label);
 }
 
-function test_prerender_defer(fn, label) {
+function test_prerender_defer(fn, label, timeout = delay) {
   promise_test(async t => {
     const {exec, activate} = await create_prerendered_page(t);
     let activated = false;
@@ -246,7 +246,7 @@ function test_prerender_defer(fn, label) {
         resolve(result);
       }));
 
-    await new Promise(resolve => t.step_timeout(resolve, 100));
+    await new Promise(resolve => t.step_timeout(resolve, delay));
     await activate();
     activated = true;
     await post;

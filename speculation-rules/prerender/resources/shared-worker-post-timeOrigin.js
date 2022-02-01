@@ -1,3 +1,2 @@
-onconnect = ({ports: [port]}) => 
+onconnect = ({ports: [port]}) =>
     port.postMessage(performance.timeOrigin);
-

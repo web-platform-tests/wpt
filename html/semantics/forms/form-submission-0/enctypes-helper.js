@@ -136,6 +136,13 @@
     enctype,
     expectedBuilder = (expected) => expected
   ) => {
+    // `name` and `value` are the form entry's name and value – `name` must be a
+    // string, `value` can be either a string or a `File` object.
+    // `expected` is the expected form body – usually a `string`, but it can be
+    // anything depending on the `expectedBuilder` passed to
+    // `formSubmissionTemplate`.
+    // `formEncoding` is the character encoding used for submitting the form.
+    // `description` will be used as part of the testharness test's description.
     function form({
       name,
       value,

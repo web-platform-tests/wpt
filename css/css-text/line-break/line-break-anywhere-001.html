@@ -11,10 +11,16 @@
                              including around punctuation or in the middle of words,
                              disregarding any prohibition against line breaks introduced by characters with the GL, JW, or ZJW character class.">
 <style>
+@font-face {
+	font-family: "mplus-1p-regular";
+	src: url("/fonts/mplus-1p-regular.woff") format("woff");
+}
+div {
+	font-family: "mplus-1p-regular";
+}
 #green {
   position: absolute;
   background: green;
-  font-family: monospace;
   width: 1ch;
   height: 19em;
 }
@@ -22,7 +28,6 @@
   width: 1ch;
   line-height: 1;
   color: red;
-  font-family: monospace;
   line-break: anywhere;
 }
 span {

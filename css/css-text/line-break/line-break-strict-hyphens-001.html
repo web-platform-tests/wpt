@@ -7,7 +7,12 @@
 <link rel=match href="reference/line-break-normal-hyphens-001-ref.html">
 <meta name=assert content="breaks before U+2010 or U+2013 when line-break is strict are not allowed when the preceding character has class ID.">
 <style>
+@font-face {
+  font-family: "mplus-1p-regular";
+  src: url("/fonts/mplus-1p-regular.woff") format("woff");
+}
 div {
+  font-family: "mplus-1p-regular";
   width: 2em;
   line-break: strict;
   border: solid cyan;

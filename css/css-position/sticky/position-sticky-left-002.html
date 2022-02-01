@@ -2,7 +2,7 @@
 
   <meta charset="UTF-8">
 
-  <title>CSS Position Test: sticky element with left offset and px unit</title>
+  <title>CSS Position Test: sticky element with left offset specified with px unit</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="https://www.w3.org/TR/css-position-3/#sticky-pos">
@@ -42,14 +42,7 @@
     {
       display: inline-block;
       height: 100%;
-      width: 100px;
-    }
-
-  div.content
-    {
-      display: inline-block;
-      height: 100%;
-      width: 300px;
+      width: 200px;
     }
 
   div.sticky
@@ -57,24 +50,10 @@
       background-color: green;
       display: inline-block;
       height: 100px;
+      left: 100px;
       position: sticky;
       vertical-align: top;
       width: 100px;
-    }
-
-  div#first-sticky
-    {
-      left: 100px;
-    }
-
-  div#second-sticky
-    {
-      left: 100px;
-    }
-
-  div#third-sticky
-    {
-      left: 100px;
     }
   </style>
 
@@ -88,7 +67,7 @@
 
   <div id="first-scrolling-container" class="scrolling-container">
 
-    <div class="horizontal-spacer"></div><div class="content"><div class="horizontal-spacer"></div><div id="first-sticky" class="sticky"></div><div class="horizontal-spacer"></div></div><div class="horizontal-spacer"></div>
+    <div class="horizontal-spacer"></div><div id="first-sticky" class="sticky"></div><div class="horizontal-spacer"></div>
 
   </div>
 
@@ -98,12 +77,12 @@
 
   <div id="second-scrolling-container" class="scrolling-container">
 
-    <div class="horizontal-spacer"></div><div class="content"><div class="horizontal-spacer"></div><div id="second-sticky" class="sticky"></div><div class="horizontal-spacer"></div></div><div class="horizontal-spacer"></div>
+    <div class="horizontal-spacer"></div><div id="second-sticky" class="sticky"></div><div class="horizontal-spacer"></div>
 
   </div>
 
   <div id="third-scrolling-container" class="scrolling-container">
 
-    <div class="horizontal-spacer"></div><div class="content"><div class="horizontal-spacer"></div><div id="third-sticky" class="sticky"></div><div class="horizontal-spacer"></div></div><div class="horizontal-spacer"></div>
+    <div class="horizontal-spacer"></div><div id="third-sticky" class="sticky"></div><div class="horizontal-spacer"></div>
 
   </div>

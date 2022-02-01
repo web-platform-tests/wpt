@@ -2,7 +2,7 @@
 
   <meta charset="UTF-8">
 
-  <title>CSS Position Test: sticky element with bottom offset and px unit</title>
+  <title>CSS Position Test: sticky element with bottom offset specified with px unit</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="https://www.w3.org/TR/css-position-3/#sticky-pos">
@@ -40,30 +40,16 @@
 
   div.vertical-spacer
     {
-      height: 100px;
+      height: 200px;
     }
 
   div.sticky
     {
       background-color: green;
+      bottom: 100px;
       height: 100px;
       position: sticky;
       width: 100px;
-    }
-
-  div#first-sticky
-    {
-      bottom: 100px;
-    }
-
-  div#second-sticky
-    {
-      bottom: 100px;
-    }
-
-  div#third-sticky
-    {
-      bottom: 100px;
     }
   </style>
 
@@ -77,19 +63,11 @@
 
   <div id="first-scrolling-container" class="scrolling-container">  <!-- 150w x 250h viewport -->
 
-    <div class="vertical-spacer"></div> <!-- 150w x 100h   -->
+    <div class="vertical-spacer"></div> <!-- 150w x 200h -->
 
-    <div class="content">
+    <div id="first-sticky" class="sticky"></div> <!-- 100w x 100h -->
 
-      <div class="vertical-spacer"></div> <!-- 150w x 100h   -->
-
-      <div id="first-sticky" class="sticky"></div> <!-- 100w x 100h -->
-
-      <div class="vertical-spacer"></div> <!-- 150w x 100h   -->
-
-    </div>
-
-    <div class="vertical-spacer"></div> <!-- 150w x 100h   -->
+    <div class="vertical-spacer"></div> <!-- 150w x 200h -->
 
   </div>
 
@@ -99,37 +77,21 @@
 
   <div id="second-scrolling-container" class="scrolling-container">  <!-- 150w x 250h viewport -->
 
-    <div class="vertical-spacer"></div> <!-- 150w x 100h   -->
+    <div class="vertical-spacer"></div> <!-- 150w x 200h -->
 
-    <div class="content">
+    <div id="second-sticky" class="sticky"></div> <!-- 100w x 100h -->
 
-      <div class="vertical-spacer"></div> <!-- 150w x 100h   -->
-
-      <div id="first-sticky" class="sticky"></div> <!-- 100w x 100h -->
-
-      <div class="vertical-spacer"></div> <!-- 150w x 100h   -->
-
-    </div>
-
-    <div class="vertical-spacer"></div> <!-- 150w x 100h   -->
+    <div class="vertical-spacer"></div> <!-- 150w x 200h -->
 
   </div>
 
 
   <div id="third-scrolling-container" class="scrolling-container">  <!-- 150w x 250h viewport -->
 
-    <div class="vertical-spacer"></div> <!-- 150w x 100h   -->
+    <div class="vertical-spacer"></div> <!-- 150w x 200h -->
 
-    <div class="content">
+    <div id="third-sticky" class="sticky"></div> <!-- 100w x 100h -->
 
-      <div class="vertical-spacer"></div> <!-- 150w x 100h   -->
-
-      <div id="first-sticky" class="sticky"></div> <!-- 100w x 100h -->
-
-      <div class="vertical-spacer"></div> <!-- 150w x 100h   -->
-
-    </div>
-
-    <div class="vertical-spacer"></div> <!-- 150w x 100h   -->
+    <div class="vertical-spacer"></div> <!-- 150w x 200h -->
 
   </div>

@@ -19,9 +19,8 @@
 
         const timeOrigin = data;
         const entries = performance.getEntriesByName(url);
-        assert_equals(entries.length, 1, "SharedWorker should have a ResourceTiming entry");
-        assert_greater_than(timeOrigin, entries[0].startTime + entries[0].duration + performance.timeOrigin, "SharedWorker timeOrigin should be after the response arrived");
-    }, "Shared workers should generate Resource Timing Entries");
+        assert_equals(entries.length, 0, "SharedWorker should not create a ResourceTiming entry");
+    }, "Shared workers should not generate Resource Timing Entries");
 </script>
 </body>
 </html>

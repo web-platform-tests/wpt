@@ -527,7 +527,13 @@ class ChromeChromiumBase(Browser):
         "Windows": "Win",
         "Darwin": "Mac",
     }.get(uname[0])
-    revision_used = None
+
+    # The last revision number used to successfully download/install browser binary or webdriver.
+    last_revision_used = None
+
+    # The last revision number used to try and download/install browser binary or webdriver.
+    # Could have been successful or unsuccessful.
+    revision_attempted = None
 
     def _chromedriver_platform_string(self):
         if self.platform is None:
@@ -558,14 +564,19 @@ class ChromeChromiumBase(Browser):
     def _format_chromium_snapshot_url(self, revision=None):
         architecture = self._chromium_platform_string()
         # Make sure we use the same revision in an invocation.
-        if self.revision_used is None and revision is None:
+        # If we have a last revision used, that revision takes priority.
+        if self.last_revision_used is None and revision is None:
             # No revision provided or previously used. use latest revision.
-            self.revision_used = self._get_latest_chromium_revision(architecture)
-        elif revision:
-            self.revision_used = revision
+            self.revision_attempted = self._get_latest_chromium_revision(architecture)
+        elif revision is not None:
+            self.revision_attempted = revision
+        else:
+            self.revision_attempted = self.last_revision_used
 
+        # The attempted revision is kept. If it is successfully used,
+        # it will be used again if another component is also installed (browser/webdriver/mojojs).
         return ("https://storage.googleapis.com/chromium-browser-snapshots/"
-                f"{architecture}/{self.revision_used}/")
+                f"{architecture}/{self.revision_attempted}/")
 
     def _get_chromium_url_by_version(self, version=None):
         if version and version.lower() != "latest":
@@ -696,6 +707,9 @@ class ChromeChromiumBase(Browser):
 
         binary_path = find_executable("chromedriver", dest)
         assert binary_path is not None
+
+        # Revision successfully used. Keep this revision in case we need another component install.
+        self.last_revision_used = self.revision_attempted
         return binary_path
 
     def version(self, binary=None, webdriver_binary=None):
@@ -798,6 +812,9 @@ class Chromium(ChromeChromiumBase):
         installer_path = os.path.join(dest, filename)
         with open(installer_path, "wb") as f:
             f.write(resp.content)
+
+        # Revision successfully used. Keep this revision in case we need another component install.
+        self.last_revision_used = self.revision_attempted
         return installer_path
 
     def find_binary(self, venv_path=None, channel="nightly"):

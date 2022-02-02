@@ -34,10 +34,14 @@ promise_test(async t => {
 
 promise_test(async t => {
   const {exec, activate} = await create_prerendered_page(t);
-  const workerURL = new URL('resources/shared-worker-post-timeOrigin.js', location.href).toString();
+  const workerURL = new URL(`resources/shared-worker.py?id=${token()}`, location.href).toString();
   await exec(workerURL => {
     window.worker = new SharedWorker(workerURL, 'dummy');
     window.worker.port.start();
+    window.waitForSharedWorkerLoadingReport = 
+      fetch(workerURL + "&check=true")
+        .then(r => t.text())
+        .then(text => text === 'ok' && document.prerendering);
     window.waitForWorker = new Promise(resolve => worker.port.addEventListener('message', e => {
         resolve({
           prerendering: document.prerendering,
@@ -49,14 +53,16 @@ promise_test(async t => {
   await new Promise(resolve => t.step_timeout(resolve, 300));
   await activate();
   const {workerStart, activationStart, workerLoad, prerendering } = await exec(() => window.waitForWorker);
-  assert_equals(prerendering, false);
+  const loadedWhilePrerendering = await exec(() => window.loadedWhilePrerendering);
+  assert_true(loadedWhilePrerendering, "The shared worker should be loaded (but suspended) while prerendering");
+  assert_false(prerendering, "SharedWorker should be suspended until activated");
   assert_greater_than(workerStart, activationStart, "Starting the worker should be delayed");
   // TODO: check SharedWorker loading. This is not yet possible due to SharedWorkers not reporting timing.
 }, "Shared workers should be loaded in suspended state until activated");
 
 promise_test(async t => {
   const {exec, activate} = await create_prerendered_page(t);
-  const workerURL = new URL('resources/shared-worker-post-timeOrigin.js', location.href).toString();
+  const workerURL = new URL(`resources/shared-worker.py?id=${token()}`, location.href).toString();
   const workerStartTime1 = await new Promise(resolve => {
     const worker = new SharedWorker(workerURL, 'worker');
     worker.port.start();
@@ -77,10 +83,9 @@ promise_test(async t => {
   await new Promise(resolve => t.step_timeout(resolve, 300));
   await activate();
   const {workerStartTime2, activationStart, workerLoad, prerendering } = await exec(() => window.waitForWorker);
-  assert_equals(prerendering, true, "An existing SharedWorker should be accessible while prerendering");
-  assert_equals(workerStartTime2, workerStartTime2);
+  assert_true(prerendering, "An existing SharedWorker should be accessible while prerendering");
+  assert_equals(workerStartTime1, workerStartTime2);
   assert_greater_than(workerStart, activationStart, "Starting the worker should be delayed");
-  // TODO: check SharedWorker loading. This is not yet possible due to SharedWorkers not reporting timing.
 }, "Existing shared workers should be accessible before activation");
 
 </script>

@@ -38,7 +38,7 @@ promise_test(async t => {
   await exec(workerURL => {
     window.worker = new SharedWorker(workerURL, 'dummy');
     window.worker.port.start();
-    window.waitForSharedWorkerLoadingReport = 
+    window.waitForSharedWorkerLoadingReport =
       fetch(workerURL + "&check=true")
         .then(r => t.text())
         .then(text => text === 'ok' && document.prerendering);

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Computed value of 'line-height' on input elements as text entry widgets</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  input { line-height: 1px; }
+</style>
+<p><input type=text value=text>
+<p><input type=tel value=tel>
+<p><input type=search value=search>
+<p><input type=url value=url>
+<p><input type=email value=email></p>
+<script>
+const inputs = document.querySelectorAll('input');
+for (const input of inputs) {
+  test(() => {
+    assert_equals(getComputedStyle(input).lineHeight, '1px');
+  }, input.type);
+}
+</script>

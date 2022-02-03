@@ -29,7 +29,7 @@
 // the second parameter of `formSubmissionTemplate` allows transforming the
 // expected value passed to each test. The second argument of that callback
 // is the actual form body (isomorphic-decoded). When this callback is used, the
-// `expected` property need not be a string.
+// `expected` property doesn't need to be a string.
 
 (() => {
   // Using echo-content-escaped.py rather than
@@ -127,22 +127,24 @@
   // This function returns a function to add individual form tests corresponding
   // to some enctype.
   // `expectedBuilder` is an optional callback that takes two parameters:
-  // `expected` (the `expected` property passed to a test) and `serialized` (the
-  // actual form body submitted by the browser, isomorphic-decoded). It must
-  // return the correct form body that should have been submitted,
+  // `expected` (the `expected` property passed to a test) and `actualFormBody`
+  // (the actual form body submitted by the browser, isomorphic-decoded). It
+  // must return the correct form body that should have been submitted,
   // isomorphic-encoded. This is necessary in order to account for the
   // multipart/form-data boundary.
+  //
+  // The returned function takes an object with the following properties:
+  // - `name`, the form entry's name. Must be a string.
+  // - `value`, the form entry's value, either a string or a `File` object.
+  // - `expected`, the expected form body. Usually a string, but it can be
+  //   anything depending on `expectedBuilder`.
+  // - `formEncoding` (optional), the character encoding used for submitting the
+  //   form.
+  // - `description`, used as part of the testharness test's description.
   window.formSubmissionTemplate = (
     enctype,
     expectedBuilder = (expected) => expected
   ) => {
-    // `name` and `value` are the form entry's name and value – `name` must be a
-    // string, `value` can be either a string or a `File` object.
-    // `expected` is the expected form body – usually a `string`, but it can be
-    // anything depending on the `expectedBuilder` passed to
-    // `formSubmissionTemplate`.
-    // `formEncoding` is the character encoding used for submitting the form.
-    // `description` will be used as part of the testharness test's description.
     function form({
       name,
       value,

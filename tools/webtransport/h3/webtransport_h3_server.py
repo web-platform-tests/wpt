@@ -15,7 +15,7 @@ from aioquic.h3.connection import H3_ALPN, FrameType, H3Connection, ProtocolErro
 from aioquic.h3.events import H3Event, HeadersReceived, WebTransportStreamDataReceived, DatagramReceived, DataReceived  # type: ignore
 from aioquic.quic.configuration import QuicConfiguration  # type: ignore
 from aioquic.quic.connection import logger as quic_connection_logger  # type: ignore
-from aioquic.quic.connection import stream_is_unidirectional  # type: ignore
+from aioquic.quic.connection import stream_is_unidirectional
 from aioquic.quic.events import QuicEvent, ProtocolNegotiated, ConnectionTerminated, StreamReset  # type: ignore
 from aioquic.tls import SessionTicket  # type: ignore
 

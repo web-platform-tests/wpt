@@ -71,3 +71,29 @@ def test_stale_element(session, inline):
 
     response = element_send_keys(session, element, "foo")
     assert_error(response, "stale element reference")
+
+@pytest.mark.parametrize("value",[
+    [u'\ue018', ";"],
+    [u'\ue019', "="],
+    [u'\ue024', "*"],
+    [u'\ue025', "+"],
+    [u'\ue027', "-"],
+    [u'\ue028', "."],
+    [u'\ue029', "/"],
+    [u'\ue01a', "0"],
+    [u'\ue023', "9"]
+    ])
+def test_normalised_key_value(session, inline, value):
+    session.url = inline("<input>")
+    element = session.find.css("input", all=False)
+    element_send_keys(session, element, value[0])
+    actual = element.property("value")
+    assert value[1] == actual
+
+def test_type_printable_chars(session, inline):
+    all_printable_keys = "!\"#$%&'()*+,-./0123456789:<=>?@ ABCDEFGHIJKLMNOPQRSTUVWXYZ [\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+    session.url = inline("<input>")
+    element = session.find.css("input", all=False)
+    element_send_keys(session, element, all_printable_keys)
+    actual = element.property("value")
+    assert all_printable_keys == actual

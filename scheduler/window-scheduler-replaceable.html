@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://bugs.chromium.org/p/chromium/issues/detail?id=1293264">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+<script>
+test(() => {
+  const originalScheduler = window.scheduler;
+  window.scheduler = 'hello';
+  assert_equals(window.scheduler, originalScheduler);
+}, 'window.scheduler should not be replaceable.');
+</script>

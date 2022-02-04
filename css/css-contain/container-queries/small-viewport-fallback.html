@@ -1,0 +1,76 @@
+<!doctype html>
+<title>@container: size queries fall back to the small viewport size</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-rule">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/cq-testcommon.js"></script>
+<style>
+  iframe {
+    width: 200px;
+    height: 100px;
+  }
+</style>
+
+<iframe id=iframe srcdoc="
+  <style>
+
+    * { color: red; }
+
+    #container {
+      container-type: size;
+      width: 100px;
+      height: 50px;
+    }
+
+    /* Should evaluate against #container */
+    @container size(width: 100px) {
+      #child1 { color: green; }
+    }
+
+    /* Should evaluate against small viewport size */
+    @container name(foo) size(width: 200px) {
+      #child2 { color: green; }
+    }
+
+    /* Should evaluate against small viewport size (no ancestor container) */
+    @container size(width: 200px) {
+      #child3 { color: green; }
+    }
+
+  </style>
+  <div id=container>
+    <div id=child1>Test</div>
+    <div id=child2>Test</div>
+  </div>
+  <div id=child3>Test</div>
+"></iframe>
+<script>
+  setup(() => assert_implements_container_queries());
+
+  function waitForLoad(w) {
+    return new Promise(resolve => w.addEventListener('load', resolve));
+  }
+
+  promise_test(async () => {
+    await waitForLoad(window);
+    let child1 = iframe.contentDocument.querySelector('#child1');
+    let child2 = iframe.contentDocument.querySelector('#child2');
+    let child3 = iframe.contentDocument.querySelector('#child3');
+
+    assert_equals(getComputedStyle(child1).color, 'rgb(0, 128, 0)');
+    assert_equals(getComputedStyle(child2).color, 'rgb(0, 128, 0)');
+    assert_equals(getComputedStyle(child3).color, 'rgb(0, 128, 0)');
+
+    // #child1 should not be affected by resize to 400px, but #child2/3 should.
+    iframe.style = 'width:400px';
+    assert_equals(getComputedStyle(child1).color, 'rgb(0, 128, 0)');
+    assert_equals(getComputedStyle(child2).color, 'rgb(255, 0, 0)');
+    assert_equals(getComputedStyle(child3).color, 'rgb(255, 0, 0)');
+
+    // Resize back to 200px.
+    iframe.style = 'width:200px';
+    assert_equals(getComputedStyle(child1).color, 'rgb(0, 128, 0)');
+    assert_equals(getComputedStyle(child2).color, 'rgb(0, 128, 0)');
+    assert_equals(getComputedStyle(child3).color, 'rgb(0, 128, 0)');
+  })
+</script>

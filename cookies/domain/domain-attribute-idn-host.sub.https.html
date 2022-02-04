@@ -11,7 +11,7 @@
       let url = new URL(document.location);
       url.host = "{{hosts[][élève]}}";
       let url2 = new URL("support/idn-child.sub.https.html", url);
-      var child_window = window.open(url2.href);
+      let child_window = window.open(url2.href);
       fetch_tests_from_window(child_window);
     </script>
   </body>

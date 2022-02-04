@@ -8,10 +8,10 @@
 </head>
 <body>
   <script>
-    async function assert_cookie(response) {
+    async function assert_cookie(response, cookie) {
       const get = await response.text();
-      assert_equals(get, "a=b");
-      assert_equals(document.cookie, "a=b");
+      assert_equals(get, cookie);
+      assert_equals(document.cookie, cookie);
     }
 
     async function assert_no_cookie(response) {
@@ -25,7 +25,7 @@
       let response = await fetch("idn.py?set-utf8&host={{host}}");
       assert_equals(await response.text(), "set");
       response = await fetch("idn.py?get&host={{host}}");
-      await assert_cookie(response);
+      await assert_no_cookie(response);
     }, "UTF8-encoded IDN in domain attribute");
 
     promise_test(async t => {
@@ -33,7 +33,7 @@
       let response = await fetch("idn.py?set-utf8-dot&host={{host}}");
       assert_equals(await response.text(), "set");
       response = await fetch("idn.py?get&host={{host}}");
-      await assert_cookie(response);
+      await assert_no_cookie(response);
     }, "UTF8-encoded IDN with non-ASCII dot in domain attribute");
 
     promise_test(async t => {
@@ -49,7 +49,7 @@
       let response = await fetch("idn.py?set-punycode&host={{host}}");
       assert_equals(await response.text(), "set");
       response = await fetch("idn.py?get&host={{host}}");
-      await assert_cookie(response);
+      await assert_cookie(response, "punycode=set");
     }, "punycode IDN in domain attribute");
 
     promise_test(async t => {

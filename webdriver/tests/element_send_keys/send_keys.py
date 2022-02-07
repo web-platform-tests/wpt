@@ -95,5 +95,4 @@ def test_type_printable_chars(session, inline):
     session.url = inline("<input>")
     element = session.find.css("input", all=False)
     element_send_keys(session, element, all_printable_keys)
-    actual = element.property("value")
-    assert all_printable_keys == actual
+    assert element.property("value") == all_printable_keys

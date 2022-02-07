@@ -35,12 +35,7 @@
             
   <section id="testharness-js-tutorial">
 <h1>testharness.js tutorial<a class="headerlink" href="#testharness-js-tutorial" title="Permalink to this headline">¶</a></h1>
-<p>.. contents:: Table of Contents
-:depth: 3
-:local:
-:backlinks: none</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
-&lt;!--
+<!--
 Note to maintainers:
 
 This tutorial is designed to be an authentic depiction of the WPT contribution
@@ -49,25 +44,28 @@ limited in order to demonstrate authoring a complete test without overwhelming
 the reader with features. Because typical WPT usage patterns change over time,
 this should be updated periodically; please weigh extensions against the
 demotivating effect that a lengthy guide can have on new contributors.
---&gt;
-
-Let&#39;s say you&#39;ve discovered that WPT doesn&#39;t have any tests for how [the Fetch
-API](https://fetch.spec.whatwg.org/) sets cookies from an HTTP response. This
+--><p>Let’s say you’ve discovered that WPT doesn’t have any tests for how <a class="reference external" href="https://fetch.spec.whatwg.org/">the Fetch
+API</a> sets cookies from an HTTP response. This
 tutorial will guide you through the process of writing a test for the
 web-platform, verifying it, and submitting it back to WPT. Although it includes
-some very brief instructions on using git, you can find more guidance in [the
-tutorial for git and GitHub](github-intro).
-
-WPT&#39;s testharness.js is a framework designed to help people write tests for the
-web platform&#39;s JavaScript APIs. [The testharness.js reference
-page](testharness) describes the framework in the abstract, but for the
-purposes of this guide, we&#39;ll only consider the features we need to test the
-behavior of `fetch`.
-
-```eval_rst
-.. contents::
-   :local:
-</pre></div>
+some very brief instructions on using git, you can find more guidance in <a class="reference internal" href="github-intro.html"><span class="doc">the
+tutorial for git and GitHub</span></a>.</p>
+<p>WPT’s testharness.js is a framework designed to help people write tests for the
+web platform’s JavaScript APIs. <a class="reference internal" href="testharness.html"><span class="doc">The testharness.js reference
+page</span></a> describes the framework in the abstract, but for the
+purposes of this guide, we’ll only consider the features we need to test the
+behavior of <code class="docutils literal notranslate"><span class="pre">fetch</span></code>.</p>
+<div class="contents local topic" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#setting-up-your-workspace" id="id1">Setting up your workspace</a></p></li>
+<li><p><a class="reference internal" href="#writing-a-subtest" id="id2">Writing a subtest</a></p></li>
+<li><p><a class="reference internal" href="#refining-the-subtest" id="id3">Refining the subtest</a></p></li>
+<li><p><a class="reference internal" href="#writing-a-second-subtest" id="id4">Writing a second subtest</a></p></li>
+<li><p><a class="reference internal" href="#verifying-our-work" id="id5">Verifying our work</a></p></li>
+<li><p><a class="reference internal" href="#submitting-the-test" id="id6">Submitting the test</a></p></li>
+<li><p><a class="reference internal" href="#more-practice" id="id7">More practice</a></p></li>
+</ul>
 </div>
 <section id="setting-up-your-workspace">
 <h2>Setting up your workspace<a class="headerlink" href="#setting-up-your-workspace" title="Permalink to this headline">¶</a></h2>

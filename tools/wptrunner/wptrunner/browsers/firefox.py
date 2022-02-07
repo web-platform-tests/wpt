@@ -92,7 +92,7 @@ def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
             "certutil_binary": kwargs["certutil_binary"],
             "ca_certificate_path": config.ssl_config["ca_cert_path"],
             "e10s": kwargs["gecko_e10s"],
-            "enable_fission": kwargs["enable_fission"],
+            "enable_fission": run_info_data["fission"],
             "stackfix_dir": kwargs["stackfix_dir"],
             "binary_args": kwargs["binary_args"],
             "timeout_multiplier": get_timeout_multiplier(test_type,
@@ -717,7 +717,7 @@ class FirefoxBrowser(Browser):
 
     def __init__(self, logger, binary, prefs_root, test_type, extra_prefs=None, debug_info=None,
                  symbols_path=None, stackwalk_binary=None, certutil_binary=None,
-                 ca_certificate_path=None, e10s=False, enable_fission=False,
+                 ca_certificate_path=None, e10s=False, enable_fission=True,
                  stackfix_dir=None, binary_args=None, timeout_multiplier=None, leak_check=False,
                  asan=False, stylo_threads=1, chaos_mode_flags=None, config=None,
                  browser_channel="nightly", headless=None, preload_browser=False,

@@ -87,8 +87,7 @@ def test_normalised_key_value(session, inline, value):
     session.url = inline("<input>")
     element = session.find.css("input", all=False)
     element_send_keys(session, element, value[0])
-    actual = element.property("value")
-    assert value[1] == actual
+    assert element.property("value") == value[1]
 
 def test_type_printable_chars(session, inline):
     all_printable_keys = "!\"#$%&'()*+,-./0123456789:<=>?@ ABCDEFGHIJKLMNOPQRSTUVWXYZ [\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"

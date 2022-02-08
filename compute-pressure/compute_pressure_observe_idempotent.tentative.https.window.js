@@ -5,12 +5,11 @@ promise_test(async t => {
   // be represented exactly in floating-point, so === comparison works.
 
   const update = await new Promise((resolve, reject) => {
-    const observer = new ComputePressureObserver(
-        resolve, {cpuUtilizationThresholds: [0.5], cpuSpeedThresholds: [0.5]});
-    t.add_cleanup(() => observer.stop());
-    observer.observe().catch(reject);
-    observer.observe().catch(reject);
-    observer.observe().catch(reject);
+    const observer = new ComputePressureObserver(resolve);
+    t.add_cleanup(() => observer.disconnect());
+    observer.observe(["cpu"], {cpuUtilizationThresholds: [0.5], cpuSpeedThresholds: [0.5]}).catch(reject);
+    observer.observe(["cpu"], {cpuUtilizationThresholds: [0.5], cpuSpeedThresholds: [0.5]}).catch(reject);
+    observer.observe(["cpu"], {cpuUtilizationThresholds: [0.5], cpuSpeedThresholds: [0.5]}).catch(reject);
   });
 
   assert_equals(typeof update.cpuUtilization, 'number');

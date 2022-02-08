@@ -5,10 +5,10 @@ promise_test(async t => {
   const observer1 = new ComputePressureObserver(
       update => { observer1_updates.push(update); },
       {cpuUtilizationThresholds: [0.5], cpuSpeedThresholds: [0.5]});
-  t.add_cleanup(() => observer1.stop());
+  t.add_cleanup(() => observer1.disconnect());
   // Ensure that observer1's quantization scheme gets registered as the origin's
   // scheme before observer2 starts.
-  await observer1.observe();
+  await observer1.observe(["cpu"]);
 
   const observer2_updates = [];
   await new Promise((resolve, reject) => {
@@ -16,10 +16,9 @@ promise_test(async t => {
         update => {
           observer2_updates.push(update);
           resolve();
-        },
-        {cpuUtilizationThresholds: [0.25], cpuSpeedThresholds: [0.75]});
-    t.add_cleanup(() => observer2.stop());
-    observer2.observe().catch(reject);
+        });
+    t.add_cleanup(() => observer2.disconnect());
+    observer2.observe(["cpu"], {cpuUtilizationThresholds: [0.25], cpuSpeedThresholds: [0.75]}).catch(reject);
   });
 
   // observer2 uses a different quantization scheme than observer1. After
@@ -31,7 +30,7 @@ promise_test(async t => {
   // observer1.observe() and the first update that observer1 would receive.
   assert_equals(
       observer1_updates.length, 0,
-      'observer2.observe() should have stopped observer1; the two observers ' +
+      'observer2.observe() should have disconnectped observer1; the two observers ' +
       'have different quantization schemes');
 
   assert_equals(observer2_updates.length, 1);
@@ -51,22 +50,21 @@ promise_test(async t => {
         update => {
           observer3_updates.push(update);
           resolve();
-        },
-        {cpuUtilizationThresholds: [0.75], cpuSpeedThresholds: [0.25]});
-    t.add_cleanup(() => observer3.stop());
-    observer3.observe().catch(reject);
+        });
+    t.add_cleanup(() => observer3.disconnect());
+    observer3.observe(["cpu"], {cpuUtilizationThresholds: [0.75], cpuSpeedThresholds: [0.25]}).catch(reject);
   });
 
   assert_equals(
       observer1_updates.length, 0,
-      'observer2.observe() should have stopped observer1; the two observers ' +
+      'observer2.observe() should have disconnectped observer1; the two observers ' +
       'have different quantization schemes');
 
   // observer3 uses a different quantization scheme than observer2. So,
-  // observer3.observe() should stop observer2.
+  // observer3.observe() should disconnect observer2.
   assert_equals(
       observer2_updates.length, 0,
-      'observer3.observe() should have stopped observer2; the two observers ' +
+      'observer3.observe() should have disconnectped observer2; the two observers ' +
       'have different quantization schemes');
 
   assert_equals(observer3_updates.length, 1);
@@ -75,5 +73,5 @@ promise_test(async t => {
   assert_in_array(observer3_updates[0].cpuSpeed, [0.125, 0.625],
                   'cpuSpeed quantization');
 
-}, 'ComputePressureObserver with a new quantization schema stops all ' +
+}, 'ComputePressureObserver with a new quantization schema disconnects all ' +
    'other active observers');

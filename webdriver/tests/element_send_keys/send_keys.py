@@ -82,8 +82,18 @@ def test_stale_element(session, inline):
     [u'\ue029', "/"],
     [u'\ue01a', "0"],
     [u'\ue023', "9"]
-    ])
-def test_normalised_key_value(session, inline, value):
+    ]) # TODO This is not extensive list due to timeouts from wpt if there are a lot of test
+def test_printable_normalised_key_value(session, inline, value):
+    session.url = inline("<input>")
+    element = session.find.css("input", all=False)
+    element_send_keys(session, element, value[0])
+    assert element.property("value") == value[1]
+
+@pytest.mark.parametrize("value", [
+    [u'\ue008'+'a', "A"],
+    ["abc"+u'\ue012'+"efg", "abefgc"]
+    ]) # TODO This is not extensive list due to timeouts from wpt if there are a lot of test
+def test_nonprintable_normalised_key_value(session, inline, value):
     session.url = inline("<input>")
     element = session.find.css("input", all=False)
     element_send_keys(session, element, value[0])

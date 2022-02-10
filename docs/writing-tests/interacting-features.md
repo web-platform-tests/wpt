@@ -10,16 +10,16 @@ This allows the tests for a feature to be decoupled as much as possible from the
 
 ### Common
 
-There are several useful utilities in the /common/ directory
+There are several useful utilities in the `/common/` directory
 
 ### Cookies
 
-Features which need to test their interaction with cookies can use the scripts in cookies/resources to control which cookies are set on a given request.
+Features which need to test their interaction with cookies can use the scripts in `cookies/resources` to control which cookies are set on a given request.
 
 ### Permissions Policy
 
-Features which integrate with Permissions Policy can make use of the permissions-policy.js support library to generate a set of tests for that integration.
+Features which integrate with Permissions Policy can make use of the `permissions-policy.js` support library to generate a set of tests for that integration.
 
 ### Reporting
 
-Testing integration with the Reporting API can be done with the help of the common report collector. This service will collect reports sent from tests and provides an API to retrieve them. See documentation at reporting/resources/README.md
+Testing integration with the Reporting API can be done with the help of the common report collector. This service will collect reports sent from tests and provides an API to retrieve them. See documentation at `reporting/resources/README.md`.

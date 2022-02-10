@@ -223,6 +223,7 @@ for CSS have some additional requirements for:
 [css-metadata]: css-metadata
 [css-user-styles]: css-user-styles
 [file-name-flags]: file-names
+[interacting-features]: interacting-features
 [mozilla-firefox]: https://mozilla.org/firefox
 [google-chrome]: https://google.com/chrome/browser/desktop/
 [apple-safari]: https://apple.com/safari

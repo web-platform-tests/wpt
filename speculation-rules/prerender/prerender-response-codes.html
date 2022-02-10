@@ -5,7 +5,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
 <script src="resources/utils.js"></script>
-<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
 <body>
 <script>
 
@@ -13,18 +12,8 @@ setup(() => assertSpeculationRulesIsSupported());
 function test_prerender_response_code(code, allow) {
   promise_test(async t => {
     const uid = token();
-    /*
-    const service_worker_url = 'resources/sw-respond-to-prerender.js';
-    const scope = "resources/empty.html";
-
-    const r = await service_worker_unregister_and_register(
-      t, service_worker_url, scope);
-    t.add_cleanup(() => service_worker_unregister(t, scope));
-    await wait_for_state(t, r.installing, 'activated');
-*/
     const url = `resources/prerender-response-code.html?code=${code}&uid=${uid}&timeout=${code < 204 ? 0 : 500}`;
     const bc = new BroadcastChannel(uid);
-    bc.addEventListener('message', e => console.log(code, e.data));
     const waitForState = (...states) => new Promise(resolve => bc.addEventListener('message', ({data}) => {
       if (states.includes(data))
         resolve(data);

@@ -13,7 +13,7 @@ def main(request, response):
               count = 0
             request.server.stash.put(uid, count)
         return 200, [], str(count)
-            
+
     if (mode == b"echo"):
         code = request.GET.first(b"code")
         content = request.GET.first(b"content")

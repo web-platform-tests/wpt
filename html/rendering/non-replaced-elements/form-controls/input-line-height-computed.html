@@ -22,11 +22,11 @@ for (const input of inputs) {
     const usedLineHeight = getComputedStyle(input).lineHeight;
     assert_not_equals(usedLineHeight, '1px', 'usedLineHeight');
     assert_not_equals(usedLineHeight, 'normal', 'usedLineHeight');
-  }, `getComputedStyle(<input type=${input.type}>).lineHeight`);
+  }, `getComputedStyle(<input type=${input.type}>).lineHeight should return a used value that is no smaller than 'normal' (but should not literally be 'normal')`);
   test(() => {
     const computedLineHeight = input.computedStyleMap().get('line-height');
     assert_equals(computedLineHeight.value, 1, 'computedLineHeight.value');
     assert_equals(computedLineHeight.unit, 'px', 'computedLineHeight.unit');
-  }, `<input type=${input.type}>.computedStyleMap().get('line-height')`);
+  }, `<input type=${input.type}>.computedStyleMap().get('line-height') should not be affected by the used value clamping`);
 }
 </script>

@@ -1,6 +1,6 @@
 # Testing interactions between features
 
-Web platform features do not exist in isolation. Often testing the interaction between two features is necessary in tests.
+Web platform features do not exist in isolation. Often, testing the interaction between two features is necessary in tests.
 To support this, many directories contain libraries which are intended to be used from other directories.
 
 These are not WPT server features, but are canonical usage of one feature intended for other features to test against.

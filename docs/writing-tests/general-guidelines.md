@@ -115,7 +115,9 @@ no [parse errors](https://validator.nu).
 
 This is not, however, to discourage testing of edge cases or
 interactions between multiple features; such tests are an essential
-part of ensuring interoperability of the web platform.
+part of ensuring interoperability of the web platform. When possible, use the
+canonical support libraries provided by features; see [here][interacting-features]
+for more information.
 
 Tests should pass when the feature under test exposes the expected behavior,
 and they should fail when the feature under test is not implemented or is

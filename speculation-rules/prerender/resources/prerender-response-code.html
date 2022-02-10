@@ -1,0 +1,33 @@
+<head>
+<script src="/common/utils.js"></script>
+<script src="./utils.js"></script>
+<script>
+    const search = new URLSearchParams(location.search);
+    const uid = search.get('uid');
+    window.onload = async () => {
+        const content = '<' + `script>
+        const bc = new BroadcastChannel('${uid}');
+        const done = message => {
+            bc.postMessage(message)
+        };
+
+        if (document.prerendering) {
+            bc.postMessage('next');
+            document.addEventListener('prerenderingchange', () => done('activated'));
+        } else
+            done('discarded');
+        <` + '/script>';
+        const url = `./echo-response-code.py?mode=echo&uid=${uid}&code=${search.get('code')}&content=${encodeURIComponent(content)}`;
+        const bc = new BroadcastChannel(uid);
+        startPrerendering(url);
+        const next = new Promise(resolve => bc.addEventListener('message', ({data}) => {
+            if (data === 'next')
+                location.href = url;
+        }))
+
+        const timeout = new Promise(resolve => setTimeout(resolve, 1000));
+        await Promise.any([next, timeout]);
+        location.href = url
+    };
+</script>
+</head>

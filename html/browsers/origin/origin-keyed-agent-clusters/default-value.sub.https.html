@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<title>Check the default value of the Origin-Agent-Cluster http header</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+  // There are plenty of tests that verify behaviour of origin-keyed agent
+  // clusters. Here, we check whether the default case - without any header
+  // set - is origin-keyed or not.
+  test(_ => {
+    assert_equals(window.originAgentCluster, true);
+  }, "Check the window.originAgentCluster property in the default case.");
+</script>

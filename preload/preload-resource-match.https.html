@@ -87,7 +87,7 @@ const loaders = {
         p.style.fontFamily = 'MyFont';
         document.body.appendChild(p);
         t.add_cleanup(() => p.remove());
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await document.fonts.ready;
     },
     shape: (href, attr, t) => {
         const div = document.createElement('div');

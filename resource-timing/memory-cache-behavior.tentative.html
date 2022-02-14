@@ -1,0 +1,172 @@
+<!doctype html>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/preload/resources/preload_helper.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<body></body>
+<script>
+
+const {HTTPS_REMOTE_ORIGIN} = get_host_info();
+
+function createEchoURL(text, type) {
+    return `/preload/resources/echo-with-cors.py?type=${
+        encodeURIComponent(type)}&content=${
+        encodeURIComponent(text)}`
+}
+
+const urls = {
+    image: createEchoURL('<svg xmlns="http://www.w3.org/2000/svg" width="2" height="2" />', 'image/svg+xml'),
+    font: '/preload/resources/font.ttf?x',
+    script: createEchoURL('function dummy() { }', 'application/javascript'),
+    style: createEchoURL('.cls { }', 'text/css'),
+}
+
+const resourceTypes = {
+    image: {url: urls.image, as: 'image'},
+    font: {url: urls.font, as: 'font', config: 'anonymous'},
+    script: {url: urls.script, as: 'script'},
+    style: {url: urls.style, as: 'style'}
+}
+
+const configs = {
+    // The requested URL is from the same origin
+    'same-origin': {crossOrigin: false, attributes: {}},
+
+    // The requested URL is from a remote origin, without CORS
+    'no-cors': {crossOrigin: true, attributes: {}},
+
+    // The requested URL is from a remote origin, with CORS (anonymous)
+    'anonymous': {crossOrigin: true, attributes: {crossOrigin: 'anonymous'}},
+
+    // The requested URL is from a remote origin, with CORS (including credentials)
+    'use-credentials': {crossOrigin: true, attributes: {crossOrigin: 'use-credentials'}},
+}
+
+const loaders = {
+    image: async (href, attr) => {
+        const img = document.createElement('img');
+        Object.entries(attr).forEach(([key, value]) => {
+            img[key] = value;
+        });
+
+        img.src = href
+
+        document.body.appendChild(img);
+        await new Promise(resolve => {
+            img.addEventListener('load', resolve);
+            img.addEventListener('error', resolve);
+        });
+
+        return () => img.remove();
+    },
+    font: async (href, attr) => {
+        const style = document.createElement('style');
+        style.innerHTML = `@font-face {
+            font-family: 'MyFont';
+            src: url('${href}');
+        }`;
+
+        document.head.appendChild(style);
+        const p = document.createElement('p');
+        p.innerText = 'abc';
+        p.style.fontFamily = 'MyFont';
+        document.body.appendChild(p);
+        await document.fonts.ready;
+        return () => {
+            p.remove();
+            style.remove();
+        };
+    },
+    shape: (href, attr) => {
+        const div = document.createElement('div');
+        div.style.shapeOutside = `url(${href})`;
+        document.body.appendChild(div);
+        return () => div.remove();
+    },
+    backgroundImage: (href, attr) => {
+        const div = document.createElement('div');
+        div.style.background = `url(${href})`;
+        document.body.appendChild(div);
+        return () => div.remove();
+    },
+    script: async (href, attr) => {
+        const script = document.createElement('script');
+        if (attr.crossOrigin)
+            script.setAttribute('crossorigin', attr.crossOrigin);
+        script.src = href;
+        document.body.appendChild(script);
+        await new Promise(resolve => { script.onload = resolve });
+        return () => script.remove();
+    },
+    module: async (href, attr) => {
+        const script = document.createElement('script');
+        script.type = 'module';
+        const cleanup = () => script.remove();
+        if (attr.crossOrigin)
+            script.setAttribute('crossorigin', attr.crossOrigin);
+        script.src = href;
+        document.body.appendChild(script);
+        await new Promise(resolve => { script.onload = resolve });
+        return cleanup;
+    },
+    style: async (href, attr) => {
+        const style = document.createElement('link');
+        style.rel = 'stylesheet';
+        const cleanup = () => style.remove();
+        style.href = href;
+        if (attr.crossOrigin)
+            style.setAttribute('crossorigin', attr.crossOrigin);
+        document.head.appendChild(style);
+        await new Promise(resolve => {
+            style.addEventListener('load', resolve);
+            style.addEventListener('error', resolve);
+        });
+
+        return cleanup;
+    }
+}
+
+function memory_cache_reuse_test(type, cacheType, deadOrAlive, as, url, cfg1, cfg2) {
+    const expected = (cfg1 === cfg2 && cacheType !== 'no-store') ? "reuse" : "discard";
+    const key = token();
+    let href = getAbsoluteURL(`${
+        (configs[cfg2].crossOrigin ? HTTPS_REMOTE_ORIGIN : '') + url
+    }&${token()}`);
+    
+    if (cacheType !== 'none') 
+        href += `&cache=${encodeURIComponent(cacheType)}`
+    promise_test(async t => {
+        const remove = await loaders[as](href, configs[cfg1].attributes);
+        if (deadOrAlive === 'dead')
+            await remove();
+        else
+            t.add_cleanup(remove);
+//        await new Promise(resolve => t.step_timeout(resolve, 100));
+        const remove2 = await loaders[as](href, configs[cfg2].attributes);
+        t.add_cleanup(remove2);
+        await new Promise(resolve => t.step_timeout(resolve, 100));
+        verifyNumberOfResourceTimingEntries(href, expected === "reuse" ? 1 : 2)
+    }, `Loading ${type} (${cfg1} and then ${cfg2}, ${deadOrAlive}) with cache config ${cacheType} should ${expected} the first response`);
+}
+
+for (const [resourceTypeName, resourceInfo] of Object.entries(resourceTypes)) {
+    const configNames = resourceInfo.config ? [resourceInfo.config, 'same-origin'] : Object.keys(configs)
+    for (const cfg2Name of configNames) {
+        for (const cfg1Name of Object.keys(configs)) {
+            for (const cacheType of ['none', 'max-age=0', 'no-store']) {
+                for (deadOrAlive of ['alive']) {
+                // Same-origin requests ignore their CORS attributes, so no need to match all of them.
+                if ((cfg2Name === 'same-origin' && cfg1Name === 'same-origin') ||
+                    (cfg2Name !== 'same-origin' && cfg1Name !== 'same-origin') && 
+                    (!resourceInfo.config || (resourceInfo.config === cfg1Name && resourceInfo.config === cfg2Name))) {
+                    memory_cache_reuse_test(resourceTypeName, cacheType, deadOrAlive, resourceInfo.as, resourceInfo.url, cfg1Name, cfg2Name);
+                }
+
+                }
+            }
+        }
+    }
+}
+</script>

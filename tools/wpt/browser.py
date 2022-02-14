@@ -4,6 +4,7 @@ import re
 import shutil
 import stat
 import subprocess
+import sys
 import tempfile
 from abc import ABCMeta, abstractmethod
 from datetime import datetime, timedelta
@@ -56,7 +57,11 @@ class Browser(object):
     def _get_dest(self, dest, channel):
         if dest is None:
             # os.getcwd() doesn't include the venv path
-            dest = os.path.join(os.getcwd(), "_venv")
+            venv_dir = "_venv"
+            versioned_dir = f"{venv_dir}{sys.version_info[0]}"
+            if os.path.exists(os.path.join(os.getcwd(), versioned_dir)):
+                venv_dir = versioned_dir
+            dest = os.path.join(os.getcwd(), venv_dir)
 
         dest = os.path.join(dest, "browsers", channel)
 

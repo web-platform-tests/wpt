@@ -261,7 +261,6 @@ class TestExecutor(object):
                  debug_info=None, **kwargs):
         self.logger = logger
         self.runner = None
-        self.recording = None
         self.browser = browser
         self.server_config = server_config
         self.timeout_multiplier = timeout_multiplier
@@ -270,13 +269,12 @@ class TestExecutor(object):
                                  "prefs": {}}
         self.protocol = None  # This must be set in subclasses
 
-    def setup(self, runner, recording):
+    def setup(self, runner):
         """Run steps needed before tests can be started e.g. connecting to
         browser instance
 
         :param runner: TestRunner instance that is going to run the tests"""
         self.runner = runner
-        self.recording = recording
         if self.protocol is not None:
             self.protocol.setup(runner)
 

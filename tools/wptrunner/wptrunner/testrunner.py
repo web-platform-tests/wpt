@@ -61,7 +61,7 @@ class TestRunner(object):
     def setup(self):
         self.logger.debug("Executor setup")
         try:
-            self.executor.setup(self, self.recording)
+            self.executor.setup(self)
         except Exception:
             # The caller is responsible for logging the exception if required
             self.send_message("init_failed")

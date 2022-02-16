@@ -54,7 +54,7 @@ def test_install_chromedriver_by_version():
     if os.path.exists(chromedriver_path):
         os.unlink(chromedriver_path)
     # This is a stable version.
-    binary_path = chrome.install_webdriver(dest=dest, version="84.0.4147.89")
+    binary_path = chrome.install_webdriver_by_version(dest=dest, version="84.0.4147.89")
     assert binary_path == chromedriver_path
     assert os.path.exists(chromedriver_path)
     os.unlink(chromedriver_path)

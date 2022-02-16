@@ -24,6 +24,8 @@ promise_test(async t => {
     }), workerURL);
   }, workerURL);
 
+  // We want to wait until the worker is initiated, but since its operation is delayed we
+  // can't wait for its message - so we wait for a time period that should be sufficient.
   await new Promise(resolve => t.step_timeout(resolve, 300));
   await activate();
   const {workerStart, activationStart, workerLoad, prerendering } = await exec(() => window.waitForWorker);

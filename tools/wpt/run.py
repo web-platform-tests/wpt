@@ -332,17 +332,16 @@ class ChromiumBasedBrowser(BrowserSetup):
         if kwargs["binary"] is None:
             binary = self.browser.find_binary(venv_path=self.venv.path, channel=browser_channel)
             if binary:
-                logger.info(f"Using {self.name} binary {binary}")
+                logger.info(f"Using {self.name.capitalize()} binary {binary}")
                 kwargs["binary"] = binary
             else:
-                raise WptrunError(f"Unable to locate {self.name} binary")
+                raise WptrunError(f"Unable to locate {self.name.capitalize()} binary")
 
         if self.name in ("chrome", "chromium"):
             if kwargs["mojojs_path"]:
                 kwargs["enable_mojojs"] = True
                 logger.info("--mojojs-path is provided, enabling MojoJS")
-            # TODO(Hexcles): Enable this everywhere when Chrome 86 becomes stable.
-            elif browser_channel in self.experimental_channels:
+            else:
                 try:
                     path = self.browser.install_mojojs(
                         dest=self.venv.path,
@@ -370,7 +369,7 @@ class ChromiumBasedBrowser(BrowserSetup):
                     webdriver_binary = None
 
             if webdriver_binary is None:
-                install = self.prompt_install(f"{self.name} webdriver")
+                install = self.prompt_install(f"{self.name.capitalize()} webdriver")
 
                 if install:
                     webdriver_binary = self.browser.install_webdriver(
@@ -387,8 +386,8 @@ class ChromiumBasedBrowser(BrowserSetup):
                 raise WptrunError("Unable to locate or install matching webdriver binary")
 
         if browser_channel in self.experimental_channels:
-            logger.info(f"Automatically turning on experimental features for {self.name} "
-                        f"{'/'.join(self.experimental_channels)}")
+            logger.info("Automatically turning on experimental features for "
+                        f"{self.name.capitalize()} {'/'.join(self.experimental_channels)}")
             kwargs["binary_args"].append("--enable-experimental-web-platform-features")
 
             if self.name in ("chrome", "chromium"):

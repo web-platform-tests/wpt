@@ -111,7 +111,7 @@ def test_list_tests(manifest_dir):
                        "--channel", "dev", "--yes",
                        # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
                        "--enable-swiftshader",
-                       "chromium", "/dom/nodes/Element-tagName.html"])
+                       "chrome", "/dom/nodes/Element-tagName.html"])
     assert excinfo.value.code == 0
 
 
@@ -180,7 +180,7 @@ def test_run_zero_tests():
         wpt.main(argv=["run", "--yes", "--no-pause", "--channel", "dev",
                        # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
                        "--enable-swiftshader",
-                       "chromium", "/non-existent-dir/non-existent-file.html"])
+                       "chrome", "/non-existent-dir/non-existent-file.html"])
     assert excinfo.value.code != 0
 
     with pytest.raises(SystemExit) as excinfo:
@@ -188,7 +188,7 @@ def test_run_zero_tests():
                        "--channel", "dev",
                        # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
                        "--enable-swiftshader",
-                       "chromium", "/non-existent-dir/non-existent-file.html"])
+                       "chrome", "/non-existent-dir/non-existent-file.html"])
     assert excinfo.value.code != 0
 
 
@@ -209,7 +209,7 @@ def test_run_failing_test():
         wpt.main(argv=["run", "--yes", "--no-pause", "--channel", "dev",
                        # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
                        "--enable-swiftshader",
-                       "chromium", failing_test])
+                       "chrome", failing_test])
     assert excinfo.value.code != 0
 
     with pytest.raises(SystemExit) as excinfo:
@@ -217,7 +217,7 @@ def test_run_failing_test():
                        "--channel", "dev",
                        # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
                        "--enable-swiftshader",
-                       "chromium", failing_test])
+                       "chrome", failing_test])
     assert excinfo.value.code == 0
 
 
@@ -244,7 +244,7 @@ def test_run_verify_unstable(temp_test):
         wpt.main(argv=["run", "--yes", "--verify", "--channel", "dev",
                        # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
                        "--enable-swiftshader",
-                       "chromium", unstable_test])
+                       "chrome", unstable_test])
     assert excinfo.value.code != 0
 
     stable_test = temp_test("test(function() {}, 'my test');")
@@ -253,7 +253,7 @@ def test_run_verify_unstable(temp_test):
         wpt.main(argv=["run", "--yes", "--verify", "--channel", "dev",
                        # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
                        "--enable-swiftshader",
-                       "chromium", stable_test])
+                       "chrome", stable_test])
     assert excinfo.value.code == 0
 
 

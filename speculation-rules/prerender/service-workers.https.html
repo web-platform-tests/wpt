@@ -11,6 +11,9 @@
 
 setup(() => assertSpeculationRulesIsSupported());
 
+// This delay is to prevent a race condition which can cause false passes -
+// a service worker might take some time to install, and if activation is too quick it might
+// end up occuring after activation by chance.
 const ACTIVATION_DELAY = 500;
 
 promise_test(async t => {
@@ -30,10 +33,10 @@ promise_test(async t => {
 
 promise_test(async t => {
   const {exec, activate} = await create_prerendered_page(t);
-  const scope = `/${token()}/`;
+  const scope = `./${token()}/`;
   await exec(async scope => {
     window.serviceWorkerInstalled = new Promise(resolve => {
-      navigator.serviceWorker.register('./service-worker.js', {scope: '.' + scope})
+      navigator.serviceWorker.register('./service-worker.js', {scope})
         .then(reg => {
           reg.unregister();
           resolve({prerendering: document.prerendering});
@@ -57,11 +60,12 @@ promise_test(async t => {
 
   const {exec, activate} = await create_prerendered_page(t);
   await exec(async uid => {
-    window.serviceWorkerUpdate = new Promise(async resolve => {
+    window.serviceWorkerUnregistered = (async () => {
       const regs = await navigator.serviceWorker.getRegistrations();
       const reg = regs.find(r => r.scope.includes(uid));
-      reg.update().then(() => resolve({prerendering: document.prerendering}));
-    });
+      await reg.unregister();
+      return {prerendering: document.prerendering};
+    })();
   }, uid);
 
   await new Promise(resolve => t.step_timeout(resolve, ACTIVATION_DELAY));
@@ -80,11 +84,12 @@ promise_test(async t => {
 
   const {exec, activate} = await create_prerendered_page(t);
   await exec(async uid => {
-    window.serviceWorkerUpdating = new Promise(async resolve => {
+    window.serviceWorkerUpdated = (async () => {
       const regs = await navigator.serviceWorker.getRegistrations();
       const reg = regs.find(r => r.scope.includes(uid));
-      reg.update().then(() => resolve({prerendering: document.prerendering}));
-    });
+      await reg.update();
+      return {prerendering: document.prerendering};
+    })();
   }, uid);
 
   await new Promise(resolve => t.step_timeout(resolve, ACTIVATION_DELAY));

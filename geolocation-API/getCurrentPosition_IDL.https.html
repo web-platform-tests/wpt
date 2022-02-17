@@ -89,20 +89,20 @@
       "number",
       "longitude must be a number"
     );
-    assert_equals(
+    assert_true(
       coords.altitude === null || typeof coords.altitude === "number",
       "altitude must be null or a number"
     );
-    assert_equals(
+    assert_true(
       coords.altitudeAccuracy === null ||
         typeof coords.altitudeAccuracy === "number",
       "altitudeAccuracy must be null or a number"
     );
-    assert_equals(
+    assert_true(
       coords.heading === null || typeof coords.heading === "number",
       "heading must be null or a number"
     );
-    assert_equals(
+    assert_true(
       coords.speed === null || typeof coords.speed === "number",
       "speed must be null or a number"
     );

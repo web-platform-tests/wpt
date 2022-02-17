@@ -23,20 +23,20 @@
 
 const testCases = [
   {
-    title: '@keyframes layered overrides unlayered',
+    title: '@keyframes unlayered overrides layered',
     style: `
       #target {
         animation: anim 1s paused;
       }
 
-      @layer {
-        @keyframes anim {
-          from { background-color: green; }
-        }
+      @keyframes anim {
+        from { background-color: green; }
       }
 
-      @keyframes anim {
-        from { background-color: red; }
+      @layer {
+        @keyframes anim {
+          from { background-color: red; }
+        }
       }
     `
   },

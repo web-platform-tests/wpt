@@ -17,16 +17,17 @@ interface AppHistory : EventTarget {
   readonly attribute boolean canGoBack;
   readonly attribute boolean canGoForward;
 
-  Promise<undefined> navigate(USVString url, optional AppHistoryNavigateOptions options = {});
-  Promise<undefined> reload(optional AppHistoryReloadOptions options = {});
+  AppHistoryResult navigate(USVString url, optional AppHistoryNavigateOptions options = {});
+  AppHistoryResult reload(optional AppHistoryReloadOptions options = {});
 
-  Promise<undefined> goTo(DOMString key, optional AppHistoryNavigationOptions options = {});
-  Promise<undefined> back(optional AppHistoryNavigationOptions options = {});
-  Promise<undefined> forward(optional AppHistoryNavigationOptions options = {});
+  AppHistoryResult goTo(DOMString key, optional AppHistoryNavigationOptions options = {});
+  AppHistoryResult back(optional AppHistoryNavigationOptions options = {});
+  AppHistoryResult forward(optional AppHistoryNavigationOptions options = {});
 
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
   attribute EventHandler onnavigateerror;
+  attribute EventHandler oncurrentchange;
 };
 
 dictionary AppHistoryUpdateCurrentOptions {
@@ -46,13 +47,31 @@ dictionary AppHistoryReloadOptions : AppHistoryNavigationOptions {
   any state;
 };
 
+dictionary AppHistoryResult {
+  Promise<AppHistoryEntry> committed;
+  Promise<AppHistoryEntry> finished;
+};
+
+[Exposed=Window]
+interface AppHistoryCurrentChangeEvent : Event {
+  constructor(DOMString type, AppHistoryCurrentChangeEventInit eventInit);
+
+  readonly attribute AppHistoryNavigationType? navigationType;
+  readonly attribute AppHistoryEntry from;
+};
+
+dictionary AppHistoryCurrentChangeEventInit : EventInit {
+  AppHistoryNavigationType? navigationType = null;
+  required AppHistoryEntry destination;
+};
+
 [Exposed=Window]
 interface AppHistoryTransition {
   readonly attribute AppHistoryNavigationType navigationType;
   readonly attribute AppHistoryEntry from;
   readonly attribute Promise<undefined> finished;
 
-  Promise<undefined> rollback(optional AppHistoryNavigationOptions options = {});
+  AppHistoryResult rollback(optional AppHistoryNavigationOptions options = {});
 };
 
 [Exposed=Window]
@@ -102,7 +121,7 @@ interface AppHistoryDestination {
 
 [Exposed=Window]
 interface AppHistoryEntry : EventTarget {
-  readonly attribute USVString url;
+  readonly attribute USVString? url;
   readonly attribute DOMString key;
   readonly attribute DOMString id;
   readonly attribute long long index;

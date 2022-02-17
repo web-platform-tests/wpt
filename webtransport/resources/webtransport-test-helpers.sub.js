@@ -5,9 +5,19 @@ const HOST = get_host_info().ORIGINAL_HOST;
 const PORT = '{{ports[webtransport-h3][0]}}';
 const BASE = `https://${HOST}:${PORT}`;
 
+// Wait for the given number of milliseconds (ms).
+function wait(ms) { return new Promise(res => step_timeout(res, ms)); }
+
 // Create URL for WebTransport session.
 function webtransport_url(handler) {
   return `${BASE}/webtransport/handlers/${handler}`;
+}
+
+// Converts WebTransport stream error code to HTTP/3 error code.
+// https://ietf-wg-webtrans.github.io/draft-ietf-webtrans-http3/draft-ietf-webtrans-http3.html#section-4.3
+function webtransport_code_to_http_code(n) {
+  const first = 0x52e4a40fa8db;
+  return first + n + Math.floor(n / 0x1e);
 }
 
 // Read all chunks from |readable_stream|, decode chunks to a utf-8 string, then
@@ -51,6 +61,19 @@ function check_and_remove_standard_headers(headers) {
   delete headers[':protocol'];
   assert_equals(headers['origin'], `${get_host_info().ORIGIN}`);
   delete headers['origin'];
-  assert_equals(headers['datagram-flow-id'], '0');
-  delete headers['datagram-flow-id'];
+}
+
+async function query(token) {
+  const wt = new WebTransport(webtransport_url(`query.py?token=${token}`));
+  try {
+    await wt.ready;
+    const streams = await wt.incomingUnidirectionalStreams;
+    const streams_reader = streams.getReader();
+    const { value: readable } = await streams_reader.read();
+    streams_reader.releaseLock();
+
+    return await read_stream_as_json(readable);
+  } finally {
+    wt.close();
+  }
 }

@@ -1,26 +1,20 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>CSS Pseudo-Elements Test: highlight cascade: unset is treated like inherit regardless of whether property is inherited</title>
-<link rel="author" title="Delan Azabani" href="mailto:dazabani@igalia.com">
+<!DOCTYPE html>
+<title>Initial custom property values in :root::selection rule</title>
 <link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#highlight-cascade">
 <link rel="match" href="highlight-cascade-003-ref.html">
-<meta name="assert" value="This test verifies that, given ::selection styles with both color and background-color declared as unset, both properties inherit their values from the parent ::selection styles. All properties become inherited for the purposes of deciding whether unset should mean initial or inherit.">
+<meta name="assert" value="This test verifies that the initial value given in a custom property registration is respected, when the property is referenced in ::selection styles but no value is defined. The initial value is not the guaranteed-invalid value, so the fallback value in var() is not used.">
 <script src="support/selections.js"></script>
-<link rel="stylesheet" href="support/highlights.css">
 <style>
-    main {
-        font-size: 7em;
-        margin: 0.5em;
-    }
-    main::selection {
-        background-color: green;
-        color: white;
-    }
-    main > span::selection {
-        background-color: unset;
-        color: unset;
-    }
+  @property --bg {
+    syntax: "<color>";
+    inherits: false;
+    initial-value: green;
+  }
+  :root::selection {
+    background-color: var(--bg, red);
+  }
 </style>
-<p>Test passes if the text below is white on green.
-<main class="highlight_reftest"><span>quick</span></main>
-<script>selectNodeContents(document.querySelector("main"));</script>
+<main>PASS if background-color is green when selected</main>
+<script>
+  selectNodeContents(document.querySelector("main"));
+</script>

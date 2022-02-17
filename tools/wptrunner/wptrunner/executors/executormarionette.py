@@ -20,7 +20,6 @@ from .base import (CallbackHandler,
                    TestharnessExecutor,
                    TimedRunner,
                    WdspecExecutor,
-                   WdspecProtocol,
                    get_pages,
                    strip_server)
 from .protocol import (ActionSequenceProtocolPart,
@@ -38,9 +37,11 @@ from .protocol import (ActionSequenceProtocolPart,
                        CoverageProtocolPart,
                        GenerateTestReportProtocolPart,
                        VirtualAuthenticatorProtocolPart,
+                       WindowProtocolPart,
                        SetPermissionProtocolPart,
                        PrintProtocolPart,
-                       DebugProtocolPart)
+                       DebugProtocolPart,
+                       merge_dicts)
 
 
 def do_delayed_imports():
@@ -118,7 +119,8 @@ class MarionetteBaseProtocolPart(BaseProtocolPart):
 
         while True:
             try:
-                self.marionette.execute_async_script("")
+                return self.marionette.execute_async_script("""let callback = arguments[arguments.length - 1];
+addEventListener("__test_restart", e => {e.preventDefault(); callback(true)})""")
             except errors.NoSuchWindowException:
                 # The window closed
                 break
@@ -135,6 +137,7 @@ class MarionetteBaseProtocolPart(BaseProtocolPart):
             except Exception:
                 self.logger.warning(traceback.format_exc())
                 break
+        return False
 
 
 class MarionetteTestharnessProtocolPart(TestharnessProtocolPart):
@@ -451,6 +454,16 @@ class MarionetteSendKeysProtocolPart(SendKeysProtocolPart):
     def send_keys(self, element, keys):
         return element.send_keys(keys)
 
+class MarionetteWindowProtocolPart(WindowProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def minimize(self):
+        return self.marionette.minimize_window()
+
+    def set_rect(self, rect):
+        self.marionette.set_window_rect(rect["x"], rect["y"], rect["height"], rect["width"])
+
 
 class MarionetteActionSequenceProtocolPart(ActionSequenceProtocolPart):
     def setup(self):
@@ -671,6 +684,7 @@ class MarionetteProtocol(Protocol):
                   MarionetteClickProtocolPart,
                   MarionetteCookiesProtocolPart,
                   MarionetteSendKeysProtocolPart,
+                  MarionetteWindowProtocolPart,
                   MarionetteActionSequenceProtocolPart,
                   MarionetteTestDriverProtocolPart,
                   MarionetteAssertsProtocolPart,
@@ -688,6 +702,11 @@ class MarionetteProtocol(Protocol):
         self.marionette = None
         self.marionette_port = browser.marionette_port
         self.capabilities = capabilities
+        if hasattr(browser, "capabilities"):
+            if self.capabilities is None:
+                self.capabilities = browser.capabilities
+            else:
+                merge_dicts(self.capabilities, browser.capabilities)
         self.timeout_multiplier = timeout_multiplier
         self.runner_handle = None
         self.e10s = e10s
@@ -1112,34 +1131,6 @@ class InternalRefTestImplementation(RefTestImplementation):
             self.logger.warning(traceback.format_exc())
 
 
-class GeckoDriverProtocol(WdspecProtocol):
-    server_cls = None  # To avoid circular imports we set this at runtime
-
-
-class MarionetteWdspecExecutor(WdspecExecutor):
-    protocol_cls = GeckoDriverProtocol
-
-    def __init__(self, logger, browser, server_config, webdriver_binary,
-                 webdriver_args, timeout_multiplier=1, capabilities=None,
-                 debug_info=None, environ=None, stackfix_dir=None,
-                 symbols_path=None, leak_report_file=None, asan=False,
-                 group_metadata=None, browser_settings=None, **kwargs):
-
-        from ..browsers.firefox import GeckoDriverServer
-        super().__init__(logger, browser, server_config, webdriver_binary,
-                         webdriver_args, timeout_multiplier=timeout_multiplier,
-                         capabilities=capabilities, debug_info=debug_info,
-                         environ=environ, **kwargs)
-        self.protocol_cls.server_cls = GeckoDriverServer
-        self.output_handler_kwargs = {"stackfix_dir": stackfix_dir,
-                                      "symbols_path": symbols_path,
-                                      "asan": asan,
-                                      "leak_report_file": leak_report_file}
-        self.output_handler_start_kwargs = {"group_metadata": group_metadata}
-        self.output_handler_start_kwargs.update(browser_settings)
-
-
-
 class MarionetteCrashtestExecutor(CrashtestExecutor):
     def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  debug_info=None, capabilities=None, debug=False,
@@ -1273,3 +1264,15 @@ class MarionettePrintRefTestExecutor(MarionetteRefTestExecutor):
                 screenshots[i] = screenshot.split(",", 1)[1]
 
         return screenshots
+
+
+class MarionetteWdspecExecutor(WdspecExecutor):
+    def __init__(self, logger, browser, *args, **kwargs):
+        super().__init__(logger, browser, *args, **kwargs)
+
+        args = self.capabilities["moz:firefoxOptions"].setdefault("args", [])
+        args.extend(["--profile", self.browser.profile])
+
+        for option in ["androidPackage", "androidDeviceSerial", "env"]:
+            if hasattr(browser, option):
+                self.capabilities["moz:firefoxOptions"][option] = getattr(browser, option)

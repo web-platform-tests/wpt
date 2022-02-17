@@ -35,14 +35,19 @@ interface WebTransport {
   readonly attribute ReadableStream incomingUnidirectionalStreams;
 };
 
+dictionary WebTransportHash {
+  DOMString algorithm;
+  BufferSource value;
+};
+
 dictionary WebTransportOptions {
   boolean allowPooling;
-  sequence<RTCDtlsFingerprint> serverCertificateFingerprints;
+  sequence<WebTransportHash> serverCertificateHashes;
 };
 
 dictionary WebTransportCloseInfo {
-  unsigned long errorCode;
-  DOMString reason;
+  unsigned long closeCode = 0;
+  DOMString reason = "";
 };
 
 dictionary WebTransportStats {
@@ -53,6 +58,8 @@ dictionary WebTransportStats {
   unsigned long numIncomingStreamsCreated;
   unsigned long long bytesReceived;
   unsigned long long packetsReceived;
+  DOMHighResTimeStamp smoothedRtt;
+  DOMHighResTimeStamp rttVariation;
   DOMHighResTimeStamp minRtt;
   unsigned long numReceivedDatagramsDropped;
 };

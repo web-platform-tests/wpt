@@ -1,0 +1,32 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: Compute Pressure API (https://wicg.github.io/compute-pressure/)
+
+callback ComputePressureUpdateCallback = undefined (
+  ComputePressureEntry update,
+  ComputePressureObserver observer
+);
+
+enum ComputePressureTarget { "cpu" };
+
+[Exposed=Window]
+interface ComputePressureObserver {
+  constructor(ComputePressureUpdateCallback callback);
+  undefined observe(ComputePressureTarget target, optional ComputePressureObserverOptions options = {});
+  undefined unobserve(ComputePressureTarget target);
+  undefined disconnect();
+  sequence<ComputePressureEntry> takeRecords();
+  [SameObject] static readonly attribute FrozenArray<DOMString> supportedTargetTypes;
+};
+
+dictionary ComputePressureEntry {
+  double cpuSpeed;
+  double cpuUtilization;
+  ComputePressureObserverOptions options;
+};
+
+dictionary ComputePressureObserverOptions {
+  sequence<double> cpuUtilizationThresholds = [];
+  sequence<double> cpuSpeedThresholds = [];
+};

@@ -4,13 +4,13 @@ import socket
 import traceback
 
 from .base import (Protocol,
-                   BaseProtocolPart,
                    RefTestExecutor,
                    RefTestImplementation,
                    TestharnessExecutor,
                    TimedRunner,
                    strip_server)
-from ..webdriver_server import wait_for_service
+from .protocol import BaseProtocolPart
+from ..environment import wait_for_service
 
 webdriver = None
 ServoCommandExtensions = None
@@ -70,7 +70,7 @@ class ServoBaseProtocolPart(BaseProtocolPart):
         pass
 
     def wait(self):
-        pass
+        return False
 
     def set_window(self, handle):
         pass
@@ -96,7 +96,7 @@ class ServoWebDriverProtocol(Protocol):
 
     def connect(self):
         """Connect to browser via WebDriver."""
-        wait_for_service((self.host, self.port), timeout=self.init_timeout)
+        wait_for_service(self.logger, self.host, self.port, timeout=self.init_timeout)
 
         self.session = webdriver.Session(self.host, self.port, extension=ServoCommandExtensions)
         self.session.start()
@@ -123,7 +123,8 @@ class ServoWebDriverProtocol(Protocol):
     def wait(self):
         while True:
             try:
-                self.session.execute_async_script("")
+                return self.session.execute_async_script("""let callback = arguments[arguments.length - 1];
+addEventListener("__test_restart", e => {e.preventDefault(); callback(true)})""")
             except webdriver.TimeoutException:
                 pass
             except (socket.timeout, IOError):
@@ -131,6 +132,7 @@ class ServoWebDriverProtocol(Protocol):
             except Exception:
                 self.logger.error(traceback.format_exc())
                 break
+        return False
 
 
 class ServoWebDriverRun(TimedRunner):

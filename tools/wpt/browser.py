@@ -4,7 +4,6 @@ import re
 import shutil
 import stat
 import subprocess
-import sys
 import tempfile
 from abc import ABCMeta, abstractmethod
 from datetime import datetime, timedelta
@@ -14,6 +13,7 @@ from urllib.parse import urlsplit
 import requests
 
 from .utils import call, get, rmtree, untar, unzip, get_download_to_descriptor, sha256sum
+from .wpt import venv_dir
 
 uname = platform.uname()
 
@@ -57,11 +57,7 @@ class Browser(object):
     def _get_dest(self, dest, channel):
         if dest is None:
             # os.getcwd() doesn't include the venv path
-            venv_dir = "_venv"
-            versioned_dir = f"{venv_dir}{sys.version_info[0]}"
-            if os.path.exists(os.path.join(os.getcwd(), versioned_dir)):
-                venv_dir = versioned_dir
-            dest = os.path.join(os.getcwd(), venv_dir)
+            dest = os.path.join(os.getcwd(), venv_dir())
 
         dest = os.path.join(dest, "browsers", channel)
 
@@ -245,8 +241,7 @@ class Firefox(Browser):
         """Looks for the firefox binary in the virtual environment"""
 
         if path is None:
-            # os.getcwd() doesn't include the venv path
-            path = os.path.join(os.getcwd(), "_venv", "browsers", channel)
+            path = self._get_dest(None, channel)
 
         binary = None
 
@@ -266,10 +261,8 @@ class Firefox(Browser):
         return binary
 
     def find_binary(self, venv_path=None, channel="nightly"):
-        if venv_path is None:
-            venv_path = os.path.join(os.getcwd(), "_venv")
 
-        path = os.path.join(venv_path, "browsers", channel)
+        path = self._get_dest(venv_path, channel)
         binary = self.find_binary_path(path, channel)
 
         if not binary and self.platform == "win":

@@ -58,8 +58,9 @@
     */
     assert_true(position instanceof GeolocationPosition);
     assert_true(position.coords instanceof GeolocationCoordinates);
-    assert_true(
-      typeof position.timestamp === "number",
+    assert_equals(
+      typeof position.timestamp,
+      "number",
       "Expected timestamp to be a number"
     );
     /*

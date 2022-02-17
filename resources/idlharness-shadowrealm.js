@@ -58,7 +58,6 @@ function idl_test_shadowrealm(srcs, deps) {
                       idl_array.add_dependency_idls(idls[i]);
                   }
                   idl_array.test();
-                  console.log('eek!');
               }, "setup");
           }`)
         ));

@@ -91,7 +91,7 @@ def test_printable_normalised_key_value(session, inline, value):
 
 @pytest.mark.parametrize("value", [
     [u'\ue008'+'a', "A"],
-    ["abc"+u'\ue012'+"efg", "abefgc"]
+    ["abc"+u'\ue012'+"def", "abdefc"]
     ]) # TODO This is not extensive list due to timeouts from wpt if there are a lot of test
 def test_nonprintable_normalised_key_value(session, inline, value):
     session.url = inline("<input>")

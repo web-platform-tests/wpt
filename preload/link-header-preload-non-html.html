@@ -6,13 +6,13 @@
   header is honored, otherwise we'd load this resource twice and the test would
   fail.
 -->
+<meta name="timeout" content="long">
 <link rel="preload" as="style" crossorigin href="resources/dummy.css?link-header-crossorigin-preload2">
 <link rel="stylesheet" crossorigin href="resources/dummy.css?link-header-crossorigin-preload2">
 <script src="resources/dummy.js?link-header-preload2"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/preload/resources/preload_helper.js"></script>
-<meta name="timeout" content="long">
 <body>
 <script>
     const preloadLink = '/common/text-plain.txt';
@@ -27,7 +27,7 @@
             t.add_cleanup(() => win.close());
             win.onload = t.step_timeout(() => {
                 const resources = win.performance.getEntriesByName(getAbsoluteURL(preloadLink));
-                assert_equals(resources.length, 1); 
+                assert_equals(resources.length, 1);
                 t.done();
             }, 200);
         }, `${type} documents should trigger a preload`);

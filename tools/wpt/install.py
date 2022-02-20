@@ -102,7 +102,12 @@ def install(name, component, destination, channel="nightly", logger=None, downlo
         import logging
         logger = logging.getLogger("install")
     prefix = "download" if download_only else "install"
-    suffix = "_webdriver" if component == 'webdriver' else ""
+    suffix = ""
+    if component == "webdriver":
+        if version is None:
+            suffix = "_webdriver"
+        else:
+            suffix = "_webdriver_by_version"
 
     method = prefix + suffix
 

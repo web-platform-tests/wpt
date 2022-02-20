@@ -16,7 +16,6 @@
       const importEntry = entries.find(e => e.name.includes('delay-css'));
       if (!linkEntry || !importEntry)
         return;
-      console.log({linkEntry, importEntry})
       assert_greater_than_equal(importEntry.startTime + importEntry.duration, linkEntry.startTime, linkEntry.duration + delay);
       t.done();
     })).observe({type: 'resource'});

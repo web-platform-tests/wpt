@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Makes sure that Link headers preload resources</title>
+<!--
+  This and the line below ensure that the trailing crossorigin in the link
+  header is honored, otherwise we'd load this resource twice and the test would
+  fail.
+-->
+<link rel="preload" as="style" crossorigin href="resources/dummy.css?link-header-crossorigin-preload2">
+<link rel="stylesheet" crossorigin href="resources/dummy.css?link-header-crossorigin-preload2">
+<script src="resources/dummy.js?link-header-preload2"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/preload/resources/preload_helper.js"></script>
+<meta name="timeout" content="long">
+<body>
+<script>
+    const preloadLink = '/common/text-plain.txt';
+    function url_with_preload(content, type) {
+        const link = encodeURIComponent(`<${preloadLink}>;rel=preload;as=fetch`)
+        return `./resources/echo-preload-header.py?type=${type}&content=${encodeURIComponent(content)}&link=${link}`
+    }
+
+    function test_document_type(content, type) {
+        async_test(t => {
+            const win = window.open(url_with_preload(content, type));
+            t.add_cleanup(() => win.close());
+            win.onload = t.step_timeout(() => {
+                const resources = win.performance.getEntriesByName(getAbsoluteURL(preloadLink));
+                assert_equals(resources.length, 1); 
+                t.done();
+            }, 200);
+        }, `${type} documents should trigger a preload`);
+    }
+
+    test_document_type('Hello', 'text/plain');
+    test_document_type('dummy', 'image/png');
+    test_document_type('dummy', 'video/mp4');
+    test_document_type(`<?xml version="1.0" encoding="utf-8"?>
+    <html xmlns="http://www.w3.org/1999/xhtml"></html>`, 'application/xml');
+</script>
+</body>

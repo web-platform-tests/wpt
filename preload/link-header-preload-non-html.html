@@ -15,28 +15,37 @@
 <script src="/preload/resources/preload_helper.js"></script>
 <body>
 <script>
-    const preloadLink = '/common/text-plain.txt';
+    const preloadLink = '/preload/resources/dummy.css';
     function url_with_preload(content, type) {
-        const link = encodeURIComponent(`<${preloadLink}>;rel=preload;as=fetch`)
-        return `./resources/echo-preload-header.py?type=${type}&content=${encodeURIComponent(content)}&link=${link}`
+        const link = encodeURIComponent(`<${preloadLink}>;rel=preload;as=style`)
+        return getAbsoluteURL(`./resources/echo-preload-header.py?type=${type}&content=${encodeURIComponent(content)}&link=${link}`);
     }
 
     function test_document_type(content, type) {
         async_test(t => {
-            const win = window.open(url_with_preload(content, type));
+            const url = url_with_preload(content, type);
+            const win = window.open(url);
             t.add_cleanup(() => win.close());
-            win.onload = t.step_timeout(() => {
-                const resources = win.performance.getEntriesByName(getAbsoluteURL(preloadLink));
-                assert_equals(resources.length, 1);
-                t.done();
-            }, 200);
+            win.addEventListener('load', () => {
+                t.step_timeout(() => {
+                    const link = win.document.createElement('link');
+                    link.rel = 'preload';
+                    link.as = 'style'
+                    link.href = preloadLink;
+                    link.addEventListener('load', t.step_func(() => {
+                        console.log(win.performance.getEntriesByType('resource'))
+                        const resources = win.performance.getEntriesByName(getAbsoluteURL(preloadLink));
+                        assert_equals(resources.length, 1);
+                        t.done();
+                    }));
+                    document.head.appendChild(link);    
+                }, 500);
+            });
         }, `${type} documents should trigger a preload`);
     }
 
     test_document_type('Hello', 'text/plain');
     test_document_type('dummy', 'image/png');
     test_document_type('dummy', 'video/mp4');
-    test_document_type(`<?xml version="1.0" encoding="utf-8"?>
-    <html xmlns="http://www.w3.org/1999/xhtml"></html>`, 'application/xml');
 </script>
 </body>

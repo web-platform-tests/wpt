@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script type="module">
+  import { getOppositeOrientation } from "/screen-orientation/resources/orientation-utils.js";
+  promise_test(async t => {
+    await test_driver.bless("request full screen", () => {
+      return document.documentElement.requestFullscreen();
+    });
+    const newOrientation = getOppositeOrientation();
+    const pMustReject = screen.orientation.lock(newOrientation);
+    const pMustResolve = new Promise(r => {
+      screen.orientation.onchange = () => {
+        r(screen.orientation.unlock());
+      };
+    });
+    await promise_rejects_js(t, TypeError, pMustReject);
+    await pMustResolve;
+    return document.exitFullscreen();
+  }, "Unlocking screen orientation during event dispatching must cause orientationPendingPromise to reject");
+</script>

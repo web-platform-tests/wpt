@@ -71,6 +71,8 @@
         name: "geolocation",
       });
 
+    assert_true("onchange" in initialStatus, "onchange is supported");
+
     // Let's check events are firing...
     await new Promise(async (resolve) => {
       const newState = initialStatus.state === "prompt" ? "denied" : "granted";

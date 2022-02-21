@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>Test the sequence of events when reporting link timing.</title>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
 <script>
-  async_test(t => {
+  promise_test(async t => {
     const link = document.createElement('link');
     const delay = 500;
     const src = `./resources/import.sub.css?delay=${delay}`
@@ -18,6 +19,7 @@
         return;
       assert_greater_than_equal(importEntry.startTime + importEntry.duration, linkEntry.startTime, linkEntry.duration + delay);
       t.done();
+
     })).observe({type: 'resource'});
     link.href = src;
     link.rel = 'stylesheet';

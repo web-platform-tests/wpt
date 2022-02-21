@@ -33,12 +33,11 @@
                     link.as = 'style'
                     link.href = preloadLink;
                     link.addEventListener('load', t.step_func(() => {
-                        console.log(win.performance.getEntriesByType('resource'))
                         const resources = win.performance.getEntriesByName(getAbsoluteURL(preloadLink));
                         assert_equals(resources.length, 1);
                         t.done();
                     }));
-                    document.head.appendChild(link);    
+                    document.head.appendChild(link);
                 }, 500);
             });
         }, `${type} documents should trigger a preload`);

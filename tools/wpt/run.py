@@ -337,11 +337,6 @@ class ChromiumBasedBrowser(BrowserSetup):
             else:
                 raise WptrunError(f"Unable to locate {self.name.capitalize()} binary")
 
-            if os.getenv("TASKCLUSTER_ROOT_URL"):
-                # We are on Taskcluster, where our Docker container does not have
-                # enough capabilities to run Chrome with sandboxing. (gh-20133)
-                kwargs["binary_args"].append("--no-sandbox")
-
         if kwargs["webdriver_binary"] is None:
             webdriver_binary = None
             if not kwargs["install_webdriver"]:
@@ -368,8 +363,8 @@ class ChromiumBasedBrowser(BrowserSetup):
             else:
                 raise WptrunError("Unable to locate or install matching webdriver binary")
 
-        # Enable/install MojoJS for Chrome/Chromium
         if self.name in ("chrome", "chromium"):
+            # Enable/install MojoJS for Chrome/Chromium
             if kwargs["mojojs_path"]:
                 kwargs["enable_mojojs"] = True
                 logger.info("--mojojs-path is provided, enabling MojoJS")
@@ -385,6 +380,11 @@ class ChromiumBasedBrowser(BrowserSetup):
                     logger.info("MojoJS enabled automatically (mojojs_path: %s)" % path)
                 except Exception as e:
                     logger.error("Cannot enable MojoJS: %s" % e)
+
+            if os.getenv("TASKCLUSTER_ROOT_URL"):
+                # We are on Taskcluster, where our Docker container does not have
+                # enough capabilities to run Chrome with sandboxing. (gh-20133)
+                kwargs["binary_args"].append("--no-sandbox")
 
         if browser_channel in self.experimental_channels:
             logger.info("Automatically turning on experimental features for "

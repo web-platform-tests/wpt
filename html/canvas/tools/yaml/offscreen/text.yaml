@@ -1285,6 +1285,27 @@
     @assert ctx.wordSpacing === '1em';
     t.done();
 
+- name: 2d.text.style.spacing.and.canvas.spacing
+  desc: Testing letter spacing and word spacing work with canvas Style
+  testing:
+  - 2d.text.drawing.style.spacing
+  code: |
+    @assert ctx.letterSpacing === '0px';
+    @assert ctx.wordSpacing === '0px';
+    var width_normal = ctx.measureText('letter spacing').width;
+
+    // There are 14 letters in "letter spacing", sothe length is increased by 28.
+    canvas.style.letterSpacing = '2px';
+    var new_width = ctx.measureText('letter spacing').width;
+    @assert new_width === width_normal + 28;
+
+    // there are 2 words in "letter spacing", so the length is increased by 4
+    canvas.style.wordSpacing = '2px';
+    canvas.style.letterSpacing = '0px';
+    new_width = ctx.measureText('letter spacing').width;
+    @assert new_width === width_normal + 4;
+    t.done();
+
 - name: 2d.text.drawing.style.nonfinite.spacing
   desc: Testing letter spacing and word spacing with nonfinite inputs
   testing:

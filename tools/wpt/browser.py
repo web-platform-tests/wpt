@@ -538,6 +538,7 @@ class Chrome(Browser):
         if channel != "nightly":
             raise NotImplementedError("We can only download Chrome Nightly (Chromium ToT) for you.")
         if dest is None:
+
             dest = self._get_dest(None, channel)
 
         filename = self._chromium_package_name() + ".zip"

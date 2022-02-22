@@ -661,7 +661,7 @@ class Chrome(Browser):
     def find_webdriver(self, venv_path=None, channel=None, browser_binary=None):
         return find_executable("chromedriver")
 
-    def webdriver_supports_browser(self, webdriver_binary, browser_binary, browser_channel):
+    def webdriver_supports_browser(self, webdriver_binary, browser_binary, channel=None):
         chromedriver_version = self.webdriver_version(webdriver_binary)
         if not chromedriver_version:
             self.logger.warning(
@@ -682,7 +682,7 @@ class Chrome(Browser):
             # There is no official ChromeDriver release for the dev channel -
             # it switches between beta and tip-of-tree, so we accept version+1
             # too for dev.
-            if browser_channel == "dev" and chromedriver_major == (browser_major + 1):
+            if channel == "dev" and chromedriver_major == (browser_major + 1):
                 self.logger.debug(
                     "Accepting ChromeDriver %s for Chrome/Chromium Dev %s" %
                     (chromedriver_version, browser_version))
@@ -795,6 +795,10 @@ class Chrome(Browser):
         return m.group(1)
 
     def webdriver_version(self, webdriver_binary):
+        if webdriver_binary is None:
+            self.logger.debug("Attempted to get version of webdriver, but webdriver not provided.")
+            return None
+
         if uname[0] == "Windows":
             return _get_fileversion(webdriver_binary, self.logger)
 
@@ -1090,7 +1094,7 @@ class EdgeChromium(Browser):
     def find_webdriver(self, venv_path=None, channel=None):
         return find_executable("msedgedriver")
 
-    def webdriver_supports_browser(self, webdriver_binary, browser_binary):
+    def webdriver_supports_browser(self, webdriver_binary, browser_binary, channel=None):
         edgedriver_version = self.webdriver_version(webdriver_binary)
         if not edgedriver_version:
             self.logger.warning(
@@ -1191,6 +1195,10 @@ class EdgeChromium(Browser):
         return m.group(1)
 
     def webdriver_version(self, webdriver_binary):
+        if webdriver_binary is None:
+            self.logger.debug("Attempted to get version of webdriver, but webdriver not provided.")
+            return None
+
         if self.platform == "win":
             return _get_fileversion(webdriver_binary, self.logger)
 

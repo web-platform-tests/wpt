@@ -12,8 +12,13 @@
       return test_driver.set_permission({ name: "geolocation" }, "prompt");
     });
     await test_driver.set_permission({ name: "geolocation" }, "denied");
-    const result = await new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(reject, resolve);
+    let hasMethodReturned = false;
+    const error = await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(reject, (error) => {
+        assert_true(hasMethodReturned);
+        resolve(error);
+      });
+      hasMethodReturned = true;
     });
     assert_true(
       result instanceof GeolocationPositionError,

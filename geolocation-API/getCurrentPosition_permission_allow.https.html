@@ -15,12 +15,16 @@
       return test_driver.set_permission({ name: "geolocation" }, "prompt");
     });
     await test_driver.set_permission({ name: "geolocation" }, "granted");
-    const promise = new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject);
+    let hasMethodReturned = false;
+    const position = await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition((position) => {
+        assert_true(hasMethodReturned);
+        resolve(position);
+      }, reject);
+      hasMethodReturned = true;
     });
-    const result = await promise;
     assert_true(
-      result instanceof GeolocationPosition,
+      position instanceof GeolocationPosition,
       "Expected GeolocationPosition"
     );
   }, "User allows access, check that success callback is called.");

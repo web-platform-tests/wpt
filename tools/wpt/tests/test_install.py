@@ -36,28 +36,6 @@ def test_install_chromedriver_by_version():
 
 @pytest.mark.slow
 @pytest.mark.remote_network
-def test_install_chromedriver_nightly():
-    if sys.platform == "win32":
-        chromedriver_path = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "Scripts", "chrome", "chromedriver.exe")
-    else:
-        chromedriver_path = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "bin", "chrome", "chromedriver")
-    if os.path.exists(chromedriver_path):
-        os.unlink(chromedriver_path)
-    with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["install", "chrome", "webdriver"])
-    assert excinfo.value.code == 0
-    assert os.path.exists(chromedriver_path)
-    # FIXME: On Windows, this may sometimes fail (access denied), possibly
-    # because the file handler is not released immediately.
-    try:
-        os.unlink(chromedriver_path)
-    except OSError:
-        if sys.platform != "win32":
-            raise
-
-
-@pytest.mark.slow
-@pytest.mark.remote_network
 @pytest.mark.xfail(sys.platform == "win32",
                    reason="https://github.com/web-platform-tests/wpt/issues/17074")
 def test_install_firefox():

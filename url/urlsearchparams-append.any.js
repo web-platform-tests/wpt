@@ -1,3 +1,4 @@
+// META: global=window,dedicatedworker,shadowrealm
 test(function() {
     var params = new URLSearchParams();
     params.append('a', 'b');

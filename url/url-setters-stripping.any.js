@@ -1,3 +1,4 @@
+// META: global=window,dedicatedworker,shadowrealm
 function urlString({ scheme = "https",
                      username = "username",
                      password = "password",

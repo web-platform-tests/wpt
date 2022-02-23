@@ -1,3 +1,4 @@
+// META: global=window,dedicatedworker,shadowrealm
 [
   {
     "input": "z=b&a=b&z=a&a=a",

@@ -14,7 +14,6 @@ window.onload = async () => {
   const position = await new Promise((resolve, reject) => {
     navigator.geolocation.getCurrentPosition(reject, resolve);
   });
-  const coords = position.coords;
   idl_test(
     ['geolocation'],
     ['hr-time', 'html'],
@@ -24,7 +23,7 @@ window.onload = async () => {
         Geolocation: ['navigator.geolocation'],
         GeolocationPositionError: [positionError],
         GeolocationPosition: [position],
-        GeolocationCoordinates: [coords],
+        GeolocationCoordinates: [position.coords],
       });
     }
   );

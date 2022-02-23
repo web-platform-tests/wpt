@@ -7,7 +7,7 @@
 <script>
   for (const invalidId of [NaN, -1, 0, 1, 2147483648, Infinity, -Infinity]) {
     test(() => {
-        navigator.geolocation.clearWatch(invalidId);
+      navigator.geolocation.clearWatch(invalidId);
     }, `Test that calling clearWatch with invalid watch ID (${invalidId}) does not cause an exception`);
   }
 </script>

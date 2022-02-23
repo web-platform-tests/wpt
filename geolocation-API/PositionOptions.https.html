@@ -15,8 +15,8 @@
     return test_driver.set_permission({ name: "geolocation" }, "prompt");
   };
   const invalidValues = ["boom", 321, -Infinity, { foo: 5 }];
-  // Rewrite http://dev.w3.org/geo/api/test-suite/t.html?00123
-  promise_test(async (t) =>{
+
+  promise_test(async (t) => {
     t.add_cleanup(resetPermission);
     await test_driver.set_permission({ name: "geolocation" }, "granted");
     for (const enableHighAccuracy of invalidValues) {
@@ -26,8 +26,7 @@
     }
   }, "Call getCurrentPosition with wrong type for enableHighAccuracy. No exception expected.");
 
-  // Rewrite http://dev.w3.org/geo/api/test-suite/t.html?00124
-  promise_test(async (t) =>{
+  promise_test(async (t) => {
     t.add_cleanup(resetPermission);
     await test_driver.set_permission({ name: "geolocation" }, "granted");
     for (const enableHighAccuracy of invalidValues) {
@@ -38,7 +37,6 @@
     }
   }, "Call watchPosition with wrong type for enableHighAccuracy. No exception expected.");
 
-  // Rewrite http://dev.w3.org/geo/api/test-suite/t.html?00086, 00088, 00091 and 00092
   promise_test(async (t) => {
     t.add_cleanup(resetPermission);
     await test_driver.set_permission({ name: "geolocation" }, "granted");

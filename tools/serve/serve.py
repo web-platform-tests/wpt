@@ -345,6 +345,54 @@ class ServiceWorkerModulesHandler(HtmlWrapperHandler):
 </script>
 """
 
+class ShadowRealmHandler(HtmlWrapperHandler):
+    global_type = "shadowrealm"
+    path_replace = [(".any.shadowrealm.html", ".any.js")]
+
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+(async function() {
+  const r = new ShadowRealm;
+  const results = JSON.parse(await new Promise(r.evaluate(`
+    (resolve, reject) => {
+      (async () => {
+        await import("/resources/testharness.js");
+        %(script)s
+        globalThis.self = globalThis;
+        globalThis.self.GLOBAL = {
+          isWindow: function() { return false; },
+          isWorker: function() { return false; },
+        };
+        const results = new Promise((finish, _) => {
+          add_completion_callback((tests, status, asserts) => {
+            finish(JSON.stringify(tests));
+          });
+        });
+        promise_test(async () => {
+          await import("%(path)s");
+        }, "setup");
+        return await results;
+      })().then(resolve, (e) => reject(e.toString()));
+    }
+  `)));
+  // We ran the tests in the ShadowRealm and gathered the results. Now treat them as if
+  // we'd run them directly here, so we can see them.
+  for (const {name, status, message} of results) {
+    promise_test(t => {t.set_status(status, message); t.phase = t.phases.HAS_RESULT; t.done()}, name);
+  }
+  done();
+})();
+</script>
+"""
+    def _script_replacement(self, key, value):
+        if key == "script":
+            return 'await import("%s");' % value
+        return None
+
 
 class BaseWorkerHandler(WrapperHandler):
     headers = [('Content-Type', 'text/javascript')]
@@ -454,6 +502,7 @@ class RoutesBuilder(object):
             ("GET", "*.any.sharedworker-module.html", SharedWorkerModulesHandler),
             ("GET", "*.any.serviceworker.html", ServiceWorkersHandler),
             ("GET", "*.any.serviceworker-module.html", ServiceWorkerModulesHandler),
+            ("GET", "*.any.shadowrealm.html", ShadowRealmHandler),
             ("GET", "*.any.worker.js", ClassicWorkerHandler),
             ("GET", "*.any.worker-module.js", ModuleWorkerHandler),
             ("GET", "*.asis", handlers.AsIsHandler),

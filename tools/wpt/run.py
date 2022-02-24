@@ -328,7 +328,7 @@ class FirefoxAndroid(BrowserSetup):
 
 class Chrome(BrowserSetup):
     name = "chrome"
-    browser_cls = browser.Chrome
+    browser_cls = browser.Chrome  # type: ClassVar[Type[browser.ChromeChromiumBase]]
     experimental_channels = ("dev", "canary", "nightly")
 
     def setup_kwargs(self, kwargs):
@@ -395,71 +395,10 @@ class Chrome(BrowserSetup):
             kwargs["binary_args"].append("--no-sandbox")
 
 
-class Chromium(BrowserSetup):
+class Chromium(Chrome):
     name = "chromium"
-    browser_cls = browser.Chromium
+    browser_cls = browser.Chromium  # type: ClassVar[Type[browser.ChromeChromiumBase]]
     experimental_channels = ("dev", "canary", "nightly")
-
-    def setup_kwargs(self, kwargs):
-        browser_channel = kwargs["browser_channel"]
-        if kwargs["binary"] is None:
-            binary = self.browser.find_binary(venv_path=self.venv.path, channel=browser_channel)
-            if binary:
-                kwargs["binary"] = binary
-            else:
-                raise WptrunError("Unable to locate Chromium binary")
-
-        if kwargs["mojojs_path"]:
-            kwargs["enable_mojojs"] = True
-            logger.info("--mojojs-path is provided, enabling MojoJS")
-        try:
-            path = self.browser.install_mojojs(
-                dest=self.venv.path,
-                channel=browser_channel,
-                browser_binary=kwargs["binary"],
-            )
-            kwargs["mojojs_path"] = path
-            kwargs["enable_mojojs"] = True
-            logger.info(f"MojoJS enabled automatically (mojojs_path: {path})")
-        except Exception as e:
-            logger.error(f"Cannot enable MojoJS: {e}")
-
-        if kwargs["webdriver_binary"] is None:
-            webdriver_binary = None
-            if not kwargs["install_webdriver"]:
-                webdriver_binary = self.browser.find_webdriver(self.venv.bin_path)
-                if webdriver_binary and not self.browser.webdriver_supports_browser(
-                        webdriver_binary, kwargs["binary"], browser_channel):
-                    webdriver_binary = None
-
-            if webdriver_binary is None:
-                install = self.prompt_install("chromedriver")
-
-                if install:
-                    webdriver_binary = self.browser.install_webdriver(
-                        dest=self.venv.bin_path,
-                        channel=browser_channel,
-                        browser_binary=kwargs["binary"],
-                    )
-            else:
-                logger.info(f"Using webdriver binary {webdriver_binary}")
-
-            if webdriver_binary:
-                kwargs["webdriver_binary"] = webdriver_binary
-            else:
-                raise WptrunError("Unable to locate or install matching ChromeDriver binary")
-        if browser_channel in self.experimental_channels:
-            logger.info(
-                "Automatically turning on experimental features for Chrome Dev/Canary or Chromium trunk")
-            kwargs["binary_args"].append("--enable-experimental-web-platform-features")
-            # HACK(Hexcles): work around https://github.com/web-platform-tests/wpt/issues/16448
-            kwargs["webdriver_args"].append("--disable-build-check")
-            # To start the WebTransport over HTTP/3 test server.
-            kwargs["enable_webtransport_h3"] = True
-        if os.getenv("TASKCLUSTER_ROOT_URL"):
-            # We are on Taskcluster, where our Docker container does not have
-            # enough capabilities to run Chromium with sandboxing. (gh-20133)
-            kwargs["binary_args"].append("--no-sandbox")
 
 
 class ChromeAndroid(BrowserSetup):

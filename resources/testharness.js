@@ -2695,15 +2695,23 @@
         var test_this = this;
 
         var wait_for_inner = test_this.step_func(() => {
-            if (cond()) {
-                func();
-            } else {
-                if(remaining === 0) {
-                    assert(false, "step_wait_func", description,
-                           "Timed out waiting on condition");
+            var handle_result = function(success) {
+                if (success) {
+                    func();
+                } else {
+                    if(remaining === 0) {
+                        assert(false, "step_wait_func", description,
+                               "Timed out waiting on condition");
+                    }
+                    remaining--;
+                    setTimeout(wait_for_inner, interval);
                 }
-                remaining--;
-                setTimeout(wait_for_inner, interval);
+            };
+            var result = cond();
+            if (typeof result == "object" && typeof result.then == "function") {
+                result.then(handle_result);
+            } else {
+                handle_result(result);
             }
         });
 

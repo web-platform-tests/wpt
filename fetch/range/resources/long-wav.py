@@ -46,7 +46,6 @@ def create_wav_header(sample_rate, bit_depth, channels, duration):
 
 
 def main(request, response):
-    response.headers.set(b"Content-Type", b"audio/wav")
     response.headers.set(b"Accept-Ranges", b"bytes")
     response.headers.set(b"Cache-Control", b"no-cache")
 
@@ -54,6 +53,33 @@ def main(request, response):
     range_header_match = range_header and re.search(r'^bytes=(\d*)-(\d*)$', isomorphic_decode(range_header))
     range_received_key = request.GET.first(b'range-received-key', b'')
     accept_encoding_key = request.GET.first(b'accept-encoding-key', b'')
+    chunked = b'chunked' in request.GET
+    source_key = request.GET.first(b'source-key', b'')
+    scenario = request.GET.first(b'scenario', b'')
+
+    if source_key:
+        take = request.server.stash.take(source_key, b'/fetch/range/')
+        if not take:
+            take = { "request_urls": [request.url] }
+        else:
+            take["request_urls"].append(request.url)
+        request.server.stash.put(source_key, take, b'/fetch/range/')
+
+        if scenario == b'redirect-second-request':
+            if len(take["request_urls"]) == 2:
+                return (302, [(b"Location", b"./long-wav.py?source-key=" + source_key + b"&chunked&scenario=" + scenario)], b'')
+
+        elif scenario == b'':
+            # TODO
+            pass
+
+
+        #elif request_count == 4:
+            #return (302, [(b"Location", b"./long-wav.py?source-key=" + source_key + b"&chunked&1")], b'')
+        #    return (307, [(b"Location", b"http://web-platform.test:8000/fetch/range/resources/long-wav.py?source-key=" + source_key + b"&chunked")], b'')
+        #elif request_count == 5:
+        #    return (307, [(b"Location", b"http://www1.web-platform.test:8000/fetch/range/resources/long-wav.py?source-key=" + source_key + b"&chunked")], b'')
+            #return (302, [(b"Location", b"http://www1.web-platform.test:8000/fetch/range/resources/long-wav.py?source-key=" + source_key + b"&chunked")], b'')
 
     if range_received_key and range_header:
         # Remove any current value
@@ -75,6 +101,7 @@ def main(request, response):
         )
 
     # Audio details
+    response.headers.set(b"Content-Type", b"audio/wav")
     sample_rate = 8000
     bit_depth = 8
     channels = 1
@@ -90,6 +117,10 @@ def main(request, response):
 
         start = int(start)
         end = int(end) if end else 0
+
+        chunked_limit = 2048
+        if chunked and end == 0 or (end + 1) - start  > chunked_limit:
+            end = start + chunked_limit - 1
 
         if end:
             bytes_remaining_to_send = (end + 1) - start

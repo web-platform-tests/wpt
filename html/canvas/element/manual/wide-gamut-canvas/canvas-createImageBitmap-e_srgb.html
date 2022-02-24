@@ -219,9 +219,11 @@ function testImageBitmap(source, colorInfo, sourceType)
         // of them are the same and the tests fail. Since, we ignore this test
         // set for SVG.
         if (sourceType != 'svg') {
-            compareBitmaps(noCropHigh, noCropMedium);
+            compareBitmaps(noCropHigh, noCropPixelated);
+            compareBitmaps(noCropMedium, noCropPixelated);
             compareBitmaps(noCropLow, noCropPixelated);
-            compareBitmaps(cropHigh, cropMedium);
+            compareBitmaps(cropHigh, cropPixelated);
+            compareBitmaps(cropMedium, cropPixelated);
             compareBitmaps(cropLow, cropPixelated);
         }
     });

@@ -362,7 +362,6 @@ class ShadowRealmHandler(HtmlWrapperHandler):
       (async () => {
         await import("/resources/testharness.js");
         %(script)s
-        globalThis.self = globalThis;
         globalThis.self.GLOBAL = {
           isWindow: function() { return false; },
           isWorker: function() { return false; },

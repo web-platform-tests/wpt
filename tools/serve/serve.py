@@ -356,7 +356,7 @@ class ShadowRealmHandler(HtmlWrapperHandler):
 <script src="/resources/testharnessreport.js"></script>
 <script>
 (async function() {
-  const r = new ShadowRealm;
+  const r = new ShadowRealm();
   const results = JSON.parse(await new Promise(r.evaluate(`
     (resolve, reject) => {
       (async () => {
@@ -388,6 +388,7 @@ class ShadowRealmHandler(HtmlWrapperHandler):
 })();
 </script>
 """
+
     def _script_replacement(self, key, value):
         if key == "script":
             return 'await import("%s");' % value

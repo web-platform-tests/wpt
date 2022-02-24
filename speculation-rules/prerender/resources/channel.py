@@ -1,10 +1,12 @@
 import json
+import time
 
 def main(request, response):
     uid = request.GET.first(b"uid")
     name = request.GET.first(b"name").decode("utf-8")
 
     if request.method == u"GET":
+        time.sleep(.01)
         response.status = 200
         response.headers.set(b"Content-Type", b"application/json")
         current = {}

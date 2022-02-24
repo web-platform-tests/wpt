@@ -145,22 +145,44 @@ function createFrame(url) {
 }
 
 class PrerenderChannel extends EventTarget {
-  broadcastChannel = null;
+  #count = 0;
+  #messages = [];
+  #active = false;
+  #baseUrl;
+  #name;
 
   constructor(uid, name) {
     super();
-    this.broadcastChannel = new BroadcastChannel(`${uid}-${name}`);
-    this.broadcastChannel.addEventListener('message', e => {
-      this.dispatchEvent(new CustomEvent('message', {detail: e.data}));
-    });
+    this.#name = name;
+    this.#baseUrl = `/speculation-rules/prerender/resources/channel.py?uid=${uid}&name=${name}`;
+  }
+
+  async #poll() {
+    if (!this.#active)
+      return;
+
+    const response = await fetch(this.#baseUrl);
+    const messages = await response.json();
+    for (let i = this.#count; i < messages.length; ++i)
+      this.dispatchEvent(new CustomEvent('message', {detail: messages[i]}));
+
+    this.#count = messages.length;
+    this.#poll();
+  }
+
+  addEventListener(...args) {
+    this.#active = true;
+    this.#poll();
+    return super.addEventListener(...args);
   }
 
   postMessage(message) {
-    this.broadcastChannel.postMessage(message);
+    this.#messages.push(message);
+    fetch(this.#baseUrl, {method: 'POST', body: JSON.stringify(this.#messages)});
   }
 
   close() {
-    this.broadcastChannel.close();
+    this.#active = false;
   }
 };
 
@@ -192,7 +214,9 @@ async function create_prerendered_page(t) {
 
   window.open(`/speculation-rules/prerender/resources/eval-init.html?uuid=${uuid}`, '_blank', 'noopener');
   t.add_cleanup(() => initChannel.postMessage('close'));
-  t.add_cleanup(() => exec(() => window.close()));
+  t.add_cleanup(() => {
+    exec(() => window.close());
+  });
   await new Promise(resolve => {
     const channel = new PrerenderChannel(uuid, 'ready');
     channel.addEventListener('message', () => {

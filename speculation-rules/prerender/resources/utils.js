@@ -145,40 +145,38 @@ function createFrame(url) {
 }
 
 class PrerenderChannel extends EventTarget {
-  #count = 0;
-  #messages = [];
-  #active = false;
+  #active = true;
   #baseUrl;
-  #name;
+  #messages = new Set();
 
   constructor(uid, name) {
     super();
-    this.#name = name;
     this.#baseUrl = `/speculation-rules/prerender/resources/channel.py?uid=${uid}&name=${name}`;
+    (async() => {
+      while (this.#active)
+        await this.#poll();
+    })();
   }
 
   async #poll() {
+    const response = await fetch(this.#baseUrl);
+    const messages = await response.json();
+
     if (!this.#active)
       return;
 
-    const response = await fetch(this.#baseUrl);
-    const messages = await response.json();
-    for (let i = this.#count; i < messages.length; ++i)
-      this.dispatchEvent(new CustomEvent('message', {detail: messages[i]}));
-
-    this.#count = messages.length;
-    this.#poll();
+    messages
+      .filter(({id}) => !this.#messages.has(id))
+      .forEach(({data, id}) => {
+        this.#messages.add(id);
+        this.dispatchEvent(new MessageEvent('message', {data}));
+      });
   }
 
-  addEventListener(...args) {
-    this.#active = true;
-    this.#poll();
-    return super.addEventListener(...args);
-  }
-
-  postMessage(message) {
-    this.#messages.push(message);
-    fetch(this.#baseUrl, {method: 'POST', body: JSON.stringify(this.#messages)});
+  postMessage(data) {
+    const id = token();
+    this.#messages.add(id);
+    return fetch(this.#baseUrl, {method: 'POST', body: JSON.stringify({id, data})});
   }
 
   close() {
@@ -192,7 +190,7 @@ async function create_prerendered_page(t) {
     // Calling it with ['log'] to avoid lint issue. This log should be used for debugging
     // the prerendered context, not testing.
     if(window.console)
-      console['log']('[From Prerendered]', ...message.detail);
+      console['log']('[From Prerendered]', ...message.data);
   });
 
   const execChannel = new PrerenderChannel(uuid, 'exec');
@@ -202,21 +200,18 @@ async function create_prerendered_page(t) {
       execChannel.postMessage({receiver, fn: func.toString(), args});
       return new Promise((resolve, reject) => {
         const channel = new PrerenderChannel(uuid, receiver);
-        channel.addEventListener('message', ({detail}) => {
+        channel.addEventListener('message', ({data}) => {
           channel.close();
-          if (detail.error)
-            reject(detail.error)
+          if (data.error)
+            reject(data.error)
           else
-            resolve(detail.result);
+            resolve(data.result);
         });
       })
     };
 
   window.open(`/speculation-rules/prerender/resources/eval-init.html?uuid=${uuid}`, '_blank', 'noopener');
   t.add_cleanup(() => initChannel.postMessage('close'));
-  t.add_cleanup(() => {
-    exec(() => window.close());
-  });
   await new Promise(resolve => {
     const channel = new PrerenderChannel(uuid, 'ready');
     channel.addEventListener('message', () => {

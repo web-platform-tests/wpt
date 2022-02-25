@@ -11,10 +11,10 @@
         const uuid = params.get('uuid');
         const url = `eval-channel.html${location.search}`;
         new PrerenderChannel(uuid, 'initiator').addEventListener('message',
-            ({detail}) => {
-                if (detail === 'close')
+            ({data}) => {
+                if (data === 'close')
                     window.close();
-                else if (detail === 'activate')
+                else if (data === 'activate')
                     location.href = url;
             });
         const rules = document.createElement('script');

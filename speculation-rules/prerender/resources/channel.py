@@ -1,5 +1,4 @@
-import json
-import time
+import json, time
 
 def main(request, response):
     uid = request.GET.first(b"uid")
@@ -21,7 +20,12 @@ def main(request, response):
     elif request.method == u"POST":
         with request.server.stash.lock:
             current = json.loads(request.server.stash.take(uid) or "{}")
-            current[name] = json.loads(request.body)
+            if name in current:
+                messages = current[name]
+            else:
+                messages = []
+            messages.append(json.loads(request.body))
+            current[name] = messages
             request.server.stash.put(uid, json.dumps(current))
         response.status = 204
         return None

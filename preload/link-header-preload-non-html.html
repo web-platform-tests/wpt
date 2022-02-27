@@ -1,36 +1,41 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
-<title>Makes sure that Link headers preload resources</title>
+<title>Makes sure that Link headers preload resources in non-HTML documents</title>
 <meta name="timeout" content="long">
 <script src="resources/dummy.js?link-header-preload2"></script>
+<script src="/common/utils.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/preload/resources/preload_helper.js"></script>
 <body>
 <script>
-    const preloadLink = '/preload/resources/dummy.css';
-    function url_with_preload(content, type) {
-        const link = encodeURIComponent(`<${preloadLink}>;rel=preload;as=style`)
-        return getAbsoluteURL(`./resources/echo-preload-header.py?type=${type}&content=${encodeURIComponent(content)}&link=${link}`);
-    }
 
     function test_document_type(content, type) {
         promise_test(async t => {
-            const url = url_with_preload(content, type);
-            const win = window.open(url);
+            const id = token();
+            const preloadLink = `/html/semantics/document-metadata/the-link-element/stylesheet.py?id=${id}`;
+            const linkHeader = encodeURIComponent(`<${preloadLink}>;rel=preload;as=style`)
+            const docURL = getAbsoluteURL(`./resources/echo-preload-header.py?type=${type}&content=${encodeURIComponent(content)}&link=${linkHeader}`);
+            const win = window.open(docURL);
             t.add_cleanup(() => win.close());
             await new Promise(resolve => win.addEventListener('load', resolve));
-            const link = win.document.createElement('link');
-            link.rel = 'preload';
-            link.as = 'style'
-            link.href = preloadLink;
-            document.head.appendChild(link);
-            await new Promise(resolve => link.addEventListener('load', resolve));
-            const resources = win.performance.getEntriesByName(getAbsoluteURL(preloadLink));
-            assert_equals(resources.length, 1);
-        }, `${type} documents should trigger a preload`);
+            const timeout = 250;
+            const interval = 50;
+            let count = 0;
+            const before = new Date().valueOf();
+            while (new Date().valueOf() < before + timeout) {
+                const res = await fetch(preloadLink + '&count=true');
+                count = +(await res.text());
+                if (count > 0)
+                    break;
+            }
+            assert_equals(count, 1);
+        }, `${type} documents should respect preload Link headers`);
     }
 
+    test_document_type(`<?xml version="1.0" encoding="utf-8"?>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    </html>`, 'application/xml');
     test_document_type('Hello', 'text/plain');
     test_document_type('dummy', 'image/png');
     test_document_type('dummy', 'video/mp4');

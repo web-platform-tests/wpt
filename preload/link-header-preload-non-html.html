@@ -29,7 +29,9 @@
                 if (count > 0)
                     break;
             }
-            assert_equals(count, 1);
+            assert_equals(count, 1, "verify that request was issued");
+            const resources = win.performance.getEntriesByName(getAbsoluteURL(preloadLink));
+            assert_equals(resources.length, 1, "verify that an RT entry was created");
         }, `${type} documents should respect preload Link headers`);
     }
 

@@ -32,7 +32,7 @@
                 count = +(await res.text());
                 if (count > 0)
                     break;
-                await new Promise(resolve => setTimeout(resolve, interval));
+                await new Promise(resolve => t.step_timeout(resolve, interval));
             }
 
             assert_equals(count, 1, "verify that request was issued");

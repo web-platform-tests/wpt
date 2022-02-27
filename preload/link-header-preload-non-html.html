@@ -10,17 +10,21 @@
 <body>
 <script>
 
-    function test_document_type(content, type) {
+    function test_document_type(options, desc) {
         promise_test(async t => {
             const id = token();
             const preloadLink = `/html/semantics/document-metadata/the-link-element/stylesheet.py?id=${id}`;
-            const linkHeader = encodeURIComponent(`<${preloadLink}>;rel=preload;as=style`)
-            const docURL = getAbsoluteURL(`./resources/echo-preload-header.py?type=${type}&content=${encodeURIComponent(content)}&link=${linkHeader}`);
+            const params = new URLSearchParams();
+            for (const opt in options)
+                params.set(opt, options[opt]);
+            params.set('link', `<${preloadLink}>;rel=preload;as=style`);
+
+            const docURL = getAbsoluteURL(`./resources/echo-preload-header.py?${params.toString()}`);
             const win = window.open(docURL);
             t.add_cleanup(() => win.close());
             await new Promise(resolve => win.addEventListener('load', resolve));
             const timeout = 250;
-            const interval = 50;
+            const interval = 25;
             let count = 0;
             const before = new Date().valueOf();
             while (new Date().valueOf() < before + timeout) {
@@ -28,18 +32,23 @@
                 count = +(await res.text());
                 if (count > 0)
                     break;
+                await new Promise(resolve => setTimeout(resolve, interval));
             }
+
             assert_equals(count, 1, "verify that request was issued");
             const resources = win.performance.getEntriesByName(getAbsoluteURL(preloadLink));
             assert_equals(resources.length, 1, "verify that an RT entry was created");
-        }, `${type} documents should respect preload Link headers`);
+        }, `${desc} documents should respect preload Link headers`);
     }
 
-    test_document_type(`<?xml version="1.0" encoding="utf-8"?>
-    <html xmlns="http://www.w3.org/1999/xhtml">
-    </html>`, 'application/xml');
-    test_document_type('Hello', 'text/plain');
-    test_document_type('dummy', 'image/png');
-    test_document_type('dummy', 'video/mp4');
+    test_document_type({
+        type: 'application/xml',
+        content: `<?xml version="1.0" encoding="utf-8"?>
+        <html xmlns="http://www.w3.org/1999/xhtml">
+        </html>`}, "XHTML");
+    test_document_type({content: 'Hello', type: 'text/plain'}, 'plain text');
+    test_document_type({file: 'square.png', type: 'image/png'}, 'image');
+    test_document_type({file: 'white.mp4', type: 'video/mp4'}, 'media');
+    test_document_type({content: 'dummy', type: 'image/png'}, 'invalid image');
 </script>
 </body>

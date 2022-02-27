@@ -12,9 +12,9 @@
     const src = `./resources/import.sub.css?delay=${delay}`
     const absoluteURL = new URL(src, location.href).toString();
     new PerformanceObserver(t.step_func(() => {
-      const entries = performance.getEntriesByType('resource');
-      const linkEntry = entries.find(e => e.name.includes('import.sub.css'));
-      const importEntry = entries.find(e => e.name.includes('delay-css'));
+      const allPerformanceEntries = performance.getEntriesByType('resource');
+      const linkEntry = allPerformanceEntries.find(e => e.name.includes('import.sub.css'));
+      const importEntry = allPerformanceEntries.find(e => e.name.includes('delay-css'));
       if (!linkEntry || !importEntry)
         return;
       assert_greater_than_equal(importEntry.startTime + importEntry.duration, linkEntry.startTime, linkEntry.duration + delay);

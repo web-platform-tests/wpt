@@ -35,7 +35,7 @@ if switching between testing Chrome and Chromium.
 - **Browser Binary**
 : Browser binary installation is not provided through `wpt` and will throw a
 NotImplementedError if attempted via the install command. The user will need to
-have a browser binary on their machine that can be detected or provide a path explicitly
+have a browser binary on their system that can be detected or provide a path explicitly
 using the `--binary` flag.
 
 - **Webdriver**
@@ -43,11 +43,11 @@ using the `--binary` flag.
 has been given or detected. A FileNotFoundError will be raised if the user tries
 to download ChromeDriver via the install command and a browser binary is not located.
 `wpt` will install a version of ChromeDriver that version-matches the browser binary.
-The download source for this ChromeDriver is described here. If a matching ChromeDriver
-version cannot be found using this process, it is assumed that the Chrome browser binary
-is a dev version which does not have a ChromeDriver version available through official releases.
-In this case, a version of ChromeDriver is pulled that is associated with the latest revision
-of Chromium, as this is currently the closest version we can match for Chrome Dev.
+The download source for this ChromeDriver is [described here](http://chromedriver.chromium.org/downloads/version-selection).
+If a matching ChromeDriver version cannot be found using this process, it is assumed that
+the Chrome browser binary is a dev version which does not have a ChromeDriver version available
+through official releases. In this case, a version of ChromeDriver is pulled that is associated with
+the latest revision of Chromium, as this is currently the closest version we can match for Chrome Dev.
 
 ## Chromium
 
@@ -67,19 +67,19 @@ from the directory and the process for webdriver installation will begin.
 
 ### Installation
 - **Browser Binary**
-: Chromium’s browser binary will be installed from the Chromium snapshots API. If no version
-is specified by the user, the last revision associated with the user’s operating system will
+: Chromium’s browser binary will be installed from the [Chromium snapshots API](https://storage.googleapis.com/chromium-browser-snapshots/index.html).
+If no version is specified by the user, the last revision associated with the user’s operating system will
 be downloaded (this revision is obtained by the LAST_CHANGE designation from the snapshots API).
 The install path is `_venv3/browsers/{channel}/{chromium_binary}`.
 If a version is specified for installation based on the `--browser-version` flag, a
-revision number will be detected based on the given version using the OmahaProxy API.
+revision number will be detected based on the given version using the [OmahaProxy API](https://omahaproxy.appspot.com/).
 Using this revision number, downloading of a matching revision from the Chromium snapshots API
 is attempted. Note: This downloading process has been known to be flaky and not all
 revisions are provided on the snapshots API. If this install based on a given version
 fails, a RequestException will be thrown specifying that the download was unsuccessful.
 
 **Important Note**: If this download process is successful, the Chromium snapshot url
-that the browser binary was downloaded from will be kept during the current run.
+that the browser binary was downloaded from will be kept during the current `wpt` invocation.
 If a Chromium ChromeDriver is also downloaded later to match this browser binary,
 the same url is used for that download to ensure both components are downloaded from the same source.
 

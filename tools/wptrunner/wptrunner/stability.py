@@ -384,7 +384,6 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
         iterations = test_status.repeated_runs
         all_skipped = test_status.all_skipped
 
-        results, inconsistent, slow, iterations, all_skipped = step_func(**kwargs)
         logger.info(f"::: Ran {iterations} of expected {expected_iterations} iterations.")
         if iterations <= 1 and expected_iterations > 1 and not all_skipped:
             step_results.append((desc, "FAIL"))

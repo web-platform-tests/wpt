@@ -294,8 +294,6 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
     if not restart_after_iteration:
         iterations = kwargs["rerun"]
 
-    all_skipped = test_status.all_skipped
-
     logger._state.handlers = initial_handlers
     logger._state.running_tests = set()
     logger._state.suite_started = False

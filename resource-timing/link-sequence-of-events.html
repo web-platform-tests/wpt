@@ -17,7 +17,9 @@
       const importEntry = allPerformanceEntries.find(e => e.name.includes('delay-css'));
       if (!linkEntry || !importEntry)
         return;
-      assert_greater_than_equal(importEntry.startTime + importEntry.duration, linkEntry.startTime, linkEntry.duration + delay);
+      const linkEndTime = linkEntry.startTime + linkEntry.duration;
+      const importEndTime = importEntry.startTime + importEntry.duration;
+      assert_greater_than_equal(importEndTime, linkEndTime + delay, "link load should be done before import load");
       t.done();
 
     })).observe({type: 'resource'});

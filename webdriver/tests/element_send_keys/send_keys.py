@@ -71,3 +71,77 @@ def test_stale_element(session, inline):
 
     response = element_send_keys(session, element, "foo")
     assert_error(response, "stale element reference")
+
+@pytest.mark.parametrize("value",[
+    [u'\ue018', ";"],
+    [u'\ue019', "="],
+    [u'\ue024', "*"],
+    [u'\ue025', "+"],
+    [u'\ue027', "-"],
+    [u'\ue028', "."],
+    [u'\ue029', "/"],
+    [u'\ue01a', "0"],
+    [u'\ue023', "9"]
+    [u'\ue018', ";"],
+    [u'\ue019', "="],
+    [u'\ue024', "*"],
+    [u'\ue025', "+"],
+    [u'\ue027', "-"],
+    [u'\ue028', "."],
+    [u'\ue029', "/"],
+    [u'\ue01a', "0"],
+    [u'\ue023', "9"]
+    [u'\ue018', ";"],
+    [u'\ue019', "="],
+    [u'\ue024', "*"],
+    [u'\ue025', "+"],
+    [u'\ue027', "-"],
+    [u'\ue028', "."],
+    [u'\ue029', "/"],
+    [u'\ue01a', "0"],
+    [u'\ue023', "9"]
+    [u'\ue018', ";"],
+    [u'\ue019', "="],
+    [u'\ue024', "*"],
+    [u'\ue025', "+"],
+    [u'\ue027', "-"],
+    [u'\ue028', "."],
+    [u'\ue029', "/"],
+    [u'\ue01a', "0"],
+    [u'\ue023', "9"]
+    [u'\ue018', ";"],
+    [u'\ue019', "="],
+    [u'\ue024', "*"],
+    [u'\ue025', "+"],
+    [u'\ue027', "-"],
+    [u'\ue028', "."],
+    [u'\ue029', "/"],
+    [u'\ue01a', "0"],
+    [u'\ue023', "9"]
+    ])
+def test_printable_normalised_key_value(session, inline, value):
+    # TODO This is not extensive list due to timeouts from wpt if there are a lot of test
+    # See https://github.com/web-platform-tests/wpt/issues/32899
+    session.url = inline("<input>")
+    element = session.find.css("input", all=False)
+    element_send_keys(session, element, value[0])
+    assert element.property("value") == value[1]
+
+@pytest.mark.parametrize("value", [
+    [u'\ue008'+'a', "A"],
+    ["abc"+u'\ue012'+"def", "abdefc"]
+    ])
+def test_nonprintable_normalised_key_value(session, inline, value):
+    # TODO This is not extensive list due to timeouts from wpt if there are a lot of test
+    # See https://github.com/web-platform-tests/wpt/issues/32899
+    session.url = inline("<input>")
+    element = session.find.css("input", all=False)
+    element_send_keys(session, element, value[0])
+    assert element.property("value") == value[1]
+
+def test_type_printable_chars(session, inline):
+    all_printable_keys = "!\"#$%&'()*+,-./0123456789:<=>?@ ABCDEFGHIJKLMNOPQRSTUVWXYZ [\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+    session.url = inline("<input>")
+    element = session.find.css("input", all=False)
+    element_send_keys(session, element, all_printable_keys)
+    assert element.property("value") == all_printable_keys

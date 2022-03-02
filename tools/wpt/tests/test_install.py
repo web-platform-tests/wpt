@@ -23,7 +23,7 @@ def test_install_chromium():
     if os.path.exists(chromium_path):
         utils.rmtree(chromium_path)
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["install", "chromium", "browser", f"--channel={channel}"])
+        wpt.main(argv=["install", "chromium", "browser"])
     assert excinfo.value.code == 0
     assert os.path.exists(chromium_path)
 
@@ -43,7 +43,7 @@ def test_install_chrome():
 
 @pytest.mark.slow
 @pytest.mark.remote_network
-def test_install_chromedriver_by_version():
+def test_install_chrome_chromedriver_by_version():
     # This is not technically an integration test as we do not want to require Chrome Stable to run it.
     chrome = browser.Chrome(logging.getLogger("Chrome"))
     if sys.platform == "win32":
@@ -63,7 +63,7 @@ def test_install_chromedriver_by_version():
 
 @pytest.mark.slow
 @pytest.mark.remote_network
-def test_install_chromedriver_nightly():
+def test_install_chromium_chromedriver_latest():
     if sys.platform == "win32":
         chromedriver_path = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "Scripts", "chromium", "chromedriver.exe")
     else:

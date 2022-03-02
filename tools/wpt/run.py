@@ -106,8 +106,7 @@ otherwise install OpenSSL and ensure that it's on your $PATH.""")
 
 
 def check_environ(product):
-    if product not in ("android_weblayer", "android_webview", "chrome", "chrome_android",
-                       "chromium", "firefox", "firefox_android", "servo"):
+    if product not in ("android_weblayer", "android_webview", "chrome", "chrome_android", "firefox", "firefox_android", "servo"):
         config_builder = serve.build_config(os.path.join(wpt_root, "config.json"))
         # Override the ports to avoid looking for free ports
         config_builder.ssl = {"type": "none"}
@@ -339,7 +338,7 @@ class Chrome(BrowserSetup):
             if binary:
                 kwargs["binary"] = binary
             else:
-                raise WptrunError("Unable to locate Chrome binary")
+                raise WptrunError(f"Unable to locate {self.name.capitalize()} binary")
 
         if kwargs["mojojs_path"]:
             kwargs["enable_mojojs"] = True
@@ -399,7 +398,7 @@ class Chrome(BrowserSetup):
 class Chromium(Chrome):
     name = "chromium"
     browser_cls = browser.Chromium  # type: ClassVar[Type[browser.ChromeChromiumBase]]
-    experimental_channels = ("dev", "canary", "nightly")
+    experimental_channels = ("nightly",)
 
 
 class ChromeAndroid(BrowserSetup):

@@ -53,9 +53,6 @@ def get_parser():
                         "(only with --download-only)")
     parser.add_argument('-d', '--destination',
                         help='filesystem directory to place the component')
-    parser.add_argument('--browser-version',
-                        help=("install specific version of a browser "
-                              "or webdriver (currently only supported by Chrome and Chromium)"))
     return parser
 
 
@@ -87,27 +84,18 @@ def run(venv, **kwargs):
             raise argparse.ArgumentError(None,
                                          "No --destination argument, and no default for the environment")
 
-    if kwargs.get("browser_version", None) is not None and browser not in ("chrome", "chromium"):
-        raise argparse.ArgumentError(
-            None, "--browser-version argument only supported by chrome and chromium.")
-
     install(browser, kwargs["component"], destination, channel, logger=logger,
-            download_only=kwargs["download_only"], rename=kwargs["rename"],
-            version=kwargs["browser_version"])
+            download_only=kwargs["download_only"], rename=kwargs["rename"])
 
 
 def install(name, component, destination, channel="nightly", logger=None, download_only=False,
-            rename=None, version=None):
+            rename=None):
     if logger is None:
         import logging
         logger = logging.getLogger("install")
+
     prefix = "download" if download_only else "install"
-    suffix = ""
-    if component == "webdriver":
-        if version is None:
-            suffix = "_webdriver"
-        else:
-            suffix = "_webdriver_by_version"
+    suffix = "_webdriver" if component == 'webdriver' else ""
 
     method = prefix + suffix
 
@@ -116,10 +104,6 @@ def install(name, component, destination, channel="nightly", logger=None, downlo
     kwargs = {}
     if download_only and rename:
         kwargs["rename"] = rename
-
-    if version:
-        kwargs["version"] = version
-
     path = getattr(browser_cls(logger), method)(dest=destination, channel=channel, **kwargs)
     if path:
         logger.info('Binary %s as %s', "downloaded" if download_only else "installed", path)

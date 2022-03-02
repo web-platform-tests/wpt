@@ -516,7 +516,7 @@ class FirefoxAndroid(Browser):
 
 class ChromeChromiumBase(Browser):
     """
-    Chromium base class for shared functionality between Chrome and Chromium
+    Chrome/Chromium base Browser class for shared functionality between Chrome and Chromium
 
     For a detailed description on the installation and detection of these browser components,
     see https://web-platform-tests.org/running-tests/chrome-chromium-installation-detection.html
@@ -545,6 +545,32 @@ class ChromeChromiumBase(Browser):
         revision_url = ("https://storage.googleapis.com/chromium-browser-snapshots/"
                         f"{architecture}/LAST_CHANGE")
         return get(revision_url).text.strip()
+
+    def _get_chromium_download_url(self, version=None):
+        """Format a Chromium Snapshots API url to download a browser component."""
+        url_path = "https://storage.googleapis.com/chromium-browser-snapshots/"
+        architecture = self._chromium_platform_string
+
+        # If a specific version is passed as an argument, we will use it.
+        if version is not None and version.lower != "latest":
+            # Detect a revision number based on the version passed.
+            revision = self._get_revision_from_version(version)
+            if revision is not None:
+                url = f"{url_path}{architecture}/{revision}/"
+                try:
+                    # Check the status without downloading the content (this is a streaming request).
+                    get(url)
+                    return url
+                except requests.RequestException:
+                    self.logger.warning("404: Unsuccessful attempt to download file "
+                                        f"based on version. {url}")
+        # If no url was used in a previous install
+        # and no version was passed, use the latest Chromium revision.
+        revision = self._get_latest_chromium_revision(architecture)
+
+        # If the url is successfully used to download/install, it will be used again
+        # if another component is also installed during this run (browser/webdriver).
+        return f"{url_path}{architecture}/{revision}/"
 
     def _remove_existing_chromedriver_binary(self, path):
         """Remove an existing ChromeDriver for this product if it exists
@@ -620,24 +646,23 @@ class ChromeChromiumBase(Browser):
         if browser_binary is None:
             browser_binary = self.find_binary(channel=channel)
 
-        version = self.version(browser_binary)
-        if version is None:
-            if channel == "nightly":
-                version = "latest"
-            else:
+        # A browser binary is needed so that the version can be detected.
+        # The ChromeDriver that is installed will match this version.
+        if browser_binary is None:
+            # If a browser binary path was not given, detect a valid path.
+            browser_binary = self.find_binary(channel=channel)
+            # We need a browser to version match, so if a browser binary path
+            # was not given and cannot be detected, raise an error.
+            if browser_binary is None:
                 raise FileNotFoundError("No browser binary detected. "
                                         "Cannot install ChromeDriver without a browser version.")
 
+        version = self.version(browser_binary)
+        if version is None:
+            raise ValueError(f"Unable to detect browser version from binary at {browser_binary}. "
+                             "Cannot install ChromeDriver without a valid version to match.")
+
         chromedriver_path = self.install_webdriver_by_version(version, dest)
-        # Ensure the newly downloaded ChromeDriver matches the browser binary as expected.
-        if browser_binary and not self.webdriver_supports_browser(chromedriver_path,
-                                                                  browser_binary,
-                                                                  channel):
-            # Display versions for more descriptive error message.
-            chromedriver_version = self.webdriver_version(chromedriver_path)
-            browser_binary_version = self.version(browser_binary)
-            raise ValueError(f"Downloaded ChromeDriver version {chromedriver_version} "
-                             f"does not match the browser binary version {browser_binary_version}.")
         return chromedriver_path
 
     def install_webdriver_by_version(self, version, dest, channel=None):
@@ -683,36 +708,6 @@ class ChromeChromiumBase(Browser):
             self.logger.warning(f"Failed to extract version from: {version_string}")
             return None
         return m.group(1)
-
-    def webdriver_supports_browser(self, webdriver_binary, browser_binary, browser_channel):
-        """Check that the browser binary and ChromeDriver versions are a valid match."""
-        chromedriver_version = self.webdriver_version(webdriver_binary)
-        if not chromedriver_version:
-            self.logger.warning("Unable to get version for ChromeDriver "
-                                f"{webdriver_binary}, rejecting it")
-            return False
-
-        browser_version = self.version(browser_binary)
-        if not browser_version:
-            # If we can't get the browser version,
-            # we just have to assume the ChromeDriver is good.
-            return True
-
-        # Check that the ChromeDriver version matches the Chrome version.
-        chromedriver_major = int(chromedriver_version.split('.')[0])
-        browser_major = int(browser_version.split('.')[0])
-        if chromedriver_major != browser_major:
-            # There is no official ChromeDriver release for the dev channel -
-            # it switches between beta and tip-of-tree, so we accept version+1
-            # too for dev.
-            if browser_channel == "dev" and chromedriver_major == (browser_major + 1):
-                self.logger.debug(f"Accepting ChromeDriver {chromedriver_version} "
-                                  f"for Chrome/Chromium Dev {browser_version}")
-                return True
-            self.logger.warning(f"ChromeDriver {chromedriver_version} does not match "
-                                f"Chrome/Chromium {browser_version}")
-            return False
-        return True
 
     def webdriver_version(self, webdriver_binary):
         if webdriver_binary is None:
@@ -765,37 +760,6 @@ class Chromium(ChromeChromiumBase):
         # find_executable will add .exe on Windows automatically.
         return find_executable("chrome", os.path.join(directory, self._chromium_package_name))
 
-    def _get_chromium_download_url(self, version=None):
-        """Format a Chromium Snapshots API url to download a relevant file from."""
-        url_path = "https://storage.googleapis.com/chromium-browser-snapshots/"
-        architecture = self._chromium_platform_string
-
-        # Make sure we use the same revision in an invocation.
-        # If we have a url that was last used successfully during this run,
-        # that url takes priority over trying to form another.
-        if self.last_url_used is not None:
-            return self.last_url_used
-        # If a specific version is passed as an argument, we will use it.
-        elif version is not None and version.lower != "latest":
-            # Detect a revision number based on the version passed.
-            revision = self._get_revision_from_version(version)
-            if revision is not None:
-                url = f"{url_path}{architecture}/{revision}/"
-                try:
-                    # Check the status without downloading the content (this is a streaming request).
-                    get(url)
-                    return url
-                except requests.RequestException:
-                    self.logger.warning("404: Unsuccessful attempt to download file "
-                                        f"based on version. {url}")
-        # If no url was used in a previous install
-        # and no version was passed, use the latest Chromium revision.
-        revision = self._get_latest_chromium_revision(architecture)
-
-        # If the url is successfully used to download/install, it will be used again
-        # if another component is also installed during this run (browser/webdriver).
-        return f"{url_path}{architecture}/{revision}/"
-
     def _get_revision_from_version(self, version):
         """Get a Chromium revision number that is associated with a given version."""
         # Remove channel suffixes (e.g. " dev").
@@ -813,13 +777,15 @@ class Chromium(ChromeChromiumBase):
     def _get_webdriver_url(self, version):
         """Get Chromium Snapshots API url to download Chromium ChromeDriver."""
         filename = f"chromedriver_{self._chromedriver_platform_string}.zip"
+
+        # Make sure we use the same revision in an invocation.
+        # If we have a url that was last used successfully during this run,
+        # that url takes priority over trying to form another.
+        if self.last_url_used is not None:
+            return self.last_url_used
         return f"{self._get_chromium_download_url(version)}{filename}"
 
     def download(self, dest=None, channel=None, rename=None, version=None):
-        if channel != "nightly" and version is None:
-            raise NotImplementedError(
-                "Only Chromium Nightly (Chromium ToT) can be downloaded without specifying version")
-
         if dest is None:
             dest = self._get_browser_binary_dir(None, channel)
 
@@ -839,15 +805,25 @@ class Chromium(ChromeChromiumBase):
         return self._find_binary_in_directory(self._get_browser_binary_dir(venv_path, channel))
 
     def install(self, dest=None, channel=None, version=None):
-        if channel != "nightly" and version is None:
-            raise NotImplementedError(
-                "Only Chromium Nightly (Chromium ToT) can be installed without specifying version")
         dest = self._get_browser_binary_dir(dest, channel)
         installer_path = self.download(dest, channel, version=version)
         with open(installer_path, "rb") as f:
             unzip(f, dest)
         os.remove(installer_path)
         return self._find_binary_in_directory(dest)
+
+    def webdriver_supports_browser(self, webdriver_binary, browser_binary, browser_channel=None):
+        """Check that the browser binary and ChromeDriver versions are a valid match."""
+        browser_version = self.version(browser_binary)
+        chromedriver_version = self.webdriver_version(webdriver_binary)
+        # Because Chromium and its ChromeDriver should be pulled from the
+        # same revision number, their version numbers should match exactly.
+        if browser_version and chromedriver_version and browser_version == chromedriver_version:
+            self.logger.debug("Browser and ChromeDriver versions match.")
+            return True
+        self.logger.warning(f"ChromeDriver version {chromedriver_version} does not match "
+                            f"Chromium version {browser_version}.")
+        return False
 
 
 class Chrome(ChromeChromiumBase):
@@ -861,16 +837,6 @@ class Chrome(ChromeChromiumBase):
     """
 
     product = "chrome"
-
-    def _get_chromium_download_url(self, version=None):
-        """Get a Chromium Snapshots API url to download ChromeDriver. Chrome's
-        implementation will only pull from the latest revision to obtain a ChromeDriver
-        version that matches Chrome Dev.
-        """
-        architecture = self._chromium_platform_string
-        revision = self._get_latest_chromium_revision(architecture)
-        return ("https://storage.googleapis.com/chromium-browser-snapshots/"
-                f"{architecture}/{revision}/")
 
     def _get_webdriver_url(self, version):
         """Get a ChromeDriver API url to download a version of ChromeDriver that matches
@@ -895,7 +861,7 @@ class Chrome(ChromeChromiumBase):
                 # We currently use the latest Chromium revision to get a compatible Chromedriver
                 # version for Chrome Dev, since it is not available through the chromedriver API.
                 # If we've gotten to this point, it is assumed that this is Chrome Dev.
-                return f"{self._get_chromium_download_url()}{filename}"
+                return f"{self._get_chromium_download_url(version)}{filename}"
         return f"https://chromedriver.storage.googleapis.com/{latest}/{filename}"
 
     def download(self, dest=None, channel=None, rename=None):
@@ -927,6 +893,36 @@ class Chrome(ChromeChromiumBase):
 
     def install(self, dest=None, channel=None):
         raise NotImplementedError("Installing of Chrome browser binary not implemented.")
+
+    def webdriver_supports_browser(self, webdriver_binary, browser_binary, browser_channel):
+        """Check that the browser binary and ChromeDriver versions are a valid match."""
+        chromedriver_version = self.webdriver_version(webdriver_binary)
+        if not chromedriver_version:
+            self.logger.warning("Unable to get version for ChromeDriver "
+                                f"{webdriver_binary}, rejecting it")
+            return False
+
+        browser_version = self.version(browser_binary)
+        if not browser_version:
+            # If we can't get the browser version,
+            # we just have to assume the ChromeDriver is good.
+            return True
+
+        # Check that the ChromeDriver version matches the Chrome version.
+        chromedriver_major = int(chromedriver_version.split('.')[0])
+        browser_major = int(browser_version.split('.')[0])
+        if chromedriver_major != browser_major:
+            # There is no official ChromeDriver release for the dev channel -
+            # it switches between beta and tip-of-tree, so we accept version+1
+            # too for dev.
+            if browser_channel == "dev" and chromedriver_major == (browser_major + 1):
+                self.logger.debug(f"Accepting ChromeDriver {chromedriver_version} "
+                                  f"for Chrome/Chromium Dev {browser_version}")
+                return True
+            self.logger.warning(f"ChromeDriver {chromedriver_version} does not match "
+                                f"Chrome/Chromium {browser_version}")
+            return False
+        return True
 
 
 class ChromeAndroidBase(Browser):

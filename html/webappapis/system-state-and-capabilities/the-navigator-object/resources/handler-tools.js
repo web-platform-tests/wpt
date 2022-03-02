@@ -67,4 +67,3 @@ function runTest({ includeNull = false, credentialsPart = "", hostPart = "" } = 
 function stringBetweenMarkers(string, start, end) {
   return string.substring(string.indexOf(start) + start.length, string.indexOf(end));
 }
-

@@ -70,8 +70,8 @@ from the directory and the user will be prompted to begin the webdriver installa
 
 ### Installation
 - **Browser Binary**
-: Chromium’s browser binary will be installed from the
-[Chromium snapshots API](https://storage.googleapis.com/chromium-browser-snapshots/index.html).
+: Chromium’s browser binary will be installed from
+[Chromium snapshots storage](https://storage.googleapis.com/chromium-browser-snapshots/index.html).
 The last revision associated with the user’s operating system will be downloaded
 (this revision is obtained by the LAST_CHANGE designation from the snapshots API).
 Chromium does not have varying channels, so the installation uses the default `nightly`
@@ -87,14 +87,14 @@ url is used for that download to ensure both components are downloaded from the 
 been given or detected. A FileNotFoundError will be raised if the user tries to download
 ChromeDriver via the install command and a browser binary is not located. `wpt` will
 install a version of ChromeDriver that version-matches the browser binary. The download
-source for this ChromeDriver will be the Chromium snapshots API.  If a Chromium browser
+source for this ChromeDriver will be the Chromium snapshots.  If a Chromium browser
 binary and webdriver are installed in the same invocation of `wpt`
 (e.g. by passing both `--install-browser` and `--install-webdriver` flags), then the
-browser binary and ChromeDriver will be pulled from the same Chromium Snapshots url
+browser binary and ChromeDriver will be pulled from the same Chromium snapshots url
 (see Important Note from browser binary installation).
 Although unusual, if a Chromium browser binary is detected and it is not
 the tip-of-tree revision, and a browser binary was not downloaded and installed during
 this invocation of `wpt`, then `wpt` will attempt to detect the revision number from
 the browser binary version using the [OmahaProxy API](https://omahaproxy.appspot.com/).
 It will then attempt to download the matching ChromeDriver using this revision number
-from the Chromium snapshots API.
+from Chromium snapshots.

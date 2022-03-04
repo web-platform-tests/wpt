@@ -153,25 +153,18 @@ def get_pause_after_test(test_loader, **kwargs):
     return kwargs["pause_after_test"]
 
 
-def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source_cls, run_info,
-                       recording, test_environment, product, run_test_kwargs):
-    """Runs the entire test suite.
-    This is called for each repeat run requested."""
+def load_test_groups(test_loader, test_source_cls, test_source_kwargs):
     tests = []
     for test_type in test_loader.test_types:
         tests.extend(test_loader.tests[test_type])
+    test_groups = test_source_cls.tests_by_group(tests, **test_source_kwargs)
+    return test_groups
 
-    try:
-        test_groups = test_source_cls.tests_by_group(
-            tests, **test_source_kwargs)
-    except Exception:
-        logger.critical("Loading tests failed")
-        return False
 
-    logger.suite_start(test_groups,
-                       name='web-platform-test',
-                       run_info=run_info,
-                       extra={"run_by_dir": run_test_kwargs["run_by_dir"]})
+def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source_cls, test_groups,
+                       run_info, recording, test_environment, product, run_test_kwargs):
+    """Runs the entire test suite.
+    This is called for each repeat run requested."""
     for test_type in run_test_kwargs["test_types"]:
         logger.info(f"Running {test_type} tests")
 
@@ -382,6 +375,16 @@ def run_tests(config, test_paths, product, **kwargs):
             # so that the runs can be stopped to avoid a possible TC timeout.
             longest_iteration_time = timedelta()
 
+            try:
+                test_groups = load_test_groups(test_loader, test_source_cls, test_source_kwargs)
+            except Exception:
+                logger.critical("Loading tests failed")
+                return False, test_status
+            logger.suite_start(test_groups,
+                               name="web-platform-test",
+                               run_info=run_info,
+                               extra={"run_by_dir": kwargs["run_by_dir"]})
+
             while test_status.repeated_runs < repeat or repeat_until_unexpected:
                 # if the next repeat run could cause the TC timeout to be reached,
                 # stop now and use the test results we have.
@@ -401,7 +404,7 @@ def run_tests(config, test_paths, product, **kwargs):
                     logger.info(f"Repetition {test_status.repeated_runs} / {repeat}")
 
                 iter_success = run_test_iteration(test_status, test_loader, test_source_kwargs,
-                                                  test_source_cls, run_info, recording,
+                                                  test_source_cls, test_groups, run_info, recording,
                                                   test_environment, product, kwargs)
                 # if there were issues with the suite run(tests not loaded, etc.) return
                 if not iter_success:
@@ -409,7 +412,6 @@ def run_tests(config, test_paths, product, **kwargs):
                 recording.set(["after-end"])
                 logger.info(f"Got {test_status.unexpected} unexpected results, "
                     f"with {test_status.unexpected_pass} unexpected passes")
-                logger.suite_end()
 
                 # Note this iteration's runtime
                 iteration_runtime = datetime.now() - iteration_start
@@ -422,6 +424,8 @@ def run_tests(config, test_paths, product, **kwargs):
                 if test_status.repeated_runs == 1 and len(test_loader.test_ids) == test_status.skipped:
                     test_status.all_skipped = True
                     break
+
+            logger.suite_end()
 
     # Return the evaluation of the runs and the number of repeated iterations that were run.
     return evaluate_runs(test_status, kwargs), test_status

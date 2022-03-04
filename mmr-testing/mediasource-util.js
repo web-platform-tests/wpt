@@ -54,8 +54,7 @@
         {
             object.removeEventListener(eventName, eventHandler);
             var expected = expectations[0];
-			//TODO: investigate accurately setting target for events
-            //assert_equals(event.target, expected.target, "Event target match.");
+            assert_equals(event.target, expected.target, "Event target match.");
             assert_equals(event.type, expected.type, "Event types match.");
             assert_equals(eventInfo.description, expected.description, "Descriptions match for '" +  event.type + "'.");
 

@@ -816,9 +816,20 @@ class Chromium(ChromeChromiumBase):
         """Check that the browser binary and ChromeDriver versions are a valid match."""
         browser_version = self.version(browser_binary)
         chromedriver_version = self.webdriver_version(webdriver_binary)
+
+        if not chromedriver_version:
+            self.logger.warning("Unable to get version for ChromeDriver "
+                                f"{webdriver_binary}, rejecting it")
+            return False
+
+        if not browser_version:
+            # If we can't get the browser version,
+            # we just have to assume the ChromeDriver is good.
+            return True
+
         # Because Chromium and its ChromeDriver should be pulled from the
         # same revision number, their version numbers should match exactly.
-        if browser_version and chromedriver_version and browser_version == chromedriver_version:
+        if browser_version == chromedriver_version:
             self.logger.debug("Browser and ChromeDriver versions match.")
             return True
         self.logger.warning(f"ChromeDriver version {chromedriver_version} does not match "

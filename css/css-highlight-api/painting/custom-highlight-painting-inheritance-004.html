@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>CSS Highlight API Test: Inheritance</title>
+<link rel="help" href="https://drafts.csswg.org/css-highlight-api-1/">
+<link rel="match" href="custom-highlight-painting-inheritance-004-ref.html">
+<meta name="assert" value="Highlighted elements inherit style properties from their parent if they're not set">
+<style>
+  div::highlight(div-highlight) {
+    background-color: green;
+    color: red;
+  }
+  span::highlight(span-highlight) {
+    color: blue;
+  }
+  div::selection {
+    background-color: yellow;
+    color: blue;
+  }
+  span::selection {
+    color: green;
+  }
+</style>
+<body>
+<div>There should be only one green rectangle below from [ to ]:</div>
+<div id="highlight_target">[<span>&nbsp;&nbsp;&nbsp;<strong>&nbsp;&nbsp;&nbsp;</strong>&nbsp;&nbsp;&nbsp;</span>]</div>
+<div>There should be a yellow selection below from [ to ]:</div>
+<div id="selection_target">[<span>Text <strong>strong</strong> sample</span>]</div>
+<script>
+  let highlight_range = new Range();
+  const highlight_node = document.getElementById("highlight_target");
+  highlight_range.setStart(highlight_node, 1);
+  highlight_range.setEnd(highlight_node, 2);
+
+  CSS.highlights.set("div-highlight", new Highlight(highlight_range));
+  CSS.highlights.set("span-highlight", new Highlight(highlight_range));
+
+  let selection_range = new Range();
+  const selection_node = document.getElementById("selection_target");
+  selection_range.setStart(selection_node, 1);
+  selection_range.setEnd(selection_node, 2);
+  window.getSelection().addRange(selection_range);
+</script>

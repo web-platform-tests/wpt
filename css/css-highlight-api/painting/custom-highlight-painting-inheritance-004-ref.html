@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<style>
+  #highlight {
+    background-color: green;
+  }
+
+  #selection {
+    color: green;
+  }
+
+  #selection strong {
+    color: initial;
+  }
+
+</style>
+<body>
+<div>There should be only one green rectangle below from [ to ]:</div>
+<div>[<span id="highlight">&nbsp;&nbsp;&nbsp;<strong>&nbsp;&nbsp;&nbsp;</strong>&nbsp;&nbsp;&nbsp;</span>]</div>
+<div>There should be a yellow selection below from [ to ]:</div>
+<div>[<span id="selection">Text <strong>strong</strong> sample</span>]</div>
+<script>
+  let selection_range = new Range();
+  const selection_node = document.querySelector('#selection strong');
+  selection_range.setStart(selection_node, 0);
+  selection_range.setEnd(selection_node, 1);
+  window.getSelection().addRange(selection_range);
+</script>

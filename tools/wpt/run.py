@@ -3,7 +3,7 @@ import os
 import platform
 import sys
 from distutils.spawn import find_executable
-from typing import ClassVar, Type
+from typing import ClassVar, Tuple, Type
 
 wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 sys.path.insert(0, os.path.abspath(os.path.join(wpt_root, "tools")))
@@ -329,7 +329,7 @@ class FirefoxAndroid(BrowserSetup):
 class Chrome(BrowserSetup):
     name = "chrome"
     browser_cls = browser.Chrome  # type: ClassVar[Type[browser.ChromeChromiumBase]]
-    experimental_channels = ("dev", "canary", "nightly")  # type: tuple
+    experimental_channels = ("dev", "canary", "nightly")  # type: ClassVar[Tuple[str, ...]]
 
     def setup_kwargs(self, kwargs):
         browser_channel = kwargs["browser_channel"]

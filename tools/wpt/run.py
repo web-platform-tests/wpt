@@ -329,7 +329,7 @@ class FirefoxAndroid(BrowserSetup):
 class Chrome(BrowserSetup):
     name = "chrome"
     browser_cls = browser.Chrome  # type: ClassVar[Type[browser.ChromeChromiumBase]]
-    experimental_channels = ("dev", "canary", "nightly")
+    experimental_channels = ("dev", "canary", "nightly")  # type: tuple
 
     def setup_kwargs(self, kwargs):
         browser_channel = kwargs["browser_channel"]

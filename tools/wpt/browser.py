@@ -572,6 +572,20 @@ class ChromeChromiumBase(Browser):
         # if another component is also installed during this run (browser/webdriver).
         return f"{url_path}{architecture}/{revision}/"
 
+    def _get_revision_from_version(self, version):
+        """Get a Chromium revision number that is associated with a given version."""
+        # Remove channel suffixes (e.g. " dev").
+        version = version.split(' ')[0]
+
+        # Try to find the Chromium build with the same revision.
+        try:
+            omaha = get(f"https://omahaproxy.appspot.com/deps.json?version={version}").json()
+            detected_revision = omaha['chromium_base_position']
+            return detected_revision
+        except requests.RequestException:
+            self.logger.debug("Unsuccessful attempt to detect revision based on version")
+        return None
+
     def _remove_existing_chromedriver_binary(self, path):
         """Remove an existing ChromeDriver for this product if it exists
         in the virtual environment.
@@ -759,20 +773,6 @@ class Chromium(ChromeChromiumBase):
                                                             "MacOS"))
         # find_executable will add .exe on Windows automatically.
         return find_executable("chrome", os.path.join(directory, self._chromium_package_name))
-
-    def _get_revision_from_version(self, version):
-        """Get a Chromium revision number that is associated with a given version."""
-        # Remove channel suffixes (e.g. " dev").
-        version = version.split(' ')[0]
-
-        # Try to find the Chromium build with the same revision.
-        try:
-            omaha = get(f"https://omahaproxy.appspot.com/deps.json?version={version}").json()
-            detected_revision = omaha['chromium_base_position']
-            return detected_revision
-        except requests.RequestException:
-            self.logger.debug("Unsuccessful attempt to detect revision based on version")
-        return None
 
     def _get_webdriver_url(self, version):
         """Get Chromium Snapshots API url to download Chromium ChromeDriver."""

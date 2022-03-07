@@ -146,7 +146,7 @@ class TypeData(TypeDataType):
     def __iter__(self):
         # type: () -> Iterator[Tuple[Text, ...]]
         """Iterator over keys in the TypeData in codepoint order"""
-        data_node = self._data  # type: Optional[Union[Dict[Text, Any], Set[item.ManifestItem], List[Any]]]
+        data_node = self._data  # type: Optional[Union[Dict[Text, Any], Set[item.ManifestItem]]]
         json_node = self._json_data  # type: Optional[Union[Dict[Text, Any], List[Any]]]
         path = tuple()  # type: Tuple[Text, ...]
         stack = [(data_node, json_node, path)]

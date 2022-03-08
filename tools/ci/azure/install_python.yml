@@ -1,0 +1,36 @@
+steps:
+- powershell: |
+    $pythonPath = 'C:\Python310'
+    $pythonInstallerLogPath = 'python_installer.log'
+    $installArgs = "/passive /log $pythonInstallerLogPath TargetDir=$pythonPath"
+
+    Write-Host "Downloading python installer exe"
+    $downloadPath = 'python_installer.exe'
+    Start-BitsTransfer -Source https://www.python.org/ftp/python/3.10.2/python-3.10.2-amd64.exe  -Destination $downloadPath
+    $hash = (Get-FileHash $downloadPath).Hash.ToLower()
+    $expectedHash = "42b181e9b5f424472212742a187260d4edc73b7683ae83460c974508130e08ad"
+    if ($hash.Equals($expectedHash)) {
+      Write-Host "$downloadPath hash verified"
+    } else {
+      Throw "$downloadPath hash mismatch, got $hash, expected $expectedHash"
+    }
+
+    if (Test-Path -LiteralPath $pythonPath) {
+        Write-Host "$pythonPath already exists, uninstall it"
+        $uninstallArgs = $installArgs + " /uninstall /quiet"
+        $p = Start-Process -FilePath $downloadPath -Verb RunAs -ArgumentList $uninstallArgs -PassThru -Wait
+        Write-Host "Uninstall finished. Exit code was: $($p.ExitCode)"
+    }
+
+    Write-Host "Running $downloadPath with args $installArgs"
+    $p = Start-Process -FilePath $downloadPath -Verb RunAs -ArgumentList $installArgs -PassThru -Wait
+    Write-Host "$downloadPath finished. Exit code was: $($p.ExitCode)"
+
+    Write-Host "Adding Python dirs to path"
+    Write-Host "##vso[task.prependpath]C:\Python310"
+    Write-Host "##vso[task.prependpath]C:\Python310\Scripts"
+
+    Write-Host "Dumping install log file:"
+    Get-Content -Path "python_installer.log"
+  displayName: 'Install Python (Windows)'
+  condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))

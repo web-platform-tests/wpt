@@ -10,11 +10,11 @@
 
     const preload = document.querySelector("#preload");
     preload.addEventListener("load", async () => {
-        const meta = document.createElement('meta');
+        const meta = document.createElement("meta");
         meta.httpEquiv = "Content-Security-Policy";
         meta.content = "img-src 'none'";
         document.head.appendChild(meta);
-        const img = document.createElement('img');
+        const img = document.createElement("img");
         img.src = preload.href;
         document.body.appendChild(img);
         const load = new Promise(resolve => img.addEventListener("load", () => resolve('load')));

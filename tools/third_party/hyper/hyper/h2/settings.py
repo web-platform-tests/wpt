@@ -8,6 +8,7 @@ API for manipulating HTTP/2 settings, keeping track of both the current active
 state of the settings and the unacknowledged future values of the settings.
 """
 import collections
+import collections.abc
 import enum
 
 from hyperframe.frame import SettingsFrame
@@ -151,7 +152,7 @@ class ChangedSetting:
         )
 
 
-class Settings(collections.MutableMapping):
+class Settings(collections.abc.MutableMapping):
     """
     An object that encapsulates HTTP/2 settings state.
 

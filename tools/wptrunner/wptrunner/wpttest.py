@@ -83,16 +83,6 @@ def get_run_info(metadata_root, product, **kwargs):
     return RunInfo(metadata_root, product, **kwargs)
 
 
-def _adb_run(device_serial, args, **kwargs):
-    cmd = ["adb", "-s", device_serial, *args]
-    return subprocess.check_output(cmd, **kwargs)
-
-
-def _adb_get_property(device_serial, prop, **kwargs):
-    prop = _adb_run(device_serial, ["shell", "getprop", prop], **kwargs)
-    return prop.strip()
-
-
 class RunInfo(Dict[str, Any]):
     def __init__(self, metadata_root, product, debug,
                  browser_version=None,
@@ -100,7 +90,8 @@ class RunInfo(Dict[str, Any]):
                  verify=None,
                  extras=None,
                  enable_webrender=False,
-                 device_serials=None):
+                 device_serials=None,
+                 adb_binary=None):
         import mozinfo
         self._update_mozinfo(metadata_root)
         self.update(mozinfo.info)
@@ -136,18 +127,31 @@ class RunInfo(Dict[str, Any]):
 
         self["webrender"] = enable_webrender
 
+        if adb_binary:
+            self["adb_binary"] = adb_binary
         if device_serials:
+            # Assume all emulators are identical, so query an arbitrary one.
             self._update_with_emulator_info(device_serials[0])
             self.pop("linux_distro", None)
+
+    def _adb_run(self, device_serial, args, **kwargs):
+        adb_binary = self.get("adb_binary", "adb")
+        cmd = [adb_binary, "-s", device_serial, *args]
+        return subprocess.check_output(cmd, **kwargs)
+
+    def _adb_get_property(self, device_serial, prop, **kwargs):
+        args = ["shell", "getprop", prop]
+        value = self._adb_run(device_serial, args, **kwargs)
+        return value.strip()
 
     def _update_with_emulator_info(self, device_serial):
         """Override system info taken from the host if using an Android
         emulator."""
         try:
-            _adb_run(device_serial, ["wait-for-device"])
+            self._adb_run(device_serial, ["wait-for-device"])
             emulator_info = {
                 "os": "android",
-                "os_version": _adb_get_property(
+                "os_version": self._adb_get_property(
                     device_serial,
                     "ro.build.version.release",
                     encoding="utf-8",
@@ -156,7 +160,7 @@ class RunInfo(Dict[str, Any]):
             emulator_info["version"] = emulator_info["os_version"]
 
             # Detect CPU info (https://developer.android.com/ndk/guides/abis#sa)
-            abi64, *_ = _adb_get_property(
+            abi64, *_ = self._adb_get_property(
                 device_serial,
                 "ro.product.cpu.abilist64",
                 encoding="utf-8",
@@ -165,7 +169,7 @@ class RunInfo(Dict[str, Any]):
                 emulator_info["processor"] = abi64
                 emulator_info["bits"] = 64
             else:
-                emulator_info["processor"], *_ = _adb_get_property(
+                emulator_info["processor"], *_ = self._adb_get_property(
                     device_serial,
                     "ro.product.cpu.abilist32",
                     encoding="utf-8",

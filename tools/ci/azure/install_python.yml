@@ -1,14 +1,14 @@
 steps:
 - powershell: |
-    $pythonPath = 'C:\Python39'
+    $pythonPath = 'C:\Python310'
     $pythonInstallerLogPath = 'python_installer.log'
     $installArgs = "/passive /log $pythonInstallerLogPath TargetDir=$pythonPath"
 
     Write-Host "Downloading python installer exe"
     $downloadPath = 'python_installer.exe'
-    Start-BitsTransfer -Source https://www.python.org/ftp/python/3.9.4/python-3.9.4-amd64.exe  -Destination $downloadPath
+    Start-BitsTransfer -Source https://www.python.org/ftp/python/3.10.2/python-3.10.2-amd64.exe  -Destination $downloadPath
     $hash = (Get-FileHash $downloadPath).Hash.ToLower()
-    $expectedHash = "58e6bb9d08fd250c1defb7a7a7247993b4ea349518ba877abb6364de85029e04"
+    $expectedHash = "42b181e9b5f424472212742a187260d4edc73b7683ae83460c974508130e08ad"
     if ($hash.Equals($expectedHash)) {
       Write-Host "$downloadPath hash verified"
     } else {
@@ -27,8 +27,8 @@ steps:
     Write-Host "$downloadPath finished. Exit code was: $($p.ExitCode)"
 
     Write-Host "Adding Python dirs to path"
-    Write-Host "##vso[task.prependpath]C:\Python39"
-    Write-Host "##vso[task.prependpath]C:\Python39\Scripts"
+    Write-Host "##vso[task.prependpath]C:\Python310"
+    Write-Host "##vso[task.prependpath]C:\Python310\Scripts"
 
     Write-Host "Dumping install log file:"
     Get-Content -Path "python_installer.log"

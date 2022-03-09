@@ -340,14 +340,9 @@ SET TIMEOUT: html/browsers/browsing-the-web/back-forward-cache/timers.html
 SET TIMEOUT: acid/acid3/test.html
 
 # Third party code
-*: css/tools/apiclient/*
-*: css/tools/w3ctestlib/*
 *: resources/webidl2/*
 *: tools/*
 *: */third_party/*
-
-# Build system virtualenv
-*: css/tools/_virtualenv/*
 
 ## Third party data files
 TRAILING WHITESPACE: resources/chromium/*
@@ -362,9 +357,7 @@ CONTENT-VISUAL: css/*
 CONTENT-MANUAL: css/*
 
 ## Support files not in /support/ or similar
-SUPPORT-WRONG-DIR: css/requirements.txt
 SUPPORT-WRONG-DIR: css/README.md
-SUPPORT-WRONG-DIR: css/build-css-testsuites.sh
 SUPPORT-WRONG-DIR: css/*/reftest.list
 SUPPORT-WRONG-DIR: css/*/README
 SUPPORT-WRONG-DIR: css/*/README.md

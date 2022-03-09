@@ -119,8 +119,7 @@ def test_tentative_directories_negative(path):
                                   "else/where/.gitignore"
                                   "elsewhere/tools/.gitignore",
                                   "elsewhere/docs/.gitignore",
-                                  "elsewhere/resources/webidl2/.gitignore",
-                                  "elsewhere/css/tools/apiclient/.gitignore"])
+                                  "elsewhere/resources/webidl2/.gitignore"])
 def test_gitignore_file(path):
     path = os.path.join(*path.split("/"))
 
@@ -142,9 +141,7 @@ def test_gitignore_file(path):
                                   "docs/.gitignore"
                                   "docs/elsewhere/.gitignore",
                                   "resources/webidl2/.gitignore",
-                                  "resources/webidl2/elsewhere/.gitignore",
-                                  "css/tools/apiclient/.gitignore",
-                                  "css/tools/apiclient/elsewhere/.gitignore"])
+                                  "resources/webidl2/elsewhere/.gitignore"])
 def test_gitignore_negative(path):
     path = os.path.join(*path.split("/"))
 

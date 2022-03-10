@@ -40,7 +40,7 @@
                 await new Promise(resolve => t.step_timeout(resolve, interval));
             }
 
-            assert_equals(count, 1, "verify that request was issued");
+            assert_equals(count, 1, "verify that request was issued exactly once");
             const resources = win.performance.getEntriesByName(getAbsoluteURL(preloadLink));
             assert_equals(resources.length, 1, "verify that an RT entry was created");
         }, `${desc} documents should respect preload Link headers`);

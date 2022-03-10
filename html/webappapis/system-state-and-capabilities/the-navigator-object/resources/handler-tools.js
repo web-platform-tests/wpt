@@ -12,14 +12,17 @@ const handler = {
   "query": "?QES\u2020QEEPSS%sPSE#FES\u2020FEE",
   "fragment": "?QES\u2020QEE#FES\u2020FEEPSS%sPSE"
 }[type];
-const scheme = `web+wpt${type}${swString}`;
+
+if (!window.hasOwnProperty('scheme')) {
+  window.scheme = `web+wpt${type}${swString}`;
+}
 
 function register() {
   const handlerURL = noSW ? `resources/handler.html${handler}${type}` : `resources/handler/${type}/${handler}`;
   navigator.registerProtocolHandler(scheme, handlerURL, `WPT ${type} handler${noSW ? ", without service worker" : ""}`);
 }
 
-function runTest({ includeNull = false } = {}) {
+function runTest({ includeNull = false, credentialsPart = "", hostPart = "" } = {}) {
   promise_test(async t => {
     const bc = new BroadcastChannel(`protocol-handler-${type}${swString}`);
     if (!noSW) {
@@ -33,15 +36,28 @@ function runTest({ includeNull = false } = {}) {
     for (; i < 0x82; i++) {
       codePoints.push(String.fromCharCode(i));
     }
-    a.href = `${scheme}:${codePoints.join("")}`;
+
+    const targetUrlParts = [
+      scheme, ":",
+      hostPart ? "//" : "",
+      hostPart && credentialsPart ? `${credentialsPart}@` : "",
+      hostPart ? `${hostPart}/` : "",
+      codePoints.join("")
+    ];
+    const expectedUrlParts = [
+      encodeURIComponent(scheme), "%3A",
+      hostPart ? `%2F%2F${encodeURIComponent(hostPart)}%2F` : "",
+      `${includeNull ? "%2500" : ""}%2501%2502%2503%2504%2505%2506%2507%2508%250B%250C%250E%250F%2510%2511%2512%2513%2514%2515%2516%2517%2518%2519%251A%251B%251C%251D%251E%251F%20!%22%23%24%25%26${type === "query" ? "%27" : "'"}()*%2B%2C-.%2F0123456789%3A%3B%3C%3D%3E%3F%40ABCDEFGHIJKLMNOPQRSTUVWXYZ%5B%5C%5D%5E_%60abcdefghijklmnopqrstuvwxyz%7B%7C%7D~%257F%25C2%2580%25C2%2581`
+    ];
+
+    a.href = targetUrlParts.join("");
     a.target = "_blank";
     a.click();
     await new Promise(resolve => {
       bc.onmessage = t.step_func(e => {
         resultingURL = e.data;
-        assert_equals(stringBetweenMarkers(resultingURL, "QES", "QEE"), "%86", "query baseline");
-        assert_equals(stringBetweenMarkers(resultingURL, "FES", "FEE"), "%E2%80%A0", "fragment baseline");
-        assert_equals(stringBetweenMarkers(resultingURL, "PSS", "PSE"), `${encodeURIComponent(scheme)}%3A${includeNull ? "%2500" : ""}%2501%2502%2503%2504%2505%2506%2507%2508%250B%250C%250E%250F%2510%2511%2512%2513%2514%2515%2516%2517%2518%2519%251A%251B%251C%251D%251E%251F%20!%22%23%24%25%26${type === "query" ? "%27" : "'"}()*%2B%2C-.%2F0123456789%3A%3B%3C%3D%3E%3F%40ABCDEFGHIJKLMNOPQRSTUVWXYZ%5B%5C%5D%5E_%60abcdefghijklmnopqrstuvwxyz%7B%7C%7D~%257F%25C2%2580%25C2%2581`, "actual test");
+        assert_equals(stringBetweenMarkers(resultingURL, "QES", "QEE"), "%86", "query baseline"); assert_equals(stringBetweenMarkers(resultingURL, "FES", "FEE"), "%E2%80%A0", "fragment baseline");
+        assert_equals(stringBetweenMarkers(resultingURL, "PSS", "PSE"), expectedUrlParts.join(""), "actual test");
         resolve();
       });
     });

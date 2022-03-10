@@ -23,29 +23,21 @@
             const win = window.open(docURL);
             t.add_cleanup(() => win.close());
             await new Promise(resolve => win.addEventListener('load', resolve));
-            const timeout = 2000;
+            const timeout = 5000;
             const interval = 25;
             let count = 0;
             const before = performance.now();
 
-            // Checking 10 times to shake off flakiness - sometimes the request takes a long time.
-            const iterations = 10;
-            let found = false;
+            while (performance.now() < before + timeout) {
+                // count=true returns the number of times the resource was accessed
+                const res = await fetch(preloadLink + '&count=true');
 
-            for (let i = 0; i < iterations && !found; ++i) {
-                // Polling every 25ms for two seconds to see if the preloaded link was requested
-               while (performance.now() < before + timeout) {
-                   // count=true returns the number of times the resource was accessed
-                   const res = await fetch(preloadLink + '&count=true');
+                // If count is positive, the resource was accessed.
+                count = Number(await res.text());
+                if (count > 0)
+                    break;
 
-                   // If count is positive, the resource was accessed.
-                   count = Number(await res.text());
-                   if (count > 0) {
-                       found = true;
-                       break;
-                   }
-                   await new Promise(resolve => t.step_timeout(resolve, interval));
-               }
+                await new Promise(resolve => t.step_timeout(resolve, interval));
             }
 
             assert_equals(count, 1, "verify that request was issued");

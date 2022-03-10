@@ -23,13 +23,18 @@
             const win = window.open(docURL);
             t.add_cleanup(() => win.close());
             await new Promise(resolve => win.addEventListener('load', resolve));
-            const timeout = 1000;
+            const timeout = 2000;
             const interval = 25;
             let count = 0;
-            const before = new Date().valueOf();
-            while (new Date().valueOf() < before + timeout) {
+            const before = performance.now();
+
+            // Polling every 25ms for two seconds to see if the preloaded link was requested
+            while (performance.now() < before + timeout) {
+                // count=true returns the number of times the resource was accessed
                 const res = await fetch(preloadLink + '&count=true');
-                count = +(await res.text());
+
+                // If count is positive, the resource was accessed.
+                count = Number(await res.text());
                 if (count > 0)
                     break;
                 await new Promise(resolve => t.step_timeout(resolve, interval));

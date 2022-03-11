@@ -84,8 +84,8 @@ def docker_run(**kwargs):
     if os.isatty(os.isatty(sys.stdout.fileno())):
         cmd.append("-it")
     cmd.extend(["wpt:docs", "./wpt"])
-    if kwargs["venv"]:
-        cmd.extend(["--venv", kwargs["venv"]])
+    # /app/venv is created and activated in the Dockerfile
+    cmd.extend(["--venv", "/app/venv", "--skip-venv-setup"])
     cmd.extend(["build-docs", "--type", kwargs["type"]])
     if kwargs["serve"] is not None:
         cmd.extend(["--serve", str(kwargs["serve"])])
@@ -96,7 +96,6 @@ def docker_run(**kwargs):
 def build(_venv, **kwargs):
     if kwargs["docker"]:
         docker_build()
-        kwargs["venv"] = "/app/venv"
         return docker_run(**kwargs)
 
     out_dir = os.path.join(here, "_build")

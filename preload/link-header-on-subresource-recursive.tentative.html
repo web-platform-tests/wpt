@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<title>Makes sure that Link headers on subresources preload resources</title>
+<script src="/common/utils.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resource-timing/resources/resource-loaders.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/preload/resources/preload_helper.js"></script>
+<meta name="timeout" content="long">
+
+<script>
+    promise_test(async t => {
+        const style = {as: 'style', href: '/preload/resources/dummy-preloads-subresource.css', type: 'text/css'};
+        const finalSubresource =  {href: `/fonts/CanvasTest.ttf?uid=${token()}`, type: 'font/ttf', as: 'font'};
+        const style2 =;
+        await load.stylesheet(getSubresourceWithLinks(style, [{href:
+            getSubresourceWithLinks(style, [finalSubresource]), type: 'text/css', as: 'style'}]));
+        const result = await new Promise(resolve => {
+            new PerformanceObserver(() => {
+                const entries = performance.getEntriesByName(getAbsoluteURL(finalSubresource.href));
+                if (entries.length === 1)
+                    resolve();
+            }).observe({type: 'resource'});
+            t.step_timeout(() => resolve(), 2000);
+        });
+
+        const entries = performance.getEntriesByName(getAbsoluteURL(finalSubresource.href));
+        assert_equals(entries.length, 1);
+    }, 'Subresource Link headers should work recursively');
+
+</script>
+

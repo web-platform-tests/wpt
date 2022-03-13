@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<title>Makes sure that Link headers on subresources preload resources</title>
+<script src="/common/utils.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resource-timing/resources/resource-loaders.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/preload/resources/preload_helper.js"></script>
+<meta name="timeout" content="long">
+
+<script>
+    const resources = {
+        style: {href: '/preload/resources/dummy-preloads-subresource.css', type: 'text/css', loader: load.stylesheet},
+        font: {href: '/fonts/CanvasTest.ttf', type: 'font/ttf'},
+        image: {href: '/images/blue.png', type: 'image/png'},
+        script: {href: '/preload/resources/dummy.js', type: 'text/javascript'},
+        fetch: {href: '/common/dummy.xml', type: 'text/xml', loader: fetch}
+    };
+
+    function test_preload_subresource(originalType, linkedType) {
+        promise_test(async t => {
+            const loader = resources[originalType].loader || load[originalType];
+            const link = {
+                href: `${resources[linkedType].href}?uid=${token()}`,
+                as: linkedType, uid: token()};
+            await loader(getSubresourceWithLinks({...resources[originalType], as: originalType}, [link]));
+
+            await new Promise(resolve => {
+                new PerformanceObserver(() => {
+                    const entries = performance.getEntriesByName(getAbsoluteURL(link.href));
+                    if (entries.length === 1)
+                        resolve();
+                }).observe({type: 'resource'});
+                t.step_timeout(resolve, 2000);
+            });
+
+            const entries = performance.getEntriesByName(getAbsoluteURL(link.href));
+            assert_equals(entries.length, 1);
+        }, `${originalType} should preload ${linkedType} as a link header`);
+    }
+
+    for (const originalType in resources) {
+        for (const preloadType in resources) {
+            test_preload_subresource(originalType, preloadType);
+        }
+    }
+</script>
+

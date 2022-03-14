@@ -10,7 +10,7 @@ RUN apt-get -qqy update \
 
 WORKDIR /app/
 
-COPY package.json requirements.txt .
+COPY package.json requirements.txt ./
 
 RUN npm install .
 ENV PATH=/app/node_modules/.bin:$PATH

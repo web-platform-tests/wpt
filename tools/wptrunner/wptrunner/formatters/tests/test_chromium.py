@@ -15,6 +15,7 @@ def test_chromium_required_fields(capfd):
     # Set up the handler.
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
+    logger.reset_state()
     logger.add_handler(handlers.StreamHandler(output, ChromiumFormatter()))
 
     # output a bunch of stuff
@@ -22,6 +23,7 @@ def test_chromium_required_fields(capfd):
     logger.test_start("test-id-1")
     logger.test_end("test-id-1", status="PASS", expected="PASS")
     logger.suite_end()
+    logger.shutdown()
 
     # check nothing got output to stdout/stderr
     # (note that mozlog outputs exceptions during handling to stderr!)
@@ -52,6 +54,7 @@ def test_chromium_test_name_trie(capfd):
     # Set up the handler.
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
+    logger.reset_state()
     logger.add_handler(handlers.StreamHandler(output, ChromiumFormatter()))
 
     # output a bunch of stuff
@@ -62,6 +65,7 @@ def test_chromium_test_name_trie(capfd):
     logger.test_start("/foo/test-id-2")
     logger.test_end("/foo/test-id-2", status="ERROR", expected="TIMEOUT")
     logger.suite_end()
+    logger.shutdown()
 
     # check nothing got output to stdout/stderr
     # (note that mozlog outputs exceptions during handling to stderr!)
@@ -91,6 +95,7 @@ def test_num_failures_by_type(capfd):
     # Set up the handler.
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
+    logger.reset_state()
     logger.add_handler(handlers.StreamHandler(output, ChromiumFormatter()))
 
     # Run some tests with different statuses: 3 passes, 1 timeout
@@ -104,6 +109,7 @@ def test_num_failures_by_type(capfd):
     logger.test_start("t4")
     logger.test_end("t4", status="TIMEOUT", expected="CRASH")
     logger.suite_end()
+    logger.shutdown()
 
     # check nothing got output to stdout/stderr
     # (note that mozlog outputs exceptions during handling to stderr!)
@@ -127,6 +133,7 @@ def test_subtest_messages(capfd):
     # Set up the handler.
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
+    logger.reset_state()
     logger.add_handler(handlers.StreamHandler(output, ChromiumFormatter()))
 
     # Run two tests with subtest messages. The subtest name should be included
@@ -145,6 +152,7 @@ def test_subtest_messages(capfd):
     logger.test_end("t2", status="TIMEOUT", expected="PASS",
                     message="t2_message")
     logger.suite_end()
+    logger.shutdown()
 
     # check nothing got output to stdout/stderr
     # (note that mozlog outputs exceptions during handling to stderr!)
@@ -184,6 +192,7 @@ def test_subtest_failure(capfd):
     # Set up the handler.
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
+    logger.reset_state()
     formatter = ChromiumFormatter()
     logger.add_handler(handlers.StreamHandler(output, formatter))
 
@@ -204,6 +213,7 @@ def test_subtest_failure(capfd):
     # run the test to completion.
     logger.test_end("t1", status="PASS", expected="PASS", message="top_message")
     logger.suite_end()
+    logger.shutdown()
 
     # check nothing got output to stdout/stderr
     # (note that mozlog outputs exceptions during handling to stderr!)
@@ -246,6 +256,7 @@ def test_expected_subtest_failure(capfd):
     # Set up the handler.
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
+    logger.reset_state()
     formatter = ChromiumFormatter()
     logger.add_handler(handlers.StreamHandler(output, formatter))
 
@@ -267,6 +278,7 @@ def test_expected_subtest_failure(capfd):
     # run the test to completion.
     logger.test_end("t1", status="OK", expected="OK")
     logger.suite_end()
+    logger.shutdown()
 
     # check nothing got output to stdout/stderr
     # (note that mozlog outputs exceptions during handling to stderr!)
@@ -302,6 +314,7 @@ def test_unexpected_subtest_pass(capfd):
     # Set up the handler.
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
+    logger.reset_state()
     formatter = ChromiumFormatter()
     logger.add_handler(handlers.StreamHandler(output, formatter))
 
@@ -319,6 +332,7 @@ def test_unexpected_subtest_pass(capfd):
     # run the test to completion.
     logger.test_end("t1", status="PASS", expected="PASS")
     logger.suite_end()
+    logger.shutdown()
 
     # check nothing got output to stdout/stderr
     # (note that mozlog outputs exceptions during handling to stderr!)
@@ -355,6 +369,7 @@ def test_expected_test_fail(capfd):
     # Set up the handler.
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
+    logger.reset_state()
     logger.add_handler(handlers.StreamHandler(output, ChromiumFormatter()))
 
     # Run some tests with different statuses: 3 passes, 1 timeout
@@ -362,6 +377,7 @@ def test_expected_test_fail(capfd):
     logger.test_start("t1")
     logger.test_end("t1", status="ERROR", expected="ERROR")
     logger.suite_end()
+    logger.shutdown()
 
     # check nothing got output to stdout/stderr
     # (note that mozlog outputs exceptions during handling to stderr!)
@@ -389,6 +405,7 @@ def test_unexpected_test_fail(capfd):
     # Set up the handler.
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
+    logger.reset_state()
     logger.add_handler(handlers.StreamHandler(output, ChromiumFormatter()))
 
     # Run some tests with different statuses: 3 passes, 1 timeout
@@ -396,6 +413,7 @@ def test_unexpected_test_fail(capfd):
     logger.test_start("t1")
     logger.test_end("t1", status="ERROR", expected="OK")
     logger.suite_end()
+    logger.shutdown()
 
     # check nothing got output to stdout/stderr
     # (note that mozlog outputs exceptions during handling to stderr!)
@@ -424,6 +442,7 @@ def test_flaky_test_expected(capfd):
     # set up the handler.
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
+    logger.reset_state()
     logger.add_handler(handlers.StreamHandler(output, ChromiumFormatter()))
 
     # Run a test that is known to be flaky
@@ -431,6 +450,7 @@ def test_flaky_test_expected(capfd):
     logger.test_start("t1")
     logger.test_end("t1", status="ERROR", expected="OK", known_intermittent=["ERROR", "TIMEOUT"])
     logger.suite_end()
+    logger.shutdown()
 
     # check nothing got output to stdout/stderr
     # (note that mozlog outputs exceptions during handling to stderr!)
@@ -460,6 +480,7 @@ def test_flaky_test_unexpected(capfd):
     # set up the handler.
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
+    logger.reset_state()
     logger.add_handler(handlers.StreamHandler(output, ChromiumFormatter()))
 
     # Run a test that is known to be flaky
@@ -467,6 +488,7 @@ def test_flaky_test_unexpected(capfd):
     logger.test_start("t1")
     logger.test_end("t1", status="ERROR", expected="OK", known_intermittent=["TIMEOUT"])
     logger.suite_end()
+    logger.shutdown()
 
     # check nothing got output to stdout/stderr
     # (note that mozlog outputs exceptions during handling to stderr!)
@@ -495,6 +517,7 @@ def test_precondition_failed(capfd):
     # set up the handler.
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
+    logger.reset_state()
     logger.add_handler(handlers.StreamHandler(output, ChromiumFormatter()))
 
     # Run a test with a precondition failure
@@ -502,6 +525,7 @@ def test_precondition_failed(capfd):
     logger.test_start("t1")
     logger.test_end("t1", status="PRECONDITION_FAILED", expected="OK")
     logger.suite_end()
+    logger.shutdown()
 
     # check nothing got output to stdout/stderr
     # (note that mozlog outputs exceptions during handling to stderr!)
@@ -523,6 +547,45 @@ def test_precondition_failed(capfd):
     assert test_obj["is_unexpected"] is True
 
 
+def test_repeated_runs(capfd):
+    # Check that the logger outputs one report after multiple test suite runs.
+
+    # Set up the handler.
+    output = StringIO()
+    logger = structuredlog.StructuredLogger("test_a")
+    logger.reset_state()
+    logger.add_handler(handlers.StreamHandler(output, ChromiumFormatter()))
+
+    # Run a test suite for the first time.
+    logger.suite_start(["t1"], run_info={}, time=123)
+    logger.test_start("t1")
+    logger.test_end("t1", status="PASS", expected="PASS", known_intermittent=[])
+    logger.suite_end()
+
+    # Run the test suite for the second time.
+    logger.suite_start(["t1"], run_info={}, time=456)
+    logger.test_start("t1")
+    logger.test_end("t1", status="FAIL", expected="PASS", known_intermittent=[])
+    logger.suite_end()
+
+    logger.shutdown()
+
+    # check nothing got output to stdout/stderr
+    # (note that mozlog outputs exceptions during handling to stderr!)
+    captured = capfd.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""
+
+    # check the actual output of the formatter
+    output.seek(0)
+    output_json = json.load(output)
+
+    # The latest status (FAIL) replaces the earlier one (PASS).
+    test_obj = output_json["tests"]["t1"]
+    assert test_obj["actual"] == "FAIL"
+    assert test_obj["expected"] == "PASS"
+
+
 def test_known_intermittent_empty(capfd):
     # If the known_intermittent list is empty, we want to ensure we don't append
     # any extraneous characters to the output.
@@ -530,6 +593,7 @@ def test_known_intermittent_empty(capfd):
     # set up the handler.
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
+    logger.reset_state()
     logger.add_handler(handlers.StreamHandler(output, ChromiumFormatter()))
 
     # Run a test and include an empty known_intermittent list
@@ -537,6 +601,7 @@ def test_known_intermittent_empty(capfd):
     logger.test_start("t1")
     logger.test_end("t1", status="OK", expected="OK", known_intermittent=[])
     logger.suite_end()
+    logger.shutdown()
 
     # check nothing got output to stdout/stderr
     # (note that mozlog outputs exceptions during handling to stderr!)
@@ -561,6 +626,7 @@ def test_known_intermittent_duplicate(capfd):
     # Set up the handler.
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
+    logger.reset_state()
     logger.add_handler(handlers.StreamHandler(output, ChromiumFormatter()))
 
     # There are two duplications in this input:
@@ -571,6 +637,7 @@ def test_known_intermittent_duplicate(capfd):
     logger.test_start("t1")
     logger.test_end("t1", status="ERROR", expected="ERROR", known_intermittent=["FAIL", "ERROR"])
     logger.suite_end()
+    logger.shutdown()
 
     # Check nothing got output to stdout/stderr.
     # (Note that mozlog outputs exceptions during handling to stderr!)
@@ -594,6 +661,7 @@ def test_reftest_screenshots(capfd):
     # Set up the handler.
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
+    logger.reset_state()
     logger.add_handler(handlers.StreamHandler(output, ChromiumFormatter()))
 
     # Run a reftest with reftest_screenshots.
@@ -607,6 +675,7 @@ def test_reftest_screenshots(capfd):
         ]
     })
     logger.suite_end()
+    logger.shutdown()
 
     # check nothing got output to stdout/stderr
     # (note that mozlog outputs exceptions during handling to stderr!)
@@ -631,6 +700,7 @@ def test_process_output_crashing_test(capfd):
     # Set up the handler.
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
+    logger.reset_state()
     logger.add_handler(handlers.StreamHandler(output, ChromiumFormatter()))
 
     logger.suite_start(["t1", "t2", "t3"], run_info={}, time=123)
@@ -652,6 +722,7 @@ def test_process_output_crashing_test(capfd):
     logger.test_end("t3", status="FAIL", expected="PASS")
 
     logger.suite_end()
+    logger.shutdown()
 
     # check nothing got output to stdout/stderr
     # (note that mozlog outputs exceptions during handling to stderr!)

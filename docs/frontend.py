@@ -84,7 +84,8 @@ def docker_run(**kwargs):
     if os.isatty(os.isatty(sys.stdout.fileno())):
         cmd.append("-it")
     cmd.extend(["wpt:docs", "./wpt"])
-    # /app/venv is created and activated in the Dockerfile
+    # /app/venv is created during docker build and is always active inside the
+    # container.
     cmd.extend(["--venv", "/app/venv", "--skip-venv-setup"])
     cmd.extend(["build-docs", "--type", kwargs["type"]])
     if kwargs["serve"] is not None:

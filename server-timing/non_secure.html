@@ -19,8 +19,6 @@
             }).observe({type: 'resource'});
         });
 
-        console.log(entry.serverTiming);
-
         assert_false(Reflect.has(entry, 'serverTiming'));
     }, 'Server-Timing should be limited to secure contexts');
 </script>

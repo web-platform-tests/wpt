@@ -239,7 +239,7 @@ async function create_prerendered_page(t, opt = {}) {
   }
 
   async function activate() {
-    const prenredering = await activateOrDiscard();
+    const prerendering = await tryToActivate();
     if (prerendering !== 'activated')
       throw new Error('Should not be prerendering at this point')
   }

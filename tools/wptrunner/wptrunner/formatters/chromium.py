@@ -200,8 +200,9 @@ class ChromiumFormatter(base.BaseFormatter):  # type: ignore
     def suite_start(self, data):
         # |data| contains a timestamp in microseconds, while time.time() gives
         # it in seconds.
-        self.start_timestamp_seconds = (float(data["time"]) / 1000 if "time" in data
-                                        else time.time())
+        if self.start_timestamp_seconds is None:
+            self.start_timestamp_seconds = (float(data["time"]) / 1000 if "time" in data
+                                            else time.time())
 
     def test_status(self, data):
         test_name = data["test"]
@@ -257,7 +258,7 @@ class ChromiumFormatter(base.BaseFormatter):  # type: ignore
         # New test, new browser logs.
         self.browser_log = []
 
-    def suite_end(self, data):
+    def shutdown(self, data):
         # Create the final result dictionary
         final_result = {
             # There are some required fields that we just hard-code.

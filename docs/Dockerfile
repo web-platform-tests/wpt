@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 # General requirements not in the base image
 RUN apt-get -qqy update \
-  && apt-get -qqy install git npm python3.9-venv
+  && apt-get -qqy install git npm python3.9 python3.9-venv
 
 WORKDIR /app/
 

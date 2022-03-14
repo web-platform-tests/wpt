@@ -35,7 +35,7 @@ function test_prerender_response_code(code, allow) {
   },`Responses with code ${code} should ${allow ? 'go ahead with' : 'discard'} prerendering`);
 }
 
-[200, 201, 202, 203, 404, 500].forEach(code => test_prerender_response_code(code, true));
-[204, 205, 503].forEach(code => test_prerender_response_code(code, false));
+[200, 201, 202, 203].forEach(code => test_prerender_response_code(code, true));
+[204, 205, 402, 404, 500, 503].forEach(code => test_prerender_response_code(code, false));
 </script>
 </body>

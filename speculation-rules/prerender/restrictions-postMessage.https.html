@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<title>Same-origin prerendering should not be able to post cross-context messages</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<body>
+<script>
+
+setup(() => assertSpeculationRulesIsSupported());
+
+promise_test(async t => {
+  const {exec, activate} = await create_prerendered_page(t);
+  let activated = false;
+  let received = false;
+  const uid = token();
+  const bc = new BroadcastChannel(uid);
+  const didReceiveMessage = new Promise(resolve => bc.addEventListener('message',
+    t.step_func(async () => {
+      resolve(activated);
+   })));
+
+  await exec(uid => {
+    const bc = new BroadcastChannel(uid);
+    bc.postMessage('hello');
+  }, [uid]);
+
+  await activate();
+  const activatedWhenMessageReceived = await didReceiveMessage;
+  assert_true(activatedWhenMessageReceived, "message should be received after activation");
+}, "BroadcastChannel.postMessage should be deferred");
+
+</script>
+</body>

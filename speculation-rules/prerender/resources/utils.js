@@ -241,7 +241,7 @@ async function create_prerendered_page(t, opt = {}) {
   async function activate() {
     const prerendering = await tryToActivate();
     if (prerendering !== 'activated')
-      throw new Error('Should not be prerendering at this point')
+      throw new Error('Prerendering context unexpectedly discarded');
   }
 
   return {

@@ -15,7 +15,9 @@ COPY package.json requirements.txt .
 RUN npm install .
 ENV PATH=/app/node_modules/.bin:$PATH
 
-# Inspired by https://pythonspeed.com/articles/activate-virtualenv-dockerfile/
+# Use venv to create a virtual environment with the docs dependencies installed,
+# setting the environment variables needed for this to always be active. The
+# `./wpt build-docs` then uses this venv with --skip-venv-setup.
 ENV VIRTUAL_ENV=/app/venv
 RUN python3.9 -m venv $VIRTUAL_ENV
 ENV PATH=$VIRTUAL_ENV/bin:$PATH

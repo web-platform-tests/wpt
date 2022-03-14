@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<title>Same-origin prerendering can access localStorage</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/utils.js"></script>
+<body>
+<script>
+
+setup(() => assertSpeculationRulesIsSupported());
+function test_prerender_response_code(code, allow) {
+  promise_test(async t => {
+    const uid = token();
+    const url = `resources/prerender-response-code.html?code=${code}&uid=${uid}&timeout=${code < 204 ? 0 : 500}`;
+    const bc = new BroadcastChannel(uid);
+    const waitForState = (...states) => new Promise(resolve => bc.addEventListener('message', ({data}) => {
+      if (states.includes(data))
+        resolve(data);
+    }));
+
+    t.add_cleanup(() => {
+      bc.postMessage('close');
+      bc.close();
+    });
+
+    const popup = window.open(url, '_blank', 'noopener');
+    await waitForState('prerendering');
+    bc.postMessage('activate');
+    const state = await waitForState('activated', 'discarded');
+    bc.postMessage('close');
+    const count = +(await (await fetch(`resources/echo-response-code.py?mode=get&uid=${uid}`)).text());
+    assert_equals(count, allow ? 1 : 2);
+    assert_equals(state, allow ? 'activated' : 'discarded');
+  },`Responses with code ${code} should ${allow ? 'go ahead with' : 'discard'} prerendering`);
+}
+
+[200, 201, 202, 203, 404, 500].forEach(code => test_prerender_response_code(code, true));
+[204, 205, 503].forEach(code => test_prerender_response_code(code, false));
+</script>
+</body>

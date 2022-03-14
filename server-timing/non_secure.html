@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/performance-timeline-utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<body>
+<script>
+    promise_test(async t => {
+        const image = document.createElement('img');
+        image.src = 'resources/blue.png';
+        document.body.appendChild(image);
+        t.add_cleanup(() => image.remove());
+        const entry = await new Promise(resolve => {
+            new PerformanceObserver(() => {
+                const entries = performance.getEntriesByName(image.src);
+                if (entries.length)
+                    resolve(entries[0]);
+            }).observe({type: 'resource'});
+        });
+
+        console.log(entry.serverTiming);
+
+        assert_false(Reflect.has(entry, 'serverTiming'));
+    }, 'Server-Timing should be limited to secure contexts');
+</script>

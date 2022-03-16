@@ -9,28 +9,37 @@
   <style>
   div
     {
-      height: 100px;
+      border: transparent solid 50px;
+      border-image-source: url("../support/9-colored-areas.png");
+      border-image-slice: 5% 10% 15% 20%;
       margin-bottom: 8px;
-      width: 100px;
+      width: 0px;
     }
 
   div#sub-test1
     {
-      background-image: url("../support/border-image-width-009-s1.png");
+      border-image-width: 50px;
+    }
+
+  div#sub-test2
+    {
+      border-image-width: 50px 20px;
     }
 
   div#sub-test3
     {
-      background-image: url("../support/border-image-width-009-s3.png");
+      border-image-width: 70px 0px 30px 0px;
     }
 
   div#sub-test4
     {
-      background-image: url("../support/border-image-width-009-s4.png");
+      border-image-width: 0px 70px 0px 30px;
     }
   </style>
 
   <div id="sub-test1"></div>
+
+  <div id="sub-test2"></div>
 
   <div id="sub-test3"></div>
 

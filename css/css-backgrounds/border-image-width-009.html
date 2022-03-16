@@ -2,14 +2,14 @@
 
   <meta charset="UTF-8">
 
-  <title>CSS Backgrounds and Borders Test: border image area - border-image-width with 1 or 4 values with percentage unit</title>
+  <title>CSS Backgrounds and Borders Test: border image area - border-image-width with 1, 2 or 4 values with percentage unit</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="http://www.w3.org/TR/css3-background/#the-border-image-width">
   <link rel="match" href="reference/border-image-width-009-ref.html">
 
   <meta name="flags" content="">
-  <meta content="This test checks that the border image area can still exist even if the border area (or border belt) of an element is inexistent. In this test, the border image fills the content area, the padding area and 25px of the extended-beyond-border-belt area, 25px into the margin area of each of the 3 tested block elements." name="assert">
+  <meta content="This test checks that the border image area can still exist even if the border area (or border belt) of an element is inexistent. In this test, the border image fills the content area, the padding area and 25px of the extended-beyond-border-belt area, 25px into the margin area of each of the 4 tested block elements." name="assert">
 
   <style>
   div
@@ -48,11 +48,21 @@
       margin-top: 33px;
     }
 
+  div#sub-test2
+    {
+      border-image-width: 70% 30%;
+      /*
+      In this sub-test2, the border-image-width divide the border
+      image area into six (6) parts, not nine parts. The center
+      (fill) area is 40px wide by -40px tall.
+      */
+    }
+
   div#sub-test3
     {
       border-image-width: 70% 0% 30% 0%;
       /*
-      In this test sub-test2, the border-image-width divide the border
+      In this test sub-test3, the border-image-width divide the border
       image area into two (2) parts, not nine parts. The center
       (fill) area is 100px wide by 0px tall.
       */
@@ -62,13 +72,15 @@
     {
       border-image-width: 0% 70% 0% 30%;
       /*
-      In this sub-test3, the border-image-width divide the border
+      In this sub-test4, the border-image-width divide the border
       image area into two (2) parts, not nine parts. The center
       (fill) area is 0px wide by 100px tall. */
     }
   </style>
 
   <div id="sub-test1"></div>
+
+  <div id="sub-test2"></div>
 
   <div id="sub-test3"></div>
 

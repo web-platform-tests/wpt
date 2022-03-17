@@ -4,7 +4,6 @@
 <!-- This image will cause a CSP violation, which will trigger an immediate report -->
 <script>
     const href = "/reporting/resources/fail.png";
-    const uid = new URLSearchParams(location.search).get('uid');
 
     window.addEventListener('load', async () => {
         // Trigger a CSP error.

@@ -1,4 +1,4 @@
-# Installation and Detection Protocol of Browser Binaries and Webdrivers for Chrome and Chromium
+# Detection and Installation of Browser and WebDriver Binaries and for Chrome and Chromium
 
 This is a detailed description of the process in which `wpt` detects
 and installs the browser components for Chrome and Chromium.
@@ -37,9 +37,9 @@ is no need to reinstall ChromeDriver versions if switching between testing Chrom
 have a browser binary on their system that can be detected or provide a path explicitly
 using the `--binary` flag.
 
-- **Webdriver**
+- **WebDriver**
 : A version of ChromeDriver will only be installed once a Chrome browser binary
-has been given or detected. A FileNotFoundError will be raised if the user tries
+has been given or detected. A `FileNotFoundError` will be raised if the user tries
 to download ChromeDriver via the install command and a browser binary is not located.
 `wpt` will install a version of ChromeDriver that version-matches the browser binary.
 The download source for this ChromeDriver is

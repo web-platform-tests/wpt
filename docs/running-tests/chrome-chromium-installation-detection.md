@@ -33,7 +33,7 @@ is no need to reinstall ChromeDriver versions if switching between testing Chrom
 ### Installation
 - **Browser Binary**
 : Browser binary installation is not provided through `wpt` and will throw a
-NotImplementedError if attempted via the install command. The user will need to
+`NotImplementedError` if attempted via `./wpt install`. The user will need to
 have a browser binary on their system that can be detected or provide a path explicitly
 using the `--binary` flag.
 

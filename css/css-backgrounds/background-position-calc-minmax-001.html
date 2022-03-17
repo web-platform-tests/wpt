@@ -8,7 +8,7 @@
   <link rel="help" href="https://www.w3.org/TR/css-backgrounds-3/#background-position">
   <link rel="help" href="https://www.w3.org/TR/css-values-4/#comp-func">
 
-   <!--
+  <!--
 
   Issue 4227: [css-values-4] min/max(%, %) should explicitly evaluate
   against the % value, not the resolved value
@@ -24,10 +24,16 @@
   <link rel="match" href="reference/ref-filled-green-100px-square.xht">
 
   <meta content="" name="flags">
-  <meta content="This test checks that when the background positioning area is smaller than the width of background image, then the 'background-position' percentage value will resolve as a negative offset. In this test, 'min(0%, 100%)' will be resolved as 'min(0px, -100px)' and 'max(0%, 100%)' will be resolved as 'max(0px, -100px)'. Therefore, the horizontal offset of the background image will be -100px (therefore 'pushing' the background image toward the lefthand side, beyond the left edge of the div element) and the vertical offset of the background image will be 0px (therefore the background image top edge is at the top edge of the div element)." name="assert">
+  <meta content="This test checks that when the background positioning area is smaller than the width of background image, then the 'background-position' percentage value will resolve as a negative offset." name="assert">
 
   <style>
   div
+    {
+      height: 25px;
+      width: 100px;
+    }
+
+  div#first-sub-test
     {
       background-image: url("support/pattern-rg-rr-200x200.png");
       background-position: min(0%, 100%) max(0%, 100%);
@@ -47,39 +53,33 @@
     where the size of the image is the size given by background-size.
 
     */
-
-      height: 100px;
-      width: 100px;
     }
 
-  /*
+  div#second-sub-test
+    {
+      background-image: url("support/pattern-rr-rg-200x200.png");
+      background-position: min(0%, 100%) min(0%, 100%);
+    }
 
-     background image      div element
-    |..................!__________________!
-    |                  !                  !
-    |                  !                  !
-    |                  !                  !
-    |       red        !      green       ! <== div element
-    |      area        !       area       !
-    |                  !                  !
-    |                  !                  !
-    |                  !                  !
-    |                  !__________________!
-    |                                     |
-    |                                     |
-    |                                     |
-    |       red               red         | background image
-    |      area              area         |
-    |                                     |
-    |                                     |
-    |                                     |
-    |.....................................|
+  div#third-sub-test
+    {
+      background-image: url("support/pattern-rr-gr-200x200.png");
+      background-position: max(0%, 100%) min(0%, 100%);
+    }
 
-       background image   background image
-
-  */
+  div#fourth-sub-test
+    {
+      background-image: url("support/pattern-gr-rr-200x200.png");
+      background-position: max(0%, 100%) max(0%, 100%);
+    }
   </style>
 
   <p>Test passes if there is a filled green square and <strong>no red</strong>.
 
-  <div></div>
+  <div id="first-sub-test"></div>
+
+  <div id="second-sub-test"></div>
+
+  <div id="third-sub-test"></div>
+
+  <div id="fourth-sub-test"></div>

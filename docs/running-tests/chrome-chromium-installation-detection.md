@@ -9,19 +9,19 @@ is trying to test.
 ## Chrome
 
 ### Detection
-- **Browser Binary**
+**Browser**
 : Because `wpt` does not offer installation of Chrome browser binaries,
 it will not attempt to detect a Chrome browser binary in the virtual environment
 directory. Instead, `wpt` attempts to check commonly-used installation locations on
 various operating systems. This detection process is only used if the user has not passed
 a binary path as an argument using the `--binary` flag.
 
-- **Webdriver**
+- **WebDriver**
 : ChromeDriver detection for Chrome will only occur if a valid browser binary
 has been found and the version for that binary is discernible. Once the browser
 binary version is detected, the virtual environment directory will be checked to see
 if a matching ChromeDriver version is already installed. If the browser and ChromeDriver
-versions do not match, the ChromeDriver file will be removed from the directory and
+versions do not match, the ChromeDriver binary will be removed from the directory and
 the user will be prompted to begin the webdriver installation process.
 
 Note: Both Chrome and Chromium’s versions of ChromeDriver are stored in separate
@@ -31,7 +31,7 @@ using Chromium’s ChromeDriver for a Chrome run and vice versa. Additionally, t
 is no need to reinstall ChromeDriver versions if switching between testing Chrome and Chromium.
 
 ### Installation
-- **Browser Binary**
+**Browser**
 : Browser binary installation is not provided through `wpt` and will throw a
 `NotImplementedError` if attempted via `./wpt install`. The user will need to
 have a browser binary on their system that can be detected or provide a path explicitly
@@ -40,7 +40,7 @@ using the `--binary` flag.
 - **WebDriver**
 : A version of ChromeDriver will only be installed once a Chrome browser binary
 has been given or detected. A `FileNotFoundError` will be raised if the user tries
-to download ChromeDriver via the install command and a browser binary is not located.
+to download ChromeDriver via `./wpt install` and a browser binary is not located.
 `wpt` will install a version of ChromeDriver that version-matches the browser binary.
 The download source for this ChromeDriver is
 [described here](http://chromedriver.chromium.org/downloads/version-selection).
@@ -55,17 +55,17 @@ of Chromium's ChromeDriver is installed.
 ## Chromium
 
 ### Detection
-- **Browser Binary**
-: Chromium browser binary detection is only executed on the virtual environment directory
-`_venv3/browsers/{channel}/`. Chromium’s implementation will not attempt to detect a Chromium
-browser binary on the user’s system outside of this directory. This detection process is only
-used if the user has not passed a binary path as an argument using the `--binary` flag.
+
+**Browser**: Chromium browser binary detection is only done in the virtual
+environment directory `_venv3/browsers/{channel}/`, not on the user’s system
+outside of this directory. This detection process is only used if the user has
+not passed a binary path as an argument using the `--binary` flag.
 
 - **Webdriver**
 : ChromeDriver detection for Chromium will only occur if a valid browser binary has
 been found and the version for that binary is discernible. Once the browser binary version
 is detected, the virtual environment directory will be checked to see if a matching ChromeDriver
-version is already installed. If the versions do not match, the ChromeDriver file will be removed
+version is already installed. If the versions do not match, the ChromeDriver binary will be removed
 from the directory and the user will be prompted to begin the webdriver installation process.
 
 ### Installation
@@ -77,7 +77,7 @@ The last revision associated with the user’s operating system will be download
 Chromium does not have varying channels, so the installation uses the default `nightly`
 designation. The install path is `_venv3/browsers/nightly/{chromium_binary}`.
 
-**Important Note**: If this download process is successful, the Chromium snapshot url
+Note: If this download process is successful, the Chromium snapshot URL
 that the browser binary was downloaded from will be kept during the current `wpt` invocation.
 If a Chromium ChromeDriver is also downloaded later to match this browser binary, the same
 url is used for that download to ensure both components are downloaded from the same source.

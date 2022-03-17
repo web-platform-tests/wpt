@@ -653,7 +653,7 @@ be constructed by chaining method calls.</p>
    <span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">)</span>
    <span class="p">.</span><span class="nx">keyUp</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">);</span>
 
-<span class="nx">actions</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
+<span class="k">await</span> <span class="nx">actions</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
 </pre></div>
 </div>
 <dl class="js function">
@@ -966,7 +966,7 @@ method on the builder:</p>
     <span class="p">.</span><span class="nx">setContext</span><span class="p">(</span><span class="nx">frames</span><span class="p">[</span><span class="mf">0</span><span class="p">])</span>
     <span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">)</span>
     <span class="p">.</span><span class="nx">keyUp</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">);</span>
-<span class="nx">actions</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
+<span class="k">await</span> <span class="nx">actions</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>Note that if an action uses an element reference, the context will be

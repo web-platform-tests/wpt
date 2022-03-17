@@ -745,10 +745,9 @@ class Chromium(ChromeChromiumBase):
     """
     product = "chromium"
 
-    def __init__(self, logger):
-        super().__init__(logger)
-        # Name of browser binary zip file downloaded from Chromium Snapshots.
-        self._chromium_package_name = f"chrome-{self.platform.lower()}"
+    @property
+    def _chromium_package_name(self):
+        return f"chrome-{self.platform.lower()}"
 
     def _find_binary_in_directory(self, directory):
         """Search for Chromium browser binary in a given directory."""
@@ -858,7 +857,7 @@ class Chrome(ChromeChromiumBase):
                 latest = get(latest_url).text.strip()
             except requests.RequestException:
                 # We currently use the latest Chromium revision to get a compatible Chromedriver
-                # version for Chrome Dev, since it is not available through the chromedriver API.
+                # version for Chrome Dev, since it is not available through the ChromeDriver API.
                 # If we've gotten to this point, it is assumed that this is Chrome Dev.
                 return f"{self._get_chromium_download_url(version)}{filename}"
         return f"https://chromedriver.storage.googleapis.com/{latest}/{filename}"
@@ -895,6 +894,9 @@ class Chrome(ChromeChromiumBase):
 
     def webdriver_supports_browser(self, webdriver_binary, browser_binary, browser_channel):
         """Check that the browser binary and ChromeDriver versions are a valid match."""
+        # TODO(DanielRyanSmith): The procedure for matching the browser and ChromeDriver
+        #     versions here is too loose. More strict rules for version matching
+        #     should be in place. (#33231)
         chromedriver_version = self.webdriver_version(webdriver_binary)
         if not chromedriver_version:
             self.logger.warning("Unable to get version for ChromeDriver "

@@ -5,7 +5,7 @@
 <script>
     const href = "/reporting/resources/fail.png";
     const uid = new URLSearchParams(location.search).get('uid');
-//    const bc = new BroadcastChannel(uid);
+
     window.addEventListener('load', async () => {
         // Trigger a CSP error.
         await new Promise(resolve => {
@@ -24,8 +24,6 @@
             img.addEventListener('error', resolve);
             document.body.appendChild(img);
         });
-
-//        bc.postMessage('done');
     });
 </script>
 </body>

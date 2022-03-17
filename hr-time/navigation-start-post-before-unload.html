@@ -11,7 +11,7 @@
         while (performance.now() < start + millis) {}
     }
     promise_test(async t => {
-        const delay = 1000;
+        const delay = 3000;
         const iframe = document.createElement('iframe');
         iframe.src = './resources/now_frame.html';
         document.body.appendChild(iframe);

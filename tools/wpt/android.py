@@ -5,6 +5,7 @@ import shutil
 import subprocess
 
 import requests
+from .wpt import venv_dir
 
 android_device = None
 
@@ -36,7 +37,7 @@ def get_parser_start():
 def get_sdk_path(dest):
     if dest is None:
         # os.getcwd() doesn't include the venv path
-        dest = os.path.join(wpt_root, "_venv")
+        dest = os.path.join(wpt_root, venv_dir())
     dest = os.path.join(dest, 'android-sdk')
     return os.path.abspath(os.environ.get('ANDROID_SDK_PATH', dest))
 
@@ -88,8 +89,8 @@ def install_android_packages(logger, sdk_path, no_prompt=False):
         raise OSError("Can't find sdkmanager at %s" % sdk_manager_path)
 
     packages = ["platform-tools",
-                "build-tools;30.0.2",
-                "platforms;android-30",
+                "build-tools;31.0.0",
+                "platforms;android-31",
                 "emulator"]
 
     # TODO: make this work non-internactively
@@ -106,18 +107,18 @@ def install_android_packages(logger, sdk_path, no_prompt=False):
         raise subprocess.CalledProcessError(proc.returncode, cmd)
 
 
-def get_emulator(sdk_path):
+def get_emulator(sdk_path, device_serial=None):
     if android_device is None:
         do_delayed_imports()
     if "ANDROID_SDK_ROOT" not in os.environ:
         os.environ["ANDROID_SDK_ROOT"] = sdk_path
     substs = {"top_srcdir": wpt_root, "TARGET_CPU": "x86"}
-    emulator = android_device.AndroidEmulator("*", substs=substs)
+    emulator = android_device.AndroidEmulator("*", substs=substs, device_serial=device_serial)
     emulator.emulator_path = os.path.join(sdk_path, "emulator", "emulator")
     return emulator
 
 
-def install(logger, reinstall=False, no_prompt=False):
+def install(logger, reinstall=False, no_prompt=False, device_serial=None):
     if reinstall:
         uninstall_sdk()
 
@@ -128,18 +129,18 @@ def install(logger, reinstall=False, no_prompt=False):
     if "ANDROID_SDK_ROOT" not in os.environ:
         os.environ["ANDROID_SDK_ROOT"] = dest
 
-    emulator = get_emulator(dest)
+    emulator = get_emulator(dest, device_serial=device_serial)
     return emulator
 
 
-def start(logger, emulator=None, reinstall=False):
+def start(logger, emulator=None, reinstall=False, device_serial=None):
     if reinstall:
         install(reinstall=True)
 
     sdk_path = get_sdk_path(None)
 
     if emulator is None:
-        emulator = get_emulator(sdk_path)
+        emulator = get_emulator(sdk_path, device_serial=device_serial)
 
     if not emulator.check_avd():
         logger.critical("Android AVD not found, please run |mach bootstrap|")

@@ -58,7 +58,8 @@ def cleanup_session(session):
         This also includes bringing it out of maximized, minimized,
         or fullscreened state.
         """
-        session.window.size = defaults.WINDOW_SIZE
+        if session.capabilities.get("setWindowRect"):
+            session.window.size = defaults.WINDOW_SIZE
 
     @ignore_exceptions
     def _restore_windows(session):
@@ -113,7 +114,7 @@ def deep_update(source, overrides):
     Modify ``source`` in place.
     """
     for key, value in overrides.items():
-        if isinstance(value, collections.Mapping) and value:
+        if isinstance(value, collections.abc.Mapping) and value:
             returned = deep_update(source.get(key, {}), value)
             source[key] = returned
         else:

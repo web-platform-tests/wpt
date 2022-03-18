@@ -3,4 +3,4 @@ sphinx-argparse==0.3.1
 sphinx-autobuild==2021.3.14
 sphinx-js==3.1.2
 sphinx==4.4.0
-markupsafe==2.0.1
+markupsafe==2.1.1

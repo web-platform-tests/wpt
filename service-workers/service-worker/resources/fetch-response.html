@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<script>
+    fetch(new URLSearchParams(location.search).get('path')).then(async response => {
+        const buffer = await response.arrayBuffer();
+        parent.postMessage({
+            data: buffer,
+            entry: performance.getEntriesByType('resource')[0].toJSON(),
+        }, '*');
+    });
+</script>

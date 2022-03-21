@@ -30,6 +30,8 @@ def executor_kwargs(test_type, test_environment, run_info_data, **kwargs):
 
     if test_type in ("reftest", "print-reftest"):
         executor_kwargs["screenshot_cache"] = test_environment.cache_manager.dict()
+        executor_kwargs["add_all_screenshots_to_artifacts"] = (
+            kwargs["add_all_screenshots_to_artifacts"])
 
     if test_type == "wdspec":
         executor_kwargs["binary"] = kwargs.get("binary")
@@ -357,12 +359,13 @@ class RefTestExecutor(TestExecutor):
     is_print = False
 
     def __init__(self, logger, browser, server_config, timeout_multiplier=1, screenshot_cache=None,
-                 debug_info=None, **kwargs):
+                 debug_info=None, add_all_screenshots_to_artifacts=False, **kwargs):
         TestExecutor.__init__(self, logger, browser, server_config,
                               timeout_multiplier=timeout_multiplier,
                               debug_info=debug_info)
 
         self.screenshot_cache = screenshot_cache
+        self.add_all_screenshots_to_artifacts = add_all_screenshots_to_artifacts
 
 
 class CrashtestExecutor(TestExecutor):
@@ -465,7 +468,7 @@ class RefTestImplementation(object):
             if not equal:
                 return (False if relation == "==" else True, page_idx)
         # All screenshots were equal within the fuzziness
-        return (True if relation == "==" else False, None)
+        return (True if relation == "==" else False, -1)
 
     def get_differences(self, screenshots, urls, page_idx=None):
         from PIL import Image, ImageChops, ImageStat
@@ -504,6 +507,8 @@ class RefTestImplementation(object):
 
         stack = list(((test, item[0]), item[1]) for item in reversed(test.references))
         page_idx = None
+        log_data = []
+
         while stack:
             hashes = [None, None]
             screenshots = [None, None]
@@ -515,45 +520,56 @@ class RefTestImplementation(object):
             for i, node in enumerate(nodes):
                 success, data = self.get_hash(node, viewport_size, dpi, page_ranges)
                 if success is False:
-                    return {"status": data[0], "message": data[1]}
+                    test_results = {"status": data[0], "message": data[1]}
+                    if self.executor.add_all_screenshots_to_artifacts and log_data:
+                        test_results["extra"] = {"reftest_screenshots": log_data}
+                    return test_results
 
                 hashes[i], screenshots[i] = data
                 urls[i] = node.url
 
             is_pass, page_idx = self.check_pass(hashes, screenshots, urls, relation, fuzzy)
+            if self.executor.add_all_screenshots_to_artifacts:
+                log_data.extend(
+                    [{"url": urls[0], "screenshot": screenshots[0][page_idx],
+                      "hash": hashes[0][page_idx]},
+                     relation,
+                     {"url": urls[1], "screenshot": screenshots[1][page_idx],
+                      "hash": hashes[1][page_idx]}])
+
             if is_pass:
                 fuzzy = self.get_fuzzy(test, nodes, relation)
                 if nodes[1].references:
                     stack.extend(list(((nodes[1], item[0]), item[1])
                                       for item in reversed(nodes[1].references)))
                 else:
+                    test_result = {"status": "PASS", "message": None}
+                    if self.executor.add_all_screenshots_to_artifacts:
+                        test_result["extra"] = {"reftest_screenshots": log_data}
                     # We passed
-                    return {"status": "PASS", "message": None}
+                    return test_result
 
         # We failed, so construct a failure message
 
-        if page_idx is None:
-            # default to outputting the last page
-            page_idx = -1
         for i, (node, screenshot) in enumerate(zip(nodes, screenshots)):
             if screenshot is None:
                 success, screenshot = self.retake_screenshot(node, viewport_size, dpi, page_ranges)
                 if success:
                     screenshots[i] = screenshot
+        test_result =  {"status": "FAIL",
+                        "message": "\n".join(self.message)}
 
-        log_data = [
-            {"url": nodes[0].url,
-             "screenshot": screenshots[0][page_idx],
-             "hash": hashes[0][page_idx]},
-            relation,
-            {"url": nodes[1].url,
-             "screenshot": screenshots[1][page_idx],
-             "hash": hashes[1][page_idx]},
-        ]
+        if self.executor.add_all_screenshots_to_artifacts:
+            test_result["extra"] = {"reftest_screenshots": log_data}
+        else:
+            test_result["extra"] = {"reftest_screenshots": [
+                {"url": nodes[0].url, "screenshot": screenshots[0][page_idx],
+                 "hash": hashes[0][page_idx]},
+                relation,
+                {"url": nodes[1].url, "screenshot": screenshots[1][page_idx],
+                 "hash": hashes[1][page_idx]}]}
 
-        return {"status": "FAIL",
-                "message": "\n".join(self.message),
-                "extra": {"reftest_screenshots": log_data}}
+        return test_result
 
     def get_fuzzy(self, root_test, test_nodes, relation):
         full_key = tuple([item.url for item in test_nodes] + [relation])

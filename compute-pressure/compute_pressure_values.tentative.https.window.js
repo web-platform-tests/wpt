@@ -8,8 +8,8 @@ promise_test(async t => {
     const observer = new ComputePressureObserver(
         resolve,
         {cpuUtilizationThresholds: [0.25], cpuSpeedThresholds: [0.75]});
-    t.add_cleanup(() => observer.stop());
-    observer.observe().catch(reject);
+    t.add_cleanup(() => observer.disconnect());
+    observer.observe('cpu').catch(reject);
   });
 
   assert_in_array(update.cpuUtilization, [0.125, 0.625],

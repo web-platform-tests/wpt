@@ -12,7 +12,6 @@ def test_wptreport_runtime(capfd):
     # setup the logger
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
-    logger.reset_state()
     logger.add_handler(handlers.StreamHandler(output, WptreportFormatter()))
 
     # output a bunch of stuff
@@ -42,7 +41,6 @@ def test_wptreport_run_info_optional(capfd):
     # setup the logger
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
-    logger.reset_state()
     logger.add_handler(handlers.StreamHandler(output, WptreportFormatter()))
 
     # output a bunch of stuff
@@ -66,7 +64,6 @@ def test_wptreport_run_info_optional(capfd):
 def test_wptreport_lone_surrogate(capfd):
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
-    logger.reset_state()
     logger.add_handler(handlers.StreamHandler(output, WptreportFormatter()))
 
     # output a bunch of stuff
@@ -100,7 +97,6 @@ def test_wptreport_lone_surrogate(capfd):
 def test_wptreport_known_intermittent(capfd):
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
-    logger.reset_state()
     logger.add_handler(handlers.StreamHandler(output, WptreportFormatter()))
 
     # output a bunch of stuff

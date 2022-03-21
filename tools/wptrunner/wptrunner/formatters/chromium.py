@@ -198,11 +198,13 @@ class ChromiumFormatter(base.BaseFormatter):  # type: ignore
         return expected_statuses
 
     def suite_start(self, data):
-        # |data| contains a timestamp in microseconds, while time.time() gives
+        # |data| contains a timestamp in milliseconds, while time.time() gives
         # it in seconds.
         if self.start_timestamp_seconds is None:
-            self.start_timestamp_seconds = (float(data["time"]) / 1000 if "time" in data
-                                            else time.time())
+            if 'time' in data:
+                self.start_timestamp_seconds = float(data["time"]) / 1000
+            else:
+                self.start_timestamp_seconds = time.time()
 
     def test_status(self, data):
         test_name = data["test"]

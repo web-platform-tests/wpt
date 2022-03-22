@@ -14,7 +14,7 @@ async function tryConnect() {
     // or "failed."
     const pcFailed = (pc) => {
         return new Promise((resolve, _reject) => {
-            pc.onicegatheringstatechange = (e) => {
+            pc.oniceconnectionstatechange = (e) => {
                 if(pc.iceGatheringState === "complete") {
                     resolve(pc.iceConnectionState === "failed");
                 } else if(pc.iceConnectionState !== "new") {

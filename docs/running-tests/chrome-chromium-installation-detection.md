@@ -59,7 +59,7 @@ environment directory `_venv3/browsers/{channel}/`, not on the user’s system
 outside of this directory. This detection process is only used if the user has
 not passed a binary path as an argument using the `--binary` flag.
 
-- **WebDriver**: ChromeDriver detection for Chromium will only occur if a valid browser binary has
+**WebDriver**: ChromeDriver detection for Chromium will only occur if a valid browser binary has
 been found. Once the browser binary version is detected, the virtual environment directory will
 be checked to see if a matching ChromeDriver version is already installed. If the versions do not
 match, the ChromeDriver binary will be removed from the directory and the user will be prompted to

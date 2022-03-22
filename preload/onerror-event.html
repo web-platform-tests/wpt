@@ -46,10 +46,13 @@
             assert_true(scriptFailed, "script triggered error event");
             assert_true(imageFailed, "image triggered error event");
             assert_true(fontFailed, "font triggered error event");
+            assert_true(fetchFailed, "fetch as triggered error event");
+            // TODO(crbug.com/977033): The expectations file for this hides any
+            // errors after the videoFailed line, since only the first failed
+            // assert_true shows up there.
             assert_true(videoFailed, "video triggered error event");
             assert_true(audioFailed, "audio triggered error event");
             assert_true(trackFailed, "track triggered error event");
-            assert_true(fetchFailed, "fetch as triggered error event");
             done();
         } else {
             step_timeout(check_finished, 500);

@@ -8,13 +8,13 @@ are compatible with each other and are the intended items that the user is tryin
 ## Chrome
 
 ### Detection
-**Browser** : Because WPT does not offer installation of Chrome browser binaries, it will
+**Browser**: Because WPT does not offer installation of Chrome browser binaries, it will
 not attempt to detect a Chrome browser binary in the virtual environment directory.
 Instead, commonly-used installation locations on various operating systems are checked to
 detect a valid Chrome binary. This detection process is only used if the user has not passed
 a binary path as an argument using the `--binary` flag.
 
-- **WebDriver** : ChromeDriver detection for Chrome will only occur if a valid browser binary
+**WebDriver**: ChromeDriver detection for Chrome will only occur if a valid browser binary
 has been found. Once the browser binary version is detected, the virtual environment
 directory will be checked to see if a matching ChromeDriver version is already installed.
 If the browser and ChromeDriver versions do not match, the ChromeDriver binary will be
@@ -31,17 +31,17 @@ using Chromium’s ChromeDriver for a Chrome run and vice versa. Additionally, t
 is no need to reinstall ChromeDriver versions if switching between testing Chrome and Chromium.
 
 ### Installation
-**Browser** : Browser binary installation is not provided through WPT and will throw a
+**Browser**: Browser binary installation is not provided through WPT and will throw a
 `NotImplementedError` if attempted via `./wpt install`. The user will need to
 have a browser binary on their system that can be detected or provide a path explicitly
 using the `--binary` flag.
 
-- **WebDriver** : A version of ChromeDriver will only be installed once a Chrome browser binary
+**WebDriver**: A version of ChromeDriver will only be installed once a Chrome browser binary
 has been given or detected. A `FileNotFoundError` will be raised if the user tries to download
 ChromeDriver via `./wpt install` and a browser binary is not located. After browser binary
 detection, a version of ChromeDriver that matches the browser binary will be installed.
 The download source for this ChromeDriver is
-[described here](http://chromedriver.chromium.org/downloads/version-selection).
+[described here](https://chromedriver.chromium.org/downloads/version-selection).
 If a matching ChromeDriver version cannot be found using this process, it is assumed that
 the Chrome browser binary is a dev version which does not have a ChromeDriver version available
 through official releases. In this case, the Chromium revision associated with this version is
@@ -54,12 +54,12 @@ the latest revision of Chromium's ChromeDriver is installed from Chromium snapsh
 ## Chromium
 
 ### Detection
-**Browser** : Chromium browser binary detection is only done in the virtual
+**Browser**: Chromium browser binary detection is only done in the virtual
 environment directory `_venv3/browsers/{channel}/`, not on the user’s system
 outside of this directory. This detection process is only used if the user has
 not passed a binary path as an argument using the `--binary` flag.
 
-- **WebDriver** : ChromeDriver detection for Chromium will only occur if a valid browser binary has
+- **WebDriver**: ChromeDriver detection for Chromium will only occur if a valid browser binary has
 been found. Once the browser binary version is detected, the virtual environment directory will
 be checked to see if a matching ChromeDriver version is already installed. If the versions do not
 match, the ChromeDriver binary will be removed from the directory and the user will be prompted to
@@ -68,7 +68,7 @@ the same to be considered matching. For example, Chromium 99.0.4844.74 will only
 99.0.4844.74.
 
 ### Installation
-- **Browser Binary** : Chromium’s browser binary will be installed from
+**Browser**: Chromium’s browser binary will be installed from
 [Chromium snapshots storage](https://storage.googleapis.com/chromium-browser-snapshots/index.html).
 The last revision associated with the user’s operating system will be downloaded
 (this revision is obtained by the LAST_CHANGE designation from the snapshots bucket).
@@ -80,7 +80,7 @@ binary was downloaded from will be kept during the current invocation. If a Chro
 is also downloaded later to match this browser binary, the same URL is used for that download to
 ensure both components are downloaded from the same source.
 
-- **WebDriver** : A version of ChromeDriver will only be installed once a Chromium browser binary
+**WebDriver**: A version of ChromeDriver will only be installed once a Chromium browser binary
 has been given or detected. A FileNotFoundError will be raised if the user tries to download
 ChromeDriver via the install command and a browser binary is not located. A version of
 ChromeDriver that matches the version of the browser binary will be installed. The download

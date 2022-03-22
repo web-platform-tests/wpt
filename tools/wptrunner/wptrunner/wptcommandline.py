@@ -165,8 +165,6 @@ scheme host and port.""")
                                            "program will exit with status code 0.")
 
     debugging_group = parser.add_argument_group("Debugging")
-    debugging_group.add_argument("--add-all-screenshots-to-artifacts", action="store_true",
-                                 help="Add all screenshots from reftests to test artifacts")
     debugging_group.add_argument('--debugger', const="__default__", nargs="?",
                                  help="run under a debugger, e.g. gdb or valgrind")
     debugging_group.add_argument('--debugger-args', help="arguments to the debugger")

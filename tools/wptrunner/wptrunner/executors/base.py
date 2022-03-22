@@ -30,8 +30,7 @@ def executor_kwargs(test_type, test_environment, run_info_data, **kwargs):
 
     if test_type in ("reftest", "print-reftest"):
         executor_kwargs["screenshot_cache"] = test_environment.cache_manager.dict()
-        executor_kwargs["add_all_screenshots_to_artifacts"] = (
-            kwargs["add_all_screenshots_to_artifacts"])
+        executor_kwargs["reftest_screenshot"] = kwargs["reftest_screenshot"]
 
     if test_type == "wdspec":
         executor_kwargs["binary"] = kwargs.get("binary")
@@ -359,13 +358,13 @@ class RefTestExecutor(TestExecutor):
     is_print = False
 
     def __init__(self, logger, browser, server_config, timeout_multiplier=1, screenshot_cache=None,
-                 debug_info=None, add_all_screenshots_to_artifacts=False, **kwargs):
+                 debug_info=None, reftest_screenshot=None, **kwargs):
         TestExecutor.__init__(self, logger, browser, server_config,
                               timeout_multiplier=timeout_multiplier,
                               debug_info=debug_info)
 
         self.screenshot_cache = screenshot_cache
-        self.add_all_screenshots_to_artifacts = add_all_screenshots_to_artifacts
+        self.reftest_screenshot = reftest_screenshot
 
 
 class CrashtestExecutor(TestExecutor):
@@ -387,6 +386,7 @@ class RefTestImplementation(object):
         # retrieve the screenshot from the cache directly in the future
         self.screenshot_cache = self.executor.screenshot_cache
         self.message = None
+        self.reftest_screenshot = executor.reftest_screenshot
 
     def setup(self):
         pass
@@ -521,7 +521,7 @@ class RefTestImplementation(object):
                 success, data = self.get_hash(node, viewport_size, dpi, page_ranges)
                 if success is False:
                     test_results = {"status": data[0], "message": data[1]}
-                    if self.executor.add_all_screenshots_to_artifacts and log_data:
+                    if self.reftest_screenshot == "always" and log_data:
                         test_results["extra"] = {"reftest_screenshots": log_data}
                     return test_results
 
@@ -529,22 +529,23 @@ class RefTestImplementation(object):
                 urls[i] = node.url
 
             is_pass, page_idx = self.check_pass(hashes, screenshots, urls, relation, fuzzy)
-            if self.executor.add_all_screenshots_to_artifacts:
-                log_data.extend(
-                    [{"url": urls[0], "screenshot": screenshots[0][page_idx],
-                      "hash": hashes[0][page_idx]},
-                     relation,
-                     {"url": urls[1], "screenshot": screenshots[1][page_idx],
-                      "hash": hashes[1][page_idx]}])
 
             if is_pass:
+                if self.reftest_screenshot == "always":
+                    log_data.extend(
+                        [{"url": urls[0], "screenshot": screenshots[0][page_idx],
+                          "hash": hashes[0][page_idx]},
+                         relation,
+                         {"url": urls[1], "screenshot": screenshots[1][page_idx],
+                          "hash": hashes[1][page_idx]}])
+
                 fuzzy = self.get_fuzzy(test, nodes, relation)
                 if nodes[1].references:
                     stack.extend(list(((nodes[1], item[0]), item[1])
                                       for item in reversed(nodes[1].references)))
                 else:
                     test_result = {"status": "PASS", "message": None}
-                    if self.executor.add_all_screenshots_to_artifacts:
+                    if self.reftest_screenshot == "always":
                         test_result["extra"] = {"reftest_screenshots": log_data}
                     # We passed
                     return test_result
@@ -556,17 +557,23 @@ class RefTestImplementation(object):
                 success, screenshot = self.retake_screenshot(node, viewport_size, dpi, page_ranges)
                 if success:
                     screenshots[i] = screenshot
+
         test_result =  {"status": "FAIL",
                         "message": "\n".join(self.message)}
-
-        if self.executor.add_all_screenshots_to_artifacts:
+        if self.reftest_screenshot == "always":
             test_result["extra"] = {"reftest_screenshots": log_data}
-        else:
+        elif (not self.reftest_screenshot or
+              self.reftest_screenshot == "fail" or
+              (self.reftest_screenshot == "unexpected" and
+               test.expected() == 'PASS')):
+            # Only include the screenshots that failed the comparison test.
             test_result["extra"] = {"reftest_screenshots": [
-                {"url": nodes[0].url, "screenshot": screenshots[0][page_idx],
+                {"url": nodes[0].url,
+                 "screenshot": screenshots[0][page_idx],
                  "hash": hashes[0][page_idx]},
                 relation,
-                {"url": nodes[1].url, "screenshot": screenshots[1][page_idx],
+                {"url": nodes[1].url,
+                 "screenshot": screenshots[1][page_idx],
                  "hash": hashes[1][page_idx]}]}
 
         return test_result

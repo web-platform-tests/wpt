@@ -4,9 +4,8 @@
 // blocked on both sides and "inconsistent" in the event that the
 // result is not the same on both sides (should never happen).
 async function tryConnect() {
-    const iceServers = [{urls: "stun:stun.l.google.com:19302"}];
-    const pc1 = new RTCPeerConnection({iceServers});
-    const pc2 = new RTCPeerConnection({iceServers});
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
 
     // Returns a promise which resolves to a boolean which is true
     // if and only if pc.iceConnectionState settles in the "failed"

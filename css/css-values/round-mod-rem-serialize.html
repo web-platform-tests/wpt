@@ -31,14 +31,14 @@ test_serialization(
 
 test_serialization(
     'calc(round(1,0))',
-    'calc(NaN)',
-    'NaN');
+    'calc(infinity)',
+    'infinity');
 test_serialization(
     'calc(mod(1,0))',
-    'calc(NaN)',
-    'NaN');
+    'calc(infinity)',
+    'infinity');
 test_serialization(
     'calc(rem(1,0))',
-    'calc(NaN)',
-    'NaN');
+    'calc(infinity)',
+    'infinity');
 </script>

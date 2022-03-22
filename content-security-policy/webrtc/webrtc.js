@@ -1,8 +1,8 @@
 
 // Creates two RTCPeerConnection and tries to connect them. Returns
 // "allowed" if the connection is permitted, "blocked" if it is
-// blocked on both sides and "inconsistent" in the even that the
-// result is the same on both sides (should never happen).
+// blocked on both sides and "inconsistent" in the event that the
+// result is not the same on both sides (should never happen).
 async function tryConnect() {
     const iceServers = [{urls: "stun:stun.l.google.com:19302"}];
     const pc1 = new RTCPeerConnection({iceServers});

@@ -13,9 +13,6 @@ async function tryConnect() {
     // state, and never transitions to any state other than "new"
     // or "failed."
     const pcFailed = (pc) => {
-        pc.onicecandidate = ({candidate}) => {
-            pc.addIceCandidate(candidate);
-        };
         return new Promise((resolve, _reject) => {
             pc.onicegatheringstatechange = (e) => {
                 if(pc.iceGatheringState === "complete") {
@@ -33,6 +30,8 @@ async function tryConnect() {
     const channel = pc1.createDataChannel('test');
 
     // Usual webrtc signaling dance:
+    pc1.onicecandidate = ({candidate}) => pc2.addIceCandidate(candidate);
+    pc2.onicecandidate = ({candidate}) => pc1.addIceCandidate(candidate);
     const offer = await pc1.createOffer();
     await pc1.setLocalDescription(offer);
     await pc2.setRemoteDescription(pc1.localDescription);

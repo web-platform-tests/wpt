@@ -1,6 +1,7 @@
 'use strict';
 (function() {
   var interpolationTests = [];
+  var compositionTests = [];
   var cssAnimationsData = {
     sharedStyle: null,
     nextID: 0,
@@ -18,6 +19,7 @@
 
   var cssAnimationsInterpolation = {
     name: 'CSS Animations',
+    isSupported: function() {return true;},
     supportsProperty: function() {return true;},
     supportsValue: function() {return true;},
     setup: function() {},
@@ -43,6 +45,7 @@
 
   var cssTransitionsInterpolation = {
     name: 'CSS Transitions',
+    isSupported: function() {return true;},
     supportsProperty: function() {return true;},
     supportsValue: function() {return true;},
     setup: function(property, from, target) {
@@ -64,6 +67,7 @@
 
   var cssTransitionAllInterpolation = {
     name: 'CSS Transitions with transition: all',
+    isSupported: function() {return true;},
     // The 'all' value doesn't cover custom properties.
     supportsProperty: function(property) {return property.indexOf('--') !== 0;},
     supportsValue: function() {return true;},
@@ -86,6 +90,7 @@
 
   var webAnimationsInterpolation = {
     name: 'Web Animations',
+    isSupported: function() {return 'animate' in Element.prototype;},
     supportsProperty: function(property) {return true;},
     supportsValue: function(value) {return value !== '';},
     setup: function() {},
@@ -96,6 +101,10 @@
       this.interpolateComposite(property, from, 'replace', to, 'replace', at, target);
     },
     interpolateComposite: function(property, from, fromComposite, to, toComposite, at, target) {
+      // This case turns into a test error later on.
+      if (!this.isSupported())
+        return;
+
       // Convert standard properties to camelCase.
       if (!property.startsWith('--')) {
         for (var i = property.length - 2; i > 0; --i) {
@@ -260,9 +269,9 @@
     return expectations.map(function(expectation) {
       var actualTargetContainer = createTargetContainer(testContainer, 'actual');
       var expectedTargetContainer = createTargetContainer(testContainer, 'expected');
-      var expectedStr = expectation.option || expectation.expect;
-      if (!isNeutralKeyframe(expectedStr)) {
-        expectedTargetContainer.target.style.setProperty(property, expectedStr);
+      var expectedProperties = expectation.option || expectation.expect;
+      if (typeof expectedProperties !== "object") {
+        expectedProperties = {[property]: expectedProperties};
       }
       var target = actualTargetContainer.target;
       interpolationMethod.setup(property, from, target);
@@ -270,8 +279,85 @@
         interpolationMethod.interpolate(property, from, to, expectation.at, target);
       };
       target.measure = function() {
+        for (var [expectedProp, expectedStr] of Object.entries(expectedProperties)) {
+          if (!isNeutralKeyframe(expectedStr)) {
+            expectedTargetContainer.target.style.setProperty(expectedProp, expectedStr);
+          }
+          var expectedValue = getComputedStyle(expectedTargetContainer.target).getPropertyValue(expectedProp);
+          let testName = `${testText} at (${expectation.at}) should be [${sanitizeUrls(expectedStr)}]`;
+          if (property !== expectedProp) {
+            testName += ` for <${expectedProp}>`;
+          }
+          test(function() {
+            assert_true(interpolationMethod.isSupported(), `${interpolationMethod.name} should be supported`);
+
+            if (from && from !== neutralKeyframe) {
+              assert_true(CSS.supports(property, from), '\'from\' value should be supported');
+            }
+            if (to && to !== neutralKeyframe) {
+              assert_true(CSS.supports(property, to), '\'to\' value should be supported');
+            }
+            if (typeof underlying !== 'undefined') {
+              assert_true(CSS.supports(property, underlying), '\'underlying\' value should be supported');
+            }
+
+            comparisonFunction(
+                getComputedStyle(target).getPropertyValue(expectedProp),
+                expectedValue);
+          }, testName);
+        }
+      };
+      return target;
+    });
+  }
+
+  function createCompositionTestTargets(compositionContainer, compositionTest) {
+    var options = compositionTest.options;
+    var property = options.property;
+    var underlying = options.underlying;
+    var comparisonFunction = options.comparisonFunction;
+    var from = options.accumulateFrom || options.addFrom || options.replaceFrom;
+    var to = options.accumulateTo || options.addTo || options.replaceTo;
+    var fromComposite = 'accumulateFrom' in options ? 'accumulate' : 'addFrom' in options ? 'add' : 'replace';
+    var toComposite = 'accumulateTo' in options ? 'accumulate' : 'addTo' in options ? 'add' : 'replace';
+    const invalidFrom = 'addFrom' in options === 'replaceFrom' in options
+        && 'addFrom' in options === 'accumulateFrom' in options;
+    const invalidTo = 'addTo' in options === 'replaceTo' in options
+        && 'addTo' in options === 'accumulateTo' in options;
+    if (invalidFrom || invalidTo) {
+      test(function() {
+        assert_false(invalidFrom, 'Exactly one of accumulateFrom, addFrom, or replaceFrom must be specified');
+        assert_false(invalidTo, 'Exactly one of accumulateTo, addTo, or replaceTo must be specified');
+      }, `Composition tests must have valid setup`);
+    }
+
+    var testText = `Compositing: property <${property}> underlying [${underlying}] from ${fromComposite} [${from}] to ${toComposite} [${to}]`;
+    var testContainer = createElement(compositionContainer, 'div');
+    createElement(testContainer);
+
+    // Setup a standard equality function if an override is not provided.
+    if (!comparisonFunction) {
+      comparisonFunction = (actual, expected) => {
+        assert_equals(normalizeValue(actual), normalizeValue(expected));
+      };
+    }
+
+    return compositionTest.expectations.map(function(expectation) {
+      var actualTargetContainer = createTargetContainer(testContainer, 'actual');
+      var expectedTargetContainer = createTargetContainer(testContainer, 'expected');
+      var expectedStr = expectation.option || expectation.expect;
+      if (!isNeutralKeyframe(expectedStr)) {
+        expectedTargetContainer.target.style.setProperty(property, expectedStr);
+      }
+      var target = actualTargetContainer.target;
+      target.style.setProperty(property, underlying);
+      target.interpolate = function() {
+        webAnimationsInterpolation.interpolateComposite(property, from, fromComposite, to, toComposite, expectation.at, target);
+      };
+      target.measure = function() {
         var expectedValue = getComputedStyle(expectedTargetContainer.target).getPropertyValue(property);
         test(function() {
+
           if (from && from !== neutralKeyframe) {
             assert_true(CSS.supports(property, from), '\'from\' value should be supported');
           }
@@ -291,13 +377,22 @@
     });
   }
 
-  function createTestTargets(interpolationMethods, interpolationTests, container) {
+
+
+  function createTestTargets(interpolationMethods, interpolationTests, compositionTests, container) {
     var targets = [];
     for (var interpolationMethod of interpolationMethods) {
       var interpolationMethodContainer = createElement(container);
       for (var interpolationTest of interpolationTests) {
-        [].push.apply(targets, createInterpolationTestTargets(interpolationMethod, interpolationMethodContainer, interpolationTest));
+        if(!interpolationTest.options.target_names ||
+           interpolationTest.options.target_names.includes(interpolationMethod.name)) {
+            [].push.apply(targets, createInterpolationTestTargets(interpolationMethod, interpolationMethodContainer, interpolationTest));
+          }
       }
+    }
+    var compositionContainer = createElement(container);
+    for (var compositionTest of compositionTests) {
+      [].push.apply(targets, createCompositionTestTargets(compositionContainer, compositionTest));
     }
     return targets;
   }
@@ -305,9 +400,7 @@
   function test_no_interpolation(options) {
     test_interpolation(options, expectNoInterpolation);
   }
-
-  function test_interpolation(options, expectations) {
-    interpolationTests.push({options, expectations});
+  function create_tests() {
     var interpolationMethods = [
       cssTransitionsInterpolation,
       cssTransitionAllInterpolation,
@@ -315,7 +408,7 @@
       webAnimationsInterpolation,
     ];
     var container = createElement(document.body);
-    var targets = createTestTargets(interpolationMethods, interpolationTests, container);
+    var targets = createTestTargets(interpolationMethods, interpolationTests, compositionTests, container);
     // Separate interpolation and measurement into different phases to avoid O(n^2) of the number of targets.
     for (var target of targets) {
       target.interpolate();
@@ -324,10 +417,21 @@
       target.measure();
     }
     container.remove();
-    interpolationTests = [];
   }
 
+  function test_interpolation(options, expectations) {
+    interpolationTests.push({options, expectations});
+    create_tests();
+    interpolationTests = [];
+  }
+  function test_composition(options, expectations) {
+    compositionTests.push({options, expectations});
+    create_tests();
+    compositionTests = [];
+  }
   window.test_interpolation = test_interpolation;
   window.test_no_interpolation = test_no_interpolation;
+  window.test_composition = test_composition;
   window.neutralKeyframe = neutralKeyframe;
+  window.roundNumbers = roundNumbers;
 })();

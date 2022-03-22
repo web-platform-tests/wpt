@@ -186,21 +186,21 @@ class ManifestItem(object):
     def _flatten(self):
         rv = {}
         for node in [self, self.root]:
-            for name, value in node._data.iteritems():
+            for name, value in node._data.items():
                 if name not in rv:
                     rv[name] = value
         return rv
 
     def iteritems(self):
-        for item in self._flatten().iteritems():
+        for item in self._flatten().items():
             yield item
 
     def iterkeys(self):
-        for item in self._flatten().iterkeys():
+        for item in self._flatten().keys():
             yield item
 
     def itervalues(self):
-        for item in self._flatten().itervalues():
+        for item in self._flatten().values():
             yield item
 
     def append(self, child):

@@ -8,50 +8,24 @@ testing plan](making-a-testing-plan) will help you decide what to write.
 
 There's also a load of [general guidelines](general-guidelines) that apply to all tests.
 
-```eval_rst
-.. toctree::
-   :maxdepth: 1
+## Test Types
 
-   general-guidelines
-   ahem
-   assumptions
-   css-metadata
-   css-user-styles
-   file-names
-   h2tests
-   lint-tool
-   making-a-testing-plan
-   manual
-   reftest-tutorial
-   reftests
-   rendering
-   server-features
-   submission-process
-   testdriver
-   testdriver-extension-tutorial
-   testharness
-   testharness-tutorial
-   tools
-   visual
-   wdspec
-   test-templates
-   github-intro
-```
+There are various different ways of writing tests:
 
-## Test Type
-
-Tests in this project use a few different approaches to verify expected
-behavior. The tests can be classified based on the way they express
-expectations:
+* [JavaScript tests (testharness.js)](testharness) are preferred for testing APIs and may be used
+  for other features too. They are built with the testharness.js unit testing framework, and consist
+  of assertions written in JavaScript. A high-level [testharness.js tutorial](testharness-tutorial)
+  is available.
 
 * Rendering tests should be used to verify that the browser graphically
-  displays pages as expected. See the [rendering test guidelines][rendering]
+  displays pages as expected. See the [rendering test guidelines](rendering)
   for tips on how to write great rendering tests. There are a few different
   ways to write rendering tests:
 
   * [Reftests](reftests) should be used to test rendering and layout. They
     consist of two or more pages with assertions as to whether they render
-    identically or not.
+    identically or not. A high-level [reftest tutorial](reftest-tutorial) is available. A
+    [print reftests](print-reftests) variant is available too.
 
   * [Visual tests](visual) should be used for checking rendering where there is
     a large number of conforming renderings such that reftests are impractical.
@@ -59,9 +33,10 @@ expectations:
     screenshot can be taken and compared to an expected rendering for that user
     agent on that platform.
 
-* [testharness.js](testharness) tests should be used (where possible!) for
-  testing everything else. They are built with the testharness.js unit testing
-  framework, and consist of assertions written in JavaScript.
+* [Crashtests](crashtest) tests are used to check that the browser is
+  able to load a given document without crashing or experiencing other
+  low-level issues (asserts, leaks, etc.). They pass if the load
+  completes without error.
 
 * [wdspec](wdspec) tests are written in Python using
   [pytest](https://docs.pytest.org/en/latest/) and test [the WebDriver browser
@@ -71,14 +46,6 @@ expectations:
   tested using any of the above. They consist of a page that needs manual
   interaction or verification of the final result.
 
-In general, there is a strong preference towards reftests and testharness.js
-tests types (as they can be easily run without human interaction), so they
-should be used in preference to the others even if it results in a
-somewhat cumbersome test; there is a far weaker preference between the
-two test types, and it is at times advisable to use testharness.js tests
-for things which would typically be tested using reftests but for
-which it would be overly cumbersome.
-
 See [file names](file-names) for test types and features determined by the file names,
 and [server features](server-features) for advanced testing features.
 
@@ -87,3 +54,38 @@ and [server features](server-features) for advanced testing features.
 Once you've written tests, please submit them using
 the [typical GitHub Pull Request workflow](submission-process); please
 make sure you run the [`lint` script](lint-tool) before opening a pull request!
+
+## Table of Contents
+
+```eval_rst
+.. toctree::
+   :maxdepth: 1
+
+   general-guidelines
+   making-a-testing-plan
+   testharness
+   testharness-tutorial
+   rendering
+   reftests
+   reftest-tutorial
+   print-reftests
+   visual
+   crashtest
+   wdspec
+   manual
+   file-names
+   server-features
+   submission-process
+   lint-tool
+   ahem
+   assumptions
+   css-metadata
+   css-user-styles
+   h2tests
+   testdriver
+   testdriver-extension-tutorial
+   tools
+   test-templates
+   github-intro
+   ../tools/webtransport/README.md
+```

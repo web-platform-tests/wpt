@@ -1,11 +1,12 @@
-from six.moves.configparser import SafeConfigParser
+from configparser import ConfigParser
 import os
 import sys
 from collections import OrderedDict
+from typing import Any, Dict
 
-here = os.path.split(__file__)[0]
+here = os.path.dirname(__file__)
 
-class ConfigDict(dict):
+class ConfigDict(Dict[str, Any]):
     def __init__(self, base_path, *args, **kwargs):
         self.base_path = base_path
         dict.__init__(self, *args, **kwargs)
@@ -19,8 +20,8 @@ class ConfigDict(dict):
 
 def read(config_path):
     config_path = os.path.abspath(config_path)
-    config_root = os.path.split(config_path)[0]
-    parser = SafeConfigParser()
+    config_root = os.path.dirname(config_path)
+    parser = ConfigParser()
     success = parser.read(config_path)
     assert config_path in success, success
 

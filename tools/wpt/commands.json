@@ -6,12 +6,18 @@
     "help": "Run tests in a browser",
     "virtualenv": true,
     "install": [
-      "requests",
       "zstandard"
     ],
     "requirements": [
       "../wptrunner/requirements.txt"
-    ]
+    ],
+    "conditional_requirements": {
+      "commandline_flag": {
+        "enable_webtransport_h3": [
+          "../webtransport/requirements.txt"
+        ]
+      }
+    }
   },
   "create": {
     "path": "create.py",
@@ -25,9 +31,6 @@
     "parser": "create_parser_update",
     "help": "Update expectations files from raw logs.",
     "virtualenv": true,
-    "install": [
-      "requests"
-    ],
     "requirements": [
       "../wptrunner/requirements.txt"
     ]
@@ -51,8 +54,8 @@
     "script": "run",
     "parser": "get_parser",
     "help": "Install browser components",
+    "virtualenv": true,
     "install": [
-      "mozdownload",
       "mozinstall"
     ]
   },

@@ -12,9 +12,7 @@
 
 # TODO: keep comments in the tree
 
-from __future__ import unicode_literals
-
-from six import binary_type, text_type, BytesIO
+from io import BytesIO
 
 from .node import (Node, AtomNode, BinaryExpressionNode, BinaryOperatorNode,
                    ConditionalNode, DataNode, IndexNode, KeyValueNode, ListNode,
@@ -49,7 +47,7 @@ atoms = {"True": True,
          "Reset": object()}
 
 def decode(s):
-    assert isinstance(s, text_type)
+    assert isinstance(s, str)
     return s
 
 
@@ -58,7 +56,7 @@ def precedence(operator_node):
 
 
 class TokenTypes(object):
-    def __init__(self):
+    def __init__(self) -> None:
         for type in ["group_start", "group_end", "paren", "list_start", "list_end", "separator", "ident", "string", "number", "atom", "eof"]:
             setattr(self, type, type)
 
@@ -74,10 +72,11 @@ class Tokenizer(object):
         self.state = self.line_start_state
         self.next_state = self.data_line_state
         self.line_number = 0
+        self.filename = ""
 
     def tokenize(self, stream):
         self.reset()
-        assert not isinstance(stream, text_type)
+        assert not isinstance(stream, str)
         if isinstance(stream, bytes):
             stream = BytesIO(stream)
         if not hasattr(stream, "name"):
@@ -87,7 +86,7 @@ class Tokenizer(object):
 
         self.next_line_state = self.line_start_state
         for i, line in enumerate(stream):
-            assert isinstance(line, binary_type)
+            assert isinstance(line, bytes)
             self.state = self.next_line_state
             assert self.state is not None
             states = []
@@ -95,7 +94,7 @@ class Tokenizer(object):
             self.line_number = i + 1
             self.index = 0
             self.line = line.decode('utf-8').rstrip()
-            assert isinstance(self.line, text_type)
+            assert isinstance(self.line, str)
             while self.state != self.eol_state:
                 states.append(self.state)
                 tokens = self.state()
@@ -135,9 +134,10 @@ class Tokenizer(object):
             self.indent_levels.append(self.index)
             yield (token_types.group_start, None)
         else:
-            while self.index < self.indent_levels[-1]:
-                self.indent_levels.pop()
-                yield (token_types.group_end, None)
+            if self.index < self.indent_levels[-1]:
+                while self.index < self.indent_levels[-1]:
+                    self.indent_levels.pop()
+                    yield (token_types.group_end, None)
                 # This is terrible; if we were parsing an expression
                 # then the next_state will be expr_or_value but when we deindent
                 # it must always be a heading or key next so we go back to data_line_state
@@ -302,7 +302,8 @@ class Tokenizer(object):
 
     def value_state(self):
         self.skip_whitespace()
-        if self.char() in ("'", '"'):
+        c = self.char()
+        if c in ("'", '"'):
             quote_char = self.char()
             self.consume()
             yield (token_types.string, self.consume_string(quote_char))
@@ -310,10 +311,12 @@ class Tokenizer(object):
                 self.state = self.comment_state
             else:
                 self.state = self.line_end_state
-        elif self.char() == "@":
+        elif c == "@":
             self.consume()
             for _, value in self.value_inner_state():
                 yield token_types.atom, value
+        elif c == "[":
+            self.state = self.list_start_state
         else:
             self.state = self.value_inner_state
 
@@ -493,13 +496,13 @@ class Tokenizer(object):
 
     def decode_escape(self, length):
         value = 0
-        for i in xrange(length):
+        for i in range(length):
             c = self.char()
             value *= 16
             value += self.escape_value(c)
             self.consume()
 
-        return unichr(value)
+        return chr(value)
 
     def escape_value(self, c):
         if '0' <= c <= '9':
@@ -541,7 +544,7 @@ class Parser(object):
             raise
 
     def consume(self):
-        self.token = self.token_generator.next()
+        self.token = next(self.token_generator)
 
     def expect(self, type, value=None):
         if self.token[0] != type:
@@ -595,6 +598,9 @@ class Parser(object):
             self.expression_values()
             if self.token[0] == token_types.string:
                 self.value()
+            elif self.token[0] == token_types.list_start:
+                self.consume()
+                self.list_value()
             self.eof_or_end_group()
         elif self.token[0] == token_types.atom:
             self.atom()

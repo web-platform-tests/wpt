@@ -1,42 +1,70 @@
 import base64
 import json
 import os
-import uuid
 import threading
-from multiprocessing.managers import AcquirerProxy, BaseManager, DictProxy
-from six import text_type
+import queue
+import uuid
+
+from multiprocessing.managers import AcquirerProxy, BaseManager, BaseProxy, DictProxy, public_methods
+
+from .utils import isomorphic_encode
 
 
-class ServerDictManager(BaseManager):
+class StashManager(BaseManager):
     shared_data = {}
+    lock = threading.Lock()
 
 
 def _get_shared():
-    return ServerDictManager.shared_data
+    return StashManager.shared_data
 
 
-ServerDictManager.register("get_dict",
-                           callable=_get_shared,
-                           proxytype=DictProxy)
-ServerDictManager.register('Lock', threading.Lock, AcquirerProxy)
+def _get_lock():
+    return StashManager.lock
+
+StashManager.register("get_dict",
+                      callable=_get_shared,
+                      proxytype=DictProxy)
+StashManager.register('Lock',
+                      callable=_get_lock,
+                      proxytype=AcquirerProxy)
 
 
-class ClientDictManager(BaseManager):
-    pass
+# We have to create an explicit class here because the built-in
+# AutoProxy has a bug with nested managers, and the MakeProxy
+# method doesn't work with spawn-based multiprocessing, since the
+# generated class can't be pickled for use in child processes.
+class QueueProxy(BaseProxy):
+    _exposed_ = public_methods(queue.Queue)
 
 
-ClientDictManager.register("get_dict")
-ClientDictManager.register("Lock")
+for method in QueueProxy._exposed_:
+
+    def impl_fn(method):
+        def _impl(self, *args, **kwargs):
+            return self._callmethod(method, args, kwargs)
+        _impl.__name__ = method
+        return _impl
+
+    setattr(QueueProxy, method, impl_fn(method))
+
+
+StashManager.register("Queue",
+                      callable=queue.Queue,
+                      proxytype=QueueProxy)
 
 
 class StashServer(object):
-    def __init__(self, address=None, authkey=None):
+    def __init__(self, address=None, authkey=None, mp_context=None):
         self.address = address
         self.authkey = authkey
         self.manager = None
+        self.mp_context = mp_context
 
     def __enter__(self):
-        self.manager, self.address, self.authkey = start_server(self.address, self.authkey)
+        self.manager, self.address, self.authkey = start_server(self.address,
+                                                                self.authkey,
+                                                                self.mp_context)
         store_env_config(self.address, self.authkey)
 
     def __exit__(self, *args, **kwargs):
@@ -59,13 +87,19 @@ def store_env_config(address, authkey):
     os.environ["WPT_STASH_CONFIG"] = json.dumps((address, authkey.decode("ascii")))
 
 
-def start_server(address=None, authkey=None):
-    if isinstance(authkey, text_type):
+def start_server(address=None, authkey=None, mp_context=None):
+    if isinstance(authkey, str):
         authkey = authkey.encode("ascii")
-    manager = ServerDictManager(address, authkey)
+    kwargs = {}
+    if mp_context is not None:
+        kwargs["ctx"] = mp_context
+    manager = StashManager(address, authkey, **kwargs)
     manager.start()
 
-    return (manager, manager._address, manager._authkey)
+    address = manager._address
+    if isinstance(address, bytes):
+        address = address.decode("ascii")
+    return (manager, address, manager._authkey)
 
 
 class LockWrapper(object):
@@ -114,6 +148,7 @@ class Stash(object):
 
     _proxy = None
     lock = None
+    manager = None
     _initializing = threading.Lock()
 
     def __init__(self, default_path, address=None, authkey=None):
@@ -136,18 +171,24 @@ class Stash(object):
             if Stash.lock:
                 return
 
-            manager = ClientDictManager(address, authkey)
-            manager.connect()
-            Stash._proxy = manager.get_dict()
-            Stash.lock = LockWrapper(manager.Lock())
+            Stash.manager = StashManager(address, authkey)
+            Stash.manager.connect()
+            Stash._proxy = self.manager.get_dict()
+            Stash.lock = LockWrapper(self.manager.Lock())
+
+    def get_queue(self):
+        return self.manager.Queue()
 
     def _wrap_key(self, key, path):
         if path is None:
             path = self.default_path
         # This key format is required to support using the path. Since the data
-        # passed into the stash can be a DictProxy which wouldn't detect changes
-        # when writing to a subdict.
-        return (str(path), str(uuid.UUID(key)))
+        # passed into the stash can be a DictProxy which wouldn't detect
+        # changes when writing to a subdict.
+        if isinstance(key, bytes):
+            # UUIDs are within the ASCII charset.
+            key = key.decode('ascii')
+        return (isomorphic_encode(path), uuid.UUID(key).bytes)
 
     def put(self, key, value, path=None):
         """Place a value in the shared stash.
@@ -162,7 +203,7 @@ class Stash(object):
         if internal_key in self.data:
             raise StashError("Tried to overwrite existing shared stash value "
                              "for key %s (old value was %s, new value is %s)" %
-                             (internal_key, self.data[str(internal_key)], value))
+                             (internal_key, self.data[internal_key], value))
         else:
             self.data[internal_key] = value
 

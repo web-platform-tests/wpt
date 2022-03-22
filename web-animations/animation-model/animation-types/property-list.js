@@ -1,6 +1,6 @@
 'use strict';
 
-const gCSSProperties = {
+const gCSSProperties1 = {
   'align-content': {
     // https://drafts.csswg.org/css-align/#propdef-align-content
     types: [
@@ -599,7 +599,7 @@ const gCSSProperties = {
     types: [
       'fontVariationSettings',
       { type: 'discrete',
-        options: [ ['"wght" 1.1, "wdth" 1', '"wdth" 5'],
+        options: [ ['"wdth" 1, "wght" 1.1', '"wdth" 5'],
                    ['"wdth" 5', 'normal']
                  ] },
     ]
@@ -701,6 +701,9 @@ const gCSSProperties = {
       { type: 'discrete', options: [ [ '1 2', '3 4' ] ] }
     ]
   },
+};
+
+const gCSSProperties2 = {
   'inline-size': {
     // https://drafts.csswg.org/css-logical-props/#propdef-inline-size
     types: [
@@ -1258,12 +1261,6 @@ const gCSSProperties = {
       { type: 'discrete', options: [ [ 'middle', 'end' ] ] }
     ]
   },
-  'text-combine-upright': {
-    // https://drafts.csswg.org/css-writing-modes-3/#propdef-text-combine-upright
-    types: [
-      { type: 'discrete', options: [ [ 'all', 'none' ] ] }
-    ]
-  },
   'text-decoration-color': {
     // https://drafts.csswg.org/css-text-decor-3/#propdef-text-decoration-color
     types: [ 'color' ]
@@ -1287,7 +1284,7 @@ const gCSSProperties = {
   'text-emphasis-position': {
     // http://dev.w3.org/csswg/css-text-decor-3/#propdef-text-emphasis-position
     types: [
-      { type: 'discrete', options: [ [ 'over right', 'under left' ] ] }
+      { type: 'discrete', options: [ [ 'over', 'under left' ] ] }
     ]
   },
   'text-emphasis-style': {
@@ -1427,7 +1424,7 @@ function testAnimationSamples(animation, idlName, testSamples) {
   const target = animation.effect.target;
   for (const testSample of testSamples) {
     animation.currentTime = testSample.time;
-    assert_equals(getComputedStyle(target, pseudoType)[idlName],
+    assert_equals(getComputedStyle(target, pseudoType)[idlName].toLowerCase(),
                   testSample.expected,
                   `The value should be ${testSample.expected}` +
                   ` at ${testSample.time}ms`);

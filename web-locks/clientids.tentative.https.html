@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
 <title>Web Locks API: Client IDs in query() vs. Service Worker</title>
-<link rel=help href="https://wicg.github.io/web-locks/">
+<link rel=help href="https://w3c.github.io/web-locks/">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
@@ -17,6 +17,7 @@ function nextMessage() {
 }
 
 promise_test(async t => {
+  assert_implements(navigator.locks);
   const iframe_url = 'resources/sw-controlled-iframe.html';
 
   // Register a service worker that will control an iframe.
@@ -34,7 +35,7 @@ promise_test(async t => {
 
   // NOTE: Not assert_equals(), as we don't want log the randomly generated
   // clientIds, since they would not match any failure expectation files.
-  assert_true(lock_client_id === sw_client_id,
+  assert_equals(lock_client_id, sw_client_id,
               'clientIds should match, but are different');
 
   await registration.unregister();

@@ -16,22 +16,6 @@ Manifest.prototype = {
         this.generate(loaded_callback);
     },
 
-    do_load: function(loaded_callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState !== 4) {
-                return;
-            }
-            if (!(xhr.status === 200 || xhr.status === 0)) {
-                throw new Error("Manifest " + this.path + " failed to load");
-            }
-            this.data = JSON.parse(xhr.responseText);
-            loaded_callback();
-        }.bind(this);
-        xhr.open("GET", this.path);
-        xhr.send(null);
-    },
-
     generate: function(loaded_callback) {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -41,7 +25,8 @@ Manifest.prototype = {
             if (!(xhr.status === 200 || xhr.status === 0)) {
                 throw new Error("Manifest generation failed");
             }
-            this.do_load(loaded_callback);
+            this.data = JSON.parse(xhr.responseText);
+            loaded_callback();
         }.bind(this);
         xhr.open("POST", "update_manifest.py");
         xhr.send(null);
@@ -908,18 +893,17 @@ function setup() {
     new ManualUI(document.getElementById("manualUI"), runner);
     new VisualOutput(document.getElementById("output"), runner);
 
+    window.addEventListener("message", function(e) {
+        if (e.data.type === "complete")
+            runner.on_complete(e.data.tests, e.data.status);
+    });
+
     if (options.autorun === "1") {
         runner.start(test_control.get_path(),
                      test_control.get_test_types(),
                      test_control.get_testharness_settings(),
                      test_control.get_use_regex());
-        return;
     }
-
-    window.addEventListener("message", function(e) {
-      if (e.data.type === "complete")
-        runner.on_complete(e.data.tests, e.data.status);
-    });
 }
 
 window.addEventListener("DOMContentLoaded", setup, false);

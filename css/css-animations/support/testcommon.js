@@ -36,6 +36,82 @@ function assert_time_equals_literal(actual, expected, description) {
   assert_approx_equals(actual, expected, TIME_PRECISION, description);
 }
 
+/*
+ * Compare two keyframes
+ */
+function assert_frames_equal(actual, expected, name) {
+  // TODO: Make this skip the 'composite' member when it is not specified in
+  // `expected` or when the implementation does not support it.
+  assert_array_equals(
+    Object.keys(actual).sort(),
+    Object.keys(expected).sort(),
+    `properties on ${name} should match`
+  );
+
+  // Iterates sorted keys to ensure stable failures.
+  for (const prop of Object.keys(actual).sort()) {
+    if (
+      // 'offset' can be null
+      (prop === 'offset' && typeof actual[prop] === 'number') ||
+      prop === 'computedOffset'
+    ) {
+      assert_approx_equals(
+        actual[prop],
+        expected[prop],
+        0.00001,
+        "value for '" + prop + "' on " + name
+      );
+    } else {
+      assert_equals(
+        actual[prop],
+        expected[prop],
+        `value for '${prop}' on ${name} should match`
+      );
+    }
+  }
+}
+
+/*
+ * Compare two lists of keyframes
+ */
+function assert_frame_lists_equal(actual, expected) {
+  assert_equals(
+    actual.length,
+    expected.length,
+    'Number of keyframes should match'
+  );
+
+  for (let i = 0; i < actual.length; i++) {
+    assert_frames_equal(actual[i], expected[i], `Keyframe #${i}`);
+  }
+}
+
+/**
+ * Appends an element to the document body.
+ *
+ * @param t  The testharness.js Test object. If provided, this will be used
+ *           to register a cleanup callback to remove the div when the test
+ *           finishes.
+ *
+ * @param name  A string specifying the element name.
+ *
+ * @param attrs  A dictionary object with attribute names and values to set on
+ *               the div.
+ */
+function addElement(t, name, attrs) {
+  var element = document.createElement(name);
+  if (attrs) {
+    for (var attrName in attrs) {
+      element.setAttribute(attrName, attrs[attrName]);
+    }
+  }
+  document.body.appendChild(element);
+  if (t && typeof t.add_cleanup === 'function') {
+      t.add_cleanup(() => element.remove());
+  }
+  return element;
+}
+
 /**
  * Appends a div to the document body.
  *
@@ -47,21 +123,7 @@ function assert_time_equals_literal(actual, expected, description) {
  *               the div.
  */
 function addDiv(t, attrs) {
-  var div = document.createElement('div');
-  if (attrs) {
-    for (var attrName in attrs) {
-      div.setAttribute(attrName, attrs[attrName]);
-    }
-  }
-  document.body.appendChild(div);
-  if (t && typeof t.add_cleanup === 'function') {
-    t.add_cleanup(function() {
-      if (div.parentNode) {
-        div.remove();
-      }
-    });
-  }
-  return div;
+  return addElement(t, "div", attrs);
 }
 
 /**
@@ -140,6 +202,30 @@ function waitForAnimationFrames(frameCount, onFrame) {
     }
     window.requestAnimationFrame(handleFrame);
   });
+}
+
+/**
+ * Timeout function used for tests with EventWatchers when all animation events
+ * should be received on the next animation frame. If two frames pass before
+ * receiving the expected events, then we can immediate fail the test.
+ */
+function fastEventsTimeout() {
+  return waitForAnimationFrames(2);
+};
+
+/**
+ * Timeout function used for tests with EventWatchers. The client agent has no
+ * strict requirement for how long it takes to resolve the ready promise. Once
+ * the promise is resolved a secondary timeout promise is armed that may have
+ * a tight deadline measured in animation frames.
+ */
+function armTimeoutWhenReady(animation, timeoutPromise) {
+  return () => {
+    if (animation.pending)
+      return animation.ready.then(() => { return timeoutPromise(); });
+    else
+      return timeoutPromise();
+  };
 }
 
 /**

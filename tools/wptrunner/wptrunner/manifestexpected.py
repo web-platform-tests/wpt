@@ -1,6 +1,6 @@
 import os
-from six.moves.urllib.parse import urljoin
 from collections import deque
+from urllib.parse import urljoin
 
 from .wptmanifest.backends import static
 from .wptmanifest.backends.base import ManifestItem
@@ -14,6 +14,7 @@ has one or more TestNode children, one per test in the manifest.
 Each TestNode has zero or more SubtestNode children, one for each
 known subtest of the test.
 """
+
 
 def data_cls_getter(output_node, visited_node):
     # visited_node is intentionally unused
@@ -29,7 +30,7 @@ def data_cls_getter(output_node, visited_node):
 def bool_prop(name, node):
     """Boolean property"""
     try:
-        return node.get(name)
+        return bool(node.get(name))
     except KeyError:
         return None
 
@@ -46,18 +47,28 @@ def list_prop(name, node):
     """List property"""
     try:
         list_prop = node.get(name)
-        if isinstance(list_prop, basestring):
+        if isinstance(list_prop, str):
             return [list_prop]
         return list(list_prop)
     except KeyError:
         return []
 
 
+def str_prop(name, node):
+    try:
+        prop = node.get(name)
+        if not isinstance(prop, str):
+            raise ValueError
+        return prop
+    except KeyError:
+        return None
+
+
 def tags(node):
     """Set of tags that have been applied to the test"""
     try:
         value = node.get("tags")
-        if isinstance(value, (str, unicode)):
+        if isinstance(value, str):
             return {value}
         return set(value)
     except KeyError:
@@ -66,7 +77,7 @@ def tags(node):
 
 def prefs(node):
     def value(ini_value):
-        if isinstance(ini_value, (str, unicode)):
+        if isinstance(ini_value, str):
             return tuple(pref_piece.strip() for pref_piece in ini_value.split(':', 1))
         else:
             # this should be things like @Reset, which are apparently type 'object'
@@ -74,7 +85,7 @@ def prefs(node):
 
     try:
         node_prefs = node.get("prefs")
-        if type(node_prefs) in (str, unicode):
+        if isinstance(node_prefs, str):
             rv = dict(value(node_prefs))
         else:
             rv = dict(value(item) for item in node_prefs)
@@ -86,7 +97,7 @@ def prefs(node):
 def set_prop(name, node):
     try:
         node_items = node.get(name)
-        if isinstance(node_items, (str, unicode)):
+        if isinstance(node_items, str):
             rv = {node_items}
         else:
             rv = set(node_items)
@@ -99,7 +110,7 @@ def leak_threshold(node):
     rv = {}
     try:
         node_items = node.get("leak-threshold")
-        if isinstance(node_items, (str, unicode)):
+        if isinstance(node_items, str):
             node_items = [node_items]
         for item in node_items:
             process, value = item.rsplit(":", 1)
@@ -127,7 +138,7 @@ def fuzzy_prop(node):
       maxDifferences=10;totalPixels=10-20
 
       specifies that for any test/ref pair for which no other rule is supplied,
-      there must be a maximum pixel difference of exactly 10, and betwen 10 and
+      there must be a maximum pixel difference of exactly 10, and between 10 and
       20 total pixels different.
 
       test.html==ref.htm:10;20
@@ -156,7 +167,7 @@ def fuzzy_prop(node):
     if not isinstance(value, list):
         value = [value]
     for item in value:
-        if not isinstance(item, (str, unicode)):
+        if not isinstance(item, str):
             rv.append(item)
             continue
         parts = item.rsplit(":", 1)
@@ -280,6 +291,10 @@ class ExpectedManifest(ManifestItem):
         return prefs(self)
 
     @property
+    def lsan_disabled(self):
+        return bool_prop("lsan-disabled", self)
+
+    @property
     def lsan_allowed(self):
         return set_prop("lsan-allowed", self)
 
@@ -306,6 +321,10 @@ class ExpectedManifest(ManifestItem):
     @property
     def known_intermittent(self):
         return list_prop("expected", self)[1:]
+
+    @property
+    def implementation_status(self):
+        return str_prop("implementation-status", self)
 
 
 class DirectoryManifest(ManifestItem):
@@ -338,6 +357,10 @@ class DirectoryManifest(ManifestItem):
         return prefs(self)
 
     @property
+    def lsan_disabled(self):
+        return bool_prop("lsan-disabled", self)
+
+    @property
     def lsan_allowed(self):
         return set_prop("lsan-allowed", self)
 
@@ -356,6 +379,10 @@ class DirectoryManifest(ManifestItem):
     @property
     def fuzzy(self):
         return fuzzy_prop(self)
+
+    @property
+    def implementation_status(self):
+        return str_prop("implementation-status", self)
 
 
 class TestNode(ManifestItem):
@@ -415,6 +442,10 @@ class TestNode(ManifestItem):
         return prefs(self)
 
     @property
+    def lsan_disabled(self):
+        return bool_prop("lsan-disabled", self)
+
+    @property
     def lsan_allowed(self):
         return set_prop("lsan-allowed", self)
 
@@ -441,6 +472,10 @@ class TestNode(ManifestItem):
     @property
     def known_intermittent(self):
         return list_prop("expected", self)[1:]
+
+    @property
+    def implementation_status(self):
+        return str_prop("implementation-status", self)
 
     def append(self, node):
         """Add a subtest to the current test
@@ -478,7 +513,7 @@ def get_manifest(metadata_root, test_path, url_base, run_info):
     """
     manifest_path = expected.expected_path(metadata_root, test_path)
     try:
-        with open(manifest_path) as f:
+        with open(manifest_path, "rb") as f:
             return static.compile(f,
                                   run_info,
                                   data_cls_getter=data_cls_getter,
@@ -497,7 +532,7 @@ def get_dir_manifest(path, run_info):
                      values should be computed.
     """
     try:
-        with open(path) as f:
+        with open(path, "rb") as f:
             return static.compile(f,
                                   run_info,
                                   data_cls_getter=lambda x,y: DirectoryManifest)

@@ -109,7 +109,7 @@ class RemoveObsolete(Step):
         state.tests_path = state.paths["/"]["tests_path"]
         state.metadata_path = state.paths["/"]["metadata_path"]
 
-        for url_paths in paths.itervalues():
+        for url_paths in paths.values():
             tests_path = url_paths["tests_path"]
             metadata_path = url_paths["metadata_path"]
             for dirpath, dirnames, filenames in os.walk(metadata_path):

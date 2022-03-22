@@ -2,8 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import print_function
-
 import glob
 import os
 import sys
@@ -11,7 +9,7 @@ import textwrap
 
 from setuptools import setup, find_packages
 
-here = os.path.split(__file__)[0]
+here = os.path.dirname(__file__)
 
 PACKAGE_NAME = 'wptrunner'
 PACKAGE_VERSION = '1.14'

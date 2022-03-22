@@ -1,5 +1,6 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
+// META: timeout=long
 
 // https://webaudio.github.io/web-midi-api/
 
@@ -7,7 +8,7 @@
 
 idl_test(
   ['webmidi'],
-  ['html', 'dom'],
+  ['html', 'dom', 'permissions'],
   async idl_array => {
     idl_array.add_objects({
       MIDIAccess: ['access'],

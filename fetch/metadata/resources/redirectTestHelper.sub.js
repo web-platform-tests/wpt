@@ -23,7 +23,7 @@ let insecureTestURL = 'http://{{host}}:{{ports[http][0]}}/fetch/metadata/';
 // simulate us downgrading then upgrading again during the same redirect chain.
 function MultipleRedirectTo(partialPath) {
   let finalURL = insecureRedirectURL + encodeURIComponent(secureTestURL + partialPath);
-  return insecureRedirectURL + encodeURIComponent(finalURL);
+  return secureRedirectURL + encodeURIComponent(finalURL);
 }
 
 // Helper to craft an URL that will go from HTTP => HTTPS to simulate upgrading a
@@ -36,6 +36,34 @@ function upgradeRedirectTo(partialPath) {
 // given request.
 function downgradeRedirectTo(partialPath) {
   return secureRedirectURL + encodeURIComponent(insecureTestURL + partialPath);
+}
+
+// Helper to test the behavior of the `prefetch` Link type [1]. Because the the
+// behavior under test is optional [2], this function should only be used in
+// tests which have been denoted as "optional" [3].
+//
+// [1] https://html.spec.whatwg.org/#link-type-prefetch
+// [2] https://w3c.github.io/resource-hints/#load-and-error-events
+// [3] https://web-platform-tests.org/writing-tests/file-names.html
+function testPrefetch(nonce, testNamePrefix, urlHelperMethod, expectedResults) {
+  async_test(t => {
+    let key = 'prefetch' + nonce;
+    let e = document.createElement('link');
+    e.rel = 'prefetch';
+    e.crossOrigin = 'anonymous';
+    e.href = urlHelperMethod('resources/record-header.py?file=' + key) + '&simple=true';
+    e.onload = t.step_func(e => {
+      let expectation = { ...expectedResults };
+      if (expectation['mode'] != '')
+        expectation['mode'] = 'cors';
+      fetch('/fetch/metadata/resources/record-header.py?retrieve=true&file=' + key)
+        .then(t.step_func(response => response.text()))
+        .then(t.step_func_done(text => assert_header_equals(text, expectation, testNamePrefix + ' prefetch => No headers')))
+        .catch(t.unreached_func('Fetching and verifying the results should succeed.'));
+    });
+    e.onerror = t.unreached_func();
+    document.head.appendChild(e);
+  }, testNamePrefix + ' prefetch => No headers');
 }
 
 // Helper to run common redirect test cases that don't require special setup on
@@ -51,6 +79,8 @@ function RunCommonRedirectTests(testNamePrefix, urlHelperMethod, expectedResults
       let expectation = { ...expectedResults };
       if (expectation['mode'] != '')
         expectation['mode'] = 'navigate';
+      if (expectation['dest'] == 'font')
+        expectation['dest'] = 'iframe';
       assert_header_equals(e.data, expectation, testNamePrefix + ' iframe');
       t.done();
     }));
@@ -69,6 +99,8 @@ function RunCommonRedirectTests(testNamePrefix, urlHelperMethod, expectedResults
       let expectation = { ...expectedResults };
       if (expectation['mode'] != '')
         expectation['mode'] = 'navigate';
+      if (expectation['dest'] == 'font')
+        expectation['dest'] = 'document';
       assert_header_equals(e.data, expectation, testNamePrefix + ' top level navigation');
       t.done();
     }));
@@ -83,6 +115,8 @@ function RunCommonRedirectTests(testNamePrefix, urlHelperMethod, expectedResults
         let expectation = { ...expectedResults };
         if (expectation['mode'] != '')
           expectation['mode'] = 'navigate';
+        if (expectation['dest'] == 'font')
+          expectation['dest'] = 'embed';
         fetch('/fetch/metadata/resources/record-header.py?retrieve=true&file=' + key)
           .then(response => response.text())
           .then(t.step_func(text => assert_header_equals(text, expectation, testNamePrefix + ' embed')))
@@ -98,7 +132,7 @@ function RunCommonRedirectTests(testNamePrefix, urlHelperMethod, expectedResults
     let expectation = { ...expectedResults };
     if (expectation['mode'] != '')
       expectation['mode'] = 'cors';
-    if (expectation['dest'] == '' && testNamePrefix != "Https downgrade")
+    if (expectation['dest'] == 'font')
       expectation['dest'] = 'empty';
     return fetch(urlHelperMethod('resources/echo-as-json.py?' + key))
       .then(r => r.json())
@@ -114,6 +148,8 @@ function RunCommonRedirectTests(testNamePrefix, urlHelperMethod, expectedResults
         let expectation = { ...expectedResults };
         if (expectation['mode'] != '')
           expectation['mode'] = 'navigate';
+        if (expectation['dest'] == 'font')
+          expectation['dest'] = 'object';
         fetch('/fetch/metadata/resources/record-header.py?retrieve=true&file=' + key)
           .then(response => response.text())
           .then(t.step_func(text => assert_header_equals(text, expectation, testNamePrefix + ' object')))
@@ -123,27 +159,6 @@ function RunCommonRedirectTests(testNamePrefix, urlHelperMethod, expectedResults
       document.body.appendChild(e);
     });
   }, testNamePrefix + ' object');
-
-  if (document.createElement('link').relList.supports('prefetch')) {
-    async_test(t => {
-      let key = 'prefetch' + nonce;
-      let e = document.createElement('link');
-      e.rel = 'prefetch';
-      e.crossOrigin = 'anonymous';
-      e.href = urlHelperMethod('resources/record-header.py?file=' + key) + '&simple=true';
-      e.onload = t.step_func(e => {
-        let expectation = { ...expectedResults };
-        if (expectation['mode'] != '')
-          expectation['mode'] = 'cors';
-        fetch('/fetch/metadata/resources/record-header.py?retrieve=true&file=' + key)
-          .then(t.step_func(response => response.text()))
-          .then(t.step_func_done(text => assert_header_equals(text, expectation, testNamePrefix + ' prefetch => No headers')))
-          .catch(t.unreached_func('Fetching and verifying the results should succeed.'));
-      });
-      e.onerror = t.unreached_func();
-      document.head.appendChild(e);
-    }, testNamePrefix + ' prefetch => No headers');
-  }
 
   if (document.createElement('link').relList.supports('preload')) {
     async_test(t => {
@@ -175,6 +190,8 @@ function RunCommonRedirectTests(testNamePrefix, urlHelperMethod, expectedResults
         let expectation = { ...expectedResults };
         if (expectation['mode'] != '')
           expectation['mode'] = 'no-cors';
+        if (expectation['dest'] == 'font')
+          expectation['dest'] = 'style';
         fetch('/fetch/metadata/resources/record-header.py?retrieve=true&file=' + key)
           .then(response => response.text())
           .then(t.step_func(text => assert_header_equals(text, expectation, testNamePrefix + ' stylesheet')))
@@ -195,9 +212,11 @@ function RunCommonRedirectTests(testNamePrefix, urlHelperMethod, expectedResults
         let expectation = { ...expectedResults };
         if (expectation['mode'] != '')
           expectation['mode'] = 'cors';
+        if (expectation['dest'] == 'font')
+          expectation['dest'] = 'track';
         fetch('/fetch/metadata/resources/record-header.py?retrieve=true&file=' + key)
           .then(response => response.text())
-          .then(t.step_func(text => assert_header_equals(text, expectedResults, testNamePrefix + ' track')))
+          .then(t.step_func(text => assert_header_equals(text, expectation, testNamePrefix + ' track')))
           .then(resolve);
       });
       video.appendChild(el);

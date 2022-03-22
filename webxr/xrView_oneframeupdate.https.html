@@ -4,7 +4,6 @@
 <script src="resources/webxr_util.js"></script>
 <script src="resources/webxr_test_constants.js"></script>
 <script src="resources/webxr_test_asserts.js"></script>
-<canvas />
 
 <script>
 
@@ -32,6 +31,7 @@ const fakeViews = [{
 
 let fakeDeviceInitParams = {
     supportsImmersive: true,
+    supportedModes: ["inline", "immersive-vr"],
     views: fakeViews,
     viewerOrigin: IDENTITY_TRANSFORM,
     supportedFeatures: ALL_FEATURES
@@ -76,7 +76,7 @@ let testFunction = function(session, fakeDeviceController, t) {
         counter++;
       }
 
-      session.requestAnimationFrame(onFrame);
+      session.requestAnimationFrame(t.step_func(onFrame));
   }));
 };
 

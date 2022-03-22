@@ -7,7 +7,7 @@
 
 idl_test(
   ['websockets'],
-  ['dom'],
+  ['html', 'dom'],
   idl_array => {
     idl_array.add_objects({
       WebSocket: ['new WebSocket("ws://invalid")'],

@@ -358,7 +358,7 @@ class RefTestExecutor(TestExecutor):
     is_print = False
 
     def __init__(self, logger, browser, server_config, timeout_multiplier=1, screenshot_cache=None,
-                 debug_info=None, reftest_screenshot=None, **kwargs):
+                 debug_info=None, reftest_screenshot="unexpected", **kwargs):
         TestExecutor.__init__(self, logger, browser, server_config,
                               timeout_multiplier=timeout_multiplier,
                               debug_info=debug_info)

@@ -432,7 +432,7 @@ class RefTestImplementation(object):
 
         if len(lhs_hashes) != len(rhs_hashes):
             self.logger.info("Got different number of pages")
-            return relation == "!=", None
+            return relation == "!=", -1
 
         assert len(lhs_screenshots) == len(lhs_hashes) == len(rhs_screenshots) == len(rhs_hashes)
 
@@ -526,10 +526,10 @@ class RefTestImplementation(object):
             is_pass, page_idx = self.check_pass(hashes, screenshots, urls, relation, fuzzy)
             log_data = [
                 {"url": urls[0], "screenshot": screenshots[0][page_idx],
-                  "hash": hashes[0][page_idx]},
+                 "hash": hashes[0][page_idx]},
                 relation,
                 {"url": urls[1], "screenshot": screenshots[1][page_idx],
-                "hash": hashes[1][page_idx]}
+                 "hash": hashes[1][page_idx]}
             ]
 
             if is_pass:

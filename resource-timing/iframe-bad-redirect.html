@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test the sequence of events when reporting iframe timing.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+    promise_test(async t => {
+        const frame = document.createElement('iframe');
+        t.add_cleanup(() => frame.remove());
+        await new Promise(resolve => {
+            frame.addEventListener('load', resolve);
+            frame.src = 'resources/bad-redirect.py';
+            document.body.appendChild(frame);
+        });
+
+        const entries = performance.getEntriesByName(frame.src);
+        assert_equals(entries.length, 1);
+        assert_equals(entries[0].initiatorType, 'iframe');
+    }, 'Iframes should report resource timing for bad redirects');
+</script>
+</body>

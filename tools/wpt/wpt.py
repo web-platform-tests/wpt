@@ -44,7 +44,11 @@ def load_commands():
         abs_path = os.path.join(wpt_root, path, "commands.json")
         base_dir = os.path.dirname(abs_path)
         with open(abs_path, "r") as f:
-            data = json.load(f)
+            try:
+                data = json.load(f)
+            except Exception:
+                sys.stderr.write(f"ERROR: Failed reading commands file {abs_path}\n")
+                raise
             for command, props in data.items():
                 assert "path" in props
                 assert "script" in props
@@ -54,7 +58,6 @@ def load_commands():
                     "parser": props.get("parser"),
                     "parse_known": props.get("parse_known", False),
                     "help": props.get("help"),
-                    "virtualenv": props.get("virtualenv", True),
                     "install": props.get("install", []),
                     "requirements": [os.path.join(base_dir, item)
                                      for item in props.get("requirements", [])]
@@ -63,8 +66,6 @@ def load_commands():
                 rv[command]["conditional_requirements"] = load_conditional_requirements(
                     props, base_dir)
 
-                if rv[command]["install"] or rv[command]["requirements"] or rv[command]["conditional_requirements"]:
-                    assert rv[command]["virtualenv"]
     return rv
 
 
@@ -80,6 +81,10 @@ def parse_args(argv, commands=load_commands()):
         subparsers.add_parser(command, help=props["help"], add_help=False)
 
     args, extra = parser.parse_known_args(argv)
+
+    if args.command is None:
+        parser.print_help()
+        sys.exit(1)
 
     return args, extra
 
@@ -121,8 +126,7 @@ def create_complete_parser():
     for command in commands:
         props = commands[command]
 
-        if props["virtualenv"]:
-            setup_virtualenv(None, False, props)
+        setup_virtualenv(None, False, props)
 
         subparser = import_command('wpt', command, props)[1]
         if not subparser:
@@ -186,9 +190,7 @@ def main(prog=None, argv=None):
 
     command = main_args.command
     props = commands[command]
-    venv = None
-    if props["virtualenv"]:
-        venv = setup_virtualenv(main_args.venv, main_args.skip_venv_setup, props)
+    venv = setup_virtualenv(main_args.venv, main_args.skip_venv_setup, props)
     script, parser = import_command(prog, command, props)
     if parser:
         if props["parse_known"]:
@@ -202,13 +204,10 @@ def main(prog=None, argv=None):
         extras = ()
         kwargs = {}
 
-    if venv is not None:
-        requirements = props["conditional_requirements"].get("commandline_flag")
-        if requirements is not None and not main_args.skip_venv_setup:
-            install_command_flag_requirements(venv, kwargs, requirements)
-        args = (venv,) + extras
-    else:
-        args = extras
+    requirements = props["conditional_requirements"].get("commandline_flag")
+    if requirements is not None and not main_args.skip_venv_setup:
+        install_command_flag_requirements(venv, kwargs, requirements)
+    args = (venv,) + extras
 
     if script:
         try:

@@ -43,8 +43,8 @@ wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 logger = logging.getLogger()
 
 
-def display_branch_point():
-    # type: () -> None
+def display_branch_point(_venv):
+    # type: (Any) -> None
     print(branch_point())
 
 
@@ -394,8 +394,8 @@ def get_revish(**kwargs):
     return revish.strip()
 
 
-def run_changed_files(**kwargs):
-    # type: (**Any) -> None
+def run_changed_files(_venv, **kwargs):
+    # type: (Any, **Any) -> None
     revish = get_revish(**kwargs)
     changed, _ = files_changed(revish,
                                kwargs["ignore_rule"],
@@ -409,8 +409,8 @@ def run_changed_files(**kwargs):
         sys.stdout.write(line)
 
 
-def run_tests_affected(**kwargs):
-    # type: (**Any) -> None
+def run_tests_affected(_venv, **kwargs):
+    # type: (Any, **Any) -> None
     revish = get_revish(**kwargs)
     changed, _ = files_changed(revish,
                                kwargs["ignore_rule"],

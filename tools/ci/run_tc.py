@@ -126,8 +126,7 @@ def start_userspace_oom_killer():
 
 
 def make_hosts_file():
-    run(["sudo", "sh", "-c", "./wpt make-hosts-file >> /etc/hosts"])
-
+    run(["sh", "-c", f"{os.path.join(root, 'wpt')} make-hosts-file | sudo tee -a /etc/hosts"])
 
 def checkout_revision(rev):
     run(["git", "checkout", "--quiet", rev])

@@ -4,7 +4,6 @@
     "parser": "get_parser",
     "script": "build",
     "help": "Build documentation",
-    "virtualenv": true,
     "requirements": [
       "./requirements.txt"
     ]

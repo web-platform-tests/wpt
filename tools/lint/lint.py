@@ -973,8 +973,8 @@ def create_parser():
     return parser
 
 
-def main(**kwargs):
-    # type: (**Any) -> int
+def main(_venv, **kwargs):
+    # type: (Any, **Any) -> int
 
     assert logger is not None
     if kwargs.get("json") and kwargs.get("markdown"):
@@ -1121,6 +1121,6 @@ except subprocess.CalledProcessError:
 
 if __name__ == "__main__":
     args = create_parser().parse_args()
-    error_count = main(**vars(args))
+    error_count = main(None, **vars(args))
     if error_count > 0:
         sys.exit(1)

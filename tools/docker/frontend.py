@@ -11,7 +11,7 @@ wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 logger = logging.getLogger()
 
 
-def build(tag="wpt:local", *args, **kwargs):
+def build(_venv, tag="wpt:local", *args, **kwargs):
     subprocess.check_call(["docker",
                            "build",
                            "--pull",
@@ -98,7 +98,7 @@ def push(venv, tag=None, force=False, *args, **kwargs):
         logger.critical("Tag %s already exists" % tag)
         sys.exit(1)
 
-    build(tag)
+    build(venv, tag)
     subprocess.check_call(["docker",
                            "push",
                            tag])
@@ -118,9 +118,9 @@ def parser_run():
     return parser
 
 
-def run(*args, **kwargs):
+def run(_venv, *args, **kwargs):
     if kwargs["rebuild"]:
-        build()
+        build(_venv)
 
     args = ["docker", "run"]
     args.extend(["--security-opt", "seccomp:%s" %

@@ -4,23 +4,22 @@ The tests are designed to be run from your local computer.
 
 ## System Setup
 
-Running the tests requires `python`, `pip` and `virtualenv`, as well as updating
-the system `hosts` file.
-
 WPT requires Python 3.6 or higher.
 
 The required setup is different depending on your operating system.
 
 ### Linux Setup
 
-If not already present, use the system package manager to install `python`,
-`pip` and `virtualenv`.
+If not already present, use the system package manager to install `python3`.
 
 On Debian or Ubuntu:
 
 ```bash
-sudo apt-get install python python-pip virtualenv
+sudo apt-get install python3 pyhton3-pip python3-venv
 ```
+
+On distributions that don't split the Python stdlib into multiple
+packages, only the `python3`-equivalent package is required.
 
 It is important to have a package that provides a `python` binary. On Fedora,
 for example, that means installing the `python-unversioned-command` package. On
@@ -28,17 +27,7 @@ Ubuntu Focal and later, the package is called `python-is-python3`.
 
 ### macOS Setup
 
-The system-provided Python can be used, while `pip` and `virtualenv` can be
-installed for the user only:
-
-```bash
-python -m ensurepip --user
-export PATH="$PATH:$HOME/Library/Python/2.7/bin"
-pip install --user virtualenv
-```
-
-To make the `PATH` change persistent, add it to your `~/.bash_profile` file or
-wherever you currently set your PATH.
+The system-provided Python can be used.
 
 See also [additional setup required to run Safari](safari.md).
 
@@ -49,12 +38,6 @@ installer includes `pip` by default.
 
 Add `C:\Python39` and `C:\Python39\Scripts` to your `%Path%`
 [environment variable](http://www.computerhope.com/issues/ch000549.htm).
-
-Finally, install `virtualenv`:
-
-```bash
-pip install virtualenv
-```
 
 The standard Windows shell requires that all `wpt` commands are prefixed
 by the Python binary i.e. assuming `python` is on your path the server is

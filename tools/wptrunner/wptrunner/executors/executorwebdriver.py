@@ -552,7 +552,7 @@ class WebDriverRefTestExecutor(RefTestExecutor):
     def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  screenshot_cache=None, close_after_done=True,
                  debug_info=None, capabilities=None, debug_test=False,
-                 reftest_screenshot=None, **kwargs):
+                 reftest_screenshot="unexpected", **kwargs):
         """WebDriver-based executor for reftests"""
         RefTestExecutor.__init__(self,
                                  logger,

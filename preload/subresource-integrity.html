@@ -309,6 +309,28 @@
         {integrity: "sha256-deaddeadbeefYHFvsYdWumweeFAw0hJDTFt9seErghA="}
       )
 
+      SRIPreloadTest(
+        true,
+        true,
+        `Same-origin ${destination} with matching digest does not reuse preload without digest.`,
+        2,
+        destination,
+        same_origin_prefix + destination + ext + `?${token()}`,
+        {},
+        {integrity: sha256}
+      )
+
+      SRIPreloadTest(
+        true,
+        true,
+        `Same-origin ${destination} with matching digest does not reuse preload with matching but different digest.`,
+        2,
+        destination,
+        same_origin_prefix + destination + ext + `?${token()}`,
+        {integrity: sha384},
+        {integrity: sha256},
+      )
+
     } // if.
 
   } // for-of.

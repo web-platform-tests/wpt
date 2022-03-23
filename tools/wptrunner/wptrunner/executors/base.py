@@ -506,8 +506,6 @@ class RefTestImplementation(object):
         # of reachings a leaf node with only pass results
 
         stack = list(((test, item[0]), item[1]) for item in reversed(test.references))
-        page_idx = None
-        log_data = []
 
         while stack:
             hashes = [None, None]
@@ -520,32 +518,30 @@ class RefTestImplementation(object):
             for i, node in enumerate(nodes):
                 success, data = self.get_hash(node, viewport_size, dpi, page_ranges)
                 if success is False:
-                    test_results = {"status": data[0], "message": data[1]}
-                    if self.reftest_screenshot == "always" and log_data:
-                        test_results["extra"] = {"reftest_screenshots": log_data}
-                    return test_results
+                    return {"status": data[0], "message": data[1]}
 
                 hashes[i], screenshots[i] = data
                 urls[i] = node.url
 
             is_pass, page_idx = self.check_pass(hashes, screenshots, urls, relation, fuzzy)
+            log_data = [
+                {"url": urls[0], "screenshot": screenshots[0][page_idx],
+                  "hash": hashes[0][page_idx]},
+                relation,
+                {"url": urls[1], "screenshot": screenshots[1][page_idx],
+                "hash": hashes[1][page_idx]}
+            ]
 
             if is_pass:
-                if self.reftest_screenshot == "always":
-                    log_data.extend(
-                        [{"url": urls[0], "screenshot": screenshots[0][page_idx],
-                          "hash": hashes[0][page_idx]},
-                         relation,
-                         {"url": urls[1], "screenshot": screenshots[1][page_idx],
-                          "hash": hashes[1][page_idx]}])
-
                 fuzzy = self.get_fuzzy(test, nodes, relation)
                 if nodes[1].references:
                     stack.extend(list(((nodes[1], item[0]), item[1])
                                       for item in reversed(nodes[1].references)))
                 else:
                     test_result = {"status": "PASS", "message": None}
-                    if self.reftest_screenshot == "always":
+                    if (self.reftest_screenshot == "always" or
+                            self.reftest_screenshot == "unexpected" and
+                            test.expected() != "PASS"):
                         test_result["extra"] = {"reftest_screenshots": log_data}
                     # We passed
                     return test_result
@@ -560,22 +556,10 @@ class RefTestImplementation(object):
 
         test_result =  {"status": "FAIL",
                         "message": "\n".join(self.message)}
-        if self.reftest_screenshot == "always":
+        if (self.reftest_screenshot in ("always", "fail") or
+                self.reftest_screenshot == "unexpected" and
+                test.expected() != "FAIL"):
             test_result["extra"] = {"reftest_screenshots": log_data}
-        elif (not self.reftest_screenshot or
-              self.reftest_screenshot == "fail" or
-              (self.reftest_screenshot == "unexpected" and
-               test.expected() == 'PASS')):
-            # Only include the screenshots that failed the comparison test.
-            test_result["extra"] = {"reftest_screenshots": [
-                {"url": nodes[0].url,
-                 "screenshot": screenshots[0][page_idx],
-                 "hash": hashes[0][page_idx]},
-                relation,
-                {"url": nodes[1].url,
-                 "screenshot": screenshots[1][page_idx],
-                 "hash": hashes[1][page_idx]}]}
-
         return test_result
 
     def get_fuzzy(self, root_test, test_nodes, relation):

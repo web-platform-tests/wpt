@@ -674,8 +674,8 @@ class PrintReftestTest(ReftestTest):
                  timeout=None, path=None, viewport_size=None, dpi=None, fuzzy=None,
                  page_ranges=None, protocol="http", subdomain=False):
         super().__init__(url_base, tests_root, url, inherit_metadata, test_metadata,
-                                               references, timeout, path, viewport_size, dpi,
-                                               fuzzy, protocol, subdomain=subdomain)
+                         references, timeout, path, viewport_size, dpi,
+                         fuzzy, protocol, subdomain=subdomain)
         self._page_ranges = page_ranges
 
     @classmethod

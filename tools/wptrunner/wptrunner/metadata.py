@@ -275,8 +275,8 @@ def update_from_logs(id_test_map, update_properties, disable_intermittent, updat
             updater.update_from_log(f)
 
     yield from update_results(id_test_map, update_properties, full_update,
-                               disable_intermittent, update_intermittent=update_intermittent,
-                               remove_intermittent=remove_intermittent)
+                              disable_intermittent, update_intermittent=update_intermittent,
+                              remove_intermittent=remove_intermittent)
 
 
 def update_results(id_test_map,

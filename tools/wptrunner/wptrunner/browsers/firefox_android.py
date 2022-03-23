@@ -117,8 +117,8 @@ class ProfileCreator(FirefoxProfileCreator):
     def __init__(self, logger, prefs_root, config, test_type, extra_prefs,
                  enable_fission, debug_test, browser_channel, certutil_binary, ca_certificate_path):
         super().__init__(logger, prefs_root, config, test_type, extra_prefs,
-                                             True, enable_fission, debug_test, browser_channel, None,
-                                             certutil_binary, ca_certificate_path)
+                         True, enable_fission, debug_test, browser_channel, None,
+                         certutil_binary, ca_certificate_path)
 
     def _set_required_prefs(self, profile):
         profile.set_preferences({

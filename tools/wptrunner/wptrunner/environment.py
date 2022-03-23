@@ -266,7 +266,7 @@ class TestEnvironment:
                 return
             time.sleep(each_sleep_secs)
         raise OSError("Servers failed to start: %s" %
-                               ", ".join("%s:%s" % item for item in failed))
+                      ", ".join("%s:%s" % item for item in failed))
 
     def test_servers(self):
         failed = []

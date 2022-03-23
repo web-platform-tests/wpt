@@ -518,7 +518,7 @@ class PropertyUpdate:
                 update_properties |= set(item)
             for condition in current_conditions:
                 if (not condition.variables.issubset(update_properties) and
-                     not run_info_by_condition[condition]):
+                    not run_info_by_condition[condition]):
                     conditions.append((condition.condition_node,
                                        self.from_ini_value(condition.value)))
 

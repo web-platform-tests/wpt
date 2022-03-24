@@ -7,17 +7,16 @@ import traceback
 from urllib.parse import urlparse
 from typing import Any, Dict, List, Optional, Tuple
 
-# TODO(bashi): Remove import check suppressions once aioquic dependency is resolved.
-from aioquic.buffer import Buffer  # type: ignore
-from aioquic.asyncio import QuicConnectionProtocol, serve  # type: ignore
-from aioquic.asyncio.client import connect  # type: ignore
-from aioquic.h3.connection import H3_ALPN, FrameType, H3Connection, ProtocolError, Setting  # type: ignore
-from aioquic.h3.events import H3Event, HeadersReceived, WebTransportStreamDataReceived, DatagramReceived, DataReceived  # type: ignore
-from aioquic.quic.configuration import QuicConfiguration  # type: ignore
-from aioquic.quic.connection import logger as quic_connection_logger  # type: ignore
+from aioquic.buffer import Buffer
+from aioquic.asyncio import QuicConnectionProtocol, serve
+from aioquic.asyncio.client import connect
+from aioquic.h3.connection import H3_ALPN, FrameType, H3Connection, ProtocolError, Setting
+from aioquic.h3.events import H3Event, HeadersReceived, WebTransportStreamDataReceived, DatagramReceived, DataReceived
+from aioquic.quic.configuration import QuicConfiguration
+from aioquic.quic.connection import logger as quic_connection_logger
 from aioquic.quic.connection import stream_is_unidirectional
-from aioquic.quic.events import QuicEvent, ProtocolNegotiated, ConnectionTerminated, StreamReset  # type: ignore
-from aioquic.tls import SessionTicket  # type: ignore
+from aioquic.quic.events import QuicEvent, ProtocolNegotiated, ConnectionTerminated, StreamReset
+from aioquic.tls import SessionTicket
 
 from tools.wptserve.wptserve import stash  # type: ignore
 from .capsule import H3Capsule, H3CapsuleDecoder, CapsuleType
@@ -258,7 +257,8 @@ class WebTransportSession:
         self.request_headers = request_headers
 
         self._protocol: WebTransportH3Protocol = protocol
-        self._http: H3Connection = protocol._http
+        assert protocol._http is not None
+        self._http: H3ConnectionWithDatagram04 = protocol._http
 
         # Use the a shared default path for all handlers so that different
         # WebTransport sessions can access the same store easily.
@@ -483,7 +483,7 @@ class WebTransportH3Server:
         _logger.info("Starting WebTransport over HTTP/3 server on %s:%s",
                      self.host, self.port)
 
-        configuration.load_cert_chain(self.cert_path, self.key_path)
+        configuration.load_cert_chain(self.cert_path, self.key_path)  # type: ignore
 
         ticket_store = SessionTicketStore()
 

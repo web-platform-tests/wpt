@@ -554,8 +554,8 @@ class RefTestImplementation(object):
                 if success:
                     screenshots[i] = screenshot
 
-        test_result =  {"status": "FAIL",
-                        "message": "\n".join(self.message)}
+        test_result = {"status": "FAIL",
+                       "message": "\n".join(self.message)}
         if (self.reftest_screenshot in ("always", "fail") or
             self.reftest_screenshot == "unexpected" and
             test.expected() != "FAIL"):

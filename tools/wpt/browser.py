@@ -538,12 +538,12 @@ class ChromeChromiumBase(Browser):
         return get(revision_url).text.strip()
 
     def _get_chromium_download_url(self, version=None):
-        """Format a Chromium Snapshots url to download a browser component."""
+        """Format a Chromium Snapshots URL to download a browser component."""
         url_path = "https://storage.googleapis.com/chromium-browser-snapshots/"
         architecture = self._chromium_platform_string
 
         # If a specific version is passed as an argument, we will use it.
-        if version is not None and version.lower != "latest":
+        if version is not None and version.lower() != "latest":
             # Detect a revision number based on the version passed.
             revision = self._get_revision_from_version(version)
             if revision is not None:
@@ -555,7 +555,7 @@ class ChromeChromiumBase(Browser):
                 except requests.RequestException:
                     self.logger.warning("404: Unsuccessful attempt to download file "
                                         f"based on version. {url}")
-        # If no url was used in a previous install
+        # If no URL was used in a previous install
         # and no version was passed, use the latest Chromium revision.
         revision = self._get_latest_chromium_revision(architecture)
 
@@ -592,7 +592,7 @@ class ChromeChromiumBase(Browser):
 
     @property
     def _chromedriver_platform_string(self):
-        """Returns value that represents the suffix of the ChromeDriver
+        """Returns a string that represents the suffix of the ChromeDriver
         file name when downloaded from Chromium Snapshots.
         """
         if self.platform == "Linux":
@@ -605,7 +605,7 @@ class ChromeChromiumBase(Browser):
 
     @property
     def _chromium_platform_string(self):
-        """Returns value that is used for the platform directory in Chromium Snapshots"""
+        """Returns a string that is used for the platform directory in Chromium Snapshots"""
         if (self.platform == "Linux" or self.platform == "Win") and uname[4] == "x86_64":
             return f"{self.platform}_x64"
         return self.platform
@@ -837,9 +837,9 @@ class Chrome(ChromeChromiumBase):
     product = "chrome"
 
     def _get_webdriver_url(self, version):
-        """Get a ChromeDriver API url to download a version of ChromeDriver that matches
+        """Get a ChromeDriver API URL to download a version of ChromeDriver that matches
         the browser binary version. Version selection is described here:
-        http://chromedriver.chromium.org/downloads/version-selection"""
+        https://chromedriver.chromium.org/downloads/version-selection"""
         filename = f"chromedriver_{self._chromedriver_platform_string}.zip"
 
         # Remove channel suffixes (e.g. " dev").

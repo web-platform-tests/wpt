@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Chrome &#8212; web-platform-tests  documentation</title>
+    <title>Chrome and Chromium &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -33,8 +33,8 @@
 
           <div class="body" role="main">
             
-  <section id="chrome">
-<h1>Chrome<a class="headerlink" href="#chrome" title="Permalink to this headline">¶</a></h1>
+  <section id="chrome-and-chromium">
+<h1>Chrome and Chromium<a class="headerlink" href="#chrome-and-chromium" title="Permalink to this headline">¶</a></h1>
 <p>When running Chrome, there are some useful command line arguments.</p>
 <p>You can inform <code class="docutils literal notranslate"><span class="pre">wpt</span></code> of the release channel of Chrome using <code class="docutils literal notranslate"><span class="pre">--channel</span></code>.
 <code class="docutils literal notranslate"><span class="pre">wpt</span></code> is able to find the correct binary in the following cases:</p>
@@ -57,6 +57,8 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt run --binary-arg<span class="o">=</span>--enable-blink-features<span class="o">=</span>AsyncClipboard chrome clipboard-apis/
 </pre></div>
 </div>
+<p><a class="reference external" href="running-tests/chrome-chromium-installation-detection.html">A detailed explanation is available</a>
+for more information on how wpt detects and installs the components for Chrome and Chromium.</p>
 </section>
 
 

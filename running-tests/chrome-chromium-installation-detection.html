@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Detection and Installation of Browser and WebDriver Binaries and for Chrome and Chromium &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="detection-and-installation-of-browser-and-webdriver-binaries-and-for-chrome-and-chromium">
+<h1>Detection and Installation of Browser and WebDriver Binaries and for Chrome and Chromium<a class="headerlink" href="#detection-and-installation-of-browser-and-webdriver-binaries-and-for-chrome-and-chromium" title="Permalink to this headline">¶</a></h1>
+<p>This is a detailed description of the process in which WPT detects and installs the browser
+components for Chrome and Chromium. This process can seem convoluted and difficult to
+understand at first glance, but the reason for this process is to best ensure these components
+are compatible with each other and are the intended items that the user is trying to test.</p>
+<section id="chrome">
+<h2>Chrome<a class="headerlink" href="#chrome" title="Permalink to this headline">¶</a></h2>
+<section id="detection">
+<h3>Detection<a class="headerlink" href="#detection" title="Permalink to this headline">¶</a></h3>
+<p><strong>Browser</strong>: Because WPT does not offer installation of Chrome browser binaries, it will
+not attempt to detect a Chrome browser binary in the virtual environment directory.
+Instead, commonly-used installation locations on various operating systems are checked to
+detect a valid Chrome binary. This detection process is only used if the user has not passed
+a binary path as an argument using the <code class="docutils literal notranslate"><span class="pre">--binary</span></code> flag.</p>
+<p><strong>WebDriver</strong>: ChromeDriver detection for Chrome will only occur if a valid browser binary
+has been found. Once the browser binary version is detected, the virtual environment
+directory will be checked to see if a matching ChromeDriver version is already installed.
+If the browser and ChromeDriver versions do not match, the ChromeDriver binary will be
+removed from the directory and the user will be prompted to begin the webdriver installation
+process. A ChromeDriver version is considered matching the browser version if ChromeDriver shares
+the same major version, or next major version when testing Chrome Dev. For example, Chrome 98.x.x.x
+is considered to match ChromeDriver version 98.x.x.x, or also ChromeDriver 99.x.x.x if testing
+Chrome Dev.</p>
+<p>Note: Both Chrome and Chromium’s versions of ChromeDriver are stored in separate
+directories in the virtual environment directory i.e
+<code class="docutils literal notranslate"><span class="pre">_venv3/bin/{chrome|chromium}/{chromedriver}</span></code>. This safeguards from accidentally
+using Chromium’s ChromeDriver for a Chrome run and vice versa. Additionally, there
+is no need to reinstall ChromeDriver versions if switching between testing Chrome and Chromium.</p>
+</section>
+<section id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h3>
+<p><strong>Browser</strong>: Browser binary installation is not provided through WPT and will throw a
+<code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> if attempted via <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">install</span></code>. The user will need to
+have a browser binary on their system that can be detected or provide a path explicitly
+using the <code class="docutils literal notranslate"><span class="pre">--binary</span></code> flag.</p>
+<p><strong>WebDriver</strong>: A version of ChromeDriver will only be installed once a Chrome browser binary
+has been given or detected. A <code class="docutils literal notranslate"><span class="pre">FileNotFoundError</span></code> will be raised if the user tries to download
+ChromeDriver via <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">install</span></code> and a browser binary is not located. After browser binary
+detection, a version of ChromeDriver that matches the browser binary will be installed.
+The download source for this ChromeDriver is
+<a class="reference external" href="https://chromedriver.chromium.org/downloads/version-selection">described here</a>.
+If a matching ChromeDriver version cannot be found using this process, it is assumed that
+the Chrome browser binary is a dev version which does not have a ChromeDriver version available
+through official releases. In this case, the Chromium revision associated with this version is
+detected from <a class="reference external" href="https://omahaproxy.appspot.com/">OmahaProxy</a> and used to download
+Chromium’s version of ChromeDriver for use from Chromium snapshots, as this is currently
+the closest version we can match for Chrome Dev. Finally, if the revision number detected is
+not available in Chromium snapshots, or if the version does not match any revision number,
+the latest revision of Chromium’s ChromeDriver is installed from Chromium snapshots.</p>
+</section>
+</section>
+<section id="chromium">
+<h2>Chromium<a class="headerlink" href="#chromium" title="Permalink to this headline">¶</a></h2>
+<section id="id1">
+<h3>Detection<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p><strong>Browser</strong>: Chromium browser binary detection is only done in the virtual
+environment directory <code class="docutils literal notranslate"><span class="pre">_venv3/browsers/{channel}/</span></code>, not on the user’s system
+outside of this directory. This detection process is only used if the user has
+not passed a binary path as an argument using the <code class="docutils literal notranslate"><span class="pre">--binary</span></code> flag.</p>
+<p><strong>WebDriver</strong>: ChromeDriver detection for Chromium will only occur if a valid browser binary has
+been found. Once the browser binary version is detected, the virtual environment directory will
+be checked to see if a matching ChromeDriver version is already installed. If the versions do not
+match, the ChromeDriver binary will be removed from the directory and the user will be prompted to
+begin the webdriver installation process. For Chromium, the ChromeDriver and browser versions must be
+the same to be considered matching. For example, Chromium 99.0.4844.74 will only match ChromeDriver
+99.0.4844.74.</p>
+</section>
+<section id="id2">
+<h3>Installation<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p><strong>Browser</strong>: Chromium’s browser binary will be installed from
+<a class="reference external" href="https://storage.googleapis.com/chromium-browser-snapshots/index.html">Chromium snapshots storage</a>.
+The last revision associated with the user’s operating system will be downloaded
+(this revision is obtained by the LAST_CHANGE designation from the snapshots bucket).
+Chromium does not have varying channels, so the installation uses the default <code class="docutils literal notranslate"><span class="pre">nightly</span></code>
+designation. The install path is <code class="docutils literal notranslate"><span class="pre">_venv3/browsers/nightly/{chromium_binary}</span></code>.</p>
+<p>Note: If this download process is successful, the Chromium snapshot URL that the browser
+binary was downloaded from will be kept during the current invocation. If a Chromium ChromeDriver
+is also downloaded later to match this browser binary, the same URL is used for that download to
+ensure both components are downloaded from the same source.</p>
+<p><strong>WebDriver</strong>: A version of ChromeDriver will only be installed once a Chromium browser binary
+has been given or detected. A FileNotFoundError will be raised if the user tries to download
+ChromeDriver via the install command and a browser binary is not located. A version of
+ChromeDriver that matches the version of the browser binary will be installed. The download
+source for this ChromeDriver will be the Chromium snapshots.  If a Chromium browser
+binary and webdriver are installed in the same invocation of <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">run</span></code>
+(for example, by passing both <code class="docutils literal notranslate"><span class="pre">--install-browser</span></code> and <code class="docutils literal notranslate"><span class="pre">--install-webdriver</span></code> flags), then the
+browser binary and ChromeDriver will be pulled from the same Chromium snapshots URL (see Note
+from browser installation). Although unusual, if a Chromium browser binary is detected and
+it is not the tip-of-tree revision and the browser binary was not downloaded and installed
+during this invocation of <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">run</span></code> and the currently installed ChromeDriver version does
+not match the browser version, then an attempt will be made to detect the revision number from
+the browser binary version using the <a class="reference external" href="https://omahaproxy.appspot.com/">OmahaProxy</a>
+and download the matching ChromeDriver using this revision number from Chromium snapshots.</p>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../test-suite-design.html">Test Suite Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro-video-transcript.html">“Introduction to WPT” video transcript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Running Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../writing-tests/index.html">Writing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/running-tests/chrome-chromium-installation-detection.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

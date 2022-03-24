@@ -48,7 +48,7 @@ def get_taskcluster_artifact(index, path):
     return resp
 
 
-class Browser(object):
+class Browser:
     __metaclass__ = ABCMeta
 
     def __init__(self, logger):
@@ -473,7 +473,7 @@ class FirefoxAndroid(Browser):
     requirements = "requirements_firefox.txt"
 
     def __init__(self, logger):
-        super(FirefoxAndroid, self).__init__(logger)
+        super().__init__(logger)
         self.apk_path = None
 
     def download(self, dest=None, channel=None, rename=None):
@@ -634,7 +634,7 @@ class ChromeChromiumBase(Browser):
         extracted = os.path.join(dest, "mojojs", "gen")
         last_url_file = os.path.join(extracted, "DOWNLOADED_FROM")
         if os.path.exists(last_url_file):
-            with open(last_url_file, "rt") as f:
+            with open(last_url_file) as f:
                 last_url = f.read().strip()
             if last_url == url:
                 self.logger.info("Mojo bindings already up to date")
@@ -936,7 +936,7 @@ class ChromeAndroidBase(Browser):
     __metaclass__ = ABCMeta  # This is an abstract class.
 
     def __init__(self, logger):
-        super(ChromeAndroidBase, self).__init__(logger)
+        super().__init__(logger)
         self.device_serial = None
 
     def download(self, dest=None, channel=None, rename=None):
@@ -1564,7 +1564,7 @@ class WebKitGTKMiniBrowser(WebKit):
 
 
     def _get_osidversion(self):
-        with open('/etc/os-release', 'r') as osrelease_handle:
+        with open('/etc/os-release') as osrelease_handle:
             for line in osrelease_handle.readlines():
                 if line.startswith('ID='):
                     os_id = line.split('=')[1].strip().strip('"')

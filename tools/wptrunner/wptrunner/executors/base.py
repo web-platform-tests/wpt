@@ -540,8 +540,8 @@ class RefTestImplementation(object):
                 else:
                     test_result = {"status": "PASS", "message": None}
                     if (self.reftest_screenshot == "always" or
-                            self.reftest_screenshot == "unexpected" and
-                            test.expected() != "PASS"):
+                        self.reftest_screenshot == "unexpected" and
+                        test.expected() != "PASS"):
                         test_result["extra"] = {"reftest_screenshots": log_data}
                     # We passed
                     return test_result
@@ -557,8 +557,8 @@ class RefTestImplementation(object):
         test_result =  {"status": "FAIL",
                         "message": "\n".join(self.message)}
         if (self.reftest_screenshot in ("always", "fail") or
-                self.reftest_screenshot == "unexpected" and
-                test.expected() != "FAIL"):
+            self.reftest_screenshot == "unexpected" and
+            test.expected() != "FAIL"):
             test_result["extra"] = {"reftest_screenshots": log_data}
         return test_result
 

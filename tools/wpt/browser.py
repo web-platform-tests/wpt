@@ -543,9 +543,9 @@ class ChromeChromiumBase(Browser):
         architecture = self._chromium_platform_string
 
         # If a specific version is passed as an argument, we will use it.
-        if version is not None and version.lower() != "latest":
+        if version is not None:
             # Detect a revision number based on the version passed.
-            revision = self._get_revision_from_version(version)
+            revision = self._get_base_revision_from_version(version)
             if revision is not None:
                 url = f"{url_path}{architecture}/{revision}/"
                 try:
@@ -563,8 +563,12 @@ class ChromeChromiumBase(Browser):
         # if another component is also installed during this run (browser/webdriver).
         return f"{url_path}{architecture}/{revision}/"
 
-    def _get_revision_from_version(self, version):
+    def _get_base_revision_from_version(self, version):
         """Get a Chromium revision number that is associated with a given version."""
+        # This is not the single revision associated with the version,
+        #     but instead is where it branched from. Chromium revisions are just counting
+        #     commits on the master branch, there are no Chromium revisions for branches.
+
         # Remove channel suffixes (e.g. " dev").
         version = version.split(' ')[0]
 
@@ -646,11 +650,6 @@ class ChromeChromiumBase(Browser):
     def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         if dest is None:
             dest = os.pwd
-
-        # A browser binary is needed so that the version can be detected.
-        # The ChromeDriver that is installed will match this version.
-        if browser_binary is None:
-            browser_binary = self.find_binary(channel=channel)
 
         # A browser binary is needed so that the version can be detected.
         # The ChromeDriver that is installed will match this version.

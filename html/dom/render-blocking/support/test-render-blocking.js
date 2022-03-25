@@ -109,6 +109,7 @@ function test_render_blocked_apis(optional_element, finalTest, finalTestTitle) {
       }
       loadObserver.load.then(resolve);
 
+      // TODO(xiaochengh): See if moving this causes FF flakes.
       if (optional_action)
         optional_action();
     });

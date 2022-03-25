@@ -48,14 +48,14 @@ test_serialization(
 
 test_serialization(
     'calc(sin(infinity))',
-    'calc(infinity)',
-    'infinity');
+    'calc(NaN)',
+    'NaN');
 test_serialization(
     'calc(cos(infinity))',
-    'calc(infinity)',
-    'infinity');
+    'calc(NaN)',
+    'NaN');
 test_serialization(
     'calc(tan(infinity))',
-    'calc(infinity)',
-    'infinity');
+    'calc(NaN)',
+    'NaN');
 </script>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<title>Certain APIs should not trigger while rendering is blocked by a preload link</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="support/test-render-blocking.js"></script>
+
+<iframe src="support/subframe-render-blocking-preload.html"></iframe>
+<button>fullscreen</button>
+
+<script>
+// Tests that certain steps of Update the rendering [1] are not reached when
+// the document is render-blocked and hence has no rendering opportunities.
+// This test file only tests those steps related to viewport changes. It uses a
+// subframe so that viewport-related events are easier to fire.
+// [1] https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering
+
+const iframe = document.querySelector('iframe');
+const button = document.querySelector('button');
+button.onclick = () => iframe.contentDocument.documentElement.requestFullscreen();
+
+let resizeTest;
+let mediaChangeTest;
+let fullscreenChangeTest;
+
+const setup = new Promise((resolve, reject) => {
+  if (!window.test_driver)
+    reject('This test require test_driver to emulate user actions');
+
+  iframe.contentWindow.addEventListener('DOMContentLoaded', () => {
+    const preloadLink = iframe.contentDocument.getElementById('font-preload');
+    const preloadObserver = new LoadObserver(preloadLink);
+
+    resizeTest = rejectIfEventsFired(
+        preloadObserver.load, iframe.contentWindow, 'resize');
+    mediaChangeTest = rejectIfEventsFired(
+        preloadObserver.load,
+        iframe.contentWindow.matchMedia('(display-mode: fullscreen)'), 'change');
+    fullscreenChangeTest = rejectIfEventsFired(
+        preloadObserver.load,
+        iframe.contentDocument, ['fullscreenchange', 'fullscreenerror']);
+
+    // This should trigger events on the subframe if it's not render-blocked.
+    test_driver.click(button).then(resolve);
+  });
+});
+
+promise_setup(() => setup);
+promise_test(
+    () => resizeTest,
+    'Should not run the resize steps when render-blocked');
+promise_test(
+    () => mediaChangeTest,
+    'Should not run the evaluate media queries and report changes steps when render-blocked');
+promise_test(
+    () => fullscreenChangeTest,
+    'Should not run the fullscreen steps when render-blocked');
+promise_test(async () => {
+  const target = iframe.contentDocument.getElementById('target');
+  assert_equals(target.offsetHeight, 20);
+  assert_equals(target.offsetWidth, 220);
+}, 'The render-blocking web font is applied');
+</script>

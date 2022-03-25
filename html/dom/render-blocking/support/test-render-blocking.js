@@ -33,6 +33,7 @@ function createScrollTarget() {
   scrollContent.style.height = '200px';
   scrollTarget.appendChild(scrollContent);
   document.documentElement.appendChild(scrollTarget);
+  scrollTarget.scrollTop = 100;
   return scrollTarget;
 }
 
@@ -85,6 +86,20 @@ function test_render_blocking(optional_element, finalTest, finalTestTitle) {
   }, finalTestTitle);
 }
 
+// Returns a Promise that rejects if certain events on `target` fire before
+// the Promise `condition` fulfills.
+function rejectIfEventsFired(condition, target, events) {
+  if (!Array.isArray(events))
+    events = [events];
+  return new Promise((resolve, reject) => {
+    for (let eventName of events) {
+      target.addEventListener(eventName,
+          () => reject(`'${eventName}' event is dispatched`));
+    }
+    condition.then(resolve);
+  });
+}
+
 // Tests that certain steps of Update the rendering [1] are not reached when
 // the document is render-blocked and hence has no rendering opportunities.
 // [1] https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering
@@ -99,19 +114,8 @@ function test_render_blocked_apis(optional_element, finalTest, finalTestTitle) {
   }
   const loadObserver = new LoadObserver(optional_element || window);
 
-  function test_event_blocked(target, events, title, optional_action) {
-    if (!Array.isArray(events))
-      events = [events];
-    const promise = new Promise((resolve, reject) => {
-      for (let eventName of events) {
-        target.addEventListener(eventName,
-                                () => reject(`'${eventName}' event is dispatched`));
-      }
-      loadObserver.load.then(resolve);
-
-      if (optional_action)
-        optional_action();
-    });
+  function test_event_blocked(target, events, title) {
+    const promise = rejectIfEventsFired(loadObserver.load, target, events);
     promise_test(() => promise, title);
   }
 
@@ -119,41 +123,13 @@ function test_render_blocked_apis(optional_element, finalTest, finalTestTitle) {
       createAutofocusTarget(), 'focus',
       'Should not flush autofocus candidates when render-blocked');
 
-  const scrollTarget = createScrollTarget();
   test_event_blocked(
-      scrollTarget, 'scroll',
-      'Should not run the scroll steps when render-blocked',
-      () => scrollTarget.scrollTop = 100);
+      createScrollTarget(), 'scroll',
+      'Should not run the scroll steps when render-blocked');
 
   test_event_blocked(
       createAnimationTarget(), ['animationstart', 'animationend'],
       'Should not run the update animations and send events steps when render-blocked');
-
-  /* TODO(xiaochengh): requestFullscreen() with test driver currently causes
-   * memory leak in Blink web test runner. Fix it and re-enable these tests.
-   * See https://crbug.com/1293987 for details
-   *
-  // requestFullscreen() below will trigger viewport resize.
-  test_event_blocked(
-      window, 'resize',
-      'Should not run the resize steps when render-blocked');
-
-  // requestFullscreen() below will change the matches state
-  test_event_blocked(
-      matchMedia('all and (display-mode: fullscreen)'), 'change',
-      'Should not run the evaluate media queries and report changes steps when render-blocked');
-
-  test_event_blocked(
-      document, ['fullscreenchange', 'fullscreenerror'],
-      'Should not run the fullscreen steps when render-blocked',
-      () => {
-        if (window.test_driver) {
-          test_driver.bless('Initiate fullscreen',
-              () => document.documentElement.requestFullscreen()
-              .then(() => document.exitFullscreen()));
-        }
-      });
-   */
 
   // We should also verify that the context lost steps for canvas are not run,
   // but there's currently no way to reliably trigger a context lost in WPT.

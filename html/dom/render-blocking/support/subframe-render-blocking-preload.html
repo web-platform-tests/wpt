@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<title>This subframe preloads a render-blocking font</title>
+<link id="font-preload" rel="preload" as="font" blocking="render" crossorigin
+      href="/fonts/Ahem.ttf?pipe=trickle(d2)">
+<style>
+@font-face {
+  font-family: custom-font;
+  src: url('/fonts/Ahem.ttf?pipe=trickle(d2)');
+}
+</style>
+<span id="target" style="font: 20px/1 custom-font">Lorem ipsum</span>

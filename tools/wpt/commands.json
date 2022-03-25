@@ -6,7 +6,7 @@
     "help": "Run tests in a browser",
     "virtualenv": true,
     "requirements": [
-      "requirements.txt",
+      "../manifest/requirements.txt",
       "../wptrunner/requirements.txt"
     ],
     "conditional_requirements": {
@@ -54,7 +54,7 @@
     "help": "Install browser components",
     "virtualenv": true,
     "requirements": [
-      "requirements.txt"
+      "requirements_install.txt"
     ]
   },
   "branch-point": {

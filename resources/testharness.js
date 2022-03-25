@@ -3851,11 +3851,11 @@
      */
     function fetch_tests_from_shadow_realm(realm) {
         var chan = new MessageChannel();
-        function recieveMessage(msg_json) {
+        function receiveMessage(msg_json) {
             chan.port1.postMessage(JSON.parse(msg_json));
         }
         var done = tests.fetch_tests_from_worker(chan.port2);
-        realm.evaluate(`begin_shadow_realm_tests`)(recieveMessage);
+        realm.evaluate("begin_shadow_realm_tests")(receiveMessage);
         chan.port2.start();
         return done;
     }

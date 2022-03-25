@@ -14,11 +14,7 @@ async function tryConnect() {
     const pcFailed = (pc) => {
         return new Promise((resolve, _reject) => {
             pc.oniceconnectionstatechange = (e) => {
-                if(pc.iceGatheringState === "complete") {
-                    resolve(pc.iceConnectionState === "failed");
-                } else if(pc.iceConnectionState !== "new") {
-                    resolve(false);
-                }
+                resolve(pc.iceConnectionState == "failed");
             };
         });
     }

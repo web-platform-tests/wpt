@@ -12,7 +12,6 @@ from . import testloader
 from . import wptmanifest
 from . import wpttest
 from .expected import expected_path
-from .vcs import git
 manifest = None  # Module that will be imported relative to test_root
 manifestitem = None
 
@@ -50,10 +49,9 @@ class RunInfo:
         return list(self.items())
 
 
-def update_expected(test_paths, serve_root, log_file_names,
-                    update_properties, rev_old=None, rev_new="HEAD",
-                    full_update=False, sync_root=None, disable_intermittent=None,
-                    update_intermittent=False, remove_intermittent=False):
+def update_expected(test_paths, log_file_names,
+                    update_properties, full_update=False, disable_intermittent=None,
+                    update_intermittent=False, remove_intermittent=False, **kwargs):
     """Update the metadata files for web-platform-tests based on
     the results obtained in a previous run or runs
 
@@ -67,7 +65,7 @@ def update_expected(test_paths, serve_root, log_file_names,
     intermittent statuses which are not present in the current run will be removed from the
     metadata, else they are left in."""
 
-    do_delayed_imports(serve_root)
+    do_delayed_imports()
 
     id_test_map = load_test_data(test_paths)
 
@@ -89,52 +87,10 @@ def update_expected(test_paths, serve_root, log_file_names,
                         print("disabled: %s" % test.root.test_path)
 
 
-def do_delayed_imports(serve_root=None):
+def do_delayed_imports():
     global manifest, manifestitem
     from manifest import manifest, item as manifestitem  # type: ignore
 
-
-def files_in_repo(repo_root):
-    return git("ls-tree", "-r", "--name-only", "HEAD").split("\n")
-
-
-def rev_range(rev_old, rev_new, symmetric=False):
-    joiner = ".." if not symmetric else "..."
-    return "".join([rev_old, joiner, rev_new])
-
-
-def paths_changed(rev_old, rev_new, repo):
-    data = git("diff", "--name-status", rev_range(rev_old, rev_new), repo=repo)
-    lines = [tuple(item.strip() for item in line.strip().split("\t", 1))
-             for line in data.split("\n") if line.strip()]
-    output = set(lines)
-    return output
-
-
-def load_change_data(rev_old, rev_new, repo):
-    changes = paths_changed(rev_old, rev_new, repo)
-    rv = {}
-    status_keys = {"M": "modified",
-                   "A": "new",
-                   "D": "deleted"}
-    # TODO: deal with renames
-    for item in changes:
-        rv[item[1]] = status_keys[item[0]]
-    return rv
-
-
-def unexpected_changes(manifests, change_data, files_changed):
-    files_changed = set(files_changed)
-
-    root_manifest = None
-    for manifest, paths in manifests.items():
-        if paths["url_base"] == "/":
-            root_manifest = manifest
-            break
-    else:
-        return []
-
-    return [fn for _, fn, _ in root_manifest if fn in files_changed and change_data.get(fn) != "M"]
 
 # For each testrun
 # Load all files and scan for the suite_start entry

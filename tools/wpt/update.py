@@ -1,6 +1,8 @@
 import os
 import sys
 
+from mozlog import commandline
+
 wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 sys.path.insert(0, os.path.abspath(os.path.join(wpt_root, "tools")))
 
@@ -22,6 +24,11 @@ def create_parser_update():
 
 def update_expectations(_, **kwargs):
     from wptrunner import metadata, products, wptcommandline
+
+    commandline.setup_logging("web-platform-tests",
+                              kwargs,
+                              {"mach": sys.stdout},
+                              formatter_defaults=None)
 
     if not kwargs["tests_root"]:
         kwargs["tests_root"] = wpt_root

@@ -69,6 +69,13 @@ def update_expected(test_paths, log_file_names,
 
     id_test_map = load_test_data(test_paths)
 
+    msg = f"Updating metadata using properties: {','.join(update_properties[0])}"
+    if update_properties[1]:
+        dependent_strs = [f"{item}: {','.join(values)}"
+                          for item, values in update_properties[1].items()]
+        msg += f", and dependent properties: {' '.join(dependent_strs)}"
+    logger.info(msg)
+
     for metadata_path, updated_ini in update_from_logs(id_test_map,
                                                        update_properties,
                                                        disable_intermittent,
@@ -82,9 +89,9 @@ def update_expected(test_paths, log_file_names,
             for test in updated_ini.iterchildren():
                 for subtest in test.iterchildren():
                     if subtest.new_disabled:
-                        print("disabled: %s" % os.path.dirname(subtest.root.test_path) + "/" + subtest.name)
+                        logger.info("disabled: %s" % os.path.dirname(subtest.root.test_path) + "/" + subtest.name)
                     if test.new_disabled:
-                        print("disabled: %s" % test.root.test_path)
+                        logger.info("disabled: %s" % test.root.test_path)
 
 
 def do_delayed_imports():
@@ -226,7 +233,7 @@ def update_from_logs(id_test_map, update_properties, disable_intermittent, updat
     updater = ExpectedUpdater(id_test_map)
 
     for i, log_filename in enumerate(log_filenames):
-        print("Processing log %d/%d" % (i + 1, len(log_filenames)))
+        logger.info("Processing log %d/%d" % (i + 1, len(log_filenames)))
         with open(log_filename) as f:
             updater.update_from_log(f)
 
@@ -398,7 +405,7 @@ class ExpectedUpdater:
         try:
             self.id_test_map[test_id]
         except KeyError:
-            print("Test not found %s, skipping" % test_id)
+            logger.warning("Test not found %s, skipping" % test_id)
             return
 
         self.tests_visited[test_id] = set()
@@ -667,6 +674,8 @@ class TestFileData:
         # even if the expectations didn't change
         if not self.requires_update and not full_update:
             return
+
+        logger.debug("Updating %s", self.metadata_path)
 
         expected = self.expected(update_properties,
                                  update_intermittent=update_intermittent,

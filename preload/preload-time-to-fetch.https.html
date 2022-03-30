@@ -42,10 +42,10 @@ test_preload_change(
     'Changing a preload "as" from a previously non-matching destination should trigger a fetch');
 
 test_preload_change(
-    {href: '/common/square.png?4', as: 'image'},
-    {type: 'image/jpeg'},
-    ['load', 'load'],
-    'Changing a preload "type" to a mime-type different from the preloaded one should trigger a fetch');
+    {href: '/common/square.png?4', type: 'text/plain', as: 'image'},
+    {type: 'image/png'},
+    ['timeout', 'load'],
+    'Changing a preload "type" (non-matching->matching) should trigger a fetch');
 
 test_preload_change(
     {href: '/common/square.png?5', as: 'image', media: 'screen and (max-width: 10px)'},

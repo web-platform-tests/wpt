@@ -41,7 +41,6 @@ promise_test(async t => {
     assert_array_equals(sequence, ['constructed', 'connected', 'loaded']);
 }, 'preload link should fetch when attached to a shadow DOM');
 
-
 promise_test(async t => {
     const href = '/common/square.png';
     const doc = document.implementation.createHTMLDocument();
@@ -55,8 +54,7 @@ promise_test(async t => {
     doc.head.appendChild(link);
     const result = await Promise.any([loaded, timeout]);
     assert_equals(result, 'timeout');
-}, 'preload links only work for documents within browsing contexts');
-
+}, 'preload links only work for documents within browsing contexts')
 
 </script>
 </body>

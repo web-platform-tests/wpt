@@ -9,10 +9,18 @@
 <script type=module>
 import inputTypes from "./input-types.js";
 
+function createInput(type) {
+  const input = document.createElement("input");
+  input.setAttribute("type", type);
+  // FIXME: Should we insert it in the document? It feels weird that we don't
+  // throw for non-rendered elements, since some pickers require positioning
+  // information.
+  return input;
+}
+
 for (const inputType of inputTypes) {
   test(() => {
-    const input = document.createElement("input");
-    input.setAttribute("type", inputType);
+    const input = createInput(inputType);
 
     assert_throws_dom('NotAllowedError', () => { input.showPicker(); });
   }, `input[type=${inputType}] showPicker() requires a user gesture`);
@@ -20,12 +28,27 @@ for (const inputType of inputTypes) {
 
 for (const inputType of inputTypes) {
   promise_test(async t => {
-    const input = document.createElement("input");
-    input.setAttribute("type", inputType);
+    const input = createInput(inputType);
 
     await test_driver.bless('show picker');
     input.showPicker();
     input.blur();
   }, `input[type=${inputType}] showPicker() does not throw when user activation is active`);
+
+  promise_test(async t => {
+    const input = createInput(inputType);
+    input.readOnly = true;
+
+    await test_driver.bless('show picker');
+    assert_throws_dom('InvalidStateError', () => { input.showPicker(); });
+  }, `input[type=${inputType}] showPicker() does throw when read only`);
+
+  promise_test(async t => {
+    const input = createInput(inputType);
+    input.disabled = true;
+
+    await test_driver.bless('show picker');
+    assert_throws_dom('InvalidStateError', () => { input.showPicker(); });
+  }, `input[type=${inputType}] showPicker() does throw when disabled`);
 }
 </script>

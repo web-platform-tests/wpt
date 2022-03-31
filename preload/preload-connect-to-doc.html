@@ -1,0 +1,62 @@
+<!doctype html>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/preload/resources/preload_helper.js"></script>
+<body>
+<script>
+
+promise_test(async t => {
+    const href = '/common/square.png';
+    const sequence = [];
+    const loaded = new Promise(resolveLoad => {
+        customElements.define("with-preload", class extends HTMLElement {
+            constructor() {
+              super();
+              const shadow = this.attachShadow({ mode: "closed" });
+              const link = document.createElement('link');
+              link.rel = 'preload';
+              link.as = 'image';
+              link.href = href;
+              shadow.appendChild(link);
+              sequence.push('constructed');
+              link.addEventListener('load', () => {
+                  sequence.push('loaded');
+                  resolveLoad();
+              });
+            }
+
+            connectedCallback() {
+                sequence.push('connected');
+            }
+        });
+    });
+
+    const wrapper = document.createElement('with-preload');
+    const timeout = 500;
+    await new Promise(resolve => t.step_timeout(resolve, timeout));
+    document.body.appendChild(wrapper);
+    await loaded;
+    assert_array_equals(sequence, ['constructed', 'connected', 'loaded']);
+}, 'preload link should fetch when attached to a shadow DOM');
+
+
+promise_test(async t => {
+    const href = '/common/square.png';
+    const doc = document.implementation.createHTMLDocument();
+    const link = doc.createElement('link');
+    link.rel = 'preload';
+    link.as = 'image';
+    link.href = href;
+    const loaded = new Promise(resolve => link.addEventListener('load', () => resolve('loaded')));
+    const timeoutMillis = 1000;
+    const timeout = new Promise(resolve => t.step_timeout(() => resolve('timeout'), timeoutMillis));
+    doc.head.appendChild(link);
+    const result = await Promise.any([loaded, timeout]);
+    assert_equals(result, 'timeout');
+}, 'preload links only work for documents within browsing contexts');
+
+
+</script>
+</body>

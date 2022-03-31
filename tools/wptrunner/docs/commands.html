@@ -76,12 +76,6 @@ is used instead of parse_args() for the subcommand. Default to False.</p>
 <dt><code class="code docutils literal notranslate"><span class="pre">virtualenv</span></code></dt><dd><p>When True, the subcommand is executed with a virtualenv environment. Default
 to True.</p>
 </dd>
-<dt><code class="code docutils literal notranslate"><span class="pre">install</span></code></dt><dd><p>A list of strings where each string represents a
-<a class="reference external" href="https://setuptools.readthedocs.io/en/latest/pkg_resources.html#requirement-objects">requirement object</a>.
-These requirements are installed into the virtualenv environment before
-running the subcommand. <code class="code docutils literal notranslate"><span class="pre">virtualenv</span></code> must be true when this field is
-set.</p>
-</dd>
 <dt><code class="code docutils literal notranslate"><span class="pre">requirements</span></code></dt><dd><p>A list of paths where each path specifies a requirements.txt. All requirements
 listed in these files are installed into the virtualenv environment before
 running the subcommand. <code class="code docutils literal notranslate"><span class="pre">virtualenv</span></code> must be true when this field is

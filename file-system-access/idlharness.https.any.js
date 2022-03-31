@@ -6,11 +6,11 @@
 
 idl_test(
   ['file-system-access'],
-  ['storage', 'permissions', 'streams', 'html', 'dom'],
+  ['fs', 'permissions', 'html', 'dom'],
   idl_array => {
     idl_array.add_objects({
-      // TODO: Add instances of FileSystemHandle, FileSystemFileHandle,
-      // FileSystemDirectoryHandle and FileSystemWriter.
+      Window: ['window'],
+      // TODO: DataTransferItem
     });
   }
 );

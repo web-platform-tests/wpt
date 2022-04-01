@@ -8,9 +8,11 @@ idl_test(
   ['file-system-access'],
   ['fs', 'permissions', 'html', 'dom'],
   idl_array => {
-    idl_array.add_objects({
-      Window: ['window'],
-      // TODO: DataTransferItem
-    });
+    if (self.GLOBAL.isWindow()) {
+      idl_array.add_objects({
+        Window: ['window'],
+        // TODO: DataTransferItem
+      });
+    }
   }
 );

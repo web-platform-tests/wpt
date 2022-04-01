@@ -22,6 +22,7 @@ jobs:
       run: |
         sudo apt-get -qqy install zstd
         pip install -r tools/wpt/requirements.txt
+        pip install virtualenv
     - name: Run manifest_build.py
       # Use a conditional step instead of a conditional job to work around #20700.
       if: github.repository == 'web-platform-tests/wpt'

@@ -3,7 +3,7 @@
      Any copyright is dedicated to the Public Domain.
      http://creativecommons.org/publicdomain/zero/1.0/
   -->
-<html>
+<html lang="ja">
 <meta charset="utf-8">
 <title>CSS Ruby Test: basic 'block ruby' layout.</title>
 <link rel="author" title="Mats Palmgren" href="mailto:mats@mozilla.com">
@@ -11,6 +11,17 @@
 <link rel="help" href="https://drafts.csswg.org/css-ruby-1/#ruby-layout">
 <link rel="match" href="block-ruby-001-ref.html">
 <style>
+@font-face
+{
+  font-family: "mplus-1p-regular";
+  src: url("/fonts/mplus-1p-regular.woff") format("woff");
+}
+
+html
+{
+  font-family: "mplus-1p-regular";
+}
+
 ruby { display: block ruby; background: lightblue; }
 .mbp {
   margin: 1px 3px 5px 7px;
@@ -29,29 +40,11 @@ rbc {
   unicode-bidi: isolate;
 }
 </style>
-
-  <!--
-
-  In the original test,
-
-  D was べ
-  E was る
-  H was 一
-  K was 二
-  M was 三
-  R was 四
-  S was 五
-  T was 六
-  W was 七
-  Z was 八
-
-  -->
-
-A<ruby>D<rt>E</rt></ruby>B
-A<ruby class=mbp>D<rt>E</rt></ruby>B
-<div class=columns>A<ruby class=mbp>D<rt>E</rt> D<rt>E</rt>  D<rt>E</rt> D<rt>E</rt> D<rt>E</rt></ruby>B</div>
+A<ruby>べ<rt>る</rt></ruby>B
+A<ruby class="mbp">べ<rt>る</rt></ruby>B
+<div class="columns">A<ruby class=mbp>べ<rt>る</rt> べ<rt>る</rt>  べ<rt>る</rt> べ<rt>る</rt> べ<rt>る</rt></ruby>B</div>
 <div style="width:2.5em; border:1px solid;">
-    <ruby style="margin: 1em 0em;"><rb>H<rb>K<rb>M<rb>R<rb>S<rb>T<rb>W<rb>Z</ruby>
-    <ruby style="margin: 1em 0em;"><rbc>H</rbc><rbc>K</rbc><rbc>M</rbc><rbc>R</rbc><rbc>S</rbc><rbc>T</rbc><rbc>W</rbc><rbc>Z</rbc></ruby>
+    <ruby style="margin: 1em 0em;"><rb>一<rb>二<rb>三<rb>四<rb>五<rb>六<rb>七<rb>八</ruby>
+    <ruby style="margin: 1em 0em;"><rbc>一</rbc><rbc>二</rbc><rbc>三</rbc><rbc>四</rbc><rbc>五</rbc><rbc>六</rbc><rbc>七</rbc><rbc>八</rbc></ruby>
 </div>
 </html>

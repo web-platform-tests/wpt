@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Reference File</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+
+  <link rel="stylesheet" href="/fonts/ahem.css">
+
+  <style>
+  body
+    {
+      font-family: Ahem;
+      font-size: 60px;
+      line-height: 1;
+    }
+
+  div
+    {
+      text-align: left;
+    }
+
+  span.add-space-on-the-left
+    {
+      padding-left: calc(4em - 1em - 0.5em);
+    }
+
+  div#first, div#second
+    {
+      padding-left: 2em; /* computes to 120px */
+    }
+
+  div.fontsize30px
+    {
+      font-size: 0.5em;
+    }
+  </style>
+
+  <div class="fontsize30px" style="padding-left: calc(120px + 60px); padding-top: 30px;">C</div>
+
+  <div id="first" style="margin-bottom: 2em;"><span style="padding-right: 0.5em;">A</span>D<span class="add-space-on-the-left">B</span></div>
+
+  <div class="fontsize30px" style="padding-left: calc(120px + 60px + 240px); padding-bottom: 30px;">G</div>
+
+  <div id="second">EFH</div>

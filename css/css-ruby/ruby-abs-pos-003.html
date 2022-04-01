@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Ruby Test: absolutely positioned ruby base unit boxes and absolutely positioned ruby text unit boxes inside a relatively positioned ruby container element</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-ruby-1/#formatting-context">
+  <link rel="match" href="reference/ruby-abs-pos-003-ref.html">
+
+  <link rel="stylesheet" href="/fonts/ahem.css">
+
+  <meta content="" name="flags">
+  <meta content="This test checks that the containing block for internal ruby boxes (ruby base units and ruby text units) when the ruby container element is relatively positioned is the ruby container element itself.">
+
+  <style>
+  body
+    {
+      font-family: Ahem;
+    }
+
+  div , ruby
+    {
+      position: relative;
+    }
+
+  div
+    {
+      font-size: 60px;
+      line-height: 3;
+      margin-bottom: 1em;
+    }
+
+  div#third, div#fourth
+    {
+      right: 2em; /* computes to 120px */
+      text-align: right;
+    }
+
+  rb#third-subtest, rt#fourth-subtest
+    {
+      position: absolute;
+      right: 240px;
+    }
+  </style>
+
+  <div id="third">I<ruby><rb id="third-subtest">J<rt>K</ruby>L</div>
+
+  <div id="fourth">M<ruby><rb>N<rt id="fourth-subtest">O</ruby>P</div>

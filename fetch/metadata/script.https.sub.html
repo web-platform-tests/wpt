@@ -34,7 +34,7 @@
 </script>
 
 <!-- Cross-site script -->
-<script src="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/metadata/resources/echo-as-script.py"></script>
+<script src="https://{{hosts[alt][]}}:{{ports[https][0]}}/fetch/metadata/resources/echo-as-script.py"></script>
 <script>
   test(t => {
     t.add_cleanup(_ => { header = null; });

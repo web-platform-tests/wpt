@@ -53,7 +53,7 @@
 
   promise_test(() =>
     requestViaImage(
-      "https://{{hosts[alt][www]}}:{{ports[https][0]}}/common/security-features/subresource/image.py")
+      "https://{{hosts[alt][]}}:{{ports[https][0]}}/common/security-features/subresource/image.py")
     .then(result => {
         headers = result.headers;
         got = {

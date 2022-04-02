@@ -53,7 +53,7 @@
       let e = document.createElement('link');
       e.rel = "icon";
       e.type = "image/png";
-      e.href = "https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/metadata/resources/record-header.py?file=" + key;
+      e.href = "https://{{hosts[alt][]}}:{{ports[https][0]}}/fetch/metadata/resources/record-header.py?file=" + key;
       document.head.appendChild(e);
       t.step_timeout(_=> {
         let expected = {"site":"cross-site", "user":"", "mode": "no-cors", "dest": "image"};

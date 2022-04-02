@@ -60,7 +60,7 @@ promise_test(t => {
       let key = "redirect-same-site-cross-site" + nonce;
 
       let e = document.createElement('img');
-      e.src = "https://{{hosts[][www]}}:{{ports[https][0]}}/xhr/resources/redirect.py?location=https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/metadata/resources/record-header.py?file=" + key;
+      e.src = "https://{{hosts[][www]}}:{{ports[https][0]}}/xhr/resources/redirect.py?location=https://{{hosts[alt][]}}:{{ports[https][0]}}/fetch/metadata/resources/record-header.py?file=" + key;
       let expected = {"site":"cross-site", "user":"", "mode": "no-cors", "dest": "image"};
 
       e.onload = e => {

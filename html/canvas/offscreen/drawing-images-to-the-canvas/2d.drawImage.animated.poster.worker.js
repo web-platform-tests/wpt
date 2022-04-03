@@ -32,6 +32,7 @@ promise.then(function(response) {
         _assertPixelApprox(canvas, 50,25, 0,255,0,255, "50,25", "0,255,0,255", 2);
     }, t_fail);
 }).then(t_pass, t_fail);
+t.done();
 
 });
 done();

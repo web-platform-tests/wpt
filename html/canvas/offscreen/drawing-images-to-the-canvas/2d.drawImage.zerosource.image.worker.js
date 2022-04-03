@@ -36,6 +36,7 @@ promise.then(function(response) {
         _assertPixel(canvas, 50,25, 0,255,0,255, "50,25", "0,255,0,255");
     }, t_fail);
 }).then(t_pass, t_fail);
+t.done();
 
 });
 done();

@@ -7,7 +7,7 @@
   <link rel="match" href="../../reference/ref-filled-green-100px-square.xht">
   <link rel="help" href="https://www.w3.org/TR/css-position-3/#sticky-pos">
 
-  <meta name="assert" content="This test checks that an element with 'position: sticky' creates a stacking context. In this test, both divs have the same z-index value but since div#sticky is last in document tree order, then it must overlap div#overlapped-red.">
+  <meta name="assert" content="This test checks that an element with 'position: sticky' creates a stacking context. In this test, the first 2 divs have the same z-index value but since div#sticky is last in document tree order, then it must overlap div#overlapped-red. The final div#overlap-bottom-half-of-sticky exists to make sure that the div#sticky is squeezed, 'sandwiched' between the other 2.">
 
   <style>
   div
@@ -25,9 +25,18 @@
 
   div#sticky
     {
-      background-color: green;
+      background: linear-gradient(to bottom, green 50%, red 50%);
       position: sticky;
       z-index: 2;
+    }
+
+  div#overlap-bottom-half-of-sticky
+    {
+      background-color: green;
+      bottom: 50px;
+      height: 50px;
+      position: relative;
+      z-index: 3;
     }
   </style>
 
@@ -36,3 +45,5 @@
   <div id="overlapped-red"></div>
 
   <div id="sticky"></div>
+
+  <div id="overlap-bottom-half-of-sticky"></div>

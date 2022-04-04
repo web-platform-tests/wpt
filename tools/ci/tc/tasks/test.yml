@@ -104,6 +104,8 @@ components:
 
   browser-chrome: {}
 
+  browser-chromium: {}
+
   browser-servo: {}
 
   tox-python3_6:

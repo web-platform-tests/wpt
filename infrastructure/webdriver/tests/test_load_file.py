@@ -1,2 +1,2 @@
-def test_load(session, inline):
+def test_load(inline):
     inline("PASS")

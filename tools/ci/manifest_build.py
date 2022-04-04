@@ -1,9 +1,14 @@
+import bz2
+import gzip
 import json
 import logging
+import lzma
 import os
 import subprocess
 import sys
 import tempfile
+
+from typing import Dict, List
 
 import requests
 
@@ -24,24 +29,27 @@ class Status:
     FAIL = 1
 
 
-def run(cmd, return_stdout=False, **kwargs):
+def run(cmd: List[str]) -> None:
     logger.info(" ".join(cmd))
-    if return_stdout:
-        f = subprocess.check_output
-    else:
-        f = subprocess.check_call
-    return f(cmd, **kwargs)
+    subprocess.check_call(cmd)
 
 
-def create_manifest(path):
-    run(["./wpt", "manifest", "-p", path])
+def create_manifest() -> bytes:
+    with tempfile.TemporaryDirectory() as tempdir:
+        path = os.path.join(tempdir, "MANIFEST.json")
+        run(["./wpt", "manifest", "-p", path])
+        with open(path, "rb") as f:
+            data = f.read()
+    return data
 
 
-def compress_manifest(path):
-    for args in [["gzip", "-k", "-f", "--best"],
-                 ["bzip2", "-k", "-f", "--best"],
-                 ["zstd", "-k", "-f", "--ultra", "-22", "-q"]]:
-        run(args + [path])
+def compress_manifest(data: bytes) -> Dict[str, bytes]:
+    return {
+        "gz": gzip.compress(data, compresslevel=9),
+        "bz2": bz2.compress(data, compresslevel=9),
+        "xz": lzma.compress(data, format=lzma.FORMAT_XZ,
+                            preset=(lzma.PRESET_DEFAULT | lzma.PRESET_EXTREME))
+    }
 
 
 def request(url, desc, method=None, data=None, json_data=None, params=None, headers=None):
@@ -106,7 +114,7 @@ def get_pr(owner, repo, sha):
     return pr["number"]
 
 
-def create_release(manifest_path, owner, repo, sha, tag, body):
+def create_release(artifacts, owner, repo, sha, tag, body):
     logger.info("Creating a release for tag='%s', target_commitish='%s'" % (tag, sha))
     create_url = "https://api.github.com/repos/%s/%s/releases" % (owner, repo)
     create_data = {"tag_name": tag,
@@ -121,14 +129,10 @@ def create_release(manifest_path, owner, repo, sha, tag, body):
     # Upload URL contains '{?name,label}' at the end which we want to remove
     upload_url = create_resp["upload_url"].split("{", 1)[0]
 
-    upload_exts = [".gz", ".bz2", ".zst"]
-    for upload_ext in upload_exts:
+    for upload_ext, upload_data in artifacts.items():
         upload_filename = "MANIFEST-%s.json%s" % (sha, upload_ext)
         params = {"name": upload_filename,
                   "label": "MANIFEST.json%s" % upload_ext}
-
-        with open("%s%s" % (manifest_path, upload_ext), "rb") as f:
-            upload_data = f.read()
 
         logger.info("Uploading %s bytes" % len(upload_data))
 
@@ -166,11 +170,7 @@ def should_dry_run():
 def main():
     dry_run = should_dry_run()
 
-    manifest_path = os.path.join(tempfile.mkdtemp(), "MANIFEST.json")
-
-    create_manifest(manifest_path)
-
-    compress_manifest(manifest_path)
+    artifacts = compress_manifest(create_manifest())
 
     owner, repo = os.environ["GITHUB_REPOSITORY"].split("/", 1)
 
@@ -186,7 +186,7 @@ def main():
         return Status.FAIL
     tag_name = "merge_pr_%s" % pr
 
-    if not create_release(manifest_path, owner, repo, head_rev, tag_name, body):
+    if not create_release(artifacts, owner, repo, head_rev, tag_name, body):
         return Status.FAIL
 
     return Status.SUCCESS

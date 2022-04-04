@@ -6,7 +6,6 @@
     "help": "Run tests in a browser",
     "virtualenv": true,
     "requirements": [
-      "../manifest/requirements.txt",
       "../wptrunner/requirements.txt"
     ],
     "conditional_requirements": {

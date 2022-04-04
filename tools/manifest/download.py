@@ -2,15 +2,10 @@ import argparse
 import bz2
 import gzip
 import json
-import io
+import lzma
 import os
 from datetime import datetime, timedelta
 from urllib.request import urlopen
-
-try:
-    import zstandard
-except ImportError:
-    zstandard = None
 
 from .utils import git
 
@@ -67,7 +62,7 @@ def score_name(name):
     # Accept both ways of naming the manifest asset, even though
     # there's no longer a reason to include the commit sha.
     if name.startswith("MANIFEST-") or name.startswith("MANIFEST."):
-        if zstandard and name.endswith("json.zst"):
+        if name.endswith("json.xz"):
             return 1
         if name.endswith(".json.bz2"):
             return 2
@@ -137,13 +132,10 @@ def download_manifest(
                            resp.code)
             continue
 
-        if url.endswith(".zst"):
-            if not zstandard:
-                continue
+        if url.endswith(".xz"):
             try:
-                dctx = zstandard.ZstdDecompressor()
-                decompressed = dctx.decompress(resp.read())
-            except OSError:
+                decompressed = lzma.decompress(resp.read())
+            except lzma.LZMAError:
                 logger.warning("Failed to decompress downloaded file")
                 continue
         elif url.endswith(".bz2"):
@@ -153,11 +145,8 @@ def download_manifest(
                 logger.warning("Failed to decompress downloaded file")
                 continue
         elif url.endswith(".gz"):
-            fileobj = io.BytesIO(resp.read())
             try:
-                with gzip.GzipFile(fileobj=fileobj) as gzf:
-                    data = gzf.read()
-                    decompressed = data
+                decompressed = gzip.decompress(resp.read())
             except OSError:
                 logger.warning("Failed to decompress downloaded file")
                 continue

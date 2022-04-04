@@ -1,11 +1,11 @@
 <!DOCTYPE html>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
 <script src="resources/utils.js"></script>
-<meta name="timeout" content="long">
-<body></body>
+<body>
 <script>
 
 function range_rewrite_test(rewrites, expect, label) {
@@ -39,4 +39,4 @@ range_rewrite_test(
     ], 'ok', 'Range response out of range of request');
 range_rewrite_test([{request: ['0', '*'], status: 200}], 'ok', 'Range requests ignored (200 status)');
 </script>
-
+</body

@@ -52,7 +52,7 @@ def domains_are_distinct(a, b):
     return a_parts[slice_index:] != b_parts[slice_index:]
 
 
-class WrapperHandler(object):
+class WrapperHandler:
 
     __meta__ = abc.ABCMeta
 
@@ -120,9 +120,8 @@ class WrapperHandler(object):
         path = self._get_filesystem_path(request)
         try:
             with open(path, "rb") as f:
-                for key, value in read_script_metadata(f, js_meta_re):
-                    yield key, value
-        except IOError:
+                yield from read_script_metadata(f, js_meta_re)
+        except OSError:
             raise HTTPException(404)
 
     def _get_meta(self, request):
@@ -179,7 +178,7 @@ class HtmlWrapperHandler(WrapperHandler):
 
     def check_exposure(self, request):
         if self.global_type:
-            globals = u""
+            globals = ""
             for (key, value) in self._get_metadata(request):
                 if key == "global":
                     globals = value
@@ -345,6 +344,44 @@ class ServiceWorkerModulesHandler(HtmlWrapperHandler):
 </script>
 """
 
+class ShadowRealmHandler(HtmlWrapperHandler):
+    global_type = "shadowrealm"
+    path_replace = [(".any.shadowrealm.html", ".any.js")]
+
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+(async function() {
+  const r = new ShadowRealm();
+
+  await new Promise(r.evaluate(`
+    (resolve, reject) => {
+      (async () => {
+        await import("/resources/testharness.js");
+        %(script)s
+        globalThis.self.GLOBAL = {
+          isWindow: function() { return false; },
+          isWorker: function() { return false; },
+        };
+        await import("%(path)s");
+      })().then(resolve, (e) => reject(e.toString()));
+    }
+  `));
+
+  await fetch_tests_from_shadow_realm(r);
+  done();
+})();
+</script>
+"""
+
+    def _script_replacement(self, key, value):
+        if key == "script":
+            return 'await import("%s");' % value
+        return None
+
 
 class BaseWorkerHandler(WrapperHandler):
     headers = [('Content-Type', 'text/javascript')]
@@ -405,7 +442,7 @@ done();
 rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl2.js")]
 
 
-class RoutesBuilder(object):
+class RoutesBuilder:
     def __init__(self):
         self.forbidden_override = [("GET", "/tools/runner/*", handlers.file_handler),
                                    ("POST", "/tools/runner/update_manifest.py",
@@ -454,6 +491,7 @@ class RoutesBuilder(object):
             ("GET", "*.any.sharedworker-module.html", SharedWorkerModulesHandler),
             ("GET", "*.any.serviceworker.html", ServiceWorkersHandler),
             ("GET", "*.any.serviceworker-module.html", ServiceWorkerModulesHandler),
+            ("GET", "*.any.shadowrealm.html", ShadowRealmHandler),
             ("GET", "*.any.worker.js", ClassicWorkerHandler),
             ("GET", "*.any.worker-module.js", ModuleWorkerHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
@@ -489,7 +527,7 @@ def get_route_builder(logger, aliases, config):
     return builder
 
 
-class ServerProc(object):
+class ServerProc:
     def __init__(self, mp_context, scheme=None):
         self.proc = None
         self.daemon = None
@@ -569,7 +607,7 @@ def check_subdomains(logger, config, routes, mp_context, log_handlers):
     wrapper.start(start_http_server, host, port, paths, routes,
                   bind_address, config, log_handlers)
 
-    url = "http://{}:{}/".format(host, port)
+    url = f"http://{host}:{port}/"
     connected = False
     for i in range(10):
         try:
@@ -591,7 +629,7 @@ def check_subdomains(logger, config, routes, mp_context, log_handlers):
         try:
             urllib.request.urlopen("http://%s:%d/" % (domain, port))
         except Exception:
-            logger.critical("Failed probing domain {}. {}".format(domain, EDIT_HOSTS_HELP))
+            logger.critical(f"Failed probing domain {domain}. {EDIT_HOSTS_HELP}")
             sys.exit(1)
 
     wrapper.stop()
@@ -719,7 +757,7 @@ def start_http2_server(logger, host, port, paths, routes, bind_address, config, 
         startup_failed(logger)
 
 
-class WebSocketDaemon(object):
+class WebSocketDaemon:
     def __init__(self, host, port, doc_root, handlers_root, bind_address, ssl_config):
         logger = logging.getLogger()
         self.host = host
@@ -811,7 +849,7 @@ def start_webtransport_h3_server(logger, host, port, paths, routes, bind_address
                                     logger=logger)
     except Exception as error:
         logger.critical(
-            "Failed to start WebTransport over HTTP/3 server: {}".format(error))
+            f"Failed to start WebTransport over HTTP/3 server: {error}")
         sys.exit(0)
 
 
@@ -836,20 +874,20 @@ def iter_servers(servers):
 
 
 def _make_subdomains_product(s: Set[str], depth: int = 2) -> Set[str]:
-    return {u".".join(x) for x in chain(*(product(s, repeat=i) for i in range(1, depth+1)))}
+    return {".".join(x) for x in chain(*(product(s, repeat=i) for i in range(1, depth+1)))}
 
 
 def _make_origin_policy_subdomains(limit: int) -> Set[str]:
-    return {u"op%d" % x for x in range(1,limit+1)}
+    return {"op%d" % x for x in range(1,limit+1)}
 
 
-_subdomains = {u"www",
-               u"www1",
-               u"www2",
-               u"天気の良い日",
-               u"élève"}
+_subdomains = {"www",
+               "www1",
+               "www2",
+               "天気の良い日",
+               "élève"}
 
-_not_subdomains = {u"nonexistent"}
+_not_subdomains = {"nonexistent"}
 
 _subdomains = _make_subdomains_product(_subdomains)
 
@@ -917,7 +955,7 @@ class ConfigBuilder(config.ConfigBuilder):
             kwargs["subdomains"] = _subdomains
         if "not_subdomains" not in kwargs:
             kwargs["not_subdomains"] = _not_subdomains
-        super(ConfigBuilder, self).__init__(
+        super().__init__(
             logger,
             *args,
             **kwargs
@@ -938,7 +976,7 @@ class ConfigBuilder(config.ConfigBuilder):
             return os.path.join(data["doc_root"], "websockets", "handlers")
 
     def _get_paths(self, data):
-        rv = super(ConfigBuilder, self)._get_paths(data)
+        rv = super()._get_paths(data)
         rv["ws_doc_root"] = data["ws_doc_root"]
         return rv
 
@@ -1008,7 +1046,7 @@ def get_parser():
     return parser
 
 
-class MpContext(object):
+class MpContext:
     def __getattr__(self, name):
         return getattr(multiprocessing, name)
 
@@ -1060,9 +1098,9 @@ def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, log_handl
         bind_address = config["bind_address"]
 
         if kwargs.get("alias_file"):
-            with open(kwargs["alias_file"], 'r') as alias_file:
+            with open(kwargs["alias_file"]) as alias_file:
                 for line in alias_file:
-                    alias, doc_root = [x.strip() for x in line.split(',')]
+                    alias, doc_root = (x.strip() for x in line.split(','))
                     config["aliases"].append({
                         'url-path': alias,
                         'local-dir': doc_root,

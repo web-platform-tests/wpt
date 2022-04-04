@@ -1,0 +1,13 @@
+*.pyc
+*.so
+.coverage
+.idea/
+.mypy_cache
+.tox
+build/
+compliance/reports/
+dist/
+docs/_build/
+htmlcov/
+MANIFEST
+websockets.egg-info/

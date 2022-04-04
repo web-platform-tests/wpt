@@ -140,9 +140,17 @@
   #\  #result, #\  #score { position: fixed; top: 10%; left: 10%; width: 4em; z-index: 1; color: yellow; font-size: 50px; background: fuchsia; border: solid 1em purple; }
  </style>
 
+ <!-- not part of the tests -->
+ <script type="text/javascript">
+  if (window.location.protocol != "https:" && window.location.hostname.toLowerCase() != "localhost") {
+   window.location.href = window.location.href.replace(/^http:/, "https:");
+  }
+ </script>
+
  <!-- part of the HTTP tests -->
  <link rel="stylesheet" href="empty.css"><!-- text/html file (should be ignored, <h1> will go red if it isn't) -->
-
+ 
+ 
  <!-- the next five script blocks are part of one of the tests -->
  <script type="text/javascript">
   var d1 = "fail";
@@ -2300,7 +2308,7 @@
       var obj2 = document.createElement('object');
       obj2.setAttribute('data', './test.html');
       assertEquals(obj1.data, obj2.data, "object elements didn't resolve URIs correctly");
-      assert(obj1.data.match(/^http:/), "object.data isn't absolute");
+      assert(obj1.data.match(/^https:/), "object.data isn't absolute");
       obj1.appendChild(document.createElement('param'));
       assertEquals(obj1.getElementsByTagName('param').length, 1, "object is missing its only child");
       // non-existent attributes

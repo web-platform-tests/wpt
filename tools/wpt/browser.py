@@ -632,7 +632,7 @@ class ChromeChromiumBase(Browser):
             get(url)
         except requests.RequestException:
             # If a valid matching version cannot be found in the wpt archive,
-            # Download from Chromium snapshots bucket. However,
+            # download from Chromium snapshots bucket. However,
             # MojoJS is only bundled with Linux from Chromium snapshots.
             if self.platform == "Linux":
                 url = self._get_chromium_download_url(chrome_version) + "mojojs.zip"

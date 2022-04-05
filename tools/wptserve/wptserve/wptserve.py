@@ -20,7 +20,7 @@ def parse_args():
                         type=str, default="127.0.0.1",
                         help="Host to run server on")
     parser.add_argument("--polyfill", action="store", dest="polyfill", default=None,
-                        help="URL to polyfill to inject")
+                        help="URL of polyfill to inject")
     return parser.parse_args()
 
 

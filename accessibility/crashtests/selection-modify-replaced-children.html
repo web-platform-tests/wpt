@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jaragunde@igalia.com">
+<link rel=help href="https://crbug.com/1303501">
+<html>
+<style type="text/css">
+*{border-block-start:solid;}
+*:optional{display:none;}
+</style>
+<script type="text/javascript" charset="utf-8">
+function onDOMNodeInserted() {
+  // called on every newly inserted "baz" node
+  window.getSelection().modify('move', 'forward', 'paragraph');
+  event.srcElement.remove();
+}
+document.addEventListener("DOMNodeInserted", onDOMNodeInserted);
+window.onload = () => {
+  document.execCommand("SelectAll");
+  var selection = window.getSelection();
+  var range = selection.getRangeAt(0);
+  selection.collapseToEnd();
+
+  window.requestIdleCallback(() => {
+    var allElements = document.querySelectorAll("style, p, strong, input, animate");
+    allElements.forEach(function (element) {
+      // replace each of these nodes with a text node "baz"
+      var parent = element.parentNode;
+      parent.replaceChild(document.createTextNode("baz"), element);
+    });
+  });
+};
+</script>
+<p></p>
+<div>
+<strong></strong>
+<textarea disabled="disabled">
+foo
+</textarea>
+<input value="bar"/>
+<svg>
+<animate>

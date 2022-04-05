@@ -26,7 +26,7 @@ from mod_pywebsocket import dispatch
 from mod_pywebsocket.handshake import HandshakeException, AbortedByUserException
 
 from . import routes as default_routes
-from .handlers import HtmlScriptInjectorHandler
+from .handlers import HtmlScriptInjectorHandlerWrapper
 from .config import ConfigBuilder
 from .logger import get_logger
 from .request import Server, Request, H2Request
@@ -794,19 +794,12 @@ class WebTestHttpd:
         if routes is None:
             routes = default_routes.routes
 
-        # If a polyfill URL was specified, insert a route for all *.html and
-        # *.htm files.
+        # If a polyfill URL was specified, wrap the routes to inject the
+        # polyfill into html responses.
         if polyfill is not None:
-            index = len(routes)
-            # Insert the polyfill before the default route if one exists.
-            # TODO: Inject the polyfill even into pre-existing matched routes.
             for i in range(len(routes)):
-                method, path, _ = routes[i]
-                if method == "GET" and path == "*":
-                    index = i
-                    break
-            routes.insert(index, ("GET", "*.htm", HtmlScriptInjectorHandler(inject=polyfill)))
-            routes.insert(index, ("GET", "*.html", HtmlScriptInjectorHandler(inject=polyfill)))
+                method, path, handler = routes[i]
+                routes[i] = (method, path, HtmlScriptInjectorHandlerWrapper(inject=polyfill, wrap=handler))
 
         self.host = host
 

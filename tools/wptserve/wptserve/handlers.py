@@ -277,28 +277,22 @@ class FileHandler:
 file_handler = FileHandler()  # type: ignore
 
 
-class HtmlScriptInjectorHandler:
+class HtmlScriptInjectorHandlerWrapper:
 
-    def __init__(self, inject="", base_path=None, url_base="/"):
+    def __init__(self, inject="", wrap=None):
         self.inject = inject
-        self.base_path = base_path
-        self.url_base = url_base
-        self.handler = handler(self.handle_request)
+        self.wrap = wrap
 
     def __call__(self, request, response):
-        rv = self.handler(request, response)
+        rv = self.wrap(request, response)
+        # If the response content type isn't html, don't modify it.
+        if rv.headers.get("Content-Type")[0] != b"text/html":
+            return rv
+
+        # Otherwise, inject the polyfill script after the document's doctype.
+        data = "".join(item.decode(rv.encoding) for item in rv.iter_content(read_file=True))
+        rv.content = re.sub(r'^(<![^>]*>\n?)?', "\\1<script src=\"%s\"></script>" % (self.inject), data)
         return rv
-
-    def handle_request(self, request, response):
-        path = filesystem_path(self.base_path, request, self.url_base)
-
-        try:
-            with open(path, 'r') as f:
-              content = f.read()
-            content = re.sub(r'^(<![^>]*>\n?)?', "\\1<script src=\"%s\"></script>" % (self.inject), content)
-            return [("Content-Type", "text/html")], content
-        except OSError:
-            raise HTTPException(404)
 
 
 class PythonScriptHandler:

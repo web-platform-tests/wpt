@@ -126,7 +126,6 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
         capabilities["pageLoadStrategy"] = "eager"
     if test_type in ("reftest", "print-reftest"):
         executor_kwargs["reftest_internal"] = kwargs["reftest_internal"]
-        executor_kwargs["reftest_screenshot"] = kwargs["reftest_screenshot"]
     if test_type == "wdspec":
         options = {"args": []}
         if kwargs["binary"]:
@@ -800,7 +799,8 @@ class FirefoxBrowser(Browser):
         if self._settings.get("special_powers", False):
             extensions.append(self.specialpowers_path)
         return ExecutorBrowser, {"marionette_port": self.instance.marionette_port,
-                                 "extensions": extensions}
+                                 "extensions": extensions,
+                                 "supports_devtools": True}
 
     def check_crash(self, process, test):
         dump_dir = os.path.join(self.instance.runner.profile.profile, "minidumps")
@@ -941,5 +941,6 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
 
     def executor_browser(self):
         cls, args = super().executor_browser()
+        args["supports_devtools"] = False
         args["profile"] = self.profile.profile
         return cls, args

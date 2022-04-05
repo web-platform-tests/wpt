@@ -621,6 +621,8 @@ class ChromeChromiumBase(Browser):
 
     def install_mojojs(self, dest, browser_binary):
         """Install MojoJS web framework."""
+        # MojoJS is platform agnostic, but the version number must be an
+        # exact match of the Chrome/Chromium version to be compatible.
         chrome_version = self.version(binary=browser_binary)
         try:
             assert chrome_version, "Cannot determine the version of Chrome"

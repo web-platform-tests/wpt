@@ -19,6 +19,8 @@ def parse_args():
     parser.add_argument("--host", "-H", dest="host", action="store",
                         type=str, default="127.0.0.1",
                         help="Host to run server on")
+    parser.add_argument("--polyfill", action="store", dest="polyfill", default=None,
+                        help="URL to polyfill to inject")
     return parser.parse_args()
 
 
@@ -26,7 +28,8 @@ def main():
     args = parse_args()
     httpd = WebTestHttpd(host=args.host, port=args.port,
                          use_ssl=False, certificate=None,
-                         doc_root=args.document_root)
+                         doc_root=args.document_root,
+                         polyfill=args.polyfill)
     httpd.start()
 
 if __name__ == "__main__":

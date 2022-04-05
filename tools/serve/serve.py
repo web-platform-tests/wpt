@@ -713,7 +713,8 @@ def start_http_server(logger, host, port, paths, routes, bind_address, config, *
                                      use_ssl=False,
                                      key_file=None,
                                      certificate=None,
-                                     latency=kwargs.get("latency"))
+                                     latency=kwargs.get("latency"),
+                                     polyfill=kwargs.get("polyfill"))
     except Exception:
         startup_failed(logger)
 
@@ -731,7 +732,8 @@ def start_https_server(logger, host, port, paths, routes, bind_address, config, 
                                      key_file=config.ssl_config["key_path"],
                                      certificate=config.ssl_config["cert_path"],
                                      encrypt_after_connect=config.ssl_config["encrypt_after_connect"],
-                                     latency=kwargs.get("latency"))
+                                     latency=kwargs.get("latency"),
+                                     polyfill=kwargs.get("polyfill"))
     except Exception:
         startup_failed(logger)
 
@@ -752,7 +754,8 @@ def start_http2_server(logger, host, port, paths, routes, bind_address, config, 
                                      certificate=config.ssl_config["cert_path"],
                                      encrypt_after_connect=config.ssl_config["encrypt_after_connect"],
                                      latency=kwargs.get("latency"),
-                                     http2=True)
+                                     http2=True,
+                                     polyfill=kwargs.get("polyfill"))
     except Exception:
         startup_failed(logger)
 
@@ -1031,6 +1034,7 @@ def get_parser():
                         help="Path to document root. Overrides config.")
     parser.add_argument("--ws_doc_root", action="store", dest="ws_doc_root",
                         help="Path to WebSockets document root. Overrides config.")
+    parser.add_argument("--polyfill", default=None, help="URL to polyfill to inject")
     parser.add_argument("--alias_file", action="store", dest="alias_file",
                         help="File with entries for aliases/multiple doc roots. In form of `/ALIAS_NAME/, DOC_ROOT\\n`")
     parser.add_argument("--h2", action="store_true", dest="h2", default=None,

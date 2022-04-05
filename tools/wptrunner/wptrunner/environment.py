@@ -91,7 +91,7 @@ class TestEnvironment:
     websockets servers"""
     def __init__(self, test_paths, testharness_timeout_multipler,
                  pause_after_test, debug_test, debug_info, options, ssl_config, env_extras,
-                 enable_webtransport=False, mojojs_path=None):
+                 enable_webtransport=False, mojojs_path=None, polyfill=None):
 
         self.test_paths = test_paths
         self.server = None
@@ -114,6 +114,7 @@ class TestEnvironment:
         self.ssl_config = ssl_config
         self.enable_webtransport = enable_webtransport
         self.mojojs_path = mojojs_path
+        self.polyfill = polyfill
 
     def __enter__(self):
         server_log_handler = self.server_logging_ctx.__enter__()
@@ -139,7 +140,8 @@ class TestEnvironment:
                                    self.get_routes(),
                                    mp_context=mpcontext.get_context(),
                                    log_handlers=[server_log_handler],
-                                   webtransport_h3=self.enable_webtransport)
+                                   webtransport_h3=self.enable_webtransport,
+                                   polyfill=self.polyfill)
 
         if self.options.get("supports_debugger") and self.debug_info and self.debug_info.interactive:
             self.ignore_interrupts()

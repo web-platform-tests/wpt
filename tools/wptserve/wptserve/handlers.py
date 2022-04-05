@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import traceback
 from collections import defaultdict
 
@@ -274,6 +275,30 @@ class FileHandler:
 
 
 file_handler = FileHandler()  # type: ignore
+
+
+class HtmlScriptInjectorHandler:
+
+    def __init__(self, inject="", base_path=None, url_base="/"):
+        self.inject = inject
+        self.base_path = base_path
+        self.url_base = url_base
+        self.handler = handler(self.handle_request)
+
+    def __call__(self, request, response):
+        rv = self.handler(request, response)
+        return rv
+
+    def handle_request(self, request, response):
+        path = filesystem_path(self.base_path, request, self.url_base)
+
+        try:
+            with open(path, 'r') as f:
+              content = f.read()
+            content = re.sub(r'^(<![^>]*>\n?)?', "\\1<script src=\"%s\"></script>" % (self.inject), content)
+            return [("Content-Type", "text/html")], content
+        except OSError:
+            raise HTTPException(404)
 
 
 class PythonScriptHandler:

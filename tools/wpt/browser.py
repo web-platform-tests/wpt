@@ -625,7 +625,6 @@ class ChromeChromiumBase(Browser):
         # exact match of the Chrome/Chromium version to be compatible.
         chrome_version = self.version(binary=browser_binary)
         try:
-            assert chrome_version, "Cannot determine the version of Chrome"
             # MojoJS version url must match the browser binary version exactly.
             url = ("https://storage.googleapis.com/chrome-wpt-mojom/"
                    f"{chrome_version}/linux64/mojojs.zip")

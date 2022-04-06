@@ -278,21 +278,21 @@ file_handler = FileHandler()  # type: ignore
 
 
 class HtmlScriptInjectorHandlerWrapper:
-
     def __init__(self, inject="", wrap=None):
         self.inject = inject
         self.wrap = wrap
 
     def __call__(self, request, response):
-        rv = self.wrap(request, response)
+        self.wrap(request, response)
         # If the response content type isn't html, don't modify it.
-        if rv.headers.get("Content-Type")[0] != b"text/html":
-            return rv
+        if response.headers.get("Content-Type")[0] != b"text/html":
+            return response
 
         # Otherwise, inject the polyfill script after the document's doctype.
-        data = "".join(item.decode(rv.encoding) for item in rv.iter_content(read_file=True))
-        rv.content = re.sub(r'^(<![^>]*>\n?)?', "\\1<script src=\"%s\"></script>" % (self.inject), data)
-        return rv
+        data = "".join(item.decode(response.encoding) for item in response.iter_content(read_file=True))
+        response.content = re.sub(r'^(<![^>]*>\n?)?', "\\1<script src=\"%s\"></script>" %
+                                  (self.inject,), data)
+        return response
 
 
 class PythonScriptHandler:

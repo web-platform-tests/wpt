@@ -121,11 +121,16 @@ class ChromiumFormatter(base.BaseFormatter):  # type: ignore
         cur_dict = self.tests
         for name_part in name_parts:
             cur_dict = cur_dict.setdefault(name_part, {})
+        # Splitting and joining the list of statuses here avoids the need for
+        # recursively postprocessing the |tests| trie at shutdown. We assume the
+        # number of repetitions is typically small enough for the quadratic
+        # runtime to not matter.
         statuses = cur_dict.get("actual", "").split()
         statuses.append(actual)
         cur_dict["actual"] = " ".join(statuses)
         cur_dict["expected"] = expected
         if duration is not None:
+            # Record the time to run the first invocation only.
             cur_dict.setdefault("time", duration)
             durations = cur_dict.setdefault("times", [])
             durations.append(duration)

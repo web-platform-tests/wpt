@@ -91,6 +91,15 @@ your helper script includes a hyphen (<code class="docutils literal notranslate"
 <span class="n">myhelper</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;common.security-features.myhelper&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p><strong>Note on <strong>init</strong> files</strong>: Importing helper scripts like this
+requires a ‘path’ of empty <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> files in every directory down
+to the helper. For example, if your helper is
+<code class="docutils literal notranslate"><span class="pre">css/css-align/resources/myhelper.py</span></code>, you need to have:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">css</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+<span class="n">css</span><span class="o">/</span><span class="n">css</span><span class="o">-</span><span class="n">align</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+<span class="n">css</span><span class="o">/</span><span class="n">css</span><span class="o">-</span><span class="n">align</span><span class="o">/</span><span class="n">resources</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
 </section>
 <section id="example-dynamic-http-headers">
 <h2>Example: Dynamic HTTP headers<a class="headerlink" href="#example-dynamic-http-headers" title="Permalink to this headline">¶</a></h2>

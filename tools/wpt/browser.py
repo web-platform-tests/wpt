@@ -551,12 +551,11 @@ class ChromeChromiumBase(Browser):
                 f"{self._chromium_platform_string}/{revision}/{filename}")
 
     def _get_latest_chromium_revision(self):
-        """Queries Chromium Snapshots and returns the latest Chromium revision number
-        for the current platform.
-        """
-        revision_url = ("https://storage.googleapis.com/chromium-browser-snapshots/"
-                        f"{self._chromium_platform_string}/LAST_CHANGE")
-        return get(revision_url).text.strip()
+        """Returns the latest Chromium revision number for the current platform."""
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            "latest_chromium_revision.txt")
+        with open(path) as f:
+            return f.read().strip()
 
     def _get_chromium_revision(self, filename, version=None):
         """Format a Chromium Snapshots URL to download a browser component."""

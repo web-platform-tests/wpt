@@ -797,9 +797,14 @@ class WebTestHttpd:
         # If a polyfill URL was specified, wrap the routes to inject the
         # polyfill into html responses.
         if polyfill is not None:
-            for i in range(len(routes)):
-                method, path, handler = routes[i]
-                routes[i] = (method, path, HtmlScriptInjectorHandlerWrapper(inject=polyfill, wrap=handler))
+            try:
+                with open(polyfill, 'r') as f:
+                    polyfill_script = f.read()
+                for i in range(len(routes)):
+                    method, path, handler = routes[i]
+                    routes[i] = (method, path, HtmlScriptInjectorHandlerWrapper(inject=polyfill_script, wrap=handler))
+            except:
+                raise OSError("Unable to read specified polyfill: %s", polyfill)
 
         self.host = host
 

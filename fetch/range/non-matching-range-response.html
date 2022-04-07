@@ -2,12 +2,8 @@
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
-<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
-<script src="resources/utils.js"></script>
 <body>
 <script>
-
 function range_rewrite_test(rewrites, expect, label) {
     promise_test(async t => {
         const url = new URL('resources/video-with-range.py', location.href);
@@ -19,11 +15,7 @@ function range_rewrite_test(rewrites, expect, label) {
         video.muted = true;
         video.src = url.toString();
         const timeout = new Promise(resolve => t.step_timeout(() => resolve('timeout'), 10000));
-        const ok = new Promise(resolve =>
-            setInterval(t.step_func(() => {
-                if (video.currentTime > 0.1)
-                    resolve('ok');
-            }, 100)));
+        const ok = new Promise(resolve => video.addEventListener('play', () => resolve('ok')));
         t.add_cleanup(() => video.remove());
         document.body.appendChild(video);
         const result = await Promise.any([timeout, ok]);
@@ -39,4 +31,4 @@ range_rewrite_test(
     ], 'ok', 'Range response out of range of request');
 range_rewrite_test([{request: ['0', '*'], status: 200}], 'ok', 'Range requests ignored (200 status)');
 </script>
-</body
+</body>

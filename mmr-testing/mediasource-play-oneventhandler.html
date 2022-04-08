@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!-- Copyright © 2016 Chromium authors and World Wide Web Consortium, (Massachusetts Institute of Technology, ERCIM, Keio University, Beihang). -->
+<html>
+    <head>
+        <title>Simple MediaSource playback test case.</title>
+        <meta name="timeout" content="long">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="mediasource-util.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script>		
+          mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
+          {		  
+              mediaElement.addEventListener('error', test.unreached_func("Unexpected event 'error'"));
+              mediaElement.addEventListener('ended', test.step_func_done());
+
+              test.expectEventWithPropertyEventHandler(sourceBuffer, 'updatestart', 'sourceBuffer');
+              test.expectEventWithPropertyEventHandler(sourceBuffer, 'update', 'sourceBuffer');
+              test.expectEventWithPropertyEventHandler(sourceBuffer, 'updateend', 'sourceBuffer');
+
+              assert_false(sourceBuffer.updating, "sourceBuffer.updating");
+
+              sourceBuffer.appendBuffer(mediaData);
+
+              assert_true(sourceBuffer.updating, "sourceBuffer.updating");
+
+              test.waitForExpectedEvents(function()
+              {
+                  assert_false(sourceBuffer.updating, "sourceBuffer.updating");
+
+                  // Truncate the buffered media to about 1 second duration.
+                  sourceBuffer.remove(1, +Infinity);
+
+                  assert_true(sourceBuffer.updating, "sourceBuffer.updating");
+                  test.expectEventWithPropertyEventHandler(sourceBuffer, 'updatestart', 'sourceBuffer');
+                  test.expectEventWithPropertyEventHandler(sourceBuffer, 'update', 'sourceBuffer');
+                  test.expectEventWithPropertyEventHandler(sourceBuffer, 'updateend', 'sourceBuffer');
+              });
+
+              test.waitForExpectedEvents(function()
+              {
+                  assert_false(sourceBuffer.updating, "updating");
+                  assert_greater_than(mediaSource.duration, 1, "duration");
+
+                  // Complete truncation of duration to 1 second.
+                  mediaSource.duration = 1;
+
+                  test.expectEventWithPropertyEventHandler(mediaElement, "durationchange");
+              });
+
+              test.waitForExpectedEvents(function()
+              {
+                  mediaSource.endOfStream();
+                  mediaElement.play();
+              });
+          }, "Test normal playback case with MediaSource API");
+        </script>
+    </body>
+</html>

@@ -624,6 +624,9 @@ class ChromeChromiumBase(Browser):
         # MojoJS is platform agnostic, but the version number must be an
         # exact match of the Chrome/Chromium version to be compatible.
         chrome_version = self.version(binary=browser_binary)
+
+        # Remove channel suffixes (e.g. " dev").
+        chrome_version = chrome_version.split(' ')[0]
         try:
             # MojoJS version url must match the browser binary version exactly.
             url = ("https://storage.googleapis.com/chrome-wpt-mojom/"

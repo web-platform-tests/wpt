@@ -627,6 +627,8 @@ class ChromeChromiumBase(Browser):
         # MojoJS is platform agnostic, but the version number must be an
         # exact match of the Chrome/Chromium version to be compatible.
         chrome_version = self.version(binary=browser_binary)
+        if not chrome_version:
+            return None
         chrome_version = self._remove_version_suffix(chrome_version)
 
         try:

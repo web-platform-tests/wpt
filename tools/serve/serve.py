@@ -6,6 +6,7 @@ import logging
 import multiprocessing
 import os
 import platform
+import re
 import subprocess
 import sys
 import threading
@@ -24,6 +25,7 @@ from wptserve import server as wptserve, handlers
 from wptserve import stash
 from wptserve import config
 from wptserve.handlers import filesystem_path, wrap_pipeline
+from wptserve.response import ResponseHeaders
 from wptserve.utils import get_port, HTTPException, http2_compatible
 from mod_pywebsocket import standalone as pywebsocket
 
@@ -202,6 +204,29 @@ class HtmlWrapperHandler(WrapperHandler):
             attribute = value.replace("&", "&amp;").replace('"', "&quot;")
             return '<script src="%s"></script>' % attribute
         return None
+
+
+class HtmlScriptInjectorHandlerWrapper:
+    def __init__(self, inject="", wrap=None):
+        self.inject = inject
+        self.wrap = wrap
+
+    def __call__(self, request, response):
+        self.wrap(request, response)
+        # If the response content type isn't html, don't modify it.
+        if not isinstance(response.headers, ResponseHeaders) or response.headers.get("Content-Type")[0] != b"text/html":
+            return response
+
+        # Otherwise, inject the polyfill script after the document's doctype.
+        data = "".join(item.decode(response.encoding) for item in response.iter_content(read_file=True))
+        response.content = re.sub(r'^(<![^>]*>\n?)?',
+                                  ("\\1<script>\n"
+                                   "%s\n"
+                                   "// Remove the polyfill script tag from the DOM.\n"
+                                   "document.currentScript.parentNode.removeChild(document.currentScript);\n"
+                                   "</script>\n") %
+                                  (self.inject.replace("\\", "\\\\")), data)
+        return response
 
 
 class WorkersHandler(HtmlWrapperHandler):
@@ -443,7 +468,7 @@ rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl
 
 
 class RoutesBuilder:
-    def __init__(self):
+    def __init__(self, polyfill = None):
         self.forbidden_override = [("GET", "/tools/runner/*", handlers.file_handler),
                                    ("POST", "/tools/runner/update_manifest.py",
                                     handlers.python_script_handler)]
@@ -454,6 +479,13 @@ class RoutesBuilder:
                           ("*", "/results/", handlers.ErrorHandler(404))]
 
         self.extra = []
+        self.inject_script = None
+        if polyfill is not None:
+            try:
+                with open(polyfill, 'r') as f:
+                    self.inject_script = f.read()
+            except:
+                raise OSError("Unable to read specified polyfill: %s", polyfill)
 
         self.mountpoint_routes = OrderedDict()
 
@@ -501,10 +533,14 @@ class RoutesBuilder:
         ]
 
         for (method, suffix, handler_cls) in routes:
+            handler = handler_cls(base_path=path, url_base=url_base)
+            if self.inject_script is not None:
+                handler = HtmlScriptInjectorHandlerWrapper(inject=self.inject_script, wrap=handler)
+
             self.mountpoint_routes[url_base].append(
                 (method,
                  "%s%s" % (url_base if url_base != "/" else "", suffix),
-                 handler_cls(base_path=path, url_base=url_base)))
+                 handler))
 
     def add_file_mount_point(self, file_url, base_path):
         assert file_url.startswith("/")
@@ -513,7 +549,7 @@ class RoutesBuilder:
 
 
 def get_route_builder(logger, aliases, config):
-    builder = RoutesBuilder()
+    builder = RoutesBuilder(config.polyfill)
     for alias in aliases:
         url = alias["url-path"]
         directory = alias["local-dir"]
@@ -713,8 +749,7 @@ def start_http_server(logger, host, port, paths, routes, bind_address, config, *
                                      use_ssl=False,
                                      key_file=None,
                                      certificate=None,
-                                     latency=kwargs.get("latency"),
-                                     polyfill=kwargs.get("polyfill"))
+                                     latency=kwargs.get("latency"))
     except Exception:
         startup_failed(logger)
 
@@ -732,8 +767,7 @@ def start_https_server(logger, host, port, paths, routes, bind_address, config, 
                                      key_file=config.ssl_config["key_path"],
                                      certificate=config.ssl_config["cert_path"],
                                      encrypt_after_connect=config.ssl_config["encrypt_after_connect"],
-                                     latency=kwargs.get("latency"),
-                                     polyfill=kwargs.get("polyfill"))
+                                     latency=kwargs.get("latency"))
     except Exception:
         startup_failed(logger)
 
@@ -754,8 +788,7 @@ def start_http2_server(logger, host, port, paths, routes, bind_address, config, 
                                      certificate=config.ssl_config["cert_path"],
                                      encrypt_after_connect=config.ssl_config["encrypt_after_connect"],
                                      latency=kwargs.get("latency"),
-                                     http2=True,
-                                     polyfill=kwargs.get("polyfill"))
+                                     http2=True)
     except Exception:
         startup_failed(logger)
 
@@ -1010,6 +1043,9 @@ def build_config(logger, override_path=None, config_cls=ConfigBuilder, **kwargs)
     if kwargs.get("verbose"):
         rv.log_level = "debug"
 
+    if kwargs.get("polyfill"):
+        setattr(rv, "polyfill", kwargs.get("polyfill"))
+
     overriding_path_args = [("doc_root", "Document root"),
                             ("ws_doc_root", "WebSockets document root")]
     for key, title in overriding_path_args:
@@ -1034,7 +1070,7 @@ def get_parser():
                         help="Path to document root. Overrides config.")
     parser.add_argument("--ws_doc_root", action="store", dest="ws_doc_root",
                         help="Path to WebSockets document root. Overrides config.")
-    parser.add_argument("--polyfill", default=None, help="URL to polyfill to inject")
+    parser.add_argument("--polyfill", default=None, help="Path to polyfill to inject")
     parser.add_argument("--alias_file", action="store", dest="alias_file",
                         help="File with entries for aliases/multiple doc roots. In form of `/ALIAS_NAME/, DOC_ROOT\\n`")
     parser.add_argument("--h2", action="store_true", dest="h2", default=None,

@@ -140,8 +140,7 @@ class TestEnvironment:
                                    self.get_routes(),
                                    mp_context=mpcontext.get_context(),
                                    log_handlers=[server_log_handler],
-                                   webtransport_h3=self.enable_webtransport,
-                                   polyfill=self.polyfill)
+                                   webtransport_h3=self.enable_webtransport)
 
         if self.options.get("supports_debugger") and self.debug_info and self.debug_info.interactive:
             self.ignore_interrupts()
@@ -211,7 +210,7 @@ class TestEnvironment:
         return config
 
     def get_routes(self):
-        route_builder = serve.RoutesBuilder()
+        route_builder = serve.RoutesBuilder(polyfill=self.polyfill)
 
         for path, format_args, content_type, route in [
                 ("testharness_runner.html", {}, "text/html", "/testharness_runner.html"),

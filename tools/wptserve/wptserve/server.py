@@ -26,7 +26,6 @@ from mod_pywebsocket import dispatch
 from mod_pywebsocket.handshake import HandshakeException, AbortedByUserException
 
 from . import routes as default_routes
-from .handlers import HtmlScriptInjectorHandlerWrapper
 from .config import ConfigBuilder
 from .logger import get_logger
 from .request import Server, Request, H2Request
@@ -789,22 +788,10 @@ class WebTestHttpd:
                  use_ssl=False, key_file=None, certificate=None, encrypt_after_connect=False,
                  router_cls=Router, doc_root=os.curdir, ws_doc_root=None, routes=None,
                  rewriter_cls=RequestRewriter, bind_address=True, rewrites=None,
-                 latency=None, config=None, http2=False, polyfill=None):
+                 latency=None, config=None, http2=False):
 
         if routes is None:
             routes = default_routes.routes
-
-        # If a polyfill URL was specified, wrap the routes to inject the
-        # polyfill into html responses.
-        if polyfill is not None:
-            try:
-                with open(polyfill, 'r') as f:
-                    polyfill_script = f.read()
-                for i in range(len(routes)):
-                    method, path, handler = routes[i]
-                    routes[i] = (method, path, HtmlScriptInjectorHandlerWrapper(inject=polyfill_script, wrap=handler))
-            except:
-                raise OSError("Unable to read specified polyfill: %s", polyfill)
 
         self.host = host
 

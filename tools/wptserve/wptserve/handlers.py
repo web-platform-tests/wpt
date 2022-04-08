@@ -1,6 +1,5 @@
 import json
 import os
-import re
 import traceback
 from collections import defaultdict
 
@@ -10,7 +9,7 @@ from .constants import content_types
 from .pipes import Pipeline, template
 from .ranges import RangeParser
 from .request import Authentication
-from .response import MultipartContent, ResponseHeaders
+from .response import MultipartContent
 from .utils import HTTPException
 
 from html import escape
@@ -275,29 +274,6 @@ class FileHandler:
 
 
 file_handler = FileHandler()  # type: ignore
-
-
-class HtmlScriptInjectorHandlerWrapper:
-    def __init__(self, inject="", wrap=None):
-        self.inject = inject
-        self.wrap = wrap
-
-    def __call__(self, request, response):
-        self.wrap(request, response)
-        # If the response content type isn't html, don't modify it.
-        if not isinstance(response.headers, ResponseHeaders) or response.headers.get("Content-Type")[0] != b"text/html":
-            return response
-
-        # Otherwise, inject the polyfill script after the document's doctype.
-        data = "".join(item.decode(response.encoding) for item in response.iter_content(read_file=True))
-        response.content = re.sub(r'^(<![^>]*>\n?)?',
-                                  ("\\1<script>\n"
-                                   "%s\n"
-                                   "// Remove the polyfill script tag from the DOM.\n"
-                                   "document.currentScript.parentNode.removeChild(document.currentScript);\n"
-                                   "</script>\n") %
-                                  (self.inject.replace("\\", "\\\\")), data)
-        return response
 
 
 class PythonScriptHandler:

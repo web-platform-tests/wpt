@@ -6,7 +6,6 @@ import logging
 import multiprocessing
 import os
 import platform
-import re
 import subprocess
 import sys
 import threading
@@ -16,6 +15,7 @@ import urllib
 import uuid
 from collections import defaultdict, OrderedDict
 from itertools import chain, product
+from html5lib import html5parser
 from typing import ClassVar, List, Set, Tuple
 
 from localpaths import repo_root  # type: ignore
@@ -219,13 +219,40 @@ class HtmlScriptInjectorHandlerWrapper:
 
         # Otherwise, inject the polyfill script after the document's doctype.
         data = "".join(item.decode(response.encoding) for item in response.iter_content(read_file=True))
-        response.content = re.sub(r'^(<![^>]*>\n?)?',
-                                  ("\\1<script>\n"
-                                   "%s\n"
-                                   "// Remove the polyfill script tag from the DOM.\n"
-                                   "document.currentScript.parentNode.removeChild(document.currentScript);\n"
-                                   "</script>\n") %
-                                  (self.inject.replace("\\", "\\\\")), data)
+
+        # Tokenize and find the position of the first content (e.g. after the
+        # doctype if one is present).
+        token_types = html5parser.tokenTypes
+        before_tokens = {token_types["StartTag"], token_types["EndTag"],
+                         token_types["EmptyTag"], token_types["Characters"]}
+        error_tokens = {token_types["ParseError"]}
+
+        tokenizer = html5parser._tokenizer.HTMLTokenizer(data)
+        stream = tokenizer.stream
+        offset = 0
+        error = False
+        for item in tokenizer:
+            if item["type"] in before_tokens:
+                break
+            elif item["type"] in error_tokens:
+                error = True
+                break
+            offset = stream.chunkOffset
+        else:
+            error = True
+
+        if not error and stream.prevNumCols or stream.prevNumLines:
+            # We're outside the first chunk, so we don't know what to do
+            error = True
+
+        if not error:
+            inject_data = "<script>\n" + \
+                          self.inject + "\n" + \
+                          ("// Remove the polyfill script tag from the DOM.\n"
+                           "document.currentScript.parentNode.removeChild(document.currentScript);\n"
+                           "</script>\n")
+            response.content = data[:offset] + inject_data + data[offset:]
+
         return response
 
 

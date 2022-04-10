@@ -4,6 +4,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
 <script src="resources/utils.js"></script>
 <script src="/cookie-store/resources/cookie-test-helpers.js"></script>
 <body>
@@ -19,7 +20,6 @@ cookie_test(async t => {
   document.cookie = initiator_cookie;
   const result = await exec(() => {
     const result = document.cookie;
-    prerender_log(result);
     document.cookie = "prerender_cookie=exist;path=/;";
     return result;
   });

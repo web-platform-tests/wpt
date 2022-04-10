@@ -4,23 +4,16 @@
 // Source: Local Font Access API (https://wicg.github.io/local-font-access/)
 
 [SecureContext]
-interface mixin NavigatorFonts {
-  [SameObject] readonly attribute FontManager fonts;
-};
-Navigator includes NavigatorFonts;
-
-[SecureContext,
- Exposed=Window]
-interface FontManager {
-  Promise<sequence<FontMetadata>> query(optional QueryOptions options = {});
+partial interface Window {
+  Promise<sequence<FontData>> queryLocalFonts(optional QueryOptions options = {});
 };
 
 dictionary QueryOptions {
-  sequence<DOMString> select = [];
+  sequence<DOMString> postscriptNames;
 };
 
 [Exposed=Window]
-interface FontMetadata {
+interface FontData {
   Promise<Blob> blob();
 
   // Names

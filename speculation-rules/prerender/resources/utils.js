@@ -22,6 +22,45 @@ function startPrerendering(url) {
   document.head.appendChild(script);
 }
 
+class PrerenderChannel extends EventTarget {
+  #ids = new Set();
+  #url;
+  #active = true;
+
+  constructor(name, uid = new URLSearchParams(location.search).get('uid')) {
+    super();
+    this.#url = `/speculation-rules/prerender/resources/deprecated-broadcast-channel.py?name=${name}&uid=${uid}`;
+    (async() => {
+      while (this.#active) {
+        // Add the "keepalive" option to avoid fetch() results in unhandled
+        // rejection with fetch abortion due to window.close().
+        const messages = await (await fetch(this.#url, {keepalive: true})).json();
+        for (const {data, id} of messages) {
+          if (!this.#ids.has(id))
+            this.dispatchEvent(new MessageEvent('message', {data}));
+          this.#ids.add(id);
+        }
+      }
+    })();
+  }
+
+  close() {
+    this.#active = false;
+  }
+
+  set onmessage(m) {
+    this.addEventListener('message', m)
+  }
+
+  async postMessage(data) {
+    const id = new Date().valueOf();
+    this.#ids.add(id);
+    // Add the "keepalive" option to prevent messages from being lost due to
+    // window.close().
+    await fetch(this.#url, {method: 'POST', body: JSON.stringify({data, id}), keepalive: true});
+  }
+}
+
 // Reads the value specified by `key` from the key-value store on the server.
 async function readValueFromServer(key) {
   const serverUrl = `${STORE_URL}?key=${key}`;
@@ -63,7 +102,7 @@ async function writeValueToServer(key, value) {
 // receives the 'readyToActivate' message.
 function loadInitiatorPage() {
   // Used to communicate with the prerendering page.
-  const prerenderChannel = new BroadcastChannel('prerender-channel');
+  const prerenderChannel = new PrerenderChannel('prerender-channel');
   window.addEventListener('unload', () => {
     prerenderChannel.close();
   });
@@ -90,7 +129,7 @@ function loadInitiatorPage() {
   readyToActivate.then(() => {
     window.location = url.toString();
   }).catch(e => {
-    const testChannel = new BroadcastChannel('test-channel');
+    const testChannel = new PrerenderChannel('test-channel');
     testChannel.postMessage(
         `Failed to navigate the prerendered page: ${e.toString()}`);
     testChannel.close();
@@ -98,21 +137,21 @@ function loadInitiatorPage() {
   });
 }
 
-// Returns messages received from the given BroadcastChannel
+// Returns messages received from the given PrerenderChannel
 // so that callers do not need to add their own event listeners.
 // nextMessage() returns a promise which resolves with the next message.
 //
 // Usage:
-//   const channel = new BroadcastChannel('channel-name');
+//   const channel = new PrerenderChannel('channel-name');
 //   const messageQueue = new BroadcastMessageQueue(channel);
 //   const message1 = await messageQueue.nextMessage();
 //   const message2 = await messageQueue.nextMessage();
 //   message1 and message2 are the messages received.
 class BroadcastMessageQueue {
-  constructor(broadcastChannel) {
+  constructor(c) {
     this.messages = [];
     this.resolveFunctions = [];
-    this.channel = broadcastChannel;
+    this.channel = c;
     this.channel.addEventListener('message', e => {
       if (this.resolveFunctions.length > 0) {
         const fn = this.resolveFunctions.shift();
@@ -144,77 +183,75 @@ function createFrame(url) {
     });
 }
 
-class PrerenderChannel extends EventTarget {
-  broadcastChannel = null;
+async function create_prerendered_page(t, opt = {}) {
+  const baseUrl = '/speculation-rules/prerender/resources/exec.py';
+  const init_uuid = token();
+  const prerender_uuid = token();
+  const discard_uuid = token();
+  const init_remote = new RemoteContext(init_uuid);
+  const prerender_remote = new RemoteContext(prerender_uuid);
+  const discard_remote = new RemoteContext(discard_uuid);
+  window.open(`${baseUrl}?uuid=${init_uuid}&init`, '_blank', 'noopener');
+  const params = new URLSearchParams(baseUrl.search);
+  params.set('uuid', prerender_uuid);
+  params.set('discard_uuid', discard_uuid);
+  for (const p in opt)
+    params.set(p, opt[p]);
+  const url = `${baseUrl}?${params.toString()}`;
 
-  constructor(uid, name) {
-    super();
-    this.broadcastChannel = new BroadcastChannel(`${uid}-${name}`);
-    this.broadcastChannel.addEventListener('message', e => {
-      this.dispatchEvent(new CustomEvent('message', {detail: e.data}));
-    });
-  }
+  await init_remote.execute_script(url => {
+      const a = document.createElement('a');
+      a.href = url;
+      a.innerText = 'Activate';
+      document.body.appendChild(a);
+      const rules = document.createElement('script');
+      rules.type = "speculationrules";
+      rules.text = JSON.stringify({prerender: [{source: 'list', urls: [url]}]});
+      document.head.appendChild(rules);
+  }, [url]);
 
-  postMessage(message) {
-    this.broadcastChannel.postMessage(message);
-  }
+  await Promise.any([
+    prerender_remote.execute_script(() => {
+        window.import_script_to_prerendered_page = src => {
+            const script = document.createElement('script');
+            script.src = src;
+            document.head.appendChild(script);
+            return new Promise(resolve => script.addEventListener('load', resolve));
+        }
+    }), new Promise(r => t.step_timeout(r, 3000))
+    ]);
 
-  close() {
-    this.broadcastChannel.close();
-  }
-};
-
-async function create_prerendered_page(t) {
-  const uuid = token();
-  new PrerenderChannel(uuid, 'log').addEventListener('message', message => {
-    // Calling it with ['log'] to avoid lint issue. This log should be used for debugging
-    // the prerendered context, not testing.
-    if(window.console)
-      console['log']('[From Prerendered]', ...message.detail);
+  t.add_cleanup(() => {
+    init_remote.execute_script(() => window.close());
+    discard_remote.execute_script(() => window.close());
+    prerender_remote.execute_script(() => window.close());
   });
 
-  const execChannel = new PrerenderChannel(uuid, 'exec');
-  const initChannel = new PrerenderChannel(uuid, 'initiator');
-  const exec = (func, args = []) => {
-      const receiver = token();
-      execChannel.postMessage({receiver, fn: func.toString(), args});
-      return new Promise((resolve, reject) => {
-        const channel = new PrerenderChannel(uuid, receiver);
-        channel.addEventListener('message', ({detail}) => {
-          channel.close();
-          if (detail.error)
-            reject(detail.error)
-          else
-            resolve(detail.result);
-        });
-      })
-    };
+  async function tryToActivate() {
+    const prerendering = prerender_remote.execute_script(() => new Promise(resolve => {
+        if (!document.prerendering)
+            resolve('activated');
+        else document.addEventListener('prerenderingchange', () => resolve('activated'));
+    }));
 
-  window.open(`/speculation-rules/prerender/resources/eval-init.html?uuid=${uuid}`, '_blank', 'noopener');
-  t.add_cleanup(() => initChannel.postMessage('close'));
-  t.add_cleanup(() => exec(() => window.close()));
-  await new Promise(resolve => {
-    const channel = new PrerenderChannel(uuid, 'ready');
-    channel.addEventListener('message', () => {
-      channel.close();
-      resolve();
-    });
-  });
+    const discarded = discard_remote.execute_script(() => Promise.resolve('discarded'));
+
+    init_remote.execute_script(url => {
+        location.href = url;
+    }, [url]);
+    return Promise.any([prerendering, discarded]);
+  }
 
   async function activate() {
-    const prerendering = exec(() => new Promise(resolve =>
-      document.addEventListener('prerenderingchange', () => {
-        resolve(document.prerendering);
-      })));
-
-    initChannel.postMessage('activate');
-    if (await prerendering)
+    const prerendering = await tryToActivate();
+    if (prerendering !== 'activated')
       throw new Error('Should not be prerendering at this point')
   }
 
   return {
-    exec,
-    activate
+    exec: (fn, args) => prerender_remote.execute_script(fn, args),
+    activate,
+    tryToActivate
   };
 }
 
@@ -246,7 +283,6 @@ function test_prerender_defer(fn, label) {
         resolve(result);
       }));
 
-    await new Promise(resolve => t.step_timeout(resolve, 100));
     await activate();
     activated = true;
     await post;

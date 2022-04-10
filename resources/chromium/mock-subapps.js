@@ -25,6 +25,21 @@ self.SubAppsServiceTest = (() => {
         result: testInternal.serviceResultCode
       });
     }
+
+    list() {
+      return Promise.resolve({
+        result: {
+          code: testInternal.serviceResultCode,
+          subAppIds: []
+        }
+      });
+    }
+
+    remove() {
+      return Promise.resolve({
+        result: testInternal.serviceResultCode,
+      });
+    }
   }
 
   let testInternal = {

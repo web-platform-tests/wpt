@@ -217,7 +217,7 @@ class HtmlScriptInjectorHandlerWrapper:
         if not isinstance(response.headers, ResponseHeaders) or response.headers.get("Content-Type")[0] != b"text/html":
             return response
 
-        # Otherwise, inject the polyfill script after the document's doctype.
+        # Otherwise, inject the script after the document's doctype.
         data = "".join(item.decode(response.encoding) for item in response.iter_content(read_file=True))
 
         # Tokenize and find the position of the first content (e.g. after the
@@ -248,7 +248,7 @@ class HtmlScriptInjectorHandlerWrapper:
         if not error:
             inject_data = "<script>\n" + \
                           self.inject + "\n" + \
-                          ("// Remove the polyfill script tag from the DOM.\n"
+                          ("// Remove the injected script tag from the DOM.\n"
                            "document.currentScript.parentNode.removeChild(document.currentScript);\n"
                            "</script>\n")
             response.content = data[:offset] + inject_data + data[offset:]
@@ -495,7 +495,7 @@ rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl
 
 
 class RoutesBuilder:
-    def __init__(self, polyfill = None):
+    def __init__(self, inject_script = None):
         self.forbidden_override = [("GET", "/tools/runner/*", handlers.file_handler),
                                    ("POST", "/tools/runner/update_manifest.py",
                                     handlers.python_script_handler)]
@@ -506,13 +506,13 @@ class RoutesBuilder:
                           ("*", "/results/", handlers.ErrorHandler(404))]
 
         self.extra = []
-        self.inject_script = None
-        if polyfill is not None:
+        self.inject_script_data = None
+        if inject_script is not None:
             try:
-                with open(polyfill, 'r') as f:
-                    self.inject_script = f.read()
+                with open(inject_script, 'r') as f:
+                    self.inject_script_data = f.read()
             except:
-                raise OSError("Unable to read specified polyfill: %s", polyfill)
+                raise OSError("Unable to read specified inject_script: %s", inject_script)
 
         self.mountpoint_routes = OrderedDict()
 
@@ -561,8 +561,8 @@ class RoutesBuilder:
 
         for (method, suffix, handler_cls) in routes:
             handler = handler_cls(base_path=path, url_base=url_base)
-            if self.inject_script is not None:
-                handler = HtmlScriptInjectorHandlerWrapper(inject=self.inject_script, wrap=handler)
+            if self.inject_script_data is not None:
+                handler = HtmlScriptInjectorHandlerWrapper(inject=self.inject_script_data, wrap=handler)
 
             self.mountpoint_routes[url_base].append(
                 (method,
@@ -576,7 +576,7 @@ class RoutesBuilder:
 
 
 def get_route_builder(logger, aliases, config):
-    builder = RoutesBuilder(config.polyfill)
+    builder = RoutesBuilder(config.inject_script)
     for alias in aliases:
         url = alias["url-path"]
         directory = alias["local-dir"]
@@ -1070,8 +1070,7 @@ def build_config(logger, override_path=None, config_cls=ConfigBuilder, **kwargs)
     if kwargs.get("verbose"):
         rv.log_level = "debug"
 
-    if kwargs.get("polyfill"):
-        setattr(rv, "polyfill", kwargs.get("polyfill"))
+    setattr(rv, "inject_script", kwargs.get("inject_script"))
 
     overriding_path_args = [("doc_root", "Document root"),
                             ("ws_doc_root", "WebSockets document root")]
@@ -1097,7 +1096,7 @@ def get_parser():
                         help="Path to document root. Overrides config.")
     parser.add_argument("--ws_doc_root", action="store", dest="ws_doc_root",
                         help="Path to WebSockets document root. Overrides config.")
-    parser.add_argument("--polyfill", default=None, help="Path to polyfill to inject")
+    parser.add_argument("--inject-script", default=None, help="Path to script to inject")
     parser.add_argument("--alias_file", action="store", dest="alias_file",
                         help="File with entries for aliases/multiple doc roots. In form of `/ALIAS_NAME/, DOC_ROOT\\n`")
     parser.add_argument("--h2", action="store_true", dest="h2", default=None,

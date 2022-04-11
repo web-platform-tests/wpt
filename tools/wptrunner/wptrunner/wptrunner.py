@@ -350,7 +350,7 @@ def run_tests(config, test_paths, product, **kwargs):
                                                                        **kwargs)
 
         mojojs_path = kwargs["mojojs_path"] if kwargs["enable_mojojs"] else None
-        polyfill = kwargs["polyfill"] if kwargs["polyfill"] else None
+        inject_script = kwargs["inject_script"] if kwargs["inject_script"] else None
 
         recording.set(["startup", "start_environment"])
         with env.TestEnvironment(test_paths,
@@ -363,7 +363,7 @@ def run_tests(config, test_paths, product, **kwargs):
                                  env_extras,
                                  kwargs["enable_webtransport_h3"],
                                  mojojs_path,
-                                 polyfill) as test_environment:
+                                 inject_script) as test_environment:
             recording.set(["startup", "ensure_environment"])
             try:
                 test_environment.ensure_started()

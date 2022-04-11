@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Navigation Timing: unload event with nested contexts</title>
+    <link rel="help" href="https://w3c.github.io/navigation-timing/"/>
+    <script src="/common/utils.js"></script>
+    <script src="/common/dispatcher/dispatcher.js"></script>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <meta name="timeout" content="long">
+</head>
+<body>
+<script>
+
+    const dummyURL = () => `/navigation-timing/resources/blank_page_green.html?uid=${token()}`;
+
+    promise_test(async t => {
+        const mainWindowUnloadDuration = 100;
+        const iframeUnloadDuration = 400;
+        const popupUid = token();
+        const iframeUid = token();
+        const finalUid = token();
+        const popup = window.open(`resources/exec.html?uuid=${popupUid}`);
+        t.add_cleanup(() => popup.close());
+        const popupContext = new RemoteContext(popupUid);
+        const iframeContext = new RemoteContext(iframeUid);
+        const finalContext = new RemoteContext(finalUid);
+        const busyWait = duration => window.addEventListener('unload', () => {
+            const buffer = 3;
+            const timeoutEnd = performance.now() + duration + buffer;
+            while (timeoutEnd > performance.now()) {}
+        });
+
+        await popupContext.execute_script(busyWait, [mainWindowUnloadDuration]);
+
+        const loadIframe = iframeContext.execute_script(busyWait, [iframeUnloadDuration]);
+        const unloadIframe = iframeContext.execute_script(() => window.addEventListener('unload', () => busyWait(iframeUnloadDuration)));
+        const loadPopup = popupContext.execute_script(async iframeUid => {
+            const iframe = document.createElement('iframe');
+            iframe.src = `./exec.html?uuid=${iframeUid}`;
+            document.body.appendChild(iframe);
+            await new Promise(resolve => iframe.addEventListener('load', resolve));
+        }, [iframeUid]);
+
+        await Promise.all([loadIframe, unloadIframe, loadPopup]);
+        await popupContext.execute_script((uid) => location.href = `./exec.html?uuid=${uid}`, [finalUid]);
+        const navigationTimingEntry = await finalContext.execute_script(() => performance.getEntriesByType('navigation')[0].toJSON());
+        const unloadDuration = navigationTimingEntry.unloadEventEnd - navigationTimingEntry.unloadEventStart;
+        assert_greater_than_equal(unloadDuration, mainWindowUnloadDuration);
+        assert_less_than(unloadDuration, mainWindowUnloadDuration + iframeUnloadDuration);
+    });
+</script>
+</body>

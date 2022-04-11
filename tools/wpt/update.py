@@ -40,7 +40,7 @@ def update_expectations(_, **kwargs):
     if "product" not in kwargs["extra_property"]:
         kwargs["extra_property"].append("product")
 
-    use_wptrunner_update_props =  kwargs.get("product") is not None
+    use_wptrunner_update_props = kwargs.get("product") is not None
 
     kwargs = wptcommandline.check_args_metadata_update(kwargs)
 

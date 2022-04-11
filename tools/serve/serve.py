@@ -1096,7 +1096,8 @@ def get_parser():
                         help="Path to document root. Overrides config.")
     parser.add_argument("--ws_doc_root", action="store", dest="ws_doc_root",
                         help="Path to WebSockets document root. Overrides config.")
-    parser.add_argument("--inject-script", default=None, help="Path to script to inject")
+    parser.add_argument("--inject-script", default=None,
+                        help="Path to script file to inject, useful for testing polyfills.")
     parser.add_argument("--alias_file", action="store", dest="alias_file",
                         help="File with entries for aliases/multiple doc roots. In form of `/ALIAS_NAME/, DOC_ROOT\\n`")
     parser.add_argument("--h2", action="store_true", dest="h2", default=None,

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Flexible Box Test: flex-direction property - column-reverse on Safari</title>
+    <link rel="author" title="LeTraceurSnork" href="mailto:le_traceur_snork@mail.ru">
+    <link rel="help" href="http://www.w3.org/TR/css-flexbox-1/#flex-direction-property">
+    <link rel="match" href="reference/flex-direction-column-reverse-ref.html">
+    <meta name="assert" content="Statement describing what the test case is asserting">
+    <style type="text/css">
+        .content {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 50px;
+        }
+    </style>
+</head>
+<body>
+<p>The test passed if you see all the cells are arraged vertically and reversed with a gap=50px between them on Safari
+    browser (basically, any Apple production) .</p>
+<div class="content">
+    <div>111 Lorem ipsum</div>
+    <div>222 Another test phrase</div>
+    <div>333 Say hello to my little friend</div>
+    <div>444 Something funny here</div>
+    <div>555 We tip</div>
+</div>
+</body>
+</html>

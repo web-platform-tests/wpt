@@ -52,7 +52,8 @@ This approach has a couple limitations:
 synchronously in a single inline script. See [Preparing the
 polyfill](#preparing-the-polyfill) for suggestions on transforming polyfills to
 run in that way.
-* Does not inject into python handler responses.
+* Does not inject into python handlers which write directly to the output
+  stream.
 
 ### Observability
 

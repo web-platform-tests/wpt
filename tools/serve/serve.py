@@ -14,6 +14,7 @@ import traceback
 import urllib
 import uuid
 from collections import defaultdict, OrderedDict
+from io import IOBase
 from itertools import chain, product
 from html5lib import html5parser
 from typing import ClassVar, List, Set, Tuple
@@ -215,6 +216,10 @@ class HtmlScriptInjectorHandlerWrapper:
         self.wrap(request, response)
         # If the response content type isn't html, don't modify it.
         if not isinstance(response.headers, ResponseHeaders) or response.headers.get("Content-Type")[0] != b"text/html":
+            return response
+
+        # Skip injection on custom streaming responses.
+        if not isinstance(response.content, (bytes, str, IOBase)) and not hasattr(response, "read"):
             return response
 
         # Otherwise, inject the script after the document's doctype.

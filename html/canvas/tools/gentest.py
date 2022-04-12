@@ -1,10 +1,26 @@
 from gentestutils import genTestUtils
-from gentestutilsunion import genTestUtils_union
 
 genTestUtils(
-    "../element", "../element", "templates.yaml", "name2dir-canvas.yaml", False
+    "yaml/element",
+    "templates-new.yaml",
+    "name2dir-canvas.yaml",
+    canvas_output_dir="../element",
+    include_done=False,
 )
+
 genTestUtils(
-    "../offscreen", "../offscreen", "templates.yaml", "name2dir-offscreen.yaml", True
+    "yaml/offscreen",
+    "templates-new.yaml",
+    "name2dir-offscreen.yaml",
+    offscreen_output_dir="../offscreen",
+    include_done=False,
 )
-genTestUtils_union("templates-new.yaml", "name2dir.yaml")
+
+genTestUtils(
+    "yaml-new",
+    "templates-new.yaml",
+    "name2dir.yaml",
+    canvas_output_dir="../element",
+    offscreen_output_dir="../offscreen",
+    include_done=True,
+)

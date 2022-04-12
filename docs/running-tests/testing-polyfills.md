@@ -47,10 +47,12 @@ the served response:
 document.currentScript.parentNode.removeChild(document.currentScript);
 ```
 
-As such, this requires that the polyfill is self-contained and executes
+This approach has a couple limitations:
+* This requires that the polyfill is self-contained and executes
 synchronously in a single inline script. See [Preparing the
 polyfill](#preparing-the-polyfill) for suggestions on transforming polyfills to
 run in that way.
+* Does not inject into python handler responses.
 
 ### Observability
 

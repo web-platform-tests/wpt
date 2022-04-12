@@ -9,7 +9,7 @@
 <script>
 function supportsTouchEvents(isTouchEvent) {
   if (isTouchEvent) {
-    assert_implements_optional('ontouchstart' in document, "'expose legacy touch event APIs' is false");
+    assert_implements_optional('ontouchstart' in document, "'expose legacy touch event APIs'");
   }
 }
 function testAlias(arg, iface, isTouchEvent) {

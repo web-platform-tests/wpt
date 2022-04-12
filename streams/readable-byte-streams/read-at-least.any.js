@@ -23,6 +23,33 @@ promise_test(async t => {
 }, 'ReadableStream with byte source: read({ atLeast }) rejects if atLeast is 0');
 
 promise_test(async t => {
+  const rs = new ReadableStream({
+    type: 'bytes',
+    pull: t.unreached_func('pull() should not be called'),
+  });
+  const reader = rs.getReader({ mode: 'byob' });
+  await promise_rejects_js(t, RangeError, reader.read(new Uint8Array(1), { atLeast: 2 }));
+}, 'ReadableStream with byte source: read({ atLeast }) rejects if atLeast is larger than view\'s length (Uint8Array)');
+
+promise_test(async t => {
+  const rs = new ReadableStream({
+    type: 'bytes',
+    pull: t.unreached_func('pull() should not be called'),
+  });
+  const reader = rs.getReader({ mode: 'byob' });
+  await promise_rejects_js(t, RangeError, reader.read(new Uint16Array(1), { atLeast: 2 }));
+}, 'ReadableStream with byte source: read({ atLeast }) rejects if atLeast is larger than view\'s length (Uint16Array)');
+
+promise_test(async t => {
+  const rs = new ReadableStream({
+    type: 'bytes',
+    pull: t.unreached_func('pull() should not be called'),
+  });
+  const reader = rs.getReader({ mode: 'byob' });
+  await promise_rejects_js(t, RangeError, reader.read(new DataView(new ArrayBuffer(1)), { atLeast: 2 }));
+}, 'ReadableStream with byte source: read({ atLeast }) rejects if atLeast is larger than view\'s length (DataView)');
+
+promise_test(async t => {
   let pullCount = 0;
   const byobRequests = [];
   const rs = new ReadableStream({

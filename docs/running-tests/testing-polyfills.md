@@ -2,14 +2,14 @@
 
 ## Preparing the polyfill
 
-The polyfill script injection feature currently only supports scripts which
+The polyfill script-injection feature currently only supports scripts which
 are immediately invoked. The script must be prepared as a single file whose
 contents will be inlined into a script tag served as part of every test page.
 
 If your polyfill is only available as an asynchronous module with dependent
-scripts you can use a tool such as
+scripts, you can use a tool such as
 [microbundle](https://github.com/developit/microbundle) to repackage it as a
-single synchronous script file, e.g.
+single synchronous script file, e.g.:
 
 ```bash
 microbundle -f iife -i polyfill/src/main.js -o polyfill.js
@@ -19,7 +19,7 @@ microbundle -f iife -i polyfill/src/main.js -o polyfill.js
 
 Follow the steps for [Running Tests from the Local System](from-local-system) to
 set up your test environment. When running tests via the browser or via the
-command line add the `--inject-script=polyfill.js` to either command, e.g.
+command line, add the `--inject-script=polyfill.js` to either command, e.g.
 
 Via the browser:
 
@@ -37,7 +37,7 @@ Via the command line:
 
 Polyfill scripts are injected to an inline script tag which removes itself from
 the DOM after executing. This is done by modifying the server response for
-text/html mimetype documents to insert the following before the first tag in
+documents with a `text/html` MIME type  to insert the following before the first tag in
 the served response:
 
 ```html
@@ -47,14 +47,14 @@ the served response:
 document.currentScript.parentNode.removeChild(document.currentScript);
 ```
 
-As such, this requires that the polyfill is self contained and executes
+As such, this requires that the polyfill is self-contained and executes
 synchronously in a single inline script. See [Preparing the
-polyfill](#preparing-the-polyfill) for suggestions in transforming polyfills to
-run in this way.
+polyfill](#preparing-the-polyfill) for suggestions on transforming polyfills to
+run in that way.
 
 ### Observability
 
 The script tag is removed from the DOM before any other script has run, and runs
 from an inline script. As such, it should not affect mutation observers on the
-same page or resource timing APIs as it is not a separate resource. The polyfill
+same page or resource timing APIs, as it is not a separate resource. The polyfill
 may be observable by a mutation observer added by a parent frame before load.

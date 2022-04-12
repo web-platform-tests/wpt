@@ -3,7 +3,6 @@ from webdriver import error
 
 from tests.support.asserts import assert_error, assert_success
 
-
 def close(session):
     return session.transport.send(
         "DELETE", "session/{session_id}/window".format(**vars(session)))

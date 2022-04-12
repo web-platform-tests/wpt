@@ -18,14 +18,21 @@
     promise_test(async t => {
         const mainWindowUnloadDuration = 100;
         const iframeUnloadDuration = 400;
-        const popupUid = token();
-        const iframeUid = token();
-        const finalUid = token();
-        const popup = window.open(`resources/exec.html?uuid=${popupUid}`);
+        /*
+            We create 3 contexts: one for the document to unload, one for the iframe in that document,
+            and one for the document that's loaded after the unload.
+
+            The iframe is going to busy-wait on unload for 400ms, and the unloading top-level
+            document is going to busy-wait on unload for 100ms.
+
+            We verify that the total unloadEvent duration measured at the final document is ~100 but
+            less than 500ms - does not include the unload event duration from the iframe.
+        */
+        const popupContext = new RemoteContext(token());
+        const iframeContext = new RemoteContext(token());
+        const finalContext = new RemoteContext(token());
+        const popup = window.open(`resources/exec.html?uuid=${popupContext.context_id}`);
         t.add_cleanup(() => popup.close());
-        const popupContext = new RemoteContext(popupUid);
-        const iframeContext = new RemoteContext(iframeUid);
-        const finalContext = new RemoteContext(finalUid);
         const busyWait = duration => window.addEventListener('unload', () => {
             const buffer = 3;
             const timeoutEnd = performance.now() + duration + buffer;
@@ -41,10 +48,10 @@
             iframe.src = `./exec.html?uuid=${iframeUid}`;
             document.body.appendChild(iframe);
             await new Promise(resolve => iframe.addEventListener('load', resolve));
-        }, [iframeUid]);
+        }, [iframeContext.context_id]);
 
         await Promise.all([loadIframe, unloadIframe, loadPopup]);
-        await popupContext.execute_script((uid) => location.href = `./exec.html?uuid=${uid}`, [finalUid]);
+        await popupContext.execute_script((uid) => location.href = `./exec.html?uuid=${uid}`, [finalContext.context_id]);
         const navigationTimingEntry = await finalContext.execute_script(() => performance.getEntriesByType('navigation')[0].toJSON());
         const unloadDuration = navigationTimingEntry.unloadEventEnd - navigationTimingEntry.unloadEventStart;
         assert_greater_than_equal(unloadDuration, mainWindowUnloadDuration);

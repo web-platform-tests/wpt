@@ -508,11 +508,8 @@ class RoutesBuilder:
         self.extra = []
         self.inject_script_data = None
         if inject_script is not None:
-            try:
-                with open(inject_script, 'r') as f:
-                    self.inject_script_data = f.read()
-            except:
-                raise OSError("Unable to read specified inject_script: %s", inject_script)
+            with open(inject_script, 'r') as f:
+                self.inject_script_data = f.read()
 
         self.mountpoint_routes = OrderedDict()
 

@@ -14,14 +14,16 @@ promise_test(async done => {
     for (const timeoutValue of timeouts) {
       let didTimeout = false
       const waitForTimeout = new Promise(resolve => step_timeout(() => {
-        didTimeout = true
-        resolve()
+        didTimeout = true;
+        resolve();
       }, timeoutValue));
-      const deadline = await getDeadlineForNextIdleCallback()
-      if (!didTimeout) {
-        assert_less_than_equal(Math.floor(deadline), timeoutValue)
-        await waitForTimeout
-      }
+      const deadline = await getDeadlineForNextIdleCallback();
+
+      // Timeout expired before we got a chance to perform the deadline task, try again
+      if (didTimeout)
+          continue;
+      assert_less_than_equal(Math.floor(deadline), timeoutValue);
+      await waitForTimeout;
     }
   }
 }, 'Check that the deadline is capped at the next timeout.');

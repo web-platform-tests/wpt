@@ -9,7 +9,7 @@
 setup(() => assert_implements('requestIdleCallback' in window));
 
 promise_test(async done => {
-  const timeouts = [10, 15, 30]
+  const timeouts = [8, 24, 40]
   for (let i = 0; i < 300; ++i) {
     for (const timeoutValue of timeouts) {
       let didTimeout = false

@@ -6,19 +6,20 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/ric-utils.js"></script>
 <script>
+setup(() => assert_implements('requestIdleCallback' in window));
 
 promise_test(async done => {
-  const timeouts = [15, 20, 30, 100]
-  for (let i = 0; i < 10; ++i) {
+  const timeouts = [10, 15, 30, 100]
+  for (let i = 0; i < 100; ++i) {
     for (const timeoutValue of timeouts) {
-      let resolved = false
+      let didTimeout = false
       const waitForTimeout = new Promise(resolve => step_timeout(() => {
-        resolved = true
+        didTimeout = true
         resolve()
-      }, timeoutValue))
+      }, timeoutValue));
       const deadline = await getDeadlineForNextIdleCallback()
-      if (!resolved) {
-        assert_less_than_equal(deadline, timeoutValue)
+      if (!didTimeout) {
+        assert_less_than_equal(Math.floor(deadline), timeoutValue)
         await waitForTimeout
       }
     }

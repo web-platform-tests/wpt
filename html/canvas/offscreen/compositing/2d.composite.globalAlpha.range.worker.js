@@ -26,6 +26,7 @@ ctx.globalAlpha = 0;
 _assertSame(ctx.globalAlpha, 0, "ctx.globalAlpha", "0");
 ctx.globalAlpha = 1;
 _assertSame(ctx.globalAlpha, 1, "ctx.globalAlpha", "1");
+
 t.done();
 
 });

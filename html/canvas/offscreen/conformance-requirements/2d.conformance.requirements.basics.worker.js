@@ -52,6 +52,7 @@ if (ctx.putImageData) {
 }
 _assertSame(ctx.drawImage(canvas, 0, 0, 1, 1, 0, 0, 0, 0), undefined, "ctx.drawImage(canvas, 0, 0, 1, 1, 0, 0, 0, 0)", "undefined");
 _assertSame(ctx.createLinearGradient(0, 0, 0, 0).addColorStop(0, 'white'), undefined, "ctx.createLinearGradient(0, 0, 0, 0).addColorStop(0, 'white')", "undefined");
+
 t.done();
 
 });

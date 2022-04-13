@@ -43,6 +43,7 @@ ctx.fillRect(0, Infinity, Infinity, Infinity);
 ctx.fillRect(0, Infinity, 100, Infinity);
 ctx.fillRect(0, 0, Infinity, Infinity);
 _assertPixel(canvas, 50,25, 0,255,0,255, "50,25", "0,255,0,255");
+
 t.done();
 
 });

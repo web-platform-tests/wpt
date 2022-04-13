@@ -17,6 +17,7 @@ var canvas = new OffscreenCanvas(100, 50);
 var ctx = canvas.getContext('2d');
 
 _assertSame(ctx.globalCompositeOperation, 'source-over', "ctx.globalCompositeOperation", "'source-over'");
+
 t.done();
 
 });

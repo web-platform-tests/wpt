@@ -120,6 +120,7 @@ for (testCase of workingTestCases) {
   const filterOptions = {...{filter: "turbulence"}, ...testCase};
   _assert(new CanvasFilter(filterOptions) != null, "new CanvasFilter(filterOptions) != null");
 }
+
 t.done();
 
 });

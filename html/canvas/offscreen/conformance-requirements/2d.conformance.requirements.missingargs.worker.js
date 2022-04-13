@@ -131,6 +131,7 @@ if (ctx.putImageData) {
 var g = ctx.createLinearGradient(0, 0, 0, 0);
 assert_throws_js(TypeError, function() { g.addColorStop(); });
 assert_throws_js(TypeError, function() { g.addColorStop(0); });
+
 t.done();
 
 });

@@ -24,6 +24,7 @@ for (var i = 0; i < modes.length; ++i)
     ctx.globalCompositeOperation = modes[i];
     _assertSame(ctx.globalCompositeOperation, modes[i], "ctx.globalCompositeOperation", "modes[\""+(i)+"\"]");
 }
+
 t.done();
 
 });

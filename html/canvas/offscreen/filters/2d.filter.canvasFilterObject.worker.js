@@ -37,6 +37,7 @@ _assert(ctx.filter == 'none', "ctx.filter == 'none'");
 ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: 5});
 ctx.filter = "this string is not a filter and should do nothing";
 _assert(ctx.filter.toString() == '[object CanvasFilter]', "ctx.filter.toString() == '[object CanvasFilter]'");
+
 t.done();
 
 });

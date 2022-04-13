@@ -27,6 +27,7 @@ assert_throws_dom("INVALID_STATE_ERR", function() { ctx.drawImage(offscreenCanva
 offscreenCanvas2.width = 0;
 offscreenCanvas2.height = 0;
 assert_throws_dom("INVALID_STATE_ERR", function() { ctx.drawImage(offscreenCanvas2, 0, 0); });
+
 t.done();
 
 });

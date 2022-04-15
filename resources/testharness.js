@@ -4775,6 +4775,12 @@
         };
 
         addEventListener("error", function(e) {
+            // Some user agents may terminate execution on unhandled uncaught
+            // exceptions (namely Deno). To deal with this we mark the error
+            // event as handled if the test setup allows uncaught exceptions.
+            if (tests.allow_uncaught_exception) {
+                e.preventDefault();
+            }
             var message = e.message;
             var stack;
             if (e.error && e.error.stack) {
@@ -4786,6 +4792,13 @@
         }, false);
 
         addEventListener("unhandledrejection", function(e) {
+            // Some user agents may terminate execution on unhandled uncaught
+            // rejections. Notable examples are Node and Deno. To deal with this
+            // we mark the unhandledrejection event as handled if the test setup
+            // allows uncaught exceptions.
+            if (tests.allow_uncaught_exception) {
+                e.preventDefault();
+            }
             var message;
             if (e.reason && e.reason.message) {
                 message = "Unhandled rejection: " + e.reason.message;

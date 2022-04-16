@@ -485,7 +485,7 @@ structuredCloneBatteryOfTests.push({
   description: 'Object with a getter that throws',
   async f(runner, t) {
     const exception = new Error();
-    const test = {
+    const testObject = {
       get testProperty() {
         throw exception;
       }
@@ -493,7 +493,7 @@ structuredCloneBatteryOfTests.push({
     await promise_rejects_exactly(
       t,
       exception,
-      runner.structuredClone(test)
+      runner.structuredClone(testObject)
     );
   }
 });

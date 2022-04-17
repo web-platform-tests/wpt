@@ -30,7 +30,7 @@
                     if (entries.length === 1)
                         resolve();
                 }).observe({type: 'resource'});
-                t.step_timeout(resolve, 2000);
+                t.step_timeout(resolve, 1000);
             });
 
             const entries = performance.getEntriesByName(getAbsoluteURL(link.href));

@@ -11,7 +11,7 @@ const {HTTPS_REMOTE_ORIGIN} = get_host_info();
 function createEchoURL(text, type) {
     return `/preload/resources/echo-with-cors.py?type=${
         encodeURIComponent(type)}&content=${
-        encodeURIComponent(text)}`
+        encodeURIComponent(text)}&uid=${token()}`
 }
 const urls = {
     image: createEchoURL('<svg xmlns="http://www.w3.org/2000/svg" width="2" height="2" />', 'image/svg+xml'),
@@ -155,7 +155,7 @@ function preload_reuse_test(type, as, url, preloadConfig, resourceConfig) {
 for (const [resourceTypeName, resourceInfo] of Object.entries(resourceTypes)) {
     const configNames = resourceInfo.config ? [resourceInfo.config, 'same-origin'] : Object.keys(configs)
     for (const resourceConfigName of configNames) {
-        for (const preloadConfigName of Object.keys(configs)) {
+        for (const preloadConfigName in configs) {
             // Same-origin requests ignore their CORS attributes, so no need to match all of them.
             if ((resourceConfigName === 'same-origin' && preloadConfigName === 'same-origin') ||
                 (resourceConfigName !== 'same-origin' && preloadConfigName !== 'same-origin'))

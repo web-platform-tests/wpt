@@ -147,8 +147,12 @@ function preload_reuse_test(type, as, url, preloadConfig, resourceConfig) {
     }&${token()}`)
     promise_test(async t => {
         await preload({href, as, ...configs[preloadConfig].attributes}, t);
-        await loaders[as](href, configs[resourceConfig].attributes, t)
-        verifyNumberOfResourceTimingEntries(href, expected === "reuse" ? 1 : 2)
+        await loaders[as](href, configs[resourceConfig].attributes, t);
+        const expectedEntries = expected === "reuse" ? 1 : 2;
+
+        if (numberOfResourceTimingEntries(href) < expectedEntries)
+            await new Promise(resolve => t.step_timeout(resolve, 300));
+        verifyNumberOfResourceTimingEntries(href, expectedEntries);
     }, `Loading ${type} (${resourceConfig}) with link (${preloadConfig}) should ${expected} the preloaded response`);
 }
 

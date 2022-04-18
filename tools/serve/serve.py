@@ -360,6 +360,7 @@ class ShadowRealmHandler(HtmlWrapperHandler):
   await new Promise(r.evaluate(`
     (resolve, reject) => {
       (async () => {
+        globalThis.TESTHARNESSJS_IS_INSIDE_SHADOW_REALM = true;
         await import("/resources/testharness.js");
         %(script)s
         globalThis.self.GLOBAL = {

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>SPC Authentication iframe</title>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="../utils.sub.js"></script>
 <script>
 'use strict';
@@ -32,6 +34,7 @@ window.addEventListener('message', async function handler(evt) {
     }
   }], PAYMENT_DETAILS);
 
+  await test_driver.bless('user activation');
   const responsePromise = request.show();
 
   const response = await responsePromise;

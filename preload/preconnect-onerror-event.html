@@ -22,7 +22,7 @@
                     link.addEventListener('load', () => didLoad({rel, type: 'load'}));
                     link.addEventListener('error', () => didLoad({rel, type: 'error'}));
                     document.head.appendChild(link);
-                    await new Promise(resolve => t.step_timeout(resolve, 200));
+                    t.step_timeout(() => resolve('timeout'), 200));
                 }
             });
             assert_equals(result.rel, 'preload');

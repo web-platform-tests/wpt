@@ -259,7 +259,6 @@ class AnyHtmlHandler(HtmlWrapperHandler):
 self.GLOBAL = {
   isWindow: function() { return true; },
   isWorker: function() { return false; },
-  isShadowRealm: function() { return false; },
 };
 </script>
 <script src="/resources/testharness.js"></script>
@@ -361,13 +360,12 @@ class ShadowRealmHandler(HtmlWrapperHandler):
   await new Promise(r.evaluate(`
     (resolve, reject) => {
       (async () => {
+        await import("/resources/testharness.js");
+        %(script)s
         globalThis.self.GLOBAL = {
           isWindow: function() { return false; },
           isWorker: function() { return false; },
-          isShadowRealm: function() { return true; },
         };
-        await import("/resources/testharness.js");
-        %(script)s
         await import("%(path)s");
       })().then(resolve, (e) => reject(e.toString()));
     }
@@ -413,7 +411,6 @@ class ClassicWorkerHandler(BaseWorkerHandler):
 self.GLOBAL = {
   isWindow: function() { return false; },
   isWorker: function() { return true; },
-  isShadowRealm: function() { return false; },
 };
 importScripts("/resources/testharness.js");
 %(script)s
@@ -431,7 +428,6 @@ class ModuleWorkerHandler(BaseWorkerHandler):
 self.GLOBAL = {
   isWindow: function() { return false; },
   isWorker: function() { return true; },
-  isShadowRealm: function() { return false; },
 };
 import "/resources/testharness.js";
 %(script)s

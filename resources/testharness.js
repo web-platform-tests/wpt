@@ -537,11 +537,11 @@
         }
         /* Shadow realm global objects are _ordinary_ objects (i.e. their prototype is
          * Object) so we don't have a nice `instanceof` test to use; instead, we
-         * check if the there is a TESTHARNESSJS_IS_INSIDE_SHADOW_REALM property
+         * check if the there is a GLOBAL.isShadowRealm() property
          * on the global object. that was set by the test harness when it
          * created the ShadowRealm.
          */
-        if (global_scope.TESTHARNESSJS_IS_INSIDE_SHADOW_REALM) {
+        if (global_scope.GLOBAL.isShadowRealm()) {
             return new ShadowRealmTestEnvironment();
         }
 

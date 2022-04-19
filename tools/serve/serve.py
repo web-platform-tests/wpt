@@ -228,8 +228,9 @@ class HtmlScriptInjectorHandlerWrapper:
         # Tokenize and find the position of the first content (e.g. after the
         # doctype if one is present).
         token_types = html5parser.tokenTypes
-        before_tokens = {token_types["StartTag"], token_types["EndTag"],
-                         token_types["EmptyTag"], token_types["Characters"]}
+        after_tags = {"html", "head"}
+        before_tokens = {token_types["EndTag"], token_types["EmptyTag"],
+                         token_types["Characters"]}
         error_tokens = {token_types["ParseError"]}
 
         tokenizer = html5parser._tokenizer.HTMLTokenizer(data)
@@ -237,7 +238,10 @@ class HtmlScriptInjectorHandlerWrapper:
         offset = 0
         error = False
         for item in tokenizer:
-            if item["type"] in before_tokens:
+            if item["type"] == token_types["StartTag"]:
+                if not item["name"].lower() in after_tags:
+                    break
+            elif item["type"] in before_tokens:
                 break
             elif item["type"] in error_tokens:
                 error = True

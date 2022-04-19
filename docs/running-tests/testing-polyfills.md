@@ -44,7 +44,7 @@ the served response:
 <script>
 // <-- The polyfill file is inlined here
 // Remove the injected script tag from the DOM.
-document.currentScript.parentNode.removeChild(document.currentScript);
+document.currentScript.remove();
 ```
 
 This approach has a couple limitations:

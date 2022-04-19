@@ -258,7 +258,7 @@ class HtmlScriptInjectorHandlerWrapper:
             inject_data = "<script>\n" + \
                           self.inject + "\n" + \
                           ("// Remove the injected script tag from the DOM.\n"
-                           "document.currentScript.parentNode.removeChild(document.currentScript);\n"
+                           "document.currentScript.remove();\n"
                            "</script>\n")
             response.content = data[:offset] + inject_data + data[offset:]
 

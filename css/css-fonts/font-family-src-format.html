@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset=utf-8>
+<link rel="author" title="Eric Huang" href="ele828@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-fonts/#src-desc" />
+<meta name="assert" content="Test font-family src format in string and keyword form"/>
+<script type="text/javascript" src="/resources/testharness.js"></script>
+<script type="text/javascript" src="/resources/testharnessreport.js"></script>
+<style id="string">
+/* string format*/
+@font-face {
+    font-family: "string0";
+    src: url(../../resources/Ahem.ttf) format("opentype");
+}
+
+@font-face {
+    font-family: "string1";
+    src: url(../../resources/Ahem.ttf) format("truetype");
+}
+
+@font-face {
+    font-family: "string2";
+    src: url(../../resources/Ahem.ttf) format("woff");
+}
+
+@font-face {
+    font-family: "string3";
+    src: url(../../resources/Ahem.ttf) format("woff2");
+}
+</style>
+
+<style id="keyword">
+/* keyword format*/
+@font-face {
+    font-family: "keyword0";
+    src: url(../../resources/Ahem.ttf) format(opentype);
+}
+
+@font-face {
+    font-family: "keyword1";
+    src: url(../../resources/Ahem.ttf) format(truetype);
+}
+
+@font-face {
+    font-family: "keyword2";
+    src: url(../../resources/Ahem.ttf) format(woff);
+}
+
+@font-face {
+    font-family: "keyword3";
+    src: url(../../resources/Ahem.ttf) format(woff2);
+}
+</style>
+<style id="nonkeyword">
+@font-face {
+  font-family: font1;
+  src: url(../../resources/Ahem.ttf) format(ttf);
+}
+@font-face {
+  font-family: font2;
+  src: url(../../resources/Ahem.ttf) format(unknown);
+}
+@font-face {
+  font-family: font3;
+  src: url(../../resources/Ahem.ttf) format(woff-variations);
+}
+@font-face {
+  font-family: font4;
+  src: url(../../resources/Ahem.ttf) format("ttf");
+}
+@font-face {
+  font-family: font5;
+  src: url(../../resources/Ahem.ttf) format("unknown");
+}
+@font-face {
+  font-family: font6;
+  src: url(../../resources/Ahem.ttf) format("woff-variations");
+}
+</style>
+</head>
+<body>
+<script>
+test(function(t) {
+    var rules = document.getElementById("string").sheet.cssRules;
+    assert_greater_than(rules[0].cssText.indexOf('format(opentype)'), -1);
+    assert_greater_than(rules[1].cssText.indexOf('format(truetype)'), -1);
+    assert_greater_than(rules[2].cssText.indexOf('format(woff)'), -1);
+    assert_greater_than(rules[3].cssText.indexOf('format(woff2)'), -1);
+
+    var keyword_rules = document.getElementById("keyword").sheet.cssRules;
+    assert_greater_than(keyword_rules[0].cssText.indexOf('format(opentype)'), -1);
+    assert_greater_than(keyword_rules[1].cssText.indexOf('format(truetype)'), -1);
+    assert_greater_than(keyword_rules[2].cssText.indexOf('format(woff)'), -1);
+    assert_greater_than(keyword_rules[3].cssText.indexOf('format(woff2)'), -1);
+
+    var nonkeyword_rules = document.getElementById('nonkeyword').sheet.cssRules;
+    assert_false(/format\(.*\)/.test(nonkeyword_rules[0].cssText));
+    assert_false(/format\(.*\)/.test(nonkeyword_rules[1].cssText));
+    assert_false(/format\(.*\)/.test(nonkeyword_rules[2].cssText));
+    assert_greater_than(nonkeyword_rules[3].cssText.indexOf('format("ttf")'), -1);
+    assert_greater_than(nonkeyword_rules[4].cssText.indexOf('format("unknown")'), -1);
+    assert_greater_than(nonkeyword_rules[5].cssText.indexOf('format("woff-variations")'), -1);
+});
+</script>
+</body>
+</html>

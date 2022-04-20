@@ -27,6 +27,9 @@ Via the browser:
 ./wpt serve --inject-script=polyfill.js
 ```
 
+Then visit http://web-platform.test:8000/ or https://web-platform.test:8443/ to
+run the tests in your browser.
+
 Via the command line:
 
 ```bash
@@ -54,6 +57,7 @@ polyfill](#preparing-the-polyfill) for suggestions on transforming polyfills to
 run in that way.
 * Does not inject into python handlers which write directly to the output
   stream.
+* Does not inject into the worker context of `.any.js` tests.
 
 ### Observability
 

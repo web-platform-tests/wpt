@@ -223,10 +223,10 @@ class HtmlScriptInjectorHandlerWrapper:
             return response
 
         # Otherwise, inject the script after the document's doctype.
-        data = "".join(item.decode(response.encoding) for item in response.iter_content(read_file=True))
+        data = b"".join(response.iter_content(read_file=True))
 
         # Tokenize and find the position of the first content (e.g. after the
-        # doctype if one is present).
+        # doctype, html, and head opening tags if present but before any other tags).
         token_types = html5parser.tokenTypes
         after_tags = {"html", "head"}
         before_tokens = {token_types["EndTag"], token_types["EmptyTag"],
@@ -258,11 +258,11 @@ class HtmlScriptInjectorHandlerWrapper:
             # The response content was consumed above and needs to be set.
             response.content = data
         else:
-            inject_data = "<script>\n" + \
-                          self.inject + "\n" + \
-                          ("// Remove the injected script tag from the DOM.\n"
-                           "document.currentScript.remove();\n"
-                           "</script>\n")
+            inject_data = b"<script>\n" + \
+                          self.inject + b"\n" + \
+                          (b"// Remove the injected script tag from the DOM.\n"
+                           b"document.currentScript.remove();\n"
+                           b"</script>\n")
             response.content = data[:offset] + inject_data + data[offset:]
 
         return response
@@ -520,7 +520,7 @@ class RoutesBuilder:
         self.extra = []
         self.inject_script_data = None
         if inject_script is not None:
-            with open(inject_script, 'r') as f:
+            with open(inject_script, 'rb') as f:
                 self.inject_script_data = f.read()
 
         self.mountpoint_routes = OrderedDict()

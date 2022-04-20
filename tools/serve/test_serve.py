@@ -7,7 +7,7 @@ import pytest
 
 import localpaths  # type: ignore
 from . import serve
-from .serve import ConfigBuilder
+from .serve import ConfigBuilder, inject_script
 
 
 logger = logging.getLogger()
@@ -107,3 +107,18 @@ def test_alternate_host_invalid(primary, alternate):
 ])
 def test_alternate_host_valid(primary, alternate):
     ConfigBuilder(logger, browser_host=primary, alternate_hosts={"alt": alternate})
+
+
+def test_inject_script():
+    inject_marker = b"<!-- inject here -->"
+    inject = b"<script>/* test */</script>"
+    html = (
+        b"<!DOCTYPE html>"
+        b"<html>"
+        b"  <head>"
+        b"  ") + inject_marker + (b"</head>"
+        b"  <body>"
+        b"  </body>"
+        b"</html>")
+    assert inject_script(html.replace(inject_marker, b""), inject) == \
+        html.replace(inject_marker, inject)

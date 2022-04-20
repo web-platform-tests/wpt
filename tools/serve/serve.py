@@ -55,6 +55,42 @@ def domains_are_distinct(a, b):
     return a_parts[slice_index:] != b_parts[slice_index:]
 
 
+def inject_script(html, script_tag):
+    # Tokenize and find the position of the first content (e.g. after the
+    # doctype, html, and head opening tags if present but before any other tags).
+    token_types = html5parser.tokenTypes
+    after_tags = {"html", "head"}
+    before_tokens = {token_types["EndTag"], token_types["EmptyTag"],
+                        token_types["Characters"]}
+    error_tokens = {token_types["ParseError"]}
+
+    tokenizer = html5parser._tokenizer.HTMLTokenizer(html)
+    stream = tokenizer.stream
+    offset = 0
+    error = False
+    for item in tokenizer:
+        if item["type"] == token_types["StartTag"]:
+            if not item["name"].lower() in after_tags:
+                break
+        elif item["type"] in before_tokens:
+            break
+        elif item["type"] in error_tokens:
+            error = True
+            break
+        offset = stream.chunkOffset
+    else:
+        error = True
+
+    if not error and stream.prevNumCols or stream.prevNumLines:
+        # We're outside the first chunk, so we don't know what to do
+        error = True
+
+    if error:
+        return html
+    else:
+        return html[:offset] + script_tag + html[offset:]
+
+
 class WrapperHandler:
 
     __meta__ = abc.ABCMeta
@@ -222,49 +258,13 @@ class HtmlScriptInjectorHandlerWrapper:
         if not isinstance(response.content, (bytes, str, IOBase)) and not hasattr(response, "read"):
             return response
 
-        # Otherwise, inject the script after the document's doctype.
-        data = b"".join(response.iter_content(read_file=True))
-
-        # Tokenize and find the position of the first content (e.g. after the
-        # doctype, html, and head opening tags if present but before any other tags).
-        token_types = html5parser.tokenTypes
-        after_tags = {"html", "head"}
-        before_tokens = {token_types["EndTag"], token_types["EmptyTag"],
-                         token_types["Characters"]}
-        error_tokens = {token_types["ParseError"]}
-
-        tokenizer = html5parser._tokenizer.HTMLTokenizer(data)
-        stream = tokenizer.stream
-        offset = 0
-        error = False
-        for item in tokenizer:
-            if item["type"] == token_types["StartTag"]:
-                if not item["name"].lower() in after_tags:
-                    break
-            elif item["type"] in before_tokens:
-                break
-            elif item["type"] in error_tokens:
-                error = True
-                break
-            offset = stream.chunkOffset
-        else:
-            error = True
-
-        if not error and stream.prevNumCols or stream.prevNumLines:
-            # We're outside the first chunk, so we don't know what to do
-            error = True
-
-        if error:
-            # The response content was consumed above and needs to be set.
-            response.content = data
-        else:
-            inject_data = b"<script>\n" + \
-                          self.inject + b"\n" + \
-                          (b"// Remove the injected script tag from the DOM.\n"
-                           b"document.currentScript.remove();\n"
-                           b"</script>\n")
-            response.content = data[:offset] + inject_data + data[offset:]
-
+        response.content = inject_script(
+            b"".join(response.iter_content(read_file=True)),
+            b"<script>\n" + \
+            self.inject + b"\n" + \
+            (b"// Remove the injected script tag from the DOM.\n"
+            b"document.currentScript.remove();\n"
+            b"</script>\n"))
         return response
 
 

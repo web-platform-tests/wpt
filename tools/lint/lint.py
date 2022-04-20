@@ -936,9 +936,9 @@ def lint_paths(kwargs, wpt_root):
                 paths.append(os.path.relpath(os.path.abspath(path), wpt_root))
     elif kwargs["all"]:
         paths = list(all_filesystem_paths(wpt_root))
-    elif kwargs["rspfile"]:
+    elif kwargs["paths_file"]:
         paths = []
-        with open(kwargs["rspfile"], 'r', newline='') as f:
+        with open(kwargs["paths_file"], 'r', newline='') as f:
             for line in f.readlines():
                 path = line.strip()
                 if os.path.isdir(path):
@@ -982,7 +982,7 @@ def create_parser():
                         help="Path to GitHub checks output file for Taskcluster runs")
     parser.add_argument("-j", "--jobs", type=int, default=0,
                         help="Level to parallelism to use (defaults to 0, which detects the number of CPUs)")
-    parser.add_argument("--rspfile", help="File containing a list of files to lint, one per line")
+    parser.add_argument("--paths-file", help="File containing a list of files to lint, one per line")
     return parser
 
 

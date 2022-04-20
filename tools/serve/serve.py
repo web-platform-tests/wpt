@@ -254,7 +254,10 @@ class HtmlScriptInjectorHandlerWrapper:
             # We're outside the first chunk, so we don't know what to do
             error = True
 
-        if not error:
+        if error:
+            # The response content was consumed above and needs to be set.
+            response.content = data
+        else:
             inject_data = "<script>\n" + \
                           self.inject + "\n" + \
                           ("// Remove the injected script tag from the DOM.\n"

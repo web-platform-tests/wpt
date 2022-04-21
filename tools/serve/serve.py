@@ -61,7 +61,7 @@ def inject_script(html, script_tag):
     token_types = html5parser.tokenTypes
     after_tags = {"html", "head"}
     before_tokens = {token_types["EndTag"], token_types["EmptyTag"],
-                        token_types["Characters"]}
+                     token_types["Characters"]}
     error_tokens = {token_types["ParseError"]}
 
     tokenizer = html5parser._tokenizer.HTMLTokenizer(html)
@@ -260,8 +260,8 @@ class HtmlScriptInjectorHandlerWrapper:
 
         response.content = inject_script(
             b"".join(response.iter_content(read_file=True)),
-            b"<script>\n" + \
-            self.inject + b"\n" + \
+            b"<script>\n" +
+            self.inject + b"\n" +
             (b"// Remove the injected script tag from the DOM.\n"
             b"document.currentScript.remove();\n"
             b"</script>\n"))

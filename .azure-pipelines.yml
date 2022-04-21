@@ -359,7 +359,6 @@ jobs:
       versionSpec: '3.9'
   - template: tools/ci/azure/system_info.yml
   - template: tools/ci/azure/checkout.yml
-  - template: tools/ci/azure/install_python.yml
   - template: tools/ci/azure/pip_install.yml
     parameters:
       packages: virtualenv

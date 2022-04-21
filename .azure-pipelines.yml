@@ -374,7 +374,7 @@ jobs:
     displayName: 'Publish results'
     inputs:
       artifactName: 'edge-stable-results'
-  - template: tools/ci/azure/cleanup_win10.yml
+  - template: tools/ci/azure/publish_logs.yml
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
     dependsOn: results_edge_stable
@@ -412,7 +412,7 @@ jobs:
     displayName: 'Publish results'
     inputs:
       artifactName: 'edge-dev-results'
-  - template: tools/ci/azure/cleanup_win10.yml
+  - template: tools/ci/azure/publish_logs.yml
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
     dependsOn: results_edge_dev
@@ -449,7 +449,7 @@ jobs:
     displayName: 'Publish results'
     inputs:
       artifactName: 'edge-canary-results'
-  - template: tools/ci/azure/cleanup_win10.yml
+  - template: tools/ci/azure/publish_logs.yml
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
     dependsOn: results_edge_canary

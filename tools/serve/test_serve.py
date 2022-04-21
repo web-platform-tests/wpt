@@ -109,16 +109,39 @@ def test_alternate_host_valid(primary, alternate):
     ConfigBuilder(logger, browser_host=primary, alternate_hosts={"alt": alternate})
 
 
-def test_inject_script():
-    inject_marker = b"<!-- inject here -->"
-    inject = b"<script>/* test */</script>"
-    html = (
-        b"<!DOCTYPE html>"
-        b"<html>"
-        b"  <head>"
-        b"  ") + inject_marker + (b"</head>"
-        b"  <body>"
-        b"  </body>"
-        b"</html>")
-    assert inject_script(html.replace(inject_marker, b""), inject) == \
-        html.replace(inject_marker, inject)
+# A token marking the location of expected script injection.
+INJECT_SCRIPT_MARKER = b"<!-- inject here -->"
+
+
+def test_inject_script_after_head():
+    html = b"""<!DOCTYPE html>
+    <html>
+        <head>
+        <!-- inject here --><script src="test.js"></script>
+        </head>
+        <body>
+        </body>
+    </html>"""
+    assert INJECT_SCRIPT_MARKER in html
+    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""), INJECT_SCRIPT_MARKER) == html
+
+
+def test_inject_script_no_html_head():
+    html = b"""<!DOCTYPE html>
+    <!-- inject here --><div></div>"""
+    assert INJECT_SCRIPT_MARKER in html
+    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""), INJECT_SCRIPT_MARKER) == html
+
+
+def test_inject_script_no_doctype():
+    html = b"""<!-- inject here --><div></div>"""
+    assert INJECT_SCRIPT_MARKER in html
+    assert inject_script(html.replace(INJECT_SCRIPT_MARKER, b""), INJECT_SCRIPT_MARKER) == html
+
+
+def test_inject_script_parse_error():
+    html = b"""<!--<!-- inject here --><div></div>"""
+    assert INJECT_SCRIPT_MARKER in html
+    # On a parse error, the script should not be injected and the original content should be
+    # returned.
+    assert INJECT_SCRIPT_MARKER not in inject_script(html.replace(INJECT_SCRIPT_MARKER, b""), INJECT_SCRIPT_MARKER)

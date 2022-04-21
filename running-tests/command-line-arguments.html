@@ -286,6 +286,7 @@ a different set of command-line arguments.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">lint</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">json</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">markdown</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">repo</span><span class="o">-</span><span class="n">root</span> <span class="n">REPO_ROOT</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">glob</span> <span class="n">IGNORE_GLOB</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">all</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">github</span><span class="o">-</span><span class="n">checks</span><span class="o">-</span><span class="n">text</span><span class="o">-</span><span class="n">file</span> <span class="n">GITHUB_CHECKS_TEXT_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">j</span> <span class="n">JOBS</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">paths</span><span class="o">-</span><span class="n">file</span> <span class="n">PATHS_FILE</span><span class="p">]</span>
          <span class="p">[</span><span class="n">paths</span> <span class="o">...</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -324,6 +325,9 @@ a different set of command-line arguments.</p>
 <dt><kbd>-j, --jobs</kbd></dt>
 <dd><p>Level to parallelism to use (defaults to 0, which detects the number of CPUs)</p>
 <p>Default: 0</p>
+</dd>
+<dt><kbd>--paths-file</kbd></dt>
+<dd><p>File containing a list of files to lint, one per line</p>
 </dd>
 </dl>
 </section>
@@ -561,7 +565,7 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">VERIFY_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">repeat</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">REPEAT_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">reftest</span><span class="p">,</span><span class="n">crashtest</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">wdspec</span><span class="p">,</span><span class="n">crashtest</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="n">INCLUDE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">file</span> <span class="n">INCLUDE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="n">EXCLUDE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">manifest</span> <span class="n">INCLUDE_MANIFEST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">groups</span> <span class="n">TEST_GROUPS_FILE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">timeout</span><span class="p">]</span>
@@ -765,9 +769,9 @@ channel.) This flag overrides –browser-channel.</p>
 <h4>Test Selection<a class="headerlink" href="#Test Selection" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--test-types</kbd></dt>
-<dd><p>Possible choices: reftest, crashtest, testharness, print-reftest, wdspec</p>
+<dd><p>Possible choices: wdspec, crashtest, testharness, reftest, print-reftest</p>
 <p>Test types to run</p>
-<p>Default: {‘reftest’, ‘crashtest’, ‘testharness’, ‘print-reftest’, ‘wdspec’}</p>
+<p>Default: {‘wdspec’, ‘crashtest’, ‘testharness’, ‘reftest’, ‘print-reftest’}</p>
 </dd>
 <dt><kbd>--include</kbd></dt>
 <dd><p>URL prefix to include</p>

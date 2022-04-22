@@ -458,8 +458,8 @@ a different set of command-line arguments.</p>
 <p>Run wptserve server</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">serve</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">latency</span> <span class="n">LATENCY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG_PATH</span><span class="p">]</span>
           <span class="p">[</span><span class="o">--</span><span class="n">doc_root</span> <span class="n">DOC_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ws_doc_root</span> <span class="n">WS_DOC_ROOT</span><span class="p">]</span>
-          <span class="p">[</span><span class="o">--</span><span class="n">alias_file</span> <span class="n">ALIAS_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">h2</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">webtransport</span><span class="o">-</span><span class="n">h3</span><span class="p">]</span>
-          <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span><span class="p">]</span>
+          <span class="p">[</span><span class="o">--</span><span class="n">inject</span><span class="o">-</span><span class="n">script</span> <span class="n">INJECT_SCRIPT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">alias_file</span> <span class="n">ALIAS_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">h2</span><span class="p">]</span>
+          <span class="p">[</span><span class="o">--</span><span class="n">webtransport</span><span class="o">-</span><span class="n">h3</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="Named Arguments_repeat13">
@@ -476,6 +476,9 @@ a different set of command-line arguments.</p>
 </dd>
 <dt><kbd>--ws_doc_root</kbd></dt>
 <dd><p>Path to WebSockets document root. Overrides config.</p>
+</dd>
+<dt><kbd>--inject-script</kbd></dt>
+<dd><p>Path to script file to inject, useful for testing polyfills.</p>
 </dd>
 <dt><kbd>--alias_file</kbd></dt>
 <dd><p>File with entries for aliases/multiple doc roots. In form of <cite>/ALIAS_NAME/, DOC_ROOTn</cite></p>
@@ -503,8 +506,9 @@ a different set of command-line arguments.</p>
 <p>Run wptserve server for WAVE</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">serve</span><span class="o">-</span><span class="n">wave</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">latency</span> <span class="n">LATENCY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG_PATH</span><span class="p">]</span>
                <span class="p">[</span><span class="o">--</span><span class="n">doc_root</span> <span class="n">DOC_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ws_doc_root</span> <span class="n">WS_DOC_ROOT</span><span class="p">]</span>
-               <span class="p">[</span><span class="o">--</span><span class="n">alias_file</span> <span class="n">ALIAS_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">h2</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">webtransport</span><span class="o">-</span><span class="n">h3</span><span class="p">]</span>
-               <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">report</span><span class="p">]</span>
+               <span class="p">[</span><span class="o">--</span><span class="n">inject</span><span class="o">-</span><span class="n">script</span> <span class="n">INJECT_SCRIPT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">alias_file</span> <span class="n">ALIAS_FILE</span><span class="p">]</span>
+               <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">h2</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">webtransport</span><span class="o">-</span><span class="n">h3</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span><span class="p">]</span>
+               <span class="p">[</span><span class="o">--</span><span class="n">report</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="Named Arguments_repeat14">
@@ -521,6 +525,9 @@ a different set of command-line arguments.</p>
 </dd>
 <dt><kbd>--ws_doc_root</kbd></dt>
 <dd><p>Path to WebSockets document root. Overrides config.</p>
+</dd>
+<dt><kbd>--inject-script</kbd></dt>
+<dd><p>Path to script file to inject, useful for testing polyfills.</p>
 </dd>
 <dt><kbd>--alias_file</kbd></dt>
 <dd><p>File with entries for aliases/multiple doc roots. In form of <cite>/ALIAS_NAME/, DOC_ROOTn</cite></p>
@@ -565,7 +572,7 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">VERIFY_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">repeat</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">REPEAT_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">wdspec</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="n">crashtest</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">crashtest</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="n">INCLUDE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">file</span> <span class="n">INCLUDE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="n">EXCLUDE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">manifest</span> <span class="n">INCLUDE_MANIFEST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">groups</span> <span class="n">TEST_GROUPS_FILE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">timeout</span><span class="p">]</span>
@@ -586,7 +593,8 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">browser</span><span class="o">-</span><span class="n">version</span> <span class="n">BROWSER_VERSION</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">browser</span><span class="o">-</span><span class="n">channel</span> <span class="n">BROWSER_CHANNEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">fonts</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">install</span><span class="o">-</span><span class="n">fonts</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">font</span><span class="o">-</span><span class="nb">dir</span> <span class="n">FONT_DIR</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">headless</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">headless</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">instrument</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">file</span> <span class="n">INSTRUMENT_TO_FILE</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">inject</span><span class="o">-</span><span class="n">script</span> <span class="n">INJECT_SCRIPT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">headless</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">headless</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">instrument</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">file</span> <span class="n">INSTRUMENT_TO_FILE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">debug</span><span class="o">-</span><span class="n">build</span> <span class="o">|</span> <span class="o">--</span><span class="n">release</span><span class="o">-</span><span class="n">build</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">total</span><span class="o">-</span><span class="n">chunks</span> <span class="n">TOTAL_CHUNKS</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">this</span><span class="o">-</span><span class="n">chunk</span> <span class="n">THIS_CHUNK</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">chunk</span><span class="o">-</span><span class="nb">type</span> <span class="p">{</span><span class="n">none</span><span class="p">,</span><span class="nb">hash</span><span class="p">,</span><span class="n">dir_hash</span><span class="p">}]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">ssl</span><span class="o">-</span><span class="nb">type</span> <span class="p">{</span><span class="n">openssl</span><span class="p">,</span><span class="n">pregenerated</span><span class="p">,</span><span class="n">none</span><span class="p">}]</span>
@@ -769,9 +777,9 @@ channel.) This flag overrides –browser-channel.</p>
 <h4>Test Selection<a class="headerlink" href="#Test Selection" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--test-types</kbd></dt>
-<dd><p>Possible choices: wdspec, print-reftest, testharness, reftest, crashtest</p>
+<dd><p>Possible choices: crashtest, reftest, testharness, print-reftest, wdspec</p>
 <p>Test types to run</p>
-<p>Default: {‘wdspec’, ‘print-reftest’, ‘testharness’, ‘reftest’, ‘crashtest’}</p>
+<p>Default: {‘crashtest’, ‘reftest’, ‘testharness’, ‘print-reftest’, ‘wdspec’}</p>
 </dd>
 <dt><kbd>--include</kbd></dt>
 <dd><p>URL prefix to include</p>
@@ -930,6 +938,9 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 <dt><kbd>--font-dir</kbd></dt>
 <dd><p>Path to local font installation directory</p>
+</dd>
+<dt><kbd>--inject-script</kbd></dt>
+<dd><p>Path to script file to inject, useful for testing polyfills.</p>
 </dd>
 <dt><kbd>--headless</kbd></dt>
 <dd><p>Run browser in headless mode</p>

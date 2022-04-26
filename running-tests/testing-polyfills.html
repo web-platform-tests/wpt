@@ -68,8 +68,8 @@ run the tests in your browser.</p>
 the DOM after executing. This is done by modifying the server response for
 documents with a <code class="docutils literal notranslate"><span class="pre">text/html</span></code> MIME type  to insert the following before the first tag in
 the served response:</p>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
-<span class="c1">// &lt;-- The polyfill file is inlined here</span>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
+<span class="c1">// &lt;-- The polyfill file is inlined here</span><span class="w"></span>
 // Remove the injected script tag from the DOM.
 document.currentScript.remove();
 </pre></div>

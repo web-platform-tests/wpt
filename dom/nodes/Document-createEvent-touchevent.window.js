@@ -6,6 +6,7 @@ for (const variant of ['TouchEvent', 'touchevent', 'TOUCHEVENT']) {
       });
     } else {
       document.createEvent(variant);
+      // The interface and other details of the event is tested in Document-createEvent.https.html
     }
   }, `document.createEvent('${variant}') should throw if 'expose legacy touch event APIs' is false`);
 }

@@ -537,7 +537,7 @@ class ChromeChromiumBase(Browser):
                         f"{architecture}/LAST_CHANGE")
         return get(revision_url).text.strip()
 
-    def _get_chromium_download_url(self, version=None):
+    def _get_chromium_download_url(self, filename, version=None):
         """Format a Chromium Snapshots URL to download a browser component."""
         url_path = "https://storage.googleapis.com/chromium-browser-snapshots/"
         architecture = self._chromium_platform_string
@@ -547,10 +547,11 @@ class ChromeChromiumBase(Browser):
             # Detect a revision number based on the version passed.
             revision = self._get_base_revision_from_version(version)
             if revision is not None:
+                # File name is needed to test if request is valid.
                 url = f"{url_path}{architecture}/{revision}/"
                 try:
                     # Check the status without downloading the content (this is a streaming request).
-                    get(url)
+                    get(f"{url}{filename}")
                     return url
                 except requests.RequestException:
                     self.logger.warning("404: Unsuccessful attempt to download file "
@@ -642,7 +643,8 @@ class ChromeChromiumBase(Browser):
             # download from Chromium snapshots bucket. However,
             # MojoJS is only bundled with Linux from Chromium snapshots.
             if self.platform == "Linux":
-                url = self._get_chromium_download_url(chrome_version) + "mojojs.zip"
+                filename = "mojojs.zip"
+                url = f"{self._get_chromium_download_url(filename, chrome_version)}{filename}"
             else:
                 self.logger.error("A valid MojoJS version cannot be found "
                                   f"for browser binary version {chrome_version}.")
@@ -789,15 +791,15 @@ class Chromium(ChromeChromiumBase):
         # that url takes priority over trying to form another.
         if self.last_url_used is not None:
             return f"{self.last_url_used}{filename}"
-
-        return f"{self._get_chromium_download_url(version)}{filename}"
+        url = self._get_chromium_download_url(filename, version)
+        return f"{url}{filename}"
 
     def download(self, dest=None, channel=None, rename=None, version=None):
         if dest is None:
             dest = self._get_browser_binary_dir(None, channel)
 
         filename = f"{self._chromium_package_name}.zip"
-        url = self._get_chromium_download_url(version)
+        url = self._get_chromium_download_url(filename, version)
         self.logger.info(f"Downloading Chromium from {url}{filename}")
         resp = get(f"{url}{filename}")
         installer_path = os.path.join(dest, filename)
@@ -878,7 +880,8 @@ class Chrome(ChromeChromiumBase):
                 # We currently use the latest Chromium revision to get a compatible Chromedriver
                 # version for Chrome Dev, since it is not available through the ChromeDriver API.
                 # If we've gotten to this point, it is assumed that this is Chrome Dev.
-                return f"{self._get_chromium_download_url(version)}{filename}"
+                url = self._get_chromium_download_url(filename, version)
+                return f"{url}{filename}"
         return f"https://chromedriver.storage.googleapis.com/{latest}/{filename}"
 
     def download(self, dest=None, channel=None, rename=None):

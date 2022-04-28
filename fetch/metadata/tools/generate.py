@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import argparse
 import itertools
 import os
 
@@ -193,10 +192,4 @@ def main(config_file):
                 ) + '\n')
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        'config_file',
-        type=str,
-        help='Path to a YAML-formatted configuration file'
-    )
-    main(**vars(parser.parse_args()))
+    main('fetch-metadata.conf.yml')

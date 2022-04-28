@@ -1,6 +1,6 @@
 ---
 templates: templates
-output_directory: generated
+output_directory: ../generated
 cases:
   - all_subtests:
       expected: NULL
@@ -50,7 +50,6 @@ cases:
       audioworklet.https.sub.html: []
       # Service workers are only available in secure context
       fetch-via-serviceworker.https.sub.html: []
-      cors-preflight.sub.html: []
       # Service workers are only available in secure context
       serviceworker.https.sub.html: []
 
@@ -120,7 +119,6 @@ cases:
 
       appcache-manifest.sub.https.html: [{}]
       audioworklet.https.sub.html: [{}]
-      cors-preflight.sub.html: [{}]
       css-images.sub.html:
         - filename_flags: [tentative]
       css-font-face.sub.html:
@@ -181,10 +179,6 @@ cases:
       # The `audioWorklet` interface is only available in secure contexts
       # https://webaudio.github.io/web-audio-api/#BaseAudioContext
       audioworklet.https.sub.html: []
-      # These requests do not necessarily induce preflight requests because
-      # preflight requests are only issued on the basis of the origin of the
-      # initial request.
-      cors-preflight.sub.html: []
       # Service workers are only available in secure context
       fetch-via-serviceworker.https.sub.html: []
       # Service workers' redirect mode is "error"
@@ -280,11 +274,6 @@ cases:
         origins: [httpsSameSite, httpsCrossSite]
         expected: cross-site
     template_axes:
-      # Unused
-      # These requests do not necessarily induce preflight requests because
-      # preflight requests are only issued on the basis of the origin of the
-      # initial request.
-      cors-preflight.sub.html: []
       # Service Workers' redirect mode is "error"
       serviceworker.https.sub.html: []
       # Interstitial locations in an HTTP redirect chain are not added to the
@@ -381,7 +370,6 @@ cases:
       script-module-import-dynamic.sub.html: []
       # Service Workers' redirect mode is "error"
       serviceworker.https.sub.html: []
-      cors-preflight.sub.html: []
       # Interstitial locations in an HTTP redirect chain are not added to the
       # session history, so these requests cannot be initiated using the
       # History API.
@@ -432,8 +420,6 @@ cases:
       css-font-face.sub.html:
         - expected: cors
           filename_flags: [tentative]
-      cors-preflight.sub.html:
-        - expected: cors
       element-a.sub.html:
         - expected: navigate
         # https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks
@@ -611,8 +597,6 @@ cases:
       css-font-face.sub.html:
         - expected: font
           filename_flags: [tentative]
-      cors-preflight.sub.html:
-        - expected: empty
       element-a.sub.html:
         - expected: document
         # https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks
@@ -735,8 +719,6 @@ cases:
       css-font-face.sub.html:
         - expected: NULL
           filename_flags: [tentative]
-      cors-preflight.sub.html:
-        - expected: NULL
       element-a.sub.html:
         - expected: NULL
         - userActivated: TRUE

@@ -219,7 +219,113 @@ promise_test(async t => {
     assert_equals(viewInfo.byteLength, 1, 'second view.byteLength should be 1');
   }
 
-}, 'ReadableStream with byte source: read({ min }), then multiple enqueue()');
+}, 'ReadableStream with byte source: read({ min: 3 }) on a 3-byte Uint8Array, then multiple enqueue() up to 3 bytes');
+
+promise_test(async t => {
+  let pullCount = 0;
+  const byobRequests = [];
+  const rs = new ReadableStream({
+    type: 'bytes',
+    pull: t.step_func((c) => {
+      const byobRequest = c.byobRequest;
+      const view = byobRequest.view;
+      byobRequests[pullCount] = {
+        nonNull: byobRequest !== null,
+        viewNonNull: view !== null,
+        viewInfo: extractViewInfo(view)
+      };
+      if (pullCount === 0) {
+        c.enqueue(new Uint8Array([0x01, 0x02]));
+      } else if (pullCount === 1) {
+        c.enqueue(new Uint8Array([0x03]));
+      }
+      ++pullCount;
+    })
+  });
+  const reader = rs.getReader({ mode: 'byob' });
+
+  const result = await reader.read(new Uint8Array(5), { min: 3 });
+  assert_false(result.done, 'first result should not be done');
+  assert_typed_array_equals(result.value, new Uint8Array([0x01, 0x02, 0x03, 0, 0]).subarray(0, 3), 'first result value');
+
+  assert_equals(pullCount, 2, 'pull() must have been called 2 times');
+
+  {
+    const byobRequest = byobRequests[0];
+    assert_true(byobRequest.nonNull, 'first byobRequest must not be null');
+    assert_true(byobRequest.viewNonNull, 'first byobRequest.view must not be null');
+    const viewInfo = byobRequest.viewInfo;
+    assert_equals(viewInfo.constructor, Uint8Array, 'first view.constructor should be Uint8Array');
+    assert_equals(viewInfo.bufferByteLength, 5, 'first view.buffer.byteLength should be 5');
+    assert_equals(viewInfo.byteOffset, 0, 'first view.byteOffset should be 0');
+    assert_equals(viewInfo.byteLength, 5, 'first view.byteLength should be 5');
+  }
+
+  {
+    const byobRequest = byobRequests[1];
+    assert_true(byobRequest.nonNull, 'second byobRequest must not be null');
+    assert_true(byobRequest.viewNonNull, 'second byobRequest.view must not be null');
+    const viewInfo = byobRequest.viewInfo;
+    assert_equals(viewInfo.constructor, Uint8Array, 'second view.constructor should be Uint8Array');
+    assert_equals(viewInfo.bufferByteLength, 5, 'second view.buffer.byteLength should be 5');
+    assert_equals(viewInfo.byteOffset, 2, 'second view.byteOffset should be 2');
+    assert_equals(viewInfo.byteLength, 3, 'second view.byteLength should be 3');
+  }
+
+}, 'ReadableStream with byte source: read({ min: 3 }) on a 5-byte Uint8Array, then multiple enqueue() up to 3 bytes');
+
+promise_test(async t => {
+  let pullCount = 0;
+  const byobRequests = [];
+  const rs = new ReadableStream({
+    type: 'bytes',
+    pull: t.step_func((c) => {
+      const byobRequest = c.byobRequest;
+      const view = byobRequest.view;
+      byobRequests[pullCount] = {
+        nonNull: byobRequest !== null,
+        viewNonNull: view !== null,
+        viewInfo: extractViewInfo(view)
+      };
+      if (pullCount === 0) {
+        c.enqueue(new Uint8Array([0x01, 0x02]));
+      } else if (pullCount === 1) {
+        c.enqueue(new Uint8Array([0x03, 0x04]));
+      }
+      ++pullCount;
+    })
+  });
+  const reader = rs.getReader({ mode: 'byob' });
+
+  const result = await reader.read(new Uint8Array(5), { min: 3 });
+  assert_false(result.done, 'first result should not be done');
+  assert_typed_array_equals(result.value, new Uint8Array([0x01, 0x02, 0x03, 0x04, 0]).subarray(0, 4), 'first result value');
+
+  assert_equals(pullCount, 2, 'pull() must have been called 2 times');
+
+  {
+    const byobRequest = byobRequests[0];
+    assert_true(byobRequest.nonNull, 'first byobRequest must not be null');
+    assert_true(byobRequest.viewNonNull, 'first byobRequest.view must not be null');
+    const viewInfo = byobRequest.viewInfo;
+    assert_equals(viewInfo.constructor, Uint8Array, 'first view.constructor should be Uint8Array');
+    assert_equals(viewInfo.bufferByteLength, 5, 'first view.buffer.byteLength should be 5');
+    assert_equals(viewInfo.byteOffset, 0, 'first view.byteOffset should be 0');
+    assert_equals(viewInfo.byteLength, 5, 'first view.byteLength should be 5');
+  }
+
+  {
+    const byobRequest = byobRequests[1];
+    assert_true(byobRequest.nonNull, 'second byobRequest must not be null');
+    assert_true(byobRequest.viewNonNull, 'second byobRequest.view must not be null');
+    const viewInfo = byobRequest.viewInfo;
+    assert_equals(viewInfo.constructor, Uint8Array, 'second view.constructor should be Uint8Array');
+    assert_equals(viewInfo.bufferByteLength, 5, 'second view.buffer.byteLength should be 5');
+    assert_equals(viewInfo.byteOffset, 2, 'second view.byteOffset should be 2');
+    assert_equals(viewInfo.byteLength, 3, 'second view.byteLength should be 3');
+  }
+
+}, 'ReadableStream with byte source: read({ min: 3 }) on a 5-byte Uint8Array, then multiple enqueue() up to 4 bytes');
 
 promise_test(async t => {
   const stream = new ReadableStream({

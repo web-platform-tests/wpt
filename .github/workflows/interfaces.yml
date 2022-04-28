@@ -9,13 +9,13 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Run interfaces_update.sh
       run: ./tools/ci/interfaces_update.sh
     - name: Create pull request
       # Use a conditional step instead of a conditional job to work around #20700.
       if: github.repository == 'web-platform-tests/wpt'
-      uses: peter-evans/create-pull-request@v3
+      uses: peter-evans/create-pull-request@v4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         author: wpt-pr-bot <wpt-pr-bot@users.noreply.github.com>
@@ -25,7 +25,7 @@ jobs:
         body: |
           This automated pull request updates interfaces/*.idl from [@webref/idl ${{ env.webref_idl_version }}](https://www.npmjs.com/package/@webref/idl/v/${{ env.webref_idl_version }}).
 
-          Before merging, please check that any tests that depend on the updated IDL files still work.
+          Before merging, please check that any tests that depend on the updated IDL files still work. In particular, check for **gray boxes as the wpt.fyi check status**, which usually means that some tests have regressed.
 
           If additional changes are needed, please manually create another PR based on this one.
 

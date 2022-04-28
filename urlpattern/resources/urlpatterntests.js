@@ -39,7 +39,7 @@ function runTests(data) {
           // First determine if there is a baseURL present in the pattern
           // input.  A baseURL can be the source for many component patterns.
           let baseURL = null;
-          if (entry.pattern[0].baseURL) {
+          if (entry.pattern.length > 0 && entry.pattern[0].baseURL) {
             baseURL = new URL(entry.pattern[0].baseURL);
           } else if (entry.pattern.length > 1 &&
                      typeof entry.pattern[1] === 'string') {
@@ -144,6 +144,14 @@ function runTests(data) {
           if (!entry.exactly_empty_components ||
               !entry.exactly_empty_components.includes(component)) {
             expected_obj.groups['0'] = '';
+          }
+        }
+        // JSON does not allow us to use undefined directly, so the data file
+        // contains null instead.  Translate to the expected undefined value
+        // here.
+        for (const key in expected_obj.groups) {
+          if (expected_obj.groups[key] === null) {
+            expected_obj.groups[key] = undefined;
           }
         }
         assert_object_equals(exec_result[component], expected_obj,

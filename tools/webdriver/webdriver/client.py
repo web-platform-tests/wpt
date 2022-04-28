@@ -1,9 +1,10 @@
+from typing import Dict
+from urllib import parse as urlparse
+
 from . import error
 from . import protocol
 from . import transport
 from .bidi.client import BidiSession
-
-from urllib import parse as urlparse
 
 
 def command(func):
@@ -24,7 +25,7 @@ def command(func):
     return inner
 
 
-class Timeouts(object):
+class Timeouts:
 
     def __init__(self, session):
         self.session = session
@@ -70,7 +71,7 @@ class Timeouts(object):
             (name, self.script, self.page_load, self.implicit)
 
 
-class ActionSequence(object):
+class ActionSequence:
     """API for creating and performing action sequences.
 
     Each action method adds one or more actions to a queue. When perform()
@@ -264,7 +265,7 @@ class ActionSequence(object):
         return self
 
 
-class Actions(object):
+class Actions:
     def __init__(self, session):
         self.session = session
 
@@ -292,7 +293,7 @@ class Actions(object):
         return ActionSequence(self.session, *args, **kwargs)
 
 
-class Window(object):
+class Window:
     identifier = "window-fcc6-11e5-b4f8-330a88ab9d7f"
 
     def __init__(self, session):
@@ -315,6 +316,11 @@ class Window(object):
     def rect(self):
         return self.session.send_session_command("GET", "window/rect")
 
+    @rect.setter  # type: ignore
+    @command
+    def rect(self, new_rect):
+        self.session.send_session_command("POST", "window/rect", new_rect)
+
     @property  # type: ignore
     @command
     def size(self):
@@ -326,9 +332,14 @@ class Window(object):
     @command
     def size(self, new_size):
         """Set window size by passing a tuple of `(width, height)`."""
-        width, height = new_size
-        body = {"width": width, "height": height}
-        self.session.send_session_command("POST", "window/rect", body)
+        try:
+            width, height = new_size
+            body = {"width": width, "height": height}
+            self.session.send_session_command("POST", "window/rect", body)
+        except (error.UnknownErrorException, error.InvalidArgumentException):
+            # silently ignore this error as the command is not implemented
+            # for Android. Revert this once it is implemented.
+            pass
 
     @property  # type: ignore
     @command
@@ -341,9 +352,14 @@ class Window(object):
     @command
     def position(self, new_position):
         """Set window position by passing a tuple of `(x, y)`."""
-        x, y = new_position
-        body = {"x": x, "y": y}
-        self.session.send_session_command("POST", "window/rect", body)
+        try:
+            x, y = new_position
+            body = {"x": x, "y": y}
+            self.session.send_session_command("POST", "window/rect", body)
+        except error.UnknownErrorException:
+            # silently ignore this error as the command is not implemented
+            # for Android. Revert this once it is implemented.
+            pass
 
     @command
     def maximize(self):
@@ -363,7 +379,7 @@ class Window(object):
         return cls(uuid, session)
 
 
-class Frame(object):
+class Frame:
     identifier = "frame-075b-4da1-b6ba-e579c2d3230a"
 
     def __init__(self, session):
@@ -375,7 +391,7 @@ class Frame(object):
         return cls(uuid, session)
 
 
-class ShadowRoot(object):
+class ShadowRoot:
     identifier = "shadow-6066-11e4-a52e-4f735466cecf"
 
     def __init__(self, session, id):
@@ -392,10 +408,10 @@ class ShadowRoot(object):
     @classmethod
     def from_json(cls, json, session):
         uuid = json[ShadowRoot.identifier]
-        return cls(uuid, session)
+        return cls(session, uuid)
 
     def send_shadow_command(self, method, uri, body=None):
-        url = "shadow/{}/{}".format(self.id, uri)
+        url = f"shadow/{self.id}/{uri}"
         return self.session.send_session_command(method, url, body)
 
     @command
@@ -411,7 +427,7 @@ class ShadowRoot(object):
         return self.send_shadow_command("POST", "elements", body)
 
 
-class Find(object):
+class Find:
     def __init__(self, session):
         self.session = session
 
@@ -427,7 +443,7 @@ class Find(object):
         return self.session.send_session_command("POST", route, body)
 
 
-class Cookies(object):
+class Cookies:
     def __init__(self, session):
         self.session = session
 
@@ -445,7 +461,7 @@ class Cookies(object):
         self.session.send_session_command("POST", "cookie/%s" % name, {})
 
 
-class UserPrompt(object):
+class UserPrompt:
     def __init__(self, session):
         self.session = session
 
@@ -469,7 +485,7 @@ class UserPrompt(object):
         self.session.send_session_command("POST", "alert/text", body=body)
 
 
-class Session(object):
+class Session:
     def __init__(self,
                  host,
                  port,
@@ -541,6 +557,9 @@ class Session(object):
             body["capabilities"] = self.requested_capabilities
 
         value = self.send_command("POST", "session", body=body)
+        assert isinstance(value["sessionId"], str)
+        assert isinstance(value["capabilities"], Dict)
+
         self.session_id = value["sessionId"]
         self.capabilities = value["capabilities"]
 
@@ -777,7 +796,7 @@ class Session(object):
     def screenshot(self):
         return self.send_session_command("GET", "screenshot")
 
-class Element(object):
+class Element:
     """
     Representation of a web element.
 

@@ -20,6 +20,7 @@ from .protocol import (BaseProtocolPart,
                        ClickProtocolPart,
                        CookiesProtocolPart,
                        SendKeysProtocolPart,
+                       WindowProtocolPart,
                        ActionSequenceProtocolPart,
                        TestDriverProtocolPart)
 
@@ -69,15 +70,16 @@ class SeleniumBaseProtocolPart(BaseProtocolPart):
     def wait(self):
         while True:
             try:
-                self.webdriver.execute_async_script("")
+                return self.webdriver.execute_async_script("""let callback = arguments[arguments.length - 1];
+addEventListener("__test_restart", e => {e.preventDefault(); callback(true)})""")
             except exceptions.TimeoutException:
                 pass
-            except (socket.timeout, exceptions.NoSuchWindowException,
-                    exceptions.ErrorInResponseException, IOError):
+            except (socket.timeout, exceptions.NoSuchWindowException, exceptions.ErrorInResponseException, OSError):
                 break
             except Exception:
                 self.logger.error(traceback.format_exc())
                 break
+        return False
 
 
 class SeleniumTestharnessProtocolPart(TestharnessProtocolPart):
@@ -190,6 +192,18 @@ class SeleniumCookiesProtocolPart(CookiesProtocolPart):
         self.logger.info("Deleting all cookies")
         return self.webdriver.delete_all_cookies()
 
+class SeleniumWindowProtocolPart(WindowProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def minimize(self):
+        self.previous_rect = self.webdriver.window.rect
+        self.logger.info("Minimizing")
+        return self.webdriver.minimize()
+
+    def set_rect(self, rect):
+        self.logger.info("Setting window rect")
+        self.webdriver.window.rect = rect
 
 class SeleniumSendKeysProtocolPart(SendKeysProtocolPart):
     def setup(self):
@@ -230,12 +244,13 @@ class SeleniumProtocol(Protocol):
                   SeleniumCookiesProtocolPart,
                   SeleniumSendKeysProtocolPart,
                   SeleniumTestDriverProtocolPart,
+                  SeleniumWindowProtocolPart,
                   SeleniumActionSequenceProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         do_delayed_imports()
 
-        super(SeleniumProtocol, self).__init__(executor, browser)
+        super().__init__(executor, browser)
         self.capabilities = capabilities
         self.url = browser.webdriver_url
         self.webdriver = None

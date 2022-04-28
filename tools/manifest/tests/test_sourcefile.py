@@ -170,7 +170,6 @@ def test_worker():
     for item, url in zip(items, expected_urls):
         assert item.url == url
         assert item.timeout is None
-        assert item.quic is None
 
 
 def test_window():
@@ -196,7 +195,6 @@ def test_window():
     for item, url in zip(items, expected_urls):
         assert item.url == url
         assert item.timeout is None
-        assert item.quic is None
 
 
 def test_worker_long_timeout():
@@ -262,7 +260,6 @@ test()"""
     for item, url in zip(items, expected_urls):
         assert item.url == url
         assert item.timeout is None
-        assert item.quic is None
 
 
 def test_window_with_variants():
@@ -293,7 +290,6 @@ test()"""
     for item, url in zip(items, expected_urls):
         assert item.url == url
         assert item.timeout is None
-        assert item.quic is None
 
 
 def test_python_long_timeout():
@@ -338,7 +334,6 @@ def test_multi_global():
     for item, url in zip(items, expected_urls):
         assert item.url == url
         assert item.timeout is None
-        assert item.quic is None
 
 
 def test_multi_global_long_timeout():
@@ -398,7 +393,6 @@ test()""" % input
         assert item.url == url
         assert item.jsshell is False
         assert item.timeout is None
-        assert item.quic is None
 
 
 def test_multi_global_with_jsshell_globals():
@@ -429,7 +423,6 @@ test()"""
         assert item.url == url
         assert item.jsshell == jsshell
         assert item.timeout is None
-        assert item.quic is None
 
 
 def test_multi_global_with_variants():
@@ -468,7 +461,6 @@ test()"""
     for item, url in zip(items, expected_urls):
         assert item.url == url
         assert item.timeout is None
-        assert item.quic is None
 
 
 @pytest.mark.parametrize("input,expected", [
@@ -505,6 +497,31 @@ def test_testharness(ext):
     assert s.content_is_testharness
 
     assert items(s) == [("testharness", "/" + filename)]
+
+
+@pytest.mark.parametrize("variant", ["", "?foo", "#bar", "?foo#bar"])
+def test_testharness_variant(variant):
+    content = (b"<meta name=variant content=\"%s\">" % variant.encode("utf-8") +
+               b"<meta name=variant content=\"?fixed\">" +
+               b"<script src=/resources/testharness.js></script>")
+
+    filename = "html/test.html"
+    s = create(filename, content)
+
+    s.test_variants = [variant, "?fixed"]
+
+
+@pytest.mark.parametrize("variant", ["?", "#", "?#bar"])
+def test_testharness_variant_invalid(variant):
+    content = (b"<meta name=variant content=\"%s\">" % variant.encode("utf-8") +
+               b"<meta name=variant content=\"?fixed\">" +
+               b"<script src=/resources/testharness.js></script>")
+
+    filename = "html/test.html"
+    s = create(filename, content)
+
+    with pytest.raises(ValueError):
+        s.test_variants
 
 
 @pytest.mark.parametrize("ext", ["htm", "html"])
@@ -678,35 +695,6 @@ def test_relative_testdriver(ext):
 
 
 @pytest.mark.parametrize("ext", ["htm", "html"])
-def test_quic_html(ext):
-    filename = "html/test." + ext
-
-    content = b'<meta name="quic" content="true">'
-    s = create(filename, content)
-    assert s.quic
-
-    content = b'<meta name="quic" content="false">'
-    s = create(filename, content)
-    assert s.quic is None
-
-
-def test_quic_js():
-    filename = "html/test.any.js"
-
-    content = b"// META: quic=true"
-    s = create(filename, content)
-    _, items = s.manifest_items()
-    for item in items:
-        assert item.quic
-
-    content = b"// META: quic=false"
-    s = create(filename, content)
-    _, items = s.manifest_items()
-    for item in items:
-        assert item.quic is None
-
-
-@pytest.mark.parametrize("ext", ["htm", "html"])
 def test_reftest(ext):
     content = b"<link rel=match href=ref.html>"
 
@@ -773,7 +761,7 @@ def test_xhtml_with_entity(ext):
 
 
 def test_no_parse():
-    s = create("foo/bar.xml", u"\uFFFF".encode("utf-8"))
+    s = create("foo/bar.xml", "\uFFFF".encode("utf-8"))
 
     assert not s.name_is_non_test
     assert not s.name_is_manual
@@ -829,14 +817,14 @@ test()"""
 
     assert item_type == "testharness"
 
-    assert [item.url for item in items] == [u'/_fake_base/html/test.any.html',
-                                            u'/_fake_base/html/test.any.html?wss',
-                                            u'/_fake_base/html/test.any.serviceworker.html',
-                                            u'/_fake_base/html/test.any.serviceworker.html?wss',
-                                            u'/_fake_base/html/test.any.sharedworker.html',
-                                            u'/_fake_base/html/test.any.sharedworker.html?wss',
-                                            u'/_fake_base/html/test.any.worker.html',
-                                            u'/_fake_base/html/test.any.worker.html?wss']
+    assert [item.url for item in items] == ['/_fake_base/html/test.any.html',
+                                            '/_fake_base/html/test.any.html?wss',
+                                            '/_fake_base/html/test.any.serviceworker.html',
+                                            '/_fake_base/html/test.any.serviceworker.html?wss',
+                                            '/_fake_base/html/test.any.sharedworker.html',
+                                            '/_fake_base/html/test.any.sharedworker.html?wss',
+                                            '/_fake_base/html/test.any.worker.html',
+                                            '/_fake_base/html/test.any.worker.html?wss']
 
     assert items[0].url_base == "/_fake_base/"
 

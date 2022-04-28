@@ -14,14 +14,36 @@ here = os.path.dirname(__file__)
 wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 
 
+def load_conditional_requirements(props, base_dir):
+    """Load conditional requirements from commands.json."""
+
+    conditional_requirements = props.get("conditional_requirements")
+    if not conditional_requirements:
+        return {}
+
+    commandline_flag_requirements = {}
+    for key, value in conditional_requirements.items():
+        if key == "commandline_flag":
+            for flag_name, requirements_paths in value.items():
+                commandline_flag_requirements[flag_name] = [
+                    os.path.join(base_dir, path) for path in requirements_paths]
+        else:
+            raise KeyError(
+                f'Unsupported conditional requirement key: {key}')
+
+    return {
+        "commandline_flag": commandline_flag_requirements,
+    }
+
+
 def load_commands():
     rv = {}
-    with open(os.path.join(here, "paths"), "r") as f:
+    with open(os.path.join(here, "paths")) as f:
         paths = [item.strip().replace("/", os.path.sep) for item in f if item.strip()]
     for path in paths:
         abs_path = os.path.join(wpt_root, path, "commands.json")
         base_dir = os.path.dirname(abs_path)
-        with open(abs_path, "r") as f:
+        with open(abs_path) as f:
             data = json.load(f)
             for command, props in data.items():
                 assert "path" in props
@@ -33,11 +55,14 @@ def load_commands():
                     "parse_known": props.get("parse_known", False),
                     "help": props.get("help"),
                     "virtualenv": props.get("virtualenv", True),
-                    "install": props.get("install", []),
                     "requirements": [os.path.join(base_dir, item)
                                      for item in props.get("requirements", [])]
                 }
-                if rv[command]["install"] or rv[command]["requirements"]:
+
+                rv[command]["conditional_requirements"] = load_conditional_requirements(
+                    props, base_dir)
+
+                if rv[command]["requirements"] or rv[command]["conditional_requirements"]:
                     assert rv[command]["virtualenv"]
     return rv
 
@@ -75,7 +100,7 @@ def import_command(prog, command, props):
     script = getattr(mod, props["script"])
     if props["parser"] is not None:
         parser = getattr(mod, props["parser"])()
-        parser.prog = "%s %s" % (os.path.basename(prog), command)
+        parser.prog = f"{os.path.basename(prog)} {command}"
     else:
         parser = None
 
@@ -92,11 +117,17 @@ def create_complete_parser():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
+    # We should already be in a virtual environment from the top-level
+    # `wpt build-docs` command but we need to look up the environment to
+    # find out where it's located.
+    venv_path = os.environ["VIRTUAL_ENV"]
+    venv = virtualenv.Virtualenv(venv_path, True)
+
     for command in commands:
         props = commands[command]
 
-        if props["virtualenv"]:
-            setup_virtualenv(None, False, props)
+        for path in props.get("requirements", []):
+            venv.install_requirements(path)
 
         subparser = import_command('wpt', command, props)[1]
         if not subparser:
@@ -111,7 +142,7 @@ def create_complete_parser():
 
 
 def venv_dir():
-    return "_venv" + str(sys.version_info[0])
+    return f"_venv{sys.version_info[0]}"
 
 
 def setup_virtualenv(path, skip_venv_setup, props):
@@ -123,11 +154,16 @@ def setup_virtualenv(path, skip_venv_setup, props):
     venv = virtualenv.Virtualenv(path, should_skip_setup)
     if not should_skip_setup:
         venv.start()
-        for name in props["install"]:
-            venv.install(name)
         for path in props["requirements"]:
             venv.install_requirements(path)
     return venv
+
+
+def install_command_flag_requirements(venv, kwargs, requirements):
+    for command_flag_name, requirement_paths in requirements.items():
+        if command_flag_name in kwargs:
+            for path in requirement_paths:
+                venv.install_requirements(path)
 
 
 def main(prog=None, argv=None):
@@ -170,6 +206,9 @@ def main(prog=None, argv=None):
         kwargs = {}
 
     if venv is not None:
+        requirements = props["conditional_requirements"].get("commandline_flag")
+        if requirements is not None and not main_args.skip_venv_setup:
+            install_command_flag_requirements(venv, kwargs, requirements)
         args = (venv,) + extras
     else:
         args = extras

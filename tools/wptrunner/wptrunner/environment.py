@@ -1,3 +1,4 @@
+import errno
 import json
 import os
 import signal
@@ -45,6 +46,13 @@ def serve_path(test_paths):
     return test_paths["/"]["tests_path"]
 
 
+def webtranport_h3_server_is_running(host, port, timeout):
+    # TODO(bashi): Move the following import to the beginning of this file
+    # once WebTransportH3Server is enabled by default.
+    from webtransport.h3.webtransport_h3_server import server_is_running  # type: ignore
+    return server_is_running(host, port, timeout)
+
+
 class TestEnvironmentError(Exception):
     pass
 
@@ -78,12 +86,12 @@ class ProxyLoggingContext:
         self.logging_thread.join(1)
 
 
-class TestEnvironment(object):
+class TestEnvironment:
     """Context manager that owns the test environment i.e. the http and
     websockets servers"""
     def __init__(self, test_paths, testharness_timeout_multipler,
                  pause_after_test, debug_test, debug_info, options, ssl_config, env_extras,
-                 enable_quic=False, mojojs_path=None):
+                 enable_webtransport=False, mojojs_path=None, inject_script=None):
 
         self.test_paths = test_paths
         self.server = None
@@ -104,8 +112,9 @@ class TestEnvironment(object):
         self.env_extras = env_extras
         self.env_extras_cms = None
         self.ssl_config = ssl_config
-        self.enable_quic = enable_quic
+        self.enable_webtransport = enable_webtransport
         self.mojojs_path = mojojs_path
+        self.inject_script = inject_script
 
     def __enter__(self):
         server_log_handler = self.server_logging_ctx.__enter__()
@@ -130,7 +139,8 @@ class TestEnvironment(object):
                                    self.config,
                                    self.get_routes(),
                                    mp_context=mpcontext.get_context(),
-                                   log_handlers=[server_log_handler])
+                                   log_handlers=[server_log_handler],
+                                   webtransport_h3=self.enable_webtransport)
 
         if self.options.get("supports_debugger") and self.debug_info and self.debug_info.interactive:
             self.ignore_interrupts()
@@ -173,9 +183,8 @@ class TestEnvironment(object):
             "ws": [8888],
             "wss": [8889],
             "h2": [9000],
+            "webtransport-h3": [11000],
         }
-        if self.enable_quic:
-            ports["quic-transport"] = [10000]
         config.ports = ports
 
         if os.path.exists(override_path):
@@ -201,7 +210,7 @@ class TestEnvironment(object):
         return config
 
     def get_routes(self):
-        route_builder = serve.RoutesBuilder()
+        route_builder = serve.RoutesBuilder(inject_script=self.inject_script)
 
         for path, format_args, content_type, route in [
                 ("testharness_runner.html", {}, "text/html", "/testharness_runner.html"),
@@ -257,8 +266,8 @@ class TestEnvironment(object):
             if not pending:
                 return
             time.sleep(each_sleep_secs)
-        raise EnvironmentError("Servers failed to start: %s" %
-                               ", ".join("%s:%s" % item for item in failed))
+        raise OSError("Servers failed to start: %s" %
+                      ", ".join("%s:%s" % item for item in failed))
 
     def test_servers(self):
         failed = []
@@ -271,10 +280,12 @@ class TestEnvironment(object):
 
         if not failed and self.test_server_port:
             for scheme, servers in self.servers.items():
-                # TODO(Hexcles): Find a way to test QUIC's UDP port.
-                if scheme == "quic-transport":
-                    continue
                 for port, server in servers:
+                    if scheme == "webtransport-h3":
+                        if not webtranport_h3_server_is_running(host, port, timeout=5.0):
+                            # TODO(bashi): Consider supporting retry.
+                            failed.append((host, port))
+                        continue
                     s = socket.socket()
                     s.settimeout(0.1)
                     try:
@@ -285,3 +296,28 @@ class TestEnvironment(object):
                         s.close()
 
         return failed, pending
+
+
+def wait_for_service(logger, host, port, timeout=60):
+    """Waits until network service given as a tuple of (host, port) becomes
+    available or the `timeout` duration is reached, at which point
+    ``socket.error`` is raised."""
+    addr = (host, port)
+    logger.debug(f"Trying to connect to {host}:{port}")
+    end = time.time() + timeout
+    while end > time.time():
+        so = socket.socket()
+        try:
+            so.connect(addr)
+        except socket.timeout:
+            pass
+        except OSError as e:
+            if e.errno != errno.ECONNREFUSED:
+                raise
+        else:
+            logger.debug(f"Connected to {host}:{port}")
+            return True
+        finally:
+            so.close()
+        time.sleep(0.5)
+    raise OSError("Service is unavailable: %s:%i" % addr)

@@ -25,7 +25,7 @@ def do_delayed_imports():
     from manifest.download import download_from_github  # type: ignore
 
 
-class TestGroupsFile(object):
+class TestGroupsFile:
     """
     Mapping object representing {group name: [test ids]}
     """
@@ -74,7 +74,7 @@ def update_include_for_groups(test_groups, include):
     return new_include
 
 
-class TestChunker(object):
+class TestChunker:
     def __init__(self, total_chunks, chunk_number, **kwargs):
         self.total_chunks = total_chunks
         self.chunk_number = chunk_number
@@ -93,8 +93,7 @@ class Unchunked(TestChunker):
         assert self.total_chunks == 1
 
     def __call__(self, manifest, **kwargs):
-        for item in manifest:
-            yield item
+        yield from manifest
 
 
 class HashChunker(TestChunker):
@@ -125,7 +124,7 @@ class DirectoryHashChunker(TestChunker):
                 yield test_type, test_path, tests
 
 
-class TestFilter(object):
+class TestFilter:
     """Callable that restricts the set of tests in a given manifest according
     to initial criteria"""
     def __init__(self, test_manifests, include=None, exclude=None, manifest_path=None, explicit=False):
@@ -157,7 +156,7 @@ class TestFilter(object):
                 yield test_type, test_path, include_tests
 
 
-class TagFilter(object):
+class TagFilter:
     def __init__(self, tags):
         self.tags = set(tags)
 
@@ -167,7 +166,7 @@ class TagFilter(object):
                 yield test
 
 
-class ManifestLoader(object):
+class ManifestLoader:
     def __init__(self, test_paths, force_manifest_update=False, manifest_download=False,
                  types=None):
         do_delayed_imports()
@@ -201,11 +200,10 @@ class ManifestLoader(object):
 def iterfilter(filters, iter):
     for f in filters:
         iter = f(iter)
-    for item in iter:
-        yield item
+    yield from iter
 
 
-class TestLoader(object):
+class TestLoader:
     """Loads tests according to a WPT manifest and any associated expectation files"""
     def __init__(self,
                  test_manifests,
@@ -217,7 +215,7 @@ class TestLoader(object):
                  chunk_number=1,
                  include_https=True,
                  include_h2=True,
-                 include_quic=False,
+                 include_webtransport_h3=False,
                  skip_timeout=False,
                  skip_implementation_status=None,
                  chunker_kwargs=None):
@@ -232,7 +230,7 @@ class TestLoader(object):
         self.disabled_tests = None
         self.include_https = include_https
         self.include_h2 = include_h2
-        self.include_quic = include_quic
+        self.include_webtransport_h3 = include_webtransport_h3
         self.skip_timeout = skip_timeout
         self.skip_implementation_status = skip_implementation_status
 
@@ -321,8 +319,6 @@ class TestLoader(object):
                 enabled = False
             if not self.include_h2 and test.environment["protocol"] == "h2":
                 enabled = False
-            if not self.include_quic and test.environment["quic"]:
-                enabled = False
             if self.skip_timeout and test.expected() == "TIMEOUT":
                 enabled = False
             if self.skip_implementation_status and test.implementation_status() in self.skip_implementation_status:
@@ -361,7 +357,7 @@ def get_test_src(**kwargs):
     return test_source_cls, test_source_kwargs, chunker_kwargs
 
 
-class TestSource(object):
+class TestSource:
     __metaclass__ = ABCMeta
 
     def __init__(self, test_queue):

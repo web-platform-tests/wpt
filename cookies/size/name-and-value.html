@@ -8,6 +8,8 @@
   <meta name="timeout" content="long">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
   <script src="/cookies/resources/cookie-test.js"></script>
 </head>
 
@@ -64,6 +66,11 @@
         cookie: cookieStringWithNameAndValueLengths(0, 4097).slice(1), // slice off leading =
         expected: "",
         name: "Ignore name-less cookie (without leading =) with value larger than 4096 bytes",
+      },
+      {
+        cookie: cookieStringWithNameAndValueLengths(2048, 2048) + '; Max-Age:43110;',
+        expected: cookieStringWithNameAndValueLengths(2048, 2048),
+        name: "Set max-size cookie that also has an attribute",
       },
     ];
 

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Test for the 'secure-payment-confirmation' payment method constructor</title>
+<link rel="help" href="https://w3c.github.io/secure-payment-confirmation/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+const details = {total:
+    {label: 'Total', amount: {value: '0.01', currency: 'USD'}}};
+
+test(() => {
+  new PaymentRequest([{
+    supportedMethods: 'secure-payment-confirmation',
+    data: {
+      // All valid parameters.
+      credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+      challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+      payeeOrigin: window.location.origin,
+      timeout: 60000,
+      instrument: {
+        displayName: 'X',
+        icon: 'https://example.test/icon.png',
+      },
+      rpId: 'relying-party.example',
+    },
+  }], details);
+}, 'Valid payment method data does not throw exceptions.');
+
+test(() => {
+  new PaymentRequest([{
+    supportedMethods: 'secure-payment-confirmation',
+    data: {
+      credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+      challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+      payeeOrigin: window.location.origin,
+      // Omitted timeout field.
+      instrument: {
+        displayName: 'X',
+        icon: 'https://example.test/icon.png',
+      },
+      rpId: 'relying-party.example',
+    },
+  }], details);
+}, 'The timeout field is optional.');
+
+test(() => {
+  assert_throws_js(RangeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+        rpId: 'relying-party.example',
+      },
+    }, {supportedMethods: 'https://example.com/pay'}], details);
+  });
+}, 'Extra payment method not allowed afterward.');
+
+test(() => {
+  assert_throws_js(RangeError, () => {
+    new PaymentRequest([{supportedMethods: 'https://example.com/pay'}, {
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+        rpId: 'relying-party.example',
+      },
+    }], details);
+  });
+}, 'Extra payment method not allowed beforehand.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        // Omitted credentialIds field.
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+        rpId: 'relying-party.example',
+      },
+    }], details);
+  });
+}, 'The credentialIds field is required.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        // Omitted challenge field.
+        payeeOrigin: window.location.origin,
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+        rpId: 'relying-party.example',
+      },
+    }], details);
+  });
+}, 'The challenge field is required.');
+
+test(() => {
+  assert_throws_js(RangeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        relyingPartyId: 'relying-party.example',
+        // Empty credentialIds field.
+        credentialIds: [],
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+        rpId: 'relying-party.example',
+      },
+    }], details);
+  });
+}, 'Empty credentialIds field throws exception.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        // Null challenge fields.
+        challenge: null,
+        payeeOrigin: window.location.origin,
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+        rpId: 'relying-party.example',
+      },
+    }], details);
+  });
+}, 'Null challenge field throws exception.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        // Empty challenge fields.
+        challenge: [],
+        payeeOrigin: window.location.origin,
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+        rpId: 'relying-party.example',
+      },
+    }], details);
+  });
+}, 'Empty challenge field throws exception.');
+
+test(() => {
+  assert_throws_js(RangeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
+        // Timeout longer than 1 hour.
+        timeout: 1000 * 60 * 60 + 1,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+        rpId: 'relying-party.example',
+      },
+    }], details);
+  });
+}, 'Timeout longer than 1 hour throws exception.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        // Large credentialIds value.
+        credentialIds: [Uint8Array.from(
+            'x'.repeat(1024 * 1024), c => c.charCodeAt(0))],
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+        rpId: 'relying-party.example',
+      },
+    }], details);
+  });
+}, 'Large credentialIds value throws exception.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        // Large challenge value.
+        challenge: Uint8Array.from('x'.repeat(1024 * 1024), c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+        rpId: 'relying-party.example',
+      },
+    }], details);
+  });
+}, 'Large challenge value throws exception.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
+        timeout: 60000,
+        rpId: 'relying-party.example',
+        // Omitted instrument field.
+      },
+    }], details);
+  });
+}, 'Instrument field is required.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
+        timeout: 60000,
+        instrument: {
+          // Ommitted instrument display name.
+          icon: 'https://example.test/icon.png',
+        },
+        rpId: 'relying-party.example',
+      },
+    }], details);
+  });
+}, 'Instrument display name is required.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          // Ommitted instrument icon.
+        },
+        rpId: 'relying-party.example',
+      },
+    }], details);
+  });
+}, 'Instrument icon is required.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        // Omitted payee origin and payee name.
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+        rpId: 'relying-party.example',
+      },
+    }], details);
+  });
+}, 'Omitting both payee origin and payee name throws exception.');
+
+test(() => {
+  new PaymentRequest([{
+    supportedMethods: 'secure-payment-confirmation',
+    data: {
+      credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+      challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+      // Omitted payee origin, instead with payee name.
+      payeeName: 'Example Merchant',
+      timeout: 60000,
+      instrument: {
+        displayName: 'X',
+        icon: 'https://example.test/icon.png',
+      },
+      rpId: 'relying-party.example',
+    },
+  }], details);
+}, 'Payee name without payee origin is valid.');
+
+test(() => {
+  new PaymentRequest([{
+    supportedMethods: 'secure-payment-confirmation',
+    data: {
+      credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+      challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+      // Both payee origin and payee name.
+      payeeName: 'Example Merchant',
+      payeeOrigin: window.location.origin,
+      timeout: 60000,
+      instrument: {
+        displayName: 'X',
+        icon: 'https://example.test/icon.png',
+      },
+      rpId: 'relying-party.example',
+    },
+  }], details);
+}, 'Providing both payee name and payee origin is valid.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        // Empty payee name
+        payeeName: '',
+        payeeOrigin: window.location.origin,
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+        rpId: 'relying-party.example',
+      },
+    }], details);
+  });
+}, 'Empty payee name throws exception.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeName: 'Example Merchant',
+        // Empty payee origin
+        payeeOrigin: '',
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+        rpId: 'relying-party.example',
+      },
+    }], details);
+  });
+}, 'Empty payee origin throws exception.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+        // Omitted rpId.
+      },
+    }], details);
+  });
+}, 'rpId is required.');
+
+</script>

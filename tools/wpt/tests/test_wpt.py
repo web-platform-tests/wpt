@@ -93,6 +93,12 @@ def test_help():
     assert excinfo.value.code == 0
 
 
+def test_load_commands():
+    commands = wpt.load_commands()
+    # The `wpt run` command has conditional requirements.
+    assert "conditional_requirements" in commands["run"]
+
+
 @pytest.mark.slow
 @pytest.mark.skipif(sys.platform == "win32",
                     reason="https://github.com/web-platform-tests/wpt/issues/28745")
@@ -254,7 +260,7 @@ def test_run_verify_unstable(temp_test):
 def test_files_changed(capsys):
     commit = "9047ac1d9f51b1e9faa4f9fad9c47d109609ab09"
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["files-changed", "%s~..%s" % (commit, commit)])
+        wpt.main(argv=["files-changed", f"{commit}~..{commit}"])
     assert excinfo.value.code == 0
     out, err = capsys.readouterr()
     expected = """html/browsers/offline/appcache/workers/appcache-worker.html
@@ -272,7 +278,7 @@ html/browsers/offline/appcache/workers/resources/appcache-worker.py
 def test_files_changed_null(capsys):
     commit = "9047ac1d9f51b1e9faa4f9fad9c47d109609ab09"
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["files-changed", "--null", "%s~..%s" % (commit, commit)])
+        wpt.main(argv=["files-changed", "--null", f"{commit}~..{commit}"])
     assert excinfo.value.code == 0
     out, err = capsys.readouterr()
     expected = "\0".join(["html/browsers/offline/appcache/workers/appcache-worker.html",
@@ -317,7 +323,7 @@ def test_tests_affected(capsys, manifest_dir):
     # The test will fail if the file we assert is renamed, so we choose a stable one.
     commit = "3a055e818218f548db240c316654f3cc1aeeb733"
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["tests-affected", "--metadata", manifest_dir, "%s~..%s" % (commit, commit)])
+        wpt.main(argv=["tests-affected", "--metadata", manifest_dir, f"{commit}~..{commit}"])
     assert excinfo.value.code == 0
     out, err = capsys.readouterr()
     assert "infrastructure/reftest-wait.html" in out
@@ -331,7 +337,7 @@ def test_tests_affected(capsys, manifest_dir):
 def test_tests_affected_idlharness(capsys, manifest_dir):
     commit = "47cea8c38b88c0ddd3854e4edec0c5b6f2697e62"
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["tests-affected", "--metadata", manifest_dir, "%s~..%s" % (commit, commit)])
+        wpt.main(argv=["tests-affected", "--metadata", manifest_dir, f"{commit}~..{commit}"])
     assert excinfo.value.code == 0
     out, err = capsys.readouterr()
     assert ("mst-content-hint/idlharness.window.js\n" +
@@ -354,7 +360,7 @@ def test_tests_affected_null(capsys, manifest_dir):
     # The test will fail if the file we assert is renamed, so we choose a stable one.
     commit = "2614e3316f1d3d1a744ed3af088d19516552a5de"
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["tests-affected", "--null", "--metadata", manifest_dir, "%s~..%s" % (commit, commit)])
+        wpt.main(argv=["tests-affected", "--null", "--metadata", manifest_dir, f"{commit}~..{commit}"])
     assert excinfo.value.code == 0
     out, err = capsys.readouterr()
 

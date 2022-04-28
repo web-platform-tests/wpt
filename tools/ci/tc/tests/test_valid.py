@@ -2,9 +2,9 @@ import json
 import os
 from unittest import mock
 
+import httpx
 import jsone
 import pytest
-import requests
 import yaml
 from jsonschema import validate
 
@@ -37,15 +37,37 @@ def test_verify_taskcluster_yml():
         jsone.render(template, context)
 
 
+@pytest.mark.parametrize("event_path,expected",
+                         [("pr_event.json",
+                           frozenset(["lint", "wpt-chrome-dev-stability"])),
+                          ("pr_event_tests_affected.json", frozenset(["lint"]))]
+                         )
+def test_exclude_users(event_path, expected):
+    """Verify that tasks excluded by the PR submitter are properly excluded"""
+    tasks = {
+        "lint": {
+            "commands": "wpt example"
+        },
+        "wpt-chrome-dev-stability": {
+            "commands": "wpt example",
+            "exclude-users": ["chromium-wpt-export-bot"]
+        }
+    }
+    with open(data_path(event_path), encoding="utf8") as f:
+        event = json.load(f)
+        decision.filter_excluded_users(tasks, event)
+        assert set(tasks) == expected
+
+
 def test_verify_payload():
     """Verify that the decision task produces tasks with a valid payload"""
     from tools.ci.tc.decision import decide
 
-    r = requests.get("https://community-tc.services.mozilla.com/schemas/queue/v1/create-task-request.json")
+    r = httpx.get("https://community-tc.services.mozilla.com/schemas/queue/v1/create-task-request.json")
     r.raise_for_status()
     create_task_schema = r.json()
 
-    r = requests.get("https://community-tc.services.mozilla.com/references/schemas/docker-worker/v1/payload.json")
+    r = httpx.get("https://community-tc.services.mozilla.com/references/schemas/docker-worker/v1/payload.json")
     r.raise_for_status()
     payload_schema = r.json()
 
@@ -69,7 +91,7 @@ def test_verify_payload():
                 validate(instance=task_data, schema=create_task_schema)
                 validate(instance=task_data["payload"], schema=payload_schema)
             except Exception as e:
-                print("Validation failed for task '%s':\n%s" % (name, json.dumps(task_data, indent=2)))
+                print(f"Validation failed for task '{name}':\n{json.dumps(task_data, indent=2)}")
                 raise e
 
 
@@ -130,11 +152,11 @@ def test_verify_payload():
     ("pr_event.json", True, {".taskcluster.yml", ".travis.yml", "tools/ci/start.sh"},
      ['lint',
       'tools/ unittests (Python 3.6)',
-      'tools/ unittests (Python 3.9)',
+      'tools/ unittests (Python 3.10)',
       'tools/ integration tests (Python 3.6)',
-      'tools/ integration tests (Python 3.9)',
+      'tools/ integration tests (Python 3.10)',
       'resources/ tests (Python 3.6)',
-      'resources/ tests (Python 3.9)',
+      'resources/ tests (Python 3.10)',
       'download-firefox-nightly',
       'infrastructure/ tests',
       'sink-task']),
@@ -145,7 +167,6 @@ def test_verify_payload():
       'wpt-firefox-nightly-stability',
       'wpt-firefox-nightly-results',
       'wpt-firefox-nightly-results-without-changes',
-      'wpt-chrome-dev-stability',
       'wpt-chrome-dev-results',
       'wpt-chrome-dev-results-without-changes',
       'lint',
@@ -168,22 +189,22 @@ def test_verify_payload():
       'wpt-firefox-stable-testharness-14',
       'wpt-firefox-stable-testharness-15',
       'wpt-firefox-stable-testharness-16',
-      'wpt-chrome-nightly-testharness-1',
-      'wpt-chrome-nightly-testharness-2',
-      'wpt-chrome-nightly-testharness-3',
-      'wpt-chrome-nightly-testharness-4',
-      'wpt-chrome-nightly-testharness-5',
-      'wpt-chrome-nightly-testharness-6',
-      'wpt-chrome-nightly-testharness-7',
-      'wpt-chrome-nightly-testharness-8',
-      'wpt-chrome-nightly-testharness-9',
-      'wpt-chrome-nightly-testharness-10',
-      'wpt-chrome-nightly-testharness-11',
-      'wpt-chrome-nightly-testharness-12',
-      'wpt-chrome-nightly-testharness-13',
-      'wpt-chrome-nightly-testharness-14',
-      'wpt-chrome-nightly-testharness-15',
-      'wpt-chrome-nightly-testharness-16',
+      'wpt-chromium-nightly-testharness-1',
+      'wpt-chromium-nightly-testharness-2',
+      'wpt-chromium-nightly-testharness-3',
+      'wpt-chromium-nightly-testharness-4',
+      'wpt-chromium-nightly-testharness-5',
+      'wpt-chromium-nightly-testharness-6',
+      'wpt-chromium-nightly-testharness-7',
+      'wpt-chromium-nightly-testharness-8',
+      'wpt-chromium-nightly-testharness-9',
+      'wpt-chromium-nightly-testharness-10',
+      'wpt-chromium-nightly-testharness-11',
+      'wpt-chromium-nightly-testharness-12',
+      'wpt-chromium-nightly-testharness-13',
+      'wpt-chromium-nightly-testharness-14',
+      'wpt-chromium-nightly-testharness-15',
+      'wpt-chromium-nightly-testharness-16',
       'wpt-chrome-stable-testharness-1',
       'wpt-chrome-stable-testharness-2',
       'wpt-chrome-stable-testharness-3',
@@ -237,11 +258,11 @@ def test_verify_payload():
       'wpt-firefox-stable-reftest-3',
       'wpt-firefox-stable-reftest-4',
       'wpt-firefox-stable-reftest-5',
-      'wpt-chrome-nightly-reftest-1',
-      'wpt-chrome-nightly-reftest-2',
-      'wpt-chrome-nightly-reftest-3',
-      'wpt-chrome-nightly-reftest-4',
-      'wpt-chrome-nightly-reftest-5',
+      'wpt-chromium-nightly-reftest-1',
+      'wpt-chromium-nightly-reftest-2',
+      'wpt-chromium-nightly-reftest-3',
+      'wpt-chromium-nightly-reftest-4',
+      'wpt-chromium-nightly-reftest-5',
       'wpt-chrome-stable-reftest-1',
       'wpt-chrome-stable-reftest-2',
       'wpt-chrome-stable-reftest-3',
@@ -259,8 +280,8 @@ def test_verify_payload():
       'wpt-servo-nightly-reftest-5',
       'wpt-firefox-stable-wdspec-1',
       'wpt-firefox-stable-wdspec-2',
-      'wpt-chrome-nightly-wdspec-1',
-      'wpt-chrome-nightly-wdspec-2',
+      'wpt-chromium-nightly-wdspec-1',
+      'wpt-chromium-nightly-wdspec-2',
       'wpt-chrome-stable-wdspec-1',
       'wpt-chrome-stable-wdspec-2',
       'wpt-webkitgtk_minibrowser-nightly-wdspec-1',
@@ -268,12 +289,12 @@ def test_verify_payload():
       'wpt-servo-nightly-wdspec-1',
       'wpt-servo-nightly-wdspec-2',
       'wpt-firefox-stable-crashtest-1',
-      'wpt-chrome-nightly-crashtest-1',
+      'wpt-chromium-nightly-crashtest-1',
       'wpt-chrome-stable-crashtest-1',
       'wpt-webkitgtk_minibrowser-nightly-crashtest-1',
       'wpt-servo-nightly-crashtest-1',
       'wpt-firefox-stable-print-reftest-1',
-      'wpt-chrome-nightly-print-reftest-1',
+      'wpt-chromium-nightly-print-reftest-1',
       'wpt-chrome-stable-print-reftest-1'])
 ])
 def test_schedule_tasks(event_path, is_pr, files_changed, expected):

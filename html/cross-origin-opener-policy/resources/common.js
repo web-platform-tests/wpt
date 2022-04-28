@@ -1,3 +1,7 @@
+// To use the functions below, be sure to include the following files in your
+// test:
+// - "/common/get-host-info.sub.js" to get the different origin values.
+
 const SAME_ORIGIN = {origin: get_host_info().HTTPS_ORIGIN, name: "SAME_ORIGIN"};
 const SAME_SITE = {origin: get_host_info().HTTPS_REMOTE_ORIGIN, name: "SAME_SITE"};
 const CROSS_ORIGIN = {origin: get_host_info().HTTPS_NOTSAMESITE_ORIGIN, name: "CROSS_ORIGIN"}
@@ -112,18 +116,4 @@ function run_coop_test_iframe (documentTitle, iframe_origin, popup_origin, popup
         document.body.append(frame);
     }, `${documentTitle} with ${iframe_origin.name} iframe opening popup via ${popup_via} a ${popup_origin.name} with COOP: ${format_value(popup_coop)}`);
   }
-}
-
-// Wait until the page is fully loaded before navigating
-// so that it creates a history entry properly.
-function fullyLoaded() {
-  return new Promise((resolve, reject) => {
-    addEventListener('load', () => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          resolve();
-        });
-      });
-    });
-  });
 }

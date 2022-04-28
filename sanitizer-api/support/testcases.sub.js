@@ -11,6 +11,8 @@ const testcases = [
   {config_input: {}, value: "<html><head></head><body>test</body></html>", result: "test", message: "document"},
   {config_input: {}, value: "<div>test", result: "<div>test</div>", message: "html without close tag"},
   {config_input: {}, value: "<script>alert('i am a test')<\/script>", result: "", message: "scripts for default configs"},
+  {config_input: {}, value: "hello<script>alert('i am a test')<\/script>", result: "hello", message: "script not as root"},
+  {config_input: {}, value: "<div><b>hello<script>alert('i am a test')<\/script>", result: "<div><b>hello</b></div>", message: "script deeper in the tree"},
   {config_input: {}, value: "<p onclick='a= 123'>Click.</p>", result: "<p>Click.</p>", message: "onclick scripts"},
   {config_input: {}, value: "<plaintext><p>text</p>", result: "&lt;p&gt;text&lt;/p&gt;", message: "plaintext"},
   {config_input: {}, value: "<xmp>TEXT</xmp>", result: "TEXT", message: "xmp"},
@@ -64,4 +66,6 @@ const testcases = [
   {config_input: {}, value: "<p>comment<!-- hello -->in<!-- </p> -->text</p>", result: "<p>commentintext</p>", message: "HTML with comments deeper in the tree"},
   {config_input: {allowComments: true}, value: "<p>comment<!-- hello -->in<!-- </p> -->text</p>", result: "<p>comment<!-- hello -->in<!-- </p> -->text</p>", message: "HTML with comments deeper in the tree, allowComments"},
   {config_input: {allowComments: false}, value: "<p>comment<!-- hello -->in<!-- </p> -->text</p>", result: "<p>commentintext</p>", message: "HTML with comments deeper in the tree, !allowComments"},
+  {config_input: {allowElements: ["svg"]}, value: "<svg></svg>", result: "", message: "Unknown HTML names (HTMLUnknownElement instances) should not match elements parsed as non-HTML namespaces."},
+  {config_input: {allowElements: ["div", "svg"]}, value: "<div><svg></svg></div>", result: "<div></div>", message: "Unknown HTML names (HTMLUnknownElement instances) should not match elements parsed as non-HTML namespaces when nested."},
 ];

@@ -130,6 +130,66 @@ promise_test(async t => {
   const byobRequests = [];
   const rs = new ReadableStream({
     type: 'bytes',
+    pull: t.step_func((c) => {
+      const byobRequest = c.byobRequest;
+      const view = byobRequest.view;
+      byobRequests[pullCount] = {
+        nonNull: byobRequest !== null,
+        viewNonNull: view !== null,
+        viewInfo: extractViewInfo(view)
+      };
+      if (pullCount === 0) {
+        view[0] = 0x01;
+        view[1] = 0x02;
+        byobRequest.respond(2);
+      } else if (pullCount === 1) {
+        view[0] = 0x03;
+        byobRequest.respond(1);
+      }
+      ++pullCount;
+    })
+  });
+  const reader = rs.getReader({ mode: 'byob' });
+
+  const result = await reader.read(new DataView(new ArrayBuffer(3)), { min: 3 });
+  assert_false(result.done, 'result should not be done');
+  assert_equals(result.value.constructor, DataView, 'result.value must be a DataView');
+  assert_equals(result.value.byteOffset, 0, 'result.value.byteOffset');
+  assert_equals(result.value.byteLength, 3, 'result.value.byteLength');
+  assert_equals(result.value.buffer.byteLength, 3, 'result.value.buffer.byteLength');
+  assert_array_equals([...new Uint8Array(result.value.buffer)], [0x01, 0x02, 0x03], `result.value.buffer contents`);
+
+  assert_equals(pullCount, 2, 'pull() must have been called 2 times');
+
+  {
+    const byobRequest = byobRequests[0];
+    assert_true(byobRequest.nonNull, 'first byobRequest must not be null');
+    assert_true(byobRequest.viewNonNull, 'first byobRequest.view must not be null');
+    const viewInfo = byobRequest.viewInfo;
+    assert_equals(viewInfo.constructor, Uint8Array, 'first view.constructor should be Uint8Array');
+    assert_equals(viewInfo.bufferByteLength, 3, 'first view.buffer.byteLength should be 3');
+    assert_equals(viewInfo.byteOffset, 0, 'first view.byteOffset should be 0');
+    assert_equals(viewInfo.byteLength, 3, 'first view.byteLength should be 3');
+  }
+
+  {
+    const byobRequest = byobRequests[1];
+    assert_true(byobRequest.nonNull, 'second byobRequest must not be null');
+    assert_true(byobRequest.viewNonNull, 'second byobRequest.view must not be null');
+    const viewInfo = byobRequest.viewInfo;
+    assert_equals(viewInfo.constructor, Uint8Array, 'second view.constructor should be Uint8Array');
+    assert_equals(viewInfo.bufferByteLength, 3, 'second view.buffer.byteLength should be 3');
+    assert_equals(viewInfo.byteOffset, 2, 'second view.byteOffset should be 2');
+    assert_equals(viewInfo.byteLength, 1, 'second view.byteLength should be 1');
+  }
+
+}, 'ReadableStream with byte source: read({ min }) with a DataView');
+
+promise_test(async t => {
+  let pullCount = 0;
+  const byobRequests = [];
+  const rs = new ReadableStream({
+    type: 'bytes',
     start: t.step_func((c) => {
       c.enqueue(new Uint8Array([0x01]));
     }),

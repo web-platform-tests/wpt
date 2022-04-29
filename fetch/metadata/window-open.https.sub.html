@@ -42,7 +42,7 @@
   }, "Same-site window, forced");
 
   async_test(t => {
-    let w = window.open("https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/metadata/resources/post-to-owner.py");
+    let w = window.open("https://{{hosts[alt][]}}:{{ports[https][0]}}/fetch/metadata/resources/post-to-owner.py");
     t.add_cleanup(_ => w.close());
     window.addEventListener('message', t.step_func(e => {
       if (e.source != w)
@@ -107,7 +107,7 @@
   }, "Same-site window, forced, reloaded");
 
   async_test(t => {
-    let w = window.open("https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/metadata/resources/post-to-owner.py");
+    let w = window.open("https://{{hosts[alt][]}}:{{ports[https][0]}}/fetch/metadata/resources/post-to-owner.py");
     t.add_cleanup(_ => w.close());
     let messages = 0;
     window.addEventListener('message', t.step_func(e => {
@@ -178,7 +178,7 @@
   async_test(t => {
     let b = document.createElement('button');
     b.onclick = t.step_func(_ => {
-      let w = window.open("https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/metadata/resources/post-to-owner.py");
+      let w = window.open("https://{{hosts[alt][]}}:{{ports[https][0]}}/fetch/metadata/resources/post-to-owner.py");
       t.add_cleanup(_ => w.close());
       window.addEventListener('message', t.step_func(e => {
         if (e.source != w)

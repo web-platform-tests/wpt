@@ -21,7 +21,7 @@ promise_test(t => {
 }, "Same-site fetch");
 
 promise_test(t => {
-  return validate_expectations_custom_url("https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/metadata/resources/echo-as-json.py", {}, {
+  return validate_expectations_custom_url("https://{{hosts[alt][]}}:{{ports[https][0]}}/fetch/metadata/resources/echo-as-json.py", {}, {
           "site": "cross-site",
           "user": "",
           "mode": "cors",

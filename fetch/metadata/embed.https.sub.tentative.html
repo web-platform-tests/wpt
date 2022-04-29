@@ -17,7 +17,7 @@
   const origins = {
     "same-origin": "https://{{host}}:{{ports[https][0]}}",
     "same-site":   "https://{{hosts[][www]}}:{{ports[https][0]}}",
-    "cross-site":  "https://{{hosts[alt][www]}}:{{ports[https][0]}}",
+    "cross-site":  "https://{{hosts[alt][]}}:{{ports[https][0]}}",
   };
 
   for (let site in origins) {

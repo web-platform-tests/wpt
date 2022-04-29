@@ -75,7 +75,7 @@
       let key = "track-cross-site" + nonce;
       let video = createVideoElement();
       let el = createTrack();
-      el.src = "https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/metadata/resources/record-header.py?file=" + key;
+      el.src = "https://{{hosts[alt][]}}:{{ports[https][0]}}/fetch/metadata/resources/record-header.py?file=" + key;
       el.onload = t.step_func(_ => {
         expected = {
           "site": "cross-site",

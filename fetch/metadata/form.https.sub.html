@@ -55,7 +55,7 @@
     "dest": "document"
   });
 
-  create_test("{{hosts[alt][www]}}:{{ports[https][0]}}", FORCED, {
+  create_test("{{hosts[alt][]}}:{{ports[https][0]}}", FORCED, {
     "site": "cross-site",
     "user": "",
     "mode": "navigate",
@@ -76,7 +76,7 @@
     "dest": "document"
   });
 
-  create_test("{{hosts[alt][www]}}:{{ports[https][0]}}", USER, {
+  create_test("{{hosts[alt][]}}:{{ports[https][0]}}", USER, {
     "site": "cross-site",
     "user": "?1",
     "mode": "navigate",

@@ -48,7 +48,7 @@
       let key = "object-cross-site" + nonce;
 
       let e = document.createElement('object');
-      e.data = "https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/metadata/resources/record-header.py?file=" + key;
+      e.data = "https://{{hosts[alt][]}}:{{ports[https][0]}}/fetch/metadata/resources/record-header.py?file=" + key;
       e.onload = e => {
         let expected = {"site":"cross-site", "user":"", "mode":"navigate", "dest": "object"};
         validate_expectations(key, expected, "Cross-Site object")

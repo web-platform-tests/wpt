@@ -44,7 +44,7 @@ function add_test(description, report_host, go_back_host, expectations) {
 
 const same_origin_host = "{{host}}:{{ports[https][0]}}";
 const same_site_host = "{{hosts[][www]}}:{{ports[https][0]}}";
-const cross_site_host = "{{hosts[alt][www]}}:{{ports[https][0]}}";
+const cross_site_host = "{{hosts[alt][]}}:{{ports[https][0]}}";
 
 add_test(
   "back to same-origin-initiated navigation",

@@ -45,7 +45,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, ['httpsOrigin']))
+    induceRequest(makeRequestURL(key, ['httpsOrigin']))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
@@ -60,7 +60,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, ['httpsCrossSite']))
+    induceRequest(makeRequestURL(key, ['httpsCrossSite']))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
@@ -75,7 +75,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, ['httpsSameSite']))
+    induceRequest(makeRequestURL(key, ['httpsSameSite']))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
@@ -90,7 +90,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, ['httpsOrigin', 'httpOrigin']))
+    induceRequest(makeRequestURL(key, ['httpsOrigin', 'httpOrigin']))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_not_own_property(headers, 'sec-fetch-site');
@@ -104,7 +104,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, ['httpOrigin', 'httpsOrigin']))
+    induceRequest(makeRequestURL(key, ['httpOrigin', 'httpsOrigin']))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
@@ -119,7 +119,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, ['httpsOrigin', 'httpOrigin', 'httpsOrigin']))
+    induceRequest(makeRequestURL(key, ['httpsOrigin', 'httpOrigin', 'httpsOrigin']))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
@@ -134,7 +134,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, ['httpsOrigin', 'httpsCrossSite', 'httpsOrigin']))
+    induceRequest(makeRequestURL(key, ['httpsOrigin', 'httpsCrossSite', 'httpsOrigin']))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
@@ -149,7 +149,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, ['httpsOrigin', 'httpsSameSite', 'httpsOrigin']))
+    induceRequest(makeRequestURL(key, ['httpsOrigin', 'httpsSameSite', 'httpsOrigin']))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
@@ -164,7 +164,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, ['httpsCrossSite', 'httpsOrigin']))
+    induceRequest(makeRequestURL(key, ['httpsCrossSite', 'httpsOrigin']))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
@@ -179,7 +179,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, ['httpsCrossSite', 'httpsSameSite']))
+    induceRequest(makeRequestURL(key, ['httpsCrossSite', 'httpsSameSite']))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
@@ -194,7 +194,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, ['httpsCrossSite', 'httpsCrossSite']))
+    induceRequest(makeRequestURL(key, ['httpsCrossSite', 'httpsCrossSite']))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
@@ -209,7 +209,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, ['httpsOrigin', 'httpsOrigin']))
+    induceRequest(makeRequestURL(key, ['httpsOrigin', 'httpsOrigin']))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
@@ -224,7 +224,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, ['httpsOrigin', 'httpsSameSite']))
+    induceRequest(makeRequestURL(key, ['httpsOrigin', 'httpsSameSite']))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
@@ -239,7 +239,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, ['httpsOrigin', 'httpsCrossSite']))
+    induceRequest(makeRequestURL(key, ['httpsOrigin', 'httpsCrossSite']))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
@@ -254,7 +254,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, ['httpsSameSite', 'httpsOrigin']))
+    induceRequest(makeRequestURL(key, ['httpsSameSite', 'httpsOrigin']))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
@@ -269,7 +269,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, ['httpsSameSite', 'httpsSameSite']))
+    induceRequest(makeRequestURL(key, ['httpsSameSite', 'httpsSameSite']))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
@@ -284,7 +284,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, ['httpsSameSite', 'httpsCrossSite']))
+    induceRequest(makeRequestURL(key, ['httpsSameSite', 'httpsCrossSite']))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
@@ -299,7 +299,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, []))
+    induceRequest(makeRequestURL(key, []))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-mode');
@@ -314,7 +314,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, []))
+    induceRequest(makeRequestURL(key, []))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-dest');
@@ -329,7 +329,7 @@ Sources:
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, []))
+    induceRequest(makeRequestURL(key, []))
       .then(() => retrieve(key))
       .then((headers) => {
           assert_not_own_property(headers, 'sec-fetch-user');

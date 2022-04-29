@@ -44,7 +44,7 @@
       !!window.applicationCache, 'Application Cache supported.'
     );
 
-    return induceRequest(makeRequestURL(key, [% subtest.origins %]))
+    induceRequest(makeRequestURL(key, [% subtest.origins %]))
       .then(() => retrieve(key))
       .then((headers) => {
         {%- if subtest.expected == none %}

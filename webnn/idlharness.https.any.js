@@ -9,7 +9,7 @@
 
 idl_test(
   ['webnn'],
-  ['html', 'WebIDL', 'webgl1', 'webgpu'],
+  ['html', 'webidl', 'webgl1', 'webgpu'],
   idl_array => {
     if (self.GLOBAL.isWindow()) {
       idl_array.add_objects({ Navigator: ['navigator'] });

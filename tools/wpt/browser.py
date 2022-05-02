@@ -550,10 +550,10 @@ class ChromeChromiumBase(Browser):
         return ("https://storage.googleapis.com/chromium-browser-snapshots/"
                 f"{self._chromium_platform_string}/{revision}/{filename}")
 
-    def _get_latest_chromium_revision(self):
-        """Returns the latest Chromium revision number for the current platform."""
+    def _get_pinned_chromium_revision(self) -> str:
+        """Returns the pinned Chromium revision number."""
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                            "latest_chromium_revision.txt")
+                            "pinned_chromium_revision.txt")
         with open(path) as f:
             return f.read().strip()
 
@@ -576,7 +576,7 @@ class ChromeChromiumBase(Browser):
                                         f"based on version. {url}")
         # If no URL was used in a previous install
         # and no version was passed, use the latest Chromium revision.
-        revision = self._get_latest_chromium_revision()
+        revision = self._get_pinned_chromium_revision()
 
         # If the url is successfully used to download/install, it will be used again
         # if another component is also installed during this run (browser/webdriver).

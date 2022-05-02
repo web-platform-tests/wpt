@@ -47,7 +47,7 @@ import tempfile
 import zipfile
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from wpt.utils import get, get_download_to_descriptor, unzip  # type: ignore
+from wpt.utils import get_download_to_descriptor  # type: ignore
 
 root = os.path.abspath(
     os.path.join(os.path.dirname(__file__),
@@ -258,31 +258,11 @@ def setup_environment(args):
         assert args.channel is not None
         install_chrome(args.channel)
 
-    if "chromium" in args.browser:
-        install_chromium()
-
     if args.xvfb:
         start_xvfb()
 
     if args.oom_killer:
         start_userspace_oom_killer()
-
-
-def install_chromium():
-    revisions_path = os.path.join(os.getcwd(), "tools", "wpt", "latest_chromium_revision.txt")
-    with open(revisions_path) as f:
-        revision = f.read().strip()
-        dest = os.path.join("/tmp")
-        installer_path = os.path.join("/tmp", "chrome-linux.zip")
-
-        url = ("https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/"
-               f"{revision}/chrome-linux.zip")
-        resp = get(url)
-        with open(installer_path, "wb") as f:
-            f.write(resp.content)
-        with open(installer_path, "rb") as f:
-            unzip(f, dest)
-        os.remove(installer_path)
 
 
 def setup_repository(args):

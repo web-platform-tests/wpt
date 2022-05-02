@@ -1,8 +1,6 @@
 import requests
 from time import time
 
-from .utils import get
-
 
 PLATFORM_INFO = [
     ("Win_x64", "chrome-win.zip"),
@@ -13,76 +11,74 @@ PLATFORM_INFO = [
 SNAPSHOTS_PATH = "https://storage.googleapis.com/chromium-browser-snapshots/"
 
 
-def main(timeout=600.0):
+def main(timeout: float = 600.0) -> None:
     start = time()
 
     # Load existing pinned revision.
-    existing_revision = None
-    with open("tools/wpt/latest_chromium_revision.txt", "r") as f:
+    start_revision = None
+    with open("tools/wpt/pinned_chromium_revision.txt", "r") as f:
         existing_revision = int(f.read())
 
-    # Find the lowest new revision number among latest revisions by platform.
-    # We need to find a revision number that is available for download for all platforms,
-    # so we start looking from the smallest of these latest revisions.
-    smallest_revision = existing_revision
-    for platform, filename in PLATFORM_INFO:
-        try:
-            url = f"{SNAPSHOTS_PATH}{platform}/LAST_CHANGE"
-            revision = get(url).text.strip()
-            smallest_revision = max(smallest_revision, int(revision))
-        except requests.RequestException as e:
-            print(f"failed LAST_CHANGE lookup for {platform}: {e}")
-            continue
+    # Get the latest revision for Linux as a starting point to check for
+    # a valid revision for all platforms.
+    try:
+        url = f"{SNAPSHOTS_PATH}Linux_x64/LAST_CHANGE"
+        start_revision = int(requests.get(url).text.strip())
+    except requests.RequestException as e:
+        raise requests.RequestException(f"Failed LAST_CHANGE lookup: {e}")
 
-    if smallest_revision == existing_revision:
+    if start_revision == existing_revision:
         return
 
     # Step backwards through revision numbers until we find one
     # that is available for all platforms.
-    largest_mutually_available_revision = smallest_revision
-    available_for_all = False
+    candidate_revision = start_revision
+    new_revision = -1
     timed_out = False
-    while not available_for_all and not timed_out:
+    while new_revision == -1 and candidate_revision > existing_revision:
         available_for_all = True
         # For each platform, check if Chromium is available for download from snapshots.
         for platform, filename in PLATFORM_INFO:
             try:
                 url = (f"{SNAPSHOTS_PATH}{platform}/"
-                       f"{largest_mutually_available_revision}/{filename}")
+                       f"{candidate_revision}/{filename}")
                 # Check the headers of each possible download URL.
                 r = requests.head(url)
-                # If the "Accept-Ranges" header is not present, we know the file is not
-                # available for download. Decrement the revision number and try again.
-                if "Accept-Ranges" not in r.headers:
-                    largest_mutually_available_revision -= 1
+                # If the file is not available for download, decrement the revision and try again.
+                if r.status_code != 200:
+                    candidate_revision -= 1
                     available_for_all = False
                     break
-            except requests.RequestException as e:
-                print(e)
-                largest_mutually_available_revision -= 1
+            except requests.RequestException:
+                print(f"Failed to fetch headers for revision {candidate_revision}. Skipping it.")
+                candidate_revision -= 1
                 available_for_all = False
                 break
+
+        if available_for_all:
+            new_revision = candidate_revision
         if time() - start > timeout:
             timed_out = True
+            break
 
     if timed_out:
         raise TimeoutError(f"Reached timeout {timeout}s while checking revision "
-                           f"{largest_mutually_available_revision}")
+                           f"{candidate_revision}")
 
     end = time()
-    if largest_mutually_available_revision == existing_revision:
-        print(f"No new mutually available revision numbers found after "
-              f"{'{:.2f}'.format(end - start)} seconds.")
+    if new_revision <= existing_revision:
+        print(f"No new mutually available revision found after "
+              f"{'{:.2f}'.format(end - start)} seconds. Keeping revision {existing_revision}.")
         return
 
-    print(f"Found mutually available revision at {largest_mutually_available_revision}.")
-    print(f"This process started at {smallest_revision} and checked "
-          f"{smallest_revision - largest_mutually_available_revision} revisions.")
+    print(f"Found mutually available revision at {new_revision}.")
+    print(f"This process started at {start_revision} and checked "
+          f"{start_revision - new_revision} revisions.")
     print(f"The whole process took {'{:.2f}'.format(end - start)} seconds.")
 
-    with open("tools/wpt/latest_chromium_revision.txt", "w") as f:
-        f.write(f"{largest_mutually_available_revision}\n")
+    with open("tools/wpt/pinned_chromium_revision.txt", "w") as f:
+        f.write(f"{new_revision}\n")
 
 
 if __name__ == "__main__":
-    main()  # type: ignore
+    main()

@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 from .base import NullBrowser  # noqa: F401
 from .base import require_arg
 from .base import get_timeout_multiplier  # noqa: F401
@@ -87,7 +89,7 @@ class WeblayerShell(ChromeAndroidBrowserBase):
 
     def __init__(self, logger, binary,
                  webdriver_binary="chromedriver",
-                 adb_binary="adb",
+                 adb_binary=None,
                  remote_queue=None,
                  device_serial=None,
                  webdriver_args=None,

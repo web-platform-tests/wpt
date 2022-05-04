@@ -189,6 +189,11 @@ class TestharnessTest(URLManifestItem):
         return self._extras.get("timeout")
 
     @property
+    def pac(self):
+        # type: () -> Optional[Text]
+        return self._extras.get("pac")
+
+    @property
     def testdriver(self):
         # type: () -> Optional[Text]
         return self._extras.get("testdriver")
@@ -208,6 +213,8 @@ class TestharnessTest(URLManifestItem):
         rv = super().to_json()
         if self.timeout is not None:
             rv[-1]["timeout"] = self.timeout
+        if self.pac is not None:
+            rv[-1]["pac"] = self.pac
         if self.testdriver:
             rv[-1]["testdriver"] = self.testdriver
         if self.jsshell:
@@ -276,6 +283,8 @@ class RefTest(URLManifestItem):
         extras = rv[-1]
         if self.timeout is not None:
             extras["timeout"] = self.timeout
+        if self.pac is not None:
+            extras["pac"] = self.pac
         if self.viewport_size is not None:
             extras["viewport_size"] = self.viewport_size
         if self.dpi is not None:
@@ -359,11 +368,18 @@ class WebDriverSpecTest(URLManifestItem):
         # type: () -> Optional[Text]
         return self._extras.get("timeout")
 
+    @property
+    def pac(self):
+        # type: () -> Optional[Text]
+        return self._extras.get("pac")
+
     def to_json(self):
         # type: () -> Tuple[Optional[Text], Dict[Text, Any]]
         rv = super().to_json()
         if self.timeout is not None:
             rv[-1]["timeout"] = self.timeout
+        if self.pac is not None:
+            rv[-1]["pac"] = self.pac
         return rv
 
 

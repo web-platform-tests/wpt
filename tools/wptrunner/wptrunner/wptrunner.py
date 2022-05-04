@@ -4,6 +4,7 @@ import json
 import os
 import sys
 from datetime import datetime, timedelta
+from urllib.parse import urljoin
 
 import wptserve
 from wptserve import sslutils
@@ -175,7 +176,7 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
                        run_info=run_info,
                        extra={"run_by_dir": run_test_kwargs["run_by_dir"]})
     for test_type in run_test_kwargs["test_types"]:
-        logger.info(f"Running {test_type} tests")
+        tests_to_run = test_loader.tests[test_type]
 
         browser_cls = product.get_browser_cls(test_type)
 

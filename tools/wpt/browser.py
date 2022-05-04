@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import os
 import platform
 import re
@@ -794,7 +796,7 @@ class Chromium(ChromeChromiumBase):
         # Make sure we use the same revision in an invocation.
         # If we have a url that was last used successfully during this run,
         # that url takes priority over trying to form another.
-        if self.last_revision_used is not None:
+        if hasattr(self, "last_revision_used") self.last__used is not None:
             return self._build_snapshots_url(self.last_revision_used, filename)
         revision = self._get_chromium_revision(filename, version)
         return self._build_snapshots_url(revision, filename)

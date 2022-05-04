@@ -558,7 +558,7 @@ class ChromeChromiumBase(Browser):
             return f.read().strip()
 
     def _get_chromium_revision(self, filename, version=None):
-        """Format a Chromium Snapshots URL to download a browser component."""
+        """Retrieve a valid Chromium revision to download a browser component."""
 
         # If a specific version is passed as an argument, we will use it.
         if version is not None:

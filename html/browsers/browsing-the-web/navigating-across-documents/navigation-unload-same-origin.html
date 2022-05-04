@@ -1,0 +1,22 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Same-origin navigation started from unload handler must be ignored</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/helpers.js"></script>
+<body>
+
+<script>
+promise_test(async () => {
+  const iframe = await setupAndWaitForIframe();
+
+  iframe.contentWindow.addEventListener("unload", () => {
+    iframe.contentWindow.location.href = "/common/blank.html?fail";
+  });
+
+  iframe.src = "/common/blank.html?pass";
+
+  await waitForIframeLoad(iframe);
+  assert_equals(iframe.contentWindow.location.search, "?pass");
+});
+</script>

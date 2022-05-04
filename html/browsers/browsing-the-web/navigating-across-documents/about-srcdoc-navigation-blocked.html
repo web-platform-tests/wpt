@@ -1,57 +1,50 @@
 <!doctype html>
-<html>
-<head>
+<meta charset="utf-8">
+<title>Navigation to about:srcdoc, not via srcdoc="", must be blocked</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-</head>
+<script src="../resources/helpers.js"></script>
 <body>
+
 <script>
-  let message_from = w => {
-    return new Promise(resolve => {
-      window.addEventListener('message', msg => {
-        if (msg.source == w) resolve(msg.data);
-      });
-    });
-  };
+promise_test(async t => {
+  const iframe = await setupAndWaitForSrcdocIframe();
 
-  let setup_iframe = async t => {
-    let iframe = document.createElement('iframe');
-    iframe.srcdoc =
-      '<script>window.parent.postMessage("srcdoc ready", "*")</scr' + 'ipt>';
-    document.body.appendChild(iframe);
-    assert_equals(await message_from(iframe.contentWindow), "srcdoc ready");
+  iframe.contentWindow.location = "/common/blank.html";
+  await waitForIframeLoad(iframe);
 
-    iframe.contentWindow.location = "resources/message-parent.html";
-    assert_equals(await message_from(iframe.contentWindow), "ready");
+  iframe.contentWindow.location = "about:srcdoc";
 
-    let srcdoc_loaded = message_from(iframe.contentWindow)
-        .then(() => "allowed");
+  // Fetching "about:srcdoc" should result in a network error, and navigating
+  // to a network error should produce an opaque-origin page. In particular,
+  // since the error page should end up being cross-origin to the parent
+  // frame, `contentDocument` should return `null`.
+  //
+  // If instead this results in a message because we reloaded the srcdoc iframe, immediately fail.
+  await Promise.race([
+    t.step_wait(() => iframe.contentDocument === null),
+    failOnMessage(iframe.contentWindow)
+  ]);
+}, "Navigations to about:srcdoc via window.location are blocked");
 
-    // Fetching "about:srcdoc" should result in a network error, and navigating
-    // to a network error should produce an opaque-origin page. In particular,
-    // since the error page should end up being cross-origin to the parent
-    // frame, `contentDocument` should return `null`.
-    let srcdoc_blocked = t.step_wait(() => iframe.contentDocument === null)
-        .then(() => "blocked");
-    return [iframe, Promise.any([srcdoc_loaded, srcdoc_blocked])];
-  };
+promise_test(async t => {
+  const iframe = await setupAndWaitForSrcdocIframe();
+  iframe.contentWindow.name = "test_frame";
 
-  promise_test(async t => {
-    let [iframe, status] = await setup_iframe(t);
-    iframe.contentWindow.location = "about:srcdoc";
+  iframe.contentWindow.location = "/common/blank.html";
+  await waitForIframeLoad(iframe);
 
-    assert_equals(await status, "blocked");
+  window.open("about:srcdoc", "test_frame");
 
-  }, "Navigations to about:srcdoc via window.location are blocked.");
-
-  promise_test(async t => {
-    let [iframe, status] = await setup_iframe(t);
-    iframe.contentWindow.name = "test_frame";
-    window.open("about:srcdoc", "test_frame");
-
-    assert_equals(await status, "blocked");
-
-  }, "Navigations to about:srcdoc via window.open() are blocked.");
+  // Fetching "about:srcdoc" should result in a network error, and navigating
+  // to a network error should produce an opaque-origin page. In particular,
+  // since the error page should end up being cross-origin to the parent
+  // frame, `contentDocument` should return `null`.
+  //
+  // If instead this results in a message because we reloaded the srcdoc iframe, immediately fail.
+  await Promise.race([
+    t.step_wait(() => iframe.contentDocument === null),
+    failOnMessage(iframe.contentWindow)
+  ]);
+}, "Navigations to about:srcdoc via window.open() are blocked");
 </script>
-</body>
-</html>

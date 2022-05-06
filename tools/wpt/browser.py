@@ -533,8 +533,7 @@ class ChromeChromiumBase(Browser):
         """Queries Chromium Snapshots and returns the latest Chromium revision number
         for the current platform.
         """
-        revision_url = ("https://storage.googleapis.com/chromium-browser-snapshots/"
-                        f"{architecture}/LAST_CHANGE")
+        revision_url = "https://storage.googleapis.com/wpt-pinned-revisions/chromium-candidate.txt"
         return get(revision_url).text.strip()
 
     def _get_chromium_download_url(self, version=None):

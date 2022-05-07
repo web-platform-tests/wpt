@@ -385,3 +385,121 @@ promise_test(t => {
     assert_array_equals(rs.events, ['pull'], 'cancel should not have been called');
   });
 }, 'abort should do nothing after the writable is errored');
+
+promise_test(async t => {
+  let resolvePullCalled;
+  const pullCalledPromise = new Promise(resolve => {
+    resolvePullCalled = resolve;
+  });
+  const rs = recordingReadableStream({
+    pull: t.step_func(() => {
+      resolvePullCalled();
+    })
+  }, { highWaterMark: 0 });
+
+  let resolveWriteCalled;
+  const writeCalledPromise = new Promise(resolve => {
+    resolveWriteCalled = resolve;
+  });
+  let resolveWrite;
+  const writePromise = new Promise(resolve => {
+    resolveWrite = resolve;
+  });
+  const ws = recordingWritableStream({
+    write: t.step_func(() => {
+      resolveWriteCalled();
+      return writePromise;
+    }),
+  }, { highWaterMark: Infinity });
+
+  rs.controller.enqueue('a');
+  assert_array_equals(rs.events, [], 'pull() has not yet been called');
+
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+  const pipeToPromise = rs.pipeTo(ws, { signal, preventCancel: true });
+
+  // The pipe must start writing the first chunk.
+  await writeCalledPromise;
+  assert_array_equals(ws.events, ['write', 'a'], 'write() must have been called once');
+  // The pipe must immediately try to read the next chunk, since the destination desired more chunks.
+  await pullCalledPromise;
+  assert_array_equals(rs.events, ['pull'], 'pull() must have been called once');
+
+  // Abort the pipe.
+  // Any chunks enqueued after aborting must not be piped to the destination.
+  abortController.abort(error1);
+  rs.controller.enqueue('b');
+  await flushAsyncEvents();
+
+  // Finish the current write, allowing the pipe to complete.
+  resolveWrite();
+
+  await promise_rejects_exactly(t, error1, pipeToPromise, 'pipeTo() should reject with abort reason');
+  assert_array_equals(rs.events, ['pull'], 'pull() must have been called once');
+  assert_array_equals(ws.events, ['write', 'a', 'abort', error1], 'write() and abort() must have been called');
+
+  rs.controller.close();
+  const reader = rs.getReader();
+  const result = await reader.read();
+  assert_object_equals(result, { value: 'b', done: false }, 'first read after pipeTo() should be correct');
+}, 'abort should stop pulling from source; preventCancel = true');
+
+promise_test(async t => {
+  let resolvePullCalled;
+  const pullCalledPromise = new Promise(resolve => {
+    resolvePullCalled = resolve;
+  });
+  const rs = recordingReadableStream({
+    pull: t.step_func(() => {
+      resolvePullCalled();
+    })
+  }, { highWaterMark: 0 });
+
+  let resolveWriteCalled;
+  const writeCalledPromise = new Promise(resolve => {
+    resolveWriteCalled = resolve;
+  });
+  let resolveWrite;
+  const writePromise = new Promise(resolve => {
+    resolveWrite = resolve;
+  });
+  const ws = recordingWritableStream({
+    write: t.step_func(() => {
+      resolveWriteCalled();
+      return writePromise;
+    }),
+  }, { highWaterMark: Infinity });
+
+  rs.controller.enqueue('a');
+  assert_array_equals(rs.events, [], 'pull() has not yet been called');
+
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+  const pipeToPromise = rs.pipeTo(ws, { signal, preventCancel: true, preventAbort: true });
+
+  // The pipe must start writing the first chunk.
+  await writeCalledPromise;
+  assert_array_equals(ws.events, ['write', 'a'], 'write() must have been called once');
+  // The pipe must immediately try to read the next chunk, since the destination desired more chunks.
+  await pullCalledPromise;
+  assert_array_equals(rs.events, ['pull'], 'pull() must have been called once');
+
+  // Abort the pipe.
+  // Any chunks enqueued after aborting must not be piped to the destination.
+  abortController.abort(error1);
+  rs.controller.enqueue('b');
+  await flushAsyncEvents();
+
+  // Finish the current write, allowing the pipe to complete.
+  resolveWrite();
+
+  await promise_rejects_exactly(t, error1, pipeToPromise, 'pipeTo() should reject with abort reason');
+  assert_array_equals(rs.events, ['pull'], 'pull() must have been called once');
+  assert_array_equals(ws.events, ['write', 'a'], 'write() must have been called once');
+
+  rs.controller.close();
+  const reader = rs.getReader();
+  const result = await reader.read();
+  assert_object_equals(result, { value: 'b', done: false }, 'first read after pipeTo() should be correct');
+}, 'abort should stop pulling from source; preventCancel = true, preventAbort = true');

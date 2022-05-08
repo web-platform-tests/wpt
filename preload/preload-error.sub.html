@@ -53,7 +53,7 @@ function runTest(api, as, description, shouldPreloadSucceed, shouldMainLoadSucce
   description += ' (' + api + ')';
 
   const url = new URL(urlWithoutLabel, location.href);
-  url.searchParams.set('label', api);
+  url.searchParams.set('label', api + Math.random());
 
   const tPreload = async_test(description + ': preload events');
 

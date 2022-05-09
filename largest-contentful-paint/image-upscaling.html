@@ -16,8 +16,11 @@
         t.add_cleanup(() => popup.close());
         const image = popup.document.createElement('img');
         image.src = imageURL;
+
+        // We decode the image to get the natural size (though it's a constant)
         await image.decode();
         const naturalSize = image.width * image.height;
+        
         const container = popup.document.createElement('div');
         container.appendChild(image);
         const applyStyle = (el, style = {}) =>
@@ -37,6 +40,8 @@
         return {lcpSize: (await Promise.any([entryReported, timeout])), naturalSize};
     }
 
+    // We set the image to display: none when testing background, so that only the background is reported
+    // and not the image itself
     const load_background_image_and_get_lcp_size = (t, style) =>
         load_image_and_get_lcp_size(t, {display: 'none'},
             {

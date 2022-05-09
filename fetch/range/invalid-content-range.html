@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+function range_rewrite_test(response, expect, label) {
+    promise_test(async t => {
+        const url = new URL('resources/video-with-invalid-range.py', location.href);
+        const params = new URLSearchParams();
+        if (response)
+            params.set('response', response);
+        url.search = params.toString();
+        const video = document.createElement('video');
+        video.autoplay = true;
+        video.muted = true;
+        video.src = url.toString();
+        const timeout = new Promise(resolve => t.step_timeout(() => resolve('timeout'), 1000));
+        const ok = new Promise(resolve => video.addEventListener('play', () => resolve('ok')));
+        t.add_cleanup(() => video.remove());
+        document.body.appendChild(video);
+        const result = await Promise.any([timeout, ok]);
+        assert_equals(result, expect ? 'ok' : 'timeout');
+    }, `A ${response} Content-Range response should be ${expect ? 'valid' : 'invalid'}`);
+}
+
+range_rewrite_test('', true);
+range_rewrite_test('0-1/1000', false);
+range_rewrite_test('bytes -10-100', false);
+range_rewrite_test('7-4', false);
+range_rewrite_test('bytes ABC-1', false);
+range_rewrite_test('80', false);
+range_rewrite_test('bytes something', false);
+range_rewrite_test('-12', false);
+range_rewrite_test('bytes 3 3', false);
+</script>
+</body>

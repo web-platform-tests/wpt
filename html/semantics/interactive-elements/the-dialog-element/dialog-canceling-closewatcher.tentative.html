@@ -41,10 +41,19 @@ then once again to close it. Repeat for the remaining dialog.
 </dialog>
 <dialog id="top">
   <span></span>
+  <button id="user-activation-button">user activation button</button>
 </dialog>
 
 <script>
-async function pressEscape() {
+async function pressEscape(userActivationElement) {
+  // Pressing escape on the dialog needs user activation or else the cancel event won't be fired.
+  if (userActivationElement) {
+    const clickPromise = new Promise(resolve => userActivationElement.onclick = resolve);
+    await test_driver.click(userActivationElement);
+    await clickPromise;
+  } else {
+    await new Promise(resolve => test_driver.bless('dialog element user activation', resolve));
+  }
   await test_driver.send_keys(document.documentElement, "\uE00C"); // ESC key
 }
 
@@ -67,31 +76,32 @@ promise_test(async () => {
   swallowInput.addEventListener('keydown', function(event) {
     event.preventDefault();
   });
+  userActivationButton = document.getElementById('user-activation-button');
 
   bottomDialog.showModal();
   topDialog.showModal();
 
-  await pressEscape();
+  await pressEscape(userActivationButton);
   assert_true(topDialog.open, 'Top dialog event listener should prevent closing.');
   assert_true(bottomDialog.open, 'Top dialog event listener should prevent closing.');
 
-  await pressEscape();
+  await pressEscape(userActivationButton);
   assert_false(topDialog.open, 'Top dialog should close.');
   assert_true(bottomDialog.open, 'Top dialog should close.');
 
   swallowInput.focus();
-  await pressEscape();
-  await pressEscape();
-  await pressEscape();
+  await pressEscape(swallowInput);
+  await pressEscape(swallowInput);
+  await pressEscape(swallowInput);
   assert_false(topDialog.open, 'Input should swallow Escape mechanism.');
   assert_true(bottomDialog.open, 'Input should swallow Escape mechanism.');
 
   normalInput.focus();
-  await pressEscape();
+  await pressEscape(normalInput);
   assert_false(topDialog.open, 'Bottom dialog event listener should prevent closing.');
   assert_true(bottomDialog.open, 'Bottom dialog event listener should prevent closing.');
 
-  await pressEscape();
+  await pressEscape(normalInput);
   assert_false(topDialog.open, 'Bottom dialog should close.');
   assert_false(bottomDialog.open, 'Bottom dialog should close.');
 

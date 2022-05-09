@@ -49,5 +49,10 @@
     test_preload_subresource('script', 'image', true);
     test_preload_subresource('script', 'script', true);
     test_preload_subresource('script', 'fetch', true);
+
+    for (const type of ['image', 'font', 'fetch']) {
+        for (const subType in resources)
+            test_preload_subresource(type, subType, false);
+    }
 </script>
 

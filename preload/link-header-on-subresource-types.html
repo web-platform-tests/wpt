@@ -5,7 +5,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resource-timing/resources/resource-loaders.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/preload/resources/preload_helper.js"></script>
+<script src="/preload/resources/subresource.js"></script>
 
 <script>
     const resources = {
@@ -54,5 +54,5 @@
         for (const subType in resources)
             test_preload_subresource(type, subType, false);
     }
-</script>
+    </script>
 

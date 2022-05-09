@@ -126,6 +126,12 @@ def test_wpt_infrastructure():
                          includes=["wptrunner_infrastructure"]) == {"wptrunner_infrastructure"}
     assert jobs.get_jobs(["infrastructure/assumptions/ahem.html"],
                          includes=["wptrunner_infrastructure"]) == {"wptrunner_infrastructure"}
+    assert jobs.get_jobs([".azure-pipelines.yml"],
+                         includes=["wptrunner_infrastructure"]) == {"wptrunner_infrastructure"}
+    assert jobs.get_jobs([".azure-pipelines_yml"],
+                         includes=["wptrunner_infrastructure"]) == set()
+    assert jobs.get_jobs(["foo/.azure-pipelines.yml"],
+                         includes=["wptrunner_infrastructure"]) == set()
 
 def test_wdspec_support():
     assert jobs.get_jobs(["webdriver/tests/support/__init__.py"],

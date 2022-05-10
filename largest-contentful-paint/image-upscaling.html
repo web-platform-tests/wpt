@@ -20,7 +20,7 @@
         // We decode the image to get the natural size (though it's a constant)
         await image.decode();
         const naturalSize = image.width * image.height;
-        
+
         const container = popup.document.createElement('div');
         container.appendChild(image);
         const applyStyle = (el, style = {}) =>

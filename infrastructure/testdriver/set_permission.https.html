@@ -14,4 +14,8 @@ promise_test(t => {
 promise_test(t => {
   return test_driver.set_permission({name: "push", userVisibleOnly: true}, "denied");
 }, "Deny Permission, omit one realm");
+
+promise_test(t => {
+  return test_driver.set_permission({name: "protocol-handler"}, "granted", true);
+}, "Grant Permission for 'protocol-handler' operations");
 </script>

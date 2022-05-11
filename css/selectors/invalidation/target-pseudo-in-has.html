@@ -15,22 +15,22 @@
 </div>
 <script>
   test((t) => {
-    var fragment = document.querySelector('#fragment')
-    var toFragment = document.querySelector('a[href="#fragment"]')
-    var toTop = document.querySelector('a[href="#"]')
+    const fragment = document.querySelector("#fragment");
+    const toFragment = document.querySelector(`a[href="#fragment"]`);
+    const toTop = document.querySelector(`a[href="#"]`);
 
-    location.hash = ''
+    location.hash = "";
 
-    assert_equals(getComputedStyle(parent1).color, 'rgb(0, 128, 0)', "parent should be green");
+    assert_equals(getComputedStyle(parent1).color, "rgb(0, 128, 0)", "parent should be green");
 
     toFragment.click()
 
-    assert_true(fragment.matches(':target'));
+    assert_true(fragment.matches(":target"));
     assert_equals(getComputedStyle(parent1).color, "rgb(154, 205, 50)", "parent should be yellowgreen on fragment click");
 
     toTop.click()
 
-    assert_equals(location.hash, '');
+    assert_equals(location.hash, "");
     assert_equals(getComputedStyle(parent1).color, "rgb(0, 128, 0)", "parent should be green without :target");
   });
 </script>

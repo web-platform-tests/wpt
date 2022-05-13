@@ -5,6 +5,7 @@ test(() => {
 }, 'setCaptureHandleConfig does not throw if handle length is 1024.');
 
 test(() => {
+  assert_true(!!navigator.mediaDevices.setCaptureHandleConfig); 
   assert_throws_js(
       TypeError,
       () => navigator.mediaDevices.setCaptureHandleConfig(
@@ -18,6 +19,7 @@ test(
     'setCaptureHandleConfig does not throw if asterisk character appears only once.');
 
 test(() => {
+  assert_true(!!navigator.mediaDevices.setCaptureHandleConfig); 
   assert_throws_dom(
       'NotSupportedError',
       () => navigator.mediaDevices.setCaptureHandleConfig(

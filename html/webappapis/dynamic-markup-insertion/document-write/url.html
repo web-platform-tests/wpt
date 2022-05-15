@@ -1,0 +1,34 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>document.URL after document.write()</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body onload="document.querySelector('iframe').contentWindow.runTest()">
+<iframe src="resources/url-incumbent.html"></iframe>
+
+<script>
+  const testUrlBeforeDocumentWrite = async_test(
+      "Document.URL before document.write()");
+  const testUrlAfterDocumentWrite = async_test(
+      "Document.URL after document.write()");
+
+  window.onmessage = event => {
+    if (event.data.name === "beforeDocumentWrite") {
+      testUrlBeforeDocumentWrite.step_func_done(() => {
+        assert_equals(event.data.url, "about:blank");
+      })();
+    } else if (event.data.name === "afterDocumentWrite") {
+      // Must be the entry global object's associated Document's URL,
+      // according to Step 12.1 of
+      // https://html.spec.whatwg.org/C/#document-open-steps
+      // The entry realm of document.write() is that of url.html,
+      // and the incumbent realm of document.write() is that of url-incumbent.html.
+      testUrlAfterDocumentWrite.step_func_done(() => {
+        assert_equals(
+            event.data.url,
+            self.origin + "/html/webappapis/dynamic-markup-insertion/document-write/url.html",
+            "must be entryDocument's URL");
+      })();
+    }
+  };
+</script>

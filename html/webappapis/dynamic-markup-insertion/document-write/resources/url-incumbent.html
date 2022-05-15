@@ -1,0 +1,22 @@
+<!doctype html>
+<meta charset="utf-8">
+<script>
+function runTest() {
+  const iframe = document.createElement("iframe");
+  document.body.appendChild(iframe);
+
+  parent.postMessage({
+      name: "beforeDocumentWrite",
+      url: iframe.contentDocument.URL},
+    "*");
+
+  iframe.contentDocument.write("");
+
+  parent.postMessage({
+      name: "afterDocumentWrite",
+      url: iframe.contentDocument.URL},
+    "*");
+
+  iframe.contentDocument.close();
+}
+</script>

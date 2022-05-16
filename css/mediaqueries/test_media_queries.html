@@ -611,7 +611,7 @@ setup({ "explicit_done": true });
     expression_should_be_known("update: none")
     expression_should_be_known("update: slow")
     expression_should_be_known("update: fast")
-    expression_should_not_be_known("update: some-random-invalid-thing")
+    expression_should_be_unknown("update: some-random-invalid-thing")
 
     // Sanity check for update
     test(function() {

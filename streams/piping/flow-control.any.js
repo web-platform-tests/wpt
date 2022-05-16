@@ -77,6 +77,38 @@ promise_test(() => {
 
 }, 'Piping from a non-empty ReadableStream into a WritableStream that does not desire chunks, but then does');
 
+promise_test(async () => {
+
+  const rs = recordingReadableStream({
+    start(controller) {
+      controller.enqueue('a');
+      controller.enqueue('b');
+      controller.close();
+    }
+  });
+
+  const ws = recordingWritableStream({}, { highWaterMark: 0 });
+
+  const writer = ws.getWriter();
+  assert_equals(writer.desiredSize, 0, 'desiredSize must be 0');
+  writer.releaseLock();
+  const pipePromise = rs.pipeTo(ws);
+
+  await flushAsyncEvents();
+  assert_array_equals(ws.events, []);
+
+  ws.controller.releaseBackpressure();
+  await flushAsyncEvents();
+  assert_array_equals(ws.events, ['write', 'a']);
+
+  ws.controller.releaseBackpressure();
+  await pipePromise;
+  assert_array_equals(rs.eventsWithoutPulls, []);
+  assert_array_equals(ws.events, ['write', 'a', 'write', 'b', 'close']);
+
+}, 'Piping from a ReadableStream to a WritableStream that does not desire chunks, but then does ' +
+   'using releaseBackpressure()');
+
 promise_test(() => {
 
   const rs = recordingReadableStream();

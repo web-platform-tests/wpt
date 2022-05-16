@@ -193,3 +193,34 @@ promise_test(t => {
     return promise_rejects_exactly(t, error1, pipePromise, 'promise returned from pipeTo() should be rejected');
   });
 }, 'cancelling the readable side of a TransformStream should abort a full pipe');
+
+promise_test(async t => {
+  const ts = new TransformStream({}, { highWaterMark: 0 });
+  const reader = ts.readable.getReader();
+  const writer = ts.writable.getWriter();
+  assert_equals(writer.desiredSize, 0, 'desiredSize should be 0');
+
+  let ready1Resolved = false;
+  const ready1 = writer.ready;
+  ready1.then(() => { ready1Resolved = true });
+  await flushAsyncEvents();
+  assert_false(ready1Resolved, 'writer.ready should be pending');
+
+  const read = reader.read();
+  await ready1;
+  assert_true(ready1Resolved, 'writer.ready should be resolved after pull()');
+  assert_equals(writer.desiredSize, 0, 'desiredSize should be 0');
+
+  writer.write('a');
+  let ready2Resolved = false;
+  const ready2 = writer.ready;
+  ready2.then(() => { ready2Resolved = true });
+  assert_not_equals(ready1, ready2, 'writer.ready should be a new promise after write()');
+  await flushAsyncEvents();
+  assert_false(ready2Resolved, 'writer.ready should be pending');
+  assert_equals(writer.desiredSize, 0, 'desiredSize should be 0');
+
+  const result = await read;
+  assert_false(result.done, 'result.done');
+  assert_equals(result.value, 'a', 'result.value');
+}, 'calling pull() resolves writer.ready with a writable HWM of 0');

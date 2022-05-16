@@ -1,0 +1,16 @@
+hpack/__init__.py,sha256=Pt27T8qdtME8DpY-_rI0I_oBO670OCt_hymhJlBlc0Y,479
+hpack/compat.py,sha256=gIyA_FOrzA3wKPXpLqJcKU-iffSwGXdJzuQUN3AN5v4,679
+hpack/exceptions.py,sha256=Rrw1Fke5Cfq72OwvwrnS6JucBvw3_bxu3o_ujtAUlrM,974
+hpack/hpack.py,sha256=NTATROnUHErtssiSR08bMgV62ehc7uNvFPnKrJi5NGw,22772
+hpack/hpack_compat.py,sha256=fS9caWAND4k_g8ciXqDpvJunczssnvYAAFIHmGr8qzc,3596
+hpack/huffman.py,sha256=nOOZTGpOXGkwbrWPkYaHNt00RVeyQeN-Lf2SKsi96x4,2521
+hpack/huffman_constants.py,sha256=4szhXrK1EEXNMKZzbSUgrG8S07Vc3ALwj7QpwLTtNh0,4628
+hpack/huffman_table.py,sha256=5yijIuaylIePwkbhWMXKf3EXspeXKY7hakpvPdSRJkg,168580
+hpack/struct.py,sha256=rMfEqhtp6KTOZ0pk33iXTFVfuhVwEUO-XZjrsQMDZ5I,1052
+hpack/table.py,sha256=6cITVnI5X-x4wxu8uA0dp9kkMck8kDFAOUupDGy0Su8,8950
+hpack-3.0.0.dist-info/DESCRIPTION.rst,sha256=a3KmUrtMvB6_oOCsF-WO51EgKWNAu5JwhHb-cO2YQr8,6161
+hpack-3.0.0.dist-info/METADATA,sha256=v0XmuzSPr5PaSa65ecn0yq_jDNz83rTBgcS3CKcaEAo,6995
+hpack-3.0.0.dist-info/RECORD,,
+hpack-3.0.0.dist-info/WHEEL,sha256=o2k-Qa-RMNIJmUdIc7KU6VWR_ErNRbWNlxDIpl7lm34,110
+hpack-3.0.0.dist-info/metadata.json,sha256=cHIa1A8fQfSGOPOb9YqdHEYzRVN1yqSmczK-UyefhJk,929
+hpack-3.0.0.dist-info/top_level.txt,sha256=nyrZLbQo-0nC6ot3YO_109pkUiTtK1M0wUJfLHuQceE,6

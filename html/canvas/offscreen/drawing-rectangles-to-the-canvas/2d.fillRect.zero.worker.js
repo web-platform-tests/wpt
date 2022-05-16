@@ -23,6 +23,7 @@ ctx.fillRect(0, 0, 100, 0);
 ctx.fillRect(0, 0, 0, 50);
 ctx.fillRect(0, 0, 0, 0);
 _assertPixel(canvas, 50,25, 0,255,0,255, "50,25", "0,255,0,255");
+
 t.done();
 
 });

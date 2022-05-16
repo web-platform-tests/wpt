@@ -19,6 +19,7 @@ var ctx = canvas.getContext('2d');
 assert_throws_js(TypeError, function() { ctx.drawImage(undefined, 0, 0); });
 assert_throws_js(TypeError, function() { ctx.drawImage(0, 0, 0); });
 assert_throws_js(TypeError, function() { ctx.drawImage("", 0, 0); });
+
 t.done();
 
 });

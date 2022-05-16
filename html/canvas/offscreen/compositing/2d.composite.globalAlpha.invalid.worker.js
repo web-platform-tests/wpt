@@ -24,6 +24,7 @@ ctx.globalAlpha = -Infinity;
 _assertSame(ctx.globalAlpha, a, "ctx.globalAlpha", "a");
 ctx.globalAlpha = NaN;
 _assertSame(ctx.globalAlpha, a, "ctx.globalAlpha", "a");
+
 t.done();
 
 });

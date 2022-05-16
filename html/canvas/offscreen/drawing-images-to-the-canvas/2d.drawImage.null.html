@@ -21,6 +21,7 @@ var canvas = new OffscreenCanvas(100, 50);
 var ctx = canvas.getContext('2d');
 
 assert_throws_js(TypeError, function() { ctx.drawImage(null, 0, 0); });
+
 t.done();
 
 });

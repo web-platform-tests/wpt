@@ -31,6 +31,7 @@ assert_throws_js(TypeError, function() { new CanvasFilter({filter: "convolveMatr
 assert_throws_js(TypeError, function() { new CanvasFilter({filter: "convolveMatrix", kernelMatrix: []}); });
 // This should not throw an error
 ctx.filter = new CanvasFilter({filter: "convolveMatrix", kernelMatrix: [[]]});
+
 t.done();
 
 });

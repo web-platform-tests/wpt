@@ -19,6 +19,7 @@ var ctx = canvas.getContext('2d');
 ctx.globalCompositeOperation = 'xor';
 ctx.globalCompositeOperation = 'clear';
 _assertSame(ctx.globalCompositeOperation, 'clear', "ctx.globalCompositeOperation", "'clear'");
+
 t.done();
 
 });

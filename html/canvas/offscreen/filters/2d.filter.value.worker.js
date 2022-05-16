@@ -46,6 +46,7 @@ _assert(ctx.filter == 'blur(5px)', "ctx.filter == 'blur(5px)'");
 
 ctx.filter = 'blur(  5px)';
 assert_equals(ctx.filter, 'blur(  5px)');
+
 t.done();
 
 });

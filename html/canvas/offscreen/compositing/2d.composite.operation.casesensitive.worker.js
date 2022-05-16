@@ -19,6 +19,7 @@ var ctx = canvas.getContext('2d');
 ctx.globalCompositeOperation = 'xor';
 ctx.globalCompositeOperation = 'Source-over';
 _assertSame(ctx.globalCompositeOperation, 'xor', "ctx.globalCompositeOperation", "'xor'");
+
 t.done();
 
 });

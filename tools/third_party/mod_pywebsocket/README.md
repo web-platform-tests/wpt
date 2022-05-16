@@ -1,5 +1,5 @@
 
-# pywebsocket3 #
+# mod_pywebsocket #
 
 The pywebsocket project aims to provide a [WebSocket](https://tools.ietf.org/html/rfc6455) standalone server.
 
@@ -10,7 +10,7 @@ Run this to read the general document:
 $ pydoc mod_pywebsocket
 ```
 
-Please see [Wiki](https://github.com/GoogleChromeLabs/pywebsocket3/wiki) for more details.
+Please see [Wiki](https://github.com/GoogleChromeLabs/mod_pywebsocket/wiki) for more details.
 
 # INSTALL #
 

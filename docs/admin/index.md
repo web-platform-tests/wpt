@@ -12,13 +12,13 @@ infrastructure which makes the project possible.
    ../README
    /tools/wptrunner/README.rst
    /tools/wptserve/docs/index.rst
-   pywebsocket3
+   mod_pywebsocket
 
 .. toctree::
    :hidden:
 
    ../tools/wptserve/README
-   ../tools/third_party/pywebsocket3/README
+   ../tools/third_party/mod_pywebsocket/README
 ```
 
 ### Indices and tables

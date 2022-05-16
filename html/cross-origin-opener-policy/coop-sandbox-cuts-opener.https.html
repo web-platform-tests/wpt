@@ -8,18 +8,9 @@
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
 <script src="resources/common.js"></script>
+<script src="resources/popup-test.js"></script>
 <body>
 <script>
-const executor_path = "/common/dispatcher/executor.html?pipe=";
-const coop_same_origin_header =
-  '|header(Cross-Origin-Opener-Policy,same-origin)';
-const coop_unsafe_none_header =
-  '|header(Cross-Origin-Opener-Policy,unsafe-none)';
-
-function getExecutorPath(uuid, origin, coop_header) {
-  return origin.origin + executor_path + coop_header  + `&uuid=${uuid}`;
-}
-
 [
   "allow-popups allow-scripts allow-same-origin",
   "allow-popups allow-scripts",
@@ -34,15 +25,18 @@ function getExecutorPath(uuid, origin, coop_header) {
     // Create a sandboxed iframe.
     const iframe = document.createElement("iframe");
     iframe.sandbox = sandboxValue;
-    iframe.src = getExecutorPath(iframe_token, SAME_ORIGIN,
-                                 coop_unsafe_none_header);
+    iframe.src = getExecutorPath(
+      iframe_token,
+      SAME_ORIGIN.origin,
+      "unsafe-none");
     document.body.append(iframe);
     t.add_cleanup(() => iframe.remove());
 
     // Open a COOP popup from the sandboxed iframe.
-    const popup_url = getExecutorPath(popup_token,
-    SAME_ORIGIN,
-    coop_same_origin_header);
+    const popup_url = getExecutorPath(
+      popup_token,
+      SAME_ORIGIN.origin,
+      "same-origin");
     send(iframe_token, `window.popup = window.open('${popup_url}')`);
 
     // This should fail. We ping the popup, if we get an answer it loaded.

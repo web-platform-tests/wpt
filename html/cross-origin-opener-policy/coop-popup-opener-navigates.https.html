@@ -13,17 +13,8 @@
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
 <script src="resources/common.js"></script>
+<script src="resources/popup-test.js"></script>
 <script>
-
-const executor_path = "/common/dispatcher/executor.html?pipe=";
-const coop_same_origin_header =
-    '|header(Cross-Origin-Opener-Policy,same-origin)';
-const coop_unsafe_none_header =
-    '|header(Cross-Origin-Opener-Policy,unsafe-none)';
-
-function getExecutorPath(uuid, origin, coop_header) {
-    return origin.origin + executor_path + coop_header  + `&uuid=${uuid}`;
-}
 
 // Note: Because we can not navigate the main page to verify the behavior,
 // we instead create another layer of popup, and navigate the intermediate
@@ -38,18 +29,18 @@ promise_test(async t => {
 
   const first_popup_url = getExecutorPath(
     first_popup_token,
-    SAME_ORIGIN,
-    coop_same_origin_header);
+    SAME_ORIGIN.origin,
+    "same-origin");
 
   const post_navigate_first_popup_url = getExecutorPath(
     post_navigate_first_popup_token,
-    SAME_ORIGIN,
-    coop_unsafe_none_header);
+    SAME_ORIGIN.origin,
+    "unsafe-none");
 
   const second_popup_url = getExecutorPath(
     second_popup_token,
-    SAME_ORIGIN,
-    coop_same_origin_header);
+    SAME_ORIGIN.origin,
+    "same-origin");
 
   // We open the first popup and then ping it, it will respond after loading.
   const first_popup = window.open(first_popup_url);

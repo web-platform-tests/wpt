@@ -9,17 +9,9 @@
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
 <script src="resources/common.js"></script>
+<script src="resources/popup-test.js"></script>
 <body>
 <script>
-const executor_path = "/common/dispatcher/executor.html?pipe=";
-const coop_same_origin_header =
-  '|header(Cross-Origin-Opener-Policy,same-origin)';
-const coop_unsafe_none_header =
-  '|header(Cross-Origin-Opener-Policy,unsafe-none)';
-
-function getExecutorPath(uuid, origin) {
-  return origin.origin + executor_path + `&uuid=${uuid}`;
-}
 
 [
   "allow-popups allow-scripts allow-same-origin",
@@ -35,16 +27,23 @@ function getExecutorPath(uuid, origin) {
     // Create a sandboxed iframe.
     const iframe = document.createElement("iframe");
     iframe.sandbox = sandboxValue;
-    iframe.src = getExecutorPath(iframe_token, SAME_ORIGIN);
+    iframe.src = getExecutorPath(
+      iframe_token,
+      SAME_ORIGIN.origin,
+      /*coop=*/"");
     document.body.append(iframe);
     t.add_cleanup(() => iframe.remove());
 
     // Open a COOP popup from the sandboxed iframe.
     // Instead of navigating directly we go through a redirect.
-    const popup_url = getExecutorPath(popup_token, SAME_ORIGIN);
+    const popup_url = getExecutorPath(
+      popup_token,
+      SAME_ORIGIN.origin,
+      /*coop=*/"");
     const redirect_url = SAME_ORIGIN.origin + "/common/redirect.py?pipe=" +
-                         coop_same_origin_header + "&location=" +
-                         encodeURIComponent(popup_url);
+                         '|header(Cross-Origin-Opener-Policy,same-origin)' +
+                         `&location=${encodeURIComponent(popup_url)}`;
+
     send(iframe_token, `window.popup = window.open('${redirect_url}')`);
 
     // This should fail. We ping the popup, if we get an answer it loaded.

@@ -3,32 +3,34 @@
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
-<script src="./resources/common.js"></script>
+<script src="resources/common.js"></script>
+<script src="resources/popup-test.js"></script>
 <script>
 
-const executor_path = '/common/dispatcher/executor.html?pipe=';
-
-const https_origin = get_host_info().HTTPS_ORIGIN;
-const coop_same_origin =
-    '|header(Cross-Origin-Opener-Policy,same-origin)';
 const csp_sandbox =
-    '|header(Content-Security-Policy, sandbox allow-scripts)';
+      '|header(Content-Security-Policy, sandbox allow-scripts)';
 
 promise_test(async test => {
   const driver_token = token();
 
   // 1. Start from a COOP:same-origin document.
   const opener_token = token();
-  const opener_url = https_origin + executor_path + coop_same_origin +
-    `&uuid=${opener_token}`;
+  const opener_url = getExecutorPath(
+    opener_token,
+    SAME_ORIGIN.origin,
+    "same-origin");
   const w = window.open(opener_url);
   add_completion_callback(() => w.close());
 
   // 2. It opens a popups, and then navigates the popup toward a same-origin
   // COOP:same-origin document with CSP:sandbox
   const openee_token = token();
-  const openee_url = https_origin + executor_path + coop_same_origin +
-    csp_sandbox + `&uuid=${openee_token}`;
+  const openee_url = getExecutorPath(
+    openee_token,
+    SAME_ORIGIN.origin,
+    "same-origin")
+  + csp_sandbox;
+
   send(opener_token, `
     openee = window.open("${openee_url}");
   `);

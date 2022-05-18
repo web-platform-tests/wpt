@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-at-rule">
+<link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-offset-section">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/web-animations/testcommon.js"></script>
+<style>
+  #container {
+    container-type: size;
+    width: 200px;
+    height: 160px;
+  }
+  #scroller {
+    overflow: scroll;
+    width: 100px;
+    height: 100px;
+    font-size: 12px;
+  }
+  #contents {
+    height: 300px;
+  }
+  @keyframes expand {
+    from { width: 100px; }
+    to { width: 200px; }
+  }
+  @scroll-timeline timeline_0px_10em {
+    source: selector(#scroller);
+    start: 0px;
+    end: 10em;
+  }
+  @scroll-timeline timeline_0px_10cqh {
+    source: selector(#scroller);
+    start: 0px;
+    end: 10cqh;
+  }
+  main > div {
+    width: 0px;
+    animation-name: expand;
+    animation-duration: 10s;
+    animation-timing-function: linear;
+  }
+  /* Ensure stable expectations if feature is not supported */
+  @supports not (animation-timeline:foo) {
+    main > div { animation-play-state: paused; }
+  }
+  #element_0px_10em { animation-timeline: timeline_0px_10em; }
+  #element_0px_10cqh { animation-timeline: timeline_0px_10cqh; }
+</style>
+<div id=container>
+  <div id=scroller>
+    <div id=contents></div>
+  </div>
+</div>
+<main>
+  <div id=element_0px_10em></div>
+  <div id=element_0px_10cqh></div>
+</main>
+<script>
+
+  // Scrolls top to 'offset', waits for a frame, then call the provided
+  // assertions function.
+  function test_scroll(element, offset, assertions, description) {
+    promise_test(async (t) => {
+      scroller.scrollTop = offset;
+      await waitForNextFrame();
+      assertions();
+    }, `${description} [${element.id}]`);
+  }
+
+  // Tests that the computed value of 'width' on element is the expected value
+  // after scrolling top to the specifed offset.
+  function test_width_at_scroll_top(element, offset, expected) {
+    test_scroll(element, offset, () => {
+      assert_equals(getComputedStyle(element).width, expected);
+    }, `Scroll at offset ${offset} updates animation correctly`);
+  }
+
+  // [0px, 10em] = [0px, 120px]
+  test_width_at_scroll_top(element_0px_10em, 0, '100px');
+  test_width_at_scroll_top(element_0px_10em, 30, '125px');
+  test_width_at_scroll_top(element_0px_10em, 60, '150px');
+  test_width_at_scroll_top(element_0px_10em, 90, '175px');
+  test_width_at_scroll_top(element_0px_10em, 120, '0px');
+
+  // [0px, 10cqh] = [0px, 16px]
+  test_width_at_scroll_top(element_0px_10cqh, 0, '100px');
+  test_width_at_scroll_top(element_0px_10cqh, 4, '125px');
+  test_width_at_scroll_top(element_0px_10cqh, 8, '150px');
+  test_width_at_scroll_top(element_0px_10cqh, 12, '175px');
+  test_width_at_scroll_top(element_0px_10cqh, 16, '0px');
+
+</script>

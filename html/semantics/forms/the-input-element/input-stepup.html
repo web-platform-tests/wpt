@@ -11,6 +11,7 @@
 <input type="month" id="month_input" max="2009-02" step="1" value="2010-02">
 <input type="time" id="time_input" max="19:13" step="60" value="20:13">
 <input type="week" id="week_input" max="2009-W02" step="1" value="2010-W02">
+<input type="number" id="number_input_nan" max="-5">
 
 <script>
 
@@ -38,11 +39,21 @@
       }, "Calling stepUp() on input -" + type + "- where value > max should not modify value.");
     }
 
+    function testStepUpNaN(id, value, type) {
+      test(() => {
+        let input = document.getElementById(id);
+        input.stepUp();
+        assert_equals(input.value, value, "value that's NaN should be updated to the max if (max < 0).");
+      }, "Calling stepDown() on input - " + type + " - where value is NaN should be updated to max if (max < 0).");
+    }
+
     testStepUpOverflow("number_input", "200", "number");
     testStepUpOverflow("date_input", "2010-02-10", "date");
     testStepUpOverflow("dtl_input", "2010-02-10T20:13", "datetime-local");
     testStepUpOverflow("month_input", "2010-02", "month");
     testStepUpOverflow("time_input", "20:13", "time");
     testStepUpOverflow("week_input", "2010-W02", "week");
+
+    testStepUpNaN("number_input_nan", "-5", "number");
 </script>
 </html>

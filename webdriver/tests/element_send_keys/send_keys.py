@@ -71,3 +71,21 @@ def test_stale_element(session, inline):
 
     response = element_send_keys(session, element, "foo")
     assert_error(response, "stale element reference")
+
+def test_cancel(session):
+    session.url = inline("")
+
+    session.execute_script("""
+        document.body.addEventListener('keydown', function(event) {
+            document.body.innerHTML = event.key;
+          });
+    """)
+    element = session.find.css("body", all=False)
+
+    response = element_send_keys(session, element, u"\ue001")
+    value = assert_success(response)
+    assert value is None
+
+    result = session.execute_script("return document.body.innerHTML;")
+
+    assert result == "Cancel"

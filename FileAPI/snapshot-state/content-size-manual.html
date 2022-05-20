@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<label>Select a file first: <input type="file" id="fileInput"></label><br>
+<button id="readyButton">Then modify the content of the selected file and click this</button><br>
+Note that it should not change the timestamp.<br>
+You'll have to set the timestamp manually:<br>
+On Linux: <code>touch -t 202201010000 foo.txt</code><br>
+On Windows (PowerShell): <code>(gci foo.txt).lastWriteTime = "2022-01-01"</code>
+<script type="module">
+  import { initialState, ready, testFileAttributes, promisifiedFileReader } from "./utils.js";
+
+  setup({ explicit_timeout: true });
+
+  testFileAttributes("File attributes should not change when the native content size changes");
+
+  promise_test(async t => {
+    await ready;
+    const arrayBuffer = await fileInput.files[0].arrayBuffer();
+    assert_less_than_equal(arrayBuffer.byteLength, initialState.size, "buffer should be smaller than the initial file size");
+  }, `File#arrayBuffer() should return clipped result by File#size`);
+
+  promise_test(async t => {
+    await ready;
+    const text = await fileInput.files[0].text();
+    const encoded = new TextEncoder().encode(text);
+    assert_less_than_equal(encoded.byteLength, initialState.size, "text should be smaller than the initial file size");
+  }, `File#text() should return clipped result by File#size`);
+
+  promise_test(async t => {
+    await ready;
+    const arrayBuffer = await new Response(await fileInput.files[0].stream()).arrayBuffer();
+    assert_less_than_equal(arrayBuffer.byteLength, initialState.size, "stream should be smaller than the initial file size");
+  }, `File#stream() should return clipped result by File#size`);
+
+  promise_test(async t => {
+    await ready;
+    const arrayBuffer = await promisifiedFileReader(fileInput.files[0], "readAsArrayBuffer");
+    assert_less_than_equal(arrayBuffer.byteLength, initialState.size, "buffer should be smaller than the initial file size");
+  }, `FileReader#readAsArrayBuffer() return clipped result by File#size`);
+
+  promise_test(async t => {
+    await ready;
+    const str = await promisifiedFileReader(fileInput.files[0], "readAsBinaryString");
+    assert_less_than_equal(str.length, initialState.size, "string should be smaller than the initial file size");
+  }, `FileReader#readAsBinaryString() return clipped result by File#size`);
+
+  promise_test(async t => {
+    await ready;
+    const url = await promisifiedFileReader(fileInput.files[0], "readAsDataURL");
+    const res = await fetch(url);
+    const arrayBuffer = await res.arrayBuffer();
+    assert_less_than_equal(arrayBuffer.byteLength, initialState.size, "buffer should be smaller than the initial file size");
+  }, `FileReader#readAsDataURL() return clipped result by File#size`);
+
+  promise_test(async t => {
+    await ready;
+    const text = await promisifiedFileReader(fileInput.files[0], "readAsText");
+    const encoded = new TextEncoder().encode(text);
+    assert_less_than_equal(encoded.byteLength, initialState.size, "text should be smaller than the initial file size");
+  }, `FileReader#readAsText() return clipped result by File#size`);
+</script>

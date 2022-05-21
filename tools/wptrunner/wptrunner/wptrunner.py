@@ -194,7 +194,7 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
                                                       run_info,
                                                       **run_test_kwargs)
 
-        if executor_cls is None:
+        if executor_cls is None and len(tests_to_run) > 0:
             logger.error(f"Unsupported test type {test_type} for product {product.name}")
             continue
 
@@ -202,7 +202,6 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
             logger.test_start(test.id)
             logger.test_end(test.id, status="SKIP")
             test_status.skipped += 1
-
         if test_type == "testharness":
             run_tests = {"testharness": []}
             for test in test_loader.tests["testharness"]:

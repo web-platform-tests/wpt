@@ -553,8 +553,6 @@ class ReftestTest(Test):
                       test_metadata):
 
         timeout = cls.long_timeout if manifest_test.timeout == "long" else cls.default_timeout
-        pac = manifest_test.pac
-
         url = manifest_test.url
 
         node = cls(manifest_file.url_base,
@@ -564,7 +562,6 @@ class ReftestTest(Test):
                    test_metadata,
                    [],
                    timeout=timeout,
-                   pac=pac,
                    path=manifest_test.path,
                    subdomain=manifest_test.subdomain,
                    **cls.cls_kwargs(manifest_test))

@@ -526,6 +526,9 @@ class SourceFile:
                 if meta == 'pac':
                     return content
 
+        if self.root is None:
+            return None
+
         if self.pac_nodes:
             return self.pac_nodes[0].attrib.get("content", None)  # type: Optional[Text]
 

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<title>Makes sure that preloaded resources trigger the onerror event</title>
+<meta name="dpi" content="2">
+<meta name="timeout" content="long">
+<meta name="pac" content="resources/proxy-all.sub.pac">
+
+<script src="/common/utils.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<body>
+<script>
+    const {HTTP_REMOTE_ORIGIN} = get_host_info();
+    promise_test(async t => {
+        const [pendingWithPreconnect, pendingWithoutPreconnect] = [true, false].map(preconnect => {
+            const win = window.open(`http://${token()}.wpt/preload/resources/preconnect.sub.html?preconnect=${preconnect}`);
+            t.add_cleanup(() => win.close());
+            return new Promise(resolve => window.addEventListener('message', ({data}) => {
+                if (preconnect === data.preconnect)
+                    resolve(data.entry);
+            }));
+        });
+
+        const [withPreconnect, withoutPreconnect] = [await pendingWithPreconnect, await pendingWithoutPreconnect];
+        assert_equals(withPreconnect.connectStart, withPreconnect.connectEnd);
+        assert_not_equals(withoutPreconnect.connectStart, withoutPreconnect.connectEnd);
+    }, "preconnect");
+</script>
+</body>
+</html>

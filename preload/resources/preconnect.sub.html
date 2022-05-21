@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<script src="/common/utils.js"></script>
+<script>
+    const params = new URLSearchParams(location.search);
+    const origin = `http://${token()}.wpt`;
+    const preconnect = params.get('preconnect') === 'true';
+    if (preconnect)
+        document.write(`<link rel="preconnect" href="${origin}">`);
+
+    new PerformanceObserver(() => {
+        const entry = performance.getEntriesByType('resource').find(e => e.name.includes(origin));
+        if (entry)
+            window.opener.postMessage({entry: entry.toJSON(), preconnect}, '*');
+    }).observe({type: 'resource'});
+
+    setTimeout(() => {
+        const script = document.createElement('script');
+        script.src = new URL('/preload/resources/with-cors.js', origin).toString();
+        document.body.appendChild(script);
+    }, 2000);
+
+</script>

@@ -283,8 +283,6 @@ class RefTest(URLManifestItem):
         extras = rv[-1]
         if self.timeout is not None:
             extras["timeout"] = self.timeout
-        if self.pac is not None:
-            extras["pac"] = self.pac
         if self.viewport_size is not None:
             extras["viewport_size"] = self.viewport_size
         if self.dpi is not None:

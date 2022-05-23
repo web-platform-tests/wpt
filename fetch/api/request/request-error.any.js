@@ -16,7 +16,7 @@ for (const { args, testName } of badRequestArgTests) {
 test(function() {
   assert_throws_js(
       TypeError,
-      () => Request(),
+      () => Request("about:blank"),
       "Calling Request constructor without 'new' must throw"
     );
 });

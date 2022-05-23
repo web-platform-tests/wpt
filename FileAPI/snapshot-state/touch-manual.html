@@ -2,8 +2,17 @@
 <meta charset="utf-8">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<label>Select a file first: <input type="file" id="fileInput"></label><br>
-<button id="readyButton">Then update the last modified timestamp ('touch') of the selected file and click this</button>
+<ol>
+  <li><label>Select a file first: <input type="file" id="fileInput"></label></li>
+  <li>
+    Update the file timestamp.
+    <ul>
+      <li>On Linux: <code>touch -t 202201010000 foo.txt</code></li>
+      <li>On Windows (PowerShell): <code>(gci foo.txt).lastWriteTime = "2022-01-01"</code></li>
+    </ul>
+  </li>
+  <li><button id="readyButton">Then click this</button></li>
+</ol>
 <script type="module">
   import { ready, testFileAttributes, promisifiedFileReader } from "./utils.js";
 

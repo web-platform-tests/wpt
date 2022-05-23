@@ -2,12 +2,27 @@
 <meta charset="utf-8">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<label>Select a file first: <input type="file" id="fileInput"></label><br>
-<button id="readyButton">Then modify the content of the selected file and click this</button><br>
-Note that it should not change the timestamp.<br>
-You'll have to set the timestamp manually:<br>
-On Linux: <code>touch -t 202201010000 foo.txt</code><br>
-On Windows (PowerShell): <code>(gci foo.txt).lastWriteTime = "2022-01-01"</code>
+<ol>
+  <li>
+    Set the file timestamp to a specific value.
+    <ul>
+      <li>On Linux: <code>touch -t 202201010000 foo.txt</code></li>
+      <li>On Windows (PowerShell): <code>(gci foo.txt).lastWriteTime = "2022-01-01"</code></li>
+    </ul>
+  </li>
+  <li><label>Select the touched file: <input type="file" id="fileInput"></label></li>
+  <li>
+    Modify the content of the selected file in various way for each test run:
+    <ol>
+      <li>Same size but different content</li>
+      <li>Smaller size</li>
+      <li>Larger size</li>
+      <li>Zero size</li>
+    </ol>
+  </li>
+  <li>Restore the file timestamp to the value used at the step 1.</li>
+  <li><button id="readyButton">Then click this</button></li>
+</ol>
 <script type="module">
   import { initialState, ready, testFileAttributes, promisifiedFileReader } from "./utils.js";
 

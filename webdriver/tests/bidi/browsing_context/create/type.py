@@ -6,7 +6,7 @@ pytestmark = pytest.mark.asyncio
 
 
 @pytest.mark.parametrize("value", ["tab", "window"])
-async def test_type(bidi_session, current_session, value):
+async def test_type(bidi_session, value):
     contexts = await bidi_session.browsing_context.get_tree(max_depth=0)
     assert len(contexts) == 1
 
@@ -31,15 +31,9 @@ async def test_type(bidi_session, current_session, value):
         url="about:blank",
     )
 
-    # Fallback to WebDriver HTTP to check that the new context has no opener.
-    initial_window = current_session.window_handle
-    current_session.window_handle = new_context_id
-
-    try:
-        opener = current_session.execute_script("return !!window.opener;")
-        assert opener is False
-    finally:
-        # Restore the current window for WebDriver HTTP before closing the window.
-        current_session.window_handle = initial_window
+    opener_protocol_value = await bidi_session.script.evaluate(
+        expression="!!window.opener",
+        target=bidi_session.script.ContextTarget(new_context_id))
+    assert opener_protocol_value["result"]["value"] is False
 
     await bidi_session.browsing_context.close(context=new_context_id)

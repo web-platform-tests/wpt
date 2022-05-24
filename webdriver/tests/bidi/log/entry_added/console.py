@@ -21,16 +21,17 @@ from . import assert_console_entry
     'null and undefined',
 ])
 async def test_text_with_argument_variation(bidi_session,
-                                            current_session,
                                             wait_for_event,
                                             log_argument,
-                                            expected_text):
+                                            expected_text,
+                                            top_context):
     await bidi_session.session.subscribe(events=["log.entryAdded"])
 
     on_entry_added = wait_for_event("log.entryAdded")
 
-    # TODO: To be replaced with the BiDi implementation of execute_script.
-    current_session.execute_script(f"console.log({log_argument})")
+    await bidi_session.script.evaluate(
+        expression=f"console.log({log_argument})",
+        target=bidi_session.script.ContextTarget(top_context["context"]))
 
     event_data = await on_entry_added
 
@@ -49,20 +50,23 @@ async def test_text_with_argument_variation(bidi_session,
     ("warn", "warning"),
 ])
 async def test_level(bidi_session,
-                     current_session,
                      wait_for_event,
+                     top_context,
                      log_method,
                      expected_level):
     await bidi_session.session.subscribe(events=["log.entryAdded"])
 
     on_entry_added = wait_for_event("log.entryAdded")
 
-    # TODO: To be replaced with the BiDi implementation of execute_script.
     if log_method == 'assert':
         # assert has to be called with a first falsy argument to trigger a log.
-        current_session.execute_script("console.assert(false, 'foo')")
+        await bidi_session.script.evaluate(
+            expression="console.assert(false, 'foo')",
+            target=bidi_session.script.ContextTarget(top_context["context"]))
     else:
-        current_session.execute_script(f"console.{log_method}('foo')")
+        await bidi_session.script.evaluate(
+            expression=f"console.{log_method}('foo')",
+            target=bidi_session.script.ContextTarget(top_context["context"]))
 
     event_data = await on_entry_added
 
@@ -70,21 +74,22 @@ async def test_level(bidi_session,
 
 
 @pytest.mark.asyncio
-async def test_timestamp(bidi_session, current_session, current_time, wait_for_event):
+async def test_timestamp(bidi_session, current_time, wait_for_event, top_context):
     await bidi_session.session.subscribe(events=["log.entryAdded"])
 
     on_entry_added = wait_for_event("log.entryAdded")
 
     time_start = current_time()
 
-    # TODO: To be replaced with the BiDi implementation of execute_async_script.
-    current_session.execute_async_script("""
-        const resolve = arguments[0];
-        setTimeout(() => {
-            console.log('foo');
-            resolve();
-        }, 100);
-        """)
+    await bidi_session.script.evaluate(
+        expression="""
+            const resolve = arguments[0];
+            setTimeout(() => {
+                console.log('foo');
+                resolve();
+            }, 100);
+        """,
+        target=bidi_session.script.ContextTarget(top_context["context"]))
 
     event_data = await on_entry_added
 
@@ -98,11 +103,14 @@ async def test_timestamp(bidi_session, current_session, current_time, wait_for_e
 async def test_new_context(bidi_session,
                            current_session,
                            wait_for_event,
-                           new_context_method_name):
+                           new_context_method_name,
+                           top_context):
     await bidi_session.session.subscribe(events=["log.entryAdded"])
 
     on_entry_added = wait_for_event("log.entryAdded")
-    current_session.execute_script("console.log('foo')")
+    await bidi_session.script.evaluate(
+        expression="console.log('foo')",
+        target=bidi_session.script.ContextTarget(top_context["context"]))
     event_data = await on_entry_added
     assert_console_entry(event_data, text="foo")
 
@@ -110,6 +118,8 @@ async def test_new_context(bidi_session,
     new_context_method()
 
     on_entry_added = wait_for_event("log.entryAdded")
-    current_session.execute_script("console.log('foo_after_refresh')")
+    await bidi_session.script.evaluate(
+        expression="console.log('foo_after_refresh')",
+        target=bidi_session.script.ContextTarget(top_context["context"]))
     event_data = await on_entry_added
     assert_console_entry(event_data, text="foo_after_refresh")

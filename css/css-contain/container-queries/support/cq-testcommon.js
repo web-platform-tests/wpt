@@ -11,3 +11,9 @@ function polyfill_declarative_shadow_dom(root) {
     polyfill_declarative_shadow_dom(shadowRoot);
   });
 }
+
+function waitForFrame() {
+  return new Promise((resolve, reject) => {
+    window.requestAnimationFrame(resolve);
+  });
+}

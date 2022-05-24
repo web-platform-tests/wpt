@@ -33,16 +33,19 @@
 
   let dialog = document.querySelector('dialog');
 
-  test(function() {
+  promise_test(async () => {
     try {
       dialog.showModal();
 
+      await waitForFrame();
       assert_equals(getComputedStyle(dialog, '::backdrop').backgroundColor, 'rgb(0, 0, 0)');
 
       container.style.width = '300px';
+      await waitForFrame();
       assert_equals(getComputedStyle(dialog, '::backdrop').backgroundColor, 'rgb(0, 128, 0)');
 
       container.style = '';
+      await waitForFrame();
       assert_equals(getComputedStyle(dialog, '::backdrop').backgroundColor, 'rgb(0, 0, 0)');
     } finally {
       dialog.close();

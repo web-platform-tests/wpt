@@ -30,7 +30,7 @@ class Script(BidiModule):
     def evaluate(self,
                  expression: str,
                  target: Target,
-                 await_promise: Optional[bool] = None, ) -> Mapping[str, Any]:
+                 await_promise: Optional[bool] = None) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "expression": expression,
             "target": target.to_param(),

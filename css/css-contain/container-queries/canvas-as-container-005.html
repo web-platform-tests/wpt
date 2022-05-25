@@ -30,7 +30,7 @@
 
   promise_test(async () => {
     canvas.style.width = "200px";
-    await waitForFrame();
+    if (waitForPolyfill) await waitForPolyfill();
     target.focus();
     assert_equals(document.activeElement, target);
   }, "Focusable after container size change");

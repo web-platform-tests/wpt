@@ -33,7 +33,7 @@
   const size_span = document.querySelector("#size > span");
 
   promise_test(async () => {
-    await waitForFrame();
+    if (waitForPolyfill) await waitForPolyfill();
     assert_equals(getComputedStyle(inline_span).color, red,
                   "Should not match for inline-size containment");
     assert_equals(getComputedStyle(size_span).color, green,
@@ -44,7 +44,7 @@
 
   promise_test(async () => {
     document.querySelector("#size").style.width = "200px";
-    await waitForFrame();
+    if (waitForPolyfill) await waitForPolyfill();
     assert_equals(getComputedStyle(size_span).backgroundColor, lime,
                   "Should match 2/1 min-ratio");
   }, "@container query with aspect-ratio change after resize");

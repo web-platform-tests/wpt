@@ -37,15 +37,15 @@
     try {
       dialog.showModal();
 
-      await waitForFrame();
+      if (waitForPolyfill) await waitForPolyfill();
       assert_equals(getComputedStyle(dialog, '::backdrop').backgroundColor, 'rgb(0, 0, 0)');
 
       container.style.width = '300px';
-      await waitForFrame();
+      if (waitForPolyfill) await waitForPolyfill();
       assert_equals(getComputedStyle(dialog, '::backdrop').backgroundColor, 'rgb(0, 128, 0)');
 
       container.style = '';
-      await waitForFrame();
+      if (waitForPolyfill) await waitForPolyfill();
       assert_equals(getComputedStyle(dialog, '::backdrop').backgroundColor, 'rgb(0, 0, 0)');
     } finally {
       dialog.close();

@@ -28,13 +28,13 @@ Ubuntu Focal and later, the package is called `python-is-python3`.
 
 ### macOS Setup
 
-The system-provided Python can be used, while `pip` and `virtualenv` can be
+The system-provided Python can be used, while `pip3` and `virtualenv` can be
 installed for the user only:
 
 ```bash
-python -m ensurepip --user
-export PATH="$PATH:$HOME/Library/Python/2.7/bin"
-pip install --user virtualenv
+python3 -m ensurepip --user
+export PATH="$PATH:$HOME/Library/Python/3.8/bin"
+pip3 install --user virtualenv
 ```
 
 To make the `PATH` change persistent, add it to your `~/.bash_profile` file or

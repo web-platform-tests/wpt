@@ -2,7 +2,12 @@ FROM ubuntu:20.04
 
 # No interactive frontend during docker build
 ENV DEBIAN_FRONTEND=noninteractive \
-    DEBCONF_NONINTERACTIVE_SEEN=true
+    DEBCONF_NONINTERACTIVE_SEEN=true \
+    TZ="UTC" \
+    SCREEN_WIDTH=1280 \
+    SCREEN_HEIGHT=1024 \
+    SCREEN_DEPTH=24 \
+    DISPLAY=:99.0
 
 # General requirements not in the base image
 RUN apt-get -qqy update \
@@ -35,44 +40,37 @@ RUN apt-get -qqy update \
     sudo \
     unzip \
     wget \
-    xvfb
-
+    xvfb \
 # python3.6 is not available by default in new versions of Ubuntu.
-RUN apt-add-repository -y ppa:deadsnakes/ppa
-
+  && apt-add-repository -y ppa:deadsnakes/ppa \
 # Ensure a `python` binary exists
-RUN apt-get -qqy update \
-    && apt-get install -qqy python-is-python3
-
+  && apt-get -qqy update \
+  && apt-get -qqy install \
+    python-is-python3 \
 # Installing just the deps of firefox and chrome is moderately tricky, so
-# just install the default versions of them, and some extra deps we happen
+# just install the default version of firefox, and some extra deps we happen
 # to know that chrome requires
-
-RUN apt-get -qqy install \
-    firefox \
-    libnss3-tools \
-    fonts-liberation \
-    indicator-application \
-    libappindicator1 \
-    libappindicator3-1 \
-    libdbusmenu-gtk3-4 \
-    libindicator3-7 \
-    libindicator7
-
-RUN apt-get -y autoremove
-
-RUN pip install --upgrade pip
-RUN pip install virtualenv
-
-ENV TZ "UTC"
-RUN echo "${TZ}" > /etc/timezone \
-  && dpkg-reconfigure --frontend noninteractive tzdata
+  && apt-get -qqy install \
+     firefox \
+     libnss3-tools \
+     fonts-liberation \
+     indicator-application \
+     libappindicator1 \
+     libappindicator3-1 \
+     libdbusmenu-gtk3-4 \
+     libindicator3-7 \
+     libindicator7 \
+  && apt-get -y autoremove \
+  && pip install --upgrade pip \
+  && pip install virtualenv \
+  && echo "${TZ}" > /etc/timezone \
+  && dpkg-reconfigure --frontend noninteractive tzdata \
+  && locale-gen en_US.UTF-8
 
 # Set the locale
-RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+ENV LANG=en_US.UTF-8 \
+  LANGUAGE=en_US:en \
+  LC_ALL=en_US.UTF-8
 
 RUN useradd test \
          --shell /bin/bash  \
@@ -83,26 +81,16 @@ RUN useradd test \
   && echo 'ALL ALL = (ALL) NOPASSWD: ALL' >> /etc/sudoers \
   && echo 'test:secret' | chpasswd
 
-ENV SCREEN_WIDTH 1280
-ENV SCREEN_HEIGHT 1024
-ENV SCREEN_DEPTH 24
-ENV DISPLAY :99.0
-
 USER test
 
 WORKDIR /home/test
 
 # Remove information on how to use sudo on login
-RUN sudo echo ""
+RUN sudo echo "" \
+  && mkdir -p /home/test/artifacts \
+  && mkdir -p /home/test/bin
 
-RUN mkdir -p /home/test/artifacts
-RUN mkdir -p /home/test/bin
+ENV PATH="/home/test/.local/bin:${PATH}"
 
-ENV PATH="/home/test/bin:/home/test/.local/bin:${PATH}"
-
-WORKDIR /home/test/
-
-COPY .bashrc /home/test/.bashrc
-
-COPY start.sh /home/test/start.sh
-COPY retry.py /home/test/bin/retry
+COPY .bashrc start.sh /home/test/
+COPY retry.py /home/test/.local/bin/retry

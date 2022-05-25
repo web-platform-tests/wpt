@@ -19,15 +19,15 @@ function polyfill_declarative_shadow_dom(root) {
  * 
  * By calling `window.setWaitForPolyfill`, a polyfill can provide a function that
  * tests can use to wait until it's safe to read the effects of writes. Immediately
- * prior to attempt to read any layout or style state, tests should await the function,
- * if it is set:
+ * prior to attempt to read any layout or style state, tests should check if the
+ * function has been set, and if so, await it:
  * 
  *     if (waitForPolyfill) await waitForPolyfill();
  *     assert_equals(getComputedStyle(target), ...);
  * 
  * Note: Even though it would be safe to `await null`, an additional microtask could
- * hide implementation bugs in browser implementations. Therefore, a test should always
- * check and only wait `waitForPolyfill` is set.
+ * hide bugs in browser implementations. Therefore, a test should always check first,
+ * and only await if `waitForPolyfill` has been explicitly set.
  */
 var waitForPolyfill = null;
 window.setWaitForPolyfill = function setWaitForPolyfill(impl) {

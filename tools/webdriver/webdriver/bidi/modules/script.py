@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Optional, Mapping, MutableMapping, Union, Dict
+from typing import Any, Optional, Mapping, List, MutableMapping, Union, Dict
 
 from ._module import BidiModule, command
 
@@ -53,3 +53,30 @@ class Script(BidiModule):
         if "result" not in result:
             raise ScriptEvaluateResultException(result)
         return result["result"]
+
+    @command
+    def call_function(self,
+                      function_declaration: str,
+                      target: Target,
+                      arguments: Optional[List[Mapping[str, Any]]] = None,
+                      this: Optional[Mapping[str, Any]] = None,
+                      ownership: Optional[str] = None,
+                      await_promise: Optional[bool] = None) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {
+            "functionDeclaration": function_declaration,
+            "target": target.to_param(),
+        }
+
+        if await_promise is not None:
+            params["awaitPromise"] = await_promise
+        if arguments is not None:
+            params["arguments"] = arguments
+        if this is not None:
+            params["this"] = this
+        if ownership is not None:
+            params["ownership"] = ownership
+        return params
+
+    @evaluate.result
+    def _callFunction(self, result: Mapping[str, Any]) -> Any:
+        return result

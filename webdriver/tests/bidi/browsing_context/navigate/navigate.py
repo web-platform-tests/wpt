@@ -7,17 +7,21 @@ from . import navigate_and_assert
 pytestmark = pytest.mark.asyncio
 
 
-async def test_payload(bidi_session, inline, new_tab):
+async def test_payload(bidi_session, inline):
+    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
+
     url = inline("<div>foo</div>")
     result = await bidi_session.browsing_context.navigate(
-        context=new_tab["context"], url=url
+        context=new_tab, url=url
     )
 
     assert "navigation" in result
     assert result["url"] == url
 
 
-async def test_interactive_simultaneous_navigation(bidi_session, inline, new_tab):
+async def test_interactive_simultaneous_navigation(bidi_session, inline):
+    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
+
     frame1_start_url = inline("frame1")
     frame2_start_url = inline("frame2")
 
@@ -65,12 +69,14 @@ async def test_interactive_simultaneous_navigation(bidi_session, inline, new_tab
     frame1_result = frame1_task.result()
     assert frame1_result["url"] == frame1_url
 
-    contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
+    contexts = await bidi_session.browsing_context.get_tree(root=new_tab)
     assert contexts[0]["children"][0]["url"] == frame1_url
     assert contexts[0]["children"][1]["url"] == frame2_url
 
 
-async def test_relative_url(bidi_session, new_tab, url):
+async def test_relative_url(bidi_session, url):
+    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
+
     url_before = url(
         "/webdriver/tests/bidi/browsing_context/navigate/support/empty.html"
     )

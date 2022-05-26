@@ -3,23 +3,22 @@ import pytest
 from webdriver.bidi.error import UnknownErrorException
 
 
-async def navigate_and_assert(bidi_session, context, url, wait="complete", expected_error=False):
+async def navigate_and_assert(bidi_session, context_id, url, wait="complete", expected_error=False):
     if expected_error:
         with pytest.raises(UnknownErrorException):
             await bidi_session.browsing_context.navigate(
-                context=context['context'], url=url, wait=wait
+                context=context_id, url=url, wait=wait
             )
-
     else:
         result = await bidi_session.browsing_context.navigate(
-            context=context['context'], url=url, wait=wait
+            context=context_id, url=url, wait=wait
         )
         assert result["url"] == url
 
         contexts = await bidi_session.browsing_context.get_tree(
-            root=context['context']
+            root=context_id
         )
-        assert len(contexts) == 1
+        assert len(contexts) == 1, f"Should be only 1 context. {len(contexts)} found instead."
         assert contexts[0]["url"] == url
 
         return contexts

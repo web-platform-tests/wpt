@@ -8,20 +8,26 @@ PAGE_ABOUT_BLANK = "about:blank"
 PAGE_EMPTY = "/webdriver/tests/bidi/browsing_context/navigate/support/empty.html"
 
 
-async def test_navigate_from_single_page(bidi_session, new_tab, url):
+async def test_navigate_from_single_page(bidi_session, url):
+    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
+
     await navigate_and_assert(bidi_session, new_tab, url(PAGE_EMPTY))
     await navigate_and_assert(bidi_session, new_tab, PAGE_ABOUT_BLANK)
 
 
-async def test_navigate_from_frameset(bidi_session, inline, new_tab, url):
+async def test_navigate_from_frameset(bidi_session, inline, url):
+    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
+
     frame_url = url(PAGE_EMPTY)
     url_before = inline(f"<frameset><frame src='{frame_url}'/></frameset")
-    await navigate_and_assert(bidi_session, new_tab, url_before)
 
+    await navigate_and_assert(bidi_session, new_tab, url_before)
     await navigate_and_assert(bidi_session, new_tab, PAGE_ABOUT_BLANK)
 
 
-async def test_navigate_in_iframe(bidi_session, inline, new_tab):
+async def test_navigate_in_iframe(bidi_session, inline):
+    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
+
     frame_start_url = inline("frame")
     url_before = inline(f"<iframe src='{frame_start_url}'></iframe>")
     contexts = await navigate_and_assert(bidi_session, new_tab, url_before)

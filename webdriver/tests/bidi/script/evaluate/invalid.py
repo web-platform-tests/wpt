@@ -1,0 +1,78 @@
+import pytest
+import webdriver.bidi.error as error
+from ... import recursive_compare
+
+pytestmark = pytest.mark.asyncio
+
+
+@pytest.mark.parametrize("context", [None, False, 42, {}, []])
+async def test_params_context_invalid_type(bidi_session, context):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.script.evaluate(
+            expression="1 + 2",
+            target=bidi_session.script.ContextTarget(context))
+
+
+async def test_params_context_unknown(bidi_session):
+    with pytest.raises(error.NoSuchFrameException):
+        await bidi_session.script.evaluate(
+            expression="1 + 2",
+            target=bidi_session.script.ContextTarget("_UNKNOWN_"))
+
+
+@pytest.mark.parametrize("realm", [None, False, 42, {}, []])
+async def test_params_realm_invalid_type(bidi_session, realm):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.script.evaluate(
+            expression="1 + 2",
+            target=bidi_session.script.RealmTarget(realm))
+
+
+async def test_params_realm_unknown(bidi_session):
+    with pytest.raises(error.NoSuchFrameException):
+        await bidi_session.script.evaluate(
+            expression="1 + 2",
+            target=bidi_session.script.RealmTarget("_UNKNOWN_"))
+
+
+@pytest.mark.parametrize("expression", [None, False, 42, {}, []])
+async def test_params_expression_invalid_type(bidi_session, top_context, expression):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.script.evaluate(
+            expression=expression,
+            target=bidi_session.script.ContextTarget(top_context["context"]))
+
+
+async def test_params_expression_invalid_script(bidi_session, top_context):
+    result = await bidi_session.script.evaluate(
+        expression="))) !!@@## some invalid JS script (((",
+        target=bidi_session.script.ContextTarget(top_context["context"]))
+    recursive_compare({
+        'exceptionDetails': {
+            'columnNumber': 0,
+            'exception': {
+                'objectId': '__any_value__',
+                'type': 'error'},
+            'lineNumber': 0,
+            'stackTrace': {
+                'callFrames': []},
+            'text': "__any_value__"}},
+        result, ["objectId", "text"])
+
+
+@pytest.mark.parametrize("await_promise", [None, "False", 0, 42, {}, []])
+async def test_params_await_promise_invalid_type(bidi_session, top_context, await_promise):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.script.evaluate(
+            expression="1 + 2",
+            await_promise=await_promise,
+            target=bidi_session.script.ContextTarget(top_context["context"]))
+
+
+@pytest.mark.parametrize("result_ownership", [None, False, "_UNKNOWN_", 42, {}, []])
+async def test_params_await_promise_invalid_type(bidi_session, top_context, result_ownership):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.script.evaluate(
+            expression="1 + 2",
+            result_ownership=result_ownership,
+            target=bidi_session.script.ContextTarget(top_context["context"]))

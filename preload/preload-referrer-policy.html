@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
-<title>Link headers do not support the referrerpolicy attribute</title>
+<title>The preload's referrerpolicy attribute should be respected</title>
 <meta name="timeout" content="long">
 <script src="resources/dummy.js?link-header-preload2"></script>
 <script src="/common/get-host-info.sub.js"></script>
@@ -9,6 +9,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/preload/resources/preload_helper.js"></script>
 <body>
+    <p>The preload's referrerpolicy attribute should be respected,
+    and consumed regardless of consumer referrer policy</p>
 <script>
 window.referrers = {};
 const {REMOTE_ORIGIN} = get_host_info();

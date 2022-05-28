@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<body>
+<script>
+window.referrers = {};
+const params = new URLSearchParams(location.search);
+const href = new URL(params.get('href'), location.href).toString();
+new PerformanceObserver(async list => {
+    if (!list.getEntriesByName(href).length)
+        return;
+
+    const script = document.createElement('script');
+    script.src = href;
+    script.referrerPolicy = params.get('resource-policy');
+    const loaded = new Promise(resolve => script.addEventListener('load', resolve));
+    document.body.appendChild(script);
+    await loaded;
+    window.parent.postMessage({
+        referrers: window.referrers
+    }, '*');
+}).observe({type: 'resource', buffered: true})
+</script>
+</body>

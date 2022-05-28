@@ -175,6 +175,8 @@ class BrowserManager:
 
     def update_settings(self, test):
         browser_settings = self.browser.settings(test)
+        if test.pac is not None:
+            print(browser_settings)
         restart_required = ((self.browser_settings is not None and
                              self.browser_settings != browser_settings) or
                             (self.last_test != test and test.expected() == "CRASH"))

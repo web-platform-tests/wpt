@@ -4,7 +4,6 @@ import json
 import os
 import sys
 from datetime import datetime, timedelta
-from urllib.parse import urljoin
 
 import wptserve
 from wptserve import sslutils
@@ -176,7 +175,7 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
                        run_info=run_info,
                        extra={"run_by_dir": run_test_kwargs["run_by_dir"]})
     for test_type in run_test_kwargs["test_types"]:
-        tests_to_run = test_loader.tests[test_type]
+        logger.info(f"Running {test_type} tests")
 
         browser_cls = product.get_browser_cls(test_type)
 
@@ -194,7 +193,7 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
                                                       run_info,
                                                       **run_test_kwargs)
 
-        if executor_cls is None and len(tests_to_run) > 0:
+        if executor_cls is None:
             logger.error(f"Unsupported test type {test_type} for product {product.name}")
             continue
 
@@ -202,6 +201,10 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
             logger.test_start(test.id)
             logger.test_end(test.id, status="SKIP")
             test_status.skipped += 1
+<<<<<<< HEAD
+=======
+
+>>>>>>> Revert wptrunner changes
         if test_type == "testharness":
             run_tests = {"testharness": []}
             for test in test_loader.tests["testharness"]:

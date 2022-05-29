@@ -178,7 +178,6 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
         logger.info(f"Running {test_type} tests")
 
         browser_cls = product.get_browser_cls(test_type)
-
         browser_kwargs = product.get_browser_kwargs(logger,
                                                     test_type,
                                                     run_info,

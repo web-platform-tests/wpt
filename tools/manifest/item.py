@@ -366,18 +366,11 @@ class WebDriverSpecTest(URLManifestItem):
         # type: () -> Optional[Text]
         return self._extras.get("timeout")
 
-    @property
-    def pac(self):
-        # type: () -> Optional[Text]
-        return self._extras.get("pac")
-
     def to_json(self):
         # type: () -> Tuple[Optional[Text], Dict[Text, Any]]
         rv = super().to_json()
         if self.timeout is not None:
             rv[-1]["timeout"] = self.timeout
-        if self.pac is not None:
-            rv[-1]["pac"] = self.pac
         return rv
 
 

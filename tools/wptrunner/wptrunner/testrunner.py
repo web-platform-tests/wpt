@@ -4,6 +4,7 @@ import threading
 import traceback
 from queue import Empty
 from collections import namedtuple
+from urllib.parse import urljoin
 
 from mozlog import structuredlog, capture
 
@@ -167,6 +168,7 @@ class BrowserManager:
         self.no_timeout = no_timeout
         self.browser_settings = None
         self.last_test = None
+        self.pac = None
 
         self.started = False
 
@@ -175,13 +177,14 @@ class BrowserManager:
 
     def update_settings(self, test):
         browser_settings = self.browser.settings(test)
-        if test.pac is not None:
-            print(browser_settings)
+
         restart_required = ((self.browser_settings is not None and
                              self.browser_settings != browser_settings) or
+                            self.pac != test.pac or
                             (self.last_test != test and test.expected() == "CRASH"))
         self.browser_settings = browser_settings
         self.last_test = test
+        self.pac = test.pac
         return restart_required
 
     def init(self, group_metadata):
@@ -482,6 +485,16 @@ class TestRunnerManager(threading.Thread):
             return RunnerManagerState.error()
 
         self.browser.update_settings(self.state.test)
+        if self.browser.pac is not None:
+            server_config=self.executor_kwargs["server_config"]
+            pac = urljoin(f'http://{server_config["server_host"]}:{server_config["ports"]["http"][0]}', self.browser.pac)
+            if not "capabilities" in self.executor_kwargs:
+                self.executor_kwargs["capabilities"] = {}
+
+            self.executor_kwargs["capabilities"]["proxy"] = {
+                "proxyType": "pac",
+                "proxyAutoconfigUrl": pac
+            }
 
         result = self.browser.init(self.state.group_metadata)
         if result is Stop:
@@ -504,6 +517,7 @@ class TestRunnerManager(threading.Thread):
         assert self.command_queue is not None
         assert self.remote_queue is not None
         self.logger.info("Starting runner")
+
         executor_browser_cls, executor_browser_kwargs = self.browser.browser.executor_browser()
 
         args = (self.remote_queue,
@@ -557,7 +571,6 @@ class TestRunnerManager(threading.Thread):
     def run_test(self):
         assert isinstance(self.state, RunnerManagerState.running)
         assert self.state.test is not None
-
         if self.browser.update_settings(self.state.test):
             self.logger.info("Restarting browser for new test environment")
             return RunnerManagerState.restarting(self.state.test,

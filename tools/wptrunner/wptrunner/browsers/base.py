@@ -1,5 +1,3 @@
-# mypy: allow-untyped-defs
-
 import enum
 import errno
 import os
@@ -165,6 +163,7 @@ class NullBrowser(Browser):
         super().__init__(logger)
 
     def start(self, **kwargs):
+        print('no-op')
         """No-op browser to use in scenarios where the TestRunnerManager shouldn't
         actually own the browser process (e.g. Servo where we start one browser
         per test)"""

@@ -5,6 +5,7 @@ import platform
 import socket
 import traceback
 from abc import ABCMeta, abstractmethod
+from urllib.parse import urljoin
 
 import mozprocess
 
@@ -163,7 +164,6 @@ class NullBrowser(Browser):
         super().__init__(logger)
 
     def start(self, **kwargs):
-        print('no-op')
         """No-op browser to use in scenarios where the TestRunnerManager shouldn't
         actually own the browser process (e.g. Servo where we start one browser
         per test)"""
@@ -311,6 +311,7 @@ class WebDriverBrowser(Browser):
         self._output_handler = None
         self._cmd = None
         self._proc = None
+        self._capabilities = None
 
     def make_command(self):
         """Returns the full command for starting the server process as a list."""
@@ -332,6 +333,8 @@ class WebDriverBrowser(Browser):
     def _run_server(self, group_metadata, **kwargs):
         cmd = self.make_command()
         self._output_handler = self.create_output_handler(cmd)
+        if "capabilties" in kwargs:
+            self._capabilities = kwargs["capabilities"]
 
         self._proc = mozprocess.ProcessHandler(
             cmd,
@@ -397,6 +400,20 @@ class WebDriverBrowser(Browser):
         self.stop()
 
     def executor_browser(self):
-        return ExecutorBrowser, {"webdriver_url": self.url,
+        args = {"webdriver_url": self.url,
                                  "host": self.host,
                                  "port": self.port}
+        if self._capabilities is not None:
+            args["capabilities"] = self._capabilities
+
+        return ExecutorBrowser, args
+
+    def settings(self, test, server_config=None):
+        if test.pac is None:
+            return {}
+        else:
+            self._capabilities = {"proxy": {
+                "proxyType": "pac",
+                "proxyAutoconfigUrl": urljoin(f'http://{server_config["server_host"]}:{server_config["ports"]["http"][0]}', test.pac)
+            }}
+            return self._capabilities

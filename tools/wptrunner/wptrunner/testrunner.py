@@ -162,29 +162,26 @@ def start_runner(runner_command_queue, runner_result_queue,
 
 
 class BrowserManager:
-    def __init__(self, logger, browser, command_queue, no_timeout=False):
+    def __init__(self, logger, browser, command_queue, no_timeout=False, server_config=None):
         self.logger = logger
         self.browser = browser
         self.no_timeout = no_timeout
         self.browser_settings = None
         self.last_test = None
-        self.pac = None
 
         self.started = False
-
+        self.server_config = server_config
         self.init_timer = None
         self.command_queue = command_queue
 
     def update_settings(self, test):
-        browser_settings = self.browser.settings(test)
+        browser_settings = self.browser.settings(test, server_config=self.server_config)
 
         restart_required = ((self.browser_settings is not None and
                              self.browser_settings != browser_settings) or
-                            self.pac != test.pac or
                             (self.last_test != test and test.expected() == "CRASH"))
         self.browser_settings = browser_settings
         self.last_test = test
-        self.pac = test.pac
         return restart_required
 
     def init(self, group_metadata):
@@ -354,6 +351,7 @@ class TestRunnerManager(threading.Thread):
             self.browser = BrowserManager(self.logger,
                                           browser,
                                           self.command_queue,
+                                          server_config=self.executor_kwargs["server_config"],
                                           no_timeout=self.debug_info is not None)
             dispatch = {
                 RunnerManagerState.before_init: self.start_init,
@@ -485,16 +483,6 @@ class TestRunnerManager(threading.Thread):
             return RunnerManagerState.error()
 
         self.browser.update_settings(self.state.test)
-        if self.browser.pac is not None:
-            server_config=self.executor_kwargs["server_config"]
-            pac = urljoin(f'http://{server_config["server_host"]}:{server_config["ports"]["http"][0]}', self.browser.pac)
-            if not "capabilities" in self.executor_kwargs:
-                self.executor_kwargs["capabilities"] = {}
-
-            self.executor_kwargs["capabilities"]["proxy"] = {
-                "proxyType": "pac",
-                "proxyAutoconfigUrl": pac
-            }
 
         result = self.browser.init(self.state.group_metadata)
         if result is Stop:

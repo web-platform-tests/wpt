@@ -227,7 +227,7 @@ class Test:
         self.path = path
         # self.pac will be an absolute path
         if pac is not None:
-            self.pac = urljoin(urljoin(url_base, os.path.relpath(path, tests_root)), pac)
+            self.pac = urljoin(self.url, pac)
 
         self.subdomain = subdomain
         self.environment = {"url_base": url_base,

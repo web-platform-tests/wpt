@@ -435,7 +435,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         TestharnessExecutor.__init__(self, logger, browser, server_config,
                                      timeout_multiplier=timeout_multiplier,
                                      debug_info=debug_info)
-        self.protocol = self.protocol_cls(self, browser, capabilities)
+        self.protocol = self.protocol_cls(self, browser, capabilities, server_config=server_co nfig)
         with open(os.path.join(here, "testharness_webdriver_resume.js")) as f:
             self.script_resume = f.read()
         with open(os.path.join(here, "window-loaded.js")) as f:

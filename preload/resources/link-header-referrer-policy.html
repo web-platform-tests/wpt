@@ -6,7 +6,8 @@ window.referrers = {};
 const params = new URLSearchParams(location.search);
 const href = new URL(params.get('href'), location.href).toString();
 new PerformanceObserver(async list => {
-    if (!list.getEntriesByName(href).length)
+    const entries = list.getEntriesByName(href).length;
+    if (!entries)
         return;
 
     const script = document.createElement('script');
@@ -16,7 +17,8 @@ new PerformanceObserver(async list => {
     document.body.appendChild(script);
     await loaded;
     window.parent.postMessage({
-        referrers: window.referrers
+        referrers: window.referrers,
+        entries
     }, '*');
 }).observe({type: 'resource', buffered: true})
 </script>

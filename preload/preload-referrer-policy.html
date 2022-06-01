@@ -29,12 +29,12 @@ const loaders = {
         const done = new Promise(resolve => {
             window.addEventListener('message', ({data}) => {
                 if (id in data.referrers)
-                    resolve({actualReferrer: data.referrers[id]});
+                    resolve({actualReferrer: data.referrers[id], entries: data.entries});
             })
         });
         document.body.appendChild(iframe);
-        const {actualReferrer} = await done;
-        return {actualReferrer, unsafe: iframe.src};
+        const {actualReferrer, entries} = await done;
+        return {actualReferrer, unsafe: iframe.src, entries};
     },
     element: async (t, {preloadPolicy, resourcePolicy, href, id}) => {
         const link = document.createElement('link');
@@ -52,17 +52,17 @@ const loaders = {
         const loaded = new Promise(resolve => script.addEventListener('load', resolve));
         document.body.appendChild(script);
         await loaded;
-        return {unsafe: location.href, actualReferrer: window.referrers[id]}
+        return {unsafe: location.href, actualReferrer: window.referrers[id], entries: performance.getEntriesByName(script.src).length}
     },
-}
+};
+
 function test_referrer_policy(preloadPolicy, resourcePolicy, crossOrigin, type) {
     promise_test(async t => {
         const id = token();
         const href = `${crossOrigin ? REMOTE_ORIGIN : ''}/preload/resources/echo-referrer.py?uid=${id}`;
-        const {actualReferrer, unsafe} = await loaders[type](t, {preloadPolicy, resourcePolicy, id, href})
+        const {actualReferrer, unsafe, entries} = await loaders[type](t, {preloadPolicy, resourcePolicy, href, id})
+        assert_equals(entries, 1);
         const origin = window.origin + '/';
-//        if (type === 'header')
-//            assert_equals(actualReferrer, preloadPolicy === 'no-referrer' ? '' : crossOrigin ? origin : unsafe);
         switch (preloadPolicy) {
             case '':
                 assert_equals(actualReferrer, crossOrigin ? origin : unsafe);

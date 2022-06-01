@@ -11,16 +11,6 @@ test(() => {
 }, 'Test toString propagation exception.');
 
 test(() => {
-  try {
-    var foo = {toString:function(){new SharedWorker(foo)}};
-    new SharedWorker(foo);
-  } catch(ex) {
-    assert_true(true, 'trying to create Sharedworkers recursively should result in an: ' +
-                ex + 'exception.')
-  }
-}, 'Test recursive SharedWorker creation.');
-
-test(() => {
   assert_throws_js(TypeError,
                    function() { new SharedWorker(); },
                    'invoking SharedWorker constructor without arguments should result ' +

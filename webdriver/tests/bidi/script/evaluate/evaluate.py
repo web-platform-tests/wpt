@@ -25,7 +25,7 @@ async def test_exception(bidi_session, top_context):
         "exceptionDetails": {
             'columnNumber': 0,
             'exception': {
-                'objectId': '__any_value__',
+                'handle': '__any_value__',
                 'type': 'error'},
             'lineNumber': 0,
             'stackTrace': {
@@ -35,7 +35,7 @@ async def test_exception(bidi_session, top_context):
                     'lineNumber': 0,
                     'url': ''}]},
             'text': '__any_value__'}},
-        result, ["objectId", "text"])
+        result, ["handle", "text"])
 
 
 @pytest.mark.asyncio
@@ -61,8 +61,8 @@ async def test_resolved_promise_with_wait_promise_false(bidi_session,
     recursive_compare({
         "result": {
             "type": "promise",
-            "objectId": "__any_value__"
-        }}, result, ["objectId"])
+            "handle": "__any_value__"
+        }}, result, ["handle"])
 
 
 @pytest.mark.asyncio
@@ -105,8 +105,8 @@ async def test_rejected_promise_with_wait_promise_false(bidi_session,
     recursive_compare({
         "result": {
             "type": "promise",
-            "objectId": "__any_value__"
-        }}, result, ["objectId"])
+            "handle": "__any_value__"
+        }}, result, ["handle"])
 
 
 @pytest.mark.asyncio
@@ -125,7 +125,7 @@ async def test_rejected_promise_with_wait_promise_true(bidi_session,
             'lineNumber': 0,
             'stackTrace': {'callFrames': []},
             'text': '__any_value__'}},
-        result, ["objectId", "text"])
+        result, ["handle", "text"])
 
 
 @pytest.mark.asyncio
@@ -143,4 +143,4 @@ async def test_rejected_promise_with_wait_promise_omitted(bidi_session,
             'lineNumber': 0,
             'stackTrace': {'callFrames': []},
             'text': '__any_value__'}},
-        result, ["objectId", "text"])
+        result, ["handle", "text"])

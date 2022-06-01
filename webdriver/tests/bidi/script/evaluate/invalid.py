@@ -51,13 +51,13 @@ async def test_params_expression_invalid_script(bidi_session, top_context):
         'exceptionDetails': {
             'columnNumber': 0,
             'exception': {
-                'objectId': '__any_value__',
+                'handle': '__any_value__',
                 'type': 'error'},
             'lineNumber': 0,
             'stackTrace': {
                 'callFrames': []},
             'text': "__any_value__"}},
-        result, ["objectId", "text"])
+        result, ["handle", "text"])
 
 
 @pytest.mark.parametrize("await_promise", [None, "False", 0, 42, {}, []])

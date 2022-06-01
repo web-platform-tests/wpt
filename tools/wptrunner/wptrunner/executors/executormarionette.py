@@ -711,6 +711,7 @@ class MarionetteProtocol(Protocol):
         super().__init__(executor, browser)
         self.marionette = None
         self.marionette_port = browser.marionette_port
+        self.pac = browser.pac
         self.capabilities = capabilities
         if hasattr(browser, "capabilities"):
             if self.capabilities is None:

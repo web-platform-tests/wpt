@@ -9,6 +9,7 @@ import tempfile
 import time
 from abc import ABCMeta, abstractmethod
 from http.client import HTTPConnection
+from urllib.parse import urljoin
 
 import mozinfo
 import mozleak
@@ -165,7 +166,6 @@ def env_options():
 
 
 def run_info_extras(**kwargs):
-
     def get_bool_pref_if_exists(pref):
         for key, value in kwargs.get('extra_prefs', []):
             if pref == key:
@@ -276,6 +276,7 @@ class FirefoxInstanceManager:
         self.stackfix_dir = stackfix_dir
         self.symbols_path = symbols_path
         self.asan = asan
+        self.pac = None
 
         self.previous = None
         self.current = None
@@ -310,6 +311,11 @@ class FirefoxInstanceManager:
 
         marionette_port = get_free_port()
         profile.set_preferences({"marionette.port": marionette_port})
+        if self.pac is not None:
+            profile.set_preferences({
+                "network.proxy.type": 2,
+                "network.proxy.autoconfig_url": self.pac
+            })
 
         env = get_environ(self.logger, self.binary, self.debug_info, self.stylo_threads,
                           self.headless, self.chaos_mode_flags)
@@ -335,7 +341,7 @@ class FirefoxInstanceManager:
                                process_class=ProcessHandler,
                                process_args={"processOutputLine": [output_handler]})
         instance = BrowserInstance(self.logger, runner, marionette_port,
-                                   output_handler, leak_report_file)
+                                   output_handler, leak_report_file,)
 
         self.logger.debug("Starting Firefox")
         runner.start(debug_args=debug_args,
@@ -739,7 +745,6 @@ class FirefoxBrowser(Browser):
         self.symbols_path = symbols_path
         self.stackwalk_binary = stackwalk_binary
 
-        self.asan = asan
         self.leak_check = leak_check
 
         self.specialpowers_path = specialpowers_path
@@ -774,17 +779,19 @@ class FirefoxBrowser(Browser):
                                                      symbols_path,
                                                      asan)
 
-    def settings(self, test):
+    def settings(self, test, server_config=None):
         self._settings = {"check_leaks": self.leak_check and not test.leaks,
                           "lsan_disabled": test.lsan_disabled,
                           "lsan_allowed": test.lsan_allowed,
                           "lsan_max_stack_depth": test.lsan_max_stack_depth,
                           "mozleak_allowed": self.leak_check and test.mozleak_allowed,
                           "mozleak_thresholds": self.leak_check and test.mozleak_threshold,
+                          "pac": urljoin(f'http://{server_config["server_host"]}:{server_config["ports"]["http"][0]}', test.pac),
                           "special_powers": self.specialpowers_path and test.url_base == "/_mozilla/"}
         return self._settings
 
     def start(self, group_metadata=None, **kwargs):
+        self.instance_manager.pac = self._settings.get("pac", None)
         self.instance = self.instance_manager.get()
         self.instance.output_handler.start(group_metadata,
                                            **kwargs)
@@ -809,6 +816,7 @@ class FirefoxBrowser(Browser):
             extensions.append(self.specialpowers_path)
         return ExecutorBrowser, {"marionette_port": self.instance.marionette_port,
                                  "extensions": extensions,
+                                 "pac": self._settings.get("pac", None),
                                  "supports_devtools": True}
 
     def check_crash(self, process, test):
@@ -929,7 +937,7 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
         super().cleanup()
         self.profile.cleanup()
 
-    def settings(self, test):
+    def settings(self, test, server_config=None):
         return {"check_leaks": self.leak_check and not test.leaks,
                 "lsan_disabled": test.lsan_disabled,
                 "lsan_allowed": test.lsan_allowed,

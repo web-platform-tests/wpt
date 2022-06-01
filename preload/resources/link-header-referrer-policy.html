@@ -6,7 +6,7 @@ window.referrers = {};
 const params = new URLSearchParams(location.search);
 const href = new URL(params.get('href'), location.href).toString();
 new PerformanceObserver(async list => {
-    const entries = list.getEntriesByName(href).length;
+    let entries = list.getEntriesByName(href).length;
     if (!entries)
         return;
 
@@ -16,6 +16,7 @@ new PerformanceObserver(async list => {
     const loaded = new Promise(resolve => script.addEventListener('load', resolve));
     document.body.appendChild(script);
     await loaded;
+    entries = performance.getEntriesByName(href).length;
     window.parent.postMessage({
         referrers: window.referrers,
         entries

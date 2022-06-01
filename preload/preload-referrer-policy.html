@@ -82,11 +82,9 @@ function test_referrer_policy(preloadPolicy, resourcePolicy, crossOrigin, type) 
                 break;
 
             case 'origin':
-            case 'strict-origin':
                 assert_equals(actualReferrer, origin);
                 break;
 
-            case 'no-referrer-when-downgrade':
             case 'unsafe-url':
                 assert_equals(actualReferrer, unsafe);
                 break;
@@ -101,10 +99,8 @@ function test_referrer_policy(preloadPolicy, resourcePolicy, crossOrigin, type) 
 const policies = [
 "",
 "no-referrer",
-"no-referrer-when-downgrade",
 "same-origin",
 "origin",
-"strict-origin",
 "origin-when-cross-origin",
 "strict-origin-when-cross-origin",
 "unsafe-url"]

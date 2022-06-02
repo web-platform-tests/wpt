@@ -553,6 +553,7 @@ class ReftestTest(Test):
                       test_metadata):
 
         timeout = cls.long_timeout if manifest_test.timeout == "long" else cls.default_timeout
+
         url = manifest_test.url
 
         node = cls(manifest_file.url_base,

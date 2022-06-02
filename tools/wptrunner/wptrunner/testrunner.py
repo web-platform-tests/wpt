@@ -4,7 +4,6 @@ import threading
 import traceback
 from queue import Empty
 from collections import namedtuple
-from urllib.parse import urljoin
 
 from mozlog import structuredlog, capture
 
@@ -505,7 +504,6 @@ class TestRunnerManager(threading.Thread):
         assert self.command_queue is not None
         assert self.remote_queue is not None
         self.logger.info("Starting runner")
-
         executor_browser_cls, executor_browser_kwargs = self.browser.browser.executor_browser()
 
         args = (self.remote_queue,
@@ -559,6 +557,7 @@ class TestRunnerManager(threading.Thread):
     def run_test(self):
         assert isinstance(self.state, RunnerManagerState.running)
         assert self.state.test is not None
+
         if self.browser.update_settings(self.state.test):
             self.logger.info("Restarting browser for new test environment")
             return RunnerManagerState.restarting(self.state.test,

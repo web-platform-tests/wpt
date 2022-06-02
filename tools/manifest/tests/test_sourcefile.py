@@ -849,6 +849,17 @@ def test_reftest_fuzzy(fuzzy, expected):
     assert s.content_is_ref_node
     assert s.fuzzy == expected
 
+@pytest.mark.parametrize("pac, expected", [
+    (b"proxy.pac", "proxy.pac")],
+def test_reftest_fuzzy(pac, expected):
+    content = b"""
+<meta name=pac content="%s">
+""" % pac
+
+    s = create("foo/test.html", content)
+
+    assert s.pac == expected
+
 
 @pytest.mark.parametrize("fuzzy, expected", [
     ([b"1;200"], {None: [[1, 1], [200, 200]]}),

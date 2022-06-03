@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>Popup light dismiss behavior for dragstart</title>
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel=help href="https://open-ui.org/components/popup.research.explainer">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div popup id="popup">Popup</div>
+<button draggable="true">Drag me</button>
+
+<script>
+  promise_test(async () => {
+    const popup = document.querySelector('[popup]');
+    const draggable = document.querySelector('[draggable]');
+    assert_false(popup.matches(':top-layer'));
+    popup.showPopup();
+    assert_true(popup.matches(':top-layer'));
+    draggable.dispatchEvent(new Event('mousedown'));
+    assert_false(popup.matches(':top-layer'),'mousedown should light dismiss the popup');
+    popup.showPopup();
+    assert_true(popup.matches(':top-layer'));
+    draggable.dispatchEvent(new Event('dragstart'));
+    assert_false(popup.matches(':top-layer'),'dragstart should light dismiss the popup');
+
+    // Make draggable a trigger for popup, and it should no longer light dismiss.
+    draggable.setAttribute('togglepopup','popup');
+    draggable.click();
+    assert_true(popup.matches(':top-layer'),'clicking the draggable should now show the popup');
+    draggable.dispatchEvent(new Event('mousedown'));
+    assert_true(popup.matches(':top-layer'),'mousedown should not light dismiss the popup');
+    draggable.dispatchEvent(new Event('dragstart'));
+    assert_true(popup.matches(':top-layer'),'dragstart should not light dismiss the popup');
+    popup.hidePopup();
+  },'Clicking outside a popup will dismiss the popup');
+</script>

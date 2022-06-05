@@ -530,7 +530,7 @@ class SourceFile:
             return None
 
         if self.pac_nodes:
-            return self.pac_nodes[0].attrib.get("content", None)  # type: Optional[Text]
+            return self.pac_nodes[0].attrib.get("content", None)
 
         return None
 

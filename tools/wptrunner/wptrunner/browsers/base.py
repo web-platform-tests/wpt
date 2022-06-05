@@ -404,8 +404,9 @@ class WebDriverBrowser(Browser):
 
     def executor_browser(self):
         args = {"webdriver_url": self.url,
-                                 "host": self.host,
-                                 "port": self.port}
+                "host": self.host,
+                "port": self.port}
+
         if self._capabilities is not None:
             args["capabilities"] = self._capabilities
 

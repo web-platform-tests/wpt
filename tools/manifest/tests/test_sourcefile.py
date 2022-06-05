@@ -850,7 +850,7 @@ def test_reftest_fuzzy(fuzzy, expected):
     assert s.fuzzy == expected
 
 @pytest.mark.parametrize("pac, expected", [
-    (b"proxy.pac", "proxy.pac")],
+    (b"proxy.pac", "proxy.pac")])
 def test_reftest_fuzzy(pac, expected):
     content = b"""
 <meta name=pac content="%s">

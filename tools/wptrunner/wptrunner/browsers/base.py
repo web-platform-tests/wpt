@@ -7,7 +7,6 @@ import platform
 import socket
 import traceback
 from abc import ABCMeta, abstractmethod
-from urllib.parse import urljoin
 
 import mozprocess
 

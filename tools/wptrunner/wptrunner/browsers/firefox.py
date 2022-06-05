@@ -9,7 +9,6 @@ import tempfile
 import time
 from abc import ABCMeta, abstractmethod
 from http.client import HTTPConnection
-from urllib.parse import urljoin
 
 import mozinfo
 import mozleak

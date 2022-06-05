@@ -412,12 +412,12 @@ class WebDriverBrowser(Browser):
 
         return ExecutorBrowser, args
 
-    def settings(self, test, server_config=None):
+    def settings(self, test):
         if test.pac is None or self._supports_pac is False:
             return {}
         else:
             self._capabilities = {"proxy": {
                 "proxyType": "pac",
-                "proxyAutoconfigUrl": urljoin(f'http://{server_config["server_host"]}:{server_config["ports"]["http"][0]}', test.pac)
+                "proxyAutoconfigUrl": test.pac
             }}
             return self._capabilities

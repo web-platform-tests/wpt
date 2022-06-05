@@ -341,6 +341,11 @@ class TestLoader:
 
         return groups
 
+    def update_environment(self, env):
+        for type in self.tests.keys():
+            for test in self.tests[type]:
+                test.update_environment(env)
+
 
 def get_test_src(**kwargs):
     test_source_kwargs = {"processes": kwargs["processes"],

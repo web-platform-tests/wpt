@@ -248,6 +248,10 @@ class Test:
             metadata = {}
         return metadata
 
+    def update_environment(self, env):
+        if self.pac is not None:
+            self.pac = urljoin(f'http://{env.config["server_host"]}:{env.config["ports"]["http"][0]}', self.pac)
+
     @classmethod
     def from_manifest(cls, manifest_file, manifest_item, inherit_metadata, test_metadata):
         timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout

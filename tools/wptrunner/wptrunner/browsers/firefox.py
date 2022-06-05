@@ -779,14 +779,14 @@ class FirefoxBrowser(Browser):
                                                      symbols_path,
                                                      asan)
 
-    def settings(self, test, server_config=None):
+    def settings(self, test):
         self._settings = {"check_leaks": self.leak_check and not test.leaks,
                           "lsan_disabled": test.lsan_disabled,
                           "lsan_allowed": test.lsan_allowed,
                           "lsan_max_stack_depth": test.lsan_max_stack_depth,
                           "mozleak_allowed": self.leak_check and test.mozleak_allowed,
                           "mozleak_thresholds": self.leak_check and test.mozleak_threshold,
-                          "pac": urljoin(f'http://{server_config["server_host"]}:{server_config["ports"]["http"][0]}', test.pac),
+                          "pac": test.pac,
                           "special_powers": self.specialpowers_path and test.url_base == "/_mozilla/"}
         return self._settings
 

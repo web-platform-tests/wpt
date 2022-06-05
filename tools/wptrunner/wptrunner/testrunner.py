@@ -161,7 +161,7 @@ def start_runner(runner_command_queue, runner_result_queue,
 
 
 class BrowserManager:
-    def __init__(self, logger, browser, command_queue, no_timeout=False, server_config=None):
+    def __init__(self, logger, browser, command_queue, no_timeout=False):
         self.logger = logger
         self.browser = browser
         self.no_timeout = no_timeout
@@ -169,12 +169,11 @@ class BrowserManager:
         self.last_test = None
 
         self.started = False
-        self.server_config = server_config
         self.init_timer = None
         self.command_queue = command_queue
 
     def update_settings(self, test):
-        browser_settings = self.browser.settings(test, server_config=self.server_config)
+        browser_settings = self.browser.settings(test)
 
         restart_required = ((self.browser_settings is not None and
                              self.browser_settings != browser_settings) or
@@ -350,7 +349,6 @@ class TestRunnerManager(threading.Thread):
             self.browser = BrowserManager(self.logger,
                                           browser,
                                           self.command_queue,
-                                          server_config=self.executor_kwargs["server_config"],
                                           no_timeout=self.debug_info is not None)
             dispatch = {
                 RunnerManagerState.before_init: self.start_init,

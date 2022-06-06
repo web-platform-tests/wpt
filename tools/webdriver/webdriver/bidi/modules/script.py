@@ -1,4 +1,5 @@
 from typing import Any, Optional, Mapping, MutableMapping
+from enum import Enum
 
 from ._module import BidiModule, command
 
@@ -7,6 +8,11 @@ class ScriptResultException(Exception):
     def __init__(self, result):
         self.result = result
         super().__init__("Script execution failed.")
+
+
+class OwnershipModel(Enum):
+    NONE = "none"
+    ROOT = "root"
 
 
 class Script(BidiModule):
@@ -37,7 +43,7 @@ class Script(BidiModule):
                  expression: str,
                  target: Target,
                  await_promise: Optional[bool] = None,
-                 result_ownership: Optional[str] = None) -> Mapping[str, Any]:
+                 result_ownership: Optional[OwnershipModel] = None) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "expression": expression,
             "target": target.to_param(),

@@ -7,6 +7,14 @@ from ... import recursive_compare
 pytestmark = pytest.mark.asyncio
 
 
+@pytest.mark.parametrize("target", [None, False, 42, {}, []])
+async def test_params_target_invalid_type(bidi_session, target):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.script.evaluate(
+            expression="1 + 2",
+            target=target)
+
+
 @pytest.mark.parametrize("context", [None, False, 42, {}, []])
 async def test_params_context_invalid_type(bidi_session, context):
     with pytest.raises(error.InvalidArgumentException):

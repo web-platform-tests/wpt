@@ -27,7 +27,7 @@ trigger:
 variables:
   safaridriver_diagnose: false
 
-jobs:
+jobs: 
 # The affected tests jobs are unconditional for speed, as most PRs have one or
 # more affected tests: https://github.com/web-platform-tests/wpt/issues/13936.
 - job: affected_safari_preview

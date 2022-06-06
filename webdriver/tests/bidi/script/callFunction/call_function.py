@@ -34,8 +34,8 @@ async def test_arguments(bidi_session, top_context):
         }, {
             "type": 'number',
             "value": 42}],
-        "objectId": "__any_value__"},
-        result, ["objectId"])
+        "handle": "__any_value__"},
+        result, ["handle"])
 
 
 @pytest.mark.asyncio
@@ -69,8 +69,8 @@ async def test_not_await_promise(bidi_session, top_context):
 
     recursive_compare({
         "type": "promise",
-        "objectId": "__any_value__"},
-        result, ["objectId"])
+        "handle": "__any_value__"},
+        result, ["handle"])
 
 
 @pytest.mark.asyncio
@@ -79,12 +79,12 @@ async def test_remote_value_argument(bidi_session, top_context):
         expression="({SOME_PROPERTY:'SOME_VALUE'})",
         target=bidi_session.script.ContextTarget(top_context["context"]))
 
-    remote_value_object_id = remote_value_result["result"]["objectId"]
+    remote_value_handle = remote_value_result["handle"]
 
     result = await bidi_session.script.call_function(
         function_declaration="(obj)=>{return obj.SOME_PROPERTY;}",
         arguments=[{
-            "objectId": remote_value_object_id
+            "handle": remote_value_handle
         }],
         target=bidi_session.script.ContextTarget(top_context["context"]))
 
@@ -108,8 +108,8 @@ async def test_arrow_await_promise(bidi_session, top_context, await_promise):
     else:
         recursive_compare({
             "type": "promise",
-            "objectId": "__any_value__"},
-            result, ["objectId"])
+            "handle": "__any_value__"},
+            result, ["handle"])
 
 
 @pytest.mark.asyncio
@@ -127,5 +127,5 @@ async def test_classic_await_promise(bidi_session, top_context, await_promise):
     else:
         recursive_compare({
             "type": "promise",
-            "objectId": "__any_value__"},
-            result, ["objectId"])
+            "handle": "__any_value__"},
+            result, ["handle"])

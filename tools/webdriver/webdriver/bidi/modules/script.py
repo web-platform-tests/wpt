@@ -77,7 +77,7 @@ class Script(BidiModule):
             params["resultOwnership"] = result_ownership
         return params
 
-    @evaluate.result
+    @call_function.result
     def _call_function(self, result: Mapping[str, Any]) -> Any:
         if "result" not in result:
             raise ScriptResultException(result)

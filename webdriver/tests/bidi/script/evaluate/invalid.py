@@ -90,7 +90,7 @@ async def test_params_await_promise_invalid_type(bidi_session, top_context, awai
 
 
 @pytest.mark.parametrize("result_ownership", [False, "_UNKNOWN_", 42, {}, []])
-async def test_params_await_promise_invalid_type(bidi_session, top_context, result_ownership):
+async def test_params_await_promise_invalid_value(bidi_session, top_context, result_ownership):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.script.evaluate(
             expression="1 + 2",

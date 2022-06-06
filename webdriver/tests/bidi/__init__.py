@@ -1,5 +1,7 @@
 # Compares 2 objects recursively ignoring values of specific attributes.
 def recursive_compare(expected, actual, ignore_attributes=None):
+    if ignore_attributes is None:
+        ignore_attributes = []
     assert type(expected) == type(actual)
     if type(expected) is list:
         assert len(expected) == len(actual)

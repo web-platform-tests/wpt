@@ -1,5 +1,6 @@
 import pytest
 import webdriver.bidi.error as error
+
 from webdriver.bidi.modules.script import ScriptResultException
 from ... import recursive_compare
 

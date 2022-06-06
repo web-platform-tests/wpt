@@ -1,5 +1,6 @@
 import pytest
 import webdriver.bidi.error as error
+from webdriver.bidi.modules.script import ScriptResultException
 from ... import recursive_compare
 
 pytestmark = pytest.mark.asyncio
@@ -44,10 +45,12 @@ async def test_params_expression_invalid_type(bidi_session, top_context, express
 
 
 async def test_params_expression_invalid_script(bidi_session, top_context):
-    result = await bidi_session.script.evaluate(
-        expression="))) !!@@## some invalid JS script (((",
-        target=bidi_session.script.ContextTarget(top_context["context"]))
+    with pytest.raises(ScriptResultException) as exception:
+        await bidi_session.script.evaluate(
+            expression='))) !!@@## some invalid JS script (((',
+            target=bidi_session.script.ContextTarget(top_context["context"]))
     recursive_compare({
+        'realm': '__any_value__',
         'exceptionDetails': {
             'columnNumber': 0,
             'exception': {
@@ -57,10 +60,10 @@ async def test_params_expression_invalid_script(bidi_session, top_context):
             'stackTrace': {
                 'callFrames': []},
             'text': "__any_value__"}},
-        result, ["handle", "text"])
+        exception.value.result, ["handle", "text", "realm"])
 
 
-@pytest.mark.parametrize("await_promise", [None, "False", 0, 42, {}, []])
+@pytest.mark.parametrize("await_promise", ["False", 0, 42, {}, []])
 async def test_params_await_promise_invalid_type(bidi_session, top_context, await_promise):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.script.evaluate(
@@ -69,7 +72,7 @@ async def test_params_await_promise_invalid_type(bidi_session, top_context, awai
             target=bidi_session.script.ContextTarget(top_context["context"]))
 
 
-@pytest.mark.parametrize("result_ownership", [None, False, "_UNKNOWN_", 42, {}, []])
+@pytest.mark.parametrize("result_ownership", [False, "_UNKNOWN_", 42, {}, []])
 async def test_params_await_promise_invalid_type(bidi_session, top_context, result_ownership):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.script.evaluate(

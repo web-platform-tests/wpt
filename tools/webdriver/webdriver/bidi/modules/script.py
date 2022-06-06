@@ -3,6 +3,12 @@ from typing import Any, Optional, Mapping, MutableMapping
 from ._module import BidiModule, command
 
 
+class ScriptResultException(Exception):
+    def __init__(self, result):
+        self.result = result
+        super().__init__("Script execution failed.")
+
+
 class Script(BidiModule):
     class Target:
         def to_param(self) -> Mapping[str, Any]:
@@ -45,4 +51,6 @@ class Script(BidiModule):
 
     @evaluate.result
     def _evaluate(self, result: Mapping[str, Any]) -> Any:
-        return result
+        if "result" not in result:
+            raise ScriptResultException(result)
+        return result["result"]

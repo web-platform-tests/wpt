@@ -1,11 +1,10 @@
 <!doctype html>
-<body>Body needed for test_driver.click()</body>
+<body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/feature-policy/resources/featurepolicy.js"></script>
-<script src="../../resources/user-activation.js"></script>
 <script>
 'use strict';
 
@@ -16,12 +15,10 @@ const cross_origin_src =
 
 promise_test(async t => {
   await test_driver.set_permission({ name: 'clipboard-write' }, 'granted');
-  await waitForUserActivation();
   await navigator.clipboard.writeText('test text');
 }, 'Feature-Policy header clipboard-write "*" allows the top-level document.');
 
-promise_test(async t => {
-  await waitForUserActivation();
+async_test(t => {
   test_feature_availability(
     'navigator.clipboard.writeText("test text")',
     t,
@@ -30,3 +27,4 @@ promise_test(async t => {
   );
 }, 'Feature-Policy header clipboard-write "*" allows same-origin iframes.');
 </script>
+</body>

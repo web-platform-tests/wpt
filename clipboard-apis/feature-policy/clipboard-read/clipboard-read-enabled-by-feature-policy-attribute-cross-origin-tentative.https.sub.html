@@ -1,11 +1,10 @@
 <!doctype html>
-<body>Body needed for test_driver.click()</body>
+<body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/feature-policy/resources/featurepolicy.js"></script>
-<script src="../../resources/user-activation.js"></script>
 <script>
 'use strict';
 
@@ -18,8 +17,7 @@ const cross_origin_src =
 // In Chrome and Firefox, Cross-origin focus requires user gesture. In Chrome
 // only, cross-origin focus is asynchronous. Implement WPT support for
 // cross-origin focus.
-promise_test(async t => {
-  await waitForUserActivation();
+async_test(t => {
   test_feature_availability(
     'navigator.clipboard.readText()',
     t,
@@ -29,3 +27,4 @@ promise_test(async t => {
   );
 }, 'Feature policy "clipboard-read" can be enabled in cross-origin iframe using allow="clipboard-read" attribute');
 </script>
+</body>

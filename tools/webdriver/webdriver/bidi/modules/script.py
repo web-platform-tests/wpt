@@ -57,14 +57,14 @@ class Script(BidiModule):
     @command
     def call_function(self,
                       function_declaration: str,
-                      target: Target,
+                      target: Union[RealmTarget, ContextTarget],
                       arguments: Optional[List[Mapping[str, Any]]] = None,
                       this: Optional[Mapping[str, Any]] = None,
-                      ownership: Optional[str] = None,
+                      result_ownership: Optional[OwnershipModel] = None,
                       await_promise: Optional[bool] = None) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "functionDeclaration": function_declaration,
-            "target": target.to_param(),
+            "target": target,
         }
 
         if await_promise is not None:
@@ -73,10 +73,12 @@ class Script(BidiModule):
             params["arguments"] = arguments
         if this is not None:
             params["this"] = this
-        if ownership is not None:
-            params["ownership"] = ownership
+        if result_ownership is not None:
+            params["resultOwnership"] = result_ownership
         return params
 
     @evaluate.result
-    def _callFunction(self, result: Mapping[str, Any]) -> Any:
-        return result
+    def _call_function(self, result: Mapping[str, Any]) -> Any:
+        if "result" not in result:
+            raise ScriptResultException(result)
+        return result["result"]

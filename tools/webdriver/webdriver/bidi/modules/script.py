@@ -1,4 +1,4 @@
-from typing import Any, Optional, Mapping, MutableMapping
+from typing import Any, Optional, Mapping, MutableMapping, Union
 from enum import Enum
 
 from ._module import BidiModule, command
@@ -16,37 +16,26 @@ class OwnershipModel(Enum):
 
 
 class Script(BidiModule):
-    class Target:
-        def to_param(self) -> Mapping[str, Any]:
-            pass
-
-    class RealmTarget(Target):
+    class RealmTarget(dict):
         def __init__(self, realm: str):
-            self.realm = realm
+            dict.__init__(self, realm=realm)
 
-        def to_param(self) -> Mapping[str, Any]:
-            return {"realm": self.realm}
-
-    class ContextTarget(Target):
+    class ContextTarget(dict):
         def __init__(self, context: str, sandbox: Optional[str] = None):
-            self.context = context
-            self.sandbox = sandbox
-
-        def to_param(self) -> Mapping[str, Any]:
-            target_param = {"context": self.context}
-            if self.sandbox is not None:
-                target_param["sandbox"] = self.sandbox
-            return target_param
+            if sandbox is None:
+                dict.__init__(self, context=context)
+            else:
+                dict.__init__(self, context=context, sandbox=sandbox)
 
     @command
     def evaluate(self,
                  expression: str,
-                 target: Target,
+                 target: Union[RealmTarget, ContextTarget],
                  await_promise: Optional[bool] = None,
                  result_ownership: Optional[OwnershipModel] = None) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "expression": expression,
-            "target": target.to_param(),
+            "target": target,
         }
 
         if await_promise is not None:

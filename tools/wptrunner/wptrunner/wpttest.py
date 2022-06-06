@@ -217,7 +217,7 @@ class Test:
     long_timeout = 60  # seconds
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata,
-                 timeout=None, pac=None, path=None, protocol="http", subdomain=False):
+                 timeout=None, path=None, protocol="http", subdomain=False, pac=None):
         self.url_base = url_base
         self.tests_root = tests_root
         self.url = url
@@ -466,10 +466,10 @@ class TestharnessTest(Test):
     test_type = "testharness"
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata,
-                 timeout=None, pac=None, path=None, protocol="http", testdriver=False,
-                 jsshell=False, scripts=None, subdomain=False):
+                 timeout=None, path=None, protocol="http", testdriver=False,
+                 jsshell=False, scripts=None, subdomain=False, pac=None):
         Test.__init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, timeout,
-                      pac, path, protocol, subdomain)
+                      path, protocol, subdomain, pac)
 
         self.testdriver = testdriver
         self.jsshell = jsshell

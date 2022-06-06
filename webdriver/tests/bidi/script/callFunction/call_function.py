@@ -28,29 +28,33 @@ async def test_arguments(bidi_session, top_context):
 
     recursive_compare({
         "type": "array",
+        "handle": "__any_value__",
         "value": [{
             "type": 'string',
             "value": 'ARGUMENT_STRING_VALUE'
         }, {
             "type": 'number',
-            "value": 42}],
-        "handle": "__any_value__"},
+            "value": 42}]},
         result, ["handle"])
 
 
 @pytest.mark.asyncio
 async def test_this(bidi_session, top_context):
     result = await bidi_session.script.call_function(
-        function_declaration="function(){return this}",
+        function_declaration="function(){return this.some_property}",
         this={
-            "type": "string",
-            "value": "THIS_STRING_VALUE"
-        },
+            "type": "object",
+            "value": [[
+                "some_property",
+                {
+                    "type": "number",
+                    "value": 42
+                }]]},
         target=bidi_session.script.ContextTarget(top_context["context"]))
 
     assert result == {
-        "type": "string",
-        "value": "THIS_STRING_VALUE"}
+        'type': 'number',
+        'value': 42}
 
 
 @pytest.mark.asyncio

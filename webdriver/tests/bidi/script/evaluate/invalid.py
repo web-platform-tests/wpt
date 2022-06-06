@@ -23,6 +23,14 @@ async def test_params_context_invalid_type(bidi_session, context):
             target=bidi_session.script.ContextTarget(context))
 
 
+@pytest.mark.parametrize("sandbox", [False, 42, {}, []])
+async def test_params_sandbox_invalid_type(bidi_session, top_context, sandbox):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.script.evaluate(
+            expression="1 + 2",
+            target=bidi_session.script.ContextTarget(top_context["context"], sandbox))
+
+
 async def test_params_context_unknown(bidi_session):
     with pytest.raises(error.NoSuchFrameException):
         await bidi_session.script.evaluate(

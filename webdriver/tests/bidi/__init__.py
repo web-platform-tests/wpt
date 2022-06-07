@@ -1,22 +1,31 @@
-# Compares 2 objects recursively ignoring values of specific attributes.
-def recursive_compare(expected, actual, ignore_attributes=None):
-    if ignore_attributes is None:
-        ignore_attributes = []
+from typing import Any
+
+
+# Compares 2 objects recursively.
+# Actual value can have more keys as part of the forwards-compat design.
+# Expected value can be a callable delegate, asserting the value.
+def recursive_compare(expected: Any, actual: Any) -> None:
     assert type(expected) == type(actual)
     if type(expected) is list:
         assert len(expected) == len(actual)
         for index, val in enumerate(expected):
-            recursive_compare(expected[index], actual[index], ignore_attributes)
+            recursive_compare(expected[index], actual[index])
         return
 
     if type(expected) is dict:
-        assert expected.keys() == actual.keys(), \
-            f"Key sets should be the same: " \
-            f"\nNot present: {set(expected.keys()) - set(actual.keys())}" \
-            f"\nUnexpected: {set(actual.keys()) - set(expected.keys())}"
+        # Actual dict can have more keys as part of the forwards-compat design.
+        assert expected.keys() <= actual.keys(), \
+            f"Key set should be present: {set(expected.keys()) - set(actual.keys())}"
         for index, val in enumerate(expected):
-            if val not in ignore_attributes:
-                recursive_compare(expected[val], actual[val], ignore_attributes)
+            expected_val = expected[val]
+            if callable(expected_val):
+                expected_val(actual[val])
+            else:
+                recursive_compare(expected[val], actual[val])
         return
 
     assert expected == actual
+
+
+def any_string(expected: Any) -> None:
+    assert isinstance(expected, str)

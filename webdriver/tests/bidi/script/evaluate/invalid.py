@@ -2,7 +2,9 @@ import pytest
 import webdriver.bidi.error as error
 
 from webdriver.bidi.modules.script import ScriptResultException
-from ... import recursive_compare
+from webdriver.bidi.modules.script import ContextTarget
+from webdriver.bidi.modules.script import RealmTarget
+from ... import recursive_compare, any_string
 
 pytestmark = pytest.mark.asyncio
 
@@ -20,7 +22,7 @@ async def test_params_context_invalid_type(bidi_session, context):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.script.evaluate(
             expression="1 + 2",
-            target=bidi_session.script.ContextTarget(context))
+            target=ContextTarget(context))
 
 
 @pytest.mark.parametrize("sandbox", [False, 42, {}, []])
@@ -28,14 +30,14 @@ async def test_params_sandbox_invalid_type(bidi_session, top_context, sandbox):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.script.evaluate(
             expression="1 + 2",
-            target=bidi_session.script.ContextTarget(top_context["context"], sandbox))
+            target=ContextTarget(top_context["context"], sandbox))
 
 
 async def test_params_context_unknown(bidi_session):
     with pytest.raises(error.NoSuchFrameException):
         await bidi_session.script.evaluate(
             expression="1 + 2",
-            target=bidi_session.script.ContextTarget("_UNKNOWN_"))
+            target=ContextTarget("_UNKNOWN_"))
 
 
 @pytest.mark.parametrize("realm", [None, False, 42, {}, []])
@@ -43,14 +45,14 @@ async def test_params_realm_invalid_type(bidi_session, realm):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.script.evaluate(
             expression="1 + 2",
-            target=bidi_session.script.RealmTarget(realm))
+            target=RealmTarget(realm))
 
 
 async def test_params_realm_unknown(bidi_session):
     with pytest.raises(error.NoSuchFrameException):
         await bidi_session.script.evaluate(
             expression="1 + 2",
-            target=bidi_session.script.RealmTarget("_UNKNOWN_"))
+            target=RealmTarget("_UNKNOWN_"))
 
 
 @pytest.mark.parametrize("expression", [None, False, 42, {}, []])
@@ -58,26 +60,26 @@ async def test_params_expression_invalid_type(bidi_session, top_context, express
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.script.evaluate(
             expression=expression,
-            target=bidi_session.script.ContextTarget(top_context["context"]))
+            target=ContextTarget(top_context["context"]))
 
 
 async def test_params_expression_invalid_script(bidi_session, top_context):
     with pytest.raises(ScriptResultException) as exception:
         await bidi_session.script.evaluate(
             expression='))) !!@@## some invalid JS script (((',
-            target=bidi_session.script.ContextTarget(top_context["context"]))
+            target=ContextTarget(top_context["context"]))
     recursive_compare({
-        'realm': '__any_value__',
+        'realm': any_string,
         'exceptionDetails': {
             'columnNumber': 0,
             'exception': {
-                'handle': '__any_value__',
+                'handle': any_string,
                 'type': 'error'},
             'lineNumber': 0,
             'stackTrace': {
                 'callFrames': []},
-            'text': "__any_value__"}},
-        exception.value.result, ["handle", "text", "realm"])
+            'text': any_string}},
+        exception.value.result)
 
 
 @pytest.mark.parametrize("await_promise", ["False", 0, 42, {}, []])
@@ -86,7 +88,7 @@ async def test_params_await_promise_invalid_type(bidi_session, top_context, awai
         await bidi_session.script.evaluate(
             expression="1 + 2",
             await_promise=await_promise,
-            target=bidi_session.script.ContextTarget(top_context["context"]))
+            target=ContextTarget(top_context["context"]))
 
 
 @pytest.mark.parametrize("result_ownership", [False, "_UNKNOWN_", 42, {}, []])
@@ -95,4 +97,4 @@ async def test_params_result_ownership_invalid_value(bidi_session, top_context, 
         await bidi_session.script.evaluate(
             expression="1 + 2",
             result_ownership=result_ownership,
-            target=bidi_session.script.ContextTarget(top_context["context"]))
+            target=ContextTarget(top_context["context"]))

@@ -15,18 +15,20 @@ class OwnershipModel(Enum):
     ROOT = "root"
 
 
+class RealmTarget(Dict[str, Any]):
+    def __init__(self, realm: str):
+        dict.__init__(self, realm=realm)
+
+
+class ContextTarget(Dict[str, Any]):
+    def __init__(self, context: str, sandbox: Optional[str] = None):
+        if sandbox is None:
+            dict.__init__(self, context=context)
+        else:
+            dict.__init__(self, context=context, sandbox=sandbox)
+
+
 class Script(BidiModule):
-    class RealmTarget(Dict[str, Any]):
-        def __init__(self, realm: str):
-            dict.__init__(self, realm=realm)
-
-    class ContextTarget(Dict[str, Any]):
-        def __init__(self, context: str, sandbox: Optional[str] = None):
-            if sandbox is None:
-                dict.__init__(self, context=context)
-            else:
-                dict.__init__(self, context=context, sandbox=sandbox)
-
     @command
     def evaluate(self,
                  expression: str,

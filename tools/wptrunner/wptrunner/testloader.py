@@ -383,7 +383,7 @@ class TestSource:
     def group(self):
         if not self.current_group or len(self.current_group) == 0:
             try:
-                self.current_group, self.current_metadata = self.test_queue.get(block=False)
+                self.current_group, self.current_metadata = self.test_queue.get(block=True)
             except Empty:
                 return None, None
         return self.current_group, self.current_metadata
@@ -413,6 +413,8 @@ class GroupedSource(TestSource):
 
         for item in groups:
             test_queue.put(item)
+        for _ in range(kwargs["processes"]):
+            test_queue.put((None, None))
         return test_queue
 
     @classmethod
@@ -444,6 +446,8 @@ class SingleTestSource(TestSource):
 
         for item in zip(queues, metadatas):
             test_queue.put(item)
+        for _ in range(kwargs["processes"]):
+            test_queue.put((None, None))
 
         return test_queue
 
@@ -488,6 +492,9 @@ class GroupFileTestSource(TestSource):
                 test.update_metadata(group_metadata)
 
             test_queue.put((group, group_metadata))
+
+        for _ in range(kwargs["processes"]):
+            test_queue.put((None, None))
 
         return test_queue
 

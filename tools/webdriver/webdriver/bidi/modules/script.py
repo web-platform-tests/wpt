@@ -57,7 +57,7 @@ class Script(BidiModule):
     @command
     def call_function(self,
                       function_declaration: str,
-                      target: Union[RealmTarget, ContextTarget],
+                      target: Target,
                       arguments: Optional[List[Mapping[str, Any]]] = None,
                       this: Optional[Mapping[str, Any]] = None,
                       result_ownership: Optional[OwnershipModel] = None,
@@ -80,5 +80,5 @@ class Script(BidiModule):
     @call_function.result
     def _call_function(self, result: Mapping[str, Any]) -> Any:
         if "result" not in result:
-            raise ScriptResultException(result)
+            raise ScriptEvaluateResultException(result)
         return result["result"]

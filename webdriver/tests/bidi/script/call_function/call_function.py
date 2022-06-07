@@ -1,13 +1,34 @@
 import pytest
 
-from ... import recursive_compare
+from webdriver.bidi.modules.script import ContextTarget, ScriptEvaluateResultException
+from ... import recursive_compare, any_string, any_int
+from .. import any_stack_trace
+
+
+@pytest.mark.asyncio
+async def test_invalid_function(bidi_session, top_context):
+    with pytest.raises(ScriptEvaluateResultException) as exception:
+        await bidi_session.script.call_function(
+            function_declaration='))) !!@@## some invalid JS script (((',
+            target=ContextTarget(top_context["context"]))
+    recursive_compare({
+        'realm': any_string,
+        'exceptionDetails': {
+            'columnNumber': any_int,
+            'exception': {
+                'handle': any_string,
+                'type': 'error'},
+            'lineNumber': any_int,
+            'stackTrace': any_stack_trace,
+            'text': any_string}},
+        exception.value.result)
 
 
 @pytest.mark.asyncio
 async def test_arrow_function(bidi_session, top_context):
     result = await bidi_session.script.call_function(
         function_declaration="()=>{return 1+2;}",
-        target=bidi_session.script.ContextTarget(top_context["context"]))
+        target=ContextTarget(top_context["context"]))
 
     assert result == {
         "type": "number",
@@ -18,24 +39,24 @@ async def test_arrow_function(bidi_session, top_context):
 async def test_arguments(bidi_session, top_context):
     result = await bidi_session.script.call_function(
         function_declaration="(...args)=>{return Promise.resolve(args);}",
-        target=bidi_session.script.ContextTarget(top_context["context"]),
         arguments=[{
             "type": "string",
             "value": "ARGUMENT_STRING_VALUE"
         }, {
             "type": "number",
-            "value": 42}])
+            "value": 42}],
+        target=ContextTarget(top_context["context"]))
 
     recursive_compare({
         "type": "array",
-        "handle": "__any_value__",
+        "handle": any_string,
         "value": [{
             "type": 'string',
             "value": 'ARGUMENT_STRING_VALUE'
         }, {
             "type": 'number',
             "value": 42}]},
-        result, ["handle"])
+        result)
 
 
 @pytest.mark.asyncio
@@ -50,7 +71,7 @@ async def test_this(bidi_session, top_context):
                     "type": "number",
                     "value": 42
                 }]]},
-        target=bidi_session.script.ContextTarget(top_context["context"]))
+        target=ContextTarget(top_context["context"]))
 
     assert result == {
         'type': 'number',
@@ -69,28 +90,27 @@ async def test_not_await_promise(bidi_session, top_context):
             "value": 42
         }],
         await_promise=False,
-        target=bidi_session.script.ContextTarget(top_context["context"]))
+        target=ContextTarget(top_context["context"]))
 
     recursive_compare({
         "type": "promise",
-        "handle": "__any_value__"},
-        result, ["handle"])
+        "handle": any_string},
+        result)
 
 
 @pytest.mark.asyncio
 async def test_remote_value_argument(bidi_session, top_context):
     remote_value_result = await bidi_session.script.evaluate(
         expression="({SOME_PROPERTY:'SOME_VALUE'})",
-        target=bidi_session.script.ContextTarget(top_context["context"]))
+        target=ContextTarget(top_context["context"]))
 
     remote_value_handle = remote_value_result["handle"]
 
     result = await bidi_session.script.call_function(
         function_declaration="(obj)=>{return obj.SOME_PROPERTY;}",
         arguments=[{
-            "handle": remote_value_handle
-        }],
-        target=bidi_session.script.ContextTarget(top_context["context"]))
+            "handle": remote_value_handle}],
+        target=ContextTarget(top_context["context"]))
 
     assert result == {
         "type": "string",
@@ -103,7 +123,7 @@ async def test_arrow_await_promise(bidi_session, top_context, await_promise):
     result = await bidi_session.script.call_function(
         function_declaration="async ()=>{return 'SOME_VALUE'}",
         await_promise=await_promise,
-        target=bidi_session.script.ContextTarget(top_context["context"]))
+        target=ContextTarget(top_context["context"]))
 
     if await_promise:
         assert result == {
@@ -112,8 +132,8 @@ async def test_arrow_await_promise(bidi_session, top_context, await_promise):
     else:
         recursive_compare({
             "type": "promise",
-            "handle": "__any_value__"},
-            result, ["handle"])
+            "handle": any_string},
+            result)
 
 
 @pytest.mark.asyncio
@@ -122,7 +142,7 @@ async def test_classic_await_promise(bidi_session, top_context, await_promise):
     result = await bidi_session.script.call_function(
         function_declaration="async function(){return 'SOME_VALUE'}",
         await_promise=await_promise,
-        target=bidi_session.script.ContextTarget(top_context["context"]))
+        target=ContextTarget(top_context["context"]))
 
     if await_promise:
         assert result == {
@@ -131,5 +151,5 @@ async def test_classic_await_promise(bidi_session, top_context, await_promise):
     else:
         recursive_compare({
             "type": "promise",
-            "handle": "__any_value__"},
-            result, ["handle"])
+            "handle": any_string},
+            result)

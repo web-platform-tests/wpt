@@ -1,11 +1,11 @@
-from typing import Any, Optional, Mapping, MutableMapping, Union
+from typing import Any, Optional, Mapping, MutableMapping, Union, Dict
 from enum import Enum
 
 from ._module import BidiModule, command
 
 
 class ScriptResultException(Exception):
-    def __init__(self, result):
+    def __init__(self, result: Mapping[str, Any]):
         self.result = result
         super().__init__("Script execution failed.")
 
@@ -16,11 +16,11 @@ class OwnershipModel(Enum):
 
 
 class Script(BidiModule):
-    class RealmTarget(dict):
+    class RealmTarget(Dict[str, Any]):
         def __init__(self, realm: str):
             dict.__init__(self, realm=realm)
 
-    class ContextTarget(dict):
+    class ContextTarget(Dict[str, Any]):
         def __init__(self, context: str, sandbox: Optional[str] = None):
             if sandbox is None:
                 dict.__init__(self, context=context)

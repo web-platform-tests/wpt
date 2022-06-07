@@ -32,4 +32,13 @@ promise_test(t => {
 
   return promise;
 }, "error event is normal (return true does not cancel; one arg) on Document, with a synthetic ErrorEvent");
+
+test(() => {
+  const e = new ErrorEvent("error");
+  assert_equals(e.message, "");
+  assert_equals(e.filename, "");
+  assert_equals(e.lineno, 0);
+  assert_equals(e.colno, 0);
+  assert_equals(e.error, undefined);
+}, "Initial values of ErrorEvent members")
 </script>

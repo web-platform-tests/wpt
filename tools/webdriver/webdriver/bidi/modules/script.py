@@ -4,7 +4,7 @@ from enum import Enum
 from ._module import BidiModule, command
 
 
-class ScriptResultException(Exception):
+class ScriptEvaluateResultException(Exception):
     def __init__(self, result: Mapping[str, Any]):
         self.result = result
         super().__init__("Script execution failed.")
@@ -49,5 +49,5 @@ class Script(BidiModule):
     @evaluate.result
     def _evaluate(self, result: Mapping[str, Any]) -> Any:
         if "result" not in result:
-            raise ScriptResultException(result)
+            raise ScriptEvaluateResultException(result)
         return result["result"]

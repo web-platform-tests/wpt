@@ -1,6 +1,6 @@
 import pytest
 
-from webdriver.bidi.modules.script import ContextTarget, ScriptResultException
+from webdriver.bidi.modules.script import ContextTarget, ScriptEvaluateResultException
 from ... import recursive_compare, any_string
 
 
@@ -17,7 +17,7 @@ async def test_eval(bidi_session, top_context):
 
 @pytest.mark.asyncio
 async def test_params_expression_invalid_script(bidi_session, top_context):
-    with pytest.raises(ScriptResultException) as exception:
+    with pytest.raises(ScriptEvaluateResultException) as exception:
         await bidi_session.script.evaluate(
             expression='))) !!@@## some invalid JS script (((',
             target=ContextTarget(top_context["context"]))
@@ -37,7 +37,7 @@ async def test_params_expression_invalid_script(bidi_session, top_context):
 
 @pytest.mark.asyncio
 async def test_exception(bidi_session, top_context):
-    with pytest.raises(ScriptResultException) as exception:
+    with pytest.raises(ScriptEvaluateResultException) as exception:
         await bidi_session.script.evaluate(
             expression="throw Error('SOME_ERROR_MESSAGE')",
             target=ContextTarget(top_context["context"]))
@@ -127,7 +127,7 @@ async def test_rejected_promise_with_wait_promise_false(bidi_session,
 @pytest.mark.asyncio
 async def test_rejected_promise_with_wait_promise_true(bidi_session,
                                                        top_context):
-    with pytest.raises(ScriptResultException) as exception:
+    with pytest.raises(ScriptEvaluateResultException) as exception:
         await bidi_session.script.evaluate(
             expression="Promise.reject('SOME_REJECTED_RESULT')",
             target=ContextTarget(top_context["context"]),
@@ -148,7 +148,7 @@ async def test_rejected_promise_with_wait_promise_true(bidi_session,
 @pytest.mark.asyncio
 async def test_rejected_promise_with_wait_promise_omitted(bidi_session,
                                                           top_context):
-    with pytest.raises(ScriptResultException) as exception:
+    with pytest.raises(ScriptEvaluateResultException) as exception:
         await bidi_session.script.evaluate(
             expression="Promise.reject('SOME_REJECTED_RESULT')",
             target=ContextTarget(top_context["context"]))

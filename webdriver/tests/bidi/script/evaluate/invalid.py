@@ -1,8 +1,7 @@
 import pytest
 import webdriver.bidi.error as error
 
-from webdriver.bidi.modules.script import ContextTarget
-from webdriver.bidi.modules.script import RealmTarget
+from webdriver.bidi.modules.script import ContextTarget, RealmTarget
 
 pytestmark = pytest.mark.asyncio
 

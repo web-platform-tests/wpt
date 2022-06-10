@@ -8,7 +8,7 @@ def recursive_compare(expected: Any, actual: Any) -> None:
     assert type(expected) == type(actual)
     if type(expected) is list:
         assert len(expected) == len(actual)
-        for index, val in enumerate(expected):
+        for index, _ in enumerate(expected):
             recursive_compare(expected[index], actual[index])
         return
 
@@ -16,12 +16,11 @@ def recursive_compare(expected: Any, actual: Any) -> None:
         # Actual dict can have more keys as part of the forwards-compat design.
         assert expected.keys() <= actual.keys(), \
             f"Key set should be present: {set(expected.keys()) - set(actual.keys())}"
-        for index, val in enumerate(expected):
-            expected_val = expected[val]
-            if callable(expected_val):
-                expected_val(actual[val])
+        for key in expected.keys():
+            if callable(expected[key]):
+                expected[key](actual[key])
             else:
-                recursive_compare(expected[val], actual[val])
+                recursive_compare(expected[key], actual[key])
         return
 
     assert expected == actual

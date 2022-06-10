@@ -383,10 +383,15 @@ class TestSource:
     def group(self):
         if not self.current_group or len(self.current_group) == 0:
             try:
-                self.current_group, self.current_metadata = self.test_queue.get(block=True)
+                self.current_group, self.current_metadata = self.test_queue.get(block=True, timeout=5)
             except Empty:
                 return None, None
         return self.current_group, self.current_metadata
+
+    def add_sentinal(self, test_queue, num_of_workers):
+        # add one sentinal for each worker
+        for _ in range(num_of_workers):
+            test_queue.put((None, None))
 
 
 class GroupedSource(TestSource):
@@ -413,8 +418,7 @@ class GroupedSource(TestSource):
 
         for item in groups:
             test_queue.put(item)
-        for _ in range(kwargs["processes"]):
-            test_queue.put((None, None))
+        self.add_sentinal(test_queue, kwargs["processes"])
         return test_queue
 
     @classmethod
@@ -446,8 +450,7 @@ class SingleTestSource(TestSource):
 
         for item in zip(queues, metadatas):
             test_queue.put(item)
-        for _ in range(kwargs["processes"]):
-            test_queue.put((None, None))
+        self.add_sentinal(test_queue, kwargs["processes"])
 
         return test_queue
 
@@ -493,8 +496,7 @@ class GroupFileTestSource(TestSource):
 
             test_queue.put((group, group_metadata))
 
-        for _ in range(kwargs["processes"]):
-            test_queue.put((None, None))
+        self.add_sentinal(test_queue, kwargs["processes"])
 
         return test_queue
 

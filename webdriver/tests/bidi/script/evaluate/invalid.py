@@ -1,10 +1,8 @@
 import pytest
 import webdriver.bidi.error as error
 
-from webdriver.bidi.modules.script import ScriptResultException
 from webdriver.bidi.modules.script import ContextTarget
 from webdriver.bidi.modules.script import RealmTarget
-from ... import recursive_compare, any_string
 
 pytestmark = pytest.mark.asyncio
 
@@ -61,25 +59,6 @@ async def test_params_expression_invalid_type(bidi_session, top_context, express
         await bidi_session.script.evaluate(
             expression=expression,
             target=ContextTarget(top_context["context"]))
-
-
-async def test_params_expression_invalid_script(bidi_session, top_context):
-    with pytest.raises(ScriptResultException) as exception:
-        await bidi_session.script.evaluate(
-            expression='))) !!@@## some invalid JS script (((',
-            target=ContextTarget(top_context["context"]))
-    recursive_compare({
-        'realm': any_string,
-        'exceptionDetails': {
-            'columnNumber': 0,
-            'exception': {
-                'handle': any_string,
-                'type': 'error'},
-            'lineNumber': 0,
-            'stackTrace': {
-                'callFrames': []},
-            'text': any_string}},
-        exception.value.result)
 
 
 @pytest.mark.parametrize("await_promise", ["False", 0, 42, {}, []])

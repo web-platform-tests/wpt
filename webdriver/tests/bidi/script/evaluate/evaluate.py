@@ -16,6 +16,26 @@ async def test_eval(bidi_session, top_context):
 
 
 @pytest.mark.asyncio
+async def test_params_expression_invalid_script(bidi_session, top_context):
+    with pytest.raises(ScriptResultException) as exception:
+        await bidi_session.script.evaluate(
+            expression='))) !!@@## some invalid JS script (((',
+            target=ContextTarget(top_context["context"]))
+    recursive_compare({
+        'realm': any_string,
+        'exceptionDetails': {
+            'columnNumber': 0,
+            'exception': {
+                'handle': any_string,
+                'type': 'error'},
+            'lineNumber': 0,
+            'stackTrace': {
+                'callFrames': []},
+            'text': any_string}},
+        exception.value.result)
+
+
+@pytest.mark.asyncio
 async def test_exception(bidi_session, top_context):
     with pytest.raises(ScriptResultException) as exception:
         await bidi_session.script.evaluate(

@@ -411,7 +411,7 @@ class GroupedSource(TestSource):
             group.append(test)
             test.update_metadata(metadata)
 
-        for item in sorted(groups, key=lambda x: len(x[0]), reverse=True):
+        for item in groups:
             test_queue.put(item)
         return test_queue
 

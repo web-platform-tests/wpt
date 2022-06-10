@@ -1,7 +1,6 @@
 import pytest
 
-from webdriver.bidi.modules.script import ScriptResultException
-from webdriver.bidi.modules.script import ContextTarget
+from webdriver.bidi.modules.script import ContextTarget, ScriptResultException
 from ... import recursive_compare, any_string
 
 

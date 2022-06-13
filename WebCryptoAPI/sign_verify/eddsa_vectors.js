@@ -1,6 +1,6 @@
 // eddsa_vectors.js
 
-// Data for testing EdDSA with every curve currently in the WebCryptoAPI recommendation.
+// Data for testing Ed25519 and Ed448.
 
 // The following function returns an array of test vectors
 // for the subtleCrypto sign method.

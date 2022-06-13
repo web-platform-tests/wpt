@@ -90,7 +90,7 @@ function define_tests() {
               }, function(err) {
                   assert_equals(err.name, "TypeError", "Should throw correct error, not " + err.name + ": " + err.message);
               });
-          }, algorithmName + " missing public curve");
+          }, algorithmName + " missing public property");
 
           // - Non CryptoKey public property TypeError
           promise_test(function(test) {
@@ -102,7 +102,7 @@ function define_tests() {
               });
           }, algorithmName + " public property of algorithm is not a CryptoKey");
 
-          // - wrong named curve
+          // - wrong algorithm
           promise_test(function(test) {
               publicKey = publicKeys["X25519"];
               if (algorithmName === "X25519") {
@@ -114,7 +114,7 @@ function define_tests() {
               }, function(err) {
                   assert_equals(err.name, "InvalidAccessError", "Should throw correct error, not " + err.name + ": " + err.message);
               });
-          }, algorithmName + " mismatched curves");
+          }, algorithmName + " mismatched algorithms");
 
           // - No deriveBits usage in baseKey InvalidAccessError
           promise_test(function(test) {

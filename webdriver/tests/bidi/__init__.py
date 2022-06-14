@@ -5,6 +5,10 @@ from typing import Any
 # Actual value can have more keys as part of the forwards-compat design.
 # Expected value can be a callable delegate, asserting the value.
 def recursive_compare(expected: Any, actual: Any) -> None:
+    if callable(expected):
+        expected(actual)
+        return
+
     assert type(expected) == type(actual)
     if type(expected) is list:
         assert len(expected) == len(actual)
@@ -17,18 +21,15 @@ def recursive_compare(expected: Any, actual: Any) -> None:
         assert expected.keys() <= actual.keys(), \
             f"Key set should be present: {set(expected.keys()) - set(actual.keys())}"
         for key in expected.keys():
-            if callable(expected[key]):
-                expected[key](actual[key])
-            else:
-                recursive_compare(expected[key], actual[key])
+            recursive_compare(expected[key], actual[key])
         return
 
     assert expected == actual
 
 
-def any_string(expected: Any) -> None:
-    assert isinstance(expected, str)
+def any_string(actual: Any) -> None:
+    assert isinstance(actual, str)
 
 
-def any_int(expected: Any) -> None:
-    assert isinstance(expected, int)
+def any_int(actual: Any) -> None:
+    assert isinstance(actual, int)

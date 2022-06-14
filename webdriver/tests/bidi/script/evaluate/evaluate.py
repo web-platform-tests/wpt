@@ -2,6 +2,7 @@ import pytest
 
 from webdriver.bidi.modules.script import ContextTarget, ScriptEvaluateResultException
 from ... import recursive_compare, any_string, any_int
+from .. import any_stack_trace
 
 
 @pytest.mark.asyncio
@@ -29,8 +30,7 @@ async def test_params_expression_invalid_script(bidi_session, top_context):
                 'handle': any_string,
                 'type': 'error'},
             'lineNumber': any_int,
-            'stackTrace': {
-                'callFrames': []},
+            'stackTrace': any_stack_trace,
             'text': any_string}},
         exception.value.result)
 
@@ -50,12 +50,7 @@ async def test_exception(bidi_session, top_context):
                 'handle': any_string,
                 'type': 'error'},
             'lineNumber': any_int,
-            'stackTrace': {
-                'callFrames': [{
-                    'columnNumber': any_int,
-                    'functionName': any_string,
-                    'lineNumber': any_int,
-                    'url': ''}]},
+            'stackTrace': any_stack_trace,
             'text': any_string}},
         exception.value.result)
 

@@ -72,7 +72,7 @@ async def test_interact_with_dom(bidi_session, top_context):
 
 
 @pytest.mark.asyncio
-async def test_resolved_promise_with_wait_promise_false(bidi_session,
+async def test_resolved_promise_with_await_promise_false(bidi_session,
                                                         top_context):
     result = await bidi_session.script.evaluate(
         expression="Promise.resolve('SOME_RESOLVED_RESULT')",
@@ -86,7 +86,7 @@ async def test_resolved_promise_with_wait_promise_false(bidi_session,
 
 
 @pytest.mark.asyncio
-async def test_resolved_promise_with_wait_promise_true(bidi_session,
+async def test_resolved_promise_with_await_promise_true(bidi_session,
                                                        top_context):
     result = await bidi_session.script.evaluate(
         expression="Promise.resolve('SOME_RESOLVED_RESULT')",
@@ -99,7 +99,7 @@ async def test_resolved_promise_with_wait_promise_true(bidi_session,
 
 
 @pytest.mark.asyncio
-async def test_resolved_promise_with_wait_promise_omitted(bidi_session,
+async def test_resolved_promise_with_await_promise_omitted(bidi_session,
                                                           top_context):
     result = await bidi_session.script.evaluate(
         expression="Promise.resolve('SOME_RESOLVED_RESULT')",
@@ -111,7 +111,7 @@ async def test_resolved_promise_with_wait_promise_omitted(bidi_session,
 
 
 @pytest.mark.asyncio
-async def test_rejected_promise_with_wait_promise_false(bidi_session,
+async def test_rejected_promise_with_await_promise_false(bidi_session,
                                                         top_context):
     result = await bidi_session.script.evaluate(
         expression="Promise.reject('SOME_REJECTED_RESULT')",
@@ -125,7 +125,7 @@ async def test_rejected_promise_with_wait_promise_false(bidi_session,
 
 
 @pytest.mark.asyncio
-async def test_rejected_promise_with_wait_promise_true(bidi_session,
+async def test_rejected_promise_with_await_promise_true(bidi_session,
                                                        top_context):
     with pytest.raises(ScriptEvaluateResultException) as exception:
         await bidi_session.script.evaluate(
@@ -146,7 +146,7 @@ async def test_rejected_promise_with_wait_promise_true(bidi_session,
 
 
 @pytest.mark.asyncio
-async def test_rejected_promise_with_wait_promise_omitted(bidi_session,
+async def test_rejected_promise_with_await_promise_omitted(bidi_session,
                                                           top_context):
     with pytest.raises(ScriptEvaluateResultException) as exception:
         await bidi_session.script.evaluate(

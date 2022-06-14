@@ -222,6 +222,9 @@ function allValidUsages(validUsages, emptyIsValid, mandatoryUsages) {
     return okaySubsets;
 }
 
+function unique(names) {
+    return [...new Set(names)];
+}
 
 // Algorithm name specifiers are case-insensitive. Generate several
 // case variations of a given name.
@@ -232,6 +235,6 @@ function allNameVariants(name, slowTest) {
 
     // for slow tests effectively cut the amount of work in third by only
     // returning one variation
-    if (slowTest) return [mixedCaseName];
-    return [upCaseName, lowCaseName, mixedCaseName];
+    if (slowTest) return unique([mixedCaseName]);
+    return unique([upCaseName, lowCaseName, mixedCaseName]);
 }

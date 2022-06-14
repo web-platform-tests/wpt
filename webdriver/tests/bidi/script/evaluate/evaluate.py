@@ -1,7 +1,7 @@
 import pytest
 
 from webdriver.bidi.modules.script import ContextTarget, ScriptEvaluateResultException
-from ... import recursive_compare, any_string
+from ... import recursive_compare, any_string, any_int
 
 
 @pytest.mark.asyncio
@@ -24,11 +24,11 @@ async def test_params_expression_invalid_script(bidi_session, top_context):
     recursive_compare({
         'realm': any_string,
         'exceptionDetails': {
-            'columnNumber': 0,
+            'columnNumber': any_int,
             'exception': {
                 'handle': any_string,
                 'type': 'error'},
-            'lineNumber': 0,
+            'lineNumber': any_int,
             'stackTrace': {
                 'callFrames': []},
             'text': any_string}},
@@ -45,16 +45,16 @@ async def test_exception(bidi_session, top_context):
     recursive_compare({
         'realm': any_string,
         'exceptionDetails': {
-            'columnNumber': 0,
+            'columnNumber': any_int,
             'exception': {
                 'handle': any_string,
                 'type': 'error'},
-            'lineNumber': 0,
+            'lineNumber': any_int,
             'stackTrace': {
                 'callFrames': [{
-                    'columnNumber': 6,
-                    'functionName': '',
-                    'lineNumber': 0,
+                    'columnNumber': any_int,
+                    'functionName': any_string,
+                    'lineNumber': any_int,
                     'url': ''}]},
             'text': any_string}},
         exception.value.result)
@@ -73,7 +73,7 @@ async def test_interact_with_dom(bidi_session, top_context):
 
 @pytest.mark.asyncio
 async def test_resolved_promise_with_await_promise_false(bidi_session,
-                                                        top_context):
+                                                         top_context):
     result = await bidi_session.script.evaluate(
         expression="Promise.resolve('SOME_RESOLVED_RESULT')",
         target=ContextTarget(top_context["context"]),
@@ -87,7 +87,7 @@ async def test_resolved_promise_with_await_promise_false(bidi_session,
 
 @pytest.mark.asyncio
 async def test_resolved_promise_with_await_promise_true(bidi_session,
-                                                       top_context):
+                                                        top_context):
     result = await bidi_session.script.evaluate(
         expression="Promise.resolve('SOME_RESOLVED_RESULT')",
         target=ContextTarget(top_context["context"]),
@@ -100,7 +100,7 @@ async def test_resolved_promise_with_await_promise_true(bidi_session,
 
 @pytest.mark.asyncio
 async def test_resolved_promise_with_await_promise_omitted(bidi_session,
-                                                          top_context):
+                                                           top_context):
     result = await bidi_session.script.evaluate(
         expression="Promise.resolve('SOME_RESOLVED_RESULT')",
         target=ContextTarget(top_context["context"]))
@@ -112,7 +112,7 @@ async def test_resolved_promise_with_await_promise_omitted(bidi_session,
 
 @pytest.mark.asyncio
 async def test_rejected_promise_with_await_promise_false(bidi_session,
-                                                        top_context):
+                                                         top_context):
     result = await bidi_session.script.evaluate(
         expression="Promise.reject('SOME_REJECTED_RESULT')",
         target=ContextTarget(top_context["context"]),
@@ -126,7 +126,7 @@ async def test_rejected_promise_with_await_promise_false(bidi_session,
 
 @pytest.mark.asyncio
 async def test_rejected_promise_with_await_promise_true(bidi_session,
-                                                       top_context):
+                                                        top_context):
     with pytest.raises(ScriptEvaluateResultException) as exception:
         await bidi_session.script.evaluate(
             expression="Promise.reject('SOME_REJECTED_RESULT')",
@@ -136,10 +136,10 @@ async def test_rejected_promise_with_await_promise_true(bidi_session,
     recursive_compare({
         'realm': any_string,
         'exceptionDetails': {
-            'columnNumber': 0,
+            'columnNumber': any_int,
             'exception': {'type': 'string',
                           'value': 'SOME_REJECTED_RESULT'},
-            'lineNumber': 0,
+            'lineNumber': any_int,
             'stackTrace': {'callFrames': []},
             'text': any_string}},
         exception.value.result)
@@ -147,7 +147,7 @@ async def test_rejected_promise_with_await_promise_true(bidi_session,
 
 @pytest.mark.asyncio
 async def test_rejected_promise_with_await_promise_omitted(bidi_session,
-                                                          top_context):
+                                                           top_context):
     with pytest.raises(ScriptEvaluateResultException) as exception:
         await bidi_session.script.evaluate(
             expression="Promise.reject('SOME_REJECTED_RESULT')",
@@ -156,10 +156,10 @@ async def test_rejected_promise_with_await_promise_omitted(bidi_session,
     recursive_compare({
         'realm': any_string,
         'exceptionDetails': {
-            'columnNumber': 0,
+            'columnNumber': any_int,
             'exception': {'type': 'string',
                           'value': 'SOME_REJECTED_RESULT'},
-            'lineNumber': 0,
+            'lineNumber': any_int,
             'stackTrace': {'callFrames': []},
             'text': any_string}},
         exception.value.result)

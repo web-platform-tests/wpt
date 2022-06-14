@@ -28,3 +28,7 @@ def recursive_compare(expected: Any, actual: Any) -> None:
 
 def any_string(expected: Any) -> None:
     assert isinstance(expected, str)
+
+
+def any_int(expected: Any) -> None:
+    assert isinstance(expected, int)

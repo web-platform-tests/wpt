@@ -235,6 +235,6 @@ function allNameVariants(name, slowTest) {
 
     // for slow tests effectively cut the amount of work in third by only
     // returning one variation
-    if (slowTest) return unique([mixedCaseName]);
+    if (slowTest) return [mixedCaseName];
     return unique([upCaseName, lowCaseName, mixedCaseName]);
 }

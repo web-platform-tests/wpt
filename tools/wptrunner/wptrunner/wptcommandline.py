@@ -348,6 +348,11 @@ scheme host and port.""")
     chrome_group.add_argument("--enable-swiftshader", action="store_true", default=False,
                              help="Enable SwiftShader for CPU-based 3D graphics. This can be used "
                              "in environments with no hardware GPU available.")
+    config_group.add_argument("--no-enable-experimental", action="store_true",
+                              help="Do not enable --enable-experimental-web-platform-features flag "
+                              "on experimental channels", default=False)
+    config_group.add_argument("--no-enable-webtransport-h3", action="store_true", default=False,
+                              help="Do not enable WebTransport tests on experimental channels")
 
     sauce_group = parser.add_argument_group("Sauce Labs-specific")
     sauce_group.add_argument("--sauce-browser", dest="sauce_browser",

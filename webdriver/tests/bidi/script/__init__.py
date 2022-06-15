@@ -1,6 +1,6 @@
 from typing import Any
 
-from .. import any_string, any_int
+from .. import any_int, any_string
 
 
 def any_stack_trace(actual: Any) -> None:

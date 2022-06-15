@@ -135,7 +135,7 @@ async def test_rejected_promise_with_await_promise_true(bidi_session,
             'exception': {'type': 'string',
                           'value': 'SOME_REJECTED_RESULT'},
             'lineNumber': any_int,
-            'stackTrace': {'callFrames': []},
+            'stackTrace': any_stack_trace,
             'text': any_string}},
         exception.value.result)
 
@@ -155,6 +155,6 @@ async def test_rejected_promise_with_await_promise_omitted(bidi_session,
             'exception': {'type': 'string',
                           'value': 'SOME_REJECTED_RESULT'},
             'lineNumber': any_int,
-            'stackTrace': {'callFrames': []},
+            'stackTrace': any_stack_trace,
             'text': any_string}},
         exception.value.result)

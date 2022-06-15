@@ -1,6 +1,5 @@
-from collections import UserDict
 from enum import Enum
-from typing import Any, Optional, Mapping, MutableMapping, Union
+from typing import Any, Optional, Mapping, MutableMapping, Union, Dict
 
 from ._module import BidiModule, command
 
@@ -16,16 +15,17 @@ class OwnershipModel(Enum):
     ROOT = "root"
 
 
-class RealmTarget(UserDict[str, Any]):
+class RealmTarget(Dict[str, Any]):
     def __init__(self, realm: str):
-        UserDict.__init__(self, realm=realm)
+        dict.__init__(self, realm=realm)
 
 
-class ContextTarget(UserDict[str, Any]):
+class ContextTarget(Dict[str, Any]):
     def __init__(self, context: str, sandbox: Optional[str] = None):
-        UserDict.__init__(self, context=context)
-        if sandbox is not None:
-            self.data.update({sandbox: sandbox})
+        if sandbox is None:
+            dict.__init__(self, context=context)
+        else:
+            dict.__init__(self, context=context, sandbox=sandbox)
 
 
 Target = Union[RealmTarget, ContextTarget]

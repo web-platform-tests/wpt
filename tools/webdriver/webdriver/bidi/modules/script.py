@@ -22,10 +22,9 @@ class RealmTarget(Dict[str, Any]):
 
 class ContextTarget(Dict[str, Any]):
     def __init__(self, context: str, sandbox: Optional[str] = None):
-        if sandbox is None:
-            dict.__init__(self, context=context)
-        else:
-            dict.__init__(self, context=context, sandbox=sandbox)
+            super().__init__(self, context=context)
+            if sandbox is not None:
+                self.data.update({sandbox: sandbox})
 
 
 class Script(BidiModule):

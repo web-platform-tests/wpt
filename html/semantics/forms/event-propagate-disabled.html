@@ -90,24 +90,36 @@
   }
 
   /**
+  * @param {object} options
+  * @param {Element & { disabled: boolean }} options.element
+  * @param {Element} options.observingElement
+  * @param {string[]} options.expectedEvents
+  * @param {(target: Element) => (Promise<void> | void)} options.clickerFn
+  * @param {string} options.title
+  */
+  function promise_event_test({ element, observingElement, expectedEvents, nonDisabledExpectedEvents, clickerFn, title }) {
+    promise_test(async t => {
+      const { target, observedEvents } = setupTest(t, element, observingElement);
+
+      await clickerFn(target);
+      await new Promise(resolve => t.step_timeout(resolve, 0));
+
+      const expected = element.disabled ? expectedEvents : nonDisabledExpectedEvents;
+      assert_array_equals(observedEvents, expected, "Observed events");
+
+    }, `${title} on ${element.outerHTML}, observed from <${observingElement.localName}>`);
+  }
+
+  /**
    * @param {object} options
    * @param {Element & { disabled: boolean }} options.element
    * @param {string[]} options.expectedEvents
    * @param {(target: Element) => (Promise<void> | void)} options.clickerFn
    * @param {string} options.title
    */
-  function promise_event_test({ element, expectedEvents, nonDisabledExpectedEvents, clickerFn, title }) {
+  function promise_event_test_both({ element, expectedEvents, nonDisabledExpectedEvents, clickerFn, title }) {
     for (const observingElement of [element, document.body]) {
-      promise_test(async t => {
-        const { target, observedEvents } = setupTest(t, element, observingElement);
-
-        await clickerFn(target);
-        await new Promise(resolve => t.step_timeout(resolve, 0));
-
-        const expected = element.disabled ? expectedEvents : nonDisabledExpectedEvents;
-        assert_array_equals(observedEvents, expected, "Observed events");
-
-      }, `${title} on ${element.outerHTML}, observed from <${observingElement.localName}>`);
+      promise_event_test({ element, observingElement, expectedEvents, nonDisabledExpectedEvents, clickerFn, title });
     }
   }
 
@@ -118,7 +130,17 @@
   for (const element of elements) {
     promise_event_test({
       element,
+      observingElement: element,
       expectedEvents: pointerEvents,
+      nonDisabledExpectedEvents: allEvents,
+      clickerFn: test_driver.click,
+      title: "Trusted click"
+    })
+
+    promise_event_test({
+      element,
+      observingElement: document.body,
+      expectedEvents: allEvents,
       nonDisabledExpectedEvents: allEvents,
       clickerFn: test_driver.click,
       title: "Trusted click"
@@ -130,7 +152,7 @@
     ];
 
     for (const [eventInterface, events] of eventFirePair) {
-      promise_event_test({
+      promise_event_test_both({
         element,
         expectedEvents: events,
         nonDisabledExpectedEvents: events,
@@ -143,7 +165,7 @@
       })
     }
 
-    promise_event_test({
+    promise_event_test_both({
       element,
       expectedEvents: [],
       nonDisabledExpectedEvents: ["click"],

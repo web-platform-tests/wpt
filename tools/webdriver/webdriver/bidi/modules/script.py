@@ -28,11 +28,14 @@ class ContextTarget(UserDict[str, Any]):
             self.data.update({sandbox: sandbox})
 
 
+Target = Union[RealmTarget, ContextTarget]
+
+
 class Script(BidiModule):
     @command
     def evaluate(self,
                  expression: str,
-                 target: Union[RealmTarget, ContextTarget],
+                 target: Target,
                  await_promise: Optional[bool] = None,
                  result_ownership: Optional[OwnershipModel] = None) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {

@@ -366,6 +366,9 @@ class TestSource:
         self.test_queue = test_queue
         self.current_group = None
         self.current_metadata = None
+        self.logger = structured.get_default_logger()
+        if self.logger is None:
+            self.logger = structured.structuredlog.StructuredLogger("TestSource")
 
     @abstractmethod
     #@classmethod (doesn't compose with @abstractmethod in < 3.3)
@@ -385,6 +388,7 @@ class TestSource:
             try:
                 self.current_group, self.current_metadata = self.test_queue.get(block=True, timeout=5)
             except Empty:
+                self.logger.warning("Timed out to get test group from queue")
                 return None, None
         return self.current_group, self.current_metadata
 

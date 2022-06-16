@@ -22,7 +22,6 @@ function runTest({target, eventName, expectCancelable}) {
       cancelable = event.cancelable;
       arrived = true;
       event.preventDefault();
-      console.log(eventName);
   });
 
   promise_test (async (t) => {

@@ -15,26 +15,32 @@ function waitFor(condition) {
   });
 }
 
-function runTest({target, eventName, expectCancelable}) {
-  let cancelable = null;
-  let arrived = false;
+function runTest({target, eventName, expectCancelable, preventDefault}) {
+  let cancelable = [];
+  let arrived = 0;
   target.addEventListener(eventName, function (event) {
-      cancelable = event.cancelable;
-      arrived = true;
+    cancelable.push(event.cancelable);
+    arrived++;
+    if (preventDefault) {
       event.preventDefault();
+    }
   });
 
   promise_test (async (t) => {
     t.add_cleanup(() => {
-      document.querySelector('div[style="height: 200vh"]').remove();
+      document.querySelector('.remove-on-cleanup')?.remove();
     })
     const pos_x = Math.floor(window.innerWidth / 2);
-    const pos_y = Math.floor(window.innerHeight / 2);
+    let pos_y = Math.floor(window.innerHeight / 2);
     const delta_x = 0;
     const delta_y = 100;
-    await new test_driver.Actions()
-       .scroll(pos_x, pos_y, delta_x, delta_y).send();
-    await waitFor(()=> { return arrived; });
-    assert_equals(cancelable, expectCancelable);
-  }, `${eventName} events are ${ expectCancelable ? '' : 'non-' }cancelable since the event listener on ${target.constructor.name} is treated as ${ expectCancelable ? 'not ' : '' }passive`);
+    const actions = new test_driver.Actions();
+    for (let i = 0; i < expectCancelable.length; ++i) {
+      actions.scroll(pos_x, pos_y, delta_x, (i + 1) * delta_y)
+      pos_y += delta_y;
+    }
+    await actions.send();
+    await waitFor(()=> { return arrived >= expectCancelable.length; });
+    assert_array_equals(cancelable, expectCancelable);
+  });
 }

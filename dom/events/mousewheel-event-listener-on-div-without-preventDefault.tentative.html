@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>mousewheel event listener on document, with preventDefault()</title>
+<title>mousewheel event listener on div, without preventDefault()</title>
 <link rel="help" href="https://github.com/WICG/interventions/issues/64">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -7,14 +7,30 @@
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="resources/default-passive-scrolling.js"></script>
+<style>
+  html, body {
+    overflow: hidden;
+    margin: 0;
+  }
+  #div {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: scroll;
+  }
+</style>
 <script>
   onload = () => {
     runTest({
-      target: document,
+      target: document.getElementById('div'),
       eventName: 'mousewheel',
-      expectCancelable: [false],
-      preventDefault: true,
+      expectCancelable: [true, true],
+      preventDefault: false,
     });
   }
 </script>
-<div class=remove-on-cleanup style="height: 200vh"></div>
+<div class=remove-on-cleanup id=div>
+  <div style="height: 200vh"></div>
+</div>

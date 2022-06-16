@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>touchstart event listener on document, with preventDefault()</title>
+<title>touchmove event listener on div, without preventDefault()</title>
 <link rel="help" href="https://github.com/WICG/interventions/issues/35">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -16,10 +16,10 @@
 <script>
   onload = () => {
     runTest({
-      target: document,
-      eventName: 'touchstart',
-      expectCancelable: [false],
-      preventDefault: true,
+      target: document.getElementById('touchDiv'),
+      eventName: 'touchmove',
+      expectCancelable: [true, false],
+      preventDefault: false,
     });
   }
 </script>

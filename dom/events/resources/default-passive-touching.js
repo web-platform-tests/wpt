@@ -24,29 +24,34 @@ function waitForCompositorCommit() {
   });
 }
 
-function injectInput(touch_div) {
-  new test_driver.Actions()
+function injectInput(touchDiv, moveCount) {
+  const actions = new test_driver.Actions()
     .addPointer("touch_pointer", "touch")
-    .pointerMove(0, 0, {origin: touch_div})
-    .pointerDown()
-    .pointerMove(30, 30)
-    .pointerUp()
+    .pointerMove(0, 0, {origin: touchDiv})
+    .pointerDown();
+  for (let i = 0; i < moveCount; ++i) {
+    const offset = (i + 1) * 30;
+    actions.pointerMove(offset, offset);
+  }
+  actions.pointerUp()
     .send();
 }
 
-function runTest({target, eventName, expectCancelable}) {
-  let touch_div = document.getElementById("touchDiv");
-  let cancelable = null;
-  let arrived = false;
+function runTest({target, eventName, expectCancelable, preventDefault}) {
+  let touchDiv = document.getElementById("touchDiv");
+  let cancelable = [];
+  let arrived = 0;
   target.addEventListener(eventName, function (event) {
-      cancelable = event.cancelable;
-      arrived = true;
+    cancelable.push(event.cancelable);
+    arrived++;
+    if (preventDefault) {
       event.preventDefault();
+    }
   });
   promise_test (async () => {
     await waitForCompositorCommit();
-    injectInput(touch_div);
-    await waitFor(()=> { return arrived; });
-    assert_equals(cancelable, expectCancelable);
-  }, `${eventName} events are ${ expectCancelable ? '' : 'non-' }cancelable since the event listener on ${target.constructor.name} is treated as ${ expectCancelable ? 'not ' : '' }passive`);
+    injectInput(touchDiv, expectCancelable.length);
+    await waitFor(()=> { return arrived >= expectCancelable.length; });
+    assert_array_equals(cancelable, expectCancelable);
+  });
 }

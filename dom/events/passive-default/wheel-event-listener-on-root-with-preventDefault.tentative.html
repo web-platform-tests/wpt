@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<title>wheel event listener on root, with preventDefault()</title>
+<link rel="help" href="https://github.com/WICG/interventions/issues/64">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/default-passive-scrolling.js"></script>
+<script>
+  onload = () => {
+    runTest({
+      target: document.documentElement,
+      eventName: 'wheel',
+      expectCancelable: [false],
+      preventDefault: true,
+    });
+  }
+</script>
+<div class=remove-on-cleanup style="height: 200vh"></div>

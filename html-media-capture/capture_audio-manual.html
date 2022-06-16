@@ -23,13 +23,13 @@
   var input;
 
   setup(function() {
-    input = document.querySelector('input[type=file]');
+    input = document.querySelector('input[type=file]'); // Input element to capture audio.
   }, {explicit_done: true});
 
   async_test(function(t) {
     input.onchange = t.step_func_done(function() {
       assert_equals(input.files.length, 1, 'Should capture one file');
-      assert_regexp_match(input.files[0].type, /^audio\//, 'The captured file should be type of audio');
+      assert_regexp_match(input.files[0].type, /^audio\//, 'The captured file should be type of audio'); // Aleert user of the file type.
     });
     done();
   });

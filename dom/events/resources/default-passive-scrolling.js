@@ -16,7 +16,7 @@ function waitFor(condition) {
 }
 
 function runTest({target, eventName, expectCancelable}) {
-  let cancelable = true;
+  let cancelable = null;
   let arrived = false;
   target.addEventListener(eventName, function (event) {
       cancelable = event.cancelable;

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<title>Default passive touchmove event listener on window</title>
+<link rel="help" href="https://github.com/WICG/interventions/issues/35">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/default-passive-touching.js"></script>
+<style>
+#touchDiv {
+  width: 100px;
+  height: 100px;
+}
+</style>
+<body onload="runTest({target: window, eventName: 'touchmove', expectCancelable: false})">
+<div id="touchDiv"></div>

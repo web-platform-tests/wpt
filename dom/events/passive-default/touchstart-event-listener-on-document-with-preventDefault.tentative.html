@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>touchstart event listener on document, with preventDefault()</title>
+<title>touchstart event listener on document</title>
 <link rel="help" href="https://github.com/WICG/interventions/issues/35">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -18,8 +18,7 @@
     runTest({
       target: document,
       eventName: 'touchstart',
-      expectCancelable: [false],
-      preventDefault: true,
+      expectCancelable: false,
     });
   }
 </script>

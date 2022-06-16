@@ -24,34 +24,29 @@ function waitForCompositorCommit() {
   });
 }
 
-function injectInput(touchDiv, moveCount) {
-  const actions = new test_driver.Actions()
+function injectInput(touchDiv) {
+  return new test_driver.Actions()
     .addPointer("touch_pointer", "touch")
     .pointerMove(0, 0, {origin: touchDiv})
-    .pointerDown();
-  for (let i = 0; i < moveCount; ++i) {
-    const offset = (i + 1) * 30;
-    actions.pointerMove(offset, offset);
-  }
-  actions.pointerUp()
+    .pointerDown()
+    .pointerMove(30, 30)
+    .pointerUp()
     .send();
 }
 
-function runTest({target, eventName, expectCancelable, preventDefault}) {
+function runTest({target, eventName, expectCancelable}) {
   let touchDiv = document.getElementById("touchDiv");
-  let cancelable = [];
+  let cancelable = null;
   let arrived = 0;
   target.addEventListener(eventName, function (event) {
-    cancelable.push(event.cancelable);
-    arrived++;
-    if (preventDefault) {
-      event.preventDefault();
-    }
+    cancelable = event.cancelable;
+    arrived = true;
+    event.preventDefault();
   });
   promise_test (async () => {
     await waitForCompositorCommit();
-    injectInput(touchDiv, expectCancelable.length);
-    await waitFor(()=> { return arrived >= expectCancelable.length; });
-    assert_array_equals(cancelable, expectCancelable);
+    await injectInput(touchDiv);
+    await waitFor(()=> { return arrived; });
+    assert_equals(cancelable, expectCancelable);
   });
 }

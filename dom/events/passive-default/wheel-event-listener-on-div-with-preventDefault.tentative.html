@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>wheel event listener on div, with preventDefault()</title>
+<title>wheel event listener on div</title>
 <link rel="help" href="https://github.com/WICG/interventions/issues/64">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -26,8 +26,7 @@
     runTest({
       target: document.getElementById('div'),
       eventName: 'wheel',
-      expectCancelable: [true, true],
-      preventDefault: true,
+      expectCancelable: true,
     });
   }
 </script>

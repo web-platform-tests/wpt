@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>touchmove event listener on window, with preventDefault()</title>
+<title>touchmove event listener on window</title>
 <link rel="help" href="https://github.com/WICG/interventions/issues/35">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -18,8 +18,7 @@
     runTest({
       target: window,
       eventName: 'touchstart',
-      expectCancelable: [false],
-      preventDefault: true,
+      expectCancelable: false,
     });
   }
 </script>

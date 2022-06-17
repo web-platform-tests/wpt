@@ -723,9 +723,12 @@ class TestRunnerManager(threading.Thread):
             test, test_group, group_metadata = self.get_next_test()
             if test is None:
                 return RunnerManagerState.stop(force_stop)
-            restart = (self.restart_on_new_group and
-                       test_group is not self.state.test_group)
-            if restart:
+            if (
+                not restart and
+                self.restart_on_new_group and
+                test_group is not self.state.test_group
+            ):
+                restart = True
                 self.logger.info("Restarting browser for new test group")
         else:
             test_group = self.state.test_group

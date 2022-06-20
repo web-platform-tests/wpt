@@ -7,7 +7,7 @@ const method = "POST";
 
 test(() => {
   const body = new ReadableStream({});
-  const request = new Request("...", { method, body: body, duplex });
+  const request = new Request("...", { method, body, duplex });
   assert_equals(request.body, body);
 }, "Constructing a Request with a stream holds the original object.");
 

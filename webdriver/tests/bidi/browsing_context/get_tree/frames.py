@@ -7,7 +7,6 @@ pytestmark = pytest.mark.asyncio
 
 async def test_multiple_frames(
     bidi_session,
-    current_session,
     top_context,
     test_page,
     test_page2,
@@ -18,7 +17,7 @@ async def test_multiple_frames(
     )
 
     # First retrieve all browsing contexts of the current tab
-    top_level_context_id = current_session.window_handle
+    top_level_context_id = top_context["context"]
     all_contexts = await bidi_session.browsing_context.get_tree(root=top_level_context_id)
 
     assert len(all_contexts) == 1
@@ -57,7 +56,6 @@ async def test_multiple_frames(
 
 async def test_cross_origin(
     bidi_session,
-    current_session,
     top_context,
     test_page_cross_origin,
     test_page_cross_origin_frame,
@@ -67,7 +65,7 @@ async def test_cross_origin(
     )
 
     # First retrieve all browsing contexts of the current tab
-    top_level_context_id = current_session.window_handle
+    top_level_context_id = top_context["context"]
     all_contexts = await bidi_session.browsing_context.get_tree(root=top_level_context_id)
 
     assert len(all_contexts) == 1

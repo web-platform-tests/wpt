@@ -3,6 +3,7 @@ import json
 
 import pytest
 from webdriver.error import TimeoutException
+from webdriver.bidi.modules.script import ContextTarget
 
 from tests.support.sync import AsyncPoll
 from .. import assert_browsing_context
@@ -63,7 +64,7 @@ async def test_evaluate_window_open_without_url(bidi_session, wait_for_event, to
 
     await bidi_session.script.evaluate(
         expression="""window.open();""",
-        target=bidi_session.script.ContextTarget(top_context["top_context"]))
+        target=ContextTarget(top_context["context"]))
 
     context_info = await on_entry
 
@@ -90,7 +91,7 @@ async def test_evaluate_window_open_with_url(bidi_session, wait_for_event, inlin
 
     await bidi_session.script.evaluate(
         expression=f"""window.open({json.dumps(url)});""",
-        target=bidi_session.script.ContextTarget(top_context["top_context"]))
+        target=ContextTarget(top_context["context"]))
 
     context_info = await on_entry
 
@@ -126,7 +127,7 @@ async def test_navigate_creates_iframes(bidi_session, current_session, top_conte
     assert len(events) == 2
 
     # Get all browsing contexts from the current tab
-    contexts = await bidi_session.browsing_context.get_tree(root=current_session.window_handle)
+    contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])
 
     assert len(contexts) == 1
     root_info = contexts[0]
@@ -176,7 +177,7 @@ async def test_navigate_creates_nested_iframes(bidi_session, current_session, to
     assert len(events) == 2
 
     # Get all browsing contexts from the current tab
-    contexts = await bidi_session.browsing_context.get_tree(root=current_session.window_handle)
+    contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])
 
     assert len(contexts) == 1
     root_info = contexts[0]

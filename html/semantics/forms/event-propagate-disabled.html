@@ -6,6 +6,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
 
 <div id=cases>
   <input> <!-- Santity check with non-disabled control -->
@@ -92,7 +93,7 @@
     promise_test(async t => {
       const { target, observedEvents } = setupTest(t, element, observingElement);
 
-      await clickerFn(target);
+      await t.step_func(clickerFn)(target);
       await new Promise(resolve => t.step_timeout(resolve, 0));
 
       const expected = element.disabled ? expectedEvents : nonDisabledExpectedEvents;
@@ -114,6 +115,15 @@
     }
   }
 
+  function trusted_click(target) {
+    return new test_driver.Actions()
+          .addPointer("default-mouse", "mouse")
+          .pointerMove(0, 0, target, 0)
+          .pointerDown()
+          .pointerUp()
+          .send();
+  }
+
   const mouseEvents = ["mousemove", "mousedown", "mouseup", "click"];
   const pointerEvents = ["pointermove", "pointerdown", "pointerup"];
 
@@ -124,7 +134,7 @@
       observingElement: element,
       expectedEvents: pointerEvents,
       nonDisabledExpectedEvents: allEvents,
-      clickerFn: test_driver.click,
+      clickerFn: trusted_click,
       title: "Trusted click"
     })
 
@@ -133,7 +143,7 @@
       observingElement: document.body,
       expectedEvents: allEvents,
       nonDisabledExpectedEvents: allEvents,
-      clickerFn: test_driver.click,
+      clickerFn: trusted_click,
       title: "Trusted click"
     })
 

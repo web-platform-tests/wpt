@@ -7,8 +7,8 @@ const method = "POST";
 
 test(() => {
   const body = new ReadableStream({});
-  const request = new Request("...", { method, body, duplex });
-  assert_equals(request.body, stream);
+  const request = new Request("...", { method, body: body, duplex });
+  assert_equals(request.body, body);
 }, "Constructing a Request with a stream holds the original object.");
 
 promise_test(async (t) => {
@@ -20,7 +20,7 @@ promise_test(async (t) => {
 
 promise_test(async (t) => {
   const body = new ReadableStream({});
-  stream.getReader().read();
+  body.getReader().read();
   assert_throws_js(TypeError,
                    () => new Request("...", { method, body, duplex }));
 }, "Constructing a Request with a stream on which read() is called");
@@ -31,7 +31,7 @@ promise_test(async (t) => {
   await reader.read();
   reader.releaseLock();
   assert_throws_js(TypeError,
-                   () => "...", { method, body, duplex });
+                   () => new Request("...", { method, body, duplex }));
 }, "Constructing a Request with a stream on which read() and releaseLock() are called");
 
 promise_test(async (t) => {

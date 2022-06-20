@@ -6,7 +6,7 @@ const duplex = "half";
 const method = "POST";
 
 test(() => {
-  const body = new ReadableStream({});
+  const body = new ReadableStream();
   const request = new Request("...", { method, body, duplex });
   assert_equals(request.body, body);
 }, "Constructing a Request with a stream holds the original object.");
@@ -19,7 +19,7 @@ promise_test(async (t) => {
 }, "Constructing a Request with a stream on which getReader() is called");
 
 promise_test(async (t) => {
-  const body = new ReadableStream({});
+  const body = new ReadableStream();
   body.getReader().read();
   assert_throws_js(TypeError,
                    () => new Request("...", { method, body, duplex }));
@@ -77,7 +77,7 @@ test((t) => {
 }, "It is OK to omit .duplex when the body is a Blob.");
 
 test((t) => {
-  const body = new ReadableStream({});
+  const body = new ReadableStream();
   assert_throws_js(TypeError,
                    () => new Request("...", { method, body }));
 }, "It is error to omit .duplex when the body is a ReadableStream.");
@@ -99,7 +99,7 @@ test((t) => {
 }, "It is OK to set .duplex = 'half' when the body is a Blob.");
 
 test((t) => {
-  const body = new ReadableStream({});
+  const body = new ReadableStream();
   new Request("...", { method, body, duplex: "half" });
 }, "It is OK to set .duplex = 'half' when the body is a ReadableStream.");
 
@@ -132,14 +132,14 @@ test((t) => {
 }, "It is error to set .duplex = 'full' when the body is a Blob.");
 
 test((t) => {
-  const body = new ReadableStream({});
+  const body = new ReadableStream();
   const duplex = "full";
   assert_throws_js(TypeError,
                    () => new Request("...", { method, body, duplex }));
 }, "It is error to set .duplex = 'full' when the body is a ReadableStream.");
 
 test((t) => {
-  const body = new ReadableStream({});
+  const body = new ReadableStream();
   const duplex = "half";
   const req1 = new Request("...", { method, body, duplex });
   const req2 = new Request(req1);

@@ -228,9 +228,12 @@ class Test:
         # self.pac will be an absolute path
 
         self.subdomain = subdomain
+        if pac is not None:
+            pac = urljoin(self.url, pac)
+
         self.environment = {"url_base": url_base,
                             "protocol": protocol,
-                            "pac": urljoin(self.url, pac),
+                            "pac": pac,
                             "prefs": self.prefs}
 
     def __eq__(self, other):

@@ -44,12 +44,6 @@
   <input disabled type="time">
   <input disabled type="url">
   <input disabled type="week">
-
-  <!--
-    WebDriver can't click on type="file"
-    https://github.com/w3c/webdriver/issues/1666
-  <input disabled="disabled" type="file">
-  <input disabled="disabled" type="hidden"> -->
 </div>
 
 <script>
@@ -117,6 +111,8 @@
   }
 
   function trusted_click(target) {
+    // To workaround type=file clicking issue
+    // https://github.com/w3c/webdriver/issues/1666
     return new test_driver.Actions()
       .addPointer("default-mouse", "mouse")
       .pointerMove(0, 0, { origin: target })

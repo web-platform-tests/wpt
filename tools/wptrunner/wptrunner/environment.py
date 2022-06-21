@@ -325,10 +325,10 @@ def wait_for_service(logger, host, port, timeout=60):
     raise OSError("Service is unavailable: %s:%i" % addr)
 
 def get_server_url(server_config, protocol, subdomain=False):
-        scheme = "https" if protocol == "h2" else protocol
-        host = server_config["browser_host"]
-        if subdomain:
-            # The only supported subdomain filename flag is "www".
-            host = "{subdomain}.{host}".format(subdomain="www", host=host)
-        return "{scheme}://{host}:{port}".format(scheme=scheme, host=host,
-            port = server_config["ports"][protocol][0])
+    scheme = "https" if protocol == "h2" else protocol
+    host = server_config["browser_host"]
+    if subdomain:
+        # The only supported subdomain filename flag is "www".
+        host = "{subdomain}.{host}".format(subdomain="www", host=host)
+    return "{scheme}://{host}:{port}".format(scheme=scheme, host=host,
+        port = server_config["ports"][protocol][0])

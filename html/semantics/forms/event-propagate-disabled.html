@@ -114,7 +114,6 @@
     // To workaround type=file clicking issue
     // https://github.com/w3c/webdriver/issues/1666
     return new test_driver.Actions()
-      .addPointer("default-mouse", "mouse")
       .pointerMove(0, 0, { origin: target })
       .pointerDown()
       .pointerUp()

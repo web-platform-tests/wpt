@@ -119,7 +119,7 @@
   function trusted_click(target) {
     return new test_driver.Actions()
       .addPointer("default-mouse", "mouse")
-      .pointerMove(0, 0, target, 0)
+      .pointerMove(0, 0, { origin: target })
       .pointerDown()
       .pointerUp()
       .send();

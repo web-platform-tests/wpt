@@ -978,7 +978,8 @@ class MarionetteRefTestExecutor(RefTestExecutor):
                                  debug_info=debug_info)
         self.protocol = MarionetteProtocol(self, browser, capabilities,
                                            timeout_multiplier, kwargs["e10s"],
-                                           ccov)
+                                           ccov,
+                                           server_config)
         self.implementation = self.get_implementation(reftest_internal)
         self.implementation_kwargs = {}
         if reftest_internal:

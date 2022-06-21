@@ -333,7 +333,3 @@ def get_server_url(server_config, protocol, subdomain=False):
             host = "{subdomain}.{host}".format(subdomain="www", host=host)
         return "{scheme}://{host}:{port}".format(scheme=scheme, host=host,
             port = server_config["ports"][protocol][0])
-
-def get_test_server_url(server_config, test):
-    return urljoin(get_server_url(server_config, test.environment["protocol"],
-                                    test.subdomain), test.url)

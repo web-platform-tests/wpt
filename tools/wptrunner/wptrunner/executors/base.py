@@ -11,12 +11,12 @@ import socket
 import sys
 from abc import ABCMeta, abstractmethod
 from typing import Any, Callable, ClassVar, Tuple, Type
-from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import urljoin, urlsplit, urlunsplit
 
 from . import pytestrunner
 from .actions import actions
 from .protocol import Protocol, WdspecProtocol
-from ..environment import get_server_url, get_test_server_url
+from ..environment import get_server_url
 
 here = os.path.dirname(__file__)
 
@@ -316,7 +316,8 @@ class TestExecutor:
         return get_server_url(self.server_config, protocol, subdomain)
 
     def test_url(self, test):
-        return get_test_server_url(self.server_config, test)
+        return urljoin(self.server_url(test.environment["protocol"], test.subdomain), test.url)
+
 
     @abstractmethod
     def do_test(self, test):

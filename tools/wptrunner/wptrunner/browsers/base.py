@@ -10,7 +10,7 @@ from abc import ABCMeta, abstractmethod
 
 import mozprocess
 
-from ..environment import wait_for_service, get_test_server_url
+from ..environment import wait_for_service, get_server_url
 from urllib.parse import urljoin
 from ..wptcommandline import require_arg  # noqa: F401
 
@@ -419,6 +419,6 @@ class WebDriverBrowser(Browser):
         else:
             self._capabilities = {"proxy": {
                 "proxyType": "pac",
-                "proxyAutoconfigUrl": urljoin(get_test_server_url(server_config, test), pac)
+                "proxyAutoconfigUrl": urljoin(get_server_url(server_config, "http"), pac)
             }}
             return self._capabilities

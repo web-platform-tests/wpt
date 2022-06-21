@@ -12,7 +12,6 @@ from mozlog import get_default_logger, handlers
 
 from . import mpcontext
 from .wptlogging import LogLevelRewriter, QueueHandler, LogQueueThread
-from urllib.parse import urljoin
 
 here = os.path.dirname(__file__)
 repo_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir, os.pardir))

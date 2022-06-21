@@ -12,12 +12,13 @@
   <input> <!-- Santity check with non-disabled control -->
   <select disabled></select>
   <select disabled>
+    <!-- <option> can't be clicked as it doesn't have its own painting area -->
     <option>foo</option>
   </select>
   <fieldset disabled>Text</fieldset>
-  <fieldset disabled><span>Span</span></fieldset>
+  <fieldset disabled><span class="target">Span</span></fieldset>
   <button disabled>Text</button>
-  <button disabled><span>Span</span></button>
+  <button disabled><span class="target">Span</span></button>
   <textarea disabled></textarea>
   <input disabled type="button">
   <input disabled type="checkbox">
@@ -56,17 +57,7 @@
    * @param {Element} element
    */
   function getEventFiringTarget(element) {
-    let target = element;
-    while (target.children.length) {
-      const { firstElementChild } = target;
-      if (!firstElementChild.getBoundingClientRect().width) {
-        // Some elements does not have its own painting area, e.g. <option>.
-        // Such element can't be clicked natively.
-        break;
-      }
-      target = firstElementChild;
-    }
-    return target;
+    return element.querySelector(".target") || element;
   }
 
   const allEvents = ["pointermove", "mousemove", "pointerdown", "mousedown", "pointerup", "mouseup", "click"];
@@ -127,11 +118,11 @@
 
   function trusted_click(target) {
     return new test_driver.Actions()
-          .addPointer("default-mouse", "mouse")
-          .pointerMove(0, 0, target, 0)
-          .pointerDown()
-          .pointerUp()
-          .send();
+      .addPointer("default-mouse", "mouse")
+      .pointerMove(0, 0, target, 0)
+      .pointerDown()
+      .pointerUp()
+      .send();
   }
 
   const mouseEvents = ["mousemove", "mousedown", "mouseup", "click"];
@@ -178,7 +169,7 @@
 
     promise_event_test_both({
       element,
-      expectedEvents: [],
+      expectedEvents: getEventFiringTarget(element) === element ? [] : ["click"],
       nonDisabledExpectedEvents: ["click"],
       clickerFn: target => target.click(),
       title: `click()`

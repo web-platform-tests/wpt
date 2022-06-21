@@ -226,12 +226,11 @@ class Test:
         self.timeout = timeout if timeout is not None else self.default_timeout
         self.path = path
         # self.pac will be an absolute path
-        if pac is not None:
-            self.pac = urljoin(self.url, pac)
 
         self.subdomain = subdomain
         self.environment = {"url_base": url_base,
                             "protocol": protocol,
+                            "pac": urljoin(self.url, pac),
                             "prefs": self.prefs}
 
     def __eq__(self, other):
@@ -247,10 +246,6 @@ class Test:
         if metadata is None:
             metadata = {}
         return metadata
-
-    def update_environment(self, env):
-        if self.pac is not None:
-            self.pac = urljoin(f'http://{env.config["server_host"]}:{env.config["ports"]["http"][0]}', self.pac)
 
     @classmethod
     def from_manifest(cls, manifest_file, manifest_item, inherit_metadata, test_metadata):

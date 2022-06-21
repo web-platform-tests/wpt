@@ -10,7 +10,8 @@ from abc import ABCMeta, abstractmethod
 
 import mozprocess
 
-from ..environment import wait_for_service
+from ..environment import wait_for_service, get_test_server_url
+from urllib.parse import urljoin
 from ..wptcommandline import require_arg  # noqa: F401
 
 here = os.path.dirname(__file__)
@@ -112,7 +113,7 @@ class Browser:
         """Used for browser-specific setup that happens at the start of a test run"""
         pass
 
-    def settings(self, test):
+    def settings(self, test, server_config=None):
         """Dictionary of metadata that is constant for a specific launch of a browser.
 
         This is used to determine when the browser instance configuration changes, requiring
@@ -411,12 +412,13 @@ class WebDriverBrowser(Browser):
 
         return ExecutorBrowser, args
 
-    def settings(self, test):
-        if test.pac is None or self._supports_pac is False:
+    def settings(self, test, server_config=None):
+        pac = test.environment.get("pac", None)
+        if pac is None or self._supports_pac is False:
             return {}
         else:
             self._capabilities = {"proxy": {
                 "proxyType": "pac",
-                "proxyAutoconfigUrl": test.pac
+                "proxyAutoconfigUrl": urljoin(get_test_server_url(server_config, test), pac)
             }}
             return self._capabilities

@@ -12,6 +12,7 @@ from mozlog import get_default_logger, handlers
 
 from . import mpcontext
 from .wptlogging import LogLevelRewriter, QueueHandler, LogQueueThread
+from urllib.parse import urljoin
 
 here = os.path.dirname(__file__)
 repo_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir, os.pardir))
@@ -323,3 +324,16 @@ def wait_for_service(logger, host, port, timeout=60):
             so.close()
         time.sleep(0.5)
     raise OSError("Service is unavailable: %s:%i" % addr)
+
+def get_server_url(server_config, protocol, subdomain=False):
+        scheme = "https" if protocol == "h2" else protocol
+        host = server_config["browser_host"]
+        if subdomain:
+            # The only supported subdomain filename flag is "www".
+            host = "{subdomain}.{host}".format(subdomain="www", host=host)
+        return "{scheme}://{host}:{port}".format(scheme=scheme, host=host,
+            port = server_config["ports"][protocol][0])
+
+def get_test_server_url(server_config, test):
+    return urljoin(get_server_url(server_config, test.environment["protocol"],
+                                    test.subdomain), test.url)

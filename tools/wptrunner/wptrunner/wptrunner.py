@@ -371,7 +371,7 @@ def run_tests(config, test_paths, product, **kwargs):
                                  mojojs_path,
                                  inject_script) as test_environment:
             recording.set(["startup", "ensure_environment"])
-            test_loader.update_environment(test_environment)
+
             try:
                 test_environment.ensure_started()
                 start_time = datetime.now()

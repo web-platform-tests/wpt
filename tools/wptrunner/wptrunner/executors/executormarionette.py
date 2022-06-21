@@ -24,6 +24,9 @@ from .base import (CallbackHandler,
                    WdspecExecutor,
                    get_pages,
                    strip_server)
+
+from ..environment import get_server_url
+
 from .protocol import (ActionSequenceProtocolPart,
                        AssertsProtocolPart,
                        BaseProtocolPart,
@@ -705,13 +708,12 @@ class MarionetteProtocol(Protocol):
                   MarionettePrintProtocolPart,
                   MarionetteDebugProtocolPart]
 
-    def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1, e10s=True, ccov=False):
+    def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1, e10s=True, ccov=False, server_config=None):
         do_delayed_imports()
 
         super().__init__(executor, browser)
         self.marionette = None
         self.marionette_port = browser.marionette_port
-        self.pac = browser.pac
         self.capabilities = capabilities
         if hasattr(browser, "capabilities"):
             if self.capabilities is None:
@@ -722,6 +724,7 @@ class MarionetteProtocol(Protocol):
         self.runner_handle = None
         self.e10s = e10s
         self.ccov = ccov
+        self.server_config = server_config
 
     def connect(self):
         self.logger.debug("Connecting to Marionette on port %i" % self.marionette_port)
@@ -781,6 +784,16 @@ class MarionetteProtocol(Protocol):
             self.executor.original_pref_values[name] = self.prefs.get(name)
             self.prefs.set(name, value)
 
+        pac = new_environment.get("pac", None)
+
+        if pac != old_environment.get("pac", None):
+            if pac is None:
+                self.prefs.clear("network.proxy.type")
+                self.prefs.clear("network.proxy.autoconfig_url")
+            else:
+                self.prefs.set("network.proxy.type", 2)
+                self.prefs.set("network.proxy.autoconfig_url",
+                               urljoin(get_server_url(self.server_config, "http"), pac))
 
 class ExecuteAsyncScriptRun(TimedRunner):
     def set_timeout(self):
@@ -849,7 +862,8 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
                                            capabilities,
                                            timeout_multiplier,
                                            kwargs["e10s"],
-                                           ccov)
+                                           ccov,
+                                           server_config)
         with open(os.path.join(here, "testharness_webdriver_resume.js")) as f:
             self.script_resume = f.read()
         self.close_after_done = close_after_done
@@ -1162,7 +1176,8 @@ class MarionetteCrashtestExecutor(CrashtestExecutor):
                                            capabilities,
                                            timeout_multiplier,
                                            kwargs["e10s"],
-                                           ccov)
+                                           ccov,
+                                           server_config)
 
         self.original_pref_values = {}
         self.debug = debug

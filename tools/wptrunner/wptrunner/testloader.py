@@ -388,7 +388,7 @@ class TestSource:
             try:
                 self.current_group, self.current_metadata = self.test_queue.get(block=True, timeout=5)
             except Empty:
-                self.logger.warning("Timed out to get test group from queue")
+                self.logger.warning("Timed out getting test group from queue")
                 return None, None
         return self.current_group, self.current_metadata
 

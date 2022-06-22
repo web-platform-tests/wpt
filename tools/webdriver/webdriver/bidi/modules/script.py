@@ -57,18 +57,17 @@ class Script(BidiModule):
     @command
     def call_function(self,
                       function_declaration: str,
+                      await_promise: bool,
                       target: Target,
                       arguments: Optional[List[Mapping[str, Any]]] = None,
                       this: Optional[Mapping[str, Any]] = None,
-                      result_ownership: Optional[OwnershipModel] = None,
-                      await_promise: Optional[bool] = None) -> Mapping[str, Any]:
+                      result_ownership: Optional[OwnershipModel] = None) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "functionDeclaration": function_declaration,
             "target": target,
+            "awaitPromise": await_promise
         }
 
-        if await_promise is not None:
-            params["awaitPromise"] = await_promise
         if arguments is not None:
             params["arguments"] = arguments
         if this is not None:

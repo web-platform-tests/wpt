@@ -58,7 +58,7 @@ async def test_arrow_function(bidi_session, top_context):
 @pytest.mark.asyncio
 async def test_arguments(bidi_session, top_context):
     result = await bidi_session.script.call_function(
-        function_declaration="(...args)=>{return Promise.resolve(args);}",
+        function_declaration="(...args)=>{return args}",
         arguments=[{
             "type": "string",
             "value": "ARGUMENT_STRING_VALUE"
@@ -99,26 +99,6 @@ async def test_this(bidi_session, top_context):
 
 
 @pytest.mark.asyncio
-async def test_not_await_promise(bidi_session, top_context):
-    result = await bidi_session.script.call_function(
-        function_declaration="(...args)=>{return Promise.resolve(args);}",
-        arguments=[{
-            "type": "string",
-            "value": "ARGUMENT_STRING_VALUE"
-        }, {
-            "type": "number",
-            "value": 42
-        }],
-        await_promise=False,
-        target=ContextTarget(top_context["context"]))
-
-    recursive_compare({
-        "type": "promise",
-        "handle": any_string},
-        result)
-
-
-@pytest.mark.asyncio
 async def test_remote_value_argument(bidi_session, top_context):
     remote_value_result = await bidi_session.script.evaluate(
         expression="({SOME_PROPERTY:'SOME_VALUE'})",
@@ -139,7 +119,7 @@ async def test_remote_value_argument(bidi_session, top_context):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("await_promise", [True, False])
-async def test_arrow_await_promise(bidi_session, top_context, await_promise):
+async def test_async_arrow_await_promise(bidi_session, top_context, await_promise):
     result = await bidi_session.script.call_function(
         function_declaration="async ()=>{return 'SOME_VALUE'}",
         await_promise=await_promise,
@@ -158,7 +138,7 @@ async def test_arrow_await_promise(bidi_session, top_context, await_promise):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("await_promise", [True, False])
-async def test_classic_await_promise(bidi_session, top_context, await_promise):
+async def test_async_classic_await_promise(bidi_session, top_context, await_promise):
     result = await bidi_session.script.call_function(
         function_declaration="async function(){return 'SOME_VALUE'}",
         await_promise=await_promise,

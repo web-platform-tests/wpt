@@ -6,20 +6,14 @@ import webdriver
 
 
 @pytest.fixture
-async def new_tab(bidi_session, current_session):
-    # Open and focus a new tab to run the test in a foreground tab.
-    context_id = current_session.new_window(type_hint="tab")
-    initial_window = current_session.window_handle
-    current_session.window_handle = context_id
+async def new_tab(bidi_session):
+    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
 
     # Retrieve the browsing context info for the new tab
-    contexts = await bidi_session.browsing_context.get_tree(root=context_id, max_depth=0)
-    yield contexts[0]
+    yield new_tab
 
-    # Restore the focus and current window for the WebDriver session before
-    # closing the tab.
-    current_session.window_handle = initial_window
-    await bidi_session.browsing_context.close(context=contexts[0]["context"])
+    # Close the tab.
+    await bidi_session.browsing_context.close(context=new_tab)
 
 
 @pytest.fixture

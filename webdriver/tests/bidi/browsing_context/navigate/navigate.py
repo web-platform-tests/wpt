@@ -7,9 +7,7 @@ from . import navigate_and_assert
 pytestmark = pytest.mark.asyncio
 
 
-async def test_payload(bidi_session, inline):
-    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
-
+async def test_payload(bidi_session, inline, new_tab):
     url = inline("<div>foo</div>")
     result = await bidi_session.browsing_context.navigate(
         context=new_tab, url=url
@@ -19,9 +17,7 @@ async def test_payload(bidi_session, inline):
     assert result["url"] == url
 
 
-async def test_interactive_simultaneous_navigation(bidi_session, inline):
-    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
-
+async def test_interactive_simultaneous_navigation(bidi_session, inline, new_tab):
     frame1_start_url = inline("frame1")
     frame2_start_url = inline("frame2")
 
@@ -74,9 +70,7 @@ async def test_interactive_simultaneous_navigation(bidi_session, inline):
     assert contexts[0]["children"][1]["url"] == frame2_url
 
 
-async def test_relative_url(bidi_session, url):
-    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
-
+async def test_relative_url(bidi_session, url, new_tab):
     url_before = url(
         "/webdriver/tests/bidi/browsing_context/navigate/support/empty.html"
     )

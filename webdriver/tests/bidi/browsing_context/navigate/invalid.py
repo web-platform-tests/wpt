@@ -21,9 +21,7 @@ async def test_params_context_invalid_value(bidi_session, inline, value):
 
 
 @pytest.mark.parametrize("value", [None, False, 42, {}, []])
-async def test_params_url_invalid_type(bidi_session, value):
-    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
-
+async def test_params_url_invalid_type(bidi_session, new_tab, value):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.navigate(
             context=new_tab, url=value
@@ -31,9 +29,7 @@ async def test_params_url_invalid_type(bidi_session, value):
 
 
 @pytest.mark.parametrize("value", ["http://:invalid", "http://#invalid"])
-async def test_params_url_invalid_value(bidi_session, value):
-    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
-
+async def test_params_url_invalid_value(bidi_session, new_tab, value):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.navigate(
             context=new_tab, url=value
@@ -41,9 +37,7 @@ async def test_params_url_invalid_value(bidi_session, value):
 
 
 @pytest.mark.parametrize("value", [False, 42, {}, []])
-async def test_params_wait_invalid_type(bidi_session, inline, value):
-    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
-
+async def test_params_wait_invalid_type(bidi_session, inline, new_tab, value):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.navigate(
             context=new_tab, url=inline("<p>bar"), wait=value

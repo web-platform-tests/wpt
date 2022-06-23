@@ -30,10 +30,8 @@ SVG = "/webdriver/tests/bidi/browsing_context/navigate/support/other.svg"
     ],
 )
 async def test_navigate_between_img_and_html(
-    bidi_session, url, url_before, url_after
+    bidi_session, new_tab, url, url_before, url_after
 ):
-    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
-
     await navigate_and_assert(bidi_session, new_tab, url(url_before))
     await navigate_and_assert(bidi_session, new_tab, url(url_after))
 
@@ -46,9 +44,7 @@ async def test_navigate_between_img_and_html(
         "to png",
     ],
 )
-async def test_navigate_in_iframe(bidi_session, inline, url, img):
-    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
-
+async def test_navigate_in_iframe(bidi_session, new_tab, inline, url, img):
     frame_start_url = inline("frame")
     url_before = inline(f"<iframe src='{frame_start_url}'></iframe>")
     contexts = await navigate_and_assert(bidi_session, new_tab, url_before)

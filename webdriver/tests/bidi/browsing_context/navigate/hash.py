@@ -25,10 +25,8 @@ PAGE_OTHER = "/webdriver/tests/bidi/browsing_context/navigate/support/other.html
     ],
 )
 async def test_navigate_in_the_same_document(
-    bidi_session, url, hash_before, hash_after
+    bidi_session, new_tab, url, hash_before, hash_after
 ):
-    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
-
     await navigate_and_assert(bidi_session, new_tab, url(PAGE_EMPTY + hash_before))
     await navigate_and_assert(bidi_session, new_tab, url(PAGE_EMPTY + hash_after))
 
@@ -45,17 +43,13 @@ async def test_navigate_in_the_same_document(
     ],
 )
 async def test_navigate_different_documents(
-    bidi_session, url, url_before, url_after
+    bidi_session, new_tab, url, url_before, url_after
 ):
-    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
-
     await navigate_and_assert(bidi_session, new_tab, url(url_before))
     await navigate_and_assert(bidi_session, new_tab, url(url_after))
 
 
-async def test_navigate_in_iframe(bidi_session, inline):
-    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
-
+async def test_navigate_in_iframe(bidi_session, inline, new_tab):
     frame_start_url = inline("frame")
     url_before = inline(f"<iframe src='{frame_start_url}'></iframe>")
     contexts = await navigate_and_assert(bidi_session, new_tab, url_before)

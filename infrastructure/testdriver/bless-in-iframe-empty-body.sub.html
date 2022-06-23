@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test for calling bless() in an iframe with an empty body</title>
+<body><div></div></body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+'use strict';
+
+promise_test(async t => {
+  // Make sure that we are testing bless in a cross-origin iframe.
+  // TODO: Is cross-origin relevant here?
+  assert_not_equals(window.location.hostname, '{{hosts[alt][]}}',
+      'This test must not be run on the alt hostname.');
+
+  const frame = document.createElement('iframe');
+  frame.src = 'https://{{hosts[alt][]}}:{{ports[https][0]}}' +
+      '/infrastructure/testdriver/iframe-bless.html';
+
+  // Wait for the iframe to load.
+  const readyPromise = new Promise(resolve => {
+      window.addEventListener('message', function handler(evt) {
+        if (evt.source === frame.contentWindow && evt.data.type == 'loaded') {
+          window.removeEventListener('message', handler);
+          resolve(evt.data);
+        }
+      });
+  });
+  document.body.appendChild(frame);
+  await readyPromise;
+
+  // Now trigger the bless.
+  const resultPromise = new Promise(resolve => {
+      window.addEventListener('message', function handler(evt) {
+        if (evt.source === frame.contentWindow && evt.data.type == 'bless_result') {
+          window.removeEventListener('message', handler);
+	  // Deliberately not removing the iframe, for testing (to preserve
+	  // console logs).
+          //document.body.removeChild(frame);
+          resolve(evt.data);
+        }
+      });
+  });
+  frame.contentWindow.postMessage({ action: 'bless' }, '*');
+  const result = await resultPromise;
+  assert_true(result.blessed);
+}, 'Calling bless() in cross-origin iframe where parent frame has empty body');
+</script>

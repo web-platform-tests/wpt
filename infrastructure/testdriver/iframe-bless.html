@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>bless() iframe</title>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+'use strict';
+
+console.log('iframe here 0');
+
+// Setup the listener first, to avoid race conditions.
+window.addEventListener('message', async function handler(evt) {
+  console.log('iframe here 1');
+  console.log(evt);
+  // TODO: Filter to make sure the action is right.
+
+  window.removeEventListener('message', handler);
+
+  test_driver.set_test_context(window.parent);
+  await test_driver.bless('user activation');
+
+  parent.postMessage({type: 'bless_result', blessed: navigator.userActivation.isActive}, '*');
+});
+
+// Now let our parent know that we are ready to go.
+window.parent.postMessage({ type: 'loaded' }, '*');
+</script>

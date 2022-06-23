@@ -17,7 +17,7 @@ promise_test(async t => {
 
   const frame = document.createElement('iframe');
   frame.src = 'https://{{hosts[alt][]}}:{{ports[https][0]}}' +
-      '/infrastructure/testdriver/iframe-bless.html';
+      '/secure-payment-confirmation/iframe-bless.html';
 
   // Wait for the iframe to load.
   const readyPromise = new Promise(resolve => {

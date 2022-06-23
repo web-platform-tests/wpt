@@ -1,6 +1,7 @@
 import pytest
 
 from . import assert_javascript_entry
+from webdriver.bidi.modules.script import ContextTarget
 
 
 @pytest.mark.asyncio
@@ -11,7 +12,7 @@ async def test_types_and_values(bidi_session, current_time, inline, top_context,
 
     await bidi_session.script.evaluate(
         expression="const err = new Error('foo'); return err.toString()",
-        target=bidi_session.script.ContextTarget(top_context["context"]))
+        target=ContextTarget(top_context["context"]))
 
     time_start = current_time()
 

@@ -1,6 +1,7 @@
 import pytest
 
 from . import assert_console_entry
+from webdriver.bidi.modules.script import ContextTarget
 
 
 @pytest.mark.asyncio
@@ -43,7 +44,7 @@ async def test_primitive_types(bidi_session,
 
     await bidi_session.script.evaluate(
         expression=command.format(data),
-        target=bidi_session.script.ContextTarget(top_context["context"]))
+        target=ContextTarget(top_context["context"]))
 
     event_data = await on_entry_added
     args = [

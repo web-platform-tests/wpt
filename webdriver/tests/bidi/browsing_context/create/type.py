@@ -1,6 +1,7 @@
 import pytest
 
 from .. import assert_browsing_context
+from webdriver.bidi.modules.script import ContextTarget
 
 pytestmark = pytest.mark.asyncio
 
@@ -33,7 +34,7 @@ async def test_type(bidi_session, value):
 
     opener_protocol_value = await bidi_session.script.evaluate(
         expression="!!window.opener",
-        target=bidi_session.script.ContextTarget(new_context_id))
-    assert opener_protocol_value["result"]["value"] is False
+        target=ContextTarget(new_context_id))
+    assert opener_protocol_value["value"] is False
 
     await bidi_session.browsing_context.close(context=new_context_id)

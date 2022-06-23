@@ -72,6 +72,8 @@ class Script(BidiModule):
             "awaitPromise": await_promise,
         }
 
+        if await_promise is not None:
+            params["awaitPromise"] = await_promise
         if result_ownership is not None:
             params["resultOwnership"] = result_ownership
         return params

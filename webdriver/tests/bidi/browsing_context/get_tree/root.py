@@ -67,10 +67,10 @@ async def test_top_level_context(bidi_session, top_context, test_page, type_hint
 
 
 async def test_child_context(
-        bidi_session,
-        top_context,
-        test_page_same_origin_frame,
-        test_page_nested_frames,
+    bidi_session,
+    top_context,
+    test_page_same_origin_frame,
+    test_page_nested_frames,
 ):
     await bidi_session.browsing_context.navigate(
         context=top_context["context"], url=test_page_nested_frames, wait="complete"

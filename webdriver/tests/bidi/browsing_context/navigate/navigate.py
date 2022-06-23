@@ -70,7 +70,7 @@ async def test_interactive_simultaneous_navigation(bidi_session, inline, new_tab
     assert contexts[0]["children"][1]["url"] == frame2_url
 
 
-async def test_relative_url(bidi_session, url, new_tab):
+async def test_relative_url(bidi_session, new_tab, url):
     url_before = url(
         "/webdriver/tests/bidi/browsing_context/navigate/support/empty.html"
     )

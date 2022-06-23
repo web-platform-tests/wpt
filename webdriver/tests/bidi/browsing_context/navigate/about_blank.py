@@ -16,8 +16,8 @@ async def test_navigate_from_single_page(bidi_session, new_tab, url):
 async def test_navigate_from_frameset(bidi_session, inline, new_tab, url):
     frame_url = url(PAGE_EMPTY)
     url_before = inline(f"<frameset><frame src='{frame_url}'/></frameset")
-
     await navigate_and_assert(bidi_session, new_tab, url_before)
+
     await navigate_and_assert(bidi_session, new_tab, PAGE_ABOUT_BLANK)
 
 

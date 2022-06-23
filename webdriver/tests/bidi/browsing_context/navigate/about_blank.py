@@ -30,4 +30,4 @@ async def test_navigate_in_iframe(bidi_session, inline, new_tab):
     frame = contexts[0]["children"][0]
     assert frame["url"] == frame_start_url
 
-    await navigate_and_assert(bidi_session, frame, PAGE_ABOUT_BLANK)
+    await navigate_and_assert(bidi_session, frame["context"], PAGE_ABOUT_BLANK)

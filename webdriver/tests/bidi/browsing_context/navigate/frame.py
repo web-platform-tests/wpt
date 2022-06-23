@@ -17,7 +17,7 @@ async def test_origin(bidi_session, new_tab, inline, domain):
     frame = contexts[0]["children"][0]
     assert frame["url"] == frame_start_url
 
-    await navigate_and_assert(bidi_session, frame, inline(PAGE_CONTENT))
+    await navigate_and_assert(bidi_session, frame["context"], inline(PAGE_CONTENT))
 
 
 async def test_multiple_frames(
@@ -31,7 +31,7 @@ async def test_multiple_frames(
     frame = contexts[0]["children"][0]
     assert frame["url"] == test_page
 
-    await navigate_and_assert(bidi_session, frame, inline(PAGE_CONTENT))
+    await navigate_and_assert(bidi_session, frame["context"], inline(PAGE_CONTENT))
 
     # Make sure that the sesond frame hasn't been navigated
     contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
@@ -56,4 +56,4 @@ async def test_nested_frames(
     frame_level_2 = frame_level_1["children"][0]
     assert frame_level_2["url"] == test_page
 
-    await navigate_and_assert(bidi_session, frame_level_2, inline(PAGE_CONTENT))
+    await navigate_and_assert(bidi_session, frame_level_2["context"], inline(PAGE_CONTENT))

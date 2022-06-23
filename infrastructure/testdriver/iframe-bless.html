@@ -6,20 +6,16 @@
 <script>
 'use strict';
 
-console.log('iframe here 0');
-
 // Setup the listener first, to avoid race conditions.
 window.addEventListener('message', async function handler(evt) {
-  console.log('iframe here 1');
-  console.log(evt);
-  // TODO: Filter to make sure the action is right.
+  if (evt.data.action === 'bless') {
+    window.removeEventListener('message', handler);
 
-  window.removeEventListener('message', handler);
+    test_driver.set_test_context(window.parent);
+    await test_driver.bless('user activation');
 
-  test_driver.set_test_context(window.parent);
-  await test_driver.bless('user activation');
-
-  parent.postMessage({type: 'bless_result', blessed: navigator.userActivation.isActive}, '*');
+    parent.postMessage({type: 'bless_result', blessed: navigator.userActivation.isActive}, '*');
+  }
 });
 
 // Now let our parent know that we are ready to go.

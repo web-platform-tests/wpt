@@ -9,6 +9,37 @@
 <script>
 'use strict';
 
+function assert_rounded_equals(actual, expected, description) {
+  assert_equals(Math.round(actual), Math.round(expected), description);
+}
+
+function copySizes(sizes) {
+  return sizes ? sizes.map(size => ({
+    inlineSize: size.inlineSize,
+    blockSize: size.blockSize,
+  })) : undefined;
+}
+
+function copyEntry(entry) {
+  return {
+    contentRect: {
+      width: entry.contentRect.width,
+      height: entry.contentRect.height,
+      top: entry.contentRect.top,
+      left: entry.contentRect.left,
+    },
+    contentBoxSize: copySizes(entry.contentBoxSize),
+    borderBoxSize: copySizes(entry.borderBoxSize),
+    devicePixelContentBoxSize: copySizes(entry.devicePixelContentBoxSize),
+  };
+}
+
+function recordSizes(map, entries) {
+  for (const entry of entries) {
+    map.set(entry.target, copyEntry(entry));
+  }
+}
+
 function test0() {
   let t = createAndAppendElement("div");
   t.style.width = "100px";
@@ -24,7 +55,7 @@ function test0() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, t, "target is t");
-        assert_equals(entries[0].contentRect.width, 5, "target width");
+        assert_rounded_equals(entries[0].contentRect.width, 5, "target width");
       }
     }
   ]);
@@ -151,7 +182,7 @@ function test5() {
         },
         notify: entries => {
           assert_equals(entries.length, 1);
-          assert_equals(entries[0].contentRect.width, 15.5);
+          assert_rounded_equals(entries[0].contentRect.width * 2, 15.5 * 2);
         }
       }
     ]);
@@ -250,6 +281,7 @@ function test8() {
   t.style.width = "100px";
   t.style.height = "100px";
 
+  let lastEntry;
   let helper = new ResizeTestHelper(
     "test8: simple content-box observation",
   [
@@ -261,17 +293,17 @@ function test8() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, t, "target is t");
-        assert_equals(entries[0].contentRect.width, 100, "target width");
-        assert_equals(entries[0].contentRect.height, 100, "target height");
+        assert_rounded_equals(entries[0].contentRect.width, 100, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 100, "target height");
         assert_equals(entries[0].contentRect.top, 0, "target top padding");
         assert_equals(entries[0].contentRect.left, 0, "target left padding");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 100,
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 100,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 100,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 100,
                       "target content-box block size");
-        assert_equals(entries[0].borderBoxSize[0].inlineSize, 100,
+        assert_rounded_equals(entries[0].borderBoxSize[0].inlineSize, 100,
                       "target border-box inline size");
-        assert_equals(entries[0].borderBoxSize[0].blockSize, 100,
+        assert_rounded_equals(entries[0].borderBoxSize[0].blockSize, 100,
                       "target border-box block size");
         return true;
       }
@@ -284,18 +316,19 @@ function test8() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, t, "target is t");
-        assert_equals(entries[0].contentRect.width, 90, "target width");
-        assert_equals(entries[0].contentRect.height, 90, "target height");
+        assert_rounded_equals(entries[0].contentRect.width, 90, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 90, "target height");
         assert_equals(entries[0].contentRect.top, 0, "target top padding");
         assert_equals(entries[0].contentRect.left, 0, "target left padding");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 90,
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 90,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 90,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 90,
                       "target content-box block size");
-        assert_equals(entries[0].borderBoxSize[0].inlineSize, 90,
+        assert_rounded_equals(entries[0].borderBoxSize[0].inlineSize, 90,
                       "target border-box inline size");
-        assert_equals(entries[0].borderBoxSize[0].blockSize, 90,
+        assert_rounded_equals(entries[0].borderBoxSize[0].blockSize, 90,
                       "target border-box block size");
+        lastEntry = copyEntry(entries[0]);
         return true;
       }
     },
@@ -304,8 +337,10 @@ function test8() {
         t.style.padding = "5px";
       },
       notify: entries => {
-        assert_unreached("the 'content-box' ResizeObserver shouldn't fire " +
-                         "for restyles that don't affect the content-box size");
+        // we may or may not get an event here. With different fractional devicePixelRatios
+        // the size computation might be different by a small amount. If they're different we
+        // expect a callback. If not we don't.
+        assert_not_equals(JSON.stringify(lastEntry), JSON.stringify(copyEntry(entries[0])), "if we get event sizes must be different");
       },
       timeout: () => {
         // expected
@@ -331,17 +366,17 @@ function test9() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, t, "target is t");
-        assert_equals(entries[0].contentRect.width, 100, "target width");
-        assert_equals(entries[0].contentRect.height, 100, "target height");
+        assert_rounded_equals(entries[0].contentRect.width, 100, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 100, "target height");
         assert_equals(entries[0].contentRect.top, 0, "target top padding");
         assert_equals(entries[0].contentRect.left, 0, "target left padding");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 100,
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 100,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 100,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 100,
                       "target content-box block size");
-        assert_equals(entries[0].borderBoxSize[0].inlineSize, 100,
+        assert_rounded_equals(entries[0].borderBoxSize[0].inlineSize, 100,
                       "target border-box inline size");
-        assert_equals(entries[0].borderBoxSize[0].blockSize, 100,
+        assert_rounded_equals(entries[0].borderBoxSize[0].blockSize, 100,
                       "target border-box block size");
         return true;
       }
@@ -356,17 +391,17 @@ function test9() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, t, "target is t");
-        assert_equals(entries[0].contentRect.width, 92, "target width");
-        assert_equals(entries[0].contentRect.height, 92, "target height");
-        assert_equals(entries[0].contentRect.top, 4, "target top padding");
-        assert_equals(entries[0].contentRect.left, 4, "target left padding");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 92,
+        assert_rounded_equals(entries[0].contentRect.width, 92, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 92, "target height");
+        assert_rounded_equals(entries[0].contentRect.top, 4, "target top padding");
+        assert_rounded_equals(entries[0].contentRect.left, 4, "target left padding");
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 92,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 92,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 92,
                       "target content-box block size");
-        assert_equals(entries[0].borderBoxSize[0].inlineSize, 100,
+        assert_rounded_equals(entries[0].borderBoxSize[0].inlineSize, 100,
                       "target border-box inline size");
-        assert_equals(entries[0].borderBoxSize[0].blockSize, 100,
+        assert_rounded_equals(entries[0].borderBoxSize[0].blockSize, 100,
                       "target border-box block size");
       }
     }
@@ -379,6 +414,7 @@ function test10() {
   t.style.width = "100px";
   t.style.height = "100px";
 
+  let lastEntry;
   let helper = new ResizeTestHelper(
     "test10: simple border-box observation",
   [
@@ -389,17 +425,17 @@ function test10() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, t, "target is t");
-        assert_equals(entries[0].contentRect.width, 100, "target width");
-        assert_equals(entries[0].contentRect.height, 100, "target height");
+        assert_rounded_equals(entries[0].contentRect.width, 100, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 100, "target height");
         assert_equals(entries[0].contentRect.top, 0, "target top padding");
         assert_equals(entries[0].contentRect.left, 0, "target left padding");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 100,
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 100,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 100,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 100,
                       "target content-box block size");
-        assert_equals(entries[0].borderBoxSize[0].inlineSize, 100,
+        assert_rounded_equals(entries[0].borderBoxSize[0].inlineSize, 100,
                       "target border-box inline size");
-        assert_equals(entries[0].borderBoxSize[0].blockSize, 100,
+        assert_rounded_equals(entries[0].borderBoxSize[0].blockSize, 100,
                       "target border-box block size");
         return true;
       }
@@ -411,18 +447,19 @@ function test10() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, t, "target is t");
-        assert_equals(entries[0].contentRect.width, 100, "target width");
-        assert_equals(entries[0].contentRect.height, 100, "target height");
-        assert_equals(entries[0].contentRect.top, 4, "target top padding");
-        assert_equals(entries[0].contentRect.left, 4, "target left padding");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 100,
+        assert_rounded_equals(entries[0].contentRect.width, 100, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 100, "target height");
+        assert_rounded_equals(entries[0].contentRect.top, 4, "target top padding");
+        assert_rounded_equals(entries[0].contentRect.left, 4, "target left padding");
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 100,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 100,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 100,
                       "target content-box block size");
-        assert_equals(entries[0].borderBoxSize[0].inlineSize, 108,
+        assert_rounded_equals(entries[0].borderBoxSize[0].inlineSize, 108,
                       "target border-box inline size");
-        assert_equals(entries[0].borderBoxSize[0].blockSize, 108,
+        assert_rounded_equals(entries[0].borderBoxSize[0].blockSize, 108,
                       "target border-box block size");
+        lastEntry = copyEntry(entries[0]);
       }
     },
     {
@@ -432,8 +469,10 @@ function test10() {
         t.style.padding = "2px";
       },
       notify: entries => {
-        assert_unreached("the 'border-box' ResizeObserver shouldn't fire " +
-                         "for restyles that don't affect the border-box size");
+        // we may or may not get an event here. With different fractional devicePixelRatios
+        // the size computation might be different by a small amount. If they're different we
+        // expect a callback. If not we don't.
+        assert_not_equals(JSON.stringify(lastEntry), JSON.stringify(copyEntry(entries[0])), "if we get event sizes must be different");
       },
       timeout: () => {
         // expected: 104 + 2 * 2 = 108. The border-box size is the same.
@@ -462,15 +501,15 @@ function test11() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, t, "target is t");
-        assert_equals(entries[0].contentRect.width, 50, "target width");
-        assert_equals(entries[0].contentRect.height, 50, "target height");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 50,
+        assert_rounded_equals(entries[0].contentRect.width, 50, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 50, "target height");
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 50,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 50,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 50,
                       "target content-box block size");
-        assert_equals(entries[0].borderBoxSize[0].inlineSize, 50,
+        assert_rounded_equals(entries[0].borderBoxSize[0].inlineSize, 50,
                       "target border-box inline size");
-        assert_equals(entries[0].borderBoxSize[0].blockSize, 50,
+        assert_rounded_equals(entries[0].borderBoxSize[0].blockSize, 50,
                       "target border-box block size");
         return true;
       }
@@ -482,15 +521,15 @@ function test11() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, t, "target is t");
-        assert_equals(entries[0].contentRect.width, 75, "target width");
-        assert_equals(entries[0].contentRect.height, 50, "target height");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 50,
+        assert_rounded_equals(entries[0].contentRect.width, 75, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 50, "target height");
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 50,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 75,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 75,
                       "target content-box block size");
-        assert_equals(entries[0].borderBoxSize[0].inlineSize, 50,
+        assert_rounded_equals(entries[0].borderBoxSize[0].inlineSize, 50,
                       "target border-box inline size");
-        assert_equals(entries[0].borderBoxSize[0].blockSize, 75,
+        assert_rounded_equals(entries[0].borderBoxSize[0].blockSize, 75,
                       "target border-box block size");
       }
     }
@@ -519,11 +558,11 @@ function test12() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, t, "target is t");
-        assert_equals(entries[0].contentRect.width, 50, "target width");
-        assert_equals(entries[0].contentRect.height, 100, "target height");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 100,
+        assert_rounded_equals(entries[0].contentRect.width, 50, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 100, "target height");
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 100,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 50,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 50,
                       "target content-box block size");
         return true;
       }
@@ -561,11 +600,11 @@ function test13() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, t, "target is t");
-        assert_equals(entries[0].contentRect.width, 50, "target width");
-        assert_equals(entries[0].contentRect.height, 100, "target height");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 100,
+        assert_rounded_equals(entries[0].contentRect.width, 50, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 100, "target height");
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 100,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 50,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 50,
                       "target content-box block size");
         return true;
       }
@@ -577,11 +616,11 @@ function test13() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, t, "target is t");
-        assert_equals(entries[0].contentRect.width, 50, "target width");
-        assert_equals(entries[0].contentRect.height, 100, "target height");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 50,
+        assert_rounded_equals(entries[0].contentRect.width, 50, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 100, "target height");
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 50,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 100,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 100,
                       "target content-box block size");
       },
     }
@@ -595,6 +634,7 @@ function test14() {
   t.style.width = "100px";
   t.style.height = "100px";
 
+  let lastEntry;
   let helper = new ResizeTestHelper(
     "test14: observe the same target but using a different box should " +
     "override the previous one",
@@ -607,17 +647,17 @@ function test14() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, t, "target is t");
-        assert_equals(entries[0].contentRect.width, 100, "target width");
-        assert_equals(entries[0].contentRect.height, 100, "target height");
+        assert_rounded_equals(entries[0].contentRect.width, 100, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 100, "target height");
         assert_equals(entries[0].contentRect.top, 0, "target top padding");
         assert_equals(entries[0].contentRect.left, 0, "target left padding");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 100,
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 100,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 100,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 100,
                       "target content-box block size");
-        assert_equals(entries[0].borderBoxSize[0].inlineSize, 100,
+        assert_rounded_equals(entries[0].borderBoxSize[0].inlineSize, 100,
                       "target border-box inline size");
-        assert_equals(entries[0].borderBoxSize[0].blockSize, 100,
+        assert_rounded_equals(entries[0].borderBoxSize[0].blockSize, 100,
                       "target border-box block size");
         return true;
       }
@@ -630,18 +670,19 @@ function test14() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, t, "target is t");
-        assert_equals(entries[0].contentRect.width, 100, "target width");
-        assert_equals(entries[0].contentRect.height, 100, "target height");
-        assert_equals(entries[0].contentRect.top, 4, "target top padding");
-        assert_equals(entries[0].contentRect.left, 4, "target left padding");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 100,
+        assert_rounded_equals(entries[0].contentRect.width, 100, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 100, "target height");
+        assert_rounded_equals(entries[0].contentRect.top, 4, "target top padding");
+        assert_rounded_equals(entries[0].contentRect.left, 4, "target left padding");
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 100,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 100,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 100,
                       "target content-box block size");
-        assert_equals(entries[0].borderBoxSize[0].inlineSize, 108,
+        assert_rounded_equals(entries[0].borderBoxSize[0].inlineSize, 108,
                       "target border-box inline size");
-        assert_equals(entries[0].borderBoxSize[0].blockSize, 108,
+        assert_rounded_equals(entries[0].borderBoxSize[0].blockSize, 108,
                       "target border-box block size");
+        lastEntry = copyEntry(entries[0]);
       }
     },
     {
@@ -652,8 +693,10 @@ function test14() {
         t.style.padding = "2px";
       },
       notify: entries => {
-        assert_unreached("the 'border-box' ResizeObserver shouldn't fire " +
-                         "for restyles that don't affect the border-box size");
+        // we may or may not get an event here. With different fractional devicePixelRatios
+        // the size computation might be different by a small amount. If they're different we
+        // expect a callback. If not we don't.
+        assert_not_equals(JSON.stringify(lastEntry), JSON.stringify(copyEntry(entries[0])), "if we get event sizes must be different");
       },
       timeout: () => {
         // expected: 104 + 2 * 2 = 108. The border-box size is the same.
@@ -679,15 +722,15 @@ function test15() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, t, "target is t");
-        assert_equals(entries[0].contentRect.width, 50, "target width");
-        assert_equals(entries[0].contentRect.height, 100, "target height");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 50,
+        assert_rounded_equals(entries[0].contentRect.width, 50, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 100, "target height");
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 50,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 100,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 100,
                       "target content-box block size");
-        assert_equals(entries[0].borderBoxSize[0].inlineSize, 50,
+        assert_rounded_equals(entries[0].borderBoxSize[0].inlineSize, 50,
                       "target content-box inline size");
-        assert_equals(entries[0].borderBoxSize[0].blockSize, 100,
+        assert_rounded_equals(entries[0].borderBoxSize[0].blockSize, 100,
                       "target content-box block size");
         return true;
       }
@@ -757,7 +800,7 @@ function test17() {
   document.body.appendChild(outer);
 
   let helper = new ResizeTestHelper(
-    "test17: Box sizing snd Resize Observer notifications",
+    "test17: Box sizing and Resize Observer notifications",
   [
     {
       setup: observer => {
@@ -766,17 +809,17 @@ function test17() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, nested, "target is nested");
-        assert_equals(entries[0].contentRect.width, 40, "target width");
-        assert_equals(entries[0].contentRect.height, 30, "target height");
-        assert_equals(entries[0].contentRect.top, 5, "target top padding");
-        assert_equals(entries[0].contentRect.left, 5, "target left padding");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 40,
+        assert_rounded_equals(entries[0].contentRect.width, 40, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 30, "target height");
+        assert_rounded_equals(entries[0].contentRect.top, 5, "target top padding");
+        assert_rounded_equals(entries[0].contentRect.left, 5, "target left padding");
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 40,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 30,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 30,
                       "target content-box block size");
-        assert_equals(entries[0].borderBoxSize[0].inlineSize, 60,
+        assert_rounded_equals(entries[0].borderBoxSize[0].inlineSize, 60,
                       "target border-box inline size");
-        assert_equals(entries[0].borderBoxSize[0].blockSize, 50,
+        assert_rounded_equals(entries[0].borderBoxSize[0].blockSize, 50,
                       "target border-box block size");
         return true;
       }
@@ -791,17 +834,17 @@ function test17() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, nested, "target is nested");
-        assert_equals(entries[0].contentRect.width, 30, "target width");
-        assert_equals(entries[0].contentRect.height, 20, "target height");
-        assert_equals(entries[0].contentRect.top, 10, "target top padding");
-        assert_equals(entries[0].contentRect.left, 10, "target left padding");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 30,
+        assert_rounded_equals(entries[0].contentRect.width, 30, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 20, "target height");
+        assert_rounded_equals(entries[0].contentRect.top, 10, "target top padding");
+        assert_rounded_equals(entries[0].contentRect.left, 10, "target left padding");
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 30,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 20,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 20,
                       "target content-box block size");
-        assert_equals(entries[0].borderBoxSize[0].inlineSize, 60,
+        assert_rounded_equals(entries[0].borderBoxSize[0].inlineSize, 60,
                       "target border-box inline size");
-        assert_equals(entries[0].borderBoxSize[0].blockSize, 50,
+        assert_rounded_equals(entries[0].borderBoxSize[0].blockSize, 50,
                       "target border-box block size");
         return true;
       }
@@ -815,17 +858,17 @@ function test17() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, nested, "target is nested");
-        assert_equals(entries[0].contentRect.width, 38, "target width");
-        assert_equals(entries[0].contentRect.height, 28, "target height");
-        assert_equals(entries[0].contentRect.top, 10, "target top padding");
-        assert_equals(entries[0].contentRect.left, 10, "target left padding");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 38,
+        assert_rounded_equals(entries[0].contentRect.width, 38, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 28, "target height");
+        assert_rounded_equals(entries[0].contentRect.top, 10, "target top padding");
+        assert_rounded_equals(entries[0].contentRect.left, 10, "target left padding");
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 38,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 28,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 28,
                       "target content-box block size");
-        assert_equals(entries[0].borderBoxSize[0].inlineSize, 60,
+        assert_rounded_equals(entries[0].borderBoxSize[0].inlineSize, 60,
                       "target border-box inline size");
-        assert_equals(entries[0].borderBoxSize[0].blockSize, 50,
+        assert_rounded_equals(entries[0].borderBoxSize[0].blockSize, 50,
                       "target border-box block size");
         return true;
       }
@@ -837,17 +880,17 @@ function test17() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, nested, "target is nested");
-        assert_equals(entries[0].contentRect.width, 38, "target width");
-        assert_equals(entries[0].contentRect.height, 28, "target height");
-        assert_equals(entries[0].contentRect.top, 10, "target top padding");
-        assert_equals(entries[0].contentRect.left, 10, "target left padding");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 38,
+        assert_rounded_equals(entries[0].contentRect.width, 38, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 28, "target height");
+        assert_rounded_equals(entries[0].contentRect.top, 10, "target top padding");
+        assert_rounded_equals(entries[0].contentRect.left, 10, "target left padding");
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 38,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 28,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 28,
                       "target content-box block size");
-        assert_equals(entries[0].borderBoxSize[0].inlineSize, 60,
+        assert_rounded_equals(entries[0].borderBoxSize[0].inlineSize, 60,
                       "target border-box inline size");
-        assert_equals(entries[0].borderBoxSize[0].blockSize, 50,
+        assert_rounded_equals(entries[0].borderBoxSize[0].blockSize, 50,
                       "target border-box block size");
         return true;
       }
@@ -867,7 +910,7 @@ function test17() {
     },
 
   ]);
-  return helper.start(() => nested.remove());
+  return helper.start(() => outer.remove());
 }
 
 function test18() {
@@ -886,19 +929,19 @@ function test18() {
       notify: entries => {
         assert_equals(entries.length, 1, "1 pending notification");
         assert_equals(entries[0].target, t, "target is t");
-        assert_equals(entries[0].contentRect.width, 50, "target width");
-        assert_equals(entries[0].contentRect.height, 100, "target height");
-        assert_equals(entries[0].contentBoxSize[0].inlineSize, 50,
+        assert_rounded_equals(entries[0].contentRect.width, 50, "target width");
+        assert_rounded_equals(entries[0].contentRect.height, 100, "target height");
+        assert_rounded_equals(entries[0].contentBoxSize[0].inlineSize, 50,
                       "target content-box inline size");
-        assert_equals(entries[0].contentBoxSize[0].blockSize, 100,
+        assert_rounded_equals(entries[0].contentBoxSize[0].blockSize, 100,
                       "target content-box block size");
-        assert_equals(entries[0].borderBoxSize[0].inlineSize, 50,
+        assert_rounded_equals(entries[0].borderBoxSize[0].inlineSize, 50,
                       "target border-box inline size");
-        assert_equals(entries[0].borderBoxSize[0].blockSize, 100,
+        assert_rounded_equals(entries[0].borderBoxSize[0].blockSize, 100,
                       "target border-box block size");
-        assert_equals(entries[0].devicePixelContentBoxSize[0].inlineSize, 50,
+        assert_rounded_equals(entries[0].devicePixelContentBoxSize[0].inlineSize, 50 * devicePixelRatio,
                       "target device-pixel-content-box inline size");
-        assert_equals(entries[0].devicePixelContentBoxSize[0].blockSize, 100,
+        assert_rounded_equals(entries[0].devicePixelContentBoxSize[0].blockSize, 100 * devicePixelRatio,
                       "target device-pixel-content-box block size");
       }
     },
@@ -948,9 +991,9 @@ function test19() {
                       "target border-box inline size");
         assert_equals(entries[0].borderBoxSize[0].blockSize, 100,
                       "target border-box block size");
-        assert_equals(entries[0].devicePixelContentBoxSize[0].inlineSize, 150,
+        assert_rounded_equals(entries[0].devicePixelContentBoxSize[0].inlineSize, 150 * devicePixelRatio,
                       "target device-pixel-content-box inline size");
-        assert_equals(entries[0].devicePixelContentBoxSize[0].blockSize, 300,
+        assert_rounded_equals(entries[0].devicePixelContentBoxSize[0].blockSize, 300 * devicePixelRatio,
                       "target device-pixel-content-box block size");
         return true;
       }
@@ -964,6 +1007,107 @@ function test19() {
   ]);
 
   return helper.start(() => t.remove());
+}
+
+function test20() {
+  // <div id="outer">
+  //   <div id="nested"></div>
+  //   <div id="nested"></div>
+  // </div>
+
+  const px = v => `${v}px`;
+  const outer = document.createElement('div');
+  const roundUpToOdd = v => Math.floor(v * 0.5) * 2 + 1;
+  // We're trying to setup a situation that is the main reason devicePixelContextBoxSize exists
+  // If we make this HTML
+  //
+  // <div style="width: 99px">
+  //    <div style="flex: 1 1 auto;"></div>
+  //    <div style="flex: 1 1 auto;"></div>
+  // </div>
+  //
+  // We expect each child div to get 50% of the width of the parent. In this case that width
+  // is 49.5 and we can see this. If we look at childElem.getBoundingClientRect().width
+  // both children will report 49.5 and if we use a ResizeObserver, the entries for both children
+  // will report entry.contentBoxSize[0].inlineSize === 49.5
+  //
+  // But, on a devicePixelRatio = 1 device, we asked the parent to be 99px. You can't actually
+  // have an element that is 49.5 device pixels wide so one element will be 49 device pixels,
+  // the other 50 device pixels. That is the point of devicePixelContextBoxSize, to tell which
+  // element got the extra pixel and which one didn't
+  //
+  // So, we must pick an odd number of device pixels so that between two `flex: 1 1 auto` children
+  // the only way to find out which of the 2 got the extra pixel is via devicePixelContextBoxSize
+  // This way, some children should get different devicePixelContentBoxSize measurements
+  //
+  // devicePixels are, by definition, measured in integer values (you can't have half a device pixel).
+  // So, for a flex situation like above, the some of children's device pixel measurements should
+  // add up to the the parent's measurement. If they don't add up there's a bug in the UA.
+  //
+  // Note that AFAIK we can't be 100% sure what the UA will do. For example it might around all
+  // sizes to an integer number of CSS pixels. But, we can be sure that the 
+  // devicePixelContentBoxSizes of the children should sum to the size of the parent's
+  // which is why we try more than just 2 children. In all cases the sum of the children's
+  // devicePixelContentBoxSizes should sum to the size of the parent's
+  const baseCSSSize = 50;  
+  // This will be an odd number of devicePixel so that dividing it by 2 child elements
+  // should have each child return a different devicePixelContentBoxSize
+  const outerDevicePixelWidth = roundUpToOdd(devicePixelRatio * baseCSSSize);
+  outer.style.width = px(outerDevicePixelWidth / devicePixelRatio);
+  outer.style.display = "flex";
+  outer.id = 'test20outer';
+
+  const addInner = () => {
+    const inner = document.createElement('div');
+    inner.style.flex = "1 1 auto";
+    inner.style.height = "10px";
+    inner.id = `test20inner${outer.children.length}`;
+    outer.appendChild(inner);
+    return inner;
+  };
+
+  addInner();
+  addInner();
+  document.body.appendChild(outer);
+
+  const elemToSizesMap = new Map();
+
+  const checkResults = entries => {
+    for (const entry of entries) {
+      recordSizes(elemToSizesMap, entries);
+    }
+    const totalEntries = outer.children.length + 1;  // children + parent
+    assert_equals(elemToSizesMap.size, totalEntries, `${totalEntries} entries`);
+    // devicePixels are integers. The sum of the children should equal the parent
+    const outerSize = [...elemToSizesMap.entries()].filter(([elem]) => elem === outer)[0][1].devicePixelContentBoxSize[0].inlineSize;
+    const innerSize = [...elemToSizesMap.entries()].reduce((sum, [elem, sizes]) => sum + sizes.devicePixelContentBoxSize[0].inlineSize, 0) - outerSize;
+    assert_equals(outerSize, outerDevicePixelWidth, "outer is correct size");
+    assert_equals(innerSize, outerDevicePixelWidth, `sum of ${outer.children.length} child sizes matches parent size`);
+    return true;
+  };
+
+  const steps = [
+    {
+      setup: observer => {
+        observer.observe(outer, { box: "device-pixel-content-box" });
+        for (const inner of outer.children) {
+          observer.observe(inner, { box: "device-pixel-content-box" });
+        }
+      },
+      notify: checkResults,
+    },
+  ]
+  for (let i = 3; i < baseCSSSize; ++i) {
+    steps.push({
+      setup: observer => observer.observe(addInner()),
+      notify: checkResults,
+    });
+  }
+
+  let helper = new ResizeTestHelper(
+    "test20: Box devicePixelContentBox sizing and Resize Observer notifications",
+    steps);
+  return helper.start(() => outer.remove());
 }
 
 let guard;
@@ -992,6 +1136,7 @@ test0()
   .then(() => test17())
   .then(() => test18())
   .then(() => test19())
+  .then(() => test20())
   .then(() => guard.done());
 
 </script>

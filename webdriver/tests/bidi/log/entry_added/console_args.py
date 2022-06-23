@@ -1,7 +1,6 @@
 import pytest
 
 from . import assert_console_entry
-from webdriver.bidi.modules.script import ContextTarget
 
 
 @pytest.mark.asyncio
@@ -29,8 +28,8 @@ from webdriver.bidi.modules.script import ContextTarget
     "bigint",
 ])
 async def test_primitive_types(bidi_session,
+                               current_session,
                                wait_for_event,
-                               top_context,
                                data,
                                remote_value):
     await bidi_session.session.subscribe(events=["log.entryAdded"])
@@ -42,9 +41,8 @@ async def test_primitive_types(bidi_session,
     else:
         command = "console.log('foo', {})"
 
-    await bidi_session.script.evaluate(
-        expression=command.format(data),
-        target=ContextTarget(top_context["context"]))
+    # TODO: To be replaced with the BiDi implementation of execute_script.
+    current_session.execute_script(command.format(data))
 
     event_data = await on_entry_added
     args = [

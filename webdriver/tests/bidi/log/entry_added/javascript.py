@@ -1,18 +1,21 @@
+import math
+import time
+
 import pytest
 
 from . import assert_javascript_entry
-from webdriver.bidi.modules.script import ContextTarget
 
 
 @pytest.mark.asyncio
-async def test_types_and_values(bidi_session, current_time, inline, top_context, wait_for_event):
+async def test_types_and_values(
+    bidi_session, current_session, current_time, inline, top_context, wait_for_event
+):
     await bidi_session.session.subscribe(events=["log.entryAdded"])
 
     on_entry_added = wait_for_event("log.entryAdded")
 
-    await bidi_session.script.evaluate(
-        expression="const err = new Error('foo'); return err.toString()",
-        target=ContextTarget(top_context["context"]))
+    expected_text = current_session.execute_script(
+        "const err = new Error('foo'); return err.toString()")
 
     time_start = current_time()
 

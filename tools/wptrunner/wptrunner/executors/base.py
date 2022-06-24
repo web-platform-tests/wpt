@@ -322,7 +322,8 @@ class TestExecutor:
             port = self.server_config["ports"][protocol][0])
 
     def test_url(self, test):
-        return urljoin(self.server_url(test.environment["protocol"], test.subdomain), test.url)
+        return urljoin(self.server_url(test.environment["protocol"],
+                                       test.subdomain), test.url)
 
 
     @abstractmethod

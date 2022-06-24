@@ -104,8 +104,12 @@
    * @param {(target: Element) => (Promise<void> | void)} options.clickerFn
    * @param {string} options.title
    */
-  function promise_event_test_both({ element, expectedEvents, nonDisabledExpectedEvents, clickerFn, title }) {
-    for (const observingElement of [element, document.body]) {
+  function promise_event_test_hierarchy({ element, expectedEvents, nonDisabledExpectedEvents, clickerFn, title }) {
+    const targets = [element, document.body];
+    if (element.querySelector(".target")) {
+      targets.unshift(element.querySelector(".target"));
+    }
+    for (const observingElement of targets) {
       promise_event_test({ element, observingElement, expectedEvents, nonDisabledExpectedEvents, clickerFn, title });
     }
   }
@@ -123,17 +127,35 @@
   const mouseEvents = ["mousemove", "mousedown", "mouseup", "click"];
   const pointerEvents = ["pointermove", "pointerdown", "pointerup"];
 
+  // Events except mousedown/up/click
+  const allowedEvents = ["pointermove", "mousemove", "pointerdown", "pointerup"];
+
   const elements = document.getElementById("cases").children;
   for (const element of elements) {
+    // Observe on a child element of the control, if exists
+    const target = element.querySelector(".target");
+    if (target) {
+      promise_event_test({
+        element,
+        observingElement: target,
+        expectedEvents: allEvents,
+        nonDisabledExpectedEvents: allEvents,
+        clickerFn: trusted_click,
+        title: "Trusted click"
+      });
+    }
+
+    // Observe on the control itself
     promise_event_test({
       element,
       observingElement: element,
-      expectedEvents: pointerEvents,
+      expectedEvents: allowedEvents,
       nonDisabledExpectedEvents: allEvents,
       clickerFn: trusted_click,
       title: "Trusted click"
-    })
+    });
 
+    // Observe on document.body
     promise_event_test({
       element,
       observingElement: document.body,
@@ -141,7 +163,7 @@
       nonDisabledExpectedEvents: allEvents,
       clickerFn: trusted_click,
       title: "Trusted click"
-    })
+    });
 
     const eventFirePair = [
       [MouseEvent, mouseEvents],
@@ -149,7 +171,7 @@
     ];
 
     for (const [eventInterface, events] of eventFirePair) {
-      promise_event_test_both({
+      promise_event_test_hierarchy({
         element,
         expectedEvents: events,
         nonDisabledExpectedEvents: events,
@@ -162,7 +184,7 @@
       })
     }
 
-    promise_event_test_both({
+    promise_event_test_hierarchy({
       element,
       expectedEvents: getEventFiringTarget(element) === element ? [] : ["click"],
       nonDisabledExpectedEvents: ["click"],

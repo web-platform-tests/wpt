@@ -127,17 +127,35 @@
   const mouseEvents = ["mousemove", "mousedown", "mouseup", "click"];
   const pointerEvents = ["pointermove", "pointerdown", "pointerup"];
 
+  // Events except mousedown/up/click
+  const allowedEvents = ["pointermove", "mousemove", "pointerdown", "pointerup"];
+
   const elements = document.getElementById("cases").children;
   for (const element of elements) {
+    // Observe on a child element of the control, if exists
+    const target = element.querySelector(".target");
+    if (target) {
+      promise_event_test({
+        element,
+        observingElement: target,
+        expectedEvents: allEvents,
+        nonDisabledExpectedEvents: allEvents,
+        clickerFn: trusted_click,
+        title: "Trusted click"
+      });
+    }
+
+    // Observe on the control itself
     promise_event_test({
       element,
       observingElement: element,
-      expectedEvents: pointerEvents,
+      expectedEvents: allowedEvents,
       nonDisabledExpectedEvents: allEvents,
       clickerFn: trusted_click,
       title: "Trusted click"
-    })
+    });
 
+    // Observe on document.body
     promise_event_test({
       element,
       observingElement: document.body,
@@ -145,7 +163,7 @@
       nonDisabledExpectedEvents: allEvents,
       clickerFn: trusted_click,
       title: "Trusted click"
-    })
+    });
 
     const eventFirePair = [
       [MouseEvent, mouseEvents],

@@ -25,8 +25,6 @@ from .base import (CallbackHandler,
                    get_pages,
                    strip_server)
 
-from ..environment import get_server_url
-
 from .protocol import (ActionSequenceProtocolPart,
                        AssertsProtocolPart,
                        BaseProtocolPart,
@@ -793,7 +791,7 @@ class MarionetteProtocol(Protocol):
             else:
                 self.prefs.set("network.proxy.type", 2)
                 self.prefs.set("network.proxy.autoconfig_url",
-                               urljoin(get_server_url(self.server_config, "http"), pac))
+                               urljoin(self.executor.server_url("http"), pac))
 
 class ExecuteAsyncScriptRun(TimedRunner):
     def set_timeout(self):

@@ -772,7 +772,7 @@ class FirefoxBrowser(Browser):
                                                      symbols_path,
                                                      asan)
 
-    def settings(self, test, server_config=None):
+    def settings(self, test):
         self._settings = {"check_leaks": self.leak_check and not test.leaks,
                           "lsan_disabled": test.lsan_disabled,
                           "lsan_allowed": test.lsan_allowed,
@@ -927,7 +927,7 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
         super().cleanup()
         self.profile.cleanup()
 
-    def settings(self, test, server_config=None):
+    def settings(self, test):
         return {"check_leaks": self.leak_check and not test.leaks,
                 "lsan_disabled": test.lsan_disabled,
                 "lsan_allowed": test.lsan_allowed,

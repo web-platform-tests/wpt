@@ -16,6 +16,7 @@ from .base import (CallbackHandler,
                    TestharnessExecutor,
                    TimedRunner,
                    strip_server)
+
 from .protocol import (BaseProtocolPart,
                        TestharnessProtocolPart,
                        Protocol,
@@ -350,6 +351,19 @@ class WebDriverProtocol(Protocol):
                 self.capabilities = browser.capabilities
             else:
                 merge_dicts(self.capabilities, browser.capabilities)
+
+        pac = browser.pac
+        if pac is not None:
+            if self.capabilities is None:
+                self.capabilities = {}
+            merge_dicts(self.capabilities,
+                        {"proxy":
+                            {
+                                "proxyType": "pac",
+                                "proxyAutoconfigUrl": urljoin(executor.server_url("http"), pac)
+                            }
+                        })
+
         self.url = browser.webdriver_url
         self.webdriver = None
 

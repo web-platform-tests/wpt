@@ -10,7 +10,7 @@ from abc import ABCMeta, abstractmethod
 
 import mozprocess
 
-from ..environment import wait_for_service, get_server_url
+from ..environment import wait_for_service
 from urllib.parse import urljoin
 from ..wptcommandline import require_arg  # noqa: F401
 
@@ -113,7 +113,7 @@ class Browser:
         """Used for browser-specific setup that happens at the start of a test run"""
         pass
 
-    def settings(self, test, server_config=None):
+    def settings(self, test):
         """Dictionary of metadata that is constant for a specific launch of a browser.
 
         This is used to determine when the browser instance configuration changes, requiring
@@ -160,6 +160,9 @@ class Browser:
         log. Returns a boolean indicating whether a crash occured."""
         return False
 
+    @property
+    def pac(self):
+        return None
 
 class NullBrowser(Browser):
     def __init__(self, logger, **kwargs):
@@ -315,6 +318,7 @@ class WebDriverBrowser(Browser):
         self._cmd = None
         self._proc = None
         self._capabilities = None
+        self._pac = None
 
     def make_command(self):
         """Returns the full command for starting the server process as a list."""
@@ -405,20 +409,18 @@ class WebDriverBrowser(Browser):
     def executor_browser(self):
         args = {"webdriver_url": self.url,
                 "host": self.host,
-                "port": self.port}
+                "port": self.port,
+                "pac": self.pac}
 
         if self._capabilities is not None:
             args["capabilities"] = self._capabilities
 
         return ExecutorBrowser, args
 
-    def settings(self, test, server_config=None):
-        pac = test.environment.get("pac", None)
-        if pac is None or self._supports_pac is False:
-            return {}
-        else:
-            self._capabilities = {"proxy": {
-                "proxyType": "pac",
-                "proxyAutoconfigUrl": urljoin(get_server_url(server_config, "http"), pac)
-            }}
-            return self._capabilities
+    def settings(self, test):
+        self._pac = test.environment.get("pac", None) if self._supports_pac else None
+        return {"pac": self._pac}
+
+    @property
+    def pac(self):
+        return self._pac

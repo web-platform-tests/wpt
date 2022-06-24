@@ -8,10 +8,7 @@ import webdriver
 @pytest.fixture
 async def new_tab(bidi_session):
     new_tab = await bidi_session.browsing_context.create(type_hint='tab')
-
-    # Retrieve the browsing context info for the new tab
     yield new_tab
-
     # Close the tab.
     await bidi_session.browsing_context.close(context=new_tab)
 

@@ -104,8 +104,12 @@
    * @param {(target: Element) => (Promise<void> | void)} options.clickerFn
    * @param {string} options.title
    */
-  function promise_event_test_both({ element, expectedEvents, nonDisabledExpectedEvents, clickerFn, title }) {
-    for (const observingElement of [element, document.body]) {
+  function promise_event_test_hierarchy({ element, expectedEvents, nonDisabledExpectedEvents, clickerFn, title }) {
+    const targets = [element, document.body];
+    if (element.querySelector(".target")) {
+      targets.unshift(element.querySelector(".target"));
+    }
+    for (const observingElement of targets) {
       promise_event_test({ element, observingElement, expectedEvents, nonDisabledExpectedEvents, clickerFn, title });
     }
   }
@@ -167,7 +171,7 @@
     ];
 
     for (const [eventInterface, events] of eventFirePair) {
-      promise_event_test_both({
+      promise_event_test_hierarchy({
         element,
         expectedEvents: events,
         nonDisabledExpectedEvents: events,
@@ -180,7 +184,7 @@
       })
     }
 
-    promise_event_test_both({
+    promise_event_test_hierarchy({
       element,
       expectedEvents: getEventFiringTarget(element) === element ? [] : ["click"],
       nonDisabledExpectedEvents: ["click"],

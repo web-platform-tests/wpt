@@ -13,7 +13,7 @@ pytestmark = pytest.mark.asyncio
 CONTEXT_CREATED_EVENT = "browsingContext.contextCreated"
 
 
-async def test_not_unsubscribed(bidi_session, current_session):
+async def test_not_unsubscribed(bidi_session):
     await bidi_session.session.subscribe(events=[CONTEXT_CREATED_EVENT])
     await bidi_session.session.unsubscribe(events=[CONTEXT_CREATED_EVENT])
 
@@ -27,7 +27,7 @@ async def test_not_unsubscribed(bidi_session, current_session):
 
     await bidi_session.browsing_context.create(type_hint="tab")
 
-    wait = AsyncPoll(current_session, timeout=0.5)
+    wait = AsyncPoll(bidi_session, timeout=0.5)
     with pytest.raises(TimeoutException):
         await wait.until(lambda _: len(events) > 0)
 
@@ -104,7 +104,7 @@ async def test_evaluate_window_open_with_url(bidi_session, wait_for_event, inlin
     )
 
 
-async def test_navigate_creates_iframes(bidi_session, current_session, top_context, test_page_multiple_frames):
+async def test_navigate_creates_iframes(bidi_session, top_context, test_page_multiple_frames):
     # Unsubscribe in case a previous tests subscribed to the event
     await bidi_session.session.unsubscribe(events=[CONTEXT_CREATED_EVENT])
 
@@ -121,7 +121,7 @@ async def test_navigate_creates_iframes(bidi_session, current_session, top_conte
     )
 
     wait = AsyncPoll(
-        current_session, message="Didn't receive context created events for frames"
+        bidi_session, message="Didn't receive context created events for frames"
     )
     await wait.until(lambda _: len(events) >= 2)
     assert len(events) == 2
@@ -154,7 +154,7 @@ async def test_navigate_creates_iframes(bidi_session, current_session, top_conte
     await bidi_session.session.unsubscribe(events=[CONTEXT_CREATED_EVENT])
 
 
-async def test_navigate_creates_nested_iframes(bidi_session, current_session, top_context, test_page_nested_frames):
+async def test_navigate_creates_nested_iframes(bidi_session, top_context, test_page_nested_frames):
     # Unsubscribe in case a previous tests subscribed to the event
     await bidi_session.session.unsubscribe(events=[CONTEXT_CREATED_EVENT])
 
@@ -171,7 +171,7 @@ async def test_navigate_creates_nested_iframes(bidi_session, current_session, to
     )
 
     wait = AsyncPoll(
-        current_session, message="Didn't receive context created events for frames"
+        bidi_session, message="Didn't receive context created events for frames"
     )
     await wait.until(lambda _: len(events) >= 2)
     assert len(events) == 2

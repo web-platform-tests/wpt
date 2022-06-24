@@ -201,10 +201,7 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
             logger.test_start(test.id)
             logger.test_end(test.id, status="SKIP")
             test_status.skipped += 1
-<<<<<<< HEAD
-=======
 
->>>>>>> Revert wptrunner changes
         if test_type == "testharness":
             run_tests = {"testharness": []}
             for test in test_loader.tests["testharness"]:
@@ -371,7 +368,6 @@ def run_tests(config, test_paths, product, **kwargs):
                                  mojojs_path,
                                  inject_script) as test_environment:
             recording.set(["startup", "ensure_environment"])
-
             try:
                 test_environment.ensure_started()
                 start_time = datetime.now()

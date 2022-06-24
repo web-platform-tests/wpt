@@ -165,6 +165,7 @@ def env_options():
 
 
 def run_info_extras(**kwargs):
+
     def get_bool_pref_if_exists(pref):
         for key, value in kwargs.get('extra_prefs', []):
             if pref == key:
@@ -334,7 +335,7 @@ class FirefoxInstanceManager:
                                process_class=ProcessHandler,
                                process_args={"processOutputLine": [output_handler]})
         instance = BrowserInstance(self.logger, runner, marionette_port,
-                                   output_handler, leak_report_file,)
+                                   output_handler, leak_report_file)
 
         self.logger.debug("Starting Firefox")
         runner.start(debug_args=debug_args,
@@ -738,6 +739,7 @@ class FirefoxBrowser(Browser):
         self.symbols_path = symbols_path
         self.stackwalk_binary = stackwalk_binary
 
+        self.asan = asan
         self.leak_check = leak_check
 
         self.specialpowers_path = specialpowers_path

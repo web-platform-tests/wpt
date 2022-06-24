@@ -11,7 +11,6 @@ from abc import ABCMeta, abstractmethod
 import mozprocess
 
 from ..environment import wait_for_service
-from urllib.parse import urljoin
 from ..wptcommandline import require_arg  # noqa: F401
 
 here = os.path.dirname(__file__)
@@ -317,7 +316,6 @@ class WebDriverBrowser(Browser):
         self._output_handler = None
         self._cmd = None
         self._proc = None
-        self._capabilities = None
         self._pac = None
 
     def make_command(self):
@@ -340,8 +338,6 @@ class WebDriverBrowser(Browser):
     def _run_server(self, group_metadata, **kwargs):
         cmd = self.make_command()
         self._output_handler = self.create_output_handler(cmd)
-        if "capabilties" in kwargs:
-            self._capabilities = kwargs["capabilities"]
 
         self._proc = mozprocess.ProcessHandler(
             cmd,
@@ -411,9 +407,6 @@ class WebDriverBrowser(Browser):
                 "host": self.host,
                 "port": self.port,
                 "pac": self.pac}
-
-        if self._capabilities is not None:
-            args["capabilities"] = self._capabilities
 
         return ExecutorBrowser, args
 

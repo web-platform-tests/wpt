@@ -7,6 +7,7 @@ import webdriver
 
 @pytest.fixture
 async def new_tab(bidi_session):
+    """Open and focus a new tab to run the test in a foreground tab."""
     new_tab = await bidi_session.browsing_context.create(type_hint='tab')
     yield new_tab
     # Close the tab.

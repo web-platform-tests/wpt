@@ -26,6 +26,7 @@
   <input disabled type="date">
   <input disabled type="datetime-local">
   <input disabled type="email">
+  <input disabled type="file">
   <input disabled type="image">
   <input disabled type="month">
   <input disabled type="number">
@@ -43,12 +44,6 @@
   <input disabled type="time">
   <input disabled type="url">
   <input disabled type="week">
-
-  <!--
-    WebDriver can't click on type="file"
-    https://github.com/w3c/webdriver/issues/1666
-  <input disabled="disabled" type="file">
-  <input disabled="disabled" type="hidden"> -->
 </div>
 
 <script>
@@ -116,12 +111,13 @@
   }
 
   function trusted_click(target) {
+    // To workaround type=file clicking issue
+    // https://github.com/w3c/webdriver/issues/1666
     return new test_driver.Actions()
-          .addPointer("default-mouse", "mouse")
-          .pointerMove(0, 0, { origin: target })
-          .pointerDown()
-          .pointerUp()
-          .send();
+      .pointerMove(0, 0, { origin: target })
+      .pointerDown()
+      .pointerUp()
+      .send();
   }
 
   const mouseEvents = ["mousemove", "mousedown", "mouseup", "click"];

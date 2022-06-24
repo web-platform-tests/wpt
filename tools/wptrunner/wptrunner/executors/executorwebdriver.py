@@ -16,7 +16,6 @@ from .base import (CallbackHandler,
                    TestharnessExecutor,
                    TimedRunner,
                    strip_server)
-
 from .protocol import (BaseProtocolPart,
                        TestharnessProtocolPart,
                        Protocol,

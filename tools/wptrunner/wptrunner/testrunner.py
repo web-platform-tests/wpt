@@ -169,12 +169,12 @@ class BrowserManager:
         self.last_test = None
 
         self.started = False
+
         self.init_timer = None
         self.command_queue = command_queue
 
     def update_settings(self, test):
         browser_settings = self.browser.settings(test)
-
         restart_required = ((self.browser_settings is not None and
                              self.browser_settings != browser_settings) or
                             (self.last_test != test and test.expected() == "CRASH"))

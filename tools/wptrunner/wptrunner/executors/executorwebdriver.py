@@ -355,13 +355,12 @@ class WebDriverProtocol(Protocol):
         if pac is not None:
             if self.capabilities is None:
                 self.capabilities = {}
-            merge_dicts(self.capabilities,
-                        {"proxy":
-                            {
-                                "proxyType": "pac",
-                                "proxyAutoconfigUrl": urljoin(executor.server_url("http"), pac)
-                            }
-                        })
+            merge_dicts(self.capabilities, {"proxy":
+                {
+                    "proxyType": "pac",
+                    "proxyAutoconfigUrl": urljoin(executor.server_url("http"), pac)
+                }
+            })
 
         self.url = browser.webdriver_url
         self.webdriver = None

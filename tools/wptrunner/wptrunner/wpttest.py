@@ -479,7 +479,6 @@ class TestharnessTest(Test):
         script_metadata = manifest_item.script_metadata or []
         scripts = [v for (k, v) in script_metadata
                    if k == "script"]
-
         return cls(manifest_file.url_base,
                    manifest_file.tests_root,
                    manifest_item.url,

@@ -225,10 +225,7 @@ class Test:
         self._test_metadata = test_metadata
         self.timeout = timeout if timeout is not None else self.default_timeout
         self.path = path
-        # self.pac will be an absolute path
-
         self.subdomain = subdomain
-
         self.environment = {"url_base": url_base,
                             "protocol": protocol,
                             "prefs": self.prefs}

@@ -16,4 +16,4 @@ def check_chromium_revision() -> None:
 
 
 if __name__ == "__main__":
-    check_chromium_revision()  # type: ignore
+    check_chromium_revision()

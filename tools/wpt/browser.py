@@ -550,7 +550,7 @@ class ChromeChromiumBase(Browser):
         return ("https://storage.googleapis.com/chromium-browser-snapshots/"
                 f"{self._chromium_platform_string}/{revision}/{filename}")
 
-    def _get_pinned_chromium_revision(self) -> str:
+    def _get_pinned_chromium_revision(self):
         """Returns the pinned Chromium revision number."""
         try:
             # File used to check the validity of new Chromium revisions.
@@ -560,7 +560,7 @@ class ChromeChromiumBase(Browser):
             with open(filepath) as f:
                 return f.read().strip()
         except FileNotFoundError:
-            revision: str = get("https://storage.googleapis.com/wpt-versions/pinned_chromium_revision").text.strip()
+            revision = get("https://storage.googleapis.com/wpt-versions/pinned_chromium_revision").text.strip()
             return revision
 
     def _get_chromium_revision(self, filename=None, version=None):

@@ -563,7 +563,7 @@ class ChromeChromiumBase(Browser):
             revision = get("https://storage.googleapis.com/wpt-versions/pinned_chromium_revision").text.strip()
             return revision
 
-    def _get_chromium_revision(self, filename, version=None):
+    def _get_chromium_revision(self, filename=None, version=None):
         """Retrieve a valid Chromium revision to download a browser component."""
 
         # If a specific version is passed as an argument, we will use it.
@@ -697,34 +697,6 @@ class ChromeChromiumBase(Browser):
             self.logger.error(f"Cannot enable MojoJS: {e}")
             return None
 
-    def install_webdriver(self, dest=None, channel=None, browser_binary=None, revision=None):
-        if dest is None:
-            dest = os.pwd
-
-        if revision is None:
-            # If a revision was not given, we will need to detect the browser version.
-            # The ChromeDriver that is installed will match this version.
-            if browser_binary is None:
-                # If a browser binary path was not given, detect a valid path.
-                browser_binary = self.find_binary(channel=channel)
-                # We need a browser to version match, so if a browser binary path
-                # was not given and cannot be detected, raise an error.
-                if browser_binary is None:
-                    raise FileNotFoundError("No browser binary detected. "
-                                            "Cannot install ChromeDriver without a browser version.")
-
-            version = self.version(browser_binary)
-            if version is None:
-                raise ValueError("Unable to detect browser version from binary at "
-                                 f"{browser_binary}. Cannot install ChromeDriver "
-                                 "without a valid version to match.")
-        else:
-            version = None
-
-        chromedriver_path = self.install_webdriver_by_version(version, dest, revision)
-
-        return chromedriver_path
-
     def install_webdriver_by_version(self, version, dest, revision=None):
         dest = os.path.join(dest, self.product)
         self._remove_existing_chromedriver_binary(dest)
@@ -800,6 +772,20 @@ class Chromium(ChromeChromiumBase):
     def _chromium_package_name(self):
         return f"chrome-{self.platform.lower()}"
 
+    def _get_existing_browser_revision(self, venv_path, channel):
+        revision = None
+        try:
+            # A file referencing the revision number is saved with the binary.
+            # Check if this revision number exists and use it if it does.
+            path = os.path.join(self._get_browser_binary_dir(None, channel), "revision")
+            with open(path) as f:
+                revision = f.read().strip()
+        except FileNotFoundError:
+            # If there is no information about the revision downloaded,
+            # use the pinned revision.
+            revision = self._get_pinned_chromium_revision()
+        return revision
+
     def _find_binary_in_directory(self, directory):
         """Search for Chromium browser binary in a given directory."""
         if uname[0] == "Darwin":
@@ -842,6 +828,8 @@ class Chromium(ChromeChromiumBase):
 
         # Revision successfully used. Keep this revision if another component install is needed.
         self.last_revision_used = revision
+        with open(os.path.join(dest, "revision"), "w") as f:
+            f.write(revision)
         return installer_path
 
     def find_binary(self, venv_path=None, channel=None):
@@ -854,6 +842,19 @@ class Chromium(ChromeChromiumBase):
             unzip(f, dest)
         os.remove(installer_path)
         return self._find_binary_in_directory(dest)
+
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None, revision=None):
+        if dest is None:
+            dest = os.pwd
+
+        if revision is None:
+            # If a revision was not given, we will need to detect the browser version.
+            # The ChromeDriver that is installed will match this version.
+            revision = self._get_existing_browser_revision(dest, channel)
+
+        chromedriver_path = self.install_webdriver_by_version(None, dest, revision)
+
+        return chromedriver_path
 
     def webdriver_supports_browser(self, webdriver_binary, browser_binary, browser_channel=None):
         """Check that the browser binary and ChromeDriver versions are a valid match."""
@@ -961,6 +962,30 @@ class Chrome(ChromeChromiumBase):
 
     def install(self, dest=None, channel=None):
         raise NotImplementedError("Installing of Chrome browser binary not implemented.")
+
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None, revision=None):
+        if dest is None:
+            dest = os.pwd
+
+        # Detect the browser version.
+        # The ChromeDriver that is installed will match this version.
+        if browser_binary is None:
+            # If a browser binary path was not given, detect a valid path.
+            browser_binary = self.find_binary(channel=channel)
+            # We need a browser to version match, so if a browser binary path
+            # was not given and cannot be detected, raise an error.
+            if browser_binary is None:
+                raise FileNotFoundError("No browser binary detected. "
+                                        "Cannot install ChromeDriver without a browser version.")
+
+        version = self.version(browser_binary)
+        if version is None:
+            raise ValueError(f"Unable to detect browser version from binary at {browser_binary}. "
+                             " Cannot install ChromeDriver without a valid version to match.")
+
+        chromedriver_path = self.install_webdriver_by_version(version, dest, revision)
+
+        return chromedriver_path
 
     def webdriver_supports_browser(self, webdriver_binary, browser_binary, browser_channel):
         """Check that the browser binary and ChromeDriver versions are a valid match."""

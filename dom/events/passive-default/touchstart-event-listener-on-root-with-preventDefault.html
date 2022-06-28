@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<title>touchstart event listener on root</title>
+<title>passive touchstart event listener on root</title>
 <link rel="help" href="https://github.com/WICG/interventions/issues/35">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/wait-for.js"></script>
 <script src="resources/default-passive-touching.js"></script>
 <style>
 #touchDiv {
@@ -18,6 +19,7 @@
     runTest({
       target: document.documentElement,
       eventName: 'touchstart',
+      passive: true,
       expectCancelable: false,
     });
   }

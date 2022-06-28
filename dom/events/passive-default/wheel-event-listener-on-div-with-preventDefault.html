@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<title>wheel event listener on div</title>
+<title>non-passive wheel event listener on div</title>
 <link rel="help" href="https://github.com/WICG/interventions/issues/64">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/wait-for.js"></script>
 <script src="resources/default-passive-scrolling.js"></script>
 <style>
   html, body {
@@ -26,6 +27,7 @@
     runTest({
       target: document.getElementById('div'),
       eventName: 'wheel',
+      passive: false,
       expectCancelable: true,
     });
   }

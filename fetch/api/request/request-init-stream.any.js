@@ -11,14 +11,14 @@ test(() => {
   assert_equals(request.body, body);
 }, "Constructing a Request with a stream holds the original object.");
 
-promise_test(async (t) => {
+test((t) => {
   const body = new ReadableStream();
   body.getReader();
   assert_throws_js(TypeError,
                    () => new Request("...", { method, body, duplex }));
 }, "Constructing a Request with a stream on which getReader() is called");
 
-promise_test(async (t) => {
+test((t) => {
   const body = new ReadableStream();
   body.getReader().read();
   assert_throws_js(TypeError,
@@ -34,30 +34,30 @@ promise_test(async (t) => {
                    () => new Request("...", { method, body, duplex }));
 }, "Constructing a Request with a stream on which read() and releaseLock() are called");
 
-promise_test(async (t) => {
+test((t) => {
   const request = new Request("...", { method: "POST", body: "..." });
   request.body.getReader();
   assert_throws_js(TypeError, () => new Request(request));
   // This doesn't throw.
-  const r = new Request(request, { body: "..." });
+  new Request(request, { body: "..." });
 }, "Constructing a Request with a Request on which body.getReader() is called");
 
-promise_test(async (t) => {
+test((t) => {
   const request = new Request("...", { method: "POST", body: "..." });
   request.body.getReader().read();
   assert_throws_js(TypeError, () => new Request(request));
   // This doesn't throw.
-  const r = new Request(request, { body: "..." });
+  new Request(request, { body: "..." });
 }, "Constructing a Request with a Request on which body.getReader().read() is called");
 
-promise_test(async (t) => {
+promsie_test((t) => {
   const request = new Request("...", { method: "POST", body: "..." });
   const reader = request.body.getReader();
   await reader.read();
   reader.releaseLock();
   assert_throws_js(TypeError, () => new Request(request));
   // This doesn't throw.
-  const r = new Request(request, { body: "..." });
+  new Request(request, { body: "..." });
 }, "Constructing a Request with a Request on which read() and releaseLock() are called");
 
 test((t) => {

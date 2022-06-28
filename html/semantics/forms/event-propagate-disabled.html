@@ -62,11 +62,16 @@
    * @param {Element} observingElement
    */
   function setupTest(t, element, observingElement) {
-    /** @type {string[]} */
+    /** @type {{type: string, composedPath: Node[]}[]} */
     const observedEvents = [];
     const controller = new AbortController();
     const { signal } = controller;
-    const listenerFn = t.step_func(event => observedEvents.push(event.type));
+    const listenerFn = t.step_func(event => {
+      observedEvents.push({
+        type: event.type,
+        composedPath: event.composedPath().map(n => n.constructor.name)
+      });
+    });
     for (const event of allEvents) {
       observingElement.addEventListener(event, listenerFn, { signal });
     }
@@ -74,6 +79,20 @@
 
     const target = getEventFiringTarget(element);
     return { target, observedEvents };
+  }
+
+  /**
+   * @param {Element} target
+   * @param {Element} control
+   */
+  function getExpectedComposedPath(target) {
+    const result = [];
+    while (target) {
+      result.push(target.constructor.name);
+      target = target.parentNode;
+    }
+    result.push("Window");
+    return result;
   }
 
   /**
@@ -92,7 +111,11 @@
       await new Promise(resolve => t.step_timeout(resolve, 0));
 
       const expected = element.disabled ? expectedEvents : nonDisabledExpectedEvents;
-      assert_array_equals(observedEvents, expected, "Observed events");
+      assert_array_equals(observedEvents.map(e => e.type), expected, "Observed events");
+
+      for (const observed of observedEvents) {
+        assert_array_equals(observed.composedPath, getExpectedComposedPath(target), `${observed.type}.composedPath`);
+      }
 
     }, `${title} on ${element.outerHTML}, observed from <${observingElement.localName}>`);
   }

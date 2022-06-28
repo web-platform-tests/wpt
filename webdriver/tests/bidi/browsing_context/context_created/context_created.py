@@ -64,7 +64,8 @@ async def test_evaluate_window_open_without_url(bidi_session, wait_for_event, to
 
     await bidi_session.script.evaluate(
         expression="""window.open();""",
-        target=ContextTarget(top_context["context"]))
+        target=ContextTarget(top_context["context"]),
+        await_promise=False)
 
     context_info = await on_entry
 
@@ -91,7 +92,8 @@ async def test_evaluate_window_open_with_url(bidi_session, wait_for_event, inlin
 
     await bidi_session.script.evaluate(
         expression=f"""window.open({json.dumps(url)});""",
-        target=ContextTarget(top_context["context"]))
+        target=ContextTarget(top_context["context"]),
+        await_promise=False)
 
     context_info = await on_entry
 

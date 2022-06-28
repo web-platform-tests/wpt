@@ -34,7 +34,8 @@ async def test_type(bidi_session, value):
 
     opener_protocol_value = await bidi_session.script.evaluate(
         expression="!!window.opener",
-        target=ContextTarget(new_context_id))
+        target=ContextTarget(new_context_id),
+        await_promise=False)
     assert opener_protocol_value["value"] is False
 
     await bidi_session.browsing_context.close(context=new_context_id)

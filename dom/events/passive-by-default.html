@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<title>Default passive event listeners on window, document, document element, body</title>
+<link rel="help" href="https://dom.spec.whatwg.org/#default-passive-value">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <div id="div"></div>
+<script>
+  function isListenerPassiveByDefault(eventName, eventTarget, expectPassive) {
+    test(() => {
+      let defaultPrevented = null;
+      eventTarget.addEventListener(eventName, event => {
+        event.preventDefault();
+        defaultPrevented = event.defaultPrevented;
+      });
+      let dispatchEventReturnValue = eventTarget.dispatchEvent(new Event(eventName, {cancelable: true}));
+      assert_equals(defaultPrevented, !expectPassive, 'defaultPrevented');
+      assert_equals(dispatchEventReturnValue, expectPassive, 'dispatchEventReturnValue');
+    }, `${eventName} listener is ${expectPassive ? '' : 'non-'}passive by default for ${eventTarget.constructor.name}`);
+  }
+
+  const eventNames = {
+    touchstart: true,
+    touchmove: true,
+    wheel: true,
+    mousewheel: true,
+    touchend: false
+  };
+  const passiveEventTargets = [window, document, document.documentElement, document.body];
+  const div = document.getElementById('div');
+
+  for (const eventName in eventNames) {
+    for (const eventTarget of passiveEventTargets) {
+      isListenerPassiveByDefault(eventName, eventTarget, eventNames[eventName]);
+    }
+    isListenerPassiveByDefault(eventName, div, false);
+  }
+</script>

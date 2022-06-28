@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>non-passive touchstart event listener on div</title>
+<title>non-passive touchmove event listener on div</title>
 <link rel="help" href="https://github.com/WICG/interventions/issues/35">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -7,7 +7,7 @@
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="resources/wait-for.js"></script>
-<script src="resources/default-passive-touching.js"></script>
+<script src="resources/touching.js"></script>
 <style>
 #touchDiv {
   width: 100px;
@@ -18,7 +18,7 @@
   onload = () => {
     runTest({
       target: document.getElementById('touchDiv'),
-      eventName: 'touchstart',
+      eventName: 'touchmove',
       passive: false,
       expectCancelable: true,
     });

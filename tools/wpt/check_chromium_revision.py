@@ -2,7 +2,7 @@ import requests
 
 
 # GitHub Action script to check daily if a new Chromium revision is availble.
-def check_chromium_revision():
+def check_chromium_revision() -> None:
     old_revision = requests.get("https://storage.googleapis.com/wpt-versions/pinned_chromium_revision")
     # A scheduled GCP function is run daily to update this file.
     new_revision = requests.get("https://storage.googleapis.com/wpt-versions/pinned_chromium_revision_NEW")
@@ -16,4 +16,4 @@ def check_chromium_revision():
 
 
 if __name__ == "__main__":
-    check_chromium_revision()
+    check_chromium_revision()  # type: ignore

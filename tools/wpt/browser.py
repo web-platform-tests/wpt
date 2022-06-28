@@ -560,7 +560,7 @@ class ChromeChromiumBase(Browser):
             with open(filepath) as f:
                 return f.read().strip()
         except FileNotFoundError:
-            revision = get("https://storage.googleapis.com/wpt-versions/pinned_chromium_revision").text.strip()
+            revision: str = get("https://storage.googleapis.com/wpt-versions/pinned_chromium_revision").text.strip()
             return revision
 
     def _get_chromium_revision(self, filename=None, version=None):

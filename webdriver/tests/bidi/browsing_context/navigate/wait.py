@@ -8,12 +8,12 @@ pytestmark = pytest.mark.asyncio
 async def test_expected_url(bidi_session, inline, new_tab, value):
     url = inline("<div>foo</div>")
     result = await bidi_session.browsing_context.navigate(
-        context=new_tab, url=url, wait=value
+        context=new_tab["context"], url=url, wait=value
     )
     assert result["url"] == url
     if value != "none":
         contexts = await bidi_session.browsing_context.get_tree(
-            root=new_tab, max_depth=0
+            root=new_tab["context"], max_depth=0
         )
         assert contexts[0]["url"] == url
 
@@ -34,7 +34,7 @@ async def test_slow_image(bidi_session, inline, new_tab, wait, expect_timeout):
     # See https://github.com/w3c/webdriver-bidi/issues/188.
     wait_for_navigation = asyncio.wait_for(
         bidi_session.browsing_context.navigate(
-            context=new_tab, url=url, wait=wait
+            context=new_tab["context"], url=url, wait=wait
         ),
         timeout=1,
     )
@@ -47,7 +47,7 @@ async def test_slow_image(bidi_session, inline, new_tab, wait, expect_timeout):
 
     if wait != "none":
         contexts = await bidi_session.browsing_context.get_tree(
-            root=new_tab, max_depth=0
+            root=new_tab["context"], max_depth=0
         )
         assert contexts[0]["url"] == url
 
@@ -67,7 +67,7 @@ async def test_slow_page(bidi_session, new_tab, url, wait, expect_timeout):
 
     wait_for_navigation = asyncio.wait_for(
         bidi_session.browsing_context.navigate(
-            context=new_tab, url=page_url, wait=wait
+            context=new_tab["context"], url=page_url, wait=wait
         ),
         timeout=1,
     )
@@ -96,7 +96,7 @@ async def test_slow_script(bidi_session, inline, new_tab, wait, expect_timeout):
 
     wait_for_navigation = asyncio.wait_for(
         bidi_session.browsing_context.navigate(
-            context=new_tab, url=url, wait=wait
+            context=new_tab["context"], url=url, wait=wait
         ),
         timeout=1,
     )
@@ -109,6 +109,6 @@ async def test_slow_script(bidi_session, inline, new_tab, wait, expect_timeout):
 
     if wait != "none":
         contexts = await bidi_session.browsing_context.get_tree(
-            root=new_tab, max_depth=0
+            root=new_tab["context"], max_depth=0
         )
         assert contexts[0]["url"] == url

@@ -10,7 +10,7 @@ pytestmark = pytest.mark.asyncio
 async def test_payload(bidi_session, inline, new_tab):
     url = inline("<div>foo</div>")
     result = await bidi_session.browsing_context.navigate(
-        context=new_tab, url=url
+        context=new_tab["context"], url=url
     )
 
     assert "navigation" in result
@@ -65,7 +65,7 @@ async def test_interactive_simultaneous_navigation(bidi_session, inline, new_tab
     frame1_result = frame1_task.result()
     assert frame1_result["url"] == frame1_url
 
-    contexts = await bidi_session.browsing_context.get_tree(root=new_tab)
+    contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
     assert contexts[0]["children"][0]["url"] == frame1_url
     assert contexts[0]["children"][1]["url"] == frame2_url
 

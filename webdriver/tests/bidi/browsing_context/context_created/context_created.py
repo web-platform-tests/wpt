@@ -42,12 +42,12 @@ async def test_new_context(bidi_session, wait_for_event, type_hint):
     await bidi_session.session.subscribe(events=[CONTEXT_CREATED_EVENT])
 
     on_entry = wait_for_event(CONTEXT_CREATED_EVENT)
-    top_level_context_id = await bidi_session.browsing_context.create(type_hint="tab")
+    top_level_context = await bidi_session.browsing_context.create(type_hint="tab")
     context_info = await on_entry
 
     assert_browsing_context(
         context_info,
-        top_level_context_id,
+        top_level_context["context"],
         children=None,
         url="about:blank",
         parent=None,

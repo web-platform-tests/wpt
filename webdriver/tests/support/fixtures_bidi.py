@@ -11,7 +11,7 @@ async def new_tab(bidi_session):
     new_tab = await bidi_session.browsing_context.create(type_hint='tab')
     yield new_tab
     # Close the tab.
-    await bidi_session.browsing_context.close(context=new_tab)
+    await bidi_session.browsing_context.close(context=new_tab["context"])
 
 
 @pytest.fixture

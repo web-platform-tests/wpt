@@ -12,9 +12,8 @@ async def test_null(bidi_session, top_context, test_page, type_hint):
     )
 
     current_top_level_context_id = top_context["context"]
-    other_top_level_context_id = await bidi_session.browsing_context.create(
-        type_hint=type_hint
-    )
+    other_top_level_context = await bidi_session.browsing_context.create(type_hint=type_hint)
+    other_top_level_context_id = other_top_level_context["context"]
 
     # Retrieve all top-level browsing contexts
     contexts = await bidi_session.browsing_context.get_tree(root=None)
@@ -50,10 +49,9 @@ async def test_top_level_context(bidi_session, top_context, test_page, type_hint
         context=top_context["context"], url=test_page, wait="complete"
     )
 
+    other_top_level_context = await bidi_session.browsing_context.create(type_hint=type_hint)
+    other_top_level_context_id = other_top_level_context["context"]
     # Retrieve all browsing contexts of the newly opened tab/window
-    other_top_level_context_id = await bidi_session.browsing_context.create(
-        type_hint=type_hint
-    )
     contexts = await bidi_session.browsing_context.get_tree(root=other_top_level_context_id)
 
     assert len(contexts) == 1

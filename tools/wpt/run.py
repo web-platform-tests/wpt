@@ -383,11 +383,11 @@ class Chrome(BrowserSetup):
         if browser_channel in self.experimental_channels:
             # HACK(Hexcles): work around https://github.com/web-platform-tests/wpt/issues/16448
             kwargs["webdriver_args"].append("--disable-build-check")
-            if not kwargs["no_enable_experimental"]:
+            if kwargs["enable_experimental"] is None:
                 logger.info(
                     "Automatically turning on experimental features for Chrome Dev/Canary or Chromium trunk")
-                kwargs["binary_args"].append("--enable-experimental-web-platform-features")
-            if not kwargs["no_enable_webtransport_h3"]:
+                kwargs["enable_experimental"] = True
+            if kwargs["enable_webtransport_h3"] is None:
                 # To start the WebTransport over HTTP/3 test server.
                 kwargs["enable_webtransport_h3"] = True
         if os.getenv("TASKCLUSTER_ROOT_URL"):
@@ -447,9 +447,9 @@ class ChromeAndroid(ChromeAndroidBase):
         if kwargs["browser_channel"] in self.experimental_channels:
             # HACK(Hexcles): work around https://github.com/web-platform-tests/wpt/issues/16448
             kwargs["webdriver_args"].append("--disable-build-check")
-            if not kwargs["no_enable_experimental"]:
+            if kwargs["enable_experimental"] is None:
                 logger.info("Automatically turning on experimental features for Chrome Dev/Canary")
-                kwargs["binary_args"].append("--enable-experimental-web-platform-features")
+                kwargs["enable_experimental"] = True
 
 
 class ChromeiOS(BrowserSetup):
@@ -467,9 +467,9 @@ class AndroidWeblayer(ChromeAndroidBase):
 
     def setup_kwargs(self, kwargs):
         super().setup_kwargs(kwargs)
-        if kwargs["browser_channel"] in self.experimental_channels and not kwargs["no_enable_experimental"]:
+        if kwargs["browser_channel"] in self.experimental_channels and kwargs["enable_experimental"] is None:
             logger.info("Automatically turning on experimental features for WebLayer Dev/Canary")
-            kwargs["binary_args"].append("--enable-experimental-web-platform-features")
+            kwargs["enable_experimental"] = True
 
 
 class AndroidWebview(ChromeAndroidBase):
@@ -541,9 +541,9 @@ class EdgeChromium(BrowserSetup):
                 kwargs["webdriver_binary"] = webdriver_binary
             else:
                 raise WptrunError("Unable to locate or install msedgedriver binary")
-        if browser_channel in ("dev", "canary") and not kwargs["no_enable_experimental"]:
+        if browser_channel in ("dev", "canary") and kwargs["enable_experimental"] is None:
             logger.info("Automatically turning on experimental features for Edge Dev/Canary")
-            kwargs["binary_args"].append("--enable-experimental-web-platform-features")
+            kwargs["enable_experimental"] = True
 
 
 class Edge(BrowserSetup):

@@ -7,7 +7,7 @@ from .. import any_stack_trace
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "expression, result",
+    "expression, expected",
     [
         ("undefined", {"type": "undefined"}),
         ("null", {"type": "null"}),
@@ -22,10 +22,14 @@ from .. import any_stack_trace
         ("42n", {"type": "bigint", "value": "42"}),
     ],
 )
-async def test_eval(bidi_session, top_context, expression, result):
-    assert result == await bidi_session.script.evaluate(
-        expression=expression, target=ContextTarget(top_context["context"])
+async def test_eval(bidi_session, top_context, expression, expected):
+    result = await bidi_session.script.evaluate(
+        expression=expression,
+        target=ContextTarget(top_context["context"]),
+        await_promise=True,
     )
+
+    assert result == expected
 
 
 @pytest.mark.asyncio

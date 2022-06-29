@@ -13,7 +13,7 @@ const url_prefix = 'https://{{host}}:{{ports[https][0]}}/credential-management/s
 const test_options = {
   federated: {
     providers: [{
-      url: url_prefix,
+      configURL: url_prefix,
       clientId: '1',
       nonce: '2',
     }]
@@ -53,25 +53,25 @@ promise_test(async t => {
   }
   });
   return promise_rejects_js(t, TypeError, cred);
-}, "Reject when url is missing" );
+}, "Reject when configURL is missing" );
 
 promise_test(async t => {
   const cred = navigator.credentials.get({
   federated: {
     providers: [{
-      url: 'test',
+      configURL: 'test',
       clientId: '1',
     }]
   }
   });
   return promise_rejects_dom(t, "InvalidStateError", cred);
-}, "Reject when url is invalid");
+}, "Reject when configURL is invalid");
 
 promise_test(async t => {
   const cred = navigator.credentials.get({
   federated: {
     providers: [{
-      url: 'https://idp.test',
+      configURL: 'https://idp.test',
       clientId: '',
     }]
   }
@@ -83,7 +83,7 @@ promise_test(async t => {
   const cred = await navigator.credentials.get({
     federated: {
       providers: [{
-        url: url_prefix,
+        configURL: url_prefix,
         clientId: '1',
       }]
     }
@@ -95,7 +95,7 @@ promise_test(async t => {
   const cred = navigator.credentials.get({
   federated: {
     providers: [{
-      url: 'https://idp.test',
+      configURL: 'https://idp.test',
     }]
   }
   });
@@ -129,7 +129,7 @@ promise_test(async t => {
   const cred = navigator.credentials.get({
     federated: {
       providers: [{
-        url: 'https://other-idp.test/',
+        configURL: 'https://other-idp.test/',
         clientId: '1',
       }]
     }
@@ -148,7 +148,7 @@ promise_test(async t => {
   const cred = navigator.credentials.get({
     federated: {
       providers: [{
-        url: url_prefix + "fedcm-manifest-not-in-list/",
+        configURL: url_prefix + "fedcm-manifest-not-in-list/",
         clientId: '1',
         nonce: '2',
       }]

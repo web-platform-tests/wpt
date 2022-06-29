@@ -6,14 +6,26 @@ from .. import any_stack_trace
 
 
 @pytest.mark.asyncio
-async def test_eval(bidi_session, top_context):
-    result = await bidi_session.script.evaluate(
-        expression="1 + 2",
-        target=ContextTarget(top_context["context"]),
-        await_promise=True,
+@pytest.mark.parametrize(
+    "expression, result",
+    [
+        ("undefined", {"type": "undefined"}),
+        ("null", {"type": "null"}),
+        ("'foo'+ 'bar'", {"type": "string", "value": "foobar"}),
+        ("Number('a')", {"type": "number", "value": "NaN"}),
+        ("-0", {"type": "number", "value": "-0"}),
+        ("Infinity", {"type": "number", "value": "+Infinity"}),
+        ("-Infinity", {"type": "number", "value": "-Infinity"}),
+        ("1 + 2", {"type": "number", "value": 3}),
+        ("1 === 1", {"type": "boolean", "value": True}),
+        ("1 !== 1", {"type": "boolean", "value": False}),
+        ("42n", {"type": "bigint", "value": "42"}),
+    ],
+)
+async def test_eval(bidi_session, top_context, expression, result):
+    assert result == await bidi_session.script.evaluate(
+        expression=expression, target=ContextTarget(top_context["context"])
     )
-
-    assert result == {"type": "number", "value": 3}
 
 
 @pytest.mark.asyncio

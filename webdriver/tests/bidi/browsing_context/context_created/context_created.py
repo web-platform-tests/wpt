@@ -1,5 +1,4 @@
 import asyncio
-import json
 
 import pytest
 from webdriver.error import TimeoutException
@@ -90,10 +89,14 @@ async def test_evaluate_window_open_with_url(bidi_session, wait_for_event, inlin
 
     on_entry = wait_for_event(CONTEXT_CREATED_EVENT)
 
-    await bidi_session.script.evaluate(
-        expression=f"""window.open({json.dumps(url)});""",
-        target=ContextTarget(top_context["context"]),
-        await_promise=False)
+    await bidi_session.script.call_function(
+        function_declaration="(url)=>{window.open(url)}",
+        arguments=[{
+            "type": "string",
+            "value": url
+        }],
+        await_promise=False,
+        target=ContextTarget(top_context["context"]))
 
     context_info = await on_entry
 

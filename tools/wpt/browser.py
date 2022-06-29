@@ -559,6 +559,10 @@ class ChromeChromiumBase(Browser):
                         f"{self._chromium_platform_string}/LAST_CHANGE")
         return get(revision_url).text.strip()
 
+    def _get_pinned_chromium_revision(self):
+        """Returns the pinned Chromium revision number."""
+        return get("https://storage.googleapis.com/wpt-versions/pinned_chromium_revision_NEW").text.strip()
+
     def _get_chromium_revision(self, filename, version=None):
         """Format a Chromium Snapshots URL to download a browser component."""
 

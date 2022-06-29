@@ -6,17 +6,23 @@
 <body>
   <div id="div"></div>
 <script>
-  function isListenerPassiveByDefault(eventName, eventTarget, expectPassive) {
+  function isListenerPassive(eventName, eventTarget, passive, expectPassive) {
     test(() => {
       let defaultPrevented = null;
-      eventTarget.addEventListener(eventName, event => {
+      let handler = event => {
         event.preventDefault();
         defaultPrevented = event.defaultPrevented;
-      });
+        eventTarget.removeEventListener(eventName, handler);
+      };
+      if (passive === 'omitted') {
+        eventTarget.addEventListener(eventName, handler);
+      } else {
+        eventTarget.addEventListener(eventName, handler, {passive});
+      }
       let dispatchEventReturnValue = eventTarget.dispatchEvent(new Event(eventName, {cancelable: true}));
       assert_equals(defaultPrevented, !expectPassive, 'defaultPrevented');
-      assert_equals(dispatchEventReturnValue, expectPassive, 'dispatchEventReturnValue');
-    }, `${eventName} listener is ${expectPassive ? '' : 'non-'}passive by default for ${eventTarget.constructor.name}`);
+      assert_equals(dispatchEventReturnValue, expectPassive, 'dispatchEvent() return value');
+    }, `${eventName} listener is ${expectPassive ? '' : 'non-'}passive ${passive === 'omitted' ? 'by default' : `with {passive:${passive}}`} for ${eventTarget.constructor.name}`);
   }
 
   const eventNames = {
@@ -31,8 +37,14 @@
 
   for (const eventName in eventNames) {
     for (const eventTarget of passiveEventTargets) {
-      isListenerPassiveByDefault(eventName, eventTarget, eventNames[eventName]);
+      isListenerPassive(eventName, eventTarget, 'omitted', eventNames[eventName]);
+      isListenerPassive(eventName, eventTarget, undefined, eventNames[eventName]);
+      isListenerPassive(eventName, eventTarget, false, false);
+      isListenerPassive(eventName, eventTarget, true, true);
     }
-    isListenerPassiveByDefault(eventName, div, false);
+    isListenerPassive(eventName, div, 'omitted', false);
+    isListenerPassive(eventName, div, undefined, false);
+    isListenerPassive(eventName, div, false, false);
+    isListenerPassive(eventName, div, true, true);
   }
 </script>

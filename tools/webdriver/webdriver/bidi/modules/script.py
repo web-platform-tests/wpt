@@ -33,28 +33,6 @@ Target = Union[RealmTarget, ContextTarget]
 
 class Script(BidiModule):
     @command
-    def evaluate(self,
-                 expression: str,
-                 target: Target,
-                 await_promise: bool,
-                 result_ownership: Optional[OwnershipModel] = None) -> Mapping[str, Any]:
-        params: MutableMapping[str, Any] = {
-            "expression": expression,
-            "target": target,
-            "awaitPromise": await_promise,
-        }
-
-        if result_ownership is not None:
-            params["resultOwnership"] = result_ownership
-        return params
-
-    @evaluate.result
-    def _evaluate(self, result: Mapping[str, Any]) -> Any:
-        if "result" not in result:
-            raise ScriptEvaluateResultException(result)
-        return result["result"]
-
-    @command
     def call_function(self,
                       function_declaration: str,
                       await_promise: bool,
@@ -78,6 +56,28 @@ class Script(BidiModule):
 
     @call_function.result
     def _call_function(self, result: Mapping[str, Any]) -> Any:
+        if "result" not in result:
+            raise ScriptEvaluateResultException(result)
+        return result["result"]
+
+    @command
+    def evaluate(self,
+                 expression: str,
+                 target: Target,
+                 await_promise: bool,
+                 result_ownership: Optional[OwnershipModel] = None) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {
+            "expression": expression,
+            "target": target,
+            "awaitPromise": await_promise,
+        }
+
+        if result_ownership is not None:
+            params["resultOwnership"] = result_ownership
+        return params
+
+    @evaluate.result
+    def _evaluate(self, result: Mapping[str, Any]) -> Any:
         if "result" not in result:
             raise ScriptEvaluateResultException(result)
         return result["result"]

@@ -69,7 +69,7 @@ class Script(BidiModule):
         params: MutableMapping[str, Any] = {
             "expression": expression,
             "target": target,
-            "awaitPromise": await_promise
+            "awaitPromise": await_promise,
         }
 
         if result_ownership is not None:

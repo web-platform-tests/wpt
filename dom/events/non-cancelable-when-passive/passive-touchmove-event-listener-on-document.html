@@ -14,14 +14,12 @@
   height: 100px;
 }
 </style>
-<script>
-  onload = () => {
-    runTest({
-      target: document,
-      eventName: 'touchmove',
-      passive: true,
-      expectCancelable: false,
-    });
-  }
-</script>
 <div id="touchDiv"></div>
+<script>
+  runTest({
+    target: document,
+    eventName: 'touchmove',
+    passive: true,
+    expectCancelable: false,
+  });
+</script>

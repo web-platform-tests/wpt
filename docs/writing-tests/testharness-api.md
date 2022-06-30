@@ -516,6 +516,23 @@ complex cleanup behavior should manage execution order explicitly. If
 any of the eventual values are rejected, the test runner will report
 an error.
 
+### AbortSignal support ###
+
+[`add_cleanup`](#Test.add_cleanup) gives an AbortSignal that is aborted when
+the test finishes. This can be useful when dealing with AbortSignal-supported
+APIs.
+
+```js
+promise_test(t => {
+  const { signal } = t;
+  const event = await new Promise(resolve => {
+    document.body.addEventListener(resolve, { once: true, signal });
+    document.body.click();
+  });
+  assert_equals(event.type, "click");
+}, "");
+```
+
 ## Timers in Tests ##
 
 In general the use of timers (i.e. `setTimeout`) in tests is

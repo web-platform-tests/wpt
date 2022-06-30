@@ -2477,6 +2477,10 @@
         this._user_defined_cleanup_count = 0;
         this._done_callbacks = [];
 
+        if (typeof AbortController) {
+            this._abortController = new AbortController();
+        }
+
         // Tests declared following harness completion are likely an indication
         // of a programming error, but they cannot be reported
         // deterministically.
@@ -2953,6 +2957,10 @@
 
         this.phase = this.phases.CLEANING;
 
+        if (this._abortController) {
+            this._abortController.abort("Test cleanup");
+        }
+
         forEach(this.cleanup_callbacks,
                 function(cleanup_callback) {
                     var result;
@@ -3044,6 +3052,16 @@
                     callback();
                 });
         test._done_callbacks.length = 0;
+    }
+
+    /**
+     * Gives an AbortSignal that will be aborted when the test finishes.
+     */
+    Test.prototype.get_signal = function() {
+        if (!this._abortController) {
+            throw new Error("AbortController is not supported in this browser");
+        }
+        return this._abortController.signal;
     }
 
     /**

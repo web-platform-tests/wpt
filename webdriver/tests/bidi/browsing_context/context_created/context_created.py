@@ -89,15 +89,10 @@ async def test_evaluate_window_open_with_url(bidi_session, wait_for_event, inlin
 
     on_entry = wait_for_event(CONTEXT_CREATED_EVENT)
 
-    await bidi_session.script.call_function(
-        function_declaration="(url)=>{window.open(url)}",
-        arguments=[{
-            "type": "string",
-            "value": url
-        }],
-        await_promise=False,
-        target=ContextTarget(top_context["context"]))
-
+    await bidi_session.script.evaluate(
+        expression=f"""window.open("{url}");""",
+        target=ContextTarget(top_context["context"]),
+        await_promise=False)
     context_info = await on_entry
 
     assert_browsing_context(

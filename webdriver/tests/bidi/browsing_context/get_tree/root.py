@@ -74,7 +74,7 @@ async def test_child_context(
         context=top_context["context"], url=test_page_nested_frames, wait="complete"
     )
 
-    # First retrieve all browsing contexts for current tab
+    # First retrieve all browsing contexts for the first tab
     top_level_context_id = top_context["context"]
     all_contexts = await bidi_session.browsing_context.get_tree(root=top_level_context_id)
 

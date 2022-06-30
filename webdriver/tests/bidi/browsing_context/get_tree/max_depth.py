@@ -21,7 +21,7 @@ async def test_null(
         context=top_context["context"], url=test_page_nested_frames, wait="complete"
     )
 
-    # Retrieve browsing contexts for current tab only
+    # Retrieve browsing contexts for first tab only
     top_level_context_id = top_context["context"]
     contexts = await bidi_session.browsing_context.get_tree(root=top_level_context_id)
 
@@ -64,7 +64,7 @@ async def test_top_level_only(bidi_session, top_context, test_page_nested_frames
         context=top_context["context"], url=test_page_nested_frames, wait="complete"
     )
 
-    # Retrieve browsing contexts for current tab only
+    # Retrieve browsing contexts for first tab only
     top_level_context_id = top_context["context"]
     contexts = await bidi_session.browsing_context.get_tree(
         max_depth=0,
@@ -92,7 +92,7 @@ async def test_top_level_and_one_child(
         context=top_context["context"], url=test_page_nested_frames, wait="complete"
     )
 
-    # Retrieve browsing contexts for current tab only
+    # Retrieve browsing contexts for first tab only
     top_level_context_id = top_context["context"]
     contexts = await bidi_session.browsing_context.get_tree(
         max_depth=1,

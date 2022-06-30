@@ -16,7 +16,7 @@ async def test_multiple_frames(
         context=top_context["context"], url=test_page_multiple_frames, wait="complete"
     )
 
-    # First retrieve all browsing contexts of the current tab
+    # First retrieve all browsing contexts of the first tab
     top_level_context_id = top_context["context"]
     all_contexts = await bidi_session.browsing_context.get_tree(root=top_level_context_id)
 
@@ -64,7 +64,7 @@ async def test_cross_origin(
         context=top_context["context"], url=test_page_cross_origin_frame, wait="complete"
     )
 
-    # First retrieve all browsing contexts of the current tab
+    # First retrieve all browsing contexts of the first tab
     top_level_context_id = top_context["context"]
     all_contexts = await bidi_session.browsing_context.get_tree(root=top_level_context_id)
 

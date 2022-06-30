@@ -126,7 +126,7 @@ async def test_navigate_creates_iframes(bidi_session, top_context, test_page_mul
     await wait.until(lambda _: len(events) >= 2)
     assert len(events) == 2
 
-    # Get all browsing contexts from the current tab
+    # Get all browsing contexts from the first tab
     contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])
 
     assert len(contexts) == 1
@@ -176,7 +176,7 @@ async def test_navigate_creates_nested_iframes(bidi_session, top_context, test_p
     await wait.until(lambda _: len(events) >= 2)
     assert len(events) == 2
 
-    # Get all browsing contexts from the current tab
+    # Get all browsing contexts from the first tab
     contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])
 
     assert len(contexts) == 1

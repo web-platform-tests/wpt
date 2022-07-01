@@ -134,7 +134,7 @@ async def test_navigate_creates_iframes(bidi_session, top_context, test_page_mul
     children_info = root_info["children"]
     assert len(children_info) == 2
 
-    # Note: `browsingContext.contextCreated` is always created with "about:blank":
+    # Note: Live `browsingContext.contextCreated` events are always created with "about:blank":
     # https://github.com/w3c/webdriver-bidi/issues/220#issuecomment-1145785349
     assert_browsing_context(
         events[0],

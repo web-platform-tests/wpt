@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<title>Form elements mutated to be disabled during propogation</title>
+<meta charset=utf8>
+<meta name=timeout content=long>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<div id=cases>
+  <select></select>
+  <select>
+    <!-- <option> can't be clicked as it doesn't have its own painting area -->
+    <option>foo</option>
+  </select>
+  <fieldset>Text</fieldset>
+  <fieldset><span class="target">Span</span></fieldset>
+  <button>Text</button>
+  <button><span class="target">Span</span></button>
+  <textarea></textarea>
+  <input type="button">
+  <input type="checkbox">
+  <input type="color" value="#000000">
+  <input type="date">
+  <input type="datetime-local">
+  <input type="email">
+  <input type="file">
+  <input type="image">
+  <input type="month">
+  <input type="number">
+  <input type="password">
+  <input type="radio">
+  <!-- Native click will click the bar -->
+  <input type="range" value="0">
+  <!-- Native click will click the slider -->
+  <input type="range" value="50">
+  <input type="reset">
+  <input type="search">
+  <input type="submit">
+  <input type="tel">
+  <input type="text">
+  <input type="time">
+  <input type="url">
+  <input type="week">
+</div>
+
+<script>
+  /**
+   * @param {Element} element
+   */
+  function getEventFiringTarget(element) {
+    return element.querySelector(".target") || element;
+  }
+
+  function trusted_click(target) {
+    // To workaround type=file clicking issue
+    // https://github.com/w3c/webdriver/issues/1666
+    return new test_driver.Actions()
+      .pointerMove(0, 0, { origin: target })
+      .pointerDown()
+      .pointerUp()
+      .send();
+  }
+
+  const allEvents = ["pointermove", "mousemove", "pointerdown", "mousedown", "pointerup", "mouseup", "click"];
+
+  /**
+   * @param {*} t
+   * @param {Element} element
+   * @param {boolean} initialDisabled
+   */
+  function setupTest(t, element, { initialDisabled }) {
+    const controller = new AbortController();
+    t.add_cleanup(() => controller.abort());
+    const { signal } = controller;
+
+    /** @type {string[]}} */
+    const observedEvents = [];
+    const mutaterFn = t.step_func(event => {
+      element.disabled = initialDisabled;
+      event.preventDefault();
+    });
+    const listenerFn = t.step_func(event => {
+      element.disabled = !initialDisabled;
+      observedEvents.push(event.type);
+    });
+    for (const event of allEvents) {
+      element.addEventListener(event, mutaterFn, { signal });
+      element.addEventListener(event, listenerFn, { signal });
+    }
+
+    const target = getEventFiringTarget(element);
+    return { target, observedEvents };
+  }
+
+  const elements = document.getElementById("cases").children;
+  for (const element of elements) {
+    promise_test(async t => {
+      const { target, observedEvents } = setupTest(t, element, { initialDisabled: true });
+
+      await trusted_click(target);
+      await new Promise(resolve => t.step_timeout(resolve, 0));
+
+      assert_array_equals(observedEvents, allEvents, "Observed events");
+
+    }, `immediate propagation on ${element.outerHTML} when initially not disabled`);
+
+
+    promise_test(async t => {
+      const { target, observedEvents } = setupTest(t, element, { initialDisabled: false });
+
+      await trusted_click(target);
+      await new Promise(resolve => t.step_timeout(resolve, 0));
+
+      assert_array_equals(observedEvents, allEvents, "Observed events");
+
+    }, `immediate propagation on ${element.outerHTML} when initially disabled`);
+  }
+</script>

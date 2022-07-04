@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "bare": "https://example.com/1"
+  },
+  "scopes": {
+    "https://example.com/1": {
+      "bare": "https://example.com/2"
+    },
+    "[object Object]": {
+      "bare": "https://example.com/PASS-object"
+    }
+  }
+}
+</script>
+
+<script type="module">
+test(() => {
+  assert_equals(import.meta.resolve("bare", document.baseURI), "https://example.com/1");
+}, "import.meta.resolve() with a base URL");
+
+test(() => {
+  assert_equals(import.meta.resolve("bare", "https://example.com/1"), "https://example.com/2");
+}, "import.meta.resolve() with a base URL to a scope");
+
+test(() => {
+  assert_equals(import.meta.resolve("bare", null), "https://example.com/PASS-object");
+
+  assert_equals(import.meta.resolve("bare", undefined), "https://example.com/1");
+
+  // Only toString() methods are consulted by ToString, not valueOf() ones.
+  // So this becomes "[object Object]".
+  assert_equals(import.meta.resolve("bare", { valueOf() { return "https://example.com/1"; } }), "https://example.com/PASS-object");
+}, "Testing the ToString() step of import.meta.resolve() second argument via import maps");
+</script>

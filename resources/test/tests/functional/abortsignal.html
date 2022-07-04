@@ -24,3 +24,26 @@
     assert_true(observed, "onabort should have been called");
   }, "t.signal.aborted");
 </script>
+<script type="text/json" id="expected">
+{
+  "summarized_status": {
+    "message": null,
+    "status_string": "OK"
+  },
+  "summarized_tests": [
+    {
+      "message": null,
+      "name": "t.signal existence",
+      "properties": {},
+      "status_string": "PASS"
+    },
+    {
+      "message": null,
+      "name": "t.signal.aborted",
+      "properties": {},
+      "status_string": "PASS"
+    }
+  ],
+  "type": "complete"
+}
+</script>

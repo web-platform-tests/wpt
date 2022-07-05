@@ -52,12 +52,12 @@ async def test_primitive_values(bidi_session, top_context, expression, expected)
             },
         ),
         (
-            "[1, '2', true, new RegExp(/foo/g), [1]]",
+            "[1, 'foo', true, new RegExp(/foo/g), [1]]",
             {
                 "type": "array",
                 "value": [
                     {"type": "number", "value": 1},
-                    {"type": "string", "value": "2"},
+                    {"type": "string", "value": "foo"},
                     {"type": "boolean", "value": True},
                     {
                         "type": "regexp",
@@ -71,7 +71,7 @@ async def test_primitive_values(bidi_session, top_context, expression, expected)
             },
         ),
         (
-            "new Map([[1, 2], ['2', '3'], [true, false], ['4', [1]]])",
+            "new Map([[1, 2], ['foo', 'bar'], [true, false], ['baz', [1]]])",
             {
                 "type": "map",
                 "value": [
@@ -79,22 +79,22 @@ async def test_primitive_values(bidi_session, top_context, expression, expected)
                         {"type": "number", "value": 1},
                         {"type": "number", "value": 2},
                     ],
-                    ["2", {"type": "string", "value": "3"}],
+                    ["foo", {"type": "string", "value": "bar"}],
                     [
                         {"type": "boolean", "value": True},
                         {"type": "boolean", "value": False},
                     ],
-                    ["4", {"type": "array"}],
+                    ["baz", {"type": "array"}],
                 ],
             },
         ),
         (
-            "new Set([1, '2', true, [1]])",
+            "new Set([1, 'foo', true, [1]])",
             {
                 "type": "set",
                 "value": [
                     {"type": "number", "value": 1},
-                    {"type": "string", "value": "2"},
+                    {"type": "string", "value": "foo"},
                     {"type": "boolean", "value": True},
                     {"type": "array"},
                 ],

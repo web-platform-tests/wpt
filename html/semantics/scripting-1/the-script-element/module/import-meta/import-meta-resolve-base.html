@@ -10,9 +10,6 @@
   "scopes": {
     "https://example.com/1": {
       "bare": "https://example.com/2"
-    },
-    "[object Object]": {
-      "bare": "https://example.com/PASS-object"
     }
   }
 }
@@ -34,6 +31,8 @@ test(() => {
 
   // Only toString() methods are consulted by ToString, not valueOf() ones.
   // So this becomes "[object Object]".
-  assert_equals(import.meta.resolve("bare", { valueOf() { return "https://example.com/1"; } }), "https://example.com/PASS-object");
+  assert_equals(import.meta.resolve("bare", { toString() { return "https://example.com/1"; } }), "https://example.com/2");
+  assert_throws_js(TypeError, () => import.meta.resolve("bare", {}),
+    "invalid baseURL");
 }, "Testing the ToString() step of import.meta.resolve() second argument via import maps");
 </script>

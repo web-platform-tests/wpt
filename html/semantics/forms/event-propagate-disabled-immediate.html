@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Form elements mutated to be disabled during propogation</title>
+<title>Form elements mutated to be disabled during propagation</title>
 <meta charset=utf8>
 <meta name=timeout content=long>
 <script src="/resources/testharness.js"></script>
@@ -75,14 +75,15 @@
     t.add_cleanup(() => controller.abort());
     const { signal } = controller;
 
+    element.disabled = initialDisabled;
+
     /** @type {string[]}} */
     const observedEvents = [];
     const mutaterFn = t.step_func(event => {
-      element.disabled = initialDisabled;
+      element.disabled = !initialDisabled;
       event.preventDefault();
     });
     const listenerFn = t.step_func(event => {
-      element.disabled = !initialDisabled;
       observedEvents.push(event.type);
     });
     for (const event of allEvents) {
@@ -97,7 +98,7 @@
   const elements = document.getElementById("cases").children;
   for (const element of elements) {
     promise_test(async t => {
-      const { target, observedEvents } = setupTest(t, element, { initialDisabled: true });
+      const { target, observedEvents } = setupTest(t, element, { initialDisabled: false });
 
       await trusted_click(target);
       await new Promise(resolve => t.step_timeout(resolve, 0));
@@ -108,7 +109,7 @@
 
 
     promise_test(async t => {
-      const { target, observedEvents } = setupTest(t, element, { initialDisabled: false });
+      const { target, observedEvents } = setupTest(t, element, { initialDisabled: true });
 
       await trusted_click(target);
       await new Promise(resolve => t.step_timeout(resolve, 0));

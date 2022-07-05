@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Form elements mutated to be disabled during propagation</title>
+<title>Form elements mutated to be disabled during propagation to parents</title>
 <meta charset=utf8>
 <meta name=timeout content=long>
 <script src="/resources/testharness.js"></script>
@@ -32,9 +32,9 @@
   <input type="password">
   <input type="radio">
   <!-- Native click will click the bar -->
-  <input type="range" value="0">
+  <input type="range" value="0" data-value="0">
   <!-- Native click will click the slider -->
-  <input type="range" value="50">
+  <input type="range" value="50" data-value="50">
   <input type="reset">
   <input type="search">
   <input type="submit">
@@ -63,33 +63,94 @@
       .send();
   }
 
-  const allEvents = ["pointermove", "mousemove", "pointerdown", "mousedown", "pointerup", "mouseup", "click"];
+  /**
+   * @param {HTMLElement} element
+   * @param {object} options
+   * @param {boolean} options.initialDisabled
+   */
+  function initialize(element, { initialDisabled }) {
+    element.disabled = initialDisabled;
+    switch (element.type) {
+      case "checkbox":
+      case "radio":
+        element.checked = false;
+        break;
+      case "range":
+        element.value = element.dataset.value;
+        break;
+    }
+  }
+
+  /**
+   * @param {HTMLElement} element
+   * @param {string[]} observedEvents
+   * @param {object} options
+   * @param {boolean} options.initialDisabled
+   */
+  function assertStatus(element, observedEvents, { initialDisabled }) {
+    switch (element.type) {
+      case "checkbox":
+      case "radio":
+        // By legacy-pre-activation behavior
+        // https://html.spec.whatwg.org/multipage/input.html#the-input-element:legacy-canceled-activation-behavior
+        assert_equals(element.checked, !initialDisabled, `.checked should be ${!initialDisabled}`);
+        break;
+      case "range":
+        if (initialDisabled) {
+          assert_equals(element.value, element.dataset.value, ".value should not change");
+        } else {
+          assert_true(element.valueAsNumber > 0, ".value should be nonzero");
+        }
+        break;
+    }
+
+    const focusable = element.tabIndex !== -1 && !initialDisabled;
+
+    if (focusable) {
+      assert_array_equals(observedEvents, ["focus"], "A focus event should be observed");
+    } else {
+      assert_array_equals(observedEvents, [], "No events should be observed");
+    }
+    assert_equals(document.activeElement, document.body, "The focus should be at the body");
+  }
+
+  /**
+   * @param {Event} ev
+   */
+  function preventDefaultIfNecessary(element, ev) {
+    switch (element.type) {
+      case "file": // Opens a modal picker
+      case "submit": // May cause a navigation if not
+        ev.preventDefault();
+    }
+  }
 
   /**
    * @param {*} t
    * @param {Element} element
-   * @param {boolean} initialDisabled
+   * @param {object} options
+   * @param {boolean} options.initialDisabled
    */
   function setupTest(t, element, { initialDisabled }) {
     const controller = new AbortController();
     t.add_cleanup(() => controller.abort());
     const { signal } = controller;
 
-    element.disabled = initialDisabled;
-
-    /** @type {string[]}} */
+    /** @type {string[]} */
     const observedEvents = [];
-    const mutaterFn = t.step_func(event => {
-      element.disabled = !initialDisabled;
-      event.preventDefault();
-    });
-    const listenerFn = t.step_func(event => {
-      observedEvents.push(event.type);
-    });
-    for (const event of allEvents) {
-      element.addEventListener(event, mutaterFn, { signal });
-      element.addEventListener(event, listenerFn, { signal });
+
+    initialize(element, { initialDisabled });
+
+    for (const event of ["focus", "blur", "submit"]) {
+      element.addEventListener(event, t.step_func(event => {
+        observedEvents.push(event.type);
+      }), { signal });
     }
+
+    cases.addEventListener("click", t.step_func(event => {
+      element.disabled = !initialDisabled;
+      preventDefaultIfNecessary(element, event);
+    }), { signal });
 
     const target = getEventFiringTarget(element);
     return { target, observedEvents };
@@ -103,9 +164,9 @@
       await trusted_click(target);
       await new Promise(resolve => t.step_timeout(resolve, 0));
 
-      assert_array_equals(observedEvents, allEvents, "Observed events");
-
+      assertStatus(element, observedEvents, { initialDisabled: false });
     }, `immediate propagation on ${element.outerHTML} when initially disabled=false`);
+
 
     promise_test(async t => {
       const { target, observedEvents } = setupTest(t, element, { initialDisabled: true });
@@ -113,8 +174,7 @@
       await trusted_click(target);
       await new Promise(resolve => t.step_timeout(resolve, 0));
 
-      assert_array_equals(observedEvents, allEvents, "Observed events");
-
+      assertStatus(element, observedEvents, { initialDisabled: true });
     }, `immediate propagation on ${element.outerHTML} when initially disabled=true`);
   }
 </script>

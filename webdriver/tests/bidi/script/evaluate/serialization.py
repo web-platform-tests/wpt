@@ -101,7 +101,7 @@ async def test_primitive_values(bidi_session, top_context, expression, expected)
             },
         ),
         (
-            "{'foo': {'bar': 'baz'}, 'qux': 'quux'}",
+            "({'foo': {'bar': 'baz'}, 'qux': 'quux'})",
             {
                 "type": "object",
                 "value": [

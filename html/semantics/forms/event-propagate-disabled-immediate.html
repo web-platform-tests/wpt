@@ -84,6 +84,7 @@
       event.preventDefault();
     });
     const listenerFn = t.step_func(event => {
+      element.disabled = initialDisabled;
       observedEvents.push(event.type);
     });
     for (const event of allEvents) {

@@ -36,12 +36,12 @@ async def test_primitive_values(bidi_session, top_context, expression, expected)
     "expression, expected",
     [
         (
-            "new RegExp(/foo/)",
+            "new RegExp(/foo/g)",
             {
                 "type": "regexp",
                 "value": {
                     "pattern": "foo",
-                    "flags": "",
+                    "flags": "g",
                 },
             },
         ),

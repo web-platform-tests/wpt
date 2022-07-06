@@ -8,7 +8,7 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 
-<div id=cases>
+<form id=cases>
   <select></select>
   <select>
     <!-- <option> can't be clicked as it doesn't have its own painting area -->
@@ -43,7 +43,7 @@
   <input type="time">
   <input type="url">
   <input type="week">
-</div>
+</form>
 
 <script>
   /**
@@ -118,10 +118,9 @@
    * @param {Event} ev
    */
   function preventDefaultIfNecessary(element, ev) {
-    switch (element.type) {
-      case "file": // Opens a modal picker
-      case "submit": // May cause a navigation if not
-        ev.preventDefault();
+    if (element.type === "file") {
+      // Prevent opening a modal picker
+      ev.preventDefault();
     }
   }
 
@@ -141,16 +140,22 @@
 
     initialize(element, { initialDisabled });
 
-    for (const event of ["focus", "blur", "submit"]) {
+    for (const event of ["focus", "blur"]) {
       element.addEventListener(event, t.step_func(event => {
         observedEvents.push(event.type);
+      }), { signal });
+    }
+    for (const event of ["submit", "reset"]) {
+      cases.addEventListener(event, t.step_func(event => {
+        observedEvents.push(event.type);
+        event.preventDefault();
       }), { signal });
     }
 
     cases.addEventListener("click", t.step_func(event => {
       element.disabled = !initialDisabled;
       preventDefaultIfNecessary(element, event);
-    }), { signal });
+    }, { signal }));
 
     const target = getEventFiringTarget(element);
     return { target, observedEvents };

@@ -90,7 +90,7 @@ async def test_primitive_values(bidi_session, top_context, expression, expected)
             },
         ),
         (
-            "new Set([1, 'foo', true, [1]])",
+            "new Set([1, 'foo', true, [1], new Map([[1,2]])])",
             {
                 "type": "set",
                 "value": [
@@ -98,6 +98,7 @@ async def test_primitive_values(bidi_session, top_context, expression, expected)
                     {"type": "string", "value": "foo"},
                     {"type": "boolean", "value": True},
                     {"type": "array"},
+                    {"type": "map"},
                 ],
             },
         ),

@@ -12,7 +12,7 @@ promise_test(async (t) => {
   const utterance = new SpeechSynthesisUtterance('test');
   const eventWatcher = new EventWatcher(t, utterance, ['start', 'end', 'error']);
   await test_driver.bless('speechSynthesis.speak',
-      () => speechSynthesis.speak(utterance));
+      () => { speechSynthesis.speak(utterance) });
   const events = await eventWatcher.wait_for(['start', 'end'], { record: 'all' });
   assert_equals(events.length, 2, 'number of events');
   for (const event of events) {

@@ -19,7 +19,7 @@ promise_test(async (t) => {
     assert_true(event instanceof SpeechSynthesisEvent, 'is SpeechSynthesisEvent');
     assert_false(event.bubbles, 'bubbles');
     assert_false(event.cancelable, 'cancelable');
-    assert_equal(event.utterance, utterance, 'utterance');
+    assert_equals(event.utterance, utterance, 'utterance');
   }
 });
 </script>

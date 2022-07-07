@@ -344,26 +344,6 @@ test(() => {
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
         payeeName: 'Example Merchant',
-        payeeOrigin: 'thisisnotaurl',
-        timeout: 60000,
-        instrument: {
-          displayName: 'X',
-          icon: 'https://example.test/icon.png',
-        },
-        rpId: 'relying-party.example',
-      },
-    }], details);
-  });
-}, 'Empty payee origin throws exception.');
-
-test(() => {
-  assert_throws_js(TypeError, () => {
-    new PaymentRequest([{
-      supportedMethods: 'secure-payment-confirmation',
-      data: {
-        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
-        payeeName: 'Example Merchant',
         payeeOrigin: 'http://thepayee.com',
         timeout: 60000,
         instrument: {

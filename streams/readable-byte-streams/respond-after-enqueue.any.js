@@ -36,7 +36,7 @@ promise_test(async () => {
   assert_array_equals(value, [1, 2, 3], 'value should be 3 bytes');
 }, 'byobRequest.respond() with cached byobRequest after enqueue() should not crash');
 
-promise_test(async () => {
+promise_test(async t => {
   const rs = new ReadableStream({
     type: 'bytes',
     autoAllocateChunkSize: 10,
@@ -47,9 +47,5 @@ promise_test(async () => {
   });
 
   const reader = rs.getReader();
-  const [read1, read2] = await Promise.all([reader.read(), reader.read()]);
-  assert_false(read1.done, 'read1.done should not be true');
-  assert_array_equals(read1.value, [1, 2, 3], 'read1.value should be 3 bytes');
-  assert_false(read2.done, 'read2.done should not be true');
-  assert_array_equals(read2.value, [0, 0], 'read2.value should be 2 bytes');
+  await promise_rejects_js(t, TypeError, Promise.all([reader.read(), reader.read()]));
 }, 'byobRequest.respond() after enqueue() with double read should not crash');

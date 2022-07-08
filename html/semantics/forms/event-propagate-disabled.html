@@ -69,6 +69,7 @@
     const listenerFn = t.step_func(event => {
       observedEvents.push({
         type: event.type,
+        target: event.target,
         composedPath: event.composedPath().map(n => n.constructor.name)
       });
     });
@@ -114,6 +115,7 @@
       assert_array_equals(observedEvents.map(e => e.type), expected, "Observed events");
 
       for (const observed of observedEvents) {
+        assert_equals(observed.target, target, `${observed.type}.target`)
         assert_array_equals(observed.composedPath, getExpectedComposedPath(target), `${observed.type}.composedPath`);
       }
 

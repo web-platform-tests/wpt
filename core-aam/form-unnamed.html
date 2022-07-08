@@ -9,7 +9,6 @@
     <script src="/wai-aria/scripts/ATTAcomm.js"></script>
     <script>
     setup({explicit_timeout: true, explicit_done: true });
-
     var theTest = new ATTAcomm(
     {
    "steps" : [
@@ -21,13 +20,7 @@
                   "property",
                   "role",
                   "is",
-                  "ROLE_LANDMARK"
-               ],
-               [
-                  "property",
-                  "objectAttributes",
-                  "contains",
-                  "xml-roles:form"
+                  "ROLE_SECTION"
                ]
             ],
             "AXAPI" : [
@@ -49,13 +42,15 @@
                   "property",
                   "role",
                   "is",
-                  "IA2_ROLE_FORM"
-               ],
+                  "IA2_ROLE_SECTION"
+               ]
+            ],
+            "MSAA" : [
                [
                   "property",
-                  "objectAttributes",
-                  "contains",
-                  "xml-roles:form"
+                  "role",
+                  "is",
+                  "ROLE_SYSTEM_GROUPING"
                ]
             ],
             "UIA" : [
@@ -64,18 +59,6 @@
                   "ControlType",
                   "is",
                   "Group"
-               ],
-               [
-                  "property",
-                  "LocalizedControlType",
-                  "is",
-                  "form"
-               ],
-               [
-                  "property",
-                  "Landmark Type",
-                  "is",
-                  "Form"
                ]
             ]
          },
@@ -83,15 +66,15 @@
          "type" : "test"
       }
    ],
-   "title" : "form"
+   "title" : "unnamed form"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for form.</p>
-    <div role='form' id='test' aria-labelled='the name of the form'>content</div>
+  <p>This test examines the ARIA properties for an unnamed form.</p>
+    <div role='form' id='test'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

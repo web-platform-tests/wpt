@@ -7,22 +7,18 @@
 <link rel='help' href='https://drafts.csswg.org/css-text-3/#text-align-property'>
 <link rel='match' href='reference/text-align-end-ref-008.html'>
 <meta name="assert" content="text-align:end aligns inline-level content to the end edge of the line box – ie. right when direction is horizontal, ltr.">
-<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
 <style type='text/css'>
 .test { text-align: end; }
 /* the CSS below is not part of the test */
 .test, .ref { border: 1px solid orange; margin: 20px; width: 300px; color: orange; font: 25px/1 Ahem; }
-.ref { position: relative; height: 75px; }
-#rb1 { position: absolute; background-color: orange; width: 75px; height: 75px; }
-#rb2 { position: absolute; right: 100px; background-color: orange; width: 75px; height: 75px; }
-#rb3 { position: absolute; right: 200px; background-color: orange; width: 75px; height: 50px; }
 </style>
 </head>
 <body>
 <div id='instructions'>Test passes if shading in both orange boxes is identical.</div>
 <div dir="rtl">
-<div class="test" dir="ltr">XXX XXX XXX XXX XXX XXX XXX XXX</div>
-<div class="ref"><div id="rb1"></div><div id="rb2"></div><div id="rb3"></div></div>
+<div class="test" dir="ltr">DIV CLA SS_ TES T__ HER E__ ___</div>
+<div class="ref">DIV CLA SS_ REF ___ HER E__ ___</div>
 </div>
 </body>
 </html>

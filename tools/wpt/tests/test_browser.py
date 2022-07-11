@@ -1,6 +1,7 @@
 # mypy: allow-untyped-defs
 
 import logging
+import os
 import inspect
 import requests
 import subprocess
@@ -195,43 +196,36 @@ def test_safari_version_errors(mocked_check_output):
     mocked_check_output.side_effect = subprocess.CalledProcessError(1, 'cmd')
     assert safari.version(webdriver_binary="safaridriver") is None
 
+@pytest.fixture
+def safari_downloads_page_stp_section():
+    file_path = os.path.join(
+        os.path.dirname(__file__),
+        'safari_downloads_page_stp_section.html')
+    with open(file_path) as fp:
+        return fp.read()
+
 @mock.patch('tools.wpt.browser.get')
-def test_safari_find_downloads_stp(mocked_get):
+def test_safari_find_downloads_stp(mocked_get, safari_downloads_page_stp_section):
     safari = browser.Safari(logger)
+
+    # Setup mock
     response = requests.models.Response()
     response.status_code = 200
-
-    content = """
-        <div class="column large-6 medium-12 small-12">
-            <div class="callout">
-                <figure class="app-icon large-icon safari-preview-icon" aria-hidden="true" data-hires-status="pending"></figure>
-                <h4>Safari Technology Preview</h4>
-                <p class="margin-bottom-small">Get a sneak peek at upcoming web technologies in macOS and iOS with <a href="/safari/technology-preview/" class="nowrap">Safari Technology Preview</a> and experiment with these technologies in your websites and extensions.</p>
-                <ul class="links small">
-                    <li class="dmg" data-hires-status="pending"><a class="inline" href="https://secure-appldnld.apple.com/STP/012-38225-20220706-237860CD-5766-4F53-AAC7-1CE26023A959/SafariTechnologyPreview.dmg">Safari Technology Preview<br>for macOS&nbsp;Ventura</a><br><span class="smaller lighter nowrap nowrap-small">Requires macOS&nbsp;13 beta&nbsp;3 or later.</span></li>
-                    <li class="dmg margin-top-small" data-hires-status="pending"><a class="inline" href="https://secure-appldnld.apple.com/STP/012-32918-20220629-B3452905-0138-4CA9-A4E6-334B63585653/SafariTechnologyPreview.dmg">Safari Technology Preview<br>for macOS&nbsp;Monterey</a><br><span class="smaller lighter">Requires macOS&nbsp;12.3 or later.</span></li>
-                    <li class="document margin-top-small" data-hires-status="pending"><a href="/safari/technology-preview/release-notes/">Release Notes</a></li>
-                </ul>
-                <div class="row gutter text-left">
-                    <div class="column">
-                        <p class="sosumi no-margin-bottom margin-top-small">Release</p>
-                        <p class="smaller lighter no-margin">148</p>
-                    </div>
-                    <div class="column">
-                        <p class="sosumi no-margin-bottom margin-top-small">Posted</p>
-                        <p class="smaller lighter no-margin">June 29, 2022</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    """
-    response._content = str.encode(content)
+    response._content = str.encode(safari_downloads_page_stp_section)
     mocked_get.return_value = response
+
     downloads = safari._find_downloads()
+
+    # STP section has two downloads.
+    # 1 for Beta Mac OS and 1 for the stable Mac OS
     assert len(downloads) == 2
 
-    assert downloads[0][0] == SpecifierSet(f"==13.*") # Needs to be ~=13.3
-    assert downloads[1][0] == SpecifierSet(f"~=12.3")
+    # First section is for beta OS version
+    assert downloads[0][0] == SpecifierSet("==13.*")
+    assert "13.0" in downloads[0][0]
+
+    # Second section is for the stable OS version
+    assert downloads[1][0] == SpecifierSet("~=12.3")
     assert "12.4" in downloads[1][0]
 
 

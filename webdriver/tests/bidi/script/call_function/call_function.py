@@ -194,7 +194,7 @@ async def test_remote_value_argument(bidi_session, top_context, result_ownership
 @pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing)])
 async def test_async_arrow_await_promise(bidi_session, top_context, await_promise, result_ownership, expected_handle):
     result = await bidi_session.script.call_function(
-        function_declaration="async ()=>{return {}}",
+        function_declaration="async ()=>{return {a:1}}",
         await_promise=await_promise,
         result_ownership=result_ownership,
         target=ContextTarget(top_context["context"]))
@@ -202,7 +202,10 @@ async def test_async_arrow_await_promise(bidi_session, top_context, await_promis
     if await_promise:
         recursive_compare({
             "type": "object",
-            "value": [],
+            "value": [[
+                "a", {
+                    "type": "number",
+                    "value": 1}]],
             "handle": expected_handle
         }, result)
     else:
@@ -217,7 +220,7 @@ async def test_async_arrow_await_promise(bidi_session, top_context, await_promis
 @pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing)])
 async def test_async_classic_await_promise(bidi_session, top_context, await_promise, result_ownership, expected_handle):
     result = await bidi_session.script.call_function(
-        function_declaration="async function(){return {}}",
+        function_declaration="async function(){return {a:1}}",
         await_promise=await_promise,
         result_ownership=result_ownership,
         target=ContextTarget(top_context["context"]))
@@ -225,7 +228,10 @@ async def test_async_classic_await_promise(bidi_session, top_context, await_prom
     if await_promise:
         recursive_compare({
             "type": "object",
-            "value": [],
+            "value": [[
+                "a", {
+                    "type": "number",
+                    "value": 1}]],
             "handle": expected_handle
         }, result)
     else:

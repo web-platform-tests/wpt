@@ -6,7 +6,7 @@ from .. import any_stack_trace
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing)])
+@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing), (None, missing)])
 async def test_exception(bidi_session, top_context, result_ownership, expected_handle):
     with pytest.raises(ScriptEvaluateResultException) as exception:
         await bidi_session.script.call_function(
@@ -33,7 +33,7 @@ async def test_exception(bidi_session, top_context, result_ownership, expected_h
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing)])
+@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing), (None, missing)])
 async def test_invalid_function(bidi_session, top_context, result_ownership, expected_handle):
     with pytest.raises(ScriptEvaluateResultException) as exception:
         await bidi_session.script.call_function(
@@ -55,7 +55,7 @@ async def test_invalid_function(bidi_session, top_context, result_ownership, exp
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing)])
+@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing), (None, missing)])
 async def test_arrow_function(bidi_session, top_context, result_ownership, expected_handle):
     result = await bidi_session.script.call_function(
         function_declaration="()=>{return {a:1};}",
@@ -74,7 +74,7 @@ async def test_arrow_function(bidi_session, top_context, result_ownership, expec
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing)])
+@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing), (None, missing)])
 async def test_arguments(bidi_session, top_context, result_ownership, expected_handle):
     result = await bidi_session.script.call_function(
         function_declaration="(...args)=>{return args}",
@@ -101,7 +101,7 @@ async def test_arguments(bidi_session, top_context, result_ownership, expected_h
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing)])
+@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing), (None, missing)])
 async def test_default_arguments(bidi_session, top_context, result_ownership, expected_handle):
     result = await bidi_session.script.call_function(
         function_declaration="(...args)=>{return args}",
@@ -117,7 +117,7 @@ async def test_default_arguments(bidi_session, top_context, result_ownership, ex
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing)])
+@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing), (None, missing)])
 async def test_this(bidi_session, top_context, result_ownership, expected_handle):
     result = await bidi_session.script.call_function(
         function_declaration="function(){return this}",
@@ -145,7 +145,7 @@ async def test_this(bidi_session, top_context, result_ownership, expected_handle
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing)])
+@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing), (None, missing)])
 async def test_default_this(bidi_session, top_context, result_ownership, expected_handle):
     result = await bidi_session.script.call_function(
         function_declaration="function(){return this}",
@@ -161,7 +161,7 @@ async def test_default_this(bidi_session, top_context, result_ownership, expecte
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing)])
+@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing), (None, missing)])
 async def test_remote_value_argument(bidi_session, top_context, result_ownership, expected_handle):
     remote_value_result = await bidi_session.script.evaluate(
         expression="({SOME_PROPERTY:'SOME_VALUE'})",
@@ -191,7 +191,7 @@ async def test_remote_value_argument(bidi_session, top_context, result_ownership
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("await_promise", [True, False])
-@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing)])
+@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing), (None, missing)])
 async def test_async_arrow_await_promise(bidi_session, top_context, await_promise, result_ownership, expected_handle):
     result = await bidi_session.script.call_function(
         function_declaration="async ()=>{return {a:1}}",
@@ -217,7 +217,7 @@ async def test_async_arrow_await_promise(bidi_session, top_context, await_promis
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("await_promise", [True, False])
-@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing)])
+@pytest.mark.parametrize("result_ownership, expected_handle", [("root", any_string), ("none", missing), (None, missing)])
 async def test_async_classic_await_promise(bidi_session, top_context, await_promise, result_ownership, expected_handle):
     result = await bidi_session.script.call_function(
         function_declaration="async function(){return {a:1}}",

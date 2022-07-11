@@ -16,19 +16,19 @@ async def test_exception(bidi_session, top_context, result_ownership, expected_h
             target=ContextTarget(top_context["context"]))
 
     recursive_compare({
-        'realm': any_string,
-        'exceptionDetails': {
-            'columnNumber': any_int,
-            'exception': {
-                'type': 'object',
-                'handle': expected_handle,
-                'value': [[
-                    'a', {
-                        "type": 'number',
+        "realm": any_string,
+        "exceptionDetails": {
+            "columnNumber": any_int,
+            "exception": {
+                "type": "object",
+                "handle": expected_handle,
+                "value": [[
+                    "a", {
+                        "type": "number",
                         "value": 1}]]},
-            'lineNumber': any_int,
-            'stackTrace': any_stack_trace,
-            'text': any_string}
+            "lineNumber": any_int,
+            "stackTrace": any_stack_trace,
+            "text": any_string}
     }, exception.value.result)
 
 
@@ -37,20 +37,20 @@ async def test_exception(bidi_session, top_context, result_ownership, expected_h
 async def test_invalid_function(bidi_session, top_context, result_ownership, expected_handle):
     with pytest.raises(ScriptEvaluateResultException) as exception:
         await bidi_session.script.call_function(
-            function_declaration='))) !!@@## some invalid JS script (((',
+            function_declaration="))) !!@@## some invalid JS script (((",
             await_promise=False,
             result_ownership=result_ownership,
             target=ContextTarget(top_context["context"]))
     recursive_compare({
-        'realm': any_string,
-        'exceptionDetails': {
-            'columnNumber': any_int,
-            'exception': {
-                'handle': expected_handle,
-                'type': 'error'},
-            'lineNumber': any_int,
-            'stackTrace': any_stack_trace,
-            'text': any_string}
+        "realm": any_string,
+        "exceptionDetails": {
+            "columnNumber": any_int,
+            "exception": {
+                "handle": expected_handle,
+                "type": "error"},
+            "lineNumber": any_int,
+            "stackTrace": any_stack_trace,
+            "text": any_string}
     }, exception.value.result)
 
 
@@ -67,8 +67,8 @@ async def test_arrow_function(bidi_session, top_context, result_ownership, expec
         "type": "object",
         "handle": expected_handle,
         "value": [[
-            'a', {
-                "type": 'number',
+            "a", {
+                "type": "number",
                 "value": 1}]]
     }, result)
 
@@ -92,10 +92,10 @@ async def test_arguments(bidi_session, top_context, result_ownership, expected_h
         "type": "array",
         "handle": expected_handle,
         "value": [{
-            "type": 'string',
-            "value": 'ARGUMENT_STRING_VALUE'
+            "type": "string",
+            "value": "ARGUMENT_STRING_VALUE"
         }, {
-            "type": 'number',
+            "type": "number",
             "value": 42}]
     }, result)
 
@@ -111,7 +111,7 @@ async def test_default_arguments(bidi_session, top_context, result_ownership, ex
 
     recursive_compare({
         "type": "array",
-        'handle': expected_handle,
+        "handle": expected_handle,
         "value": []
     }, result)
 
@@ -134,13 +134,13 @@ async def test_this(bidi_session, top_context, result_ownership, expected_handle
         target=ContextTarget(top_context["context"]))
 
     recursive_compare({
-        'type': 'object',
-        'handle': expected_handle,
-        'value': [[
-            'some_property',
+        "type": "object",
+        "handle": expected_handle,
+        "value": [[
+            "some_property",
             {
-                'type': 'number',
-                'value': 42}]]
+                "type": "number",
+                "value": 42}]]
     }, result)
 
 
@@ -155,8 +155,8 @@ async def test_default_this(bidi_session, top_context, result_ownership, expecte
 
     # Note: https://github.com/w3c/webdriver-bidi/issues/251
     recursive_compare({
-        "type": 'window',
-        'handle': expected_handle,
+        "type": "window",
+        "handle": expected_handle,
     }, result)
 
 
@@ -179,13 +179,13 @@ async def test_remote_value_argument(bidi_session, top_context, result_ownership
         target=ContextTarget(top_context["context"]))
 
     recursive_compare({
-        'type': 'object',
+        "type": "object",
         "handle": expected_handle,
-        'value': [[
-            'SOME_PROPERTY',
+        "value": [[
+            "SOME_PROPERTY",
             {
-                'type': 'string',
-                'value': 'SOME_VALUE'}]]
+                "type": "string",
+                "value": "SOME_VALUE"}]]
     }, result)
 
 
@@ -201,8 +201,8 @@ async def test_async_arrow_await_promise(bidi_session, top_context, await_promis
 
     if await_promise:
         recursive_compare({
-            'type': 'object',
-            'value': [],
+            "type": "object",
+            "value": [],
             "handle": expected_handle
         }, result)
     else:
@@ -224,8 +224,8 @@ async def test_async_classic_await_promise(bidi_session, top_context, await_prom
 
     if await_promise:
         recursive_compare({
-            'type': 'object',
-            'value': [],
+            "type": "object",
+            "value": [],
             "handle": expected_handle
         }, result)
     else:

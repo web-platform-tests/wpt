@@ -4,7 +4,7 @@ from typing import Any
 # Compares 2 objects recursively.
 # Actual value can have more keys as part of the forwards-compat design.
 # Expected value can be a callable delegate, asserting the value.
-# Expected value can be `missing`, in which case the function asserts there is not such a key in the actual object.
+# Expected value can be `missing`, in which case the function asserts there is no such a key in the actual object.
 def recursive_compare(expected: Any, actual: Any) -> None:
     if callable(expected):
         expected(actual)

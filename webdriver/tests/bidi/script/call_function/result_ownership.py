@@ -1,14 +1,7 @@
 import pytest
 
 from webdriver.bidi.modules.script import ContextTarget, ScriptEvaluateResultException
-
-
-def assert_handle(obj, should_contain_handle):
-    if should_contain_handle:
-        assert "handle" in obj, f"Exception should contain `handle`. Actual: {obj}"
-        assert isinstance(obj["handle"], str), f"`handle` should be a string, but was {type(obj['handle'])}"
-    else:
-        assert "handle" not in obj, f"Exception should not contain `handle`. Actual: {obj}"
+from .. import assert_handle
 
 
 @pytest.mark.asyncio

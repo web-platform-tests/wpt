@@ -30,3 +30,97 @@ async def test_primitive_values(bidi_session, top_context, expression, expected)
     )
 
     assert result == expected
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "expression, expected",
+    [
+        (
+            "new RegExp(/foo/g)",
+            {
+                "type": "regexp",
+                "value": {
+                    "pattern": "foo",
+                    "flags": "g",
+                },
+            },
+        ),
+        (
+            "new Date(1654004849000)",
+            {
+                "type": "date",
+                "value": "2022-05-31T13:47:29.000Z",
+            },
+        ),
+        (
+            "[1, 'foo', true, new RegExp(/foo/g), [1]]",
+            {
+                "type": "array",
+                "value": [
+                    {"type": "number", "value": 1},
+                    {"type": "string", "value": "foo"},
+                    {"type": "boolean", "value": True},
+                    {
+                        "type": "regexp",
+                        "value": {
+                            "pattern": "foo",
+                            "flags": "g",
+                        },
+                    },
+                    {"type": "array"},
+                ],
+            },
+        ),
+        (
+            "new Map([[1, 2], ['foo', 'bar'], [true, false], ['baz', [1]]])",
+            {
+                "type": "map",
+                "value": [
+                    [
+                        {"type": "number", "value": 1},
+                        {"type": "number", "value": 2},
+                    ],
+                    ["foo", {"type": "string", "value": "bar"}],
+                    [
+                        {"type": "boolean", "value": True},
+                        {"type": "boolean", "value": False},
+                    ],
+                    ["baz", {"type": "array"}],
+                ],
+            },
+        ),
+        (
+            "new Set([1, 'foo', true, [1], new Map([[1,2]])])",
+            {
+                "type": "set",
+                "value": [
+                    {"type": "number", "value": 1},
+                    {"type": "string", "value": "foo"},
+                    {"type": "boolean", "value": True},
+                    {"type": "array"},
+                    {"type": "map"},
+                ],
+            },
+        ),
+        (
+            "({'foo': {'bar': 'baz'}, 'qux': 'quux'})",
+            {
+                "type": "object",
+                "value": [
+                    ["foo", {"type": "object"}],
+                    ["qux", {"type": "string", "value": "quux"}],
+                ],
+            },
+        ),
+    ],
+    ids=["regexp", "date", "array", "map", "set", "object"],
+)
+async def test_remote_values(bidi_session, top_context, expression, expected):
+    result = await bidi_session.script.call_function(
+        function_declaration=f"() => {expression}",
+        await_promise=False,
+        target=ContextTarget(top_context["context"]),
+    )
+
+    assert result == expected

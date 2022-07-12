@@ -75,7 +75,7 @@ async def test_return_value(bidi_session, top_context, await_promise, result_own
 
     if should_contain_handle:
         assert "handle" in result, \
-            f"Result should contain `handle`. Actual: {exception.value.result['exceptionDetails']['exception']}"
+            f"Result should contain `handle`. Actual: {result}"
     else:
         assert "handle" not in result, \
-            f"Result should not contain `handle`. Actual: {exception.value.result['exceptionDetails']['exception']}"
+            f"Result should not contain `handle`. Actual: {result}"

@@ -9,40 +9,40 @@ from .. import any_stack_trace
 async def test_exception(bidi_session, top_context):
     with pytest.raises(ScriptEvaluateResultException) as exception:
         await bidi_session.script.call_function(
-            function_declaration="()=>{throw 1}",
+            function_declaration='()=>{throw 1}',
             await_promise=False,
             target=ContextTarget(top_context["context"]))
 
     recursive_compare({
-        "realm": any_string,
-        "exceptionDetails": {
-            "columnNumber": any_int,
-            "exception": {
-                "value": 1,
-                "type": "number"},
-            "lineNumber": any_int,
-            "stackTrace": any_stack_trace,
-            "text": any_string}
-    }, exception.value.result)
+        'realm': any_string,
+        'exceptionDetails': {
+            'columnNumber': any_int,
+            'exception': {
+                'value': 1,
+                'type': 'number'},
+            'lineNumber': any_int,
+            'stackTrace': any_stack_trace,
+            'text': any_string}},
+        exception.value.result)
 
 
 @pytest.mark.asyncio
 async def test_invalid_function(bidi_session, top_context):
     with pytest.raises(ScriptEvaluateResultException) as exception:
         await bidi_session.script.call_function(
-            function_declaration="))) !!@@## some invalid JS script (((",
+            function_declaration='))) !!@@## some invalid JS script (((',
             await_promise=False,
             target=ContextTarget(top_context["context"]))
     recursive_compare({
-        "realm": any_string,
-        "exceptionDetails": {
-            "columnNumber": any_int,
-            "exception": {
-                "type": "error"},
-            "lineNumber": any_int,
-            "stackTrace": any_stack_trace,
-            "text": any_string}
-    }, exception.value.result)
+        'realm': any_string,
+        'exceptionDetails': {
+            'columnNumber': any_int,
+            'exception': {
+                'type': 'error'},
+            'lineNumber': any_int,
+            'stackTrace': any_stack_trace,
+            'text': any_string}},
+        exception.value.result)
 
 
 @pytest.mark.asyncio
@@ -73,12 +73,12 @@ async def test_arguments(bidi_session, top_context):
     recursive_compare({
         "type": "array",
         "value": [{
-            "type": "string",
-            "value": "ARGUMENT_STRING_VALUE"
+            "type": 'string',
+            "value": 'ARGUMENT_STRING_VALUE'
         }, {
-            "type": "number",
-            "value": 42}]
-    }, result)
+            "type": 'number',
+            "value": 42}]},
+        result)
 
 
 @pytest.mark.asyncio
@@ -110,8 +110,8 @@ async def test_this(bidi_session, top_context):
         target=ContextTarget(top_context["context"]))
 
     assert result == {
-        "type": "number",
-        "value": 42}
+        'type': 'number',
+        'value': 42}
 
 
 @pytest.mark.asyncio
@@ -123,7 +123,7 @@ async def test_default_this(bidi_session, top_context):
 
     # Note: https://github.com/w3c/webdriver-bidi/issues/251
     recursive_compare({
-        "type": "window",
+        "type": 'window',
     }, result)
 
 
@@ -163,8 +163,8 @@ async def test_async_arrow_await_promise(bidi_session, top_context, await_promis
             "value": "SOME_VALUE"}
     else:
         recursive_compare({
-            "type": "promise"
-        }, result)
+            "type": "promise"},
+            result)
 
 
 @pytest.mark.asyncio
@@ -181,5 +181,5 @@ async def test_async_classic_await_promise(bidi_session, top_context, await_prom
             "value": "SOME_VALUE"}
     else:
         recursive_compare({
-            "type": "promise"
-        }, result)
+            "type": "promise"},
+            result)

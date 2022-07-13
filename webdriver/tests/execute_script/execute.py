@@ -1,3 +1,5 @@
+import time
+
 import pytest
 from webdriver.error import NoSuchAlertException
 from webdriver.transport import Response
@@ -117,3 +119,44 @@ def test_abort_by_user_prompt_twice(session, dialog_type):
     assert text == "Bye"
 
     session.alert.accept()
+
+
+def test_element_reference_multiple_windows_iframe(session, iframe, inline):
+    session.url = inline(iframe("<div>"))
+    frame = session.find.css("iframe", all=False)
+    element_from_parent = session.execute_script(
+        "return frames[0].document.getElementsByTagName('div')[0]")
+
+    session.switch_frame(frame)
+
+    element_from_frame = session.find.css("div", all=False)
+
+    assert element_from_frame == element_from_parent
+
+
+def test_element_reference_multiple_windows_open(session, inline):
+    popup_url = inline("")
+    initial_handles = set(session.handles)
+    session.url = inline(f"<script>win = window.open('{popup_url}')</script><div></div>")
+
+    end_time = time.time() + 5
+    while time.time() < end_time:
+        final_handles = set(session.handles)
+        if len(final_handles) > len(initial_handles):
+            break
+    else:
+        assert False, "Failed to open new window"
+
+    new_windows = final_handles - initial_handles
+    assert len(new_windows) == 1
+    new_window = new_windows.pop()
+
+    element_from_opener = session.execute_script(
+        "return document.getElementsByTagName('div')[0]")
+
+    session.window_handle = new_window
+
+    element_from_opened = session.execute_script(
+        "return opener.document.getElementsByTagName('div')[0]")
+
+    assert element_from_opener == element_from_opened

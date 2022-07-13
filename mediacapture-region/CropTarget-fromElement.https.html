@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Test CropTarget.fromElement()</title>
+  <title id='test-title'>Test CropTarget.fromElement()</title>
   <meta name='assert' content='Test CropTarget.fromElement().' />
 </head>
 
@@ -17,25 +17,99 @@
   <a id='test-a'></a>
   <div id='log'></div>
 
+  <p id='test-p'>
+    <var id='test-var'>e</var> equals mc<sup id='test-sup'>2</sup>, or is
+    <wbr id='test-wbr'>it mc<sub id='test-sub'>2</sub>?
+    <u id='test-u'>probz</u>.
+  </p>
+
+  <details id='test-details'>
+    <summary id='test-summary'>Here's a test summary...</summary>
+  </details>
+
+  <table id='test-table'>
+    <thead id='test-thead'></thead>
+
+    <tbody id='test-tbody'>
+      <tr id='test-tr'>
+        <th id='test-th'></th>
+        <td id='test-td'></td>
+      </tr>
+    </tbody>
+
+    <tfoot id='test-tfoot'></tfoot>
+  </table>
+
+  <ul id='test-ul'>
+    <li id='test-li'></li>
+  </ul>
+
+  <video id='test-video'>
+    <source id='test-source'>
+    <track id='test-track'>
+  </video>
+
+  <object id='test-object'>
+    <param id='test-param' name="autoplay" value="true">
+  </object>
+
   <script src=/resources/testharness.js></script>
   <script src=/resources/testharnessreport.js></script>
 
+  <select id='test-select'>
+    <optgroup label="Bar" id='test-optgroup'>
+      <option value="foo" id='test-option'>Foo</option>
+    </optgroup>
+  </select>
+
   <script>
     "use strict";
+    promise_test(async () => {
+      // NOTE: this list is intentionally non-exhaustive. These content tests
+      // do not do well with large amount of elements, and adding additional
+      // element tags here can cause test failures later.
+      const kElementTags = [
+          'a',       'abbr',     'acronym',  'address',    'applet', 'area',
+          'article', 'aside',    'audio',    'b',          'base',   'basefont',
+          'bdi',     'bdo',      'big',      'blockquote', 'body',   'br',
+          'button',  'canvas',   'caption',  'center',     'cite',   'code',
+          'col',     'colgroup', 'data',     'datalist',   'dd',     'del',
+          'dfn',     'dialog',   'dir',      'div',        'dl',     'dt',
+          'em',      'embed',    'fieldset', 'figcaption', 'figure', 'font',
+          'footer',  'form',     'frame',    'frameset',   'h1',     'head',
+          'header',  'hr',       'html',     'i',          'iframe', 'img',
+          'input',   'ins',      'kbd',      'label',      'legend', 'link',
+          'main',    'map',      'mark',     'meta',       'meter',  'output',
+          'picture', 'section',  'span',     'strike',     'strong',
+      ];
+      assert_true(!!CropTarget.fromElement);
+
+      for (let tag of kElementTags) {
+        const element = document.createElement(tag);
+        const crop_target = await CropTarget.fromElement(element);
+        assert_true(!!crop_target, "should produce target for tag type " + tag);
+        element.remove();
+      }
+    }, "Produces a CropTarget for all easily createable HTML elements.");
 
     promise_test(async () => {
+      // Elements that have complicated rules for existing in HTML must be
+      // here. Sorted by order of appearance.
+      const kSyntacticallyComplicatedElementTags = [
+          'p',       'var',     'sup',   'wbr',    'sub',    'u',
+          'details', 'summary', 'table', 'th',     'tr',     'td',     'thead',
+          'tbody',   'tfoot',   'ul',    'li',     'title',  'video',  'source',
+          'track',   'object',  'param', 'select', 'option', 'optgroup'
+      ];
       assert_true(!!CropTarget.fromElement);
-      const crop_target = await CropTarget.fromElement(
-        document.getElementById('test-iframe'));
-      assert_equals(crop_target.constructor.name, 'CropTarget');
-    }, "Produces a CropTarget for Elements of subtype iframe.");
 
-    promise_test(async () => {
-      assert_true(!!CropTarget.fromElement);
-      const crop_target = await CropTarget.fromElement(
-        document.getElementById('test-div'));
-      assert_equals(crop_target.constructor.name, 'CropTarget');
-    }, "Produces a CropTarget for Elements of subtype div.");
+      for (let tag of kSyntacticallyComplicatedElementTags) {
+        const element = document.getElementById('test-' + tag);
+        assert_true(!!element, "must have element with id=test-" + tag);
+        const crop_target = await CropTarget.fromElement(element);
+        assert_true(!!crop_target, "should produce target for tag type " + tag);
+      }
+    }, "Produces a CropTarget for all other HTML elements.");
 
     promise_test(t => {
       assert_true(!!CropTarget.fromElement);
@@ -47,13 +121,6 @@
       assert_true(!!CropTarget.fromElement);
       return promise_rejects_js(t, TypeError, CropTarget.fromElement(123));
     }, "Rejects a non-Element with a TypeError.");
-
-    promise_test(function (t) {
-      assert_true(!!CropTarget.fromElement);
-
-      return promise_rejects_dom(t, "NotSupportedError",
-        CropTarget.fromElement(document.getElementById("test-a")));
-    }, "Rejects unimplemented Element subtypes with a NotSupportedError");
 
     promise_test(async () => {
       assert_true(!!CropTarget.fromElement);

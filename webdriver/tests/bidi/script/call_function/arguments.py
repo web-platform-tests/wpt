@@ -20,8 +20,6 @@ from webdriver.bidi.modules.script import ContextTarget
         {"type": "boolean", "value": True},
         {"type": "boolean", "value": False},
         {"type": "bigint", "value": "42"},
-        {"type": "regexp", "value": {"pattern": "foo", "flags": "g"}},
-        {"type": "date", "value": "2022-05-31T13:47:29.000Z"},
     ],
 )
 async def test_primitive_values(bidi_session, top_context, argument):
@@ -37,84 +35,37 @@ async def test_primitive_values(bidi_session, top_context, argument):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "argument, expected_result",
+    "argument",
     [
-        ({
-             "type": "array",
-             "value": [
-                 {"type": "string", "value": "foobar"},
-                 {
-                     "type": "object",
-                     "value": [
-                         ["foobar", {"type": "string", "value": "foobar"}],
-                     ],
-                 },
-             ],
-         },
-         {
-             "type": "array",
-             "value": [
-                 {"type": "string", "value": "foobar"},
-                 {"type": "object"},
-             ],
-         }),
-        ({
-             "type": "object",
-             "value": [
-                 ["foobar", {"type": "string", "value": "foobar"}],
-                 ["object", {
-                     "type": "object",
-                     "value": [
-                         ["foobar", {"type": "string", "value": "foobar"}],
-                     ],
-                 }],
-             ],
-         }, {
-             "type": "object",
-             "value": [
-                 ["foobar", {"type": "string", "value": "foobar"}],
-                 ["object", {"type": "object", }],
-             ],
-         },),
-        ({
-             "type": "map",
-             "value": [
-                 ["foobar", {"type": "string", "value": "foobar"}],
-                 ["object", {
-                     "type": "object",
-                     "value": [
-                         ["foobar", {"type": "string", "value": "foobar"}],
-                     ],
-                 }],
-             ],
-         }, {
-             "type": "map",
-             "value": [
-                 ["foobar", {"type": "string", "value": "foobar"}],
-                 ["object", {"type": "object", }],
-             ],
-         },),
-        ({
-             "type": "set",
-             "value": [
-                 {"type": "string", "value": "foobar"},
-                 {
-                     "type": "object",
-                     "value": [
-                         ["foobar", {"type": "string", "value": "foobar"}],
-                     ],
-                 },
-             ],
-         }, {
-             "type": "set",
-             "value": [
-                 {"type": "string", "value": "foobar"},
-                 {"type": "object"},
-             ],
-         },),
+        {
+            "type": "array",
+            "value": [
+                {"type": "string", "value": "foobar"},
+            ],
+        },
+        {"type": "date", "value": "2022-05-31T13:47:29.000Z"},
+        {
+            "type": "map",
+            "value": [
+                ["foobar", {"type": "string", "value": "foobar"}],
+            ],
+        },
+        {
+            "type": "object",
+            "value": [
+                ["foobar", {"type": "string", "value": "foobar"}],
+            ],
+        },
+        {"type": "regexp", "value": {"pattern": "foo", "flags": "g"}},
+        {
+            "type": "set",
+            "value": [
+                {"type": "string", "value": "foobar"},
+            ],
+        },
     ],
 )
-async def test_local_values(bidi_session, top_context, argument, expected_result):
+async def test_local_values(bidi_session, top_context, argument):
     result = await bidi_session.script.call_function(
         function_declaration=f"(arg) => arg",
         arguments=[argument],
@@ -122,4 +73,4 @@ async def test_local_values(bidi_session, top_context, argument, expected_result
         target=ContextTarget(top_context["context"]),
     )
 
-    assert result == expected_result
+    assert result == argument

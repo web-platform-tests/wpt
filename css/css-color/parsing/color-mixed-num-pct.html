@@ -21,7 +21,7 @@
     testColorFunction("sRGB all numbers", "color(srgb 1.00 0.50 0.200)", "color(srgb 1 0.5 0.2)");
     testColorFunction("sRGB all percent", "color(srgb 100% 50% 20%)", "color(srgb 1 0.5 0.2)");
     testColorFunction("sRGB mixed number and percent", "color(srgb 100% 0.5 20%)", "color(srgb 1 0.5 0.2)");
-    testColorFunction("sRGB mixed number and percent", "color(srgb 1.00 50% 0.2)", "color(srgb 1 0.5 0.2)");
+    testColorFunction("sRGB mixed number and percent 2", "color(srgb 1.00 50% 0.2)", "color(srgb 1 0.5 0.2)");
     testColorFunction("sRGB all none", "color(srgb none none none)", "color(srgb 0 0 0)");
     testColorFunction("sRGB number and none", "color(srgb 1.00 none 0.2)", "color(srgb 1 0 0.2)");
     testColorFunction("sRGB percent and none", "color(srgb 100% none 20%)", "color(srgb 1 0 0.2)");
@@ -31,7 +31,7 @@
     testColorFunction("sRGB with alpha, all numbers", "color(srgb 1.00 0.50 0.200 / 0.6)", "color(srgb 1 0.5 0.2 / 0.6)");
     testColorFunction("sRGB with alpha, all percent", "color(srgb 100% 50% 20%)", "color(srgb 1 0.5 0.2 / 0.6)");
     testColorFunction("sRGB with alpha, mixed number and percent", "color(srgb 100% 0.5 20% / 0.6)", "color(srgb 1 0.5 0.2 / 0.6)");
-    testColorFunction("sRGB with alpha, mixed number and percent", "color(srgb 1.00 50% 0.2 / 60%)", "color(srgb 1 0.5 0.2 / 0.6)");
+    testColorFunction("sRGB with alpha, mixed number and percent 2", "color(srgb 1.00 50% 0.2 / 60%)", "color(srgb 1 0.5 0.2 / 0.6)");
     testColorFunction("sRGB with alpha, all none", "color(srgb none none none / none)", "color(srgb 0 0 0 / 0)");
     testColorFunction("sRGB with alpha, number and none", "color(srgb 1.00 none 0.2 / none)", "color(srgb 1 0 0.2 / 0)");
     testColorFunction("sRGB with alpha, percent and none", "color(srgb 100% none 20% / 30%)", "color(srgb 1 0 0.2 / 0.3)");
@@ -41,7 +41,7 @@
     testColorFunction("Display P3 all numbers", "color(display-p3 1.00 0.50 0.200)", "color(display-p3 1 0.5 0.2)");
     testColorFunction("Display P3 all percent", "color(display-p3 100% 50% 20%)", "color(display-p3 1 0.5 0.2)");
     testColorFunction("Display P3 mixed number and percent", "color(display-p3 100% 0.5 20%)", "color(display-p3 1 0.5 0.2)");
-    testColorFunction("Display P3 mixed number and percent", "color(display-p3 1.00 50% 0.2)", "color(display-p3 1 0.5 0.2)");
+    testColorFunction("Display P3 mixed number and percent 2", "color(display-p3 1.00 50% 0.2)", "color(display-p3 1 0.5 0.2)");
     testColorFunction("Display P3 all none", "color(display-p3 none none none)", "color(display-p3 0 0 0)");
     testColorFunction("Display P3 number and none", "color(display-p3 1.00 none 0.2)", "color(display-p3 1 0 0.2)");
     testColorFunction("Display P3 percent and none", "color(display-p3 100% none 20%)", "color(display-p3 1 0 0.2)");
@@ -51,7 +51,7 @@
     testColorFunction("Display P3 with alpha, all numbers", "color(display-p3 1.00 0.50 0.200 / 0.6)", "color(display-p3 1 0.5 0.2 / 0.6)");
     testColorFunction("Display P3 with alpha, all percent", "color(display-p3 100% 50% 20%)", "color(display-p3 1 0.5 0.2 / 0.6)");
     testColorFunction("Display P3 with alpha, mixed number and percent", "color(display-p3 100% 0.5 20% / 0.6)", "color(display-p3 1 0.5 0.2 / 0.6)");
-    testColorFunction("Display P3 with alpha, mixed number and percent", "color(display-p3 1.00 50% 0.2 / 60%)", "color(display-p3 1 0.5 0.2 / 0.6)");
+    testColorFunction("Display P3 with alpha, mixed number and percent 2", "color(display-p3 1.00 50% 0.2 / 60%)", "color(display-p3 1 0.5 0.2 / 0.6)");
     testColorFunction("Display P3 with alpha, all none", "color(display-p3 none none none / none)", "color(display-p3 0 0 0 / 0)");
     testColorFunction("Display P3 with alpha, number and none", "color(display-p3 1.00 none 0.2 / none)", "color(display-p3 1 0 0.2 / 0)");
     testColorFunction("Display P3 with alpha, percent and none", "color(display-p3 100% none 20% / 30%)", "color(display-p3 1 0 0.2 / 0.3)");
@@ -61,7 +61,7 @@
     testColorFunction("Rec BT.2020 all numbers", "color(rec2020 1.00 0.50 0.200)", "color(rec2020 1 0.5 0.2)");
     testColorFunction("Rec BT.2020 all percent", "color(rec2020 100% 50% 20%)", "color(rec2020 1 0.5 0.2)");
     testColorFunction("Rec BT.2020 mixed number and percent", "color(rec2020 100% 0.5 20%)", "color(rec2020 1 0.5 0.2)");
-    testColorFunction("Rec BT.2020 mixed number and percent", "color(rec2020 1.00 50% 0.2)", "color(rec2020 1 0.5 0.2)");
+    testColorFunction("Rec BT.2020 mixed number and percent 2", "color(rec2020 1.00 50% 0.2)", "color(rec2020 1 0.5 0.2)");
     testColorFunction("Rec BT.2020 all none", "color(rec2020 none none none)", "color(rec2020 0 0 0)");
     testColorFunction("Rec BT.2020 number and none", "color(rec2020 1.00 none 0.2)", "color(rec2020 1 0 0.2)");
     testColorFunction("Rec BT.2020 percent and none", "color(rec2020 100% none 20%)", "color(rec2020 1 0 0.2)");
@@ -71,7 +71,7 @@
     testColorFunction("Rec BT.2020 with alpha, all numbers", "color(rec2020 1.00 0.50 0.200 / 0.6)", "color(rec2020 1 0.5 0.2 / 0.6)");
     testColorFunction("Rec BT.2020 with alpha, all percent", "color(rec2020 100% 50% 20%)", "color(rec2020 1 0.5 0.2 / 0.6)");
     testColorFunction("Rec BT.2020 with alpha, mixed number and percent", "color(rec2020 100% 0.5 20% / 0.6)", "color(rec2020 1 0.5 0.2 / 0.6)");
-    testColorFunction("Rec BT.2020 with alpha, mixed number and percent", "color(rec2020 1.00 50% 0.2 / 60%)", "color(rec2020 1 0.5 0.2 / 0.6)");
+    testColorFunction("Rec BT.2020 with alpha, mixed number and percent 2", "color(rec2020 1.00 50% 0.2 / 60%)", "color(rec2020 1 0.5 0.2 / 0.6)");
     testColorFunction("Rec BT.2020 with alpha, all none", "color(rec2020 none none none / none)", "color(rec2020 0 0 0 / 0)");
     testColorFunction("Rec BT.2020 with alpha, number and none", "color(rec2020 1.00 none 0.2 / none)", "color(rec2020 1 0 0.2 / 0)");
     testColorFunction("Rec BT.2020 with alpha, percent and none", "color(rec2020 100% none 20% / 30%)", "color(rec2020 1 0 0.2 / 0.3)");

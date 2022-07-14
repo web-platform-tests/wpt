@@ -21,6 +21,14 @@
     main.append(style);
     return style;
   }
+  
+  function test_rule_valid(query) {
+    test(t => {
+      t.add_cleanup(cleanup_main);
+      let style = set_style(`@container ${query} {}`);
+      assert_equals(style.sheet.rules.length, 1);
+    }, query);
+  }
 
   function test_query_invalid(query) {
     test(t => {
@@ -150,8 +158,10 @@
   test_query_invalid('(width: 100px), (height: 100px)');
   test_query_invalid('(width: 100px) and (height: 100px)');
   test_query_invalid('(width: 100px) or (height: 100px)');
-  test_query_invalid('not (width: 100px)');
   test_query_invalid('foo (width: 100px)');
+  
+  test_rule_valid('name not (width <= 500px)');
+  test_rule_valid('not (width <= 500px)');
 
   test_container_selector_valid('foo');
   test_container_selector_valid(' foo');

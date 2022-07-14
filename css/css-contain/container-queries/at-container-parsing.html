@@ -21,7 +21,7 @@
     main.append(style);
     return style;
   }
-  
+
   function test_rule_valid(query) {
     test(t => {
       t.add_cleanup(cleanup_main);
@@ -159,7 +159,7 @@
   test_query_invalid('(width: 100px) and (height: 100px)');
   test_query_invalid('(width: 100px) or (height: 100px)');
   test_query_invalid('foo (width: 100px)');
-  
+
   test_rule_valid('name not (width <= 500px)');
   test_rule_valid('not (width <= 500px)');
 

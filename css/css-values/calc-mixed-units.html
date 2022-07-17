@@ -1,0 +1,30 @@
+<html lang="en">
+  <head>
+    <style>
+      .box {
+        background: rgb(0, 0, 255);
+        width: 100vw;
+        height: 10px;
+      }
+
+      @media (min-width: calc(100vw - 1em)) {
+        .box {
+          background: rgb(255, 165, 0);
+        }
+      }
+    </style>
+    <title>test calc with mixed units</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div class="box"></div>
+    <script>
+      const box = document.querySelector(".box");
+      test(function() {
+        const actual = getComputedStyle(box).getPropertyValue("background-color");
+        assert_equals(actual, "rgb(255, 165, 0)");
+      }, "background-color should be orange because media query is matched");
+    </script>
+  </body>
+</html>

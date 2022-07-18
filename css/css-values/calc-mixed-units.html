@@ -14,13 +14,13 @@
     <iframe src="./support/mixed-units-05.html" title="vh/px" frameborder="0" height="10" width="100"></iframe>
     <iframe src="./support/mixed-units-06.html" title="vw/px" frameborder="0" height="10" width="100"></iframe>
     <script>
-      for (const frame of document.querySelectorAll('iframe')) {
+      for (const frame of document.querySelectorAll("iframe")) {
         async_test((t) => {
           frame.addEventListener("load", t.step_func(() => {
-            const box = frame.contentWindow.document.querySelector('.box');
+            const box = frame.contentWindow.document.querySelector(".box");
             const actual = frame.contentWindow.getComputedStyle(box).getPropertyValue("background-color");
             assert_equals(actual, "rgb(255, 165, 0)");
-            t.done()
+            t.done();
           }));
         }, `background should be orange if the calculation between ${frame.title} was correct`);
       }

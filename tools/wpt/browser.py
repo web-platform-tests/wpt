@@ -781,7 +781,7 @@ class Chromium(ChromeChromiumBase):
     """Chromium-specific interface.
 
     Includes browser binary installation and detection.
-    Webdriver installation and wptrunner setup shared in base class with Chrome
+    Webdriver installation and wptrunner setup shared in base class with Chrome.
 
     For a detailed description on the installation and detection of these browser components,
     see https://web-platform-tests.org/running-tests/chrome-chromium-installation-detection.html

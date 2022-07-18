@@ -1478,7 +1478,7 @@ class Safari(Browser):
         Input: Safari Technology Preview<br>for macOS&nbsp;Ventura
         Output: Safari Technology Previewfor macOS Ventura
         """
-        stp_link_text = re.compile(r"^\s*Safari\s+Technology\s+Preview\s*(?:[0-9]+\s+)?for\s+macOS")
+        stp_link_text = re.compile(r"^\s*Safari\s+Technology\s+Preview\s*(?:[0-9]+\s*)?for\s+macOS")
         requirement = re.compile(
             r"Requires\s+macOS\s+([0-9\.]+)\s+(?:or\s+later|beta)."
         )

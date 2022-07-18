@@ -197,36 +197,45 @@ def test_safari_version_errors(mocked_check_output):
     assert safari.version(webdriver_binary="safaridriver") is None
 
 @pytest.fixture
-def safari_downloads_page_stp_section():
-    file_path = os.path.join(
-        os.path.dirname(__file__),
-        'safari_downloads_page_stp_section.html')
-    with open(file_path) as fp:
-        return fp.read()
+def safari_downloads_page_stp_sections():
+    file_names = [
+        "safari_downloads_page_stp_section.html",
+        "safari_downloads_page_stp_section_version_incl.html"
+    ]
+    sections = []
+    for file_name in file_names:
+        file_path = os.path.join(
+            os.path.dirname(__file__), file_name)
+        with open(file_path) as fp:
+            sections.append({"file_name": file_name, "content": fp.read()})
+    return sections
 
 @mock.patch('tools.wpt.browser.get')
-def test_safari_find_downloads_stp(mocked_get, safari_downloads_page_stp_section):
+def test_safari_find_downloads_stp(mocked_get, safari_downloads_page_stp_sections):
     safari = browser.Safari(logger)
 
-    # Setup mock
-    response = requests.models.Response()
-    response.status_code = 200
-    response._content = str.encode(safari_downloads_page_stp_section)
-    mocked_get.return_value = response
+    for section in safari_downloads_page_stp_sections:
+        content = section["content"]
+        file_name = section["file_name"]
+        # Setup mock
+        response = requests.models.Response()
+        response.status_code = 200
+        response._content = str.encode(content)
+        mocked_get.return_value = response
 
-    downloads = safari._find_downloads()
+        downloads = safari._find_downloads()
 
-    # STP section has two downloads.
-    # 1 for Beta Mac OS and 1 for the stable Mac OS
-    assert len(downloads) == 2
+        # STP section has two downloads.
+        # 1 for Beta Mac OS and 1 for the stable Mac OS
+        assert len(downloads) == 2, f"Unable to find two STP downloads on {file_name}"
 
-    # First section is for beta OS version
-    assert downloads[0][0] == SpecifierSet("==13.*")
-    assert "13.0" in downloads[0][0]
+        # First section is for beta OS version
+        assert downloads[0][0] == SpecifierSet("==13.*"), file_name
+        assert "13.0" in downloads[0][0], file_name
 
-    # Second section is for the stable OS version
-    assert downloads[1][0] == SpecifierSet("~=12.3")
-    assert "12.4" in downloads[1][0]
+        # Second section is for the stable OS version
+        assert downloads[1][0] == SpecifierSet("~=12.3"), file_name
+        assert "12.4" in downloads[1][0], file_name
 
 
 @mock.patch('subprocess.check_output')

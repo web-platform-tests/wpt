@@ -57,6 +57,7 @@ and in particular the
 Command Line Tools
 ==================
 
+
 The `wpt` command provides a frontend to a variety of tools for
 working with and running web-platform-tests. Some of the most useful
 commands are:

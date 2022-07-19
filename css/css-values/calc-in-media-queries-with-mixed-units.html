@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>test calc with mixed units</title>
+    <title>test calc with mixed units in media queries</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <link rel="help" href="https://www.w3.org/TR/css3-values/#calc-computed-value">
@@ -22,7 +22,7 @@
             assert_equals(actual, "rgb(255, 165, 0)");
             t.done();
           }));
-        }, `background should be orange if the calculation between ${frame.title} was correct`);
+        }, `box should be orange if the calc between ${frame.title} in @media was correct`);
       }
     </script>
   </body>

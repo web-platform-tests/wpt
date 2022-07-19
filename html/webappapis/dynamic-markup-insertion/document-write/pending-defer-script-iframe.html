@@ -1,0 +1,13 @@
+<!doctype html>
+<script src="pending-script.js?defer&pipe=trickle(d1)" defer></script>
+<script>
+window.log = [];
+window.parent.t2.step_timeout(() => {
+  // document.open() occurs while a defer script is still loading.
+  document.open();
+  document.write("document.write body contents\n")
+  document.write('<script src="pending-script.js?defer2" defer></scr' + 'ipt>');
+  document.close();
+}, 500);
+</script>
+Initial body contents

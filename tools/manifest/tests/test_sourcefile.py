@@ -877,6 +877,16 @@ def test_pac(pac, expected):
     s = create("foo/test.html", content)
     assert s.pac == expected
 
+@pytest.mark.parametrize("proxy_mode, expected", [
+    (b"all", "all")])
+def test_pac(pac, expected):
+    content = b"""
+<meta name=proxy content="all">
+""" % pac
+
+    s = create("foo/test.html", content)
+    assert s.proxy_mode == expected
+
 @pytest.mark.parametrize("page_ranges, expected", [
     (b"1-2", [[1, 2]]),
     (b"1-1,3-4", [[1, 1], [3, 4]]),

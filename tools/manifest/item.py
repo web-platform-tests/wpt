@@ -194,6 +194,11 @@ class TestharnessTest(URLManifestItem):
         return self._extras.get("pac")
 
     @property
+    def proxy_mode(self):
+        # type: () -> Optional[Text]
+        return self._extras.get("proxy_mode")
+
+    @property
     def testdriver(self):
         # type: () -> Optional[Text]
         return self._extras.get("testdriver")
@@ -215,6 +220,8 @@ class TestharnessTest(URLManifestItem):
             rv[-1]["timeout"] = self.timeout
         if self.pac is not None:
             rv[-1]["pac"] = self.pac
+        if self.proxy_mode is not None:
+            rv[-1]["proxy_mode"] = self.proxy_mode
         if self.testdriver:
             rv[-1]["testdriver"] = self.testdriver
         if self.jsshell:

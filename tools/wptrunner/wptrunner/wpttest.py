@@ -212,12 +212,13 @@ class Test:
     subtest_result_cls = None  # type: ClassVar[Type[SubtestResult]]
     test_type = None  # type: ClassVar[str]
     pac = None
+    proxy_mode = None
 
     default_timeout = 10  # seconds
     long_timeout = 60  # seconds
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata,
-                 timeout=None, path=None, protocol="http", subdomain=False, pac=None):
+                 timeout=None, path=None, protocol="http", subdomain=False, proxy_mode=None, pac=None):
         self.url_base = url_base
         self.tests_root = tests_root
         self.url = url
@@ -232,6 +233,10 @@ class Test:
 
         if pac is not None:
             self.environment["pac"] = urljoin(self.url, pac)
+            proxy_mode = "pac"
+
+        if proxy_mode is not None:
+            self.environment["proxy_mode"] = proxy_mode
 
     def __eq__(self, other):
         if not isinstance(other, Test):
@@ -462,9 +467,9 @@ class TestharnessTest(Test):
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata,
                  timeout=None, path=None, protocol="http", testdriver=False,
-                 jsshell=False, scripts=None, subdomain=False, pac=None):
+                 jsshell=False, scripts=None, subdomain=False, proxy_mode=None, pac=None):
         Test.__init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, timeout,
-                      path, protocol, subdomain, pac)
+                      path, protocol, subdomain, proxy_mode, pac)
 
         self.testdriver = testdriver
         self.jsshell = jsshell
@@ -474,6 +479,7 @@ class TestharnessTest(Test):
     def from_manifest(cls, manifest_file, manifest_item, inherit_metadata, test_metadata):
         timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
         pac = manifest_item.pac
+        proxy_mode = manifest_item.proxy_mode
         testdriver = manifest_item.testdriver if hasattr(manifest_item, "testdriver") else False
         jsshell = manifest_item.jsshell if hasattr(manifest_item, "jsshell") else False
         script_metadata = manifest_item.script_metadata or []
@@ -485,6 +491,7 @@ class TestharnessTest(Test):
                    inherit_metadata,
                    test_metadata,
                    timeout=timeout,
+                   proxy_mode=proxy_mode,
                    pac=pac,
                    path=os.path.join(manifest_file.tests_root, manifest_item.path),
                    protocol=server_protocol(manifest_item),

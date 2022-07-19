@@ -355,15 +355,24 @@ class WebDriverProtocol(Protocol):
                 merge_dicts(self.capabilities, browser.capabilities)
 
         pac = browser.pac
-        if pac is not None:
+        proxy_mode = browser.proxy_mode
+        if proxy_mode is not None:
             if self.capabilities is None:
                 self.capabilities = {}
-            merge_dicts(self.capabilities, {"proxy":
-                {
+            if proxy_mode == "pac":
+                proxy_settings = {
                     "proxyType": "pac",
                     "proxyAutoconfigUrl": urljoin(executor.server_url("http"), pac)
                 }
-            })
+            elif proxy_mode == "all":
+                proxy_settings = {
+                    "proxyType": "manual",
+                    "httpProxy": executor.server_url("http")
+                }
+            else:
+                raise Exception("Unknown proxy mode: " + proxy_mode)
+
+            merge_dicts(self.capabilities, {"proxy": proxy_settings})
 
         self.url = browser.webdriver_url
         self.webdriver = None

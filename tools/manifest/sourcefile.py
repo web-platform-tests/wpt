@@ -486,6 +486,14 @@ class SourceFile:
         return self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='pac']")
 
     @cached_property
+    def proxy_nodes(self):
+        # type: () -> List[ElementTree.Element]
+        """List of ElementTree Elements corresponding to nodes in a test that
+        specify proxy mode"""
+        assert self.root is not None
+        return self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='proxy']")
+
+    @cached_property
     def script_metadata(self):
         # type: () -> Optional[List[Tuple[Text, Text]]]
         if self.name_is_worker or self.name_is_multi_global or self.name_is_window:
@@ -531,6 +539,23 @@ class SourceFile:
 
         if self.pac_nodes:
             return self.pac_nodes[0].attrib.get("content", None)
+
+        return None
+
+    @cached_property
+    def proxy_mode(self):
+        # type: () -> Optional[Text]
+        """The proxy mode of a test or reference file. A URL or null"""
+        if self.script_metadata:
+            for (meta, content) in self.script_metadata:
+                if meta == 'proxy':
+                    return content
+
+        if self.root is None:
+            return None
+
+        if self.proxy_nodes:
+            return self.proxy_nodes[0].attrib.get("content", None)
 
         return None
 
@@ -1033,6 +1058,7 @@ class SourceFile:
                     self.url_base,
                     global_variant_url(self.rel_url, suffix) + variant,
                     timeout=self.timeout,
+                    proxy_mode=self.proxy_mode,
                     pac=self.pac,
                     jsshell=jsshell,
                     script_metadata=self.script_metadata
@@ -1051,6 +1077,7 @@ class SourceFile:
                     self.url_base,
                     test_url + variant,
                     timeout=self.timeout,
+                    proxy_mode=self.proxy_mode,
                     pac=self.pac,
                     script_metadata=self.script_metadata
                 )
@@ -1067,6 +1094,7 @@ class SourceFile:
                     self.url_base,
                     test_url + variant,
                     timeout=self.timeout,
+                    proxy_mode=self.proxy_mode,
                     pac=self.pac,
                     script_metadata=self.script_metadata
                 )
@@ -1094,6 +1122,7 @@ class SourceFile:
                     self.url_base,
                     url,
                     timeout=self.timeout,
+                    proxy_mode=self.proxy_mode,
                     pac=self.pac,
                     testdriver=testdriver,
                     script_metadata=self.script_metadata

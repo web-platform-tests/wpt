@@ -406,12 +406,18 @@ class WebDriverBrowser(Browser):
         return ExecutorBrowser, {"webdriver_url": self.url,
                                  "host": self.host,
                                  "port": self.port,
+                                 "proxy_mode": self.proxy_mode,
                                  "pac": self.pac}
 
     def settings(self, test):
         self._pac = test.environment.get("pac", None) if self._supports_pac else None
-        return {"pac": self._pac}
+        self._proxy_mode = test.environment.get("proxy_mode", None)
+        return {"pac": self._pac, "proxy_mode": self._proxy_mode}
 
     @property
     def pac(self):
         return self._pac
+
+    @property
+    def proxy_mode(self):
+        return self._proxy_mode

@@ -5,26 +5,30 @@ from webdriver.bidi.modules.script import ContextTarget
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "argument",
+    "argument, expected",
     [
-        {"type": "undefined"},
-        {"type": "null"},
-        {"type": "string", "value": "foobar"},
-        {"type": "string", "value": "2"},
-        {"type": "number", "value": "NaN"},
-        {"type": "number", "value": "-0"},
-        {"type": "number", "value": "Infinity"},
-        {"type": "number", "value": "-Infinity"},
-        {"type": "number", "value": 3},
-        {"type": "number", "value": 1.4},
-        {"type": "boolean", "value": True},
-        {"type": "boolean", "value": False},
-        {"type": "bigint", "value": "42"},
+        ({"type": "undefined"}, "undefined"),
+        ({"type": "null"}, "null"),
+        ({"type": "string", "value": "foobar"}, "'foobar'"),
+        ({"type": "string", "value": "2"}, "'2'"),
+        ({"type": "number", "value": "-0"}, "-0"),
+        ({"type": "number", "value": "Infinity"}, "Infinity"),
+        ({"type": "number", "value": "-Infinity"}, "-Infinity"),
+        ({"type": "number", "value": 3}, "3"),
+        ({"type": "number", "value": 1.4}, "1.4"),
+        ({"type": "boolean", "value": True}, "true"),
+        ({"type": "boolean", "value": False}, "false"),
+        ({"type": "bigint", "value": "42"}, "42n"),
     ],
 )
-async def test_primitive_values(bidi_session, top_context, argument):
+async def test_primitive_values(bidi_session, top_context, argument, expected):
     result = await bidi_session.script.call_function(
-        function_declaration=f"(arg) => arg",
+        function_declaration=
+        f"(arg) => {{ "
+        f"    if(arg!=={expected}) "
+        f"        throw Error(\"Argument type should be {expected}, but was \"+arg);"
+        f"    return arg;"
+        f"}}",
         arguments=[argument],
         await_promise=False,
         target=ContextTarget(top_context["context"]),
@@ -34,40 +38,76 @@ async def test_primitive_values(bidi_session, top_context, argument):
 
 
 @pytest.mark.asyncio
+async def test_nan(bidi_session, top_context):
+    nan_remote_value = {"type": "number", "value": "NaN"}
+    result = await bidi_session.script.call_function(
+        function_declaration=
+        f"(arg) => {{ "
+        f"    if(!isNaN(arg)) "
+        f"        throw Error(\"Argument type should be 'NaN', but was \"+arg);"
+        f"    return arg;"
+        f"}}",
+        arguments=[nan_remote_value],
+        await_promise=False,
+        target=ContextTarget(top_context["context"]),
+    )
+
+    assert result == nan_remote_value
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "argument",
+    "argument, expected_type",
     [
-        {
-            "type": "array",
-            "value": [
-                {"type": "string", "value": "foobar"},
-            ],
-        },
-        {"type": "date", "value": "2022-05-31T13:47:29.000Z"},
-        {
-            "type": "map",
-            "value": [
-                ["foobar", {"type": "string", "value": "foobar"}],
-            ],
-        },
-        {
-            "type": "object",
-            "value": [
-                ["foobar", {"type": "string", "value": "foobar"}],
-            ],
-        },
-        {"type": "regexp", "value": {"pattern": "foo", "flags": "g"}},
-        {
-            "type": "set",
-            "value": [
-                {"type": "string", "value": "foobar"},
-            ],
-        },
+        ({
+             "type": "array",
+             "value": [
+                 {"type": "string", "value": "foobar"},
+             ],
+         },
+         "Array"
+        ),
+        ({"type": "date", "value": "2022-05-31T13:47:29.000Z"},
+         "Date"
+         ),
+        ({
+             "type": "map",
+             "value": [
+                 ["foobar", {"type": "string", "value": "foobar"}],
+             ],
+         },
+         "Map"
+        ),
+        ({
+             "type": "object",
+             "value": [
+                 ["foobar", {"type": "string", "value": "foobar"}],
+             ],
+         },
+         "Object"
+        ),
+        ({"type": "regexp", "value": {"pattern": "foo", "flags": "g"}},
+         "RegExp"
+         ),
+        ({
+             "type": "set",
+             "value": [
+                 {"type": "string", "value": "foobar"},
+             ],
+         },
+         "Set"
+        )
     ],
 )
-async def test_local_values(bidi_session, top_context, argument):
+async def test_local_values(bidi_session, top_context, argument, expected_type):
     result = await bidi_session.script.call_function(
-        function_declaration=f"(arg) => arg",
+        function_declaration=
+        f"(arg) => {{ "
+        f"    if(! (arg instanceof {expected_type})) "
+        f"        throw Error(\"Argument type should be {expected_type}, but was \"+"
+        f"            Object.prototype.toString.call(arg));"
+        f"    return arg;"
+        f"}}",
         arguments=[argument],
         await_promise=False,
         target=ContextTarget(top_context["context"]),

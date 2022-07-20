@@ -800,6 +800,8 @@ class MarionetteProtocol(Protocol):
             else:
                 self.prefs.clear("network.proxy.type")
                 self.prefs.clear("network.proxy.autoconfig_url")
+                self.prefs.clear("network.proxy.http")
+                self.prefs.clear("network.proxy.http_port")
 
 class ExecuteAsyncScriptRun(TimedRunner):
     def set_timeout(self):

@@ -74,7 +74,7 @@ promise_test(async t => {
   const barEncoding = parameters.encodings.find(encoding => encoding.rid === 'bar');
   assert_not_equals(barEncoding, undefined);
   assert_not_equals(barEncoding.active, false);
-}, 'Using the ~rid SDP syntax in a remote description does not control the local encodings active flag');
+}, 'Using the ~rid SDP syntax in a remote offer does not control the local encodings active flag');
 
 promise_test(async t => {
   const pc = new RTCPeerConnection();

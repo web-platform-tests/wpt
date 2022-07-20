@@ -550,6 +550,14 @@ class ChromeChromiumBase(Browser):
         return ("https://storage.googleapis.com/chromium-browser-snapshots/"
                 f"{self._chromium_platform_string}/{revision}/{filename}")
 
+    def _get_latest_chromium_revision(self):
+        """Returns latest Chromium revision available for download."""
+        # This is only used if the user explicitly passes "latest" for the revision flag.
+        # The pinned revision is used by default to avoid unexpected failures as versions update.
+        revision_url = ("https://storage.googleapis.com/chromium-browser-snapshots/"
+                        f"{self._chromium_platform_string}/LAST_CHANGE")
+        return get(revision_url).text.strip()
+
     def _get_pinned_chromium_revision(self):
         """Returns the pinned Chromium revision number."""
         return get("https://storage.googleapis.com/wpt-versions/pinned_chromium_revision").text.strip()
@@ -799,6 +807,11 @@ class Chromium(ChromeChromiumBase):
             return self._build_snapshots_url(self.last_revision_used, filename)
         if revision is None:
             revision = self._get_chromium_revision(filename, version)
+        elif revision == "latest":
+            revision = self._get_latest_chromium_revision()
+        elif revision == "pinned":
+            revision = self._get_pinned_chromium_revision()
+
         return self._build_snapshots_url(revision, filename)
 
     def download(self, dest=None, channel=None, rename=None, version=None, revision=None):
@@ -809,6 +822,10 @@ class Chromium(ChromeChromiumBase):
 
         if revision is None:
             revision = self._get_chromium_revision(filename, version)
+        elif revision == "latest":
+            revision = self._get_latest_chromium_revision()
+        elif revision == "pinned":
+            revision = self._get_pinned_chromium_revision()
 
         url = self._build_snapshots_url(revision, filename)
         self.logger.info(f"Downloading Chromium from {url}")

@@ -5,7 +5,12 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
     promise_test(async t => {
-        const response = await fetch('http://not-a-real-domain.wpt.test/infrastructure/resources/ok.txt');
+        let response = null;
+        try {
+            response = await fetch('http://not-a-real-domain.wpt.test/infrastructure/resources/ok.txt');
+        } catch (e) {
+            assert_unreached("Response to arbitrary domain should succeed");
+        }
         const text = await response.text();
         assert_equals(text, 'OK');
     }, 'test that <meta name=proxy content=all> is respected');

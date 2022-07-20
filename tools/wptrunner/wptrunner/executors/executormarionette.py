@@ -786,11 +786,13 @@ class MarionetteProtocol(Protocol):
         pac = new_environment.get("pac", None)
         proxy_mode = new_environment.get("proxy_mode", None)
 
-        if pac != old_environment.get("pac", None) or proxy_mode != old_environment.get("pac", None):
+        if pac != old_environment.get("pac", None) or proxy_mode != old_environment.get("proxy_mode", None):
             if proxy_mode == "all":
                 self.prefs.set("network.proxy.type", 1)
                 self.prefs.set("network.proxy.http",
-                               self.executor.server_url("http"))
+                               self.executor.server_config["server_host"])
+                self.prefs.set("network.proxy.http_port",
+                               self.executor.server_config["ports"]["http"][0])
             elif pac is not None:
                 self.prefs.set("network.proxy.type", 2)
                 self.prefs.set("network.proxy.autoconfig_url",

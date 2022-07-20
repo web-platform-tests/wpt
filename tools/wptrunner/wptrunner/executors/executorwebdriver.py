@@ -359,7 +359,7 @@ class WebDriverProtocol(Protocol):
         if proxy_mode is not None:
             if self.capabilities is None:
                 self.capabilities = {}
-            if proxy_mode == "pac":
+            if pac is not None:
                 proxy_settings = {
                     "proxyType": "pac",
                     "proxyAutoconfigUrl": urljoin(executor.server_url("http"), pac)

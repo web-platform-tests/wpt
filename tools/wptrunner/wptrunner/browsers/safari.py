@@ -157,7 +157,7 @@ class SafariBrowser(WebDriverBrowser):
                          webdriver_binary,
                          webdriver_args=webdriver_args,
                          port=None,
-                         supports_pac=False,
+                         supports_proxy=False,
                          env=env)
 
         if "/" not in webdriver_binary:

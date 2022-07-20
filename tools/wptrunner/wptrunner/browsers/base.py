@@ -410,8 +410,8 @@ class WebDriverBrowser(Browser):
                                  "pac": self.pac}
 
     def settings(self, test):
-        self._pac = test.environment.get("pac", None) if self._supports_roxy else None
-        self._proxy_mode = test.environment.get("proxy_mode", None) if self._supports_roxy else None
+        self._pac = test.environment.get("pac", None) if self._supports_proxy else None
+        self._proxy_mode = test.environment.get("proxy_mode", None) if self._supports_proxy else None
         return {"pac": self._pac, "proxy_mode": self._proxy_mode}
 
     @property

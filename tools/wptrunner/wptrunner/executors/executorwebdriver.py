@@ -631,7 +631,7 @@ class WebDriverRefTestExecutor(RefTestExecutor):
 
         screenshot = self.protocol.webdriver.screenshot()
         if screenshot is None:
-            raise ValueErrori('screenshot is None')
+            raise ValueError('screenshot is None')
 
         # strip off the data:img/png, part of the url
         if screenshot.startswith("data:image/png;base64,"):

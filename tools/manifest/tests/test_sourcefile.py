@@ -879,7 +879,7 @@ def test_pac(pac, expected):
 
 @pytest.mark.parametrize("proxy_mode, expected", [
     (b"all", "all")])
-def test_pac(pac, expected):
+def test_proxy_mode(proxy_mode, expected):
     content = b"""
 <meta name=proxy content="all">
 """ % pac

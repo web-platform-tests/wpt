@@ -580,7 +580,7 @@ class ChromeChromiumBase(Browser):
                     self.logger.warning("404: Unsuccessful attempt to download file "
                                         f"based on version. {url}")
         # If no URL was used in a previous install
-        # and no version was passed, use the latest Chromium revision.
+        # and no version was passed, use the pinned Chromium revision.
         revision = self._get_pinned_chromium_revision()
 
         # If the url is successfully used to download/install, it will be used again

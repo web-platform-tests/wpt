@@ -75,6 +75,11 @@ class EditorTestUtils {
     return this.sendKey(kEnd, modifier);
   }
 
+  sendEnterKey(modifier) {
+    const kEnter = "\uE007";
+    return this.sendKey(kEnter, modifier);
+  }
+
   sendSelectAllShortcutKey() {
     return this.sendKey(
       "a",
@@ -117,6 +122,9 @@ class EditorTestUtils {
         };
         if (node.hasChildNodes()) {
           return inclusiveDeepestFirstChildNode(node);
+        }
+        if (node === this.editingHost) {
+          return null;
         }
         if (node.nextSibling) {
           return inclusiveDeepestFirstChildNode(node.nextSibling);

@@ -153,6 +153,14 @@ SET TIMEOUT: css/selectors/selector-required-type-change-002.html
 SET TIMEOUT: encrypted-media/polyfill/chrome-polyfill.js
 SET TIMEOUT: encrypted-media/polyfill/clearkey-polyfill.js
 SET TIMEOUT: encrypted-media/scripts/playback-temporary-events.js
+SET TIMEOUT: fetch/metadata/resources/helper.sub.js
+SET TIMEOUT: fetch/metadata/resources/message-opener.html
+SET TIMEOUT: focus/support/iframe-focus-with-different-site-intermediate-frame-outer.sub.html
+SET TIMEOUT: focus/support/iframe-focus-with-different-site-intermediate-frame-middle.sub.html
+SET TIMEOUT: focus/support/iframe-contentwindow-focus-with-different-site-intermediate-frame-outer.sub.html
+SET TIMEOUT: focus/support/iframe-contentwindow-focus-with-different-site-intermediate-frame-middle.sub.html
+SET TIMEOUT: focus/support/iframe-focuses-parent-different-site-inner.html
+SET TIMEOUT: focus/support/iframe-focuses-parent-same-site-inner.html
 SET TIMEOUT: generic-sensor/resources/iframe_sensor_handler.html
 SET TIMEOUT: html/browsers/browsing-the-web/back-forward-cache/resources/inflight-fetch-helper.js
 SET TIMEOUT: html/browsers/browsing-the-web/history-traversal/*
@@ -168,6 +176,8 @@ SET TIMEOUT: html/cross-origin-opener-policy/resources/fully-loaded.js
 SET TIMEOUT: html/editing/dnd/*
 SET TIMEOUT: html/semantics/embedded-content/the-iframe-element/*
 SET TIMEOUT: html/semantics/embedded-content/the-img-element/*
+SET TIMEOUT: html/semantics/embedded-content/the-object-element/object-param-url.html
+SET TIMEOUT: html/semantics/embedded-content/the-object-element/object-param-url-ref.html
 SET TIMEOUT: html/semantics/scripting-1/the-script-element/*
 SET TIMEOUT: html/webappapis/dynamic-markup-insertion/opening-the-input-stream/0*
 SET TIMEOUT: html/webappapis/dynamic-markup-insertion/opening-the-input-stream/resources/history-frame.html
@@ -189,6 +199,7 @@ SET TIMEOUT: navigation-api/navigation-history-entry/entries-after-bfcache-in-if
 SET TIMEOUT: navigation-timing/*
 SET TIMEOUT: old-tests/submission/Microsoft/history/history_000.htm
 SET TIMEOUT: paint-timing/resources/subframe-painting.html
+SET TIMEOUT: performance-timeline/resources/navigation-id-detached-frame-page.html
 SET TIMEOUT: portals/resources/portals-adopt-predecessor-portal.html
 SET TIMEOUT: preload/single-download-preload.html
 SET TIMEOUT: preload/resources/slow-exec.js
@@ -228,12 +239,6 @@ SET TIMEOUT: webvtt/*
 SET TIMEOUT: workers/*
 SET TIMEOUT: xhr/resources/init.htm
 SET TIMEOUT: xhr/resources/xmlhttprequest-timeout.js
-SET TIMEOUT: focus/support/iframe-focus-with-different-site-intermediate-frame-outer.sub.html
-SET TIMEOUT: focus/support/iframe-focus-with-different-site-intermediate-frame-middle.sub.html
-SET TIMEOUT: focus/support/iframe-contentwindow-focus-with-different-site-intermediate-frame-outer.sub.html
-SET TIMEOUT: focus/support/iframe-contentwindow-focus-with-different-site-intermediate-frame-middle.sub.html
-SET TIMEOUT: focus/support/iframe-focuses-parent-different-site-inner.html
-SET TIMEOUT: focus/support/iframe-focuses-parent-same-site-inner.html
 
 # generate_tests implementation and sample usage
 GENERATE_TESTS: resources/test/tests/functional/generate-callback.html
@@ -337,6 +342,7 @@ SET TIMEOUT: speculation-rules/prerender/resources/prerender-response-code.html
 SET TIMEOUT: speculation-rules/prerender/resources/deferred-promise-utils.js
 SET TIMEOUT: speculation-rules/prerender/resources/utils.js
 SET TIMEOUT: html/browsers/browsing-the-web/back-forward-cache/timers.html
+SET TIMEOUT: dom/abort/crashtests/timeout-close.html
 
 # setTimeout use in reftests
 SET TIMEOUT: acid/acid3/test.html
@@ -347,6 +353,13 @@ SET TIMEOUT: acid/acid3/test.html
 *: resources/webidl2/*
 *: tools/*
 *: */third_party/*
+
+# .gitignore files in child directories
+*: cors/resources/.gitignore
+*: css/.gitignore
+*: css/css-writing-modes/tools/generators/.gitignore
+*: resources/.gitignore
+*: webaudio/.gitignore
 
 # Build system virtualenv
 *: css/tools/_virtualenv/*
@@ -750,6 +763,8 @@ AHEM SYSTEM FONT: css/css-font-loading/fontface-size-adjust-descriptor.html
 AHEM SYSTEM FONT: css/css-font-loading/fontface-size-adjust-descriptor-ref.html
 AHEM SYSTEM FONT: css/css-fonts/ascent-descent-override.html
 AHEM SYSTEM FONT: css/css-fonts/line-gap-override.html
+AHEM SYSTEM FONT: html/dom/render-blocking/remove-attr-unblocks-rendering.optional.html
+AHEM SYSTEM FONT: html/dom/render-blocking/remove-element-unblocks-rendering.optional.html
 
 # TODO: The following should be deleted along with the Ahem web font cleanup
 # PR (https://github.com/web-platform-tests/wpt/pull/18702)

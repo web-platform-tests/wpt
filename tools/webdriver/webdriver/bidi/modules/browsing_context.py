@@ -14,15 +14,26 @@ class BrowsingContext(BidiModule):
         return params
 
     @command
+    def create(self, type_hint: str) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {"type": type_hint}
+        return params
+
+    @create.result
+    def _create(self, result: Mapping[str, Any]) -> Any:
+        assert result["context"] is not None
+
+        return result
+
+    @command
     def get_tree(self,
                  max_depth: Optional[int] = None,
-                 parent: Optional[str] = None) -> Mapping[str, Any]:
+                 root: Optional[str] = None) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {}
 
         if max_depth is not None:
             params["maxDepth"] = max_depth
-        if parent is not None:
-            params["parent"] = parent
+        if root is not None:
+            params["root"] = root
 
         return params
 
@@ -32,3 +43,22 @@ class BrowsingContext(BidiModule):
         assert isinstance(result["contexts"], list)
 
         return result["contexts"]
+
+    @command
+    def navigate(
+        self, context: str, url: str, wait: Optional[str] = None
+    ) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {"context": context, "url": url}
+        if wait is not None:
+            params["wait"] = wait
+        return params
+
+    @navigate.result
+    def _navigate(self, result: Mapping[str, Any]) -> Any:
+        if result["navigation"] is not None:
+            assert isinstance(result["navigation"], str)
+
+        assert result["url"] is not None
+        assert isinstance(result["url"], str)
+
+        return result

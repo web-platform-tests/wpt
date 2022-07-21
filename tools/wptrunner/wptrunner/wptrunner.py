@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import json
 import os
 import sys
@@ -228,6 +230,7 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
                           run_test_kwargs["restart_on_unexpected"],
                           run_test_kwargs["debug_info"],
                           not run_test_kwargs["no_capture_stdio"],
+                          run_test_kwargs["restart_on_new_group"],
                           recording=recording) as manager_group:
             try:
                 manager_group.run(test_type, run_tests)
@@ -350,6 +353,7 @@ def run_tests(config, test_paths, product, **kwargs):
                                                                        **kwargs)
 
         mojojs_path = kwargs["mojojs_path"] if kwargs["enable_mojojs"] else None
+        inject_script = kwargs["inject_script"] if kwargs["inject_script"] else None
 
         recording.set(["startup", "start_environment"])
         with env.TestEnvironment(test_paths,
@@ -361,7 +365,8 @@ def run_tests(config, test_paths, product, **kwargs):
                                  ssl_config,
                                  env_extras,
                                  kwargs["enable_webtransport_h3"],
-                                 mojojs_path) as test_environment:
+                                 mojojs_path,
+                                 inject_script) as test_environment:
             recording.set(["startup", "ensure_environment"])
             try:
                 test_environment.ensure_started()

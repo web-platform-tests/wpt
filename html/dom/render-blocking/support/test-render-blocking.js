@@ -5,12 +5,12 @@ class LoadObserver {
   constructor(target) {
     this.finishTime = null;
     this.load = new Promise((resolve, reject) => {
-      if (target instanceof EventTarget) {
-        target.onload = ev => {
+      if (target.addEventListener) {
+        target.addEventListener('load', ev => {
           this.finishTime = ev.timeStamp;
           resolve(ev);
-        };
-        target.onerror = reject;
+        });
+        target.addEventListener('error', reject);
       } else if (typeof target === 'string') {
         const observer = new PerformanceObserver(() => {
           if (numberOfResourceTimingEntries(target)) {
@@ -28,6 +28,22 @@ class LoadObserver {
   get finished() {
     return this.finishTime !== null;
   }
+}
+
+// Observes the insertion of a script/parser-blocking element into DOM via
+// MutationObserver, so that we can access the element before it's loaded.
+function nodeInserted(parentNode, predicate) {
+  return new Promise(resolve => {
+    function callback(mutationList) {
+      for (let mutation of mutationList) {
+        for (let node of mutation.addedNodes) {
+          if (predicate(node))
+            resolve(node);
+        }
+      }
+    }
+    new MutationObserver(callback).observe(parentNode, {childList: true});
+  });
 }
 
 function createAutofocusTarget() {

@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import threading
 import traceback
 from queue import Empty
@@ -259,7 +261,7 @@ class TestRunnerManager(threading.Thread):
     def __init__(self, suite_name, index, test_type, test_queue, test_source_cls, browser_cls,
                  browser_kwargs, executor_cls, executor_kwargs, stop_flag, rerun=1,
                  pause_after_test=False, pause_on_unexpected=False, restart_on_unexpected=True,
-                 debug_info=None, capture_stdio=True, recording=None):
+                 debug_info=None, capture_stdio=True, restart_on_new_group=True, recording=None):
         """Thread that owns a single TestRunner process and any processes required
         by the TestRunner (e.g. the Firefox binary).
 
@@ -330,6 +332,7 @@ class TestRunnerManager(threading.Thread):
         self.browser = None
 
         self.capture_stdio = capture_stdio
+        self.restart_on_new_group = restart_on_new_group
 
     def run(self):
         """Main loop for the TestRunnerManager.
@@ -648,7 +651,7 @@ class TestRunnerManager(threading.Thread):
                 self.logger.info("Found a crash dump file; changing status to CRASH")
                 status = "CRASH"
             else:
-                self.logger.warning("Found a crash dump; should change status from %s to CRASH but this causes instability" % (status,))
+                self.logger.warning(f"Found a crash dump; should change status from {status} to CRASH but this causes instability")
 
         # We have a couple of status codes that are used internally, but not exposed to the
         # user. These are used to indicate that some possibly-broken state was reached
@@ -720,13 +723,13 @@ class TestRunnerManager(threading.Thread):
             test, test_group, group_metadata = self.get_next_test()
             if test is None:
                 return RunnerManagerState.stop(force_stop)
-            if test_group is not self.state.test_group:
-                # We are starting a new group of tests, so force a restart
+            if self.restart_on_new_group and test_group is not self.state.test_group:
                 self.logger.info("Restarting browser for new test group")
                 restart = True
         else:
             test_group = self.state.test_group
             group_metadata = self.state.group_metadata
+
         if restart:
             return RunnerManagerState.restarting(test, test_group, group_metadata, force_stop)
         else:
@@ -830,11 +833,11 @@ class TestRunnerManager(threading.Thread):
                     # to stop the TestRunner in `stop_runner`.
                     pass
                 else:
-                    self.logger.warning("Command left in command_queue during cleanup: %r, %r" % (cmd, data))
+                    self.logger.warning(f"Command left in command_queue during cleanup: {cmd!r}, {data!r}")
         while True:
             try:
                 cmd, data = self.remote_queue.get_nowait()
-                self.logger.warning("Command left in remote_queue during cleanup: %r, %r" % (cmd, data))
+                self.logger.warning(f"Command left in remote_queue during cleanup: {cmd!r}, {data!r}")
             except Empty:
                 break
 
@@ -861,6 +864,7 @@ class ManagerGroup:
                  restart_on_unexpected=True,
                  debug_info=None,
                  capture_stdio=True,
+                 restart_on_new_group=True,
                  recording=None):
         self.suite_name = suite_name
         self.size = size
@@ -876,6 +880,7 @@ class ManagerGroup:
         self.debug_info = debug_info
         self.rerun = rerun
         self.capture_stdio = capture_stdio
+        self.restart_on_new_group = restart_on_new_group
         self.recording = recording
         assert recording is not None
 
@@ -918,6 +923,7 @@ class ManagerGroup:
                                         self.restart_on_unexpected,
                                         self.debug_info,
                                         self.capture_stdio,
+                                        self.restart_on_new_group,
                                         recording=self.recording)
             manager.start()
             self.pool.add(manager)

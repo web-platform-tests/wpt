@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import argparse
 import os
 import platform
@@ -344,17 +346,15 @@ class Chrome(BrowserSetup):
             kwargs["enable_mojojs"] = True
             logger.info("--mojojs-path is provided, enabling MojoJS")
         else:
-            try:
-                path = self.browser.install_mojojs(
-                    dest=self.venv.path,
-                    channel=browser_channel,
-                    browser_binary=kwargs["binary"],
-                )
+            path = self.browser.install_mojojs(dest=self.venv.path,
+                                               browser_binary=kwargs["binary"])
+            if path:
                 kwargs["mojojs_path"] = path
                 kwargs["enable_mojojs"] = True
-                logger.info("MojoJS enabled automatically (mojojs_path: %s)" % path)
-            except Exception as e:
-                logger.error("Cannot enable MojoJS: %s" % e)
+                logger.info(f"MojoJS enabled automatically (mojojs_path: {path})")
+            else:
+                kwargs["enable_mojojs"] = False
+                logger.info("MojoJS is disabled for this run.")
 
         if kwargs["webdriver_binary"] is None:
             webdriver_binary = None
@@ -406,6 +406,8 @@ class ChromeAndroidBase(BrowserSetup):
     def setup_kwargs(self, kwargs):
         if kwargs.get("device_serial"):
             self.browser.device_serial = kwargs["device_serial"]
+        if kwargs.get("adb_binary"):
+            self.browser.adb_binary = kwargs["adb_binary"]
         browser_channel = kwargs["browser_channel"]
         if kwargs["package_name"] is None:
             kwargs["package_name"] = self.browser.find_binary(

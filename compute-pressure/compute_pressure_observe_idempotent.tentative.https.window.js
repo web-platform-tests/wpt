@@ -5,8 +5,8 @@ promise_test(async t => {
   // be represented exactly in floating-point, so === comparison works.
 
   const update = await new Promise((resolve, reject) => {
-    const observer = new ComputePressureObserver(
-        resolve, {cpuUtilizationThresholds: [0.5], cpuSpeedThresholds: [0.5]});
+    const observer = new PressureObserver(
+        resolve, {cpuUtilizationThresholds: [0.5]});
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu').catch(reject);
     observer.observe('cpu').catch(reject);
@@ -18,10 +18,5 @@ promise_test(async t => {
   assert_less_than_equal(update.cpuUtilization, 1.0, 'cpuUtilization range');
   assert_in_array(update.cpuUtilization, [0.25, 0.75],
                   'cpuUtilization quantization');
-
-  assert_equals(typeof update.cpuSpeed, 'number');
-  assert_greater_than_equal(update.cpuSpeed, 0.0, 'cpuSpeed range');
-  assert_less_than_equal(update.cpuSpeed, 1.0, 'cpuUSpeed range');
-  assert_in_array(update.cpuSpeed, [0.25, 0.75], 'cpuSpeed quantization');
-}, 'ComputePressureObserver.observe() is idempotent');
+}, 'PressureObserver.observe() is idempotent');
 

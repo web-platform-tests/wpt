@@ -24,11 +24,11 @@ from webdriver.bidi.modules.script import ContextTarget
 async def test_primitive_values(bidi_session, top_context, argument, expected):
     result = await bidi_session.script.call_function(
         function_declaration=
-        f"(arg) => {{ "
-        f"    if(arg!=={expected}) "
-        f"        throw Error(\"Argument type should be {expected}, but was \"+arg);"
-        f"    return arg;"
-        f"}}",
+        f"""(arg) => {{
+            if(arg!=={expected})
+                throw Error("Argument should be {expected}, but was "+arg);
+            return arg;
+        }}""",
         arguments=[argument],
         await_promise=False,
         target=ContextTarget(top_context["context"]),
@@ -42,11 +42,11 @@ async def test_nan(bidi_session, top_context):
     nan_remote_value = {"type": "number", "value": "NaN"}
     result = await bidi_session.script.call_function(
         function_declaration=
-        f"(arg) => {{ "
-        f"    if(!isNaN(arg)) "
-        f"        throw Error(\"Argument type should be 'NaN', but was \"+arg);"
-        f"    return arg;"
-        f"}}",
+        f"""(arg) => {{
+            if(!isNaN(arg))
+                throw Error("Argument should be 'NaN', but was "+arg);
+            return arg;
+        }}""",
         arguments=[nan_remote_value],
         await_promise=False,
         target=ContextTarget(top_context["context"]),
@@ -102,12 +102,12 @@ async def test_nan(bidi_session, top_context):
 async def test_local_values(bidi_session, top_context, argument, expected_type):
     result = await bidi_session.script.call_function(
         function_declaration=
-        f"(arg) => {{ "
-        f"    if(! (arg instanceof {expected_type})) "
-        f"        throw Error(\"Argument type should be {expected_type}, but was \"+"
-        f"            Object.prototype.toString.call(arg));"
-        f"    return arg;"
-        f"}}",
+        f"""(arg) => {{
+            if(! (arg instanceof {expected_type}))
+                throw Error("Argument type should be {expected_type}, but was "+
+                    Object.prototype.toString.call(arg));
+            return arg;
+        }}""",
         arguments=[argument],
         await_promise=False,
         target=ContextTarget(top_context["context"]),

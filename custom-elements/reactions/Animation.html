@@ -50,7 +50,7 @@ test(function () {
 }, 'Animation.animate must enqueue an attributeChanged reaction when it mutates the observed style attribute');
 
 test(function () {
-    var element = define_new_custom_element([]);
+    const element = define_new_custom_element([]);
     const instance = document.createElement(element.name);
     document.body.appendChild(instance);
     assert_array_equals(element.takeLog().types(), ['constructed', 'connected']);

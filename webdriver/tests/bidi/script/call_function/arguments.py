@@ -53,7 +53,7 @@ async def test_nan(bidi_session, top_context):
         target=ContextTarget(top_context["context"]),
     )
 
-    assert result == nan_remote_value
+    recursive_compare(nan_remote_value, result)
 
 
 @pytest.mark.asyncio

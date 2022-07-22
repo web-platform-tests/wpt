@@ -161,7 +161,11 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
     This is called for each repeat run requested."""
     tests = []
     for test_type in test_loader.test_types:
-        tests.extend(test_loader.tests[test_type])
+        if test_status.unexpected_tests and run_test_kwargs['no_repeat_expected']:
+            tests.extend(test for test in test_loader.tests[test_type]
+                         if test.id in test_status.unexpected_tests)
+        else:
+            tests.extend(test_loader.tests[test_type])
 
     try:
         test_groups = test_source_cls.tests_by_group(
@@ -170,6 +174,7 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
         logger.critical("Loading tests failed")
         return False
 
+    unexpected_tests = set()
     logger.suite_start(test_groups,
                        name='web-platform-test',
                        run_info=run_info,
@@ -241,7 +246,9 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
             test_status.total_tests += manager_group.test_count()
             test_status.unexpected += manager_group.unexpected_count()
             test_status.unexpected_pass += manager_group.unexpected_pass_count()
+            unexpected_tests.update(manager_group.unexpected_tests())
 
+    test_status.unexpected_tests = unexpected_tests
     return True
 
 
@@ -282,6 +289,7 @@ class TestStatus:
         self.repeated_runs = 0
         self.expected_repeated_runs = 0
         self.all_skipped = False
+        self.unexpected_tests = set()
 
 
 def run_tests(config, test_paths, product, **kwargs):
@@ -382,6 +390,7 @@ def run_tests(config, test_paths, product, **kwargs):
                 max_time = timedelta(minutes=kwargs["repeat_max_time"])
 
             repeat_until_unexpected = kwargs["repeat_until_unexpected"]
+            no_repeat_expected = kwargs["no_repeat_expected"]
 
             # keep track of longest time taken to complete a test suite iteration
             # so that the runs can be stopped to avoid a possible TC timeout.
@@ -400,7 +409,7 @@ def run_tests(config, test_paths, product, **kwargs):
                 # begin tracking runtime of the test suite
                 iteration_start = datetime.now()
                 test_status.repeated_runs += 1
-                if repeat_until_unexpected:
+                if repeat_until_unexpected or no_repeat_expected:
                     logger.info(f"Repetition {test_status.repeated_runs}")
                 elif repeat > 1:
                     logger.info(f"Repetition {test_status.repeated_runs} / {repeat}")
@@ -423,6 +432,8 @@ def run_tests(config, test_paths, product, **kwargs):
                                              iteration_runtime)
 
                 if repeat_until_unexpected and test_status.unexpected > 0:
+                    break
+                if no_repeat_expected and not test_status.unexpected_tests:
                     break
                 if test_status.repeated_runs == 1 and len(test_loader.test_ids) == test_status.skipped:
                     test_status.all_skipped = True

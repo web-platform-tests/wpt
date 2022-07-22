@@ -321,6 +321,7 @@ class TestRunnerManager(threading.Thread):
         self.test_count = 0
         self.unexpected_count = 0
         self.unexpected_pass_count = 0
+        self.unexpected_tests = set()
 
         # This may not really be what we want
         self.daemon = True
@@ -673,6 +674,9 @@ class TestRunnerManager(threading.Thread):
         if is_unexpected_pass:
             self.unexpected_pass_count += 1
 
+        if is_unexpected or subtest_unexpected:
+            self.unexpected_tests.add(test.id)
+
         if "assertion_count" in file_result.extra:
             assertion_count = file_result.extra["assertion_count"]
             if assertion_count is not None and assertion_count > 0:
@@ -948,3 +952,6 @@ class ManagerGroup:
 
     def unexpected_pass_count(self):
         return sum(manager.unexpected_pass_count for manager in self.pool)
+
+    def unexpected_tests(self):
+        return set().union(*(manager.unexpected_tests for manager in self.pool))

@@ -1,6 +1,7 @@
 import pytest
 
 from webdriver.bidi.modules.script import ContextTarget
+from ... import recursive_compare
 
 
 @pytest.mark.asyncio
@@ -34,7 +35,7 @@ async def test_primitive_values(bidi_session, top_context, argument, expected):
         target=ContextTarget(top_context["context"]),
     )
 
-    assert result == argument
+    recursive_compare(argument, result)
 
 
 @pytest.mark.asyncio
@@ -113,4 +114,4 @@ async def test_local_values(bidi_session, top_context, argument, expected_type):
         target=ContextTarget(top_context["context"]),
     )
 
-    assert result == argument
+    recursive_compare(argument, result)

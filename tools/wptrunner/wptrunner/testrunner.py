@@ -903,12 +903,11 @@ class ManagerGroup:
     def run(self, test_type, tests):
         """Start all managers in the group"""
         self.logger.debug("Using %i processes" % self.size)
-        type_tests = tests[test_type]
-        if not type_tests:
+        if not tests:
             self.logger.info("No %s tests to run" % test_type)
             return
 
-        test_queue = make_test_queue(type_tests, self.test_source_cls, **self.test_source_kwargs)
+        test_queue = make_test_queue(tests, self.test_source_cls, **self.test_source_kwargs)
 
         for idx in range(self.size):
             manager = TestRunnerManager(self.suite_name,

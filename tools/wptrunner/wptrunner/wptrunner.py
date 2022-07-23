@@ -155,17 +155,36 @@ def get_pause_after_test(test_loader, **kwargs):
     return kwargs["pause_after_test"]
 
 
+def skip_test(test_status, test):
+    logger.test_start(test.id)
+    logger.test_end(test.id, status="SKIP")
+    test_status.skipped += 1
+
+
+def get_or_skip_tests(test_status, test_loader, test_type, executor_cls,
+                      no_repeat_expected=False):
+    for test in test_loader.disabled_tests[test_type]:
+        skip_test(test_status, test)
+
+    for test in test_loader.tests[test_type]:
+        if test_type == "testharness" and (
+            (test.testdriver and not executor_cls.supports_testdriver) or
+            (test.jsshell and not executor_cls.supports_jsshell)
+        ):
+            skip_test(test_status, test)
+        elif no_repeat_expected and test_status.ran_as_expected(test.id):
+            skip_test(test_status, test)
+        else:
+            yield test
+
+
 def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source_cls, run_info,
                        recording, test_environment, product, run_test_kwargs):
     """Runs the entire test suite.
     This is called for each repeat run requested."""
     tests = []
     for test_type in test_loader.test_types:
-        if test_status.unexpected_tests and run_test_kwargs['no_repeat_expected']:
-            tests.extend(test for test in test_loader.tests[test_type]
-                         if test.id in test_status.unexpected_tests)
-        else:
-            tests.extend(test_loader.tests[test_type])
+        tests.extend(test_loader.tests[test_type])
 
     try:
         test_groups = test_source_cls.tests_by_group(
@@ -183,7 +202,6 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
         logger.info(f"Running {test_type} tests")
 
         browser_cls = product.get_browser_cls(test_type)
-
         browser_kwargs = product.get_browser_kwargs(logger,
                                                     test_type,
                                                     run_info,
@@ -202,23 +220,12 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
             logger.error(f"Unsupported test type {test_type} for product {product.name}")
             continue
 
-        for test in test_loader.disabled_tests[test_type]:
-            logger.test_start(test.id)
-            logger.test_end(test.id, status="SKIP")
-            test_status.skipped += 1
-
-        if test_type == "testharness":
-            run_tests = {"testharness": []}
-            for test in test_loader.tests["testharness"]:
-                if ((test.testdriver and not executor_cls.supports_testdriver) or
-                        (test.jsshell and not executor_cls.supports_jsshell)):
-                    logger.test_start(test.id)
-                    logger.test_end(test.id, status="SKIP")
-                    test_status.skipped += 1
-                else:
-                    run_tests["testharness"].append(test)
-        else:
-            run_tests = test_loader.tests
+        no_repeat_expected = run_test_kwargs["no_repeat_expected"]
+        tests_to_run = list(get_or_skip_tests(test_status,
+                                              test_loader,
+                                              test_type,
+                                              executor_cls,
+                                              no_repeat_expected))
 
         recording.pause()
         with ManagerGroup("web-platform-tests",
@@ -238,7 +245,7 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
                           run_test_kwargs["restart_on_new_group"],
                           recording=recording) as manager_group:
             try:
-                manager_group.run(test_type, run_tests)
+                manager_group.run(test_type, tests_to_run)
             except KeyboardInterrupt:
                 logger.critical("Main thread got signal")
                 manager_group.stop()
@@ -290,6 +297,9 @@ class TestStatus:
         self.expected_repeated_runs = 0
         self.all_skipped = False
         self.unexpected_tests = set()
+
+    def ran_as_expected(self, test_id):
+        return self.repeated_runs > 1 and test_id not in self.unexpected_tests
 
 
 def run_tests(config, test_paths, product, **kwargs):

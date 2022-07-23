@@ -181,7 +181,7 @@ scheme host and port.""")
     debugging_group.add_argument("--repeat-until-unexpected", action="store_true", default=None,
                                  help="Run tests in a loop until one returns an unexpected result")
     debugging_group.add_argument('--no-repeat-expected', action='store_true',
-                                 help='Do not run a test in a later restart once that test runs as expected.')
+                                 help='Skip a test in a later repetition once that test runs as expected.')
     debugging_group.add_argument('--pause-after-test', action="store_true", default=None,
                                  help="Halt the test runner after each test (this happens by default if only a single test is run)")
     debugging_group.add_argument('--no-pause-after-test', dest="pause_after_test", action="store_false",

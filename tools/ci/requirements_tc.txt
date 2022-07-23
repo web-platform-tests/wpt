@@ -1,4 +1,0 @@
-pygithub==1.55
-pyyaml==6.0
-requests==2.27.1
-taskcluster==44.17.1

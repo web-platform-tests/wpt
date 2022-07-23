@@ -155,33 +155,10 @@ def get_pause_after_test(test_loader, **kwargs):
     return kwargs["pause_after_test"]
 
 
-def skip_test(test_status, test):
-    logger.test_start(test.id)
-    logger.test_end(test.id, status="SKIP")
-    test_status.skipped += 1
-
-
-def get_or_skip_tests(test_status, test_loader, test_type, executor_cls,
-                      no_repeat_expected=False):
-    for test in test_loader.disabled_tests[test_type]:
-        skip_test(test_status, test)
-
-    for test in test_loader.tests[test_type]:
-        if test_type == "testharness" and (
-            (test.testdriver and not executor_cls.supports_testdriver) or
-            (test.jsshell and not executor_cls.supports_jsshell)
-        ):
-            skip_test(test_status, test)
-        elif no_repeat_expected and test_status.ran_as_expected(test.id):
-            skip_test(test_status, test)
-        else:
-            yield test
-
-
 def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source_cls, run_info,
                        recording, test_environment, product, run_test_kwargs):
     """Runs the entire test suite.
-    This is called for each repeat run requested."""
+    This is called for each repeat or retry run requested."""
     tests = []
     for test_type in test_loader.test_types:
         tests.extend(test_loader.tests[test_type])
@@ -220,12 +197,26 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
             logger.error(f"Unsupported test type {test_type} for product {product.name}")
             continue
 
-        no_repeat_expected = run_test_kwargs["no_repeat_expected"]
-        tests_to_run = list(get_or_skip_tests(test_status,
-                                              test_loader,
-                                              test_type,
-                                              executor_cls,
-                                              no_repeat_expected))
+        for test in test_loader.disabled_tests[test_type]:
+            logger.test_start(test.id)
+            logger.test_end(test.id, status="SKIP")
+            test_status.skipped += 1
+
+        if test_type == "testharness":
+            tests_to_run = []
+            for test in test_loader.tests["testharness"]:
+                if ((test.testdriver and not executor_cls.supports_testdriver) or
+                        (test.jsshell and not executor_cls.supports_jsshell)):
+                    logger.test_start(test.id)
+                    logger.test_end(test.id, status="SKIP")
+                    test_status.skipped += 1
+                else:
+                    tests_to_run.append(test)
+        else:
+            tests_to_run = test_loader.tests[test_type]
+        if test_status.retries_remaining:
+            tests_to_run = [test for test in tests_to_run
+                            if test.id in test_status.unexpected_tests]
 
         recording.pause()
         with ManagerGroup("web-platform-tests",
@@ -255,7 +246,11 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
             test_status.unexpected_pass += manager_group.unexpected_pass_count()
             unexpected_tests.update(manager_group.unexpected_tests())
 
-    test_status.unexpected_tests = unexpected_tests
+    if test_status.repeated_runs == 1:
+        test_status.unexpected_tests = unexpected_tests
+    else:
+        test_status.unexpected_tests &= unexpected_tests
+
     return True
 
 
@@ -283,6 +278,10 @@ def evaluate_runs(test_status, run_test_kwargs):
                     "because they all PASS")
         return True
 
+    retries = run_test_kwargs['retry_unexpected']
+    if retries > 0 and not test_status.unexpected_tests:
+        return True
+
     return test_status.unexpected == 0
 
 
@@ -297,9 +296,7 @@ class TestStatus:
         self.expected_repeated_runs = 0
         self.all_skipped = False
         self.unexpected_tests = set()
-
-    def ran_as_expected(self, test_id):
-        return self.repeated_runs > 1 and test_id not in self.unexpected_tests
+        self.retries_remaining = 0
 
 
 def run_tests(config, test_paths, product, **kwargs):
@@ -400,7 +397,6 @@ def run_tests(config, test_paths, product, **kwargs):
                 max_time = timedelta(minutes=kwargs["repeat_max_time"])
 
             repeat_until_unexpected = kwargs["repeat_until_unexpected"]
-            no_repeat_expected = kwargs["no_repeat_expected"]
 
             # keep track of longest time taken to complete a test suite iteration
             # so that the runs can be stopped to avoid a possible TC timeout.
@@ -419,7 +415,7 @@ def run_tests(config, test_paths, product, **kwargs):
                 # begin tracking runtime of the test suite
                 iteration_start = datetime.now()
                 test_status.repeated_runs += 1
-                if repeat_until_unexpected or no_repeat_expected:
+                if repeat_until_unexpected:
                     logger.info(f"Repetition {test_status.repeated_runs}")
                 elif repeat > 1:
                     logger.info(f"Repetition {test_status.repeated_runs} / {repeat}")
@@ -443,14 +439,40 @@ def run_tests(config, test_paths, product, **kwargs):
 
                 if repeat_until_unexpected and test_status.unexpected > 0:
                     break
-                if no_repeat_expected and not test_status.unexpected_tests:
-                    break
                 if test_status.repeated_runs == 1 and len(test_loader.test_ids) == test_status.skipped:
                     test_status.all_skipped = True
                     break
 
+            if not test_status.all_skipped:
+                retry_success = retry_unexpected_tests(test_status, test_loader,
+                                                       test_source_kwargs,
+                                                       test_source_cls, run_info,
+                                                       recording, test_environment,
+                                                       product, kwargs)
+                if not retry_success:
+                    return False, test_status
+
     # Return the evaluation of the runs and the number of repeated iterations that were run.
     return evaluate_runs(test_status, kwargs), test_status
+
+
+def retry_unexpected_tests(test_status, test_loader, test_source_kwargs,
+                           test_source_cls, run_info, recording,
+                           test_environment, product, kwargs):
+    max_retries = max(0, kwargs["retry_unexpected"])
+    test_status.retries_remaining = max_retries
+    while test_status.unexpected_tests and test_status.retries_remaining > 0:
+        logger.info(f"Retry {max_retries - test_status.retries_remaining + 1}")
+        iter_success = run_test_iteration(test_status, test_loader,
+                                          test_source_kwargs, test_source_cls,
+                                          run_info, recording, test_environment,
+                                          product, kwargs)
+        if not iter_success:
+            return False
+        recording.set(["after-end"])
+        logger.suite_end()
+        test_status.retries_remaining -= 1
+    return True
 
 
 def check_stability(**kwargs):

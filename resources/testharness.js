@@ -756,6 +756,11 @@
                             if (value instanceof AssertionError) {
                                 throw value;
                             }
+                            // Adding the stack to the assert message is messy because it's a multi-line string.
+                            // Logging to the console makes it clickable.
+                            console.error("Unhandled rejection", value.stack);
+                            assert(false, "promise_test", null,
+                               "Unhandled rejection with value: ${value}", {value:value});
                             assert(false, "promise_test", null,
                                    "Unhandled rejection with value: ${value}", {value:value});
                         }))

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>[lang] and shadow DOM</title>
+<link rel="author" title="Eric Meyer" href="mailto:emeyer@igalia.com">
+<link rel="help" href="">
+<link rel="match" href="">
+<style type="text/css">
+body {width: 600px;}
+#host {background: silver; margin: 1em; padding: 0.25em;}
+span {border: 1px solid silver;}
+html *::before {content: "[attr: " attr(lang) "] ";}
+*:lang('en') {padding: 0.5em; border: 1px solid red;}
+*:lang('en-AU') {padding: 0.5em; border-width: 5px;}
+</style>
+</head>
+<body lang="en">
+
+<p>'lang="en-AU"' on the shadow host, paragraph with 'lang="en-GB"' attribute in the light tree, slot element with 'lang="en-GB"'</p>
+<p>Any match for :lang('en') gets a 1px red border; any match for :lang('en-AU') gets a 5px red border
+<div id="host" lang="en-AU"><p lang="en-GB">English</p></div>
+
+<script type="text/javascript">
+  let root = host.attachShadow({mode:"open"});
+  root.innerHTML = '<slot lang="en-GB"></slot>';
+</script>
+
+</body>
+</html>

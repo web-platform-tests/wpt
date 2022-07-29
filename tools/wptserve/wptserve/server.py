@@ -315,6 +315,8 @@ class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
         if not self.close_connection:
             # Ensure that the whole request has been read from the socket
             request.raw_input.read()
+        else:
+            self.connection.shutdown(socket.SHUT_RDWR)
 
     def handle_connect(self, response):
         self.logger.debug("Got CONNECT")
@@ -327,6 +329,7 @@ class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
                                            certfile=self.server.certificate,
                                            server_side=True)
             self.setup()
+            self.close_connection = False
         return
 
 

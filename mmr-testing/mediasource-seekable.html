@@ -29,7 +29,7 @@
         });
     }, 'Get seekable time ranges after init segment received.');
 
-    /*mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
+    mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
     {
         var initSegment = MediaSourceUtil.extractSegmentData(mediaData, segmentInfo.init);
         test.expectEvent(mediaElement, 'durationchange', 'mediaElement got duration after initsegment');
@@ -43,14 +43,12 @@
             mediaSource.duration = Infinity;
             test.waitForExpectedEvents(function()
             {
-                //assertSeekableEquals(mediaElement, '{ }', 'mediaElement.seekable');
-				assertSeekableEquals(mediaElement, '{ [0.000, Infinity) }', 'mediaElement.seekable');
+                assertSeekableEquals(mediaElement, '{ }', 'mediaElement.seekable');
 
                 // Append a segment from the middle of the stream to make sure that seekable does not use buffered.start(0) or duration as first or last value
                 var midSegment = MediaSourceUtil.extractSegmentData(mediaData, segmentInfo.media[2]);
                 test.expectEvent(sourceBuffer, 'update');
                 test.expectEvent(sourceBuffer, 'updateend');
-				test.expectEvent(mediaElement, 'onreadystateupdate');
                 sourceBuffer.appendBuffer(midSegment);
                 test.waitForExpectedEvents(function()
                 {
@@ -60,10 +58,10 @@
                     assert_equals(mediaElement.seekable.start(0), 0);
                     assert_not_equals(mediaElement.seekable.end(0), mediaElement.duration);
                     assert_not_equals(mediaElement.seekable.end(0), mediaElement.buffered.start(0));
-                    //assert_equals(mediaElement.seekable.end(0), mediaElement.buffered.end(0));
+                    assert_equals(mediaElement.seekable.end(0), mediaElement.buffered.end(0));
                     test.done();
                 });
             });
         });
-    }, 'Get seekable time ranges on an infinite stream.');*/
+    }, 'Get seekable time ranges on an infinite stream.');
 </script>

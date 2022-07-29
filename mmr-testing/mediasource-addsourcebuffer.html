@@ -10,7 +10,7 @@
     <body>
         <div id="log"></div>
         <script>
-          /*mediasource_test(function(test, mediaElement, mediaSource)
+          mediasource_test(function(test, mediaElement, mediaSource)
           {
               mediaSource.endOfStream();
               assert_throws_dom("InvalidStateError",
@@ -41,7 +41,7 @@
                           function() { mediaSource.addSourceBuffer("invalidType"); },
                           "addSourceBuffer() threw an exception for an unsupported type.");
               test.done();
-          }, "Test addSourceBuffer() with unsupported type");*/
+          }, "Test addSourceBuffer() with unsupported type");
 
           mediasource_test(function(test, mediaElement, mediaSource)
           {

@@ -129,7 +129,7 @@
           mediaSourceActiveSourceBufferOrderTest(false, true);
           mediaSourceActiveSourceBufferOrderTest(false, false);
 
-          /*mediasource_test(function(test, mediaElement, mediaSource)
+          mediasource_test(function(test, mediaElement, mediaSource)
           {
               mediaElement.addEventListener("error", test.unreached_func("Unexpected event 'error'"));
               MediaSourceUtil.fetchManifestAndData(test, manifestFilenameAudio, function (typeAudio, dataAudio)
@@ -180,10 +180,10 @@
                       });
                   });
               });
-          }, "Active SourceBuffers list reflects changes to selected audio/video tracks associated with separate SourceBuffers.");*/
+          }, "Active SourceBuffers list reflects changes to selected audio/video tracks associated with separate SourceBuffers.");
 
 
-          /*mediasource_test(function(test, mediaElement, mediaSource)
+          mediasource_test(function(test, mediaElement, mediaSource)
           {
               mediaElement.addEventListener("error", test.unreached_func("Unexpected event 'error'"));
               MediaSourceUtil.fetchManifestAndData(test, manifestFilenameAV, function (typeAV, dataAV)
@@ -232,7 +232,7 @@
                   });
               });
           }, "Active SourceBuffers list ignores changes to selected audio/video tracks " +
-            "that do not affect the activation of the SourceBuffer.");*/
+            "that do not affect the activation of the SourceBuffer.");
         </script>
     </body>
 </html>

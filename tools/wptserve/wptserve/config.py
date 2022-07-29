@@ -137,7 +137,7 @@ class ConfigBuilder:
         "bind_address": True,
         "ssl": {
             "type": "none",
-            "encrypt_after_connect": False,
+            "encrypt_after_connect": True,
             "none": {},
             "openssl": {
                 "openssl_binary": "openssl",

@@ -14,10 +14,9 @@
     function testInvalidCodec(test, mediaElement, mediaSource, mediaType, url) {
         assert_true(MediaSource.isTypeSupported(mediaType), `Media type not supported in this browser: isTypeSupported('${mediaType}')`);
 
-        /*MediaSourceUtil.loadBinaryData(test, url, (mediaData) => {
+        MediaSourceUtil.loadBinaryData(test, url, (mediaData) => {
             _testInvalidCodecWithData(test, mediaElement, mediaSource, mediaType, mediaData);
-        });*/
-		test.done();
+        });
     }
 
     function _testInvalidCodecWithData(test, mediaElement, mediaSource, mediaType, mediaData) {
@@ -32,16 +31,14 @@
     // These test cases provide a typical media MIME type, but the actual files have been mangled to declare a different,
     // unsupported, fictitious codec (MP4 fourcc: 'zzzz', WebM codec id 'V_ZZZ'). The browser should report a parsing
     // error.
-	
-	mediasource_test((test, mediaElement, mediaSource) => {
-        testInvalidCodec(test, mediaElement, mediaSource, 'video/webm; codecs="vp8"', 'webm/invalid-codec.webm');
-    }, 'Test a WebM with an invalid codec results in an error.');
 
     mediasource_test((test, mediaElement, mediaSource) => {
         testInvalidCodec(test, mediaElement, mediaSource, 'video/mp4;codecs="avc1.4D4001"', 'mp4/invalid-codec.mp4');
     }, 'Test an MP4 with an invalid codec results in an error.');
 
-
+    mediasource_test((test, mediaElement, mediaSource) => {
+        testInvalidCodec(test, mediaElement, mediaSource, 'video/webm; codecs="vp8"', 'webm/invalid-codec.webm');
+    }, 'Test a WebM with an invalid codec results in an error.');
 
 </script>
 </body>

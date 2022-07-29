@@ -27,7 +27,7 @@
               test.done();
           }, "Test correctly reset appendWindowStart and appendWindowEnd values");
 
-          /*mediasource_test(function(test, mediaElement, mediaSource)
+          mediasource_test(function(test, mediaElement, mediaSource)
           {
               var sourceBuffer = mediaSource.addSourceBuffer(MediaSourceUtil.AUDIO_VIDEO_TYPE);
               assert_true(sourceBuffer != null, "New SourceBuffer returned");
@@ -82,9 +82,9 @@
                   "set appendWindowStart throws an exception if undefined.");
 
               test.done();
-          }, "Test set wrong values to appendWindowStart and appendWindowEnd.");*/
+          }, "Test set wrong values to appendWindowStart and appendWindowEnd.");
 
-          /*mediasource_test(function(test, mediaElement, mediaSource)
+          mediasource_test(function(test, mediaElement, mediaSource)
           {
               var sourceBuffer = mediaSource.addSourceBuffer(MediaSourceUtil.AUDIO_VIDEO_TYPE);
               assert_true(sourceBuffer != null, "New SourceBuffer returned");
@@ -109,9 +109,9 @@
 
               test.done();
 
-          }, "Test set correct values to appendWindowStart and appendWindowEnd.");*/
+          }, "Test set correct values to appendWindowStart and appendWindowEnd.");
 
-          /*mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
+          mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
           {
               mediaSource.removeSourceBuffer(sourceBuffer);
               assert_throws_dom("InvalidStateError",
@@ -123,9 +123,9 @@
                   "set appendWindowEnd throws an exception when mediasource object is not associated with a buffer.");
               test.done();
 
-          }, "Test appendwindow throw error when mediasource object is not associated with a sourebuffer.");*/
+          }, "Test appendwindow throw error when mediasource object is not associated with a sourebuffer.");
 
-          /*mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
+          mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
           {
               test.expectEvent(sourceBuffer, "updateend", "sourceBuffer");
               sourceBuffer.appendBuffer(mediaData);
@@ -144,7 +144,7 @@
                   assert_false(sourceBuffer.updating, "updating attribute is false");
                   test.done();
               });
-          }, "Test set appendWindowStart and appendWindowEnd when source buffer updating.");*/
+          }, "Test set appendWindowStart and appendWindowEnd when source buffer updating.");
 
           mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
           {

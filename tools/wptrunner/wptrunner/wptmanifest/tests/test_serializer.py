@@ -243,3 +243,82 @@ class TokenizerTest(unittest.TestCase):
     def test_non_ascii_1(self):
         self.compare(b"""[\xf0\x9f\x99\x84]
 """)
+
+    def test_comments_preceding_kv_pair(self):
+        self.compare(
+            textwrap.dedent(
+                """\
+                # These two comments should be attached
+                # to the first key-value pair.
+                key1: value
+                # Attached to the second pair.
+                key2: value
+                """).encode())
+
+    def test_comments_preceding_headings(self):
+        self.compare(
+            textwrap.dedent(
+                """\
+                # Attached to the first heading.
+                [test1.html]
+
+                # Attached to the second heading.
+                [test2.html]
+                  # Attached to subheading.
+                  [subheading]  # Also attached to subheading.
+                """).encode())
+
+    def test_comments_inline(self):
+        self.compare(
+            textwrap.dedent(
+                """\
+                key:            # inline after key
+                  value         # inline after string value
+                [test.html]     # inline after heading
+                  key1: @True   # inline after atom
+                  key2: [
+                    value1,     # inline after list element
+                    value2]     # inline after list end
+                """).encode(),
+            textwrap.dedent(
+                """\
+                # inline after key
+                key: value  # inline after string value
+                [test.html]  # inline after heading
+                  key1: @True  # inline after atom
+                  # inline after list end
+                  key2: [value1, value2]  # inline after list element
+                """))
+
+    def test_comments_conditions(self):
+        self.compare(
+            textwrap.dedent(
+                """\
+                key:
+                  # cond 1
+                  if cond == 1: value
+                  # cond 2
+                  if cond == 2: value  # cond 2
+                  # cond 3
+                  # cond 3
+                  if cond == 3: value
+                  # default 0
+                  default  # default 1
+                  # default 2
+                  # default 3
+                """).encode(),
+            textwrap.dedent(
+                """\
+                key:
+                  # cond 1
+                  if cond == 1: value
+                  # cond 2
+                  if cond == 2: value  # cond 2
+                  # cond 3
+                  # cond 3
+                  if cond == 3: value
+                  # default 0
+                  # default 2
+                  # default 3
+                  default  # default 1
+                """))

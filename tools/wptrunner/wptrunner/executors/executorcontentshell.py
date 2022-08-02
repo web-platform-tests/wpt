@@ -8,8 +8,10 @@ from base64 import b64encode
 from os import linesep
 import json
 
+
 class CrashError(BaseException):
     pass
+
 
 class ContentShellProtocol(ConnectionlessProtocol):
     """This class represents the protocol used by content_shell in protocol mode.
@@ -140,6 +142,7 @@ class ContentShellProtocol(ConnectionlessProtocol):
 
         return result
 
+
 def _convert_exception(test, exception, errors):
     """Converts our TimeoutError and CrashError exceptions into test results.
     """
@@ -148,6 +151,7 @@ def _convert_exception(test, exception, errors):
     if isinstance(exception, CrashError):
         return (test.result_cls("CRASH", errors), [])
     raise exception
+
 
 class ContentShellRefTestExecutor(RefTestExecutor):
     def __init__(self, logger, browser, server_config, timeout_multiplier=1, screenshot_cache=None,
@@ -177,6 +181,7 @@ class ContentShellRefTestExecutor(RefTestExecutor):
 
         return True, b64encode(image).decode()
 
+
 class ContentShellCrashtestExecutor(CrashtestExecutor):
     def __init__(self, logger, browser, server_config, timeout_multiplier=1, debug_info=None,
             **kwargs):
@@ -190,6 +195,7 @@ class ContentShellCrashtestExecutor(CrashtestExecutor):
             return self.convert_result(test, {"status": "PASS", "message": None})
         except BaseException as exception:
             return _convert_exception(test, exception, self.protocol.read_errors())
+
 
 class ContentShellTestharnessExecutor(TestharnessExecutor):
     def __init__(self, logger, browser, server_config, timeout_multiplier=1, debug_info=None,

@@ -109,7 +109,7 @@ otherwise install OpenSSL and ensure that it's on your $PATH.""")
 
 def check_environ(product):
     if product not in ("android_weblayer", "android_webview", "chrome", "chrome_android",
-        "content_shell", "firefox", "firefox_android", "servo"):
+            "content_shell", "firefox", "firefox_android", "servo"):
         config_builder = serve.build_config(os.path.join(wpt_root, "config.json"))
         # Override the ports to avoid looking for free ports
         config_builder.ssl = {"type": "none"}

@@ -12,8 +12,8 @@ from . import chrome_spki_certs
 from .base import Browser, ExecutorBrowser
 from .base import get_timeout_multiplier   # noqa: F401
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.executorcontentshell import ContentShellRefTestExecutor, \
-    ContentShellCrashtestExecutor, ContentShellTestharnessExecutor
+from ..executors.executorcontentshell import (ContentShellRefTestExecutor,
+    ContentShellCrashtestExecutor, ContentShellTestharnessExecutor)  # noqa: F401
 
 
 __wptrunner__ = {"product": "content_shell",
@@ -29,14 +29,16 @@ __wptrunner__ = {"product": "content_shell",
                  "update_properties": "update_properties",
                  "timeout_multiplier": "get_timeout_multiplier",}
 
+
 def check_args(**kwargs):
     pass
+
 
 def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
     args = kwargs["binary_args"]
 
     args.append("--ignore-certificate-errors-spki-list=%s" %
-                                  ','.join(chrome_spki_certs.IGNORE_CERTIFICATE_ERRORS_SPKI_LIST))
+        ','.join(chrome_spki_certs.IGNORE_CERTIFICATE_ERRORS_SPKI_LIST))
 
     webtranport_h3_port = config.ports.get('webtransport-h3')
     if webtranport_h3_port is not None:
@@ -45,10 +47,11 @@ def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
 
     # These flags are specific to content_shell - they activate web test protocol mode.
     args.append("--run-web-tests")
-    args.append("-") 
+    args.append("-")
 
     return {"binary": kwargs["binary"],
             "binary_args": args}
+
 
 def executor_kwargs(logger, test_type, test_environment, run_info_data,
                     **kwargs):
@@ -56,15 +59,19 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
                                            **kwargs)
     return executor_kwargs
 
+
 def env_extras(**kwargs):
     return []
+
 
 def env_options():
     return {"server_host": "127.0.0.1",
             "testharnessreport": "testharnessreport-content-shell.js"}
 
+
 def update_properties():
     return (["debug", "os", "processor"], {"os": ["version"], "processor": ["bits"]})
+
 
 class ContentShellBrowser(Browser):
     """Class that represents an instance of content_shell.

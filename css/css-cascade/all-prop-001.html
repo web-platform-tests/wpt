@@ -14,9 +14,6 @@
   /* these must not be overridden */
   direction: rtl;
   unicode-bidi: bidi-override;
-}
-
-.test, bdo {
   /* all of these must be overridden */
   border: solid red;
   background: red;
@@ -33,7 +30,7 @@
   overflow: scroll;
 }
 
-.test, bdo {
+.test {
   all: initial;
   /* if incorrectly implemented, this causes direction: initial; unicode-bidi: initial;
      which is the same as direction:ltr; unicode-bidi: normal */

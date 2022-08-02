@@ -1,7 +1,7 @@
 # mypy: allow-untyped-defs
 
 import os
-from multiprocessing import Queue
+from multiprocessing import Queue, Event
 from queue import Empty
 from time import time
 from subprocess import PIPE
@@ -100,6 +100,7 @@ class ContentShellBrowser(Browser):
         self._stdout_queue = Queue()
         self._stderr_queue = Queue()
         self._stdin_queue = Queue()
+        self._io_stopped = Event()
 
         self._stdout_reader = self._create_reader_thread(self._proc.stdout, self._stdout_queue)
         self._stderr_reader = self._create_reader_thread(self._proc.stderr, self._stderr_queue)
@@ -147,11 +148,13 @@ class ContentShellBrowser(Browser):
     def executor_browser(self):
         """This function returns the `ExecutorBrowser` object that is used by other
         processes to interact with content_shell. In our case, this consists of the three
-        multiprocessing Queues.
+        multiprocessing Queues as well as an `io_stopped` event to signal when the
+        underlying pipes have reached EOF.
         """
         return ExecutorBrowser, {"stdout_queue": self._stdout_queue,
                                  "stderr_queue": self._stderr_queue,
-                                 "stdin_queue": self._stdin_queue}
+                                 "stdin_queue": self._stdin_queue,
+                                 "io_stopped": self._io_stopped}
 
     def check_crash(self, process, test):
         return not self.is_alive()
@@ -177,7 +180,7 @@ class ContentShellBrowser(Browser):
         """This creates (and starts) a background thread which reads lines from `stream` and
         puts them into `queue` until `stream` reports EOF.
         """
-        def reader_thread(stream, queue):
+        def reader_thread(stream, queue, stop_event):
             while True:
                 line = stream.readline()
                 if not line:
@@ -185,10 +188,11 @@ class ContentShellBrowser(Browser):
 
                 queue.put(line)
 
+            stop_event.set()
             queue.close()
             queue.join_thread()
 
-        result = Thread(target=reader_thread, args=(stream, queue), daemon=True)
+        result = Thread(target=reader_thread, args=(stream, queue, self._io_stopped), daemon=True)
         result.start()
         return result
 

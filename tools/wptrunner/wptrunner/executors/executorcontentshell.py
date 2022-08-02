@@ -67,14 +67,10 @@ class ContentShellProtocol(ConnectionlessProtocol):
         return line.decode(encoding, errors) if encoding else line
 
     def is_alive(self):
-        """Checks if content_shell is still working by running a test on `about:blank` with
-        a short 2 second timeout.
+        """Checks if content_shell is alive by determining if the IO pipes are still
+        open. This does not guarantee that the process is responsive.
         """
-        try:
-            self.do_test("about:blank", 2)
-            return True
-        except (TimeoutError, CrashError):
-            return False
+        return self.browser.io_stopped.is_set()
 
     def do_test(self, url, timeout=None):
         """Sends a url to content_shell and returns the resulting text and image output.

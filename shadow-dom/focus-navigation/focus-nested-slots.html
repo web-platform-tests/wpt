@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" title="Joey Arhar" href="mailto:jarhar@chromium.org">
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=1209217">
+<script src='../resources/testharness.js'></script>
+<script src='../resources/testharnessreport.js'></script>
+
+<button id=button1>one</button>
+<span>
+  <template shadowroot=open>
+    <slot name=myslot></slot>
+  </template>
+  <slot slot=myslot>
+    <button id=button2>two</button>
+    <button id=button3>three</button>
+    <button id=button4>four</button>
+  </slot>
+</span>
+<button id=button5>five</button>
+
+<script>
+(function attachShadowRoots(root) {
+  root.querySelectorAll("template[shadowroot]").forEach(template => {
+    const mode = template.getAttribute("shadowroot");
+    const shadowRoot = template.parentNode.attachShadow({ mode });
+    shadowRoot.appendChild(template.content);
+    template.remove();
+    attachShadowRoots(shadowRoot);
+  });
+})(document);
+
+async function navigateFocusForward() {
+  return test_driver.Actions()
+    .keyDown('\uE004')
+    .keyUp('\uE004')
+    .send();
+}
+
+async function navigateFocusBackward() {
+  return test_driver.Actions()
+    .keyDown('\uE050')
+    .keyDown('\uE004')
+    .keyUp('\uE004')
+    .keyUp('\uE050')
+    .send();
+}
+
+promise_test(async () => {
+  button1.focus();
+  assert_equals(document.activeElement, button1);
+
+  await navigateFocusForwards();
+  assert_equals(document.activeElement, button2);
+  await navigateFocusForwards();
+  assert_equals(document.activeElement, button3);
+  await navigateFocusForwards();
+  assert_equals(document.activeElement, button4);
+  await navigateFocusForwards();
+  assert_equals(document.activeElement, button5);
+  await navigateFocusBackwards();
+  assert_equals(document.activeElement, button4);
+  await navigateFocusBackwards();
+  assert_equals(document.activeElement, button3);
+  await navigateFocusBackwards();
+  assert_equals(document.activeElement, button2);
+  await navigateFocusBackwards();
+  assert_equals(document.activeElement, button1);
+}, `Verifies that focus order goes in flat tree order with buttons inside nested slots which have a mixture of assigned and unassigned states.`);
+
+</script>

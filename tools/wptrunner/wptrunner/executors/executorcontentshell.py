@@ -14,8 +14,7 @@ class CrashError(BaseException):
 class ContentShellProtocol(ConnectionlessProtocol):
     """This class represents the protocol used by content_shell in protocol mode.
     For more details, see:
-
-    #TODO
+    https://chromium.googlesource.com/chromium/src.git/+/HEAD/content/web_test/browser/test_info_extractor.h
     """
     # Marker sent by content_shell after blocks.
     eof_marker = "#EOF" + linesep

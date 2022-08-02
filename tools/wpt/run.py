@@ -857,4 +857,3 @@ def run(venv, **kwargs):
 def run_single(venv, **kwargs):
     from wptrunner import wptrunner
     return wptrunner.start(**kwargs)
-

@@ -120,12 +120,7 @@ class ContentShellBrowser(Browser):
 
         # We need to shut down these queues cleanly to avoid broken pipe error spam in the logs.
         self._stdout_reader.join(2)
-        self._stdout_queue.close()
-        self._stdout_queue.join_thread()
-
         self._stderr_reader.join(2)
-        self._stderr_queue.close()
-        self._stderr_queue.join_thread()
 
         self._stdin_queue.put(None)
         self._stdin_writer.join(2)
@@ -133,11 +128,15 @@ class ContentShellBrowser(Browser):
         for thread in [self._stdout_reader, self._stderr_reader, self._stdin_writer]:
             if thread.is_alive():
                 self.logger.warning("Content shell IO threads did not shut down gracefully.")
-                break
+                return False
 
-        self.logger.debug("Content shell has been stopped.")
+        stopped = not self.is_alive()
+        if stopped:
+            self.logger.debug("Content shell has been stopped.")
+        else:
+            self.logger.warning("Content shell failed to stop.")
 
-        return not self.is_alive()
+        return stopped
 
     def is_alive(self):
         return self._proc is not None and self._proc.poll() is None
@@ -185,6 +184,9 @@ class ContentShellBrowser(Browser):
                     break
 
                 queue.put(line)
+
+            queue.close()
+            queue.join_thread()
 
         result = Thread(target=reader_thread, args=(stream, queue), daemon=True)
         result.start()

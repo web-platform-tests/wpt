@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Reference File</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+
+  <style>
+  body
+    {
+      font-family: Ahem;
+      font-size: 60px;
+      line-height: 1;
+    }
+
+  div.wrapper
+    {
+      border: black dotted 2px;
+      margin-bottom: 8px;
+    }
+
+  div.fontsize30px
+    {
+      font-size: 0.5em;
+    }
+
+  div.fontsize60px
+    {
+      padding-bottom: 0.5em;
+    }
+  </style>
+
+  <div id="first" class="wrapper">
+
+    <div class="fontsize30px" style="color: lime; padding-left: 60px;">C</div>
+
+    <div class="fontsize60px"><span style="color: blue; padding-right: 30px;">A</span><span style="color: orange;">B</span></div>
+
+  </div>
+
+
+  <div id="second" class="wrapper">
+
+    <div class="fontsize30px" style="color: orange; padding-left: 120px;">G</div>
+
+    <div class="fontsize60px"><span style="color: blue;">E</span><span style="color: lime;">F</span><span style="color: blue;">H</span></div>
+
+  </div>
+
+
+  <div id="third" class="wrapper">
+
+    <div class="fontsize30px" style="color: lime; padding-left: 60px;">K</div>
+
+    <div class="fontsize60px"><span style="color: blue;">I</span><span style="color: orange; position: relative; left: -30px;">J</span><span style="color: blue; position: relative; left: -30px;">L</span></div>
+
+  </div>
+
+
+  <div id="second" class="wrapper">
+
+    <div class="fontsize30px" style="color: orange; padding-left: 90px;">O</div>
+
+    <div class="fontsize60px"><span style="color: blue;">M</span><span style="color: lime;">N</span><span style="color: blue;">Q</span></div>
+
+  </div>

@@ -114,14 +114,12 @@
     const controller = new w.AbortController();
     const signal = controller.signal;
 
-    const response = await w.fetch('data.json', { signal });
+    const fetchPromise = await w.fetch('data.json', { signal });
 
     controller.abort(error1);
 
-    const bodyPromise = response[bodyMethod]();
-
-    await promise_rejects_exactly(t, error1, bodyPromise);
-  }, "response.${bodyMethod}() rejects with abort reason");
+    await promise_rejects_exactly(t, error1, fetchPromise);
+  }, "fetch() rejects with abort reason");
 </script>
 </body>
 </html>

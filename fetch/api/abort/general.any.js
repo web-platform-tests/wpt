@@ -117,7 +117,7 @@ promise_test(async t => {
 
   const fetchPromise = fetch(request);
 
-  await promise_rejects_dom(t, error1, fetchPromise, "fetch() should reject with abort reason");
+  await promise_rejects_exactly(t, error1, fetchPromise, "fetch() should reject with abort reason");
 }, "Signal on request object should also have abort reason");
 
 promise_test(async t => {

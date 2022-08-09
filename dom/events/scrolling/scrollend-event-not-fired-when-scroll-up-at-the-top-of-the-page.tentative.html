@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="scroll_support.js"></script>
+
+<style>
+#targetDiv {
+  width: 200px;
+  height: 200px;
+  overflow: scroll;
+}
+
+#innerDiv {
+  width: 500px;
+  height: 4000px;
+}
+</style>
+
+<body style="margin:0" onload=runTest()>
+<div id="targetDiv">
+  <div id="innerDiv">
+  </div>
+</div>
+</body>
+
+<script>
+const target_div = document.getElementById("targetDiv");
+let document_scrollend_arrived = false;
+let target_div_scrollend_arrived = false;
+
+document.addEventListener("scrollend", () => { document_scrollend_arrived = true; });
+target_div.addEventListener("scrollend", () => { target_div_scrollend_arrived = true; });
+
+function runTest() {
+  promise_test (async (t) => {
+    await touchScrollInTarget(200, target_div, "up");
+
+    await conditionHolds(() => { return !document_scrollend_arrived; },
+      'document should not receive scrollend event!');
+
+    await conditionHolds(() => { return !target_div_scrollend_arrived; },
+      'target_div should not receive scrollend event!');
+  }, "Touch scrolling up at the top of the page should not generate scrollend event!");
+
+  promise_test (async (t) => {
+    const actions = new test_driver.Actions()
+       .scroll(50, 50, 0, -200, {origin: target_div, duration: 200});
+    await actions.send();
+
+    await conditionHolds(() => { return !document_scrollend_arrived; },
+      'document should not receive scrollend event!');
+
+    await conditionHolds(() => { return !target_div_scrollend_arrived; },
+      'target_div should not receive scrollend event!');
+  }, "Wheel scrolling up at the top of the page should not generate scrollend event!");
+
+}
+</script>

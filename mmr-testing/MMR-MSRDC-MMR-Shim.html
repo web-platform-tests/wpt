@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Video Element is shimmed</title>
+    <meta name="timeout" content="normal">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="mediasource-util.js"></script>
+</head>
+<body>
+    <div id="log"></div>
+    <script>
+        mediasource_test(function (test) {
+
+            var mediaElement = document.createElement("video");
+            if (!document.body) {
+                document.body = document.createElement("body");
+            }
+
+            document.body.appendChild(mediaElement);
+
+            var fShimmed = false;
+            if (mediaElement.MSRDC_MMR_Shim != undefined) {
+                fShimmed = true;
+            }
+            assert_true(fShimmed, "Video Element is shimmed");
+            
+            test.done();
+            test.add_cleanup(function () {
+                document.body.removeChild(mediaElement);
+            });
+
+        }, "Test Video Element is shimmed");
+
+    </script>
+
+</body>
+</html>

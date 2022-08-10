@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Set videoElement src then immediately seek</title>
+    <meta name="timeout" content="normal">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="mediasource-util.js"></script>
+</head>
+<body>
+    <div id="log"></div>
+    <script>
+        mediasource_test(function (test) {
+
+            var mediaElement = document.createElement("video");
+            document.body.appendChild(mediaElement);
+
+            mediaElement.src = "mp4/test.mp4";
+            mediaElement.type = 'video/mp4; codecs="mp4a.40.2, avc1.4d400d"';
+            mediaElement.currentTime = 2;
+            test.expectEvent(mediaElement, 'playing', 'Playing triggered');
+            mediaElement.play();
+
+            mediaElement.addEventListener('error', test.unreached_func("Unexpected event 'error'"));
+            mediaElement.addEventListener('ended', test.step_func_done());
+
+            test.step_timeout(function () {
+                assert_false(test.eventExpectations_.expectingEvents(), "Pending event expectations.");
+            }, 5000);
+
+            test.removeMediaElement_ = true;
+            test.add_cleanup(function () {
+                if (test.removeMediaElement_) {
+                    document.body.removeChild(mediaTag);
+                    test.removeMediaElement_ = false;
+                }
+            });
+
+        }, "Test Set videoElement src then immediately seek");
+
+    </script>
+
+</body>
+</html>

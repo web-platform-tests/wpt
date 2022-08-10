@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Set preload from none to auto</title>
+    <meta name="timeout" content="normal">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="mediasource-util.js"></script>
+</head>
+<body>
+    <div id="log"></div>
+    <video preload="none" id="Video1">
+        <source src="mp4/test.mp4" type='video/mp4; codecs="mp4a.40.2, avc1.4d400d"'>
+    </video>
+    <script>
+        // Test Bug fix:
+        // Pull Request 7648395: Two small fixes for coursera
+        // Change preload from none to auto, expect networkState to be NETWORK_NO_SOURCE (3)
+
+        mediasource_test(function (test) {
+
+            var mediaElement = document.getElementById("Video1");
+            console.log("network state = " + mediaElement.networkState);
+            // Check networkState
+            assert_true((mediaElement.networkState !== 3), "networkState is not NETWORK_NO_SOURCE");
+
+            mediaElement.preload = "auto";
+
+            console.log("network state = " + mediaElement.networkState);
+
+            test.removeMediaElement_ = true;
+            test.add_cleanup(function () {
+                if (test.removeMediaElement_) {
+                    document.body.removeChild(mediaTag);
+                    test.removeMediaElement_ = false;
+                }
+            });
+
+            test.done();
+
+        }, "Test Set preload from none to auto");
+
+    </script>
+
+</body>
+</html>

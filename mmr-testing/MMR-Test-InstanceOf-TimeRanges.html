@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Instanceof timeranges</title>
+    <meta name="timeout" content="normal">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="mediasource-util.js"></script>
+</head>
+<body>
+    <div id="log"></div>
+    <script>
+        // Test Bug fix:
+        // Pull Request 7334313: Change to set TimeRangesProxy prototype to TimeRanges
+        function appendBuffer(test, sourceBuffer, data) {
+            test.expectEvent(sourceBuffer, "update");
+            test.expectEvent(sourceBuffer, "updateend");
+            sourceBuffer.appendBuffer(data);
+        }
+
+        var manifestFilename = "mp4/test-av-384k-44100Hz-1ch-320x240-30fps-10kfr-manifest.json";
+
+        mediasource_test(function (test, mediaElement, mediaSource) {
+            mediaElement.pause();
+           
+            mediaElement.addEventListener('error', test.unreached_func("Unexpected event 'error'"));
+
+            assert_true((mediaElement instanceof HTMLVideoElement), "mediaElement instanceof HTMLVideoElement");
+
+            //assert_true((mediaSource instanceof MediaSource), "mediaSource instanceof MediaSource");
+
+            MediaSourceUtil.fetchManifestAndData(test, manifestFilename, function (type, data) {
+
+                var sourceBuffer = mediaSource.addSourceBuffer(type);
+                // Bug 40784788: [MMR] sourceBuffer returned by addSourceBuffer is not instanceOf SourceBuffer
+                // assert_equals((sourceBuffer instanceof SourceBuffer), true, "sourceBuffer instanceof SourceBuffer");
+
+                appendBuffer(test, sourceBuffer, data);
+
+                test.waitForExpectedEvents(function () {
+                    mediaSource.endOfStream();
+
+                    var timeRanges = mediaElement.buffered;
+                    assert_true((timeRanges instanceof TimeRanges), "timeRanges instanceof TimeRanges");
+
+                    var videolength = timeRanges.length;
+                    console.log("number of buffered ranges = " + videolength);
+
+                    test.expectEvent(mediaElement, "ended");
+                    mediaElement.play();
+                });
+
+                test.waitForExpectedEvents(function () {
+                    test.done();
+                });
+
+                test.step_timeout(function () {
+                    assert_false(test.eventExpectations_.expectingEvents(), "Pending event expectations.");
+                }, 5000);
+
+
+
+            });
+        }, "Test Instanceof timeranges");
+
+    </script>
+
+</body>
+</html>

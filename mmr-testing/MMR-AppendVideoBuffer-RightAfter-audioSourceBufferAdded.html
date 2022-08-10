@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Append Video Buffer RightAfter Audio SourceBuffer Added</title>
+    <meta name="timeout" content="normal">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="mediasource-util.js"></script>
+</head>
+<body>
+    <div id="log"></div>
+    <script>
+        // Test Bug fix:
+        // Pull Request 7377581: When SourceBuffer is created, set MediaSource owner if it's known
+        function appendBuffer(test, sourceBuffer, data) {
+            test.expectEvent(sourceBuffer, "update");
+            test.expectEvent(sourceBuffer, "updateend");
+            sourceBuffer.appendBuffer(data);
+        }
+
+        var manifestVideoFilename = "mp4/test-v-128k-320x240-30fps-10kfr-manifest.json";
+        var manifestAudioFilename = "mp4/test-a-128k-44100Hz-1ch-manifest.json";
+
+        mediasource_test(function (test, mediaElement, mediaSource) {
+            mediaElement.pause();
+           
+            mediaElement.addEventListener('error', test.unreached_func("Unexpected event 'error'"));
+
+            MediaSourceUtil.fetchManifestAndData(test, manifestVideoFilename, function (typeVideo, dataVideo) {
+
+                MediaSourceUtil.fetchManifestAndData(test, manifestAudioFilename, function (typeAudio, dataAudio) {
+
+                    
+                    var sourceBufferVideo = mediaSource.addSourceBuffer(typeVideo);
+
+                    setTimeout(function () {
+                        var sourceBufferAudio = mediaSource.addSourceBuffer(typeAudio);
+                        assert_equals(mediaSource.activeSourceBuffers.length, 0,
+                            "activeSourceBuffers is empty to start with");
+                        assert_equals(mediaSource.sourceBuffers.length, 2,
+                            "sourceBuffers list contains both SourceBuffers");
+
+                        appendBuffer(test, sourceBufferVideo, dataVideo);
+                        appendBuffer(test, sourceBufferAudio, dataAudio);
+
+                        test.waitForExpectedEvents(function () {
+                            assert_equals(mediaSource.activeSourceBuffers.length, 2,
+                                "activeSourceBuffers list updated when tracks are loaded");
+                            assert_equals(mediaSource.activeSourceBuffers[0], mediaSource.sourceBuffers[0],
+                                "first active SourceBuffer matches first SourceBuffer");
+                            assert_equals(mediaSource.activeSourceBuffers[1], mediaSource.sourceBuffers[1],
+                                "second active SourceBuffer matches second SourceBuffer");
+                            mediaSource.endOfStream();
+                            test.expectEvent(mediaElement, "ended");
+                            mediaElement.play();
+                        });
+
+                        test.waitForExpectedEvents(function () {
+                            test.done();
+                        });
+
+                        test.step_timeout(function () {
+                            assert_false(test.eventExpectations_.expectingEvents(), "Pending event expectations.");
+                        }, 5000);
+                    }, 1000);
+
+                });
+            });
+        }, "Test Append Video Buffer RightAfter Audio SourceBuffer Added");
+
+    </script>
+
+</body>
+</html>

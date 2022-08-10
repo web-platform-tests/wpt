@@ -57,9 +57,8 @@ promise_test(async function() {
         reachedTarget = true;
     }, { once: true });
 
-    let wrapperRect = wrapper.getBoundingClientRect();
     await new test_driver.Actions()
-        .pointerMove(wrapperRect.x + 1, wrapperRect.y + 1, { origin: "viewport" })
+        .pointerMove(0, 0, { origin: wrapper })
         .pointerDown()
         .send();
 

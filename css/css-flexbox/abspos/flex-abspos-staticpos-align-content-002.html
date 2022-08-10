@@ -39,9 +39,13 @@
       height: 6px;
       width: 8px;
       /* This "align-self" only gets a chance to take effect when our container
-         has "align-content: stretch". In that case, it helps us verify that
-         the container's "align-content: stretch" is actually taking effect
-         and stretching the flex line (and giving us space to center in). */
+         has "align-content: stretch" and its available size is non-negative.
+         In that case, align-self helps us verify that the container's
+         "align-content: stretch" is actually taking effect and stretching the
+         flex line (and giving us space to center in). In the case of a negative
+         available size, "align-content: stretch" should not give us any space
+         to center in and so we should see the fallback behavior to
+         "align-content: flex-start". */
       align-self: center;
     }
   </style>
@@ -80,7 +84,7 @@
     <!-- The various align-content values, from
          https://www.w3.org/TR/css-align-3/#propdef-align-content -->
     <!-- normal -->
-    <div class="container" style="align-content: normal"><div data-offset-x="2" data-offset-y="-1"></div></div>
+    <div class="container" style="align-content: normal"><div data-offset-x="2" data-offset-y="-3"></div></div>
     <br>
     <!-- <baseline-position> -->
     <div class="container" style="align-content: baseline"><div data-offset-x="2" data-offset-y="1"></div></div>
@@ -90,7 +94,7 @@
     <div class="container" style="align-content: space-between"><div data-offset-x="2" data-offset-y="-3"></div></div>
     <div class="container" style="align-content: space-around"><div data-offset-x="2" data-offset-y="-1"></div></div>
     <div class="container" style="align-content: space-evenly"><div data-offset-x="2" data-offset-y="-1"></div></div>
-    <div class="container" style="align-content: stretch"><div data-offset-x="2" data-offset-y="-1"></div></div>
+    <div class="container" style="align-content: stretch"><div data-offset-x="2" data-offset-y="-3"></div></div>
     <br>
     <!-- <content-position>, part 1 -->
     <div class="container" style="align-content: center"><div data-offset-x="2" data-offset-y="-1"></div></div>

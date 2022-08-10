@@ -16,8 +16,8 @@
   const error1 = new Error('error1');
   error1.name = 'error1';
 
-  async function setupRegistration(t, scope) {
-    const reg = await navigator.serviceWorker.register('../resources/sw-intercept.js', { scope });
+  async function setupRegistration(t, scope, service_worker) {
+    const reg = await navigator.serviceWorker.register(service_worker, { scope });
     await wait_for_state(t, reg.installing, 'activated');
     add_completion_callback(_ => reg.unregister());
     return reg;
@@ -26,7 +26,7 @@
   promise_test(async t => {
     const suffix = "?q=aborted-not-intercepted";
     const scope = SCOPE + suffix;
-    await setupRegistration(t, scope);
+    await setupRegistration(t, scope, '../resources/sw-intercept.js');
     const iframe = await with_iframe(scope);
     add_completion_callback(_ => iframe.remove());
     const w = iframe.contentWindow;
@@ -59,7 +59,7 @@
   for (const bodyMethod of BODY_METHODS) {
     promise_test(async t => {
       const scope = SCOPE + "?q=aborted-" + bodyMethod + "-rejects";
-      await setupRegistration(t, scope);
+      await setupRegistration(t, scope, '../resources/sw-intercept.js');
       const iframe = await with_iframe(scope);
       add_completion_callback(_ => iframe.remove());
       const w = iframe.contentWindow;
@@ -87,7 +87,7 @@
 
   promise_test(async t => {
     const scope = SCOPE + "?q=aborted-stream-errors";
-    await setupRegistration(t, scope);
+    await setupRegistration(t, scope, '../resources/sw-intercept.js');
     const iframe = await with_iframe(scope);
     add_completion_callback(_ => iframe.remove());
     const w = iframe.contentWindow;
@@ -106,7 +106,7 @@
 
   promise_test(async t => {
     const scope = SCOPE + "?q=aborted-with-abort-reason";
-    await setupRegistration(t, scope);
+    await setupRegistration(t, scope, '../resources/sw-intercept.js');
     const iframe = await with_iframe(scope);
     add_completion_callback(_ => iframe.remove());
     const w = iframe.contentWindow;
@@ -120,6 +120,36 @@
 
     await promise_rejects_exactly(t, error1, fetchPromise);
   }, "fetch() rejects with abort reason");
+
+  promise_test(async t => {
+    const scope = SCOPE + "?q=service-worker-observes-abort-reason";
+    await setupRegistration(t, scope, '../resources/sw-intercept-abort.js');
+    const iframe = await with_iframe(scope);
+    add_completion_callback(_ => iframe.remove());
+    const w = iframe.contentWindow;
+
+    const controller = new w.AbortController();
+    const signal = controller.signal;
+    console.log("AAAA");
+
+    const totalMessages = 0;
+
+    w.navigator.serviceWorker.addEventListener('message', event => {
+      totalMessages += 1;
+      if (totalMessages == 1) {
+        assert_equals(event.data, "fetch event has arrived");
+      } else if (totalMessage == 2) {
+        assert_equals(event.data, error1);
+      }
+      console.log("HELLOOO");
+    });
+
+    const fetchPromise = w.fetch('data.json', { signal });
+
+    controller.abort(error1);
+
+    await promise_rejects_exactly(t, error1, fetchPromise);
+  }, "Service Worker can observe the fetch abort and associated abort reason");
 </script>
 </body>
 </html>

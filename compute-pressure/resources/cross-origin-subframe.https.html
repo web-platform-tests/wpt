@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>Pressure observation fails in a cross-origin frame</title>
+<body></body>
+<script>
+'use strict';
+async function attemptObservation() {
+  try {
+    const observer = new PressureObserver(e => {
+      window.top.postMessage('got observation', '*');
+    });
+    await observer.observe('cpu');
+    window.top.postMessage('started observation', '*');
+  } catch (e) {
+    window.top.postMessage(e.message, '*');
+  }
+}
+attemptObservation();
+</script>

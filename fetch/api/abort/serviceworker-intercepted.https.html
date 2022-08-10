@@ -137,7 +137,7 @@
       totalMessages += 1;
       if (totalMessages == 1) {
         assert_equals(event.data, "fetch event has arrived");
-      } else if (totalMessage == 2) {
+      } else if (totalMessages == 2) {
         assert_equals(event.data, error1);
       }
     });

@@ -130,7 +130,6 @@
 
     const controller = new w.AbortController();
     const signal = controller.signal;
-    console.log("AAAA");
 
     const totalMessages = 0;
 
@@ -141,7 +140,6 @@
       } else if (totalMessage == 2) {
         assert_equals(event.data, error1);
       }
-      console.log("HELLOOO");
     });
 
     const fetchPromise = w.fetch('data.json', { signal });

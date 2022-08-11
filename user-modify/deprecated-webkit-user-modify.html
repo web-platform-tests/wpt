@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>-webkit-user-modify shouldn't be available in author origin</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+#modified {
+    -webkit-user-modify: read-write-plaintext-only;
+}
+</style>
+<div id="inherited"></div>
+<div id="modified"></div>
+<script>
+    test(function() {
+        const inherited = document.getElementById('inherited');
+        assert_equals(getComputedStyle(inherited).getPropertyValue('-webkit-user-modify'), 'read-only');
+    }, '-webkit-user-modify is read-only by default');
+
+    test(function() {
+        const inherited = document.getElementById('inherited');
+        const modified = document.getElementById('modified');
+        assert_not_equals(getComputedStyle(modified).getPropertyValue('-webkit-user-modify'), 'read-write-plaintext-only');
+    }, '-webkit-user-modify is not supported in author origin CSS');
+
+    test(function() {
+        const inherited = document.getElementById('inherited');
+        const modified = document.getElementById('modified');
+        assert_equals(getComputedStyle(modified).getPropertyValue('-webkit-user-modify'), getComputedStyle(inherited).getPropertyValue('-webkit-user-modify'));
+    }, '-webkit-user-modify remains only as user-agent CSS value');
+</script>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <title>Test that promise is resolved when user selects a device.</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/common/media.js"></script>
+  <body>
+    <p>
+      Click the button below to prompt for a remote playback device and select
+      one!
+    </p>
+    <button id="prompt-button">Pick device</button>
+  </body>
+  <script>
+    async_test((t) => {
+      var v = document.createElement("video");
+      v.src = getVideoURI("/media/movie_5");
+
+      function callback(available) {
+        //assert_true(available, "Is remote playback device available");
+        promise_test(() => {
+          return v.remote.prompt();
+        });
+      }
+
+      var button = document.getElementById("prompt-button");
+      button.onclick = function () {
+        v.remote.watchAvailability(t.step_func_done(callback)).then(
+          t.step_func(() => {}),
+          t.unreached_func()
+        );
+      };
+    }, "Test that promise is resolved when user selects a device.");
+  </script>
+</html>

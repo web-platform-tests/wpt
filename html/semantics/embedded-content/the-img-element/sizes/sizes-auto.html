@@ -86,6 +86,8 @@ const tests = [
   {loading: 'lazy', sizes: 'auto', style: 'min-block-size: 10px; writing-mode: vertical-rl', 'data-ref': 'ref1'},
   {loading: 'lazy', sizes: 'auto', style: 'inline-size: 10px; aspect-ratio: 10/10; writing-mode: vertical-rl', 'data-ref': 'ref1'},
   {loading: 'lazy', sizes: 'auto', style: 'min-inline-size: 10px; aspect-ratio: 10/10; writing-mode: vertical-rl', 'data-ref': 'ref1'},
+  {loading: 'lazy', sizes: 'auto', style: '--my-width: 10px; width: var(--my-width)', 'data-ref': 'ref1'},
+  {loading: 'lazy', sizes: 'auto', style: 'width: calc(5px + 5px)', 'data-ref': 'ref1'},
 ];
 
 function test_img(obj, i) {

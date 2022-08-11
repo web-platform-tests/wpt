@@ -89,6 +89,7 @@ const tests = [
   {loading: 'lazy', sizes: 'auto', style: 'min-inline-size: 10px; aspect-ratio: 10/10; writing-mode: vertical-rl', 'data-ref': 'ref1'},
   {loading: 'lazy', sizes: 'auto', style: '--my-width: 10px; width: var(--my-width)', 'data-ref': 'ref1'},
   {loading: 'lazy', sizes: 'auto', style: 'width: calc(5px + 5px)', 'data-ref': 'ref1'},
+  {loading: 'lazy', sizes: 'auto', style: 'position: absolute; left: 50%; right: 49%', 'data-ref': 'ref2'}, // replaced elements don't get the width resolved from 'left'/'right' per https://drafts.csswg.org/css2/#abs-replaced-width
 ];
 
 function test_img(obj, i) {

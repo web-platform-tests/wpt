@@ -6,47 +6,6 @@ from .. import any_stack_trace
 
 
 @pytest.mark.asyncio
-async def test_exception(bidi_session, top_context):
-    with pytest.raises(ScriptEvaluateResultException) as exception:
-        await bidi_session.script.call_function(
-            function_declaration='()=>{throw 1}',
-            await_promise=False,
-            target=ContextTarget(top_context["context"]))
-
-    recursive_compare({
-        'realm': any_string,
-        'exceptionDetails': {
-            'columnNumber': any_int,
-            'exception': {
-                'value': 1,
-                'type': 'number'},
-            'lineNumber': any_int,
-            'stackTrace': any_stack_trace,
-            'text': any_string}},
-        exception.value.result)
-
-
-@pytest.mark.asyncio
-async def test_invalid_function(bidi_session, top_context):
-    with pytest.raises(ScriptEvaluateResultException) as exception:
-        await bidi_session.script.call_function(
-            function_declaration='))) !!@@## some invalid JS script (((',
-            await_promise=False,
-            target=ContextTarget(top_context["context"]))
-    recursive_compare({
-        'realm': any_string,
-        'exceptionDetails': {
-            'columnNumber': any_int,
-            'exception': {
-                'handle': any_string,
-                'type': 'error'},
-            'lineNumber': any_int,
-            'stackTrace': any_stack_trace,
-            'text': any_string}},
-        exception.value.result)
-
-
-@pytest.mark.asyncio
 async def test_arrow_function(bidi_session, top_context):
     result = await bidi_session.script.call_function(
         function_declaration="()=>{return 1+2;}",
@@ -73,7 +32,6 @@ async def test_arguments(bidi_session, top_context):
 
     recursive_compare({
         "type": "array",
-        "handle": any_string,
         "value": [{
             "type": 'string',
             "value": 'ARGUMENT_STRING_VALUE'
@@ -92,7 +50,6 @@ async def test_default_arguments(bidi_session, top_context):
 
     recursive_compare({
         "type": "array",
-        "handle": any_string,
         "value": []
     }, result)
 
@@ -127,7 +84,6 @@ async def test_default_this(bidi_session, top_context):
     # Note: https://github.com/w3c/webdriver-bidi/issues/251
     recursive_compare({
         "type": 'window',
-        "handle": any_string,
     }, result)
 
 
@@ -136,6 +92,7 @@ async def test_remote_value_argument(bidi_session, top_context):
     remote_value_result = await bidi_session.script.evaluate(
         expression="({SOME_PROPERTY:'SOME_VALUE'})",
         await_promise=False,
+        result_ownership="root",
         target=ContextTarget(top_context["context"]))
 
     remote_value_handle = remote_value_result["handle"]
@@ -150,41 +107,3 @@ async def test_remote_value_argument(bidi_session, top_context):
     assert result == {
         "type": "string",
         "value": "SOME_VALUE"}
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("await_promise", [True, False])
-async def test_async_arrow_await_promise(bidi_session, top_context, await_promise):
-    result = await bidi_session.script.call_function(
-        function_declaration="async ()=>{return 'SOME_VALUE'}",
-        await_promise=await_promise,
-        target=ContextTarget(top_context["context"]))
-
-    if await_promise:
-        assert result == {
-            "type": "string",
-            "value": "SOME_VALUE"}
-    else:
-        recursive_compare({
-            "type": "promise",
-            "handle": any_string},
-            result)
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("await_promise", [True, False])
-async def test_async_classic_await_promise(bidi_session, top_context, await_promise):
-    result = await bidi_session.script.call_function(
-        function_declaration="async function(){return 'SOME_VALUE'}",
-        await_promise=await_promise,
-        target=ContextTarget(top_context["context"]))
-
-    if await_promise:
-        assert result == {
-            "type": "string",
-            "value": "SOME_VALUE"}
-    else:
-        recursive_compare({
-            "type": "promise",
-            "handle": any_string},
-            result)

@@ -1,0 +1,24 @@
+.fake-pop-up {
+  position: fixed;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  inset-block-start: 0;
+  inset-block-end: 0;
+  width: fit-content;
+  height: fit-content;
+  margin: auto;
+  border: solid;
+  overflow: auto;
+  padding: 1em;
+  color: CanvasText;
+  background-color: Canvas;
+}
+.fake-pop-up-backdrop {
+  position: fixed;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  inset-block-start: 0;
+  inset-block-end: 0;
+  background: transparent;
+  pointer-events: none !important;
+}

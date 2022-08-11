@@ -2,8 +2,8 @@
 
 promise_test(async t => {
   const update1_promise = new Promise((resolve, reject) => {
-    const observer = new ComputePressureObserver(
-        resolve, {cpuUtilizationThresholds: [0.5], cpuSpeedThresholds: [0.5]});
+    const observer = new PressureObserver(
+        resolve, {cpuUtilizationThresholds: [0.5]});
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu').catch(reject);
   });
@@ -14,8 +14,8 @@ promise_test(async t => {
   document.body.appendChild(iframe2);
 
   const update2_promise = new Promise((resolve, reject) => {
-    const observer = new iframe2.contentWindow.ComputePressureObserver(
-        resolve, {cpuUtilizationThresholds: [0.5], cpuSpeedThresholds: [0.5]});
+    const observer = new iframe2.contentWindow.PressureObserver(
+        resolve, {cpuUtilizationThresholds: [0.5]});
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu').catch(reject);
   });
@@ -24,8 +24,8 @@ promise_test(async t => {
   document.body.appendChild(iframe3);
 
   const update3_promise = new Promise((resolve, reject) => {
-    const observer = new iframe3.contentWindow.ComputePressureObserver(
-        resolve, {cpuUtilizationThresholds: [0.5], cpuSpeedThresholds: [0.5]});
+    const observer = new iframe3.contentWindow.PressureObserver(
+        resolve, {cpuUtilizationThresholds: [0.5]});
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu').catch(reject);
   });
@@ -36,7 +36,6 @@ promise_test(async t => {
   for (const update of [update1, update2, update3]) {
     assert_in_array(update.cpuUtilization, [0.25, 0.75],
                     'cpuUtilization quantization');
-    assert_in_array(update.cpuSpeed, [0.25, 0.75], 'cpuSpeed quantization');
   }
-}, 'Three ComputePressureObserver instances in different iframes, but with ' +
+}, 'Three PressureObserver instances in different iframes, but with ' +
    'the same quantization schema, receive updates');

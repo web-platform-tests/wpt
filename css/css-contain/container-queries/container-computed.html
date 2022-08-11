@@ -18,12 +18,11 @@ test_computed_value('container', 'none / inline-size');
 test_computed_value('container', 'none / size');
 test_computed_value('container', 'inline-size / inline-size');
 test_computed_value('container', 'block-size / size');
-test_computed_value('container', 'name / size style', 'name / style size');
-test_computed_value('container', 'name /inline-size style', 'name / style inline-size');
 test_computed_value('container', 'foo / inline-size');
 test_computed_value('container', 'foo /inline-size', 'foo / inline-size');
 test_computed_value('container', 'foo/ inline-size', 'foo / inline-size');
 test_computed_value('container', 'foo/inline-size', 'foo / inline-size');
 test_computed_value('container', 'FoO / size');
 test_computed_value('container', 'foo bar / size', 'foo bar / size');
+test_computed_value('container', 'foo / normal', 'foo');
 </script>

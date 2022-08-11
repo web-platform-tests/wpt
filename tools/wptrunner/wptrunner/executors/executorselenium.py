@@ -39,10 +39,12 @@ def do_delayed_imports():
     global exceptions
     global RemoteConnection
     global Command
+    global By
     from selenium import webdriver
     from selenium.common import exceptions
     from selenium.webdriver.remote.remote_connection import RemoteConnection
     from selenium.webdriver.remote.command import Command
+    from selenium.webdriver.common.by import By
 
 
 class SeleniumBaseProtocolPart(BaseProtocolPart):
@@ -61,7 +63,7 @@ class SeleniumBaseProtocolPart(BaseProtocolPart):
         return self.webdriver.current_window_handle
 
     def set_window(self, handle):
-        self.webdriver.switch_to_window(handle)
+        self.webdriver.switch_to.window(handle)
 
     def window_handles(self):
         return self.webdriver.window_handles
@@ -95,7 +97,7 @@ class SeleniumTestharnessProtocolPart(TestharnessProtocolPart):
 
     def load_runner(self, url_protocol):
         if self.runner_handle:
-            self.webdriver.switch_to_window(self.runner_handle)
+            self.webdriver.switch_to.window(self.runner_handle)
         url = urljoin(self.parent.executor.server_url(url_protocol),
                       "/testharness_runner.html")
         self.logger.debug("Loading %s" % url)
@@ -108,11 +110,11 @@ class SeleniumTestharnessProtocolPart(TestharnessProtocolPart):
         handles = [item for item in self.webdriver.window_handles if item != self.runner_handle]
         for handle in handles:
             try:
-                self.webdriver.switch_to_window(handle)
+                self.webdriver.switch_to.window(handle)
                 self.webdriver.close()
             except exceptions.NoSuchWindowException:
                 pass
-        self.webdriver.switch_to_window(self.runner_handle)
+        self.webdriver.switch_to.window(self.runner_handle)
         return self.runner_handle
 
     def get_test_window(self, window_id, parent, timeout=5):
@@ -172,10 +174,10 @@ class SeleniumSelectorProtocolPart(SelectorProtocolPart):
         self.webdriver = self.parent.webdriver
 
     def elements_by_selector(self, selector):
-        return self.webdriver.find_elements_by_css_selector(selector)
+        return self.webdriver.find_elements(By.CSS_SELECTOR, selector)
 
     def elements_by_selector_and_frame(self, element_selector, frame):
-        return self.webdriver.find_elements_by_css_selector(element_selector)
+        return self.webdriver.find_elements(By.CSS_SELECTOR, element_selector)
 
 
 class SeleniumClickProtocolPart(ClickProtocolPart):
@@ -265,7 +267,7 @@ class SeleniumProtocol(Protocol):
         self.logger.debug("Connecting to Selenium on URL: %s" % self.url)
 
         self.webdriver = webdriver.Remote(command_executor=RemoteConnection(self.url.strip("/"),
-                                                                            resolve_ip=False),
+                                                                            keep_alive=True),
                                           desired_capabilities=self.capabilities)
 
     def teardown(self):

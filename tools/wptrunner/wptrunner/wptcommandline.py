@@ -396,6 +396,12 @@ scheme host and port.""")
     parser.add_argument("test_list", nargs="*",
                         help="List of URLs for tests to run, or paths including tests to run. "
                              "(equivalent to --include)")
+    
+    browserstack_group = parser.add_argument_group("BrowserStack-specific")
+    browserstack_group.add_argument("--browserstack-url", dest="browserstack_url",
+                          help="BrowserStack URL")
+    browserstack_group.add_argument("--browserstack-capabilities", dest="browserstack_capabilities",
+                          help="BrowserStack Capabilities", type=str)
 
     def screenshot_api_wrapper(formatter, api):
         formatter.api = api

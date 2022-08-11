@@ -704,6 +704,18 @@ class Epiphany(BrowserSetup):
             kwargs["webdriver_binary"] = webdriver_binary
 
 
+class BrowserStack(BrowserSetup):
+    name = "browserstack"
+    browser_cls = browser.BrowserStack
+
+    def install(self, channel=None):
+        raise NotImplementedError
+
+    def setup_kwargs(self, kwargs):
+        if kwargs["browserstack_capabilities"] is None:
+            raise WptrunError("Missing required argument --browserstack-capabilities")
+        kwargs["test_types"] = ["testharness", "reftest"]
+
 product_setup = {
     "android_weblayer": AndroidWeblayer,
     "android_webview": AndroidWebview,
@@ -725,6 +737,7 @@ product_setup = {
     "webkit": WebKit,
     "webkitgtk_minibrowser": WebKitGTKMiniBrowser,
     "epiphany": Epiphany,
+    "browserstack": BrowserStack,
 }
 
 

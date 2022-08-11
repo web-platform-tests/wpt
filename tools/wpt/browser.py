@@ -2018,3 +2018,13 @@ class Epiphany(Browser):
             # Tech Preview output looks like "Web 3.31.3-88-g97db4f40f"
             return output.split()[1]
         return None
+
+
+class BrowserStack(Browser):
+    """BrowserStack-specific interface."""
+
+    product = "browserstack"
+    requirements = "requirements_browserstack.txt"
+
+    def version(self, binary=None, webdriver_binary=None):
+        return None

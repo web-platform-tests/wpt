@@ -9,7 +9,7 @@ from .. import any_stack_trace, specific_error_response
 async def test_strict_mode(bidi_session, top_context):
     with pytest.raises(ScriptEvaluateResultException) as exception:
         await bidi_session.script.call_function(
-            function_declaration="()=>{'use strict';return x=1}",
+            function_declaration="()=>{'use strict';return NOT_EXISTED_VARIABLE=1}",
             await_promise=False,
             target=ContextTarget(top_context["context"]),
         )
@@ -17,7 +17,7 @@ async def test_strict_mode(bidi_session, top_context):
     recursive_compare(specific_error_response({"type": "error"}), exception.value.result)
 
     result = await bidi_session.script.call_function(
-        function_declaration="()=>{return y=1}",
+        function_declaration="()=>{return ANOTHER_NOT_EXISTED_VARIABLE=1}",
         await_promise=False,
         target=ContextTarget(top_context["context"]),
     )
@@ -28,7 +28,7 @@ async def test_strict_mode(bidi_session, top_context):
 
     with pytest.raises(ScriptEvaluateResultException) as exception:
         await bidi_session.script.call_function(
-            function_declaration="()=>{'use strict';return z=1}",
+            function_declaration="()=>{'use strict';return YET_ANOTHER_NOT_EXISTED_VARIABLE=1}",
             await_promise=False,
             target=ContextTarget(top_context["context"]),
         )

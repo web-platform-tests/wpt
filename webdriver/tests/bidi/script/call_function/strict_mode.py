@@ -2,7 +2,7 @@ import pytest
 
 from webdriver.bidi.modules.script import ContextTarget, ScriptEvaluateResultException
 from ... import any_int, any_string, recursive_compare
-from .. import any_stack_trace, any_error_response
+from .. import any_stack_trace, specific_error_response
 
 
 @pytest.mark.asyncio
@@ -14,7 +14,7 @@ async def test_strict_mode(bidi_session, top_context):
             target=ContextTarget(top_context["context"]),
         )
 
-    recursive_compare(any_error_response({"type": "error"}), exception.value.result)
+    recursive_compare(specific_error_response({"type": "error"}), exception.value.result)
 
     result = await bidi_session.script.call_function(
         function_declaration="()=>{return y=1}",
@@ -33,4 +33,4 @@ async def test_strict_mode(bidi_session, top_context):
             target=ContextTarget(top_context["context"]),
         )
 
-    recursive_compare(any_error_response({"type": "error"}), exception.value.result)
+    recursive_compare(specific_error_response({"type": "error"}), exception.value.result)

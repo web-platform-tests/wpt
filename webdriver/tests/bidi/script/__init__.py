@@ -11,7 +11,7 @@ def assert_handle(obj: Mapping[str, Any], should_contain_handle: bool) -> None:
         assert "handle" not in obj, f"Result should not contain `handle`. Actual: {obj}"
 
 
-def any_error_response(expected_error: Mapping[str, Any]) -> Callable[[Any], None]:
+def specific_error_response(expected_error: Mapping[str, Any]) -> Callable[[Any], None]:
     return lambda actual: recursive_compare(
         {
             "realm": any_string,

@@ -7,27 +7,28 @@ from .. import any_stack_trace, specific_error_response
 
 @pytest.mark.asyncio
 async def test_strict_mode(bidi_session, top_context):
+    # As long as there is no `SOME_VARIABLE`, the command should fail in strict mode.
     with pytest.raises(ScriptEvaluateResultException) as exception:
         await bidi_session.script.evaluate(
-            expression="'use strict';NOT_EXISTED_VARIABLE=1",
+            expression="'use strict';SOME_VARIABLE=1",
             target=ContextTarget(top_context["context"]),
             await_promise=True)
-
     recursive_compare(specific_error_response({"type": "error"}), exception.value.result)
 
+    # In non-strict mode, the command should succeed and global `SOME_VARIABLE` should be created.
     result = await bidi_session.script.evaluate(
-        expression="ANOTHER_NOT_EXISTED_VARIABLE=1",
+        expression="SOME_VARIABLE=1",
         target=ContextTarget(top_context["context"]),
         await_promise=True)
-
     assert result == {
         "type": "number",
         "value": 1}
 
-    with pytest.raises(ScriptEvaluateResultException) as exception:
-        await bidi_session.script.evaluate(
-            expression="'use strict';YET_ANOTHER_NOT_EXISTED_VARIABLE=1",
-            target=ContextTarget(top_context["context"]),
-            await_promise=True)
-
-    recursive_compare(specific_error_response({"type": "error"}), exception.value.result)
+    # Access created by the previous command `SOME_VARIABLE`.
+    result = await bidi_session.script.evaluate(
+        expression="'use strict';SOME_VARIABLE=1",
+        target=ContextTarget(top_context["context"]),
+        await_promise=True)
+    assert result == {
+        "type": "number",
+        "value": 1}

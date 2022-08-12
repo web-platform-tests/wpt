@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
-  <title>Test that promise is resolved when user selects a device.</title>
+  <title>
+    Test that the remote playback state changes when selecting a device.
+  </title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/common/media.js"></script>
@@ -40,12 +42,26 @@
       explicit_timeout: true,
     });
     async_test((t) => {
-      var button = document.getElementById("prompt-button");
-      button.onclick = t.step_func_done(() => {
+      assert_equals(v.remote.state, "disconnected");
+
+      function callback(available) {
+        //assert_true(available, "Is remote playback device available");
         promise_test(() => {
-          return v.remote.prompt();
-        }, "Prompt resolves");
-      });
-    }, "Test that promise is resolved when user selects a device.");
+          return v.remote.prompt().then(
+            t.step_func(() => {
+              assert_equals(v.remote.state, "connecting");
+            })
+          );
+        }, "Prompt call resolves");
+      }
+
+      var button = document.getElementById("prompt-button");
+      button.onclick = function () {
+        v.remote.watchAvailability(t.step_func_done(callback)).then(
+          t.step_func(() => {}),
+          t.unreached_func()
+        );
+      };
+    }, "Test that the remote playback state changes when selecting a device.");
   </script>
 </html>

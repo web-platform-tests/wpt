@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
-  <title>Test that promise is resolved when user selects a device.</title>
+  <title>
+    Test that watchAvailability returned true when user selects device.
+  </title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/common/media.js"></script>
@@ -31,21 +33,37 @@
     };
     var promptPrepButton = document.getElementById("prompt-button-prep");
     promptPrepButton.onclick = function () {
-      v.remote
-        .prompt()
-        .then(() => {})
-        .catch(() => {});
+      v.remote.prompt().then(() => {}).catch(() => {});
     };
     setup({
       explicit_timeout: true,
     });
     async_test((t) => {
+      var deviceAvailable = false;
+
+      function callback(available) {
+        deviceAvailable = available;
+      }
+
       var button = document.getElementById("prompt-button");
-      button.onclick = t.step_func_done(() => {
-        promise_test(() => {
-          return v.remote.prompt();
-        }, "Prompt resolves");
-      });
-    }, "Test that promise is resolved when user selects a device.");
+      button.onclick = function () {
+        v.remote.watchAvailability(t.step_func(callback)).then(
+          t.step_func(() => {
+            v.remote
+              .prompt()
+              .then(() => {
+                assert_true(deviceAvailable);
+                t.done();
+              })
+              .catch(
+                t.unreached_func(
+                  "Selecting a remote device was not successful."
+                )
+              );
+          }),
+          t.unreached_func()
+        );
+      };
+    }, "Test that watchAvailability returned true when user selects device.");
   </script>
 </html>

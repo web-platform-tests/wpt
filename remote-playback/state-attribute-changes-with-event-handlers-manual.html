@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
-  <title>Test that promise is resolved when user selects a device.</title>
+  <title>
+    Test that remote playback state changes when connecting and disconnecting.
+  </title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/common/media.js"></script>
@@ -13,9 +15,13 @@
     <div id="pick-device" style="display: none">
       <p>
         Click the button below to prompt for a remote playback device and select
-        one!
+        one! After connecting to the device, please click again and disconnect
+        from device.
       </p>
       <button id="prompt-button">Pick device</button>
+      <button id="disconnect-button" style="display: none">
+        Disconnect device
+      </button>
     </div>
   </body>
   <script>
@@ -40,12 +46,33 @@
       explicit_timeout: true,
     });
     async_test((t) => {
+      v.remote.onconnecting = function () {
+        assert_equals(v.remote.state, "connecting");
+      };
+
+      v.remote.onconneced = function () {
+        assert_equals(v.remote.state, "connected");
+      };
+
+      v.remote.ondisconnected = function () {
+        assert_equals(v.remote.state, "disconnected");
+      };
+
       var button = document.getElementById("prompt-button");
-      button.onclick = t.step_func_done(() => {
+      var disconnectButton = document.getElementById("disconnect-button");
+      button.onclick = function () {
         promise_test(() => {
-          return v.remote.prompt();
-        }, "Prompt resolves");
-      });
-    }, "Test that promise is resolved when user selects a device.");
+          return v.remote.prompt().then(() => {
+            button.style.display = "none";
+            disconnectButton.style.display = "inline";
+          });
+        }, "Prompt to connect device");
+      };
+      disconnectButton.onclick = function () {
+        promise_test(() => {
+          return v.remote.prompt().then(() => t.done());
+        }, "Prompt to disconnect device");
+      };
+    }, "Test that remote playback state changes when connecting and disconnecting.");
   </script>
 </html>

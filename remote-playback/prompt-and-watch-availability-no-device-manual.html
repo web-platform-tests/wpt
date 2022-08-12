@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html>
-  <title>Test that promise is resolved when user selects a device.</title>
+  <title>
+    Test that watchAvailability returned false when there is no device for the user to select.
+  </title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/common/media.js"></script>
   <body>
     <div id="prep">
-      <p>Please make sure a device for remote playback is <b>available.</b></p>
+      <p>Please make sure <b>no device is available</b> for remote playback.</p>
       <button id="prompt-button-prep">Show devices</button>
       <button id="start-button">Start test</button>
     </div>
     <div id="pick-device" style="display: none">
       <p>
         Click the button below to prompt for a remote playback device and select
-        one!
+        one if available, otherwise cancel!
       </p>
       <button id="prompt-button">Pick device</button>
     </div>
@@ -31,21 +33,33 @@
     };
     var promptPrepButton = document.getElementById("prompt-button-prep");
     promptPrepButton.onclick = function () {
-      v.remote
-        .prompt()
-        .then(() => {})
-        .catch(() => {});
+      v.remote.prompt().then(() => {}).catch(() => {});
     };
     setup({
       explicit_timeout: true,
     });
     async_test((t) => {
+      var deviceAvailable = false;
+
+      function callback(available) {
+        deviceAvailable = available;
+      }
+
       var button = document.getElementById("prompt-button");
-      button.onclick = t.step_func_done(() => {
-        promise_test(() => {
-          return v.remote.prompt();
-        }, "Prompt resolves");
-      });
-    }, "Test that promise is resolved when user selects a device.");
+      button.onclick = function () {
+        v.remote.watchAvailability(t.step_func(callback)).then(
+          t.step_func(() => {
+            v.remote
+              .prompt()
+              .then(t.unreached_func("A device was selected."))
+              .catch(() => {
+                assert_false(deviceAvailable);
+                t.done();
+              });
+          }),
+          t.unreached_func()
+        );
+      };
+    }, "Test that watchAvailability returned false when there is no device for the user to select.");
   </script>
 </html>

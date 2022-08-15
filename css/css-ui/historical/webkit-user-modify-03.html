@@ -16,7 +16,7 @@
 <script>
     test(function() {
         const content = document.getElementById('content');
-        assert_not_equals(content.style.backgroundColor, 'rgb(255, 0, 0)');
+        assert_not_equals(getComputedStyle(content).getPropertyValue('background-color'), 'rgb(255, 0, 0)');
     }, '@supports doesn\'t use unsupported -webkit-user-modify property');
 
     test(function() {

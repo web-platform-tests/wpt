@@ -1,0 +1,20 @@
+<!doctype html>
+<html class=reftest-wait>
+<title>restart the animation when setting src to same value, current request is completely available</title>
+<link rel=match href=restart-animation-ref.html>
+
+<img src=../resources/anim.gif id=img>
+
+<script>
+const img = document.getElementById('img');
+const rAF = () => new Promise(resolve => { requestAnimationFrame(resolve); });
+
+onload = () => {
+  setTimeout(async () => {
+    img.src = img.getAttribute('src');
+    await rAF();
+    await rAF();
+    document.documentElement.className = '';
+  }, 550);
+}
+</script>

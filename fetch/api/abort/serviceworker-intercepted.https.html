@@ -131,20 +131,23 @@
     const controller = new w.AbortController();
     const signal = controller.signal;
 
-    const totalMessages = 0;
-
-    w.navigator.serviceWorker.addEventListener('message', event => {
-      totalMessages += 1;
-      if (totalMessages == 1) {
-        assert_equals(event.data, "fetch event has arrived");
-      } else if (totalMessages == 2) {
-        assert_equals(event.data, error1);
-      }
-    });
-
     const fetchPromise = w.fetch('data.json', { signal });
 
+    await new Promise(resolve => {
+      w.navigator.serviceWorker.addEventListener('message', t.step_func(event => {
+        assert_equals(event.data, "fetch event has arrived");
+        resolve();
+      }), {once: true});
+    });
+
     controller.abort(error1);
+
+    await new Promise(resolve => {
+      w.navigator.serviceWorker.addEventListener('message', t.step_func(event => {
+        assert_equals(event.data.message, error1.message);
+        resolve();
+      }), {once: true});
+    });
 
     await promise_rejects_exactly(t, error1, fetchPromise);
   }, "Service Worker can observe the fetch abort and associated abort reason");

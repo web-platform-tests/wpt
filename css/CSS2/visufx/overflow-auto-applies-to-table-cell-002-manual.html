@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <!--
+
+  Related tests:
+
+  http://wpt.live/css/css-backgrounds/table-cell-background-local.html
+
+  Overflow applies to table cell
+  http://test.csswg.org/suites/css21_dev/nightly-unstable/html4/overflow-applies-to-007.htm
+  but this test only tested 'overflow: hidden' and not 'overflow: auto' or 'overflow: scroll'
+
+  Mozilla Bug report 221154: table cells do not support 'overflow' correctly
+  https://bugzilla.mozilla.org/show_bug.cgi?id=221154
+
+  Date created: May 6th 2020
+  Date modified: August 15th 2022
+
+  -->
+
+  <title>CSS 2.2 Test: 'overflow: auto' applies to a table cell</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+  <link rel="help" href="https://www.w3.org/TR/CSS22/visufx.html#overflow">
+
+  <meta name="flags" content="scroll">
+
+  <style type="text/css">
+  table
+    {
+      border-spacing: 0px;
+      color: red;
+      font-family: Ahem;
+      font-size: 100px;
+      line-height: 1;
+      table-layout: fixed;
+      width: 1em;
+    }
+
+  td
+    {
+      overflow: auto;
+      padding: 0px;
+      white-space: nowrap;
+    }
+
+  span#overflowed
+    {
+      color: green;
+    }
+  </style>
+
+  <script type="text/javascript">
+  function startTest()
+  {
+  document.getElementById("target").scrollLeft = 100;
+  }
+  </script>
+
+  <body onload="startTest();">
+
+  <p>Test passes if
+
+  <ul>
+
+    <li>there is a short horizontal scroll bar
+    <li>there is a filled green square
+    <li>there is <strong>no red</strong> <em>unless the short horizontal scroll bar is used</em>.
+
+  </ul>
+
+  <table>
+
+    <tr>
+
+      <td id="target"><span>A</span><span id="overflowed">Z</span>
+
+  </table>

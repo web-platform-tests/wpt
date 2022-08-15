@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <!--
+
+  Related tests:
+
+  http://wpt.live/css/css-backgrounds/table-cell-background-local.html
+
+  Overflow applies to table cell
+  http://test.csswg.org/suites/css21_dev/nightly-unstable/html4/overflow-applies-to-007.htm
+  but this test only tested 'overflow: hidden' and not 'overflow: auto' or 'overflow: scroll'
+
+  Mozilla Bug report 221154: table cells do not support 'overflow' correctly
+  https://bugzilla.mozilla.org/show_bug.cgi?id=221154
+
+  Date created: May 6th 2020
+  Date modified: August 15th 2022
+
+  -->
+
+  <title>CSS 2.2 Test: 'overflow: auto' applies to a table cell</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/CSS22/visufx.html#overflow">
+
+  <meta name="flags" content="scroll">
+
+  <style>
+  td
+    {
+      overflow: auto;
+      padding: 0px;
+    }
+
+  div#parent100x100
+    {
+      background-color: blue;
+      height: 100px;
+      width: 100px;
+    }
+
+  div#child200x200
+    {
+      background-color: orange;
+      height: 200px;
+      width: 200px;
+    }
+  </style>
+
+  <body>
+
+  <p>Test passes if there is an orange rectangle with both an active vertical scroll bar and an active horizontal scroll bar.
+
+  <table>
+
+    <tr>
+
+      <td>
+
+        <div id="parent100x100">
+          <div id="child200x200"></div>
+        </div>
+
+  </table>

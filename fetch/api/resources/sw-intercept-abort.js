@@ -14,7 +14,6 @@ addEventListener('fetch', event => {
 
   messageClient(event.clientId, 'fetch event has arrived');
 
-  event.waitUntil(promise);
-  event.respondWith(new Promise(() => {}));
+  event.respondWith(promise.then(() => new Response('hello')));
   event.request.signal.addEventListener('abort', onAborted);
 });

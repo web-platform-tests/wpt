@@ -12,23 +12,10 @@
 <div id="modified"></div>
 <script>
     test(function() {
-        const inherited = document.getElementById('inherited');
-        assert_equals(inherited.style.WebkitUserModify, undefined);
-        assert_equals(inherited.style.webkitUserModify, undefined);
-        assert_equals(getComputedStyle(inherited).getPropertyValue('-webkit-user-modify'), '');
+        for (const el of [inherited, modified]) {
+            assert_equals(el.style.WebkitUserModify, undefined);
+            assert_equals(el.style.webkitUserModify, undefined);
+            assert_equals(getComputedStyle(el).getPropertyValue('-webkit-user-modify'), '');
+        }
     }, '-webkit-user-modify is not supported');
-
-    test(function() {
-        const modified = document.getElementById('modified');
-        assert_equals(getComputedStyle(modified).getPropertyValue('-webkit-user-modify'), '');
-        assert_equals(modified.style.WebkitUserModify, undefined);
-        assert_equals(modified.style.webkitUserModify, undefined);
-        assert_not_equals(getComputedStyle(modified).getPropertyValue('-webkit-user-modify'), 'read-write-plaintext-only');
-    }, '-webkit-user-modify is not supported in author origin CSS');
-
-    test(function() {
-        const inherited = document.getElementById('inherited');
-        const modified = document.getElementById('modified');
-        assert_equals(getComputedStyle(modified).getPropertyValue('-webkit-user-modify'), getComputedStyle(inherited).getPropertyValue('-webkit-user-modify'));
-    }, '-webkit-user-modify remains as empty string');
 </script>

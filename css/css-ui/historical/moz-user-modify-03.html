@@ -23,7 +23,6 @@
     test(function() {
         const supportsMozUserModifyProperty = CSS.supports(`(-moz-user-modify: read-only) or
             (-moz-user-modify: read-write) or
-            (-moz-user-modify: read-write-plaintext-only) or
             (-moz-user-modify: write-only)`);
         assert_equals(supportsMozUserModifyProperty, false);
     }, 'CSS.supports doesn\'t use unsupported -moz-user-modify property');

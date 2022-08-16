@@ -54,5 +54,5 @@ class ChromeiOSBrowser(WebDriverBrowser):
     init_timeout = 120
 
     def make_command(self):
-        return [self.webdriver_binary, f"--port={self.port}"] \
-               + self.webdriver_args
+        return ([self.webdriver_binary, f"--port={self.port}"] +
+                self.webdriver_args)

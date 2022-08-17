@@ -1,0 +1,52 @@
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="timeout" content="long"/>
+    <title>WebRTC WPT demo</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/webrtc/third_party/sdp/sdp.js"></script>
+    <script src="webrtc-echo.js"></script>
+</head>
+<body>
+<script>
+promise_test(async (t) => {
+    const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
+    const stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: true
+    });
+    t.add_cleanup(() => stream.getTracks().forEach(t => t.stop()));
+    stream.getTracks().forEach((track) => {
+        pc.addTrack(track, stream);
+    });
+
+    const ws = await connect(pc);
+    t.add_cleanup(() => ws.close());
+
+    // Wait for a video frame. The last packet in the frame will have the marker bit set.
+    // Note that this doesn't deal well with conditions like missing last packets, however
+    // waiting for a timestamp change requires waiting a bit longer. This is just an example :-)
+    const frame = await (new Promise((resolve) => {
+        const buffer = [];
+        ws.addEventListener('message', function listener(message) {
+            if (isRTCP(message.data)) {
+                return;
+            }
+            const rtpData = new RTP(message.data);
+            buffer.push(rtpData);
+            if (rtpData.marker) {
+                ws.removeEventListener('message', listener);
+                resolve(buffer);
+            }
+        });
+    }));
+    // Run some assertions such as trying to reassemble a frame.
+    // Or just print a table.
+    console.table(frame);
+}, 'aiortc is cool');
+</script>
+</body>
+</html>

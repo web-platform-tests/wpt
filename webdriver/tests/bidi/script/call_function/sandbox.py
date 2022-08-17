@@ -49,6 +49,8 @@ async def test_sandbox(bidi_session, new_tab):
 
 @pytest.mark.asyncio
 async def test_sandbox_with_empty_name(bidi_session, new_tab):
+    # BiDi specification doesn't have restrictions of a sandbox name,
+    # that's why we want to make sure that it works with an empty name
     await bidi_session.script.call_function(
         function_declaration="() => window.foo = 'bar'",
         target=ContextTarget(new_tab["context"], ""),
@@ -99,6 +101,27 @@ async def test_switch_sandboxes(bidi_session, new_tab):
         await_promise=True,
     )
     assert result_in_sandbox_2 == {"type": "number", "value": 2}
+
+    # Make sure changing the node in sandbox will affect the other sandbox as well
+    await bidi_session.script.call_function(
+        function_declaration="() => document.querySelector('body').textContent = 'foo'",
+        target=ContextTarget(new_tab["context"], "sandbox_1"),
+        await_promise=True,
+    )
+
+    result_in_sandbox_1 = await bidi_session.script.call_function(
+        function_declaration="() => document.querySelector('body').textContent",
+        target=ContextTarget(new_tab["context"], "sandbox_1"),
+        await_promise=True,
+    )
+    assert result_in_sandbox_1 == {"type": "string", "value": "foo"}
+
+    result_in_sandbox_2 = await bidi_session.script.call_function(
+        function_declaration="() => document.querySelector('body').textContent",
+        target=ContextTarget(new_tab["context"], "sandbox_2"),
+        await_promise=True,
+    )
+    assert result_in_sandbox_2 == {"type": "string", "value": "foo"}
 
 
 @pytest.mark.asyncio

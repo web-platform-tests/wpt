@@ -102,6 +102,9 @@ async def test_switch_sandboxes(bidi_session, new_tab):
     )
     assert result_in_sandbox_2 == {"type": "number", "value": 2}
 
+
+@pytest.mark.asyncio
+async def test_sandbox_with_side_effects(bidi_session, new_tab):
     # Make sure changing the node in sandbox will affect the other sandbox as well
     await bidi_session.script.evaluate(
         expression="document.querySelector('body').textContent = 'foo'",

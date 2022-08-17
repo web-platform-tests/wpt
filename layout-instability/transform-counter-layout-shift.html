@@ -19,7 +19,6 @@ promise_test(async () => {
 
   // Wait for the initial render to complete.
   await waitForAnimationFrames(2);
-
   // Modify the transform and the location at the same time, and the values
   // cancel each other visually, for which no shift should be reported.
   transformed.style.transform = 'translateY(100px)';

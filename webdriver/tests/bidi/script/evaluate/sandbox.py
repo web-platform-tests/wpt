@@ -111,20 +111,21 @@ async def test_sandbox_with_side_effects(bidi_session, new_tab):
         target=ContextTarget(new_tab["context"], "sandbox_1"),
         await_promise=True,
     )
+    expected_value = {"type": "string", "value": "foo"}
 
     result_in_sandbox_1 = await bidi_session.script.evaluate(
         expression="document.querySelector('body').textContent",
         target=ContextTarget(new_tab["context"], "sandbox_1"),
         await_promise=True,
     )
-    assert result_in_sandbox_1 == {"type": "string", "value": "foo"}
+    assert result_in_sandbox_1 == expected_value
 
     result_in_sandbox_2 = await bidi_session.script.evaluate(
         expression="document.querySelector('body').textContent",
         target=ContextTarget(new_tab["context"], "sandbox_2"),
         await_promise=True,
     )
-    assert result_in_sandbox_2 == {"type": "string", "value": "foo"}
+    assert result_in_sandbox_2 == expected_value
 
 
 @pytest.mark.asyncio

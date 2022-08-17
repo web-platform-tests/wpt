@@ -1046,7 +1046,7 @@ class ContentShell(Browser):
         raise NotImplementedError
 
     def find_binary(self, venv_path=None, channel=None):
-        return find_executable("content_shell", venv_path)
+        return find_executable("content_shell")
 
     def find_webdriver(self, venv_path=None, channel=None):
         return None

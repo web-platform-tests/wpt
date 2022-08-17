@@ -56,9 +56,22 @@ doesn’t require the root CA to be trusted.</p>
 </section>
 <section id="regenerating-certificates">
 <h2>Regenerating certificates<a class="headerlink" href="#regenerating-certificates" title="Permalink to this headline">¶</a></h2>
-<p>If you wish to generate new certificates for any reason, it’s possible to use
-OpenSSL when starting the server, or starting a test run, by providing the
-<code class="docutils literal notranslate"><span class="pre">--ssl-type=openssl</span></code> argument to the <code class="docutils literal notranslate"><span class="pre">wpt</span> <span class="pre">serve</span></code> or <code class="docutils literal notranslate"><span class="pre">wpt</span> <span class="pre">run</span></code> commands.</p>
+<p>The easiest way to regenerate the pregenerated certificates is to the
+the command</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">regen</span><span class="o">-</span><span class="n">certs</span>
+</pre></div>
+</div>
+<p>By default this will not generate new certificates unless the existing
+ones are about to expire. In cases where the certificates need to be
+updated anyway (e.g. because the server configuration changed), this
+can be overridden with <code class="docutils literal notranslate"><span class="pre">--force</span></code>.</p>
+<p>Generating the certificates requires OpenSSL to be installed.</p>
+<section id="implementation-details">
+<h3>Implementation Details<a class="headerlink" href="#implementation-details" title="Permalink to this headline">¶</a></h3>
+<p>If you wish to manually generate new certificates for any reason, it’s
+possible to use OpenSSL when starting the server, or starting a test
+run, by providing the <code class="docutils literal notranslate"><span class="pre">--ssl-type=openssl</span></code> argument to the <code class="docutils literal notranslate"><span class="pre">wpt</span> <span class="pre">serve</span></code>
+or <code class="docutils literal notranslate"><span class="pre">wpt</span> <span class="pre">run</span></code> commands.</p>
 <p>If you installed OpenSSL in such a way that running <code class="docutils literal notranslate"><span class="pre">openssl</span></code> at a
 command line doesn’t work, you also need to adjust the path to the
 OpenSSL binary. This can be done by adding a section to <code class="docutils literal notranslate"><span class="pre">config.json</span></code>
@@ -66,10 +79,16 @@ like:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;ssl&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;openssl&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;binary&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/openssl&quot;</span><span class="p">}}</span>
 </pre></div>
 </div>
-<p>On Windows using OpenSSL typically requires installing an OpenSSL distribution.
-<a class="reference external" href="https://slproweb.com/products/Win32OpenSSL.html">Shining Light</a>
+</section>
+<section id="windows-specific-instructions">
+<h3>Windows-specific Instructions<a class="headerlink" href="#windows-specific-instructions" title="Permalink to this headline">¶</a></h3>
+<p>For Windows users, the easiest approach is likely to be using
+<a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/">WSL</a> and generate
+certificates in a Linux environment. However it is possible to install
+OpenSSL and generate the certificates without using WSL.</p>
+<p><a class="reference external" href="https://slproweb.com/products/Win32OpenSSL.html">Shining Light</a>
 provide a convenient installer that is known to work, but requires a
-little extra setup, i.e.:</p>
+little extra setup:</p>
 <p>Run the installer for Win32_OpenSSL_v1.1.0b (30MB). During installation,
 change the default location for where to Copy OpenSSL Dlls from the
 System directory to the /bin directory.</p>
@@ -98,10 +117,6 @@ the path to the OpenSSL config file (typically this will be
 <span class="p">}</span>
 </pre></div>
 </div>
-<section id="regenerating-the-pregenerated-certificates">
-<h3>Regenerating the pregenerated certificates<a class="headerlink" href="#regenerating-the-pregenerated-certificates" title="Permalink to this headline">¶</a></h3>
-<p>From the root, run <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">serve</span> <span class="pre">--config</span> <span class="pre">tools/certs/config.json</span></code> and terminate
-it after it has started up.</p>
 </section>
 </section>
 </section>

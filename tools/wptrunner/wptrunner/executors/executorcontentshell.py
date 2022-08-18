@@ -1,7 +1,7 @@
 # mypy: allow-untyped-defs
 
 from .base import RefTestExecutor, RefTestImplementation, CrashtestExecutor, TestharnessExecutor
-from .protocol import ConnectionlessProtocol
+from .protocol import Protocol, ProtocolPart
 from time import time
 from queue import Empty
 from base64 import b64encode
@@ -13,69 +13,45 @@ class CrashError(BaseException):
     pass
 
 
-class ContentShellProtocol(ConnectionlessProtocol):
-    """This class represents the protocol used by content_shell in protocol mode.
+def _read_line(io_queue, deadline=None, encoding=None, errors="strict", raise_crash=True):
+    """Reads a single line from the io queue. The read must succeed before `deadline` or
+    a TimeoutError is raised. The line is returned as a bytestring or optionally with the
+    specified `encoding`. If `raise_crash` is set, a CrashError is raised if the line
+    happens to be a crash message.
+    """
+    current_time = time()
+
+    if deadline and current_time > deadline:
+        raise TimeoutError()
+
+    try:
+        line = io_queue.get(True, deadline - current_time if deadline else None)
+        if raise_crash and line.startswith(b"#CRASHED"):
+            raise CrashError()
+    except Empty:
+        raise TimeoutError()
+
+    return line.decode(encoding, errors) if encoding else line
+
+
+class ContentShellTestPart(ProtocolPart):
+    """This protocol part is responsible for running tests via content_shell's protocol mode.
+
     For more details, see:
     https://chromium.googlesource.com/chromium/src.git/+/HEAD/content/web_test/browser/test_info_extractor.h
     """
-    # Marker sent by content_shell after blocks.
-    eof_marker = "#EOF" + linesep
+    name = "content_shell_test"
+    eof_marker = "#EOF" + linesep  # Marker sent by content_shell after blocks.
 
-    def teardown(self):
-        # Close the queue properly to avoid broken pipe spam in the log.
-        self.browser.stdin_queue.close()
-        self.browser.stdin_queue.join_thread()
-
-    def send_command(self, command):
-        """Sends a single `command`, i.e. a URL to open, to content_shell.
-        """
-        self.browser.stdin_queue.put((command + linesep).encode("utf-8"))
-
-    def read_errors(self):
-        """Reads the entire content of the stderr queue as is available right now (no blocking).
-        """
-        result = ""
-
-        while not self.browser.stderr_queue.empty():
-            # There is no potential for race conditions here because this is the only place
-            # where we read from the stderr queue.
-            error = self.browser.stderr_queue.get()
-            result += error.decode("utf-8", "replace") + "\n"
-
-        return result
-
-    def read_line(self, deadline=None, encoding=None, errors="strict", raise_crash=True):
-        """Reads a single line from the stdout queue. The read must succeed before `deadline` or
-        a TimeoutError is raised. The line is returned as a bytestring or optionally with the
-        specified `encoding`. If `raise_crash` is set, a CrashError is raised if the line
-        happens to be a crash message.
-        """
-        current_time = time()
-
-        if deadline and current_time > deadline:
-            raise TimeoutError()
-
-        try:
-            line = self.browser.stdout_queue.get(True,
-                    deadline - current_time if deadline else None)
-
-            if raise_crash and line.startswith(b"#CRASHED"):
-                raise CrashError()
-        except Empty:
-            raise TimeoutError()
-
-        return line.decode(encoding, errors) if encoding else line
-
-    def is_alive(self):
-        """Checks if content_shell is alive by determining if the IO pipes are still
-        open. This does not guarantee that the process is responsive.
-        """
-        return self.browser.io_stopped.is_set()
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.stdout_queue = parent.browser.stdout_queue
+        self.stdin_queue = parent.browser.stdin_queue
 
     def do_test(self, url, timeout=None):
         """Sends a url to content_shell and returns the resulting text and image output.
         """
-        self.send_command(url)
+        self._send_command(url)
 
         deadline = time() + timeout if timeout else None
         # The first block can also contain audio data but not in WPT.
@@ -84,11 +60,16 @@ class ContentShellProtocol(ConnectionlessProtocol):
 
         return text, image
 
+    def _send_command(self, command):
+        """Sends a single `command`, i.e. a URL to open, to content_shell.
+        """
+        self.stdin_queue.put((command + linesep).encode("utf-8"))
+
     def _read_block(self, deadline=None):
         """Tries to read a single block of content from stdout before the `deadline`.
         """
         while True:
-            line = self.read_line(deadline, "latin-1").rstrip()
+            line = _read_line(self.stdout_queue, deadline, "latin-1").rstrip()
 
             if line == "Content-Type: text/plain":
                 return self._read_text_block(deadline)
@@ -105,7 +86,7 @@ class ContentShellProtocol(ConnectionlessProtocol):
         result = ""
 
         while True:
-            line = self.read_line(deadline, "utf-8", "replace", False)
+            line = _read_line(self.stdout_queue, deadline, "utf-8", "replace", False)
 
             if line.endswith(self.eof_marker):
                 result += line[:-len(self.eof_marker)]
@@ -118,14 +99,14 @@ class ContentShellProtocol(ConnectionlessProtocol):
     def _read_image_block(self, deadline=None):
         """Tries to read an image block (as a binary png) before the `deadline`.
         """
-        content_length_line = self.read_line(deadline, "utf-8")
+        content_length_line = _read_line(self.stdout_queue, deadline, "utf-8")
         assert content_length_line.startswith("Content-Length:")
         content_length = int(content_length_line[15:])
 
         result = bytearray()
 
         while True:
-            line = self.read_line(deadline, raise_crash=False)
+            line = _read_line(self.stdout_queue, deadline, raise_crash=False)
             excess = len(line) + len(result) - content_length
 
             if excess > 0:
@@ -137,6 +118,57 @@ class ContentShellProtocol(ConnectionlessProtocol):
             result += line
 
         return result
+
+
+class ContentShellErrorsPart(ProtocolPart):
+    """This protocol part is responsible for collecting the errors reported by content_shell.
+    """
+    name = "content_shell_errors"
+
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.stderr_queue = parent.browser.stderr_queue
+
+    def read_errors(self):
+        """Reads the entire content of the stderr queue as is available right now (no blocking).
+        """
+        result = ""
+
+        while not self.stderr_queue.empty():
+            # There is no potential for race conditions here because this is the only place
+            # where we read from the stderr queue.
+            result += _read_line(self.stderr_queue, None, "utf-8", "replace", False)
+
+        return result
+
+
+class ContentShellProtocol(Protocol):
+    implements = [ContentShellTestPart, ContentShellErrorsPart]
+    init_timeout = 10  # Timeout (seconds) to wait for #READY message.
+
+    def connect(self):
+        """Waits for content_shell to emit its "#READY" message which signals that it is fully
+        initialized. We wait for a maximum of self.init_timeout seconds.
+        """
+        deadline = time() + self.init_timeout
+
+        while True:
+            if _read_line(self.browser.stdout_queue, deadline).rstrip() == b"#READY":
+                break
+
+    def after_connect(self):
+        pass
+
+    def teardown(self):
+        # Close the queue properly to avoid broken pipe spam in the log.
+        self.browser.stdin_queue.close()
+        self.browser.stdin_queue.join_thread()
+
+    def is_alive(self):
+        """Checks if content_shell is alive by determining if the IO pipes are still
+        open. This does not guarantee that the process is responsive.
+        """
+        return self.browser.io_stopped.is_set()
 
 
 def _convert_exception(test, exception, errors):
@@ -163,17 +195,17 @@ class ContentShellRefTestExecutor(RefTestExecutor):
     def do_test(self, test):
         try:
             result = self.implementation.run_test(test)
-            self.protocol.read_errors()
+            self.protocol.content_shell_errors.read_errors()
             return self.convert_result(test, result)
         except BaseException as exception:
-            return _convert_exception(test, exception, self.protocol.read_errors())
+            return _convert_exception(test, exception, self.protocol.content_shell_errors.read_errors())
 
     def screenshot(self, test, viewport_size, dpi, page_ranges):
-        _, image = self.protocol.do_test(self.test_url(test),
+        _, image = self.protocol.content_shell_test.do_test(self.test_url(test),
                 test.timeout * self.timeout_multiplier)
 
         if not image:
-            return False, ("ERROR", self.protocol.read_errors())
+            return False, ("ERROR", self.protocol.content_shell_errors.read_errors())
 
         return True, b64encode(image).decode()
 
@@ -186,11 +218,11 @@ class ContentShellCrashtestExecutor(CrashtestExecutor):
 
     def do_test(self, test):
         try:
-            _ = self.protocol.do_test(self.test_url(test), test.timeout * self.timeout_multiplier)
-            self.protocol.read_errors()
+            _ = self.protocol.content_shell_test.do_test(self.test_url(test), test.timeout * self.timeout_multiplier)
+            self.protocol.content_shell_errors.read_errors()
             return self.convert_result(test, {"status": "PASS", "message": None})
         except BaseException as exception:
-            return _convert_exception(test, exception, self.protocol.read_errors())
+            return _convert_exception(test, exception, self.protocol.content_shell_errors.read_errors())
 
 
 class ContentShellTestharnessExecutor(TestharnessExecutor):
@@ -201,13 +233,13 @@ class ContentShellTestharnessExecutor(TestharnessExecutor):
 
     def do_test(self, test):
         try:
-            text, _ = self.protocol.do_test(self.test_url(test),
+            text, _ = self.protocol.content_shell_test.do_test(self.test_url(test),
                     test.timeout * self.timeout_multiplier)
 
-            errors = self.protocol.read_errors()
+            errors = self.protocol.content_shell_errors.read_errors()
             if not text:
                 return (test.result_cls("ERROR", errors), [])
 
             return self.convert_result(test, json.loads(text))
         except BaseException as exception:
-            return _convert_exception(test, exception, self.protocol.read_errors())
+            return _convert_exception(test, exception, self.protocol.content_shell_errors.read_errors())

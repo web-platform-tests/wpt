@@ -107,8 +107,9 @@ class ContentShellBrowser(Browser):
         self._stderr_reader = self._create_reader_thread(self._proc.stderr, self._stderr_queue)
         self._stdin_writer = self._create_writer_thread(self._proc.stdin, self._stdin_queue)
 
-        self._wait_for_ready()
-        self.logger.debug("Content shell is ready.")
+        # Content shell is likely still in the process of initializing. The actual waiting
+        # for the startup to finish is done in the ContentShellProtocol.
+        self.logger.debug("Content shell has been started.")
 
     def stop(self, force=False):
         self.logger.debug("Stopping content shell...")
@@ -159,23 +160,6 @@ class ContentShellBrowser(Browser):
 
     def check_crash(self, process, test):
         return not self.is_alive()
-
-    def _wait_for_ready(self):
-        """This function waits for content_shell to emit its "#READY" message which signals
-        that it is fully initialized. We wait for a maximum of self.init_timeout seconds.
-        """
-        deadline = time() + self.init_timeout
-
-        while True:
-            current_time = time()
-            if current_time > deadline:
-                raise TimeoutError()
-
-            try:
-                if self._stdout_queue.get(True, deadline - current_time).startswith(b"#READY"):
-                    break
-            except Empty:
-                raise TimeoutError()
 
     def _create_reader_thread(self, stream, queue):
         """This creates (and starts) a background thread which reads lines from `stream` and

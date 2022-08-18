@@ -948,11 +948,8 @@ def start_webrtc_server(logger, host, port, paths, routes, bind_address, config,
         from webrtc.webrtc_server import WebRTCServer  # type: ignore
         return WebRTCServer(host=host,
                             port=port,
-                            doc_root=paths["doc_root"],
-                            handlers_root=os.path.join(repo_root, "tools", "webrtc"),
                             cert_path=config.ssl_config["cert_path"],
                             key_path=config.ssl_config["key_path"],
-                            bind_address=bind_address,
                             logger=logger)
     except Exception as error:
         logger.critical(

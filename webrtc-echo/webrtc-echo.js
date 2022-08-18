@@ -1,7 +1,7 @@
 // Helper function to connect to the echo endpoint
 async function connect(pc) {
     const {protocol} = window.location;
-    const ws = new WebSocket((protocol === 'http:' ? 'ws:' : 'wss:') + '//' + window.location.host + '/webrtc');
+    const ws = new WebSocket((protocol === 'http:' ? 'ws:' : 'wss:') + '//' + window.location.hostname + ':4404/webrtc');
     ws.binaryType = 'arraybuffer';
 
     await (new Promise((resolve) => {

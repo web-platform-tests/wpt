@@ -1046,7 +1046,9 @@ class ContentShell(Browser):
         raise NotImplementedError
 
     def find_binary(self, venv_path=None, channel=None):
-        return find_executable("content_shell")
+        if uname[0] == "Darwin":
+            return find_executable("Content Shell.app/Contents/MacOS/Content Shell")
+        return find_executable("content_shell")  # .exe is added automatically for Windows
 
     def find_webdriver(self, venv_path=None, channel=None):
         return None

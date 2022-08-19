@@ -2,8 +2,6 @@
 
 import os
 from multiprocessing import Queue, Event
-from queue import Empty
-from time import time
 from subprocess import PIPE
 from threading import Thread
 from mozprocess import ProcessHandlerMixin

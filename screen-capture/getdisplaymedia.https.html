@@ -58,10 +58,10 @@ promise_test( async t => {
 [
  {video: true},
  {video: true, audio: false},
- {video: true, selfBrowserSurface: "include"},
- {video: true, selfBrowserSurface: "exclude"},
  {audio: false},
  {audio: true},
+ {selfBrowserSurface: "include"},
+ {selfBrowserSurface: "exclude"},
  {},
  undefined
 ].forEach(constraints => promise_test(async t => {

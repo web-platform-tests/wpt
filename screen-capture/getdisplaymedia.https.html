@@ -208,4 +208,16 @@ promise_test(async t => {
   assert_any(assert_equals, settings.cursor, ['never', 'always', 'motion']);
 }, 'getDisplayMedia() with getSettings');
 
+[
+ {video: {displaySurface: "monitor"}},
+ {video: {displaySurface: "browser"}},
+ {video: {displaySurface: "window"}},
+].forEach(constraints => promise_test(async t => {
+  const stream = await getDisplayMedia(constraints);
+  t.add_cleanup(() => stopTracks(stream));
+  assert_equals(stream.getTracks().length, 1);
+  assert_equals(stream.getVideoTracks().length, 1);
+  assert_equals(stream.getAudioTracks().length, 0);
+}, `getDisplayMedia(${j(constraints)}) must succeed with displaySurface`));
+  
 </script>

@@ -60,6 +60,8 @@ promise_test( async t => {
  {video: true, audio: false},
  {audio: false},
  {audio: true},
+ {surfaceSwitching: "include"},
+ {surfaceSwitching: "exclude"},
  {},
  undefined
 ].forEach(constraints => promise_test(async t => {

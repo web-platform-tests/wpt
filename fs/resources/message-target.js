@@ -108,9 +108,10 @@ function add_message_event_handlers(receiver, target, target_origin) {
           // success to the sender.
           let success = true;
           try {
-            const access_handle = await message_data.file_handle
-                                    .createSyncAccessHandle({mode: "in-place"});
-            await access_handle.close();
+            const file_handle = await message_data.file_handle;
+            const access_handle =
+                file_handle.createSyncAccessHandle({mode: "in-place"});
+            access_handle.close();
           } catch (error) {
             success = false;
           }

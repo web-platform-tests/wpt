@@ -6,29 +6,31 @@ importScripts('resources/sandboxed-fs-test-helpers.js');
 directory_test(async (t, root_dir) =>  {
   const fileHandle = await root_dir.getFileHandle('OPFS.test', {create: true});
 
-  const syncHandle1 = await fileHandle.createSyncAccessHandle();
-  await promise_rejects_dom(
-      t, 'NoModificationAllowedError', fileHandle.createSyncAccessHandle());
+  const syncHandle1 = fileHandle.createSyncAccessHandle();
+  assert_throws_dom(
+    'NoModificationAllowedError',
+    () => fileHandle.createSyncAccessHandle());
 
-  await syncHandle1.close();
-  const syncHandle2 = await fileHandle.createSyncAccessHandle();
-  await syncHandle2.close();
+  syncHandle1.close();
+  const syncHandle2 = fileHandle.createSyncAccessHandle();
+  syncHandle2.close();
 }, 'There can only be one open access handle at any given time');
 
 directory_test(async (t, root_dir) =>  {
   const fooFileHandle = await root_dir.getFileHandle('foo.test', {create: true});
   const barFileHandle = await root_dir.getFileHandle('bar.test', {create: true});
 
-  const fooSyncHandle = await fooFileHandle.createSyncAccessHandle();
+  const fooSyncHandle = fooFileHandle.createSyncAccessHandle();
   t.add_cleanup(() => fooSyncHandle.close());
 
-  const barSyncHandle1 = await barFileHandle.createSyncAccessHandle();
-  await promise_rejects_dom(
-      t, 'NoModificationAllowedError', barFileHandle.createSyncAccessHandle());
+  const barSyncHandle1 = barFileHandle.createSyncAccessHandle();
+  assert_throws_dom(
+      'NoModificationAllowedError',
+      () => barFileHandle.createSyncAccessHandle());
 
-  await barSyncHandle1.close();
-  const barSyncHandle2 = await barFileHandle.createSyncAccessHandle();
-  await barSyncHandle2.close();
+  barSyncHandle1.close();
+  const barSyncHandle2 = barFileHandle.createSyncAccessHandle();
+  barSyncHandle2.close();
 }, 'An access handle from one file does not interfere with the creation of an' +
      ' access handle on another file');
 
@@ -39,7 +41,7 @@ directory_test(async (t, root_dir) =>  {
   const fooWritable = await fooFileHandle.createWritable();
   t.add_cleanup(() => fooWritable.close());
 
-  const barSyncHandle = await barFileHandle.createSyncAccessHandle();
+  const barSyncHandle = barFileHandle.createSyncAccessHandle();
   t.add_cleanup(() => barSyncHandle.close());
 }, 'A writable stream from one file does not interfere with the creation of an' +
      ' access handle on another file');
@@ -48,7 +50,7 @@ directory_test(async (t, root_dir) =>  {
   const fooFileHandle = await root_dir.getFileHandle('foo.test', {create: true});
   const barFileHandle = await root_dir.getFileHandle('bar.test', {create: true});
 
-  const fooSyncHandle = await fooFileHandle.createSyncAccessHandle();
+  const fooSyncHandle = fooFileHandle.createSyncAccessHandle();
   t.add_cleanup(() => fooSyncHandle.close());
 
   const barWritable = await barFileHandle.createWritable();
@@ -59,11 +61,11 @@ directory_test(async (t, root_dir) =>  {
 directory_test(async (t, root_dir) =>  {
   const fileHandle = await root_dir.getFileHandle('OPFS.test', {create: true});
 
-  const syncHandle = await fileHandle.createSyncAccessHandle();
+  const syncHandle = fileHandle.createSyncAccessHandle();
   await promise_rejects_dom(
       t, 'NoModificationAllowedError', fileHandle.createWritable());
 
-  await syncHandle.close();
+  syncHandle.close();
   const writable = await fileHandle.createWritable();
   await writable.close();
 }, 'Writable streams cannot be created if there is an open access handle');
@@ -73,16 +75,18 @@ directory_test(async (t, root_dir) =>  {
 
   const writable1 = await fileHandle.createWritable();
   const writable2 = await fileHandle.createWritable();
-  await promise_rejects_dom(
-      t, 'NoModificationAllowedError', fileHandle.createSyncAccessHandle());
+  assert_throws_dom(
+    'NoModificationAllowedError',
+    () => fileHandle.createSyncAccessHandle());
 
   await writable1.close();
-  await promise_rejects_dom(
-      t, 'NoModificationAllowedError', fileHandle.createSyncAccessHandle());
+  assert_throws_dom(
+    'NoModificationAllowedError',
+    () => fileHandle.createSyncAccessHandle());
 
   await writable2.close();
-  const syncHandle = await fileHandle.createSyncAccessHandle();
-  await syncHandle.close();
+  const syncHandle = fileHandle.createSyncAccessHandle();
+  syncHandle.close();
 }, 'Access handles cannot be created if there are open Writable streams');
 
 done();

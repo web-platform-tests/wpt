@@ -151,6 +151,45 @@
 
     await promise_rejects_exactly(t, error1, fetchPromise);
   }, "Service Worker can observe the fetch abort and associated abort reason");
+
+  promise_test(async t => {
+    let incrementing_error = new Error('error1');
+    incrementing_error.name = 'error1';
+
+    const scope = SCOPE + "?q=serialization-on-abort";
+    await setupRegistration(t, scope, '../resources/sw-intercept-abort.js');
+    const iframe = await with_iframe(scope);
+    add_completion_callback(_ => iframe.remove());
+    const w = iframe.contentWindow;
+
+    const controller = new w.AbortController();
+    const signal = controller.signal;
+
+    const fetchPromise = w.fetch('data.json', { signal });
+
+    await new Promise(resolve => {
+      w.navigator.serviceWorker.addEventListener('message', t.step_func(event => {
+        assert_equals(event.data, "fetch event has arrived");
+        resolve();
+      }), {once: true});
+    });
+
+    controller.abort(incrementing_error);
+
+    const original_error = incrementing_error;
+
+    incrementing_error = new Error('error2');
+    incrementing_error.name = 'error2';
+
+    await new Promise(resolve => {
+      w.navigator.serviceWorker.addEventListener('message', t.step_func(event => {
+        assert_equals(event.data.message, original_error.message);
+        resolve();
+      }), {once: true});
+    });
+
+    await promise_rejects_exactly(t, incrementing_error, fetchPromise);
+  }, "Abort reason serialization happens on abort");
 </script>
 </body>
 </html>

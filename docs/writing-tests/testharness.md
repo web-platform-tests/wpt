@@ -150,6 +150,10 @@ It is possible to customize the set of scopes with a metadata comment, such as
 //       ==> would run in the dedicated worker scope as a module
 // META: global=worker
 //       ==> would run in the dedicated, shared, and service worker scopes
+// META: global=window
+//       ==> would run the test script as a classic script.
+// META: global=window-module
+         ==> would run the test script as a module script.
 ```
 
 For a test file <code><var>x</var>.any.js</code>, the available scope keywords
@@ -157,6 +161,7 @@ are:
 
 * `window` (default): to be run at <code><var>x</var>.any.html</code>
 * `dedicatedworker` (default): to be run at <code><var>x</var>.any.worker.html</code>
+* `window-module`: to be run at <code><var>x</var>.any.window-module.html</code>
 * `dedicatedworker-module` to be run at <code><var>x</var>.any.worker-module.html</code>
 * `serviceworker`: to be run at <code><var>x</var>.any.serviceworker.html</code> (`.https` is
   implied)

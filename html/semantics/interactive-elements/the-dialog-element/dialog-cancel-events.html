@@ -13,6 +13,7 @@
 <p>Test cancel event is fired when the dialog is closed by user interaction</p>
 <dialog>
   <p>Hello World</p>
+  <button>user activation button</button>
 </dialog>
 <script>
   setup({ single_test: true });
@@ -39,7 +40,16 @@
   });
 
   dialog.showModal();
-  test_driver.send_keys(document.documentElement, "\uE00C"); // ESC key
+
+  (async () => {
+    // Pressing escape on the dialog needs user activation or else the cancel event won't be fired.
+    const button = dialog.querySelector('button');
+    const buttonClickPromise = new Promise(resolve => button.onclick = resolve);
+    await test_driver.click(button);
+    await buttonClickPromise;
+
+    test_driver.send_keys(document.documentElement, "\uE00C"); // ESC key
+  })();
 </script>
 </body>
 </html>

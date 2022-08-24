@@ -176,14 +176,13 @@
 
     controller.abort(incrementing_error);
 
-    const original_error = incrementing_error;
+    const original_error_name = incrementing_error.name;
 
-    incrementing_error = new Error('error2');
     incrementing_error.name = 'error2';
 
     await new Promise(resolve => {
       w.navigator.serviceWorker.addEventListener('message', t.step_func(event => {
-        assert_equals(event.data.message, original_error.message);
+        assert_equals(event.data.name, original_error_name);
         resolve();
       }), {once: true});
     });

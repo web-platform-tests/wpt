@@ -13,6 +13,8 @@ import json
 from shutil import copyfile
 from stat import *
 
+here = os.path.dirname(__file__)
+
 '''
 This tool reads out test262 suite and generates wrappers for web-platform-tests.
 Each WPT wrapper runs the target test262 test within 4 agents: IFrame, Window,
@@ -21,7 +23,7 @@ non-strict mode, unless the target test indicates otherwise.
 '''
 
 TAB_WIDTH = 2
-DEST_PATH = 'js/test262'
+DEST_PATH = os.path.join(here, '..', 'test262')
 
 def trim(text):
     lines = text.split("\n")
@@ -68,7 +70,7 @@ class Test262Parser(object):
     def parse_header(self):
         if len(self.header) == 0:
             return {}
-        return yaml.load(self.yaml_section()) or {}
+        return yaml.safe_load(self.yaml_section()) or {}
 
     def yaml_section(self):
         is_yaml = False
@@ -365,9 +367,7 @@ class WPTestBuilder(object):
         return ret
 
 def main():
-    if len(sys.argv) < 2:
-        usage()
-    path = sys.argv[1]
+    path = os.path.join(here, '..', '..', '..', '..', 'src', 'test262')
     WPTestBuilder(path).generate()
 
 if __name__ == "__main__":

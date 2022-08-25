@@ -25,6 +25,7 @@ scripts = {
     "fetch": ["fetch/metadata/tools/generate.py"],
     "html5lib": ["html/tools/update_html5lib_tests.py"],
     "infrastructure": ["infrastructure/assumptions/tools/ahem-generate-table.py"],
+    "js": ["js/tools/test262.py"],
     "mimesniff": ["mimesniff/mime-types/resources/generated-mime-types.py"],
     "speculative-parsing": ["html/syntax/speculative-parsing/tools/generate.py"]
 }

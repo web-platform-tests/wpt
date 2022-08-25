@@ -207,9 +207,9 @@ class WPTestBuilder(object):
                 test_dir = os.path.join(path, "test")
             mode = os.stat(test_dir)[ST_MODE]
             if not S_ISDIR(mode):
-                print("Could not locate 'test' folder at %s" % path)
+                print(("Could not locate 'test' folder at %s" % path))
                 exit(1)
-            print "Generating web-platform-test wrappers for test262"
+            print("Generating web-platform-test wrappers for test262")
             # Blacklist 'harness' from root folders.
             folders = [test_dir]
             for each in os.listdir(test_dir):
@@ -227,16 +227,16 @@ class WPTestBuilder(object):
                 if re.search('module-code', filename):
                     self.keep_file(filename)
                 self.generate_single_wpt(filename)
-            print "Output: " + self.destination_path(path)
+            print("Output: " + self.destination_path(path))
         elif S_ISREG(mode):
             pos = path.find("test262/test")
             if pos < 0:
-                print("Not a test262 file: '%s'" % path)
+                print(("Not a test262 file: '%s'" % path))
                 exit(1)
-            print "Generating web-platform-tests wrapper for {0}".format(path)
-            print "Output: %s" % self.generate_single_wpt(path)
+            print("Generating web-platform-tests wrapper for {0}".format(path))
+            print("Output: %s" % self.generate_single_wpt(path))
         else:
-            print "Skipping %s" % path
+            print("Skipping %s" % path)
 
     def keep_file(self, filename):
         dirname = self.destination_path(filename)

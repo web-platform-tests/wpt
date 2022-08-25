@@ -4,20 +4,37 @@
 <link rel="help" href="https://drafts.csswg.org/css-sizing-4/#aspect-ratio" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-
+<style>
+  img {
+    width: 100px;
+    aspect-ratio: 1/2;
+    background: green;
+  }
+</style>
 <div id="log"></div>
 
 <img
-  id="test"
   src="error.png"
-  style="width: 100px; aspect-ratio: 1/2; background: green; display: block"
-  alt="Should be 200px high"
+  style="display: block"
+  alt="display:block img should be 200px high"
+/>
+
+<img
+  src="error.png"
+  style="display: inline-block"
+  alt="display:inline-block img should be 200px high"
 />
 
 <script>
+  setup({ explicit_done: true });
+
   onload = () => {
-    test(() => {
-      assert_equals(document.getElementById("test").offsetHeight, 200);
-    });
+    for (const [i, img] of [...document.images].entries()) {
+      test(() => {
+        assert_equals(img.offsetHeight, 200);
+      }, img.alt);
+    }
+
+    done();
   };
 </script>

@@ -40,31 +40,66 @@ if (topLevelDocument) {
   // This specific test will run only as a top level test (not as a worker).
   // Specific requestStorageAccess() scenarios will be tested within the context
   // of various iFrames
+  promise_test(async t => {
+    let promise = RunRequestStorageAccessInDetachedFrame();
+    let description = "document.requestStorageAccess() call in a detached frame";
+    return promise.then(t.unreached_func("Should have rejected: " + description)).catch(function (e) {
 
-  // Create a test with a single-child same-origin iframe.
-  RunTestsInIFrame("resources/requestStorageAccess-iframe.html?testCase=same-origin-frame&rootdocument=false");
-
-  // Create a test with a single-child cross-origin iframe.
-  RunTestsInIFrame("http://{{domains[www]}}:{{ports[http][0]}}/storage-access-api/resources/requestStorageAccess-iframe.html?testCase=cross-origin-frame&rootdocument=false");
-
-  // Validate the nested-iframe scenario where the same-origin frame containing
-  // the tests is not the first child.
-  RunTestsInNestedIFrame("resources/requestStorageAccess-iframe.html?testCase=nested-same-origin-frame&rootdocument=false");
-
-  // Validate the nested-iframe scenario where the cross-origin frame containing
-  //  the tests is not the first child.
-  RunTestsInNestedIFrame("http://{{domains[www]}}:{{ports[http][0]}}/storage-access-api/resources/requestStorageAccess-iframe.html?testCase=nested-cross-origin-frame&rootdocument=false");
+      assert_equals(e.name, 'SecurityError', description);
+    });
+  }, "[non-fully-active] document.requestStorageAccess() should not resolve when run in a detached frame");
 
   promise_test(async t => {
-    await test_driver.set_permission({ name: 'storage-access' }, 'granted');
+    let promise = RunRequestStorageAccessViaDomParser();
+    let description = "document.requestStorageAccess() in a detached DOMParser result";
+    return promise.then(t.unreached_func("Should have rejected: " + description)).catch(function (e) {
+      assert_equals(e.name, 'SecurityError', description);
+    });
+  }, "[non-fully-active] document.requestStorageAccess() should not resolve when run in a detached DOMParser document");
 
-    var access_promise;
-    let testMethod = function() {
-      access_promise = document.requestStorageAccess();
-    };
-    await ClickButtonWithGesture(testMethod);
+  // Create a test with a single-child same-origin iframe.
+  let sameOriginFramePromise = RunTestsInIFrame(
+      'resources/requestStorageAccess-iframe.html?testCase=same-origin-frame&rootdocument=false');
 
-    return access_promise;
-  }, "[" + testPrefix + "] document.requestStorageAccess() should be resolved when called properly with a user gesture");
+  // Create a test with a single-child cross-origin iframe.
+  let crossOriginFramePromise = RunTestsInIFrame(
+      'http://{{domains[www]}}:{{ports[http][0]}}/storage-access-api/resources/requestStorageAccess-iframe.html?testCase=cross-origin-frame&rootdocument=false');
 
+  // Validate the nested-iframe scenario where the same-origin frame
+  // containing the tests is not the first child.
+  let nestedSameOriginFramePromise = RunTestsInNestedIFrame(
+      'resources/requestStorageAccess-iframe.html?testCase=nested-same-origin-frame&rootdocument=false');
+
+  // Validate the nested-iframe scenario where the cross-origin frame
+  // containing the tests is not the first child.
+  let nestedCrossOriginFramePromise = RunTestsInNestedIFrame(
+      'http://{{domains[www]}}:{{ports[http][0]}}/storage-access-api/resources/requestStorageAccess-iframe.html?testCase=nested-cross-origin-frame&rootdocument=false');
+
+  // Because the iframe tests expect no user activation, and because they
+  // load asynchronously, we want to first run those tests before simulating
+  // clicks on the page.
+  Promise
+      .all([
+        sameOriginFramePromise,
+        crossOriginFramePromise,
+        nestedSameOriginFramePromise,
+        nestedCrossOriginFramePromise,
+      ])
+      .then(x => {
+        promise_test(
+            async t => {
+              await test_driver.set_permission(
+                  {name: 'storage-access'}, 'granted');
+
+              var access_promise;
+              let testMethod = function() {
+                access_promise = document.requestStorageAccess();
+              };
+              await ClickButtonWithGesture(testMethod);
+
+              return access_promise;
+            },
+            '[' + testPrefix +
+                '] document.requestStorageAccess() should be resolved when called properly with a user gesture');
+      });
 }

@@ -73,12 +73,12 @@ async def test_level(
 
 
 @pytest.mark.asyncio
-async def test_timestamp(bidi_session, top_context, wait_for_event, current_time_bidi):
+async def test_timestamp(bidi_session, top_context, wait_for_event, current_time):
     await bidi_session.session.subscribe(events=["log.entryAdded"])
 
     on_entry_added = wait_for_event("log.entryAdded")
 
-    time_start = await current_time_bidi()
+    time_start = await current_time()
 
     script = """new Promise(resolve => {
             setTimeout(() => {
@@ -95,7 +95,7 @@ async def test_timestamp(bidi_session, top_context, wait_for_event, current_time
 
     event_data = await on_entry_added
 
-    time_end = await current_time_bidi()
+    time_end = await current_time()
 
     assert_console_entry(event_data, text="foo", timestamp=int_interval(time_start, time_end))
 

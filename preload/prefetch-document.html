@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<title>Ensures that prefetch works with documents</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/prefetch-helper.js"></script>
+<body>
+<script>
+
+const {ORIGIN, REMOTE_ORIGIN, HTTP_NOTSAMESITE_ORIGIN} = get_host_info();
+const origins = {
+    "same origin": ORIGIN,
+    "same site": REMOTE_ORIGIN,
+    "different site": HTTP_NOTSAMESITE_ORIGIN
+}
+const loaders = {
+    image: {
+        file: 'square.png',
+        type: 'image/png',
+        load: href => {
+            const image = document.createElement('img');
+            image.src = href;
+            document.body.appendChild(image);
+            return new Promise(resolve => image.addEventListener('load', resolve));
+        }
+    },
+    script: {
+        file: 'dummy.js',
+        type: 'application/javascript',
+        load: href => {
+            const script = document.createElement('script');
+            script.src = href;
+            document.body.appendChild(script);
+            return new Promise(resolve => script.addEventListener('load', resolve));
+        }
+    },
+    style: {
+        file: 'dummy.css',
+        type: 'text/css',
+        load: href => {
+            const link = document.createElement('link');
+            link.href = href;
+            link.rel = "stylesheet";
+            document.body.appendChild(link);
+            return new Promise(resolve => link.addEventListener('load', resolve));
+        }
+    },
+    document: {
+        file: 'empty.html',
+        type: 'text/html',
+        load: href => {
+            const iframe = document.createElement("iframe");
+            iframe.src = href;
+            document.body.appendChild(iframe);
+            return new Promise(resolve => iframe.addEventListener("load", resolve));
+        }
+    }
+};
+
+async function prefetch_document(origin, as, t) {
+    const {href, uid} = await prefetch({
+        file: "prefetch-exec.html",
+        type: "text/html",
+        corssOrigin: "anonymous",
+        origin: origins[origin], as});
+    const popup = window.open(href);
+    const remoteContext = new RemoteContext(uid);
+    t.add_cleanup(() => popup.close());
+    const result = await remoteContext.execute_script(() => "OK");
+    assert_equals(result, "OK");
+    return await get_prefetch_info(href);
+}
+
+async function test_prefetch_document({origin, as}, expected) {
+    promise_test(async t => {
+        const requests = await prefetch_document(origin, as, t);
+        const did_consume = requests.length === 1 ? "consumed" : "not consumed";
+        assert_equals(did_consume, expected);
+    }, `Prefetching a document (${origin}, as="${as}") should be ${expected}`);
+}
+
+test_prefetch_document({origin: "same origin"}, "consumed");
+test_prefetch_document({origin: "same site"}, "consumed");
+test_prefetch_document({as: "document", origin: "different site"}, "not consumed");
+
+promise_test(async t => {
+    const {href, uid} = await prefetch({
+        file: "prefetch-exec.html",
+        type: "text/html",
+        corssOrigin: "anonymous",
+        origin: ORIGIN});
+    const popup = window.open(href + "&cache_bust=" + token());
+    const remoteContext = new RemoteContext(uid);
+    t.add_cleanup(() => popup.close());
+    await remoteContext.execute_script(() => "OK");
+    const results = await get_prefetch_info(href);
+    assert_equals(results.length, 2);
+    assert_equals(results[0].headers.accept, results[1].headers.accept);
+}, "Document prefetch should send the exact Accept header as navigation")
+
+</script>
+</body>

@@ -27,14 +27,15 @@ def update(tests_root,  # type: str
            working_copy=True,  # type: bool
            cache_root=None,  # type: Optional[str]
            rebuild=False,  # type: bool
-           parallel=True  # type: bool
+           parallel=True, # type: bool
+           sub_dirs=None # type: Optional[list]
            ):
     # type: (...) -> bool
     logger.warning("Deprecated; use manifest.load_and_update instead")
     logger.info("Updating manifest")
 
     tree = vcs.get_tree(tests_root, manifest, manifest_path, cache_root,
-                        working_copy, rebuild)
+                        working_copy, rebuild, sub_dirs)
     return manifest.update(tree, parallel)
 
 
@@ -53,7 +54,8 @@ def update_from_cli(**kwargs):
                              update=True,
                              rebuild=kwargs["rebuild"],
                              cache_root=kwargs["cache_root"],
-                             parallel=kwargs["parallel"])
+                             parallel=kwargs["parallel"],
+                             sub_dirs=kwargs["dirs"])
 
 
 def abs_path(path):
@@ -86,6 +88,8 @@ def create_parser():
     parser.add_argument(
         "--no-parallel", dest="parallel", action="store_false", default=True,
         help="Do not parallelize building the manifest")
+    parser.add_argument('dirs', nargs='*', default=[],
+                        help='sub directories or files relative to the tests root to update.')
     return parser
 
 

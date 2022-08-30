@@ -25,8 +25,9 @@ else:
 
 
 def get_tree(tests_root, manifest, manifest_path, cache_root,
-             working_copy=True, rebuild=False):
-    # type: (Text, Manifest, Optional[Text], Optional[Text], bool, bool) -> FileSystem
+             working_copy=True, rebuild=False, sub_dirs=None):
+    # type: (Text, Manifest, Optional[Text], Optional[Text], bool, bool,
+    # Optional[list]) -> FileSystem
     tree = None
     if cache_root is None:
         cache_root = os.path.join(tests_root, ".wptcache")
@@ -44,7 +45,8 @@ def get_tree(tests_root, manifest, manifest_path, cache_root,
                           manifest.url_base,
                           manifest_path=manifest_path,
                           cache_path=cache_root,
-                          rebuild=rebuild)
+                          rebuild=rebuild,
+                          sub_dirs=sub_dirs)
     return tree
 
 
@@ -86,9 +88,10 @@ class GitHasher:
 
 
 class FileSystem:
-    def __init__(self, tests_root, url_base, cache_path, manifest_path=None, rebuild=False):
-        # type: (Text, Text, Optional[Text], Optional[Text], bool) -> None
+    def __init__(self, tests_root, url_base, cache_path, manifest_path=None, rebuild=False, sub_dirs=None):
+        # type: (Text, Text, Optional[Text], Optional[Text], bool, Optional[list]) -> None
         self.tests_root = tests_root
+        self.sub_dirs = sub_dirs or ['']
         self.url_base = url_base
         self.ignore_cache = None
         self.mtime_cache = None
@@ -106,16 +109,27 @@ class FileSystem:
 
     def __iter__(self):
         # type: () -> Iterator[Tuple[Text, Optional[Text], bool]]
+        def path_and_hash(mtime_cache, path, path_stat):
+            if mtime_cache is None or mtime_cache.updated(path, path_stat):
+                file_hash = self.hash_cache.get(path, None)
+                return path, file_hash, True
+            else:
+                return path, None, False
+
         mtime_cache = self.mtime_cache
-        for dirpath, dirnames, filenames in self.path_filter(
-                walk(self.tests_root.encode("utf8"))):
-            for filename, path_stat in filenames:
-                path = os.path.join(dirpath, filename).decode("utf8")
-                if mtime_cache is None or mtime_cache.updated(path, path_stat):
-                    file_hash = self.hash_cache.get(path, None)
-                    yield path, file_hash, True
-                else:
-                    yield path, None, False
+        for sub_dir in self.sub_dirs:
+            tests_dir = os.path.join(self.tests_root, sub_dir)
+            if os.path.isfile(tests_dir):
+                stat = os.stat(tests_dir)
+                yield path_and_hash(mtime_cache, sub_dir, stat)
+                continue
+
+            sub_dir_bytes = sub_dir.encode("utf8")
+            for dirpath, dirnames, filenames in self.path_filter(
+                    walk(tests_dir.encode("utf8"))):
+                for filename, path_stat in filenames:
+                    path = os.path.join(sub_dir_bytes, dirpath, filename).decode("utf8")
+                    yield path_and_hash(mtime_cache, path, path_stat)
 
     def dump_caches(self):
         # type: () -> None

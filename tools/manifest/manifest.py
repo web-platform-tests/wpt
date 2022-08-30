@@ -388,7 +388,8 @@ def load_and_update(tests_root,  # type: Text
                     types=None,  # type: Optional[Container[Text]]
                     write_manifest=True,  # type: bool
                     allow_cached=True,  # type: bool
-                    parallel=True  # type: bool
+                    parallel=True,  # type: bool
+                    sub_dirs=None, # type: Optional[List]
                     ):
     # type: (...) -> Manifest
 
@@ -421,7 +422,7 @@ def load_and_update(tests_root,  # type: Text
         for retry in range(2):
             try:
                 tree = vcs.get_tree(tests_root, manifest, manifest_path, cache_root,
-                                    working_copy, rebuild)
+                                    working_copy, rebuild, sub_dirs)
                 changed = manifest.update(tree, parallel)
                 break
             except InvalidCacheError:

@@ -26,8 +26,7 @@ else:
 
 def get_tree(tests_root, manifest, manifest_path, cache_root,
              working_copy=True, rebuild=False, sub_dirs=None):
-    # type: (Text, Manifest, Optional[Text], Optional[Text], bool, bool,
-    # Optional[list]) -> FileSystem
+  # type: (Text, Manifest, Optional[Text], Optional[Text], bool, bool, Optional[list[str]]) -> FileSystem
     tree = None
     if cache_root is None:
         cache_root = os.path.join(tests_root, ".wptcache")
@@ -89,7 +88,7 @@ class GitHasher:
 
 class FileSystem:
     def __init__(self, tests_root, url_base, cache_path, manifest_path=None, rebuild=False, sub_dirs=None):
-        # type: (Text, Text, Optional[Text], Optional[Text], bool, Optional[list]) -> None
+        # type: (Text, Text, Optional[Text], Optional[Text], bool, Optional[list[str]]) -> None
         self.tests_root = tests_root
         self.sub_dirs = sub_dirs or ['']
         self.url_base = url_base
@@ -110,6 +109,7 @@ class FileSystem:
     def __iter__(self):
         # type: () -> Iterator[Tuple[Text, Optional[Text], bool]]
         def path_and_hash(mtime_cache, path, path_stat):
+            # type: (Optional[MtimeCache], str, os.stat_result) -> tuple[str, Optional[str], bool]
             if mtime_cache is None or mtime_cache.updated(path, path_stat):
                 file_hash = self.hash_cache.get(path, None)
                 return path, file_hash, True

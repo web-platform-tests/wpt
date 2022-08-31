@@ -389,7 +389,7 @@ def load_and_update(tests_root,  # type: Text
                     write_manifest=True,  # type: bool
                     allow_cached=True,  # type: bool
                     parallel=True,  # type: bool
-                    sub_dirs=None, # type: Optional[List]
+                    sub_dirs=None,  # type: Optional[list[str]]
                     ):
     # type: (...) -> Manifest
 

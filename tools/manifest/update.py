@@ -27,8 +27,8 @@ def update(tests_root,  # type: str
            working_copy=True,  # type: bool
            cache_root=None,  # type: Optional[str]
            rebuild=False,  # type: bool
-           parallel=True, # type: bool
-           sub_dirs=None # type: Optional[list]
+           parallel=True,  # type: bool
+           sub_dirs=None  # type: Optional[list[str]]
            ):
     # type: (...) -> bool
     logger.warning("Deprecated; use manifest.load_and_update instead")

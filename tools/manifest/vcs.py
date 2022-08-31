@@ -26,7 +26,7 @@ else:
 
 def get_tree(tests_root, manifest, manifest_path, cache_root,
              working_copy=True, rebuild=False, sub_dirs=None):
-  # type: (Text, Manifest, Optional[Text], Optional[Text], bool, bool, Optional[list[str]]) -> FileSystem
+    # type: (Text, Manifest, Optional[Text], Optional[Text], bool, bool, Optional[list[str]]) -> FileSystem
     tree = None
     if cache_root is None:
         cache_root = os.path.join(tests_root, ".wptcache")

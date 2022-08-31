@@ -9,7 +9,7 @@ pytestmark = pytest.mark.asyncio
 CONTEXT_LOAD_EVENT = "browsingContext.load"
 
 
-async def test_not_unsubscribed(bidi_session):
+async def test_not_unsubscribed(bidi_session, inline, top_context):
     await bidi_session.session.subscribe(events=[CONTEXT_LOAD_EVENT])
     await bidi_session.session.unsubscribe(events=[CONTEXT_LOAD_EVENT])
 
@@ -21,7 +21,10 @@ async def test_not_unsubscribed(bidi_session):
 
     remove_listener = bidi_session.add_event_listener(CONTEXT_LOAD_EVENT, on_event)
 
-    await bidi_session.browsing_context.create(type_hint="tab")
+    url = inline("<div>foo</div>")
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"], url=url
+    )
 
     wait = AsyncPoll(bidi_session, timeout=0.5)
     with pytest.raises(TimeoutException):
@@ -46,7 +49,7 @@ async def test_subscribe(bidi_session, inline, new_tab, wait_for_event):
     await bidi_session.session.unsubscribe(events=[CONTEXT_LOAD_EVENT])
 
 
-async def test_iframe(bidi_session, new_tab, test_page_same_origin_frame, test_page):
+async def test_iframe(bidi_session, new_tab, test_page, test_page_same_origin_frame):
     # Unsubscribe in case a previous tests subscribed to the event
     await bidi_session.session.unsubscribe(events=[CONTEXT_LOAD_EVENT])
 

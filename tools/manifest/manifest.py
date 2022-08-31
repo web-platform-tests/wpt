@@ -30,6 +30,7 @@ if MYPY:
     from typing import IO
     from typing import Iterator
     from typing import Iterable
+    from typing import List
     from typing import Optional
     from typing import Set
     from typing import Text
@@ -389,7 +390,7 @@ def load_and_update(tests_root,  # type: Text
                     write_manifest=True,  # type: bool
                     allow_cached=True,  # type: bool
                     parallel=True,  # type: bool
-                    sub_dirs=None,  # type: Optional[list[str]]
+                    sub_dirs=None,  # type: Optional[List[str]]
                     ):
     # type: (...) -> Manifest
 

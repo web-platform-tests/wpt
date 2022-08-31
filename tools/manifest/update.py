@@ -17,6 +17,7 @@ MYPY = False
 if MYPY:
     # MYPY is set to True when run under Mypy.
     from typing import Any
+    from typing import List
     from typing import Optional
     from .manifest import Manifest  # avoid cyclic import
 
@@ -28,7 +29,7 @@ def update(tests_root,  # type: str
            cache_root=None,  # type: Optional[str]
            rebuild=False,  # type: bool
            parallel=True,  # type: bool
-           sub_dirs=None  # type: Optional[list[str]]
+           sub_dirs=None  # type: Optional[List[str]]
            ):
     # type: (...) -> bool
     logger.warning("Deprecated; use manifest.load_and_update instead")

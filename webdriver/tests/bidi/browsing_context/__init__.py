@@ -42,3 +42,7 @@ def assert_navigation_info(event, context, url):
     assert "url" in event
     assert isinstance(event["url"], str)
     assert event["url"] == url
+
+    assert "navigation" in event
+    if event["navigation"] is not None:
+        assert isinstance(event["navigation"], str)

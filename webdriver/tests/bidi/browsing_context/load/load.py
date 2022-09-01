@@ -84,3 +84,18 @@ async def test_iframe(bidi_session, new_tab, test_page, test_page_same_origin_fr
 
     remove_listener()
     await bidi_session.session.unsubscribe(events=[CONTEXT_LOAD_EVENT])
+
+
+async def test_new_tab(bidi_session, wait_for_event):
+    # Unsubscribe in case a previous tests subscribed to the event
+    await bidi_session.session.unsubscribe(events=[CONTEXT_LOAD_EVENT])
+
+    await bidi_session.session.subscribe(events=[CONTEXT_LOAD_EVENT])
+
+    on_entry = wait_for_event(CONTEXT_LOAD_EVENT)
+    new_context = await bidi_session.browsing_context.create(type_hint="tab")
+    event = await on_entry
+
+    assert_navigation_info(event, new_context["context"], "about:blank")
+
+    await bidi_session.session.unsubscribe(events=[CONTEXT_LOAD_EVENT])

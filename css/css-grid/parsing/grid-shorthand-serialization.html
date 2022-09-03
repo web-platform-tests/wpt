@@ -21,6 +21,14 @@
   }, "Serialization without grid-template-areas");
 
   test(() => {
+    const gridTemplateAreasValue = '"one"';
+    element.style.grid = 'none'
+    element.style.gridTemplateAreas = gridTemplateAreasValue;
+    assert_equals(element.style.grid, "", "grid shorthand must not be serialized when grid-template-areas is set to a non-initial value");
+    assert_equals(element.style.gridTemplateAreas, gridTemplateAreasValue);
+  }, "Serialization with grid-template-areas");
+
+  test(() => {
     const gridTemplateAreasValue = '"one two" "three four"';
     element.style.gridTemplateAreas = gridTemplateAreasValue;
     assert_equals(element.style.grid, "", "grid shorthand must not be serialized when grid-template-areas and grid-auto-flow/rows are both set");

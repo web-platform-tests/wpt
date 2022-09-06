@@ -35,6 +35,21 @@ promise_test(async t => {
 promise_test(async t => {
     const {minimize, restore} = window_state_context(t);
     await minimize();
+    const popup = window.open("resources/blank_page_green.html");
+    t.add_cleanup(() => popup.close());
+    await restore();
+    let entries = popup.performance.getEntriesByType("visibility-state");
+    assert_equals(entries.length, 2);
+    assert_equals(entries[0].name, "hidden");
+    assert_equals(entries[0].startTime, 0);
+    assert_equals(entries[1].name, "visible");
+    assert_greater_than(entries[1].startTime, 0);
+
+}, "If a page starts as hidden, the first visibility-state entry should be hidden");
+
+promise_test(async t => {
+    const {minimize, restore} = window_state_context(t);
+    await minimize();
     const observed = new Promise(resolve => new PerformanceObserver(list => {
         const entries = list.getEntries();
         assert_equals(entries.length, 1);
@@ -44,7 +59,7 @@ promise_test(async t => {
         resolve();
     }).observe({entryTypes: ['visibility-state'], buffered: true}));
     await restore();
-    await observed();
+    await observed;
 }, "Visibility state entries should be queued to performance observers");
 
 promise_test(async t => {

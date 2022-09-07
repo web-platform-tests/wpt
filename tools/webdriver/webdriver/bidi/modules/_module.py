@@ -1,5 +1,13 @@
 import functools
-from typing import Any, Awaitable, Callable, Optional, Mapping, MutableMapping, TYPE_CHECKING
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Optional,
+    Mapping,
+    MutableMapping,
+    TYPE_CHECKING,
+)
 
 if TYPE_CHECKING:
     from ..client import BidiSession
@@ -39,7 +47,9 @@ class command:
         self.params_fn = fn
         self.result_fn: Optional[Callable[..., Any]] = None
 
-    def result(self, fn: Callable[[Any, MutableMapping[str, Any]], Mapping[str, Any]]) -> None:
+    def result(
+        self, fn: Callable[[Any, MutableMapping[str, Any]], Mapping[str, Any]]
+    ) -> None:
         self.result_fn = fn
 
     def __set_name__(self, owner: Any, name: str) -> None:
@@ -48,26 +58,33 @@ class command:
         params_fn = self.params_fn
         result_fn = self.result_fn
 
-        @functools.wraps(params_fn)
-        async def inner(self: Any, **kwargs: Any) -> Any:
-            params = params_fn(self, **kwargs)
+        # Create two versions of the command. First will apply `result_fn`
+        # to the result of the command, second with suffix `_raw` will
+        # return the result of the command without modifications.
+        for suffix in ["", "_raw"]:
+            fn_name = name + suffix
+            is_raw = suffix != ""
 
-            # Convert the classname and the method name to a bidi command name
-            mod_name = owner.__name__[0].lower() + owner.__name__[1:]
-            if hasattr(owner, "prefix"):
-                mod_name = f"{owner.prefix}:{mod_name}"
-            cmd_name = f"{mod_name}.{to_camelcase(name)}"
+            @functools.wraps(params_fn)
+            async def inner(self: Any, is_raw: bool = is_raw, **kwargs: Any) -> Any:
+                params = params_fn(self, **kwargs)
 
-            future = await self.session.send_command(cmd_name, params)
-            result = await future
+                # Convert the classname and the method name to a bidi command name
+                mod_name = owner.__name__[0].lower() + owner.__name__[1:]
+                if hasattr(owner, "prefix"):
+                    mod_name = f"{owner.prefix}:{mod_name}"
+                cmd_name = f"{mod_name}.{to_camelcase(name)}"
 
-            if result_fn is not None:
-                # Convert the result if we have a conversion function defined
-                result = result_fn(self, result)
-            return result
+                future = await self.session.send_command(cmd_name, params)
+                result = await future
 
-        # Overwrite the method on the owner class with the wrapper
-        setattr(owner, name, inner)
+                if result_fn is not None and is_raw is False:
+                    # Convert the result if we have a conversion function defined
+                    result = result_fn(self, result)
+                return result
+
+            # Overwrite the method on the owner class with the wrapper
+            setattr(owner, fn_name, inner)
 
     def __call__(*args: Any, **kwargs: Any) -> Awaitable[Any]:
         # This isn't really used, but mypy doesn't understand __set_name__

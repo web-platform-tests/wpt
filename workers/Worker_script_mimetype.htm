@@ -8,13 +8,17 @@
 async_test(t => {
   const worker = new Worker('./support/WorkerText.txt');
   worker.onmessage = t.unreached_func("Worker should not receive messages");
-  worker.onerror = () => t.done();
+  worker.onerror = t.step_func_done((e) => {
+      assert_equals(e.constructor, ErrorEvent);
+    });
 }, "HTTP(S) URLs which respond with text/plain MIME type must not work");
 
 async_test(t => {
   const worker = new SharedWorker('./support/WorkerText.txt');
   worker.onmessage = t.unreached_func("Worker should not receive messages");
-  worker.onerror = () => t.done();
+  worker.onerror = t.step_func_done((e) => {
+      assert_equals(e.constructor, ErrorEvent);
+    });
 }, "HTTP(S) URLs which respond with text/plain MIME type must not work on SharedWorkers");
 
 async_test(t => {

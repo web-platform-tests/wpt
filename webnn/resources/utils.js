@@ -10,7 +10,9 @@ const DeviceTypeArray = ['cpu', 'gpu'];
 const ULPTolerance = {
   // for single-precision floating-point
   'float32': {
+    'clamp': 0,
     'concat': 0,
+    'relu': 0,
     'reshape': 0,
     'slice': 0,
     'split': 0,

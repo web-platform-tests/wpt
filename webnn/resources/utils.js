@@ -1,9 +1,39 @@
 'use strict';
 
-const ExecutionArray = ['async', 'sync'];
-
 // https://webmachinelearning.github.io/webnn/#enumdef-mldevicetype
 const DeviceTypeArray = ['cpu', 'gpu'];
+
+const ExecutionArray = ['async', 'sync'];
+
+// https://webmachinelearning.github.io/webnn/#enumdef-mloperandtype
+// OperandTypeArray was set with supported type list.
+const OperandTypeArray = ['float32'];
+
+const TypedArrayDict = {
+  float32: Float32Array,
+};
+
+// Refer to precision metrics suggestions on https://github.com/webmachinelearning/webnn/issues/265#issuecomment-1256242643
+const PrecisionMetrics = {
+  // ULP - unit last place (expected.asRawBits within [actual.asRawBits - ulp, actual.asRawBits + ulp])
+  ULP: {
+    // for single-precision floating-point
+    float32: {
+      clamp: 0,
+      concat: 0,
+      relu: 0,
+      reshape: 0,
+      slice: 0,
+      split: 0,
+      squeeze: 0,
+      transpose: 0,
+    },
+  },
+};
+
+function sizeOfShape(array) {
+  return array.reduce((accumulator, currentValue) => accumulator * currentValue, 1);
+}
 
 /**
  * Get bitwise of the given value.

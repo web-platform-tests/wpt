@@ -14,7 +14,7 @@ async function prefetch(p = {}, t) {
     params.set("key", uid);
     for (const key in p)
         params.set(key, p[key]);
-    const origin = p.origin || '.';
+    const origin = p.origin || '';
     link.href = `${origin}/preload/resources/prefetch-info.py?${params.toString()}`;
     document.head.appendChild(link);
     while (!(await get_prefetch_info(link.href)).length) { }

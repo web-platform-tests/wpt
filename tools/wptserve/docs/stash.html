@@ -54,7 +54,7 @@ part of the stash corresponding to its own path.</p>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">stash</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">request</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">stash</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="n">key</span>
+        <span class="k">return</span> <span class="n">value</span>
 </pre></div>
 </div>
 <section id="module-wptserve.stash">

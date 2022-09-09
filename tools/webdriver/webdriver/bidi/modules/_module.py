@@ -58,33 +58,27 @@ class command:
         params_fn = self.params_fn
         result_fn = self.result_fn
 
-        # Create two versions of the command. First will apply `result_fn`
-        # to the result of the command, second with suffix `_raw` will
-        # return the result of the command without modifications.
-        for suffix in ["", "_raw"]:
-            fn_name = name + suffix
-            is_raw = suffix != ""
+        @functools.wraps(params_fn)
+        async def inner(self: Any, **kwargs: Any) -> Any:
+            raw_response = kwargs.pop("raw_response", False)
+            params = params_fn(self, **kwargs)
 
-            @functools.wraps(params_fn)
-            async def inner(self: Any, is_raw: bool = is_raw, **kwargs: Any) -> Any:
-                params = params_fn(self, **kwargs)
+            # Convert the classname and the method name to a bidi command name
+            mod_name = owner.__name__[0].lower() + owner.__name__[1:]
+            if hasattr(owner, "prefix"):
+                mod_name = f"{owner.prefix}:{mod_name}"
+            cmd_name = f"{mod_name}.{to_camelcase(name)}"
 
-                # Convert the classname and the method name to a bidi command name
-                mod_name = owner.__name__[0].lower() + owner.__name__[1:]
-                if hasattr(owner, "prefix"):
-                    mod_name = f"{owner.prefix}:{mod_name}"
-                cmd_name = f"{mod_name}.{to_camelcase(name)}"
+            future = await self.session.send_command(cmd_name, params)
+            result = await future
 
-                future = await self.session.send_command(cmd_name, params)
-                result = await future
+            if result_fn is not None and not raw_response:
+                # Convert the result if we have a conversion function defined
+                result = result_fn(self, result)
+            return result
 
-                if result_fn is not None and is_raw is False:
-                    # Convert the result if we have a conversion function defined
-                    result = result_fn(self, result)
-                return result
-
-            # Overwrite the method on the owner class with the wrapper
-            setattr(owner, fn_name, inner)
+        # Overwrite the method on the owner class with the wrapper
+        setattr(owner, name, inner)
 
     def __call__(*args: Any, **kwargs: Any) -> Awaitable[Any]:
         # This isn't really used, but mypy doesn't understand __set_name__

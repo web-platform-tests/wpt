@@ -25,7 +25,7 @@ async def test_payload_types(bidi_session):
 
 
 @pytest.mark.asyncio
-async def test_calling_twice(bidi_session):
+async def test_realm_is_consisnent_when_calling_twice(bidi_session):
     result = await bidi_session.script.get_realms()
 
     result_calling_again = await bidi_session.script.get_realms()
@@ -34,7 +34,7 @@ async def test_calling_twice(bidi_session):
 
 
 @pytest.mark.asyncio
-async def test_reload(bidi_session, top_context):
+async def test_realm_is_different_after_reload(bidi_session, top_context):
     result = await bidi_session.script.get_realms()
 
     # Reload the page

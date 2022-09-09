@@ -54,12 +54,14 @@ async def test_multiple_top_level_contexts(bidi_session, top_context, type_hint)
     result = await bidi_session.script.get_realms()
 
     # Evaluate to get realm ids
-    top_context_result = await bidi_session.script.evaluate_raw(
+    top_context_result = await bidi_session.script.evaluate(
+        raw_response=True,
         expression="1 + 2",
         target=ContextTarget(top_context["context"]),
         await_promise=False,
     )
-    new_context_result = await bidi_session.script.evaluate_raw(
+    new_context_result = await bidi_session.script.evaluate(
+        raw_response=True,
         expression="1 + 2",
         target=ContextTarget(new_context["context"]),
         await_promise=False,
@@ -101,7 +103,8 @@ async def test_iframes(
     result = await bidi_session.script.get_realms()
 
     # Evaluate to get realm id
-    top_context_result = await bidi_session.script.evaluate_raw(
+    top_context_result = await bidi_session.script.evaluate(
+        raw_response=True,
         expression="1 + 2",
         target=ContextTarget(top_context["context"]),
         await_promise=False,
@@ -114,7 +117,8 @@ async def test_iframes(
     frame_context = frames[0]["context"]
 
     # Evaluate to get realm id
-    frame_context_result = await bidi_session.script.evaluate_raw(
+    frame_context_result = await bidi_session.script.evaluate(
+        raw_response=True,
         expression="1 + 2",
         target=ContextTarget(frame_context),
         await_promise=False,
@@ -154,7 +158,8 @@ async def test_origin(bidi_session, inline, top_context, test_origin):
     result = await bidi_session.script.get_realms()
 
     # Evaluate to get realm id
-    top_context_result = await bidi_session.script.evaluate_raw(
+    top_context_result = await bidi_session.script.evaluate(
+        raw_response=True,
         expression="1 + 2",
         target=ContextTarget(top_context["context"]),
         await_promise=False,

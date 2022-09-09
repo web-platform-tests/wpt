@@ -14,7 +14,8 @@ async def test_type(bidi_session, top_context, type):
     result = await bidi_session.script.get_realms(type=type)
 
     # Evaluate to get realm id
-    top_context_result = await bidi_session.script.evaluate_raw(
+    top_context_result = await bidi_session.script.evaluate(
+        raw_response=True,
         expression="1 + 2",
         target=ContextTarget(top_context["context"]),
         await_promise=False,

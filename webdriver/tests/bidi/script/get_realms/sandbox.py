@@ -9,14 +9,16 @@ PAGE_ABOUT_BLANK = "about:blank"
 
 @pytest.mark.asyncio
 async def test_sandbox(bidi_session, top_context):
-    evaluate_result = await bidi_session.script.evaluate_raw(
+    evaluate_result = await bidi_session.script.evaluate(
+        raw_response=True,
         expression="1 + 2",
         target=ContextTarget(top_context["context"]),
         await_promise=False,
     )
 
     # Create a sandbox
-    evaluate_in_sandbox_result = await bidi_session.script.evaluate_raw(
+    evaluate_in_sandbox_result = await bidi_session.script.evaluate(
+        raw_response=True,
         expression="1 + 2",
         target=ContextTarget(top_context["context"], "sandbox"),
         await_promise=False,
@@ -56,14 +58,16 @@ async def test_origin(bidi_session, inline, top_context, test_origin):
         context=top_context["context"], url=url, wait="complete"
     )
 
-    evaluate_result = await bidi_session.script.evaluate_raw(
+    evaluate_result = await bidi_session.script.evaluate(
+        raw_response=True,
         expression="1 + 2",
         target=ContextTarget(top_context["context"]),
         await_promise=False,
     )
 
     # Create a sandbox
-    evaluate_in_sandbox_result = await bidi_session.script.evaluate_raw(
+    evaluate_in_sandbox_result = await bidi_session.script.evaluate(
+        raw_response=True,
         expression="1 + 2",
         target=ContextTarget(top_context["context"], "sandbox"),
         await_promise=False,
@@ -98,14 +102,16 @@ async def test_origin(bidi_session, inline, top_context, test_origin):
 
 @pytest.mark.asyncio
 async def test_type(bidi_session, top_context):
-    evaluate_result = await bidi_session.script.evaluate_raw(
+    evaluate_result = await bidi_session.script.evaluate(
+        raw_response=True,
         expression="1 + 2",
         target=ContextTarget(top_context["context"]),
         await_promise=False,
     )
 
     # Create a sandbox
-    evaluate_in_sandbox_result = await bidi_session.script.evaluate_raw(
+    evaluate_in_sandbox_result = await bidi_session.script.evaluate(
+        raw_response=True,
         expression="1 + 2",
         target=ContextTarget(top_context["context"], "sandbox"),
         await_promise=False,
@@ -155,14 +161,16 @@ async def test_multiple_top_level_contexts(
         wait="complete",
     )
 
-    evaluate_result = await bidi_session.script.evaluate_raw(
+    evaluate_result = await bidi_session.script.evaluate(
+        raw_response=True,
         expression="1 + 2",
         target=ContextTarget(new_context["context"]),
         await_promise=False,
     )
 
     # Create a sandbox
-    evaluate_in_sandbox_result = await bidi_session.script.evaluate_raw(
+    evaluate_in_sandbox_result = await bidi_session.script.evaluate(
+        raw_response=True,
         expression="1 + 2",
         target=ContextTarget(new_context["context"], "sandbox"),
         await_promise=False,
@@ -194,14 +202,16 @@ async def test_multiple_top_level_contexts(
     assert len(frames) == 1
     frame_context = frames[0]["context"]
 
-    evaluate_result = await bidi_session.script.evaluate_raw(
+    evaluate_result = await bidi_session.script.evaluate(
+        raw_response=True,
         expression="1 + 2",
         target=ContextTarget(frame_context),
         await_promise=False,
     )
 
     # Create a sandbox in iframe
-    evaluate_in_sandbox_result = await bidi_session.script.evaluate_raw(
+    evaluate_in_sandbox_result = await bidi_session.script.evaluate(
+        raw_response=True,
         expression="1 + 2",
         target=ContextTarget(frame_context, "sandbox"),
         await_promise=False,

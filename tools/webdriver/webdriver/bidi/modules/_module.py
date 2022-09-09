@@ -60,7 +60,7 @@ class command:
 
         @functools.wraps(params_fn)
         async def inner(self: Any, **kwargs: Any) -> Any:
-            raw_response = kwargs.pop("raw_response", False)
+            raw_result = kwargs.pop("raw_result", False)
             params = params_fn(self, **kwargs)
 
             # Convert the classname and the method name to a bidi command name
@@ -72,7 +72,7 @@ class command:
             future = await self.session.send_command(cmd_name, params)
             result = await future
 
-            if result_fn is not None and not raw_response:
+            if result_fn is not None and not raw_result:
                 # Convert the result if we have a conversion function defined
                 result = result_fn(self, result)
             return result

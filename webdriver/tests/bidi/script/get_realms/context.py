@@ -21,7 +21,7 @@ async def test_context(
 
     # Evaluate to get realm id
     new_context_result = await bidi_session.script.evaluate(
-        raw_response=True,
+        raw_result=True,
         expression="1 + 2",
         target=ContextTarget(new_context["context"]),
         await_promise=False,
@@ -49,7 +49,7 @@ async def test_context(
 
     # Evaluate to get realm id
     frame_context_result = await bidi_session.script.evaluate(
-        raw_response=True,
+        raw_result=True,
         expression="1 + 2",
         target=ContextTarget(frame_context),
         await_promise=False,

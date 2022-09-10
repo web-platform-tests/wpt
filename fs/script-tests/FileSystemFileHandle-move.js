@@ -66,7 +66,7 @@ directory_test(async (t, root) => {
   const handle = await createFileWithContents(t, 'file-before', 'abc', root);
 
   // Cannot rename handle with an active writable.
-  const stream = await handle.createWritable();
+  const stream = await cleanup_writable(t, await handle.createWritable());
   await promise_rejects_dom(
       t, 'NoModificationAllowedError', handle.move('file-after'));
 
@@ -82,7 +82,7 @@ directory_test(async (t, root) => {
       await createFileWithContents(t, 'file-after', '123', root);
 
   // Cannot overwrite a handle with an active writable.
-  const stream = await handle_dest.createWritable();
+  const stream = await cleanup_writable(t, await handle_dest.createWritable());
   await promise_rejects_dom(
       t, 'NoModificationAllowedError', handle.move('file-after'));
 
@@ -252,7 +252,7 @@ directory_test(async (t, root) => {
   const file = await createFileWithContents(t, 'file', 'abc', dir_src);
 
   // Cannot move handle with an active writable.
-  const stream = await file.createWritable();
+  const stream = await cleanup_writable(t, await file.createWritable());
   await promise_rejects_dom(t, 'NoModificationAllowedError', file.move(dir_dest));
 
   assert_array_equals(
@@ -275,7 +275,7 @@ directory_test(async (t, root) => {
   const file = await createFileWithContents(t, 'file-before', 'abc', dir_src);
 
   // Cannot move handle with an active writable.
-  const stream = await file.createWritable();
+  const stream = await cleanup_writable(t, await file.createWritable());
   await promise_rejects_dom(t, 'NoModificationAllowedError', file.move(dir_dest));
 
   assert_array_equals(
@@ -300,7 +300,7 @@ directory_test(async (t, root) => {
   const file_dest = await createFileWithContents(t, 'file', '123', dir_dest);
 
   // Cannot overwrite handle with an active writable.
-  const stream = await file_dest.createWritable();
+  const stream = await cleanup_writable(t, await file_dest.createWritable());
   await promise_rejects_dom(t, 'NoModificationAllowedError', file.move(dir_dest));
 
   assert_array_equals(
@@ -327,7 +327,7 @@ directory_test(async (t, root) => {
       await createFileWithContents(t, 'file-dest', '123', dir_dest);
 
   // Cannot overwrite handle with an active writable.
-  const stream = await file_dest.createWritable();
+  const stream = await cleanup_writable(t, await file_dest.createWritable());
   await promise_rejects_dom(
       t, 'NoModificationAllowedError', file.move(dir_dest, 'file-dest'));
 

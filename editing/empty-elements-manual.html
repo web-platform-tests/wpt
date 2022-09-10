@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Placing selection and typing inside empty elements</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #strong {
+    display: inline-block;
+    border: 2px red solid;
+    padding: 1em;
+  }
+</style>
+<div contenteditable id="host">
+  <p><strong id="strong"></strong></p>
+</div>
+
+<ol>
+  <li>Put the caret inside the red square above.</li>
+  <li>Press any letter to insert it.</li>
+</ol>
+<script>
+  setup( { explicit_timeout: true } );
+
+  promise_test( () => {
+    return new Promise( ( resolve, reject ) => {
+      host.addEventListener( 'input', () => {
+        try {
+          assert_greater_than( strong.innerHTML.length, 0, 'The text was inserted into the <strong> element' );
+        } catch ( error ) {
+          reject( error );
+        }
+        resolve();
+      } );
+    } );
+  } );
+</script>

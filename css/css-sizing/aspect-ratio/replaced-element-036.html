@@ -29,7 +29,7 @@
   setup({ explicit_done: true });
 
   onload = () => {
-    for (const [i, img] of [...document.images].entries()) {
+    for (const img of document.images) {
       test(() => {
         assert_equals(img.offsetHeight, 200);
       }, img.alt);

@@ -10,6 +10,8 @@ CONTEXT_LOAD_EVENT = "browsingContext.load"
 @pytest.fixture
 async def new_tab(bidi_session, wait_for_event):
     """Open and focus a new tab to run the test in a foreground tab."""
+
+    # Subscribe to the load event to wait for the newly created tab to be loaded.
     await bidi_session.session.subscribe(events=[CONTEXT_LOAD_EVENT])
     new_tab = await bidi_session.browsing_context.create(type_hint='tab')
     await wait_for_event(CONTEXT_LOAD_EVENT,

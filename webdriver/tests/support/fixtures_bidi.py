@@ -1,15 +1,20 @@
 import asyncio
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping, Optional
 
 import pytest
 import webdriver
 from webdriver.bidi.modules.script import ContextTarget
 
+CONTEXT_LOAD_EVENT = "browsingContext.load"
 
 @pytest.fixture
-async def new_tab(bidi_session):
+async def new_tab(bidi_session, wait_for_event):
     """Open and focus a new tab to run the test in a foreground tab."""
+    await bidi_session.session.subscribe(events=[CONTEXT_LOAD_EVENT])
     new_tab = await bidi_session.browsing_context.create(type_hint='tab')
+    await wait_for_event(CONTEXT_LOAD_EVENT,
+                         lambda data: data["context"] == new_tab["context"])
+    await bidi_session.session.unsubscribe(events=[CONTEXT_LOAD_EVENT])
     yield new_tab
     # Close the tab.
     await bidi_session.browsing_context.close(context=new_tab["context"])
@@ -27,10 +32,12 @@ def send_blocking_command(bidi_session):
 @pytest.fixture
 def wait_for_event(bidi_session, event_loop):
     """Wait until the BiDi session emits an event and resolve  the event data."""
-    def wait_for_event(event_name: str):
+    def wait_for_event(event_name: str, filter: Callable[[Any], bool] = lambda _: True):
         future = event_loop.create_future()
 
         async def on_event(method, data):
+            if not filter(data):
+                return
             remove_listener()
             future.set_result(data)
 

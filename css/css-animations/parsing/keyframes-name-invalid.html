@@ -15,34 +15,6 @@
         <main id="main"></main>
     </div>
     <script>
-        function cleanup_main() {
-            while (main.firstChild)
-                main.firstChild.remove();
-        }
-
-        function set_style(text) {
-            let style = document.createElement('style');
-            style.innerText = text;
-            main.append(style);
-            return style;
-        }
-
-        function test_keyframes_name_invalid(keyframes_name) {
-            test(t => {
-                t.add_cleanup(cleanup_main);
-                let style = set_style(`@keyframes ${keyframes_name} {}`);
-                assert_equals(style.sheet.rules.length, 0);
-            }, `invalid: @keyframes ${keyframes_name} { }`);
-        }
-
-        function test_keyframes_name_valid(keyframes_name) {
-            test(t => {
-                t.add_cleanup(cleanup_main);
-                let style = set_style(`@keyframes ${keyframes_name} {}`);
-                assert_equals(style.sheet.rules.length, 1);
-            }, `valid: @keyframes ${keyframes_name} { }`);
-        }
-
         test_keyframes_name_invalid('none');
 
         // The CSS-wide keywords are not valid <custom-ident>s. The default keyword is reserved and is also not a valid <custom-ident>.
@@ -52,12 +24,15 @@
         test_keyframes_name_invalid('inherit');
         test_keyframes_name_invalid('unset');
         test_keyframes_name_invalid('revert');
-        test_keyframes_name_invalid('revert-layer');        
+        test_keyframes_name_invalid('revert-layer');
+
         test_keyframes_name_invalid('12');
         test_keyframes_name_invalid('-12');
         test_keyframes_name_invalid('12foo');
         test_keyframes_name_invalid('foo.bar');
         test_keyframes_name_invalid('one two');
+        test_keyframes_name_invalid('one, two');
+
         test_keyframes_name_invalid('one, initial');
         test_keyframes_name_invalid('one, inherit');
         test_keyframes_name_invalid('one, unset');

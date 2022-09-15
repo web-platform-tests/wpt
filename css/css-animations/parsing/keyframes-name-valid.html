@@ -15,34 +15,6 @@
         <main id="main"></main>
     </div>
     <script>
-        function cleanup_main() {
-            while (main.firstChild)
-                main.firstChild.remove();
-        }
-
-        function set_style(text) {
-            let style = document.createElement('style');
-            style.innerText = text;
-            main.append(style);
-            return style;
-        }
-
-        function test_keyframes_name_invalid(keyframes_name) {
-            test(t => {
-                t.add_cleanup(cleanup_main);
-                let style = set_style(`@keyframes ${keyframes_name} {}`);
-                assert_equals(style.sheet.rules.length, 0);
-            }, `invalid: @keyframes ${keyframes_name} { }`);
-        }
-
-        function test_keyframes_name_valid(keyframes_name) {
-            test(t => {
-                t.add_cleanup(cleanup_main);
-                let style = set_style(`@keyframes ${keyframes_name} {}`);
-                assert_equals(style.sheet.rules.length, 1);
-            }, `valid: @keyframes ${keyframes_name} { }`);
-        }
-
         // Test <custom-ident>
         test_keyframes_name_valid(' foo ');
         test_keyframes_name_valid('  foo');
@@ -58,7 +30,8 @@
         test_keyframes_name_valid('and');
         test_keyframes_name_valid('all');
         test_keyframes_name_valid('or');
-        // <custom-ident> may disable the `auto/normal` keywords in the future 
+
+        // <custom-ident> may disable the `auto/normal` keywords in the future
         // https://github.com/w3c/csswg-drafts/issues/7431
         test_keyframes_name_valid('auto');
         test_keyframes_name_valid('normal');
@@ -74,13 +47,18 @@
         test_keyframes_name_valid('"example"');
         test_keyframes_name_valid('"EXAMPLE"');
 
+        test_keyframes_name_valid('"one two"');
+        test_keyframes_name_valid('"one, two"');
+
         test_keyframes_name_valid('"not"');
         test_keyframes_name_valid('"and"');
         test_keyframes_name_valid('"all"');
         test_keyframes_name_valid('"or"');
+
         test_keyframes_name_valid('"auto"');
         test_keyframes_name_valid('"normal"');
         test_keyframes_name_valid('"none"');
+
         test_keyframes_name_valid('"default"');
         test_keyframes_name_valid('"initial"');
         test_keyframes_name_valid('"inherit"');

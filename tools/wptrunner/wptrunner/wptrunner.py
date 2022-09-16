@@ -170,6 +170,11 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
         logger.critical("Loading tests failed")
         return False
 
+    if test_status.retries_remaining:
+        for test_type, tests in dict(test_groups).items():
+            test_groups[test_type] = [test for test in tests
+                                      if test in test_status.unexpected_tests]
+
     unexpected_tests = set()
     logger.suite_start(test_groups,
                        name='web-platform-test',
@@ -458,8 +463,8 @@ def retry_unexpected_tests(test_status, test_loader, test_source_kwargs,
     kwargs["rerun"] = 1
     max_retries = max(0, kwargs["retry_unexpected"])
     test_status.retries_remaining = max_retries
-    while (test_status.retries_remaining > 0
-            and not evaluate_runs(test_status, kwargs)):
+    while (test_status.retries_remaining > 0 and not
+           evaluate_runs(test_status, kwargs)):
         logger.info(f"Retry {max_retries - test_status.retries_remaining + 1}")
         test_status.total_tests = 0
         test_status.skipped = 0

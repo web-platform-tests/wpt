@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://bugs.chromium.org/p/chromium/issues/detail?id=1363082">
+<link rel=match href="child-pseudo-elements-ref.html">
+
+<style>
+details::before {
+  content: "before";
+}
+details::after {
+  content: "after";
+}
+</style>
+
+<details>
+  <div>hello world</div>
+</details>

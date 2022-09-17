@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Selecting and deleting all from the cE=true element with cE=false element at the beginning</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div contenteditable>
+  <div contenteditable="false" id="cefalse-beginning">&nbsp;</div>
+  <p id="paragraph-beginning">Lorem ipsum dolor sit amet.</p>
+</div>
+
+<div contenteditable>
+  <p id="paragraph-end">Lorem ipsum dolor sit amet.</p>
+  <div contenteditable="false" id="cefalse-end">&nbsp;</div>
+</div>
+
+<div contenteditable>
+  <div contenteditable="false" id="cefalse-boundaries-beginning">&nbsp;</div>
+  <p id="paragraph-boundaries">Lorem ipsum dolor sit amet.</p>
+  <div contenteditable="false" id="cefalse-boundaries-end">&nbsp;</div>
+</div>
+
+<script>
+    test( () => {
+      const cefalse = document.querySelector( '#cefalse-beginning' );
+      const paragraph = document.querySelector( '#paragraph-beginning' );
+      getSelection().collapse( paragraph, 0 );
+      document.execCommand( 'selectAll' );
+      document.execCommand( 'delete' );
+
+      assert_false( cefalse.isConnected, 'cE=false element was removed' );
+      assert_false( paragraph.isConnected, 'paragraph was removed' );
+    }, 'cE=false elements can be removed from the beginning of the cE=true elements' );
+
+    test( () => {
+      const cefalse = document.querySelector( '#cefalse-end' );
+      const paragraph = document.querySelector( '#paragraph-end' );
+      getSelection().collapse( paragraph, 0 );
+      document.execCommand( 'selectAll' );
+      document.execCommand( 'delete' );
+
+      assert_false( cefalse.isConnected, 'cE=false element was removed' );
+      assert_false( paragraph.isConnected, 'paragraph was removed' );
+    }, 'cE=false elements can be removed from the end of the cE=true elements' );
+
+    test( () => {
+      const cefalseBeginning = document.querySelector( '#cefalse-boundaries-beginning' );
+      const cefalseEnd = document.querySelector( '#cefalse-boundaries-end' );
+      const paragraph = document.querySelector( '#paragraph-boundaries' );
+      getSelection().collapse( paragraph, 0 );
+      document.execCommand( 'selectAll' );
+      document.execCommand( 'delete' );
+
+      assert_false( cefalseBeginning.isConnected, 'cE=false element at the beginning was removed' );
+      assert_false( cefalseEnd.isConnected, 'cE=false element at the end was removed' );
+      assert_false( paragraph.isConnected, 'paragraph was removed' );
+    }, 'cE=false elements can be removed from the boundaries of the cE=true elements' );
+</script>

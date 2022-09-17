@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Placing selection and typing inside empty elements</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div contenteditable>
+  <p><a href="https://example.com" id="test-end">Link</a></p>
+  <p><a href="https://example.com" id="test-beginning">Link</a></p>
+</div>
+<script>
+  test( () => {
+    const target = document.querySelector( '#test-end' );
+    const range = document.createRange();
+    const selection = getSelection();
+
+    range.selectNodeContents( target );
+    selection.removeAllRanges();
+    selection.addRange( range );
+    selection.collapseToEnd();
+
+    document.execCommand( 'insertText', false, 'a' );
+    assert_equals( target.innerHTML, 'Linka', 'The text was inserted into the link' );
+  }, 'Insert text into the selection at the end of a link' );
+
+  test( () => {
+    const target = document.querySelector( '#test-beginning' );
+    const range = document.createRange();
+    const selection = getSelection();
+
+    range.selectNodeContents( target );
+    selection.removeAllRanges();
+    selection.addRange( range );
+    selection.collapseToStart();
+
+    document.execCommand( 'insertText', false, 'a' );
+    assert_equals( target.innerHTML, 'aLink', 'The text was inserted into the link' );
+  }, 'Insert text into the selection at the beginning of a link' );
+</script>

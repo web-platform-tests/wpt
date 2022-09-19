@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<title>Dynamic import interaction with microtask queue</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+
+function ticker(max) {
+  let i = 0;
+  let stop = false;
+  Promise.resolve().then(function loop() {
+    if (stop || i >= max) return;
+    i++;
+    Promise.resolve().then(loop);
+  });
+  return () => {
+    stop = true;
+    return i;
+  };
+}
+
+promise_test(async t => {
+  const getCount = ticker(1000);
+
+  try {
+    await import("<invalid>");
+    assert_unreached('import() should reject');
+  } catch (_) {}
+
+  assert_less_than(getCount(), 1000);
+}, "import() should not drain the microtask queue if it fails during specifier resolution");
+
+promise_test(async t => {
+  await import("./../imports-a.js");
+
+  const getCount = ticker(1000);
+  await import("./../imports-a.js");
+  assert_less_than(getCount(), 1000);
+}, "import() should not drain the microtask queue when loading an already loaded module");
+
+promise_test(async t => {
+  const getCount = ticker(1e7);
+  await import("./../imports-a.js?" + Date.now()); // Use Date.now() to ensure that the module is not in the module map
+  assert_equals(getCount(), 1e7);
+}, "import() should drain the microtask queue when fetching a new module");
+</script>

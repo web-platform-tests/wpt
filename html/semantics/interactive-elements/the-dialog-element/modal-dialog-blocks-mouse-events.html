@@ -44,16 +44,6 @@ dialog::backdrop {
 
 <script>
 promise_test(async () => {
-  async function clickOn(element) {
-    const rect = element.getBoundingClientRect();
-    const actions = new test_driver.Actions()
-      .pointerMove(rect.left + rect.width / 2, rect.top + rect.height / 2)
-      .pointerDown()
-      .pointerUp()
-      .pointerMove(0, 0);
-    await actions.send();
-  }
-
   dialog.showModal();
 
   inertDivHandledEvent = false;
@@ -88,11 +78,11 @@ promise_test(async () => {
     document.addEventListener(events[i], eventFiredOnDocument);
   }
 
-  await clickOn(inertDiv);
+  await test_driver.click(inertDiv);
   assert_false(inertDivHandledEvent, 'Clicking on inert box');
   assert_equals(Object.keys(handledEvents.document).length, expectedEventCountForDocument, 'Clicking on inert box');
 
-  await clickOn(dialogDiv);
+  await test_driver.click(inertDiv);
   assert_false(inertDivHandledEvent, 'Clicking on non-inert box');
   assert_equals(Object.keys(handledEvents.dialogDiv).length, events.length, 'Clicking on non-inert box');
 }, 'Ensure that mouse events are not dispatched to an inert node.');

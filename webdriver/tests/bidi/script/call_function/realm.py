@@ -5,10 +5,7 @@ from ... import recursive_compare
 
 
 @pytest.mark.asyncio
-async def test_target_realm(bidi_session, top_context):
-    realms = await bidi_session.script.get_realms(context=top_context["context"])
-    default_realm = realms[0]["realm"]
-
+async def test_target_realm(bidi_session, default_realm):
     result = await bidi_session.script.call_function(
         raw_result=True,
         function_declaration="() => { window.foo = 3; }",

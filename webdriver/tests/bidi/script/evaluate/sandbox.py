@@ -159,9 +159,7 @@ async def test_exception_details(bidi_session, new_tab, await_promise):
 
 
 @pytest.mark.asyncio
-async def test_target_realm(bidi_session, top_context):
-    realms = await bidi_session.script.get_realms(context=top_context["context"])
-
+async def test_target_realm(bidi_session, top_context, default_realm):
     result = await bidi_session.script.evaluate(
         raw_result=True,
         expression="window.foo = 3",
@@ -171,7 +169,7 @@ async def test_target_realm(bidi_session, top_context):
     realm = result["realm"]
 
     # Make sure that sandbox realm id is different from default
-    assert realm != realms[0]["realm"]
+    assert realm != default_realm
 
     result = await bidi_session.script.evaluate(
         raw_result=True,

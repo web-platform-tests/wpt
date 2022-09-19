@@ -179,10 +179,9 @@ async def test_exception_details(bidi_session, new_tab, await_promise):
         exception.value.result,
     )
 
-@pytest.mark.asyncio
-async def test_target_realm(bidi_session, top_context):
-    realms = await bidi_session.script.get_realms(context=top_context["context"])
 
+@pytest.mark.asyncio
+async def test_target_realm(bidi_session, top_context, default_realm):
     result = await bidi_session.script.call_function(
         raw_result=True,
         function_declaration="() => { window.foo = 3; }",
@@ -192,7 +191,7 @@ async def test_target_realm(bidi_session, top_context):
     realm = result["realm"]
 
     # Make sure that sandbox realm id is different from default
-    assert realm != realms[0]["realm"]
+    assert realm != default_realm
 
     result = await bidi_session.script.call_function(
         raw_result=True,

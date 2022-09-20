@@ -444,7 +444,7 @@ def run_tests(config, test_paths, product, **kwargs):
                     test_status.all_skipped = True
                     break
 
-            if not test_status.all_skipped:
+            if not test_status.all_skipped and kwargs["retry_unexpected"] > 0:
                 retry_success = retry_unexpected_tests(test_status, test_loader,
                                                        test_source_kwargs,
                                                        test_source_cls, run_info,
@@ -461,7 +461,7 @@ def retry_unexpected_tests(test_status, test_loader, test_source_kwargs,
                            test_source_cls, run_info, recording,
                            test_environment, product, kwargs):
     kwargs["rerun"] = 1
-    max_retries = max(0, kwargs["retry_unexpected"])
+    max_retries = kwargs["retry_unexpected"]
     test_status.retries_remaining = max_retries
     while (test_status.retries_remaining > 0 and not
            evaluate_runs(test_status, kwargs)):

@@ -35,7 +35,7 @@ test(() => {
   function showAndTest(id) {
     dialog = document.getElementById(id);
     dialog.showModal();
-    assert_equals(dialog.offsetTop, expectedTop(dialog), id);
+    assert_approx_equals(dialog.offsetTop, expectedTop(dialog), 1, id);
   }
 
   showAndTest('top-dialog');

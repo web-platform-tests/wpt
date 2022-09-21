@@ -368,3 +368,30 @@ promise_test(async t => {
   decoder.reset();
   assert_equals(decoder.decodeQueueSize, 0);
 }, 'AudioDecoder decodeQueueSize test');
+
+promise_test(async t => {
+  // Only Opus supports concealment.
+  if (location.search != '?opus') {
+    return;
+  }
+
+  const callbacks = {};
+  const decoder = createAudioDecoder(t, callbacks);
+  decoder.configure(CONFIG);
+
+  for (var i = 0; i < CHUNKS.length; i++) {
+    // Replace the fifth chunk with an empty one, expect no decode error.
+    if (i == 4) {
+      decoder.decode(new EncodedAudioChunk({
+        type: 'key',
+        timestamp: CHUNKS[i].timestamp,
+        duration: CHUNKS[i].duration,
+        data: new ArrayBuffer(0)
+      }));
+      continue;
+    }
+    decoder.decode(CHUNKS[i]);
+  }
+
+  await decoder.flush();
+}, 'AudioDecoder loss concealment test');

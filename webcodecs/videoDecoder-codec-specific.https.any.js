@@ -351,25 +351,6 @@ promise_test(async t => {
   let errors = 0;
   callbacks.error = e => errors++;
 
-  const decoder = createVideoDecoder(t, callbacks);
-  decoder.configure(CONFIG);
-  decoder.decode(CHUNKS[0]);  // Decode keyframe first.
-  decoder.decode(new EncodedVideoChunk(
-      {type: 'key', timestamp: 1, data: new ArrayBuffer(0)}));
-
-  await promise_rejects_dom(t, 'AbortError', decoder.flush());
-
-  assert_equals(errors, 1, 'errors');
-  assert_equals(decoder.state, 'closed', 'state');
-}, 'Decode empty frame');
-
-
-promise_test(async t => {
-  const callbacks = {};
-
-  let errors = 0;
-  callbacks.error = e => errors++;
-
   let outputs = 0;
   callbacks.output = frame => {
     outputs++;

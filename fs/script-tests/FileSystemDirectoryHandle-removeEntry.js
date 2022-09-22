@@ -97,7 +97,7 @@ directory_test(async (t, root) => {
 
   await writable.close();
   await root.removeEntry('file-to-remove');
-    
+
   assert_array_equals(
       await getSortedDirectoryEntries(root),
       ['file-to-keep']);

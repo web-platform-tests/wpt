@@ -1667,20 +1667,6 @@ speed when the condition is quickly met.</p>
 </ul>
 </dd>
 </dl>
-<p><strong>Examples:</strong></p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">async_test</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">popup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">&quot;resources/coop-coep.py?coop=same-origin&amp;coep=&amp;navigate=about:blank&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">add_cleanup</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">popup</span><span class="p">.</span><span class="nx">close</span><span class="p">());</span><span class="w"></span>
-<span class="w"> </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">window</span><span class="p">,</span><span class="w"> </span><span class="nx">popup</span><span class="p">.</span><span class="nx">opener</span><span class="p">);</span><span class="w"></span>
-
-<span class="w"> </span><span class="nx">popup</span><span class="p">.</span><span class="nx">onload</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="nx">assert_true</span><span class="p">(</span><span class="nx">popup</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="p">.</span><span class="nx">endsWith</span><span class="p">(</span><span class="s2">&quot;&amp;navigate=about:blank&quot;</span><span class="p">));</span><span class="w"></span>
-<span class="w">   </span><span class="c1">// Use step_wait_func_done as about:blank cannot message back.</span><span class="w"></span>
-<span class="w">   </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_wait_func_done</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">popup</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">&quot;about:blank&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w"> </span><span class="p">});</span><span class="w"></span>
-<span class="p">},</span><span class="w"> </span><span class="s2">&quot;Navigating a popup to about:blank&quot;</span><span class="p">);</span><span class="w"></span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="js function">
@@ -1703,6 +1689,20 @@ when the condition is quickly met.</p>
 </ul>
 </dd>
 </dl>
+<p><strong>Examples:</strong></p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">async_test</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">popup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">&quot;resources/coop-coep.py?coop=same-origin&amp;coep=&amp;navigate=about:blank&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">add_cleanup</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">popup</span><span class="p">.</span><span class="nx">close</span><span class="p">());</span><span class="w"></span>
+<span class="w"> </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">window</span><span class="p">,</span><span class="w"> </span><span class="nx">popup</span><span class="p">.</span><span class="nx">opener</span><span class="p">);</span><span class="w"></span>
+
+<span class="w"> </span><span class="nx">popup</span><span class="p">.</span><span class="nx">onload</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="nx">assert_true</span><span class="p">(</span><span class="nx">popup</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="p">.</span><span class="nx">endsWith</span><span class="p">(</span><span class="s2">&quot;&amp;navigate=about:blank&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="w">   </span><span class="c1">// Use step_wait_func_done as about:blank cannot message back.</span><span class="w"></span>
+<span class="w">   </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_wait_func_done</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">popup</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">&quot;about:blank&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w"> </span><span class="p">});</span><span class="w"></span>
+<span class="p">},</span><span class="w"> </span><span class="s2">&quot;Navigating a popup to about:blank&quot;</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="js function">

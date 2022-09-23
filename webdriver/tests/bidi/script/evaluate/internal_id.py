@@ -37,4 +37,4 @@ async def test_remote_values_with_internal_id(
             ["bar", {"type": type, "internalId": any_string}],
         ]
 
-    recursive_compare({"type": result_type, "value": value}, result)
+    recursive_compare(value, result["value"])

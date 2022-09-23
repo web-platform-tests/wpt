@@ -572,7 +572,7 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">VERIFY_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">repeat</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">REPEAT_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">testharness</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">crashtest</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">wdspec</span><span class="p">,</span><span class="n">crashtest</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="n">INCLUDE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">file</span> <span class="n">INCLUDE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="n">EXCLUDE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">manifest</span> <span class="n">INCLUDE_MANIFEST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">groups</span> <span class="n">TEST_GROUPS_FILE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">timeout</span><span class="p">]</span>
@@ -603,8 +603,7 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">ca</span><span class="o">-</span><span class="n">cert</span><span class="o">-</span><span class="n">path</span> <span class="n">CA_CERT_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="n">key</span><span class="o">-</span><span class="n">path</span> <span class="n">HOST_KEY_PATH</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="n">cert</span><span class="o">-</span><span class="n">path</span> <span class="n">HOST_CERT_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefs</span><span class="o">-</span><span class="n">root</span> <span class="n">PREFS_ROOT</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">preload</span><span class="o">-</span><span class="n">browser</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">preload</span><span class="o">-</span><span class="n">browser</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">e10s</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">webrender</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">enable</span><span class="o">-</span><span class="n">webrender</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">fission</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">enable</span><span class="o">-</span><span class="n">fission</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">stackfix</span><span class="o">-</span><span class="nb">dir</span> <span class="n">STACKFIX_DIR</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">fission</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">enable</span><span class="o">-</span><span class="n">fission</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">stackfix</span><span class="o">-</span><span class="nb">dir</span> <span class="n">STACKFIX_DIR</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">specialpowers</span><span class="o">-</span><span class="n">path</span> <span class="n">SPECIALPOWERS_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">setpref</span> <span class="n">PREF</span><span class="o">=</span><span class="n">VALUE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">leak</span><span class="o">-</span><span class="n">check</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">leak</span><span class="o">-</span><span class="n">check</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">stylo</span><span class="o">-</span><span class="n">threads</span> <span class="n">STYLO_THREADS</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">reftest</span><span class="o">-</span><span class="n">internal</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reftest</span><span class="o">-</span><span class="n">external</span><span class="p">]</span>
@@ -782,9 +781,9 @@ channel.) This flag overrides –browser-channel.</p>
 <h4>Test Selection<a class="headerlink" href="#Test Selection" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--test-types</kbd></dt>
-<dd><p>Possible choices: testharness, reftest, print-reftest, wdspec, crashtest</p>
+<dd><p>Possible choices: wdspec, crashtest, testharness, reftest, print-reftest</p>
 <p>Test types to run</p>
-<p>Default: {‘testharness’, ‘reftest’, ‘print-reftest’, ‘wdspec’, ‘crashtest’}</p>
+<p>Default: {‘wdspec’, ‘crashtest’, ‘testharness’, ‘reftest’, ‘print-reftest’}</p>
 </dd>
 <dt><kbd>--include</kbd></dt>
 <dd><p>URL prefix to include</p>
@@ -1021,15 +1020,8 @@ channel.) This flag overrides –browser-channel.</p>
 <dd><p>Run tests without electrolysis preferences</p>
 <p>Default: True</p>
 </dd>
-<dt><kbd>--enable-webrender</kbd></dt>
-<dd><p>Enable the WebRender compositor in Gecko (defaults to disabled).</p>
-</dd>
-<dt><kbd>--no-enable-webrender</kbd></dt>
-<dd><p>Disable the WebRender compositor in Gecko.</p>
-<p>Default: True</p>
-</dd>
 <dt><kbd>--enable-fission</kbd></dt>
-<dd><p>Enable fission in Gecko (defaults to disabled).</p>
+<dd><p>Enable fission in Gecko (defaults to enabled; this option only exists for backward compatibility).</p>
 </dd>
 <dt><kbd>--no-enable-fission</kbd></dt>
 <dd><p>Disable fission in Gecko.</p>

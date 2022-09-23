@@ -28,7 +28,7 @@ var attributes = ["method",
                   "bodyUsed"
                   ];
 
-function IsreadOnly(request, attributeToCheck) {
+function isReadOnly(request, attributeToCheck) {
   var defaultValue = undefined;
   var newValue = undefined;
   switch (attributeToCheck) {
@@ -128,6 +128,6 @@ for (var idx in methods) {
 for (var idx in attributes) {
   test(function() {
     assert_true(attributes[idx] in request, "request has " + attributes[idx] + " attribute");
-    IsreadOnly(request, attributes[idx]);
+    isReadOnly(request, attributes[idx]);
   }, "Check " + attributes[idx] + " attribute");
 }

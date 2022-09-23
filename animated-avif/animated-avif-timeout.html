@@ -4,7 +4,7 @@
 <img src=../images/animated-avif.avif onload="loaded()"/>
 <script>
   function loaded() {
-    setTimeout(function() {
+    step_timeout(function() {
       document.documentElement.classList.remove("reftest-wait");
     }, 1000);
   }

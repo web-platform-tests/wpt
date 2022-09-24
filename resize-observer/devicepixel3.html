@@ -1,0 +1,89 @@
+<!doctype html>
+<link rel="match" href="devicepixel3-ref.html">
+<meta name="assert" content="Resize Observer's reported device pixel content box size should be consistent with the actual pixel-snapped painted box size">
+<style>
+  .outer {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+  .outer>* {
+    display: block;
+    height: 100px;
+  }
+</style>
+<body>
+  <div class="outer"></div>
+  <script type="module">
+import createPatternDataURL from './create-pattern-data-url.js';
+
+const {patternSize, imageData: patternImageData} = createPatternDataURL();
+
+
+function setCanvasPattern(canvas, devicePixelWidth, devicePixelHeight) {
+  canvas.width = devicePixelWidth;
+  canvas.height = devicePixelHeight;
+  const ctx = canvas.getContext('2d');
+  const imgData = ctx.createImageData(devicePixelWidth, devicePixelHeight);
+  const srcU32View = new Uint32Array(patternImageData.data.buffer);
+  const dstU32View = new Uint32Array(imgData.data.buffer);
+  for (let dstY = 0; dstY < devicePixelHeight; ++dstY) {
+    for (let dstX = 0; dstX < devicePixelWidth; ++dstX) {
+      const srcX = dstX % patternSize;
+      const srcY = dstY % patternSize;
+      dstU32View[dstY * devicePixelWidth + dstX] = srcU32View[srcY * patternSize + srcX];
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+
+/*
+This test creates elements like this
+
+  <body>
+    <div class="outer">
+      <canvas></canvas>
+      <canvas></canvas>
+      <canvas></canvas>
+      ...
+    </div>
+  </body>
+
+Where the outer div is a flexbox centering the child canvases.
+Each of the child canvases is set to a different width in percent.
+
+The size of each canvas in device pixels is queried with ResizeObserver
+and then each canvases' resolution is set to that size so that there should
+be one pixel in each canvas for each device pixel.
+
+Each canvas is filled with a pattern using putImageData.
+
+In the reference the canvas elements are replaced with divs.
+For the divs the same pattern is applied with CSS and its size 
+adjusted so the pattern should appear with one pixel in the pattern
+corresponding to 1 device pixel.
+
+The reference and this page should then match.
+*/
+
+const outerElem = document.querySelector('.outer');
+
+function setPatternsUsingSizeInfo(entries) {
+  for (const entry of entries) {
+    setCanvasPattern(
+        entry.target,
+        entry.devicePixelContentBoxSize[0].inlineSize,
+        entry.devicePixelContentBoxSize[0].blockSize);
+  }
+}
+
+const observer = new ResizeObserver(setPatternsUsingSizeInfo);
+for (let percentSize = 7; percentSize < 100; percentSize += 13) {
+  const canvasElem = document.createElement('canvas');
+  canvasElem.style.width = `${percentSize}%`;
+  observer.observe(canvasElem, {box:"device-pixel-content-box"});
+  outerElem.appendChild(canvasElem);
+}
+  </script>
+</body>

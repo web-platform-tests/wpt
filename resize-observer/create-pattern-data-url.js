@@ -18,5 +18,5 @@ export default function createPatternDataURL() {
     g, t, t, b,
   ].flat());
   ctx.putImageData(imageData, 0, 0);
-  return {patternSize, dataURL: ctx.canvas.toDataURL()};
+  return {patternSize, imageData, dataURL: ctx.canvas.toDataURL()};
 }

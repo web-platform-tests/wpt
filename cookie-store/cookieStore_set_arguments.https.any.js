@@ -74,7 +74,7 @@ promise_test(async testCase => {
     await cookieStore.delete('cookie-name');
   });
   const cookie = await cookieStore.get('cookie-name');
-  assert_equals(cookie, null);
+  assert_equals(cookie, undefined);
 }, 'cookieStore.set with expires set to a past Date');
 
 promise_test(async testCase => {
@@ -103,7 +103,7 @@ promise_test(async testCase => {
     await cookieStore.delete('cookie-name');
   });
   const cookie = await cookieStore.get('cookie-name');
-  assert_equals(cookie, null);
+  assert_equals(cookie, undefined);
 }, 'cookieStore.set with expires set to a past timestamp');
 
 promise_test(async testCase => {
@@ -144,7 +144,7 @@ promise_test(async testCase => {
   await promise_rejects_js(testCase, TypeError, cookieStore.set(
       { name: 'cookie-name', value: 'cookie-value', domain: subDomain }));
   const cookie = await cookieStore.get('cookie-name');
-  assert_equals(cookie, null);
+  assert_equals(cookie, undefined);
 }, 'cookieStore.set with domain set to a subdomain of the current hostname');
 
 promise_test(async testCase => {
@@ -157,7 +157,7 @@ promise_test(async testCase => {
   await promise_rejects_js(testCase, TypeError, cookieStore.set(
       { name: 'cookie-name', value: 'cookie-value', domain: domainSuffix }));
   const cookie = await cookieStore.get('cookie-name');
-  assert_equals(cookie, null);
+  assert_equals(cookie, undefined);
 }, 'cookieStore.set with domain set to a non-domain-matching suffix of the ' +
    'current hostname');
 
@@ -219,7 +219,7 @@ promise_test(async testCase => {
     await cookieStore.delete({ name: 'cookie-name', path: subDirectory });
   });
   const cookie = await cookieStore.get('cookie-name');
-  assert_equals(cookie, null);
+  assert_equals(cookie, undefined);
 }, 'cookieStore.set with path set to a subdirectory of the current directory');
 
 promise_test(async testCase => {

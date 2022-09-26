@@ -21,7 +21,7 @@
     await cookieStore.set(
         { name: `${prefix}cookie-name`, value: `secure-cookie-value`,
           expires: Date.now() - (24 * 60 * 60 * 1000)});
-    assert_equals(await cookieStore.get(`${prefix}cookie-name`), null);
+    assert_equals(await cookieStore.get(`${prefix}cookie-name`), undefined);
     try { await cookieStore.delete(`${prefix}cookie-name`); } catch (e) {}
   }, `cookieStore.set of expired ${prefix} cookie name on secure origin`);
 

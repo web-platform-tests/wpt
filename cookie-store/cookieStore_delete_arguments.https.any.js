@@ -8,7 +8,7 @@ promise_test(async testCase => {
 
   await cookieStore.delete('cookie-name');
   const cookie = await cookieStore.get('cookie-name');
-  assert_equals(cookie, null);
+  assert_equals(cookie, undefined);
 }, 'cookieStore.delete with positional name');
 
 promise_test(async testCase => {
@@ -19,7 +19,7 @@ promise_test(async testCase => {
 
   await cookieStore.delete({ name: 'cookie-name' });
   const cookie = await cookieStore.get('cookie-name');
-  assert_equals(cookie, null);
+  assert_equals(cookie, undefined);
 }, 'cookieStore.delete with name in options');
 
 promise_test(async testCase => {
@@ -47,7 +47,7 @@ promise_test(async testCase => {
 
   await cookieStore.delete({ name: 'cookie-name', domain: currentDomain });
   const cookie = await cookieStore.get('cookie-name');
-  assert_equals(cookie, null);
+  assert_equals(cookie, undefined);
 }, 'cookieStore.delete with domain set to the current hostname');
 
 promise_test(async testCase => {
@@ -84,7 +84,7 @@ promise_test(async testCase => {
 
   await cookieStore.delete({ name: 'cookie-name', path: currentDirectory });
   const cookie = await cookieStore.get('cookie-name');
-  assert_equals(cookie, null);
+  assert_equals(cookie, undefined);
 }, 'cookieStore.delete with path set to the current directory');
 
 promise_test(async testCase => {
@@ -119,7 +119,7 @@ promise_test(async testCase => {
 
   await cookieStore.delete({ name: 'cookie-name', path: currentDirectory });
   const cookie = await cookieStore.get('cookie-name');
-  assert_equals(cookie, null);
+  assert_equals(cookie, undefined);
 }, 'cookieStore.delete with missing / at the end of path');
 
 promise_test(async testCase => {
@@ -145,7 +145,7 @@ promise_test(async testCase => {
 
   await cookieStore.delete(cookie_attributes);
   const cookie = await cookieStore.get('cookie-name');
-  assert_equals(cookie, null);
+  assert_equals(cookie, undefined);
 }, 'cookieStore.delete with get result');
 
 promise_test(async testCase => {
@@ -156,7 +156,7 @@ promise_test(async testCase => {
 
   await cookieStore.delete('');
   const cookie = await cookieStore.get('');
-  assert_equals(cookie, null);
+  assert_equals(cookie, undefined);
 }, 'cookieStore.delete with positional empty name');
 
 promise_test(async testCase => {
@@ -167,5 +167,5 @@ promise_test(async testCase => {
 
   await cookieStore.delete({ name: '' });
   const cookie = await cookieStore.get('');
-  assert_equals(cookie, null);
+  assert_equals(cookie, undefined);
 }, 'cookieStore.delete with empty name in options');

@@ -59,7 +59,7 @@ promise_test(async t => {
   const message = await waitForMessage();
 
   const { frameCookie } = message;
-  assert_not_equals(frameCookie, null);
+  assert_not_equals(frameCookie, undefined);
   assert_equals(frameCookie.name, 'cookie-name');
   assert_equals(frameCookie.value, 'cookie-value');
 }, 'cookieStore.get() in cross-origin frame sees cookieStore.set()');

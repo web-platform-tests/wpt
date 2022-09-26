@@ -1,5 +1,4 @@
 // META: script=/resources/testdriver.js
-// META: script=/resources/testharnessreport.js
 'use strict';
 const test_desc = '[SameObject] test for navigator.bluetooth';
 

@@ -691,7 +691,7 @@ harness will assume there are no more results to come when:</p>
 <li><p>There are no <code class="docutils literal notranslate"><span class="pre">Test</span></code> objects that have been created but not completed</p></li>
 <li><p>The load event on the document has fired</p></li>
 </ol>
-<p>For single page tests, or when the <code class="docutils literal notranslate"><span class="pre">explict_done</span></code> property has been
+<p>For single page tests, or when the <code class="docutils literal notranslate"><span class="pre">explicit_done</span></code> property has been
 set in the <a class="reference external" href="#setup">setup</a>, the <a class="reference external" href="#done"><code class="docutils literal notranslate"><span class="pre">done</span></code></a> function must be used.</p>
 <dl class="js function">
 <dt class="sig sig-object js" id="done">
@@ -699,7 +699,7 @@ set in the <a class="reference external" href="#setup">setup</a>, the <a class="
 <dd><p>Mark test loading as complete.</p>
 <p>Typically this function is called implicitly on page load; it’s
 only necessary for users to call this when either the
-<code class="docutils literal notranslate"><span class="pre">explict_done</span></code> or <code class="docutils literal notranslate"><span class="pre">single_page</span></code> properties have been set
+<code class="docutils literal notranslate"><span class="pre">explicit_done</span></code> or <code class="docutils literal notranslate"><span class="pre">single_page</span></code> properties have been set
 via the <a class="reference internal" href="#setup" title="setup"><code class="xref js js-func docutils literal notranslate"><span class="pre">setup()</span></code></a> function.</p>
 <p>For single page tests this marks the test as complete and sets its status.
 For other tests, this marks test loading as complete, but doesn’t affect ongoing tests.</p>
@@ -709,7 +709,7 @@ For other tests, this marks test loading as complete, but doesn’t affect ongoi
 <dt class="sig sig-object js" id="timeout">
 <span class="sig-name descname"><span class="n"><span class="pre">timeout</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Timeout the tests.</p>
-<p>This only has an effect when <code class="docutils literal notranslate"><span class="pre">explict_timeout</span></code> has been set
+<p>This only has an effect when <code class="docutils literal notranslate"><span class="pre">explicit_timeout</span></code> has been set
 in <a class="reference internal" href="#setup" title="setup"><code class="xref js js-func docutils literal notranslate"><span class="pre">setup()</span></code></a>. In other cases any call is a no-op.</p>
 </dd></dl>
 

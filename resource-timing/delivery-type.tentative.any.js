@@ -25,7 +25,7 @@ const checkDeliveryType = list => {
       assert_equals(entry.deliveryType, "",
         "Expect empty deliveryType for 200 response.");
     } else if (seenCount === 1 || seenCount === 2) {
-      // Cached response (`cacheMode` is "local") or 304 response (`cacheMode` 
+      // Cached response (`cacheMode` is "local") or 304 response (`cacheMode`
       // is "validated").
       assert_equals(entry.deliveryType, "cache",
         "Expect 'cache' deliveryType for cached or 304 response.");
@@ -36,7 +36,7 @@ const checkDeliveryType = list => {
   }
 };
 
-// TODO(crbug/1358591): Rename this file from "tentative" once 
+// TODO(crbug/1358591): Rename this file from "tentative" once
 // `w3c/resource-timing#343` is merged.
 promise_test(() => {
   // Use a different URL every time so that the cache behaviour does not

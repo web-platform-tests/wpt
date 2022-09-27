@@ -157,6 +157,8 @@
   "x-mac-vt100",
   "x-nextstep",
   "x-vps",
+  "_autodetect",
+  "_autodetect_all",
   "_autodetect_kr"
 ].forEach(label => {
   async_test(t => {

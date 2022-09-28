@@ -6,6 +6,7 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/permissions-policy/resources/permissions-policy.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
+<body>
 <script>
   "use strict";
 
@@ -17,9 +18,9 @@
   const header = 'Permissions-Policy header "screen-wake-lock=*"';
 
   promise_test(async t => {
-    await test_driver.set_permission(
-        { name: 'screen-wake-lock' }, 'granted');
-    await navigator.wakeLock.request('screen').then(lock => lock.release());
+    await test_driver.bless("screen wake lock");
+    const lock = await navigator.wakeLock.request('screen');
+    await lock.release();
   }, `${header} allows the top-level document.`);
 
   async_test(t => {
@@ -42,6 +43,5 @@
       'screen-wake-lock'
     );
   }, `${header} allows cross-origin iframes.`);
-
 </script>
 </body>

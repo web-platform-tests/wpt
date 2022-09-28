@@ -1,17 +1,22 @@
 <!DOCTYPE html>
 <html>
-<body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<body>
 <script>
 'use strict';
-
 promise_test(async t => {
-  await test_driver.set_permission({name: 'screen-wake-lock'}, 'denied');
-  return promise_rejects_dom(t, "NotAllowedError", navigator.wakeLock.request('screen'));
-}, 'Denied requests should abort with NotAllowedError');
+  await promise_rejects_dom(t, "NotAllowedError", navigator.wakeLock.request('screen'), "Must reject as there is no user activation");
+
+  await test_driver.bless("screen wake lock");
+  const lock = await navigator.wakeLock.request('screen');
+  assert_true(lock instanceof WakeLockSentinel, "navigator.wakeLock.request() must return a WakeLockSentinel object");
+  await lock.release();
+
+  await promise_rejects_dom(t, "NotAllowedError", navigator.wakeLock.request('screen'), "Must reject as transient activation was consumed.");
+}, "Requesting with a wake requires and consumed transient activation");
 </script>
 </body>
 </html>

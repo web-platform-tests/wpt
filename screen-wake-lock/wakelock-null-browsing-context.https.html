@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<link rel="help" href="https://w3c.github.io/screen-wake-lock/#dom-wakelocksentinel-released">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body>
+</body>
+<script>
+async function createIframe(){
+    const iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+    iframe.src = "./resources/page1.html";
+    await new Promise(resolve => iframe.onload = resolve);
+    return iframe;
+}
+
+promise_test(async t => {
+  const iframe = await createIframe();
+  const iframeWindow = iframe.contentWindow;
+  await test_driver.bless("request wake lock", null, iframeWindow);
+  iframe.remove();
+  const promise = iframeWindow.navigator.wakeLock.request("screen");
+  await promise_rejects_dom()
+
+
+}, "The released attribute inside an event handler");
+</script>

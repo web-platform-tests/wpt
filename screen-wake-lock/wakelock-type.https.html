@@ -13,7 +13,7 @@ promise_test(async (t) => {
 
 promise_test(async (t) => {
   const invalidTypes = ["invalid", null, 123, {}, "", true];
-  for (const type of invalidTypes) {
+  for (const invalidType of invalidTypes) {
     await promise_rejects_js(
       t,
       TypeError,

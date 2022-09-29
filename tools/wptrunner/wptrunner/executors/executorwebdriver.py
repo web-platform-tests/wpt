@@ -203,6 +203,14 @@ class WebDriverCookiesProtocolPart(CookiesProtocolPart):
         self.logger.info("Deleting all cookies")
         return self.webdriver.send_session_command("DELETE", "cookie")
 
+    def get_all_cookies(self):
+        self.logger.info("Getting all cookies")
+        return self.webdriver.send_session_command("GET", "cookie")
+
+    def get_named_cookie(self, name):
+        self.logger.info("Getting cookie named %s" % name)
+        return self.webdriver.send_session_command("GET", "cookie/%s" % name)
+
 class WebDriverWindowProtocolPart(WindowProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver

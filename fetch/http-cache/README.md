@@ -13,7 +13,7 @@ A few notes:
   race the cache with a network request.
 
 * Likewise, some tests might fail because there is a separate document-level
-  cache that's ill-defined; see [this
+  cache that's not well defined; see [this
   issue](https://github.com/whatwg/fetch/issues/354).
 
 * [Partial content tests](partial.any.js) (a.k.a. Range requests) are not specified

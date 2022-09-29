@@ -37,7 +37,7 @@ promise_test(async ()=>{
 
   await Promise.all([releaseEventPromise, releasePromise]);
   assert_equals(result, "onrelease event fired then release promise resolved");
-},  "Ensure onreleased is called before WakeLockSentinel.release() resolves");
+}, "Ensure onreleased is called before WakeLockSentinel.release() resolves");
 
 </script>
 

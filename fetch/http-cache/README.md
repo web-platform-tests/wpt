@@ -1,12 +1,14 @@
 ## HTTP Caching Tests
 
 These tests cover HTTP-specified behaviours for caches, primarily from
-[RFC7234](http://httpwg.org/specs/rfc7234.html), but as seen through the
+[RFC9111](https://www.rfc-editor.org/rfc/rfc9111.html), but as seen through the
 lens of Fetch.
 
 A few notes:
 
-* By its nature, caching is optional; some tests expecting a response to be
+* By its nature, [caching is an entirely optional](
+  https://www.rfc-editor.org/rfc/rfc9111.html#section-2-2);
+  some tests expecting a response to be
   cached might fail because the client chose not to cache it, or chose to
   race the cache with a network request.
 

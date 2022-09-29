@@ -20,9 +20,6 @@ A few notes:
 * Some browser caches will behave differently when reloading /
   shift-reloading, despite the `cache mode` staying the same.
 
-* At the moment, Edge doesn't appear to using HTTP caching in conjunction
-  with Fetch at all.
-
 
 ## Test Format
 

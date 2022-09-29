@@ -194,6 +194,14 @@ class SeleniumCookiesProtocolPart(CookiesProtocolPart):
         self.logger.info("Deleting all cookies")
         return self.webdriver.delete_all_cookies()
 
+    def get_all_cookies(self):
+        self.logger.info("Getting all cookies")
+        return self.webdriver.get_all_cookies()
+
+    def get_named_cookie(name, self):
+        self.logger.info("Getting cookie named %s" % name)
+        return self.webdriver.get_named_cookie(name)
+
 class SeleniumWindowProtocolPart(WindowProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver

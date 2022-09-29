@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <body>
+    <script>
+      promise_test(async (t) => {
+        await promise_rejects_dom(
+          t,
+          "NotAllowedError",
+          navigator.wakeLock.request("screen"),
+          "Must reject as there is no user activation"
+        );
+
+        await test_driver.bless("screen wake lock");
+        const lockPromises = [
+          navigator.wakeLock.request(),
+          navigator.wakeLock.request(),
+          navigator.wakeLock.request(),
+        ];
+        const locks = await Promise.all(lockPromises);
+        await Promise.all(locks.map((lock) => lock.release()));
+      }, "Requesting with a wake requires and consumed transient activation");
+    </script>
+  </body>
+</html>

@@ -16,7 +16,7 @@ A few notes:
   cache that's ill-defined; see [this
   issue](https://github.com/whatwg/fetch/issues/354).
 
-* [Partial content tests](partial.html) (a.k.a. Range requests) are not specified
+* [Partial content tests](partial.any.js) (a.k.a. Range requests) are not specified
   in Fetch; tests are included here for interest only.
 
 * Some browser caches will behave differently when reloading /

@@ -25,7 +25,7 @@ promise_test(async ()=>{
   const lock = await navigator.wakeLock.request("screen");
   let result = "";
   const releaseEventPromise = new Promise(resolve => {
-    lock.onrelease = ()=>{
+    lock.onrelease = () => {
       result += "onrelease event fired";
       resolve();
     }

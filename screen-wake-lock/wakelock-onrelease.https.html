@@ -31,7 +31,7 @@ promise_test(async ()=>{
     }
   });
 
-  const releasePromise = lock.release().then(()=>{
+  const releasePromise = lock.release().then(() => {
     result += " then release promise resolved";
   });
 

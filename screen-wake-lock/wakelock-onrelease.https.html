@@ -19,4 +19,25 @@ promise_test(async t => {
   assert_false(ev.bubbles);
   assert_false(ev.cancelable);
 }, "Test onreleased event firing and attributes");
+
+promise_test(async ()=>{
+  await test_driver.bless("screen wake lock");
+  const lock = await navigator.wakeLock.request("screen");
+  let result = "";
+  const releaseEventPromise = new Promise(resolve => {
+    lock.onrelease = ()=>{
+      result += "onrelease event fired";
+      resolve();
+    }
+  });
+
+  const releasePromise = lock.release().then(()=>{
+    result += " then release promise resolved";
+  });
+
+  await Promise.all([releaseEventPromise, releasePromise]);
+  assert_equals(result, "onrelease event fired then release promise resolved");
+},  "Ensure onreleased is called before WakeLockSentinel.release() resolves");
+
 </script>
+

@@ -669,6 +669,14 @@
             return Promise.reject(new Error("unimplemented"));
         },
 
+        get_all_cookies: function(context=null) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
+        get_named_cookie: function(name, context=null) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
         send_keys: function(element, keys) {
             if (this.in_automation) {
                 return Promise.reject(new Error('Not implemented'));

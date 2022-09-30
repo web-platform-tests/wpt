@@ -198,7 +198,7 @@ class SeleniumCookiesProtocolPart(CookiesProtocolPart):
         self.logger.info("Getting all cookies")
         return self.webdriver.get_all_cookies()
 
-    def get_named_cookie(name, self):
+    def get_named_cookie(self, name):
         self.logger.info("Getting cookie named %s" % name)
         return self.webdriver.get_named_cookie(name)
 

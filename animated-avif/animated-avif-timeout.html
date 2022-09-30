@@ -1,7 +1,8 @@
 <html class="reftest-wait">
 <title>Animated AVIF: Second frame displays quickly, replacing red with green.</title>
 <link rel="match" href="animated-avif-timeout-ref.html"/>
-<img src=../images/animated-avif.avif onload="loaded()"/>
+<meta name="fuzzy" content="maxDifference=3;totalPixels=16">
+<img src="../images/animated-avif.avif" onload="loaded()"/>
 <script>
   function loaded() {
     setTimeout(function() {

@@ -10,13 +10,53 @@ const DeviceTypeArray = ['cpu', 'gpu'];
 const ULPTolerance = {
   // for single-precision floating-point
   'float32': {
+    'batchNormalization': 6,
     'clamp': 0,
     'concat': 0,
+    'conv2d': 2,
+
+    // element-wise binary operations
+    'add': 1,
+    'sub': 1,
+    'mul': 1,
+    'div': 2,
+    'max': 0,
+    'min': 0,
+    'pow': 3,
+
+    // element-wise unary operations
+    'abs': 0,
+    'ceil': 0,
+    'cos': 2,
+    'exp': 2,
+    'floor': 0,
+    'log': 3,
+    'neg': 0,
+    'sin': 2,
+    'tan': 4,
+
+    'gemm': 1,
+    'leakyRelu': 1,
+    'matmul': 1,
+
+    // pooling operations
+    'averagePool2d': 2,
+    'maxPool2d': 0,
+
+    // reduction operations
+    'reduceMax': 0,
+    'reduceMean': 0,
+    'reduceMin': 0,
+    'reduceProduct': 0,
+    'reduceSum': 0,
+
     'relu': 0,
     'reshape': 0,
+    'sigmoid': 2,
     'slice': 0,
     'split': 0,
     'squeeze': 0,
+    'tanh': 2,
     'transpose': 0,
   },
 };
@@ -33,7 +73,7 @@ function sizeOfShape(array) {
  *     https://webmachinelearning.github.io/webnn/#enumdef-mloperandtype
  * @return {number} A 64-bit signed integer.
  */
-  function getBitwise(value, dataType) {
+function getBitwise(value, dataType) {
   const buffer = new ArrayBuffer(8);
   const int64Array = new BigInt64Array(buffer);
   int64Array[0] = value < 0 ? ~BigInt(0) : BigInt(0);
@@ -77,5 +117,20 @@ function assert_array_approx_equals_ulp(actual, expected, nulp, dataType)
       distance = distance >= 0 ? distance : -distance;
       assert_true(distance <= nulp,
                   `The distance of ${actual[i]} should be close enough to the distance of ${expected[i]} by the acceptable ULP distance ${nulp}, while current they have ${distance} ULP distance`);
+  }
+}
+
+function createActivation(builder, activation, input = undefined, options = {}) {
+  if (activation === 'relu') {
+    return input === undefined ? builder.relu() : builder.relu(input);
+  } else if (activation === 'relu6') {
+    const clampOptions = {minValue: 0, maxValue: 6};
+    return input === undefined ? builder.clamp(clampOptions) : builder.clamp(input, clampOptions);
+  } else if (activation === 'sigmoid') {
+    return input === undefined ? builder.sigmoid() : builder.sigmoid(input);
+  } else if (activation === 'leakyRelu') {
+    return input === undefined ? builder.leakyRelu(options) : builder.leakyRelu(input, options);
+  } else {
+    assert_true(false, `activation ${activation} is not supported`);
   }
 }

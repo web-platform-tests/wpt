@@ -6,7 +6,7 @@ lens of Fetch.
 
 A few notes:
 
-* By its nature, [caching is an entirely optional](
+* By its nature, [caching is entirely optional](
   https://www.rfc-editor.org/rfc/rfc9111.html#section-2-2);
   some tests expecting a response to be
   cached might fail because the client chose not to cache it, or chose to

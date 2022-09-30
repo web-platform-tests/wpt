@@ -459,7 +459,7 @@ class MarionetteCookiesProtocolPart(CookiesProtocolPart):
 
     def get_named_cookie(self, name):
         self.logger.info("Getting cookie named %s" % name)
-        return self.marionette.get_named_cookie()
+        return self.marionette.get_named_cookie(name)
 
 
 class MarionetteSendKeysProtocolPart(SendKeysProtocolPart):

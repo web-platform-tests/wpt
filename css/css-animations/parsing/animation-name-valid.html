@@ -22,8 +22,15 @@ test_valid_value("animation-name", 'first, second, third');
 
 test_valid_value("animation-name", '"string"', ['"string"', "string"]);
 test_valid_value("animation-name", '"multi word string"', ['"multi word string"', "multi\\ word\\ string"]);
-test_valid_value("animation-name", '"initial"');
+test_valid_value("animation-name", '"initial"', ['"initial"', "initial"]);
 test_valid_value("animation-name", '"---\\22---"', ['\"---\\\"---\"', '---\\\"---']);
+
+test_valid_value("animation-name", '"none"', ['"none"', "none"]);
+test_valid_value("animation-name", '"inherit"', ['"inherit"', "inherit"]);
+test_valid_value("animation-name", '"unset"', ['"unset"', "unset"]);
+test_valid_value("animation-name", '"default"', ['"default"', "default"]);
+test_valid_value("animation-name", '"revert"', ['"revert"', "revert"]);
+test_valid_value("animation-name", '"revert-layer"', ['"revert-layer"', "revert-layer"]);
 </script>
 </body>
 </html>

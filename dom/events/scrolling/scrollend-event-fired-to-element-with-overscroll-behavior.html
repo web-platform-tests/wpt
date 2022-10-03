@@ -72,22 +72,16 @@ function runTest() {
         t.unreached_func("target_div got unexpected scrollend event."));
     await waitForCompositorCommit();
 
-    // Scroll left on target div and wait for the element with overscroll-x to
-    // get scrollend event.
     await touchScrollInTarget(300, target_div, 'left');
-    await waitFor(() => { return horizontal_scrollend_arrived; },
-        'Expected element did not receive scrollend event after scroll left ' +
-        'on target.');
+    await conditionHolds(() => { return !horizontal_scrollend_arrived; },
+        'Expected element should not receive scrollend event after scroll left on target.');
     assert_equals(target_div.scrollLeft, 0);
 
-    // Scroll up on target div and wait for the element with overscroll-y to get
-    // scrollend event.
     await touchScrollInTarget(300, target_div, 'up');
-    await waitFor(() => { return vertical_scrollend_arrived; },
-        'Expected element did not receive scrollend event after scroll up on ' +
-        'target.');
+    await conditionHolds(() => { return !vertical_scrollend_arrived; },
+        'Expected element should not receive scrollend event after scroll up on target.');
     assert_equals(target_div.scrollTop, 0);
-  }, 'Tests that the last element in the cut scroll chain gets scrollend ' +
+  }, 'Tests that the last element in the cut scroll chain does not gets scrollend ' +
      'event when no element scrolls by touch.');
 }
 </script>

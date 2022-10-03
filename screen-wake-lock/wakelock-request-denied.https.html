@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body>
+<script>
+'use strict';
+promise_test(async t => {
+  await promise_rejects_dom(t, "NotAllowedError", navigator.wakeLock.request('screen'));
+  await test_driver.bless("screen wake lock");
+  const lock = await navigator.wakeLock.request('screen');
+  await lock.release();
+}, 'Denied requests should abort with NotAllowedError');
+</script>
+</body>
+</html>

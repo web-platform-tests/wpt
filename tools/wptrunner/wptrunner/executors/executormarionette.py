@@ -455,11 +455,11 @@ class MarionetteCookiesProtocolPart(CookiesProtocolPart):
 
     def get_all_cookies(self):
         self.logger.info("Getting all cookies")
-        return self.marionette.get_all_cookies()
+        return self.marionette.get_cookies()
 
     def get_named_cookie(self, name):
         self.logger.info("Getting cookie named %s" % name)
-        return self.marionette.get_named_cookie(name)
+        return self.marionette.get_cookie(name)
 
 
 class MarionetteSendKeysProtocolPart(SendKeysProtocolPart):

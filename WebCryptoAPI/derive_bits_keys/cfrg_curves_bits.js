@@ -183,6 +183,8 @@ function define_tests() {
                                           false, ["deriveBits", "deriveKey"])
                           .then(function(key) {
                               privateKeys[algorithmName] = key;
+                            }, function (err) {
+                              privateKeys[algorithmName] = null;
                           });
           promises.push(operation);
       });
@@ -192,6 +194,8 @@ function define_tests() {
                                           false, ["deriveKey"])
                           .then(function(key) {
                               noDeriveBitsKeys[algorithmName] = key;
+                            }, function (err) {
+                              noDeriveBitsKeys[algorithmName] = null;
                           });
           promises.push(operation);
       });
@@ -201,6 +205,8 @@ function define_tests() {
                                           false, [])
                           .then(function(key) {
                               publicKeys[algorithmName] = key;
+                            }, function (err) {
+                              publicKeys[algorithmName] = null;
                           });
           promises.push(operation);
       });

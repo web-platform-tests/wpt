@@ -150,7 +150,7 @@ function define_tests() {
           promise_test(function(test) {
               return subtle.generateKey({name: "AES-CBC", length: 128}, true, ["encrypt", "decrypt"])
               .then(function(secretKey) {
-                  subtle.deriveBits({name: algorithmName, public: secretKey}, privateKeys[algorithmName], 8 * sizes[algorithmName])
+                  return subtle.deriveBits({name: algorithmName, public: secretKey}, privateKeys[algorithmName], 8 * sizes[algorithmName])
                   .then(function(derivation) {
                       assert_unreached("deriveBits succeeded but should have failed with InvalidAccessError");
                   }, function(err) {

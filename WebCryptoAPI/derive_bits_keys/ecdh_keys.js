@@ -143,7 +143,7 @@ function define_tests() {
             promise_test(function(test) {
                 return subtle.generateKey({name: "HMAC", hash: "SHA-256", length: 256}, true, ["sign", "verify"])
                 .then(function(secretKey) {
-                    subtle.deriveKey({name: "ECDH", public: secretKey}, privateKeys[namedCurve], {name: "AES-CBC", length: 256}, true, ["sign", "verify"])
+                    return subtle.deriveKey({name: "ECDH", public: secretKey}, privateKeys[namedCurve], {name: "AES-CBC", length: 256}, true, ["sign", "verify"])
                     .then(function(key) {return crypto.subtle.exportKey("raw", key);})
                     .then(function(exportedKey) {
                         assert_unreached("deriveKey succeeded but should have failed with InvalidAccessError");

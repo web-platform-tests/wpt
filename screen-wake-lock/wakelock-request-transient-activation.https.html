@@ -22,7 +22,7 @@
         ];
         const locks = await Promise.all(lockPromises);
         await Promise.all(locks.map((lock) => lock.release()));
-      }, "Requesting with a wake requires and consumed transient activation");
+      }, "Requesting with a wake requires transient activation, but does not consume it");
     </script>
   </body>
 </html>

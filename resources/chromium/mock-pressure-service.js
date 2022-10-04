@@ -1,4 +1,4 @@
-import {PressureState} from '/gen/services/device/public/mojom/pressure_update.mojom.m.js'
+import {PressureFactor, PressureState} from '/gen/services/device/public/mojom/pressure_update.mojom.m.js'
 import {PressureService, PressureServiceReceiver, PressureStatus} from '/gen/third_party/blink/public/mojom/compute_pressure/pressure_service.mojom.m.js'
 
 class MockPressureService {
@@ -14,6 +14,11 @@ class MockPressureService {
       ['nominal', PressureState.kNominal], ['fair', PressureState.kFair],
       ['serious', PressureState.kSerious], ['critical', PressureState.kCritical]
     ]);
+    this.mojomFactorType_ = new Map([
+      ['thermal', PressureFactor.kThermal],
+      ['power-supply', PressureFactor.kPowerSupply]
+    ]);
+    this.pressureServiceReadingTimerId_ = null;
     // Sets a timestamp by creating a DOMHighResTimeStamp from a given
     // platform timestamp. In this mock implementation we use a starting value
     // and an increment step value that resemble a platform timestamp
@@ -61,7 +66,11 @@ class MockPressureService {
 
     const timeout = (1 / sampleRate) * 1000;
     this.pressureServiceReadingTimerId_ = window.setInterval(() => {
-      this.sendUpdate();
+      if (this.pressureUpdate_ === null || this.observer_ === null)
+        return;
+      this.pressureUpdate_.timestamp = this.timestamp_++;
+      this.observer_.onUpdate(this.pressureUpdate_);
+      this.updatesDelivered_++;
     }, timeout);
   }
 
@@ -77,20 +86,22 @@ class MockPressureService {
     return this.updatesDelivered_;
   }
 
-  sendUpdate() {
-    if (this.pressureUpdate_ === null || this.observer_ === null)
-      return;
-    this.pressureUpdate_.timestamp = this.timestamp_++;
-    this.observer_.onUpdate(this.pressureUpdate_);
-    this.updatesDelivered_++;
-  }
-
-  setPressureUpdate(state) {
+  setPressureUpdate(state, factors) {
     if (!this.mojomStateType_.has(state))
       throw new Error(`PressureState '${state}' is invalid`);
 
+    let pressureFactors = [];
+    if (Array.isArray(factors)) {
+      for (const factor of factors) {
+        if (!this.mojomFactorType_.has(factor))
+          throw new Error(`PressureFactor '${factor}' is invalid`);
+        pressureFactors.push(this.mojomFactorType_.get(factor));
+      }
+    }
+
     this.pressureUpdate_ = {
       state: this.mojomStateType_.get(state),
+      factors: pressureFactors,
       timestamp: window.performance.timeOrigin
     };
   }

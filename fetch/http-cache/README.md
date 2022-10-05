@@ -22,8 +22,8 @@ A few notes:
 * Some browser caches will behave differently when reloading /
   shift-reloading, despite the `cache mode` staying the same.
 
-* [cache-tests.fyi](https://cache-tests.fyi/) is yet another test suites of http caching
-  which also includes Server/CDN implementation.
+* [cache-tests.fyi](https://cache-tests.fyi/) is another test suite of HTTP caching
+  which also caters to server/CDN implementations.
 
 ## Test Format
 

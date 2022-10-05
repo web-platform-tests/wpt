@@ -2,7 +2,6 @@
 <meta charset=utf-8>
 <title>getDisplayMedia</title>
 <meta name="timeout" content="long">
-<button id="button">User gesture</button>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -18,9 +17,7 @@ const stopTracks = stream => stream.getTracks().forEach(track => track.stop());
 const j = obj => JSON.stringify(obj);
 
 async function getDisplayMedia(constraints) {
-  const p = new Promise(r => button.onclick = r);
-  await test_driver.click(button);
-  await p;
+  await test_driver.bless("getDisplayMedia");
   return navigator.mediaDevices.getDisplayMedia(constraints);
 }
 
@@ -81,8 +78,7 @@ promise_test( async t => {
  {video: {frameRate: {exact: 4}}},
  {video: false, audio: true},
 ].forEach(constraints => promise_test(async t => {
-  await test_driver.bless('getDisplayMedia()');
-  const p = navigator.mediaDevices.getDisplayMedia(constraints);
+  const p = getDisplayMedia(constraints);
   t.add_cleanup(async () => {
     try { stopTracks(await p) } catch {}
   });
@@ -239,8 +235,7 @@ promise_test(async t => {
  {surfaceSwitching: "invalid"},
  {systemAudio: "invalid"},
 ].forEach(constraints => promise_test(async t => {
-  await test_driver.bless('getDisplayMedia()');
-  const p = navigator.mediaDevices.getDisplayMedia(constraints);
+  const p = getDisplayMedia(constraints);
   t.add_cleanup(async () => {
     try { stopTracks(await p) } catch {}
   });

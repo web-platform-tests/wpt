@@ -17,7 +17,7 @@ const stopTracks = stream => stream.getTracks().forEach(track => track.stop());
 const j = obj => JSON.stringify(obj);
 
 async function getDisplayMedia(constraints) {
-  await test_driver.bless("getDisplayMedia");
+  await test_driver.bless("getDisplayMedia", () => navigator.mediaDevices.getDisplayMedia(constraints));
   return navigator.mediaDevices.getDisplayMedia(constraints);
 }
 

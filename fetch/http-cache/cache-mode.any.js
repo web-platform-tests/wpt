@@ -43,6 +43,8 @@ var tests = [
   //       then append (`Pragma`, `no-cache`) to httpRequest's header list.
   //    2. If httpRequest's header list does not contain `Cache-Control`,
   //        then append (`Cache-Control`, `no-cache`) to httpRequest's header list.
+
+  // mode: "no-store"
   {
     name: "Fetch sends Cache-Control: no-cache and Pragma: no-cache when cache mode is no-store",
     requests: [
@@ -74,8 +76,40 @@ var tests = [
         expected_request_headers: [['pragma', 'foo']]
       }
     ]
-  }
+  },
 
-  // TODO: "reload"
+  // mode: "reload"
+  {
+    name: "Fetch sends Cache-Control: no-cache and Pragma: no-cache when cache mode is reload",
+    requests: [
+      {
+        cache: "reload",
+        expected_request_headers: [
+          ['cache-control', 'no-cache'],
+          ['pragma', 'no-cache']
+        ]
+      }
+    ]
+  },
+  {
+    name: "Fetch doesn't touch Cache-Control when cache mode is reload and Cache-Control is already present",
+    requests: [
+      {
+        cache: "reload",
+        request_headers: [['cache-control', 'foo']],
+        expected_request_headers: [['cache-control', 'foo']]
+      }
+    ]
+  },
+  {
+    name: "Fetch doesn't touch Pragma when cache mode is reload and Pragma is already present",
+    requests: [
+      {
+        cache: "reload",
+        request_headers: [['pragma', 'foo']],
+        expected_request_headers: [['pragma', 'foo']]
+      }
+    ]
+  }
 ];
 run_tests(tests);

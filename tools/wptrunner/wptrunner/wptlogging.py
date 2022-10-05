@@ -81,6 +81,7 @@ class QueueHandler(logging.Handler):
 
     def emit(self, record):
         msg = self.format(record)
+        msg = msg.encode("utf-8")
         data = {"action": "log",
                 "level": record.levelname,
                 "thread": record.threadName,

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<title>Tests anchors on out-of-flow boxes</title>
-<link rel="help" href="https://tabatkins.github.io/specs/css-anchor-position/#determining">
+<title>Tests two OOF anchors in different containing blocks in multicol.</title>
 <link rel="help" href="https://tabatkins.github.io/specs/css-anchor-position/#propdef-anchor-name">
+<link rel="help" href="https://tabatkins.github.io/specs/css-anchor-position/#anchor-pos">
 <link rel="help" href="https://tabatkins.github.io/specs/css-anchor-position/#anchor-size">
 <link rel="author" href="mailto:kojii@chromium.org">
 <script src="/resources/testharness.js"></script>
@@ -12,11 +12,11 @@
   position: relative;
 }
 .columns {
-  column-count: 2;
+  column-count: 3;
   column-fill: auto;
   column-gap: 10px;
   column-width: 100px;
-  width: 210px;
+  width: 320px;
   height: 50px;
 }
 .anchor1 {
@@ -26,10 +26,27 @@
   height: 30px;
   background: orange;
 }
+.anchor2 {
+  anchor-name: --a2;
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: purple;
+}
 .target {
   position: absolute;
-  height: anchor-size(--a1 height);
+  width: 5px;
   background: lime;
+}
+.target1 {
+  left: anchor(--a1 left);
+  top: anchor(--a1 top);
+  height: anchor-size(--a1 height);
+}
+.target2 {
+  left: anchor(--a2 left);
+  top: anchor(--a2 top);
+  height: anchor-size(--a2 height);
 }
 </style>
 <body onload="checkLayout('.target')">
@@ -39,28 +56,16 @@
       <div class="relpos">
         <div class="spacer" style="height: 30px"></div>
         <div class="anchor1"></div>
-        <div class="target" data-expected-height=0></div>
       </div>
-      <div class="target" data-expected-height=50></div>
-    </div>
-    <div class="target" data-expected-height=50></div>
-  </div>
-
-  <div class="spacer" style="height: 10px"></div>
-  <div class="relpos">
-    <div class="columns">
-      <div class="spacer" style="height: 10px"></div>
+      <div class="spacer" style="height: 70px"></div>
       <div class="relpos">
         <div class="spacer" style="height: 10px"></div>
-        <div class="relpos">
-          <div class="spacer" style="height: 10px"></div>
-          <div class="anchor1"></div>
-          <div class="target" data-expected-height=0></div>
-        </div>
-        <div class="target" data-expected-height=50></div>
+        <div class="anchor2"></div>
       </div>
-      <div class="target" data-expected-height=50></div>
+      <div class="target target1" data-expected-height=50></div>
+      <div class="target target2" data-expected-height=30></div>
     </div>
-    <div class="target" data-expected-height=50></div>
+    <div class="target target1" data-expected-height=50></div>
+    <div class="target target2" data-expected-height=30></div>
   </div>
 </body>

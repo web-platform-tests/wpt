@@ -34,6 +34,10 @@
       }, 'set contentEditable = "true"', true, "true");
 
       testContentEditable(el => {
+        el.contentEditable = "false";
+      }, 'set contentEditable = "false"', false, "false");
+
+      testContentEditable(el => {
         const parent = document.createElement("div");
         parent.appendChild(el);
         parent.contentEditable = "true";

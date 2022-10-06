@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<link
+  rel="help"
+  src="https://w3c.github.io/screen-orientation/#dfn-apply-an-orientation-lock"
+/>
+<script>
+  async function cleanup() {
+    try {
+      await document.exitFullscreen();
+    } catch (e) {}
+    screen.orientation.unlock();
+  }
+
+  promise_test(async (t) => {
+    t.add_cleanup(cleanup);
+    await test_driver.bless("request full screen");
+    await document.documentElement.requestFullscreen();
+    const preType = screen.orientation.type;
+    const isPortrait = preType.includes("portrait");
+    const newType = isPortrait ? "landscape" : "portrait";
+    const p = screen.orientation.lock(newType);
+    const testPromises = [];
+    for (const type of ["portrait", "landscape", "any"]) {
+      testPromises.push(
+        promise_rejects_dom(
+          t,
+          "AbortError",
+          screen.orientation.lock(type),
+          "Must reject with AbortError"
+        )
+      );
+    }
+    await Promise.all(testPromises);
+    await p;
+  }, "subsequent calls to lock() just return aborted promises");
+</script>

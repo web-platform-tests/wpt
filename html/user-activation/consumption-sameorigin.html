@@ -95,7 +95,6 @@
         child1.src = "resources/child-one.html";
         child1.id = "child1";
         document.body.appendChild(child1);
-
         await new Promise((resolve) => (child1.onload = resolve));
         const childSO = document.createElement("iframe");
         childSO.id = "child-so";

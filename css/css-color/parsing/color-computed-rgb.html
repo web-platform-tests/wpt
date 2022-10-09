@@ -6,6 +6,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-color-4/#rgb-functions">
 <link rel="help" href="https://drafts.csswg.org/css-color-4/#resolving-sRGB-values">
 <link rel="help" href="https://drafts.csswg.org/css-color-4/#serializing-sRGB-values">
+<link rel="author" title="Chris Nardi" href="mailto:cnardi@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/computed-testcommon.js"></script>
@@ -36,6 +37,8 @@ test_computed_value("color", "rgba(none none none / .5)", "rgba(0, 0, 0, 0.5)");
 test_computed_value("color", "rgba(20% none none)", "rgb(51, 0, 0)");
 test_computed_value("color", "rgba(20% none none / none)", "rgba(51, 0, 0, 0)");
 test_computed_value("color", "rgba(none none none / 50%)", "rgba(0, 0, 0, 0.5)");
+
+test_computed_value("color", "rgb(2.5, 3.4, 4.6)", ["rgb(3, 3, 5)", "rgb(2.5, 3.4, 4.6)"], "[Tests that RGB channels are rounded appropriately]");
 </script>
 </body>
 </html>

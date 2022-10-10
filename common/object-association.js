@@ -1,26 +1,24 @@
 "use strict";
 
-// For now this only has per-Window tests, but we could expand it to also test per-Document
+// This is for testing whether an object (e.g., a global property) is associated with Window, or
+// with Document. Recall that Window and Document are 1:1 except when doing a same-origin navigation
+// away from the initial about:blank. In that case the Window object gets reused for the new
+// Document.
+//
+// So:
+// - If something is per-Window, then it should maintain its identity across an about:blank
+//   navigation.
+// - If something is per-Document, then it should be recreated across an about:blank navigation.
 
-/**
- * Run tests for window[propertyName] after discarding the browsing context, navigating, etc.
- * @param {string} propertyName
- */
 window.testIsPerWindow = propertyName => {
-  test(t => {
-    const iframe = document.createElement("iframe");
-    document.body.appendChild(iframe);
-    const frame = iframe.contentWindow;
+  runTests(propertyName, assert_equals, "must not");
+};
 
-    const before = frame[propertyName];
-    assert_true(before !== undefined && before !== null, `window.${propertyName} must be implemented`);
+window.testIsPerDocument = propertyName => {
+  runTests(propertyName, assert_not_equals, "must");
+};
 
-    iframe.remove();
-
-    const after = frame[propertyName];
-    assert_equals(after, before, `window.${propertyName} should not change after iframe.remove()`);
-  }, `Discarding the browsing context must not change window.${propertyName}`);
-
+function runTests(propertyName, equalityOrInequalityAsserter, mustOrMustNotReplace) {
   async_test(t => {
     const iframe = document.createElement("iframe");
     document.body.appendChild(iframe);
@@ -38,14 +36,30 @@ window.testIsPerWindow = propertyName => {
       }
 
       const after = frame[propertyName];
-      assert_equals(after, before);
+      equalityOrInequalityAsserter(after, before);
       t.done();
     });
 
     iframe.src = "/common/blank.html";
-  }, `Navigating from the initial about:blank must not replace window.${propertyName}`);
+  }, `Navigating from the initial about:blank ${mustOrMustNotReplace} replace window.${propertyName}`);
 
-  // Per spec, document.open() should not change any of the Window state.
+  // Per spec, discarding a browsing context should not change any of the global objects.
+  test(() => {
+    const iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+    const frame = iframe.contentWindow;
+
+    const before = frame[propertyName];
+    assert_true(before !== undefined && before !== null, `window.${propertyName} must be implemented`);
+
+    iframe.remove();
+
+    const after = frame[propertyName];
+    assert_equals(after, before, `window.${propertyName} should not change after iframe.remove()`);
+  }, `Discarding the browsing context must not change window.${propertyName}`);
+
+  // Per spec, document.open() should not change any of the global objects. In historical versions
+  // of the spec, it did, so we test here.
   async_test(t => {
     const iframe = document.createElement("iframe");
 
@@ -64,5 +78,5 @@ window.testIsPerWindow = propertyName => {
 
     iframe.src = "/common/blank.html";
     document.body.appendChild(iframe);
-  }, `document.open() must replace window.${propertyName}`);
-};
+  }, `document.open() must not replace window.${propertyName}`);
+}

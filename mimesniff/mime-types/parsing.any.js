@@ -36,12 +36,13 @@ function runTests(tests) {
       assert_equals(new File([], "noname", { type: val.input}).type, output, "File");
     }, val.input + " (Blob/File)");
 
-    promise_test(() => {
-      const compatibleNess = isByteCompatible(val.input);
+    const compatibleNess = isByteCompatible(val.input);
+    if(compatibleNess === "header-value-incompatible") {
+      return;
+    }
 
-      if(compatibleNess === "header-value-incompatible") {
-        return Promise.resolve();
-      } if(compatibleNess === "incompatible" || compatibleNess === "header-value-error") {
+    promise_test(() => {
+      if(compatibleNess === "incompatible" || compatibleNess === "header-value-error") {
         assert_throws_js(TypeError, () => new Request("about:blank", { headers: [["Content-Type", val.input]] }));
         assert_throws_js(TypeError, () => new Response(null, { headers: [["Content-Type", val.input]] }));
         return Promise.resolve();

@@ -40,8 +40,10 @@ from .exceptions import (
 )
 from .extensions.base import Extension
 from .framing import *
+from .handshake import *
 from .http import Headers
 from .typing import Data
+
 
 __all__ = ["WebSocketCommonProtocol"]
 
@@ -230,13 +232,9 @@ class WebSocketCommonProtocol(asyncio.Protocol):
         self._paused = False
         self._drain_waiter: Optional[asyncio.Future[None]] = None
 
-        # Argument `loop` is removed from the `Lock`:
-        # > The loop parameter has been removed.
-        # https://docs.python.org/3/whatsnew/3.10.html
-        if sys.version_info[:2] >= (3, 8):
-            self._drain_lock = asyncio.Lock()
-        else:
-            self._drain_lock = asyncio.Lock(loop=loop)
+        self._drain_lock = asyncio.Lock(
+            loop=loop if sys.version_info[:2] < (3, 8) else None
+        )
 
         # This class implements the data transfer and closing handshake, which
         # are shared between the client-side and the server-side.

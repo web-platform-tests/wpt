@@ -1404,15 +1404,9 @@ class EdgeChromium(Browser):
         # If an exact version can't be found, use a suitable fallback based on
         # the browser channel, if available.
         if version is None:
-            platforms = {
-                "linux": "LINUX",
-                "macos": "MACOS",
-                "win": "WINDOWS"
-            }
             if channel is None:
                 channel = "dev"
-            platform = platforms[self.platform]
-            suffix = f"{channel.upper()}_{platform}"
+            suffix = f"{channel.upper()}"
             version_url = f"https://msedgedriver.azureedge.net/LATEST_{suffix}"
             version = get(version_url).text.strip()
 

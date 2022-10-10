@@ -962,6 +962,8 @@ class Chrome(ChromeChromiumBase):
             elif channel == "dev":
                 name += " Dev"
             path = os.path.expandvars(fr"$PROGRAMFILES\Google\{name}\Application\chrome.exe")
+            if not os.path.exists(path):
+                path = os.path.expandvars(fr"$SYSTEMDRIVE\Program Files (x86)\Google\{name}\Application\chrome.exe")
             if channel == "canary":
                 path = os.path.expandvars(r"$LOCALAPPDATA\Google\Chrome SxS\Application\chrome.exe")
             return path

@@ -8,6 +8,8 @@ promise_test(() => {
 }, "Loading data…");
 
 function isByteCompatible(str) {
+  // normalize https://fetch.spec.whatwg.org/#concept-header-value-normalize
+  str = str.replace(/^[\u0009\u0020\u000A\u000D]+|[\u0009\u0020\u000A\u000D]+$/g, '');
   for(let i = 0; i < str.length; i++) {
     const charCode = str.charCodeAt(i);
     // See https://fetch.spec.whatwg.org/#concept-header-value

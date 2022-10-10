@@ -43,22 +43,28 @@
 
   div#parent100x100
     {
-      background-color: blue;
       height: 100px;
       width: 100px;
     }
 
   div#child200x200
     {
-      background-color: orange;
-      height: 200px;
-      width: 200px;
+      background-color: green;
+      border-bottom: red solid 100px;
+      border-right: red solid 100px;
+      height: 100px;
+      width: 100px;
     }
   </style>
 
-  <body>
+  <p>Test passes if
 
-  <p>Test passes if there is an orange rectangle with both an active vertical scroll bar and an active horizontal scroll bar.
+  <ul>
+
+    <li>there is a filled green square with both an active vertical scroll bar and an active horizontal scroll bar
+    <li>there is <strong>no red</strong> <em>unless one of the scroll bars is used</em>.
+
+  </ul>
 
   <table>
 

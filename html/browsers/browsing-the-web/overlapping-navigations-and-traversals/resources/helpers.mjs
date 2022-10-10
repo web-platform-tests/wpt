@@ -39,7 +39,13 @@ export function waitForPopstate(obj) {
 // of a separate iframe load, we would have caught any problems.
 export async function waitForPotentialNetworkLoads(t) {
   const before = performance.now();
+
+  // Sometimes we're doing something, like a traversal, which cancels our first
+  // attempt at iframe loading. In that case we bail out after 100 ms and try
+  // again. (Better ideas welcome...)
+  await Promise.race([createIframe(t), delay(t, 100)]);
   await createIframe(t);
+
   const after = performance.now();
   await delay(t, after - before);
 }

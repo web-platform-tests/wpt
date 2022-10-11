@@ -63,6 +63,7 @@ promise_test(async t => {
 
   // test4 [Secure] Omitted
   cookie = await test_driver.get_named_cookie("test4");
+  console.log(JSON.stringify(cookie)); // TODO REMOVE THIS
   assert_equals(cookie, null);
 
   // test5 [SameSite Strict]

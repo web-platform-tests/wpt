@@ -200,7 +200,10 @@ class SeleniumCookiesProtocolPart(CookiesProtocolPart):
 
     def get_named_cookie(self, name):
         self.logger.info("Getting cookie named %s" % name)
-        return self.webdriver.get_named_cookie(name)
+        try:
+            return self.webdriver.get_named_cookie(name)
+        except exceptions.NoSuchCookieException:
+            return None
 
 class SeleniumWindowProtocolPart(WindowProtocolPart):
     def setup(self):

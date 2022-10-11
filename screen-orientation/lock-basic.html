@@ -61,7 +61,7 @@ promise_test(async t => {
       if (err.name === "NotSupportedError") {
         continue;
       }
-      assert_unreached("Unknown erorr: " + err);
+      assert_unreached("Unknown error: " + err);
     }
     const type = screen.orientation.type;
     switch (orientation) {

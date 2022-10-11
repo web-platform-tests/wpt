@@ -35,7 +35,7 @@ class GetAllCookiesAction:
 
     def __call__(self, payload):
         self.logger.debug("Getting all cookies")
-        self.protocol.cookies.get_all_cookies()
+        return self.protocol.cookies.get_all_cookies()
 
 
 class GetNamedCookieAction:
@@ -48,7 +48,7 @@ class GetNamedCookieAction:
     def __call__(self, payload):
         name = payload["name"]
         self.logger.debug("Getting cookie named %s" % name)
-        self.protocol.cookies.get_named_cookie(name)
+        return self.protocol.cookies.get_named_cookie(name)
 
 
 class SendKeysAction:

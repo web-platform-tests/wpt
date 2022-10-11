@@ -212,7 +212,7 @@ class WebDriverCookiesProtocolPart(CookiesProtocolPart):
         try:
             return self.webdriver.send_session_command("GET", "cookie/%s" % name)
         except error.NoSuchCookieError as e:
-            return e
+            return None
 
 class WebDriverWindowProtocolPart(WindowProtocolPart):
     def setup(self):

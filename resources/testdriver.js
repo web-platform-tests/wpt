@@ -195,7 +195,7 @@
          * @returns {Promise} Returns an array of cookies objects as defined in the spec:
          *                    https://w3c.github.io/webdriver/#cookies
          */
-         get_all_cookies: function(context=null) {
+        get_all_cookies: function(context=null) {
             return window.test_driver_internal.get_all_cookies(context);
         },
 
@@ -215,7 +215,7 @@
          get_named_cookie: async function(name, context=null) {
             cookie = await window.test_driver_internal.get_named_cookie(name, context);
             if (!cookie) {
-              throw new Error("no such cookie");
+                throw new Error("no such cookie");
             }
             return cookie;
         },

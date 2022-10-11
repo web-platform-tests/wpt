@@ -63,11 +63,11 @@
 
         empty.name = "initial";
         assert_equals(empty.name, "initial", "CSSKeyframesRule name setter, CSS-wide keyword");
-        assert_equals(empty.cssText.replace(/\s/g, ""), "@keyframes\"initial\"{}", "CSSKeyframesRule cssText attribute with CSS-wide keyword name");
+        assert_equals(empty.cssText.replace(/\s/g, ""), "@keyframesinitial{}", "CSSKeyframesRule cssText attribute with CSS-wide keyword name");
 
         empty.name = "none";
         assert_equals(empty.name, "none", "CSSKeyframesRule name setter, 'none'");
-        assert_equals(empty.cssText.replace(/\s/g, ""), "@keyframes\"none\"{}", "CSSKeyframesRule cssText attribute with 'none' name");
+        assert_equals(empty.cssText.replace(/\s/g, ""), "@keyframesnone{}", "CSSKeyframesRule cssText attribute with 'none' name");
     });
     </script>
 </head>

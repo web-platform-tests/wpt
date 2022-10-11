@@ -213,7 +213,7 @@
          *                    Rejected if no such cookie exists.
          */
          get_named_cookie: async function(name, context=null) {
-            cookie = await window.test_driver_internal.get_named_cookie(name, context);
+            let cookie = await window.test_driver_internal.get_named_cookie(name, context);
             if (!cookie) {
                 throw new Error("no such cookie");
             }

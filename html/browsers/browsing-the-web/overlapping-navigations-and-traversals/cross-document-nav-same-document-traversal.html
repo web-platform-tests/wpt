@@ -6,7 +6,8 @@
 
 <!--
   According to the spec, "apply the history step" will set the ongoing
-  navigation to "traversal", canceling any non-mature navigations.
+  navigation to "traversal", canceling any navigation that is still processing
+  in parallel and hasn't yet reached "apply the history step".
 -->
 
 <body>

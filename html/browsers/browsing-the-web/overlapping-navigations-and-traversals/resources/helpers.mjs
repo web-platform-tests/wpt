@@ -35,8 +35,9 @@ export function waitForPopstate(obj) {
 // This is used when we want to end the test by asserting some load doesn't
 // happen, but we're not sure how long to wait. We could just wait a long-ish
 // time (e.g. a second), but that makes the tests slow. Instead, assume that
-// network loads take roughly the same time, so by waiting for 2x the duration
-// of a separate iframe load, we would have caught any problems.
+// network loads take roughly the same time. Then, you can use this function to
+// wait a small multiple of the duration of a separate iframe load; this should
+// be long enough to catch any problems.
 export async function waitForPotentialNetworkLoads(t) {
   const before = performance.now();
 

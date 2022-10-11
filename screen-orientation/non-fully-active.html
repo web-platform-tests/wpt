@@ -55,6 +55,6 @@
     iframe.remove();
 
     await promise_rejects_dom(t, "AbortError", p);
-    await assert_throws_dom(t, "InvalidStateError", orientation.unlock());
+     assert_throws_dom(t, "InvalidStateError", () => { orientation.unlock() });
   }, "Making a document non-fully active while locking results in an AbortError");
 </script>

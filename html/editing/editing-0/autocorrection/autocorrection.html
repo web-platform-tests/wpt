@@ -6,29 +6,27 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 
-test(function() {
+test(() => {
     assert_true('autocorrect' in document.createElement('input'));
-}, "Test that the autocorrect attribute is available on HTMLInputElement.")
+}, "Test that the autocorrect attribute is available on HTMLInputElement.");
 
-test(function() {
+test(() => {
     assert_true('autocorrect' in document.createElement('textarea'));
-}, "Test that the autocorrect attribute is available on HTMLTextAreaElement.")
+}, "Test that the autocorrect attribute is available on HTMLTextAreaElement.");
 
-test(function() {
+test(() => {
     assert_true('autocorrect' in document.createElement('div'));
-}, "Test that the autocorrect attribute is available on div.")
+}, "Test that the autocorrect attribute is available on div.");
 
-test(function() {
+test(() => {
     assert_true('autocorrect' in document.createElement('form'));
-}, "Test that the autocorrect attribute is available on form.")
+}, "Test that the autocorrect attribute is available on form.");
 
-test(function() {
-  var elements = [ document.createElement('input'),
-                   document.createElement('textarea'),
-                   document.createElement('div'),
-                   document.createElement('form') ];
-
-  elements.forEach(function(e) {
+test(() => {
+  [ document.createElement('input'),
+    document.createElement('textarea'),
+    document.createElement('div'),
+    document.createElement('form') ].forEach(e => {
     e.autocorrect = true;
     assert_true(e.autocorrect);
     assert_equals(e.getAttribute('autocorrect'), 'on');
@@ -47,13 +45,11 @@ test(function() {
   });
 }, "Test setting the autocorrect IDL attribute.");
 
-test(function() {
-  var elements = [ document.createElement('input'),
-                   document.createElement('textarea'),
-                   document.createElement('div'),
-                   document.createElement('form') ];
-
-  elements.forEach(function(e) {
+test(() => {
+  [ document.createElement('input'),
+    document.createElement('textarea'),
+    document.createElement('div'),
+    document.createElement('form') ].forEach(e => {
     e.setAttribute('autocorrect', 'on');
     assert_equals(e.getAttribute('autocorrect'), 'on');
     assert_true(e.autocorrect);
@@ -82,159 +78,159 @@ test(function() {
     assert_false(e.hasAttribute('autocorrect'));
     assert_true(e.autocorrect);
   });
-}, "Test setting the autocorrect attribute using setAttribute.")
+}, "Test setting the autocorrect attribute using setAttribute.");
 
-test(function() {
+test(t => {
   const testData = [
     {
       formValue: null,
       formElementValue: null,
       inheritedResult: true,
-      uninheritedResult: true,
+      uninheritedResult: true
     },
     {
       formValue: null,
       formElementValue: 'on',
       inheritedResult: true,
-      uninheritedResult: true,
+      uninheritedResult: true
     },
     {
       formValue: 'on',
       formElementValue: null,
       inheritedResult: true,
-      uninheritedResult: true,
+      uninheritedResult: true
     },
     {
       formValue: 'on',
       formElementValue: 'on',
       inheritedResult: true,
-      uninheritedResult: true,
+      uninheritedResult: true
     },
     {
       formValue: null,
       formElementValue: 'off',
       inheritedResult: false,
-      uninheritedResult: false,
+      uninheritedResult: false
     },
     {
       formValue: 'off',
       formElementValue: null,
       inheritedResult: false,
-      uninheritedResult: true,
+      uninheritedResult: true
     },
     {
       formValue: 'off',
       formElementValue: 'off',
       inheritedResult: false,
-      uninheritedResult: false,
+      uninheritedResult: false
     },
     {
       formValue: 'on',
       formElementValue: 'off',
       inheritedResult: false,
-      uninheritedResult: false,
+      uninheritedResult: false
     },
     {
       formValue: 'off',
       formElementValue: 'on',
       inheritedResult: true,
-      uninheritedResult: true,
+      uninheritedResult: true
     },
     {
       formValue: 'off',
       formElementValue: 'foo',
       inheritedResult: true,
-      uninheritedResult: true,
+      uninheritedResult: true
     },
     {
       formValue: 'off',
       formElementValue: 'bar',
       inheritedResult: true,
-      uninheritedResult: true,
+      uninheritedResult: true
     },
     {
       formValue: 'off',
       formElementValue: '',
       inheritedResult: false,
-      uninheritedResult: true,
+      uninheritedResult: true
     },
     {
       formValue: 'off',
       formElementValue: '',
       inheritedResult: false,
-      uninheritedResult: true,
+      uninheritedResult: true
     },
     {
       formValue: 'on',
       formElementValue: 'foo',
       inheritedResult: true,
-      uninheritedResult: true,
+      uninheritedResult: true
     },
     {
       formValue: 'on',
       formElementValue: 'bar',
       inheritedResult: true,
-      uninheritedResult: true,
+      uninheritedResult: true
     },
     {
       formValue: 'on',
       formElementValue: '',
       inheritedResult: true,
-      uninheritedResult: true,
+      uninheritedResult: true
     },
     {
       formValue: 'on',
       formElementValue: '',
       inheritedResult: true,
-      uninheritedResult: true,
+      uninheritedResult: true
     },
     {
       formValue: 'foo',
       formElementValue: 'off',
       inheritedResult: false,
-      uninheritedResult: false,
+      uninheritedResult: false
     },
     {
       formValue: 'bar',
       formElementValue: 'off',
       inheritedResult: false,
-      uninheritedResult: false,
+      uninheritedResult: false
     },
     {
       formValue: '',
       formElementValue: 'off',
       inheritedResult: false,
-      uninheritedResult: false,
+      uninheritedResult: false
     },
     {
       formValue: '',
       formElementValue: 'off',
       inheritedResult: false,
-      uninheritedResult: false,
+      uninheritedResult: false
     },
     {
       formValue: 'foo',
       formElementValue: 'on',
       inheritedResult: true,
-      uninheritedResult: true,
+      uninheritedResult: true
     },
     {
       formValue: 'bar',
       formElementValue: 'on',
       inheritedResult: true,
-      uninheritedResult: true,
+      uninheritedResult: true
     },
     {
       formValue: '',
       formElementValue: 'on',
       inheritedResult: true,
-      uninheritedResult: true,
+      uninheritedResult: true
     },
     {
       formValue: '',
       formElementValue: 'on',
       inheritedResult: true,
-      uninheritedResult: true,
+      uninheritedResult: true
     }
   ];
 
@@ -252,6 +248,7 @@ test(function() {
   const form = document.createElement('form');
   form.id = 'form';
   document.body.appendChild(form);
+  t.add_cleanup(() => form.remove());
 
   testData.forEach(data => {
     form.removeAttribute('autocorrect');
@@ -267,6 +264,7 @@ test(function() {
       const element2 = document.createElement(elementData.element);
       element2.setAttribute('form', 'form');
       document.body.appendChild(element2);
+      t.add_cleanup(() => element2.remove());
 
       if (data.formElementValue !== null) {
         element.setAttribute('autocorrect', data.formElementValue);
@@ -295,12 +293,13 @@ test(function() {
   });
 }, "Test inheriting autocorrection from a form.")
 
-test(function() {
+test(t => {
   const editingHost = document.createElement("div");
   const container = document.createElement("br");
   editingHost.contentEditable = true;
   editingHost.appendChild(container);
   document.body.appendChild(editingHost);
+  t.add_cleanup(() => editingHost.remove());
 
   editingHost.autocorrect = false;
   container.autocorrect = true;
@@ -315,7 +314,7 @@ test(function() {
   assert_false(container.autocorrect);
 }, "Test autocorrection in an editing host.")
 
-test(function() {
+test(t => {
   const form = document.createElement("form");
   const passwordInput = document.createElement("input");
   const emailInput = document.createElement("input");
@@ -328,6 +327,7 @@ test(function() {
   form.setAttribute("autocorrect", "on");
 
   document.body.appendChild(form);
+  t.add_cleanup(() => form.remove());
   for (const input of [passwordInput, emailInput, urlInput, textInput])
     form.appendChild(input);
 

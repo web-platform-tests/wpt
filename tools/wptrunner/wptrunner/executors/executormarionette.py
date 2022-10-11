@@ -459,7 +459,12 @@ class MarionetteCookiesProtocolPart(CookiesProtocolPart):
 
     def get_named_cookie(self, name):
         self.logger.info("Getting cookie named %s" % name)
-        return self.marionette.get_cookie(name)
+        try:
+            return self.marionette.get_cookie(name)
+        # When errors.NoSuchCookieException is supported,
+        # that should be used here instead.
+        except Exception:
+            return None
 
 
 class MarionetteSendKeysProtocolPart(SendKeysProtocolPart):

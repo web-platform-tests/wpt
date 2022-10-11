@@ -209,7 +209,10 @@ class WebDriverCookiesProtocolPart(CookiesProtocolPart):
 
     def get_named_cookie(self, name):
         self.logger.info("Getting cookie named %s" % name)
-        return self.webdriver.send_session_command("GET", "cookie/%s" % name)
+        try:
+            return self.webdriver.send_session_command("GET", "cookie/%s" % name)
+        except error.NoSuchCookieError as e:
+            return e
 
 class WebDriverWindowProtocolPart(WindowProtocolPart):
     def setup(self):

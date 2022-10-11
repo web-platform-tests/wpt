@@ -36,7 +36,7 @@
 
     iframe.remove();
 
-    await assert_throws_dom(t, "InvalidStateError", orientation.unlock());
+    assert_throws_dom(t, "InvalidStateError", () => { orientation.unlock() });
   }, "Attempting to unlock non-fully active documents results in a InvalidStateError");
 
   promise_test(async (t) => {

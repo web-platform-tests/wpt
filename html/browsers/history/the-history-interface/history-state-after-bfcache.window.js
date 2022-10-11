@@ -31,7 +31,11 @@ promise_test(async t => {
     'precondition: document was bfcached'
   );
 
-  assert_equals(await rc.executeScript(() => history.state.foo), 'bar', 'history.state was restored correctly');
+  assert_equals(
+    await rc.executeScript(() => history.state.foo),
+    'bar',
+    'history.state was restored correctly'
+  );
 
   assert_true(
     await rc.executeScript(() => window.stashedHistoryState === history.state),

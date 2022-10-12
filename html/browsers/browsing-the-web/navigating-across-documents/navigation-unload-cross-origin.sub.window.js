@@ -1,12 +1,6 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>Cross-origin navigation started from unload handler must be ignored</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="../resources/helpers.js"></script>
-<body>
+// META: title=Cross-origin navigation started from unload handler must be ignored
+// META: script=../resources/helpers.js
 
-<script>
 promise_test(async () => {
   const iframe = await setupAndWaitForIframe();
 
@@ -19,4 +13,3 @@ promise_test(async () => {
   await waitForIframeLoad(iframe);
   assert_equals(iframe.contentWindow.location.search, "?pass");
 });
-</script>

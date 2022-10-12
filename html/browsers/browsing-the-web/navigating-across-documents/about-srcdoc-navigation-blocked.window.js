@@ -1,12 +1,6 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>Navigation to about:srcdoc, not via srcdoc="", must be blocked</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="../resources/helpers.js"></script>
-<body>
+// META: title=Navigation to about:srcdoc, not via srcdoc="", must be blocked
+// META: script=../resources/helpers.js
 
-<script>
 promise_test(async t => {
   const iframe = await setupAndWaitForSrcdocIframe();
 
@@ -25,7 +19,7 @@ promise_test(async t => {
     t.step_wait(() => iframe.contentDocument === null),
     failOnMessage(iframe.contentWindow)
   ]);
-}, "Navigations to about:srcdoc via window.location are blocked");
+}, "Navigations to about:srcdoc via window.location must be blocked");
 
 promise_test(async t => {
   const iframe = await setupAndWaitForSrcdocIframe();
@@ -46,5 +40,4 @@ promise_test(async t => {
     t.step_wait(() => iframe.contentDocument === null),
     failOnMessage(iframe.contentWindow)
   ]);
-}, "Navigations to about:srcdoc via window.open() are blocked");
-</script>
+}, "Navigations to about:srcdoc via window.open() must be blocked");

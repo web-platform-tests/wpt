@@ -17,7 +17,7 @@
     const p = screen.orientation.lock(orientation);
     window.location.href = "#fragment";
     await p;
-  }, "When performing a fragment navigation, the change must not abort");
+  }, "When performing a fragment navigation, the orientation change must not abort");
 
   promise_test(async (t) => {
     t.add_cleanup(makeCleanup());

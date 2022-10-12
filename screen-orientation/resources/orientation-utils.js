@@ -17,7 +17,7 @@ export function getOppositeOrientation() {
 }
 
 export function makeCleanup(initialOrientation = screen.orientation?.type.split(/-/)[0]) {
-  return async  () => {
+  return async () => {
     if (initialOrientation) {
       await screen.orientation.lock(initialOrientation);
     }

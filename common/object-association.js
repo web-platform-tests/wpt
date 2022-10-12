@@ -25,19 +25,11 @@ function runTests(propertyName, equalityOrInequalityAsserter, mustOrMustNotRepla
     const frame = iframe.contentWindow;
 
     const before = frame[propertyName];
-    assert_true(before !== undefined && before !== null, `window.${propertyName} must be implemented`);
+    assert_implements(before, `window.${propertyName} must be implemented`);
 
-    // Note: cannot use step_func_done for this because it might be called twice, per the below comment.
-    iframe.onload = t.step_func(() => {
-      if (frame.location.href === "about:blank") {
-        // Browsers are not reliable on whether about:blank fires the load event; see
-        // https://github.com/whatwg/html/issues/490
-        return;
-      }
-
+    iframe.onload = t.step_func_done(() => {
       const after = frame[propertyName];
       equalityOrInequalityAsserter(after, before);
-      t.done();
     });
 
     iframe.src = "/common/blank.html";
@@ -50,7 +42,7 @@ function runTests(propertyName, equalityOrInequalityAsserter, mustOrMustNotRepla
     const frame = iframe.contentWindow;
 
     const before = frame[propertyName];
-    assert_true(before !== undefined && before !== null, `window.${propertyName} must be implemented`);
+    assert_implements(before, `window.${propertyName} must be implemented`);
 
     iframe.remove();
 
@@ -66,7 +58,7 @@ function runTests(propertyName, equalityOrInequalityAsserter, mustOrMustNotRepla
     iframe.onload = t.step_func_done(() => {
       const frame = iframe.contentWindow;
       const before = frame[propertyName];
-      assert_true(before !== undefined && before !== null, `window.${propertyName} must be implemented`);
+      assert_implements(before, `window.${propertyName} must be implemented`);
 
       frame.document.open();
 

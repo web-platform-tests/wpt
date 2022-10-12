@@ -17,35 +17,5 @@
     const p = screen.orientation.lock(orientation);
     window.location.href = "#fragment";
     await p;
-  }, "When performing a fragment navigation, the orientation change must not abort");
-
-  promise_test(async (t) => {
-    t.add_cleanup(makeCleanup());
-
-    // Get the iframe ready...
-    const iframe = document.getElementById("iframe");
-    await new Promise((resolve) => {
-      iframe.onload = resolve;
-      iframe.src = "about:blank";
-    });
-
-    // Keep references to things we need before navigating.
-    const iframeDoc = iframe.contentDocument;
-    const iframeWin = iframe.contentWindow;
-    const iframeException = iframeWin.DOMException;
-    const iframeOrientation = iframeWin.screen.orientation;
-
-    // start changing the orientation
-    await test_driver.bless("request full screen", null, iframeWin);
-    await iframeDoc.documentElement.requestFullscreen();
-    const orientation = iframeOrientation.type.startsWith("portrait")
-      ? "landscape"
-      : "portrait";
-    const p = iframeOrientation.lock(orientation);
-
-    // Navigate the iframe
-    iframe.src = "./resources/empty.html";
-
-    await promise_rejects_dom(t, "AbortError", iframeException, p);
-  }, "If the document is navigated, the lock request must to abort");
+  }, "When performing a fragment navigation, the change must not abort");
 </script>

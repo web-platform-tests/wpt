@@ -6,6 +6,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-color-4/#the-hsl-notation">
 <link rel="help" href="https://drafts.csswg.org/css-color-4/#resolving-sRGB-values">
 <link rel="help" href="https://drafts.csswg.org/css-color-4/#serializing-sRGB-values">
+<link rel="author" title="Chris Nardi" href="mailto:csnardi1@gmail.com">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/computed-testcommon.js"></script>
@@ -20,28 +21,50 @@
   }
 </style>
 <script>
-test_computed_value("color", "hsl(120 30% 50%)", "rgb(89, 166, 89)");
-test_computed_value("color", "hsl(120 30% 50% / 0.5)", "rgba(89, 166, 89, 0.5)");
-test_computed_value("color", "hsl(120 30% 50% / 50%)", "rgba(89, 166, 89, 0.5)");
-test_computed_value("color", "hsl(none none none)", "rgb(0, 0, 0)");
-test_computed_value("color", "hsl(0 0% 0%)", "rgb(0, 0, 0)");
-test_computed_value("color", "hsl(none none none / none)", "rgba(0, 0, 0, 0)");
-test_computed_value("color", "hsl(0 0% 0% / 0)", "rgba(0, 0, 0, 0)");
-test_computed_value("color", "hsla(none none none)", "rgb(0, 0, 0)");
-test_computed_value("color", "hsla(0 0% 0%)", "rgb(0, 0, 0)");
-test_computed_value("color", "hsla(none none none / none)", "rgba(0, 0, 0, 0)");
-test_computed_value("color", "hsla(0 0% 0% / 0)", "rgba(0, 0, 0, 0)");
-test_computed_value("color", "hsl(120 none none)", "rgb(0, 0, 0)");
-test_computed_value("color", "hsl(120 0% 0%)", "rgb(0, 0, 0)");
-test_computed_value("color", "hsl(120 80% none)", "rgb(0, 0, 0)");
-test_computed_value("color", "hsl(120 80% 0%)", "rgb(0, 0, 0)");
-test_computed_value("color", "hsl(120 none 50%)", "rgb(128, 128, 128)");
-test_computed_value("color", "hsl(120 0% 50%)", "rgb(128, 128, 128)");
-test_computed_value("color", "hsl(120 100% 50% / none)", "rgba(0, 255, 0, 0)");
-test_computed_value("color", "hsl(120 100% 50% / 0)", "rgba(0, 255, 0, 0)");
-test_computed_value("color", "hsl(120 100% 50% / 0%)", "rgba(0, 255, 0, 0)");
-test_computed_value("color", "hsl(none 100% 50%)", "rgb(255, 0, 0)");
-test_computed_value("color", "hsl(0 100% 50%)", "rgb(255, 0, 0)");
+tests = [
+    ["hsl(120 30% 50%)", "rgb(89, 166, 89)"],
+    ["hsl(120 30% 50% / 0.5)", "rgba(89, 166, 89, 0.5)"],
+    ["hsl(120 30% 50% / 50%)", "rgba(89, 166, 89, 0.5)"],
+    ["hsl(none none none)", "rgb(0, 0, 0)"],
+    ["hsl(0 0% 0%)", "rgb(0, 0, 0)"],
+    ["hsl(none none none / none)", "rgba(0, 0, 0, 0)"],
+    ["hsl(0 0% 0% / 0)", "rgba(0, 0, 0, 0)"],
+    ["hsla(none none none)", "rgb(0, 0, 0)"],
+    ["hsla(0 0% 0%)", "rgb(0, 0, 0)"],
+    ["hsla(none none none / none)", "rgba(0, 0, 0, 0)"],
+    ["hsla(0 0% 0% / 0)", "rgba(0, 0, 0, 0)"],
+    ["hsl(120 none none)", "rgb(0, 0, 0)"],
+    ["hsl(120 0% 0%)", "rgb(0, 0, 0)"],
+    ["hsl(120 80% none)", "rgb(0, 0, 0)"],
+    ["hsl(120 80% 0%)", "rgb(0, 0, 0)"],
+    ["hsl(120 none 50%)", "rgb(128, 128, 128)"],
+    ["hsl(120 0% 50%)", "rgb(128, 128, 128)"],
+    ["hsl(120 100% 50% / none)", "rgba(0, 255, 0, 0)"],
+    ["hsl(120 100% 50% / 0)", "rgba(0, 255, 0, 0)"],
+    ["hsl(120 100% 50% / 0%)", "rgba(0, 255, 0, 0)"],
+    ["hsl(none 100% 50%)", "rgb(255, 0, 0)"],
+    ["hsl(0 100% 50%)", "rgb(255, 0, 0)"],
+
+    ["HSL(0, 0%, 0%)", "rgb(0, 0, 0)", "Capitalization should not affect parsing"],
+    ["hsL(0, 100%, 50%)", "rgb(255, 0, 0)", "Capitalization should not affect parsing"],
+    ["hsl(60, 100%, 37.5%)", "rgb(191, 191, 0)", "Valid numbers should be parsed"],
+    ["hsl(780, 100%, 37.5%)", "rgb(191, 191, 0)", "Angles are represented as a part of a circle and wrap around"],
+    ["hsl(-300, 100%, 37.5%)", "rgb(191, 191, 0)", "Angles are represented as a part of a circle and wrap around"],
+    ["hsl(300, 50%, 50%)", "rgb(191, 64, 191)", "Valid numbers should be parsed"],
+    ["hsl(30deg, 100%, 100%)", "rgb(255, 255, 255)", "Angles are accepted in HSL/HSLA"],
+    ["hsl(0, 0%, 0%, 0%)", "rgba(0, 0, 0, 0)", "HSL and HSLA are synonyms"],
+    ["HSLA(-300, 100%, 37.5%, 1)", "rgb(191, 191, 0)", "Angles are represented as a part of a circle and wrap around"],
+    ["hsLA(-300, 100%, 37.5%, 12)", "rgb(191, 191, 0)", "Invalid alpha values should be clamped to 0 and 1 respectively"],
+    ["hsla(-300, 100%, 37.5%, 0.2)", "rgba(191, 191, 0, 0.2)", "Angles are represented as a part of a circle and wrap around"],
+    ["hsla(-300, 100%, 37.5%, 0)", "rgba(191, 191, 0, 0)", "Angles are represented as a part of a circle and wrap around"],
+    ["hsla(-300, 100%, 37.5%, -3)", "rgba(191, 191, 0, 0)", "Invalid alpha values should be clamped to 0 and 1 respectively"],
+    ["hsla(0, 0%, 0%, 50%)", "rgba(0, 0, 0, 0.5)", "Percent alpha values are accepted in hsl/hsla"],
+    ["hsla(30deg, 100%, 100%, 1)", "rgb(255, 255, 255)", "Angles are accepted in HSL/HSLA"],
+];
+
+for (const test of tests) {
+    test_computed_value("color", test[0], test[1], test[2] ? `[${test[2]}]` : undefined);
+}
 </script>
 </body>
 </html>

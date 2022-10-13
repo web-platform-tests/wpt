@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<head>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async function() {
+    // Since user activation does not play nicely with the remote context
+    // helper, this is a workaround to trigger user activation in an iframe
+    // without introducing flakes to the tests.
+    // This adds a button to the iframe and then simulates hitting the 'tab' key
+    // twice. Once to focus on the button, and once to trigger user activation
+    // in the iframe (user activation is given to the frame that has focus when
+    // the tab key is pressed, not the frame that ends up getting focus). Note
+    // that this will result in both the parent and this frame getting user
+    // activation. Note that this currently only works for iframes nested 1
+    // level deep.
+    test_driver.set_test_context(window.parent);
+    await test_driver.send_keys(document.body, "\uE004\uE004");
+    try {
+      window.parent.location.href = "https://google.com";
+      window.top.postMessage("pass")
+    } catch (e) {
+      window.top.postMessage("fail");
+    }
+  }, false);
+</script>
+</head>
+<body>
+<button>focus on me to activate!</button>
+</body>
+</html>

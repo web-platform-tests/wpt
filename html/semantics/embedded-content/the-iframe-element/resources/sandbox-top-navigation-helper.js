@@ -10,7 +10,10 @@
 // // META: script=./resources/sandbox-top-navigation-helper.js
 
 // Helper file that provides various functions to test top-level navigation
-// with various frame and sandbox flag configurations.
+// with various frame and sandbox flag configurations. Note: there are flakes
+// associated with giving user activation to frames created using the remote
+// context helper, so any testing that requires user activation will need to
+// be done the old fashioned way.
 
 async function createNestedIframe(parent, origin, frame_sandbox, header_sandbox)
 {
@@ -27,11 +30,6 @@ async function createNestedIframe(parent, origin, frame_sandbox, header_sandbox)
   }
   return parent.addIframe({
     origin: origin,
-    scripts: [
-      '/resources/testdriver.js',
-      '/resources/testdriver-driver.js',
-      '/resources/testdriver-vendor.js'
-    ],
     headers: headers,
   }, iframe_attributes);
 }
@@ -56,23 +54,4 @@ async function attemptTopNavigation(iframe, should_succeed) {
 async function setupTest() {
   const rcHelper = new RemoteContextHelper();
   return rcHelper.addWindow(/*config=*/ null, /*options=*/ {});
-}
-
-async function activate(iframe) {
-  return iframe.executeScript(async () => {
-    let b = document.createElement("button");
-    document.body.appendChild(b);
-
-    // Since test_driver.bless() does not play nicely with the remote context
-    // helper, this is a workaround to trigger user activation in the iframe.
-    // This adds a button to the iframe and then simulates hitting the 'tab' key
-    // twice. Once to focus on the button, and once to trigger user activation
-    // in the iframe (user activation is given to the frame that has focus when
-    // the tab key is pressed, not the frame that ends up getting focus). Note
-    // that this will result in both the parent and this frame getting user
-    // activation. Note that this currently only works for iframes nested 1
-    // level deep.
-    test_driver.set_test_context(window.top);
-    return test_driver.send_keys(document.body, "\uE004\uE004");
-  });
 }

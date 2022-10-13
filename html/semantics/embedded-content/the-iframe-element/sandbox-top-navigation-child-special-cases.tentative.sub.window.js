@@ -14,12 +14,27 @@
 /* ------------------------- USER ACTIVATION TESTS ------------------------- */
 
 promise_test(async t => {
+  // There were flakes associated with nested iframes being created but not
+  // getting access to the test_driver object, which would cause it to not be
+  // able to get user activation. This is a workaround that uses a manually
+  // created html page to attempt the top-level navigation and report the result
+  // back to the test using postMessage().
   const main = await setupTest();
-  const iframe_1 = await createNestedIframe(main,
-      "HTTP_ORIGIN", "allow-top-navigation-by-user-activation", "");
-  await activate(iframe_1);
+  await main.executeScript(() => {
+    const iframe_1 = document.createElement("iframe");
+    iframe_1.src ="/html/semantics/embedded-content/the-iframe-element/"
+        + "resources/top-with-user-activation.html";
+    document.body.appendChild(iframe_1);
+    return new Promise((res, rej) => {
+      window.onmessage = (e) => {
+        if (e.data == "pass")
+          res(e.data);
+        else
+          rej(e.data);
+      }
+    });
 
-  await attemptTopNavigation(iframe_1, true);
+  });
 }, "Allow top with user activation + user activation");
 
 promise_test(async t => {

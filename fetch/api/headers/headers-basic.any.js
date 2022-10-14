@@ -219,11 +219,11 @@ test(function() {
   assert_true(reference.next().done);
 }, "Check forEach method");
 
-test(function() {
+test(() => {
   const headers = new Headers({"foo": "2", "baz": "1", "BAR": "0"});
   const actualKeys = [];
   const actualValues = [];
-  for (let [header, value] of headers) {
+  for (const [header, value] of headers) {
     actualKeys.push(header);
     actualValues.push(value);
     headers.delete("foo");
@@ -232,12 +232,11 @@ test(function() {
   assert_array_equals(actualValues, ["0", "1"]);
 }, "Iteration skips elements removed while iterating");
 
-test(function() {
-  const headers =
-      new Headers({"foo": "2", "baz": "1", "BAR": "0", "quux": "3"});
+test(() => {
+  const headers = new Headers({"foo": "2", "baz": "1", "BAR": "0", "quux": "3"});
   const actualKeys = [];
   const actualValues = [];
-  for (let [header, value] of headers) {
+  for (const [header, value] of headers) {
     actualKeys.push(header);
     actualValues.push(value);
     if (header === "baz")
@@ -247,12 +246,11 @@ test(function() {
   assert_array_equals(actualValues, ["0", "1", "3"]);
 }, "Removing elements already iterated over causes an element to be skipped during iteration");
 
-test(function() {
-  const headers =
-      new Headers({"foo": "2", "baz": "1", "BAR": "0", "quux": "3"});
+test(() => {
+  const headers = new Headers({"foo": "2", "baz": "1", "BAR": "0", "quux": "3"});
   const actualKeys = [];
   const actualValues = [];
-  for (let [header, value] of headers) {
+  for (const [header, value] of headers) {
     actualKeys.push(header);
     actualValues.push(value);
     if (header === "baz")
@@ -262,12 +260,11 @@ test(function() {
   assert_array_equals(actualValues, ["0", "1", "2", "3", "4"]);
 }, "Appending a value pair during iteration causes it to be reached during iteration");
 
-test(function() {
-  const headers =
-      new Headers({"foo": "2", "baz": "1", "BAR": "0", "quux": "3"});
+test(() => {
+  const headers = new Headers({"foo": "2", "baz": "1", "BAR": "0", "quux": "3"});
   const actualKeys = [];
   const actualValues = [];
-  for (let [header, value] of headers) {
+  for (const [header, value] of headers) {
     actualKeys.push(header);
     actualValues.push(value);
     if (header === "baz")
@@ -275,4 +272,4 @@ test(function() {
   }
   assert_array_equals(actualKeys, ["bar", "baz", "baz", "foo", "quux"]);
   assert_array_equals(actualValues, ["0", "1", "1", "2", "3"]);
-}, "Prepending a value pair before the current element position causes it to be skipped during iteration");
+}, "Prepending a value pair before the current element position causes it to be skipped during iteration and adds the current element a second time");

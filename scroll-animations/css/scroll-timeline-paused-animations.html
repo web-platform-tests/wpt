@@ -37,6 +37,7 @@ promise_test(async t => {
 
   div.style.animation = 'anim 100s linear paused scroll(root)';
   await waitForNextFrame();
+  await waitForNextFrame();
 
   const anim = div.getAnimations()[0];
   await anim.ready;

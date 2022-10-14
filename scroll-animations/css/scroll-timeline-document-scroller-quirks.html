@@ -21,6 +21,7 @@
 <script>
 promise_test(async () => {
   await waitForNextFrame();
+  await waitForNextFrame();
   assert_equals(getComputedStyle(element).zIndex, "100");
 });
 </script>

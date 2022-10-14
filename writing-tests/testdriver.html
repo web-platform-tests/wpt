@@ -261,6 +261,41 @@ WebDriver command.</p>
 </dl>
 </dd></dl>
 
+<dl class="js function">
+<dt class="sig sig-object js" id="test_driver.get_all_cookies">
+<span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_all_cookies</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_all_cookies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get details for all cookies in the current context.
+See <a class="reference external" href="https://w3c.github.io/webdriver/#get-all-cookies">https://w3c.github.io/webdriver/#get-all-cookies</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">WindowProxy()</span></code></span>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – Returns an array of cookies objects as defined in the spec: <a class="reference external" href="https://w3c.github.io/webdriver/#cookies">https://w3c.github.io/webdriver/#cookies</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="test_driver.get_named_cookie">
+<span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_named_cookie</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_named_cookie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get details for a cookie in the current context by name if it exists.
+See <a class="reference external" href="https://w3c.github.io/webdriver/#get-named-cookie">https://w3c.github.io/webdriver/#get-named-cookie</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">String()</span></code></span>) – The name of the cookie to get.</p></li>
+<li><p><strong>context</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">WindowProxy()</span></code></span>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – Returns the matching cookie as defined in the spec: <a class="reference external" href="https://w3c.github.io/webdriver/#cookies">https://w3c.github.io/webdriver/#cookies</a> Rejected if no such cookie exists.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="permissions">
 <h3>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h3>

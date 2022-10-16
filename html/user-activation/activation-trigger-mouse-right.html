@@ -15,7 +15,7 @@
   <ol id="instructions">
     <li>Right-click anywhere in the document.
   </ol>
-  <script>
+  <script defer>
     promise_test(async () => {
         var actions = new test_driver.Actions();
         actions.pointerMove(0, 0, {origin: document.body})

@@ -15,14 +15,15 @@
   <ol id="instructions">
     <li>Press ENTER key.
   </ol>
-  <script>
+  <script defer>
     promise_test(async () => {
         const ENTER_KEY = '\uE007';
-        test_driver.send_keys(document.body, ENTER_KEY);
 
         let keydown_event = getEvent('keydown');
         let keypress_event = getEvent('keypress');
         let keyup_event = getEvent('keyup');
+
+        await test_driver.send_keys(document.body, ENTER_KEY);
 
         await keydown_event;
         let consumed = await consumeTransientActivation();

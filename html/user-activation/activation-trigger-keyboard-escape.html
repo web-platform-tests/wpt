@@ -15,13 +15,14 @@
   <ol id="instructions">
     <li>Press ESCAPE key.
   </ol>
-  <script>
+  <script defer>
     promise_test(async () => {
         const ESCAPE_KEY = '\uE00C';
-        test_driver.send_keys(document.body, ESCAPE_KEY);
 
         let keydown_event = getEvent('keydown');
         let keyup_event = getEvent('keyup');
+
+        await test_driver.send_keys(document.body, ESCAPE_KEY);
 
         await keydown_event;
         let consumed = await consumeTransientActivation();

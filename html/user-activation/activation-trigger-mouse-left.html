@@ -14,13 +14,14 @@
   <ol id="instructions">
     <li>Click anywhere in the document.
   </ol>
-  <script>
+  <script defer>
     promise_test(async () => {
-        test_driver.click(document.body);
 
         let mousedown_event = getEvent('mousedown');
         let mouseup_event = getEvent('mouseup');
         let click_event = getEvent('click');
+
+        await test_driver.click(document.body);
 
         await mousedown_event;
         let consumed = await consumeTransientActivation();

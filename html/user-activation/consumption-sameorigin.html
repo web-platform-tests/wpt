@@ -18,7 +18,7 @@
     let num_children_to_load = 3;
     let num_children_to_report = 3;
 
-    function finishLoadPhase() {
+    async function finishLoadPhase() {
         assert_equals(num_children_to_load, 0);
 
         test(() => {
@@ -26,7 +26,7 @@
             assert_false(navigator.userActivation.hasBeenActive);
         }, "Parent frame initial state");
 
-        test_driver.click(document.getElementById("child-so"));
+        await test_driver.click(document.getElementById("child-so"));
     }
 
     function finishReportPhase() {
@@ -40,7 +40,7 @@
         consumption_test.done();
     }
 
-    window.addEventListener("message", event => {
+    window.addEventListener("message", async event => {
         var msg = JSON.parse(event.data);
 
         if (msg.type == 'child-one-loaded') {
@@ -84,7 +84,7 @@
         // Phase switching.
         if (msg.type.endsWith("-loaded")) {
             if (--num_children_to_load == 0)
-                finishLoadPhase();
+                await finishLoadPhase();
         } else if (msg.type.endsWith("-report")) {
             if (--num_children_to_report == 0)
                 finishReportPhase();

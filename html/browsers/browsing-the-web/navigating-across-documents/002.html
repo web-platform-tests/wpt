@@ -1,23 +1,37 @@
 <!doctype html>
-<title>Multiple simultaneous navigations</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <iframe src="about:blank"></iframe>
 <script>
-var t = async_test();
-onload = t.step_func(function() {
-  var iframe = document.getElementsByTagName("iframe")[0];
+async_test(function(test) {
+  var iframe = document.querySelector("iframe");
 
-  setTimeout(t.step_func(function() {
-    iframe.src = "002-1.html?pipe=trickle(d1)";
-    setTimeout(t.step_func(function(){iframe.src = "002-2.html"}), 500);
-  }), 100);
-});
+  window.onmessage = test.step_func_done(function(e) {
+    assert_equals(e.data, "002-2");
+  });
 
-onmessage = t.step_func(function(e) {
-  assert_equals(e.data, "002-2");
-  t.done();
-});
+  window.onload = test.step_func(function() {
+    setTimeout(test.step_func(function() {
+      // The iframe `src` is set to "002-1.html"
+      // (with a response that will be delayed by 1s, using `?pipe=trickle(d1)`)
+      //
+      // This must start a navigation by making the request,
+      // despite the delayed response.
+      iframe.src = "002-1.html?pipe=trickle(d1)";
+      setTimeout(test.step_func(function() {
 
+        // Before that navigation is complete (~500ms later), the iframe `src`
+        // will be set to 002-2.html, which **must** cancel the previous
+        // "not yet mature" navigation.
+        //
+        // If the semantics are implemented correctly, a message "002-2"
+        // from 002-2.html will be received. (Below)
+        iframe.src = "002-2.html"
+      }), 500);
+    }), 100);
+  });
+
+}, "Multiple navigations by setting iframe.src");
 </script>

@@ -1,9 +1,13 @@
 <!doctype html>
 003-2
 <script>
-onload = function() {
-  parent.postMessage("003-2", "*")
-  setTimeout(function() {history.go(-1)})
-}
-onunload = function() {location = "003-3.html"}
+window.onload = function() {
+  parent.postMessage("003-2", "*");
+  setTimeout(function() {
+    history.go(-1);
+  }, 1);
+};
+window.onunload = function() {
+  window.location = "003-3.html";
+};
 </script>

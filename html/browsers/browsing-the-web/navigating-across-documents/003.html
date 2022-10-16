@@ -1,22 +1,33 @@
 <!doctype html>
-<title>Navigation from unload whilst traversing history</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
+<title>Navigation from unload canceled when traversing same-origin history</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
-<iframe src="003-1.html"></iframe>
+<iframe src=""></iframe>
 <script>
-var t = async_test();
+async_test(function(test) {
+  var iframe = document.querySelector("iframe");
+  var messages = [];
 
-var pages = [];
-var iframe = document.getElementsByTagName("iframe")[0];
+  // 003-2.html has an `onunload` handler, which sets `location` to 003-3.html.
+  // This must NOT be allowed, per https://github.com/whatwg/html/commit/2a11eef8f92b0335328890dc2cb1e281d18553eb.
+  //
+  // 003-2.html has an `onload` handler, which sends the message "003-2" to 003.html,
+  // then calls `history.go(-1)` after a 0ms timeout. `history.go(-1)` navigates
+  // browsingContext to the last _session history entry_ (003-1.html).
+  //
+  window.onmessage = test.step_func(function(e) {
+    messages.push(e.data);
+    if (messages.length === 3) {
+      assert_array_equals(messages, ["003-1", "003-2", "003-1"]);
+      test.done();
+      iframe.parentNode.removeChild(iframe);
+    }
+  });
 
-
-onmessage = t.step_func(function(e) {
-  pages.push(e.data);
-  if(pages.length == 3) {
-    assert_array_equals(pages, ["003-1", "003-2", "003-1"]);
-    t.done();
-    iframe.parentNode.removeChild(iframe);
-  }
+  // 003-1.html has an `onload` handler, which sends the message "003-1" to 003.html,
+  // then sets `location` to 003-2.html ~100ms later
+  iframe.src = "003-1.html";
 });
 </script>

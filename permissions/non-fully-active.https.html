@@ -11,11 +11,11 @@
   // Creates the iframe, wait for it to load...
   async function attachIframe() {
     const iframe = document.createElement("iframe");
-    iframe.src = "resources/empty.html";
-    document.body.appendChild(iframe);
-    await new Promise((resolve) =>
-      iframe.addEventListener("load", resolve, { once: true })
-    );
+    await new Promise((resolve) => {
+      iframe.src = "resources/empty.html";
+      iframe.addEventListener("load", resolve, { once: true });
+      document.body.appendChild(iframe);
+    });
     return iframe;
   }
 

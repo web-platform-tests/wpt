@@ -33,10 +33,9 @@ test(() => {
 }, "[" + testPrefix + "] document.requestStorageAccess() should be supported on the document interface");
 
 promise_test(t => {
-  return promise_rejects_exactly(
-    t, undefined, document.requestStorageAccess(),
+  return promise_rejects_dom(t, "NotAllowedError", document.requestStorageAccess(),
     "document.requestStorageAccess() call without user gesture");
-}, "[" + testPrefix + "] document.requestStorageAccess() should be rejected by default with no user gesture");
+}, "[" + testPrefix + "] document.requestStorageAccess() should be rejected with a NotAllowedError by default with no user gesture");
 
 // Logic to load test cases within combinations of iFrames.
 if (topLevelDocument) {
@@ -48,12 +47,12 @@ if (topLevelDocument) {
     const description = "document.requestStorageAccess() call in a detached frame";
     // Can't use `promise_rejects_dom` here, since the error comes from the wrong global.
     return promise.then(t.unreached_func("Should have rejected: " + description), (e) => {
-      assert_equals(e.name, 'SecurityError', description);
+      assert_equals(e.name, 'InvalidStateError', description);
     });
   }, "[non-fully-active] document.requestStorageAccess() should not resolve when run in a detached frame");
 
   promise_test(t => {
-    return promise_rejects_dom(t, 'SecurityError', RunRequestStorageAccessViaDomParser(),
+    return promise_rejects_dom(t, 'InvalidStateError', RunRequestStorageAccessViaDomParser(),
      "document.requestStorageAccess() in a detached DOMParser result");
   }, "[non-fully-active] document.requestStorageAccess() should not resolve when run in a detached DOMParser document");
 

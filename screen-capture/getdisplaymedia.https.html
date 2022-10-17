@@ -58,8 +58,8 @@ promise_test( async t => {
 [
  {video: true},
  {video: true, audio: false},
+ {video: {}},
  {audio: false},
- {audio: true},
  {},
  undefined
 ].forEach(constraints => promise_test(async t => {
@@ -93,6 +93,7 @@ promise_test( async t => {
 
 [
  {video: true, audio: true},
+ {audio: true},
 ].forEach(constraints => promise_test(async t => {
   const stream = await getDisplayMedia(constraints);
   t.add_cleanup(() => stopTracks(stream));
@@ -197,16 +198,19 @@ promise_test(async t => {
   assert_equals(track.readyState, "ended");
 }, 'getDisplayMedia() resolves with stream with video track');
 
-promise_test(async t => {
-  const stream = await getDisplayMedia({video: true});
-  t.add_cleanup(() => stopTracks(stream));
-  const settings = stream.getVideoTracks()[0].getSettings();
-  assert_any(
-      assert_equals, settings.displaySurface,
-      ['monitor', 'window', 'browser']);
-  assert_any(assert_equals, settings.logicalSurface, [true, false]);
-  assert_any(assert_equals, settings.cursor, ['never', 'always', 'motion']);
-}, 'getDisplayMedia() with getSettings');
+{
+  const displaySurfaces = ['monitor', 'window', 'browser'];
+  displaySurfaces.forEach((displaySurface) => {
+    promise_test(async t => {
+      const stream = await getDisplayMedia({video: {displaySurface}});
+      t.add_cleanup(() => stopTracks(stream));
+      const settings = stream.getVideoTracks()[0].getSettings();
+      assert_equals(settings.displaySurface, displaySurface);
+      assert_any(assert_equals, settings.logicalSurface, [true, false]);
+      assert_any(assert_equals, settings.cursor, ['never', 'always', 'motion']);
+    }, `getDisplayMedia({"video":{"displaySurface":"${displaySurface}"}}) with getSettings`);
+  })
+}
 
 {
   const properties = ["displaySurface"];
@@ -218,4 +222,35 @@ promise_test(async t => {
     }, property + " is supported");
   });
 }
+
+[
+ {video: {displaySurface: "monitor"}},
+ {video: {displaySurface: "window"}},
+ {video: {displaySurface: "browser"}},
+ {selfBrowserSurface: "include"},
+ {selfBrowserSurface: "exclude"},
+ {surfaceSwitching: "include"},
+ {surfaceSwitching: "exclude"},
+ {systemAudio: "include"},
+ {systemAudio: "exclude"},
+].forEach(constraints => promise_test(async t => {
+  const stream = await getDisplayMedia(constraints);
+  t.add_cleanup(() => stopTracks(stream));
+}, `getDisplayMedia(${j(constraints)}) must succeed`));
+
+[
+ {selfBrowserSurface: "invalid"},
+ {surfaceSwitching: "invalid"},
+ {systemAudio: "invalid"},
+].forEach(constraints => promise_test(async t => {
+  await test_driver.bless('getDisplayMedia()');
+  const p = navigator.mediaDevices.getDisplayMedia(constraints);
+  t.add_cleanup(async () => {
+    try { stopTracks(await p) } catch {}
+  });
+  await promise_rejects_js(
+    t, TypeError, Promise.race([p, Promise.resolve()]),
+    'getDisplayMedia should have returned an already-rejected promise.');
+}, `getDisplayMedia(${j(constraints)}) must fail with TypeError`));
+
 </script>

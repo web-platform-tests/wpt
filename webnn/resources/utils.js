@@ -15,6 +15,13 @@ const TypedArrayDict = {
 
 // Refer to precision metrics suggestions on https://github.com/webmachinelearning/webnn/issues/265#issuecomment-1256242643
 const PrecisionMetrics = {
+  // ATOL - absolute tolerance (expected within [actual - atol, actual + atol])
+  ATOL: {
+    // for single-precision floating-point
+    float32: {
+      tanh: 1/1024,
+    },
+  },
   // ULP - unit last place (expected.asRawBits within [actual.asRawBits - ulp, actual.asRawBits + ulp])
   ULP: {
     // for single-precision floating-point

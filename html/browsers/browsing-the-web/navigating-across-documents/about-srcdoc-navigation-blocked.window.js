@@ -2,7 +2,7 @@
 // META: script=../resources/helpers.js
 
 promise_test(async t => {
-  const iframe = await setupAndWaitForSrcdocIframe();
+  const iframe = await addSrcdocIframe();
 
   iframe.contentWindow.location = "/common/blank.html";
   await waitForIframeLoad(iframe);
@@ -22,7 +22,7 @@ promise_test(async t => {
 }, "Navigations to about:srcdoc via window.location must be blocked");
 
 promise_test(async t => {
-  const iframe = await setupAndWaitForSrcdocIframe();
+  const iframe = await addSrcdocIframe();
   iframe.contentWindow.name = "test_frame";
 
   iframe.contentWindow.location = "/common/blank.html";

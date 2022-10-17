@@ -26,21 +26,7 @@ window.addIframe = (url = "/common/blank.html", doc = document) => {
   });
 };
 
-window.waitToAvoidReplace = t => {
-  return new Promise(resolve => t.step_timeout(resolve, 0));
-};
-
-window.setupAndWaitForIframe = async (url = "/common/blank.html") => {
-  const iframe = document.createElement("iframe");
-  iframe.src = url;
-  document.body.append(iframe);
-
-  await waitForIframeLoad(iframe);
-
-  return iframe;
-};
-
-window.setupAndWaitForSrcdocIframe = async () => {
+window.addSrcdocIframe = async () => {
   const iframe = document.createElement("iframe");
   iframe.srcdoc = `<script>window.parent.postMessage("srcdoc ready", "*")</scr` + `ipt>`;
   document.body.append(iframe);
@@ -48,6 +34,10 @@ window.setupAndWaitForSrcdocIframe = async () => {
   assert_equals(await waitForMessage(iframe.contentWindow), "srcdoc ready");
 
   return iframe;
+};
+
+window.waitToAvoidReplace = t => {
+  return new Promise(resolve => t.step_timeout(resolve, 0));
 };
 
 window.waitForIframeLoad = iframe => {

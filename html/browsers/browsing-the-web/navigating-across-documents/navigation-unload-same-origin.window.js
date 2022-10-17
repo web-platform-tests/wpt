@@ -2,7 +2,7 @@
 // META: script=../resources/helpers.js
 
 promise_test(async () => {
-  const iframe = await setupAndWaitForIframe();
+  const iframe = await addIframe();
 
   iframe.contentWindow.addEventListener("unload", () => {
     iframe.contentWindow.location.href = "/common/blank.html?fail";

@@ -1,5 +1,8 @@
 // META: title=FormData: changes to entry list during iteration
 
+// These are tests for next()'s behavior as specified in
+// https://webidl.spec.whatwg.org/#es-iterator-prototype-object
+
 "use strict";
 
 function createFormData(input) {

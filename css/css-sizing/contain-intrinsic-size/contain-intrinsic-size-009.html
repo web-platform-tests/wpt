@@ -57,7 +57,7 @@ data-expected-client-height="66"></select>
 let reference = document.getElementById("reference");
 const normalWidth = reference.clientWidth;
 for (let test of document.querySelectorAll(".test.cis-width")) {
-  reference.size = test.size ? test.size : 4;
+  reference.size = test.size || 4;
   test.dataset.expectedClientHeight = reference.clientHeight;
 }
 for (let test of document.querySelectorAll(".test.cis-height")) {

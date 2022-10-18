@@ -13,6 +13,47 @@ const TypedArrayDict = {
   float32: Float32Array,
 };
 
+/**
+ * Get ULP tolerances of gemm operation.
+ * @param {Array} shapeA [number, number]
+ * @param {Object} options
+ * @param {Object} [options.c]
+ * @param {Number} [options.alpha]
+ * @param {Number} [options.beta]
+ * @param {Boolean} [options.aTranspose]
+ * @param {Boolean} [options.bTranspose]
+ * @returns {Number}
+ */
+function gemmULPTolerances(shapeA, options) {
+  const gemmOptions = {
+    c: 0.0,
+    alpha: 1.0,
+    beta: 1.0,
+    aTranspose: false,
+    bTranspose: false,
+  };
+
+  for (const key in options) {
+    gemmOptions[key] = options[key];
+  }
+
+  const width = gemmOptions.aTranspose ? shapeA[0] : shapeA[1];
+  let nulp = width * 2;
+
+  if (gemmOptions.alpha !== 1.0) {
+    nulp++;
+  }
+
+  if (gemmOptions.c && options.beta !== 0.0) {
+    if (options.beta !== 1.0) {
+      nulp++;
+    }
+    nulp++;
+  }
+
+  return nulp;
+}
+
 // Refer to precision metrics suggestions on https://github.com/webmachinelearning/webnn/issues/265#issuecomment-1256242643
 const PrecisionMetrics = {
   // ATOL - absolute tolerance (expected within [actual - atol, actual + atol])
@@ -20,6 +61,13 @@ const PrecisionMetrics = {
     // for single-precision floating-point
     float32: {
       tanh: 1/1024,
+    },
+  },
+  // IEPOE - input elements per output element (depends on individual operator)
+  IEPOE: {
+    // for single-precision floating-point
+    float32: {
+      gemm: gemmULPTolerances,
     },
   },
   // ULP - unit last place (expected.asRawBits within [actual.asRawBits - ulp, actual.asRawBits + ulp])

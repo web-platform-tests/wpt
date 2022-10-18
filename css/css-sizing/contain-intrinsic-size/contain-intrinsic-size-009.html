@@ -54,7 +54,7 @@ data-expected-client-height="66"></select>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/check-layout-th.js"></script>
 <script>
-let reference = document.getElementById("reference");
+const reference = document.getElementById("reference");
 const normalWidth = reference.clientWidth;
 for (let test of document.querySelectorAll(".test.cis-width")) {
   reference.size = test.size || 4;

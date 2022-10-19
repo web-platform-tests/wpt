@@ -28,15 +28,13 @@ for (const [description, action] of tests) {
     i.contentWindow.location.href = "/common/blank.html";
     await new Promise(r => i.onload = r);
 
-    // Now try going back. It should do nothing (and not tell us about the result).
+    // Now try going back. It should fire navigate, but not navigatesuccess or
+    // navigateerror, and the promises should not settle.
 
     const indexBefore = i.contentWindow.navigation.currentEntry.index;
 
-    // One might be surprised that navigate does not fire. (It does fire for the
-    // corresponding tests of navigation.navigate(), i.e., this is
-    // traversal-specific behavior.) See https://github.com/WICG/navigation-api/issues/207
-    // for some discussion.
-    i.contentWindow.navigation.onnavigate = t.unreached_func("onnavigate should not be called");
+    let navigateCount = 0;
+    i.contentWindow.navigation.onnavigate = () => { ++navigateCount; };
     i.contentWindow.navigation.onnavigatesuccess = t.unreached_func("onnavigatesuccess should not be called");
     i.contentWindow.navigation.onnavigateerror = t.unreached_func("onnavigateerror should not be called");
 
@@ -45,6 +43,7 @@ for (const [description, action] of tests) {
     assertNeverSettles(t, result, i.contentWindow);
 
     await new Promise(resolve => t.step_timeout(resolve, 50));
+    assert_equals(navigateCount, 1);
     assert_equals(i.contentWindow.navigation.currentEntry.index, indexBefore);
     assert_equals(i.contentWindow.navigation.transition, null);
   }, `back() promises to ${description} never settle`);

@@ -1,0 +1,36 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../navigation-methods/return-value/resources/helpers.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script>
+promise_test(async t => {
+  // Wait for after the load event so that the navigation doesn't get converted
+  // into a replace navigation.
+  let w = window.open("/common/blank.html");
+  await new Promise(resolve => w.onload = () => t.step_timeout(resolve, 0));
+
+  // Navigate to a url that will notify us when the navigation is complete.
+  w.navigation.navigate(get_host_info().ORIGIN + "/navigation-api/navigate-event/resources/opener-postMessage-onload.html");
+  await new Promise(resolve => window.onmessage = resolve);
+  assert_equals(w.navigation.entries().length, 2);
+  assert_equals(w.navigation.currentEntry.index, 1);
+
+  w.navigation.onnavigate = t.step_func(e => {
+    assert_false(e.destination.sameDocument);
+    e.preventDefault();
+  });
+  w.onbeforeunload = t.unreached_func("beforeunload should not fire because the navigation was cancelled");
+
+  let navigateerror_called = false;
+  w.navigation.onnavigateerror = t.step_func(e => {
+    assert_equals(e.constructor, w.ErrorEvent);
+    assert_equals(e.filename, w.location.href);
+    navigateerror_called = true;
+  });
+
+  await assertBothRejectDOM(t, w.navigation.back(), "AbortError", w, w.DOMException);
+  assert_equals(w.navigation.currentEntry.index, 1);
+  assert_true(navigateerror_called);
+}, "navigation.back() cross-document preventDefault");
+</script>

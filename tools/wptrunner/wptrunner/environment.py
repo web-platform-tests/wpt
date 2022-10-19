@@ -95,8 +95,8 @@ class TestEnvironment:
                  pause_after_test, debug_test, debug_info, options, ssl_config, env_extras,
                  enable_webtransport=False, mojojs_path=None, inject_script=None):
 
-        sys.stdin.reconfigure(encoding='utf-8')
-        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8', errors='namereplace')
+        sys.stdout.reconfigure(encoding='utf-8', errors='namereplace')
         self.test_paths = test_paths
         self.server = None
         self.config_ctx = None

@@ -153,6 +153,9 @@ class Tokenizer:
         if self.char() == eol:
             self.state = self.eol_state
             return
+        if self.char() == "#":
+            self.state = self.comment_state
+            return
         if self.index > self.indent_levels[-1]:
             self.indent_levels.append(self.index)
             yield (token_types.group_start, None)
@@ -168,10 +171,7 @@ class Tokenizer:
             if self.index != self.indent_levels[-1]:
                 raise ParseError(self.filename, self.line_number, "Unexpected indent")
 
-        if self.char() == "#":
-            self.state = self.comment_state
-        else:
-            self.state = self.next_state
+        self.state = self.next_state
 
     def data_line_state(self):
         if self.char() == "[":
@@ -610,6 +610,7 @@ class Parser:
                 self.expect(token_types.separator)
                 self.maybe_consume_inline_comment()
                 self.flush_comments()
+                self.consume_comments()
                 self.value_block()
                 self.flush_comments()
                 self.tree.pop()
@@ -624,6 +625,7 @@ class Parser:
                 self.expect(token_types.paren, "]")
                 self.maybe_consume_inline_comment()
                 self.flush_comments()
+                self.consume_comments()
                 if self.token[0] == token_types.group_start:
                     self.consume()
                     self.data_block()

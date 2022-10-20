@@ -48,7 +48,7 @@ class ManifestSerializer(NodeVisitor):
         if lines and "#" not in lines[0]:
             for i, (token_type, comment) in enumerate(node.comments):
                 if token_type == token_types.inline_comment:
-                    lines[0] += " " * 2 + f"#{comment}"
+                    lines[0] += f"  #{comment}"
                     comments.pop(i)
                     break
         return comments + lines

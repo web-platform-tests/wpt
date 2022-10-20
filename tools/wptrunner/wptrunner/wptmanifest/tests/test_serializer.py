@@ -264,9 +264,21 @@ class TokenizerTest(unittest.TestCase):
 
                 # Attached to the second heading.
                 [test2.html]
+                # Attached to subheading.
+                    # Also attached to subheading.
+                  [subheading]  # Also attached to subheading (inline).
+                """).encode(),
+            textwrap.dedent(
+                """\
+                # Attached to the first heading.
+                [test1.html]
+
+                # Attached to the second heading.
+                [test2.html]
                   # Attached to subheading.
-                  [subheading]  # Also attached to subheading.
-                """).encode())
+                  # Also attached to subheading.
+                  [subheading]  # Also attached to subheading (inline).
+                """))
 
     def test_comments_inline(self):
         self.compare(
@@ -295,12 +307,12 @@ class TokenizerTest(unittest.TestCase):
             textwrap.dedent(
                 """\
                 key:
-                  # cond 1
+                # cond 1
                   if cond == 1: value
                   # cond 2
                   if cond == 2: value  # cond 2
-                  # cond 3
-                  # cond 3
+                # cond 3
+                    # cond 3
                   if cond == 3: value
                   # default 0
                   default  # default 1

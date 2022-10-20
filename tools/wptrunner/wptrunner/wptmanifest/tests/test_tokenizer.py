@@ -350,9 +350,7 @@ key:
              (token_types.paren, "["),
              (token_types.string, "Heading"),
              (token_types.paren, "]"),
-             (token_types.group_start, None),
              (token_types.comment, " comment 1"),
-             (token_types.group_end, None),
              (token_types.comment, " comment 2")])
 
     def test_comment_inline(self):
@@ -361,6 +359,7 @@ key:
                 """\
                 [Heading]          # after heading
                 key:               # after key
+                # before group start
                   if cond: value1  # after value1
                   value2           # after value2
                 """).encode(),
@@ -371,6 +370,7 @@ key:
              (token_types.string, "key"),
              (token_types.separator, ":"),
              (token_types.inline_comment, " after key"),
+             (token_types.comment, " before group start"),
              (token_types.group_start, None),
              (token_types.ident, "if"),
              (token_types.ident, "cond"),

@@ -94,9 +94,9 @@ class TestEnvironment:
     def __init__(self, test_paths, testharness_timeout_multipler,
                  pause_after_test, debug_test, debug_info, options, ssl_config, env_extras,
                  enable_webtransport=False, mojojs_path=None, inject_script=None):
-        # if sys.version_info >= (3, 7):
-        #     sys.__stderr__.reconfigure(encoding='utf-8')
-        #     sys.__stdout__.reconfigure(encoding='utf-8')
+        if sys.version_info >= (3, 7):
+            sys.__stderr__.reconfigure(encoding='utf-8')
+            sys.__stdout__.reconfigure(encoding='utf-8')
             
         self.test_paths = test_paths
         self.server = None

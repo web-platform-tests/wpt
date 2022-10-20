@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta name="timeout" content="long" />
 <title>Media Loading State: the :buffering and :stalled pseudo-classes</title>
 <link
   rel="help"
@@ -24,23 +25,42 @@
       await new Promise((r) => {
         video.addEventListener("stalled", r, { once: true });
         video.src = `/media/counting.mp4?pipe=trickle(100:d1:r2)&random=${Math.random()}`;
-        video.play();
       });
-
+      const promise = video.play();
       assert_equals(
         document.querySelector("video:stalled"),
         video,
         "video is stalled"
       );
+      video.pause();
+      // Wait for the video to abort trying to play
+      try {
+        await promise;
+      } catch (err) {}
     }, "Test :stalled pseudo-classes");
 
     promise_test(async (t) => {
       const video = document.querySelector("video");
+      await new Promise((r) => {
+        video.addEventListener("stalled", r, { once: true });
+        video.src = `/media/counting.mp4?pipe=trickle(100:d1:r2)&random=${Math.random()}`;
+      });
+      video.currentTime = 10;
+      const promise = video.play();
       assert_equals(
         document.querySelector("video:buffering"),
         video,
         "video is buffering"
       );
+      video.pause();
+      // Wait for the video to abort trying to play
+      try {
+        await promise;
+      } catch (err) {}
     }, "Test :buffering pseudo-classes");
+
+    onunhandledrejection = async (event) => {
+      window.xxx = event;
+    };
   </script>
 </body>

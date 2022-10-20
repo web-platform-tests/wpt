@@ -9,6 +9,9 @@
 <body>
   <video width="300" height="300" muted loop></video>
   <script type="module">
+    // Unfortunately, we can't test the volume-locked state because it's not
+    // possible to lock the volume of a video element with JS.
+    
     test((t) => {
       for (const pseudo of [":muted", ":volume-locked"]) {
         try {

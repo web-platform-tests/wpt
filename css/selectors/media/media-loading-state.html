@@ -18,8 +18,6 @@
         }
       }
     }, "Test :pseudo-class syntax is supported without throwing a SyntaxError");
-    // Unfortunately, we can't test the volume-locked state because it's not
-    // possible to lock the volume of a video element with JS.
     promise_test(async (t) => {
       const video = document.querySelector("video");
       await new Promise((r) => {

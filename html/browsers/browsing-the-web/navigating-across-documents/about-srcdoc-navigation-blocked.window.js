@@ -14,7 +14,8 @@ promise_test(async t => {
   // since the error page should end up being cross-origin to the parent
   // frame, `contentDocument` should return `null`.
   //
-  // If instead this results in a message because we reloaded the srcdoc iframe, immediately fail.
+  // If instead this results in a message because we re-loaded a srcdoc document
+  // from the contents of the srcdoc="" attribute, immediately fail.
   await Promise.race([
     t.step_wait(() => iframe.contentDocument === null),
     failOnMessage(iframe.contentWindow)
@@ -35,7 +36,8 @@ promise_test(async t => {
   // since the error page should end up being cross-origin to the parent
   // frame, `contentDocument` should return `null`.
   //
-  // If instead this results in a message because we reloaded the srcdoc iframe, immediately fail.
+  // If instead this results in a message because we re-loaded a srcdoc document
+  // from the contents of the srcdoc="" attribute, immediately fail.
   await Promise.race([
     t.step_wait(() => iframe.contentDocument === null),
     failOnMessage(iframe.contentWindow)

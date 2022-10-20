@@ -32,7 +32,7 @@
         video,
         "video is stalled"
       );
-      video.pause();
+      video.src = "";
       // Wait for the video to abort trying to play
       try {
         await promise;
@@ -52,15 +52,11 @@
         video,
         "video is buffering"
       );
-      video.pause();
+      video.src = "";
       // Wait for the video to abort trying to play
       try {
         await promise;
       } catch (err) {}
     }, "Test :buffering pseudo-classes");
-
-    onunhandledrejection = async (event) => {
-      window.xxx = event;
-    };
   </script>
 </body>

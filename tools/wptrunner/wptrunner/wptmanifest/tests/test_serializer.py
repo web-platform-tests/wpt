@@ -6,7 +6,7 @@ import unittest
 from .. import parser, serializer
 
 
-class TokenizerTest(unittest.TestCase):
+class SerializerTest(unittest.TestCase):
     def setUp(self):
         self.serializer = serializer.ManifestSerializer()
         self.parser = parser.Parser()
@@ -284,29 +284,35 @@ class TokenizerTest(unittest.TestCase):
         self.compare(
             textwrap.dedent(
                 """\
-                key:            # inline after key
+                key1:           # inline after key
                   value         # inline after string value
+                key2:
+                  [value]       # inline after list in group
                 [test.html]     # inline after heading
                   key1: @True   # inline after atom
-                  key2: [
-                    value1,     # inline after list element
+                  key2: [       # inline after list start
+                    @False,     # inline after atom in list
+                    value1,     # inline after value in list
                     value2]     # inline after list end
                 """).encode(),
             textwrap.dedent(
                 """\
                 # inline after key
-                key: value  # inline after string value
+                key1: value  # inline after string value
+                key2: [value]  # inline after list in group
                 [test.html]  # inline after heading
                   key1: @True  # inline after atom
+                  # inline after atom in list
+                  # inline after value in list
                   # inline after list end
-                  key2: [value1, value2]  # inline after list element
+                  key2: [@False, value1, value2]  # inline after list start
                 """))
 
     def test_comments_conditions(self):
         self.compare(
             textwrap.dedent(
                 """\
-                key:
+                key1:
                 # cond 1
                   if cond == 1: value
                   # cond 2
@@ -318,10 +324,17 @@ class TokenizerTest(unittest.TestCase):
                   default  # default 1
                   # default 2
                   # default 3
+                key2:
+                  if cond == 1: value
+                  [value]
+                  # list default
+                key3:
+                  if cond == 1: value
+                  # no default
                 """).encode(),
             textwrap.dedent(
                 """\
-                key:
+                key1:
                   # cond 1
                   if cond == 1: value
                   # cond 2
@@ -333,4 +346,11 @@ class TokenizerTest(unittest.TestCase):
                   # default 2
                   # default 3
                   default  # default 1
+                key2:
+                  if cond == 1: value
+                  # list default
+                  [value]
+                # no default
+                key3:
+                  if cond == 1: value
                 """))

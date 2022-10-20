@@ -591,8 +591,19 @@ class Parser:
             self.comments.append(self.token)
             self.consume()
 
-    def flush_comments(self, node=None):
-        (node or self.tree.node).comments.extend(self.comments)
+    def flush_comments(self, target_node=None):
+        """Transfer comments from the parser's buffer to a parse tree node.
+
+        Use the tree's current node if no target node is explicitly specified.
+
+        The comments are buffered because the target node they should belong to
+        may not exist yet. For example:
+
+            [heading]
+              # comment to be attached to the subheading
+              [subheading]
+        """
+        (target_node or self.tree.node).comments.extend(self.comments)
         self.comments.clear()
 
     def manifest(self):
@@ -655,6 +666,18 @@ class Parser:
                 default_value = self.list_value
             if default_value:
                 default_value()
+            # For this special case where a group exists, attach comments to
+            # the string/list value, not the key-value node. That is,
+            #   key:
+            #     ...
+            #     # comment attached to condition default
+            #     value
+            #
+            # should not read
+            #   # comment attached to condition default
+            #   key:
+            #     ...
+            #     value
             self.consume_comments()
             self.flush_comments(
                 self.tree.node.children[-1] if default_value else None)
@@ -667,6 +690,7 @@ class Parser:
 
     def list_value(self):
         self.tree.append(ListNode())
+        self.maybe_consume_inline_comment()
         while self.token[0] in (token_types.atom, token_types.string):
             if self.token[0] == token_types.atom:
                 self.atom()

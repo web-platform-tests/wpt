@@ -39,14 +39,5 @@
       assert_equals(document.querySelector("video:not(:muted)"), null);
     }, "Test :muted pseudo-classes");
 
-    promise_test(async (t) => {
-      // Unfortunately, we can't test the volume-locked state because it's not
-      // possible to lock the volume of a video element with JS.
-      assert_equals(
-        document.querySelector("video:volume-locked"),
-        null,
-        "must know :volume-locked"
-      );
-    }, "Test :volume-locked pseudo-classes");
   </script>
 </body>

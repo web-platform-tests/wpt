@@ -18,12 +18,17 @@
       assert_equals(workerUA.version, windowUA.version);
     }
     assert_equals(e.data.mobile, navigator.userAgentData.mobile);
-    const highEntropyValues = await navigator.userAgentData.getHighEntropyValues(["platform", "platformVersion", "architecture", "model", "uaFullVersion"]);
+    const highEntropyValues = await navigator.userAgentData.getHighEntropyValues(
+      ["platform", "platformVersion", "architecture", "model", "uaFullVersion"]
+    );
     assert_equals(e.data.model, highEntropyValues.model);
     assert_equals(e.data.platform, highEntropyValues.platform);
     assert_equals(e.data.platformVersion, highEntropyValues.platformVersion);
     assert_equals(e.data.architecture, highEntropyValues.architecture);
     assert_equals(e.data.uaFullVersion, highEntropyValues.uaFullVersion);
     assert_equals(e.data.NavigatorUADataExposed, true);
+
+    // Architecture should be one of two permitted values.
+    assert_true(["x86", "arm"].some(arch => arch == e.data.architecture))
   }, "Test that userAgentData is available in workers in secure contexts");
 </script>

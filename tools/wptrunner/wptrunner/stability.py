@@ -173,9 +173,9 @@ def err_string(results_dict, iterations):
     else:
         for key, value in sorted(results_dict.items()):
             rv.append("%s%s" %
-                      (key, ": %s/%s" % (value, iterations) if value != iterations else ""))
+                      (key, f": {value}/{iterations}" if value != iterations else ""))
     if total_results < iterations:
-        rv.append("MISSING: %s/%s" % (iterations - total_results, iterations))
+        rv.append(f"MISSING: {iterations - total_results}/{iterations}")
     rv = ", ".join(rv)
     if is_inconsistent(results_dict, iterations):
         rv = "**%s**" % rv
@@ -246,7 +246,7 @@ def write_results(log, results, iterations, pr_number=None, use_details=False):
         if use_details:
             log("<details>\n")
             if pr_number:
-                title = "<a href=\"%s/%s%s\">%s</a>" % (baseurl, pr_number, test_name, title)
+                title = f"<a href=\"{baseurl}/{pr_number}{test_name}\">{title}</a>"
             log('<summary>%s</summary>\n\n' % title)
         else:
             log("### %s ###" % title)
@@ -325,7 +325,7 @@ def get_steps(logger, repeat_loop, repeat_restart, kwargs_extras):
                           repeat_loop))
 
         if repeat_restart:
-            desc = "Running tests in a loop with restarts %s times%s" % (repeat_restart,
+            desc = "Running tests in a loop with restarts {} times{}".format(repeat_restart,
                                                                          flags_string)
             steps.append((desc,
                           functools.partial(run_step,
@@ -340,7 +340,7 @@ def get_steps(logger, repeat_loop, repeat_restart, kwargs_extras):
 
 def write_summary(logger, step_results, final_result):
     for desc, result in step_results:
-        logger.info('::: %s : %s' % (desc, result))
+        logger.info(f'::: {desc} : {result}')
     logger.info(':::')
     if final_result == "PASS":
         log = logger.info

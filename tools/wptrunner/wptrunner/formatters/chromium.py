@@ -80,16 +80,16 @@ class ChromiumFormatter(base.BaseFormatter):  # type: ignore
         Messages are appended verbatim to self.messages[test].
         """
         if subtest:
-            result = "  [%s]\n    expected: %s\n" % (_escape_heading(subtest),
+            result = "  [{}]\n    expected: {}\n".format(_escape_heading(subtest),
                                                      wpt_actual_status)
             self.actual_metadata[test].append(result)
             if message:
-                self.messages[test].append("%s: %s\n" % (subtest, message))
+                self.messages[test].append(f"{subtest}: {message}\n")
         else:
             # No subtest, so this is the top-level test. The result must be
             # prepended to the list, so that it comes before any subtest.
             test_name_last_part = test.split("/")[-1]
-            result = "[%s]\n  expected: %s\n" % (
+            result = "[{}]\n  expected: {}\n".format(
                 _escape_heading(test_name_last_part), wpt_actual_status)
             self.actual_metadata[test].insert(0, result)
             if message:
@@ -160,7 +160,7 @@ class ChromiumFormatter(base.BaseFormatter):  # type: ignore
             if not isinstance(item, dict):
                 # Skip the relation string.
                 continue
-            data = "%s: %s" % (item["url"], item["screenshot"])
+            data = "{}: {}".format(item["url"], item["screenshot"])
             self._append_artifact(cur_dict, "screenshots", data)
 
         # Figure out if there was a regression, unexpected status, or flake.

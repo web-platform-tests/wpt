@@ -50,7 +50,7 @@ class ManifestSerializer(NodeVisitor):
                 indent = ""
 
             for child in node.children:
-                rv.extend("%s%s" % (indent if item else "", item) for item in self.visit(child))
+                rv.extend("{}{}".format(indent if item else "", item) for item in self.visit(child))
 
             if node.parent:
                 rv.append("")

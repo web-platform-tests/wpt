@@ -50,11 +50,7 @@ if MYPY:
     # Define an arbitrary typevar
     T = TypeVar("T")
 
-    try:
-        from xml.etree import ElementTree as ElementTree
-    except ImportError:
-        from xml.etree import ElementTree as ElementTree  # type: ignore
-
+    from xml.etree import ElementTree as ElementTree
 
 logger = None  # type: Optional[logging.Logger]
 

@@ -5,6 +5,7 @@ from collections import deque
 from io import BytesIO
 from urllib.parse import urljoin
 from fnmatch import fnmatch
+from xml.etree import ElementTree as ElementTree
 
 MYPY = False
 if MYPY:
@@ -23,11 +24,6 @@ if MYPY:
     from typing import Tuple
     from typing import Union
     from typing import cast
-
-try:
-    from xml.etree import ElementTree as ElementTree
-except ImportError:
-    from xml.etree import ElementTree as ElementTree  # type: ignore
 
 import html5lib
 

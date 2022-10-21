@@ -40,13 +40,13 @@ class Node:
     def __unicode__(self):
         if self.attrs:
             #Need to escape
-            attrs_unicode = " " + " ".join("%s=\"%s\"" % (html_escape(key),
+            attrs_unicode = " " + " ".join("{}=\"{}\"".format(html_escape(key),
                                                           html_escape(value,
                                                                       escape_quote=True))
                                            for key, value in self.attrs.items())
         else:
             attrs_unicode = ""
-        return "<%s%s>%s</%s>\n" % (self.name,
+        return "<{}{}>{}</{}>\n".format(self.name,
                                     attrs_unicode,
                                     "".join(unicode(html_escape(item))
                                             for item in self.children),

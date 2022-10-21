@@ -585,7 +585,7 @@ class RoutesBuilder:
 
             self.mountpoint_routes[url_base].append(
                 (method,
-                 "%s%s" % (url_base if url_base != "/" else "", suffix),
+                 "{}{}".format(url_base if url_base != "/" else "", suffix),
                  handler))
 
     def add_file_mount_point(self, file_url, base_path):
@@ -621,7 +621,7 @@ class ServerProc:
         self.proc = self.mp_context.Process(target=self.create_daemon,
                                             args=(init_func, host, port, paths, routes, bind_address,
                                                   config, log_handlers),
-                                            name='%s on port %s' % (self.scheme, port),
+                                            name=f'{self.scheme} on port {port}',
                                             kwargs=kwargs)
         self.proc.daemon = True
         self.proc.start()
@@ -725,7 +725,7 @@ def make_hosts_file(config, host):
     rv = []
 
     for domain in config.domains_set:
-        rv.append("%s\t%s\n" % (host, domain))
+        rv.append(f"{host}\t{domain}\n")
 
     # Windows interpets the IP address 0.0.0.0 as non-existent, making it an
     # appropriate alias for non-existent hosts. However, UNIX-like systems
@@ -1093,7 +1093,7 @@ def build_config(logger, override_path=None, config_cls=ConfigBuilder, **kwargs)
             continue
         value = os.path.abspath(os.path.expanduser(value))
         if not os.path.exists(value):
-            raise ValueError("%s path %s does not exist" % (title, value))
+            raise ValueError(f"{title} path {value} does not exist")
         setattr(rv, key, value)
 
     return rv

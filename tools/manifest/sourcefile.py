@@ -25,7 +25,7 @@ if MYPY:
     from typing import cast
 
 try:
-    from xml.etree import cElementTree as ElementTree
+    from xml.etree import ElementTree as ElementTree
 except ImportError:
     from xml.etree import ElementTree as ElementTree  # type: ignore
 

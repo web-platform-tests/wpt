@@ -193,7 +193,7 @@ class ConfigBuilder:
         for k, new_k in _renamed_props.items():
             if k in kwargs:
                 logger.warning(
-                    "%s in config is deprecated; use %s instead" % (
+                    "{} in config is deprecated; use {} instead".format(
                         k,
                         new_k
                     )
@@ -201,7 +201,7 @@ class ConfigBuilder:
                 self._data[new_k] = kwargs.pop(k)
 
         if kwargs:
-            raise TypeError("__init__() got unexpected keyword arguments %r" % (tuple(kwargs),))
+            raise TypeError(f"__init__() got unexpected keyword arguments {tuple(kwargs)!r}")
 
     def __setattr__(self, key, value):
         if not key[0] == "_":
@@ -220,7 +220,7 @@ class ConfigBuilder:
         for k, new_k in _renamed_props.items():
             if k in override:
                 self._logger.warning(
-                    "%s in config is deprecated; use %s instead" % (
+                    "{} in config is deprecated; use {} instead".format(
                         k,
                         new_k
                     )

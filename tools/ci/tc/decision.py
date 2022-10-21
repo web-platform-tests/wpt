@@ -64,7 +64,7 @@ def filter_triggers(event, all_tasks):
 
 def get_run_jobs(event):
     from tools.ci import jobs
-    revish = "%s..%s" % (event["pull_request"]["base"]["sha"]
+    revish = "{}..{}".format(event["pull_request"]["base"]["sha"]
                          if "pull_request" in event
                          else event["before"],
                          event["pull_request"]["head"]["sha"]
@@ -152,7 +152,7 @@ def get_fetch_rev(event):
         # PR, and a 'merge' branch containing a merge commit between the base
         # branch and the PR.
         for ref_type in ["head", "merge"]:
-            ref = "refs/pull/%s/%s" % (event["pull_request"]["number"], ref_type)
+            ref = "refs/pull/{}/{}".format(event["pull_request"]["number"], ref_type)
             sha = None
             try:
                 output = subprocess.check_output(["git", "ls-remote", "origin", ref])

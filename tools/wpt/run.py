@@ -74,7 +74,7 @@ def args_general(kwargs):
     def set_if_none(name, value):
         if kwargs.get(name) is None:
             kwargs[name] = value
-            logger.info("Set %s to %s" % (name, value))
+            logger.info(f"Set {name} to {value}")
 
     set_if_none("tests_root", wpt_root)
     set_if_none("metadata_root", wpt_root)
@@ -146,13 +146,13 @@ def check_environ(product):
                 if is_windows:
                     message = """Missing hosts file configuration. Run
 
-python %s make-hosts-file | Out-File %s -Encoding ascii -Append
+python {} make-hosts-file | Out-File {} -Encoding ascii -Append
 
-in PowerShell with Administrator privileges.""" % (wpt_path, hosts_path)
+in PowerShell with Administrator privileges.""".format(wpt_path, hosts_path)
                 else:
                     message = """Missing hosts file configuration. Run
 
-%s make-hosts-file | sudo tee -a %s""" % ("./wpt" if wpt_path == "wpt" else wpt_path,
+{} make-hosts-file | sudo tee -a {}""".format("./wpt" if wpt_path == "wpt" else wpt_path,
                                           hosts_path)
                 raise WptrunError(message)
 
@@ -807,7 +807,7 @@ def setup_wptrunner(venv, **kwargs):
         channel = install.get_channel(kwargs["product"], kwargs["channel"])
         if channel is not None:
             if channel != kwargs["channel"]:
-                logger.info("Interpreting channel '%s' as '%s'" % (kwargs["channel"],
+                logger.info("Interpreting channel '{}' as '{}'".format(kwargs["channel"],
                                                                    channel))
             kwargs["browser_channel"] = channel
         else:

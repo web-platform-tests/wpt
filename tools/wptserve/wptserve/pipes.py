@@ -472,7 +472,7 @@ def template(request, content, escape_type="html"):
             variable = None
 
         if token_type != "ident":
-            raise Exception("unexpected token type %s (token '%r'), expected ident" % (token_type, field))
+            raise Exception(f"unexpected token type {token_type} (token '{field!r}'), expected ident")
 
         if field in variables:
             value = variables[field]
@@ -491,11 +491,11 @@ def template(request, content, escape_type="html"):
         elif field in request.server.config:
             value = request.server.config[field]
         elif field == "location":
-            value = {"server": "%s://%s:%s" % (request.url_parts.scheme,
+            value = {"server": "{}://{}:{}".format(request.url_parts.scheme,
                                                request.url_parts.hostname,
                                                request.url_parts.port),
                      "scheme": request.url_parts.scheme,
-                     "host": "%s:%s" % (request.url_parts.hostname,
+                     "host": "{}:{}".format(request.url_parts.hostname,
                                         request.url_parts.port),
                      "hostname": request.url_parts.hostname,
                      "port": request.url_parts.port,
@@ -515,7 +515,7 @@ def template(request, content, escape_type="html"):
                 value = value(request, *field)
             else:
                 raise Exception(
-                    "unexpected token type %s (token '%r'), expected ident or arguments" % (ttype, field)
+                    f"unexpected token type {ttype} (token '{field!r}'), expected ident or arguments"
                 )
 
         assert isinstance(value, (int, (bytes, str))), tokens

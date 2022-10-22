@@ -7,7 +7,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
-  <video width="300" height="300" muted loop></video>
+  <video width="300" height="300" loop></video>
   <script type="module">
     // Unfortunately, we can't test the volume-locked state because it's not
     // possible to lock the volume of a video element with JS.
@@ -40,6 +40,6 @@
       video.muted = true;
       assert_equals(document.querySelector("video:muted"), video);
       assert_equals(document.querySelector("video:not(:muted)"), null);
-    }, "Test :muted pseudo-classes");
+    }, "Test :muted pseudo-class");
   </script>
 </body>

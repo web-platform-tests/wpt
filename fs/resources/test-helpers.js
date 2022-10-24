@@ -101,6 +101,7 @@ async function cleanup(test, value, cleanup_func) {
 
 async function cleanup_writable(test, value) {
   return cleanup(test, value, async () => {
-    value.close();
+    // in case 'value' was a promise, await it
+    return (await value).close();
   });
 }

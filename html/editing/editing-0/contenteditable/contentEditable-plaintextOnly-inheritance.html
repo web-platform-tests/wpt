@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Editing: contenteditable=plaintext-only inheritance test</title>
+    <link
+            rel="help"
+            href="https://html.spec.whatwg.org/multipage/#contenteditable"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <div contenteditable="true">
+        <div id="outer">outer</div>
+        <div contenteditable=plaintext-only>
+            <div>
+                <div id="inner">test queryCommandEnabled() with this inner div</div>
+            </div>
+        </div>
+    </div>
+</head>
+<body>
+<script>
+
+    test(() => {
+        var outerEl = document.getElementById('outer');
+        var selection = document.getSelection();
+        selection.selectAllChildren(outerEl);
+        assert_equals(document.queryCommandEnabled('bold'), true);
+    }, 'outer element for contenteditable=true inherits queryCommandEnabled');
+
+    test(() => {
+        var innerEl = document.getElementById('inner');
+        var selection = document.getSelection();
+        selection.selectAllChildren(innerEl);
+        assert_equals(document.queryCommandEnabled('bold'), false);
+    }, 'inner element for contenteditable=plaintext-only inherits queryCommandEnabled');
+</script>
+</body>
+</html>

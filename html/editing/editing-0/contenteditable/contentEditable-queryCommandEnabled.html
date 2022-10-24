@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Editing: contentEditable attribute test</title>
+    <link rel="author" title="Baidu" href="mailto: guopengcheng@baidu.com" />
+    <link
+            rel="help"
+            href="https://html.spec.whatwg.org/multipage/#contenteditable"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <div id="contentEditableTrue" contenteditable="true">true</div>
+    <div id="contentEditablePlaintextOnly" contenteditable="plaintext-only">plaintext-only</div>
+</head>
+<body>
+<script>
+    var selection = document.getSelection();
+    var contentEditableTrue = document.getElementById('contentEditableTrue');
+    var contentEditablePlaintextOnly = document.getElementById('contentEditablePlaintextOnly');
+
+    function checkQueryCommandEnabled(el, title, command, expectQueryCommandEnabled) {
+        test(() => {
+            selection.selectAllChildren(el);
+            assert_equals(document.queryCommandEnabled(command), expectQueryCommandEnabled);
+        }, title);
+    }
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('bold') is true for contenteditable=true", 'bold', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('bold') is false for contenteditable=plaintext-only", 'bold', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('italic') is true for contenteditable=true", 'italic', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('italic') is false for contenteditable=plaintext-only", 'italic', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('backColor') is true for contenteditable=true", 'backColor', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('backColor') is false for contenteditable=plaintext-only", 'backColor', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('createLink') is true for contenteditable=true", 'createLink', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('createLink') is false for contenteditable=plaintext-only", 'createLink', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('fontName') is true for contenteditable=true", 'fontName', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('fontName') is false for contenteditable=plaintext-only", 'fontName', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('fontSize') is true for contenteditable=true", 'fontSize', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('fontSize') is false for contenteditable=plaintext-only", 'fontSize', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('foreColor') is true for contenteditable=true", 'foreColor', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('foreColor') is false for contenteditable=plaintext-only", 'foreColor', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('hiliteColor') is true for contenteditable=true", 'hiliteColor', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('hiliteColor') is false for contenteditable=plaintext-only", 'hiliteColor', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('removeFormat') is true for contenteditable=true", 'removeFormat', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('removeFormat') is false for contenteditable=plaintext-only", 'removeFormat', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('strikethrough') is true for contenteditable=true", 'strikethrough', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('strikethrough') is false for contenteditable=plaintext-only", 'strikethrough', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('subscript') is true for contenteditable=true", 'subscript', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('subscript') is false for contenteditable=plaintext-only", 'subscript', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('superscript') is true for contenteditable=true", 'superscript', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('superscript') is false for contenteditable=plaintext-only", 'superscript', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('underline') is true for contenteditable=true", 'underline', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('underline') is false for contenteditable=plaintext-only", 'underline', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('unlink') is true for contenteditable=true", 'unlink', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('unlink') is false for contenteditable=plaintext-only", 'unlink', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('indent') is true for contenteditable=true", 'indent', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('indent') is false for contenteditable=plaintext-only", 'indent', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('underline') is true for contenteditable=true", 'underline', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('underline') is false for contenteditable=plaintext-only", 'underline', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('insertHorizontalRule') is true for contenteditable=true", 'insertHorizontalRule', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('insertHorizontalRule') is false for contenteditable=plaintext-only", 'insertHorizontalRule', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('insertImage') is true for contenteditable=true", 'insertImage', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('insertImage') is false for contenteditable=plaintext-only", 'insertImage', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('insertOrderedList') is true for contenteditable=true", 'insertOrderedList', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('insertOrderedList') is false for contenteditable=plaintext-only", 'insertOrderedList', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('insertUnorderedList') is true for contenteditable=true", 'insertUnorderedList', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('insertUnorderedList') is false for contenteditable=plaintext-only", 'insertUnorderedList', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('justifyCenter') is true for contenteditable=true", 'justifyCenter', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('justifyCenter') is false for contenteditable=plaintext-only", 'justifyCenter', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('justifyFull') is true for contenteditable=true", 'justifyFull', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('justifyFull') is false for contenteditable=plaintext-only", 'justifyFull', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('justifyLeft') is true for contenteditable=true", 'justifyLeft', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('justifyLeft') is false for contenteditable=plaintext-only", 'justifyLeft', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('justifyRight') is true for contenteditable=true", 'justifyRight', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('justifyRight') is false for contenteditable=plaintext-only", 'justifyRight', false);
+
+    checkQueryCommandEnabled(contentEditableTrue, "document.queryCommandEnabled('outdent') is true for contenteditable=true", 'outdent', true);
+    checkQueryCommandEnabled(contentEditablePlaintextOnly, "document.queryCommandEnabled('outdent') is false for contenteditable=plaintext-only", 'outdent', false);
+</script>
+</body>
+</html>

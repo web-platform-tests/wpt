@@ -103,7 +103,7 @@ class TestEnvironment:
         if sys.version_info >= (3, 7):
             sys.__stderr__.reconfigure(encoding='utf-8')
             sys.__stdout__.reconfigure(encoding='utf-8')
-        
+
         self.test_paths = test_paths
         self.server = None
         self.config_ctx = None

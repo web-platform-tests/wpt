@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Editing: manual test for keyboard shortcuts with contenteditable=plaintext-only</title>
+    <link rel="help" href="https://html.spec.whatwg.org/multipage/#contenteditable"/>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
+    <script src="/resources/testdriver-actions.js"></script>
+
+    <div id="contentEditablePlaintextOnly" contenteditable="plaintext-only">plaintext-only</div>
+</head>
+<body>
+<script>
+    var kControl = "\uE009";
+    var kB = "KeyB";
+
+    promise_test(async () => {
+        var contentEditablePlaintextOnly = document.getElementById('contentEditablePlaintextOnly');
+
+        var selection = document.getSelection();
+        selection.selectAllChildren(contentEditablePlaintextOnly);
+
+        await new test_driver.Actions()
+            .keyDown(kControl)
+            .keyDown('B')
+            .keyUp('B')
+            .keyUp(kControl)
+            .send();
+
+        assert_equals(document.queryCommandState('bold'), false);
+    }, 'Press Ctrl+B for making text bold');
+</script>
+</body>
+</html>

@@ -14,7 +14,8 @@
 <body>
 <script>
     var kControl = "\uE009";
-    var kB = "KeyB";
+    var kMeta = "\uE03D";
+    var kB = "B";
 
     promise_test(async () => {
         var contentEditablePlaintextOnly = document.getElementById('contentEditablePlaintextOnly');
@@ -24,13 +25,29 @@
 
         await new test_driver.Actions()
             .keyDown(kControl)
-            .keyDown('B')
-            .keyUp('B')
+            .keyDown(kB)
+            .keyUp(kB)
             .keyUp(kControl)
             .send();
 
         assert_equals(document.queryCommandState('bold'), false);
-    }, 'Press Ctrl+B for making text bold');
+    }, 'Send Ctrl+B shortcut for making text bold');
+
+    promise_test(async () => {
+        var contentEditablePlaintextOnly = document.getElementById('contentEditablePlaintextOnly');
+
+        var selection = document.getSelection();
+        selection.selectAllChildren(contentEditablePlaintextOnly);
+
+        await new test_driver.Actions()
+            .keyDown(kMeta)
+            .keyDown(kB)
+            .keyUp(kB)
+            .keyUp(kMeta)
+            .send();
+
+        assert_equals(document.queryCommandState('bold'), false);
+    }, 'Send Meta+B shortcut for making text bold');
 </script>
 </body>
 </html>

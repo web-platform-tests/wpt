@@ -94,6 +94,12 @@ class TestEnvironment:
     def __init__(self, test_paths, testharness_timeout_multipler,
                  pause_after_test, debug_test, debug_info, options, ssl_config, env_extras,
                  enable_webtransport=False, mojojs_path=None, inject_script=None):
+        # this specific version change is required as setting sys.stdout or 
+        # sys.stderr will cause mozlog to not work properly. ".reconfigure"
+        # is only available after python 3.7, but since the builders are
+        # already all using 3.8+ we're just fixing for only 3.7+
+        # TODO(crbug.com/1378771) once we no longer support < 3.6 remove the
+        # version specific code.
         if sys.version_info >= (3, 7):
             sys.__stderr__.reconfigure(encoding='utf-8')
             sys.__stdout__.reconfigure(encoding='utf-8')

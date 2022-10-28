@@ -1,44 +1,38 @@
 // META: script=../resources/helpers.js
 // META: title=javascript: URL navigation to a string must create a document whose referrer is the navigation initiator
 
-promise_test(async (t) => {
-  const w = await openWindow("/common/blank.html", t);
+const originalURL = location.href;
 
-  w.location.href = `javascript:'a string<script>opener.postMessage(document.referrer, "*");</script>'`;
+const testCases = [
+  ["unsafe-url", location.href],
+  ["origin", self.origin + "/"],
+  ["no-referrer", ""]
+];
 
-  const referrer = await waitForMessage(w);
+for (const [referrerPolicyForStartingWindowCreation, expectedReferrer] of testCases) {
+  promise_test(async (t) => {
+    const meta = document.createElement("meta");
+    meta.name = "referrer";
+    meta.content = referrerPolicyForStartingWindowCreation;
+    t.add_cleanup(() => meta.remove());
+    document.head.append(meta);
 
-  assert_equals(referrer, location.href);
-}, "default referrer policy");
+    const w = await openWindow("/common/blank.html", t);
+    const originalReferrer = w.document.referrer;
+    assert_equals(originalReferrer, expectedReferrer,
+      "Sanity check: opened window's referrer is set correctly");
 
-promise_test(async (t) => {
-  const meta = document.createElement("meta");
-  meta.name = "referrer";
-  meta.content = "origin";
-  t.add_cleanup(() => meta.remove());
-  document.head.append(meta);
+    // Mess with the current document's URL so that the initiator URL is different. Then, if that
+    // shows up as the javascript: URL document's referrer, we know the navigation initiator's URL is
+    // being used as the referrer, which is incorrect.
+    history.replaceState(undefined, "", "/incorrect-referrer.html");
+    t.add_cleanup(() => history.replaceState(undefined, "", originalURL));
 
-  const w = await openWindow("/common/blank.html", t);
+    w.location.href = `javascript:'a string<script>opener.postMessage(document.referrer, "*");</script>'`;
 
-  w.location.href = `javascript:'a string<script>opener.postMessage(document.referrer, "*");</script>'`;
+    const referrer = await waitForMessage(w);
 
-  const referrer = await waitForMessage(w);
-
-  assert_equals(referrer, self.origin + "/");
-}, "origin referrer policy");
-
-promise_test(async (t) => {
-  const meta = document.createElement("meta");
-  meta.name = "referrer";
-  meta.content = "no-referrer";
-  t.add_cleanup(() => meta.remove());
-  document.head.append(meta);
-
-  const w = await openWindow("/common/blank.html", t);
-
-  w.location.href = `javascript:'a string<script>opener.postMessage(document.referrer, "*");</script>'`;
-
-  const referrer = await waitForMessage(w);
-
-  assert_equals(referrer, "");
-}, "no-referrer referrer policy");
+    assert_equals(referrer, originalReferrer,
+      "javascript: URL-created document's referrer equals the previous document's referrer");
+  }, `${referrerPolicyForStartingWindowCreation} referrer policy used to create the starting page`);
+}

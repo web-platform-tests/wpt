@@ -5,9 +5,7 @@
 <link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-contain/#content-visibility">
 <link rel="match" href="content-visibility-004-ref.html">
-<meta name="assert" content="content-visibility hidden makes iframe contents hidden">
-
-<p>Test passes if the word “Fail” does not appear in the box below.</p>
+<meta name="assert" content="content-visibility makes iframe contents hidden">
 
 <iframe id="frame" srcdoc='
   <style>
@@ -17,6 +15,6 @@
     content-visibility: hidden;
   }
   </style>
-  <div id="container">Fail</div>
+  <div id="container">Lorem</div>
 '></iframe>
 </html>

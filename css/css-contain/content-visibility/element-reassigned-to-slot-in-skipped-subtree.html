@@ -45,14 +45,14 @@ div {
   height: 50px;
 }
 .composited { will-change: transform; }
-#one { background: pink; }
+#one { background: green; }
 #two { background: red; }
 </style>
 
 <div id=container>
   <my-element>
-    <div id=one slot=unlocked>FAIL</div>
-    <div id=two slot=locked>FAIL</div>
+    <div id=one slot=unlocked>hello</div>
+    <div id=two slot=locked>world</div>
   </my-element>
 </div>
 

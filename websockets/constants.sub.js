@@ -5,16 +5,20 @@ var __SCHEME;
 var __PORT;
 if (url_has_variant('wss')) {
   __SCHEME = 'wss';
+  __HTTP_SCHEME = 'https';
   __PORT = "{{ports[wss][0]}}";
 } else if (url_has_flag('h2')) {
   __SCHEME = 'wss';
+  __HTTP_SCHEME = 'https';
   __PORT = "{{ports[h2][0]}}";
 } else {
   __SCHEME = 'ws';
+  __HTTP_SCHEME = 'http';
   __PORT = "{{ports[ws][0]}}";
 }
 
 const SCHEME_DOMAIN_PORT = __SCHEME + '://' + __SERVER__NAME + ':' + __PORT;
+const HTTP_SCHEME_DOMAIN_PORT = __HTTP_SCHEME + '://' + __SERVER__NAME + ':' + __PORT;
 
 function url_has_variant(variant) {
   const params = new URLSearchParams(location.search);
@@ -40,7 +44,7 @@ function CreateWebSocketNonAbsolute() {
 
 function CreateWebSocketNonWsScheme() {
   IsWebSocket();
-  const url = "http://" + __SERVER__NAME + ":" + __PORT + "/" + __PATH;
+  const url = "invalid-scheme://" + __SERVER__NAME + ":" + __PORT + "/" + __PATH;
   return new WebSocket(url);
 }
 
@@ -86,9 +90,11 @@ function CreateWebSocketWithRepeatedProtocolsCaseInsensitive() {
   wsocket = new WebSocket(url, ["echo", "eCho"]);
 }
 
-function CreateWebSocket(isProtocol, isProtocols) {
+function CreateWebSocket(isProtocol, isProtocols, isHttp, isRelative) {
   IsWebSocket();
-  const url = SCHEME_DOMAIN_PORT + "/" + __PATH;
+  const url = isRelative
+    ? "/" + __PATH
+    : (isHttp ? HTTP_SCHEME_DOMAIN_PORT : SCHEME_DOMAIN_PORT) + "/" + __PATH;
 
   if (isProtocol) {
     return new WebSocket(url, "echo");

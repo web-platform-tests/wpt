@@ -183,7 +183,7 @@ function createFrame(url) {
     });
 }
 
-async function create_prerendered_page(t, opt = {}) {
+async function create_prerendered_page(t, opt = {}, init_opt = {}) {
   const baseUrl = '/speculation-rules/prerender/resources/exec.py';
   const init_uuid = token();
   const prerender_uuid = token();
@@ -191,7 +191,13 @@ async function create_prerendered_page(t, opt = {}) {
   const init_remote = new RemoteContext(init_uuid);
   const prerender_remote = new RemoteContext(prerender_uuid);
   const discard_remote = new RemoteContext(discard_uuid);
-  window.open(`${baseUrl}?uuid=${init_uuid}&init`, '_blank', 'noopener');
+
+  const init_params = new URLSearchParams(baseUrl.search);
+  init_params.set('uuid', init_uuid);
+  for (const p in init_opt)
+    init_params.set(p, init_opt[p]);
+  window.open(`${baseUrl}?${init_params.toString()}&init`, '_blank', 'noopener');
+
   const params = new URLSearchParams(baseUrl.search);
   params.set('uuid', prerender_uuid);
   params.set('discard_uuid', discard_uuid);
@@ -295,7 +301,7 @@ function test_prerender_defer(fn, label) {
  *
  * See
  * /html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js
- * for more details on the `RemoteContextWrapper` framework.
+ * for more details on the `RemoteContextWrapper` framework, and supported fields for extraConfig.
  *
  * The returned `RemoteContextWrapper` for the prerendered remote
  * context will have an extra `url` property, which is used by
@@ -304,9 +310,10 @@ function test_prerender_defer(fn, label) {
  * a prerendered page after creating it.)
  *
  * @param {RemoteContextWrapper} referrerRemoteContext
+ * @param {RemoteContextConfig|object} extraConfig
  * @returns {Promise<RemoteContextWrapper>}
  */
-async function addPrerenderRC(referrerRemoteContext) {
+async function addPrerenderRC(referrerRemoteContext, extraConfig) {
   let savedURL;
   const prerenderedRC = await referrerRemoteContext.helper.createContext({
     executorCreator(url) {
@@ -327,7 +334,7 @@ async function addPrerenderRC(referrerRemoteContext) {
         });
         document.head.append(script);
       }, [url]);
-    }
+    }, extraConfig
   });
 
   prerenderedRC.url = savedURL;
@@ -381,4 +388,19 @@ async function activatePrerenderRC(referrerRC, prerenderedRC, navigateFn) {
     "activated",
     "The prerendered page must be activated; instead a normal navigation happened."
   );
+}
+
+async function getActivationStart(prerenderedRC) {
+  return await prerenderedRC.executeScript(() => {
+    const entry = performance.getEntriesByType("navigation")[0];
+    return entry.activationStart;
+  });;
+}
+
+// Used by the opened window, to tell the main test runner to terminate a
+// failed test.
+function failTest(reason, uid) {
+  const bc = new PrerenderChannel('test-channel', uid);
+  bc.postMessage({result: 'FAILED', reason});
+  bc.close();
 }

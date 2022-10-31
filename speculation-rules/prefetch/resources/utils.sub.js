@@ -85,6 +85,15 @@ class PrefetchAgent extends RemoteContext {
   async getRequestCredentials() {
     return this.execute_script(() => window.requestCredentials);
   }
+
+  async setReferrerPolicy(referrerPolicy) {
+    return this.execute_script(referrerPolicy => {
+      const meta = document.createElement("meta");
+      meta.name = "referrer";
+      meta.content = referrerPolicy;
+      document.head.append(meta);
+    }, [referrerPolicy]);
+  }
 }
 
 // Produces n URLs with unique UUIDs which will record when they are prefetched.
@@ -109,8 +118,8 @@ async function isUrlPrefetched(url) {
 }
 
 // Must also include /common/utils.js and /common/dispatcher/dispatcher.js to use this.
-async function spawnWindow(t, options = {}) {
-  let agent = new PrefetchAgent(token(), t);
+async function spawnWindow(t, options = {}, uuid = token()) {
+  let agent = new PrefetchAgent(uuid, t);
   let w = window.open(agent.getExecutorURL(options), options);
   t.add_cleanup(() => w.close());
   return agent;

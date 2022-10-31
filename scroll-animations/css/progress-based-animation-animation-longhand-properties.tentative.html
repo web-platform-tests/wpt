@@ -6,6 +6,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/web-animations/testcommon.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
   @keyframes anim {
     from { translate: 0px; }
@@ -104,10 +105,12 @@ promise_test(async t => {
 
   // Let animation become 50% in the 1st iteration.
   target.style.animationIterationCount = '2';
+  await waitForCSSScrollTimelineStyle();
   assert_equals(getComputedStyle(target).translate, '50px');
 
   // Let animation become 0% in the 2nd iteration.
   target.style.animationIterationCount = '4';
+  await waitForCSSScrollTimelineStyle();
   assert_equals(getComputedStyle(target).translate, '0px');
 }, 'animation-iteration-count');
 
@@ -197,6 +200,7 @@ promise_test(async t => {
 
   // Let animation be in before phase.
   target.style.animationDelay = '10s';
+  target.style.animationDelayStart = '10s'; // crbug.com/1375994
   assert_equals(getComputedStyle(target).translate, 'none');
 
   await scrollTop(scroller, 50); // The animation enters active phase.
@@ -217,6 +221,8 @@ promise_test(async t => {
 
   await scrollTop(scroller, 20); // [0, 100].
   target.style.animationDelay = '-5s';
+  target.style.animationDelayStart = '-5s'; // crbug.com/1375994
+  await waitForCSSScrollTimelineStyle();
   assert_equals(getComputedStyle(target).translate, '60px');
 }, 'animation-delay with a negative value');
 
@@ -229,11 +235,13 @@ promise_test(async t => {
   let [target, scroller] = createTargetAndScroller(t);
   target.style.animation = '10s linear anim scroll(nearest)';
   target.style.animationDelay = '10s';
+  target.style.animationDelayStart = '10s'; // crbug.com/1375994
 
   await scrollTop(scroller, 25);
   assert_equals(getComputedStyle(target).translate, 'none');
 
   target.style.animationFillMode = 'backwards';
+  await waitForCSSScrollTimelineStyle();
   assert_equals(getComputedStyle(target).translate, '0px');
 }, 'animation-fill-mode');
 

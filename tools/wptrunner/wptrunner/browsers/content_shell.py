@@ -10,17 +10,23 @@ from . import chrome_spki_certs
 from .base import Browser, ExecutorBrowser
 from .base import get_timeout_multiplier   # noqa: F401
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.executorcontentshell import (ContentShellRefTestExecutor,  # noqa: F401
-                                              ContentShellCrashtestExecutor,  # noqa: F401
-                                              ContentShellTestharnessExecutor)  # noqa: F401
+from ..executors.executorcontentshell import (  # noqa: F401
+    ContentShellCrashtestExecutor,
+    ContentShellPrintRefTestExecutor,
+    ContentShellRefTestExecutor,
+    ContentShellTestharnessExecutor,
+)
 
 
 __wptrunner__ = {"product": "content_shell",
                  "check_args": "check_args",
                  "browser": "ContentShellBrowser",
-                 "executor": {"reftest": "ContentShellRefTestExecutor",
+                 "executor": {
                      "crashtest": "ContentShellCrashtestExecutor",
-                     "testharness": "ContentShellTestharnessExecutor"},
+                     "print-reftest": "ContentShellPrintRefTestExecutor",
+                     "reftest": "ContentShellRefTestExecutor",
+                     "testharness": "ContentShellTestharnessExecutor",
+                 },
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
@@ -34,7 +40,7 @@ def check_args(**kwargs):
 
 
 def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
-    args = kwargs["binary_args"]
+    args = list(kwargs["binary_args"])
 
     args.append("--ignore-certificate-errors-spki-list=%s" %
         ','.join(chrome_spki_certs.IGNORE_CERTIFICATE_ERRORS_SPKI_LIST))

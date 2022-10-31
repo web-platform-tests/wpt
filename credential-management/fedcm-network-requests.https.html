@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<title>Federated Credential Management API network request tests.</title>
+<link rel="help" href="https://fedidcg.github.io/FedCM">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+
+<script type="module">
+import {default_request_options, fedcm_test, set_fedcm_cookie} from './support/fedcm-helper.sub.js';
+
+fedcm_test(async t => {
+  const cred = await navigator.credentials.get(default_request_options());
+  assert_equals(cred.token, "token");
+}, "Successfully obtaining token should resolve the promise.");
+
+fedcm_test(async t => {
+  const first = navigator.credentials.get(default_request_options());
+  const second = navigator.credentials.get(default_request_options());
+
+  // We have to call promise_rejects_dom here, because if we call it after
+  // the promise gets rejected, the unhandled rejection event handler is called
+  // and fails the test even if we handle the rejection later.
+  const rej = promise_rejects_dom(t, 'AbortError', second);
+
+  const first_cred = await first;
+  assert_equals(first_cred.token, "token");
+
+  return rej;
+},
+"When there's a pending request, a second `get` call should be rejected. ");
+
+fedcm_test(async t => {
+  let test_options = default_request_options();
+  test_options.identity.providers = [];
+  const cred = navigator.credentials.get(test_options);
+  return promise_rejects_js(t, TypeError, cred);
+}, "Reject when provider list is empty");
+
+fedcm_test(async t => {
+  let test_options = default_request_options();
+  delete test_options.identity.providers[0].configURL;
+  const cred = navigator.credentials.get(test_options);
+  return promise_rejects_js(t, TypeError, cred);
+}, "Reject when configURL is missing" );
+
+fedcm_test(async t => {
+  let test_options = default_request_options();
+  test_options.identity.providers[0].configURL = 'test';
+  const cred = navigator.credentials.get(test_options);
+  return promise_rejects_dom(t, "InvalidStateError", cred);
+}, "Reject when configURL is invalid");
+
+fedcm_test(async t => {
+  let test_options = default_request_options();
+  test_options.identity.providers[0].clientId = '';
+  const cred = navigator.credentials.get(test_options);
+  return promise_rejects_dom(t, "InvalidStateError", cred);
+}, "Reject when clientId is empty");
+
+fedcm_test(async t => {
+  let test_options = default_request_options();
+  assert_true("nonce" in test_options.identity.providers[0]);
+  delete test_options.identity.providers[0].nonce;
+  const cred = await navigator.credentials.get(test_options);
+  assert_equals(cred.token, "token");
+}, "nonce is not required in FederatedIdentityProvider.");
+
+fedcm_test(async t => {
+  let test_options = default_request_options();
+  delete test_options.identity.providers[0].clientId;
+  const cred = navigator.credentials.get(test_options);
+  return promise_rejects_js(t, TypeError, cred);
+}, "Reject when clientId is missing" );
+
+fedcm_test(async t => {
+  let controller = new AbortController();
+  let test_options = default_request_options();
+  test_options.signal = controller.signal;
+  const cred = navigator.credentials.get(test_options);
+  controller.abort();
+  return promise_rejects_dom(t, 'AbortError', cred);
+}, "Test the abort signal");
+
+fedcm_test(async t => {
+  let controller = new AbortController();
+  let test_options = default_request_options();
+  test_options.signal = controller.signal;
+  const first_cred = navigator.credentials.get(test_options);
+  controller.abort();
+  await promise_rejects_dom(t, 'AbortError', first_cred);
+
+  const second_cred = await navigator.credentials.get(default_request_options());
+  assert_equals(second_cred.token, "token");
+}, "Get after abort should work");
+
+fedcm_test(async t => {
+  let test_options = default_request_options('manifest-not-in-list.json');
+  const cred = navigator.credentials.get(test_options);
+  return promise_rejects_dom(t, 'NetworkError', cred);
+}, 'Test that the promise is rejected if the manifest is not in the manifest list');
+
+</script>

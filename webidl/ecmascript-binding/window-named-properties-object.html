@@ -223,7 +223,7 @@ test(t => {
         forInKeys.push(key);
 
     assert_array_equals(forInKeys, Object.keys(w.EventTarget.prototype));
-    assert_array_equals(Object.getOwnPropertyNames(wp), []);
+    assert_array_equals(Object.getOwnPropertyNames(wp), ["a", "b"]);
     assert_array_equals(Reflect.ownKeys(wp), [Symbol.toStringTag]);
 }, "[[OwnPropertyKeys]]");
 

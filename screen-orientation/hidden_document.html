@@ -14,9 +14,9 @@
   promise_test(async (t) => {
     const { minimize, restore } = window_state_context(t);
     t.add_cleanup(restore);
-    
+
     await minimize();
-    
+
     assert_equals(document.visibilityState, "hidden", "Document must be hidden");
     await promise_rejects_dom(t, "SecurityError", screen.orientation.lock("landscape") );
   }, "hidden documents must reject went trying to call lock or unlock");
@@ -24,9 +24,9 @@
   promise_test(async (t) => {
     const { minimize, restore } = window_state_context(t);
     t.add_cleanup(restore);
-    
+
     await minimize();
-    
+
     assert_equals(document.visibilityState, "hidden", "Document must be hidden");
     await promise_rejects_dom(t, "SecurityError", screen.orientation.unlock() );
   }, "hidden documents must reject went trying to call unlock");
@@ -36,9 +36,9 @@
     t.add_cleanup(restore);
     t.add_cleanup(make_cleanup());
     await screen.orientation.lock(getOppositeOrientation());
-    
+
     await minimize();
-    
+
     assert_equals(document.visibilityState, "hidden", "Document must be hidden");
     await promise_rejects_dom(t, "SecurityError", screen.orientation.unlock() );
   }, "hidden documents must not unlock the screen orientation");
@@ -48,15 +48,15 @@
     t.add_cleanup(restore);
     t.add_cleanup(make_cleanup());
     await screen.orientation.lock(getOppositeOrientation());
-    
+
     await minimize();
-    
+
     assert_equals(document.visibilityState, "hidden");
     await promise_rejects_dom(t, "SecurityError", screen.orientation.lock(getOppositeOrientation()));
-  
+
     // Maximize, now everything should work as expected.
     await restore();
-    
+
     assert_equals(document.visibilityState, "visible");
     await screen.orientation.lock(getOppositeOrientation());
     await screen.orientation.unlock();

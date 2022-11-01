@@ -30,6 +30,7 @@ const dictionaryNames = {
     audio: "RTCAudioSourceStats",
     video: "RTCVideoSourceStats"
   },
+  "media-playout": "RTCAudioPlayoutStats",
   "sender": {
     audio: "RTCAudioSenderStats",
     video: "RTCVideoSenderStats"
@@ -45,6 +46,32 @@ const dictionaryNames = {
   "certificate": "RTCCertificateStats",
 };
 
+function isPropertyTestable(type, property) {
+  // List of properties which are not testable by this test.
+  // When adding something to this list, please explain why.
+  const untestablePropertiesByType = {
+    'local-candidate': [
+      'url', // requires a STUN/TURN server.
+      'relayProtocol', // requires a TURN server.
+      'relatedAddress', // requires a STUN/TURN server.
+      'relatedPort', // requires a STUN/TURN server.
+    ],
+    'remote-candidate': [
+      'url', // requires a STUN/TURN server.
+      'relayProtocol', // requires a TURN server.
+      'relatedAddress', // requires a STUN/TURN server.
+      'relatedPort', // requires a STUN/TURN server.
+      'tcpType', // requires ICE-TCP connection.
+    ],
+    'outbound-rtp': [
+      'rid', // requires simulcast.
+    ],
+  };
+  if (!untestablePropertiesByType[type]) {
+    return true;
+  }
+  return !untestablePropertiesByType[type].includes(property);
+}
 
 async function getAllStats(t, pc) {
   // Try to obtain as many stats as possible, waiting up to 20 seconds for
@@ -53,10 +80,24 @@ async function getAllStats(t, pc) {
   for (let i = 0; i < 20; i++) {
     stats = await pc.getStats();
     const values = [...stats.values()];
-    const [audio, video] = ["audio", "video"].map(kind =>
-      values.find(s => s.type == "remote-inbound-rtp" && s.kind == kind));
-    if (audio && "roundTripTime" in audio &&
-        video && "roundTripTime" in video) {
+    const [remoteInboundAudio, remoteInboundVideo] =
+        ["audio", "video"].map(kind =>
+            values.find(s => s.type == "remote-inbound-rtp" && s.kind == kind));
+    const [remoteOutboundAudio, remoteOutboundVideo] =
+        ["audio", "video"].map(kind =>
+            values.find(s => s.type == "remote-outbound-rtp" && s.kind == kind));
+    // We expect both audio and video remote-inbound-rtp RTT.
+    const hasRemoteInbound =
+        remoteInboundAudio && "roundTripTime" in remoteInboundAudio &&
+        remoteInboundVideo && "roundTripTime" in remoteInboundVideo;
+    // Due to current implementation limitations, we don't put as hard
+    // requirements on remote-outbound-rtp as remote-inbound-rtp. It's enough if
+    // it is available for either kind and `roundTripTime` is not required. In
+    // Chromium, remote-outbound-rtp is only implemented for audio and
+    // `roundTripTime` is missing in this test, but awaiting for any
+    // remote-outbound-rtp avoids flaky failures.
+    const hasRemoteOutbound = remoteOutboundAudio || remoteOutboundVideo;
+    if (hasRemoteInbound && hasRemoteOutbound) {
       return stats;
     }
     await new Promise(r => t.step_timeout(r, 1000));
@@ -65,36 +106,34 @@ async function getAllStats(t, pc) {
 }
 
 
-  promise_test(async t => {
-    // load the IDL to know which members to be looking for
+promise_test(async t => {
+  // load the IDL to know which members to be looking for
+  const idl = await fetch("/interfaces/webrtc-stats.idl").then(r => r.text());
+  // for RTCStats definition
+  const webrtcIdl = await fetch("/interfaces/webrtc.idl").then(r => r.text());
+  const astArray = WebIDL2.parse(idl + webrtcIdl);
 
-    const idl = await fetch("/interfaces/webrtc-stats.idl").then(r => r.text());
-    // for RTCStats definition
-    const webrtcIdl = await fetch("/interfaces/webrtc.idl").then(r => r.text());
-    const astArray = WebIDL2.parse(idl + webrtcIdl);
-
-    let all = {};
-    for (let type in dictionaryNames) {
-        // TODO: make use of audio/video distinction
-      let dictionaries = dictionaryNames[type].audio ? Object.values(dictionaryNames[type]) : [dictionaryNames[type]];
-      all[type] = [];
-      let i = 0;
-      // Recursively collect members from inherited dictionaries
-      while (i < dictionaries.length) {
-        const dictName = dictionaries[i];
-        const dict = astArray.find(i => i.name === dictName && i.type === "dictionary");
-        if (dict && dict.members) {
-          all[type] = all[type].concat(dict.members.map(m => m.name));
-          if (dict.inheritance) {
-            dictionaries.push(dict.inheritance);
-          }
+  let all = {};
+  for (let type in dictionaryNames) {
+      // TODO: make use of audio/video distinction
+    let dictionaries = dictionaryNames[type].audio ? Object.values(dictionaryNames[type]) : [dictionaryNames[type]];
+    all[type] = [];
+    let i = 0;
+    // Recursively collect members from inherited dictionaries
+    while (i < dictionaries.length) {
+      const dictName = dictionaries[i];
+      const dict = astArray.find(i => i.name === dictName && i.type === "dictionary");
+      if (dict && dict.members) {
+        all[type] = all[type].concat(dict.members.map(m => m.name));
+        if (dict.inheritance) {
+          dictionaries.push(dict.inheritance);
         }
-        i++;
       }
-      // Unique-ify
-      all[type] = [...new Set(all[type])];
+      i++;
     }
-
+    // Unique-ify
+    all[type] = [...new Set(all[type])];
+  }
 
   const remaining = JSON.parse(JSON.stringify(all));
     for (const type in remaining) {
@@ -108,15 +147,21 @@ async function getAllStats(t, pc) {
 
   const dc1 = pc1.createDataChannel("dummy", {negotiated: true, id: 0});
   const dc2 = pc2.createDataChannel("dummy", {negotiated: true, id: 0});
-
   const stream = await getNoiseStream({video: true, audio:true});
   for (const track of stream.getTracks()) {
     pc1.addTrack(track, stream);
     pc2.addTrack(track, stream);
     t.add_cleanup(() => track.stop());
   }
-  exchangeIceCandidates(pc1, pc2);
-  await exchangeOfferAnswer(pc1, pc2);
+
+  // Do a non-trickle ICE handshake to ensure that TCP candidates are gathered.
+  await pc1.setLocalDescription();
+  await waitForIceGatheringState(pc1, ['complete']);
+  await pc2.setRemoteDescription(pc1.localDescription);
+  await pc2.setLocalDescription();
+  await waitForIceGatheringState(pc2, ['complete']);
+  await pc1.setRemoteDescription(pc2.localDescription);
+
   const stats = await getAllStats(t, pc1);
 
   // The focus of this test is not API correctness, but rather to provide an
@@ -142,6 +187,8 @@ async function getAllStats(t, pc) {
   for (const type in all) {
     for (const memberName of all[type]) {
       test(t => {
+        assert_implements_optional(isPropertyTestable(type, memberName),
+          `${type}.${memberName} marked as not testable.`);
         assert_true(!remaining[type].has(memberName),
                     `Is ${memberName} present`);
       }, `${type}'s ${memberName}`);

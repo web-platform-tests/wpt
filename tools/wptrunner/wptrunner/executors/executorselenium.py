@@ -194,6 +194,17 @@ class SeleniumCookiesProtocolPart(CookiesProtocolPart):
         self.logger.info("Deleting all cookies")
         return self.webdriver.delete_all_cookies()
 
+    def get_all_cookies(self):
+        self.logger.info("Getting all cookies")
+        return self.webdriver.get_all_cookies()
+
+    def get_named_cookie(self, name):
+        self.logger.info("Getting cookie named %s" % name)
+        try:
+            return self.webdriver.get_named_cookie(name)
+        except exceptions.NoSuchCookieException:
+            return None
+
 class SeleniumWindowProtocolPart(WindowProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
@@ -221,6 +232,9 @@ class SeleniumActionSequenceProtocolPart(ActionSequenceProtocolPart):
 
     def send_actions(self, actions):
         self.webdriver.execute(Command.W3C_ACTIONS, {"actions": actions})
+
+    def release(self):
+        self.webdriver.execute(Command.W3C_CLEAR_ACTIONS, {})
 
 
 class SeleniumTestDriverProtocolPart(TestDriverProtocolPart):

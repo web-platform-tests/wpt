@@ -4,7 +4,7 @@ components:
     workerType: ci
     schedulerId: taskcluster-github
     deadline: "24 hours"
-    image: webplatformtests/wpt:0.48
+    image: webplatformtests/wpt:0.52
     maxRunTime: 7200
     artifacts:
       public/results:
@@ -218,7 +218,6 @@ tasks:
                 browser: servo
                 channel: nightly
               use:
-                - trigger-daily
                 - trigger-push
           do:
             - ${vars.browser}-${vars.channel}-${vars.suite}:

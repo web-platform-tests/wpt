@@ -39,12 +39,12 @@
   const popups = document.querySelectorAll('[popup]');
   function assertAll(showing) {
     for(let popup of popups) {
-      assert_equals(popup.matches(':top-layer'),showing);
+      assert_equals(popup.matches(':open'),showing);
     }
   }
   async_test(t => {
     for(let popup of popups) {
-      popup.addEventListener('hide',e => {
+      popup.addEventListener('popuphide',e => {
         assert_unreached('Scrolling should not light-dismiss a popup');
       });
     }

@@ -24,6 +24,11 @@
 #   - cors+pna: this endpoint responds with valid CORS and PNA headers to
 #     preflights. These should be sufficient for both non-PNA preflight
 #     requests and PNA-specific preflight requests to succeed.
+#   - cors+pna+sw: this endpoint responds with valid CORS and PNA headers and
+#     "Access-Control-Allow-Headers: Service-Worker" to preflights. These should
+#     be sufficient for both non-PNA preflight requests and PNA-specific
+#     preflight requests to succeed. This allows the main request to fetch a
+#     service worker script.
 #   - unspecified, or any other value: this endpoint responds with no CORS or
 #     PNA headers. Preflight requests should fail.
 # - final-headers: Valid values are:
@@ -55,6 +60,7 @@ from wptserve.utils import isomorphic_encode
 
 _ACAO = ("Access-Control-Allow-Origin", "*")
 _ACAPN = ("Access-Control-Allow-Private-Network", "true")
+_ACAH = ("Access-Control-Allow-Headers", "Service-Worker")
 
 def _get_response_headers(method, mode):
   acam = ("Access-Control-Allow-Methods", method)
@@ -64,6 +70,9 @@ def _get_response_headers(method, mode):
 
   if mode == b"cors+pna":
     return [acam, _ACAO, _ACAPN]
+
+  if mode == b"cors+pna+sw":
+    return [acam, _ACAO, _ACAPN, _ACAH]
 
   return []
 

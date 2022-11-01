@@ -203,6 +203,17 @@ class WebDriverCookiesProtocolPart(CookiesProtocolPart):
         self.logger.info("Deleting all cookies")
         return self.webdriver.send_session_command("DELETE", "cookie")
 
+    def get_all_cookies(self):
+        self.logger.info("Getting all cookies")
+        return self.webdriver.send_session_command("GET", "cookie")
+
+    def get_named_cookie(self, name):
+        self.logger.info("Getting cookie named %s" % name)
+        try:
+            return self.webdriver.send_session_command("GET", "cookie/%s" % name)
+        except error.NoSuchCookieException:
+            return None
+
 class WebDriverWindowProtocolPart(WindowProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
@@ -236,6 +247,9 @@ class WebDriverActionSequenceProtocolPart(ActionSequenceProtocolPart):
 
     def send_actions(self, actions):
         self.webdriver.actions.perform(actions['actions'])
+
+    def release(self):
+        self.webdriver.actions.release()
 
 
 class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
@@ -627,6 +641,8 @@ class WebDriverRefTestExecutor(RefTestExecutor):
         self.protocol.base.execute_script(self.wait_script, True)
 
         screenshot = self.protocol.webdriver.screenshot()
+        if screenshot is None:
+            raise ValueError('screenshot is None')
 
         # strip off the data:img/png, part of the url
         if screenshot.startswith("data:image/png;base64,"):

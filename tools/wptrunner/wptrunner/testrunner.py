@@ -321,6 +321,7 @@ class TestRunnerManager(threading.Thread):
         self.test_count = 0
         self.unexpected_count = 0
         self.unexpected_pass_count = 0
+        self.unexpected_tests = set()
 
         # This may not really be what we want
         self.daemon = True
@@ -612,16 +613,10 @@ class TestRunnerManager(threading.Thread):
         # Write the result of each subtest
         file_result, test_results = results
         subtest_unexpected = False
-        expect_any_subtest_status = test.expect_any_subtest_status()
-        if expect_any_subtest_status:
-            self.logger.debug("Ignoring subtest statuses for test %s" % test.id)
         for result in test_results:
             if test.disabled(result.name):
                 continue
-            if expect_any_subtest_status:
-                expected = result.status
-            else:
-                expected = test.expected(result.name)
+            expected = test.expected(result.name)
             known_intermittent = test.known_intermittent(result.name)
             is_unexpected = expected != result.status and result.status not in known_intermittent
 
@@ -672,6 +667,9 @@ class TestRunnerManager(threading.Thread):
         is_unexpected_pass = is_unexpected and status == "OK"
         if is_unexpected_pass:
             self.unexpected_pass_count += 1
+
+        if is_unexpected or subtest_unexpected:
+            self.unexpected_tests.add(test.id)
 
         if "assertion_count" in file_result.extra:
             assertion_count = file_result.extra["assertion_count"]
@@ -899,12 +897,11 @@ class ManagerGroup:
     def run(self, test_type, tests):
         """Start all managers in the group"""
         self.logger.debug("Using %i processes" % self.size)
-        type_tests = tests[test_type]
-        if not type_tests:
+        if not tests:
             self.logger.info("No %s tests to run" % test_type)
             return
 
-        test_queue = make_test_queue(type_tests, self.test_source_cls, **self.test_source_kwargs)
+        test_queue = make_test_queue(tests, self.test_source_cls, **self.test_source_kwargs)
 
         for idx in range(self.size):
             manager = TestRunnerManager(self.suite_name,
@@ -948,3 +945,6 @@ class ManagerGroup:
 
     def unexpected_pass_count(self):
         return sum(manager.unexpected_pass_count for manager in self.pool)
+
+    def unexpected_tests(self):
+        return set().union(*(manager.unexpected_tests for manager in self.pool))

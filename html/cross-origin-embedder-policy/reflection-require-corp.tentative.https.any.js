@@ -1,2 +1,2 @@
-// META: global=window,dedicatedworker,sharedworker,serviceworker
+// META: global=window,worker,sharedworker-module,serviceworker-module
 test(t => assert_equals(crossOriginEmbedderPolicy, "require-corp"));

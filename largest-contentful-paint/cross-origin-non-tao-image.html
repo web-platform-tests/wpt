@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Largest Contentful Paint: Expose cross-origin non-TAO images renderTime.
+</title>
+
+<body>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script>
+    promise_test(async t => {
+      let LCPEntry = await new Promise(resolve => {
+        new PerformanceObserver((entryList, observer) => {
+          resolve(entryList.getEntries()[0]);
+          observer.disconnect();
+        }).observe({ type: 'largest-contentful-paint', buffered: true });
+      });
+
+      let FCPEntry = performance.getEntriesByName('first-contentful-paint')[0];
+
+      assert_equals(LCPEntry.startTime, FCPEntry.startTime, 'For cross-origin non tao images that are both FCP element and LCP element, the startTime of the LCP should be the renderTime which is the same as the FCP startTime.');
+
+    }, 'Cross origin non-Tao images LCP renderTime should be exposed.');
+
+  </script>
+
+  <img src='http://{{domains[www]}}:{{ports[http][1]}}/images/blue.png'
+    id='image_id' />
+</body>

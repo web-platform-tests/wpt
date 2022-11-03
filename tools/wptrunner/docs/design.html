@@ -67,60 +67,60 @@ control protocol such as WebDriver. However for browsers where no such
 protocol is supported, other implementation strategies are possible,
 typically at the expense of speed.</p>
 <p>The overall architecture of wptrunner is shown in the diagram below:</p>
-<img alt="../../../_images/architecture.svg" src="../../../_images/architecture.svg" /><p>The main entry point to the code is <a class="reference internal" href="internals.html#wptrunner.wptrunner.run_tests" title="wptrunner.wptrunner.run_tests"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_tests()</span></code></a> in
+<img alt="../../../_images/architecture.svg" src="../../../_images/architecture.svg" /><p>The main entry point to the code is <code class="xref py py-func docutils literal notranslate"><span class="pre">run_tests()</span></code> in
 <code class="docutils literal notranslate"><span class="pre">wptrunner.py</span></code>. This is responsible for setting up the test
 environment, loading the list of tests to be executed, and invoking
 the remainder of the code to actually execute some tests.</p>
 <p>The test environment is encapsulated in the
-<a class="reference internal" href="internals.html#wptrunner.environment.TestEnvironment" title="wptrunner.environment.TestEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestEnvironment</span></code></a> class. This defers to code in
+<code class="xref py py-class docutils literal notranslate"><span class="pre">TestEnvironment</span></code> class. This defers to code in
 <code class="docutils literal notranslate"><span class="pre">web-platform-tests</span></code> which actually starts the required servers to
 run the tests.</p>
 <p>The set of tests to run is defined by the
-<a class="reference internal" href="internals.html#wptrunner.testloader.TestLoader" title="wptrunner.testloader.TestLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestLoader</span></code></a>. This is constructed with a
-<a class="reference internal" href="internals.html#wptrunner.testloader.TestFilter" title="wptrunner.testloader.TestFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestFilter</span></code></a> (not shown), which takes any filter arguments
+<code class="xref py py-class docutils literal notranslate"><span class="pre">TestLoader</span></code>. This is constructed with a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">TestFilter</span></code> (not shown), which takes any filter arguments
 from the command line to restrict the set of tests that will be
-run. The <a class="reference internal" href="internals.html#wptrunner.testloader.TestLoader" title="wptrunner.testloader.TestLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestLoader</span></code></a> reads both the <code class="docutils literal notranslate"><span class="pre">web-platform-tests</span></code>
+run. The <code class="xref py py-class docutils literal notranslate"><span class="pre">TestLoader</span></code> reads both the <code class="docutils literal notranslate"><span class="pre">web-platform-tests</span></code>
 JSON manifest and the expectation data stored in ini files and
 produces a <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Queue</span></code></a> of tests to run, and
 their expected results.</p>
 <p>Actually running the tests happens through the
-<a class="reference internal" href="internals.html#wptrunner.testrunner.ManagerGroup" title="wptrunner.testrunner.ManagerGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">ManagerGroup</span></code></a> object. This takes the <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Queue</span></code></a> of
-tests to be run and starts a <a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunnerManager" title="wptrunner.testrunner.TestRunnerManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunnerManager</span></code></a> for each
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ManagerGroup</span></code> object. This takes the <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Queue</span></code></a> of
+tests to be run and starts a <code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunnerManager</span></code> for each
 instance of the browser under test that will be started. These
-<a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunnerManager" title="wptrunner.testrunner.TestRunnerManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunnerManager</span></code></a> instances are each started in their own
+<code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunnerManager</span></code> instances are each started in their own
 thread.</p>
-<p>A <a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunnerManager" title="wptrunner.testrunner.TestRunnerManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunnerManager</span></code></a> coordinates starting the product under
+<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunnerManager</span></code> coordinates starting the product under
 test, and outputting results from the test. In the case that the test
 has timed out or the browser has crashed, it has to restart the
 browser to ensure the test run can continue. The functionality for
 initialising the browser under test, and probing its state
 (e.g. whether the process is still alive) is implemented through a
-<a class="reference internal" href="internals.html#wptrunner.browsers.base.Browser" title="wptrunner.browsers.base.Browser"><code class="xref py py-class docutils literal notranslate"><span class="pre">Browser</span></code></a> object. An implementation of this class must be
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Browser</span></code> object. An implementation of this class must be
 provided for each product that is supported.</p>
 <p>The functionality for actually running the tests is provided by a
-<a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunner" title="wptrunner.testrunner.TestRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunner</span></code></a> object. <a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunner" title="wptrunner.testrunner.TestRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunner</span></code></a> instances are
+<code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunner</span></code> object. <code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunner</span></code> instances are
 run in their own child process created with the
 <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#module-multiprocessing" title="(in Python v3.11)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">multiprocessing</span></code></a> module. This allows them to run concurrently
 and to be killed and restarted as required. Communication between the
-<a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunnerManager" title="wptrunner.testrunner.TestRunnerManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunnerManager</span></code></a> and the <a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunner" title="wptrunner.testrunner.TestRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunner</span></code></a> is
+<code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunnerManager</span></code> and the <code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunner</span></code> is
 provided by a pair of queues, one for sending messages in each
 direction. In particular test results are sent from the
-<a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunner" title="wptrunner.testrunner.TestRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunner</span></code></a> to the <a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunnerManager" title="wptrunner.testrunner.TestRunnerManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunnerManager</span></code></a> using one
+<code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunner</span></code> to the <code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunnerManager</span></code> using one
 of these queues.</p>
-<p>The <a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunner" title="wptrunner.testrunner.TestRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunner</span></code></a> object is generic in that the same
-<a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunner" title="wptrunner.testrunner.TestRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunner</span></code></a> is used regardless of the product under
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunner</span></code> object is generic in that the same
+<code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunner</span></code> is used regardless of the product under
 test. However the details of how to run the test may vary greatly with
 the product since different products support different remote control
 protocols (or none at all). These protocol-specific parts are placed
 in the <a class="reference internal" href="internals.html#wptrunner.executors.base.TestExecutor" title="wptrunner.executors.base.TestExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestExecutor</span></code></a> object. There is typically a different
 <a class="reference internal" href="internals.html#wptrunner.executors.base.TestExecutor" title="wptrunner.executors.base.TestExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestExecutor</span></code></a> class for each combination of control protocol
-and test type. The <a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunner" title="wptrunner.testrunner.TestRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunner</span></code></a> is responsible for pulling
+and test type. The <code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunner</span></code> is responsible for pulling
 each test off the <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Queue</span></code></a> of tests and passing it down to
 the <a class="reference internal" href="internals.html#wptrunner.executors.base.TestExecutor" title="wptrunner.executors.base.TestExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestExecutor</span></code></a>.</p>
 <p>The executor often requires access to details of the particular
 browser instance that it is testing so that it knows e.g. which port
 to connect to to send commands to the browser. These details are
-encapsulated in the <a class="reference internal" href="internals.html#wptrunner.browsers.base.ExecutorBrowser" title="wptrunner.browsers.base.ExecutorBrowser"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecutorBrowser</span></code></a> class.</p>
+encapsulated in the <code class="xref py py-class docutils literal notranslate"><span class="pre">ExecutorBrowser</span></code> class.</p>
 </section>
 </section>
 

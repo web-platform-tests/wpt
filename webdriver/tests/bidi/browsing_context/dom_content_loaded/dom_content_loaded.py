@@ -73,7 +73,6 @@ async def test_iframe(bidi_session, new_tab, test_page, test_page_same_origin_fr
         bidi_session, message="Didn't receive dom content loaded events for frames"
     )
     await wait.until(lambda _: len(events) >= 2)
-    assert len(events) == 2
 
     contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
 
@@ -83,7 +82,12 @@ async def test_iframe(bidi_session, new_tab, test_page, test_page_same_origin_fr
     child_info = root_info["children"][0]
 
     assert_navigation_info(events[0], root_info["context"], test_page_same_origin_frame)
-    assert_navigation_info(events[1], child_info["context"], test_page)
+
+    # find an iframe event
+    for event in events:
+        if "url" in event and event["url"] == test_page:
+            iframe_event = event
+    assert_navigation_info(iframe_event, child_info["context"], test_page)
 
     remove_listener()
     await bidi_session.session.unsubscribe(events=[DOM_CONTENT_LOADED_EVENT])

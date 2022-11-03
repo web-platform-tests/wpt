@@ -42,7 +42,7 @@ async def test_subscribe_unsubscribe(bidi_session, top_context, wait_for_event, 
     await bidi_session.session.subscribe(events=["log.entryAdded"])
 
     on_entry_added = wait_for_event("log.entryAdded")
-    await create_log(bidi_session, top_context, log_type, "some text")
+    await create_log(bidi_session, top_context, log_type, "text1")
     await on_entry_added
 
     # Unsubscribe from log events globally
@@ -56,7 +56,7 @@ async def test_subscribe_unsubscribe(bidi_session, top_context, wait_for_event, 
 
     remove_listener = bidi_session.add_event_listener("log.entryAdded", on_event)
 
-    expected_text_0 = await create_log(bidi_session, top_context, log_type, "text_0")
+    await create_log(bidi_session, top_context, log_type, "text2")
 
     # Wait for some time before checking the events array
     await asyncio.sleep(0.5)
@@ -68,7 +68,7 @@ async def test_subscribe_unsubscribe(bidi_session, top_context, wait_for_event, 
     )
 
     # Check we still don't receive ConsoleLogEntry events from the new context
-    expected_text_1 = await create_log(bidi_session, top_context, log_type, "text_1")
+    await create_log(bidi_session, top_context, log_type, "text3")
 
     # Wait for some time before checking the events array
     await asyncio.sleep(0.5)
@@ -84,22 +84,20 @@ async def test_subscribe_unsubscribe(bidi_session, top_context, wait_for_event, 
     await bidi_session.session.subscribe(events=["log.entryAdded"])
 
     on_entry_added = wait_for_event("log.entryAdded")
-    expected_text_2 = await create_log(bidi_session, top_context, log_type, "text_2")
+    expected_text = await create_log(bidi_session, top_context, log_type, "text4")
     await on_entry_added
 
-    assert len(events) == 3
-    assert_base_entry(events[0], text=expected_text_0, context=top_context["context"])
-    assert_base_entry(events[1], text=expected_text_1, context=top_context["context"])
-    assert_base_entry(events[2], text=expected_text_2, context=top_context["context"])
+    assert len(events) == 1
+    assert_base_entry(events[0], text=expected_text, context=top_context["context"])
 
     # Check that we also get events from a new context
     new_context = await bidi_session.browsing_context.create(type_hint="tab")
 
     on_entry_added = wait_for_event("log.entryAdded")
-    expected_text_3 = await create_log(bidi_session, new_context, log_type, "text_3")
+    expected_text = await create_log(bidi_session, new_context, log_type, "text5")
     await on_entry_added
 
-    assert len(events) == 4
-    assert_base_entry(events[3], text=expected_text_3, context=new_context["context"])
+    assert len(events) == 2
+    assert_base_entry(events[1], text=expected_text, context=new_context["context"])
 
     remove_listener()

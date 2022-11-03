@@ -95,11 +95,11 @@ async def test_console_log_cached_message_after_refresh(
     remove_listener = bidi_session.add_event_listener("log.entryAdded", on_event)
 
     # Log a message, refresh, log another message and subscribe
-    expected_text_1 = await create_log(bidi_session, top_context, log_type, "cached_message_1")
+    await create_log(bidi_session, top_context, log_type, "missed_message")
     await bidi_session.browsing_context.navigate(
         context=top_context["context"], url=top_context["url"], wait="complete"
     )
-    expected_text_2 = await create_log(bidi_session, top_context, log_type, "cached_message_2")
+    expected_text = await create_log(bidi_session, top_context, log_type, "cached_message")
 
     on_entry_added = wait_for_event("log.entryAdded")
     await bidi_session.session.subscribe(events=["log.entryAdded"])
@@ -108,9 +108,8 @@ async def test_console_log_cached_message_after_refresh(
     # Wait for some time to catch all messages.
     await asyncio.sleep(0.5)
 
-    # Check that both cached messages are received.
-    assert len(events) == 2
-    assert_base_entry(events[0], text=expected_text_1)
-    assert_base_entry(events[1], text=expected_text_2)
+    # Check that only the cached message was retrieved.
+    assert len(events) == 1
+    assert_base_entry(events[0], text=expected_text)
 
     remove_listener()

@@ -25,7 +25,7 @@ async def test_unsubscribe(bidi_session, inline, top_context):
     url = inline("<div>foo</div>")
 
     # When navigation reaches complete state,
-    # we should have received already browsingContext.domContentLoaded event
+    # we should have received a browsingContext.domContentLoaded event
     await bidi_session.browsing_context.navigate(
         context=top_context["context"], url=url, wait="complete"
     )

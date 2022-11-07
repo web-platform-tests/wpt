@@ -72,13 +72,23 @@ function sizeOfShape(array) {
 }
 
 /**
- * Get tests JSON information from specified file.
+ * Get JSON information from specified test data file.
  * @param {String} file - file URL
  * @returns {Object}
  */
-async function getTestsJsonInfo(file) {
-  const response = await fetch(file);
-  const text = await response.text();
-  const jsonObject = JSON.parse(text.replace(/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g, (m, g) => g ? "" : m));
-  return jsonObject;
+function loadTestData(file) {
+  function loadJSON(file) {
+    let xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("GET", file, false);
+    xmlhttp.overrideMimeType("application/json");
+    xmlhttp.send();
+    if (xmlhttp.status == 200 && xmlhttp.readyState == 4) {
+      return xmlhttp.responseText;
+    } else {
+      throw new Error(`Failed to load ${file}`);
+    }
+  }
+
+  const json = loadJSON(file);
+  return JSON.parse(json.replace(/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g, (m, g) => g ? "" : m));
 }

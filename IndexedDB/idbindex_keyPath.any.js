@@ -42,12 +42,11 @@ indexeddb_test(
     const index = store.index('index');
     const cursorReq = index.openCursor();
 
-    cursorReq.onsuccess = t.step_func((e) => {
+    cursorReq.onsuccess = t.step_func_done((e) => {
       const expectedKeyValue = [1];
-      const actualKeyValue = e.target.result.key.valueOf();
+      const actualKeyValue = e.target.result.key;
 
-      assert_array_equals(actualKeyValue, expectedKeyValue);
-      t.done();
+      assert_array_equals(actualKeyValue, expectedKeyValue, "An array keypath should yield an array key");
     });
   },
   `IDBIndex's keyPath array with a single value`);
@@ -65,12 +64,11 @@ indexeddb_test(
     const index = store.index('index');
     const cursorReq = index.openCursor();
 
-    cursorReq.onsuccess = t.step_func((e) => {
+    cursorReq.onsuccess = t.step_func_done((e) => {
       const expectedKeyValue = [1, 2];
-      const actualKeyValue = e.target.result.key.valueOf();
+      const actualKeyValue = e.target.result.key;
 
-      assert_array_equals(actualKeyValue, expectedKeyValue);
-      t.done();
+      assert_array_equals(actualKeyValue, expectedKeyValue, "An array keypath should yield an array key");
     });
   },
   `IDBIndex's keyPath array with multiple values`);

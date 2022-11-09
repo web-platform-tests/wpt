@@ -8,23 +8,16 @@
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-concat
 
 const testConcat = async (operandType, syncFlag, inputShapeValues, axis, expectedShapeValue) => {
-  const inputs = [];
-  const namedInputs = {};
   const TestTypedArray = TypedArrayDict[operandType];
+  const inputOperands = [];
+  const inputs = {};
   for (let i = 0; i < inputShapeValues.length; i++) {
-    inputs.push(builder.input('input' + i, {type: operandType, dimensions: inputShapeValues[i].shape}));
-    namedInputs['input' + i] = new TestTypedArray(inputShapeValues[i].data);
+    inputOperands.push(builder.input('input' + i, {type: operandType, dimensions: inputShapeValues[i].shape}));
+    inputs['input' + i] = new TestTypedArray(inputShapeValues[i].data);
   }
-  const outputOperand = builder.concat(inputs, axis);
+  const outputOperand = builder.concat(inputOperands, axis);
   const outputs = {'outputOperand': new TestTypedArray(sizeOfShape(expectedShapeValue.shape))};
-  let graph;
-  if (syncFlag) {
-    graph = builder.buildSync({outputOperand});
-    context.computeSync(graph, namedInputs, outputs);
-  } else {
-    graph = await builder.build({outputOperand});
-    await context.compute(graph, namedInputs, outputs);
-  }
+  await buildAndCompute(syncFlag, context, builder, {outputOperand}, inputs, outputs);
   assert_array_approx_equals_ulp(outputs.outputOperand, expectedShapeValue.data, PrecisionMetrics.concat.ULP[operandType], operandType);
 };
 
@@ -43,12 +36,7 @@ ExecutionArray.forEach(executionType => {
 
   DeviceTypeArray.forEach(deviceType => {
     promise_setup(async () => {
-      if (isSync) {
-        context = navigator.ml.createContextSync({deviceType});
-      } else {
-        context = await navigator.ml.createContext({deviceType});
-      }
-      builder = new MLGraphBuilder(context);
+      [context, builder] = await createContextAndBuilder(isSync, {deviceType});
     });
 
     for (const test of tests) {
@@ -58,11 +46,11 @@ ExecutionArray.forEach(executionType => {
         const inputShapes = test.inputs.shape;
         const inputDataCategory = test.inputs.data;
         const expectedDataCategory = test.expected.data;
-        let pos = 0;
+        let position = 0;
         for (const shape of inputShapes) {
           const size = sizeOfShape(shape);
-          inputShapeValues.push({shape, data: inputsData[inputDataCategory].slice(pos, pos + size)});
-          pos += size;
+          inputShapeValues.push({shape, data: inputsData[inputDataCategory].slice(position, position + size)});
+          position += size;
         }
         const expectedShapeValue = {shape: test.expected.shape, data: expectedData[expectedDataCategory]};
         await testConcat(operandType, isSync, inputShapeValues, test.axis, expectedShapeValue);

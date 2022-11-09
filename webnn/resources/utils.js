@@ -63,7 +63,7 @@ function assert_array_approx_equals_ulp(actual, expected, nulp, dataType) {
     distance = actualBitwise - expectedBitwise;
     distance = distance >= 0 ? distance : -distance;
     assert_true(distance <= nulp,
-                `actual ${actual[i]} should be close enough to expected ${expected[i]} by the acceptable ${nulp} ULP distance, while they have ${distance} ULP distance`);
+                `actual ${actual[i]} should be close enough to expected ${expected[i]} by the acceptable ${nulp} ULP distance, but they have ${distance} ULP distance`);
   }
 }
 
@@ -91,4 +91,40 @@ function loadTestData(file) {
 
   const json = loadJSON(file);
   return JSON.parse(json.replace(/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g, (m, g) => g ? "" : m));
+}
+
+/**
+ * Create context and builder.
+ * @param {Boolean} syncFlag
+ * @param {MLContextOptions} contextOptions
+ */
+async function createContextAndBuilder(syncFlag, contextOptions) {
+  if (syncFlag) {
+    context = navigator.ml.createContextSync(contextOptions);
+  } else {
+    context = await navigator.ml.createContext(contextOptions);
+  }
+  builder = new MLGraphBuilder(context);
+  return [context, builder];
+}
+
+/**
+ * Compile the graph up to the specified output operands,
+ * then carry out the computational workload of a compiled graph.
+ * @param {Boolean} syncFlag
+ * @param {MLContext} context
+ * @param {MLGraphBuilder} builder
+ * @param {MLNamedOperands} operands - output operands
+ * @param {MLNamedArrayBufferViews} inputs - the resources of inputs.
+ * @param {MLNamedArrayBufferViews} outputs - the pre-allocated resources of required outputs.
+ */
+async function buildAndCompute(syncFlag, context, builder, operands, inputs, outputs) {
+  let graph;
+  if (syncFlag) {
+    graph = builder.buildSync(operands);
+    context.computeSync(graph, inputs, outputs);
+  } else {
+    graph = await builder.build(operands);
+    await context.compute(graph, inputs, outputs);
+  }
 }

@@ -12,7 +12,7 @@ pressure_test(async (t, mockPressureService) => {
     const observer = new PressureObserver(changes => {
       observerChanges.push(changes);
     }, {sampleRate});
-    observer.observe('cpu');
+    await observer.observe('cpu');
 
     mockPressureService.startPlatformCollector(sampleRate * 2);
     let i = 0;

@@ -4,9 +4,9 @@
 'use strict';
 
 pressure_test(async (t, mockPressureService) => {
-  const changes = await new Promise(resolve => {
+  const changes = await new Promise((resolve, reject) => {
     const observer = new PressureObserver(resolve, {sampleRate: 1.0});
-    observer.observe('cpu');
+    observer.observe('cpu').catch(reject);
     mockPressureService.setPressureUpdate('critical', ['thermal']);
     mockPressureService.startPlatformCollector(/*sampleRate=*/ 1.0);
   });

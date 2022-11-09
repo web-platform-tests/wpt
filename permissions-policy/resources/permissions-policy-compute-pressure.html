@@ -3,14 +3,12 @@
 'use strict';
 
 window.onload = function() {
-  let enabled = true;
-  try {
-    const observer = new PressureObserver(() => {});
-    observer.observe("cpu");
-    observer.disconnect();
-  } catch (e) {
-    enabled = false;
-  }
-  parent.postMessage({ type: 'availability-result', enabled }, '*');
+  const observer = new PressureObserver(() => {});
+  observer.observe("cpu").then(() => {
+    window.parent.postMessage({ type: 'availability-result', enabled: true }, '*');
+    observer.unobserve("cpu");
+  } , error => {
+    window.parent.postMessage({ type: 'availability-result', enabled: false }, '*');
+  });
 }
 </script>

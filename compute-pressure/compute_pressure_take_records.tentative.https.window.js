@@ -14,11 +14,11 @@ test(t => {
 
 promise_test(async t => {
   let observer;
-  const changes = await new Promise(resolve => {
+  const changes = await new Promise((resolve, reject) => {
     observer = new PressureObserver(resolve, {sampleRate: 1.0});
     t.add_cleanup(() => observer.disconnect());
 
-    observer.observe('cpu');
+    observer.observe('cpu').catch(reject);
   });
   assert_in_array(
       changes[0].state, ['nominal', 'fair', 'serious', 'critical'],

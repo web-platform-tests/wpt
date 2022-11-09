@@ -4,7 +4,7 @@
 'use strict';
 
 pressure_test(async (t, mockPressureService) => {
-  const pressureChanges = await new Promise(async resolve => {
+  const pressureChanges = await new Promise(async (resolve, reject) => {
     const observer_changes = [];
     let n = 0;
     const observer = new PressureObserver(changes => {
@@ -12,7 +12,7 @@ pressure_test(async (t, mockPressureService) => {
       if (++n === 2)
         resolve(observer_changes);
     }, {sampleRate: 1.0});
-    observer.observe('cpu');
+    observer.observe('cpu').catch(reject);
     const updatesDelivered = mockPressureService.updatesDelivered();
     mockPressureService.setPressureUpdate('critical');
     mockPressureService.startPlatformCollector(/*sampleRate*/ 1.0);
@@ -31,7 +31,7 @@ pressure_test(async (t, mockPressureService) => {
 }, 'Changes that fail the "has change in data" test are discarded.');
 
 pressure_test(async (t, mockPressureService) => {
-  const pressureChanges = await new Promise(async resolve => {
+  const pressureChanges = await new Promise(async (resolve, reject) => {
     const observer_changes = [];
     let n = 0;
     const observer = new PressureObserver(changes => {
@@ -39,7 +39,7 @@ pressure_test(async (t, mockPressureService) => {
       if (++n === 2)
         resolve(observer_changes);
     }, {sampleRate: 1.0});
-    observer.observe('cpu');
+    observer.observe('cpu').catch(reject);
     const updatesDelivered = mockPressureService.updatesDelivered();
     mockPressureService.setPressureUpdate('critical', ['thermal']);
     mockPressureService.startPlatformCollector(/*sampleRate*/ 1.0);

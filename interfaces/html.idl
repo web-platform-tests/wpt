@@ -192,7 +192,7 @@ interface HTMLLinkElement : HTMLElement {
   [CEReactions] attribute USVString href;
   [CEReactions] attribute DOMString? crossOrigin;
   [CEReactions] attribute DOMString rel;
-  [CEReactions] attribute DOMString as; // (default "")
+  [CEReactions] attribute DOMString as;
   [SameObject, PutForwards=value] readonly attribute DOMTokenList relList;
   [CEReactions] attribute DOMString media;
   [CEReactions] attribute DOMString integrity;
@@ -1364,14 +1364,7 @@ interface mixin CanvasShadowStyles {
 
 interface mixin CanvasFilters {
   // filters
-  attribute (DOMString or CanvasFilter) filter; // (default "none")
-};
-
-typedef record<DOMString, any> CanvasFilterInput;
-
-[Exposed=(Window,Worker,PaintWorklet)]
-interface CanvasFilter {
-  constructor(optional (CanvasFilterInput or sequence<CanvasFilterInput>) filters);
+  attribute DOMString filter; // (default "none")
 };
 
 interface mixin CanvasRect {
@@ -1641,8 +1634,19 @@ dictionary ValidityStateFlags {
   boolean customError = false;
 };
 
+[Exposed=Window]
+interface UserActivation {
+  readonly attribute boolean hasBeenActive;
+  readonly attribute boolean isActive;
+};
+
+partial interface Navigator {
+  [SameObject] readonly attribute UserActivation userActivation;
+};
+
 dictionary FocusOptions {
   boolean preventScroll = false;
+  boolean focusVisible;
 };
 
 interface mixin ElementContentEditable {
@@ -1769,20 +1773,6 @@ interface BarProp {
   readonly attribute boolean visible;
 };
 
-enum ScrollRestoration { "auto", "manual" };
-
-[Exposed=Window]
-interface History {
-  readonly attribute unsigned long length;
-  attribute ScrollRestoration scrollRestoration;
-  readonly attribute any state;
-  undefined go(optional long delta = 0);
-  undefined back();
-  undefined forward();
-  undefined pushState(any data, DOMString unused, optional USVString? url = null);
-  undefined replaceState(any data, DOMString unused, optional USVString? url = null);
-};
-
 [Exposed=Window]
 interface Location { // but see also additional creation steps and overridden internal methods
   [LegacyUnforgeable] stringifier attribute USVString href;
@@ -1800,6 +1790,20 @@ interface Location { // but see also additional creation steps and overridden in
   [LegacyUnforgeable] undefined reload();
 
   [LegacyUnforgeable, SameObject] readonly attribute DOMStringList ancestorOrigins;
+};
+
+enum ScrollRestoration { "auto", "manual" };
+
+[Exposed=Window]
+interface History {
+  readonly attribute unsigned long length;
+  attribute ScrollRestoration scrollRestoration;
+  readonly attribute any state;
+  undefined go(optional long delta = 0);
+  undefined back();
+  undefined forward();
+  undefined pushState(any data, DOMString unused, optional USVString? url = null);
+  undefined replaceState(any data, DOMString unused, optional USVString? url = null);
 };
 
 [Exposed=Window]
@@ -1858,7 +1862,7 @@ dictionary ErrorEventInit : EventInit {
   USVString filename = "";
   unsigned long lineno = 0;
   unsigned long colno = 0;
-  any error = null;
+  any error;
 };
 
 [Exposed=*]
@@ -1889,6 +1893,7 @@ typedef OnBeforeUnloadEventHandlerNonNull? OnBeforeUnloadEventHandler;
 interface mixin GlobalEventHandlers {
   attribute EventHandler onabort;
   attribute EventHandler onauxclick;
+  attribute EventHandler onbeforeinput;
   attribute EventHandler onbeforematch;
   attribute EventHandler onblur;
   attribute EventHandler oncancel;
@@ -1939,6 +1944,7 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onreset;
   attribute EventHandler onresize;
   attribute EventHandler onscroll;
+  attribute EventHandler onscrollend;
   attribute EventHandler onsecuritypolicyviolation;
   attribute EventHandler onseeked;
   attribute EventHandler onseeking;

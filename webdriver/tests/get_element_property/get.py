@@ -1,6 +1,8 @@
 import pytest
 
-from tests.support.asserts import assert_error, assert_success
+from webdriver import Element, Frame, ShadowRoot, Window
+
+from tests.support.asserts import assert_error, assert_same_element, assert_success
 
 
 def get_element_property(session, element_id, prop):
@@ -28,8 +30,34 @@ def test_no_browsing_context(session, closed_frame):
     assert_error(response, "no such window")
 
 
-def test_element_not_found(session):
-    response = get_element_property(session, "foo", "id")
+def test_no_such_element_with_invalid_value(session):
+    element = Element("foo", session)
+
+    response = get_element_property(session, element.id, "id")
+    assert_error(response, "no such element")
+
+
+def test_no_such_element_from_other_window_handle(session, inline):
+    session.url = inline("<div id='parent'><p/>")
+    element = session.find.css("#parent", all=False)
+
+    new_handle = session.new_window()
+    session.window_handle = new_handle
+
+    response = get_element_property(session, element.id, "id")
+    assert_error(response, "no such element")
+
+
+def test_no_such_element_from_other_frame(session, iframe, inline):
+    session.url = inline(iframe("<div id='parent'><p/>"))
+
+    frame = session.find.css("iframe", all=False)
+    session.switch_frame(frame)
+
+    element = session.find.css("#parent", all=False)
+    session.switch_frame("parent")
+
+    response = get_element_property(session, element.id, "id")
     assert_error(response, "no such element")
 
 
@@ -105,6 +133,46 @@ def test_primitives_set_by_execute_script(session, inline, js_primitive, py_prim
 
     response = get_element_property(session, element.id, "foobar")
     assert_success(response, py_primitive)
+
+
+@pytest.mark.parametrize("js_web_reference,py_web_reference", [
+    ("element", Element),
+    ("frame", Frame),
+    ("shadowRoot", ShadowRoot),
+    ("window", Window),
+])
+def test_web_reference(session, inline, js_web_reference, py_web_reference):
+    session.url = inline("""
+        <div id="parent"></div>
+        <p id="element"></p>
+        <iframe id="frame"></iframe>
+        <shadow-element id="custom"></shadow-element>
+
+        <script>
+            customElements.define("shadow-element",
+                class extends HTMLElement {
+                    constructor() {
+                        super();
+                        this.attachShadow({ mode: "open" }).innerHTML = "<p>foo";
+                    }
+                }
+            );
+
+            const parent = document.getElementById("parent");
+            parent.__element = document.getElementById("element");
+            parent.__frame = document.getElementById("frame").contentWindow;
+            parent.__shadowRoot = document.getElementById("custom").shadowRoot;
+            parent.__window = document.defaultView;
+        </script>
+        """)
+
+    elem = session.find.css("#parent", all=False)
+    response = get_element_property(session, elem.id, "__{}".format(js_web_reference))
+    value = assert_success(response)
+
+    assert isinstance(value, dict)
+    assert py_web_reference.identifier in value
+    assert isinstance(value[py_web_reference.identifier], str)
 
 
 def test_mutated_element(session, inline):

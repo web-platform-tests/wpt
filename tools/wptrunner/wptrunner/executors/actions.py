@@ -26,6 +26,31 @@ class DeleteAllCookiesAction:
         self.protocol.cookies.delete_all_cookies()
 
 
+class GetAllCookiesAction:
+    name = "get_all_cookies"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("Getting all cookies")
+        return self.protocol.cookies.get_all_cookies()
+
+
+class GetNamedCookieAction:
+    name = "get_named_cookie"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        name = payload["name"]
+        self.logger.debug("Getting cookie named %s" % name)
+        return self.protocol.cookies.get_named_cookie(name)
+
+
 class SendKeysAction:
     name = "send_keys"
 
@@ -70,9 +95,13 @@ class ActionSequenceAction:
     def __init__(self, logger, protocol):
         self.logger = logger
         self.protocol = protocol
+        self.requires_state_reset = False
 
     def __call__(self, payload):
         # TODO: some sort of shallow error checking
+        if self.requires_state_reset:
+            self.reset()
+        self.requires_state_reset = True
         actions = payload["actions"]
         for actionSequence in actions:
             if actionSequence["type"] == "pointer":
@@ -84,6 +113,10 @@ class ActionSequenceAction:
 
     def get_element(self, element_selector):
         return self.protocol.select.element_by_selector(element_selector)
+
+    def reset(self):
+        self.protocol.action_sequence.release()
+        self.requires_state_reset = False
 
 
 class GenerateTestReportAction:
@@ -219,6 +252,8 @@ class SetSPCTransactionModeAction:
 
 actions = [ClickAction,
            DeleteAllCookiesAction,
+           GetAllCookiesAction,
+           GetNamedCookieAction,
            SendKeysAction,
            MinimizeWindowAction,
            SetWindowRectAction,

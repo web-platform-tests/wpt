@@ -569,11 +569,11 @@ class RoutesBuilder:
             ("GET", "*.any.worker.js", ClassicWorkerHandler),
             ("GET", "*.any.worker-module.js", ModuleWorkerHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
-            ("GET", "/.well-known/origin-policy", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/report-event-attribution", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/debug/report-event-attribution", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/report-aggregate-attribution", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/debug/report-aggregate-attribution", handlers.PythonScriptHandler),
+            ("*", "/.well-known/web-identity", handlers.PythonScriptHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
             ("GET", "*", handlers.FileHandler)
         ]
@@ -669,8 +669,11 @@ class ServerProc:
                 logger.critical(traceback.format_exc())
                 raise
 
-    def stop(self, timeout=None):
-        self.stop_flag.set()
+    def request_shutdown(self):
+        if self.is_alive():
+            self.stop_flag.set()
+
+    def wait(self, timeout=None):
         self.proc.join(timeout)
 
     def is_alive(self):
@@ -714,7 +717,8 @@ def check_subdomains(logger, config, routes, mp_context, log_handlers):
             logger.critical(f"Failed probing domain {domain}. {EDIT_HOSTS_HELP}")
             sys.exit(1)
 
-    wrapper.stop()
+    wrapper.request_shutdown()
+    wrapper.wait()
 
 
 def make_hosts_file(config, host):
@@ -959,10 +963,6 @@ def _make_subdomains_product(s: Set[str], depth: int = 2) -> Set[str]:
     return {".".join(x) for x in chain(*(product(s, repeat=i) for i in range(1, depth+1)))}
 
 
-def _make_origin_policy_subdomains(limit: int) -> Set[str]:
-    return {"op%d" % x for x in range(1,limit+1)}
-
-
 _subdomains = {"www",
                "www1",
                "www2",
@@ -972,12 +972,6 @@ _subdomains = {"www",
 _not_subdomains = {"nonexistent"}
 
 _subdomains = _make_subdomains_product(_subdomains)
-
-# Origin policy subdomains need to not be reused by any other tests, since origin policies have
-# origin-wide impacts like installing a CSP or Feature Policy that could interfere with features
-# under test.
-# See https://github.com/web-platform-tests/rfcs/pull/44.
-_subdomains |= _make_origin_policy_subdomains(99)
 
 _not_subdomains = _make_subdomains_product(_not_subdomains)
 
@@ -1222,14 +1216,15 @@ def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, log_handl
 
             failed_subproc = 0
             for server in iter_servers(servers):
-                subproc = server.proc
-                if subproc.is_alive():
-                    logger.info('Status of subprocess "%s": running', subproc.name)
-                    server.stop(timeout=1)
+                logger.info('Status of subprocess "%s": running', server.proc.name)
+                server.request_shutdown()
 
+            for server in iter_servers(servers):
+                server.wait(timeout=1)
                 if server.proc.exitcode == 0:
-                    logger.info('Status of subprocess "%s": exited correctly', subproc.name)
+                    logger.info('Status of subprocess "%s": exited correctly', server.proc.name)
                 else:
+                    subproc = server.proc
                     logger.warning('Status of subprocess "%s": failed. Exit with non-zero status: %d',
                                    subproc.name, subproc.exitcode)
                     failed_subproc += 1

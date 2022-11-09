@@ -29,29 +29,22 @@ dictionary MLContextOptions {
 interface ML {
   MLContext createContext(optional MLContextOptions options = {});
   MLContext createContext(GPUDevice gpuDevice);
-  MLContext createContext(WebGLRenderingContext glContext);
 };
 
-dictionary MLArrayInput {
-  required ArrayBufferView resource;
-  required sequence<long> dimensions;
-};
-
-typedef record<DOMString, (ArrayBufferView or MLArrayInput)> MLNamedArrayInputs;
-typedef record<DOMString, ArrayBufferView> MLNamedArrayOutputs;
+typedef record<DOMString, ArrayBufferView> MLNamedArrayBufferViews;
 
 [SecureContext, Exposed=(Window, DedicatedWorker)]
 interface MLContext {};
 
 partial interface MLContext {
   [Exposed=(DedicatedWorker)]
-  undefined compute(MLGraph graph, MLNamedArrayInputs inputs, MLNamedArrayOutputs outputs);
+  undefined compute(
+      MLGraph graph, MLNamedArrayBufferViews inputs, MLNamedArrayBufferViews outputs);
 };
 
 partial interface MLContext {
-  Promise<undefined> computeAsync(MLGraph graph, MLNamedArrayInputs inputs,
-
-                    MLNamedArrayOutputs outputs);
+  Promise<undefined> computeAsync(
+      MLGraph graph, MLNamedArrayBufferViews inputs, MLNamedArrayBufferViews outputs);
 };
 
 partial interface MLContext {
@@ -77,8 +70,7 @@ dictionary MLOperandDescriptor {
   required MLOperandType type;
 
   // The dimensions field is only required for tensor operands.
-  // The negative value means an unknown dimension.
-  sequence<long> dimensions;
+  sequence<unsigned long> dimensions;
 };
 
 [SecureContext, Exposed=(Window, DedicatedWorker)]
@@ -90,7 +82,7 @@ interface MLOperator {};
 typedef record<DOMString, MLOperand> MLNamedOperands;
 
 dictionary MLBufferResourceView {
-  required (WebGLBuffer or GPUBuffer) resource;
+  required GPUBuffer resource;
   unsigned long long offset = 0;
   unsigned long long size;
 };
@@ -111,9 +103,12 @@ interface MLGraphBuilder {
   // Create a single-value operand from the specified number of the specified type.
   MLOperand constant(double value, optional MLOperandType type = "float32");
 
-  // Compile the graph up to the specified output operands
+  // Compile the graph up to the specified output operands synchronously.
   [Exposed=(DedicatedWorker)]
   MLGraph build(MLNamedOperands outputs);
+
+  // Compile the graph up to the specified output operands asynchronously.
+  Promise<MLGraph> buildAsync(MLNamedOperands outputs);
 };
 
 dictionary MLBatchNormalizationOptions {
@@ -482,13 +477,7 @@ interface MLGraph {};
 
 typedef (GPUBuffer or GPUTexture) MLGPUResource;
 
-dictionary MLGPUInput {
-  required MLGPUResource resource;
-  required sequence<long> dimensions;
-};
-
-typedef record<DOMString, (MLGPUResource or MLGPUInput)> MLNamedGPUInputs;
-typedef record<DOMString, MLGPUResource> MLNamedGPUOutputs;
+typedef record<DOMString, MLGPUResource> MLNamedGPUResources;
 
 [SecureContext, Exposed=(Window, DedicatedWorker)]
 interface MLCommandEncoder {};
@@ -498,7 +487,7 @@ partial interface MLCommandEncoder {
 };
 
 partial interface MLCommandEncoder {
-  undefined dispatch(MLGraph graph, MLNamedGPUInputs inputs, MLNamedGPUOutputs outputs);
+  undefined dispatch(MLGraph graph, MLNamedGPUResources inputs, MLNamedGPUResources outputs);
 };
 
 partial interface MLCommandEncoder {

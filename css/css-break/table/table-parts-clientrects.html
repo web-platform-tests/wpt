@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="author" title="Andreu Botella" href="mailto:abotella@igalia.org">
+<link rel="help" href="https://www.w3.org/TR/css-break-3/#box-splitting">
+<link rel="help" href="https://www.w3.org/TR/cssom-view/#dom-element-getclientrects">
+<div style="column-width: 200px; column-gap: 0; column-fill:auto; height:70px; width: 400px; background:yellow;">
+  <div id="table" style="display:table; border-spacing:7px; border:2px solid; padding:1px;">
+    <div id="colgroup" style="display:table-column-group;">
+      <div id="col" style="display:table-column;"></div>
+    </div>
+    <div id="rowgroup" style="display:table-row-group;">
+      <div id="row" style="display:table-row;">
+        <div id="cell" style="display:table-cell;">
+          <div id="content" style="width:100px; height:100px; background:blue;"></div>
+        </div>
+      </div>
+    </div>
+    <div id="caption" style="display:table-caption; caption-side:bottom; height:10px; background:green;"></div>
+  </div>
+</div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  test(() => {
+    const rects = table.getClientRects();
+    assert_equals(rects.length, 2, "table rects size");
+    assert_equals(rects[0].x, 8, "table rect 0 x");
+    assert_equals(rects[0].y, 8, "table rect 0 y");
+    assert_equals(rects[0].width, 120, "table rect 0 width");
+    assert_equals(rects[0].height, 70, "table rect 0 height");
+    assert_equals(rects[1].x, 208, "table rect 1 x");
+    assert_equals(rects[1].y, 8, "table rect 1 y");
+    assert_equals(rects[1].width, 120, "table rect 1 width");
+    assert_equals(rects[1].height, 60, "table rect 1 height");
+  }, "table");
+  test(() => {
+    const rects = colgroup.getClientRects();
+    assert_equals(rects.length, 2, "colgroup rects size");
+    assert_equals(rects[0].x, 18, "colgroup rect 0 x");
+    assert_equals(rects[0].y, 18, "colgroup rect 0 y");
+    assert_equals(rects[0].width, 100, "colgroup rect 0 width");
+    assert_equals(rects[0].height, 60, "colgroup rect 0 height");
+    assert_equals(rects[1].x, 218, "colgroup rect 1 x");
+    assert_equals(rects[1].y, 8, "colgroup rect 1 y");
+    assert_equals(rects[1].width, 100, "colgroup rect 1 width");
+    assert_equals(rects[1].height, 40, "colgroup rect 1 height");
+  }, "colgroup");
+  test(() => {
+    const rects = col.getClientRects();
+    assert_equals(rects.length, 2, "col rects size");
+    assert_equals(rects[0].x, 18, "col rect 0 x");
+    assert_equals(rects[0].y, 18, "col rect 0 y");
+    assert_equals(rects[0].width, 100, "col rect 0 width");
+    assert_equals(rects[0].height, 60, "col rect 0 height");
+    assert_equals(rects[1].x, 218, "col rect 1 x");
+    assert_equals(rects[1].y, 8, "col rect 1 y");
+    assert_equals(rects[1].width, 100, "col rect 1 width");
+    assert_equals(rects[1].height, 40, "col rect 1 height");
+  }, "col");
+  test(() => {
+    const rects = rowgroup.getClientRects();
+    assert_equals(rects.length, 2, "rowgroup rects size");
+    assert_equals(rects[0].x, 18, "rowgroup rect 0 x");
+    assert_equals(rects[0].y, 18, "rowgroup rect 0 y");
+    assert_equals(rects[0].width, 100, "rowgroup rect 0 width");
+    assert_equals(rects[0].height, 60, "rowgroup rect 0 height");
+    assert_equals(rects[1].x, 218, "rowgroup rect 1 x");
+    assert_equals(rects[1].y, 8, "rowgroup rect 1 y");
+    assert_equals(rects[1].width, 100, "rowgroup rect 1 width");
+    assert_equals(rects[1].height, 40, "rowgroup rect 1 height");
+  }, "rowgroup");
+  test(() => {
+    const rects = row.getClientRects();
+    assert_equals(rects.length, 2, "row rects size");
+    assert_equals(rects[0].x, 18, "row rect 0 x");
+    assert_equals(rects[0].y, 18, "row rect 0 y");
+    assert_equals(rects[0].width, 100, "row rect 0 width");
+    assert_equals(rects[0].height, 60, "row rect 0 height");
+    assert_equals(rects[1].x, 218, "row rect 1 x");
+    assert_equals(rects[1].y, 8, "row rect 1 y");
+    assert_equals(rects[1].width, 100, "row rect 1 width");
+    assert_equals(rects[1].height, 40, "row rect 1 height");
+  }, "row");
+  test(() => {
+    const rects = cell.getClientRects();
+    assert_equals(rects.length, 2, "cell rects size");
+    assert_equals(rects[0].x, 18, "cell rect 0 x");
+    assert_equals(rects[0].y, 18, "cell rect 0 y");
+    assert_equals(rects[0].width, 100, "cell rect 0 width");
+    assert_equals(rects[0].height, 60, "cell rect 0 height");
+    assert_equals(rects[1].x, 218, "cell rect 1 x");
+    assert_equals(rects[1].y, 8, "cell rect 1 y");
+    assert_equals(rects[1].width, 100, "cell rect 1 width");
+    assert_equals(rects[1].height, 40, "cell rect 1 height");
+  }, "cell");
+  test(() => {
+    const rects = content.getClientRects();
+    assert_equals(rects.length, 2, "content rects size");
+    assert_equals(rects[0].x, 18, "content rect 0 x");
+    assert_equals(rects[0].y, 18, "content rect 0 y");
+    assert_equals(rects[0].width, 100, "content rect 0 width");
+    assert_equals(rects[0].height, 60, "content rect 0 height");
+    assert_equals(rects[1].x, 218, "content rect 1 x");
+    assert_equals(rects[1].y, 8, "content rect 1 y");
+    assert_equals(rects[1].width, 100, "content rect 1 width");
+    assert_equals(rects[1].height, 40, "content rect 1 height");
+  }, "content");
+  test(() => {
+    const rects = caption.getClientRects();
+    assert_equals(rects.length, 1, "caption rects size");
+    assert_equals(rects[0].x, 208, "caption rect x");
+    assert_equals(rects[0].y, 58, "caption rect y");
+    assert_equals(rects[0].width, 120, "caption rect width");
+    assert_equals(rects[0].height, 10, "caption rect height");
+  }, "caption");
+</script>

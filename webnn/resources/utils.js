@@ -1,6 +1,6 @@
 'use strict';
 
-const ExecutionArray = ['async', 'sync'];
+const ExecutionArray = ['sync', 'async'];
 
 // https://webmachinelearning.github.io/webnn/#enumdef-mldevicetype
 const DeviceTypeArray = ['cpu', 'gpu'];
@@ -94,37 +94,51 @@ function loadTestData(file) {
 }
 
 /**
- * Create context and builder.
- * @param {Boolean} syncFlag
+ * Synchronously create context and builder.
  * @param {MLContextOptions} contextOptions
+ * @returns {[MLContext, MLGraphBuilder]}
  */
-async function createContextAndBuilder(syncFlag, contextOptions) {
-  if (syncFlag) {
-    context = navigator.ml.createContextSync(contextOptions);
-  } else {
-    context = await navigator.ml.createContext(contextOptions);
-  }
+function createContextAndBuilderSync(contextOptions) {
+  context = navigator.ml.createContextSync(contextOptions);
   builder = new MLGraphBuilder(context);
   return [context, builder];
 }
 
 /**
- * Compile the graph up to the specified output operands,
+ * Asynchronously create context and builder.
+ * @param {MLContextOptions} contextOptions
+* @returns {Promise([MLContext, MLGraphBuilder])}
+ */
+async function createContextAndBuilder(contextOptions) {
+  context = await navigator.ml.createContext(contextOptions);
+  builder = new MLGraphBuilder(context);
+  return [context, builder];
+}
+
+/**
+ * Synchronously compile the graph up to the specified output operands,
  * then carry out the computational workload of a compiled graph.
- * @param {Boolean} syncFlag
  * @param {MLContext} context
  * @param {MLGraphBuilder} builder
  * @param {MLNamedOperands} operands - output operands
  * @param {MLNamedArrayBufferViews} inputs - the resources of inputs.
  * @param {MLNamedArrayBufferViews} outputs - the pre-allocated resources of required outputs.
  */
-async function buildAndCompute(syncFlag, context, builder, operands, inputs, outputs) {
-  let graph;
-  if (syncFlag) {
-    graph = builder.buildSync(operands);
-    context.computeSync(graph, inputs, outputs);
-  } else {
-    graph = await builder.build(operands);
-    await context.compute(graph, inputs, outputs);
-  }
+function buildAndComputeSync(context, builder, operands, inputs, outputs) {
+  const graph = builder.buildSync(operands);
+  context.computeSync(graph, inputs, outputs);
+}
+
+/**
+ * Asynchronously compile the graph up to the specified output operands,
+ * then avsynchronously carry out the computational workload of a compiled graph.
+ * @param {MLContext} context
+ * @param {MLGraphBuilder} builder
+ * @param {MLNamedOperands} operands - output operands
+ * @param {MLNamedArrayBufferViews} inputs - the resources of inputs.
+ * @param {MLNamedArrayBufferViews} outputs - the pre-allocated resources of required outputs.
+ */
+async function buildAndCompute(context, builder, operands, inputs, outputs) {
+  const graph = await builder.build(operands);
+  await context.compute(graph, inputs, outputs);
 }

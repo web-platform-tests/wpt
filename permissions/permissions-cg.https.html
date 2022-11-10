@@ -38,7 +38,7 @@ promise_test(async () => {
     await garbageCollect();
 
     // Will cause change event to be dispatched.
-    test_driver.set_permission({ name: "geolocation" }, "granted");
+    await test_driver.set_permission({ name: "geolocation" }, "granted");
   });
 
   // Wait for the change event to be dispatched.

@@ -2401,7 +2401,7 @@
 
     @assert pixel 46,18 == 0,0,0,0;
     @assert pixel 32,13 == 0,0,0,255;
-    
+
 - name: 2d.path.fill.overlap
   code: |
     ctx.fillStyle = '#000';

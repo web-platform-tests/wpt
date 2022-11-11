@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <title>Event propagation on disabled form elements</title>
-<meta charset=utf8>
-<meta name=timeout content=long>
+<meta charset="utf8">
+<meta name="timeout" content="long">
+<link rel="author" href="mailto:jarhar@chromium.org">
+<link rel="help" href="https://github.com/whatwg/html/issues/2368">
+<link rel="help" href="https://github.com/whatwg/html/issues/5886">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -9,7 +12,7 @@
 <script src="/resources/testdriver-actions.js"></script>
 
 <div id=cases>
-  <input> <!-- Santity check with non-disabled control -->
+  <input> <!-- Sanity check with non-disabled control -->
   <select disabled></select>
   <select disabled>
     <!-- <option> can't be clicked as it doesn't have its own painting area -->
@@ -70,7 +73,8 @@
       observedEvents.push({
         type: event.type,
         target: event.target,
-        composedPath: event.composedPath().map(n => n.constructor.name)
+        isTrusted: event.isTrusted,
+        composedPath: event.composedPath().map(n => n.constructor.name),
       });
     });
     for (const event of allEvents) {
@@ -84,11 +88,26 @@
 
   /**
    * @param {Element} target
-   * @param {Element} control
+   * @param {*} observedEvent
    */
-  function getExpectedComposedPath(target) {
+  function shouldNotBubble(target, observedEvent) {
+    return (
+      target.disabled &&
+      observedEvent.isTrusted &&
+      ["mousedown", "mouseup", "click"].includes(observedEvent.type)
+    );
+  }
+
+  /**
+   * @param {Event} event
+   */
+  function getExpectedComposedPath(event) {
+    let target = event.target;
     const result = [];
     while (target) {
+      if (shouldNotBubble(target, event)) {
+        return result;
+      }
       result.push(target.constructor.name);
       target = target.parentNode;
     }
@@ -116,7 +135,11 @@
 
       for (const observed of observedEvents) {
         assert_equals(observed.target, target, `${observed.type}.target`)
-        assert_array_equals(observed.composedPath, getExpectedComposedPath(target), `${observed.type}.composedPath`);
+        assert_array_equals(
+          observed.composedPath,
+          getExpectedComposedPath(observed),
+          `${observed.type}.composedPath`
+        );
       }
 
     }, `${title} on ${element.outerHTML}, observed from <${observingElement.localName}>`);
@@ -184,7 +207,7 @@
     promise_event_test({
       element,
       observingElement: document.body,
-      expectedEvents: allEvents,
+      expectedEvents: allowedEvents,
       nonDisabledExpectedEvents: allEvents,
       clickerFn: trusted_click,
       title: "Trusted click"

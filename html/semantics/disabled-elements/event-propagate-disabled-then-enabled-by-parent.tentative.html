@@ -8,41 +8,19 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 
+<!-- Things that have activation behaviors -->
 <form id=cases>
-  <select></select>
-  <select>
-    <!-- <option> can't be clicked as it doesn't have its own painting area -->
-    <option>foo</option>
-  </select>
-  <fieldset>Text</fieldset>
-  <fieldset><span class="target">Span</span></fieldset>
   <button>Text</button>
   <button><span class="target">Span</span></button>
-  <textarea></textarea>
   <input type="button">
   <input type="checkbox">
-  <input type="color" value="#000000">
-  <input type="date">
-  <input type="datetime-local">
-  <input type="email">
-  <input type="file">
+  <!-- <input type="color" value="#000000"> Can't detect whether the picker opened -->
+  <!-- <input type="file"> Can't detect whether the picker opened -->
   <input type="image">
-  <input type="month">
-  <input type="number">
-  <input type="password">
   <input type="radio">
-  <!-- Native click will click the bar -->
-  <input type="range" value="0" data-value="0">
-  <!-- Native click will click the slider -->
-  <input type="range" value="50" data-value="50">
+  <input type="range" value="0">
   <input type="reset">
-  <input type="search">
   <input type="submit">
-  <input type="tel">
-  <input type="text">
-  <input type="time">
-  <input type="url">
-  <input type="week">
 </form>
 
 <script>
@@ -51,16 +29,6 @@
    */
   function getEventFiringTarget(element) {
     return element.querySelector(".target") || element;
-  }
-
-  function trusted_click(target) {
-    // To workaround type=file clicking issue
-    // https://github.com/w3c/webdriver/issues/1666
-    return new test_driver.Actions()
-      .pointerMove(0, 0, { origin: target })
-      .pointerDown()
-      .pointerUp()
-      .send();
   }
 
   /**
@@ -76,7 +44,7 @@
         element.checked = false;
         break;
       case "range":
-        element.value = element.dataset.value;
+        element.value = 0;
         break;
     }
   }
@@ -94,35 +62,42 @@
         // By legacy-pre-activation behavior
         // https://html.spec.whatwg.org/multipage/input.html#the-input-element:legacy-canceled-activation-behavior
         assert_equals(element.checked, !initialDisabled, `.checked should be ${!initialDisabled}`);
-        break;
-      case "range":
-        if (initialDisabled) {
-          assert_equals(element.value, element.dataset.value, ".value should not change");
-        } else {
-          assert_true(element.valueAsNumber > 0, ".value should be nonzero");
+        if (!initialDisabled) {
+          assert_array_equals(observedEvents, ["input", "change"], "Input and change events should be observed");
+          return;
         }
         break;
+      case "range":
+        if (!initialDisabled) {
+          assert_true(element.valueAsNumber > 0, ".value should be nonzero");
+          assert_array_equals(observedEvents, ["input", "change"], "Input and change events should be observed");
+          return;
+        }
+        assert_equals(element.valueAsNumber, 0, ".value should not change");
+        break;
     }
 
-    const focusable = element.tabIndex !== -1 && !initialDisabled;
+    // const focusable = element.tabIndex !== -1 && !initialDisabled;
 
-    if (focusable) {
-      assert_array_equals(observedEvents, ["focus"], "A focus event should be observed");
-    } else {
-      assert_array_equals(observedEvents, [], "No events should be observed");
-    }
-    assert_equals(document.activeElement, document.body, "The focus should be at the body");
+    // if (!focusable) {
+    assert_array_equals(observedEvents, [], "No events should be observed");
+    // } else if (element.localName === "button") {
+    //   assert_array_equals(observedEvents, ["focus", "submit"], "Focus and submit events should be observed");
+    // } else {
+    //   assert_array_equals(observedEvents, ["focus"], "A focus event should be observed");
+    // }
+    // assert_equals(document.activeElement, document.body, "The focus should be at the body");
   }
 
-  /**
-   * @param {Event} ev
-   */
-  function preventDefaultIfNecessary(element, ev) {
-    if (element.type === "file") {
-      // Prevent opening a modal picker
-      ev.preventDefault();
-    }
-  }
+  // /**
+  //  * @param {Event} ev
+  //  */
+  // function preventDefaultIfNecessary(element, ev) {
+  //   if (element.type === "file") {
+  //     // Prevent opening a modal picker
+  //     ev.preventDefault();
+  //   }
+  // }
 
   /**
    * @param {*} t
@@ -140,7 +115,7 @@
 
     initialize(element, { initialDisabled });
 
-    for (const event of ["focus", "blur"]) {
+    for (const event of ["input", "change"]) {
       element.addEventListener(event, t.step_func(event => {
         observedEvents.push(event.type);
       }), { signal });
@@ -154,7 +129,7 @@
 
     cases.addEventListener("click", t.step_func(event => {
       element.disabled = !initialDisabled;
-      preventDefaultIfNecessary(element, event);
+      // preventDefaultIfNecessary(element, event);
     }, { signal }));
 
     const target = getEventFiringTarget(element);
@@ -166,7 +141,7 @@
     promise_test(async t => {
       const { target, observedEvents } = setupTest(t, element, { initialDisabled: false });
 
-      await trusted_click(target);
+      await test_driver.click(target);
       await new Promise(resolve => t.step_timeout(resolve, 0));
 
       assertStatus(element, observedEvents, { initialDisabled: false });
@@ -176,7 +151,7 @@
     promise_test(async t => {
       const { target, observedEvents } = setupTest(t, element, { initialDisabled: true });
 
-      await trusted_click(target);
+      await test_driver.click(target);
       await new Promise(resolve => t.step_timeout(resolve, 0));
 
       assertStatus(element, observedEvents, { initialDisabled: true });

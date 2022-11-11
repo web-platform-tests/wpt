@@ -324,6 +324,7 @@
               assert_true(CSS.supports(property, underlying), '\'underlying\' value should be supported');
             }
 
+
             comparisonFunction(
                 getComputedStyle(target).getPropertyValue(expectedProp),
                 expectedValue);
@@ -429,9 +430,9 @@
   function create_tests() {
     var interpolationMethods = [
       cssTransitionsInterpolation,
-      cssTransitionAllInterpolation,
-      cssAnimationsInterpolation,
-      webAnimationsInterpolation,
+      // cssTransitionAllInterpolation,
+      // cssAnimationsInterpolation,
+      // webAnimationsInterpolation,
     ];
     var container = createElement(document.body);
     var targets = createTestTargets(interpolationMethods, interpolationTests, compositionTests, container);

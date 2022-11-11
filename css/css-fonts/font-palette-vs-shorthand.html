@@ -47,7 +47,6 @@ test(function() {
     let testElem = document.getElementById("a");
     let computed = window.getComputedStyle(testElem);
     assert_equals(computed.fontPalette, "dark");
-    assert_equals(computed.font, "");
     assert_equals(computed.fontFamily, "colr");
     assert_equals(computed.fontSize, "50px");
 });
@@ -68,7 +67,6 @@ test(function() {
     let testElem = document.getElementById("c");
     let computed = window.getComputedStyle(testElem);
     assert_equals(computed.fontPalette, "dark");
-    assert_equals(computed.font, "");
 });
 
 test(function() {

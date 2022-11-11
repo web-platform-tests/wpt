@@ -2393,6 +2393,15 @@
     @assert throws INDEX_SIZE_ERR ctx.ellipse(10, 10, -2, -5, 0, 0, 1, false);
     ctx.ellipse(80, 0, 10, 4294967277, Math.PI / -84, -Math.PI / 2147483436, false);
 
+- name: 2d.path.ellipse.angle
+  desc: StartAngle and EndAngle should be based on the eccentric circle
+  code: |
+    ctx.ellipse(50, 50, 50, 25, Math.PI*0.3, 0, Math.PI*1.2, false);
+    ctx.fill();
+
+    @assert pixel 46,18 == 0,0,0,0;
+    @assert pixel 32,13 == 0,0,0,255;
+    
 - name: 2d.path.fill.overlap
   code: |
     ctx.fillStyle = '#000';

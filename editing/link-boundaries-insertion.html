@@ -20,7 +20,7 @@
     selection.collapseToEnd();
 
     document.execCommand( 'insertText', false, 'a' );
-    assert_equals( target.innerHTML, 'Linka', 'The text was inserted into the link' );
+    assert_equals( target.innerHTML, 'Linka', 'The text should be inserted into the link' );
   }, 'Insert text into the selection at the end of a link' );
 
   test( () => {
@@ -34,6 +34,6 @@
     selection.collapseToStart();
 
     document.execCommand( 'insertText', false, 'a' );
-    assert_equals( target.innerHTML, 'aLink', 'The text was inserted into the link' );
+    assert_equals( target.innerHTML, 'aLink', 'The text should be inserted into the link' );
   }, 'Insert text into the selection at the beginning of a link' );
 </script>

@@ -29,7 +29,7 @@
       .pointerUp( { button: actions.ButtonType.LEFT } )
       .send();
     document.execCommand( 'insertText', false, 'a' );
-    assert_greater_than( target.innerHTML.length, 0, 'The text was inserted into the styled <strong> element' );
+    assert_greater_than( target.innerHTML.length, 0, 'The text should be inserted into the styled <strong> element' );
   }, 'Insert text into the inline element styled with border and padding' );
 
   promise_test( async () => {
@@ -41,6 +41,6 @@
       .pointerUp( { button: actions.ButtonType.LEFT } )
       .send();
     document.execCommand( 'insertText', false, 'a' );
-    assert_greater_than( target.innerHTML.length, 0, 'The text was inserted into the unstyled <strong> element' );
+    assert_greater_than( target.innerHTML.length, 0, 'The text should be inserted into the unstyled <strong> element' );
   }, 'Insert text into the unstyled inline element' );
 </script>

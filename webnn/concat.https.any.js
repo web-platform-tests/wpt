@@ -41,15 +41,15 @@ for (const test of tests) {
   const operandType = test.type;
   const inputShapeValues = [];
   const inputShapes = test.inputs.shape;
-  const inputDataCategory = test.inputs.data;
-  const expectedDataCategory = test.expected.data;
+  const inputDataSource = test.inputs.data;
+  const expectedDataSource = test.expected.data;
   let position = 0;
   for (const shape of inputShapes) {
     const size = sizeOfShape(shape);
-    inputShapeValues.push({shape, data: inputsData[inputDataCategory].slice(position, position + size)});
+    inputShapeValues.push({shape, data: inputsData[inputDataSource].slice(position, position + size)});
     position += size;
   }
-  const expectedShapeValue = {shape: test.expected.shape, data: expectedData[expectedDataCategory]};
+  const expectedShapeValue = {shape: test.expected.shape, data: expectedData[expectedDataSource]};
   targetTests.push({name: test.name, operandType, inputShapeValues, axis: test.axis, expectedShapeValue});
 }
 let context;

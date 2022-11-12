@@ -399,8 +399,8 @@ class TestRunnerManager(threading.Thread):
             raise
         finally:
             self.logger.debug("TestRunnerManager main loop terminating, starting cleanup")
-            force_stop = (not isinstance(self.state, RunnerManagerState.stop)
-                          or self.state.force_stop)
+            force_stop = (not isinstance(self.state, RunnerManagerState.stop) or
+                          self.state.force_stop)
             self.stop_runner(force=force_stop)
             self.teardown()
         self.logger.debug("TestRunnerManager main loop terminated")

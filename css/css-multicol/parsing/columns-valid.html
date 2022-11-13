@@ -24,6 +24,7 @@ test_valid_value("columns", "7em");
 
 // Unitless zero is allowed for column-width.
 test_valid_value("columns", "0 1", "0px 1");
+test_valid_value("columns", "1 0", "0px 1");
 test_valid_value("columns", "0px 1");
 
 // CSS-wide keywords.

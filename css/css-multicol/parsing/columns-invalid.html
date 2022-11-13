@@ -15,6 +15,10 @@ test_invalid_value("columns", "none");
 
 test_invalid_value("columns", "10px 20px");
 test_invalid_value("columns", "10 20");
+test_invalid_value("columns", "auto auto auto");
+test_invalid_value("columns", "10em auto auto");
+test_invalid_value("columns", "initial initial");
+test_invalid_value("columns", "inherit inherit");
 </script>
 </body>
 </html>

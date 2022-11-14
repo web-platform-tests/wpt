@@ -7,6 +7,7 @@ from queue import Empty
 from base64 import b64encode
 from os import linesep
 import json
+import sys
 
 
 class CrashError(BaseException):
@@ -42,6 +43,9 @@ class ContentShellTestPart(ProtocolPart):
     """
     name = "content_shell_test"
     eof_marker = "#EOF" + linesep  # Marker sent by content_shell after blocks.
+
+    if sys.platform.startswith('win'):
+        eof_marker = (b'#EOF\n').decode()
 
     def __init__(self, parent):
         super().__init__(parent)

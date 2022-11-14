@@ -239,7 +239,9 @@ class BrowserManager:
         self.started = False
 
     def cleanup(self):
-        self.browser.cleanup()
+        if self.browser:
+            self.browser.cleanup()
+            self.browser = None
         if self.init_timer is not None:
             self.init_timer.cancel()
 
@@ -804,8 +806,6 @@ class TestRunnerManager(threading.Thread):
 
     def teardown(self):
         self.logger.debug("TestRunnerManager teardown")
-        if self.browser is not None:
-            self.browser.cleanup()
         self.test_runner_proc = None
         self.command_queue.close()
         self.remote_queue.close()

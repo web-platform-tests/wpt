@@ -474,9 +474,8 @@ class BrowserInstance:
         return False
 
     def cleanup(self):
-        if self.runner:
-            self.runner.cleanup()
-            self.runner = None
+        self.runner.cleanup()
+        self.runner = None
 
 
 class FirefoxOutputHandler(OutputHandler):

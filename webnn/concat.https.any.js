@@ -1,6 +1,7 @@
 // META: title=test WebNN API concat operation
 // META: global=window,dedicatedworker
 // META: script=./resources/utils.js
+// META: script=./webnn-polyfill.js
 // META: timeout=long
 
 'use strict';
@@ -38,7 +39,6 @@ const inputsData = testsDict.inputsData;
 const expectedData = testsDict.expectedData;
 const targetTests = [];
 for (const test of tests) {
-  const operandType = test.type;
   const inputShapeValues = [];
   const inputShapes = test.inputs.shape;
   const inputDataSource = test.inputs.data;
@@ -50,7 +50,7 @@ for (const test of tests) {
     position += size;
   }
   const expectedShapeValue = {shape: test.expected.shape, data: expectedData[expectedDataSource]};
-  targetTests.push({name: test.name, operandType, inputShapeValues, axis: test.axis, expectedShapeValue});
+  targetTests.push({name: test.name, operandType: test.type, inputShapeValues, axis: test.axis, expectedShapeValue});
 }
 let context;
 let builder;
@@ -60,9 +60,8 @@ ExecutionArray.forEach(executionType => {
   if (self.GLOBAL.isWindow() && isSync) {
     return;
   }
-
-  DeviceTypeArray.forEach(deviceType => {
-    if (isSync) {
+  if (isSync) {
+    DeviceTypeArray.forEach(deviceType => {
       setup(() => {
         [context, builder] = createContextAndBuilderSync({deviceType});
       });
@@ -71,7 +70,9 @@ ExecutionArray.forEach(executionType => {
           testConcatSync(subTest.operandType, subTest.inputShapeValues, subTest.axis, subTest.expectedShapeValue);
         }, `${subTest.name} / ${subTest.operandType} / ${deviceType} / ${executionType}`);
       }
-    } else {
+    });
+  } else {
+    DeviceTypeArray.forEach(deviceType => {
       promise_setup(async () => {
         [context, builder] = await createContextAndBuilder({deviceType});
       });
@@ -80,6 +81,6 @@ ExecutionArray.forEach(executionType => {
           await testConcat(subTest.operandType, subTest.inputShapeValues, subTest.axis, subTest.expectedShapeValue);
         }, `${subTest.name} / ${subTest.operandType} / ${deviceType} / ${executionType}`);
       }
-    }
-  });
+    });
+  }
 });

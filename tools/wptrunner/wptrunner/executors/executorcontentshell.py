@@ -44,7 +44,7 @@ class ContentShellTestPart(ProtocolPart):
     name = "content_shell_test"
     eof_marker = "#EOF" + linesep  # Marker sent by content_shell after blocks.
 
-    if sys.platform.startswith('win'):
+    if sys.platform == "win32":
         eof_marker = (b'#EOF\n').decode()
 
     def __init__(self, parent):

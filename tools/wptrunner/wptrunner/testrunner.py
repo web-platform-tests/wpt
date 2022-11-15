@@ -239,9 +239,6 @@ class BrowserManager:
         self.started = False
 
     def cleanup(self):
-        if self.browser:
-            self.browser.cleanup()
-            self.browser = None
         if self.init_timer is not None:
             self.init_timer.cancel()
 
@@ -405,6 +402,9 @@ class TestRunnerManager(threading.Thread):
                           self.state.force_stop)
             self.stop_runner(force=force_stop)
             self.teardown()
+            if self.browser is not None:
+                assert self.browser.browser is not None
+                self.browser.browser.cleanup()
         self.logger.debug("TestRunnerManager main loop terminated")
 
     def wait_event(self):
@@ -496,7 +496,8 @@ class TestRunnerManager(threading.Thread):
 
         if self.state.test_type != self.test_type:
             if self.browser is not None:
-                self.browser.cleanup()
+                assert self.browser.browser is not None
+                self.browser.browser.cleanup()
             _, _, browser_cls, browser_kwargs = self.test_implementation_by_type[
                 self.state.test_type]
             browser = browser_cls(self.logger, remote_queue=self.command_queue,
@@ -508,6 +509,7 @@ class TestRunnerManager(threading.Thread):
                                           no_timeout=self.debug_info is not None)
             self.test_type = self.state.test_type
 
+        assert self.browser is not None
         self.browser.update_settings(self.state.test)
 
         result = self.browser.init(self.state.group_metadata)

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<title>Element#requestFullscreen() consumes user activation</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<div id="log"></div>
+<script>
+promise_test(async (t) => {
+    t.add_cleanup(() => { document.exitFullscreen() });
+
+    const div = document.querySelector("div");
+
+    const promises = [];
+
+    await test_driver.bless("fullscreen", () => {
+      // Request fullscreen twice in a row. The first request should consume the
+      // user activation and succeed, and the second request should fail because
+      // of the user activation requirement.
+      const p1 = div.requestFullscreen();
+      const p2 = div.requestFullscreen();
+      promises.push(p1);
+      promises.push(promise_rejects_js(t, TypeError, p2));
+    });
+
+    await Promise.all(promises);
+});
+</script>

@@ -24,11 +24,10 @@ body {
 
 <div></div>
 <p tabindex=1 id=target>Test passes if there is no red.
-<script src="/resources/testharness.js"></script>
 <script>
 window.onload = function() {
     document.getElementById("target").focus();
-    step_timeout(() => {
+    setTimeout(() => {
         document.documentElement.className = "";
     }, 0);
 }

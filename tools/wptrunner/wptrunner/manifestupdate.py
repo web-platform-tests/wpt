@@ -886,7 +886,7 @@ def make_expr(prop_set, rhs):
                 BinaryExpressionNode(
                     BinaryOperatorNode("=="),
                     VariableNode(prop),
-                    make_node(value)))
+                    make_value_node(value)))
         else:
             if value:
                 expressions.append(VariableNode(prop))
@@ -914,23 +914,13 @@ def make_expr(prop_set, rhs):
     return root
 
 
-def make_node(value):
-    if isinstance(value, (int, float,)):
-        node = NumberNode(value)
-    elif isinstance(value, str):
-        node = StringNode(str(value))
-    elif hasattr(value, "__iter__"):
-        node = ListNode()
-        for item in value:
-            node.append(make_node(item))
-    return node
-
-
 def make_value_node(value):
     if isinstance(value, (int, float,)):
         node = ValueNode(value)
     elif isinstance(value, str):
         node = ValueNode(str(value))
+    elif isinstance(value, bool):
+        node = AtomNode(value)
     elif hasattr(value, "__iter__"):
         node = ListNode()
         for item in value:

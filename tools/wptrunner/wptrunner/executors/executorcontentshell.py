@@ -45,7 +45,7 @@ class ContentShellTestPart(ProtocolPart):
     eof_marker = "#EOF" + linesep  # Marker sent by content_shell after blocks.
 
     if sys.platform == "win32":
-        eof_marker = (b'#EOF\n').decode()
+        eof_marker = '#EOF\n'
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -98,6 +98,10 @@ class ContentShellTestPart(ProtocolPart):
 
             if line.endswith(self.eof_marker):
                 result += line[:-len(self.eof_marker)]
+                break
+            elif line.endswith('#EOF\r\n'):
+                result += line
+                result += 'Got a CRLF-terminated #EOF - this is a driver bug.'
                 break
 
             result += line

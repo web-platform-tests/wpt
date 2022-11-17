@@ -7,10 +7,11 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <script>
 promise_test(async t => {
+  await test_driver.delete_all_cookies();
   document.cookie = "test0=0";
   const cookie = await test_driver.get_named_cookie("test0");
   assert_equals(cookie["name"], "test0");
   assert_equals(cookie["value"], "0");
-  assert_equals(cookie["sameSite"], "Lax");
+  assert_equals(cookie["sameSite"], undefined);
 }, "Get Named cookie  w/ default SameSite");
 </script>

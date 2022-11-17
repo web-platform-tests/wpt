@@ -95,8 +95,8 @@ class ContentShellTestPart(ProtocolPart):
                 result += line[:-len(self.eof_marker)]
                 break
             elif line.endswith('#EOF\r\n'):
-                result += line
-                result += 'Got a CRLF-terminated #EOF - this is a driver bug.'
+                result += line[:-len('#EOF\r\n')]
+                self.logger.warning('Got a CRLF-terminated #EOF - this is a driver bug.')
                 break
 
             result += line

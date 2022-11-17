@@ -881,7 +881,9 @@ def make_expr(prop_set, rhs):
 
     expressions = []
     for prop, value in prop_set:
-        if value not in (True, False):
+        # Express empty string properties as `not <property>`, which is a bit
+        # nicer than `<property> == ""`.
+        if value not in (True, False, ""):
             expressions.append(
                 BinaryExpressionNode(
                     BinaryOperatorNode("=="),

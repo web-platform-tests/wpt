@@ -201,10 +201,12 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
             logger.error(f"Unsupported test type {test_type} for product {product.name}")
             continue
 
-        for test in test_loader.disabled_tests[test_type]:
-            logger.test_start(test.id)
-            logger.test_end(test.id, status="SKIP")
-            test_status.skipped += 1
+        # Only report `SKIP`s for the repeat loop, not for retries.
+        if not test_status.retries_remaining:
+            for test in test_loader.disabled_tests[test_type]:
+                logger.test_start(test.id)
+                logger.test_end(test.id, status="SKIP")
+                test_status.skipped += 1
 
         if test_type == "testharness":
             tests_to_run = []

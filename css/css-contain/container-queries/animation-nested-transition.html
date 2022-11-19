@@ -32,13 +32,15 @@
 <script>
   setup(() => assert_implements_container_queries());
 
-  test(() => {
+  promise_test(async () => {
+    if (waitForPolyfill) await waitForPolyfill();
     assert_equals(getComputedStyle(target).backgroundColor, 'rgb(100, 100, 100)');
 
     assert_equals(container.getAnimations().length, 1);
     let animation = container.getAnimations()[0];
     animation.currentTime = 600;
 
+    if (waitForPolyfill) await waitForPolyfill();
     assert_equals(getComputedStyle(target).backgroundColor, 'rgb(150, 150, 150)');
   }, 'Animated container size triggers transition');
 </script>

@@ -31,13 +31,15 @@
 <script>
   setup(() => assert_implements_container_queries());
 
-  test(() => {
+  promise_test(async () => {
+    if (waitForPolyfill) await waitForPolyfill();
     assert_equals(getComputedStyle(target).backgroundColor, 'rgb(0, 0, 255)');
 
     assert_equals(container.getAnimations().length, 1);
     let animation = container.getAnimations()[0];
     animation.currentTime = 500;
 
+    if (waitForPolyfill) await waitForPolyfill();
     assert_equals(getComputedStyle(target).backgroundColor, 'rgb(0, 128, 0)');
   }, 'Animation affects container query evaluation');
 </script>

@@ -398,21 +398,11 @@ class Test:
             default = self.result_cls.default_expected
         else:
             default = self.subtest_result_cls.default_expected
-
-        metadata = self._get_metadata(subtest)
-        if metadata is None:
-            return default
-
-        try:
-            expected = metadata.get("expected")
-            if isinstance(expected, str):
+        for meta in self.itermeta(subtest):
+            expected = meta.expected
+            if expected is not None:
                 return expected
-            elif isinstance(expected, list):
-                return expected[0]
-            elif expected is None:
-                return default
-        except KeyError:
-            return default
+        return default
 
     def implementation_status(self):
         implementation_status = None
@@ -425,17 +415,11 @@ class Test:
         return "implementing"
 
     def known_intermittent(self, subtest=None):
-        metadata = self._get_metadata(subtest)
-        if metadata is None:
-            return []
-
-        try:
-            expected = metadata.get("expected")
-            if isinstance(expected, list):
-                return expected[1:]
-            return []
-        except KeyError:
-            return []
+        for meta in self.itermeta(subtest):
+            known_intermittent = meta.known_intermittent
+            if known_intermittent is not None:
+                return known_intermittent
+        return []
 
     def __repr__(self):
         return f"<{self.__module__}.{self.__class__.__name__} {self.id}>"

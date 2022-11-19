@@ -12,6 +12,7 @@ from .. import manifestexpected, wpttest
 
 dir_ini_0 = b"""\
 prefs: [a:b]
+expected: [TIMEOUT, OK]
 """
 
 dir_ini_1 = b"""\
@@ -19,6 +20,7 @@ prefs: [@Reset, b:c]
 max-asserts: 2
 min-asserts: 1
 tags: [b, c]
+expected: CRASH
 """
 
 dir_ini_2 = b"""\
@@ -136,6 +138,8 @@ def test_metadata_inherit():
 
     test_obj = make_test_object(test_0, "a/0.html", 0, items, inherit_metadata, True)
 
+    assert test_obj.expected() == "CRASH"
+    assert test_obj.known_intermittent() == []
     assert test_obj.max_assertion_count == 3
     assert test_obj.min_assertion_count == 1
     assert test_obj.prefs == {"b": "c", "c": "d"}

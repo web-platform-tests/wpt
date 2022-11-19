@@ -53,7 +53,8 @@ def list_prop(name, node):
             return [list_prop]
         return list(list_prop)
     except KeyError:
-        return []
+        # Return `None` instead of `[]` to signal the list was not found.
+        return None
 
 
 def str_prop(name, node):
@@ -120,6 +121,16 @@ def leak_threshold(node):
     except KeyError:
         pass
     return rv
+
+
+def expected_prop(node):
+    statuses = list_prop("expected", node)
+    return statuses[0] if statuses else None
+
+
+def known_intermittent_prop(node):
+    statuses = list_prop("expected", node)
+    return statuses[1:] if statuses is not None else None
 
 
 def fuzzy_prop(node):
@@ -318,11 +329,11 @@ class ExpectedManifest(ManifestItem):
 
     @property
     def expected(self):
-        return list_prop("expected", self)[0]
+        return expected_prop(self)
 
     @property
     def known_intermittent(self):
-        return list_prop("expected", self)[1:]
+        return known_intermittent_prop(self)
 
     @property
     def implementation_status(self):
@@ -381,6 +392,14 @@ class DirectoryManifest(ManifestItem):
     @property
     def fuzzy(self):
         return fuzzy_prop(self)
+
+    @property
+    def expected(self):
+        return expected_prop(self)
+
+    @property
+    def known_intermittent(self):
+        return known_intermittent_prop(self)
 
     @property
     def implementation_status(self):
@@ -469,11 +488,11 @@ class TestNode(ManifestItem):
 
     @property
     def expected(self):
-        return list_prop("expected", self)[0]
+        return expected_prop(self)
 
     @property
     def known_intermittent(self):
-        return list_prop("expected", self)[1:]
+        return known_intermittent_prop(self)
 
     @property
     def implementation_status(self):

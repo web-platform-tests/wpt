@@ -125,9 +125,9 @@
         test_driver.click(xoChild),
         receiveMessage("child-two-clicked"),
       ]);
-      assert_false(
+      assert_true(
         navigator.userActivation.isActive,
-        "navigator.userActivation.isActive must be false"
+        "navigator.userActivation.isActive must be true"
       );
       assert_true(
         navigator.userActivation.hasBeenActive,

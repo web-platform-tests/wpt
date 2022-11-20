@@ -17,9 +17,9 @@
       <li>Click inside the yellow area.</li>
     </ol>
     <h1>Same origin</h1>
-    <iframe id="so-child" width="200" height="50"> </iframe>
+    <iframe id="so-child" width="200" height="50"></iframe>
     <h1>Cross origin</h1>
-    <iframe id="xo-child" width="200" height="50"> </iframe>
+    <iframe id="xo-child" width="200" height="50"></iframe>
   </body>
   <script>
     const soChild = document.getElementById("so-child");
@@ -143,6 +143,6 @@
         soActivation.hasBeenActive,
         "child-one hasBeenActive must remain true"
       );
-    }, "Clicking on the cross-origin navigable shouldn't activate the same origin navigable.");
+    }, "Clicking on the cross-origin navigable activates parent navigable.");
   </script>
 </html>

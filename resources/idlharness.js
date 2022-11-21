@@ -1420,7 +1420,7 @@ IdlInterface.prototype.test = function()
         if (!this.untested)
         {
             subsetTestByKey(this.name, test, function() {
-                assert_false(this.name in self);
+                assert_false(this.name in self, this.name + "should not be exposed but is");
             }.bind(this), this.name + " interface: existence and properties of interface object");
         }
         return;

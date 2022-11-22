@@ -193,9 +193,11 @@ class SafariBrowser(WebDriverBrowser):
         if self.kill_safari:
             self.logger.debug("Going to stop Safari")
             for proc in psutil.process_iter(attrs=["exe"]):
+                if proc.info["exe"] is None:
+                    continue
+
                 try:
-                    if (proc.info["exe"] is None or
-                        not os.path.samefile(proc.info["exe"], self.safari_path)):
+                    if not os.path.samefile(proc.info["exe"], self.safari_path):
                         continue
                 except OSError:
                     continue

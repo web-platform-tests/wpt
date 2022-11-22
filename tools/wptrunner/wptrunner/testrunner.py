@@ -498,10 +498,9 @@ class TestRunnerManager(threading.Thread):
             if self.browser is not None:
                 assert self.browser.browser is not None
                 self.browser.browser.cleanup()
-            _, _, browser_cls, browser_kwargs = self.test_implementation_by_type[
-                self.state.test_type]
-            browser = browser_cls(self.logger, remote_queue=self.command_queue,
-                                  **browser_kwargs)
+            impl = self.test_implementation_by_type[self.state.test_type]
+            browser = impl.browser_cls(self.logger, remote_queue=self.command_queue,
+                                       **impl.browser_kwargs)
             browser.setup()
             self.browser = BrowserManager(self.logger,
                                           browser,
@@ -532,8 +531,9 @@ class TestRunnerManager(threading.Thread):
         assert self.command_queue is not None
         assert self.remote_queue is not None
         self.logger.info("Starting runner")
-        self.executor_cls, self.executor_kwargs, _, _ = self.test_implementation_by_type[
-            self.state.test_type]
+        impl = self.test_implementation_by_type[self.state.test_type]
+        self.executor_cls = impl.executor_cls
+        self.executor_kwargs = impl.executor_kwargs
         self.executor_kwargs["group_metadata"] = self.state.group_metadata
         self.executor_kwargs["browser_settings"] = self.browser.browser_settings
         executor_browser_cls, executor_browser_kwargs = self.browser.browser.executor_browser()

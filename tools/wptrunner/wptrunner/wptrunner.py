@@ -228,7 +228,7 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
 
         if test_status.retries_remaining:
             tests_to_run[test_type] = [test for test in tests_to_run[test_type]
-                            if test.id in test_status.unexpected_tests]
+                                       if test.id in test_status.unexpected_tests]
 
     recording.pause()
     with ManagerGroup("web-platform-tests",

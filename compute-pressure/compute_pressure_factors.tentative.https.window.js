@@ -8,7 +8,7 @@ pressure_test(async (t, mockPressureService) => {
     const observer = new PressureObserver(resolve, {sampleRate: 1.0});
     observer.observe('cpu');
     mockPressureService.setPressureUpdate('critical', ['thermal']);
-    mockPressureService.startPlatformCollector(/*sampleRate=*/ 1.0);
+    mockPressureService.startPlatformCollector();
   });
   assert_true(changes.length === 1);
   assert_equals(changes[0].state, 'critical');

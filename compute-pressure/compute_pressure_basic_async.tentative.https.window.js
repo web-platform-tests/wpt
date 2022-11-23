@@ -8,7 +8,7 @@ pressure_test(async (t, mockPressureService) => {
     const observer = new PressureObserver(resolve, {sampleRate: 1.0});
     observer.observe('cpu');
     mockPressureService.setPressureUpdate('critical');
-    mockPressureService.startPlatformCollector(/*sampleRate=*/ 1.0);
+    mockPressureService.startPlatformCollector();
   });
   assert_true(changes.length === 1);
   assert_equals(changes[0].state, 'critical');
@@ -17,14 +17,14 @@ pressure_test(async (t, mockPressureService) => {
 }, 'Basic functionality test');
 
 pressure_test((t, mockPressureService) => {
-  const observer = new PressureObserver(() => {
-    assert_unreached('The observer callback should not be called');
-  });
+  const observer = new PressureObserver(
+      () => {assert_unreached('The observer callback should not be called')},
+      {sampleRate: 1.0});
 
   observer.observe('cpu');
   observer.unobserve('cpu');
   mockPressureService.setPressureUpdate('critical');
-  mockPressureService.startPlatformCollector(/*sampleRate=*/ 1.0);
+  mockPressureService.startPlatformCollector();
 
   return new Promise(resolve => t.step_timeout(resolve, 1000));
 }, 'Removing observer before observe() resolves works');

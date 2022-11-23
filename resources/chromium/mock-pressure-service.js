@@ -41,9 +41,10 @@ class MockPressureService {
     this.pressureServiceReadingTimerId_ = null;
     this.pressureStatus_ = PressureStatus.kOk;
     this.updatesDelivered_ = 0;
+    this.sampleRate_ = 0;
   }
 
-  async bindObserver(observer) {
+  async bindObserver(observer, sampleRate) {
     if (this.observer_ !== null)
       throw new Error('BindObserver() has already been called');
 
@@ -52,14 +53,16 @@ class MockPressureService {
       this.stopPlatformCollector();
       this.observer_ = null;
     });
+    this.sampleRate_ = sampleRate;
 
     return {status: this.pressureStatus_};
   }
 
-  startPlatformCollector(sampleRate) {
-    if (sampleRate === 0)
-      return;
+  setSampleRate(sampleRate) {
+    this.sampleRate_ = sampleRate;
+  }
 
+  startPlatformCollector() {
     if (this.pressureServiceReadingTimerId_ != null)
       this.stopPlatformCollector();
 
@@ -77,11 +80,17 @@ class MockPressureService {
     const unixEpoch = Date.UTC(1970, 0, 1, 0, 0, 0, 0);
     // |epochDeltaInMs| equals to base::Time::kTimeTToMicrosecondsOffset.
     const epochDeltaInMs = unixEpoch - windowsEpoch;
+    const sampleRate = 1;
+    let timeout = (1 / sampleRate) * 1000;
 
-    const timeout = (1 / sampleRate) * 1000;
     this.pressureServiceReadingTimerId_ = window.setInterval(() => {
-      if (this.pressureUpdate_ === null || this.observer_ === null)
+      let bound = false;
+      if (this.pressureUpdate_ === null || this.observer_ === null ||
+          this.sampleRate_ === 0)
         return;
+
+      timeout = (1 / this.sampleRate_) * 1000;
+
       this.pressureUpdate_.timestamp = {
         internalValue: BigInt((new Date().getTime() + epochDeltaInMs) * 1000)
       };

@@ -14,7 +14,7 @@ pressure_test(async (t, mockPressureService) => {
     }, {sampleRate});
     observer.observe('cpu');
 
-    mockPressureService.startPlatformCollector(sampleRate * 2);
+    mockPressureService.startPlatformCollector();
     let i = 0;
     // mockPressureService.updatesDelivered() does not necessarily match
     // pressureChanges.length, as system load and browser optimizations can

@@ -1,1 +1,1 @@
-Feature-Policy: autoplay 'none'
+Permissions-Policy: autoplay=()

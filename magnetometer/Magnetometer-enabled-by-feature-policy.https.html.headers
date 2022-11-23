@@ -1,1 +1,1 @@
-Feature-Policy: magnetometer *
+Permissions-Policy: magnetometer=*

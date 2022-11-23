@@ -1,1 +1,1 @@
-Feature-Policy: magnetometer 'none'
+Permissions-Policy: magnetometer=()

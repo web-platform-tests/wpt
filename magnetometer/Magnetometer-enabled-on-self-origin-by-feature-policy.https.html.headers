@@ -1,1 +1,1 @@
-Feature-Policy: magnetometer 'self'
+Permissions-Policy: magnetometer=(self)

@@ -7,7 +7,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<script src="resources/user-activation.js"></script>
 <script>
 'use strict';
 
@@ -28,11 +27,11 @@ promise_test(async t => {
   assert_equals(blobInput2.type, format2.toLowerCase());
   const clipboardItemInput = new ClipboardItem(
       {[format1]: blobInput1, [format2]: blobInput2});
-  await waitForUserActivation();
+  await test_driver.bless();
   await navigator.clipboard.write([clipboardItemInput]);
 
   // Items should be readable on a system clipboard after custom format write.
-  await waitForUserActivation();
+  await test_driver.bless();
   const clipboardItems = await navigator.clipboard.read();
   assert_equals(clipboardItems.length, 1);
   const clipboardItem = clipboardItems[0];
@@ -45,7 +44,7 @@ promise_test(async t => {
 
   // These examples use native text formats, so these formats should be
   // accessible as text.
-  await waitForUserActivation();
+  await test_driver.bless();
   const textOutput = await navigator.clipboard.readText();
   assert_equals(textOutput, dataToWrite);
 }, 'Verify write and read unsanitized content to the clipboard given standard and custom formats as input');

@@ -7,7 +7,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<script src="resources/user-activation.js"></script>
 <script>
 
 // Permissions are required in order to invoke navigator.clipboard functions in
@@ -15,7 +14,7 @@
 async function getPermissions() {
   await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
   await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
-  await waitForUserActivation();
+  await test_driver.bless();
 }
 
 test(() => {

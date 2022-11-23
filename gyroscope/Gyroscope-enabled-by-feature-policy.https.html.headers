@@ -1,1 +1,1 @@
-Feature-Policy: gyroscope *
+Permissions-Policy: gyroscope=*

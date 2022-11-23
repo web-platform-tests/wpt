@@ -1,1 +1,1 @@
-Feature-Policy: xr-spatial-tracking 'none'
+Permissions-Policy: xr-spatial-tracking=()

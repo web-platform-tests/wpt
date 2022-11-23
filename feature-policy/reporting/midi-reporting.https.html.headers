@@ -1,1 +1,1 @@
-Feature-Policy: midi 'none'
+Permissions-Policy: midi=()

@@ -1,1 +1,1 @@
-Feature-Policy: fullscreen https://{{domains[www]}}:{{ports[https][0]}} https://www.example.com;
+Permissions-Policy: fullscreen=(https://{{domains[www]}}:{{ports[https][0]}} https://www.example.com)

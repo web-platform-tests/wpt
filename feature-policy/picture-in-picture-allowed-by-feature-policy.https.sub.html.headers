@@ -1,1 +1,1 @@
-Feature-Policy: picture-in-picture *
+Permissions-Policy: picture-in-picture=*

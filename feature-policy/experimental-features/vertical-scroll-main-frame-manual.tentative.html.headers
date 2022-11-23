@@ -1,1 +1,1 @@
-Feature-Policy: vertical-scroll 'none'
+Permissions-Policy: vertical-scroll=()

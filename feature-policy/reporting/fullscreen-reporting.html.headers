@@ -1,1 +1,1 @@
-Feature-Policy: fullscreen 'none'
+Permissions-Policy: fullscreen=()

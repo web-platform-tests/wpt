@@ -1,1 +1,1 @@
-Feature-Policy: encrypted-media 'none'
+Permissions-Policy: encrypted-media=()

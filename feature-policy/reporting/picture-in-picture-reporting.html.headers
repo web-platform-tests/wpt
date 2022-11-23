@@ -1,1 +1,1 @@
-Feature-Policy: picture-in-picture 'none'
+Permissions-Policy: picture-in-picture=()

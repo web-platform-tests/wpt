@@ -1,1 +1,1 @@
-Feature-Policy: idle-detection *
+Permissions-Policy: idle-detection=*

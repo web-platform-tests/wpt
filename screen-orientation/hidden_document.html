@@ -48,7 +48,6 @@
     const { minimize, restore } = window_state_context(t);
     t.add_cleanup(restore);
     t.add_cleanup(makeCleanup());
-
     await screen.orientation.lock(getOppositeOrientation());
 
     await minimize();

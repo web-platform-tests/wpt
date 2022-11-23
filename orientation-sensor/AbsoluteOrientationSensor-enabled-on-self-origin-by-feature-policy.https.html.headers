@@ -1,1 +1,1 @@
-Feature-Policy: accelerometer 'self'; gyroscope 'self'; magnetometer 'self'
+Permissions-Policy: accelerometer=(self), gyroscope=(self), magnetometer=(self)

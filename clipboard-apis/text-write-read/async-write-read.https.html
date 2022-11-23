@@ -10,7 +10,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<script src="../resources/user-activation.js"></script>
 <script>
 async function readWriteTest(textInput) {
   promise_test(async t => {
@@ -20,9 +19,9 @@ async function readWriteTest(textInput) {
     const blobInput = new Blob([textInput], {type: 'text/plain'});
     const clipboardItemInput = new ClipboardItem({'text/plain': blobInput});
 
-    await waitForUserActivation();
+    await test_driver.bless();
     await navigator.clipboard.write([clipboardItemInput]);
-    await waitForUserActivation();
+    await test_driver.bless();
     const clipboardItems = await navigator.clipboard.read();
     assert_equals(clipboardItems.length, 1);
     const clipboardItemOutput = clipboardItems[0];

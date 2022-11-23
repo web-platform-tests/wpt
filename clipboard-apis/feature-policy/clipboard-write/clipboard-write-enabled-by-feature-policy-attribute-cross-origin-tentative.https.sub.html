@@ -5,7 +5,6 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/feature-policy/resources/featurepolicy.js"></script>
-<script src="../../resources/user-activation.js"></script>
 <script>
 'use strict';
 
@@ -19,7 +18,7 @@ const cross_origin_src =
 // only, cross-origin focus is asynchronous. Implement WPT support for
 // cross-origin focus.
 promise_test(async t => {
-  await waitForUserActivation();
+  await test_driver.bless();
   test_feature_availability(
     'navigator.clipboard.writeText("test text")',
     t,

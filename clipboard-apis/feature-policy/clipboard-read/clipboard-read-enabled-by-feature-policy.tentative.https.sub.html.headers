@@ -1,1 +1,1 @@
-Feature-Policy: clipboard-read *
+Permissions-Policy: clipboard-read=*

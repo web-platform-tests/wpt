@@ -13,7 +13,7 @@ for (const writingMode of ["horizontal-tb", "vertical-lr", "vertical-rl", "sidew
     if (!CSS.supports(`writing-mode: ${writingMode}`))
         continue;
 
-    const isHorizontal = writingMode == "horizontal-tb";
+    const isHorizontal = writingMode === "horizontal-tb";
     const textarea = document.querySelector("textarea");
 
     test(t => {

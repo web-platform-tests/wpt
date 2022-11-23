@@ -1,1 +1,1 @@
-Feature-Policy: serial 'none'
+Permissions-Policy: serial=()

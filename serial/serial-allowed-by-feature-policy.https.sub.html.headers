@@ -1,1 +1,1 @@
-Feature-Policy: serial *
+Permissions-Policy: serial=*

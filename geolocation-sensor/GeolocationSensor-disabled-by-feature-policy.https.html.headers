@@ -1,1 +1,1 @@
-Feature-Policy: geolocation 'none'
+Permissions-Policy: geolocation=()

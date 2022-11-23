@@ -1,1 +1,1 @@
-Feature-Policy: geolocation *
+Permissions-Policy: geolocation=*

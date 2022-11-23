@@ -1,1 +1,1 @@
-Feature-Policy: geolocation 'self'
+Permissions-Policy: geolocation=(self)

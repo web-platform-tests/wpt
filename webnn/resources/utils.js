@@ -16,15 +16,15 @@ const TypedArrayDict = {
 
 const sizeOfShape = (array) => {
   return array.reduce((accumulator, currentValue) => accumulator * currentValue, 1);
-}
+};
 
 /**
- * Get JSON information from specified test data file.
- * @param {String} file - A file URL
+ * Get JSON resources from specified test resources file.
+ * @param {String} file - A test resources file path
  * @returns {Object} Test resources
  */
-const loadTestData = (file) => {
-  function loadJSON(file) {
+const loadResources = (file) => {
+  const loadJSON = () => {
     let xmlhttp = new XMLHttpRequest();
     xmlhttp.open("GET", file, false);
     xmlhttp.overrideMimeType("application/json");
@@ -34,124 +34,51 @@ const loadTestData = (file) => {
     } else {
       throw new Error(`Failed to load ${file}`);
     }
-  }
+  };
 
-  const json = loadJSON(file);
+  const json = loadJSON();
   return JSON.parse(json.replace(/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g, (m, g) => g ? "" : m));
-}
-
-/**
- * Get ULP tolerance of gemm operation.
- * @param {Object} resources - Resources used for building a graph
- * @param {String} [opName] - An operation name
- * @returns {Number} A tolerance number
- */
-const getGemmPrecisionTolerance = (resources, opName) => {
-  // GEMM : alpha * (A x B) + beta * C
-  // An upper bound for the worst serial ordering is bounded by
-  // the number of lossy operations, where matrix multiplication
-  // is a dot product (mul and add times the number of elements)
-  // plus bias operations.
-  const shapeA = resources.inputA.shape;
-  const options = resources.options;
-  const width = options.aTranspose ? shapeA[0] : shapeA[1];
-  let tolerance = width * 2;
-  // default options.alpha is 1.0
-  if (options.alpha !== undefined && options.alpha !== 1.0) {
-    tolerance++;
-  }
-  if (options.c && options.beta !== 0.0) {
-    // default options.beta is 1.0
-    if (options.beta !== undefined && options.beta !== 1.0) {
-      tolerance++;
-    }
-    tolerance++;
-  }
-  return tolerance;
 };
 
 /**
- * Get ULP tolerance of matmul operation.
- * @param {Object} resources - Resources used for building a graph
- * @param {String} [opName] - An operation name
- * @returns {Number} A tolerance number
+ * Get exptected data from given resources with output name.
+ * @param {Array} resources - An array of expected resources
+ * @param {String} outputName - An output name
+ * @returns {Number[]} An expected data array
  */
-const getMatmulPrecisionTolerance = (resources, opName) => {
-  // Matmul : Compute the matrix product of two input tensors.
-  // If a is 1-D, it is converted to a 2-D tensor by prepending a 1 to its dimensions, [n] -> [1, n]
-  const shapeA = resources.inputA.shape;
-  const tolerance = shapeA[shapeA.length - 1] * 2;
-  return tolerance;
+const getExpectedData = (resources, outputName) => {
+  let data;
+  for (let subResources of resources) {
+    if (subResources.name === outputName) {
+      data = subResources.data;
+      break;
+    }
+  }
+  if (data === undefined) {
+    throw new Error(`Failed to get expected data sources by ${outputName}`);
+  }
+  return data;
 };
 
 // Refer to precision metrics on https://github.com/webmachinelearning/webnn/issues/265#issuecomment-1256242643
 const PrecisionMetrics = {
-  batchNormalization: {ULP: {float32: 6, float16: 6}},
-  clamp: {ULP: {float32: 0, float16: 0}},
   concat: {ULP: {float32: 0, float16: 0}},
-  // TODO getConv2dPrecisionTolerance
-  // conv2d: {ULP: {float32: getConv2dPrecisionTolerance, float16: getConv2dPrecisionTolerance}},
-  // element-wise binary operations
-  add: {ULP: {float32: 1, float16: 1}},
-  sub: {ULP: {float32: 1, float16: 1}},
-  mul: {ULP: {float32: 1, float16: 1}},
-  div: {ULP: {float32: 2, float16: 2}},
-  max: {ULP: {float32: 0, float16: 0}},
-  min: {ULP: {float32: 0, float16: 0}},
-  pow: {ULP: {float32: 32, float16: 2}},
-  // element-wise unary operations
-  abs: {ULP: {float32: 0, float16: 0}},
-  ceil: {ULP: {float32: 0, float16: 0}},
-  cos: {ATOL: {float32: 1/1024, float16: 1/512}},
-  exp: {ULP: {float32: 32, float16: 1}},
-  floor: {ULP: {float32: 0, float16: 0}},
-  log: {ATOL: {float32: 1/1024, float16: 1/1024}},
-  neg: {ULP: {float32: 0, float16: 0}},
-  sin: {ATOL: {float32: 1/1024, float16: 1/512}},
-  tan: {ATOL: {float32: 1/1024, float16: 1/512}},
-  gemm: {ULP: {float32: getGemmPrecisionTolerance, float16: getGemmPrecisionTolerance}},
-  leakRelu: {ULP: {float32: 1, float16: 1}},
-  matmul: {ULP: {float32: getMatmulPrecisionTolerance, float16: getMatmulPrecisionTolerance}},
-  // pooling operations
-  // TODO getAveragePool2dPrecisionTolerance
-  // averagePool2d: {ULP: {float32: getAveragePool2dPrecisionTolerance, float16: getAveragePool2dPrecisionTolerance}},
-  maxPool2d: {ULP: {float32: 0, float16: 0}},
-  // reduction operations
-  reduceMax: {ULP: {float32: 0, float16: 0}},
-  // TODO getReducePrecisionTolerance(resources, opName)
-  // using second opName parameter for reduceMean op, IEPOE + 2 ULP
-  // reduceMean: {ULP: {float32: getReducePrecisionTolerance, float16: getReducePrecisionTolerance}},
-  reduceMin: {ULP: {float32: 0, float16: 0}},
-  // reduceProduct: {ULP: {float32: getReducePrecisionTolerance, float16: getReducePrecisionTolerance}},
-  // reduceSum: {ULP: {float32: getReducePrecisionTolerance, float16: getReducePrecisionTolerance}},
-  relu: {ULP: {float32: 0, float16: 0}},
-  reshape: {ULP: {float32: 0, float16: 0}},
-  // float32 (leaving a few ULP for roundoff)
-  sigmoid: {ULP: {float32: 32+2, float16: 3}},
-  slice: {ULP: {float32: 0, float16: 0}},
-  // TODO getSoftmaxPrecisionTolerance
-  // softmax: {ULP: {float32: getSoftmaxPrecisionTolerance, float16: getSoftmaxPrecisionTolerance}},
-  split: {ULP: {float32: 0, float16: 0}},
-  squeeze: {ULP: {float32: 0, float16: 0}},
-  tanh: {ATOL: {float32: 1/1024, float16: 1/512}},
-  transpose: {ULP: {float32: 0, float16: 0}},
 };
 
 /**
  * Get precison tolerance value.
- * @param {String} opName - An operation name
+ * @param {String} operationName - An operation name
  * @param {String} metricType - Value: 'ULP', 'ATOL'
- * @param {String} operandType - Value: 'float32', 'float16', etc.,
- *     more data type strings, please see:
- *     https://webmachinelearning.github.io/webnn/#enumdef-mloperandtype
  * @param {Object} resources - Resources used for building a graph
  * @returns {Number} A tolerance number
  */
-const getPrecisonTolerance = (opName, metricType, operandType, resources) => {
-  let tolerance = PrecisionMetrics[opName][metricType][operandType];
+const getPrecisonTolerance = (operationName, metricType, resources) => {
+  // the outputs by split or gru is a sequence
+  const precisionType = Array.isArray(resources.expected) ? resources.expected[0].type : resources.expected.type;
+  let tolerance = PrecisionMetrics[operationName][metricType][precisionType];
   // If the tolerance is dynamic, then evaluate the function to get the value.
   if (tolerance instanceof Function) {
-    tolerance = tolerance(resources, opName);
+    tolerance = tolerance(resources, operationName);
   }
   return tolerance;
 };
@@ -160,7 +87,7 @@ const getPrecisonTolerance = (opName, metricType, operandType, resources) => {
  * Get bitwise of the given value.
  * @param {Number} value
  * @param {String} dataType - A data type string, like "float32", "float16",
- *     more data type strings, please see:
+ *     more types, please see:
  *     https://webmachinelearning.github.io/webnn/#enumdef-mloperandtype
  * @return {Number} A 64-bit signed integer.
  */
@@ -186,7 +113,7 @@ const getBitwise = (value, dataType) => {
  * @param {Array} expected - Array of values expected to be close to the values in ``actual``.
  * @param {Number} nulp - A BigInt value indicates acceptable ULP distance.
  * @param {String} dataType - A data type string, value: "float32",
- *     more data type strings, please see:
+ *     more types, please see:
  *     https://webmachinelearning.github.io/webnn/#enumdef-mloperandtype
  * @param {String} description - Description of the condition being tested.
  */
@@ -208,86 +135,139 @@ const assert_array_approx_equals_ulp = (actual, expected, nulp, dataType, descri
 };
 
 /**
- * Check computed results with expected data.
- * @param {String} opName - An operation name
- * @param {String} operandType - Type value: 'float32', 'float16', etc.,
- *     more type, please see:
+ * Assert actual results with expected results.
+ * @param {String} operationName - An operation name
+ * @param {(Number[]|Number)} actual
+ * @param {(Number[]|Number)} expected
+ * @param {Number} tolerance
+ * @param {String} operandType  - An operand type string, value: "float32",
+ *     more types, please see:
  *     https://webmachinelearning.github.io/webnn/#enumdef-mloperandtype
- * @param {Object.<String, MLOperand>} namedOutputOperands
- * @param {Object.<MLNamedArrayBufferViews>} outputs - The resources of required outputs
- * @param {Object} resources - Resources used for building a graph
+ * @param {String} metricType - Value: 'ULP', 'ATOL'
  */
-const checkResults = (opName, operandType, namedOutputOperands, outputs, resources) => {
-  const metricType = PrecisionMetrics[opName] ? Object.keys(PrecisionMetrics[opName])[0] : 'ULP';
-  const description = `test ${opName} ${operandType}`;
-  const tolerance = getPrecisonTolerance(opName, metricType, operandType, resources);
+const doAssert = (operationName, actual, expected, tolerance, operandType, metricType) => {
+  const description = `test ${operationName} ${operandType}`;
+  if (typeof expected === 'number') {
+    // for checking a scalar output by matmul 1D x 1D
+    expected = [expected];
+    actual = [actual];
+  }
   if (metricType === 'ULP') {
-    for (let operandName in namedOutputOperands) {
-      let outputData = outputs[operandName];
-      let expectedData = resources.expected.data[operandName];
-      if (typeof expectedData === 'number') {
-        outputData = [outputData];
-        expectedData = [expectedData];
-      }
-      assert_array_approx_equals_ulp(outputData, expectedData, tolerance, operandType, description);
-    }
+    assert_array_approx_equals_ulp(actual, expected, tolerance, operandType, description);
   } else if (metricType === 'ATOL') {
-    for (let operandName in namedOutputOperands) {
-      assert_array_approx_equals(
-        outputs[operandName], resources.expected.data[operandName], tolerance, description);
-    }
+    assert_array_approx_equals(actual, expected, tolerance, description);
   }
 };
 
 /**
+ * Check computed results with expected data.
+ * @param {String} operationName - An operation name
+ * @param {Object.<String, MLOperand>} namedOutputOperands
+ * @param {Object.<MLNamedArrayBufferViews>} outputs - The resources of required outputs
+ * @param {Object} resources - Resources used for building a graph
+ */
+const checkResults = (operationName, namedOutputOperands, outputs, resources) => {
+  const metricType = Object.keys(PrecisionMetrics[operationName])[0];
+  const tolerance = getPrecisonTolerance(operationName, metricType, resources);
+  const expected = resources.expected;
+  const operandType = expected.type;
+  let outputData;
+  let expectedData;
+  if (Array.isArray(expected)) {
+    // check outputs by split or gru
+    for (let operandName in namedOutputOperands) {
+      outputData = outputs[operandName];
+      expectedData = getExpectedData(expected, operandName);
+      doAssert(operationName, outputData, expectedData, tolerance, operandType, metricType)
+    }
+  } else {
+    outputData = outputs[expected.name];
+    expectedData = expected.data;
+    doAssert(operationName, outputData, expectedData, tolerance, operandType, metricType)
+  }
+};
+
+/**
+ * Build a graph.
+ * @param {MLGraphBuilder} builder - A ML graph builder
+ * @param {Object} resources - Resources used for building a graph
+ * @param {Function} buildFunc - A build function for an operation
+ * @returns [namedOperands, inputs, outputs]
+ */
+const buildGraph = (builder, resources, buildFunc) => {
+  const namedOperands = buildFunc(builder, resources);
+  let inputs = {};
+  if (Array.isArray(resources.inputs)) {
+    // the inputs of concat() is a sequence
+    for (let subInput of resources.inputs) {
+      inputs[subInput.name] = new TypedArrayDict[subInput.type](subInput.data);
+    }
+  } else {
+    for (let inputName in resources.inputs) {
+      const subTestByName = resources.inputs[inputName];
+      inputs[inputName] = new TypedArrayDict[subTestByName.type](subTestByName.data);
+    }
+  }
+  let outputs = {};
+  if (Array.isArray(resources.expected)) {
+    // the outputs of split() or gru() is a sequence
+    for (let i = 0; i < resources.expected.length; i++) {
+      const subExpected = resources.expected[i];
+      outputs[subExpected.name] = new TypedArrayDict[subExpected.type](sizeOfShape(subExpected.shape));
+    }
+  } else {
+    // matmul 1D with 1D produces a scalar which doesn't have its shape
+    const shape = resources.expected.shape ? resources.expected.shape : [1];
+    outputs[resources.expected.name] = new TypedArrayDict[resources.expected.type](sizeOfShape(shape));
+  }
+  return [namedOperands, inputs, outputs];
+};
+
+/**
  * Build a graph, synchronously compile graph and execute, then check computed results.
- * @param {String} opName - An operation name
+ * @param {String} operationName - An operation name
  * @param {MLContext} context - A ML context
  * @param {MLGraphBuilder} builder - A ML graph builder
- * @param {String} operandType - Type value: 'float32', 'float16', etc.,
- *     more type, please see:
- *     https://webmachinelearning.github.io/webnn/#enumdef-mloperandtype
  * @param {Object} resources - Resources used for building a graph
- * @param {Object} buildGraphFunc - A function for building a graph
+ * @param {Function} buildFunc - A build function for an operation
  */
-const runSync = (opName, context, builder, operandType, resources, buildGraphFunc) => {
+const runSync = (operationName, context, builder, resources, buildFunc) => {
   // build a graph
-  const [namedOutputOperands, inputs, outputs] = buildGraphFunc(builder, resources);
+  const [namedOutputOperands, inputs, outputs] = buildGraph(builder, resources, buildFunc);
   // synchronously compile the graph up to the output operand
   const graph = builder.buildSync(namedOutputOperands);
   // synchronously execute the compiled graph.
   context.computeSync(graph, inputs, outputs);
-  checkResults(opName, operandType, namedOutputOperands, outputs, resources);
+  checkResults(operationName, namedOutputOperands, outputs, resources);
 };
 
 /**
  * Build a graph, asynchronously compile graph and execute, then check computed results.
- * @param {String} opName - An operation name
+ * @param {String} operationName - An operation name
  * @param {MLContext} context - A ML context
  * @param {MLGraphBuilder} builder - A ML graph builder
- * @param {String} operandType - Type value: 'float32', 'float16', etc.,
- *     more type, please see:
- *     https://webmachinelearning.github.io/webnn/#enumdef-mloperandtype
  * @param {Object} resources - Resources used for building a graph
- * @param {Object} buildGraphFunc - A function for building a graph
+ * @param {Function} buildFunc - A build function for an operation
  */
-const run = async (opName, context, builder, operandType, resources, buildGraphFunc) => {
+const run = async (operationName, context, builder, resources, buildFunc) => {
   // build a graph
-  const [namedOutputOperands, inputs, outputs] = buildGraphFunc(builder, resources);
+  const [namedOutputOperands, inputs, outputs] = buildGraph(builder, resources, buildFunc);
   // asynchronously compile the graph up to the output operand
   const graph = await builder.build(namedOutputOperands);
   // asynchronously execute the compiled graph
   await context.compute(graph, inputs, outputs);
-  checkResults(opName, operandType, namedOutputOperands, outputs, resources);
+  checkResults(operationName, namedOutputOperands, outputs, resources);
 };
 
 /**
  * Run WebNN operation tests.
- * @param {String} opName - An operation name
- * @param {Array} tests - A test resources array
- * @param {Object} buildGraphFunc - A function for building a graph
+ * @param {String} operationName - An operation name
+ * @param {String} file - A test resources file path
+ * @param {Function} buildFunc - A build function for an operation
  */
-const testWebNNOperation = (opName, tests, buildGraphFunc) => {
+const testWebNNOperation = (operationName, file, buildFunc) => {
+  const resources = loadResources(file);
+  const tests = resources.tests;
   ExecutionArray.forEach(executionType => {
     const isSync = executionType === 'sync';
     if (self.GLOBAL.isWindow() && isSync) {
@@ -302,10 +282,10 @@ const testWebNNOperation = (opName, tests, buildGraphFunc) => {
           context = navigator.ml.createContextSync({deviceType});
           builder = new MLGraphBuilder(context);
         });
-        for (const testResources of tests) {
+        for (const subTest of tests) {
           test(() => {
-            runSync(opName, context, builder, testResources.operandType, testResources, buildGraphFunc);
-          }, `${testResources.name} / ${testResources.operandType} / ${deviceType} / ${executionType}`);
+            runSync(operationName, context, builder, subTest, buildFunc);
+          }, `${subTest.name} / ${deviceType} / ${executionType}`);
         }
       });
     } else {
@@ -315,12 +295,12 @@ const testWebNNOperation = (opName, tests, buildGraphFunc) => {
           context = await navigator.ml.createContext({deviceType});
           builder = new MLGraphBuilder(context);
         });
-        for (const testResources of tests) {
+        for (const subTest of tests) {
           promise_test(async () => {
-            await run(opName, context, builder, testResources.operandType, testResources, buildGraphFunc);
-          }, `${testResources.name} / ${testResources.operandType} / ${deviceType} / ${executionType}`);
+            await run(operationName, context, builder, subTest, buildFunc);
+          }, `${subTest.name} / ${deviceType} / ${executionType}`);
         }
       });
     }
   });
-}
+};

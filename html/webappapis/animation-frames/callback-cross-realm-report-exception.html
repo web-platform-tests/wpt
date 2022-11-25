@@ -17,13 +17,13 @@ frames[2].onerror = () => { onerrorCalls.push("frame2"); };
 
 async_test(t => {
   window.onload = t.step_func(() => {
-    frames[0].requestAnimationFrame(new frames[1].Function(`throw new parent.frames[2].Error("PASS");`), 4);
+    frames[0].requestAnimationFrame(new frames[1].Function(`throw new parent.frames[2].Error("PASS");`));
     document.querySelector("iframe").height = 200;
 
     t.step_timeout(() => {
       assert_array_equals(onerrorCalls, ["frame1"]);
       t.done();
-    }, 25);
+    }, 100);
   });
 });
 </script>

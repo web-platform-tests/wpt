@@ -20,7 +20,7 @@
 <div class="spacer"></div>
 
 <script>
-for (const inputType of ["text", "email", "tel", "url", "password", "search", "number"]) {
+for (const inputType of ["text", "password", "search", "number"]) {
     testInput.type = inputType;
     for (const writingMode of ["vertical-lr", "vertical-rl", "sideways-lr", "sideways-rl"]) {
         if (!CSS.supports("writing-mode", writingMode))

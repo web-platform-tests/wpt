@@ -19,10 +19,10 @@ function test_scenario(name) {
         await wait_for_state(t, registration.installing, 'activated');
         const waitForMessage = new Promise(resolve => window.addEventListener('message', ({data}) => resolve(data)));
         document.body.appendChild(iframe);
-        const {data, entry} = await waitForMessage;
-        assert_greater_than(data.byteLength, 0);
-        assert_equals(entry.decodedBodySize, data.byteLength);
-        assert_equals(entry.encodedBodySize, data.byteLength);
+        const {buffer, entry} = await waitForMessage;
+        assert_greater_than(buffer.byteLength, 0);
+        assert_equals(entry.decodedBodySize, buffer.byteLength);
+        assert_equals(entry.encodedBodySize, buffer.byteLength);
     }, `Constructed response body size: ${name}`);
 }
 

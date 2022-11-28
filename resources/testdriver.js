@@ -648,6 +648,28 @@
         set_spc_transaction_mode: function(mode, context=null) {
           return window.test_driver_internal.set_spc_transaction_mode(mode, context);
         },
+
+        /**
+         * Consumes the user activation
+         *
+         * Matches the `Consume User Activation of Window
+         * <https://w3c.github.io/permissions/#consume-user-activation-of-window>`
+         * WebDriver command.
+         *
+         * Which corresponds to these steps in HTML:
+         * https://html.spec.whatwg.org/#consume-user-activation
+         *
+         * @example
+         * await test_driver.consume_user_activation();
+         * await test_driver.consume_user_activation(iframe.contentWindow);
+         * 
+         * @param {WindowProxy?} [context=null] - Browsing context in which to run the
+         *                                call.
+         * @returns {Promise<boolean>} fulfilled when user activation is consumed.
+         */
+        consume_user_activation(context=null) {
+            return window.test_driver_internal.consume_user_activation(context);
+        },
     };
 
     window.test_driver_internal = {
@@ -772,6 +794,12 @@
 
         set_spc_transaction_mode: function(mode, context=null) {
             return Promise.reject(new Error("unimplemented"));
+        },
+
+        async consume_user_activation () {
+            if (this.in_automation) {
+                throw new Error('Not implemented');
+            }
         },
 
     };

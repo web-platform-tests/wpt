@@ -31,7 +31,7 @@ function run_test() {
           // We need a failed test if the importVectorKey operation fails, so
           // we know we never tested verification.
           promise_test(function(test) {
-              assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+              assert_unreached("importVectorKeys failed for " + vector.algorithmName + ". Message: ''" + err.message + "''");
           }, "importVectorKeys step: " + vector.name + " verification");
       });
 
@@ -45,7 +45,7 @@ function run_test() {
           var algorithm = {name: vector.algorithmName};
           promise_test(function(test) {
               var signature = copyBuffer(vector.signature);
-              var operation = subtle.verify(algorithm, vector.publicKey, signature, vector.data)
+              var operation = subtle.verify(vector.algorithmName, vector.publicKey, signature, vector.data)
               .then(function(is_verified) {
                   assert_true(is_verified, "Signature verified");
               }, function(err) {
@@ -158,6 +158,7 @@ function run_test() {
 
       all_promises.push(promise);
   });
+
 
   // Check for successful signing and verification.
   testVectors.forEach(function(vector) {
@@ -354,17 +355,16 @@ function run_test() {
           .catch(function() {done();})
   }, "setup");
 
-  // Test that generated keys are valid for signing and verifying.
-  testVectors.forEach(function(vector) {
-      var algorithm = {name: vector.algorithmName};
-      promise_test(async() => {
-          let key = await subtle.generateKey(algorithm, false, ["sign", "verify"]);
-          let signature = await subtle.sign(algorithm, key.privateKey, vector.data);
-          let isVerified = await subtle.verify(algorithm, key.publicKey, signature, vector.data);
-          assert_true(isVerified, "Verificaton failed.");
-      }, "Sign and verify using generated " + vector.algorithmName + " keys.");
-  });
-
+ // Test that generated keys are valid for signing and verifying.
+ testVectors.forEach(function(vector) {
+     var algorithm = {name: vector.algorithmName};
+     promise_test(async() => {
+        let key = await subtle.generateKey(algorithm, false, ["sign", "verify"]);
+        let signature = await subtle.sign(algorithm, key.privateKey, vector.data);
+        let isVerified = await subtle.verify(algorithm, key.publicKey, signature, vector.data);
+             assert_true(isVerified, "Verification failed.");
+     }, "Sign and verify using generated " + vector.algorithmName + " keys.");
+ });
 
   // A test vector has all needed fields for signing and verifying, EXCEPT that the
   // key field may be null. This function replaces that null with the Correct
@@ -379,7 +379,7 @@ function run_test() {
               resolve(vector);
           });
       } else {
-          publicPromise = subtle.importKey(vector.publicKeyFormat, vector.publicKeyBuffer, {name: vector.algorithmName}, false, publicKeyUsages)
+          publicPromise = subtle.importKey(vector.publicKeyFormat, vector.publicKeyBuffer, {name: vector.algorithmName}, true, publicKeyUsages)
           .then(function(key) {
               vector.publicKey = key;
               return vector;
@@ -391,7 +391,7 @@ function run_test() {
               resolve(vector);
           });
       } else {
-          privatePromise = subtle.importKey(vector.privateKeyFormat, vector.privateKeyBuffer, {name: vector.algorithmName}, false, privateKeyUsages)
+         privatePromise = subtle.importKey(vector.privateKeyFormat, vector.privateKeyBuffer, {name: vector.algorithmName}, false, privateKeyUsages)
           .then(function(key) {
               vector.privateKey = key;
               return vector;

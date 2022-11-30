@@ -14,28 +14,25 @@
 <ul id="d"></ul>
 <script>
 var t = async_test("test pixel values of a display-p3 PNG");
-_addTest(function(canvas, ctx) {
-
-
 const img = new Image();
 img.onload = () => {
-  ctx.drawImage(img, 0, 0);
+  _addTest(function(canvas, ctx) {
+    ctx.drawImage(img, 0, 0);
 
-  var pixel = ctx.getImageData(5, 5, 1, 1, {colorSpace: "display-p3", storageFormat: "uint8"}).data;
+    var pixel = ctx.getImageData(5, 5, 1, 1, {colorSpace: "display-p3", storageFormat: "uint8"}).data;
 
-  // The pixel values stored are (50 red, 100 green, 150 blue).
-  // The image has a cICP chunk indicating the Display P3 color space.
-  // This results in decoded pixel values of (26 red, 101 green, 154 blue).
-  const pixel_expected = [26, 101, 154, 255];
-  const epsilon = 2;
+    // The pixel values stored are (50 red, 100 green, 150 blue).
+    // The image has a cICP chunk indicating the Display P3 color space.
+    // This results in decoded pixel values of (26 red, 101 green, 154 blue).
+    const pixel_expected = [26, 101, 154, 255];
+    const epsilon = 2;
 
-  _assertSame(pixel.length, pixel.expected.length, "pixel.length", "pixel_expected.length");
-  assert_approx_equals(pixel[0], pixel_expected[0], epsilon);
-  assert_approx_equals(pixel[1], pixel_expected[1], epsilon);
-  assert_approx_equals(pixel[2], pixel_expected[2], epsilon);
-  assert_approx_equals(pixel[3], pixel_expected[3], epsilon);
+    _assertSame(pixel.length, pixel.expected.length, "pixel.length", "pixel_expected.length");
+    assert_approx_equals(pixel[0], pixel_expected[0], epsilon);
+    assert_approx_equals(pixel[1], pixel_expected[1], epsilon);
+    assert_approx_equals(pixel[2], pixel_expected[2], epsilon);
+    assert_approx_equals(pixel[3], pixel_expected[3], epsilon);
+  }, {colorSpace: "display-p3"});
 };
 img.src = "/images/cicp.png";
-
-}, {colorSpace: "display-p3"});
 </script>

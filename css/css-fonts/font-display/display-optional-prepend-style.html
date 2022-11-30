@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<title>Tests that prepending @font-face rules doesn't reset optional fonts</title>
+<link rel="help" href="https://drafts.csswg.org/css-fonts-4/#font-display-desc">
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=1385790">
+<link rel="match" href="display-optional-prepend-style-ref.html">
+<link rel="author" href="mailto:xiaochengh@chromium.org">
+<style>
+@font-face {
+  font-family: 'optional';
+  src: url('/fonts/Ahem.ttf?pipe=trickle(d1)');
+  font-display: optional;
+}
+@font-face {
+  font-family: 'helper';
+  src: url('/fonts/Ahem.ttf?pipe=trickle(d1)');
+}
+
+#target { font-family: 'optional', serif; }
+</style>
+
+<div id="target">
+  The text should rendered with a fallback font.
+</div>
+
+<script>
+async function runTest() {
+  function raf() {
+    return new Promise(resolve => requestAnimationFrame(resolve));
+  }
+
+  // Ensure rendering of the text in fallback font
+  await raf();
+  await raf();
+
+  // Ensure loading of the font resource
+  await document.fonts.load("16px helper", "X");
+
+  let style = document.createElement('style');
+  style.textContent = '@font-face {}';
+  document.head.prepend(style);
+
+  document.documentElement.classList.remove('reftest-wait');
+}
+runTest();
+</script>
+
+</html>

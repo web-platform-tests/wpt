@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<title>Tests that prepending style doesn't reset optional fonts</title>
+<style>
+#target { font-family: serif; }
+</style>
+
+<div id="target">
+  The text should rendered with a fallback font.
+</div>

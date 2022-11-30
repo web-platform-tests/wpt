@@ -19,7 +19,7 @@ img.onload = () => {
   _addTest(function(canvas, ctx) {
     ctx.drawImage(img, 0, 0);
 
-    var pixel = ctx.getImageData(5, 5, 1, 1, {colorSpace: "display-p3", storageFormat: "uint8"}).data;
+    var pixel = ctx.getImageData(5, 5, 1, 1, {colorSpace: "srgb", storageFormat: "uint8"}).data;
 
     // The pixel values stored are (50 red, 100 green, 150 blue).
     // The image has a cICP chunk indicating the Display P3 color space.

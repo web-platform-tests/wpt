@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<link rel="help" href="https://drafts.csswg.org/css-shapes-1/#basic-shape-interpolation">
+<link rel="match" href="clip-path-animation-custom-timing-function-ref.html">
+<!--
+  Test that ensures that the bounding rect for a clip path animation is not
+  limited to the size of the largest keyframe.
+
+  Test is done by occulsion to prevent flakes.
+-->
+<style>
+  @keyframes clippath {
+    0% {
+      clip-path: inset(90px 90px);
+    }
+
+    100% {
+      clip-path: inset(80px 80px);
+    }
+  }
+
+  .green {
+    background-color: green;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 200px;
+    height: 200px;
+  }
+
+  /* for this test to suceed, te red rect needs to be entirely
+  occluded by the inner green rect, requiring extrapolation
+  beyond the largest keyframe */
+  .red {
+    background-color: red;
+    position: fixed;
+    left: 50px;
+    top: 50px;
+    width: 100px;
+    height: 100px;
+  }
+
+  .anim {
+    animation: clippath 10000000s -6000000s;
+    animation-timing-function: cubic-bezier(0, 6, 1, 6);
+    clip-path: inset(50% 50%);
+  }
+
+</style>
+<script src="/common/reftest-wait.js"></script>
+
+<body>
+  <div class="green" id="target">
+    <div class="red">
+      <div class="green anim"></div>
+    </div>
+  </div>
+
+  <script>
+    document.getAnimations()[0].ready.then(takeScreenshot);
+  </script>
+</body>
+
+</html>

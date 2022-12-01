@@ -385,15 +385,13 @@ class RequestHeaders(Dict[bytes, List[bytes]]):
         for header in items.keys():
             key = isomorphic_encode(header).lower()
             # get all headers with the same name
-            values = items.getallmatchingheaders(header)
+            values = items.get_all(header)
             if len(values) > 1:
                 # collect the multiple variations of the current header
                 multiples = []
-                # loop through the values from getallmatchingheaders
+                # loop through the values from get_all
                 for value in values:
-                    # getallmatchingheaders returns raw header lines, so
-                    # split to get name, value
-                    multiples.append(isomorphic_encode(value).split(b':', 1)[1].strip())
+                    multiples.append(isomorphic_encode(value))
                 headers = multiples
             else:
                 headers = [isomorphic_encode(items[header])]

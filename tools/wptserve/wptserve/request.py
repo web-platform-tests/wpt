@@ -281,7 +281,7 @@ class Request:
             self.url = self.request_path
         else:
             # TODO(#23362): Stop using native strings for URLs.
-            self.url = "%s://%s:%s%s" % (
+            self.url = "{}://{}:{}{}".format(
                 scheme, host, port, self.request_path)
         self.url_parts = urlsplit(self.url)
 
@@ -300,7 +300,7 @@ class Request:
         self.server = Server(self)
 
     def __repr__(self):
-        return "<Request %s %s>" % (self.method, self.url)
+        return f"<Request {self.method} {self.url}>"
 
     @property
     def GET(self):

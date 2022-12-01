@@ -94,10 +94,10 @@ def run(*args, **kwargs):
             url = artifacts_list_url % (task_id,)
             for artifact in get_json(url, "artifacts"):
                 if artifact["name"].endswith(kwargs["artifact_name"]):
-                    filename = "%s-%s-%s" % (task["task"]["metadata"]["name"],
+                    filename = "{}-{}-{}".format(task["task"]["metadata"]["name"],
                                              task_id,
                                              kwargs["artifact_name"])
-                    path = get("%s/%s" % (url, artifact["name"]), kwargs["out_dir"], filename)
+                    path = get("{}/{}".format(url, artifact["name"]), kwargs["out_dir"], filename)
                     logger.info(path)
 
 

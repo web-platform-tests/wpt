@@ -101,7 +101,7 @@ def make_subject(common_name,
     for var, key in args:
         value = locals()[var]
         if value is not None:
-            rv.append("/%s=%s" % (key, value.replace("/", "\\/")))
+            rv.append("/{}={}".format(key, value.replace("/", "\\/")))
 
     return "".join(rv)
 

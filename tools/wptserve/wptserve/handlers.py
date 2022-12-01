@@ -56,7 +56,7 @@ class DirectoryHandler:
         self.url_base = url_base
 
     def __repr__(self):
-        return "<%s base_path:%s url_base:%s>" % (self.__class__.__name__, self.base_path, self.url_base)
+        return f"<{self.__class__.__name__} base_path:{self.base_path} url_base:{self.url_base}>"
 
     def __call__(self, request, response):
         url_path = request.url_parts.path
@@ -73,13 +73,13 @@ class DirectoryHandler:
         response.headers = [("Content-Type", "text/html")]
         response.content = """<!doctype html>
 <meta name="viewport" content="width=device-width">
-<title>Directory listing for %(path)s</title>
-<h1>Directory listing for %(path)s</h1>
+<title>Directory listing for {path}</title>
+<h1>Directory listing for {path}</h1>
 <ul>
-%(items)s
+{items}
 </ul>
-""" % {"path": escape(url_path),
-       "items": "\n".join(self.list_items(url_path, path))}  # noqa: E122
+""".format(path=escape(url_path),
+       items="\n".join(self.list_items(url_path, path)))  # noqa: E122
 
     def list_items(self, base_path, path):
         assert base_path.endswith("/")
@@ -203,7 +203,7 @@ class FileHandler:
         self.directory_handler = DirectoryHandler(self.base_path, self.url_base)
 
     def __repr__(self):
-        return "<%s base_path:%s url_base:%s>" % (self.__class__.__name__, self.base_path, self.url_base)
+        return f"<{self.__class__.__name__} base_path:{self.base_path} url_base:{self.url_base}>"
 
     def __call__(self, request, response):
         path = filesystem_path(self.base_path, request, self.url_base)
@@ -284,7 +284,7 @@ class PythonScriptHandler:
         self.url_base = url_base
 
     def __repr__(self):
-        return "<%s base_path:%s url_base:%s>" % (self.__class__.__name__, self.base_path, self.url_base)
+        return f"<{self.__class__.__name__} base_path:{self.base_path} url_base:{self.url_base}>"
 
     def _load_file(self, request, response, func):
         """

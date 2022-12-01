@@ -68,7 +68,7 @@ class Timeouts:
         return self._set("implicit", secs)
 
     def __str__(self):
-        name = "%s.%s" % (self.__module__, self.__class__.__name__)
+        name = f"{self.__module__}.{self.__class__.__name__}"
         return "<%s script=%d, load=%d, implicit=%d>" % \
             (name, self.script, self.page_load, self.implicit)
 
@@ -521,7 +521,7 @@ class Session:
         self.actions = Actions(self)
 
     def __repr__(self):
-        return "<%s %s>" % (self.__class__.__name__, self.session_id or "(disconnected)")
+        return "<{} {}>".format(self.__class__.__name__, self.session_id or "(disconnected)")
 
     def __eq__(self, other):
         return (self.session_id is not None and isinstance(other, Session) and
@@ -819,7 +819,7 @@ class Element:
         self.session = session
 
     def __repr__(self):
-        return "<%s %s>" % (self.__class__.__name__, self.id)
+        return f"<{self.__class__.__name__} {self.id}>"
 
     def __eq__(self, other):
         return (isinstance(other, Element) and self.id == other.id and
@@ -831,7 +831,7 @@ class Element:
         return cls(uuid, session)
 
     def send_element_command(self, method, uri, body=None):
-        url = "element/%s/%s" % (self.id, uri)
+        url = f"element/{self.id}/{uri}"
         return self.session.send_session_command(method, url, body)
 
     @command

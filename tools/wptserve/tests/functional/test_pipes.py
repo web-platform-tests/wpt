@@ -130,10 +130,10 @@ server: http://localhost:{0}""".format(self.server.port).encode("ascii")
     def test_sub_fs_path(self):
         resp = self.request("/subdir/sub_path.sub.txt")
         root = os.path.abspath(doc_root)
-        expected = """%(root)s%(sep)ssubdir%(sep)ssub_path.sub.txt
-%(root)s%(sep)ssub_path.sub.txt
-%(root)s%(sep)ssub_path.sub.txt
-""" % {"root": root, "sep": os.path.sep}
+        expected = """{root}{sep}subdir{sep}sub_path.sub.txt
+{root}{sep}sub_path.sub.txt
+{root}{sep}sub_path.sub.txt
+""".format(root=root, sep=os.path.sep)
         self.assertEqual(resp.read(), expected.encode("utf8"))
 
     def test_sub_header_or_default(self):

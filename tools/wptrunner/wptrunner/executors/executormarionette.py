@@ -292,10 +292,10 @@ class MarionettePrefsProtocolPart(PrefsProtocolPart):
         script = """
             let prefInterface = Components.classes["@mozilla.org/preferences-service;1"]
                                           .getService(Components.interfaces.nsIPrefBranch);
-            let pref = '%s';
+            let pref = '{}';
             let type = prefInterface.getPrefType(pref);
-            let value = %s;
-            switch(type) {
+            let value = {};
+            switch(type) {{
                 case prefInterface.PREF_STRING:
                     prefInterface.setCharPref(pref, value);
                     break;
@@ -308,7 +308,7 @@ class MarionettePrefsProtocolPart(PrefsProtocolPart):
                 case prefInterface.PREF_INVALID:
                     // Pref doesn't seem to be defined already; guess at the
                     // right way to set it based on the type of value we have.
-                    switch (typeof value) {
+                    switch (typeof value) {{
                         case "boolean":
                             prefInterface.setBoolPref(pref, value);
                             break;
@@ -320,12 +320,12 @@ class MarionettePrefsProtocolPart(PrefsProtocolPart):
                             break;
                         default:
                             throw new Error("Unknown pref value type: " + (typeof value));
-                    }
+                    }}
                     break;
                 default:
                     throw new Error("Unknown pref type " + type);
-            }
-            """ % (name, value)
+            }}
+            """.format(name, value)
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
             self.marionette.execute_script(script)
 
@@ -404,7 +404,7 @@ class MarionetteAssertsProtocolPart(AssertsProtocolPart):
             try:
                 context_count = self.marionette.execute_script(script, **kwargs)
                 if context_count:
-                    self.parent.logger.info("Got %s assert count %s" % (context, context_count))
+                    self.parent.logger.info(f"Got {context} assert count {context_count}")
                     test_count = context_count - self.assert_count[context]
                     self.assert_count[context] = context_count
                     return test_count

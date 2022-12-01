@@ -144,7 +144,7 @@ class SetPermissionAction:
         name = descriptor["name"]
         state = permission_params["state"]
         one_realm = permission_params.get("oneRealm", False)
-        self.logger.debug("Setting permission %s to %s, oneRealm=%s" % (name, state, one_realm))
+        self.logger.debug(f"Setting permission {name} to {state}, oneRealm={one_realm}")
         self.protocol.set_permission.set_permission(descriptor, state, one_realm)
 
 class AddVirtualAuthenticatorAction:
@@ -209,7 +209,7 @@ class RemoveCredentialAction:
     def __call__(self, payload):
         authenticator_id = payload["authenticator_id"]
         credential_id = payload["credential_id"]
-        self.logger.debug("Removing credential %s from authenticator %s" % (credential_id, authenticator_id))
+        self.logger.debug(f"Removing credential {credential_id} from authenticator {authenticator_id}")
         return self.protocol.virtual_authenticator.remove_credential(authenticator_id, credential_id)
 
 class RemoveAllCredentialsAction:
@@ -235,7 +235,7 @@ class SetUserVerifiedAction:
         authenticator_id = payload["authenticator_id"]
         uv = payload["uv"]
         self.logger.debug(
-            "Setting user verified flag on authenticator %s to %s" % (authenticator_id, uv["isUserVerified"]))
+            "Setting user verified flag on authenticator {} to {}".format(authenticator_id, uv["isUserVerified"]))
         return self.protocol.virtual_authenticator.set_user_verified(authenticator_id, uv)
 
 class SetSPCTransactionModeAction:

@@ -69,7 +69,7 @@ def get_download_filename(resp, default=None):
 def get_taskcluster_artifact(index, path):
     TC_INDEX_BASE = FIREFOX_CI_ROOT_URL + "/api/index/v1/"
 
-    resp = get(TC_INDEX_BASE + "task/%s/artifacts/%s" % (index, path))
+    resp = get(TC_INDEX_BASE + f"task/{index}/artifacts/{path}")
     resp.raise_for_status()
 
     return resp
@@ -186,7 +186,7 @@ class Firefox(Browser):
         else:
             bits = ""
 
-        return "%s%s" % (self.platform, bits)
+        return f"{self.platform}{bits}"
 
     def download(self, dest=None, channel="nightly", rename=None):
         product = {
@@ -213,7 +213,7 @@ class Firefox(Browser):
         if os_key not in os_builds:
             raise ValueError("Unsupported platform: %s %s" % os_key)
 
-        url = "https://download.mozilla.org/?product=%s&os=%s&lang=en-US" % (product[channel],
+        url = "https://download.mozilla.org/?product={}&os={}&lang=en-US".format(product[channel],
                                                                              os_builds[os_key])
         self.logger.info("Downloading Firefox from %s" % url)
         resp = get(url)
@@ -221,7 +221,7 @@ class Firefox(Browser):
         filename = get_download_filename(resp, "firefox.tar.bz2")
 
         if rename:
-            filename = "%s%s" % (rename, get_ext(filename))
+            filename = f"{rename}{get_ext(filename)}"
 
         installer_path = os.path.join(dest, filename)
 
@@ -347,7 +347,7 @@ class Firefox(Browser):
             # can get if we have an application.ini file
             tag = "tip"
 
-        return "%s/archive/%s.zip/testing/profiles/" % (repo, tag)
+        return f"{repo}/archive/{tag}.zip/testing/profiles/"
 
     def install_prefs(self, binary, dest=None, channel=None):
         if binary:
@@ -449,7 +449,7 @@ class Firefox(Browser):
 
         platform_bits = ("64" if uname[4] == "x86_64" else
                          ("32" if self.platform == "win" else ""))
-        tc_platform = "%s%s" % (self.platform, platform_bits)
+        tc_platform = f"{self.platform}{platform_bits}"
 
         archive_ext = ".zip" if uname[0] == "Windows" else ".tar.gz"
         archive_name = "public/build/geckodriver%s" % archive_ext
@@ -503,7 +503,7 @@ class FirefoxAndroid(Browser):
 
         filename = "geckoview-androidTest.apk"
         if rename:
-            filename = "%s%s" % (rename, get_ext(filename)[1])
+            filename = f"{rename}{get_ext(filename)[1]}"
         self.apk_path = os.path.join(dest, filename)
 
         with open(self.apk_path, "wb") as f:
@@ -679,7 +679,7 @@ class ChromeChromiumBase(Browser):
         extracted = os.path.join(dest, "mojojs", "gen")
         last_url_file = os.path.join(extracted, "DOWNLOADED_FROM")
         if os.path.exists(last_url_file):
-            with open(last_url_file, "rt") as f:
+            with open(last_url_file) as f:
                 last_url = f.read().strip()
             if last_url == url:
                 self.logger.info("Mojo bindings already up to date")
@@ -689,7 +689,7 @@ class ChromeChromiumBase(Browser):
         try:
             self.logger.info(f"Downloading Mojo bindings from {url}")
             unzip(get(url).raw, dest)
-            with open(last_url_file, "wt") as f:
+            with open(last_url_file, "w") as f:
                 f.write(url)
             return extracted
         except Exception as e:
@@ -1239,7 +1239,7 @@ class Opera(Browser):
         elif platform == "win":
             bits = "32"
 
-        return "%s%s" % (platform, bits)
+        return f"{platform}{bits}"
 
     def find_binary(self, venv_path=None, channel=None):
         raise NotImplementedError
@@ -1251,7 +1251,7 @@ class Opera(Browser):
         if dest is None:
             dest = os.pwd
         latest = get("https://api.github.com/repos/operasoftware/operachromiumdriver/releases/latest").json()["tag_name"]
-        url = "https://github.com/operasoftware/operachromiumdriver/releases/download/%s/operadriver_%s.zip" % (latest,
+        url = "https://github.com/operasoftware/operachromiumdriver/releases/download/{}/operadriver_{}.zip".format(latest,
                                                                                                                 self.platform_string())
         unzip(get(url).raw, dest)
 
@@ -1781,7 +1781,7 @@ class Servo(Browser):
             raise ValueError("Only nightly versions of Servo are available")
 
         platform, extension, _ = self.platform_components()
-        url = "https://download.servo.org/nightly/%s/servo-latest%s" % (platform, extension)
+        url = f"https://download.servo.org/nightly/{platform}/servo-latest{extension}"
         return get(url)
 
     def download(self, dest=None, channel="nightly", rename=None):
@@ -1792,7 +1792,7 @@ class Servo(Browser):
         _, extension, _ = self.platform_components()
 
         filename = rename if rename is not None else "servo-latest"
-        with open(os.path.join(dest, "%s%s" % (filename, extension,)), "w") as f:
+        with open(os.path.join(dest, f"{filename}{extension}"), "w") as f:
             f.write(resp.content)
 
     def install(self, dest=None, channel="nightly"):
@@ -1929,7 +1929,7 @@ class WebKitGTKMiniBrowser(WebKit):
         bundle_computed_hash = sha256sum(bundle_file_path)
 
         if bundle_expected_hash != bundle_computed_hash:
-            self.logger.error("Calculated SHA256 hash is %s but was expecting %s" % (bundle_computed_hash,bundle_expected_hash))
+            self.logger.error(f"Calculated SHA256 hash is {bundle_computed_hash} but was expecting {bundle_expected_hash}")
             raise RuntimeError("The WebKitGTK MiniBrowser bundle at %s has incorrect SHA256 hash." % bundle_file_path)
         return bundle_file_path
 

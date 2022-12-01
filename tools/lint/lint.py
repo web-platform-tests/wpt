@@ -50,11 +50,7 @@ if MYPY:
     # Define an arbitrary typevar
     T = TypeVar("T")
 
-    try:
-        from xml.etree import cElementTree as ElementTree
-    except ImportError:
-        from xml.etree import ElementTree as ElementTree  # type: ignore
-
+    from xml.etree import ElementTree as ElementTree
 
 logger = None  # type: Optional[logging.Logger]
 
@@ -938,7 +934,7 @@ def lint_paths(kwargs, wpt_root):
         paths = list(all_filesystem_paths(wpt_root))
     elif kwargs["paths_file"]:
         paths = []
-        with open(kwargs["paths_file"], 'r', newline='') as f:
+        with open(kwargs["paths_file"], newline='') as f:
             for line in f.readlines():
                 path = line.strip()
                 if os.path.isdir(path):

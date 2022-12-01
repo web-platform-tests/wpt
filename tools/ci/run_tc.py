@@ -161,7 +161,7 @@ def install_chrome(channel):
 
 def start_xvfb():
     start(["sudo", "Xvfb", os.environ["DISPLAY"], "-screen", "0",
-           "%sx%sx%s" % (os.environ["SCREEN_WIDTH"],
+           "{}x{}x{}".format(os.environ["SCREEN_WIDTH"],
                          os.environ["SCREEN_HEIGHT"],
                          os.environ["SCREEN_DEPTH"])])
     start(["sudo", "fluxbox", "-display", os.environ["DISPLAY"]])
@@ -194,7 +194,7 @@ def task_url(task_id):
     else:
         queue_base = root_url + "/api/queue/v1/task"
 
-    return "%s/%s" % (queue_base, task_id)
+    return f"{queue_base}/{task_id}"
 
 
 def download_artifacts(artifacts):
@@ -212,10 +212,10 @@ def download_artifacts(artifacts):
         print("DEBUG: Got artifacts %s" % artifacts_data)
         found = False
         for candidate in artifacts_data["artifacts"]:
-            print("DEBUG: candidate: %s glob: %s" % (candidate["name"], artifact["glob"]))
+            print("DEBUG: candidate: {} glob: {}".format(candidate["name"], artifact["glob"]))
             if fnmatch.fnmatch(candidate["name"], artifact["glob"]):
                 found = True
-                print("INFO: Fetching aritfact %s from task %s" % (candidate["name"], artifact["task"]))
+                print("INFO: Fetching aritfact {} from task {}".format(candidate["name"], artifact["task"]))
                 file_name = candidate["name"].rsplit("/", 1)[1]
                 url = base_url + "/artifacts/" + candidate["name"]
                 dest_path = os.path.expanduser(os.path.join("~", artifact["dest"], file_name))
@@ -228,7 +228,7 @@ def download_artifacts(artifacts):
                 if artifact.get("extract"):
                     unpack(dest_path)
         if not found:
-            print("WARNING: No artifact found matching %s in task %s" % (artifact["glob"], artifact["task"]))
+            print("WARNING: No artifact found matching {} in task {}".format(artifact["glob"], artifact["task"]))
 
 
 def unpack(path):
@@ -343,7 +343,7 @@ def setup_repository(args):
     if branch:
         # Ensure that the remote base branch exists
         # TODO: move this somewhere earlier in the task
-        run(["git", "fetch", "--quiet", "origin", "%s:%s" % (branch, branch)])
+        run(["git", "fetch", "--quiet", "origin", f"{branch}:{branch}"])
 
     checkout_rev = args.checkout if args.checkout is not None else "task_head"
     checkout_revision(checkout_rev)

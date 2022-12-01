@@ -252,7 +252,7 @@ class Response:
                 first_line = message.splitlines()[0]
             else:
                 first_line = "<no message given>"
-            self.logger.error("Exception loading %s: %s" % (self.request.url,
+            self.logger.error("Exception loading {}: {}".format(self.request.url,
                                                             first_line))
             self.logger.info(message)
 
@@ -815,4 +815,4 @@ class ResponseWriter:
         elif isinstance(data, str):
             return data.encode(self._response.encoding)
         else:
-            raise ValueError("data %r should be text or binary, but is %s" % (data, type(data)))
+            raise ValueError(f"data {data!r} should be text or binary, but is {type(data)}")

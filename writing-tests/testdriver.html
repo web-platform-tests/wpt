@@ -301,7 +301,7 @@ See <a class="reference external" href="https://w3c.github.io/webdriver/#get-nam
 <h3>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h3>
 <dl class="js function">
 <dt class="sig sig-object js" id="test_driver.set_permission">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_permission</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">descriptor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">one_realm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_permission" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_permission</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">descriptor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_permission" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the state of a permission</p>
 <p>This function simulates a user setting a permission into a
 particular state.</p>
@@ -310,9 +310,8 @@ WebDriver command.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>descriptor</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Object()</span></code></span>) – a <a class="reference external" href="https://w3c.github.io/permissions/#dictdef-permissiondescriptor">PermissionDescriptor</a> object</p></li>
+<li><p><strong>descriptor</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">PermissionDescriptor()</span></code></span>) – a <a class="reference external" href="https://w3c.github.io/permissions/#dom-permissiondescriptor">PermissionDescriptor</a> dictionary.</p></li>
 <li><p><strong>state</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">String()</span></code></span>) – the state of the permission</p></li>
-<li><p><strong>one_realm</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">boolean()</span></code></span>) – Optional. Whether the permission applies to only one realm</p></li>
 <li><p><strong>context</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">WindowProxy()</span></code></span>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
@@ -322,7 +321,7 @@ WebDriver command.</p>
 </dl>
 <p><strong>Examples:</strong></p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;background-fetch&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;denied&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;push&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">userVisibleOnly</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;granted&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span><span class="w"></span>
+<span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;push&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">userVisibleOnly</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;granted&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1033,7 +1032,7 @@ For example, to send the tab key you would send “\uE004”.</p>
 </section>
 <section id="set-permission">
 <h3>set_permission<a class="headerlink" href="#set-permission" title="Permalink to this headline">¶</a></h3>
-<p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.set_permission(descriptor,</span> <span class="pre">state,</span> <span class="pre">one_realm=false,</span> <span class="pre">context=null)</span></code></p>
+<p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.set_permission(descriptor,</span> <span class="pre">state,</span> <span class="pre">context=null)</span></code></p>
 <ul class="simple">
 <li><p><em>descriptor</em>: a
 <a class="reference external" href="https://w3c.github.io/permissions/#dictdef-permissiondescriptor">PermissionDescriptor</a>
@@ -1041,8 +1040,6 @@ or derived object</p></li>
 <li><p><em>state</em>: a
 <a class="reference external" href="https://w3c.github.io/permissions/#enumdef-permissionstate">PermissionState</a>
 value</p></li>
-<li><p><em>one_realm</em>: a boolean that indicates whether the permission settings
-apply to only one realm</p></li>
 <li><p>context: a WindowProxy for the browsing context in which to perform the call</p></li>
 </ul>
 <p>This function causes permission requests and queries for the status of a
@@ -1051,7 +1048,7 @@ return <em>state</em>. It returns a promise that resolves after the permission h
 been set to be overridden with <em>state</em>.</p>
 <p>Example:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;background-fetch&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;denied&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;push&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">userVisibleOnly</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;granted&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span><span class="w"></span>
+<span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;push&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">userVisibleOnly</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;granted&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>

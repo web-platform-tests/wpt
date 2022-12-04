@@ -31,28 +31,11 @@ promise_test(
           {name: 'storage-access'}, 'granted');
 
       await RunCallbackWithGesture(() => document.requestStorageAccess());
-
-      // Cleanup
-      await test_driver.set_permission(
-          {name: 'storage-access'}, 'prompt');
     },
     '[' + testPrefix +
         '] document.requestStorageAccess() should be resolved when called properly with a user gesture');
 
 if (testPrefix == 'cross-origin-frame' || testPrefix == 'nested-cross-origin-frame') {
-  promise_test(
-      async t => {
-        await test_driver.set_permission(
-            {name: 'storage-access'}, 'prompt');
-
-        await RunCallbackWithGesture(() => {
-          return promise_rejects_dom(t, "NotAllowedError", document.requestStorageAccess(),
-            "document.requestStorageAccess() call without permission");
-        });
-      },
-      '[' + testPrefix +
-          '] document.requestStorageAccess() should be rejected with a NotAllowedError without permission grant');
-
   promise_test(
       async t => {
         await test_driver.set_permission(
@@ -62,10 +45,6 @@ if (testPrefix == 'cross-origin-frame' || testPrefix == 'nested-cross-origin-fra
           return promise_rejects_dom(t, "NotAllowedError", document.requestStorageAccess(),
             "document.requestStorageAccess() call without permission");
         });
-
-        // Cleanup
-        await test_driver.set_permission(
-            {name: 'storage-access'}, 'prompt');
       },
       '[' + testPrefix +
           '] document.requestStorageAccess() should be rejected with a NotAllowedError with denied permission');

@@ -40,14 +40,6 @@
             }
         },
         {
-            "href": "javascript:alert(1)",
-            "new_value": "defuse",
-            "expected": {
-                "href": "defuse:alert(1)",
-                "protocol": "defuse:"
-            }
-        },
-        {
             "comment": "Upper-case ASCII is lower-cased",
             "href": "a://example.net",
             "new_value": "B",
@@ -135,45 +127,12 @@
             }
         },
         {
-            "comment": "Can’t switch from file URL with no host",
-            "href": "file://localhost/",
-            "new_value": "http",
-            "expected": {
-                "href": "file:///",
-                "protocol": "file:"
-            }
-        },
-        {
-            "href": "file:///test",
-            "new_value": "https",
-            "expected": {
-                "href": "file:///test",
-                "protocol": "file:"
-            }
-        },
-        {
-            "href": "file:",
-            "new_value": "wss",
-            "expected": {
-                "href": "file:///",
-                "protocol": "file:"
-            }
-        },
-        {
             "comment": "Can’t switch from special scheme to non-special",
             "href": "http://example.net",
             "new_value": "b",
             "expected": {
                 "href": "http://example.net/",
                 "protocol": "http:"
-            }
-        },
-        {
-            "href": "file://hi/path",
-            "new_value": "s",
-            "expected": {
-                "href": "file://hi/path",
-                "protocol": "file:"
             }
         },
         {
@@ -190,15 +149,6 @@
             "expected": {
                 "href": "ftp://example.net/",
                 "protocol": "ftp:"
-            }
-        },
-        {
-            "comment": "Cannot-be-a-base URL doesn’t have a host, but URL in a special scheme must.",
-            "href": "mailto:me@example.net",
-            "new_value": "http",
-            "expected": {
-                "href": "mailto:me@example.net",
-                "protocol": "mailto:"
             }
         },
         {
@@ -274,36 +224,10 @@
     "username": [
         {
             "comment": "No host means no username",
-            "href": "file:///home/you/index.html",
-            "new_value": "me",
-            "expected": {
-                "href": "file:///home/you/index.html",
-                "username": ""
-            }
-        },
-        {
-            "comment": "No host means no username",
             "href": "unix:/run/foo.socket",
             "new_value": "me",
             "expected": {
                 "href": "unix:/run/foo.socket",
-                "username": ""
-            }
-        },
-        {
-            "comment": "Cannot-be-a-base means no username",
-            "href": "mailto:you@example.net",
-            "new_value": "me",
-            "expected": {
-                "href": "mailto:you@example.net",
-                "username": ""
-            }
-        },
-        {
-            "href": "javascript:alert(1)",
-            "new_value": "wario",
-            "expected": {
-                "href": "javascript:alert(1)",
                 "username": ""
             }
         },
@@ -364,49 +288,15 @@
                 "href": "sc:///",
                 "username": ""
             }
-        },
-        {
-            "href": "javascript://x/",
-            "new_value": "wario",
-            "expected": {
-                "href": "javascript://wario@x/",
-                "username": "wario"
-            }
-        },
-        {
-            "href": "file://test/",
-            "new_value": "test",
-            "expected": {
-                "href": "file://test/",
-                "username": ""
-            }
         }
     ],
     "password": [
-        {
-            "comment": "No host means no password",
-            "href": "file:///home/me/index.html",
-            "new_value": "secret",
-            "expected": {
-                "href": "file:///home/me/index.html",
-                "password": ""
-            }
-        },
         {
             "comment": "No host means no password",
             "href": "unix:/run/foo.socket",
             "new_value": "secret",
             "expected": {
                 "href": "unix:/run/foo.socket",
-                "password": ""
-            }
-        },
-        {
-            "comment": "Cannot-be-a-base means no password",
-            "href": "mailto:me@example.net",
-            "new_value": "secret",
-            "expected": {
-                "href": "mailto:me@example.net",
                 "password": ""
             }
         },
@@ -465,22 +355,6 @@
             "new_value": "x",
             "expected": {
                 "href": "sc:///",
-                "password": ""
-            }
-        },
-        {
-            "href": "javascript://x/",
-            "new_value": "bowser",
-            "expected": {
-                "href": "javascript://:bowser@x/",
-                "password": "bowser"
-            }
-        },
-        {
-            "href": "file://test/",
-            "new_value": "test",
-            "expected": {
-                "href": "file://test/",
                 "password": ""
             }
         }
@@ -585,15 +459,6 @@
                 "href": "https://xn--zca/",
                 "host": "xn--zca",
                 "hostname": "xn--zca"
-            }
-        },
-        {
-            "comment": "Cannot-be-a-base means no host",
-            "href": "mailto:me@example.net",
-            "new_value": "example.com",
-            "expected": {
-                "href": "mailto:me@example.net",
-                "host": ""
             }
         },
         {
@@ -942,36 +807,6 @@
             }
         },
         {
-            "href": "file://y/",
-            "new_value": "x:123",
-            "expected": {
-                "href": "file://y/",
-                "host": "y",
-                "hostname": "y",
-                "port": ""
-            }
-        },
-        {
-            "href": "file://y/",
-            "new_value": "loc%41lhost",
-            "expected": {
-                "href": "file:///",
-                "host": "",
-                "hostname": "",
-                "port": ""
-            }
-        },
-        {
-            "href": "file://hi/x",
-            "new_value": "",
-            "expected": {
-                "href": "file:///x",
-                "host": "",
-                "hostname": "",
-                "port": ""
-            }
-        },
-        {
             "href": "sc://test@test/",
             "new_value": "",
             "expected": {
@@ -1093,15 +928,6 @@
                 "href": "sc://x/",
                 "host": "x",
                 "hostname": "x"
-            }
-        },
-        {
-            "comment": "Cannot-be-a-base means no host",
-            "href": "mailto:me@example.net",
-            "new_value": "example.com",
-            "expected": {
-                "href": "mailto:me@example.net",
-                "host": ""
             }
         },
         {
@@ -1293,36 +1119,6 @@
                 "href": "http://example.net/",
                 "host": "example.net",
                 "hostname": "example.net"
-            }
-        },
-        {
-            "href": "file://y/",
-            "new_value": "x:123",
-            "expected": {
-                "href": "file://y/",
-                "host": "y",
-                "hostname": "y",
-                "port": ""
-            }
-        },
-        {
-            "href": "file://y/",
-            "new_value": "loc%41lhost",
-            "expected": {
-                "href": "file:///",
-                "host": "",
-                "hostname": "",
-                "port": ""
-            }
-        },
-        {
-            "href": "file://hi/x",
-            "new_value": "",
-            "expected": {
-                "href": "file:///x",
-                "host": "",
-                "hostname": "",
-                "port": ""
             }
         },
         {
@@ -1553,22 +1349,6 @@
             }
         },
         {
-            "href": "file://test/",
-            "new_value": "12",
-            "expected": {
-                "href": "file://test/",
-                "port": ""
-            }
-        },
-        {
-            "href": "file://localhost/",
-            "new_value": "12",
-            "expected": {
-                "href": "file:///",
-                "port": ""
-            }
-        },
-        {
             "href": "non-base:value",
             "new_value": "12",
             "expected": {
@@ -1591,35 +1371,9 @@
                 "href": "sc://x:12/",
                 "port": "12"
             }
-        },
-        {
-            "href": "javascript://x/",
-            "new_value": "12",
-            "expected": {
-                "href": "javascript://x:12/",
-                "port": "12"
-            }
         }
     ],
     "pathname": [
-        {
-            "comment": "Cannot-be-a-base don’t have a path",
-            "href": "mailto:me@example.net",
-            "new_value": "/foo",
-            "expected": {
-                "href": "mailto:me@example.net",
-                "pathname": "me@example.net"
-            }
-        },
-        {
-            "comment": "Special URLs cannot have their paths erased",
-            "href": "file:///some/path",
-            "new_value": "",
-            "expected": {
-                "href": "file:///",
-                "pathname": "/"
-            }
-        },
         {
             "comment": "Non-special URLs can have their paths erased",
             "href": "foo://somehost/some/path",
@@ -1768,33 +1522,6 @@
             "expected": {
                 "href": "http://example.net/%23%C3%A9",
                 "pathname": "/%23%C3%A9"
-            }
-        },
-        {
-            "comment": "File URLs and (back)slashes",
-            "href": "file://monkey/",
-            "new_value": "\\\\",
-            "expected": {
-                "href": "file://monkey//",
-                "pathname": "//"
-            }
-        },
-        {
-            "comment": "File URLs and (back)slashes",
-            "href": "file:///unicorn",
-            "new_value": "//\\/",
-            "expected": {
-                "href": "file://////",
-                "pathname": "////"
-            }
-        },
-        {
-            "comment": "File URLs and (back)slashes",
-            "href": "file:///unicorn",
-            "new_value": "//monkey/..//",
-            "expected": {
-                "href": "file://///",
-                "pathname": "///"
             }
         },
         {
@@ -2039,14 +1766,6 @@
             "expected": {
                 "href": "http://example.net/#%c3%89t%C3%A9",
                 "hash": "#%c3%89t%C3%A9"
-            }
-        },
-        {
-            "href": "javascript:alert(1)",
-            "new_value": "castle",
-            "expected": {
-                "href": "javascript:alert(1)#castle",
-                "hash": "#castle"
             }
         }
     ]

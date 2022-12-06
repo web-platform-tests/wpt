@@ -1,5 +1,5 @@
 <!doctype html>
-<title>NOT invoking resource selection by inserting into other document with src set</title>
+<title>invoking resource selection by inserting into other document with src set</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
@@ -13,11 +13,15 @@ async_test(function(t) {
     assert_equals(v.networkState, v.NETWORK_NO_SOURCE);
     var iframe = document.querySelector('iframe');
     iframe.contentDocument.body.appendChild(v);
-    v.onloadstart = t.step_func(function() { assert_unreached(); });
-    // wait for an event after the above
-    var v2 = document.createElement('video');
-    v2.src = 'data:,';
-    v2.onloadstart = t.step_func(function() { t.done(); });
+
+    // Video should reload because player reuse is not currently enabled for
+    // non-pip related move.
+    v.onloadstart = t.step_func(function() {
+      // wait for an event after the above
+      var v2 = document.createElement('video');
+      v2.src = 'data:,';
+      v2.onloadstart = t.step_func(function() { t.done(); });
+    });
   });
 });
 </script>

@@ -158,7 +158,7 @@ def get_pause_after_test(test_loader, **kwargs):
 def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source_cls, run_info,
                        recording, test_environment, product, run_test_kwargs):
     """Runs the entire test suite.
-    This is called for each repeat or retry run requested."""
+    This is called for each repeat run requested."""
     tests_by_type = defaultdict(list)
     for test_type in test_loader.test_types:
         tests_by_type[test_type].extend(test_loader.tests[test_type])
@@ -169,11 +169,6 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
     except Exception:
         logger.critical("Loading tests failed")
         return False
-
-    if test_status.retries_remaining:
-        for test_type, tests in dict(test_groups).items():
-            test_groups[test_type] = [test for test in tests
-                                      if test in test_status.unexpected_tests]
 
     logger.suite_start(test_groups,
                        name='web-platform-test',
@@ -226,38 +221,45 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
         else:
             tests_to_run[test_type] = test_loader.tests[test_type]
 
-        if test_status.retries_remaining:
-            tests_to_run[test_type] = [test for test in tests_to_run[test_type]
-                                       if test.id in test_status.unexpected_tests]
-
+    unexpected_tests = set()
+    unexpected_pass_tests = set()
     recording.pause()
-    with ManagerGroup("web-platform-tests",
-                      run_test_kwargs["processes"],
-                      test_source_cls,
-                      test_source_kwargs,
-                      test_implementation_by_type,
-                      run_test_kwargs["rerun"],
-                      run_test_kwargs["pause_after_test"],
-                      run_test_kwargs["pause_on_unexpected"],
-                      run_test_kwargs["restart_on_unexpected"],
-                      run_test_kwargs["debug_info"],
-                      not run_test_kwargs["no_capture_stdio"],
-                      run_test_kwargs["restart_on_new_group"],
-                      recording=recording) as manager_group:
-        try:
-            manager_group.run(tests_to_run)
-        except KeyboardInterrupt:
-            logger.critical("Main thread got signal")
-            manager_group.stop()
-            raise
-        test_status.total_tests += manager_group.test_count()
-        test_status.unexpected += manager_group.unexpected_count()
-        test_status.unexpected_pass += manager_group.unexpected_pass_count()
+    retry_counts = run_test_kwargs["retry_unexpected"]
+    for i in range(retry_counts + 1):
+        if i > 0:
+            unexpected_fail_tests = unexpected_tests - unexpected_pass_tests
+            if len(unexpected_fail_tests) == 0:
+                break;
+            for test_type, tests in tests_to_run.items():
+                tests_to_run[test_type] = [test for test in tests
+                                           if test.id in unexpected_fail_tests]
 
-    if test_status.repeated_runs == 1:
-        test_status.unexpected_tests = manager_group.unexpected_tests()
-    else:
-        test_status.unexpected_tests &= manager_group.unexpected_tests()
+        with ManagerGroup("web-platform-tests",
+                          run_test_kwargs["processes"],
+                          test_source_cls,
+                          test_source_kwargs,
+                          test_implementation_by_type,
+                          run_test_kwargs["rerun"],
+                          run_test_kwargs["pause_after_test"],
+                          run_test_kwargs["pause_on_unexpected"],
+                          run_test_kwargs["restart_on_unexpected"],
+                          run_test_kwargs["debug_info"],
+                          not run_test_kwargs["no_capture_stdio"],
+                          run_test_kwargs["restart_on_new_group"],
+                          recording=recording) as manager_group:
+            try:
+                manager_group.run(tests_to_run)
+            except KeyboardInterrupt:
+                logger.critical("Main thread got signal")
+                manager_group.stop()
+                raise
+
+            test_status.total_tests += manager_group.test_count()
+            unexpected_tests = manager_group.unexpected_tests()
+            unexpected_pass_tests = manager_group.unexpected_pass_tests()
+
+    test_status.unexpected += len(unexpected_tests)
+    test_status.unexpected_pass += len(unexpected_pass_tests)
 
     return True
 
@@ -299,8 +301,6 @@ class TestStatus:
         self.repeated_runs = 0
         self.expected_repeated_runs = 0
         self.all_skipped = False
-        self.unexpected_tests = set()
-        self.retries_remaining = 0
 
 
 def run_tests(config, test_paths, product, **kwargs):
@@ -447,42 +447,8 @@ def run_tests(config, test_paths, product, **kwargs):
                     test_status.all_skipped = True
                     break
 
-            if not test_status.all_skipped and kwargs["retry_unexpected"] > 0:
-                retry_success = retry_unexpected_tests(test_status, test_loader,
-                                                       test_source_kwargs,
-                                                       test_source_cls, run_info,
-                                                       recording, test_environment,
-                                                       product, kwargs)
-                if not retry_success:
-                    return False, test_status
-
     # Return the evaluation of the runs and the number of repeated iterations that were run.
     return evaluate_runs(test_status, kwargs), test_status
-
-
-def retry_unexpected_tests(test_status, test_loader, test_source_kwargs,
-                           test_source_cls, run_info, recording,
-                           test_environment, product, kwargs):
-    kwargs["rerun"] = 1
-    max_retries = kwargs["retry_unexpected"]
-    test_status.retries_remaining = max_retries
-    while (test_status.retries_remaining > 0 and not
-           evaluate_runs(test_status, kwargs)):
-        logger.info(f"Retry {max_retries - test_status.retries_remaining + 1}")
-        test_status.total_tests = 0
-        test_status.skipped = 0
-        test_status.unexpected = 0
-        test_status.unexpected_pass = 0
-        iter_success = run_test_iteration(test_status, test_loader,
-                                          test_source_kwargs, test_source_cls,
-                                          run_info, recording, test_environment,
-                                          product, kwargs)
-        if not iter_success:
-            return False
-        recording.set(["after-end"])
-        logger.suite_end()
-        test_status.retries_remaining -= 1
-    return True
 
 
 def check_stability(**kwargs):

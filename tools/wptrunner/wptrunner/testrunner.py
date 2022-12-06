@@ -333,9 +333,8 @@ class TestRunnerManager(threading.Thread):
         self.logger = None
 
         self.test_count = 0
-        self.unexpected_count = 0
-        self.unexpected_pass_count = 0
         self.unexpected_tests = set()
+        self.unexpected_pass_tests = set()
 
         # This may not really be what we want
         self.daemon = True
@@ -651,6 +650,7 @@ class TestRunnerManager(threading.Thread):
         # Write the result of each subtest
         file_result, test_results = results
         subtest_unexpected = False
+        subtest_all_unexpected_pass = True
         for result in test_results:
             if test.disabled(result.name):
                 continue
@@ -659,13 +659,10 @@ class TestRunnerManager(threading.Thread):
             is_unexpected = expected != result.status and result.status not in known_intermittent
 
             if is_unexpected:
-                self.unexpected_count += 1
-                self.logger.debug("Unexpected count in this thread %i" % self.unexpected_count)
                 subtest_unexpected = True
 
-            is_unexpected_pass = is_unexpected and result.status == "PASS"
-            if is_unexpected_pass:
-                self.unexpected_pass_count += 1
+                if result.status != "PASS":
+                    subtest_all_unexpected_pass = False
 
             self.logger.test_status(test.id,
                                     result.name,
@@ -698,16 +695,19 @@ class TestRunnerManager(threading.Thread):
 
         self.test_count += 1
         is_unexpected = expected != status and status not in known_intermittent
-        if is_unexpected:
-            self.unexpected_count += 1
-            self.logger.debug("Unexpected count in this thread %i" % self.unexpected_count)
-
-        is_unexpected_pass = is_unexpected and status == "OK"
-        if is_unexpected_pass:
-            self.unexpected_pass_count += 1
 
         if is_unexpected or subtest_unexpected:
             self.unexpected_tests.add(test.id)
+
+        # A result is unexpected pass if the test or any subtest run
+        # unexpectedly, and the overall status is OK (for test harness test), or
+        # PASS (for reftest), and all unexpected results for subtests (if any) are
+        # unexpected pass.
+        is_unexpected_pass = ((is_unexpected or subtest_unexpected) and
+                              status in ["OK", "PASS"]  and subtest_all_unexpected_pass)
+        if is_unexpected_pass:
+            self.unexpected_pass_tests.add(test.id)
+
 
         if "assertion_count" in file_result.extra:
             assertion_count = file_result.extra["assertion_count"]
@@ -975,11 +975,8 @@ class ManagerGroup:
     def test_count(self):
         return sum(manager.test_count for manager in self.pool)
 
-    def unexpected_count(self):
-        return sum(manager.unexpected_count for manager in self.pool)
-
-    def unexpected_pass_count(self):
-        return sum(manager.unexpected_pass_count for manager in self.pool)
-
     def unexpected_tests(self):
         return set().union(*(manager.unexpected_tests for manager in self.pool))
+
+    def unexpected_pass_tests(self):
+        return set().union(*(manager.unexpected_pass_tests for manager in self.pool))

@@ -227,7 +227,10 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
     retry_counts = run_test_kwargs["retry_unexpected"]
     for i in range(retry_counts + 1):
         if i > 0:
-            unexpected_fail_tests = unexpected_tests - unexpected_pass_tests
+            if not run_test_kwargs["fail_on_unexpected_pass"]:
+                unexpected_fail_tests = unexpected_tests - unexpected_pass_tests
+            else:
+                unexpected_fail_tests = unexpected_tests
             if len(unexpected_fail_tests) == 0:
                 break
             for test_type, tests in tests_to_run.items():

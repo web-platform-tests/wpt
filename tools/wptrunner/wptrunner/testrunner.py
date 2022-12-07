@@ -650,7 +650,7 @@ class TestRunnerManager(threading.Thread):
         # Write the result of each subtest
         file_result, test_results = results
         subtest_unexpected = False
-        subtest_all_unexpected_pass = True
+        subtest_all_pass_or_expected = True
         for result in test_results:
             if test.disabled(result.name):
                 continue
@@ -662,7 +662,7 @@ class TestRunnerManager(threading.Thread):
                 subtest_unexpected = True
 
                 if result.status != "PASS":
-                    subtest_all_unexpected_pass = False
+                    subtest_all_pass_or_expected = False
 
             self.logger.test_status(test.id,
                                     result.name,
@@ -704,7 +704,7 @@ class TestRunnerManager(threading.Thread):
         # PASS (for reftest), and all unexpected results for subtests (if any) are
         # unexpected pass.
         is_unexpected_pass = ((is_unexpected or subtest_unexpected) and
-                              status in ["OK", "PASS"] and subtest_all_unexpected_pass)
+                              status in ["OK", "PASS"] and subtest_all_pass_or_expected)
         if is_unexpected_pass:
             self.unexpected_pass_tests.add(test.id)
 

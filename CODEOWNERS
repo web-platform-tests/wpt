@@ -3,20 +3,3 @@
 
 # Prevent accidentally touching tools/third_party
 /tools/third_party/ @jgraham
-
-# Allow monitoring various directories
-/appmanifest/ @marcoscaceres
-/badging/ @marcoscaceres
-/contacts/ @marcoscaceres
-/gamepad/ @marcoscaceres
-/geolocation-API/ @marcoscaceres
-/html/user-activation/ @marcoscaceres
-/payment-method-basic-card/ @marcoscaceres
-/payment-method-id/ @marcoscaceres
-/payment-request/ @marcoscaceres
-/permissions/ @marcoscaceres
-/push-api/ @marcoscaceres
-/screen-orientation/ @marcoscaceres
-/screen-wake-lock/ @marcoscaceres
-/speech-api/ @marcoscaceres
-/web-share/ @marcoscaceres

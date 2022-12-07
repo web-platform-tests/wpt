@@ -704,7 +704,7 @@ class TestRunnerManager(threading.Thread):
         # PASS (for reftest), and all unexpected results for subtests (if any) are
         # unexpected pass.
         is_unexpected_pass = ((is_unexpected or subtest_unexpected) and
-                              status in ["OK", "PASS"]  and subtest_all_unexpected_pass)
+                              status in ["OK", "PASS"] and subtest_all_unexpected_pass)
         if is_unexpected_pass:
             self.unexpected_pass_tests.add(test.id)
 

@@ -229,7 +229,7 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
         if i > 0:
             unexpected_fail_tests = unexpected_tests - unexpected_pass_tests
             if len(unexpected_fail_tests) == 0:
-                break;
+                break
             for test_type, tests in tests_to_run.items():
                 tests_to_run[test_type] = [test for test in tests
                                            if test.id in unexpected_fail_tests]

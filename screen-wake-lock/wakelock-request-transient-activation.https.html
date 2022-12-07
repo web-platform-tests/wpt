@@ -21,7 +21,7 @@
           navigator.wakeLock.request(),
           navigator.wakeLock.request(),
         ];
-        assert_true(navigator.userActivation.isActive, "User activation must not be consumed.");
+        assert_true(navigator.userActivation.isActive, "Transient activation must not be consumed.");
         const locks = await Promise.all(lockPromises);
         await Promise.all(locks.map((lock) => lock.release()));
       }, "Requesting a screen wake lock requires transient activation, but does not consume it");

@@ -7,6 +7,7 @@
   <body>
     <script>
       promise_test(async (t) => {
+        assert_false(navigator.userActivation.isActive, "No user activation yet.");
         await promise_rejects_dom(
           t,
           "NotAllowedError",

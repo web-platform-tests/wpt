@@ -18,12 +18,12 @@ test(t => {
 
 test(t => {
   let image = makeImageBitmap(32, 16);
-  let frame = new VideoFrame(image, {timestamp: 10});
+  let frame = new VideoFrame(image, {timestamp: 10, duration: 15});
   frame.close();
 
   assert_equals(frame.format, null, 'format')
-  assert_equals(frame.timestamp, null, 'timestamp');
-  assert_equals(frame.duration, null, 'duration');
+  assert_equals(frame.timestamp, 10, 'timestamp');
+  assert_equals(frame.duration, 15, 'duration');
   assert_equals(frame.codedWidth, 0, 'codedWidth');
   assert_equals(frame.codedHeight, 0, 'codedHeight');
   assert_equals(frame.visibleRect, null, 'visibleRect');
@@ -33,6 +33,7 @@ test(t => {
   assert_equals(frame.colorSpace.transfer, null, 'colorSpace.transfer');
   assert_equals(frame.colorSpace.matrix, null, 'colorSpace.matrix');
   assert_equals(frame.colorSpace.fullRange, null, 'colorSpace.fullRange');
+  assert_true(isFrameClosed(frame));
 
   assert_throws_dom('InvalidStateError', () => frame.clone());
 }, 'Test closed VideoFrame.');
@@ -491,6 +492,32 @@ test(t => {
   assert_equals(frame.colorSpace.matrix, 'bt470bg', 'color matrix');
   assert_true(frame.colorSpace.fullRange == null, 'color range');
 }, 'Test planar constructed I420 VideoFrame with colorSpace');
+
+test(t => {
+  let fmt = 'I420';
+  let vfInit = {
+    format: fmt,
+    timestamp: 1234,
+    codedWidth: 4,
+    codedHeight: 2,
+    colorSpace: {
+      primaries: null,
+      transfer: null,
+      matrix: null,
+      fullRange: null,
+    },
+  };
+  let data = new Uint8Array([
+    1, 2, 3, 4, 5, 6, 7, 8,  // y
+    1, 2,                    // u
+    1, 2,                    // v
+  ]);
+  let frame = new VideoFrame(data, vfInit);
+  assert_true(frame.colorSpace.primaries == null, 'color primaries');
+  assert_true(frame.colorSpace.transfer == null, 'color transfer');
+  assert_true(frame.colorSpace.matrix == null, 'color matrix');
+  assert_true(frame.colorSpace.fullRange == null, 'color range');
+}, 'Test planar constructed I420 VideoFrame with null colorSpace values');
 
 test(t => {
   let fmt = 'I420A';

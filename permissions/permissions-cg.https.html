@@ -5,6 +5,7 @@
 <script src=/resources/testharnessreport.js></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/gc.js"></script>
 
 <script>
 promise_test(async () => {
@@ -13,14 +14,17 @@ promise_test(async () => {
   });
 
   const pass = new Promise(async (resolve) => {
-    const status = await navigator.permissions.query({
+    let status = await navigator.permissions.query({
       name: "geolocation",
     });
     status.addEventListener("change", resolve, { once: true });
-  });
 
-  // Will cause change event to be dispatched.
-  await test_driver.set_permission({ name: "geolocation" }, "granted");
+    status = null;
+    await garbageCollect();
+
+    // Will cause change event to be dispatched.
+    await test_driver.set_permission({ name: "geolocation" }, "granted");
+  });
 
   // Wait for the change event to be dispatched.
   await pass;

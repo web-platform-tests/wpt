@@ -58,24 +58,34 @@ __wptrunner__ = {"product": "firefox",
 def get_timeout_multiplier(test_type, run_info_data, **kwargs):
     if kwargs["timeout_multiplier"] is not None:
         return kwargs["timeout_multiplier"]
+
+    multiplier = 1
+    if run_info_data["verify"]:
+        if kwargs.get("chaos_mode_flags", None) is not None:
+            multiplier = 2
+
     if test_type == "reftest":
-        if run_info_data["debug"] or run_info_data.get("asan") or run_info_data.get("tsan"):
-            return 4
+        if (run_info_data["debug"] or
+            run_info_data.get("asan") or
+            run_info_data.get("tsan")):
+            return 4 * multiplier
         else:
-            return 2
-    elif run_info_data["debug"] or run_info_data.get("asan") or run_info_data.get("tsan"):
+            return 2 * multiplier
+    elif (run_info_data["debug"] or
+          run_info_data.get("asan") or
+          run_info_data.get("tsan")):
         if run_info_data.get("ccov"):
-            return 4
+            return 4 * multiplier
         else:
-            return 3
+            return 3 * multiplier
     elif run_info_data["os"] == "android":
-        return 4
+        return 4 * multiplier
     # https://bugzilla.mozilla.org/show_bug.cgi?id=1538725
     elif run_info_data["os"] == "win" and run_info_data["processor"] == "aarch64":
-        return 4
+        return 4 * multiplier
     elif run_info_data.get("ccov"):
-        return 2
-    return 1
+        return 2 * multiplier
+    return 1 * multiplier
 
 
 def check_args(**kwargs):
@@ -241,7 +251,7 @@ def get_environ(logger, binary, debug_info, stylo_threads, headless,
     # Disable window occlusion. Bug 1733955
     env["MOZ_WINDOW_OCCLUSION"] = "0"
     if chaos_mode_flags is not None:
-        env["MOZ_CHAOSMODE"] = str(chaos_mode_flags)
+        env["MOZ_CHAOSMODE"] = hex(chaos_mode_flags)
     if headless:
         env["MOZ_HEADLESS"] = "1"
     return env

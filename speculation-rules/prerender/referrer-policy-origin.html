@@ -13,6 +13,8 @@ setup(() => assertSpeculationRulesIsSupported());
 
 // Tests that the referrer on the prerendering navigation request is the
 // triggering page's origin when the referrer policy is set to origin.
+// Note that "origin" is a lax referrer policy, but since this is a same-site
+// prerender, it does not cause the prerender to be aborted.
 promise_test(async t => {
   const expected = new URL('', window.origin).href;
   await referrer_test(expected, token());

@@ -48,6 +48,10 @@ class MockPressureService {
       throw new Error('BindObserver() has already been called');
 
     this.observer_ = observer;
+    this.observer_.onConnectionError.addListener(() => {
+      this.stopPlatformCollector();
+      this.observer_ = null;
+    });
 
     return {status: this.pressureStatus_};
   }
@@ -115,6 +119,18 @@ class MockPressureService {
       state: this.mojomStateType_.get(state),
       factors: pressureFactors,
     };
+  }
+
+  setExpectedFailure(expectedException) {
+    assert_true(
+        expectedException instanceof DOMException,
+        'setExpectedFailure() expects a DOMException instance');
+    if (expectedException.name === 'NotSupportedError') {
+      this.pressureStatus_ = PressureStatus.kNotSupported;
+    } else {
+      throw new TypeError(
+          `Unexpected DOMException '${expectedException.name}'`);
+    }
   }
 }
 

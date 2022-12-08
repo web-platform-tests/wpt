@@ -7,7 +7,9 @@
 <div id="log"></div>
 <script>
 promise_test(async (t) => {
-    t.add_cleanup(() => { document.exitFullscreen() });
+    t.add_cleanup(() => {
+        if (document.fullscreenElement) return document.exitFullscreen();
+    });
 
     // Use the body element as the fullscreen element, because the second
     // test_driver.bless() call needs to insert a button inside of it, which

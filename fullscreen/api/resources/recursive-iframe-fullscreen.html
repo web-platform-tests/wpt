@@ -80,7 +80,6 @@
           await create_child_frame(e.data.iframe);
           break;
         default:
-          console.log("Unknown message", e.data);
           window.top.postMessage(e.data, "*");
       }
     });

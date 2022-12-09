@@ -48,7 +48,6 @@
     }
 
     async function go_fullscreen() {
-      test_driver.set_test_context(window.top);
       await trusted_click(document.body);
       let error;
       try {

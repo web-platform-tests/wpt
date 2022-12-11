@@ -170,7 +170,7 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
         logger.critical("Loading tests failed")
         return False
 
-    logger.suite_start(test_groups,
+    logger.suite_start(tests_by_type,
                        name='web-platform-test',
                        run_info=run_info,
                        extra={"run_by_dir": run_test_kwargs["run_by_dir"]})
@@ -237,6 +237,12 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
                 tests_to_run[test_type] = [test for test in tests
                                            if test.id in unexpected_fail_tests]
 
+            logger.suite_end()
+            logger.suite_start(tests_to_run,
+                               name='web-platform-test',
+                               run_info=run_info,
+                               extra={"run_by_dir": run_test_kwargs["run_by_dir"]})
+
         with ManagerGroup("web-platform-tests",
                           run_test_kwargs["processes"],
                           test_source_cls,
@@ -263,6 +269,8 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
 
     test_status.unexpected += len(unexpected_tests)
     test_status.unexpected_pass += len(unexpected_pass_tests)
+
+    logger.suite_end()
 
     return True
 
@@ -436,7 +444,6 @@ def run_tests(config, test_paths, product, **kwargs):
                 recording.set(["after-end"])
                 logger.info(f"Got {test_status.unexpected} unexpected results, "
                     f"with {test_status.unexpected_pass} unexpected passes")
-                logger.suite_end()
 
                 # Note this iteration's runtime
                 iteration_runtime = datetime.now() - iteration_start

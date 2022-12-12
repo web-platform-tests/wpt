@@ -1,6 +1,11 @@
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+
 'use strict';
 
 promise_test(async t => {
+  await test_driver.set_permission({name: 'compute-pressure'}, 'granted');
+
   const observer1_changes = [];
   const observer1 = new PressureObserver(changes => {
     observer1_changes.push(changes);

@@ -1,4 +1,6 @@
 // META: script=/resources/test-only-api.js
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=resources/pressure-helpers.js
 
 'use strict';
@@ -13,6 +15,8 @@ test(t => {
 }, 'Calling takeRecords() before observe()');
 
 promise_test(async t => {
+  await test_driver.set_permission({name: 'compute-pressure'}, 'granted');
+
   let observer;
   const changes = await new Promise(resolve => {
     observer = new PressureObserver(resolve, {sampleRate: 1.0});

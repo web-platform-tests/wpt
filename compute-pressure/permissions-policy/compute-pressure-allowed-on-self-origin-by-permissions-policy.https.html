@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <body>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/permissions-policy/resources/permissions-policy.js"></script>
@@ -13,6 +15,8 @@ const cross_origin_src = get_host_info().HTTPS_REMOTE_ORIGIN + same_origin_src;
 const header = 'permissions policy header "compute-pressure=self"';
 
 promise_test(async () => {
+  await test_driver.set_permission({name: 'compute-pressure'}, 'granted');
+
   try {
     const observer = new PressureObserver(() => {});
     await observer.observe("cpu");

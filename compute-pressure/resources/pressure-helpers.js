@@ -15,6 +15,9 @@ function pressure_test(func, name, properties) {
   promise_test(async t => {
     if (mockPressureService === undefined) {
       if (isChromiumBased) {
+        await loadScript('/resources/testdriver.js');
+        await loadScript('/resources/testdriver-vendor.js');
+        await test_driver.set_permission({name: 'compute-pressure'}, 'granted');
         const mocks =
             await import('/resources/chromium/mock-pressure-service.js');
         mockPressureService = mocks.mockPressureService;

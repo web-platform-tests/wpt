@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <body>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/permissions-policy/resources/permissions-policy.js"></script>
@@ -14,6 +16,8 @@ const header = 'permissions policy header "compute-pressure=()"';
 const attribute = 'allow="compute-pressure" attribute';
 
 promise_test(async t => {
+  await test_driver.set_permission({name: 'compute-pressure'}, 'granted');
+
   const observer = new PressureObserver(
     t.unreached_func('oops should not end up here')
   );

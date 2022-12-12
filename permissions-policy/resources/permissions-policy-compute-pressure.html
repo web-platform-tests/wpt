@@ -1,8 +1,12 @@
 <!DOCTYPE html>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script>
 'use strict';
 
 window.onload = async function() {
+  await test_driver.set_permission({name: 'compute-pressure'}, 'granted');
+
   let enabled = true;
   try {
     const observer = new PressureObserver(() => {});

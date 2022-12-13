@@ -15,9 +15,27 @@
         return [x, y];
     }
 
+    function getShadowIncludingAncestors(element) {
+      const ancestors = [];
+      let ancestor = element;
+      while (ancestor) {
+        if (ancestor.parentNode) {
+          ancestor = ancestor.parentNode;
+          ancestors.push(ancestor);
+        } else if (ancestor.host) {
+          ancestor = ancestor.host;
+          ancestors.push(ancestor);
+        } else {
+          ancestor = null;
+        }
+      }
+      return ancestors;
+    }
+
     function getPointerInteractablePaintTree(element) {
         let elementDocument = element.ownerDocument;
-        if (!elementDocument.contains(element)) {
+        if (!elementDocument.contains(element) &&
+              !getShadowIncludingAncestors(element).includes(elementDocument)) {
             return [];
         }
 
@@ -29,6 +47,7 @@
 
         var centerPoint = getInViewCenterPoint(rectangles[0]);
 
+        // TODO elementsFromPoint is only returning stuff from the shadow host and up! it isnt going into the shadowroot
         if ("elementsFromPoint" in elementDocument) {
             return elementDocument.elementsFromPoint(centerPoint[0], centerPoint[1]);
         } else if ("msElementsFromPoint" in elementDocument) {
@@ -147,6 +166,7 @@
          *                    the cases the WebDriver command errors
          */
         click: function(element) {
+            console.log('click ', element);
             if (!inView(element)) {
                 element.scrollIntoView({behavior: "instant",
                                         block: "end",
@@ -156,6 +176,11 @@
             var pointerInteractablePaintTree = getPointerInteractablePaintTree(element);
             if (pointerInteractablePaintTree.length === 0 ||
                 !element.contains(pointerInteractablePaintTree[0])) {
+                console.log('pointerInteractablePaintTree.length: ' + pointerInteractablePaintTree.length);
+                for (let i = 0; i < pointerInteractablePaintTree.length; i++) {
+                  const entry = pointerInteractablePaintTree[i];
+                  console.log(`tree[${i}]: ${entry} ${entry.id}`);
+                }
                 return Promise.reject(new Error("element click intercepted error"));
             }
 

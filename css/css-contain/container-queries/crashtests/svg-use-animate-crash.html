@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<link rel="help" href="https://crbug.com/1400547">
+<title>Don't crash for <animate> within <use></title>
+<svg>
+  <tref>
+    <use>
+      <use>
+        <animate attributename="font-size" />
+      </use>
+    </use>
+  </tref>
+</svg>

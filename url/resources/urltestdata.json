@@ -6288,6 +6288,20 @@
     "search": "",
     "hash": ""
   },
+  {
+    "input": "file:////C:/",
+    "base": "file://ape/",
+    "href": "file:////C:/",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "//C:/",
+    "search": "",
+    "hash": ""
+  },
   "# File URLs with non-empty hosts",
   {
     "input": "/rooibos",

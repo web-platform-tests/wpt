@@ -711,7 +711,6 @@ class TestRunnerManager(threading.Thread):
         if is_unexpected_pass:
             self.unexpected_pass_tests.add(test.id)
 
-
         if "assertion_count" in file_result.extra:
             assertion_count = file_result.extra["assertion_count"]
             if assertion_count is not None and assertion_count > 0:

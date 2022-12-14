@@ -657,10 +657,14 @@ class TestRunnerManager(threading.Thread):
             expected = test.expected(result.name)
             known_intermittent = test.known_intermittent(result.name)
             is_unexpected = expected != result.status and result.status not in known_intermittent
+            is_expected_notrun = (expected == "NOTRUN" or "NOTRUN" in known_intermittent)
 
             if is_unexpected:
                 subtest_unexpected = True
 
+                if result.status != "PASS" and not is_expected_notrun:
+                    # Any result against an expected "NOTRUN" should be treated
+                    # as unexpected pass.
                 if result.status != "PASS":
                     subtest_all_pass_or_expected = False
 

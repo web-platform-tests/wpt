@@ -665,7 +665,6 @@ class TestRunnerManager(threading.Thread):
                 if result.status != "PASS" and not is_expected_notrun:
                     # Any result against an expected "NOTRUN" should be treated
                     # as unexpected pass.
-                if result.status != "PASS":
                     subtest_all_pass_or_expected = False
 
             self.logger.test_status(test.id,

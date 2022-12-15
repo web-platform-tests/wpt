@@ -667,6 +667,9 @@ class H2Headers(Dict[bytes, bytes]):
     # TODO This does not seem relevant for H2 headers, so using a dummy function for now
     def getallmatchingheaders(self, header):
         return ['dummy function']
+    
+    def get_all(self, header):
+        return ['dummy function']
 
 
 class H2HandlerCopy:

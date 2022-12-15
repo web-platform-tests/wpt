@@ -24,8 +24,7 @@ function runURLTests(urltests) {
         return expected.protocol.replace(":", "");
       }
       if (expected.failure) {
-        var key = expected.input.split(":")[0];
-        return key;
+        return expected.input.split(":")[0];
       }
       return "other";
     }

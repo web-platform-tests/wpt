@@ -21,7 +21,7 @@ function runURLSettersTests(all_test_cases) {
       if ("comment" in test_case) {
         name += " " + test_case.comment;
       }
-      var key = test_case.href.split(":")[0];
+      const key = test_case.href.split(":")[0];
       subsetTestByKey(key, test, function() {
         var url = document.createElement("a");
         url.href = test_case.href;

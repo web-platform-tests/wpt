@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<title>Tests that anchor-scroll doesn't crash renderer when anchor's scroller is gone</title>
+<link rel="author" href="mailto:xiaochengh@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-anchor-1/">
+
+<div id="scroller">
+  <div id="spacer"></div>
+  <div id="anchor">anchor</div>
+</div>
+<div id="target">target</div>
+
+<style>
+#scroller {
+  margin-top: 200px;
+  height: 200px;
+  overflow-y: scroll;
+}
+
+#anchor {
+  anchor-name: --a;
+}
+
+#spacer {
+  height: 400px;
+}
+
+#target {
+  position: fixed;
+  top: anchor(--a bottom);
+  left: anchor(--a left);
+  anchor-scroll: --a;
+}
+</style>
+
+<script>
+function raf() {
+  return new Promise(resolve => requestAnimationFrame(resolve));
+}
+
+async function runTest() {
+  await raf();
+  await raf();
+  spacer.style.height = '0';
+  target.style.transform = 'scale(1)'; // Ensure paint update on #target
+};
+runTest();
+</script>

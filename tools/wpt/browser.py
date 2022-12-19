@@ -570,15 +570,20 @@ class ChromeChromiumBase(Browser):
             # Detect a revision number based on the version passed.
             revision = self._get_base_revision_from_version(version)
             if revision is not None:
-                # File name is needed to test if request is valid.
-                url = self._build_snapshots_url(revision, filename)
-                try:
-                    # Check the status without downloading the content (this is a streaming request).
-                    get(url)
-                    return revision
-                except requests.RequestException:
-                    self.logger.warning("404: Unsuccessful attempt to download file "
-                                        f"based on version. {url}")
+                # Heuristic to find the ChromeDriver revision. If the required revision does not have a build, try to
+                # find the latest one before the required one, limited by 100.
+                for i in range (int(revision), int(revision)-100, -1):
+                    revision = str(i)
+                    # File name is needed to test if request is valid.
+                    url = self._build_snapshots_url(revision, filename)
+                    try:
+                        # Check the status without downloading the content (this is a streaming request).
+                        get(url)
+                        self.logger.info(f"Found ChromeDriver revision {revision}")
+                        return revision
+                    except requests.RequestException:
+                        self.logger.warning("404: Unsuccessful attempt to download file "
+                                            f"based on version. {url}")
         # If no URL was used in a previous install
         # and no version was passed, use the pinned Chromium revision.
         revision = self._get_pinned_chromium_revision()

@@ -12,7 +12,7 @@ promise_test(async t => {
   body.set('a', '2');
   assert_true((await res.formData()).get('a') === '1');
   assert_true((await req.formData()).get('a') === '1');
-}, 'FormData body is immutable');
+}, 'FormData is cloned');
 
 promise_test(async t => {
   const body = new URLSearchParams({a: '1'});
@@ -21,7 +21,7 @@ promise_test(async t => {
   body.set('a', '2');
   assert_true((await res.formData()).get('a') === '1');
   assert_true((await req.formData()).get('a') === '1');
-}, 'URLSearchParams body is immutable');
+}, 'URLSearchParams is cloned');
 
 promise_test(async t => {
   const body = new Uint8Array([97]); // a
@@ -30,7 +30,7 @@ promise_test(async t => {
   body[0] = 98; // b
   assert_true(await res.text() === 'a');
   assert_true(await req.text() === 'a');
-}, 'TypedArray body is immutable');
+}, 'TypedArray is cloned');
 
 promise_test(async t => {
   const body = new Uint8Array([97]); // a
@@ -39,4 +39,12 @@ promise_test(async t => {
   body[0] = 98; // b
   assert_true(await res.text() === 'a');
   assert_true(await req.text() === 'a');
-}, 'ArrayBuffer body is immutable');
+}, 'ArrayBuffer is cloned');
+
+promise_test(async t => {
+  const body = new Blob(['a']);
+  const res = new Response(body);
+  const req = new Request(url, { method, body });
+  assert_true(await res.blob() !== body);
+  assert_true(await req.blob() !== body);
+}, 'Blob is cloned');

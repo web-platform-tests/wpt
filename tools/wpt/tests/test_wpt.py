@@ -295,16 +295,6 @@ def test_files_changed_null(capsys):
     assert err == ""
 
 
-def test_files_changed_ignore():
-    from tools.wpt.testfiles import exclude_ignored
-    files = ["resources/testharness.js", "resources/webidl2/index.js", "test/test.js"]
-    changed, ignored = exclude_ignored(files, ignore_rules=["resources/testharness*"])
-    assert changed == [os.path.join(wpt.wpt_root, item) for item in
-                       ["resources/webidl2/index.js", "test/test.js"]]
-    assert ignored == [os.path.join(wpt.wpt_root, item) for item in
-                       ["resources/testharness.js"]]
-
-
 def test_files_changed_ignore_rules():
     from tools.wpt.testfiles import compile_ignore_rule
     assert compile_ignore_rule("foo*bar*/baz").pattern == r"^foo\*bar[^/]*/baz$"

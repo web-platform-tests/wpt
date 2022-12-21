@@ -2676,6 +2676,7 @@ IdlInterface.prototype.test_members = function()
         }
 
         if (!exposed_in(exposure_set(member, this.exposureSet))) {
+            var desc = member.type === "operation" ? member.toString() : member.name;
             subsetTestByKey(this.name, test, function() {
                 // It's not exposed, so we shouldn't find it anywhere.
                 assert_false(member.name in this.get_interface_object(),
@@ -2684,7 +2685,7 @@ IdlInterface.prototype.test_members = function()
                 assert_false(member.name in this.get_interface_object().prototype,
                              "The prototype object must not have a property " +
                              format_value(member.name));
-            }.bind(this), this.name + " interface: member " + member.name);
+            }.bind(this), `${this.name} interface: ${member.type} ${desc}`);
             continue;
         }
 
@@ -2862,10 +2863,11 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
             continue;
         }
         if (!exposed_in(exposure_set(member, this.exposureSet))) {
+            var details = member.type === "operation" ? member.toString() : member.name;
             subsetTestByKey(this.name, test, function() {
                 assert_equals(exception, null, "Unexpected exception when evaluating object");
                 assert_false(member.name in obj);
-            }.bind(this), this.name + " interface: " + desc + ' must not have property "' + member.name + '"');
+            }.bind(this), this.name + " interface: " + desc + ' must not have property "' + details + '"');
             continue;
         }
         if (member.type == "attribute" && member.isUnforgeable)
@@ -2882,7 +2884,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
                  member.name &&
                  member.isUnforgeable)
         {
-            var a_test = subsetTestByKey(this.name, async_test, this.name + " interface: " + desc + ' must have own property "' + member.name + '"');
+            var a_test = subsetTestByKey(this.name, async_test, this.name + " interface: " + desc + ' must have own property "' + member.toString() + '"');
             a_test.step(function()
             {
                 assert_equals(exception, null, "Unexpected exception when evaluating object");

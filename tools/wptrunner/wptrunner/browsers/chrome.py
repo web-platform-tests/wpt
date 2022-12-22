@@ -132,6 +132,10 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
         chrome_options["args"].append(
             f"--origin-to-force-quic-on=web-platform.test:{webtranport_h3_port[0]}")
 
+    # Handle custom BiDi Mapper path.
+    if (kwargs["bidi_mapper_path"]):
+        capabilities["goog:chromeOptions"]["bidiMapperPath"] = kwargs["bidi_mapper_path"]
+
     executor_kwargs["capabilities"] = capabilities
 
     return executor_kwargs

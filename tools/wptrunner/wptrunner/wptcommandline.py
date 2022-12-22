@@ -349,6 +349,7 @@ scheme host and port.""")
     chrome_group.add_argument("--mojojs-path",
                              help="Path to mojojs gen/ directory. If it is not specified, `wpt run` "
                              "will download and extract mojojs.zip into _venv2/mojojs/gen.")
+    chrome_group.add_argument("--bidi-mapper-path", help="Path to custom BiDi-CDP Mapper.")
     chrome_group.add_argument("--enable-swiftshader", action="store_true", default=False,
                              help="Enable SwiftShader for CPU-based 3D graphics. This can be used "
                              "in environments with no hardware GPU available.")

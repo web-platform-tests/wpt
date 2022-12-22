@@ -1603,12 +1603,28 @@
     ],
     "pathname": [
         {
-            "comment": "Cannot-be-a-base don’t have a path",
+            "comment": "Opaque paths cannot be set",
             "href": "mailto:me@example.net",
             "new_value": "/foo",
             "expected": {
                 "href": "mailto:me@example.net",
                 "pathname": "me@example.net"
+            }
+        },
+        {
+            "href": "data:original",
+            "new_value": "new value",
+            "expected": {
+                "href": "data:original",
+                "pathname": "original"
+            }
+        },
+        {
+            "href": "sc:original",
+            "new_value": "new value",
+            "expected": {
+                "href": "sc:original",
+                "pathname": "original"
             }
         },
         {
@@ -1832,20 +1848,20 @@
             }
         },
         {
-            "comment": "Drop trailing spaces from trailing opaque paths",
-            "href": "data:nospace",
+            "comment": "Non-special URLs with non-opaque paths percent-encode U+0020",
+            "href": "data:/nospace",
             "new_value": "space ",
             "expected": {
-                "href": "data:space",
-                "pathname": "space"
+                "href": "data:/space%20",
+                "pathname": "/space%20"
             }
         },
         {
-            "href": "sc:nospace",
+            "href": "sc:/nospace",
             "new_value": "space ",
             "expected": {
-                "href": "sc:space",
-                "pathname": "space"
+                "href": "sc:/space%20",
+                "pathname": "/space%20"
             }
         }
     ],

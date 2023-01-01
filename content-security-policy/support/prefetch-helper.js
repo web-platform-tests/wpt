@@ -7,21 +7,6 @@ setup(_ => {
     "Browser supports performance APIs.");
 });
 
-async function waitUntilResourceDownloaded(url) {
-  await new Promise((resolve, reject) => {
-    if (performance.getEntriesByName(url).length >= 1)
-      resolve();
-
-    let observer = new PerformanceObserver(list => {
-      list.getEntries().forEach(entry => {
-        if (entry.name == url) {
-          resolve();
-        }
-      });
-    });
-  });
-}
-
 function assert_resource_not_downloaded(test, url) {
   // CSP failures generate resource timing entries, so let's make sure that
   // download sizes are 0.
@@ -68,4 +53,23 @@ function assert_link_does_not_prefetch(test, link) {
   link.onload = test.unreached_func('onload should not fire.');
 
   document.head.appendChild(link);
+}
+
+async function try_to_prefetch(href, t) {
+  const url = new URL(href, location.href);
+  url.searchParams.set("pipe", "header(Cache-Control, max-age=604800)");
+  url.searchParams.set("uuid", token());
+  const link = document.createElement("link");
+  link.rel = "prefetch";
+  link.href = url.toString();
+  link.crossOrigin = "anonymous";
+  t.add_cleanup(() => link.remove());
+  const didPrefetch = new Promise(resolve => new PerformanceObserver(list => {
+    const entries = list.getEntriesByName(link.href);
+    if (entries.length)
+      resolve(entries[0]);
+  }).observe({entryTypes: ["resource"]}));
+  document.head.appendChild(link);
+  const entry = await didPrefetch;
+  return entry.requestStart > 0 && entry.decodedBodySize > 0;
 }

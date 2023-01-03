@@ -118,13 +118,13 @@ same directory and insert the following text:</p>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 
-<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
-<span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;set-cookie.asis&#39;</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;test1=t1&#39;</span><span class="p">);</span><span class="w"></span>
-<span class="w">      </span><span class="p">});</span><span class="w"></span>
-<span class="p">});</span><span class="w"></span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;set-cookie.asis&#39;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;test1=t1&#39;</span><span class="p">);</span>
+<span class="w">      </span><span class="p">});</span>
+<span class="p">});</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
@@ -151,13 +151,13 @@ because it makes tests more concise.</p>
 <p>These two <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tags retrieve the code that powers testharness.js. A
 testharness.js test can’t run without them!</p>
 </li>
-<li><div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
-<span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;thing.asis&#39;</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;test1=t1&#39;</span><span class="p">);</span><span class="w"></span>
-<span class="w">      </span><span class="p">});</span><span class="w"></span>
-<span class="p">});</span><span class="w"></span>
+<li><div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;thing.asis&#39;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;test1=t1&#39;</span><span class="p">);</span>
+<span class="w">      </span><span class="p">});</span>
+<span class="p">});</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
@@ -194,50 +194,50 @@ there are some improvements we can make to what we’ve written so far.</p>
 ensures a consistent state for any additional subtests we may add and also for
 any tests that follow. We’ll use the <code class="docutils literal notranslate"><span class="pre">add_cleanup</span></code> method to ensure that the
 cookie is deleted even if the test fails.</p>
-<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gd">-promise_test(function() {</span><span class="w"></span>
-<span class="gi">+promise_test(function(t) {</span><span class="w"></span>
-<span class="gi">+  t.add_cleanup(function() {</span><span class="w"></span>
-<span class="gi">+    document.cookie = &#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;;</span><span class="w"></span>
-<span class="gi">+  });</span><span class="w"></span>
-<span class="gi">+</span><span class="w"></span>
-<span class="w"> </span>  return fetch(&#39;thing.asis&#39;)<span class="w"></span>
-<span class="w"> </span>    .then(function() {<span class="w"></span>
-<span class="w"> </span>        assert_equals(document.cookie, &#39;test1=t1&#39;);<span class="w"></span>
-<span class="w"> </span>      });<span class="w"></span>
-<span class="w"> </span>});<span class="w"></span>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gd">-promise_test(function() {</span>
+<span class="gi">+promise_test(function(t) {</span>
+<span class="gi">+  t.add_cleanup(function() {</span>
+<span class="gi">+    document.cookie = &#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;;</span>
+<span class="gi">+  });</span>
+<span class="gi">+</span>
+<span class="w"> </span>  return fetch(&#39;thing.asis&#39;)
+<span class="w"> </span>    .then(function() {
+<span class="w"> </span>        assert_equals(document.cookie, &#39;test1=t1&#39;);
+<span class="w"> </span>      });
+<span class="w"> </span>});
 </pre></div>
 </div>
 <p>Although we’d prefer it if there were no other cookies defined during our test,
 we shouldn’t take that for granted. As written, the test will fail if the
 <code class="docutils literal notranslate"><span class="pre">document.cookie</span></code> includes additional cookies. We’ll use slightly more
 complicated logic to test for the presence of the expected cookie.</p>
-<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>promise_test(function(t) {<span class="w"></span>
-<span class="w"> </span>  t.add_cleanup(function() {<span class="w"></span>
-<span class="w"> </span>    document.cookie = &#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;;<span class="w"></span>
-<span class="w"> </span>  });<span class="w"></span>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>promise_test(function(t) {
+<span class="w"> </span>  t.add_cleanup(function() {
+<span class="w"> </span>    document.cookie = &#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;;
+<span class="w"> </span>  });
 
-<span class="w"> </span>  return fetch(&#39;thing.asis&#39;)<span class="w"></span>
-<span class="w"> </span>    .then(function() {<span class="w"></span>
-<span class="gd">-        assert_equals(document.cookie, &#39;test1=t1&#39;);</span><span class="w"></span>
-<span class="gi">+        assert_true(/(^|; )test1=t1($|;)/.test(document.cookie);</span><span class="w"></span>
-<span class="w"> </span>      });<span class="w"></span>
-<span class="w"> </span>});<span class="w"></span>
+<span class="w"> </span>  return fetch(&#39;thing.asis&#39;)
+<span class="w"> </span>    .then(function() {
+<span class="gd">-        assert_equals(document.cookie, &#39;test1=t1&#39;);</span>
+<span class="gi">+        assert_true(/(^|; )test1=t1($|;)/.test(document.cookie);</span>
+<span class="w"> </span>      });
+<span class="w"> </span>});
 </pre></div>
 </div>
 <p>In the screen shot above, the subtest’s result was reported using the
 document’s title, “fetch: setting cookies”. Since we expect to add another
 subtest, we should give this one a more specific name:</p>
-<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>promise_test(function(t) {<span class="w"></span>
-<span class="w"> </span>  t.add_cleanup(function() {<span class="w"></span>
-<span class="w"> </span>    document.cookie = &#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;;<span class="w"></span>
-<span class="w"> </span>  });<span class="w"></span>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>promise_test(function(t) {
+<span class="w"> </span>  t.add_cleanup(function() {
+<span class="w"> </span>    document.cookie = &#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;;
+<span class="w"> </span>  });
 
-<span class="w"> </span>  return fetch(&#39;thing.asis&#39;)<span class="w"></span>
-<span class="w"> </span>    .then(function() {<span class="w"></span>
-<span class="w"> </span>        assert_true(/(^|; )test1=t1($|;)/.test(document.cookie));<span class="w"></span>
-<span class="w"> </span>      });<span class="w"></span>
-<span class="gd">-});</span><span class="w"></span>
-<span class="gi">+}, &#39;cookie set for successful request&#39;);</span><span class="w"></span>
+<span class="w"> </span>  return fetch(&#39;thing.asis&#39;)
+<span class="w"> </span>    .then(function() {
+<span class="w"> </span>        assert_true(/(^|; )test1=t1($|;)/.test(document.cookie));
+<span class="w"> </span>      });
+<span class="gd">-});</span>
+<span class="gi">+}, &#39;cookie set for successful request&#39;);</span>
 </pre></div>
 </div>
 </section>
@@ -253,12 +253,12 @@ Goals of this section:
 For instance, it should <em>not</em> set a cookie if the request fails due to
 cross-origin security restrictions. Let’s write a subtest which verifies that.</p>
 <p>We’ll add another <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tag for a JavaScript support file:</p>
-<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>&lt;!DOCTYPE html&gt;<span class="w"></span>
-<span class="w"> </span>&lt;meta charset=&quot;utf-8&quot;&gt;<span class="w"></span>
-<span class="w"> </span>&lt;title&gt;fetch: setting cookies&lt;/title&gt;<span class="w"></span>
-<span class="w"> </span>&lt;script src=&quot;/resources/testharness.js&quot;&gt;&lt;/script&gt;<span class="w"></span>
-<span class="w"> </span>&lt;script src=&quot;/resources/testharnessreport.js&quot;&gt;&lt;/script&gt;<span class="w"></span>
-<span class="gi">+&lt;script src=&quot;/common/get-host-info.sub.js&quot;&gt;&lt;/script&gt;</span><span class="w"></span>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>&lt;!DOCTYPE html&gt;
+<span class="w"> </span>&lt;meta charset=&quot;utf-8&quot;&gt;
+<span class="w"> </span>&lt;title&gt;fetch: setting cookies&lt;/title&gt;
+<span class="w"> </span>&lt;script src=&quot;/resources/testharness.js&quot;&gt;&lt;/script&gt;
+<span class="w"> </span>&lt;script src=&quot;/resources/testharnessreport.js&quot;&gt;&lt;/script&gt;
+<span class="gi">+&lt;script src=&quot;/common/get-host-info.sub.js&quot;&gt;&lt;/script&gt;</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">get-host-info.sub.js</span></code> is a general-purpose script provided by WPT. It’s
@@ -266,39 +266,39 @@ designed to help with testing cross-domain functionality. Since it’s stored in
 WPT’s <code class="docutils literal notranslate"><span class="pre">common/</span></code> directory, tests from all sorts of specifications rely on it.</p>
 <p>Next, we’ll define the new subtest inside the same <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tag that holds
 our first subtest.</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nx">t</span><span class="p">.</span><span class="nx">add_cleanup</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="p">});</span><span class="w"></span>
-<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">get_host_info</span><span class="p">().</span><span class="nx">HTTP_NOTSAMESITE_ORIGIN</span><span class="w"> </span><span class="o">+</span><span class="w"></span>
-<span class="w">    </span><span class="s1">&#39;/fetch/api/basic/set-cookie.asis&#39;</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">t</span><span class="p">.</span><span class="nx">add_cleanup</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">get_host_info</span><span class="p">().</span><span class="nx">HTTP_NOTSAMESITE_ORIGIN</span><span class="w"> </span><span class="o">+</span>
+<span class="w">    </span><span class="s1">&#39;/fetch/api/basic/set-cookie.asis&#39;</span><span class="p">;</span>
 
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nx">assert_unreached</span><span class="p">(</span><span class="s1">&#39;The promise for the aborted fetch operation should reject.&#39;</span><span class="p">);</span><span class="w"></span>
-<span class="w">      </span><span class="p">},</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nx">assert_false</span><span class="p">(</span><span class="sr">/(^|; )test1=t1($|;)/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">));</span><span class="w"></span>
-<span class="w">      </span><span class="p">});</span><span class="w"></span>
-<span class="p">},</span><span class="w"> </span><span class="s1">&#39;no cookie is set for cross-domain fetch operations&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">assert_unreached</span><span class="p">(</span><span class="s1">&#39;The promise for the aborted fetch operation should reject.&#39;</span><span class="p">);</span>
+<span class="w">      </span><span class="p">},</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">assert_false</span><span class="p">(</span><span class="sr">/(^|; )test1=t1($|;)/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">));</span>
+<span class="w">      </span><span class="p">});</span>
+<span class="p">},</span><span class="w"> </span><span class="s1">&#39;no cookie is set for cross-domain fetch operations&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>This may look familiar from the previous subtest, but there are some important
 differences.</p>
 <ul>
-<li><div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">get_host_info</span><span class="p">().</span><span class="nx">HTTP_NOTSAMESITE_ORIGIN</span><span class="w"> </span><span class="o">+</span><span class="w"></span>
-<span class="w">  </span><span class="s1">&#39;/fetch/api/basic/set-cookie.asis&#39;</span><span class="p">;</span><span class="w"></span>
+<li><div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">get_host_info</span><span class="p">().</span><span class="nx">HTTP_NOTSAMESITE_ORIGIN</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="s1">&#39;/fetch/api/basic/set-cookie.asis&#39;</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>We’re requesting the same resource, but we’re referring to it with an
 alternate host name. The name of the host depends on how the WPT server has
 been configured, so we rely on the helper to provide an appropriate value.</p>
 </li>
-<li><div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">return</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span><span class="w"></span>
-<span class="w">  </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nx">assert_unreached</span><span class="p">(</span><span class="s1">&#39;The promise for the aborted fetch operation should reject.&#39;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">},</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nx">assert_false</span><span class="p">(</span><span class="sr">/(^|; )test1=t1($|;)/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">));</span><span class="w"></span>
-<span class="w">    </span><span class="p">});</span><span class="w"></span>
+<li><div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">return</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">assert_unreached</span><span class="p">(</span><span class="s1">&#39;The promise for the aborted fetch operation should reject.&#39;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">},</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">assert_false</span><span class="p">(</span><span class="sr">/(^|; )test1=t1($|;)/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">));</span>
+<span class="w">    </span><span class="p">});</span>
 </pre></div>
 </div>
 <p>We’re returning a Promise value, just like the first subtest. This time, we

@@ -42,7 +42,7 @@ contents will be inlined into a script tag served as part of every test page.</p
 scripts, you can use a tool such as
 <a class="reference external" href="https://github.com/developit/microbundle">microbundle</a> to repackage it as a
 single synchronous script file, e.g.:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>microbundle -f iife -i polyfill/src/main.js -o polyfill.js
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>microbundle<span class="w"> </span>-f<span class="w"> </span>iife<span class="w"> </span>-i<span class="w"> </span>polyfill/src/main.js<span class="w"> </span>-o<span class="w"> </span>polyfill.js
 </pre></div>
 </div>
 </section>
@@ -52,13 +52,13 @@ single synchronous script file, e.g.:</p>
 set up your test environment. When running tests via the browser or via the
 command line, add the <code class="docutils literal notranslate"><span class="pre">--inject-script=polyfill.js</span></code> to either command, e.g.</p>
 <p>Via the browser:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt serve --inject-script<span class="o">=</span>polyfill.js
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt<span class="w"> </span>serve<span class="w"> </span>--inject-script<span class="o">=</span>polyfill.js
 </pre></div>
 </div>
 <p>Then visit http://web-platform.test:8000/ or https://web-platform.test:8443/ to
 run the tests in your browser.</p>
 <p>Via the command line:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt run --inject-script<span class="o">=</span>polyfill.js <span class="o">[</span>browsername<span class="o">]</span> <span class="o">[</span>tests<span class="o">]</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt<span class="w"> </span>run<span class="w"> </span>--inject-script<span class="o">=</span>polyfill.js<span class="w"> </span><span class="o">[</span>browsername<span class="o">]</span><span class="w"> </span><span class="o">[</span>tests<span class="o">]</span>
 </pre></div>
 </div>
 </section>
@@ -68,8 +68,8 @@ run the tests in your browser.</p>
 the DOM after executing. This is done by modifying the server response for
 documents with a <code class="docutils literal notranslate"><span class="pre">text/html</span></code> MIME type  to insert the following before the first tag in
 the served response:</p>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
-<span class="c1">// &lt;-- The polyfill file is inlined here</span><span class="w"></span>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="c1">// &lt;-- The polyfill file is inlined here</span>
 // Remove the injected script tag from the DOM.
 document.currentScript.remove();
 </pre></div>

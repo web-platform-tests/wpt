@@ -200,16 +200,16 @@ add one more piece of metadata to the test file we created earlier. Open
 <code class="docutils literal notranslate"><span class="pre">html/semantics/text-level-semantics/the-bdo-element/rtl.html</span></code> in your text
 editor and add another <code class="docutils literal notranslate"><span class="pre">&lt;link&gt;</span></code> tag as described by the following change
 summary:</p>
-<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>&lt;!DOCTYPE html&gt;<span class="w"></span>
-<span class="w"> </span>&lt;meta charset=&quot;utf-8&quot;&gt;<span class="w"></span>
-<span class="w"> </span>&lt;title&gt;BDO element dir=rtl&lt;/title&gt;<span class="w"></span>
-<span class="w"> </span>&lt;link rel=&quot;author&quot; title=&quot;Sam Smith&quot; href=&quot;mailto:sam@example.com&quot;&gt;<span class="w"></span>
-<span class="w"> </span>&lt;link rel=&quot;help&quot; href=&quot;https://html.spec.whatwg.org/#the-bdo-element&quot;&gt;<span class="w"></span>
-<span class="gi">+&lt;link rel=&quot;match&quot; href=&quot;rtl-ref.html&quot;&gt;</span><span class="w"></span>
-<span class="w"> </span>&lt;meta name=&quot;assert&quot; content=&quot;BDO element&#39;s DIR content attribute renders corrently given value of &#39;rtl&#39;.&quot;&gt;<span class="w"></span>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>&lt;!DOCTYPE html&gt;
+<span class="w"> </span>&lt;meta charset=&quot;utf-8&quot;&gt;
+<span class="w"> </span>&lt;title&gt;BDO element dir=rtl&lt;/title&gt;
+<span class="w"> </span>&lt;link rel=&quot;author&quot; title=&quot;Sam Smith&quot; href=&quot;mailto:sam@example.com&quot;&gt;
+<span class="w"> </span>&lt;link rel=&quot;help&quot; href=&quot;https://html.spec.whatwg.org/#the-bdo-element&quot;&gt;
+<span class="gi">+&lt;link rel=&quot;match&quot; href=&quot;rtl-ref.html&quot;&gt;</span>
+<span class="w"> </span>&lt;meta name=&quot;assert&quot; content=&quot;BDO element&#39;s DIR content attribute renders corrently given value of &#39;rtl&#39;.&quot;&gt;
 
-<span class="w"> </span>&lt;p&gt;Test passes if WAS is displayed below.&lt;/p&gt;<span class="w"></span>
-<span class="w"> </span>&lt;bdo dir=&quot;rtl&quot;&gt;SAW&lt;/bdo&gt;<span class="w"></span>
+<span class="w"> </span>&lt;p&gt;Test passes if WAS is displayed below.&lt;/p&gt;
+<span class="w"> </span>&lt;bdo dir=&quot;rtl&quot;&gt;SAW&lt;/bdo&gt;
 </pre></div>
 </div>
 <p>Now, anyone (human or computer) reviewing the test file will know where to find

@@ -73,29 +73,29 @@ value for both is desirable.</p>
 <p>Other font properties should make sure they have their default values;
 as such, the <code class="docutils literal notranslate"><span class="pre">font</span></code> shorthand should normally be used.</p>
 <p>As a result, what is typically recommended is:</p>
-<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="nt">div</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">font</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="kt">px</span><span class="o">/</span><span class="mi">1</span><span class="w"> </span><span class="n">Ahem</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="nt">div</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">font</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="kt">px</span><span class="o">/</span><span class="mi">1</span><span class="w"> </span><span class="n">Ahem</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>Some things to avoid:</p>
-<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="nt">div</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="nt">div</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="k">font</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">em</span><span class="o">/</span><span class="mi">1</span><span class="kt">em</span><span class="w"> </span><span class="n">Ahem</span><span class="p">;</span><span class="w">  </span><span class="c">/* computed font-size is typically 16px and potentially</span>
-<span class="c">                          affected by parent elements */</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="c">                          affected by parent elements */</span>
+<span class="p">}</span>
 
-<span class="nt">div</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">font</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="kt">px</span><span class="w"> </span><span class="n">Ahem</span><span class="p">;</span><span class="w">  </span><span class="c">/* computed line-height value is normal */</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="nt">div</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">font</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="kt">px</span><span class="w"> </span><span class="n">Ahem</span><span class="p">;</span><span class="w">  </span><span class="c">/* computed line-height value is normal */</span>
+<span class="p">}</span>
 
-<span class="nt">div</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="c">/* doesn&#39;t use font shorthand; font-weight and font-style are inherited */</span><span class="w"></span>
-<span class="w">  </span><span class="k">font-family</span><span class="p">:</span><span class="w"> </span><span class="n">Ahem</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="kt">px</span><span class="p">;</span><span class="w"></span>
+<span class="nt">div</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c">/* doesn&#39;t use font shorthand; font-weight and font-style are inherited */</span>
+<span class="w">  </span><span class="k">font-family</span><span class="p">:</span><span class="w"> </span><span class="n">Ahem</span><span class="p">;</span>
+<span class="w">  </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="kt">px</span><span class="p">;</span>
 <span class="w">  </span><span class="k">line-height</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="kt">px</span><span class="p">;</span><span class="w">  </span><span class="c">/* the difference between computed line-height and</span>
 <span class="c">                         computed font-size is not divisible by 2</span>
-<span class="c">                         (50 - 25 = 25; 25 / 2 = 12.5). */</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="c">                         (50 - 25 = 25; 25 / 2 = 12.5). */</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>

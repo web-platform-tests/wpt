@@ -51,27 +51,27 @@ details.</p>
 <h2>Testing IDL fragments<a class="headerlink" href="#testing-idl-fragments" title="Permalink to this headline">¶</a></h2>
 <p>For example, the Fetch API’s IDL is tested in
 <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/fetch/api/idlharness.any.js"><code class="docutils literal notranslate"><span class="pre">/fetch/api/idlharness.any.js</span></code></a>:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// META: global=window,worker</span><span class="w"></span>
-<span class="c1">// META: script=/resources/WebIDLParser.js</span><span class="w"></span>
-<span class="c1">// META: script=/resources/idlharness.js</span><span class="w"></span>
-<span class="c1">// META: timeout=long</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// META: global=window,worker</span>
+<span class="c1">// META: script=/resources/WebIDLParser.js</span>
+<span class="c1">// META: script=/resources/idlharness.js</span>
+<span class="c1">// META: timeout=long</span>
 
-<span class="nx">idl_test</span><span class="p">(</span><span class="w"></span>
-<span class="w">  </span><span class="p">[</span><span class="s1">&#39;fetch&#39;</span><span class="p">],</span><span class="w"></span>
-<span class="w">  </span><span class="p">[</span><span class="s1">&#39;referrer-policy&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;html&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;dom&#39;</span><span class="p">],</span><span class="w"></span>
-<span class="w">  </span><span class="nx">idl_array</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nx">idl_array</span><span class="p">.</span><span class="nx">add_objects</span><span class="p">({</span><span class="w"></span>
-<span class="w">      </span><span class="nx">Headers</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;new Headers()&quot;</span><span class="p">],</span><span class="w"></span>
-<span class="w">      </span><span class="nx">Request</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;new Request(&#39;about:blank&#39;)&quot;</span><span class="p">],</span><span class="w"></span>
-<span class="w">      </span><span class="nx">Response</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;new Response()&quot;</span><span class="p">],</span><span class="w"></span>
-<span class="w">    </span><span class="p">});</span><span class="w"></span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">GLOBAL</span><span class="p">.</span><span class="nx">isWindow</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nx">idl_array</span><span class="p">.</span><span class="nx">add_objects</span><span class="p">({</span><span class="w"> </span><span class="nx">Window</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;window&#39;</span><span class="p">]</span><span class="w"> </span><span class="p">});</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">GLOBAL</span><span class="p">.</span><span class="nx">isWorker</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nx">idl_array</span><span class="p">.</span><span class="nx">add_objects</span><span class="p">({</span><span class="w"> </span><span class="nx">WorkerGlobalScope</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;self&#39;</span><span class="p">]</span><span class="w"> </span><span class="p">});</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">);</span><span class="w"></span>
+<span class="nx">idl_test</span><span class="p">(</span>
+<span class="w">  </span><span class="p">[</span><span class="s1">&#39;fetch&#39;</span><span class="p">],</span>
+<span class="w">  </span><span class="p">[</span><span class="s1">&#39;referrer-policy&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;html&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;dom&#39;</span><span class="p">],</span>
+<span class="w">  </span><span class="nx">idl_array</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">idl_array</span><span class="p">.</span><span class="nx">add_objects</span><span class="p">({</span>
+<span class="w">      </span><span class="nx">Headers</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;new Headers()&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nx">Request</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;new Request(&#39;about:blank&#39;)&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nx">Response</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;new Response()&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">GLOBAL</span><span class="p">.</span><span class="nx">isWindow</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">idl_array</span><span class="p">.</span><span class="nx">add_objects</span><span class="p">({</span><span class="w"> </span><span class="nx">Window</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;window&#39;</span><span class="p">]</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">GLOBAL</span><span class="p">.</span><span class="nx">isWorker</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">idl_array</span><span class="p">.</span><span class="nx">add_objects</span><span class="p">({</span><span class="w"> </span><span class="nx">WorkerGlobalScope</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;self&#39;</span><span class="p">]</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">);</span>
 </pre></div>
 </div>
 <p>Note how it includes <code class="docutils literal notranslate"><span class="pre">/resources/WebIDLParser.js</span></code> and <code class="docutils literal notranslate"><span class="pre">/resources/idlharness.js</span></code> in addition to
@@ -113,12 +113,12 @@ running correctly.</p>
 interfaces, and don’t want to retest the same interfaces every single time. For instance, HTML
 defines many interfaces that all inherit from <code class="docutils literal notranslate"><span class="pre">HTMLElement</span></code>, so the HTML test suite has something
 like</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="p">.</span><span class="nx">add_objects</span><span class="p">({</span><span class="w"></span>
-<span class="w">  </span><span class="nx">HTMLHtmlElement</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;document.documentElement&#39;</span><span class="p">],</span><span class="w"></span>
-<span class="w">  </span><span class="nx">HTMLHeadElement</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;document.head&#39;</span><span class="p">],</span><span class="w"></span>
-<span class="w">  </span><span class="nx">HTMLBodyElement</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;document.body&#39;</span><span class="p">],</span><span class="w"></span>
-<span class="w">  </span><span class="p">...</span><span class="w"></span>
-<span class="p">})</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="p">.</span><span class="nx">add_objects</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">HTMLHtmlElement</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;document.documentElement&#39;</span><span class="p">],</span>
+<span class="w">  </span><span class="nx">HTMLHeadElement</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;document.head&#39;</span><span class="p">],</span>
+<span class="w">  </span><span class="nx">HTMLBodyElement</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;document.body&#39;</span><span class="p">],</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="p">})</span>
 </pre></div>
 </div>
 <p>and so on for dozens of element types.  This would mean that it would retest that each and every one

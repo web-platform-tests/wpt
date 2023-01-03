@@ -164,9 +164,9 @@ other way.</p>
 
 <p>A trivial test for the DOM <a class="reference external" href="https://dom.spec.whatwg.org/#dom-domimplementation-hasfeature"><code class="docutils literal notranslate"><span class="pre">hasFeature()</span></code></a>
 method (which is defined to always return true) would be:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nx">assert_true</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">implementation</span><span class="p">.</span><span class="nx">hasFeature</span><span class="p">());</span><span class="w"></span>
-<span class="p">},</span><span class="w"> </span><span class="s2">&quot;hasFeature() with no arguments&quot;</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">assert_true</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">implementation</span><span class="p">.</span><span class="nx">hasFeature</span><span class="p">());</span>
+<span class="p">},</span><span class="w"> </span><span class="s2">&quot;hasFeature() with no arguments&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -194,58 +194,58 @@ be rather low-level but applicable to many situations.</p>
 </dd></dl>
 
 <p>Create a <a class="reference external" href="#Test"><code class="docutils literal notranslate"><span class="pre">Test</span></code></a>:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">async_test</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">async_test</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Code is run as part of the test by calling the <a class="reference external" href="#Test.step"><code class="docutils literal notranslate"><span class="pre">step</span></code></a>
 method with a function containing the test
 <a class="reference external" href="#assert-functions">assertions</a>:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nx">t</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nx">assert_true</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="p">});</span><span class="w"></span>
-<span class="p">});</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">t</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">assert_true</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">});</span>
 </pre></div>
 </div>
 <p>When all the steps are complete, the <a class="reference external" href="#Test.done"><code class="docutils literal notranslate"><span class="pre">done</span></code></a> method must
 be called:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">async_test</span></code> can also takes a function as first argument.  This
 function is called with the test object as both its <code class="docutils literal notranslate"><span class="pre">this</span></code> object and
 first argument. The above example can be rewritten as:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">async_test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nx">t</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nx">assert_true</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">});</span><span class="w"></span>
-<span class="w">    </span><span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span><span class="w"></span>
-<span class="w">  </span><span class="p">});</span><span class="w"></span>
-<span class="p">},</span><span class="w"> </span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">async_test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">t</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">assert_true</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">    </span><span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">},</span><span class="w"> </span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>In many cases it is convenient to run a step in response to an event or a
 callback. A convenient method of doing this is through the <code class="docutils literal notranslate"><span class="pre">step_func</span></code> method
 which returns a function that, when called runs a test step. For example:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nx">assert_true</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span><span class="w"></span>
-<span class="p">}));</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">assert_true</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span>
+<span class="p">}));</span>
 </pre></div>
 </div>
 <p>As a further convenience, the <code class="docutils literal notranslate"><span class="pre">step_func</span></code> that calls
 <a class="reference external" href="#Test.done"><code class="docutils literal notranslate"><span class="pre">done</span></code></a> can instead use
 <a class="reference external" href="#Test.step_func_done"><code class="docutils literal notranslate"><span class="pre">step_func_done</span></code></a>, as follows:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_func_done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nx">assert_true</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="p">}));</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_func_done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">assert_true</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span>
+<span class="p">}));</span>
 </pre></div>
 </div>
 <p>For asynchronous callbacks that should never execute,
 <a class="reference external" href="#Test.unreached_func"><code class="docutils literal notranslate"><span class="pre">unreached_func</span></code></a> can be used. For example:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nx">t</span><span class="p">.</span><span class="nx">unreached_func</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded should not be fired on the document element&quot;</span><span class="p">));</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">t</span><span class="p">.</span><span class="nx">unreached_func</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded should not be fired on the document element&quot;</span><span class="p">));</span>
 </pre></div>
 </div>
 <p><strong>Note:</strong> the <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> doesn’t impose any scheduling on async
@@ -277,16 +277,16 @@ argument. It must return a promise. The test completes when the
 returned promise settles. The test fails if the returned promise
 rejects.</p>
 <p>E.g.:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">foo</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">foo</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">);</span>
+<span class="p">}</span>
 
-<span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">foo</span><span class="p">()</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;foo should return &#39;foo&#39;&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">});</span><span class="w"></span>
-<span class="p">},</span><span class="w"> </span><span class="s2">&quot;Simple example&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">foo</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;foo should return &#39;foo&#39;&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">},</span><span class="w"> </span><span class="s2">&quot;Simple example&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>In the example above, <code class="docutils literal notranslate"><span class="pre">foo()</span></code> returns a Promise that resolves with the string
@@ -299,24 +299,24 @@ assertions don’t need to be wrapped in <a class="reference external" href="#Te
 <a class="reference external" href="#Test.step"><code class="docutils literal notranslate"><span class="pre">step</span></code></a>. However this tends to produce confusing tests;
 it’s recommended to convert any asynchronous behaviour into part of
 the promise chain. For example, instead of</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="nx">event</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nx">assert_true</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">      </span><span class="nx">resolve</span><span class="p">();</span><span class="w"></span>
-<span class="w">    </span><span class="p">}));</span><span class="w"></span>
-<span class="w">  </span><span class="p">});</span><span class="w"></span>
-<span class="p">},</span><span class="w"> </span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="nx">event</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">assert_true</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span>
+<span class="w">      </span><span class="nx">resolve</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}));</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">},</span><span class="w"> </span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Try,</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">resolve</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">event</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nx">assert_true</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="p">});</span><span class="w"></span>
-<span class="p">},</span><span class="w"> </span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">resolve</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">event</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">assert_true</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">},</span><span class="w"> </span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 <p><strong>Note:</strong> Unlike asynchronous tests, testharness.js queues promise
@@ -344,10 +344,10 @@ tests”.</p>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
-<span class="w">    </span><span class="nx">setup</span><span class="p">({</span><span class="w"> </span><span class="nx">single_test</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">});</span><span class="w"></span>
-<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">)[</span><span class="mf">0</span><span class="p">])</span><span class="w"></span>
-<span class="w">    </span><span class="nx">done</span><span class="p">()</span><span class="w"></span>
+  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="nx">setup</span><span class="p">({</span><span class="w"> </span><span class="nx">single_test</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">)[</span><span class="mf">0</span><span class="p">])</span>
+<span class="w">    </span><span class="nx">done</span><span class="p">()</span>
 <span class="w"> </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
@@ -359,7 +359,7 @@ tests”.</p>
 <p>Functions for making assertions start <code class="docutils literal notranslate"><span class="pre">assert_</span></code>. The full list of
 asserts available is documented in the <a class="reference external" href="#assert-functions">asserts</a>
 section. The general signature is:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">assert_something</span><span class="p">(</span><span class="nx">actual</span><span class="p">,</span><span class="w"> </span><span class="nx">expected</span><span class="p">,</span><span class="w"> </span><span class="nx">description</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">assert_something</span><span class="p">(</span><span class="nx">actual</span><span class="p">,</span><span class="w"> </span><span class="nx">expected</span><span class="p">,</span><span class="w"> </span><span class="nx">description</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>although not all assertions precisely match this pattern
@@ -384,13 +384,13 @@ sense</a>),
 <a class="reference external" href="#assert_implements_optional"><code class="docutils literal notranslate"><span class="pre">assert_implements_optional</span></code></a> can be
 used to indicate that failing the test does not mean violating a web
 standard. For example:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">async_test</span><span class="p">((</span><span class="nx">t</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">video</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;video&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="nx">assert_implements_optional</span><span class="p">(</span><span class="nx">video</span><span class="p">.</span><span class="nx">canPlayType</span><span class="p">(</span><span class="s2">&quot;video/webm&quot;</span><span class="p">));</span><span class="w"></span>
-<span class="w">  </span><span class="nx">video</span><span class="p">.</span><span class="nx">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;multitrack.webm&quot;</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="c1">// test something specific to multiple audio tracks in a WebM container</span><span class="w"></span>
-<span class="w">  </span><span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span><span class="w"></span>
-<span class="p">},</span><span class="w"> </span><span class="s2">&quot;WebM with multiple audio tracks&quot;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">async_test</span><span class="p">((</span><span class="nx">t</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">video</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;video&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">assert_implements_optional</span><span class="p">(</span><span class="nx">video</span><span class="p">.</span><span class="nx">canPlayType</span><span class="p">(</span><span class="s2">&quot;video/webm&quot;</span><span class="p">));</span>
+<span class="w">  </span><span class="nx">video</span><span class="p">.</span><span class="nx">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;multitrack.webm&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// test something specific to multiple audio tracks in a WebM container</span>
+<span class="w">  </span><span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span>
+<span class="p">},</span><span class="w"> </span><span class="s2">&quot;WebM with multiple audio tracks&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>A failing <a class="reference external" href="#assert_implements_optional"><code class="docutils literal notranslate"><span class="pre">assert_implements_optional</span></code></a>
@@ -400,12 +400,12 @@ that introduced
 <code class="docutils literal notranslate"><span class="pre">assert_implements_optional</span></code></a>.</p>
 <p><a class="reference external" href="#assert_implements_optional"><code class="docutils literal notranslate"><span class="pre">assert_implements_optional</span></code></a> can also
 be used during <a class="reference external" href="#setup">test setup</a>. For example:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">setup</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nx">assert_implements_optional</span><span class="p">(</span><span class="s2">&quot;optionalfeature&quot;</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span><span class="w"></span>
-<span class="w">                             </span><span class="s2">&quot;&#39;optionalfeature&#39; event supported&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="p">});</span><span class="w"></span>
-<span class="nx">async_test</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* test #1 waiting for &quot;optionalfeature&quot; event */</span><span class="w"> </span><span class="p">});</span><span class="w"></span>
-<span class="nx">async_test</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* test #2 waiting for &quot;optionalfeature&quot; event */</span><span class="w"> </span><span class="p">});</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">setup</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">assert_implements_optional</span><span class="p">(</span><span class="s2">&quot;optionalfeature&quot;</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span>
+<span class="w">                             </span><span class="s2">&quot;&#39;optionalfeature&#39; event supported&quot;</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="nx">async_test</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* test #1 waiting for &quot;optionalfeature&quot; event */</span><span class="w"> </span><span class="p">});</span>
+<span class="nx">async_test</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* test #2 waiting for &quot;optionalfeature&quot; event */</span><span class="w"> </span><span class="p">});</span>
 </pre></div>
 </div>
 <p>A failing <a class="reference external" href="#assert_implements_optional"><code class="docutils literal notranslate"><span class="pre">assert_implements_optional</span></code></a>
@@ -435,10 +435,10 @@ failures for the suite in the current context.</p>
 <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
   <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;log&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
-<span class="w">    </span><span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nx">assert_true</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;true is true&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;Simple test&quot;</span><span class="p">);</span><span class="w"></span>
+  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">assert_true</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;true is true&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;Simple test&quot;</span><span class="p">);</span>
 <span class="w">  </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
@@ -454,9 +454,9 @@ failures for the suite in the current context.</p>
 <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
   <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;log&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
-<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">child_window</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">&quot;support/child.html&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="nx">fetch_tests_from_window</span><span class="p">(</span><span class="nx">child_window</span><span class="p">);</span><span class="w"></span>
+  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">child_window</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">&quot;support/child.html&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">fetch_tests_from_window</span><span class="p">(</span><span class="nx">child_window</span><span class="p">);</span>
 <span class="w">  </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
@@ -496,15 +496,15 @@ event and don’t require an explicit <a class="reference external" href="#done"
 </ul>
 <p>Here’s an example that uses a dedicated worker.</p>
 <p><code class="docutils literal notranslate"><span class="pre">worker.js</span></code>:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">importScripts</span><span class="p">(</span><span class="s2">&quot;/resources/testharness.js&quot;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">importScripts</span><span class="p">(</span><span class="s2">&quot;/resources/testharness.js&quot;</span><span class="p">);</span>
 
-<span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nx">assert_true</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;true is true&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="p">},</span><span class="w"> </span><span class="s2">&quot;Simple test&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">assert_true</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;true is true&quot;</span><span class="p">);</span>
+<span class="p">},</span><span class="w"> </span><span class="s2">&quot;Simple test&quot;</span><span class="p">);</span>
 
-<span class="c1">// done() is needed because the testharness is running as if explicit_done</span><span class="w"></span>
-<span class="c1">// was specified.</span><span class="w"></span>
-<span class="nx">done</span><span class="p">();</span><span class="w"></span>
+<span class="c1">// done() is needed because the testharness is running as if explicit_done</span>
+<span class="c1">// was specified.</span>
+<span class="nx">done</span><span class="p">();</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">test.html</span></code>:</p>
@@ -513,9 +513,9 @@ event and don’t require an explicit <a class="reference external" href="#done"
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;log&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
 
-<span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker.js&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker.js&quot;</span><span class="p">));</span>
 
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
@@ -523,10 +523,10 @@ event and don’t require an explicit <a class="reference external" href="#done"
 <p><code class="docutils literal notranslate"><span class="pre">fetch_tests_from_worker</span></code> returns a promise that resolves once all the remote
 tests have completed. This is useful if you’re importing tests from multiple
 workers and want to ensure they run in series:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker-1.js&quot;</span><span class="p">));</span><span class="w"></span>
-<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker-2.js&quot;</span><span class="p">));</span><span class="w"></span>
-<span class="p">})();</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker-1.js&quot;</span><span class="p">));</span>
+<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker-2.js&quot;</span><span class="p">));</span>
+<span class="p">})();</span>
 </pre></div>
 </div>
 </section>
@@ -540,13 +540,13 @@ by adding cleanup callbacks to the test. Such callbacks are registered
 using the <a class="reference external" href="#Test.add_cleanup"><code class="docutils literal notranslate"><span class="pre">add_cleanup</span></code></a> method. All registered
 callbacks will be run as soon as the test result is known. For
 example:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">element</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="nx">element</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;null&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">add_cleanup</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">element</span><span class="p">)</span><span class="w"> </span><span class="p">});</span><span class="w"></span>
-<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="kc">null</span><span class="p">),</span><span class="w"> </span><span class="nx">element</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;Calling document.getElementById with a null argument.&quot;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">element</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">element</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;null&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">add_cleanup</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">element</span><span class="p">)</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="kc">null</span><span class="p">),</span><span class="w"> </span><span class="nx">element</span><span class="p">);</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;Calling document.getElementById with a null argument.&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>If the test was created using the <a class="reference external" href="#promise_test"><code class="docutils literal notranslate"><span class="pre">promise_test</span></code></a> API,
@@ -1438,13 +1438,13 @@ optional, argument the assertion description.</p>
 be used to test Promises that need to reject.</p>
 <p>Here’s an example where the <code class="docutils literal notranslate"><span class="pre">bar()</span></code> function returns a Promise that rejects
 with a TypeError:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">bar</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="ne">TypeError</span><span class="p">());</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">bar</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="ne">TypeError</span><span class="p">());</span>
+<span class="p">}</span>
 
-<span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">promise_rejects_js</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="ne">TypeError</span><span class="p">,</span><span class="w"> </span><span class="nx">bar</span><span class="p">());</span><span class="w"></span>
-<span class="p">},</span><span class="w"> </span><span class="s2">&quot;Another example&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">promise_rejects_js</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="ne">TypeError</span><span class="p">,</span><span class="w"> </span><span class="nx">bar</span><span class="p">());</span>
+<span class="p">},</span><span class="w"> </span><span class="s2">&quot;Another example&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
@@ -1568,12 +1568,12 @@ test step.</p>
 </dd>
 </dl>
 <p><strong>Examples:</strong></p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">async_test</span><span class="p">(</span><span class="s2">&quot;Example&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="nx">onload</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="nx">e</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;load&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="c1">// Mark the test as complete.</span><span class="w"></span>
-<span class="w">  </span><span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span><span class="w"></span>
-<span class="p">})</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">async_test</span><span class="p">(</span><span class="s2">&quot;Example&quot;</span><span class="p">);</span>
+<span class="nx">onload</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="nx">e</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;load&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// Mark the test as complete.</span>
+<span class="w">  </span><span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span>
+<span class="p">})</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1638,11 +1638,11 @@ when the condition is quickly met.</p>
 </dd>
 </dl>
 <p><strong>Examples:</strong></p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(</span><span class="k">async</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w"> </span><span class="c1">// …</span><span class="w"></span>
-<span class="k">await</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_wait</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">frame</span><span class="p">.</span><span class="nx">contentDocument</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Frame navigated to a cross-origin document&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="c1">// …</span><span class="w"></span>
-<span class="p">},</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(</span><span class="k">async</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="c1">// …</span>
+<span class="k">await</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_wait</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">frame</span><span class="p">.</span><span class="nx">contentDocument</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Frame navigated to a cross-origin document&quot;</span><span class="p">);</span>
+<span class="c1">// …</span>
+<span class="p">},</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1690,17 +1690,17 @@ when the condition is quickly met.</p>
 </dd>
 </dl>
 <p><strong>Examples:</strong></p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">async_test</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">popup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">&quot;resources/coop-coep.py?coop=same-origin&amp;coep=&amp;navigate=about:blank&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">add_cleanup</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">popup</span><span class="p">.</span><span class="nx">close</span><span class="p">());</span><span class="w"></span>
-<span class="w"> </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">window</span><span class="p">,</span><span class="w"> </span><span class="nx">popup</span><span class="p">.</span><span class="nx">opener</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">async_test</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">popup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">&quot;resources/coop-coep.py?coop=same-origin&amp;coep=&amp;navigate=about:blank&quot;</span><span class="p">);</span>
+<span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">add_cleanup</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">popup</span><span class="p">.</span><span class="nx">close</span><span class="p">());</span>
+<span class="w"> </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">window</span><span class="p">,</span><span class="w"> </span><span class="nx">popup</span><span class="p">.</span><span class="nx">opener</span><span class="p">);</span>
 
-<span class="w"> </span><span class="nx">popup</span><span class="p">.</span><span class="nx">onload</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="nx">assert_true</span><span class="p">(</span><span class="nx">popup</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="p">.</span><span class="nx">endsWith</span><span class="p">(</span><span class="s2">&quot;&amp;navigate=about:blank&quot;</span><span class="p">));</span><span class="w"></span>
-<span class="w">   </span><span class="c1">// Use step_wait_func_done as about:blank cannot message back.</span><span class="w"></span>
-<span class="w">   </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_wait_func_done</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">popup</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">&quot;about:blank&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w"> </span><span class="p">});</span><span class="w"></span>
-<span class="p">},</span><span class="w"> </span><span class="s2">&quot;Navigating a popup to about:blank&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w"> </span><span class="nx">popup</span><span class="p">.</span><span class="nx">onload</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="nx">assert_true</span><span class="p">(</span><span class="nx">popup</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="p">.</span><span class="nx">endsWith</span><span class="p">(</span><span class="s2">&quot;&amp;navigate=about:blank&quot;</span><span class="p">));</span>
+<span class="w">   </span><span class="c1">// Use step_wait_func_done as about:blank cannot message back.</span>
+<span class="w">   </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_wait_func_done</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">popup</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">&quot;about:blank&quot;</span><span class="p">);</span>
+<span class="w"> </span><span class="p">});</span>
+<span class="p">},</span><span class="w"> </span><span class="s2">&quot;Navigating a popup to about:blank&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1765,14 +1765,14 @@ series of events has occurred.</p>
 </dd>
 </dl>
 <p><strong>Examples:</strong></p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">watcher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">EventWatcher</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="nx">div</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s1">&#39;animationstart&#39;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                                           </span><span class="s1">&#39;animationiteration&#39;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                                           </span><span class="s1">&#39;animationend&#39;</span><span class="w"> </span><span class="p">]);</span><span class="w"></span>
-<span class="k">return</span><span class="w"> </span><span class="nx">watcher</span><span class="p">.</span><span class="nx">wait_for</span><span class="p">([</span><span class="w"> </span><span class="s1">&#39;animationstart&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;animationend&#39;</span><span class="w"> </span><span class="p">],</span><span class="w"></span>
-<span class="w">                        </span><span class="p">{</span><span class="w"> </span><span class="nx">record</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;all&#39;</span><span class="w"> </span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">evts</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">evts</span><span class="p">[</span><span class="mf">0</span><span class="p">].</span><span class="nx">elapsedTime</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">evts</span><span class="p">[</span><span class="mf">1</span><span class="p">].</span><span class="nx">elapsedTime</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">);</span><span class="w"></span>
-<span class="p">});</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">watcher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">EventWatcher</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="nx">div</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s1">&#39;animationstart&#39;</span><span class="p">,</span>
+<span class="w">                                           </span><span class="s1">&#39;animationiteration&#39;</span><span class="p">,</span>
+<span class="w">                                           </span><span class="s1">&#39;animationend&#39;</span><span class="w"> </span><span class="p">]);</span>
+<span class="k">return</span><span class="w"> </span><span class="nx">watcher</span><span class="p">.</span><span class="nx">wait_for</span><span class="p">([</span><span class="w"> </span><span class="s1">&#39;animationstart&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;animationend&#39;</span><span class="w"> </span><span class="p">],</span>
+<span class="w">                        </span><span class="p">{</span><span class="w"> </span><span class="nx">record</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;all&#39;</span><span class="w"> </span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">evts</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">evts</span><span class="p">[</span><span class="mf">0</span><span class="p">].</span><span class="nx">elapsedTime</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">evts</span><span class="p">[</span><span class="mf">1</span><span class="p">].</span><span class="nx">elapsedTime</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">);</span>
+<span class="p">});</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1786,25 +1786,25 @@ series of events has occurred.</p>
 </dd></dl>
 
 <p>Here’s an example of how to use <code class="docutils literal notranslate"><span class="pre">EventWatcher</span></code>:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">async_test</span><span class="p">(</span><span class="s2">&quot;Event order on animation start&quot;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">async_test</span><span class="p">(</span><span class="s2">&quot;Event order on animation start&quot;</span><span class="p">);</span>
 
-<span class="kd">var</span><span class="w"> </span><span class="nx">animation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">watchedNode</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">()[</span><span class="mf">0</span><span class="p">];</span><span class="w"></span>
-<span class="kd">var</span><span class="w"> </span><span class="nx">eventWatcher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">EventWatcher</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="nx">watchedNode</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;animationstart&#39;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                                                     </span><span class="s1">&#39;animationiteration&#39;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                                                     </span><span class="s1">&#39;animationend&#39;</span><span class="p">]);</span><span class="w"></span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">animation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">watchedNode</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">()[</span><span class="mf">0</span><span class="p">];</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">eventWatcher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">EventWatcher</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="nx">watchedNode</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;animationstart&#39;</span><span class="p">,</span>
+<span class="w">                                                     </span><span class="s1">&#39;animationiteration&#39;</span><span class="p">,</span>
+<span class="w">                                                     </span><span class="s1">&#39;animationend&#39;</span><span class="p">]);</span>
 
-<span class="nx">eventWatcher</span><span class="p">.</span><span class="nx">wait_for</span><span class="p">(</span><span class="s1">&#39;animationstart&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nx">assertExpectedStateAtStartOfAnimation</span><span class="p">();</span><span class="w"></span>
-<span class="w">  </span><span class="nx">animation</span><span class="p">.</span><span class="nx">currentTime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">END_TIME</span><span class="p">;</span><span class="w"> </span><span class="c1">// skip to end</span><span class="w"></span>
-<span class="w">  </span><span class="c1">// We expect two animationiteration events then an animationend event on</span><span class="w"></span>
-<span class="w">  </span><span class="c1">// skipping to the end of the animation.</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">eventWatcher</span><span class="p">.</span><span class="nx">wait_for</span><span class="p">([</span><span class="s1">&#39;animationiteration&#39;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                                </span><span class="s1">&#39;animationiteration&#39;</span><span class="p">,</span><span class="w"></span>
-<span class="w">                                </span><span class="s1">&#39;animationend&#39;</span><span class="p">]);</span><span class="w"></span>
-<span class="p">})).</span><span class="nx">then</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nx">assertExpectedStateAtEndOfAnimation</span><span class="p">();</span><span class="w"></span>
-<span class="w">  </span><span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span><span class="w"></span>
-<span class="p">}));</span><span class="w"></span>
+<span class="nx">eventWatcher</span><span class="p">.</span><span class="nx">wait_for</span><span class="p">(</span><span class="s1">&#39;animationstart&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">assertExpectedStateAtStartOfAnimation</span><span class="p">();</span>
+<span class="w">  </span><span class="nx">animation</span><span class="p">.</span><span class="nx">currentTime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">END_TIME</span><span class="p">;</span><span class="w"> </span><span class="c1">// skip to end</span>
+<span class="w">  </span><span class="c1">// We expect two animationiteration events then an animationend event on</span>
+<span class="w">  </span><span class="c1">// skipping to the end of the animation.</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">eventWatcher</span><span class="p">.</span><span class="nx">wait_for</span><span class="p">([</span><span class="s1">&#39;animationiteration&#39;</span><span class="p">,</span>
+<span class="w">                                </span><span class="s1">&#39;animationiteration&#39;</span><span class="p">,</span>
+<span class="w">                                </span><span class="s1">&#39;animationend&#39;</span><span class="p">]);</span>
+<span class="p">})).</span><span class="nx">then</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">assertExpectedStateAtEndOfAnimation</span><span class="p">();</span>
+<span class="w">  </span><span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span>
+<span class="p">}));</span>
 </pre></div>
 </div>
 </section>
@@ -1834,16 +1834,16 @@ representations.</p>
 </dd>
 </dl>
 <p><strong>Examples:</strong></p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// &quot;Document node with 2 children&quot;</span><span class="w"></span>
-<span class="nx">format_value</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// &quot;Document node with 2 children&quot;</span>
+<span class="nx">format_value</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span>
 </pre></div>
 </div>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// &quot;\&quot;foo\\uffffbar\&quot;&quot;</span><span class="w"></span>
-<span class="nx">format_value</span><span class="p">(</span><span class="s2">&quot;foo\uffffbar&quot;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// &quot;\&quot;foo\\uffffbar\&quot;&quot;</span>
+<span class="nx">format_value</span><span class="p">(</span><span class="s2">&quot;foo\uffffbar&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// &quot;[-0, Infinity]&quot;</span><span class="w"></span>
-<span class="nx">format_value</span><span class="p">([</span><span class="o">-</span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="kc">Infinity</span><span class="p">]);</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// &quot;[-0, Infinity]&quot;</span>
+<span class="nx">format_value</span><span class="p">([</span><span class="o">-</span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="kc">Infinity</span><span class="p">]);</span>
 </pre></div>
 </div>
 </dd></dl>

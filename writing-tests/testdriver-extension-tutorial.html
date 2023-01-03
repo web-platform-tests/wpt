@@ -77,9 +77,9 @@ Add testdriver.js support for the [<span class="nt">Set Window Rect command</spa
 <section id="resources-testdriver-js">
 <h3><a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/resources/testdriver.js">resources/testdriver.js</a><a class="headerlink" href="#resources-testdriver-js" title="Permalink to this headline">¶</a></h3>
 <p>This is the main entry point the tests get. Here we need to add a function to the <code class="docutils literal notranslate"><span class="pre">test_driver</span></code> object that will call the <code class="docutils literal notranslate"><span class="pre">test_driver_internal</span></code> object.</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nb">window</span><span class="p">.</span><span class="nx">test_driver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nb">window</span><span class="p">.</span><span class="nx">test_driver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
 
-<span class="w">    </span><span class="c1">// other commands...</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// other commands...</span>
 
 <span class="w">    </span><span class="cm">/**</span>
 <span class="cm">    * Triggers browser window to be resized and relocated</span>
@@ -94,20 +94,20 @@ Add testdriver.js support for the [<span class="nt">Set Window Rect command</spa
 <span class="cm">    * @param {Integer} height - The width of the window</span>
 <span class="cm">    * @returns {Promise} fulfilled after window rect is set occurs, or rejected in</span>
 <span class="cm">    *                    the cases the WebDriver command errors</span>
-<span class="cm">    */</span><span class="w"></span>
-<span class="w">    </span><span class="nx">set_window_rect</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="p">,</span><span class="w"> </span><span class="nx">width</span><span class="p">,</span><span class="w"> </span><span class="nx">height</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">test_driver_internal</span><span class="p">.</span><span class="nx">set_element_rect</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="p">,</span><span class="w"> </span><span class="nx">width</span><span class="p">,</span><span class="w"> </span><span class="nx">height</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="cm">    */</span>
+<span class="w">    </span><span class="nx">set_window_rect</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="p">,</span><span class="w"> </span><span class="nx">width</span><span class="p">,</span><span class="w"> </span><span class="nx">height</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">test_driver_internal</span><span class="p">.</span><span class="nx">set_element_rect</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="p">,</span><span class="w"> </span><span class="nx">width</span><span class="p">,</span><span class="w"> </span><span class="nx">height</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 </pre></div>
 </div>
 <p>In the same file, lets add to the internal object. ( do we need to do this?) (make sure to do this if the internal call has different arguments than the external call, especially if it calls multiple internal calls)</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nb">window</span><span class="p">.</span><span class="nx">test_driver_internal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nb">window</span><span class="p">.</span><span class="nx">test_driver_internal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
 
-<span class="w">    </span><span class="c1">// other commands...</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// other commands...</span>
 
-<span class="w">    </span><span class="nx">set_window_rect</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="p">,</span><span class="w"> </span><span class="nx">width</span><span class="p">,</span><span class="w"> </span><span class="nx">height</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s2">&quot;unimplemented&quot;</span><span class="p">))</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="nx">set_window_rect</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="p">,</span><span class="w"> </span><span class="nx">width</span><span class="p">,</span><span class="w"> </span><span class="nx">height</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s2">&quot;unimplemented&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="p">}</span>
 </pre></div>
 </div>
 <p>We will leave this unimplemented and override it in another file. Lets do that now!</p>
@@ -115,9 +115,9 @@ Add testdriver.js support for the [<span class="nt">Set Window Rect command</spa
 <section id="tools-wptrunner-wptrunner-testdriver-extra-js">
 <h3><a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/testdriver-extra.js">tools/wptrunner/wptrunner/testdriver-extra.js</a><a class="headerlink" href="#tools-wptrunner-wptrunner-testdriver-extra-js" title="Permalink to this headline">¶</a></h3>
 <p>This will be the default function called when invoking the test driver commands (sometimes it is overridden by testdriver-vendor.js, but that is outside the scope of this tutorial). In most cases this is just boilerplate:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nb">window</span><span class="p">.</span><span class="nx">test_driver_internal</span><span class="p">.</span><span class="nx">set_element_rect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="p">,</span><span class="w"> </span><span class="nx">width</span><span class="p">,</span><span class="w"> </span><span class="nx">height</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">create_action</span><span class="p">(</span><span class="s2">&quot;set_element_rect&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="p">,</span><span class="w"> </span><span class="nx">width</span><span class="p">,</span><span class="w"> </span><span class="nx">height</span><span class="p">});</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nb">window</span><span class="p">.</span><span class="nx">test_driver_internal</span><span class="p">.</span><span class="nx">set_element_rect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="p">,</span><span class="w"> </span><span class="nx">width</span><span class="p">,</span><span class="w"> </span><span class="nx">height</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">create_action</span><span class="p">(</span><span class="s2">&quot;set_element_rect&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="p">,</span><span class="w"> </span><span class="nx">width</span><span class="p">,</span><span class="w"> </span><span class="nx">height</span><span class="p">});</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">create_action</span></code> helper function does the heavy lifting of setting up a postMessage to the wptrunner internals as well as returning a promise that will resolve once the call is complete.</p>
@@ -126,14 +126,14 @@ Add testdriver.js support for the [<span class="nt">Set Window Rect command</spa
 <section id="tools-wptrunner-wptrunner-executors-protocol-py">
 <h3><a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/protocol.py">tools/wptrunner/wptrunner/executors/protocol.py</a><a class="headerlink" href="#tools-wptrunner-wptrunner-executors-protocol-py" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SetWindowRectProtocolPart</span><span class="p">(</span><span class="n">ProtocolPart</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Protocol part for resizing and changing location of window&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Protocol part for resizing and changing location of window&quot;&quot;&quot;</span>
     <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;set_window_rect&quot;</span>
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">set_window_rect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Change the window rect</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Change the window rect</span>
 
 <span class="sd">        :param x: The x coordinate of the top left of the window.</span>
 <span class="sd">        :param y: The y coordinate of the top left of the window.</span>
@@ -257,11 +257,11 @@ Now we write the browser specific implementations.</p>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testdriver.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testdriver-vendor.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 
-<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
-<span class="nx">promise_test</span><span class="p">(</span><span class="k">async</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_window_rect</span><span class="p">(</span><span class="mf">100</span><span class="p">,</span><span class="w"> </span><span class="mf">100</span><span class="p">,</span><span class="w"> </span><span class="mf">100</span><span class="p">,</span><span class="w"> </span><span class="mf">100</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="c1">// do something</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="nx">promise_test</span><span class="p">(</span><span class="k">async</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_window_rect</span><span class="p">(</span><span class="mf">100</span><span class="p">,</span><span class="w"> </span><span class="mf">100</span><span class="p">,</span><span class="w"> </span><span class="mf">100</span><span class="p">,</span><span class="w"> </span><span class="mf">100</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// do something</span>
+<span class="p">}</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
@@ -287,17 +287,17 @@ back to the test on the resolving promise. The test can then deserialize the JSO
 </pre></div>
 </div>
 <p>Then a test can access the return value as follows:</p>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
-<span class="nx">async_test</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">get_window_rect</span><span class="p">()</span><span class="w"></span>
-<span class="w">  </span><span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">result</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span><span class="w"> </span><span class="mf">10</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span><span class="w"> </span><span class="mf">800</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">height</span><span class="p">,</span><span class="w"> </span><span class="mf">600</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span><span class="w"></span>
-<span class="w">  </span><span class="p">})</span><span class="w"></span>
-<span class="p">});</span><span class="w"></span>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="nx">async_test</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">get_window_rect</span><span class="p">()</span>
+<span class="w">  </span><span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">result</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span><span class="w"> </span><span class="mf">10</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span><span class="w"> </span><span class="mf">800</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">height</span><span class="p">,</span><span class="w"> </span><span class="mf">600</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span>
+<span class="w">  </span><span class="p">})</span>
+<span class="p">});</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>

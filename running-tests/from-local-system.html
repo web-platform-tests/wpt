@@ -47,7 +47,7 @@ the system <code class="docutils literal notranslate"><span class="pre">hosts</s
 <p>If not already present, use the system package manager to install <code class="docutils literal notranslate"><span class="pre">python</span></code>,
 <code class="docutils literal notranslate"><span class="pre">pip</span></code> and <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code>.</p>
 <p>On Debian or Ubuntu:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt-get install python python-pip virtualenv
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>python<span class="w"> </span>python-pip<span class="w"> </span>virtualenv
 </pre></div>
 </div>
 <p>It is important to have a package that provides a <code class="docutils literal notranslate"><span class="pre">python</span></code> binary. On Fedora,
@@ -58,9 +58,9 @@ Ubuntu Focal and later, the package is called <code class="docutils literal notr
 <h3>macOS Setup<a class="headerlink" href="#macos-setup" title="Permalink to this headline">¶</a></h3>
 <p>The system-provided Python can be used, while <code class="docutils literal notranslate"><span class="pre">pip</span></code> and <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> can be
 installed for the user only:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m ensurepip --user
-<span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PATH</span><span class="s2">:</span><span class="nv">$HOME</span><span class="s2">/Library/Python/2.7/bin&quot;</span>
-pip install --user virtualenv
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>ensurepip<span class="w"> </span>--user
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PATH</span><span class="s2">:</span><span class="nv">$HOME</span><span class="s2">/Library/Python/2.7/bin&quot;</span>
+pip<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>virtualenv
 </pre></div>
 </div>
 <p>To make the <code class="docutils literal notranslate"><span class="pre">PATH</span></code> change persistent, add it to your <code class="docutils literal notranslate"><span class="pre">~/.bash_profile</span></code> file or
@@ -74,13 +74,13 @@ installer includes <code class="docutils literal notranslate"><span class="pre">
 <p>Add <code class="docutils literal notranslate"><span class="pre">C:\Python39</span></code> and <code class="docutils literal notranslate"><span class="pre">C:\Python39\Scripts</span></code> to your <code class="docutils literal notranslate"><span class="pre">%Path%</span></code>
 <a class="reference external" href="http://www.computerhope.com/issues/ch000549.htm">environment variable</a>.</p>
 <p>Finally, install <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install virtualenv
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>virtualenv
 </pre></div>
 </div>
 <p>The standard Windows shell requires that all <code class="docutils literal notranslate"><span class="pre">wpt</span></code> commands are prefixed
 by the Python binary i.e. assuming <code class="docutils literal notranslate"><span class="pre">python</span></code> is on your path the server is
 started using:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python wpt serve
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>wpt<span class="w"> </span>serve
 </pre></div>
 </div>
 <section id="windows-subsystem-for-linux">
@@ -98,7 +98,7 @@ require you to re-run <a class="reference external" href="#hosts-file-setup"><co
 <p>To get the tests running, you need to set up the test domains in your
 <a class="reference external" href="http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system"><code class="docutils literal notranslate"><span class="pre">hosts</span></code> file</a>.</p>
 <p>On Linux, macOS or other UNIX-like system:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt make-hosts-file <span class="p">|</span> sudo tee -a /etc/hosts
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt<span class="w"> </span>make-hosts-file<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span>/etc/hosts
 </pre></div>
 </div>
 <p>And on Windows (this must be run in a PowerShell session with Administrator privileges):</p>

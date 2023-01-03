@@ -65,17 +65,17 @@ that are commonly used with JavaScript tests.</p></li>
 generated for you at <code class="docutils literal notranslate"><span class="pre">.window.html</span></code>. I.e., for <code class="docutils literal notranslate"><span class="pre">test.window.js</span></code> the server will ensure
 <code class="docutils literal notranslate"><span class="pre">test.window.html</span></code> is available.</p>
 <p>In this JavaScript file you can place one or more tests, as follows:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">test</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="c1">// Place assertions and logic here</span><span class="w"></span>
-<span class="w">  </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">characterSet</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;UTF-8&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="p">},</span><span class="w"> </span><span class="s2">&quot;Ensure HTML boilerplate uses UTF-8&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// This is the title of the test</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">test</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Place assertions and logic here</span>
+<span class="w">  </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">characterSet</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;UTF-8&quot;</span><span class="p">);</span>
+<span class="p">},</span><span class="w"> </span><span class="s2">&quot;Ensure HTML boilerplate uses UTF-8&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// This is the title of the test</span>
 </pre></div>
 </div>
 <p>If you only need to test a <a class="reference external" href="testharness-api.html#single-page-tests">single thing</a>, you could also use:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// META: title=Ensure HTML boilerplate uses UTF-8</span><span class="w"></span>
-<span class="nx">setup</span><span class="p">({</span><span class="w"> </span><span class="nx">single_test</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">});</span><span class="w"></span>
-<span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">characterSet</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;UTF-8&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="nx">done</span><span class="p">();</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// META: title=Ensure HTML boilerplate uses UTF-8</span>
+<span class="nx">setup</span><span class="p">({</span><span class="w"> </span><span class="nx">single_test</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">});</span>
+<span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">characterSet</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;UTF-8&quot;</span><span class="p">);</span>
+<span class="nx">done</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>See <a class="reference external" href="testharness-api.html#asynchronous-tests">asynchronous (<code class="docutils literal notranslate"><span class="pre">async_test()</span></code>)</a> and
@@ -90,10 +90,10 @@ additional file used by implementations:</p>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
-<span class="w">    </span><span class="nx">test</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">characterSet</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;UTF-8&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;Ensure UTF-8 declaration is observed&quot;</span><span class="p">);</span><span class="w"></span>
+  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="nx">test</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">characterSet</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;UTF-8&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;Ensure UTF-8 declaration is observed&quot;</span><span class="p">);</span>
 <span class="w">  </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
@@ -104,10 +104,10 @@ additional file used by implementations:</p>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
-<span class="w">    </span><span class="nx">setup</span><span class="p">({</span><span class="w"> </span><span class="nx">single_test</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">});</span><span class="w"></span>
-<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">characterSet</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;UTF-8&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="nx">done</span><span class="p">();</span><span class="w"></span>
+  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="nx">setup</span><span class="p">({</span><span class="w"> </span><span class="nx">single_test</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">characterSet</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;UTF-8&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">done</span><span class="p">();</span>
 <span class="w">  </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
@@ -120,13 +120,13 @@ additional file used by implementations:</p>
 have the necessary HTML boilerplate generated for you at <code class="docutils literal notranslate"><span class="pre">.worker.html</span></code>.</p>
 <p>For example, one could write a test for the <code class="docutils literal notranslate"><span class="pre">FileReaderSync</span></code> API by
 creating a <code class="docutils literal notranslate"><span class="pre">FileAPI/FileReaderSync.worker.js</span></code> as follows:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">importScripts</span><span class="p">(</span><span class="s2">&quot;/resources/testharness.js&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">blob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Blob</span><span class="p">([</span><span class="s2">&quot;Hello&quot;</span><span class="p">]);</span><span class="w"></span>
-<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">fr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">FileReaderSync</span><span class="p">();</span><span class="w"></span>
-<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">fr</span><span class="p">.</span><span class="nx">readAsText</span><span class="p">(</span><span class="nx">blob</span><span class="p">),</span><span class="w"> </span><span class="s2">&quot;Hello&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="p">},</span><span class="w"> </span><span class="s2">&quot;FileReaderSync#readAsText.&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="nx">done</span><span class="p">();</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">importScripts</span><span class="p">(</span><span class="s2">&quot;/resources/testharness.js&quot;</span><span class="p">);</span>
+<span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">blob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Blob</span><span class="p">([</span><span class="s2">&quot;Hello&quot;</span><span class="p">]);</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">fr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">FileReaderSync</span><span class="p">();</span>
+<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">fr</span><span class="p">.</span><span class="nx">readAsText</span><span class="p">(</span><span class="nx">blob</span><span class="p">),</span><span class="w"> </span><span class="s2">&quot;Hello&quot;</span><span class="p">);</span>
+<span class="p">},</span><span class="w"> </span><span class="s2">&quot;FileReaderSync#readAsText.&quot;</span><span class="p">);</span>
+<span class="nx">done</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>This test could then be run from <code class="docutils literal notranslate"><span class="pre">FileAPI/FileReaderSync.worker.html</span></code>.</p>
@@ -141,12 +141,12 @@ JavaScript file with extension <code class="docutils literal notranslate"><span 
 <p>By default, the test runs in a window scope and a dedicated worker scope.</p>
 <p>For example, one could write a test for the <code class="docutils literal notranslate"><span class="pre">Blob</span></code> constructor by
 creating a <code class="docutils literal notranslate"><span class="pre">FileAPI/Blob-constructor.any.js</span></code> as follows:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">blob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Blob</span><span class="p">();</span><span class="w"></span>
-<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">blob</span><span class="p">.</span><span class="nx">size</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">blob</span><span class="p">.</span><span class="nx">type</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="nx">assert_false</span><span class="p">(</span><span class="nx">blob</span><span class="p">.</span><span class="nx">isClosed</span><span class="p">);</span><span class="w"></span>
-<span class="p">},</span><span class="w"> </span><span class="s2">&quot;The Blob constructor.&quot;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">blob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Blob</span><span class="p">();</span>
+<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">blob</span><span class="p">.</span><span class="nx">size</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">blob</span><span class="p">.</span><span class="nx">type</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">assert_false</span><span class="p">(</span><span class="nx">blob</span><span class="p">.</span><span class="nx">isClosed</span><span class="p">);</span>
+<span class="p">},</span><span class="w"> </span><span class="s2">&quot;The Blob constructor.&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>This test could then be run from <code class="docutils literal notranslate"><span class="pre">FileAPI/Blob-constructor.any.worker.html</span></code> as well
@@ -246,14 +246,14 @@ otherwise too many tests to complete inside the timeout. For example:</p>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/common/subset-tests.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
-<span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">tests</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">                 </span><span class="p">{</span><span class="w"> </span><span class="nx">fn</span><span class="o">:</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"></span>
-<span class="w">                 </span><span class="p">...</span><span class="w"> </span><span class="nx">lots</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nx">tests</span><span class="w"> </span><span class="p">...</span><span class="w"></span>
-<span class="w">               </span><span class="p">];</span><span class="w"></span>
-<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="nx">test</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nx">tests</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="nx">subsetTest</span><span class="p">(</span><span class="nx">async_test</span><span class="p">,</span><span class="w"> </span><span class="nx">test</span><span class="p">.</span><span class="nx">fn</span><span class="p">,</span><span class="w"> </span><span class="nx">test</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span><span class="w"></span>
-<span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">tests</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                 </span><span class="p">{</span><span class="w"> </span><span class="nx">fn</span><span class="o">:</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">                 </span><span class="p">...</span><span class="w"> </span><span class="nx">lots</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nx">tests</span><span class="w"> </span><span class="p">...</span>
+<span class="w">               </span><span class="p">];</span>
+<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="nx">test</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nx">tests</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="nx">subsetTest</span><span class="p">(</span><span class="nx">async_test</span><span class="p">,</span><span class="w"> </span><span class="nx">test</span><span class="p">.</span><span class="nx">fn</span><span class="p">,</span><span class="w"> </span><span class="nx">test</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+<span class="w"> </span><span class="p">}</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
@@ -268,9 +268,9 @@ expression).</p>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/common/subset-tests-by-key.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
-<span class="w">   </span><span class="nx">subsetTestByKey</span><span class="p">(</span><span class="s2">&quot;Foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">async_test</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;Testing foo&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">   </span><span class="p">...</span><span class="w"></span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="w">   </span><span class="nx">subsetTestByKey</span><span class="p">(</span><span class="s2">&quot;Foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">async_test</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;Testing foo&quot;</span><span class="p">);</span>
+<span class="w">   </span><span class="p">...</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>

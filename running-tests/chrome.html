@@ -45,7 +45,7 @@
 </ul>
 <p>In other cases, you will need to specify the path to the Chrome binary with
 <code class="docutils literal notranslate"><span class="pre">--binary</span></code>. For example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt run --channel dev --binary /path/to/non-default/google-chrome chrome
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt<span class="w"> </span>run<span class="w"> </span>--channel<span class="w"> </span>dev<span class="w"> </span>--binary<span class="w"> </span>/path/to/non-default/google-chrome<span class="w"> </span>chrome
 </pre></div>
 </div>
 <p>Note: when the channel is “dev”, <code class="docutils literal notranslate"><span class="pre">wpt</span></code> will <em>automatically</em> enable all
@@ -54,7 +54,7 @@
 <code class="docutils literal notranslate"><span class="pre">--enable-experimental-web-platform-features</span></code> to Chrome.</p>
 <p>If you want to enable a specific <a class="reference external" href="https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/platform/RuntimeEnabledFeatures.md">runtime enabled feature</a>, use
 <code class="docutils literal notranslate"><span class="pre">--binary-arg</span></code> to specify the flag(s) that you want to pass to Chrome:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt run --binary-arg<span class="o">=</span>--enable-blink-features<span class="o">=</span>AsyncClipboard chrome clipboard-apis/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt<span class="w"> </span>run<span class="w"> </span>--binary-arg<span class="o">=</span>--enable-blink-features<span class="o">=</span>AsyncClipboard<span class="w"> </span>chrome<span class="w"> </span>clipboard-apis/
 </pre></div>
 </div>
 <p><a class="reference external" href="running-tests/chrome-chromium-installation-detection.html">A detailed explanation is available</a>

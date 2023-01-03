@@ -39,12 +39,12 @@
 for the case to be verified. In order for proper indications and
 prerequisite to be displayed every user style sheet should contain the
 following rules.</p>
-<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="p">#</span><span class="nn">user-stylesheet-indication</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="p">#</span><span class="nn">user-stylesheet-indication</span>
+<span class="p">{</span>
 <span class="w">   </span><span class="c">/* Used by the harness to display an indication there is a user</span>
-<span class="c">   style sheet applied */</span><span class="w"></span>
-<span class="w">    </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">block</span><span class="cp">!important</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="c">   style sheet applied */</span>
+<span class="w">    </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">block</span><span class="cp">!important</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>The rule <code class="docutils literal notranslate"><span class="pre">#user-stylesheet-indication</span></code> is to be used by any
@@ -54,16 +54,16 @@ looking at their flags meta tag. It then should display appropriate
 messages indicating if a style sheet is applied or if a style sheet
 should not be applied.</p>
 <p>Harness style sheet rules:</p>
-<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="p">.</span><span class="nc">userstyle</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="kc">green</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-<span class="p">.</span><span class="nc">nouserstyle</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="kc">red</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="p">.</span><span class="nc">userstyle</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="kc">green</span><span class="p">;</span>
+<span class="w">    </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="p">.</span><span class="nc">nouserstyle</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="kc">red</span><span class="p">;</span>
+<span class="w">    </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>Harness userstyle flag found:</p>
@@ -79,11 +79,11 @@ sheet is applied.<span class="p">&lt;/</span><span class="nt">p</span><span clas
 <p>Within the test case it is recommended that the case itself indicate
 the necessary user style sheet that is required.</p>
 <p>Examples: (code for the <a class="reference external" href="https://github.com/w3c/csswg-test/blob/master/css21/cascade/support/cascade.css"><code class="docutils literal notranslate"><span class="pre">cascade.css</span></code></a> file)</p>
-<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="p">#</span><span class="nn">cascade</span><span class="w"> </span><span class="c">/* ID name should match user style sheet file name */</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="c">/* Used by the test to hide the prerequisite */</span><span class="w"></span>
-<span class="w">    </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="p">#</span><span class="nn">cascade</span><span class="w"> </span><span class="c">/* ID name should match user style sheet file name */</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c">/* Used by the test to hide the prerequisite */</span>
+<span class="w">    </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>The rule <code class="docutils literal notranslate"><span class="pre">#cascade</span></code> in the example above is used by the test

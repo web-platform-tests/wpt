@@ -191,11 +191,11 @@ a provided function.</p>
 </dd>
 </dl>
 <p><strong>Examples:</strong></p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">mediaElement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;video&#39;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">mediaElement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;video&#39;</span><span class="p">);</span>
 
-<span class="nx">test_driver</span><span class="p">.</span><span class="nx">bless</span><span class="p">(</span><span class="s1">&#39;initiate media playback&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nx">mediaElement</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span><span class="w"></span>
-<span class="p">});</span><span class="w"></span>
+<span class="nx">test_driver</span><span class="p">.</span><span class="nx">bless</span><span class="p">(</span><span class="s1">&#39;initiate media playback&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">mediaElement</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span>
+<span class="p">});</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -320,8 +320,8 @@ WebDriver command.</p>
 </dd>
 </dl>
 <p><strong>Examples:</strong></p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;background-fetch&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;denied&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;push&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">userVisibleOnly</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;granted&quot;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;background-fetch&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;denied&quot;</span><span class="p">);</span>
+<span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;push&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">userVisibleOnly</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;granted&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -566,14 +566,14 @@ WebDriver command.</p>
 </dd>
 </dl>
 <p><strong>Examples:</strong></p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_spc_transaction_mode</span><span class="p">(</span><span class="s2">&quot;autoaccept&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="nx">test</span><span class="p">.</span><span class="nx">add_cleanup</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_spc_transaction_mode</span><span class="p">(</span><span class="s2">&quot;none&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="p">});</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_spc_transaction_mode</span><span class="p">(</span><span class="s2">&quot;autoaccept&quot;</span><span class="p">);</span>
+<span class="nx">test</span><span class="p">.</span><span class="nx">add_cleanup</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_spc_transaction_mode</span><span class="p">(</span><span class="s2">&quot;none&quot;</span><span class="p">);</span>
+<span class="p">});</span>
 
-<span class="c1">// Assumption: `request` is a PaymentRequest with a secure-payment-confirmation</span><span class="w"></span>
-<span class="c1">// payment method.</span><span class="w"></span>
-<span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">.</span><span class="nx">show</span><span class="p">();</span><span class="w"></span>
+<span class="c1">// Assumption: `request` is a PaymentRequest with a secure-payment-confirmation</span>
+<span class="c1">// payment method.</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">.</span><span class="nx">show</span><span class="p">();</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -634,9 +634,9 @@ then sent via <code class="docutils literal notranslate"><span class="pre">postM
 is also a <a class="reference external" href="#test_driver.message_test"><code class="docutils literal notranslate"><span class="pre">test_driver.message_test</span></code></a>
 function that can be used to send arbitary messages to the test
 window. For example, in an auxillary browsing context:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_test_context</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">opener</span><span class="p">)</span><span class="w"></span>
-<span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;button&quot;</span><span class="p">)[</span><span class="mf">0</span><span class="p">])</span><span class="w"></span>
-<span class="nx">test_driver</span><span class="p">.</span><span class="nx">message_test</span><span class="p">(</span><span class="s2">&quot;click complete&quot;</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_test_context</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">opener</span><span class="p">)</span>
+<span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;button&quot;</span><span class="p">)[</span><span class="mf">0</span><span class="p">])</span>
+<span class="nx">test_driver</span><span class="p">.</span><span class="nx">message_test</span><span class="p">(</span><span class="s2">&quot;click complete&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The requirement to have a handle to the test window does mean it’s
@@ -677,17 +677,17 @@ be constructed by chaining method calls.</p>
 </dd>
 </dl>
 <p><strong>Examples:</strong></p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="nx">text_box</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="nx">text_box</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">);</span>
 
-<span class="kd">let</span><span class="w"> </span><span class="nx">actions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">Actions</span><span class="p">()</span><span class="w"></span>
-<span class="w">   </span><span class="p">.</span><span class="nx">pointerMove</span><span class="p">(</span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nx">origin</span><span class="o">:</span><span class="w"> </span><span class="nx">text_box</span><span class="p">})</span><span class="w"></span>
-<span class="w">   </span><span class="p">.</span><span class="nx">pointerDown</span><span class="p">()</span><span class="w"></span>
-<span class="w">   </span><span class="p">.</span><span class="nx">pointerUp</span><span class="p">()</span><span class="w"></span>
-<span class="w">   </span><span class="p">.</span><span class="nx">addTick</span><span class="p">()</span><span class="w"></span>
-<span class="w">   </span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">)</span><span class="w"></span>
-<span class="w">   </span><span class="p">.</span><span class="nx">keyUp</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="kd">let</span><span class="w"> </span><span class="nx">actions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">Actions</span><span class="p">()</span>
+<span class="w">   </span><span class="p">.</span><span class="nx">pointerMove</span><span class="p">(</span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nx">origin</span><span class="o">:</span><span class="w"> </span><span class="nx">text_box</span><span class="p">})</span>
+<span class="w">   </span><span class="p">.</span><span class="nx">pointerDown</span><span class="p">()</span>
+<span class="w">   </span><span class="p">.</span><span class="nx">pointerUp</span><span class="p">()</span>
+<span class="w">   </span><span class="p">.</span><span class="nx">addTick</span><span class="p">()</span>
+<span class="w">   </span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">)</span>
+<span class="w">   </span><span class="p">.</span><span class="nx">keyUp</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">);</span>
 
-<span class="k">await</span><span class="w"> </span><span class="nx">actions</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span><span class="w"></span>
+<span class="k">await</span><span class="w"> </span><span class="nx">actions</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
 </pre></div>
 </div>
 <dl class="js function">
@@ -996,11 +996,11 @@ test_driver.action_sequence</p>
 <h3>Using in other browsing contexts<a class="headerlink" href="#using-in-other-browsing-contexts" title="Permalink to this headline">¶</a></h3>
 <p>For the actions API, the context can be set using the <code class="docutils literal notranslate"><span class="pre">setContext</span></code>
 method on the builder:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="nx">actions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">Actions</span><span class="p">()</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="nx">setContext</span><span class="p">(</span><span class="nx">frames</span><span class="p">[</span><span class="mf">0</span><span class="p">])</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="nx">keyUp</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="k">await</span><span class="w"> </span><span class="nx">actions</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="nx">actions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">Actions</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">setContext</span><span class="p">(</span><span class="nx">frames</span><span class="p">[</span><span class="mf">0</span><span class="p">])</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">keyUp</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">);</span>
+<span class="k">await</span><span class="w"> </span><span class="nx">actions</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>Note that if an action uses an element reference, the context will be
@@ -1047,8 +1047,8 @@ certain permission type (e.g. “push”, or “background-fetch”) to always
 return <em>state</em>. It returns a promise that resolves after the permission has
 been set to be overridden with <em>state</em>.</p>
 <p>Example:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;background-fetch&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;denied&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;push&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">userVisibleOnly</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;granted&quot;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;background-fetch&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;denied&quot;</span><span class="p">);</span>
+<span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;push&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">userVisibleOnly</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;granted&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>

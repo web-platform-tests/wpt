@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Verify that encodedBodySize/decodedBodySize are CORS-protected rather than TAO-protected</title>
+<link rel="author" title="Noam Rosenthal" href="nrosenthal@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+</head>
+<body>
+<script>
+const {ORIGIN, REMOTE_ORIGIN} = get_host_info();
+
+async function test_body_size({mode, tao, expected}) {
+    promise_test(async t => {
+        const url = new URL(`${mode === "same-origin" ? ORIGIN : REMOTE_ORIGIN}/images/red.png?uid=${token()}`, location.href);
+        const pipes = [];
+        if (mode === "cors")
+            pipes.push("header(Access-Control-Allow-Origin,*)");
+        if (tao)
+            pipes.push("header(Timing-Allow-Origin,*)");
+        const img = document.createElement("img");
+        if (mode === "cors")
+            img.crossOrigin = "anonymous";
+
+        if (pipes.length)
+            url.searchParams.set("pipe", pipes.join("|"));
+        img.src = url.toString();
+        await img.decode();
+        const [entry] = performance.getEntriesByName(url.toString());
+        if (expected) {
+            assert_greater_than(entry.encodedBodySize, 0);
+            assert_greater_than(entry.decodedBodySize, 0);
+        } else {
+            assert_equals(entry.encodedBodySize, 0);
+            assert_equals(entry.decodedBodySize, 0);
+        }
+    }, `Retrieving a ${mode} resource ${tao ? "with" : "without"} Timing-Allow-Origin should ${expected ? "expose" : "not expose"} body size`);
+}
+
+test_body_size({mode: "same-origin", tao: false, expected: true});
+test_body_size({mode: "same-origin", tao: true, expected: true});
+test_body_size({mode: "no-cors", tao: false, expected: false});
+test_body_size({mode: "no-cors", tao: true, expected: false});
+test_body_size({mode: "cors", tao: false, expected: true});
+test_body_size({mode: "cors", tao: true, expected: true});
+
+</script>
+</body>
+</html>

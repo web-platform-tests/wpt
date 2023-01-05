@@ -1,6 +1,7 @@
 import os
 import sys
 from atomicwrites import atomic_write
+from collections import defaultdict
 from copy import deepcopy
 from multiprocessing import Pool, cpu_count
 
@@ -129,6 +130,8 @@ class Manifest:
     def itertypes(self, *types):
         # type: (*Text) -> Iterator[Tuple[Text, Text, Set[ManifestItem]]]
         for item_type in (types or sorted(self._data.keys())):
+            if self._data[item_type] is None:
+                continue
             for path in self._data[item_type]:
                 rel_path = os.sep.join(path)
                 tests = self._data[item_type][path]
@@ -152,6 +155,29 @@ class Manifest:
             for path, tests in type_tests.items():
                 if path[:tpath_len] == tpath:
                     yield from tests
+
+    def load_virtual_tests(self, full_prefixes_by_base):
+        types_to_load = list(item_classes.keys() - ["support"])
+        virtual_data = defaultdict(dict)
+        for item_type, rel_path, tests in self.itertypes(*types_to_load):
+            # base is either a test or  directory and should end with '/'.
+            # base comes from virtual config and always use '/' as separator
+            rel_path = rel_path.replace(os.path.sep, '/')
+            for base in full_prefixes_by_base:
+                if (self.url_base == '/' and rel_path.startswith(base) or
+                        self.url_base != '/' and base.startswith(self.url_base[1:]) and
+                        rel_path.startswith(base[len(self.url_base)-1:])):
+                    for full_prefix in full_prefixes_by_base[base]:
+                        # full_prefix is in the form virtual/prefix/
+                        virtual_rel_path = tuple((full_prefix + rel_path).split('/'))
+                        virtual_tests = set()
+                        for test in tests:
+                            virtual_tests.add(test.virtual_test(full_prefix))
+                        virtual_data[item_type][virtual_rel_path] = virtual_tests
+
+        for item_type in virtual_data:
+            for path in virtual_data[item_type]:
+                self._data[item_type][path] = virtual_data[item_type][path]
 
     def update(self, tree, parallel=True):
         # type: (Iterable[Tuple[Text, Optional[Text], bool]], bool) -> bool

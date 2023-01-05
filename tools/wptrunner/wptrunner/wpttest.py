@@ -239,6 +239,10 @@ class Test:
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    def update_args(self, args):
+        assert self.environment.get("args") is None, "Attempt to overwrite args"
+        self.environment["args"] = args
+
     def update_metadata(self, metadata=None):
         if metadata is None:
             metadata = {}

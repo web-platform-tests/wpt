@@ -4,10 +4,13 @@ import hashlib
 import itertools
 import json
 import os
-from urllib.parse import urlsplit
+import re
+import sys
 from abc import ABCMeta, abstractmethod
-from queue import Empty
 from collections import defaultdict, deque, namedtuple
+from datetime import datetime
+from queue import Empty
+from urllib.parse import urlsplit
 
 from . import manifestinclude
 from . import manifestexpected
@@ -51,6 +54,68 @@ class TestGroupsFile:
 
     def __getitem__(self, key):
         return self._data[key]
+
+
+class VirtualTestSuite:
+    def __init__(self,
+                 prefix=None,
+                 platforms=None,
+                 bases=None,
+                 args=None,
+                 expires=None):
+        # A conservative rule for names that are valid for file or directory names.
+        VALID_FILE_NAME_REGEX = re.compile(r'^[\w\-=]+$')
+        assert VALID_FILE_NAME_REGEX.match(prefix), \
+            "Virtual test suite prefix '{}' contains invalid characters".format(prefix)
+        assert isinstance(bases, list)
+        assert args
+        assert isinstance(args, list)
+        self.full_prefix = 'virtual/' + prefix + '/'
+        self.bases = bases
+        self.args = args
+
+def is_target_platform(platforms):
+    if sys.platform == 'darwin':
+        platform = 'mac'
+    elif sys.platform == 'win32':
+        platform = 'win'
+    else:
+        platform = sys.platform
+    return platform in [p.lower() for p in platforms]
+
+def expired(expires):
+    current_time = datetime.now()
+    return expires.lower() != 'never' and datetime.strptime(
+        expires, '%b %d, %Y') <= current_time
+
+def read_virtual_configs(path):
+    virtual_configs = []
+    if not os.path.exists(path):
+        return virtual_configs
+
+    with open(path) as f:
+        try:
+            test_suite_json = json.load(f)
+        except ValueError as error:
+            raise ValueError('{} is not a valid JSON file: {}'.format(path, error))
+
+        known_full_prefix = set()
+        for json_config in test_suite_json:
+            # Strings are treated as comments.
+            if isinstance(json_config, str):
+                continue
+            if (not is_target_platform(json_config.get('platforms')) or
+                expired(json_config.get('expires'))):
+                continue
+            vts = VirtualTestSuite(**json_config)
+            if vts.full_prefix in known_full_prefix:
+                raise ValueError(
+                    '{} contains entries with the same prefix: {!r}. Please combine them'
+                    .format(path, json_config))
+            known_full_prefix.add(vts.full_prefix)
+            virtual_configs.append(vts)
+
+    return virtual_configs
 
 def read_include_from_file(file):
     new_include = []
@@ -170,10 +235,11 @@ class TagFilter:
 
 
 class ManifestLoader:
-    def __init__(self, test_paths, force_manifest_update=False, manifest_download=False,
+    def __init__(self, test_paths, virtual_configs, force_manifest_update=False, manifest_download=False,
                  types=None):
         do_delayed_imports()
         self.test_paths = test_paths
+        self.virtual_configs = virtual_configs
         self.force_manifest_update = force_manifest_update
         self.manifest_download = manifest_download
         self.types = types
@@ -183,9 +249,16 @@ class ManifestLoader:
 
     def load(self):
         rv = {}
+        full_prefixes_by_base = defaultdict(list)
+        for virtual_config in self.virtual_configs:
+            for base in virtual_config.bases:
+                full_prefixes_by_base[base].append(virtual_config.full_prefix)
         for url_base, paths in self.test_paths.items():
             manifest_file = self.load_manifest(url_base=url_base,
                                                **paths)
+            # Load virtual tests. Virtual tests will never be persisted, and
+            # won't have a hash associate with it.
+            manifest_file.load_virtual_tests(full_prefixes_by_base)
             path_data = {"url_base": url_base}
             path_data.update(paths)
             rv[manifest_file] = path_data
@@ -212,6 +285,7 @@ class TestLoader:
                  test_manifests,
                  test_types,
                  run_info,
+                 virtual_configs,
                  manifest_filters=None,
                  chunk_type="none",
                  total_chunks=1,
@@ -253,6 +327,9 @@ class TestLoader:
 
         self.directory_manifests = {}
 
+        self.virtual_configs = virtual_configs
+        self.args_by_full_prefix = {vc.full_prefix: vc.args for vc in virtual_configs}
+
         self._load_tests()
 
     @property
@@ -264,12 +341,15 @@ class TestLoader:
                     self._test_ids += [item.id for item in test_dict[test_type]]
         return self._test_ids
 
-    def get_test(self, manifest_file, manifest_test, inherit_metadata, test_metadata):
+    def get_test(self, manifest_file, manifest_test, inherit_metadata, test_metadata, args):
         if test_metadata is not None:
             inherit_metadata.append(test_metadata)
             test_metadata = test_metadata.get_test(manifest_test.id)
 
-        return wpttest.from_manifest(manifest_file, manifest_test, inherit_metadata, test_metadata)
+        rv = wpttest.from_manifest(manifest_file, manifest_test, inherit_metadata, test_metadata)
+        if args is not None:
+            rv.update_args(args)
+        return rv
 
     def load_dir_metadata(self, test_manifest, metadata_path, test_path):
         rv = []
@@ -307,9 +387,33 @@ class TestLoader:
             manifest_file = manifests_by_url_base[next(iter(tests)).url_base]
             metadata_path = self.manifests[manifest_file]["metadata_path"]
 
-            inherit_metadata, test_metadata = self.load_metadata(manifest_file, metadata_path, test_path)
+            args = None
+            if test_path.startswith("virtual" + os.path.sep):
+                # virtual metadata fallbacks to non virtual version when virtual
+                # metadata does not exists. This does not apply to DIR metadata
+                # because we plan to use DIR metadata to disable tests in batch
+                # and it will be a little more convenient to not let virtual DIR
+                # metadata fallback to non virtual version.
+                paths = test_path.split(os.path.sep)
+                full_prefix = '/'.join(paths[:2]) + '/'
+                args = self.args_by_full_prefix[full_prefix]
+                inherit_metadata, test_metadata = self.load_metadata(manifest_file,
+                                                                     metadata_path,
+                                                                     test_path)
+                if test_metadata is None:
+                    _, test_metadata = self.load_metadata(manifest_file,
+                                                          metadata_path,
+                                                          '/'.join(paths[2:]))
+            else:
+                inherit_metadata, test_metadata = self.load_metadata(manifest_file,
+                                                                     metadata_path,
+                                                                     test_path)
             for test in tests:
-                yield test_path, test_type, self.get_test(manifest_file, test, inherit_metadata, test_metadata)
+                yield test_path, test_type, self.get_test(manifest_file,
+                                                          test,
+                                                          inherit_metadata,
+                                                          test_metadata,
+                                                          args)
 
     def _load_tests(self):
         """Read in the tests from the manifest file and add them to a queue"""

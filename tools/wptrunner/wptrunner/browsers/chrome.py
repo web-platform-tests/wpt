@@ -1,4 +1,5 @@
 # mypy: allow-untyped-defs
+import copy
 
 from . import chrome_spki_certs
 from .base import WebDriverBrowser, require_arg
@@ -155,3 +156,16 @@ class ChromeBrowser(WebDriverBrowser):
                 cmd_arg("port", str(self.port)),
                 cmd_arg("url-base", self.base_path),
                 cmd_arg("enable-chrome-logs")] + self.webdriver_args
+
+    def additional_args(self, test):
+        return set(test.environment.get("args", []))
+
+    def update_for_additional_args(self, executor_kwargs, additional_args):
+        if not additional_args:
+            return executor_kwargs
+        kwargs = copy.deepcopy(executor_kwargs)
+        capabilities = kwargs.setdefault("capabilities", {})
+        chrome_options = capabilities.setdefault("goog:chromeOptions", {})
+        args = chrome_options.setdefault("args", [])
+        args.extend(additional_args)
+        return kwargs

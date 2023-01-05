@@ -60,8 +60,13 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kw
                                     extras=run_info_extras,
                                     device_serials=kwargs.get("device_serial"),
                                     adb_binary=kwargs.get("adb_binary"))
+    virtual_configs = []
+    if kwargs["virtual_configs"]:
+        virtual_configs = testloader.read_virtual_configs(kwargs["virtual_configs"])
 
-    test_manifests = testloader.ManifestLoader(test_paths, force_manifest_update=kwargs["manifest_update"],
+    test_manifests = testloader.ManifestLoader(test_paths,
+                                               virtual_configs,
+                                               force_manifest_update=kwargs["manifest_update"],
                                                manifest_download=kwargs["manifest_download"]).load()
 
     manifest_filters = []
@@ -85,6 +90,7 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kw
     test_loader = testloader.TestLoader(test_manifests,
                                         kwargs["test_types"],
                                         run_info,
+                                        virtual_configs,
                                         manifest_filters=manifest_filters,
                                         chunk_type=kwargs["chunk_type"],
                                         total_chunks=kwargs["total_chunks"],

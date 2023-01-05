@@ -112,6 +112,18 @@ class Browser:
         """
         return {}
 
+    def additional_args(self, test):
+        """Set of additional arguments used for a specific launch of a browser
+        """
+        return set()
+
+    def update_for_additional_args(self, executor_kwargs, additional_args):
+        """Update executor_kwargs with additional command line arguments.
+
+        Do nothing by default
+        """
+        return executor_kwargs
+
     @abstractmethod
     def start(self, group_metadata, **kwargs):
         """Launch the browser object and get it into a state where is is ready to run tests"""

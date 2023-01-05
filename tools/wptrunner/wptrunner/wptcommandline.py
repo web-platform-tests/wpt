@@ -150,6 +150,8 @@ scheme host and port.""")
                                       help="Path to manifest listing tests to include")
     test_selection_group.add_argument("--test-groups", dest="test_groups_file", type=abs_path,
                                       help="Path to json file containing a mapping {group_name: [test_ids]}")
+    test_selection_group.add_argument("--virtual-configs", type=abs_path,
+                                      help="Path to virtual test suite configurations file.")
     test_selection_group.add_argument("--skip-timeout", action="store_true",
                                       help="Skip tests that are expected to time out")
     test_selection_group.add_argument("--skip-implementation-status",

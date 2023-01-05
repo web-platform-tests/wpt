@@ -118,6 +118,18 @@ class RequestRewriter:
                                 rewrite the request.
         """
         split_url = urlsplit(request_handler.path)
+        if split_url.path.startswith("/virtual/"):
+            # A hardcoded rule to remove /virtual/prefix
+            new_path = '/' + '/'.join(split_url.path.split('/')[3:])
+            new_url = list(split_url)
+            new_url[2] = new_path
+            new_url = urlunsplit(new_url)
+            request_handler.path = new_url
+            # We allow custom rewrites after strip full virtual prefix.
+            # This does not seem to be critical now as there is only
+            # one rewrite rule for /resources/WebIDLParser.js.
+            split_url = urlsplit(request_handler.path)
+
         if split_url.path in self.rules:
             methods, destination = self.rules[split_url.path]
             if "*" in methods or request_handler.command in methods:

@@ -123,6 +123,15 @@ class URLManifestItem(ManifestItem):
         self._flags = (set(parsed_url.path.rsplit("/", 1)[1].split(".")[1:-1]) |
                        set(parse_qs(parsed_url.query).get("wpt_flags", [])))
 
+    def virtual_test(self, full_prefix):
+        # derive a virtual test from ManifestItem
+        virtual_url = full_prefix[:-1] + self.url
+        return type(self)(self._tests_root,
+                          self.path,
+                          '/',
+                          virtual_url,
+                          **self._extras)
+
     @property
     def id(self):
         # type: () -> Text
@@ -242,6 +251,20 @@ class RefTest(URLManifestItem):
             self.references = []  # type: List[Tuple[Text, Text]]
         else:
             self.references = references
+
+    def virtual_test(self, full_prefix):
+        # derive a virtual reftest from ManifestItem
+        virtual_url = full_prefix[:-1] + self.url
+        virtual_references = []
+        for ref_url, ref_type in self.references:
+            virtual_references.append(('/' + full_prefix[:-1] + ref_url,
+                                       ref_type))
+        return type(self)(self._tests_root,
+                          self.path,
+                          '/',
+                          virtual_url,
+                          virtual_references,
+                          **self._extras)
 
     @property
     def timeout(self):

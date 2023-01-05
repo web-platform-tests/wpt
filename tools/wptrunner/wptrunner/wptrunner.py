@@ -277,12 +277,12 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
     return True
 
 def handle_interrupt_signals():
-    def SigtermHandler(_signum, _unused_frame):
+    def termination_handler(_signum, _unused_frame):
         raise KeyboardInterrupt()
     if sys.platform == "win32":
-        signal.signal(signal.SIGBREAK, SigtermHandler)
+        signal.signal(signal.SIGBREAK, termination_handler)
     else:
-        signal.signal(signal.SIGTERM, SigtermHandler)
+        signal.signal(signal.SIGTERM, termination_handler)
 
 
 def evaluate_runs(test_status, run_test_kwargs):

@@ -366,15 +366,15 @@ function pointerDragInTarget(pointerType, target, direction) {
     var y_delta = 0;
     if (direction == "down") {
         x_delta = 0;
-        y_delta = 10;
+        y_delta = 5;
     } else if (direction == "up") {
         x_delta = 0;
-        y_delta = -10;
+        y_delta = -5;
     } else if (direction == "right") {
-        x_delta = 10;
+        x_delta = 5;
         y_delta = 0;
     } else if (direction == "left") {
-        x_delta = -10;
+        x_delta = -5;
         y_delta = 0;
     } else {
         throw("drag direction '" + direction + "' is not expected, direction should be 'down', 'up', 'left' or 'right'");

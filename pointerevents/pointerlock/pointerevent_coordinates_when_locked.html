@@ -81,7 +81,7 @@
                     }
                 });
 
-                new test_driver.Actions().pointerMove(/* x = */ 0, /* y = */ 0, {origin: div1}).pointerDown().pointerUp().send();
+                new test_driver.Actions().addPointer("mousePointer1", "mouse").pointerMove(/* x = */ 0, /* y = */ 0, {origin: div1}).pointerDown().pointerUp().send();
             }
         </script>
     </head>

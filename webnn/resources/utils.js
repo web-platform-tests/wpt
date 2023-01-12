@@ -172,6 +172,15 @@ const PrecisionMetrics = {
   clamp: {ULP: {float32: 0, float16: 0}},
   concat: {ULP: {float32: 0, float16: 0}},
   conv2d: {ULP: {float32: getConv2dPrecisionTolerance, float16: getConv2dPrecisionTolerance}},
+  // Begin Element-wise binary operations
+  add: {ULP: {float32: 1, float16: 1}},
+  sub: {ULP: {float32: 1, float16: 1}},
+  mul: {ULP: {float32: 1, float16: 1}},
+  div: {ULP: {float32: 2, float16: 2}},
+  max: {ULP: {float32: 0, float16: 0}},
+  min: {ULP: {float32: 0, float16: 0}},
+  pow: {ULP: {float32: 32, float16: 2}},
+  // End Element-wise binary operations
   gemm: {ULP: {float32: getGemmPrecisionTolerance, float16: getGemmPrecisionTolerance}},
   leakyRelu: {ULP: {float32: 1, float16: 1}},
   matmul: {ULP: {float32: getMatmulPrecisionTolerance, float16: getMatmulPrecisionTolerance}},
@@ -364,6 +373,23 @@ const buildOperationWithSingleInput = (operationName, builder, resources) => {
   const inputOperand = createSingleInputOperand(builder, resources);
   const outputOperand = resources.options ?
       builder[operationName](inputOperand, resources.options) : builder[operationName](inputOperand);
+  namedOutputOperand[resources.expected.name] = outputOperand;
+  return namedOutputOperand;
+};
+
+/**
+ * Build an operation which has two inputs.
+ * @param {String} operationName - An operation name
+ * @param {MLGraphBuilder} builder - A ML graph builder
+ * @param {Object} resources - Resources used for building a graph
+ * @returns {MLNamedOperands}
+ */
+const buildOperationWithTwoInputs= (operationName, builder, resources) => {
+  // For example: MLOperand matmul(MLOperand a, MLOperand b);
+  const namedOutputOperand = {};
+  const [inputOperandA, inputOperandB] = createMultiInputOperands(builder, resources);
+  const outputOperand = resources.options ?
+      builder[operationName](inputOperandA, inputOperandB, resources.options) : builder[operationName](inputOperandA, inputOperandB);
   namedOutputOperand[resources.expected.name] = outputOperand;
   return namedOutputOperand;
 };

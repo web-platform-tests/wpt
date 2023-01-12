@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<link rel="help" href="https://drafts.csswg.org/css-flexbox-1/#propdef-order">
+<link rel="match" href="flexbox-abspos-order-ref.html">
+<style>
+
+.flexbox {
+  display: flex;
+  position: relative;
+  height: 100px;
+  margin: 1em;
+}
+
+.abs {
+  position: absolute;
+  width:100%; height:100%;
+}
+</style>
+
+<div class="flexbox">
+  <div style="order:2">
+    <span class="abs" style="background:green">SUCCESS</span>
+  </div>
+  <div style="order:1">
+    <span class="abs" style="background:red">FAIL</span>
+  </div>
+</div>

@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-matmul
 
-testWebNNOperation('matmul', '/webnn/resources/test_data/matmul.json', buildOperationWithTwoInputs);
+testWebNNOperation('matmul', buildOperationWithTwoInputs);

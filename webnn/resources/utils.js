@@ -19,12 +19,12 @@ const sizeOfShape = (array) => {
 };
 
 /**
- * Get JSON resources from specified test resources file.
- * @param {String} file - A test resources file path
- * @returns {Object} Test resources
+ * Get tests resources from test data JSON file of specified operation name.
+ * @param {String} operationName - An operation name
+ * @returns {Object} Tests resources
  */
-const loadResources = (file) => {
-  const loadJSON = () => {
+const loadTests = (operationName) => {
+  const loadJSON = (file) => {
     let xmlhttp = new XMLHttpRequest();
     xmlhttp.open("GET", file, false);
     xmlhttp.overrideMimeType("application/json");
@@ -36,8 +36,15 @@ const loadResources = (file) => {
     }
   };
 
-  const json = loadJSON();
-  return JSON.parse(json.replace(/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g, (m, g) => g ? "" : m));
+  const capitalLetterMatches = operationName.match(/[A-Z]/);
+  if (capitalLetterMatches !== null) {
+    // for example: the test data JSON file for leakyRelu is leaky_relu.json
+    const capitalLetter = capitalLetterMatches[0];
+    operationName = operationName.replace(capitalLetter, `_${capitalLetter.toLowerCase()}`);
+  }
+  const json = loadJSON(`/webnn/resources/test_data/${operationName}.json`);
+  const resources = JSON.parse(json.replace(/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g, (m, g) => g ? "" : m));
+  return resources.tests;
 };
 
 /**
@@ -469,13 +476,17 @@ const run = async (operationName, context, builder, resources, buildFunc) => {
 
 /**
  * Run WebNN operation tests.
- * @param {String} operationName - An operation name
- * @param {String} file - A test resources file path
+ * @param {(String[]|String)} operationName - An operation name array or an operation name
  * @param {Function} buildFunc - A build function for an operation
  */
-const testWebNNOperation = (operationName, file, buildFunc) => {
-  const resources = loadResources(file);
-  const tests = resources.tests;
+const testWebNNOperation = (operationName, buildFunc) => {
+  let operationNameArray;
+  if (typeof operationName === 'string') {
+    operationNameArray = [operationName];
+  } else if (Array.isArray(operationName)) {
+    operationNameArray = operationName;
+  }
+
   ExecutionArray.forEach(executionType => {
     const isSync = executionType === 'sync';
     if (self.GLOBAL.isWindow() && isSync) {
@@ -485,29 +496,35 @@ const testWebNNOperation = (operationName, file, buildFunc) => {
     let builder;
     if (isSync) {
       // test sync
-      DeviceTypeArray.forEach(deviceType => {
-        setup(() => {
-          context = navigator.ml.createContextSync({deviceType});
-          builder = new MLGraphBuilder(context);
+      operationNameArray.forEach((subOperationName) => {
+        const tests = loadTests(subOperationName);
+        DeviceTypeArray.forEach(deviceType => {
+          setup(() => {
+            context = navigator.ml.createContextSync({deviceType});
+            builder = new MLGraphBuilder(context);
+          });
+          for (const subTest of tests) {
+            test(() => {
+              runSync(subOperationName, context, builder, subTest, buildFunc);
+            }, `${subTest.name} / ${deviceType} / ${executionType}`);
+          }
         });
-        for (const subTest of tests) {
-          test(() => {
-            runSync(operationName, context, builder, subTest, buildFunc);
-          }, `${subTest.name} / ${deviceType} / ${executionType}`);
-        }
       });
     } else {
       // test async
-      DeviceTypeArray.forEach(deviceType => {
-        promise_setup(async () => {
-          context = await navigator.ml.createContext({deviceType});
-          builder = new MLGraphBuilder(context);
+      operationNameArray.forEach((subOperationName) => {
+        const tests = loadTests(subOperationName);
+        DeviceTypeArray.forEach(deviceType => {
+          promise_setup(async () => {
+            context = await navigator.ml.createContext({deviceType});
+            builder = new MLGraphBuilder(context);
+          });
+          for (const subTest of tests) {
+            promise_test(async () => {
+              await run(subOperationName, context, builder, subTest, buildFunc);
+            }, `${subTest.name} / ${deviceType} / ${executionType}`);
+          }
         });
-        for (const subTest of tests) {
-          promise_test(async () => {
-            await run(operationName, context, builder, subTest, buildFunc);
-          }, `${subTest.name} / ${deviceType} / ${executionType}`);
-        }
       });
     }
   });

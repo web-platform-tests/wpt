@@ -199,16 +199,16 @@ const PrecisionMetrics = {
  * Get precison tolerance value.
  * @param {String} operationName - An operation name
  * @param {String} metricType - Value: 'ULP', 'ATOL'
- * @param {String} precisionType - A precision type string, like "float32", "float16",
- *     more types, please see:
- *     https://webmachinelearning.github.io/webnn/#enumdef-mloperandtype
+ * @param {Object} resources - Resources used for building a graph
  * @returns {Number} A tolerance number
  */
-const getPrecisonTolerance = (operationName, metricType, precisionType) => {
+const getPrecisonTolerance = (operationName, metricType, resources) => {
+  // the outputs by split or gru is a sequence
+  const precisionType = Array.isArray(resources.expected) ? resources.expected[0].type : resources.expected.type;
   let tolerance = PrecisionMetrics[operationName][metricType][precisionType];
   // If the tolerance is dynamic, then evaluate the function to get the value.
   if (tolerance instanceof Function) {
-    tolerance = tolerance(resources, operationName);
+    tolerance = tolerance(resources);
   }
   return tolerance;
 };
@@ -309,14 +309,14 @@ const checkResults = (operationName, namedOutputOperands, outputs, resources) =>
       outputData = outputs[operandName];
       // for some operations which may have multi outputs of different types
       [expectedData, operandType] = getExpectedDataAndType(expected, operandName);
-      tolerance = getPrecisonTolerance(operationName, metricType, operandType);
+      tolerance = getPrecisonTolerance(operationName, metricType, resources);
       doAssert(operationName, outputData, expectedData, tolerance, operandType, metricType)
     }
   } else {
     outputData = outputs[expected.name];
     expectedData = expected.data;
     operandType = expected.type;
-    tolerance = getPrecisonTolerance(operationName, metricType, operandType);
+    tolerance = getPrecisonTolerance(operationName, metricType, resources);
     doAssert(operationName, outputData, expectedData, tolerance, operandType, metricType)
   }
 };

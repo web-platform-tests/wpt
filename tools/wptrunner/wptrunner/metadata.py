@@ -286,7 +286,7 @@ def unpack_result(data):
 
 
 def load_test_data(test_paths):
-    manifest_loader = testloader.ManifestLoader(test_paths, False)
+    manifest_loader = testloader.ManifestLoader(test_paths)
     manifests = manifest_loader.load()
 
     id_test_map = {}

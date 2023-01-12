@@ -235,7 +235,9 @@ class TagFilter:
 
 
 class ManifestLoader:
-    def __init__(self, test_paths, virtual_configs, force_manifest_update=False, manifest_download=False,
+    def __init__(self, test_paths, virtual_configs=[],
+                 force_manifest_update=False,
+                 manifest_download=False,
                  types=None):
         do_delayed_imports()
         self.test_paths = test_paths

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<body>
+<script>
+promise_test(async () => {
+  const host = document.createElement('div');
+  document.body.appendChild(host);
+  let hostClicked = false;
+  host.onclick = () => hostClicked = true;
+
+  const shadowRoot = host.attachShadow({mode: 'open'});
+  shadowRoot.textContent = 'hello world';
+
+  const shadowDivOne = document.createElement('div');
+  shadowRoot.appendChild(shadowDivOne);
+  shadowDivOne.textContent = 'shadow div one';
+  let shadowDivOneClicked = false;
+  shadowDivOne.onclick = () => shadowDivOneClicked = true;
+
+  const shadowDivTwo = document.createElement('div');
+  shadowRoot.appendChild(shadowDivTwo);
+  shadowDivTwo.textContent = 'shadow div two';
+  let shadowDivTwoClicked = false;
+  shadowDivTwo.onclick = () => shadowDivTwoClicked = true;
+
+  await test_driver.click(shadowDivTwo);
+  assert_false(shadowDivOneClicked, 'The first shadow div should not get clicked.');
+  assert_true(shadowDivTwoClicked, 'The second shadow div should get clicked.');
+  assert_true(hostClicked, 'The shadow host element should get a click event.');
+}, 'test_driver.click() should work on elements in shadow DOM.');
+</script>

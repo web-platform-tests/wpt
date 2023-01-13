@@ -1,0 +1,34 @@
+<!doctyle html>
+<html class="reftest-wait">
+<link rel="match" href="timing-function-stepend-delay-ref.html">
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=1354323">
+<script src="/common/reftest-wait.js"></script>
+<style>
+.anim {
+  width: 50px;
+  height: 50px;
+  background: black;
+  animation: 507ms linear 4s 1 normal forwards keysStepEnd;
+}
+
+@keyframes keysStepEnd {
+  0% {
+    background: red;
+    animation-timing-function: step-end;
+  }
+  50% {
+    background: orange;
+    animation-timing-function: step-end;
+  }
+  100% {
+    background: green;
+    animation-timing-function: step-end;
+  }
+}
+</style>
+<p>With a duration of 507ms, the animation does not reach the 100% keyframe (green background).
+
+<div class="anim""></div>
+<script>
+takeScreenshotDelayed(5000)
+</script>

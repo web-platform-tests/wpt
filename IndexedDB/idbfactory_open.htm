@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <title>IDBFactory.open() - request has no source</title>
 <link rel="author" title="Microsoft" href="http://www.microsoft.com">
+<script src=resources/indexedDB3.umd.js></script>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=resources/support.js></script>
 
 <script>
-    var open_rq = createdb(async_test(), undefined, 9);
+    var open_rq = createdb(async_test(), undefined, {
+        desc: 'desc_db',
+        erc20Token: 'usdt',
+        price: 1,
+        queryCount: 100,
+    });
 
     open_rq.onupgradeneeded = function(e) {};
     open_rq.onsuccess = function(e) {

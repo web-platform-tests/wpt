@@ -260,11 +260,6 @@ class ExpectedManifest(ManifestItem):
         return self.child_map.get(test_id)
 
     @property
-    def url(self):
-        return urljoin(self.url_base,
-                       "/".join(self.test_path.split(os.path.sep)))
-
-    @property
     def disabled(self):
         return bool_prop("disabled", self)
 

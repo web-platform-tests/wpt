@@ -50,6 +50,14 @@ promise_test(async t => {
     link.href = `${REMOTE_ORIGIN}/preload/resources/prefetch-info.py?key=${uid}&status=404`;
     const event = await prefetch(link, uid, t);
     assert_equals(event, "error");
+}, "Prefetch should fire the error event for 404 (cross-origin)");
+
+promise_test(async t => {
+    const uid = token();
+    const link = document.createElement("link");
+    link.href = `${REMOTE_ORIGIN}/preload/resources/prefetch-info.py?key=${uid}&status=404`;
+    const event = await prefetch(link, uid, t);
+    assert_equals(event, "error");
 }, "Cross-origin prefetch should fire the error event for 404");
 
 promise_test(async t => {
@@ -59,6 +67,14 @@ promise_test(async t => {
     const event = await prefetch(link, uid, t);
     assert_equals(event, "error");
 }, "Prefetch should fire the error event for 500");
+
+promise_test(async t => {
+    const uid = token();
+    const link = document.createElement("link");
+    link.href = `${REMOTE_ORIGIN}/preload/resources/prefetch-info.py?key=${uid}&status=500`;
+    const event = await prefetch(link, uid, t);
+    assert_equals(event, "error");
+}, "Cross-origin prefetch should fire the error event for 500");
 
 promise_test(async t => {
     const uid = token();

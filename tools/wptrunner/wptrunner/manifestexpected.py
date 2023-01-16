@@ -1,6 +1,5 @@
 # mypy: allow-untyped-defs
 
-import os
 from collections import deque
 from urllib.parse import urljoin
 
@@ -222,7 +221,7 @@ def fuzzy_prop(node):
 
 
 class ExpectedManifest(ManifestItem):
-    def __init__(self, node, test_path, url_base):
+    def __init__(self, node, test_path):
         """Object representing all the tests in a particular manifest
 
         :param name: Name of the AST Node associated with this object.
@@ -236,12 +235,9 @@ class ExpectedManifest(ManifestItem):
             raise ValueError("ExpectedManifest should represent the root node")
         if test_path is None:
             raise ValueError("ExpectedManifest requires a test path")
-        if url_base is None:
-            raise ValueError("ExpectedManifest requires a base url")
         ManifestItem.__init__(self, node)
         self.child_map = {}
         self.test_path = test_path
-        self.url_base = url_base
 
     def append(self, child):
         """Add a test to the manifest"""

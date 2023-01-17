@@ -6,8 +6,7 @@ async function get_prefetch_info(href) {
 async function prefetch(p = {}, t) {
     const link = document.createElement("link");
     link.rel = "prefetch";
-    if (p.as !== undefined)
-        link.as = p.as;
+    link.as = p.as;
     if (p.crossOrigin)
         link.setAttribute("crossorigin", p.crossOrigin);
     const uid = token();

@@ -31,6 +31,7 @@ if MYPY:
     from typing import IO
     from typing import Iterator
     from typing import Iterable
+    from typing import List
     from typing import Optional
     from typing import Set
     from typing import Text
@@ -159,7 +160,7 @@ class Manifest:
     def load_virtual_tests(self, full_prefixes_by_base):
         # type: (Dict[Text, List[Text]]) -> None
         types_to_load = list(item_classes.keys() - ["support"])
-        virtual_data = defaultdict(dict)
+        virtual_data = defaultdict(dict)  # type: ManifestData
         for item_type, rel_path, tests in self.itertypes(*types_to_load):
             # base is either a test or  directory and should end with '/'.
             # base comes from virtual config and always use '/' as separator

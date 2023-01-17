@@ -49,6 +49,10 @@ class ManifestItem(metaclass=ManifestItemMeta):
         self._tests_root = tests_root
         self.path = path
 
+    def virtual_test(self, full_prefix):
+        # type: (Text) -> ManifestItem
+        pass
+
     @abstractproperty
     def id(self):
         # type: () -> Text
@@ -126,7 +130,7 @@ class URLManifestItem(ManifestItem):
     def virtual_test(self,
                      full_prefix  # type: Text
                      ):
-        # type: (...) -> URLManifestItem
+        # type: (Text) -> ManifestItem
         # derive a virtual test from ManifestItem
         virtual_url = full_prefix[:-1] + self.url
         return type(self)(self._tests_root,
@@ -258,7 +262,7 @@ class RefTest(URLManifestItem):
     def virtual_test(self,
                      full_prefix  # type: Text
                      ):
-        # type: (...) -> URLManifestItem
+        # type: (Text) -> ManifestItem
         # derive a virtual reftest from ManifestItem
         virtual_url = full_prefix[:-1] + self.url
         virtual_references = []

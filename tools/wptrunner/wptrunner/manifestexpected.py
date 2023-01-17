@@ -221,7 +221,8 @@ def fuzzy_prop(node):
 
 
 class ExpectedManifest(ManifestItem):
-    def __init__(self, node, test_path):
+    # TODO: url_base is not used and should be removed
+    def __init__(self, node, test_path, url_base):
         """Object representing all the tests in a particular manifest
 
         :param name: Name of the AST Node associated with this object.
@@ -238,6 +239,7 @@ class ExpectedManifest(ManifestItem):
         ManifestItem.__init__(self, node)
         self.child_map = {}
         self.test_path = test_path
+        self.url_base = url_base
 
     def append(self, child):
         """Add a test to the manifest"""
@@ -510,7 +512,8 @@ def get_manifest(metadata_root, test_path, url_base, run_info):
             return static.compile(f,
                                   run_info,
                                   data_cls_getter=data_cls_getter,
-                                  test_path=test_path)
+                                  test_path=test_path,
+                                  url_base=url_base)
     except OSError:
         return None
 

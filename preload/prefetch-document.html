@@ -59,23 +59,22 @@ const loaders = {
     }
 };
 
-async function prefetch_document(origin, as, t) {
-    const {href, uid} = await prefetch({
-        file: "prefetch-exec.html",
-        type: "text/html",
-        corssOrigin: "anonymous",
-        origin: origins[origin], as});
-    const popup = window.open(href);
-    const remoteContext = new RemoteContext(uid);
-    t.add_cleanup(() => popup.close());
-    const result = await remoteContext.execute_script(() => "OK");
-    assert_equals(result, "OK");
-    return await get_prefetch_info(href);
-}
-
 async function test_prefetch_document({origin, as}, expected) {
     promise_test(async t => {
-        const requests = await prefetch_document(origin, as, t);
+        const {href, uid} = await prefetch({
+            file: "prefetch-exec.html",
+            type: "text/html",
+            corssOrigin: "anonymous",
+            origin: origins[origin],
+            as});
+
+        const popup = window.open(href);
+        const remoteContext = new RemoteContext(uid);
+        t.add_cleanup(() => popup.close());
+        const result = await remoteContext.execute_script(() => "OK");
+        assert_equals(result, "OK");
+
+        const requests =  await get_prefetch_info(href);
         const did_consume = requests.length === 1 ? "consumed" : "not consumed";
         assert_equals(did_consume, expected);
     }, `Prefetching a document (${origin}, as="${as}") should be ${expected}`);

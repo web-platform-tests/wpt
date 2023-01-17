@@ -23,7 +23,7 @@ for (const cacheControl of ["no-cache", "no-store", "max-age=0"]) {
     promise_test(async t => {
         const result = await prefetch_and_count(cacheControl, t);
         assert_equals(result, 2);
-    }, `Prefetch should not respsect cache-control: ${cacheControl}`);
+    }, `Prefetch should respect cache-control: ${cacheControl}`);
 }
 </script>
 </body>

@@ -510,8 +510,7 @@ def get_manifest(metadata_root, test_path, url_base, run_info):
             return static.compile(f,
                                   run_info,
                                   data_cls_getter=data_cls_getter,
-                                  test_path=test_path,
-                                  url_base=url_base)
+                                  test_path=test_path)
     except OSError:
         return None
 

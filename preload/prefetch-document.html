@@ -10,11 +10,6 @@
 <script>
 
 const {ORIGIN, REMOTE_ORIGIN, HTTP_NOTSAMESITE_ORIGIN} = get_host_info();
-const origins = {
-    "same origin": ORIGIN,
-    "same site": REMOTE_ORIGIN,
-    "different site": HTTP_NOTSAMESITE_ORIGIN
-}
 const loaders = {
     image: {
         file: 'square.png',
@@ -59,30 +54,36 @@ const loaders = {
     }
 };
 
-async function test_prefetch_document({origin, as}, expected) {
-    promise_test(async t => {
-        const {href, uid} = await prefetch({
-            file: "prefetch-exec.html",
-            type: "text/html",
-            corssOrigin: "anonymous",
-            origin: origins[origin],
-            as});
-
-        const popup = window.open(href);
-        const remoteContext = new RemoteContext(uid);
-        t.add_cleanup(() => popup.close());
-        const result = await remoteContext.execute_script(() => "OK");
-        assert_equals(result, "OK");
-
-        const requests =  await get_prefetch_info(href);
-        const did_consume = requests.length === 1 ? "consumed" : "not consumed";
-        assert_equals(did_consume, expected);
-    }, `Prefetching a document (${origin}, as="${as}") should be ${expected}`);
+async function prefetch_document_and_count_fetches(options, t) {
+    const {href, uid} = await prefetch({
+        file: "prefetch-exec.html",
+        type: "text/html",
+        corssOrigin: "anonymous",
+        ...options});
+    const popup = window.open(href);
+    const remoteContext = new RemoteContext(uid);
+    t.add_cleanup(() => popup.close());
+    const result = await remoteContext.execute_script(() => "OK");
+    assert_equals(result, "OK");
+    const requests = await get_prefetch_info(href);
+    return requests.length;
 }
 
-test_prefetch_document({origin: "same origin"}, "consumed");
-test_prefetch_document({origin: "same site"}, "consumed");
-test_prefetch_document({as: "document", origin: "different site"}, "not consumed");
+promise_test(async t => {
+    assert_equals(await prefetch_document_and_count_fetches({origin: ORIGIN}, t), 1);
+}, "same origin document prefetch without 'as' should be consumed");
+
+promise_test(async t => {
+    assert_equals(await prefetch_document_and_count_fetches({origin: REMOTE_ORIGIN}, t), 1);
+}, "same-site different-origin document prefetch without 'as' should be consumed");
+
+promise_test(async t => {
+    assert_equals(await prefetch_document_and_count_fetches({origin: HTTP_NOTSAMESITE_ORIGIN}, t), 2);
+}, "different-site document prefetch without 'as' should not be consumed");
+
+promise_test(async t => {
+    assert_equals(await prefetch_document_and_count_fetches({origin: HTTP_NOTSAMESITE_ORIGIN, as: "document"}, t), 2);
+}, "different-site document prefetch with 'as=document' should not be consumed");
 
 promise_test(async t => {
     const {href, uid} = await prefetch({
@@ -98,6 +99,5 @@ promise_test(async t => {
     assert_equals(results.length, 2);
     assert_equals(results[0].headers.accept, results[1].headers.accept);
 }, "Document prefetch should send the exact Accept header as navigation")
-
 </script>
 </body>

@@ -157,6 +157,7 @@ class Manifest:
                     yield from tests
 
     def load_virtual_tests(self, full_prefixes_by_base):
+        # type: (Dict[Text, List[Text]]) -> None
         types_to_load = list(item_classes.keys() - ["support"])
         virtual_data = defaultdict(dict)
         for item_type, rel_path, tests in self.itertypes(*types_to_load):

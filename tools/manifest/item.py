@@ -130,8 +130,8 @@ class URLManifestItem(ManifestItem):
     def virtual_test(self,
                      full_prefix  # type: Text
                      ):
-        # type: (Text) -> ManifestItem
-        # derive a virtual test from ManifestItem
+        # type: (Text) -> URLManifestItem
+        # derive a virtual test from URLManifestItem
         virtual_url = full_prefix[:-1] + self.url
         return type(self)(self._tests_root,
                           self.path,
@@ -262,8 +262,8 @@ class RefTest(URLManifestItem):
     def virtual_test(self,
                      full_prefix  # type: Text
                      ):
-        # type: (Text) -> ManifestItem
-        # derive a virtual reftest from ManifestItem
+        # type: (Text) -> RefTest
+        # derive a virtual reftest from a reftest
         virtual_url = full_prefix[:-1] + self.url
         virtual_references = []
         for ref_url, ref_type in self.references:

@@ -1,7 +1,6 @@
 # mypy: allow-untyped-defs
 
 from collections import deque
-from urllib.parse import urljoin
 
 from .wptmanifest.backends import static
 from .wptmanifest.backends.base import ManifestItem
@@ -221,15 +220,13 @@ def fuzzy_prop(node):
 
 
 class ExpectedManifest(ManifestItem):
-    # TODO: url_base is not used and should be removed
-    def __init__(self, node, test_path, url_base):
+    def __init__(self, node, test_path):
         """Object representing all the tests in a particular manifest
 
         :param name: Name of the AST Node associated with this object.
                      Should always be None since this should always be associated with
                      the root node of the AST.
         :param test_path: Path of the test file associated with this manifest.
-        :param url_base: Base url for serving the tests in this manifest
         """
         name = node.data
         if name is not None:
@@ -239,7 +236,6 @@ class ExpectedManifest(ManifestItem):
         ManifestItem.__init__(self, node)
         self.child_map = {}
         self.test_path = test_path
-        self.url_base = url_base
 
     def append(self, child):
         """Add a test to the manifest"""
@@ -406,7 +402,7 @@ class TestNode(ManifestItem):
 
     @property
     def id(self):
-        return urljoin(self.parent.url, self.name)
+        return self.name
 
     @property
     def disabled(self):
@@ -512,8 +508,7 @@ def get_manifest(metadata_root, test_path, url_base, run_info):
             return static.compile(f,
                                   run_info,
                                   data_cls_getter=data_cls_getter,
-                                  test_path=test_path,
-                                  url_base=url_base)
+                                  test_path=test_path)
     except OSError:
         return None
 

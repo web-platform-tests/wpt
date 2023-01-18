@@ -108,8 +108,7 @@ def make_test_object(test_name,
     test_metadata = manifestexpected.static.compile(BytesIO(test_name),
                                                     condition,
                                                     data_cls_getter=manifestexpected.data_cls_getter,
-                                                    test_path=test_path,
-                                                    url_base="/")
+                                                    test_path=test_path)
 
     test = next(iter(tests[index][2])) if iterate else tests[index][2].pop()
     return wpttest.from_manifest(tests, test, inherit_metadata, test_metadata.get_test(test.id))
@@ -222,8 +221,7 @@ def test_metadata_fuzzy():
     test_metadata = manifestexpected.static.compile(BytesIO(test_fuzzy),
                                                     {},
                                                     data_cls_getter=manifestexpected.data_cls_getter,
-                                                    test_path="a/fuzzy.html",
-                                                    url_base="/")
+                                                    test_path="a/fuzzy.html")
 
     test = next(manifest.iterpath(to_os_path("a/fuzzy.html")))
     test_obj = wpttest.from_manifest(manifest, test, [], test_metadata.get_test(test.id))

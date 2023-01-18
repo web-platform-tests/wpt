@@ -115,7 +115,6 @@ def test_update(tmp_path, metadata_file):
 
     firefox_expected = manifestexpected.get_manifest(metadata_path,
                                                      test_path,
-                                                     "/",
                                                      run_info_firefox)
     # Default expected isn't stored
     with pytest.raises(KeyError):
@@ -124,7 +123,6 @@ def test_update(tmp_path, metadata_file):
 
     chrome_expected = manifestexpected.get_manifest(metadata_path,
                                                     test_path,
-                                                    "/",
                                                     run_info_chrome)
     assert chrome_expected.get_test(test_id).expected == "ERROR"
     assert chrome_expected.get_test(test_id).get_subtest(subtest_name).expected == "NOTRUN"

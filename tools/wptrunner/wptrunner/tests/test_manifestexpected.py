@@ -32,4 +32,4 @@ def test_fuzzy(fuzzy, expected):
                                                {},
                                                data_cls_getter=manifestexpected.data_cls_getter,
                                                test_path="test/test.html")
-    assert manifest.get_test("/test/test.html").fuzzy == expected
+    assert manifest.get_test("test.html").fuzzy == expected

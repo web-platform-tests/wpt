@@ -37,6 +37,8 @@ onmessage = (e) => {
     '\x01',
     '\x09', // becomes the empty string
     '\x0A', // becomes the empty string
+    '\x0C',
+    '\x0D',
     '\x20',
     '\x21',
     '\x7F',
@@ -83,7 +85,7 @@ onmessage = (e) => {
   broken.forEach(val => {
     test(() => {
       assert_throws_dom("SyntaxError", () => { location.protocol = val })
-    }, encodeURI(val) + " (percent-encoded) is not a scheme")
+    }, `${encodeURI(val)} (percent-encoded here for clarity) is not a scheme`)
   })
   let c = 0
   async_test((t) => {

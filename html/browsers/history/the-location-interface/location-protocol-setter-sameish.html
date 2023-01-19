@@ -20,7 +20,7 @@ self.onload = () => {
         assert_equals(self[index].location.protocol, "http:");
       });
       self[index].location.protocol = val;
-    }, `Set location.protocol to ${encodeURI(val)} (percent-encoded)`);
+    }, `Set location.protocol to ${encodeURI(val)} (percent-encoded here for clarity)`);
   });
 }
 </script>

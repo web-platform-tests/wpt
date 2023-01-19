@@ -279,6 +279,39 @@
               "protocol": "https:",
               "port": ""
             }
+        },
+        {
+            "comment": "Non-tab/newline C0 controls result in no-op",
+            "href": "http://test/",
+            "new_value": "https\u0000",
+            "expected": {
+              "href": "http://test/",
+              "protocol": "http:"
+            }
+        },
+        {
+            "href": "http://test/",
+            "new_value": "https\u000C",
+            "expected": {
+              "href": "http://test/",
+              "protocol": "http:"
+            }
+        },
+        {
+            "href": "http://test/",
+            "new_value": "https\u000D",
+            "expected": {
+              "href": "http://test/",
+              "protocol": "http:"
+            }
+        },
+        {
+            "href": "http://test/",
+            "new_value": "https\u0020",
+            "expected": {
+              "href": "http://test/",
+              "protocol": "http:"
+            }
         }
     ],
     "username": [

@@ -203,6 +203,103 @@
         "foo666-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E="
     ).execute();
 
+    // fail-close integrity check tests
+    new SRIScriptTest(
+        false,
+        "Same-origin with sha256 digest not base64 encoded.",
+        `${same_origin_prefix}script.js?${token()}`,
+        "sha256-%"
+    ).execute();
+
+    new SRIScriptTest(
+        false,
+        "Same-origin with sha384 digest not base64 encoded.",
+        `${same_origin_prefix}script.js?${token()}`,
+        "sha384-%"
+    ).execute();
+
+    new SRIScriptTest(
+        false,
+        "Same-origin with sha512 digest not base64 encoded.",
+        `${same_origin_prefix}script.js?${token()}`,
+        "sha512-%"
+    ).execute();
+
+    // The hash function should be recognized by the user agent to
+    // validate a response’s integrity.
+     new SRIScriptTest(
+        true,
+        "Same-origin with unknown algorithm, digest not base64 encoded.",
+        `${same_origin_prefix}script.js?${token()}`,
+        "foo666-%"
+    ).execute();
+
+    new SRIScriptTest(
+        false,
+        "Same-origin with digest not base64 encoded, options.",
+        `${same_origin_prefix}script.js?${token()}`,
+        "sha256-%?foo=bar?spam=eggs"
+    ).execute();
+
+    new SRIScriptTest(
+        true,
+        "Same-origin with multiple sha256 digests, including not base64 encoded.",
+        `${same_origin_prefix}script.js?${token()}`,
+        "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA= sha256-%"
+    ).execute();
+
+    new SRIScriptTest(
+        true,
+        "Same-origin with multiple sha256 digests, including unknown algorithm with digest not base64 encoded.",
+        `${same_origin_prefix}script.js?${token()}`,
+        "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA= foo666-%"
+    ).execute();
+
+    new SRIScriptTest(
+        true,
+        "Same-origin with sha256 digest not base64 encoded, correct sha512 digest",
+        `${same_origin_prefix}script.js?${token()}`,
+        "sha512-KZdenhzBd7X7Q/vmaOSyvFz1CGdoVt26xzCZjlkU9lfBEK+V/ougGys7iYDi0+tOHIQSQa87bIqx95R7GU7I9Q== sha256-%"
+    ).execute();
+
+    new SRIScriptTest(
+        false,
+        "Same-origin with correct sha256 digest, sha512 digest not base64 encoded",
+        `${same_origin_prefix}script.js?${token()}`,
+        "sha512-% sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="
+    ).execute();
+
+    new SRIScriptTest(
+        false,
+        "<crossorigin='anonymous'> with digest not base64 encoded, ACAO: *",
+        `${xorigin_prefix}script.js?${token()}&pipe=header(Access-Control-Allow-Origin,*)`,
+        "sha256-%",
+        "anonymous"
+    ).execute();
+
+    new SRIScriptTest(
+        false,
+        "<crossorigin='use-credentials'> with digest not base64 encoded, CORS-eligible",
+        `${xorigin_prefix}script.js?${token()}&pipe=header(Access-Control-Allow-Credentials,true)|header(Access-Control-Allow-Origin,${location.origin})`,
+        "sha256-%",
+        "use-credentials"
+    ).execute();
+
+    new SRIScriptTest(
+        false,
+        "<crossorigin='anonymous'> with digest not base64 encoded, CORS-ineligible resource",
+        `${xorigin_prefix}script.js?${token()}`, /* no ACAO header makes this CORS-ineligible */
+        "sha256-%",
+        "anonymous"
+    ).execute();
+
+    new SRIScriptTest(
+        false,
+        "Cross-origin, not CORS request, with digest not base64 encoded",
+        `${xorigin_prefix}script.js?${token()}&pipe=header(Access-Control-Allow-Origin,*)`,
+        "sha256-%"
+    ).execute();
+
     // Style tests
     new SRIStyleTest(
         style_tests,

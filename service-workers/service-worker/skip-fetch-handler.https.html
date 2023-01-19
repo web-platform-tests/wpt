@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Service Worker: Should Skip Event for fetch and empty handlers</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-helpers.sub.js?pipe=sub"></script>
+<body>
+<script>
+promise_test(async t => {
+  const script = 'resources/skip-fetch-handler-worker.js?handler=none'
+  const scope = 'resources/blank.html?handler=none';
+
+  // Register a service worker with initially no fetch handlers.
+  const registration = await
+      service_worker_unregister_and_register(t, script, scope);
+  t.add_cleanup(async t => {
+    if (registration)
+      await registration.unregister();
+  });
+  const worker = registration.installing;
+  await wait_for_state(t, worker, 'activated');
+  const frame = await with_iframe(scope);
+
+  // Not intercepted because there are no fetch handlers.
+  {
+    const response = await frame.contentWindow.fetch('pass.txt');
+    const text = await response.text();
+    assert_equals(text, 'PASS\n', 'Fetch before handler update');
+  }
+
+  // Update the fetch handler to non-empty.
+  const sawMessage = new Promise((resolve) => {
+    const channel = new MessageChannel();
+    channel.port1.onmessage = t.step_func((event) => {
+      resolve(event.data);
+    });
+    worker.postMessage({port: channel.port2}, [channel.port2]);
+  });
+  const data = await sawMessage;
+  assert_equals(data, 'Handler updated',
+      'Worker call to update the fetch handler should fulfill.');
+
+  // Intercepted because the fetch handler is now non-empty, but still skipped
+  // because of https://w3c.github.io/ServiceWorker/#should-skip-event.
+  {
+    const response = await frame.contentWindow.fetch('pass.txt');
+    const text = await response.text();
+    assert_equals(text, 'PASS\n', 'Fetch after handler update');
+  }
+}, 'Fetch handler is initially non-existing and added after initial evaluation');
+
+promise_test(async t => {
+  const script = 'resources/skip-fetch-handler-worker.js?handler=empty'
+  const scope = 'resources/blank.html?handler=empty';
+
+  // Register a service worker with initially empty fetch handler
+  // `() => {}`.
+  const registration = await
+      service_worker_unregister_and_register(t, script, scope);
+  t.add_cleanup(async t => {
+    if (registration)
+      await registration.unregister();
+  });
+  const worker = registration.installing;
+  await wait_for_state(t, worker, 'activated');
+  const frame = await with_iframe(scope);
+
+  // Not intercepted because the fetch handler is empty.
+  {
+    const response = await frame.contentWindow.fetch('pass.txt');
+    const text = await response.text();
+    assert_equals(text, 'PASS\n', 'Fetch before handler update');
+  }
+
+  // Update the fetch handler to non-empty.
+  const sawMessage = new Promise((resolve) => {
+    const channel = new MessageChannel();
+    channel.port1.onmessage = t.step_func((event) => {
+      resolve(event.data);
+    });
+    worker.postMessage({port: channel.port2}, [channel.port2]);
+  });
+  const data = await sawMessage;
+  assert_equals(data, 'Handler updated',
+      'Worker call to update the fetch handler should fulfill.');
+
+  // Intercepted because the fetch handler is now non-empty and
+  // calls `respondWith`.
+  //
+  // https://w3c.github.io/ServiceWorker/#should-skip-event
+  // allows to skip fetch handlers (even if added/updated later) if there were
+  // no fetch handler at the time of initial evaluation,
+  // but doesn't allow to skip fetch handlers if there was an empty fetch
+  // handler.
+  {
+    const response = await frame.contentWindow.fetch('pass.txt');
+    const text = await response.text();
+    assert_equals(text, 'Intercepted!', 'Fetch after handler update');
+  }
+}, 'Fetch handler is initially empty and updated after initial evaluation');
+</script>
+</body>

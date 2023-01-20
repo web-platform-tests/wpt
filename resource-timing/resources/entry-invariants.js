@@ -1,3 +1,41 @@
+// Utils to help with setting up operation-specific timeouts.
+const abortable_timeout = (delay, message, signal) => {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      resolve();
+      return;
+    }
+    const timeout_handle = step_timeout(() => {
+      reject(new DOMException(message, "TimeoutError"));
+    }, delay);
+
+    signal?.addEventListener("abort", () => {
+      clearTimeout(timeout_handle);
+      resolve();
+    });
+  });
+};
+
+const await_with_timeout = async (delay, message, promise, cleanup) => {
+  const controller = new AbortController();
+  let result = null;
+  try {
+     result = await Promise.race([
+      promise,
+      abortable_timeout(
+        delay,
+        message,
+        controller.signal
+      ),
+    ]);
+  } finally {
+    // Cleanup
+    cleanup();
+    controller.abort();
+  }
+  return result;
+};
+
 // Asserts that the given attributes are present in 'entry' and hold equal
 // values.
 const assert_all_equal_ = (entry, attributes) => {
@@ -451,12 +489,12 @@ const attribute_test_internal = (loader, path, validator, run_test, test_label) 
       });
 
       await loader(path, validator);
-      const timeout = new Promise(r => step_timeout(() => {
-        console.log("Timeout was reached before entry fired");
-        r(null);
-      }, 2000));
-      const entry = await Promise.race([loaded_entry, timeout]);
-      assert_not_equals(entry, null, 'No entry was recieved');
+      const entry = await await_with_timeout(2000,
+        "Timeout was reached before entry fired",
+        loaded_entry,
+        () => { }
+      );
+      assert_not_equals(entry, null, 'No entry was received');
       run_test(entry);
   }, test_label);
 };

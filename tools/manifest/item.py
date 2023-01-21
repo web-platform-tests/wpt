@@ -128,7 +128,7 @@ class URLManifestItem(ManifestItem):
                        set(parse_qs(parsed_url.query).get("wpt_flags", [])))
 
     def virtual_test(self,
-                     full_prefix  # type: Text
+                     full_prefix
                      ):
         # type: (Text) -> URLManifestItem
         # derive a virtual test from URLManifestItem
@@ -260,7 +260,7 @@ class RefTest(URLManifestItem):
             self.references = references
 
     def virtual_test(self,
-                     full_prefix  # type: Text
+                     full_prefix
                      ):
         # type: (Text) -> RefTest
         # derive a virtual reftest from a reftest

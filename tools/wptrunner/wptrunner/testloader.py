@@ -235,13 +235,13 @@ class TagFilter:
 
 
 class ManifestLoader:
-    def __init__(self, test_paths, virtual_configs=[],
+    def __init__(self, test_paths, virtual_configs=None,
                  force_manifest_update=False,
                  manifest_download=False,
                  types=None):
         do_delayed_imports()
         self.test_paths = test_paths
-        self.virtual_configs = virtual_configs
+        self.virtual_configs = [] if virtual_configs is None else virtual_configs
         self.force_manifest_update = force_manifest_update
         self.manifest_download = manifest_download
         self.types = types
@@ -287,7 +287,7 @@ class TestLoader:
                  test_manifests,
                  test_types,
                  run_info,
-                 virtual_configs,
+                 virtual_configs=None,
                  manifest_filters=None,
                  chunk_type="none",
                  total_chunks=1,
@@ -329,7 +329,7 @@ class TestLoader:
 
         self.directory_manifests = {}
 
-        self.virtual_configs = virtual_configs
+        virtual_configs = [] if virtual_configs is None else virtual_configs
         self.args_by_full_prefix = {vc.full_prefix: vc.args for vc in virtual_configs}
 
         self._load_tests()

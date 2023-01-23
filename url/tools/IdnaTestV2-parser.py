@@ -121,7 +121,7 @@ def parse(lines, exclude_ipv4_like, exclude_std3_non_ascii):
     return { "tests": output, "unique_statuses": unique_statuses }
 
 def to_json(data):
-    handle = open("IdnaTestV2.json", "w")
+    handle = open("../resources/IdnaTestV2.json", "w")
     handle.write(json.dumps(data, sort_keys=True, allow_nan=False, indent=2, separators=(',', ': ')))
     handle.write("\n")
     handle.close()

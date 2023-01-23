@@ -25,7 +25,9 @@ self.onload = () => {
           assert_equals(frame.contentWindow.location.host, location.host)
           assert_equals(frame.contentWindow.location.port, location.port)
           t.done()
-        }, 500)
+          // Matches the timeout from location-protocol-setter-non-broken-weird.html which suggests
+          // that 4 seconds is enough for a navigation to complete.
+        }, 4000)
       })
       document.body.appendChild(frame)
     }, "Set HTTP URL frame location.protocol to " + val)

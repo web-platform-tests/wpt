@@ -38,6 +38,11 @@ const throw_tests = [
     test_name: 'new AudioWorkletProcessor() after new AudioWorkletProcessor()',
     node_name: 'new-after-new',
     thrower: 'new AudioWorkletProcessor()'
+  },
+  {
+    test_name: 'new AudioWorkletProcessor() in process()',
+    node_name: 'new-in-process',
+    thrower: 'new AudioWorkletProcessor()'
   }
 ];
 for (const test_info of throw_tests) {

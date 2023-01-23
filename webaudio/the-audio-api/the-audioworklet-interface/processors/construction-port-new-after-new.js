@@ -12,5 +12,6 @@ class NewAfterNew extends AudioWorkletProcessor {
     processor.port.postMessage(message);
     return processor;
   }
+  process(){}
 }
 registerProcessor("new-after-new", NewAfterNew);

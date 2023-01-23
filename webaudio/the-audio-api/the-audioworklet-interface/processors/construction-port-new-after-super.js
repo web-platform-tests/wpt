@@ -3,7 +3,7 @@ class NewAfterSuper extends AudioWorkletProcessor {
     super()
     let message = {threw: false};
     try {
-      new AudioWorkletProcessor()
+      new AudioWorkletProcessor();
     } catch (e) {
       message.threw = true;
       message.errorName = e.name;
@@ -11,5 +11,6 @@ class NewAfterSuper extends AudioWorkletProcessor {
     }
     this.port.postMessage(message);
   }
+  process(){}
 }
 registerProcessor("new-after-super", NewAfterSuper);

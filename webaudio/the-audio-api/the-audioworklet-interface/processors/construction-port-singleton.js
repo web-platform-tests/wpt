@@ -3,14 +3,12 @@ class Singleton extends AudioWorkletProcessor {
   constructor() {
     if (!singleton) {
       singleton = new AudioWorkletProcessor();
-      singleton.process = function() {
-        this.port.postMessage({message: "process called"});
-        // This function will be called at most once for each AudioWorkletNode
-        // if the node has no input connections.
-        return false;
-      }
     }
     return singleton;
+  }
+  process(){
+    this.port.postMessage({message: "process called"});
+    return false;
   }
 }
 registerProcessor("singleton", Singleton);

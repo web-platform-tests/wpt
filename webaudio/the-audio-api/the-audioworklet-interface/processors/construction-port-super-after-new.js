@@ -12,5 +12,6 @@ class SuperAfterNew extends AudioWorkletProcessor {
     processor.port.postMessage(message);
     return processor;
   }
+  process(){}
 }
 registerProcessor("super-after-new", SuperAfterNew);

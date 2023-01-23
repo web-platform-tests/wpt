@@ -1,5 +1,5 @@
 [
-  "THIS IS A GENERATED FILE. PLEASE DO NOT MODIFY DIRECTLY. See IdnaTestV2-parser.py instead.",
+  "THIS IS A GENERATED FILE. PLEASE DO NOT MODIFY DIRECTLY. See ../tools/IdnaTestV2-parser.py instead.",
   "--exclude-ipv4-like: True; --exclude-std3: True; --exclude_bidi: True",
   {
     "input": "fass.de",

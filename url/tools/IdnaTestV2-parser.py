@@ -1,5 +1,15 @@
 # This script can convert IdnaTestV2.txt to JSON, accounting for the requirements in the
 # URL Standard.
+#
+# The goal is to eventually remove --exclude-std3 and --exclude-bidi. For that we need solutions to
+# these issues:
+#
+# * https://github.com/whatwg/url/issues/341
+# * https://github.com/whatwg/url/issues/543
+# * https://github.com/whatwg/url/issues/733
+# * https://github.com/whatwg/url/issues/744
+#
+# Removal of --exclude-ipv4-like is a stretch goal also dependent upon those issues.
 
 import argparse
 import json
@@ -39,7 +49,7 @@ def contains_bidi_status(statuses):
 
 def parse(lines, exclude_ipv4_like, exclude_std3, exclude_bidi):
     # Main quest.
-    output = ["THIS IS A GENERATED FILE. PLEASE DO NOT MODIFY DIRECTLY. See IdnaTestV2-parser.py instead."]
+    output = ["THIS IS A GENERATED FILE. PLEASE DO NOT MODIFY DIRECTLY. See ../tools/IdnaTestV2-parser.py instead."]
     output.append(f"--exclude-ipv4-like: {exclude_ipv4_like}; --exclude-std3: {exclude_std3}; --exclude_bidi: {exclude_bidi}")
 
     # Side quest.

@@ -30,10 +30,16 @@ def ends_in_a_number(input):
         parts.pop()
     return parts[-1].isascii() and parts[-1].isdigit()
 
-def parse(lines, exclude_ipv4_like, exclude_std3_non_ascii):
+def contains_bidi_status(statuses):
+    for status in statuses:
+        if status in ["B1", "B2", "B3", "B4", "B5", "B6"]:
+            return True
+    return False
+
+def parse(lines, exclude_ipv4_like, exclude_std3, exclude_bidi):
     # Main quest.
     output = ["THIS IS A GENERATED FILE. PLEASE DO NOT MODIFY DIRECTLY. See IdnaTestV2-parser.py instead."]
-    output.append(f"--exclude-ipv4-like: {exclude_ipv4_like}; --exclude-std3-non-ascii: {exclude_std3_non_ascii}")
+    output.append(f"--exclude-ipv4-like: {exclude_ipv4_like}; --exclude-std3: {exclude_std3}; --exclude_bidi: {exclude_bidi}")
 
     # Side quest.
     unique_statuses = []
@@ -54,43 +60,47 @@ def parse(lines, exclude_ipv4_like, exclude_std3_non_ascii):
         # Since we are only interested in ToASCII and enforce Transitional_Processing=false we care
         # about the following columns:
         #
-        # * Column 1: source
-        # * Column 4: toAsciiN
-        # * Column 5: toAsciiNStatus
+        # * Column 1 (source)
+        # * Column 4 (toAsciiN)
+        # * Column 5 (toAsciiNStatus)
+        #
+        # We also store Column 2 (toUnicode) to help with UseSTD3ASCIIRules exclusion.
         columns = [column.strip() for column in line.split(";")]
 
-        # Column 1
-        column_source = columns[0]
+        # Column 1 (source) and Column 2 (toUnicode; if empty, Column 1 (source))
+        source = columns[0]
+        to_unicode = columns[1]
+        if to_unicode == "":
+            to_unicode = source
 
+        # Immediately exclude IPv4-like tests when desired. While we could force all their
+        # expectations to be failure instead, it's not clear we need that many additional tests that
+        # were actually trying to test something else.
         if exclude_ipv4_like:
-            if ends_in_a_number(column_source):
+            if ends_in_a_number(source):
                 continue
 
-        if exclude_std3_non_ascii:
-            # Notably this does not deal with them appearing in xn-- inputs.
-            if re.search(r"\u2260|\u226E|\u226F", column_source):
+        if exclude_std3:
+            if re.search(r"\u2260|\u226E|\u226F|\<|\>|\$|,", to_unicode):
                 continue
 
-        # Column 4 (if empty, use Column 2; if empty again, use Column 1)
-        column_to_ascii = columns[3]
-        if column_to_ascii == "":
-            column_to_ascii = columns[1]
-            if column_to_ascii == "":
-                column_to_ascii = column_source
+        # Column 4 (toAsciiN; if empty, use Column 2 (toUnicode))
+        to_ascii = columns[3]
+        if to_ascii == "":
+            to_ascii = to_unicode
 
-        # Column 5 (if empty, use Column 3)
-        column_status = columns[4]
-        if column_status == "":
-            column_status = columns[2]
-        # Convert to list
-        if column_status == "":
-            column_status = []
-        else:
-            assert column_status.startswith("[")
-            column_status = [status.strip() for status in column_status[1:-1].split(",")]
+        # Column 5 (toAsciiNStatus; if empty, use Column 3 (toUnicodeStatus))
+        temp_statuses = columns[4]
+        if temp_statuses == "":
+            temp_statuses = columns[2]
+
+        statuses = []
+        if temp_statuses != "":
+            assert temp_statuses.startswith("[")
+            statuses = [status.strip() for status in temp_statuses[1:-1].split(",")]
 
         # Side quest time.
-        for status in column_status:
+        for status in statuses:
             if status not in unique_statuses:
                 unique_statuses.append(status)
 
@@ -99,22 +109,27 @@ def parse(lines, exclude_ipv4_like, exclude_std3_non_ascii):
         # * UseSTD3ASCIIRules=false; however there are no tests marked U1 (some should be though)
         # * CheckHyphens=false; thus ignore V2, V3?
         # * VerifyDnsLength=false; thus ignore A4_1 and A4_2
+        ignored_statuses = []
+        for status in statuses:
+            if status in ["A4_1", "A4_2", "U1", "V2", "V3"]:
+                ignored_statuses.append(status)
+        for status in ignored_statuses:
+            statuses.remove(status)
+
+        if exclude_bidi and contains_bidi_status(statuses):
+            continue
+
+        if len(statuses) > 0:
+            to_ascii = None
+
+        test = { "input": source, "output": to_ascii }
         comment = ""
-        for ignored_status in ["A4_1", "A4_2", "U1", "V2", "V3"]:
-            if ignored_status in column_status:
-                column_status.remove(ignored_status)
-                comment += ignored_status + " (ignored); "
-        for status in column_status:
+        for status in statuses:
             comment += status + "; "
+        for status in ignored_statuses:
+            comment += status + " (ignored); "
         if comment != "":
-            comment = comment.strip()[:-1]
-
-        if len(column_status) > 0:
-            column_to_ascii = None
-
-        test = { "input": column_source, "output": column_to_ascii }
-        if comment != "":
-            test["comment"] = comment
+            test["comment"] = comment.strip()[:-1]
         output.append(test)
 
     unique_statuses.sort()
@@ -129,13 +144,14 @@ def to_json(data):
 def main():
     parser = argparse.ArgumentParser(epilog="Thanks for caring about IDNA!")
     parser.add_argument("--generate", action="store_true", help="Generate the JSON resource.")
-    parser.add_argument("--exclude-ipv4-like", action="store_true", help="Exclude inputs that end with an ASCII digit label. (Not robust.)")
-    parser.add_argument("--exclude-std3-non-ascii", action="store_true", help="Exclude inputs containing \u2260, \u226E, or \u226F. (Not robust at all.)")
+    parser.add_argument("--exclude-ipv4-like", action="store_true", help="Exclude inputs that end with an ASCII digit label. (Not robust, but works for current input.)")
+    parser.add_argument("--exclude-std3", action="store_true", help="Exclude tests impacted by UseSTD3ASCIIRules. (Not robust, but works for current input.)")
+    parser.add_argument("--exclude-bidi", action="store_true", help="Exclude tests impacted by CheckBidi.")
     parser.add_argument("--statuses", action="store_true", help="Print the unique statuses in IdnaTestV2.txt.")
     args = parser.parse_args()
 
     if args.generate or args.statuses:
-        output = parse(get_IdnaTestV2_lines(), args.exclude_ipv4_like, args.exclude_std3_non_ascii)
+        output = parse(get_IdnaTestV2_lines(), args.exclude_ipv4_like, args.exclude_std3, args.exclude_bidi)
         if args.statuses:
             print(output["unique_statuses"])
         else:

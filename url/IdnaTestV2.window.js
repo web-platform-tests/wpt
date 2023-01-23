@@ -8,11 +8,15 @@ function runTests(idnaTests) {
     if (idnaTest.input === "") {
       continue // cannot test empty string input through new URL()
     }
+    // Percent-encode the input such that ? and equivalent code points do not end up counting as
+    // part of the URL, but are parsed through the host parser instead.
+    const encodedInput = encodeURIComponent(idnaTest.input);
+
     test(() => {
       if (idnaTest.output === null) {
-        assert_throws_js(TypeError, () => new URL(`https://${idnaTest.input}/x`));
+        assert_throws_js(TypeError, () => new URL(`https://${encodedInput}/x`));
       } else {
-        const url = new URL(`https://${idnaTest.input}/x`);
+        const url = new URL(`https://${encodedInput}/x`);
         assert_equals(url.host, idnaTest.output);
         assert_equals(url.hostname, idnaTest.output);
         assert_equals(url.pathname, "/x");

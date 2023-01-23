@@ -7,7 +7,7 @@
 
 * VerifyDnsLength is not P4, but rather A4_1 and A4_2.
 * Tests that use trailing ASCII digit labels are not useful for browsers as that will trigger the IPv4 parser. This is a problem for a number of the A4_1 and A4_2 tests. And also a large number of tests later on, such as ToASCII("xn--gl0as212a.8.") or ToASCII("1.27").
-* Test for ToASCII("$") is marked P1 and V6, not U1. This might apply more widely.
+* Test for ToASCII("$") is marked P1 and V6, not U1. This also effects numerous tests with <, >, and =. If they continue to have multiple statuses that will also make it impossible to filter them in an automated fashion.
 * NV8 is not used as a status.
 * A3 and X3 do not appear to be used as a status. (These are catered for by P4 presumably.)
 * CheckBidi is not V8. V8 does not appear to be used. You'd have to filter out all B1-6 statuses instead.

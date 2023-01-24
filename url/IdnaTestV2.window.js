@@ -1,5 +1,19 @@
 promise_test(() => fetch("resources/IdnaTestV2.json").then(res => res.json()).then(runTests), "Loading data…");
 
+// Performance impact of this seems negligible (performance.now() diff in WebKit went from 48 to 52)
+// and there was a preference to let more non-ASCII hit the parser.
+function encodeHostEndingCodePoints(input) {
+  let output = "";
+  for (const codePoint of input) {
+    if ([":", "/", "?", "#", "\\"].includes(codePoint)) {
+      output += encodeURIComponent(codePoint);
+    } else {
+      output += codePoint;
+    }
+  }
+  return output;
+}
+
 function runTests(idnaTests) {
   for (const idnaTest of idnaTests) {
     if (typeof idnaTest === "string") {
@@ -10,7 +24,7 @@ function runTests(idnaTests) {
     }
     // Percent-encode the input such that ? and equivalent code points do not end up counting as
     // part of the URL, but are parsed through the host parser instead.
-    const encodedInput = encodeURIComponent(idnaTest.input);
+    const encodedInput = encodeHostEndingCodePoints(idnaTest.input);
 
     test(() => {
       if (idnaTest.output === null) {

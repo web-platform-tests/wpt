@@ -17,6 +17,7 @@ self.onload = () => {
     async_test((t) => {
       // HTTP URL <iframe>
       const frame = document.createElement("iframe")
+      t.add_cleanup(() => frame.remove())
       frame.src = "/common/blank.html"
       frame.onload = t.step_func(() => {
         frame.contentWindow.location.protocol = val
@@ -35,6 +36,7 @@ self.onload = () => {
     async_test((t) => {
       // data URL <iframe>
       const dataFrame = document.createElement("iframe")
+      t.add_cleanup(() => dataFrame.remove())
       const channel = new MessageChannel()
       dataFrame.src = `data:text/html,<script>
 onmessage = (e) => {
@@ -44,7 +46,7 @@ onmessage = (e) => {
   } catch(e) {
     result = true
   }
-  setTimeout(() => e.ports[0].postMessage([result, location.protocol]), 100)
+  setTimeout(() => e.ports[0].postMessage([result, location.protocol]), 4000)
 }
 <\/script>`
       dataFrame.onload = t.step_func(() => {

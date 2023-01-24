@@ -148,6 +148,13 @@ test_not_applied('gandalf', 'grey', false);
 test_not_applied('<color>', 'notacolor', false);
 test_not_applied('<length>', '10em', false);
 
+test_not_applied('<length>', '10cqw', false);
+test_not_applied('<length>', '10cqh', false);
+test_not_applied('<length>', '10cqi', false);
+test_not_applied('<length>', '10cqb', false);
+test_not_applied('<length>', '10cqmin', false);
+test_not_applied('<length>', '10cqmax', false);
+
 // Inheritance
 
 test_with_at_property({

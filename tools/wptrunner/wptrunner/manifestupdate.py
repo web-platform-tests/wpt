@@ -60,7 +60,7 @@ def data_cls_getter(output_node, visited_node):
     else:
         raise ValueError
 
-def get_test_name(test_id)
+def get_test_name(test_id):
     # test name is base name of test path + query string + frament
     return test_id[len(urlsplit(test_id).path.rsplit("/", 1)[0]) + 1:]
 

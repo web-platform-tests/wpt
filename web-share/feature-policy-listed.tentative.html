@@ -12,19 +12,19 @@
       'use strict';
 
       test(() => {
-        assert_true(document.featurePolicy.allowsFeature('web-share'));
+        assert_true(document.permissionsPolicy.allowsFeature('web-share'));
       }, 'allowsFeature() returns true for web-share');
 
       test(() => {
-        assert_true(document.featurePolicy.features().includes('web-share'));
+        assert_true(document.permissionsPolicy.features().includes('web-share'));
       }, 'features() includes web-share');
 
       test(() => {
-        assert_true(document.featurePolicy.allowedFeatures().includes('web-share'));
+        assert_true(document.permissionsPolicy.allowedFeatures().includes('web-share'));
       }, 'allowedFeatures() includes web-share');
 
       test(() => {
-        assert_equals(Array.from(document.featurePolicy.getAllowlistForFeature('web-share')).length, 1);
+        assert_equals(Array.from(document.permissionsPolicy.getAllowlistForFeature('web-share')).length, 1);
       }, 'allowsFeature() returns a single entry for web-share');
     </script>
   </body>

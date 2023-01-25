@@ -281,6 +281,14 @@
             }
         },
         {
+            "href": "http://test/",
+            "new_value": "https\u000D",
+            "expected": {
+              "href": "https://test/",
+              "protocol": "https:"
+            }
+        },
+        {
             "comment": "Non-tab/newline C0 controls result in no-op",
             "href": "http://test/",
             "new_value": "https\u0000",

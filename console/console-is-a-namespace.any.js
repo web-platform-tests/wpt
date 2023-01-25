@@ -20,6 +20,10 @@ test(() => {
 }, "Console (uppercase, as if it were an interface) must not exist");
 
 test(() => {
+  assert_equals(console.toString(), "[object console]");
+}, "console namespace class string is configured correctly");
+
+test(() => {
   const prototype1 = Object.getPrototypeOf(console);
   const prototype2 = Object.getPrototypeOf(prototype1);
 

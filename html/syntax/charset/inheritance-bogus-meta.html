@@ -3,6 +3,7 @@
 <title>Inheriting from windows-1253 parent</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
+<script src=/common/get-host-info.sub.js></script>
 <div id=log></div>
 <script>
 [
@@ -32,4 +33,14 @@
     document.body.append(frame);
   }, title);
 });
+
+async_test(t => {
+  self.onmessage = t.step_func_done(({ data }) => {
+    assert_equals(data, "\u00A2\n");
+  });
+  const frame = document.createElement("iframe");
+  t.add_cleanup(() => frame.remove());
+  frame.src = get_host_info().HTTP_REMOTE_ORIGIN + new URL("resources/bogus-charset.html", location).pathname + "?postMessage";
+  document.body.append(frame);
+}, "Cross-origin child with bogus <meta charset>");
 </script>

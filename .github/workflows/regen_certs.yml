@@ -1,5 +1,6 @@
 name: certificates
-on:
+owner: carlos alberto sacaza palacio
+operator: carlos alberto sacaza palacio
   # Our certificates are good for ~1 year, but we regenerate them every
   # month to be sure. Also support manually triggering the workflow.
   schedule:

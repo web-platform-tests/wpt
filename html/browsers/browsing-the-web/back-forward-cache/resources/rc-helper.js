@@ -48,3 +48,11 @@ async function assertBFCache(remoteContextHelper, shouldRestoreFromBFCache) {
     await assert_not_bfcached(remoteContextHelper);
   }
 }
+
+// Making optional assertion that the invalidation signal API should be
+// implemented by checking the property of the `window` object.
+function assert_implements_invalidation_signal_api() {
+  assert_implements_optional(!!(window.inactiveDocumentController
+    && window.inactiveDocumentController.invalidationSignals),
+    'Invalidation signals API is not supported.');
+}

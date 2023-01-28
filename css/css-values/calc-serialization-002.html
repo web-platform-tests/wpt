@@ -4,25 +4,18 @@
 
   <title>CSS Values and Units: serialization of calc() specified values: 17 arithmetical operations (complex)</title>
 
-  <!--
-
-  Latest update: March 31st 2019
-
-  Mixed absolute length units in calc() specified values
-  should *not* be converted into px unit when serializing
-  calc() values
-
-  More info:
-  Issue 3741: [css-values-4] Should physical units in specified
-  values in calc() collapse into px unit when serialized?
-  https://github.com/w3c/csswg-drafts/issues/3741
-
-  -->
-
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="https://www.w3.org/TR/css-values-4/#calc-serialize">
 
+  <meta content="" name="flags">
   <meta content="This test verifies how 17 arithmetical operations of mixed length units in calc() specified values are serialized. Absolute length units (cm, in, mm, pc, pt, q, px), font-relative length units (ex, em, rem), viewport-percentage length units (vh, vmax, vmin, vw) and percentage units are tested. 12 additions, 4 substractions and 1 division are tested." name="assert">
+
+  <!--
+
+  Issue 1050968: CSS calc and other math function serialization doesn't follow the spec
+  https://bugs.chromium.org/p/chromium/issues/detail?id=1050968
+
+  -->
 
   <script src="/resources/testharness.js"></script>
 
@@ -52,15 +45,17 @@
   /*
 
   "
-  Sort the terms in the following order:
 
-    The number, if present
+  If nodes contains a number, remove it from nodes and append it to ret.
 
-    The percentage, if present
+  If nodes contains a percentage, remove it from nodes and append it to ret.
 
-    The dimensions, ordered by their units ASCII case-insensitive alphabetically
+  If nodes contains any dimensions, remove them from nodes, sort them by their units, ordered ASCII case-insensitively, and append them to ret.
+
+  If nodes still contains any items, append them to ret in the same order.
+
   "
-  https://www.w3.org/TR/css-values-4/#math-function-serialize-a-summation
+  https://www.w3.org/TR/css-values-4/#calc-serialize
 
   */
 
@@ -74,49 +69,27 @@
 
     verifySerialization("calc(-8px + 9em + 1vh)", "calc(9em - 8px + 1vh)", "testing calc(-8px + 9em + 1vh)");
 
-    verifySerialization("calc(1pc + 1in + 1vh + 10%)", "calc(10% + 1in + 1pc + 1vh)", "testing calc(1pc + 1in + 1vh + 10%)");
+    verifySerialization("calc(1pc + 1in + 1vh + 10%)", "calc(10% + 112px + 1vh)", "testing calc(1pc + 1in + 1vh + 10%)");
 
-    verifySerialization("calc(25.4q + 1vh + 12%)", "calc(12% + 25.4q + 1vh)", "testing calc(25.4q + 1vh + 12%)");
+    verifySerialization("calc(25.4q + 1vh + 12%)", "calc(12% + 24px + 1vh)", "testing calc(25.4q + 1vh + 12%)");
 
-    verifySerialization("calc(1em + 1.27cm + 13% + 3em)", "calc(13% + 1.27cm + 4em)", "testing calc(1em + 1.27cm + 13% + 3em)");
+    verifySerialization("calc(1em + 1.27cm + 13% + 3em)", "calc(13% + 4em + 48px)", "testing calc(1em + 1.27cm + 13% + 3em)");
 
  /* verifySerialization(specified_value, serialization_expected, description)  */
 
     verifySerialization("calc(15vw + 16vmin - 17vh)", "calc(-17vh + 16vmin + 15vw)", "testing calc(15vw + 16vmin - 17vh)");
 
-    verifySerialization("calc(8pt + calc(9rem + 10px))", "calc(8pt + 10px + 9rem)", "testing calc(8pt + calc(9rem + 10px))");
-    /*
-    To simplify an expression:
+    verifySerialization("calc(9pt + calc(9rem + 10px))", "calc(22px + 9rem)", "testing calc(9pt + calc(9rem + 10px))");
 
-      1. Replace any calc() values with parentheses containing their contents.
-    https://www.w3.org/TR/css-values-4/#math-function-simplify-an-expression
-    (...)
-    The result must be a summation of unique units
-    */
+    verifySerialization("calc(5pt + 5em + 4pt + 3em)", "calc(8em + 12px)", "testing calc(5pt + 5em + 4pt + 3em)");
 
-    verifySerialization("calc(6pt + 5em + 4pt + 3em)", "calc(8em + 10pt)", "testing calc(6pt + 5em + 4pt + 3em)");
-    /*
-    To simplify an expression:
+    verifySerialization("calc(4vmin + 0pt + 3pc)", "calc(48px + 4vmin)", "testing calc(4vmin + 0pt + 3pc)");
 
-      3. Combine identical units.
-    https://www.w3.org/TR/css-values-4/#math-function-simplify-an-expression
-    (...)
-    The result must be a summation of unique units
-    */
+    verifySerialization("calc(4vmin + 0pt)", "calc(4vmin)", "testing calc(4vmin + 0pt)");
 
- /* verifySerialization(specified_value, serialization_expected, description)  */
+    verifySerialization("calc(100% - 100% + 1em)", "calc(0% + 1em)", "testing calc(100% - 100% + 1em)");
 
-    verifySerialization("calc(4vmin + 0pt + 3pc)", "calc(3pc + 0pt + 4vmin)", "testing calc(4vmin + 0pt + 3pc)");
-    /*
-    Terms with a value of zero must be preserved in this summation.
-    https://www.w3.org/TR/css-values-4/#math-function-simplify-an-expression
-    */
-
-    verifySerialization("calc(4vmin + 0pt)", "calc(0pt + 4vmin)", "testing calc(4vmin + 0pt)");
-    /*
-    Terms with a value of zero must be preserved in this summation.
-    https://www.w3.org/TR/css-values-4/#math-function-simplify-an-expression
-    */
+    verifySerialization("calc(100% + 1em - 100%)", "calc(0% + 1em)", "testing calc(100% + 1em - 100%)");
 
 
   /* Substractions */
@@ -125,33 +98,16 @@
     verifySerialization("calc(1vh - 7px)", "calc(-7px + 1vh)", "testing calc(1vh - 7px)");
 
     verifySerialization("calc(5ex - 9ex)", "calc(-4ex)", "testing calc(5ex - 9ex)");
-    /*
-    To simplify an expression:
 
-      3. Combine identical units.
-    https://www.w3.org/TR/css-values-4/#math-function-simplify-an-expression
+    /*
 
     An out-of-range value inside calc() is not syntactically invalid.
     Inside a calc() function, the resulting summation value can be
     out of range and can be serialized.
+
     */
 
-    verifySerialization("calc(-80px + 25.4mm)", "calc(25.4mm - 80px)", "testing calc(-80px + 25.4mm)");
-    /*
-    To serialize a calc() value
-
-      3. Otherwise, serialize the summation, prefix the result
-      with "calc(" and suffix it with ")", then return it.
-    https://www.w3.org/TR/css-values-4/#serialize-a-calc-value
-
-    To serialize a summation:
-
-      2. Serialize all the terms, then join them into a single
-      string, with " + " between each term. Return the result.
-    https://www.w3.org/TR/css-values-4/#math-function-serialize-a-summation
-    (...)
-    The result must be a summation of unique units
-    */
+    verifySerialization("calc(-80px + 25.4mm)", "calc(16px)", "testing calc(-80px + 25.4mm)");
 
  /* verifySerialization(specified_value, serialization_expected, description)  */
 
@@ -161,15 +117,7 @@
   /* Multiplication and division */
 
 
-    verifySerialization("calc(4 * 3px + 4pc / 8)", "calc(0.5pc + 12px)", "testing calc(4 * 3px + 4pc / 8)");
-    /*
-    To simplify an expression:
-
-      2.Resolve all multiplications and divisions.
-    https://www.w3.org/TR/css-values-4/#math-function-simplify-an-expression
-    (...)
-    The result must be a summation of unique units
-    */
+    verifySerialization("calc(4 * 3px + 4pc / 8)", "calc(20px)", "testing calc(4 * 3px + 4pc / 8)");
 
     /*
     This calc(4 * 3px + 4pc / 8) test is on purpose last. We want the

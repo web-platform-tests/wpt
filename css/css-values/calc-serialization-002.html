@@ -2,13 +2,13 @@
 
   <meta charset="UTF-8">
 
-  <title>CSS Values and Units: serialization of calc() specified values: 17 arithmetical operations (complex)</title>
+  <title>CSS Values and Units: serialization of calc() specified values: 19 arithmetical operations (complex)</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="https://www.w3.org/TR/css-values-4/#calc-serialize">
 
   <meta content="" name="flags">
-  <meta content="This test verifies how 17 arithmetical operations of mixed length units in calc() specified values are serialized. Absolute length units (cm, in, mm, pc, pt, q, px), font-relative length units (ex, em, rem), viewport-percentage length units (vh, vmax, vmin, vw) and percentage units are tested. 12 additions, 4 substractions and 1 division are tested." name="assert">
+  <meta content="This test verifies how 19 arithmetical operations of mixed length units in calc() specified values are serialized. Absolute length units (cm, in, mm, pc, pt, q, px), font-relative length units (ex, em, rem), viewport-percentage length units (vh, vmax, vmin, vw) and percentage units are tested. 12 additions, 6 substractions and 1 division are tested." name="assert">
 
   <!--
 
@@ -59,7 +59,7 @@
 
   */
 
-  /* Additions */
+  /* 12 Additions */
 
     verifySerialization("calc(1vh + 2px + 3%)", "calc(3% + 2px + 1vh)", "testing calc(1vh + 2px + 3%)");
 
@@ -87,13 +87,13 @@
 
     verifySerialization("calc(4vmin + 0pt)", "calc(4vmin)", "testing calc(4vmin + 0pt)");
 
+
+  /* 6 Substractions */
+
+
     verifySerialization("calc(100% - 100% + 1em)", "calc(0% + 1em)", "testing calc(100% - 100% + 1em)");
 
     verifySerialization("calc(100% + 1em - 100%)", "calc(0% + 1em)", "testing calc(100% + 1em - 100%)");
-
-
-  /* Substractions */
-
 
     verifySerialization("calc(1vh - 7px)", "calc(-7px + 1vh)", "testing calc(1vh - 7px)");
 
@@ -114,7 +114,7 @@
     verifySerialization("calc(1vmin - 14%)", "calc(-14% + 1vmin)", "testing calc(1vmin - 14%)");
 
 
-  /* Multiplication and division */
+  /* 1 Multiplication and division */
 
 
     verifySerialization("calc(4 * 3px + 4pc / 8)", "calc(20px)", "testing calc(4 * 3px + 4pc / 8)");

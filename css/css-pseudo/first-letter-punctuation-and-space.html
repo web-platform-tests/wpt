@@ -281,9 +281,6 @@
 
     async function runTest() {
         const target = document.querySelector("#target");
-
-        // First-letter has font-size 0, remaining size should be 3em = 48px
-        const expectedWidth = 48;
         let tests = [];
 
         function setupTest(testString, name) {
@@ -326,6 +323,8 @@
             test(() => assert_equals(el.offsetWidth, 48, 'width'), name);
         }
 
+        target.innerHTML = ''
+        tests = []
         done();
     }
 </script>

@@ -284,86 +284,48 @@
 
         // First-letter has font-size 0, remaining size should be 3em = 48px
         const expectedWidth = 48;
-        let testElements = [];
+        let tests = [];
+
+        function setupTest(testString, name) {
+            const el = document.createElement('div');
+            el.innerHTML = testString;
+            target.appendChild(el);
+
+            tests.push({el, name});
+        }
 
         // All punctuation—i.e, characters that belong to the Punctuation (P*) Unicode general category [UAX44]
         // —that precedes the first letter.
         const P = [Pc, Pd, Ps, Pe, Pi, Pf, Po].flat();
-        P.forEach(str => {
-            const el = document.createElement('div');
-            el.innerHTML = `${str}Test`;
-            target.appendChild(el);
-            testElements.push(el);
-        })
+        for (const p of P) {
+            setupTest(`${p}Test`, `Preceding punctuation ${p} (${formatCodepoint(p)}) should be included`)
+        }
 
-        await yield();
-
-        P.forEach((str, idx) => {
-            test(() => {
-                assert_equals(testElements[idx].offsetWidth, expectedWidth, 'width');
-            }, `Preceding punctuation ${str} (${formatCodepoint(str)}) should be included`);
-        })
-
-        testElements = [];
-        target.innerHTML = '';
 
         // Any punctuation other than opening punctuation and dashes—i.e. characters that belong to the Punctuation (P*)
         // Unicode general category, excluding Open Punctuation (Ps) and Dash Punctuation (Pd)—that follows the first letter.
         const followingPunctuation = [Pc, Pe, Pi, Pf, Po].flat();
-        followingPunctuation.forEach(str => {
-            const el = document.createElement('div');
-            el.innerHTML = `T${str}est`;
-            target.appendChild(el);
-            testElements.push(el);
-        });
-
-        await yield();
-
-        followingPunctuation.forEach((str, idx) => {
-            test(() => {
-                assert_equals(testElements[idx].offsetWidth, expectedWidth, 'width');
-            }, `Following punctuation ${str} (${formatCodepoint(str)}) should be included`);
-        })
-
-        testElements = [];
-        target.innerHTML = ''
+        for (const p of followingPunctuation) {
+            setupTest(`T${p}est`, `Following punctuation ${p} (${formatCodepoint(p)}) should be included`)
+        }
 
         // Any intervening typographic space—i.e. characters that belong to the Zs Unicode general category [UAX44] other
         // than U+3000 IDEOGRAPHIC SPACE or any word-separator characters
         const spaceAndWordSeparators = [Zs, wordSeparators].flat().filter(str => str.codePointAt(0) !== 0x3000);
-
-        spaceAndWordSeparators.forEach(str => {
-            const el = document.createElement('div');
-            el.innerHTML = `"${str}Test`;
-            target.appendChild(el);
-            testElements.push(el);
-        });
+        for (const s of spaceAndWordSeparators) {
+            setupTest(`"${s}Test`, `Intervening whitespace or word-separator ${(formatCodepoint(s))} before the first-letter should be included`)
+            setupTest(`T${s}"est`, `Intervening whitespace or word-separator ${(formatCodepoint(s))} after the first-letter should be included`)
+        }
 
         await yield();
 
-        spaceAndWordSeparators.forEach((str, idx) => {
-            test(() => {
-                assert_equals(testElements[idx].offsetWidth, 48, 'width');
-            }, `Intervening ${(formatCodepoint(str))} whitespace or word-separator before the first-letter should be included`);
-        });
 
-        testElements = [];
-        target.innerHTML = '';
+        for (const {el, name} of tests) {
+            // First-letter should include the T and surrounding punctuation and whitespace.
+            // As the ::first-letter has font-size 0, the remaining size of the 'est' letters should be 3em = 48px
+            test(() => assert_equals(el.offsetWidth, 48, 'width'), name);
+        }
 
-        spaceAndWordSeparators.forEach(str => {
-            const el = document.createElement('div');
-            el.innerHTML = `T${str}"est`;
-            target.appendChild(el);
-            testElements.push(el);
-        });
-
-        await yield();
-
-        spaceAndWordSeparators.forEach((str, idx) => {
-            test(() => {
-                assert_equals(testElements[idx].offsetWidth, 48, 'width')
-            }, `Intervening ${formatCodepoint(str)} whitespace or word-separator after the first-letter should be included`);
-        });
         done();
     }
 </script>

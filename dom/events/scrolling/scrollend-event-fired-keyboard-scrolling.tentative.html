@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="scroll_support.js"></script>
+
+<style>
+  #target {
+    border:  1px solid black;
+    height:  400px;
+    width:  400px;
+    overflow-y: scroll;
+    resize: both;
+  }
+
+  .spacer {
+    height: 2000px;
+    width: 100%;
+  }
+</style>
+</head>
+
+<body onload=runTest()>
+<div id="target">
+  <div class="spacer"></div>
+</div>
+
+<script>
+  var target_div = document.getElementById('target');
+
+  async function createScrollendPromise(test) {
+    return waitForScrollendEvent(test, target_div).then(evt => {
+      assert_false(evt.cancelable, 'Event is not cancelable');
+      assert_false(evt.bubbles, 'Event targeting element does not bubble');
+    });
+  }
+
+  async function scrollDownElement(element, value){
+    const arrowDown = '\uE015';
+    for(let i = 0; i < value; i++){
+      await test_driver.send_keys(element, arrowDown);
+    }
+  }
+
+  function runTest(){
+    promise_test(async(t) => {
+      let scrollend_count = 0;
+      const scrollend_listener = () => {
+        scrollend_count += 1;
+      };
+      target_div.addEventListener("scrollend", scrollend_listener);
+      t.add_cleanup(() => {
+        target_div.removeEventListener('scrollend', scrollend_listener);
+      });
+
+      const targetScrollendPromise = createScrollendPromise(t);
+
+      await scrollDownElement(target_div, 5);
+
+      await targetScrollendPromise;
+      await verifyScrollStopped(t, target_div);
+      assert_equals(scrollend_count, 1);
+    }, "scrollend event fired for target element, only once.");
+  }
+</script>
+</body>
+</html>

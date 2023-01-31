@@ -1,8 +1,36 @@
+async function waitForScrollendEvent(test, target, timeoutMs = 500) {
+  return new Promise((resolve, reject) => {
+    const timeoutCallback = test.step_timeout(() => {
+      reject(`No Scrollend event received for target ${target}`);
+    }, timeoutMs);
+    target.addEventListener('scrollend', (evt) => {
+      clearTimeout(timeoutCallback);
+      resolve(evt);
+    }, { once: true });
+  });
+}
+
+async function verifyScrollStopped(test, target_div) {
+  const unscaled_pause_time_in_ms = 100;
+  const x = target_div.scrollLeft;
+  const y = target_div.scrollTop;
+  return new Promise(resolve => {
+    test.step_timeout(() => {
+      assert_equals(x, target_div.scrollLeft);
+      assert_equals(y, target_div.scrollTop);
+      resolve();
+    }, unscaled_pause_time_in_ms);
+  });
+}
+
+
 const MAX_FRAME = 700;
 const MAX_UNCHANGED_FRAMES = 20;
 
 // Returns a promise that resolves when the given condition is met or rejects
 // after MAX_FRAME animation frames.
+// TODO(crbug.com/1400399): deprecate. We should not use frame based waits in
+// WPT as frame rates may vary greatly in different testing environments.
 function waitFor(condition, error_message = 'Reaches the maximum frames.') {
   return new Promise((resolve, reject) => {
     function tick(frames) {
@@ -19,6 +47,9 @@ function waitFor(condition, error_message = 'Reaches the maximum frames.') {
   });
 }
 
+// TODO(crbug.com/1400446): Test driver should defer sending events until the
+// browser is ready. Also the term compositor-commit is misleading as not all
+// user-agents use a compositor process.
 function waitForCompositorCommit() {
   return new Promise((resolve) => {
     // rAF twice.
@@ -28,6 +59,31 @@ function waitForCompositorCommit() {
   });
 }
 
+// Please don't remove this. This is necessary for chromium-based browsers.
+// This shouldn't be necessary if the test harness deferred running the tests
+// until after paint holding. This can be a no-op on user-agents that do not
+// have a separate compositor thread.
+async function waitForCompositorReady() {
+  const animation =
+      document.body.animate({ opacity: [ 1, 1 ] }, {duration: 1 });
+  return animation.finished;
+}
+
+function waitForNextFrame() {
+  const startTime = performance.now();
+  return new Promise(resolve => {
+    window.requestAnimationFrame((frameTime) => {
+      if (frameTime < startTime) {
+        window.requestAnimationFrame(resolve);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+// TODO(crbug.com/1400399): Deprecate as frame rates may vary greatly in
+// different test environments.
 function waitForAnimationEnd(getValue) {
   var last_changed_frame = 0;
   var last_position = getValue();
@@ -124,6 +180,8 @@ function mouseActionsInTarget(target, origin, delta, pause_time_in_ms = 100) {
 // Returns a promise that resolves when the given condition holds for 10
 // animation frames or rejects if the condition changes to false within 10
 // animation frames.
+// TODO(crbug.com/1400399): Deprecate as frame rates may very greatly in
+// different test environments.
 function conditionHolds(condition, error_message = 'Condition is not true anymore.') {
   const MAX_FRAME = 10;
   return new Promise((resolve, reject) => {

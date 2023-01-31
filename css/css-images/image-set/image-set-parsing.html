@@ -11,12 +11,60 @@
 function test_valid_value_variants(property, value, serializedValue) {
   if (!serializedValue) serializedValue = value;
   test_valid_value(property, value, serializedValue);
+
+  // The '-webkit-' prefixed 'image-set' is expected to serialize to the same
+  // value as standard 'image-set'.
+  // https://drafts.csswg.org/css-images-4/#deprecated
+  // "Implementations must accept -webkit-image-set() as a parse-time alias of
+  // image-set(). (It’s a valid value, with identical arguments to image-set(),
+  // and is turned into image-set() during parsing.)"
   test_valid_value(property, "-webkit-" + value, serializedValue);
 }
 
 function test_invalid_value_variants(property, value) {
   test_invalid_value(property, value);
   test_invalid_value(property, "-webkit-" + value);
+}
+
+function test_default_resolution() {
+  // Based on the spec, the resolution is optional and should default
+  // to 1x if not specified.
+  // This set of tests verify this expectation.
+
+  // Test when the only image is missing it's resolution
+  test_valid_value_variants(
+    'background-image',
+    'image-set(url(foo))',
+    'image-set(url("foo") 1x)'
+  );
+
+  // Test when the 1st of 2 images is missing it's resolution
+  test_valid_value_variants(
+    'background-image',
+    'image-set(url(foo), url(bar) 1x)',
+    'image-set(url("foo") 1x, url("bar") 1x)'
+  );
+
+  // Test when the 2nd of 2 images is missing it's resolution
+  test_valid_value_variants(
+    'background-image',
+    'image-set(url(foo) 1x, url(bar))',
+    'image-set(url("foo") 1x, url("bar") 1x)'
+  );
+
+  // Test when both images are missing their resolutions
+  test_valid_value_variants(
+    'background-image',
+    'image-set(url(foo), url(bar))',
+    'image-set(url("foo") 1x, url("bar") 1x)'
+  );
+
+  // Test when the middle of 3 images is missing it's resolution
+  test_valid_value_variants(
+    'background-image',
+    'image-set(url(foo) 1x, url(bar), url(baz) 2x)',
+    'image-set(url("foo") 1x, url("bar") 1x, url("baz") 2x)'
+  );
 }
 
 test_valid_value_variants('background-image', "image-set(url(example.png) 1x)", 'image-set(url("example.png") 1x)');
@@ -45,4 +93,6 @@ test_invalid_value_variants('background-image', "image-set(url(example.png) type
 test_invalid_value_variants('background-image', "image-set(url(example.png) 1xtype('image/png'))");
 test_invalid_value_variants('background-image', "image-set(type('image/png') url(example.png) 1x)");
 test_invalid_value_variants('cursor', "image-set(linear-gradient(black, white) 1x)");
+
+test_default_resolution();
 </script>

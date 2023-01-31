@@ -1,6 +1,6 @@
 import pytest
-
 from webdriver.bidi.modules.script import ContextTarget
+
 from ... import recursive_compare
 
 
@@ -113,9 +113,19 @@ async def test_default_arguments(bidi_session, top_context):
             {"type": "boolean", "value": False},
         ),
         (
-             "window.foo = 3; window",
+            "document.createElement('div')",
+            "(node) => node.tagName",
+            {"type": "string", "value": "DIV"},
+        ),
+        (
+            "window.foo = 3; window",
             "(window) => window.foo",
             {"type": "number", "value": 3},
+        ),
+        (
+            "window.url = new URL('https://example.com'); window.url",
+            "(url) => url.hostname",
+            {"type": "string", "value": "example.com"},
         ),
         (
             "({SOME_PROPERTY:'SOME_VALUE'})",
@@ -167,8 +177,7 @@ async def test_remote_value_argument(
 )
 async def test_primitive_values(bidi_session, top_context, argument, expected):
     result = await bidi_session.script.call_function(
-        function_declaration=
-        f"""(arg) => {{
+        function_declaration=f"""(arg) => {{
             if(arg!=={expected})
                 throw Error("Argument should be {expected}, but was "+arg);
             return arg;
@@ -185,8 +194,7 @@ async def test_primitive_values(bidi_session, top_context, argument, expected):
 async def test_nan(bidi_session, top_context):
     nan_remote_value = {"type": "number", "value": "NaN"}
     result = await bidi_session.script.call_function(
-        function_declaration=
-        f"""(arg) => {{
+        function_declaration=f"""(arg) => {{
             if(!isNaN(arg))
                 throw Error("Argument should be 'NaN', but was "+arg);
             return arg;
@@ -210,7 +218,7 @@ async def test_nan(bidi_session, top_context):
              ],
          },
          "Array"
-        ),
+         ),
         ({"type": "date", "value": "2022-05-31T13:47:29.000Z"},
          "Date"
          ),
@@ -221,7 +229,7 @@ async def test_nan(bidi_session, top_context):
              ],
          },
          "Map"
-        ),
+         ),
         ({
              "type": "object",
              "value": [
@@ -229,7 +237,7 @@ async def test_nan(bidi_session, top_context):
              ],
          },
          "Object"
-        ),
+         ),
         ({"type": "regexp", "value": {"pattern": "foo", "flags": "g"}},
          "RegExp"
          ),
@@ -240,13 +248,12 @@ async def test_nan(bidi_session, top_context):
              ],
          },
          "Set"
-        )
+         )
     ],
 )
 async def test_local_values(bidi_session, top_context, argument, expected_type):
     result = await bidi_session.script.call_function(
-        function_declaration=
-        f"""(arg) => {{
+        function_declaration=f"""(arg) => {{
             if(! (arg instanceof {expected_type}))
                 throw Error("Argument type should be {expected_type}, but was "+
                     Object.prototype.toString.call(arg));
@@ -306,3 +313,73 @@ async def test_remote_value_deserialization(
     await bidi_session.browsing_context.navigate(
         context=top_context["context"], url=top_context["url"], wait="complete"
     )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "expression, function_declaration, expected",
+    [
+        (
+            "document.getElementsByTagName('span')",
+            "(collection) => collection.item(0)",
+            {
+                "type": "node",
+                "value": {
+                    "attributes": {},
+                    "childNodeCount": 0,
+                    "children": [],
+                    "localName": "span",
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "nodeType": 1
+                }
+            }
+        ),
+        (
+            "document.querySelectorAll('span')",
+            "(nodeList) => nodeList.item(0)",
+            {
+                "type": "node",
+                "value": {
+                    "attributes": {},
+                    "childNodeCount": 0,
+                    "children": [],
+                    "localName": "span",
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "nodeType": 1
+                }
+            }
+        ),
+    ], ids=[
+        "htmlcollection",
+        "nodelist"
+    ]
+)
+async def test_remote_value_dom_collection(
+    bidi_session,
+    inline,
+    top_context,
+    call_function,
+    expression,
+    function_declaration,
+    expected
+):
+    page_url = inline("""<p><span>""")
+    await bidi_session.browsing_context.navigate(
+        context=top_context['context'], url=page_url, wait="complete"
+    )
+
+    remote_value = await bidi_session.script.evaluate(
+        expression=expression,
+        result_ownership="root",
+        target=ContextTarget(top_context["context"]),
+        await_promise=False,
+    )
+
+    # Check that a remote value can be successfully deserialized as an "argument"
+    # parameter and the first element be extracted.
+    result = await call_function(
+        function_declaration=function_declaration,
+        arguments=[remote_value],
+    )
+
+    assert result == expected

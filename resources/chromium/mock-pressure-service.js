@@ -1,14 +1,18 @@
+import {PressureManager, PressureManagerReceiver, PressureStatus} from '/gen/services/device/public/mojom/pressure_manager.mojom.m.js'
 import {PressureFactor, PressureState} from '/gen/services/device/public/mojom/pressure_update.mojom.m.js'
-import {PressureService, PressureServiceReceiver, PressureStatus} from '/gen/third_party/blink/public/mojom/compute_pressure/pressure_service.mojom.m.js'
 
 class MockPressureService {
   constructor() {
-    this.receiver_ = new PressureServiceReceiver(this);
+    this.receiver_ = new PressureManagerReceiver(this);
     this.interceptor_ =
-        new MojoInterfaceInterceptor(PressureService.$interfaceName);
+        new MojoInterfaceInterceptor(PressureManager.$interfaceName);
     this.interceptor_.oninterfacerequest = e => {
       this.receiver_.$.bindHandle(e.handle);
     };
+    this.receiver_.onConnectionError.addListener(() => {
+      this.stopPlatformCollector();
+      this.observer_ = null;
+    });
     this.reset();
     this.mojomStateType_ = new Map([
       ['nominal', PressureState.kNominal], ['fair', PressureState.kFair],
@@ -43,11 +47,15 @@ class MockPressureService {
     this.updatesDelivered_ = 0;
   }
 
-  async bindObserver(observer) {
+  async addClient(observer) {
     if (this.observer_ !== null)
       throw new Error('BindObserver() has already been called');
 
     this.observer_ = observer;
+    this.observer_.onConnectionError.addListener(() => {
+      this.stopPlatformCollector();
+      this.observer_ = null;
+    });
 
     return {status: this.pressureStatus_};
   }
@@ -81,7 +89,7 @@ class MockPressureService {
       this.pressureUpdate_.timestamp = {
         internalValue: BigInt((new Date().getTime() + epochDeltaInMs) * 1000)
       };
-      this.observer_.onUpdate(this.pressureUpdate_);
+      this.observer_.onPressureUpdated(this.pressureUpdate_);
       this.updatesDelivered_++;
     }, timeout);
   }
@@ -115,6 +123,18 @@ class MockPressureService {
       state: this.mojomStateType_.get(state),
       factors: pressureFactors,
     };
+  }
+
+  setExpectedFailure(expectedException) {
+    assert_true(
+        expectedException instanceof DOMException,
+        'setExpectedFailure() expects a DOMException instance');
+    if (expectedException.name === 'NotSupportedError') {
+      this.pressureStatus_ = PressureStatus.kNotSupported;
+    } else {
+      throw new TypeError(
+          `Unexpected DOMException '${expectedException.name}'`);
+    }
   }
 }
 

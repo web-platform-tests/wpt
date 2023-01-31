@@ -79,10 +79,17 @@ async function readValueFromServer(key) {
 // Convenience wrapper around the above getter that will wait until a value is
 // available on the server.
 async function nextValueFromServer(key) {
+  let retry = 0;
   while (true) {
     // Fetches the test result from the server.
-    const { status, value } = await readValueFromServer(key);
-    if (!status) {
+    let success = true;
+    const { status, value } = await readValueFromServer(key).catch(e => {
+      if (retry++ >= 5) {
+        throw new Error('readValueFromServer failed');
+      }
+      success = false;
+    });
+    if (!success || !status) {
       // The test result has not been stored yet. Retry after a while.
       await new Promise(resolve => setTimeout(resolve, 100));
       continue;
@@ -183,7 +190,12 @@ function createFrame(url) {
     });
 }
 
-async function create_prerendered_page(t, opt = {}, init_opt = {}) {
+// `opt` provides additional query params for the prerendered URL.
+// `init_opt` provides additional query params for the page that triggers
+// the prerender.
+// `rule_extras` provides additional parameters for the speculation rule used
+// to trigger prerendering.
+async function create_prerendered_page(t, opt = {}, init_opt = {}, rule_extras = {}) {
   const baseUrl = '/speculation-rules/prerender/resources/exec.py';
   const init_uuid = token();
   const prerender_uuid = token();
@@ -205,16 +217,16 @@ async function create_prerendered_page(t, opt = {}, init_opt = {}) {
     params.set(p, opt[p]);
   const url = `${baseUrl}?${params.toString()}`;
 
-  await init_remote.execute_script(url => {
+  await init_remote.execute_script((url, rule_extras) => {
       const a = document.createElement('a');
       a.href = url;
       a.innerText = 'Activate';
       document.body.appendChild(a);
       const rules = document.createElement('script');
       rules.type = "speculationrules";
-      rules.text = JSON.stringify({prerender: [{source: 'list', urls: [url]}]});
+      rules.text = JSON.stringify({prerender: [{source: 'list', urls: [url], ...rule_extras}]});
       document.head.appendChild(rules);
-  }, [url]);
+  }, [url, rule_extras]);
 
   await Promise.any([
     prerender_remote.execute_script(() => {

@@ -169,11 +169,16 @@ setup({ "explicit_done": true });
           expression_should_be_unknown(feature + " < = 0px");
         }
 
-        expression_should_be_unknown(feature + " " + separator + " -1px");
-        expression_should_be_unknown("min-" + feature + " " + separator + " -1px");
-        expression_should_be_unknown("max-" + feature + " " + separator + " -1px");
-        expression_should_be_unknown(feature + " " + separator + " -0.00001mm");
-        expression_should_be_unknown(feature + " " + separator + " -100000em");
+        expression_should_be_known(feature + " " + separator + " -1px");
+        if (separator == ":") {
+          expression_should_be_known("min-" + feature + " " + separator + " -1px");
+          expression_should_be_known("max-" + feature + " " + separator + " -1px");
+        } else {
+          expression_should_be_unknown("min-" + feature + " " + separator + " -1px");
+          expression_should_be_unknown("max-" + feature + " " + separator + " -1px");
+        }
+        expression_should_be_known(feature + " " + separator + " -0.00001mm");
+        expression_should_be_known(feature + " " + separator + " -100000em");
 
         for (let separator2 of separators) {
           // https://drafts.csswg.org/mediaqueries-4/#typedef-mf-range
@@ -430,7 +435,7 @@ setup({ "explicit_done": true });
       expression_should_be_known(feature + ": 327");
       expression_should_be_known(feature + ": 0");
       expression_should_be_unknown(feature + ": 1.0");
-      expression_should_be_unknown(feature + ": -1");
+      expression_should_be_known(feature + ": -1");
       expression_should_be_unknown(feature + ": 1/1");
     }
 
@@ -457,11 +462,10 @@ setup({ "explicit_done": true });
       expression_should_be_known(feature + ": 1.5dppx");
       expression_should_be_known(feature + ": 1.5x");
       expression_should_be_known(feature + ": 2.0dppx");
-      // TODO(emilio): Doesn't seem right to exclude 0 here.
-      expression_should_be_unknown(feature + ": 0dpi");
-      expression_should_be_unknown(feature + ": -3dpi");
-      expression_should_be_unknown(feature + ": 0dppx");
-      expression_should_be_unknown(feature + ": 0x");
+      expression_should_be_known(feature + ": 0dpi");
+      expression_should_be_known(feature + ": -3dpi");
+      expression_should_be_known(feature + ": 0dppx");
+      expression_should_be_known(feature + ": 0x");
     }
 
     // Find the resolution using max-resolution
@@ -700,6 +704,31 @@ setup({ "explicit_done": true });
     should_not_apply("not ((width) and (not (height)))");
     query_should_not_be_parseable("not (width) and not (height)");
     query_should_not_be_parseable("not not (width)");
+    query_should_be_parseable("not unknown(width) ");
+
+    testGroup = "three-valued logic"
+    should_not_apply("(unknown)");
+    should_not_apply("not (unknown)");
+    should_not_apply("((unknown) and (width))");
+    should_not_apply("not ((unknown) and (width))");
+    should_not_apply("((unknown) and (height))");
+    should_apply("not ((unknown) and (height))");
+    should_apply("((unknown) or (width))");
+    should_not_apply("not ((unknown) or (width))");
+    should_not_apply("((unknown) or (height))");
+    should_not_apply("not ((unknown) or (height))");
+    should_apply("(width) or (not ((unknown) and (width)))");
+    should_not_apply("(width) and (not ((unknown) and (width)))");
+    should_apply("(width) or (not ((unknown) or (width)))");
+    should_not_apply("(width) and (not ((unknown) or (width)))");
+    should_apply("(width) or (not ((unknown) and (height)))");
+    should_apply("(width) and (not ((unknown) and (height)))");
+    should_apply("(width) or (not ((unknown) or (height)))");
+    should_not_apply("(width) and (not ((unknown) or (height)))");
+    should_not_apply("unknown(width)");
+    should_not_apply("not unknown(width)");
+    should_apply("not (unknown(width) and (height))");
+    should_not_apply("not (unknown(width) or (height))");
 
     testGroup = ""
     done();

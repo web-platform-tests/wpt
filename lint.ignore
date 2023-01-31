@@ -107,18 +107,15 @@ PRINT STATEMENT: webdriver/tests/support/helpers.py
 
 # semi-legitimate use of console.*
 CONSOLE: console/*
-CONSOLE: custom-elements/resources/garbage-collect.js
-CONSOLE: js/builtins/weakrefs/resources/maybe-garbage-collect.js
+CONSOLE: common/gc.js
 CONSOLE: resources/check-layout-th.js
 CONSOLE: resources/chromium/*
 CONSOLE: resources/testharness.js
-CONSOLE: streams/resources/test-utils.js
 CONSOLE: service-workers/service-worker/resources/navigation-redirect-other-origin.html
 CONSOLE: service-workers/service-worker/navigation-redirect.https.html
 CONSOLE: service-workers/service-worker/resources/clients-get-other-origin.html
 CONSOLE: webrtc/tools/*
 CONSOLE: webaudio/resources/audit.js:41
-CONSOLE: webusb/resources/usb-helpers.js
 
 # use of console in a public library - annotation-model ensures
 # it is not actually used
@@ -143,9 +140,11 @@ SET TIMEOUT: apng/animated-png-timeout.html
 SET TIMEOUT: avif/animated-avif-timeout.html
 SET TIMEOUT: cookies/resources/testharness-helpers.js
 SET TIMEOUT: common/reftest-wait.js
+SET TIMEOUT: compute-pressure/resources/support-iframe.html
 SET TIMEOUT: conformance-checkers/*
 SET TIMEOUT: content-security-policy/*
 SET TIMEOUT: css/compositing/opacity-and-transform-animation-crash.html
+SET TIMEOUT: css/css-contain/contain-body-overflow-002.html
 SET TIMEOUT: css/css-display/display-contents-shadow-dom-1.html
 SET TIMEOUT: css/CSS2/normal-flow/crashtests/block-in-inline-ax-crash.html
 SET TIMEOUT: css/selectors/selector-placeholder-shown-type-change-001.html
@@ -153,6 +152,10 @@ SET TIMEOUT: css/selectors/selector-placeholder-shown-type-change-002.html
 SET TIMEOUT: css/selectors/selector-placeholder-shown-type-change-003.html
 SET TIMEOUT: css/selectors/selector-read-write-type-change-002.html
 SET TIMEOUT: css/selectors/selector-required-type-change-002.html
+SET TIMEOUT: css/selectors/invalidation/dir-pseudo-class-in-has.html
+SET TIMEOUT: css/selectors/invalidation/lang-pseudo-class-in-has-document-element.html
+SET TIMEOUT: css/selectors/invalidation/lang-pseudo-class-in-has-xhtml.xhtml
+SET TIMEOUT: css/selectors/invalidation/lang-pseudo-class-in-has.html
 SET TIMEOUT: encrypted-media/polyfill/chrome-polyfill.js
 SET TIMEOUT: encrypted-media/polyfill/clearkey-polyfill.js
 SET TIMEOUT: encrypted-media/scripts/playback-temporary-events.js
@@ -296,7 +299,7 @@ GENERATE_TESTS: mediacapture-image/MediaStreamTrack-applyConstraints-reject.http
 GENERATE_TESTS: mediacapture-image/MediaStreamTrack-getCapabilities.https.html
 GENERATE_TESTS: mediacapture-image/MediaStreamTrack-getConstraints.https.html
 GENERATE_TESTS: mediacapture-image/MediaStreamTrack-getSettings.https.html
-GENERATE_TESTS: mediacapture-image/setOptions-reject.html
+GENERATE_TESTS: mediacapture-image/takePhoto-reject.html
 GENERATE_TESTS: html/semantics/scripting-1/the-template-element/template-element/template-as-a-descendant.html
 GENERATE_TESTS: html/syntax/parsing/Document.getElementsByTagName-foreign-01.html
 GENERATE_TESTS: html/syntax/parsing/template/clearing-the-stack-back-to-a-given-context/clearing-stack-back-to-a-table-body-context.html
@@ -847,6 +850,7 @@ CSS-COLLIDING-REF-NAME: css/css-break/background-image-001-ref.html
 # Ported crashtests from Mozilla
 SET TIMEOUT: editing/crashtests/backcolor-in-nested-editing-host-td-from-DOMAttrModified.html
 SET TIMEOUT: editing/crashtests/contenteditable-will-be-blurred-by-focus-event-listener.html
+SET TIMEOUT: editing/crashtests/delete-content-in-no-data-object.html
 SET TIMEOUT: editing/crashtests/designMode-document-will-be-blurred-by-focus-event-listener.html
 SET TIMEOUT: editing/crashtests/indent-outdent-after-closing-editable-dialog-element.html
 SET TIMEOUT: editing/crashtests/inserthtml-after-temporarily-removing-document-element.html

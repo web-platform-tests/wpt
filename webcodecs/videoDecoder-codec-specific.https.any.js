@@ -146,6 +146,7 @@ promise_setup(async () => {
   }[location.search];
 
   // Don't run any tests if the codec is not supported.
+  assert_equals("function", typeof VideoDecoder.isConfigSupported);
   let supported = false;
   try {
     // TODO(sandersd): To properly support H.264 in AVC format, this should
@@ -350,6 +351,7 @@ promise_test(async t => {
 
   let errors = 0;
   callbacks.error = e => errors++;
+  callbacks.output = frame => { frame.close(); };
 
   const decoder = createVideoDecoder(t, callbacks);
   decoder.configure(CONFIG);
@@ -489,6 +491,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const callbacks = {};
+  callbacks.output = frame => { frame.close(); };
   const decoder = createVideoDecoder(t, callbacks);
 
   // No decodes yet.

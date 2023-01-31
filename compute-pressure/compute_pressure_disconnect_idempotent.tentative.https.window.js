@@ -7,17 +7,19 @@ promise_test(async t => {
   }, {sampleRate: 1});
   t.add_cleanup(() => observer1.disconnect());
   // Ensure that observer1's schema gets registered before observer2 starts.
-  observer1.observe('cpu');
+  const promise = observer1.observe('cpu');
   observer1.disconnect();
+  observer1.disconnect();
+  await promise_rejects_dom(t, 'NotSupportedError', promise);
 
   const observer2_changes = [];
-  await new Promise(resolve => {
+  await new Promise((resolve, reject) => {
     const observer2 = new PressureObserver(changes => {
       observer2_changes.push(changes);
       resolve();
     }, {sampleRate: 1});
     t.add_cleanup(() => observer2.disconnect());
-    observer2.observe('cpu');
+    observer2.observe('cpu').catch(reject);
   });
 
   assert_equals(

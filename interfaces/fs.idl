@@ -75,7 +75,7 @@ interface FileSystemWritableFileStream : WritableStream {
 };
 
 dictionary FileSystemReadWriteOptions {
-  [EnforceRange] unsigned long long at = 0;
+  [EnforceRange] unsigned long long at;
 };
 
 [Exposed=DedicatedWorker, SecureContext]
@@ -85,10 +85,10 @@ interface FileSystemSyncAccessHandle {
   unsigned long long write([AllowShared] BufferSource buffer,
                            optional FileSystemReadWriteOptions options = {});
 
-  Promise<undefined> truncate([EnforceRange] unsigned long long newSize);
-  Promise<unsigned long long> getSize();
-  Promise<undefined> flush();
-  Promise<undefined> close();
+  undefined truncate([EnforceRange] unsigned long long newSize);
+  unsigned long long getSize();
+  undefined flush();
+  undefined close();
 };
 
 [SecureContext]

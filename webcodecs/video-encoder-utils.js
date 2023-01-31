@@ -1,15 +1,10 @@
 async function checkEncoderSupport(test, config) {
+  assert_equals("function", typeof VideoEncoder.isConfigSupported);
   let supported = false;
   try {
     const support = await VideoEncoder.isConfigSupported(config);
     supported = support.supported;
   } catch (e) {}
-
-  if (!supported) {
-    // Mark the test 'passed', unfortunately assert_implements_optional()
-    // doesn't do it by itself.
-    test.done();
-  }
 
   assert_implements_optional(supported, 'Unsupported config: ' +
                              JSON.stringify(config));

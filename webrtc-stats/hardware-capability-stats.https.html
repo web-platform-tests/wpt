@@ -26,12 +26,12 @@ function getStatEntry(report, type, kind) {
   return for_kind[0];
 }
 
-async function hasSentAndReceivedVideoPackets(pc, t) {
+async function hasEncodedAndDecodedFrames(pc, t) {
   while (true) {
     const report = await pc.getStats();
     const inboundRtp = getStatEntry(report, 'inbound-rtp', 'video');
     const outboundRtp = getStatEntry(report, 'outbound-rtp', 'video');
-    if (inboundRtp.packetsReceived > 0 && outboundRtp.packetsSent > 0) {
+    if (inboundRtp.framesDecoded > 0 && outboundRtp.framesEncoded > 0) {
       return;
     }
     // Avoid any stats caching, which can otherwise make this an infinite loop.
@@ -53,7 +53,7 @@ async function setupPcAndGetStatEntry(
 
   exchangeIceCandidates(pc1, pc2);
   await exchangeOfferAnswer(pc1, pc2);
-  await hasSentAndReceivedVideoPackets(pc1, t);
+  await hasEncodedAndDecodedFrames(pc1, t);
   const report = await pc1.getStats();
   return getStatEntry(report, type, kind);
 }
@@ -76,8 +76,10 @@ for (const args of [
     const stream = await getNoiseStream({video: true, audio: true});
     const statsEntry = await setupPcAndGetStatEntry(t, stream, type, kind, stat);
     assert_not_own_property(statsEntry, stat);
-  }, stat + " not exposed when not capturing or fullscreen.");
+  }, stat + " not exposed when not capturing.");
 
+  // Exposing hardware capabilities when a there is a fullscreen element was
+  // removed with https://github.com/w3c/webrtc-stats/pull/713.
   promise_test(async (t) => {
     const stream = await getNoiseStream({video: true, audio: true});
 
@@ -87,8 +89,8 @@ for (const args of [
 
     const statsEntry = await setupPcAndGetStatEntry(
       t, stream, type, kind, stat);
-    assert_own_property(statsEntry, stat);
-  }, stat + " exposed when fullscreen.");
+    assert_not_own_property(statsEntry, stat);
+  }, stat + " not exposed when fullscreen and not capturing.");
 
   promise_test(async (t) => {
     const stream = await navigator.mediaDevices.getUserMedia(

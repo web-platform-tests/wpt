@@ -9,6 +9,7 @@ from tests.support.sync import Poll
 from . import execute_script
 
 
+
 def test_null_parameter_value(session, http):
     path = "/session/{session_id}/execute/sync".format(**vars(session))
     with http.post(path, None) as response:

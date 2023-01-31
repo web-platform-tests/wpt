@@ -5,6 +5,7 @@ from webdriver import Element
 from tests.support.asserts import assert_error, assert_success
 
 
+
 def is_element_enabled(session, element_id):
     return session.transport.send(
         "GET",

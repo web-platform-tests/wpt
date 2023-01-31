@@ -14,6 +14,7 @@ def element_send_keys(session, element, text):
         {"text": text})
 
 
+
 def test_null_parameter_value(session, http, inline):
     session.url = inline("<input>")
     element = session.find.css("input", all=False)

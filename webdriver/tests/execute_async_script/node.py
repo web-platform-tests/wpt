@@ -6,6 +6,7 @@ from tests.support.asserts import assert_error, assert_success
 from . import execute_async_script
 
 
+
 PAGE_DATA = """
     <div id="deep"><p><span></span></p><br/></div>
     <div id="text-node"><p></p>Lorem</div>

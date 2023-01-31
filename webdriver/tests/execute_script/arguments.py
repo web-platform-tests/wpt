@@ -6,6 +6,7 @@ from tests.support.asserts import assert_error, assert_success
 from . import execute_script
 
 
+
 def test_null(session):
     value = None
     result = execute_script(session, "return [arguments[0] === null, arguments[0]]", args=[value])

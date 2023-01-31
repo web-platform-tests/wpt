@@ -196,6 +196,7 @@ def test_input_disabled(session, inline, type):
     assert_error(response, "invalid element state")
 
 
+
 @pytest.mark.parametrize("type",
                          ["number",
                           "range",

@@ -12,6 +12,7 @@ def test_null_response_value(session, touch_chain):
     assert value is None
 
 
+
 def test_no_top_browsing_context(session, closed_window, touch_chain):
     with pytest.raises(NoSuchWindowException):
         touch_chain.click().perform()

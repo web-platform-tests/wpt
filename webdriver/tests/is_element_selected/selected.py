@@ -5,6 +5,7 @@ from webdriver import Element
 from tests.support.asserts import assert_error, assert_success
 
 
+
 @pytest.fixture
 def check_doc():
     return """

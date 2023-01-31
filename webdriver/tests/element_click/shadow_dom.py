@@ -9,6 +9,7 @@ def element_click(session, element):
             element_id=element.id))
 
 
+
 @pytest.fixture
 def get_checkbox_dom(inline):
     return inline("""

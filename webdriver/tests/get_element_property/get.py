@@ -13,6 +13,7 @@ def get_element_property(session, element_id, prop):
             prop=prop))
 
 
+
 def test_no_top_browsing_context(session, closed_window):
     original_handle, element = closed_window
     response = get_element_property(session, element.id, "value")

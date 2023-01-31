@@ -4,6 +4,7 @@ from webdriver.error import NoSuchAlertException
 from tests.support.sync import Poll
 
 
+
 @pytest.fixture
 def add_event_listeners(session):
     """Register listeners for tracked events on element."""

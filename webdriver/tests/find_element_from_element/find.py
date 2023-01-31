@@ -13,6 +13,7 @@ def find_element(session, element_id, using, value):
         {"using": using, "value": value})
 
 
+
 def test_null_parameter_value(session, http, inline):
     session.url = inline("<div><a href=# id=linkText>full link text</a></div>")
     element = session.find.css("div", all=False)

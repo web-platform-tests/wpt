@@ -12,6 +12,7 @@ def find_element(session, shadow_id, using, value):
         {"using": using, "value": value})
 
 
+
 def test_null_parameter_value(session, http, inline, get_shadow_page):
     session.url = inline(get_shadow_page("<div><a href=# id=linkText>full link text</a></div>"))
     custom_element = session.find.css("custom-shadow-element", all=False)

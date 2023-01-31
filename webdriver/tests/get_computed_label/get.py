@@ -13,6 +13,7 @@ def get_computed_label(session, element_id):
             element_id=element_id))
 
 
+
 def test_no_browsing_context(session, closed_frame):
     response = get_computed_label(session, "foo")
     assert_error(response, "no such window")

@@ -5,6 +5,7 @@ import pytest
 from tests.support.asserts import assert_error, assert_success, assert_dialog_handled
 
 
+
 def get_shadow_root(session, element_id):
     return session.transport.send(
         "GET", "session/{session_id}/element/{element_id}/shadow".format(

@@ -8,6 +8,7 @@ from webdriver.transport import Response
 from tests.support.asserts import assert_error, assert_same_element, assert_success
 
 
+
 def switch_to_frame(session, frame):
     return session.transport.send(
         "POST", "session/{session_id}/frame".format(**vars(session)),

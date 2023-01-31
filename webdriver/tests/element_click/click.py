@@ -11,6 +11,7 @@ def element_click(session, element):
             element_id=element.id))
 
 
+
 def test_null_response_value(session, inline):
     session.url = inline("<p>foo")
     element = session.find.css("p", all=False)

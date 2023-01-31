@@ -5,6 +5,7 @@ from webdriver import Element
 from tests.support.asserts import assert_error, assert_same_element, assert_success
 
 
+
 def get_shadow_root(session, element_id):
     return session.transport.send(
         "GET", "session/{session_id}/element/{element_id}/shadow".format(

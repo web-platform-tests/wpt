@@ -6,6 +6,7 @@ from webdriver.error import NoSuchAlertException
 from tests.support.asserts import assert_error, assert_success
 
 
+
 def get_computed_role(session, element_id):
     return session.transport.send(
         "GET", "session/{session_id}/element/{element_id}/computedrole".format(

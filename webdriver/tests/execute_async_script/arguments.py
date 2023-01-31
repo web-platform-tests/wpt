@@ -17,6 +17,7 @@ def test_null(session):
     assert actual[1] == value
 
 
+
 @pytest.mark.parametrize("value, expected_type", [
     (True, "boolean"),
     (42, "number"),

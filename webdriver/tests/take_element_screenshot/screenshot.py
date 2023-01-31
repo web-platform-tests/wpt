@@ -7,6 +7,7 @@ from tests.support.image import png_dimensions
 from . import element_dimensions
 
 
+
 def take_element_screenshot(session, element_id):
     return session.transport.send(
         "GET",

@@ -518,13 +518,14 @@ an error.
 
 ### AbortSignal support ###
 
-[`add_cleanup`](#Test.add_cleanup) gives an AbortSignal that is aborted when
+[`Test.get_signal`](#Test.get_signal) gives an AbortSignal that is aborted when
 the test finishes. This can be useful when dealing with AbortSignal-supported
 APIs.
 
 ```js
 promise_test(t => {
-  const { signal } = t;
+  // Throws when the user agent does not support AbortSignal
+  const signal = t.get_signal();
   const event = await new Promise(resolve => {
     document.body.addEventListener(resolve, { once: true, signal });
     document.body.click();

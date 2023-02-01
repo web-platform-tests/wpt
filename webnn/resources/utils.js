@@ -81,7 +81,7 @@ const getConv2dPrecisionTolerance = (resources, operationName) => {
   const options = resources.options;
   let groups = 1;
   let inputChannels = inputShape[1]; // default nchw inputLayout
-   // default oihw filterLayout for conv2d or default iohw filterLayout for convTranspose2d
+  // default oihw filterLayout for conv2d or default iohw filterLayout for convTranspose2d
   let filterWidth = filterShape[3];
   let filterHeight = filterShape[2];
   if (options) {

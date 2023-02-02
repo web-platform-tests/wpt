@@ -128,6 +128,37 @@ test(
 );
 
 test(function () {
+  const headers = new Headers([["fizz", "buzz"], ["X-Header", "test"]]);
+  const iterator = headers[Symbol.iterator]();
+  assert_array_equals(iterator.next().value, ["fizz", "buzz"]);
+  headers.append("Set-Cookie", "a=b");
+  assert_array_equals(iterator.next().value, ["set-cookie", "a=b"]);
+  headers.append("Accept", "text/html");
+  assert_array_equals(iterator.next().value, ["set-cookie", "a=b"]);
+  assert_array_equals(iterator.next().value, ["x-header", "test"]);
+  headers.append("set-cookie", "c=d");
+  assert_array_equals(iterator.next().value, ["x-header", "test"]);
+  assert_equals(iterator.next().done, true);
+}, "Headers iterator is correctly updated with set-cookie changes");
+
+test(function () {
+  const headers = new Headers(headerList);
+  assert_true(headers.has("sEt-cOoKiE"));
+}, "Headers.prototype.has works for set-cookie");
+
+test(function () {
+  const headers = new Headers(setCookie2HeaderList);
+  headers.append("set-Cookie", "foo=bar");
+  headers.append("sEt-cOoKiE", "fizz=buzz");
+  const list = [...headers];
+  assert_nested_array_equals(list, [
+    ["set-cookie", "foo=bar"],
+    ["set-cookie", "fizz=buzz"],
+    ["set-cookie2", "foo2=bar2, fizz2=buzz2; domain=example2.com"],
+  ]);
+}, "Headers.prototype.append works for set-cookie");
+
+test(function () {
   const headers = new Headers(headerList);
   headers.set("set-cookie", "foo2=bar2");
   const list = [...headers];
@@ -135,6 +166,13 @@ test(function () {
     ["set-cookie", "foo2=bar2"],
   ]);
 }, "Headers.prototype.set works for set-cookie");
+
+test(function () {
+  const headers = new Headers(headerList);
+  headers.delete("set-Cookie");
+  const list = [...headers];
+  assert_nested_array_equals(list, []);
+}, "Headers.prototype.delete works for set-cookie");
 
 test(function () {
   const headers = new Headers();

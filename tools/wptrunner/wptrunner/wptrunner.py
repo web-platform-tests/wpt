@@ -205,9 +205,7 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
         executor_cls = test_implementation.executor_cls
 
         for test in test_loader.disabled_tests[test_type]:
-            logger.test_start(test.id)
-            logger.test_end(test.id, status="SKIP")
-            test_status.skipped += 1
+            logger.warning(test.id + " SKIP/DISABLED")
 
         if test_type == "testharness":
             tests_to_run[test_type] = []

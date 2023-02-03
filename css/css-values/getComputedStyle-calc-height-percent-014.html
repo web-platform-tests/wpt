@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Values Test: computed value of height: calc(60% - 50% + 3em)</title>
+
+  <!--
+  "
+  Where percentages are not resolved at computed-value time,
+  they are not resolved in math functions, e.g.
+  'calc(100% - 100% + 1px)' resolves to 'calc(0% + 1px)', not to
+  '1px'. If there are special rules for computing percentages
+  in a value (e.g. the 'height' property), they apply whenever
+  a math function contains percentages.
+  "
+  § 10.11 Computed Value
+  https://www.w3.org/TR/css-values-4/#calc-computed-value
+  -->
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-values-4/#calc-computed-value">
+
+  <meta name="flags" content="">
+  <meta content="This test verifies that a term with a percentage unit that can be resolved at computed-value time must be absolutized to 'px'. In this test, the term with the percentage unit can be computed and resolved and so is the term with the em unit." name="assert">
+
+  <script src="/resources/testharness.js"></script>
+
+  <script src="/resources/testharnessreport.js"></script>
+
+  <style>
+  html, body
+    {
+      font-size: 16px;
+      height: 600px;
+      margin: 0px 8px;
+    }
+
+  div#target
+    {
+      background-color: yellow;
+    }
+  </style>
+
+  <div id="target"></div>
+
+  <script>
+  function startTesting()
+  {
+
+  var targetElement = document.getElementById("target");
+
+    function verifyComputedStyle(property_name, specified_value, expected_value, description)
+    {
+
+    test(function()
+      {
+
+      targetElement.style.setProperty(property_name, specified_value);
+
+      assert_equals(getComputedStyle(targetElement)[property_name], expected_value);
+
+      }, description);
+    }
+
+    verifyComputedStyle("height", "calc(60% - 50% + 3em)", "108px", "testing height: calc(60% - 50% + 3em)");
+
+    /*
+
+     600px mult 10% == 60px
+
+                 +     48px
+                 ============
+                      108px
+
+    */
+
+  }
+
+  startTesting();
+
+  </script>

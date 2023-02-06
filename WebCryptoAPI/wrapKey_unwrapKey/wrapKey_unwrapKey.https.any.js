@@ -7,12 +7,11 @@
 
     var wrappers = [];  // Things we wrap (and upwrap) keys with
     var keys = [];      // Things to wrap and unwrap
-    var ecdhPeerKey;    // ECDH peer public key needed for non-extractable ECDH key comparison
 
     // Generate all the keys needed, then iterate over all combinations
     // to test wrapping and unwrapping.
     promise_test(function() {
-    return Promise.all([generateWrappingKeys(), generateKeysToWrap(), generateEcdhPeerKey()])
+    return Promise.all([generateWrappingKeys(), generateKeysToWrap()])
     .then(function(results) {
         var promises = [];
         wrappers.forEach(function(wrapper) {
@@ -83,6 +82,9 @@
             {algorithm: {name: "ECDSA", namedCurve: "P-256"}, privateUsages: ["sign"], publicUsages: ["verify"]},
             {algorithm: {name: "ECDH", namedCurve: "P-256"}, privateUsages: ["deriveBits"], publicUsages: []},
             {algorithm: {name: "Ed25519" }, privateUsages: ["sign"], publicUsages: ["verify"]},
+            {algorithm: {name: "Ed448" }, privateUsages: ["sign"], publicUsages: ["verify"]},
+            {algorithm: {name: "X25519" }, privateUsages: ["deriveBits"], publicUsages: []},
+            {algorithm: {name: "X448" }, privateUsages: ["deriveBits"], publicUsages: []},
             {algorithm: {name: "AES-CTR", length: 128}, usages: ["encrypt", "decrypt"]},
             {algorithm: {name: "AES-CBC", length: 128}, usages: ["encrypt", "decrypt"]},
             {algorithm: {name: "AES-GCM", length: 128}, usages: ["encrypt", "decrypt"]},
@@ -110,13 +112,6 @@
                 return true;
             });
         }));
-    }
-
-    function generateEcdhPeerKey() {
-        return subtle.generateKey({name: "ECDH", namedCurve: "P-256"},true,["deriveBits"])
-        .then(function(result){
-            ecdhPeerKey = result.publicKey;
-        });
     }
 
     // Can we successfully "round-trip" (wrap, then unwrap, a key)?
@@ -386,6 +381,15 @@
             case "Ed25519" :
                 signParams = {name: "Ed25519"};
                 break;
+            case "Ed448" :
+                signParams = {name: "Ed448"};
+                break;
+            case "X25519" :
+                deriveParams = {name: "X25519"};
+                break;
+            case "X448" :
+                deriveParams = {name: "X448"};
+                break;
             case "HMAC" :
                 signParams = {name: "HMAC"};
                 break;
@@ -393,7 +397,7 @@
                 wrapParams = {name: "AES-KW"};
                 break;
             case "ECDH" :
-                deriveParams = {name: "ECDH", public: ecdhPeerKey};
+                deriveParams = {name: "ECDH"};
                 break;
             default:
                 throw new Error("Unsupported algorithm for key comparison");
@@ -422,7 +426,7 @@
                 if (expected.algorithm.name === "RSA-PSS" || expected.algorithm.name === "RSASSA-PKCS1-v1_5") {
                     ["d","p","q","dp","dq","qi","oth"].forEach(function(field){ delete jwkExpectedKey[field]; });
                 }
-                if (expected.algorithm.name === "ECDSA" || expected.algorithm.name === "Ed25519") {
+                if (expected.algorithm.name === "ECDSA" || expected.algorithm.name.startsWith("Ed")) {
                     delete jwkExpectedKey["d"];
                 }
                 jwkExpectedKey.key_ops = ["verify"];
@@ -446,9 +450,12 @@
                 var wrappedWithGot = Array.from((new Uint8Array(wrapResult)).values());
                 return wrappedWithGot.every((x,i) => x === wrappedWithExpected[i]);
             });
-        } else {
+        } else if (deriveParams) {
             var expectedDerivedBits;
-            return subtle.deriveBits(deriveParams, expected, 128)
+            return subtle.generateKey(expected.algorithm, true, ['deriveBits']).then(({ publicKey }) => {
+                deriveParams.public = publicKey;
+                return subtle.deriveBits(deriveParams, expected, 128)
+            })
             .then(function(result){
                 expectedDerivedBits = Array.from((new Uint8Array(result)).values());
                 return subtle.deriveBits(deriveParams, got, 128);

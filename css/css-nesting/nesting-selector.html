@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<title>Nesting selector</title>
+<link rel="author" title="Romain Menke" href="mailto:romainmenke@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-nesting-1/#selectordef-">
+<link rel="match" href="nesting-selector-ref.html">
+<style>
+  .test {
+    background-color: red;
+    width: 100px;
+    height: 100px;
+    display: grid;
+  }
+
+  & .test1 {
+    background-color: green;
+  }
+
+  body .test1 {
+    /* ":scope" has higher specificity than "body" */
+    background-color: red;
+  }
+
+  body *+* {
+    margin-top: 8px;
+  }
+
+</style>
+
+<body>
+  <p>Tests pass if <strong>block is green</strong></p>
+  <div class="test test1"></div>
+</body>

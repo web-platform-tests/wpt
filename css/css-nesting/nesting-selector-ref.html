@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>Nesting selector</title>
+<link rel="author" title="Romain Menke" href="mailto:romainmenke@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-nesting-1/#selectordef-">
+<style>
+  .test {
+    background-color: green;
+    width: 100px;
+    height: 100px;
+    display: grid;
+  }
+
+  body *+* {
+    margin-top: 8px;
+  }
+
+</style>
+
+<body>
+  <p>Tests pass if <strong>block is green</strong></p>
+  <div class="test"></div>
+</body>

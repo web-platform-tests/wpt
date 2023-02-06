@@ -1,5 +1,5 @@
 mypy==0.961
-mypy-extensions==0.4.3
+mypy-extensions==1.0.0
 toml==0.10.2
 typed-ast==1.5.4
 types-atomicwrites==1.4.5

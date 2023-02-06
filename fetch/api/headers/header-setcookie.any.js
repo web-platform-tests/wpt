@@ -138,7 +138,7 @@ test(function () {
   assert_array_equals(iterator.next().value, ["x-header", "test"]);
   headers.append("set-cookie", "c=d");
   assert_array_equals(iterator.next().value, ["x-header", "test"]);
-  assert_equals(iterator.next().done, true);
+  assert_true(iterator.next().done);
 }, "Headers iterator is correctly updated with set-cookie changes");
 
 test(function () {

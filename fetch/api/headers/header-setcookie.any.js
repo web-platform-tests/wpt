@@ -214,3 +214,11 @@ test(function () {
   ]);
   assert_array_equals(headers.getSetCookie(), ["z=z", "a=a", "n=n"]);
 }, "Headers.prototype.getSetCookie preserves header ordering");
+
+test(function () {
+  const response = new Response();
+  response.headers.append("Set-Cookie", "foo=bar");
+  assert_array_equals(response.headers.getSetCookie(), []);
+  response.headers.append("sEt-cOokIe", "bar=baz");
+  assert_array_equals(response.headers.getSetCookie(), []);
+}, "Set-Cookie is a forbidden response header");

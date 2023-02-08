@@ -19,18 +19,6 @@ function assert_nested_array_equals(actual, expected) {
 }
 
 test(function () {
-  new Headers({ "Set-Cookie": "foo=bar" });
-}, "Create headers with a single set-cookie header in object");
-
-test(function () {
-  new Headers([headerList[0]]);
-}, "Create headers with a single set-cookie header in list");
-
-test(function () {
-  new Headers(headerList);
-}, "Create headers with multiple set-cookie header in list");
-
-test(function () {
   const headers = new Headers(headerList);
   assert_equals(
     headers.get("set-cookie"),
@@ -183,6 +171,11 @@ test(function () {
   const headers = new Headers([headerList[0]]);
   assert_array_equals(headers.getSetCookie(), ["foo=bar"]);
 }, "Headers.prototype.getSetCookie with one header");
+
+test(function () {
+  const headers = new Headers({ "Set-Cookie": "foo=bar" });
+  assert_array_equals(headers.getSetCookie(), ["foo=bar"]);
+}, "Headers.prototype.getSetCookie with one header created from an object");
 
 test(function () {
   const headers = new Headers(headerList);

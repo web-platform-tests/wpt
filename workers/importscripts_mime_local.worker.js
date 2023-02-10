@@ -44,25 +44,25 @@ let test_cases = [
   ["TEXT/HTML", false],
 ];
 
-for (var test_case of test_cases) {
+for (const [mimeType, isScriptType] of test_cases) {
   test(t => {
-    let import_url = `data:${ test_case[0] },`;
-    if (test_case[1]) {
+    let import_url = `data:${ mimeType },`;
+    if (isScriptType) {
       assert_equals(undefined, importScripts(import_url));
     } else {
       assert_throws_dom("NetworkError", _ => { importScripts(import_url) })
     }
-  }, "importScripts() requires scripty MIME types for data: URLs: " + test_case[0] + " is " + (test_case[1] ? "allowed" : "blocked") + ".");
+  }, "importScripts() requires scripty MIME types for data: URLs: " + mimeType + " is " + (isScriptType ? "allowed" : "blocked") + ".");
 }
 
-for (var test_case of test_cases) {
+for (const [mimeType, isScriptType] of test_cases) {
   test(t => {
-    let import_url = URL.createObjectURL(new Blob([""], { type: test_case[0] }));
-    if (test_case[1]) {
+    let import_url = URL.createObjectURL(new Blob([""], { type: mimeType }));
+    if (isScriptType) {
       assert_equals(undefined, importScripts(import_url));
     } else {
       assert_throws_dom("NetworkError", _ => { importScripts(import_url) })
     }
-  }, "importScripts() requires scripty MIME types for blob: URLs: " + test_case[0] + " is " + (test_case[1] ? "allowed" : "blocked") + ".");
+  }, "importScripts() requires scripty MIME types for blob: URLs: " + mimeType + " is " + (isScriptType ? "allowed" : "blocked") + ".");
 }
 done();

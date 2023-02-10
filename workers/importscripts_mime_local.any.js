@@ -1,8 +1,6 @@
-// META: global=worker
+// META: global=dedicatedworker,sharedworker
 //
 // Tests for https://github.com/whatwg/html/issues/8869
-// Targeting Workers only because ServiceWorkers don't
-// have access to URL.createObjectURL
 
 importScripts("/resources/testharness.js");
 

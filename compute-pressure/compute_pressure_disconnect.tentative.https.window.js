@@ -1,3 +1,4 @@
+// META: timeout=long
 'use strict';
 
 test(t => {

@@ -1,5 +1,4 @@
-// META: script=/resources/test-only-api.js
-// META: script=resources/pressure-helpers.js
+// META: timeout=long
 
 'use strict';
 

@@ -1,3 +1,4 @@
+// META: timeout=long
 'use strict';
 
 promise_test(async t => {

@@ -28,16 +28,17 @@
 #
 # * Test the tests, add new ones to Git, remove deleted ones from Git, etc.
 
-from typing import List, Mapping
+from typing import List, Mapping, MutableMapping, Optional
 
 import re
-import codecs
 import collections
 import dataclasses
 import enum
 import importlib
 import os
+import pathlib
 import sys
+import textwrap
 
 try:
     import cairocffi as cairo  # type: ignore
@@ -194,6 +195,73 @@ class TestConfig:
     enabled: bool
 
 
+_CANVAS_SIZE_REGEX = re.compile(r'(?P<width>.*), (?P<height>.*)',
+                                re.MULTILINE | re.DOTALL)
+
+
+def _get_canvas_size(test: Mapping[str, str]):
+    size = test.get('size', '100, 50')
+    match = _CANVAS_SIZE_REGEX.match(size)
+    if not match:
+        raise InvalidTestDefinitionError(
+            'Invalid canvas size "%s" in test %s. Expected a string matching '
+            'this pattern: "%%s, %%s" %% (width, height)' %
+            (size, test['name']))
+    return match.group('width'), match.group('height')
+
+
+def _write_reference_test(templates: Mapping[str, str],
+                          template_params: MutableMapping[str, str],
+                          reference: str,
+                          canvas_path: Optional[str],
+                          offscreen_path: Optional[str]):
+    code = template_params['code']
+    template_params['code'] = textwrap.indent(code, '  ')
+    if canvas_path:
+        pathlib.Path(f'{canvas_path}.html').write_text(
+            templates['element_ref_test'] % template_params, 'utf-8')
+    if offscreen_path:
+        pathlib.Path(f'{offscreen_path}.html').write_text(
+            templates['offscreen_ref_test'] % template_params, 'utf-8')
+        template_params['code'] = textwrap.indent(code, '    ')
+        pathlib.Path(f'{offscreen_path}.w.html').write_text(
+            templates['worker_ref_test'] % template_params, 'utf-8')
+
+    template_params['code'] = textwrap.indent(reference.strip(), '  ')
+    template_params['links'] = ''
+    template_params['fuzzy'] = ''
+    if canvas_path:
+        pathlib.Path(f'{canvas_path}-expected.html').write_text(
+            templates['element_ref_test'] % template_params, 'utf-8')
+    if offscreen_path:
+        pathlib.Path(f'{offscreen_path}-expected.html').write_text(
+            templates['element_ref_test'] % template_params, 'utf-8')
+
+
+def _write_testharness_test(templates: Mapping[str, str],
+                            template_params: MutableMapping[str, str],
+                            canvas_path: Optional[str],
+                            offscreen_path: Optional[str]):
+
+    # Create test cases for canvas and offscreencanvas.
+    if canvas_path:
+        pathlib.Path(f'{canvas_path}.html').write_text(
+            templates['element'] % template_params, 'utf-8')
+
+    if offscreen_path:
+        code = template_params['code']
+        offscreen_template = templates['offscreen']
+        worker_template = templates['worker']
+        if ('then(t_pass, t_fail);' in code):
+            offscreen_template = offscreen_template.replace('t.done();\n', '')
+            worker_template = worker_template.replace('t.done();\n', '')
+
+        pathlib.Path(f'{offscreen_path}.html').write_text(
+            offscreen_template % template_params, 'utf-8')
+        pathlib.Path(f'{offscreen_path}.worker.js').write_text(
+            worker_template % template_params, 'utf-8')
+
+
 def _generate_test(test: Mapping[str, str], templates: Mapping[str, str],
                    sub_dir: str, html_canvas_cfg: TestConfig,
                    offscreen_canvas_cfg: TestConfig) -> None:
@@ -241,16 +309,18 @@ def _generate_test(test: Mapping[str, str], templates: Mapping[str, str],
                 '<img src="%s" class="output expected" id="expected" '
                 'alt="">' % expected_img)
 
-    canvas = test.get('canvas', 'width="100" height="50"')
+    canvas = ' ' + test['canvas'] if 'canvas' in test else ''
+    width, height = _get_canvas_size(test)
 
     notes = '<p class="notes">%s' % test['notes'] if 'notes' in test else ''
 
+    links = f'\n<link rel="match" href="{name}-expected.html">'
+    fuzzy = ('\n<meta name=fuzzy content="%s">' %
+             test['fuzzy'] if 'fuzzy' in test else '')
     timeout = ('\n<meta name="timeout" content="%s">' %
                test['timeout'] if 'timeout' in test else '')
-
-    scripts = ''
-    for s in test.get('scripts', []):
-        scripts += '<script src="%s"></script>\n' % (s)
+    timeout_js = ('// META: timeout=%s\n' % test['timeout']
+                  if 'timeout' in test else '')
 
     images = ''
     for src in test.get('images', []):
@@ -300,10 +370,14 @@ def _generate_test(test: Mapping[str, str], templates: Mapping[str, str],
         'fonts': fonts,
         'fonthack': fonthack,
         'timeout': timeout,
+        'timeout_js': timeout_js,
+        'fuzzy': fuzzy,
+        'links': links,
         'canvas': canvas,
+        'width': width,
+        'height': height,
         'expected': expectation_html,
         'code': code_canvas,
-        'scripts': scripts,
         'fallback': fallback,
         'attributes': attributes,
         'context_args': context_args
@@ -315,28 +389,17 @@ def _generate_test(test: Mapping[str, str], templates: Mapping[str, str],
         canvas_path += '-manual'
         offscreen_path += '-manual'
 
-    # Create test cases for canvas and offscreencanvas.
-    if html_canvas_cfg.enabled:
-        f = codecs.open(f'{canvas_path}.html', 'w', 'utf-8')
-        f.write(templates['w3ccanvas'] % template_params)
-    if offscreen_canvas_cfg.enabled:
-        f_html = codecs.open(f'{offscreen_path}.html', 'w', 'utf-8')
-        f_worker = codecs.open(f'{offscreen_path}.worker.js', 'w', 'utf-8')
-        if ('then(t_pass, t_fail);' in code_canvas):
-            temp_offscreen = templates['w3coffscreencanvas'].replace(
-                't.done();\n', '')
-            temp_worker = templates['w3cworker'].replace('t.done();\n', '')
-            f_html.write(temp_offscreen % template_params)
-            timeout = ('// META: timeout=%s\n' %
-                       test['timeout'] if 'timeout' in test else '')
-            template_params['timeout'] = timeout
-            f_worker.write(temp_worker % template_params)
-        else:
-            f_html.write(templates['w3coffscreencanvas'] % template_params)
-            timeout = ('// META: timeout=%s\n' %
-                       test['timeout'] if 'timeout' in test else '')
-            template_params['timeout'] = timeout
-            f_worker.write(templates['w3cworker'] % template_params)
+    reference = test.get('reference')
+    if reference is not None:
+        _write_reference_test(
+            templates, template_params, reference,
+            canvas_path if html_canvas_cfg.enabled else None,
+            offscreen_path if offscreen_canvas_cfg.enabled else None)
+    else:
+        _write_testharness_test(
+            templates, template_params,
+            canvas_path if html_canvas_cfg.enabled else None,
+            offscreen_path if offscreen_canvas_cfg.enabled else None)
 
 
 def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
@@ -351,8 +414,8 @@ def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
         doctest.testmod()
         sys.exit()
 
-    templates = yaml.safe_load(open(TEMPLATEFILE, 'r').read())
-    name_to_sub_dir = yaml.safe_load(open(NAME2DIRFILE, 'r').read())
+    templates = yaml.safe_load(pathlib.Path(TEMPLATEFILE).read_text())
+    name_to_sub_dir = yaml.safe_load(pathlib.Path(NAME2DIRFILE).read_text())
 
     tests = []
     test_yaml_directory = 'yaml-new'
@@ -360,8 +423,8 @@ def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
         os.path.join(test_yaml_directory, f)
         for f in os.listdir(test_yaml_directory) if f.endswith('.yaml')
     ]
-    for t in sum([yaml.safe_load(open(f, 'r').read()) for f in TESTSFILES],
-                 []):
+    for t in sum(
+        [yaml.safe_load(pathlib.Path(f).read_text()) for f in TESTSFILES], []):
         if 'DISABLED' in t:
             continue
         if 'meta' in t:

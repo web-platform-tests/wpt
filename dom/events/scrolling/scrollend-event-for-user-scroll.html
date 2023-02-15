@@ -31,27 +31,6 @@
 <script>
 var target_div = document.getElementById('targetDiv');
 
-async function resetTargetScrollState(test) {
-  if (target_div.scrollTop != 0 || target_div.scrollLeft != 0) {
-    target_div.scrollTop = 0;
-    target_div.scrollLeft = 0;
-    return waitForScrollendEvent(test, target_div);
-  }
-}
-
-async function verifyNoScrollendOnDocument(test) {
-  const callback =
-      test.unreached_func("window got unexpected scrollend event.");
-  window.addEventListener('scrollend', callback);
-}
-
-async function createScrollendPromise(test, timeoutMs = 500) {
-  return waitForScrollendEvent(test, target_div, timeoutMs).then(evt => {
-      assert_false(evt.cancelable, 'Event is not cancelable');
-      assert_false(evt.bubbles, 'Event targeting element does not bubble');
-  });
-}
-
 function runTest() {
   promise_test(async (t) => {
     // Skip the test on a Mac as they do not support touch screens.
@@ -59,11 +38,11 @@ function runTest() {
     if (isMac)
       return;
 
-    await resetTargetScrollState(t);
+    await resetTargetScrollState(t, target_div);
     await waitForCompositorReady();
 
     const timeout = 1000; // Because we have two pauses we need longer timeout
-    const targetScrollendPromise = createScrollendPromise(t, timeout);
+    const targetScrollendPromise = createScrollendPromiseForTarget(t, target_div, timeout);
     verifyNoScrollendOnDocument(t);
 
     let scrollend_count = 0;
@@ -105,10 +84,10 @@ function runTest() {
     if (scrollbar_width == 0)
       return;
 
-    await resetTargetScrollState(t);
+    await resetTargetScrollState(t, target_div);
     await waitForCompositorReady();
 
-    const targetScrollendPromise = createScrollendPromise(t);
+    const targetScrollendPromise = createScrollendPromiseForTarget(t, target_div);
     verifyNoScrollendOnDocument(t);
 
     const bounds = target_div.getBoundingClientRect();
@@ -136,10 +115,10 @@ function runTest() {
     if (scrollbar_width == 0)
       return;
 
-    await resetTargetScrollState(t);
+    await resetTargetScrollState(t, target_div);
     await waitForCompositorReady();
 
-    const targetScrollendPromise = createScrollendPromise(t);
+    const targetScrollendPromise = createScrollendPromiseForTarget(t, target_div);
     verifyNoScrollendOnDocument(t);
 
     const bounds = target_div.getBoundingClientRect();
@@ -162,10 +141,10 @@ function runTest() {
       'scrollbar thumb.');
 
   promise_test(async (t) => {
-    await resetTargetScrollState(t);
+    await resetTargetScrollState(t, target_div);
     await waitForCompositorReady();
 
-    const targetScrollendPromise = createScrollendPromise(t);
+    const targetScrollendPromise = createScrollendPromiseForTarget(t, target_div);
     verifyNoScrollendOnDocument(t);
 
     const x = 0;
@@ -184,11 +163,11 @@ function runTest() {
      'scrolling.');
 
   promise_test(async (t) => {
-    await resetTargetScrollState(t);
+    await resetTargetScrollState(t, target_div);
     await waitForCompositorReady();
 
     verifyNoScrollendOnDocument(t);
-    const targetScrollendPromise = createScrollendPromise(t);
+    const targetScrollendPromise = createScrollendPromiseForTarget(t, target_div);
 
     target_div.focus();
     window.test_driver.send_keys(target_div, '\ue015');

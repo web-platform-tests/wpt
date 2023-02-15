@@ -2478,7 +2478,7 @@
         this._user_defined_cleanup_count = 0;
         this._done_callbacks = [];
 
-        if (typeof AbortController) {
+        if (typeof AbortController === "function") {
             this._abortController = new AbortController();
         }
 

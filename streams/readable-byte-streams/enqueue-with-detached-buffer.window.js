@@ -5,7 +5,7 @@ promise_test(async t => {
     pull: t.step_func((controller) => {
       const buffer = controller.byobRequest.view.buffer;
       // Detach the buffer.
-      postMessage(buffer, '*', [buffer]);
+      structuredClone(buffer, { transfer: [buffer] });
 
       // Try to enqueue with a new buffer.
       assert_throws_js(TypeError, () => controller.enqueue(new Uint8Array([42])));

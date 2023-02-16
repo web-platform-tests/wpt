@@ -131,7 +131,7 @@ function assert_goodCryptoKey(key, algorithm, extractable, usages, kind) {
     }
 
     if (/^(?:Ed|X)(?:25519|448)$/.test(key.algorithm.name)) {
-        assert_false('namedCurve' in key.algorithm, "Does not have a namedCurve property")
+        assert_false('namedCurve' in key.algorithm, "Does not have a namedCurve property");
     }
 
     // usages is expected to be provided for a key pair, but we are checking

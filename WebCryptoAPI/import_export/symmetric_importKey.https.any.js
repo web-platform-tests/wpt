@@ -59,7 +59,7 @@
     });
 
     function hasLength(algorithm) {
-        return algorithm.name === 'HMAC' || algorithm.name.startsWith('AES')
+        return algorithm.name === 'HMAC' || algorithm.name.startsWith('AES');
     }
 
     // Test importKey with a given key format and other parameters. If

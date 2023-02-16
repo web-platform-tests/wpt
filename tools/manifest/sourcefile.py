@@ -83,6 +83,7 @@ def read_script_metadata(f, regexp):
 
 _any_variants = {
     "window": {"suffix": ".any.html"},
+    "window-module": {},
     "serviceworker": {"force_https": True},
     "serviceworker-module": {"force_https": True},
     "sharedworker": {},

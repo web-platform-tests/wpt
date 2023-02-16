@@ -169,3 +169,28 @@ test_scope_invalidation(document.currentScript, () => {
   assert_not_green(div);
 }, 'Element becoming root, with :scope in subject');
 </script>
+
+
+<template>
+  <style>
+    @scope (.a:has(.c)) {
+      .b { background-color:green; }
+    }
+  </style>
+  <div class=a>
+    <div class=b>
+      <div></div>
+    </div>
+  </div>
+</template>
+<script>
+test_scope_invalidation(document.currentScript, () => {
+  let b = main.querySelector('.b');
+  let innermost = main.querySelector('.b > div');
+  assert_not_green(b);
+  innermost.classList.add('c');
+  assert_green(b);
+  innermost.classList.remove('c');
+  assert_not_green(b);
+}, 'Scope root with :has()');
+</script>

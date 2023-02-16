@@ -62,34 +62,38 @@
 <li><p><a class="reference internal" href="#web-workers" id="id12">Web Workers</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#cleanup" id="id13">Cleanup</a></p></li>
-<li><p><a class="reference internal" href="#timers-in-tests" id="id14">Timers in Tests</a></p></li>
-<li><p><a class="reference internal" href="#harness-configuration" id="id15">Harness Configuration</a></p>
+<li><p><a class="reference internal" href="#cleanup" id="id13">Cleanup</a></p>
 <ul>
-<li><p><a class="reference internal" href="#setup" id="id16">Setup</a></p></li>
-<li><p><a class="reference internal" href="#output" id="id17">Output</a></p></li>
-<li><p><a class="reference internal" href="#determining-when-all-tests-are-complete" id="id18">Determining when all tests are complete</a></p></li>
+<li><p><a class="reference internal" href="#abortsignal-support" id="id14">AbortSignal support</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#reporting-api" id="id19">Reporting API</a></p>
+<li><p><a class="reference internal" href="#timers-in-tests" id="id15">Timers in Tests</a></p></li>
+<li><p><a class="reference internal" href="#harness-configuration" id="id16">Harness Configuration</a></p>
 <ul>
-<li><p><a class="reference internal" href="#callbacks" id="id20">Callbacks</a></p></li>
-<li><p><a class="reference internal" href="#external-api" id="id21">External API</a></p></li>
+<li><p><a class="reference internal" href="#setup" id="id17">Setup</a></p></li>
+<li><p><a class="reference internal" href="#output" id="id18">Output</a></p></li>
+<li><p><a class="reference internal" href="#determining-when-all-tests-are-complete" id="id19">Determining when all tests are complete</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#assert-functions" id="id22">Assert Functions</a></p>
+<li><p><a class="reference internal" href="#reporting-api" id="id20">Reporting API</a></p>
 <ul>
-<li><p><a class="reference internal" href="#promise-rejection" id="id23">Promise Rejection</a></p></li>
+<li><p><a class="reference internal" href="#callbacks" id="id21">Callbacks</a></p></li>
+<li><p><a class="reference internal" href="#external-api" id="id22">External API</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#test-objects" id="id24">Test Objects</a></p></li>
-<li><p><a class="reference internal" href="#helpers" id="id25">Helpers</a></p>
+<li><p><a class="reference internal" href="#assert-functions" id="id23">Assert Functions</a></p>
 <ul>
-<li><p><a class="reference internal" href="#waiting-for-events" id="id26">Waiting for events</a></p></li>
-<li><p><a class="reference internal" href="#utility-functions" id="id27">Utility Functions</a></p></li>
+<li><p><a class="reference internal" href="#promise-rejection" id="id24">Promise Rejection</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#deprecated-apis" id="id28">Deprecated APIs</a></p></li>
+<li><p><a class="reference internal" href="#test-objects" id="id25">Test Objects</a></p></li>
+<li><p><a class="reference internal" href="#helpers" id="id26">Helpers</a></p>
+<ul>
+<li><p><a class="reference internal" href="#waiting-for-events" id="id27">Waiting for events</a></p></li>
+<li><p><a class="reference internal" href="#utility-functions" id="id28">Utility Functions</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#deprecated-apis" id="id29">Deprecated APIs</a></p></li>
 </ul>
 </div>
 <p>testharness.js provides a framework for writing testcases. It is intended to
@@ -556,6 +560,23 @@ completion of the test until all cleanup promises have settled.</p>
 complex cleanup behavior should manage execution order explicitly. If
 any of the eventual values are rejected, the test runner will report
 an error.</p>
+<section id="abortsignal-support">
+<h3>AbortSignal support<a class="headerlink" href="#abortsignal-support" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="#Test.get_signal"><code class="docutils literal notranslate"><span class="pre">Test.get_signal</span></code></a> gives an AbortSignal that is aborted when
+the test finishes. This can be useful when dealing with AbortSignal-supported
+APIs.</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Throws when the user agent does not support AbortSignal</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">signal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">get_signal</span><span class="p">();</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">once</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nx">signal</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">click</span><span class="p">();</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="w">  </span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">type</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;click&quot;</span><span class="p">);</span>
+<span class="p">},</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="timers-in-tests">
 <h2>Timers in Tests<a class="headerlink" href="#timers-in-tests" title="Permalink to this headline">¶</a></h2>
@@ -1537,6 +1558,12 @@ be run.</p>
 <span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">force_timeout</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Test.force_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Manually set the test status to <code class="docutils literal notranslate"><span class="pre">TIMEOUT</span></code>.</p>
 <p>Alias for <a class="reference external" href="#Test.timeout">Test.timeout</a>.</p>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="Test.get_signal">
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_signal</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Test.get_signal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives an AbortSignal that will be aborted when the test finishes.</p>
 </dd></dl>
 
 <dl class="js function">

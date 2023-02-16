@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:rolling
 
 # No interactive frontend during docker build
 ENV DEBIAN_FRONTEND=noninteractive \

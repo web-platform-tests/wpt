@@ -14,7 +14,7 @@
 
   promise_test(async (t) => {
     const { minimize, restore } = window_state_context(t);
-    t.add_cleanup(restore);
+    t.add_cleanup(makeCleanup());
 
     await minimize();
 

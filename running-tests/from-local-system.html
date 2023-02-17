@@ -59,7 +59,7 @@ Ubuntu Focal and later, the package is called <code class="docutils literal notr
 <p>The system-provided Python can be used, while <code class="docutils literal notranslate"><span class="pre">pip</span></code> and <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> can be
 installed for the user only:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>ensurepip<span class="w"> </span>--user
-<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PATH</span><span class="s2">:</span><span class="nv">$HOME</span><span class="s2">/Library/Python/2.7/bin&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PATH</span><span class="s2">:</span><span class="k">$(</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>site<span class="w"> </span>--user-base<span class="w"> </span><span class="k">)</span><span class="s2">/bin&quot;</span>
 pip<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>virtualenv
 </pre></div>
 </div>

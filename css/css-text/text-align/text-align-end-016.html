@@ -8,12 +8,12 @@
 <link rel='match' href='reference/text-align-end-ref-016.html'>
 <meta name="assert" content="text-align:end aligns inline-level content to the end edge of the line box – ie. right when direction is auto and first strong character is ltr, and left when first strong is rtl.">
 <link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
-<style type='text/css'>
+<style>
 .test { text-align: end; }
 /* the CSS below is not part of the test */
 .test, .ref1, .ref2 { width: 300px; color: orange; font: 25px/1 Ahem; }
 .test { border: 1px solid orange; margin: 20px; }
-.ref1, .ref2 { border-left: 1px solid orange; border-right: 1px solid orange; margin: 0 20px; }
+.ref1, .ref2 { border-inline: 1px solid orange; margin: 0 20px; }
 .ref1 { border-top: 1px solid orange; text-align: right; }
 .ref2 { border-bottom: 1px solid orange; text-align: left; }
 </style>

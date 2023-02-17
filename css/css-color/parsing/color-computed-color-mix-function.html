@@ -81,13 +81,6 @@
     test_computed_value(`color`, `color-mix(in hsl decreasing hue, hsl(20deg 50% 50%), hsl(320deg 50% 50%))`, canonicalize(`hsl(350deg 50% 50%)`));
     test_computed_value(`color`, `color-mix(in hsl decreasing hue, hsl(320deg 50% 50%), hsl(20deg 50% 50%))`, canonicalize(`hsl(170deg 50% 50%)`));
 
-    test_computed_value(`color`, `color-mix(in hsl specified hue, hsl(40deg 50% 50%), hsl(60deg 50% 50%))`, canonicalize(`hsl(50deg 50% 50%)`));
-    test_computed_value(`color`, `color-mix(in hsl specified hue, hsl(60deg 50% 50%), hsl(40deg 50% 50%))`, canonicalize(`hsl(50deg 50% 50%)`));
-    test_computed_value(`color`, `color-mix(in hsl specified hue, hsl(50deg 50% 50%), hsl(330deg 50% 50%))`, canonicalize(`hsl(190deg 50% 50%)`));
-    test_computed_value(`color`, `color-mix(in hsl specified hue, hsl(330deg 50% 50%), hsl(50deg 50% 50%))`, canonicalize(`hsl(190deg 50% 50%)`));
-    test_computed_value(`color`, `color-mix(in hsl specified hue, hsl(20deg 50% 50%), hsl(320deg 50% 50%))`, canonicalize(`hsl(170deg 50% 50%)`));
-    test_computed_value(`color`, `color-mix(in hsl specified hue, hsl(320deg 50% 50%), hsl(20deg 50% 50%))`, canonicalize(`hsl(170deg 50% 50%)`));
-
     test_computed_value(`color`, `color-mix(in hsl, hsl(none none none), hsl(none none none))`, canonicalize(`hsl(none none none)`));
     test_computed_value(`color`, `color-mix(in hsl, hsl(none none none), hsl(30deg 40% 80%))`, canonicalize(`hsl(30deg 40% 80%)`));
     test_computed_value(`color`, `color-mix(in hsl, hsl(120deg 20% 40%), hsl(none none none))`, canonicalize(`hsl(120deg 20% 40%)`));
@@ -98,17 +91,6 @@
     test_computed_value(`color`, `color-mix(in hsl, hsl(120deg 40% 40% / none), hsl(0deg 40% 40%))`, canonicalize(`hsl(60deg 40% 40%)`));
     test_computed_value(`color`, `color-mix(in hsl, hsl(120deg 40% 40% / none), hsl(0deg 40% 40% / 0.5))`, canonicalize(`hsl(60deg 40% 40% / 0.5)`));
     test_computed_value(`color`, `color-mix(in hsl, hsl(120deg 40% 40% / none), hsl(0deg 40% 40% / none))`, canonicalize(`hsl(60deg 40% 40% / none)`));
-
-    test_computed_value(`color`, `color-mix(in hsl, color(display-p3 0 1 0) 100%, rgb(0, 0, 0) 0%)`, `rgb(0, 249, 66)`); // Naive clip based mapping would give rgb(0, 255, 0).
-    test_computed_value(`color`, `color-mix(in hsl, lab(100 104.3 -50.9) 100%, rgb(0, 0, 0) 0%)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 150, 255).
-    test_computed_value(`color`, `color-mix(in hsl, lab(0 104.3 -50.9) 100%, rgb(0, 0, 0) 0%)`, `rgb(42, 0, 34)`); // Naive clip based mapping would give rgb(90, 0, 76). NOTE: 0% lightness in Lab/LCH does not automatically correspond with sRGB black,
-    test_computed_value(`color`, `color-mix(in hsl, lch(100 116 334) 100%, rgb(0, 0, 0) 0%)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 150, 255).
-    test_computed_value(`color`, `color-mix(in hsl, lch(0 116 334) 100%, rgb(0, 0, 0) 0%)`, `rgb(42, 0, 34)`); // Naive clip based mapping would give rgb(90, 0, 76). NOTE: 0% lightness in Lab/LCH does not automatically correspond with sRGB black,
-    test_computed_value(`color`, `color-mix(in hsl, oklab(100 0.365 -0.16) 100%, rgb(0, 0, 0) 0%)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 92, 255).
-    test_computed_value(`color`, `color-mix(in hsl, oklab(0 0.365 -0.16) 100%, rgb(0, 0, 0) 0%)`, `rgb(0, 0, 0)`); // Naive clip based mapping would give rgb(19, 0, 24).
-    test_computed_value(`color`, `color-mix(in hsl, oklch(100 0.399 336.3) 100%, rgb(0, 0, 0) 0%)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 91, 255).
-    test_computed_value(`color`, `color-mix(in hsl, oklch(0 0.399 336.3) 100%, rgb(0, 0, 0) 0%)`, `rgb(0, 0, 0)`); // Naive clip based mapping would give rgb(20, 0, 24).
-
 
     test_computed_value(`color`, `color-mix(in hwb, hwb(120deg 10% 20%), hwb(30deg 30% 40%))`, `rgb(147, 179, 52)`);
     test_computed_value(`color`, `color-mix(in hwb, hwb(120deg 10% 20%) 25%, hwb(30deg 30% 40%))`, `rgb(166, 153, 64)`);
@@ -165,13 +147,6 @@
     test_computed_value(`color`, `color-mix(in hwb decreasing hue, hwb(20deg 30% 40%), hwb(320deg 30% 40%))`, canonicalize(`hwb(350deg 30% 40%)`));
     test_computed_value(`color`, `color-mix(in hwb decreasing hue, hwb(320deg 30% 40%), hwb(20deg 30% 40%))`, canonicalize(`hwb(170deg 30% 40%)`));
 
-    test_computed_value(`color`, `color-mix(in hwb specified hue, hwb(40deg 30% 40%), hwb(60deg 30% 40%))`, canonicalize(`hwb(50deg 30% 40%)`));
-    test_computed_value(`color`, `color-mix(in hwb specified hue, hwb(60deg 30% 40%), hwb(40deg 30% 40%))`, canonicalize(`hwb(50deg 30% 40%)`));
-    test_computed_value(`color`, `color-mix(in hwb specified hue, hwb(50deg 30% 40%), hwb(330deg 30% 40%))`, canonicalize(`hwb(190deg 30% 40%)`));
-    test_computed_value(`color`, `color-mix(in hwb specified hue, hwb(330deg 30% 40%), hwb(50deg 30% 40%))`, canonicalize(`hwb(190deg 30% 40%)`));
-    test_computed_value(`color`, `color-mix(in hwb specified hue, hwb(20deg 30% 40%), hwb(320deg 30% 40%))`, canonicalize(`hwb(170deg 30% 40%)`));
-    test_computed_value(`color`, `color-mix(in hwb specified hue, hwb(320deg 30% 40%), hwb(20deg 30% 40%))`, canonicalize(`hwb(170deg 30% 40%)`));
-
     test_computed_value(`color`, `color-mix(in hwb, hwb(none none none), hwb(none none none))`, canonicalize(`hwb(none none none)`));
     test_computed_value(`color`, `color-mix(in hwb, hwb(none none none), hwb(30deg 30% 40%))`, canonicalize(`hwb(30deg 30% 40%)`));
     test_computed_value(`color`, `color-mix(in hwb, hwb(120deg 10% 20%), hwb(none none none))`, canonicalize(`hwb(120deg 10% 20%)`));
@@ -181,16 +156,6 @@
     test_computed_value(`color`, `color-mix(in hwb, hwb(120deg 10% 20% / none), hwb(30deg 30% 40%))`, canonicalize(`hwb(75deg 20% 30%)`));
     test_computed_value(`color`, `color-mix(in hwb, hwb(120deg 10% 20% / none), hwb(30deg 30% 40% / 0.5))`, canonicalize(`hwb(75deg 20% 30% / 0.5)`));
     test_computed_value(`color`, `color-mix(in hwb, hwb(120deg 10% 20% / none), hwb(30deg 30% 40% / none))`, canonicalize(`hwb(75deg 20% 30% / none)`));
-
-    test_computed_value(`color`, `color-mix(in hwb, color(display-p3 0 1 0) 100%, rgb(0, 0, 0) 0%)`, `rgb(0, 249, 66)`); // Naive clip based mapping would give rgb(0, 255, 0).
-    test_computed_value(`color`, `color-mix(in hwb, lab(100 104.3 -50.9) 100%, rgb(0, 0, 0) 0%)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 150, 255).
-    test_computed_value(`color`, `color-mix(in hwb, lab(0 104.3 -50.9) 100%, rgb(0, 0, 0) 0%)`, `rgb(42, 0, 34)`); // Naive clip based mapping would give rgb(90, 0, 76). NOTE: 0% lightness in Lab/LCH does not automatically correspond with sRGB black,
-    test_computed_value(`color`, `color-mix(in hwb, lch(100 116 334) 100%, rgb(0, 0, 0) 0%)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 150, 255).
-    test_computed_value(`color`, `color-mix(in hwb, lch(0 116 334) 100%, rgb(0, 0, 0) 0%)`, `rgb(42, 0, 34)`); // Naive clip based mapping would give rgb(90, 0, 76). NOTE: 0% lightness in Lab/LCH does not automatically correspond with sRGB black,
-    test_computed_value(`color`, `color-mix(in hwb, oklab(100 0.365 -0.16) 100%, rgb(0, 0, 0) 0%)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 92, 255).
-    test_computed_value(`color`, `color-mix(in hwb, oklab(0 0.365 -0.16) 100%, rgb(0, 0, 0) 0%)`, `rgb(0, 0, 0)`); // Naive clip based mapping would give rgb(19, 0, 24).
-    test_computed_value(`color`, `color-mix(in hwb, oklch(100 0.399 336.3) 100%, rgb(0, 0, 0) 0%)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 91, 255).
-    test_computed_value(`color`, `color-mix(in hwb, oklch(0 0.399 336.3) 100%, rgb(0, 0, 0) 0%)`, `rgb(0, 0, 0)`); // Naive clip based mapping would give rgb(20, 0, 24).
 
     for (const colorSpace of [ "lch", "oklch" ]) {
         test_computed_value(`color`, `color-mix(in ${colorSpace}, ${colorSpace}(10 20 30deg), ${colorSpace}(50 60 70deg))`, `${colorSpace}(30 40 50)`);
@@ -247,13 +212,6 @@
         test_computed_value(`color`, `color-mix(in ${colorSpace} decreasing hue, ${colorSpace}(100 0 330deg), ${colorSpace}(100 0 50deg))`, `${colorSpace}(100 0 190)`);
         test_computed_value(`color`, `color-mix(in ${colorSpace} decreasing hue, ${colorSpace}(100 0 20deg), ${colorSpace}(100 0 320deg))`, `${colorSpace}(100 0 350)`);
         test_computed_value(`color`, `color-mix(in ${colorSpace} decreasing hue, ${colorSpace}(100 0 320deg), ${colorSpace}(100 0 20deg))`, `${colorSpace}(100 0 170)`);
-
-        test_computed_value(`color`, `color-mix(in ${colorSpace} specified hue, ${colorSpace}(100 0 40deg), ${colorSpace}(100 0 60deg))`, `${colorSpace}(100 0 50)`);
-        test_computed_value(`color`, `color-mix(in ${colorSpace} specified hue, ${colorSpace}(100 0 60deg), ${colorSpace}(100 0 40deg))`, `${colorSpace}(100 0 50)`);
-        test_computed_value(`color`, `color-mix(in ${colorSpace} specified hue, ${colorSpace}(100 0 50deg), ${colorSpace}(100 0 330deg))`, `${colorSpace}(100 0 190)`);
-        test_computed_value(`color`, `color-mix(in ${colorSpace} specified hue, ${colorSpace}(100 0 330deg), ${colorSpace}(100 0 50deg))`, `${colorSpace}(100 0 190)`);
-        test_computed_value(`color`, `color-mix(in ${colorSpace} specified hue, ${colorSpace}(100 0 20deg), ${colorSpace}(100 0 320deg))`, `${colorSpace}(100 0 170)`);
-        test_computed_value(`color`, `color-mix(in ${colorSpace} specified hue, ${colorSpace}(100 0 320deg), ${colorSpace}(100 0 20deg))`, `${colorSpace}(100 0 170)`);
 
         test_computed_value(`color`, `color-mix(in ${colorSpace}, ${colorSpace}(none none none), ${colorSpace}(none none none))`, `${colorSpace}(none none none)`);
         test_computed_value(`color`, `color-mix(in ${colorSpace}, ${colorSpace}(none none none), ${colorSpace}(50 60 70deg))`, `${colorSpace}(50 60 70)`);

@@ -1,6 +1,22 @@
 const image_delay = 1000;
 const delay_pipe_value = image_delay / 1000;
 
+const await_with_timeout = async (delay, message, promise, cleanup = ()=>{}) => {
+  let timeout_id;
+  const timeout = new Promise((_, reject) => {
+    timeout_id = step_timeout(() =>
+      reject(new DOMException(message, "TimeoutError")), delay)
+  });
+  let result = null;
+  try {
+    result = await Promise.race([promise, timeout]);
+    clearTimeout(timeout_id);
+  } finally {
+    cleanup();
+  }
+  return result;
+};
+
 // Receives an image LargestContentfulPaint |entry| and checks |entry|'s attribute values.
 // The |timeLowerBound| parameter is a lower bound on the loadTime value of the entry.
 // The |options| parameter may contain some string values specifying the following:
@@ -8,6 +24,8 @@ const delay_pipe_value = image_delay / 1000;
 //     When not present, the renderTime should not be 0 (image passes the checks).
 // * 'sizeLowerBound': the |expectedSize| is only a lower bound on the size attribute value.
 //     When not present, |expectedSize| must be exactly equal to the size attribute value.
+// * 'approximateSize': the |expectedSize| is only approximate to the size attribute value.
+//     This option is mutually exclusive to 'sizeLowerBound'.
 function checkImage(entry, expectedUrl, expectedID, expectedSize, timeLowerBound, options = []) {
   assert_equals(entry.name, '', "Entry name should be the empty string");
   assert_equals(entry.entryType, 'largest-contentful-paint',
@@ -38,9 +56,12 @@ function checkImage(entry, expectedUrl, expectedID, expectedSize, timeLowerBound
   }
   if (options.includes('sizeLowerBound')) {
     assert_greater_than(entry.size, expectedSize);
-  } else {
+  } else if (options.includes('approximateSize')) {
+    assert_approx_equals(entry.size, expectedSize, 1);
+  } else{
     assert_equals(entry.size, expectedSize);
   }
+
   if (options.includes('animated')) {
     assert_greater_than(entry.loadTime, entry.firstAnimatedFrameTime,
       'firstAnimatedFrameTime should be smaller than loadTime');

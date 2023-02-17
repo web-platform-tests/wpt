@@ -8,20 +8,26 @@ function assert_px_equals(observed, expected, description) {
 }
 
 function CreateViewTimelineOpacityAnimation(test, target, options) {
-  const viewTimelineOptions = {
+  const timeline_options = {
     subject: target,
     axis: 'block'
   };
-  if (options) {
-    for (let key in options) {
-      viewTimelineOptions[key] = options[key];
+  if (options && 'timeline' in options) {
+    for (let key in options.timeline) {
+      timeline_options[key] = options.timeline[key];
+    }
+  }
+  const animation_options = {
+    timeline: new ViewTimeline(timeline_options)
+  };
+  if (options && 'animation' in options) {
+    for (let key in options.animation) {
+      animation_options[key] = options.animation[key];
     }
   }
 
   const anim =
-      target.animate(
-          { opacity: [0.3, 0.7] },
-          { timeline: new ViewTimeline(viewTimelineOptions) });
+      target.animate({ opacity: [0.3, 0.7] }, animation_options);
   test.add_cleanup(() => {
     anim.cancel();
   });
@@ -32,19 +38,19 @@ function CreateViewTimelineOpacityAnimation(test, target, options) {
 // the animation.
 //
 // Sample call:
-// await runTimelineRangeTest(t, {
+// await runTimelineBoundsTest(t, {
 //   timeline: { inset: [ CSS.percent(0), CSS.percent(20)] },
 //   timing: { fill: 'both' }
-//   rangeStart: 600,
-//   rangeEnd: 900
+//   startOffset: 600,
+//   endOffset: 900
 // });
-async function runTimelineRangeTest(t, options, message) {
+async function runTimelineBoundsTest(t, options, message) {
   container.scrollLeft = 0;
   await waitForNextFrame();
 
   const anim =
       options.anim ||
-      CreateViewTimelineOpacityAnimation(t, target, options.timeline);
+      CreateViewTimelineOpacityAnimation(t, target, options);
   if (options.timing)
     anim.effect.updateTiming(options.timing);
 
@@ -52,19 +58,19 @@ async function runTimelineRangeTest(t, options, message) {
   await anim.ready;
 
   // Advance to the start offset, which triggers entry to the active phase.
-  container.scrollLeft = options.rangeStart;
+  container.scrollLeft = options.startOffset;
   await waitForNextFrame();
   assert_equals(getComputedStyle(target).opacity, '0.3',
                 `Effect at the start of the active phase: ${message}`);
 
   // Advance to the midpoint of the animation.
-  container.scrollLeft = (options.rangeStart + options.rangeEnd) / 2;
+  container.scrollLeft = (options.startOffset + options.endOffset) / 2;
   await waitForNextFrame();
   assert_equals(getComputedStyle(target).opacity,'0.5',
                 `Effect at the midpoint of the active range: ${message}`);
 
   // Advance to the end of the animation.
-  container.scrollLeft = options.rangeEnd;
+  container.scrollLeft = options.endOffset;
   await waitForNextFrame();
   assert_equals(getComputedStyle(target).opacity, '0.7',
                 `Effect is in the active phase at effect end time: ${message}`);
@@ -73,51 +79,53 @@ async function runTimelineRangeTest(t, options, message) {
   return anim;
 }
 
-// Sets the start and end delays for a view timeline and ensures that the
+// Sets the start and end range for a view timeline and ensures that the
 // range aligns with expected values.
 //
 // Sample call:
-// await runTimelineDelayTest(t, {
-//   delay: { phase: 'cover', percent: CSS.percent(0) } ,
-//   endDelay: { phase: 'cover', percent: CSS.percent(100) },
-//   rangeStart: 600,
-//   rangeEnd: 900
+// await runTimelineRangeTest(t, {
+//   rangeStart: { rangeName: 'cover', offset: CSS.percent(0) } ,
+//   rangeEnd: { rangeName: 'cover', offset: CSS.percent(100) },
+//   startOffset: 600,
+//   endOffset: 900
 // });
-async function runTimelineDelayTest(t, options) {
-  const delayToString = delay => {
+async function runTimelineRangeTest(t, options) {
+  const rangeToString = range => {
     const parts = [];
-    if (delay.phase)
-      parts.push(delay.phase);
-    if (delay.percent)
-      parts.push(`${delay.percent.value}%`);
+    if (range.rangeName)
+      parts.push(range.rangeName);
+    if (range.offset)
+      parts.push(`${range.offset.value}%`);
     return parts.join(' ');
   };
   const range =
-     `${delayToString(options.delay)} to ` +
-     `${delayToString(options.endDelay)}`;
+     `${rangeToString(options.rangeStart)} to ` +
+     `${rangeToString(options.rangeEnd)}`;
 
   options.timeline = {
     axis: 'inline'
   };
+  options.animation = {
+    rangeStart: options.rangeStart,
+    rangeEnd: options.rangeEnd,
+  };
   options.timing = {
-    delay: options.delay,
-    endDelay: options.endDelay,
     // Set fill to accommodate floating point precision errors at the
     // endpoints.
     fill: 'both'
   };
 
-  return runTimelineRangeTest(t, options, range);
+  return runTimelineBoundsTest(t, options, range);
 }
 
 // Sets the Inset for a view timeline and ensures that the range aligns with
 // expected values.
 //
 // Sample call:
-// await runTimelineDelayTest(t, {
+// await runTimelineInsetTest(t, {
 //   inset: [ CSS.px(20), CSS.px(40) ]
-//   rangeStart: 600,
-//   rangeEnd: 900
+//   startOffset: 600,
+//   endOffset: 900
 // });
 async function runTimelineInsetTest(t, options) {
   options.timeline = {
@@ -133,5 +141,5 @@ async function runTimelineInsetTest(t, options) {
   const range =
       (options.inset instanceof Array) ? options.inset.join(' ')
                                        : options.inset;
-  return runTimelineRangeTest(t, options, range);
+  return runTimelineBoundsTest(t, options, range);
 }

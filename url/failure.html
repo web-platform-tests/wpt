@@ -43,7 +43,7 @@ function runTests(testData) {
       self.test(t => {
         const frame = document.body.appendChild(document.createElement("iframe"));
         t.add_cleanup(() => frame.remove());
-        assert_throws_dom("SyntaxError", () => frame.contentWindow.location = test.input, frame.contentWindow);
+        assert_throws_dom("SyntaxError", frame.contentWindow.DOMException, () => frame.contentWindow.location = test.input);
       }, "Location's href: " + name);
 
       self.test(() => {

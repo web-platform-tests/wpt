@@ -862,7 +862,7 @@ class WebTestHttpd:
         self.logger.info(f"Starting {http_type} server on {http_scheme}://{self.host}:{self.port}")
         self.started = True
         self.server_thread = threading.Thread(target=self.httpd.serve_forever)
-        self.server_thread.setDaemon(True)  # don't hang on exit
+        self.server_thread.daemon = True  # don't hang on exit
         self.server_thread.start()
 
     def stop(self):

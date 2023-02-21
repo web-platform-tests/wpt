@@ -1,5 +1,6 @@
 import pytest
 from webdriver.bidi.modules.script import ContextTarget
+from ... import recursive_compare1
 
 
 page_data = """
@@ -161,7 +162,7 @@ async def test_element_node(
         await_promise=False,
     )
 
-    assert result == expected
+    recursive_compare(expected, result)
 
 
 @pytest.mark.asyncio
@@ -217,7 +218,7 @@ async def test_attribute_node(
         await_promise=False,
     )
 
-    assert result == expected
+    recursive_compare(expected, result)
 
 
 @pytest.mark.asyncio
@@ -253,7 +254,7 @@ async def test_text_node(bidi_session, inline, top_context, function_declaration
         await_promise=False,
     )
 
-    assert result == expected
+    recursive_compare(expected, result)
 
 
 @pytest.mark.asyncio
@@ -291,7 +292,7 @@ async def test_cdata_node(bidi_session, inline, new_tab, function_declaration, e
         await_promise=False,
     )
 
-    assert result == expected
+    recursive_compare(expected, result)
 
 
 @pytest.mark.asyncio
@@ -332,7 +333,7 @@ async def test_processing_instruction_node(
         await_promise=False,
     )
 
-    assert result == expected
+    recursive_compare(expected, result)
 
 
 @pytest.mark.asyncio
@@ -370,7 +371,7 @@ async def test_comment_node(
         await_promise=False,
     )
 
-    assert result == expected
+    recursive_compare(expected, result)
 
 
 @pytest.mark.asyncio
@@ -424,7 +425,7 @@ async def test_document_node(
         await_promise=False,
     )
 
-    assert result == expected
+    recursive_compare(expected, result)
 
 
 @pytest.mark.asyncio
@@ -461,7 +462,7 @@ async def test_doctype_node(
         await_promise=False,
     )
 
-    assert result == expected
+    recursive_compare(expected, result)
 
 
 @pytest.mark.asyncio
@@ -498,7 +499,7 @@ async def test_document_fragment_node(
         await_promise=False,
     )
 
-    assert result == expected
+    recursive_compare(expected, result)
 
 
 @pytest.mark.asyncio
@@ -595,4 +596,4 @@ async def test_node_within_dom_collection(
         await_promise=False,
     )
 
-    assert result == expected
+    recursive_compare(expected, result)

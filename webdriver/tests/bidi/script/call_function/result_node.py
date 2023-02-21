@@ -1,6 +1,6 @@
 import pytest
 from webdriver.bidi.modules.script import ContextTarget
-from ... import recursive_compare1
+from ... import recursive_compare
 
 
 page_data = """

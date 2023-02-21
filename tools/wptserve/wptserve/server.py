@@ -573,6 +573,18 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
         response = None
         req_handler = None
 
+        def cleanup():
+            if rfile:
+                try:
+                    rfile.close()
+                except OSError:
+                    pass
+            if wfile:
+                try:
+                    wfile.close()
+                except OSError:
+                    pass
+
         while not self.close_connection:
             try:
                 frame = queue.get(True, 1)
@@ -582,10 +594,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
 
             self.logger.debug(f'({self.uid} - {stream_id}) {str(frame)}')
             if isinstance(frame, RequestReceived):
-                if rfile:
-                    rfile.close()
-                if wfile:
-                    wfile.close()
+                cleanup()
 
                 pipe_rfile, pipe_wfile = os.pipe()
                 (rfile, wfile) = os.fdopen(pipe_rfile, 'rb'), os.fdopen(pipe_wfile, 'wb')
@@ -626,10 +635,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                                     (self.uid, stream_id))
                 break
 
-        if rfile:
-            rfile.close()
-        if wfile:
-            wfile.close()
+        cleanup()
 
     def frame_handler(self, request, response, handler):
         try:

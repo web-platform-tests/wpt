@@ -1,6 +1,7 @@
 from enum import Enum
-from typing import Any, Optional, Mapping, List, MutableMapping, Union, Dict
+from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Union
 
+from ..error import UnknownErrorException
 from ._module import BidiModule, command
 
 
@@ -13,6 +14,17 @@ class ScriptEvaluateResultException(Exception):
 class OwnershipModel(Enum):
     NONE = "none"
     ROOT = "root"
+
+
+class RealmTypes(Enum):
+    AUDIO_WORKLET = "audio-worklet"
+    DEDICATED_WORKER = "dedicated-worker"
+    PAINT_WORKLET = "paint-worklet"
+    SERVICE_WORKER = "service-worker"
+    SHARED_WORKER = "shared-worker"
+    WINDOW = "window"
+    WORKER = "worker"
+    WORKLET = "worklet"
 
 
 class RealmTarget(Dict[str, Any]):
@@ -33,17 +45,19 @@ Target = Union[RealmTarget, ContextTarget]
 
 class Script(BidiModule):
     @command
-    def call_function(self,
-                      function_declaration: str,
-                      await_promise: bool,
-                      target: Target,
-                      arguments: Optional[List[Mapping[str, Any]]] = None,
-                      this: Optional[Mapping[str, Any]] = None,
-                      result_ownership: Optional[OwnershipModel] = None) -> Mapping[str, Any]:
+    def call_function(
+        self,
+        function_declaration: str,
+        await_promise: bool,
+        target: Target,
+        arguments: Optional[List[Mapping[str, Any]]] = None,
+        this: Optional[Mapping[str, Any]] = None,
+        result_ownership: Optional[OwnershipModel] = None,
+    ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "functionDeclaration": function_declaration,
             "target": target,
-            "awaitPromise": await_promise
+            "awaitPromise": await_promise,
         }
 
         if arguments is not None:
@@ -56,16 +70,28 @@ class Script(BidiModule):
 
     @call_function.result
     def _call_function(self, result: Mapping[str, Any]) -> Any:
-        if "result" not in result:
+        assert "type" in result
+
+        if result["type"] == "success":
+            return result["result"]
+        elif result["type"] == "exception":
             raise ScriptEvaluateResultException(result)
-        return result["result"]
+        else:
+            raise UnknownErrorException(f"""Invalid type '{result["type"]}' in response""")
 
     @command
-    def evaluate(self,
-                 expression: str,
-                 target: Target,
-                 await_promise: bool,
-                 result_ownership: Optional[OwnershipModel] = None) -> Mapping[str, Any]:
+    def disown(self, handles: List[str], target: Target) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {"handles": handles, "target": target}
+        return params
+
+    @command
+    def evaluate(
+        self,
+        expression: str,
+        target: Target,
+        await_promise: bool,
+        result_ownership: Optional[OwnershipModel] = None,
+    ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "expression": expression,
             "target": target,
@@ -78,6 +104,33 @@ class Script(BidiModule):
 
     @evaluate.result
     def _evaluate(self, result: Mapping[str, Any]) -> Any:
-        if "result" not in result:
+        assert "type" in result
+
+        if result["type"] == "success":
+            return result["result"]
+        elif result["type"] == "exception":
             raise ScriptEvaluateResultException(result)
-        return result["result"]
+        else:
+            raise UnknownErrorException(f"""Invalid type '{result["type"]}' in response""")
+
+    @command
+    def get_realms(
+        self,
+        context: Optional[str] = None,
+        type: Optional[RealmTypes] = None,
+    ) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {}
+
+        if context is not None:
+            params["context"] = context
+        if type is not None:
+            params["type"] = type
+
+        return params
+
+    @get_realms.result
+    def _get_realms(self, result: Mapping[str, Any]) -> Any:
+        assert result["realms"] is not None
+        assert isinstance(result["realms"], list)
+
+        return result["realms"]

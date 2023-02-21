@@ -159,8 +159,11 @@ scheme host and port.""")
     # TODO(bashi): Remove this when WebTransport over HTTP/3 server is enabled by default.
     test_selection_group.add_argument("--enable-webtransport-h3",
                                       action="store_true",
-                                      default=False,
+                                      dest="enable_webtransport_h3",
+                                      default=None,
                                       help="Enable tests that require WebTransport over HTTP/3 server (default: false)")
+    test_selection_group.add_argument("--no-enable-webtransport-h3", action="store_false", dest="enable_webtransport_h3",
+                                      help="Do not enable WebTransport tests on experimental channels")
     test_selection_group.add_argument("--tag", action="append", dest="tags",
                                       help="Labels applied to tests to include in the run. "
                                            "Labels starting dir: are equivalent to top-level directories.")
@@ -180,6 +183,10 @@ scheme host and port.""")
                                  help="Number of times to run the tests, restarting between each run")
     debugging_group.add_argument("--repeat-until-unexpected", action="store_true", default=None,
                                  help="Run tests in a loop until one returns an unexpected result")
+    debugging_group.add_argument('--retry-unexpected', type=int, default=0,
+                                 help=('Maximum number of times to retry unexpected tests. '
+                                       'A test is retried until it gets one of the expected status, '
+                                       'or until it exhausts the maximum number of retries.'))
     debugging_group.add_argument('--pause-after-test', action="store_true", default=None,
                                  help="Halt the test runner after each test (this happens by default if only a single test is run)")
     debugging_group.add_argument('--no-pause-after-test', dest="pause_after_test", action="store_false",
@@ -297,12 +304,9 @@ scheme host and port.""")
                              default=None, help="Don't preload a gecko instance for faster restarts")
     gecko_group.add_argument("--disable-e10s", dest="gecko_e10s", action="store_false", default=True,
                              help="Run tests without electrolysis preferences")
-    gecko_group.add_argument("--enable-webrender", dest="enable_webrender", action="store_true", default=None,
-                             help="Enable the WebRender compositor in Gecko (defaults to disabled).")
-    gecko_group.add_argument("--no-enable-webrender", dest="enable_webrender", action="store_false",
-                             help="Disable the WebRender compositor in Gecko.")
     gecko_group.add_argument("--enable-fission", dest="enable_fission", action="store_true", default=None,
-                             help="Enable fission in Gecko (defaults to disabled).")
+                             help="Enable fission in Gecko (defaults to enabled; "
+                             "this option only exists for backward compatibility).")
     gecko_group.add_argument("--no-enable-fission", dest="enable_fission", action="store_false",
                              help="Disable fission in Gecko.")
     gecko_group.add_argument("--stackfix-dir", dest="stackfix_dir", action="store",
@@ -327,7 +331,7 @@ scheme host and port.""")
                              choices=["always", "fail", "unexpected"], default=None,
                              help="With --reftest-internal, when to take a screenshot")
     gecko_group.add_argument("--chaos", dest="chaos_mode_flags", action="store",
-                             nargs="?", const=0xFFFFFFFF, type=int,
+                             nargs="?", const=0xFFFFFFFF, type=lambda x: int(x, 16),
                              help="Enable chaos mode with the specified feature flag "
                              "(see http://searchfox.org/mozilla-central/source/mfbt/ChaosMode.h for "
                              "details). If no value is supplied, all features are activated")
@@ -348,6 +352,11 @@ scheme host and port.""")
     chrome_group.add_argument("--enable-swiftshader", action="store_true", default=False,
                              help="Enable SwiftShader for CPU-based 3D graphics. This can be used "
                              "in environments with no hardware GPU available.")
+    chrome_group.add_argument("--enable-experimental", action="store_true", dest="enable_experimental",
+                              help="Enable --enable-experimental-web-platform-features flag", default=None)
+    chrome_group.add_argument("--no-enable-experimental", action="store_false", dest="enable_experimental",
+                              help="Do not enable --enable-experimental-web-platform-features flag "
+                              "on experimental channels")
 
     sauce_group = parser.add_argument_group("Sauce Labs-specific")
     sauce_group.add_argument("--sauce-browser", dest="sauce_browser",
@@ -633,9 +642,6 @@ def check_args(kwargs):
 
     if kwargs["reftest_screenshot"] is None:
         kwargs["reftest_screenshot"] = "unexpected" if not kwargs["debug_test"] else "always"
-
-    if kwargs["enable_webrender"] is None:
-        kwargs["enable_webrender"] = False
 
     if kwargs["preload_browser"] is None:
         # Default to preloading a gecko instance if we're only running a single process

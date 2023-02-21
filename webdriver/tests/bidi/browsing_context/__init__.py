@@ -1,10 +1,12 @@
+from .. import (
+    any_int,
+    any_string,
+    any_string_or_null,
+    recursive_compare,
+)
+
 def assert_browsing_context(
-    info,
-    context,
-    children=None,
-    is_root=True,
-    parent=None,
-    url=None
+    info, context, children=None, is_root=True, parent=None, url=None
 ):
     assert "children" in info
     if children is not None:
@@ -37,3 +39,27 @@ def assert_browsing_context(
     assert "url" in info
     assert isinstance(info["url"], str)
     assert info["url"] == url
+
+
+def assert_navigation_info(event, expected_navigation_info):
+    recursive_compare(
+        {
+            "context": any_string,
+            "navigation": any_string_or_null,
+            "timestamp": any_int,
+            "url": any_string,
+        },
+        event,
+    )
+
+    if "context" in expected_navigation_info:
+        assert event["context"] == expected_navigation_info["context"]
+
+    if "navigation" in expected_navigation_info:
+        assert event["navigation"] == expected_navigation_info["navigation"]
+
+    if "timestamp" in expected_navigation_info:
+        expected_navigation_info["timestamp"](event["timestamp"])
+
+    if "url" in expected_navigation_info:
+        assert event["url"] == expected_navigation_info["url"]

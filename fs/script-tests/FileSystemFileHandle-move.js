@@ -13,6 +13,14 @@ directory_test(async (t, root) => {
 
 directory_test(async (t, root) => {
   const handle = await createFileWithContents(t, 'file-before', 'foo', root);
+  await handle.move('file-after');
+  const newhandle = await root.getFileHandle('file-after');
+  assert_equals(await getFileContents(newhandle), 'foo');
+  assert_equals(await getFileSize(newhandle), 3);
+}, 'get a handle to a moved file');
+
+directory_test(async (t, root) => {
+  const handle = await createFileWithContents(t, 'file-before', 'foo', root);
   await handle.move('file-before');
 
   assert_array_equals(await getSortedDirectoryEntries(root), ['file-before']);
@@ -55,7 +63,7 @@ directory_test(async (t, root) => {
 
 directory_test(async (t, root) => {
   const handle = await createFileWithContents(t, 'file-before', 'foo', root);
-  await promise_rejects_js(t, TypeError, handle.move('#$23423@352^*3243'));
+  await promise_rejects_js(t, TypeError, handle.move('test/test'));
 
   assert_array_equals(await getSortedDirectoryEntries(root), ['file-before']);
   assert_equals(await getFileContents(handle), 'foo');
@@ -66,7 +74,7 @@ directory_test(async (t, root) => {
   const handle = await createFileWithContents(t, 'file-before', 'abc', root);
 
   // Cannot rename handle with an active writable.
-  const stream = await handle.createWritable();
+  const stream = await cleanup_writable(t, await handle.createWritable());
   await promise_rejects_dom(
       t, 'NoModificationAllowedError', handle.move('file-after'));
 
@@ -82,16 +90,25 @@ directory_test(async (t, root) => {
       await createFileWithContents(t, 'file-after', '123', root);
 
   // Cannot overwrite a handle with an active writable.
-  const stream = await handle_dest.createWritable();
+  const stream = await cleanup_writable(t, await handle_dest.createWritable());
   await promise_rejects_dom(
       t, 'NoModificationAllowedError', handle.move('file-after'));
 
-  // Can move handle once the writable is closed.
   await stream.close();
-  await handle.move('file-after');
-  assert_array_equals(await getSortedDirectoryEntries(root), ['file-after']);
+  assert_array_equals(
+      await getSortedDirectoryEntries(root), ['file-after', 'file-before']);
 }, 'move(name) while the destination file has an open writable fails');
 
+directory_test(async (t, root) => {
+  const handle = await createFileWithContents(t, 'file-before', 'abc', root);
+  const handle_dest =
+      await createFileWithContents(t, 'file-after', '123', root);
+
+  await handle.move('file-after');
+  assert_array_equals(await getSortedDirectoryEntries(root), ['file-after']);
+  assert_equals(await getFileContents(handle), 'abc');
+  assert_equals(await getFileContents(handle_dest), 'abc');
+}, 'move(name) can overwrite an existing file');
 
 directory_test(async (t, root) => {
   const handle = await createFileWithContents(t, 'file-before', 'foo', root);
@@ -129,15 +146,15 @@ directory_test(async (t, root) => {
   const dir_src = await root.getDirectoryHandle('dir-src', {create: true});
   const dir_dest = await root.getDirectoryHandle('dir-dest', {create: true});
   const file = await createFileWithContents(t, 'file', 'abc', dir_src);
-  await file.move(dir_dest, '');
+  await promise_rejects_js(t, TypeError, file.move(dir_dest, ''));
 
   assert_array_equals(
       await getSortedDirectoryEntries(root), ['dir-dest/', 'dir-src/']);
-  assert_array_equals(await getSortedDirectoryEntries(dir_src), []);
-  assert_array_equals(await getSortedDirectoryEntries(dir_dest), ['file']);
+  assert_array_equals(await getSortedDirectoryEntries(dir_src), ['file']);
+  assert_array_equals(await getSortedDirectoryEntries(dir_dest), []);
   assert_equals(await getFileContents(file), 'abc');
   assert_equals(await getFileSize(file), 3);
-}, 'move(dir, "") to move a file to a new directory');
+}, 'move(dir, "") to move a file to a new directory fails');
 
 directory_test(async (t, root) => {
   const dir_src = await root.getDirectoryHandle('dir-src', {create: true});
@@ -187,33 +204,6 @@ directory_test(async (t, root) => {
   const dir2 = await root.getDirectoryHandle('dir2', {create: true});
   const handle = await createFileWithContents(t, 'file', 'foo', root);
 
-  await handle.move(dir1, "");
-  assert_array_equals(
-      await getSortedDirectoryEntries(root), ['dir1/', 'dir2/']);
-  assert_array_equals(await getSortedDirectoryEntries(dir1), ['file']);
-  assert_array_equals(await getSortedDirectoryEntries(dir2), []);
-  assert_equals(await getFileContents(handle), 'foo');
-
-  await handle.move(dir2, "");
-  assert_array_equals(
-      await getSortedDirectoryEntries(root), ['dir1/', 'dir2/']);
-  assert_array_equals(await getSortedDirectoryEntries(dir1), []);
-  assert_array_equals(await getSortedDirectoryEntries(dir2), ['file']);
-  assert_equals(await getFileContents(handle), 'foo');
-
-  await handle.move(root, "");
-  assert_array_equals(
-      await getSortedDirectoryEntries(root), ['dir1/', 'dir2/', 'file']);
-  assert_array_equals(await getSortedDirectoryEntries(dir1), []);
-  assert_array_equals(await getSortedDirectoryEntries(dir2), []);
-  assert_equals(await getFileContents(handle), 'foo');
-}, 'move(dir, "") can be called multiple times');
-
-directory_test(async (t, root) => {
-  const dir1 = await root.getDirectoryHandle('dir1', {create: true});
-  const dir2 = await root.getDirectoryHandle('dir2', {create: true});
-  const handle = await createFileWithContents(t, 'file', 'foo', root);
-
   await handle.move(dir1, 'file-1');
   assert_array_equals(
       await getSortedDirectoryEntries(root), ['dir1/', 'dir2/']);
@@ -238,8 +228,7 @@ directory_test(async (t, root) => {
 
 directory_test(async (t, root) => {
   const handle = await createFileWithContents(t, 'file-before', 'foo', root);
-  await promise_rejects_js(
-      t, TypeError, handle.move(root, '#$23423@352^*3243'));
+  await promise_rejects_js(t, TypeError, handle.move(root, '..'));
 
   assert_array_equals(await getSortedDirectoryEntries(root), ['file-before']);
   assert_equals(await getFileContents(handle), 'foo');
@@ -252,7 +241,7 @@ directory_test(async (t, root) => {
   const file = await createFileWithContents(t, 'file', 'abc', dir_src);
 
   // Cannot move handle with an active writable.
-  const stream = await file.createWritable();
+  const stream = await cleanup_writable(t, await file.createWritable());
   await promise_rejects_dom(t, 'NoModificationAllowedError', file.move(dir_dest));
 
   assert_array_equals(
@@ -275,7 +264,7 @@ directory_test(async (t, root) => {
   const file = await createFileWithContents(t, 'file-before', 'abc', dir_src);
 
   // Cannot move handle with an active writable.
-  const stream = await file.createWritable();
+  const stream = await cleanup_writable(t, await file.createWritable());
   await promise_rejects_dom(t, 'NoModificationAllowedError', file.move(dir_dest));
 
   assert_array_equals(
@@ -300,7 +289,7 @@ directory_test(async (t, root) => {
   const file_dest = await createFileWithContents(t, 'file', '123', dir_dest);
 
   // Cannot overwrite handle with an active writable.
-  const stream = await file_dest.createWritable();
+  const stream = await cleanup_writable(t, await file_dest.createWritable());
   await promise_rejects_dom(t, 'NoModificationAllowedError', file.move(dir_dest));
 
   assert_array_equals(
@@ -308,16 +297,22 @@ directory_test(async (t, root) => {
   // Assert the file is still in the source directory.
   assert_array_equals(await getSortedDirectoryEntries(dir_src), ['file']);
 
-  // Can move handle once the writable is closed.
   await stream.close();
+  assert_array_equals(await getSortedDirectoryEntries(dir_dest), ['file']);
+}, 'move(dir) while the destination file has an open writable fails');
+
+directory_test(async (t, root) => {
+  const dir_src = await root.getDirectoryHandle('dir-src', {create: true});
+  const dir_dest = await root.getDirectoryHandle('dir-dest', {create: true});
+  const file = await createFileWithContents(t, 'file', 'abc', dir_src);
+  const file_dest = await createFileWithContents(t, 'file', '123', dir_dest);
+
   await file.move(dir_dest);
-  assert_array_equals(
-      await getSortedDirectoryEntries(root), ['dir-dest/', 'dir-src/']);
   assert_array_equals(await getSortedDirectoryEntries(dir_src), []);
   assert_array_equals(await getSortedDirectoryEntries(dir_dest), ['file']);
   assert_equals(await getFileContents(file), 'abc');
-  assert_equals(await getFileSize(file), 3);
-}, 'move(dir) while the destination file has an open writable fails');
+  assert_equals(await getFileContents(file_dest), 'abc');
+}, 'move(dir) can overwrite an existing file');
 
 directory_test(async (t, root) => {
   const dir_src = await root.getDirectoryHandle('dir-src', {create: true});
@@ -327,7 +322,7 @@ directory_test(async (t, root) => {
       await createFileWithContents(t, 'file-dest', '123', dir_dest);
 
   // Cannot overwrite handle with an active writable.
-  const stream = await file_dest.createWritable();
+  const stream = await cleanup_writable(t, await file_dest.createWritable());
   await promise_rejects_dom(
       t, 'NoModificationAllowedError', file.move(dir_dest, 'file-dest'));
 
@@ -336,13 +331,39 @@ directory_test(async (t, root) => {
   // Assert the file is still in the source directory.
   assert_array_equals(await getSortedDirectoryEntries(dir_src), ['file-src']);
 
-  // Can move handle once the writable is closed.
   await stream.close();
+  assert_array_equals(await getSortedDirectoryEntries(dir_dest), ['file-dest']);
+}, 'move(dir, name) while the destination file has an open writable fails');
+
+directory_test(async (t, root) => {
+  const dir_src = await root.getDirectoryHandle('dir-src', {create: true});
+  const dir_dest = await root.getDirectoryHandle('dir-dest', {create: true});
+  const file = await createFileWithContents(t, 'file-src', 'abc', dir_src);
+  const file_dest =
+      await createFileWithContents(t, 'file-dest', '123', dir_dest);
+
   await file.move(dir_dest, 'file-dest');
-  assert_array_equals(
-      await getSortedDirectoryEntries(root), ['dir-dest/', 'dir-src/']);
+
+  // Assert the file has been moved to the destination directory and renamed.
   assert_array_equals(await getSortedDirectoryEntries(dir_src), []);
   assert_array_equals(await getSortedDirectoryEntries(dir_dest), ['file-dest']);
   assert_equals(await getFileContents(file), 'abc');
-  assert_equals(await getFileSize(file), 3);
-}, 'move(dir, name) while the destination file has an open writable fails');
+  assert_equals(await getFileContents(file_dest), 'abc');
+}, 'move(dir, name) can overwrite an existing file');
+
+directory_test(async (t, root) => {
+  const handle =
+      await createFileWithContents(t, 'file-to-move', '12345', root);
+  const handle2 = handle;
+
+  await handle.move('file-was-moved');
+
+  assert_equals(await getFileContents(handle), '12345');
+  assert_equals(await getFileSize(handle), 5);
+  assert_equals(await getFileContents(handle2), '12345');
+  assert_equals(await getFileSize(handle2), 5);
+
+  assert_array_equals(
+      await getSortedDirectoryEntries(root),
+      ['file-was-moved']);
+}, 'FileSystemFileHandles are references, not paths');

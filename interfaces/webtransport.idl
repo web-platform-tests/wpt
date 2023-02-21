@@ -22,16 +22,19 @@ interface WebTransport {
   Promise<WebTransportStats> getStats();
   readonly attribute Promise<undefined> ready;
   readonly attribute WebTransportReliabilityMode reliability;
+  readonly attribute WebTransportCongestionControl congestionControl;
   readonly attribute Promise<WebTransportCloseInfo> closed;
   undefined close(optional WebTransportCloseInfo closeInfo = {});
 
   readonly attribute WebTransportDatagramDuplexStream datagrams;
 
-  Promise<WebTransportBidirectionalStream> createBidirectionalStream();
+  Promise<WebTransportBidirectionalStream> createBidirectionalStream(
+      optional WebTransportSendStreamOptions options = {});
   /* a ReadableStream of WebTransportBidirectionalStream objects */
   readonly attribute ReadableStream incomingBidirectionalStreams;
 
-  Promise<WebTransportSendStream> createUnidirectionalStream();
+  Promise<WebTransportSendStream> createUnidirectionalStream(
+      optional WebTransportSendStreamOptions options = {});
   /* a ReadableStream of WebTransportReceiveStream objects */
   readonly attribute ReadableStream incomingUnidirectionalStreams;
 };
@@ -51,11 +54,22 @@ dictionary WebTransportOptions {
   boolean allowPooling = false;
   boolean requireUnreliable = false;
   sequence<WebTransportHash> serverCertificateHashes;
+  WebTransportCongestionControl congestionControl = "default";
+};
+
+enum WebTransportCongestionControl {
+  "default",
+  "throughput",
+  "low-latency",
 };
 
 dictionary WebTransportCloseInfo {
   unsigned long closeCode = 0;
-  DOMString reason = "";
+  USVString reason = "";
+};
+
+dictionary WebTransportSendStreamOptions {
+  long long? sendOrder = null;
 };
 
 dictionary WebTransportStats {
@@ -80,7 +94,7 @@ dictionary WebTransportDatagramStats {
   unsigned long long lostOutgoing;
 };
 
-[Exposed=(Window,Worker), SecureContext]
+[Exposed=(Window,Worker), SecureContext, Transferable]
 interface WebTransportSendStream : WritableStream {
   Promise<WebTransportSendStreamStats> getStats();
 };
@@ -92,7 +106,7 @@ dictionary WebTransportSendStreamStats {
   unsigned long long bytesAcknowledged;
 };
 
-[Exposed=(Window,Worker), SecureContext]
+[Exposed=(Window,Worker), SecureContext, Transferable]
 interface WebTransportReceiveStream : ReadableStream {
   Promise<WebTransportReceiveStreamStats> getStats();
 };
@@ -105,8 +119,8 @@ dictionary WebTransportReceiveStreamStats {
 
 [Exposed=(Window,Worker), SecureContext]
 interface WebTransportBidirectionalStream {
-  readonly attribute ReadableStream readable;
-  readonly attribute WritableStream writable;
+  readonly attribute WebTransportReceiveStream readable;
+  readonly attribute WebTransportSendStream writable;
 };
 
 [Exposed=(Window,Worker), SecureContext]

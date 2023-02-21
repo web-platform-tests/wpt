@@ -49,7 +49,7 @@
 {
   const RESOURCES_PATH =
       '/html/browsers/browsing-the-web/remote-context-helper/resources';
-  const WINDOW_EXECUTOR_PATH = `${RESOURCES_PATH}/executor.html`;
+  const WINDOW_EXECUTOR_PATH = `${RESOURCES_PATH}/executor.sub.html`;
   const WORKER_EXECUTOR_PATH = `${RESOURCES_PATH}/executor-worker.js`;
 
   /**
@@ -236,6 +236,15 @@
         executorCreator: windowExecutorCreator(options),
         extraConfig,
       });
+    }
+
+    async createContextWithUrl(extraConfig) {
+      let saveUrl;
+      let wrapper = await this.createContext({
+        executorCreator: (url) => {saveUrl = url},
+        extraConfig,
+      });
+      return [wrapper, saveUrl];
     }
   }
   // Export this class.

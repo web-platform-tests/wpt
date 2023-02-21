@@ -155,11 +155,17 @@ function run_test() {
 
     // Check for successful signing and verification.
     testVectors.forEach(function(vector) {
+        // RSA signing is deterministic with PKCS#1 v1.5, or PSS with zero-length salts.
+        const isDeterministic = !("saltLength" in vector.algorithm) || vector.algorithm.saltLength == 0;
         var promise = importVectorKeys(vector, ["verify"], ["sign"])
         .then(function(vectors) {
             promise_test(function(test) {
                 return subtle.sign(vector.algorithm, vector.privateKey, vector.plaintext)
                 .then(function(signature) {
+                    if (isDeterministic) {
+                        // If deterministic, we can check the output matches. Otherwise, we can only check it verifies.
+                        assert_true(equalBuffers(signature, vector.signature), "Signing did not give the expected output");
+                    }
                     // Can we verify the new signature?
                     return subtle.verify(vector.algorithm, vector.publicKey, signature, vector.plaintext)
                     .then(function(is_verified) {
@@ -173,10 +179,10 @@ function run_test() {
                     // Will a second signing give us different signature? It should for PSS with non-empty salt
                     return subtle.sign(vector.algorithm, vector.privateKey, vector.plaintext)
                     .then(function(signature) {
-                        if ("saltLength" in vector.algorithm && vector.algorithm.saltLength > 0) {
-                            assert_false(equalBuffers(priorSignature, signature), "Two signings with a salt give different signatures")
-                        } else {
+                        if (isDeterministic) {
                             assert_true(equalBuffers(priorSignature, signature), "Two signings with empty salt give same signature")
+                        } else {
+                            assert_false(equalBuffers(priorSignature, signature), "Two signings with a salt give different signatures")
                         }
                     }, function(err) {
                         assert_unreached("second time verify error for test " + vector.name + ": '" + err.message + "'");
@@ -298,6 +304,35 @@ function run_test() {
         });
 
         all_promises.push(promise);
+    });
+
+    // [RSA-PSS] Verification should fail with wrong saltLength
+    testVectors.forEach(function(vector) {
+        if (vector.algorithm.name === "RSA-PSS") {
+            var promise = importVectorKeys(vector, ["verify"], ["sign"])
+            .then(function(vectors) {
+                promise_test(function(test) {
+                    const saltLength = vector.algorithm.saltLength === 32 ? 48 : 32;
+                    var operation = subtle.verify({ ...vector.algorithm, saltLength }, vector.publicKey, vector.signature, vector.plaintext)
+                    .then(function(is_verified) {
+                        assert_false(is_verified, "Signature NOT verified");
+                    }, function(err) {
+                        assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                    });
+
+                    return operation;
+                }, vector.name + " verification failure with wrong saltLength");
+
+            }, function(err) {
+                // We need a failed test if the importVectorKey operation fails, so
+                // we know we never tested verification.
+                promise_test(function(test) {
+                    assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+                }, "importVectorKeys step: " + vector.name + " verification failure with wrong saltLength");
+            });
+
+            all_promises.push(promise);
+        }
     });
 
     // Verification should fail with wrong plaintext

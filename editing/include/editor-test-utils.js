@@ -96,7 +96,14 @@ class EditorTestUtils {
   // - `{` specifies start boundary before a node
   // - `]` specifies end boundary in a text node
   // - `}` specifies end boundary after a node
-  setupEditingHost(innerHTMLWithRangeMarkers) {
+  //
+  // options can have following fields:
+  // - selection: how to set selection, "addRange" (default),
+  //              "setBaseAndExtent", "setBaseAndExtent-reverse".
+  setupEditingHost(innerHTMLWithRangeMarkers, options = {}) {
+    if (!options.selection) {
+      options.selection = "addRange";
+    }
     const startBoundaries = innerHTMLWithRangeMarkers.match(/\{|\[/g) || [];
     const endBoundaries = innerHTMLWithRangeMarkers.match(/\}|\]/g) || [];
     if (startBoundaries.length !== endBoundaries.length) {
@@ -351,13 +358,59 @@ class EditorTestUtils {
       ranges.push(range);
     }
 
+    if (options.selection != "addRange" && ranges.length > 1) {
+      throw `Failed due to invalid selection option, ${options.selection}, for multiple selection ranges`;
+    }
+
     this.selection.removeAllRanges();
-    for (let range of ranges) {
-      this.selection.addRange(range);
+    for (const range of ranges) {
+      if (options.selection == "addRange") {
+        this.selection.addRange(range);
+      } else if (options.selection == "setBaseAndExtent") {
+        this.selection.setBaseAndExtent(
+          range.startContainer,
+          range.startOffset,
+          range.endContainer,
+          range.endOffset
+        );
+      } else if (options.selection == "setBaseAndExtent-reverse") {
+        this.selection.setBaseAndExtent(
+          range.endContainer,
+          range.endOffset,
+          range.startContainer,
+          range.startOffset
+        );
+      } else {
+        throw `Failed due to invalid selection option, ${options.selection}`;
+      }
     }
 
     if (this.selection.rangeCount != ranges.length) {
       throw `Failed to set selection to the given ranges whose length is ${ranges.length}, but only ${this.selection.rangeCount} ranges are added`;
+    }
+  }
+
+  // Originated from normalizeSerializedStyle in include/tests.js
+  normalizeStyleAttributeValues() {
+    for (const element of Array.from(
+      this.editingHost.querySelectorAll("[style]")
+    )) {
+      element.setAttribute(
+        "style",
+        element
+          .getAttribute("style")
+          // Random spacing differences
+          .replace(/; ?$/, "")
+          .replace(/: /g, ":")
+          // Gecko likes "transparent"
+          .replace(/transparent/g, "rgba(0, 0, 0, 0)")
+          // WebKit likes to look overly precise
+          .replace(/, 0.496094\)/g, ", 0.5)")
+          // Gecko converts anything with full alpha to "transparent" which
+          // then becomes "rgba(0, 0, 0, 0)", so we have to make other
+          // browsers match
+          .replace(/rgba\([0-9]+, [0-9]+, [0-9]+, 0\)/g, "rgba(0, 0, 0, 0)")
+      );
     }
   }
 }

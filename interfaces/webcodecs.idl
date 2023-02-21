@@ -9,6 +9,7 @@ interface AudioDecoder {
 
   readonly attribute CodecState state;
   readonly attribute unsigned long decodeQueueSize;
+  attribute EventHandler ondequeue;
 
   undefined configure(AudioDecoderConfig config);
   undefined decode(EncodedAudioChunk chunk);
@@ -32,6 +33,7 @@ interface VideoDecoder {
 
   readonly attribute CodecState state;
   readonly attribute unsigned long decodeQueueSize;
+  attribute EventHandler ondequeue;
 
   undefined configure(VideoDecoderConfig config);
   undefined decode(EncodedVideoChunk chunk);
@@ -55,6 +57,7 @@ interface AudioEncoder {
 
   readonly attribute CodecState state;
   readonly attribute unsigned long encodeQueueSize;
+  attribute EventHandler ondequeue;
 
   undefined configure(AudioEncoderConfig config);
   undefined encode(AudioData data);
@@ -84,6 +87,7 @@ interface VideoEncoder {
 
   readonly attribute CodecState state;
   readonly attribute unsigned long encodeQueueSize;
+  attribute EventHandler ondequeue;
 
   undefined configure(VideoEncoderConfig config);
   undefined encode(VideoFrame frame, optional VideoEncoderEncodeOptions options = {});
@@ -142,7 +146,7 @@ dictionary AudioDecoderConfig {
 
 dictionary VideoDecoderConfig {
   required DOMString codec;
-  BufferSource description;
+  [AllowShared] BufferSource description;
   [EnforceRange] unsigned long codedWidth;
   [EnforceRange] unsigned long codedHeight;
   [EnforceRange] unsigned long displayAspectWidth;
@@ -166,7 +170,7 @@ dictionary VideoEncoderConfig {
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
   [EnforceRange] unsigned long long bitrate;
-  [EnforceRange] double framerate;
+  double framerate;
   HardwareAcceleration hardwareAcceleration = "no-preference";
   AlphaOption alpha = "discard";
   DOMString scalabilityMode;
@@ -202,7 +206,7 @@ enum CodecState {
 
 callback WebCodecsErrorCallback = undefined(DOMException error);
 
-[Exposed=(Window,DedicatedWorker)]
+[Exposed=(Window,DedicatedWorker), Serializable]
 interface EncodedAudioChunk {
   constructor(EncodedAudioChunkInit init);
   readonly attribute EncodedAudioChunkType type;
@@ -225,7 +229,7 @@ enum EncodedAudioChunkType {
     "delta",
 };
 
-[Exposed=(Window,DedicatedWorker)]
+[Exposed=(Window,DedicatedWorker), Serializable]
 interface EncodedVideoChunk {
   constructor(EncodedVideoChunkInit init);
   readonly attribute EncodedVideoChunkType type;
@@ -240,7 +244,7 @@ dictionary EncodedVideoChunkInit {
   required EncodedVideoChunkType type;
   [EnforceRange] required long long timestamp;        // microseconds
   [EnforceRange] unsigned long long duration;         // microseconds
-  required BufferSource data;
+  required [AllowShared] BufferSource data;
 };
 
 enum EncodedVideoChunkType {
@@ -305,8 +309,10 @@ interface VideoFrame {
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
   readonly attribute unsigned long long? duration;  // microseconds
-  readonly attribute long long? timestamp;          // microseconds
+  readonly attribute long long timestamp;           // microseconds
   readonly attribute VideoColorSpace colorSpace;
+
+  VideoFrameMetadata metadata();
 
   unsigned long allocationSize(
       optional VideoFrameCopyToOptions options = {});
@@ -330,6 +336,8 @@ dictionary VideoFrameInit {
   // Default matches image unless visibleRect is provided.
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
+
+  VideoFrameMetadata metadata;
 };
 
 dictionary VideoFrameBufferInit {
@@ -350,6 +358,10 @@ dictionary VideoFrameBufferInit {
   [EnforceRange] unsigned long displayHeight;
 
   VideoColorSpaceInit colorSpace;
+};
+
+dictionary VideoFrameMetadata {
+  // Possible members are recorded in the VideoFrame Metadata Registry.
 };
 
 dictionary VideoFrameCopyToOptions {
@@ -396,29 +408,35 @@ interface VideoColorSpace {
 };
 
 dictionary VideoColorSpaceInit {
-  VideoColorPrimaries primaries;
-  VideoTransferCharacteristics transfer;
-  VideoMatrixCoefficients matrix;
-  boolean fullRange;
+  VideoColorPrimaries? primaries = null;
+  VideoTransferCharacteristics? transfer = null;
+  VideoMatrixCoefficients? matrix = null;
+  boolean? fullRange = null;
 };
 
 enum VideoColorPrimaries {
-  "bt709",      // BT.709, sRGB
-  "bt470bg",    // BT.601 PAL
-  "smpte170m",  // BT.601 NTSC
+  "bt709",
+  "bt470bg",
+  "smpte170m",
+  "bt2020",
+  "smpte432",
 };
 
 enum VideoTransferCharacteristics {
-  "bt709",         // BT.709
-  "smpte170m",     // BT.601 (functionally the same as bt709)
-  "iec61966-2-1",  // sRGB
+  "bt709",
+  "smpte170m",
+  "iec61966-2-1",
+  "linear",
+  "pq",
+  "hlg",
 };
 
 enum VideoMatrixCoefficients {
-  "rgb",        // sRGB
-  "bt709",      // BT.709
-  "bt470bg",    // BT.601 PAL
-  "smpte170m",  // BT.601 NTSC (functionally the same as bt470bg)
+  "rgb",
+  "bt709",
+  "bt470bg",
+  "smpte170m",
+  "bt2020-ncl",
 };
 
 [Exposed=(Window,DedicatedWorker), SecureContext]
@@ -441,7 +459,6 @@ typedef (BufferSource or ReadableStream) ImageBufferSource;
 dictionary ImageDecoderInit {
   required DOMString type;
   required ImageBufferSource data;
-  PremultiplyAlpha premultiplyAlpha = "default";
   ColorSpaceConversion colorSpaceConversion = "default";
   [EnforceRange] unsigned long desiredWidth;
   [EnforceRange] unsigned long desiredHeight;
@@ -469,10 +486,9 @@ interface ImageTrackList {
 };
 
 [Exposed=(Window,DedicatedWorker)]
-interface ImageTrack : EventTarget {
+interface ImageTrack {
   readonly attribute boolean animated;
   readonly attribute unsigned long frameCount;
   readonly attribute unrestricted float repetitionCount;
-  attribute EventHandler onchange;
   attribute boolean selected;
 };

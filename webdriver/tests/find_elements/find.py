@@ -27,16 +27,27 @@ def test_no_browsing_context(session, closed_frame):
     assert_error(response, "no such window")
 
 
+@pytest.mark.parametrize(
+    "selector",
+    ["#same1", "#in-frame", "#in-shadow-dom"],
+    ids=["not-existent", "existent-other-frame", "existent-inside-shadow-root"],
+)
+def test_no_elements_with_unknown_selector(session, get_test_page,selector):
+    session.url = get_test_page()
+
+    response = find_elements(session, "css selector", selector)
+    elements = assert_success(response)
+    assert elements == []
+
+
 @pytest.mark.parametrize("using", ["a", True, None, 1, [], {}])
 def test_invalid_using_argument(session, using):
-    # Step 1 - 2
     response = find_elements(session, using, "value")
     assert_error(response, "invalid argument")
 
 
 @pytest.mark.parametrize("value", [None, [], {}])
 def test_invalid_selector_argument(session, value):
-    # Step 3 - 4
     response = find_elements(session, "css selector", value)
     assert_error(response, "invalid argument")
 
@@ -48,7 +59,6 @@ def test_invalid_selector_argument(session, value):
                           ("tag name", "a"),
                           ("xpath", "//a")])
 def test_find_elements(session, inline, using, value):
-    # Step 8 - 9
     session.url = inline("<a href=# id=linkText>full link text</a>")
 
     response = find_elements(session, using, value)
@@ -65,7 +75,6 @@ def test_find_elements(session, inline, using, value):
     ("<a href=# style='text-transform: uppercase'>link text</a>", "LINK TEXT"),
 ])
 def test_find_elements_link_text(session, inline, document, value):
-    # Step 8 - 9
     session.url = inline("<a href=#>not wanted</a><br/>{0}".format(document))
     expected = session.execute_script("return document.links[1];")
 
@@ -88,7 +97,6 @@ def test_find_elements_link_text(session, inline, document, value):
     ("<a href=# style='text-transform: uppercase'>partial link text</a>", "LINK"),
 ])
 def test_find_elements_partial_link_text(session, inline, document, value):
-    # Step 8 - 9
     session.url = inline("<a href=#>not wanted</a><br/>{0}".format(document))
     expected = session.execute_script("return document.links[1];")
 
@@ -99,14 +107,6 @@ def test_find_elements_partial_link_text(session, inline, document, value):
 
     found_element = value[0]
     assert_same_element(session, found_element, expected)
-
-
-@pytest.mark.parametrize("using,value", [("css selector", "#wontExist")])
-def test_no_element(session, using, value):
-    # Step 8 - 9
-    response = find_elements(session, using, value)
-    assert_success(response)
-    assert response.body["value"] == []
 
 
 @pytest.mark.parametrize("using,value",

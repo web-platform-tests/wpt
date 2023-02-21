@@ -146,6 +146,7 @@ promise_setup(async () => {
   }[location.search];
 
   // Don't run any tests if the codec is not supported.
+  assert_equals("function", typeof VideoDecoder.isConfigSupported);
   let supported = false;
   try {
     // TODO(sandersd): To properly support H.264 in AVC format, this should
@@ -213,9 +214,9 @@ promise_test(async t => {
   assert_equals(support.config.displayAspectWidth, config.displayAspectWidth, 'displayAspectWidth');
   assert_equals(support.config.displayAspectHeight, config.displayAspectHeight, 'displayAspectHeight');
   assert_equals(support.config.colorSpace.primaries, config.colorSpace.primaries, 'color primaries');
-  assert_equals(support.config.colorSpace.transfer, undefined, 'color transfer');
-  assert_equals(support.config.colorSpace.matrix, undefined, 'color matrix');
-  assert_equals(support.config.colorSpace.fullRange, undefined, 'color range');
+  assert_equals(support.config.colorSpace.transfer, null, 'color transfer');
+  assert_equals(support.config.colorSpace.matrix, null, 'color matrix');
+  assert_equals(support.config.colorSpace.fullRange, null, 'color range');
   assert_false(support.config.hasOwnProperty('futureConfigFeature'), 'futureConfigFeature');
 
   if (config.description) {
@@ -261,6 +262,7 @@ promise_test(async t => {
   callbacks.output = frame => {
     outputs++;
     assert_equals(frame.timestamp, CHUNKS[0].timestamp, 'timestamp');
+    assert_equals(frame.duration, CHUNKS[0].duration, 'duration');
     frame.close();
   };
 
@@ -349,6 +351,7 @@ promise_test(async t => {
 
   let errors = 0;
   callbacks.error = e => errors++;
+  callbacks.output = frame => { frame.close(); };
 
   const decoder = createVideoDecoder(t, callbacks);
   decoder.configure(CONFIG);
@@ -488,6 +491,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const callbacks = {};
+  callbacks.output = frame => { frame.close(); };
   const decoder = createVideoDecoder(t, callbacks);
 
   // No decodes yet.

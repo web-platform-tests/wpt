@@ -2,7 +2,9 @@
 
 import json
 import os
+import signal
 import sys
+from collections import defaultdict
 from datetime import datetime, timedelta
 
 import wptserve
@@ -18,7 +20,7 @@ from . import wptlogging
 from . import wpttest
 from mozlog import capture, handlers
 from .font import FontInstaller
-from .testrunner import ManagerGroup
+from .testrunner import ManagerGroup, TestImplementation
 
 here = os.path.dirname(__file__)
 
@@ -57,7 +59,6 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kw
                                     verify=kwargs.get("verify"),
                                     debug=debug,
                                     extras=run_info_extras,
-                                    enable_webrender=kwargs.get("enable_webrender"),
                                     device_serials=kwargs.get("device_serial"),
                                     adb_binary=kwargs.get("adb_binary"))
 
@@ -159,43 +160,50 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
                        recording, test_environment, product, run_test_kwargs):
     """Runs the entire test suite.
     This is called for each repeat run requested."""
-    tests = []
+    tests_by_type = defaultdict(list)
     for test_type in test_loader.test_types:
-        tests.extend(test_loader.tests[test_type])
+        tests_by_type[test_type].extend(test_loader.tests[test_type])
+        tests_by_type[test_type].extend(test_loader.disabled_tests[test_type])
 
     try:
         test_groups = test_source_cls.tests_by_group(
-            tests, **test_source_kwargs)
+            tests_by_type, **test_source_kwargs)
     except Exception:
         logger.critical("Loading tests failed")
         return False
 
-    logger.suite_start(test_groups,
+    logger.suite_start(tests_by_type,
                        name='web-platform-test',
                        run_info=run_info,
                        extra={"run_by_dir": run_test_kwargs["run_by_dir"]})
+
+    test_implementation_by_type = {}
+
     for test_type in run_test_kwargs["test_types"]:
-        logger.info(f"Running {test_type} tests")
-
+        executor_cls = product.executor_classes.get(test_type)
+        if executor_cls is None:
+            logger.warning(f"Unsupported test type {test_type} for product {product.name}")
+            continue
+        executor_kwargs = product.get_executor_kwargs(logger,
+                                                      test_type,
+                                                      test_environment,
+                                                      run_info,
+                                                      **run_test_kwargs)
         browser_cls = product.get_browser_cls(test_type)
-
         browser_kwargs = product.get_browser_kwargs(logger,
                                                     test_type,
                                                     run_info,
                                                     config=test_environment.config,
                                                     num_test_groups=len(test_groups),
                                                     **run_test_kwargs)
+        test_implementation_by_type[test_type] = TestImplementation(executor_cls,
+                                                                    executor_kwargs,
+                                                                    browser_cls,
+                                                                    browser_kwargs)
 
-        executor_cls = product.executor_classes.get(test_type)
-        executor_kwargs = product.get_executor_kwargs(logger,
-                                                      test_type,
-                                                      test_environment,
-                                                      run_info,
-                                                      **run_test_kwargs)
-
-        if executor_cls is None:
-            logger.error(f"Unsupported test type {test_type} for product {product.name}")
-            continue
+    tests_to_run = {}
+    for test_type, test_implementation in test_implementation_by_type.items():
+        executor_cls = test_implementation.executor_cls
 
         for test in test_loader.disabled_tests[test_type]:
             logger.test_start(test.id)
@@ -203,27 +211,45 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
             test_status.skipped += 1
 
         if test_type == "testharness":
-            run_tests = {"testharness": []}
-            for test in test_loader.tests["testharness"]:
+            tests_to_run[test_type] = []
+            for test in test_loader.tests[test_type]:
                 if ((test.testdriver and not executor_cls.supports_testdriver) or
                         (test.jsshell and not executor_cls.supports_jsshell)):
                     logger.test_start(test.id)
                     logger.test_end(test.id, status="SKIP")
                     test_status.skipped += 1
                 else:
-                    run_tests["testharness"].append(test)
+                    tests_to_run[test_type].append(test)
         else:
-            run_tests = test_loader.tests
+            tests_to_run[test_type] = test_loader.tests[test_type]
 
-        recording.pause()
+    unexpected_tests = set()
+    unexpected_pass_tests = set()
+    recording.pause()
+    retry_counts = run_test_kwargs["retry_unexpected"]
+    for i in range(retry_counts + 1):
+        if i > 0:
+            if not run_test_kwargs["fail_on_unexpected_pass"]:
+                unexpected_fail_tests = unexpected_tests - unexpected_pass_tests
+            else:
+                unexpected_fail_tests = unexpected_tests
+            if len(unexpected_fail_tests) == 0:
+                break
+            for test_type, tests in tests_to_run.items():
+                tests_to_run[test_type] = [test for test in tests
+                                           if test.id in unexpected_fail_tests]
+
+            logger.suite_end()
+            logger.suite_start(tests_to_run,
+                               name='web-platform-test',
+                               run_info=run_info,
+                               extra={"run_by_dir": run_test_kwargs["run_by_dir"]})
+
         with ManagerGroup("web-platform-tests",
                           run_test_kwargs["processes"],
                           test_source_cls,
                           test_source_kwargs,
-                          browser_cls,
-                          browser_kwargs,
-                          executor_cls,
-                          executor_kwargs,
+                          test_implementation_by_type,
                           run_test_kwargs["rerun"],
                           run_test_kwargs["pause_after_test"],
                           run_test_kwargs["pause_on_unexpected"],
@@ -233,16 +259,31 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
                           run_test_kwargs["restart_on_new_group"],
                           recording=recording) as manager_group:
             try:
-                manager_group.run(test_type, run_tests)
+                handle_interrupt_signals()
+                manager_group.run(tests_to_run)
             except KeyboardInterrupt:
                 logger.critical("Main thread got signal")
                 manager_group.stop()
                 raise
+
             test_status.total_tests += manager_group.test_count()
-            test_status.unexpected += manager_group.unexpected_count()
-            test_status.unexpected_pass += manager_group.unexpected_pass_count()
+            unexpected_tests = manager_group.unexpected_tests()
+            unexpected_pass_tests = manager_group.unexpected_pass_tests()
+
+    test_status.unexpected += len(unexpected_tests)
+    test_status.unexpected_pass += len(unexpected_pass_tests)
+
+    logger.suite_end()
 
     return True
+
+def handle_interrupt_signals():
+    def termination_handler(_signum, _unused_frame):
+        raise KeyboardInterrupt()
+    if sys.platform == "win32":
+        signal.signal(signal.SIGBREAK, termination_handler)
+    else:
+        signal.signal(signal.SIGTERM, termination_handler)
 
 
 def evaluate_runs(test_status, run_test_kwargs):
@@ -414,7 +455,6 @@ def run_tests(config, test_paths, product, **kwargs):
                 recording.set(["after-end"])
                 logger.info(f"Got {test_status.unexpected} unexpected results, "
                     f"with {test_status.unexpected_pass} unexpected passes")
-                logger.suite_end()
 
                 # Note this iteration's runtime
                 iteration_runtime = datetime.now() - iteration_start

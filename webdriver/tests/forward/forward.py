@@ -29,6 +29,25 @@ def test_no_browsing_context(session, closed_frame):
     assert_success(response)
 
 
+def test_basic(session, inline):
+    url = inline("<div id=foo>")
+
+    session.url = inline("<div id=bar>")
+    session.url = url
+    session.back()
+
+    element = session.find.css("#bar", all=False)
+
+    response = forward(session)
+    assert_success(response)
+
+    with pytest.raises(error.StaleElementReferenceException):
+        element.property("id")
+
+    assert session.url == url
+    assert session.find.css("#foo", all=False)
+
+
 def test_no_browsing_history(session, inline):
     url = inline("<div id=foo>")
 
@@ -171,6 +190,6 @@ def test_cross_origin(session, url):
 
     assert session.url == second_page
 
-    with pytest.raises(error.StaleElementReferenceException):
+    with pytest.raises(error.NoSuchElementException):
         elem.click()
     elem = session.find.css("#delete", all=False)

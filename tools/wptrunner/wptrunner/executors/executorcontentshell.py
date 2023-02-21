@@ -5,7 +5,6 @@ from .protocol import Protocol, ProtocolPart
 from time import time
 from queue import Empty
 from base64 import b64encode
-from os import linesep
 import json
 
 
@@ -41,17 +40,21 @@ class ContentShellTestPart(ProtocolPart):
     https://chromium.googlesource.com/chromium/src.git/+/HEAD/content/web_test/browser/test_info_extractor.h
     """
     name = "content_shell_test"
-    eof_marker = "#EOF" + linesep  # Marker sent by content_shell after blocks.
+    eof_marker = '#EOF\n'  # Marker sent by content_shell after blocks.
 
     def __init__(self, parent):
         super().__init__(parent)
         self.stdout_queue = parent.browser.stdout_queue
         self.stdin_queue = parent.browser.stdin_queue
 
-    def do_test(self, url, timeout=None):
-        """Sends a url to content_shell and returns the resulting text and image output.
+    def do_test(self, command, timeout=None):
+        """Send a command to content_shell and return the resulting outputs.
+
+        A command consists of a URL to navigate to, followed by an optional
+        expected image hash and 'print' mode specifier. The syntax looks like:
+            http://web-platform.test:8000/test.html['<hash>['print]]
         """
-        self._send_command(url)
+        self._send_command(command)
 
         deadline = time() + timeout if timeout else None
         # The first block can also contain audio data but not in WPT.
@@ -63,7 +66,7 @@ class ContentShellTestPart(ProtocolPart):
     def _send_command(self, command):
         """Sends a single `command`, i.e. a URL to open, to content_shell.
         """
-        self.stdin_queue.put((command + linesep).encode("utf-8"))
+        self.stdin_queue.put((command + "\n").encode("utf-8"))
 
     def _read_block(self, deadline=None):
         """Tries to read a single block of content from stdout before the `deadline`.
@@ -90,6 +93,10 @@ class ContentShellTestPart(ProtocolPart):
 
             if line.endswith(self.eof_marker):
                 result += line[:-len(self.eof_marker)]
+                break
+            elif line.endswith('#EOF\r\n'):
+                result += line[:-len('#EOF\r\n')]
+                self.logger.warning('Got a CRLF-terminated #EOF - this is a driver bug.')
                 break
 
             result += line
@@ -201,13 +208,30 @@ class ContentShellRefTestExecutor(RefTestExecutor):
             return _convert_exception(test, exception, self.protocol.content_shell_errors.read_errors())
 
     def screenshot(self, test, viewport_size, dpi, page_ranges):
-        _, image = self.protocol.content_shell_test.do_test(self.test_url(test),
-                test.timeout * self.timeout_multiplier)
+        # Currently, the page size and DPI are hardcoded for print-reftests:
+        #   https://chromium.googlesource.com/chromium/src/+/4e1b7bc33d42b401d7d9ad1dcba72883add3e2af/content/web_test/renderer/test_runner.cc#100
+        # Content shell has an internal `window.testRunner.setPrintingSize(...)`
+        # API, but it's not callable with protocol mode.
+        assert dpi is None
+        command = self.test_url(test)
+        if self.is_print:
+            # Currently, `content_shell` uses the expected image hash to avoid
+            # dumping a matching image as an optimization. In Chromium, the
+            # hash can be computed from an expected screenshot checked into the
+            # source tree (i.e., without looking at a reference). This is not
+            # possible in `wpt`, so pass an empty hash here to force a dump.
+            command += "''print"
+        _, image = self.protocol.content_shell_test.do_test(
+            command, test.timeout * self.timeout_multiplier)
 
         if not image:
             return False, ("ERROR", self.protocol.content_shell_errors.read_errors())
 
         return True, b64encode(image).decode()
+
+
+class ContentShellPrintRefTestExecutor(ContentShellRefTestExecutor):
+    is_print = True
 
 
 class ContentShellCrashtestExecutor(CrashtestExecutor):

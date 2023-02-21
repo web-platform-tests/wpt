@@ -10,6 +10,7 @@ enum RTCStatsType {
 "remote-inbound-rtp",
 "remote-outbound-rtp",
 "media-source",
+"media-playout",
 "peer-connection",
 "data-channel",
 "stream",
@@ -41,7 +42,6 @@ dictionary RTCReceivedRtpStreamStats : RTCRtpStreamStats {
              unsigned long long   packetsReceived;
              long long            packetsLost;
              double               jitter;
-             unsigned long        framesDropped;
 };
 
 dictionary RTCInboundRtpStreamStats : RTCReceivedRtpStreamStats {
@@ -51,6 +51,8 @@ dictionary RTCInboundRtpStreamStats : RTCReceivedRtpStreamStats {
  DOMString            remoteId;
  unsigned long        framesDecoded;
  unsigned long        keyFramesDecoded;
+ unsigned long        framesRendered;
+ unsigned long        framesDropped;
  unsigned long        frameWidth;
  unsigned long        frameHeight;
  double               framesPerSecond;
@@ -58,6 +60,10 @@ dictionary RTCInboundRtpStreamStats : RTCReceivedRtpStreamStats {
  double               totalDecodeTime;
  double               totalInterFrameDelay;
  double               totalSquaredInterFrameDelay;
+ unsigned long        pauseCount;
+ double               totalPausesDuration;
+ unsigned long        freezeCount;
+ double               totalFreezesDuration;
  DOMHighResTimeStamp  lastPacketReceivedTimestamp;
  unsigned long long   headerBytesReceived;
  unsigned long long   packetsDiscarded;
@@ -84,6 +90,10 @@ dictionary RTCInboundRtpStreamStats : RTCReceivedRtpStreamStats {
  double               totalSamplesDuration;
  unsigned long        framesReceived;
  DOMString            decoderImplementation;
+ DOMString            playoutId;
+ boolean              powerEfficientDecoder;
+ unsigned long        framesAssembledFromMultiplePackets;
+ double               totalAssemblyTime;
 };
 
 dictionary RTCRemoteInboundRtpStreamStats : RTCReceivedRtpStreamStats {
@@ -126,6 +136,9 @@ dictionary RTCOutboundRtpStreamStats : RTCSentRtpStreamStats {
              unsigned long        firCount;
              unsigned long        pliCount;
              DOMString            encoderImplementation;
+             boolean              powerEfficientEncoder;
+             boolean              active;
+             DOMString            scalabilityMode;
 };
 
 enum RTCQualityLimitationReason {
@@ -155,6 +168,10 @@ dictionary RTCAudioSourceStats : RTCMediaSourceStats {
               double              totalSamplesDuration;
               double              echoReturnLoss;
               double              echoReturnLossEnhancement;
+              double              droppedSamplesDuration;
+              unsigned long       droppedSamplesEvents;
+              double              totalCaptureDelay;
+              unsigned long long  totalSamplesCaptured;
 };
 
 dictionary RTCVideoSourceStats : RTCMediaSourceStats {
@@ -162,6 +179,15 @@ dictionary RTCVideoSourceStats : RTCMediaSourceStats {
              unsigned long   height;
              unsigned long   frames;
              double          framesPerSecond;
+};
+
+dictionary RTCAudioPlayoutStats : RTCStats {
+             required DOMString kind;
+             double             synthesizedSamplesDuration;
+             unsigned long      synthesizedSamplesEvents;
+             double             totalSamplesDuration;
+             double             totalPlayoutDelay;
+             unsigned long long totalSamplesCount;
 };
 
 dictionary RTCPeerConnectionStats : RTCStats {
@@ -213,7 +239,12 @@ dictionary RTCIceCandidateStats : RTCStats {
              required RTCIceCandidateType candidateType;
              long                     priority;
              DOMString                url;
-             DOMString                relayProtocol;
+             RTCIceServerTransportProtocol relayProtocol;
+             DOMString                foundation;
+             DOMString                relatedAddress;
+             long                     relatedPort;
+             DOMString                usernameFragment;
+             RTCIceTcpCandidateType   tcpType;
 };
 
 dictionary RTCIceCandidatePairStats : RTCStats {

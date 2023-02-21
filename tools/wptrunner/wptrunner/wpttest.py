@@ -91,7 +91,6 @@ class RunInfo(Dict[str, Any]):
                  browser_channel=None,
                  verify=None,
                  extras=None,
-                 enable_webrender=False,
                  device_serials=None,
                  adb_binary=None):
         import mozinfo
@@ -126,8 +125,6 @@ class RunInfo(Dict[str, Any]):
             self.update(extras)
         if "headless" not in self:
             self["headless"] = False
-
-        self["webrender"] = enable_webrender
 
         if adb_binary:
             self["adb_binary"] = adb_binary
@@ -439,17 +436,6 @@ class Test:
             return []
         except KeyError:
             return []
-
-    def expect_any_subtest_status(self):
-        metadata = self._get_metadata()
-        if metadata is None:
-            return False
-        try:
-            # This key is used by the Blink CI to ignore subtest statuses
-            metadata.get("blink_expect_any_subtest_status")
-            return True
-        except KeyError:
-            return False
 
     def __repr__(self):
         return f"<{self.__module__}.{self.__class__.__name__} {self.id}>"

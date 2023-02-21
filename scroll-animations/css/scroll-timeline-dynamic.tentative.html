@@ -1,8 +1,10 @@
 <!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
 <link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#scroll-timelines">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/web-animations/testcommon.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
   main > div {
     overflow: hidden;
@@ -68,9 +70,10 @@
       }, description);
     };
 
-    // Verify that the computed style is as expected immediately after the
-    // rule change took place.
+    // Verify that the computed style is as expected after a full frame update
+    // following the rule change took place.
     instantiate(async (element, expected) => {
+      await waitForCSSScrollTimelineStyle();
       assert_equals(getComputedStyle(element).width, expected);
     }, description + ' [immediate]');
 
@@ -103,6 +106,25 @@
     element.style = '';
     await assert_width(element, '120px');
   }, 'Switching between document and scroll timelines');
+
+  dynamic_rule_test(async (t, assert_width) => {
+    let element = insertElement();
+
+    // Flush style and create the animation with play pending.
+    getComputedStyle(element).animation;
+
+    let anim = element.getAnimations()[0];
+    assert_true(anim.pending, "The animation is in play pending");
+
+    // Switch to scroll timeline for a pending animation.
+    scroller1.style.scrollTimelineName = 'timeline';
+    element.style.animationTimeline = 'timeline';
+
+    await anim.ready;
+    assert_false(anim.pending, "The animation is not pending");
+
+    await assert_width(element, '120px');
+  }, 'Switching pending animation from document to scroll timelines');
 
   dynamic_rule_test(async (t, assert_width) => {
     let element = insertElement();
@@ -151,7 +173,7 @@
 
     // ScrollTimeline -> none
     element.style.animationTimeline = 'none';
-    await assert_width(element, '0px');
+    await assert_width(element, '120px');
 
     // none -> ScrollTimeline
     element.style.animationTimeline = 'timeline';

@@ -6,12 +6,14 @@
 dictionary SecurePaymentConfirmationRequest {
     required BufferSource challenge;
     required USVString rpId;
-    required FrozenArray<BufferSource> credentialIds;
+    required sequence<BufferSource> credentialIds;
     required PaymentCredentialInstrument instrument;
     unsigned long timeout;
-    DOMString payeeName;
+    USVString payeeName;
     USVString payeeOrigin;
     AuthenticationExtensionsClientInputs extensions;
+    sequence<USVString> locale;
+    boolean showOptOut;
 };
 
 partial dictionary AuthenticationExtensionsClientInputs {
@@ -22,9 +24,9 @@ dictionary AuthenticationExtensionsPaymentInputs {
   boolean isPayment;
 
   // Only used for authentication.
-  USVString rp;
+  USVString rpId;
   USVString topOrigin;
-  DOMString payeeName;
+  USVString payeeName;
   USVString payeeOrigin;
   PaymentCurrencyAmount total;
   PaymentCredentialInstrument instrument;
@@ -35,22 +37,23 @@ dictionary CollectedClientPaymentData : CollectedClientData {
 };
 
 dictionary CollectedClientAdditionalPaymentData {
-    required USVString rp;
+    required USVString rpId;
     required USVString topOrigin;
-    DOMString payeeName;
+    USVString payeeName;
     USVString payeeOrigin;
     required PaymentCurrencyAmount total;
     required PaymentCredentialInstrument instrument;
 };
 
 dictionary PaymentCredentialInstrument {
-    required DOMString displayName;
+    required USVString displayName;
     required USVString icon;
     boolean iconMustBeShown = true;
 };
 
 enum TransactionAutomationMode {
   "none",
-  "autoaccept",
-  "autoreject"
+  "autoAccept",
+  "autoReject",
+  "autoOptOut"
 };

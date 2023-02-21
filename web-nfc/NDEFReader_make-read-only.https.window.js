@@ -1,5 +1,3 @@
-// META: script=/resources/testharness.js
-// META: script=/resources/testharnessreport.js
 // META: script=resources/nfc-helpers.js
 
 // NDEFReader.makeReadOnly method
@@ -10,7 +8,7 @@
 const invalid_signals = ['string', 123, {}, true, Symbol(), () => {}, self];
 
 nfc_test(async t => {
-  await test_driver.set_permission({name: 'nfc'}, 'denied', false);
+  await test_driver.set_permission({name: 'nfc'}, 'denied');
   const ndef = new NDEFReader();
   await promise_rejects_dom(t, 'NotAllowedError', ndef.makeReadOnly());
 }, 'NDEFReader.makeReadOnly should fail if user permission is not granted.');

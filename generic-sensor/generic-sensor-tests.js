@@ -33,10 +33,9 @@ function runGenericSensorTests(sensorName,
     throw new TypeError('readingData.expectedReadings must be an array of ' +
                         'arrays.');
   }
-  if (readings.length != expectedReadings.length) {
-    throw new TypeError('readingData.readings and ' +
-                        'readingData.expectedReadings must have the same ' +
-                        'length.');
+  if (readings.length < expectedReadings.length) {
+    throw new TypeError('readingData.readings\' length must be bigger than ' +
+                        'or equal to readingData.expectedReadings\' length.');
   }
   if (expectedRemappedReadings &&
       !validateReadingFormat(expectedRemappedReadings)) {
@@ -44,8 +43,8 @@ function runGenericSensorTests(sensorName,
                         'array of arrays.');
   }
   if (expectedRemappedReadings &&
-      readings.length != expectedRemappedReadings.length) {
-    throw new TypeError('readingData.readings and ' +
+      expectedReadings.length != expectedRemappedReadings.length) {
+    throw new TypeError('readingData.expectedReadings and ' +
       'readingData.expectedRemappedReadings must have the same ' +
       'length.');
   }
@@ -205,7 +204,7 @@ function runGenericSensorTests(sensorName,
     assert_false(sensor.hasReading);
 
     const mockSensor = await sensorProvider.getCreatedSensor(sensorName);
-    await mockSensor.setSensorReading(readings);
+    mockSensor.setSensorReading(readings);
 
     await sensorWatcher.wait_for("reading");
     const expected = new RingBuffer(expectedReadings).next().value;
@@ -229,7 +228,7 @@ function runGenericSensorTests(sensorName,
     sensor2.start();
 
     const mockSensor = await sensorProvider.getCreatedSensor(sensorName);
-    await mockSensor.setSensorReading(readings);
+    mockSensor.setSensorReading(readings);
 
     await Promise.all([sensorWatcher1.wait_for("reading"),
                        sensorWatcher2.wait_for("reading")]);
@@ -248,6 +247,8 @@ function runGenericSensorTests(sensorName,
     assert_true(verificationFunction(expected, sensor2, /*isNull=*/true));
   }, `${sensorName}: sensor reading is correct.`);
 
+  // Tests that readings maps to expectedReadings correctly. Due to threshold
+  // check and rounding some values might be discarded or changed.
   sensor_test(async (t, sensorProvider) => {
     assert_implements(sensorName in self, `${sensorName} is not supported.`);
     const sensor = new sensorType();
@@ -256,6 +257,26 @@ function runGenericSensorTests(sensorName,
 
     const mockSensor = await sensorProvider.getCreatedSensor(sensorName);
     await mockSensor.setSensorReading(readings);
+
+    for (let expectedReading of expectedReadings) {
+      await sensorWatcher.wait_for("reading");
+      assert_true(sensor.hasReading, "hasReading");
+      assert_true(verificationFunction(expectedReading, sensor),
+                                       "verification");
+    }
+
+    sensor.stop();
+  }, `${sensorName}: Test that readings are all mapped to expectedReadings\
+ correctly.`);
+
+  sensor_test(async (t, sensorProvider) => {
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
+    const sensor = new sensorType();
+    const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
+    sensor.start();
+
+    const mockSensor = await sensorProvider.getCreatedSensor(sensorName);
+    mockSensor.setSensorReading(readings);
 
     await sensorWatcher.wait_for("reading");
     const cachedTimeStamp1 = sensor.timestamp;
@@ -316,7 +337,7 @@ function runGenericSensorTests(sensorName,
     sensor.start();
 
     const mockSensor = await sensorProvider.getCreatedSensor(sensorName);
-    await mockSensor.setSensorReading(readings);
+    mockSensor.setSensorReading(readings);
 
     const expectedBuffer = new RingBuffer(expectedReadings);
     await sensorWatcher.wait_for("reading");
@@ -343,31 +364,43 @@ function runGenericSensorTests(sensorName,
     sensor.stop();
   }, `${sensorName}: Test that fresh reading is fetched on start().`);
 
-//  TBD file a WPT issue: visibilityChangeWatcher times out.
-//  sensor_test(async (t, sensorProvider) => {
-//    assert_implements(sensorName in self, `${sensorName} is not supported.`);
-//    const sensor = new sensorType();
-//    const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
-//    const visibilityChangeWatcher = new EventWatcher(t, document,
-//                                                     "visibilitychange");
-//    sensor.start();
+  sensor_test(async (t, sensorProvider) => {
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
+    const sensor = new sensorType();
+    t.add_cleanup(() => {
+      sensor.stop();
+    });
+    const sensorWatcher = new EventWatcher(t, sensor, ['reading', 'error']);
+    sensor.start();
 
-//    const mockSensor = await sensorProvider.getCreatedSensor(sensorName);
-//    await mockSensor.setSensorReading(readings);
+    const mockSensor = await sensorProvider.getCreatedSensor(sensorName);
+    mockSensor.setSensorReading(readings);
 
-//    await sensorWatcher.wait_for("reading");
-//    const expected = new RingBuffer(expectedReadings).next().value;
-//    assert_true(verificationFunction(expected, sensor));
-//    const cachedTimestamp1 = sensor.timestamp;
+    const expectedBuffer = new RingBuffer(expectedReadings);
+    await sensorWatcher.wait_for('reading');
+    const expected1 = expectedBuffer.next().value;
+    assert_true(verificationFunction(expected1, sensor));
+    assert_true(mockSensor.isReadingData());
+    const cachedTimestamp1 = sensor.timestamp;
 
-//    const win = window.open('', '_blank');
-//    await visibilityChangeWatcher.wait_for("visibilitychange");
-//    const cachedTimestamp2 = sensor.timestamp;
+    const {minimize, restore} = window_state_context(t);
 
-//    win.close();
-//    sensor.stop();
-//    assert_equals(cachedTimestamp1, cachedTimestamp2);
-//  }, `${sensorName}: sensor readings can not be fired on the background tab.`);
+    await minimize();
+    assert_true(document.hidden);
+    await t.step_wait(
+        () => !mockSensor.isReadingData(), 'readings must be suspended');
+    const cachedTimestamp2 = sensor.timestamp;
+    assert_equals(cachedTimestamp1, cachedTimestamp2);
+
+    await restore();
+    assert_false(document.hidden);
+    await t.step_wait(
+        () => mockSensor.isReadingData(), 'readings must be restored');
+    await sensorWatcher.wait_for('reading');
+    const expected2 = expectedBuffer.next().value;
+    assert_true(verificationFunction(expected2, sensor));
+    assert_greater_than(sensor.timestamp, cachedTimestamp2);
+  }, `${sensorName}: Losing visibility must cause readings to be suspended.`);
 
   sensor_test(async (t, sensorProvider) => {
     assert_implements(sensorName in self, `${sensorName} is not supported.`);
@@ -382,7 +415,7 @@ function runGenericSensorTests(sensorName,
     await eventWatcher.wait_for("activate");
 
     const mockSensor = await sensorProvider.getCreatedSensor(sensorName);
-    await mockSensor.setSensorReading(readings);
+    mockSensor.setSensorReading(readings);
 
     // We need |fastSensorFrequency| because 60Hz might be higher than a sensor
     // type's maximum allowed frequency.
@@ -406,6 +439,45 @@ function runGenericSensorTests(sensorName,
       return mockSensor.getSamplingFrequency() === slowSensorFrequency;
     }, "Sampling frequency has dropped to slowSensor's requested frequency");
   }, `${sensorName}: frequency hint works.`);
+
+  sensor_test(async (t, sensorProvider) => {
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
+
+    const sensor1 = new sensorType();
+    const sensor2 = new sensorType();
+
+    return new Promise((resolve, reject) => {
+      sensor1.addEventListener('reading', () => {
+        sensor2.addEventListener('activate', () => {
+          try {
+            assert_true(sensor1.activated);
+            assert_true(sensor1.hasReading);
+            assert_false(verificationFunction(null, sensor1, /*isNull=*/true));
+            assert_not_equals(sensor1.timestamp, null);
+
+            assert_true(sensor2.activated);
+            assert_false(verificationFunction(null, sensor2, /*isNull=*/true));
+            assert_not_equals(sensor2.timestamp, null);
+          } catch (e) {
+            reject(e);
+          }
+        }, { once: true });
+        sensor2.addEventListener('reading', () => {
+          try {
+            assert_true(sensor2.activated);
+            assert_true(sensor2.hasReading);
+            assert_sensor_equals(sensor1, sensor2);
+            resolve();
+          } catch (e) {
+            reject(e);
+          }
+        }, { once: true });
+        sensor2.start();
+      }, { once: true });
+      sensor1.start();
+    });
+  }, `${sensorName}: Readings delivered by shared platform sensor are\
+ immediately accessible to all sensors.`);
 
 //  Re-enable after https://github.com/w3c/sensors/issues/361 is fixed.
 //  test(() => {
@@ -452,7 +524,7 @@ function runGenericSensorTests(sensorName,
     sensor2.start();
 
     const mockSensor = await sensorProvider.getCreatedSensor(sensorName);
-    await mockSensor.setSensorReading(readings);
+    mockSensor.setSensorReading(readings);
 
     await Promise.all([sensorWatcher1.wait_for("reading"),
                        sensorWatcher2.wait_for("reading")]);

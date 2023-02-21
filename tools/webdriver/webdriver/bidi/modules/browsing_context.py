@@ -1,9 +1,23 @@
+import base64
 from typing import Any, Optional, Mapping, MutableMapping
 
 from ._module import BidiModule, command
 
 
 class BrowsingContext(BidiModule):
+    @command
+    def capture_screenshot(self, context: str) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {
+            "context": context
+        }
+
+        return params
+
+    @capture_screenshot.result
+    def _capture_screenshot(self, result: Mapping[str, Any]) -> bytes:
+        assert result["data"] is not None
+        return base64.b64decode(result["data"])
+
     @command
     def close(self, context: Optional[str] = None) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {}
@@ -14,8 +28,12 @@ class BrowsingContext(BidiModule):
         return params
 
     @command
-    def create(self, type_hint: str) -> Mapping[str, Any]:
+    def create(self, type_hint: str, reference_context: Optional[str] = None) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {"type": type_hint}
+
+        if reference_context is not None:
+            params["referenceContext"] = reference_context
+
         return params
 
     @create.result

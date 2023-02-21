@@ -1,33 +1,30 @@
 'use strict';
 
 promise_test(async t => {
-  const update1_promise = new Promise((resolve, reject) => {
-    const observer = new PressureObserver(
-        resolve, {cpuUtilizationThresholds: [0.5]});
+  const changes1_promise = new Promise((resolve, reject) => {
+    const observer = new PressureObserver(resolve, {sampleRate: 1.0});
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu').catch(reject);
   });
 
-  const update2_promise = new Promise((resolve, reject) => {
-    const observer = new PressureObserver(
-        resolve, {cpuUtilizationThresholds: [0.5]});
+  const changes2_promise = new Promise((resolve, reject) => {
+    const observer = new PressureObserver(resolve, {sampleRate: 1.0});
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu').catch(reject);
   });
 
-  const update3_promise = new Promise((resolve, reject) => {
-    const observer = new PressureObserver(
-        resolve, {cpuUtilizationThresholds: [0.5]});
+  const changes3_promise = new Promise((resolve, reject) => {
+    const observer = new PressureObserver(resolve, {sampleRate: 1.0});
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu').catch(reject);
   });
 
-  const [update1, update2, update3] =
-      await Promise.all([update1_promise, update2_promise, update3_promise]);
+  const [changes1, changes2, changes3] =
+      await Promise.all([changes1_promise, changes2_promise, changes3_promise]);
 
-  for (const update of [update1, update2, update3]) {
-    assert_in_array(update.cpuUtilization, [0.25, 0.75],
-                    'cpuUtilization quantization');
+  for (const changes of [changes1, changes2, changes3]) {
+    assert_in_array(
+        changes[0].state, ['nominal', 'fair', 'serious', 'critical'],
+        'cpu pressure state');
   }
-}, 'Three PressureObserver instances with the same quantization ' +
-   'schema receive updates');
+}, 'Three PressureObserver instances receive changes');

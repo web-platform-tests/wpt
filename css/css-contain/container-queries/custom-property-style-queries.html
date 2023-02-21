@@ -101,11 +101,8 @@
   #important {
     --foo: bar;
   }
-  @container style(--foo: bar) {
-    #important-child { color: green; }
-  }
   @container style(--foo: bar !important) {
-    #important-child { color: red; }
+    #important-child { color: green; }
   }
 </style>
 <div id="important">
@@ -198,4 +195,173 @@
   test(() => {
     assert_equals(getComputedStyle(document.querySelector("#revert-layer-child")).color, green);
   }, "Style query with revert-layer keyword is false");
+</script>
+
+<style>
+  #defaulting {
+    --inherit: baz;
+    --inherit-no: baz;
+  }
+  #defaulting-container {
+    --inherit-no: bar;
+    --unset-no: baz;
+    --initial-no: baz;
+  }
+  @container style(--initial: initial) {
+    #initial { color: green; }
+  }
+  @container not style(--initial-no: initial) {
+    #initial-no { color: green; }
+  }
+  @container style(--inherit: inherit) {
+    #inherit { color: green; }
+  }
+  @container not style(--inherit-no: inherit) {
+    #inherit-no { color: green; }
+  }
+  @container style(--unset: unset) {
+    #unset { color: green; }
+  }
+  @container not style(--unset-no: unset) {
+    #unset-no { color: green; }
+  }
+</style>
+<div id="defaulting">
+  <div id="defaulting-container">
+    <div id="initial"></div>
+    <div id="initial-no"></div>
+    <div id="inherit"></div>
+    <div id="inherit-no"></div>
+    <div id="unset"></div>
+    <div id="unset-no"></div>
+  </div>
+</div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#initial")).color, green);
+  }, "Style query 'initial' matching");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#initial-no")).color, green);
+  }, "Style query 'initial' not matching");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#inherit")).color, green);
+  }, "Style query 'inherit' matching");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#inherit-no")).color, green);
+  }, "Style query 'inherit' not matching");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#unset")).color, green);
+  }, "Style query 'unset' matching");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#unset-no")).color, green);
+  }, "Style query 'unset' not matching");
+</script>
+
+<style>
+  @property --reg-length {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 10px;
+  }
+
+  #registered {
+    container-type: inline-size;
+    width: 200px;
+    font-size: 20px;
+  }
+
+  #reg-container-px {
+    --reg-length: 10px;
+  }
+  @container style(--reg-length: 10px) {
+    #reg-px { color: green; }
+  }
+  @container style(--reg-length: initial) {
+    #reg-px-initial { color: green; }
+  }
+
+  #reg-container-font-relative {
+    --reg-length: 10px;
+  }
+  @container style(--reg-length: 0.5em) {
+    #reg-font-relative { color: green; }
+  }
+
+  #reg-container-font-relative-2 {
+    --reg-length: 0.5em;
+  }
+  @container style(--reg-length: 10px) {
+    #reg-font-relative-2 { color: green; }
+  }
+
+  #reg-container-container-relative {
+    width: 100px;
+    --reg-length: 100px;
+  }
+  @container style(--reg-length: 50cqi) {
+    #reg-container-relative { color: green; }
+  }
+
+  #reg-container-initial {
+    --reg-length: 10px;
+  }
+  @container style(--reg-length: 10px) {
+    #reg-initial-value { color: green; }
+  }
+  @container style(--reg-length: initial) {
+    #reg-initial-keyword { color: green; }
+  }
+</style>
+<div id="registered">
+  <div id="reg-container-px">
+    <div id="reg-px"></div>
+    <div id="reg-px-initial"></div>
+  </div>
+  <div id="reg-container-font-relative">
+    <div id="reg-font-relative"></div>
+  </div>
+  <div id="reg-container-font-relative-2">
+    <div id="reg-font-relative-2"></div>
+  </div>
+  <div id="reg-container-container-relative">
+    <div id="reg-container-relative"></div>
+  </div>
+  <div id="reg-container-initial">
+    <div id="reg-initial-value"></div>
+    <div id="reg-initial-keyword"></div>
+  </div>
+</div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#reg-px")).color, green);
+  }, "Match registered <length> custom property with px.");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#reg-px-initial")).color, green);
+  }, "Match registered <length> custom property with px via initial keyword.");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#reg-font-relative")).color, green);
+  }, "Match registered <length> custom property with em in query.");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#reg-font-relative-2")).color, green);
+  }, "Match registered <length> custom property with em in computed value.");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#reg-container-relative")).color, green);
+  }, "Match registered <length> custom property with cqi unit.");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#reg-initial-value")).color, green);
+  }, "Match registered <length> custom property with initial value.");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#reg-initial-keyword")).color, green);
+  }, "Match registered <length> custom property with initial value via initial keyword.");
 </script>

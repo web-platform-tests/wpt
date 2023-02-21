@@ -26,6 +26,31 @@ class DeleteAllCookiesAction:
         self.protocol.cookies.delete_all_cookies()
 
 
+class GetAllCookiesAction:
+    name = "get_all_cookies"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("Getting all cookies")
+        return self.protocol.cookies.get_all_cookies()
+
+
+class GetNamedCookieAction:
+    name = "get_named_cookie"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        name = payload["name"]
+        self.logger.debug("Getting cookie named %s" % name)
+        return self.protocol.cookies.get_named_cookie(name)
+
+
 class SendKeysAction:
     name = "send_keys"
 
@@ -118,9 +143,8 @@ class SetPermissionAction:
         descriptor = permission_params["descriptor"]
         name = descriptor["name"]
         state = permission_params["state"]
-        one_realm = permission_params.get("oneRealm", False)
-        self.logger.debug("Setting permission %s to %s, oneRealm=%s" % (name, state, one_realm))
-        self.protocol.set_permission.set_permission(descriptor, state, one_realm)
+        self.logger.debug("Setting permission %s to %s" % (name, state))
+        self.protocol.set_permission.set_permission(descriptor, state)
 
 class AddVirtualAuthenticatorAction:
     name = "add_virtual_authenticator"
@@ -227,6 +251,8 @@ class SetSPCTransactionModeAction:
 
 actions = [ClickAction,
            DeleteAllCookiesAction,
+           GetAllCookiesAction,
+           GetNamedCookieAction,
            SendKeysAction,
            MinimizeWindowAction,
            SetWindowRectAction,

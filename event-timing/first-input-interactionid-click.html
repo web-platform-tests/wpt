@@ -15,22 +15,18 @@
   let hasFirstInputEntry = false;
   let hasEventTimingPointerDownEntry = false;
 
-  const isReadyForCheck = () => {
-    return hasFirstInputEntry && hasEventTimingPointerDownEntry;
-  }
-
-  async_test(function (t) {
+  promise_test(async t => {
     assert_implements(window.PerformanceEventTiming, 'Event Timing is not supported.');
 
-    new PerformanceObserver(t.step_func(entryList => {
+    const callback = (entryList) => {
       entryList.getEntries().forEach(entry => {
         switch (entry.entryType) {
-          case "first-input": {
+          case 'first-input': {
             firstInputInteractionId = entry.interactionId;
             hasFirstInputEntry = true;
             break;
           }
-          case "event": {
+          case 'event': {
             if ('pointerdown' == entry.name) {
               eventTimingPointerDownInteractionId = entry.interactionId;
               hasEventTimingPointerDownEntry = true;
@@ -38,16 +34,17 @@
             break;
           }
         }
-      })
+      });
+    };
+    const readyToResolve = () => {
+      return hasFirstInputEntry && hasEventTimingPointerDownEntry;
+    }
+    const observerPromise = createPerformanceObserverPromise(['event', 'first-input'], callback, readyToResolve);
+    await interactAndObserve('click', document.getElementById('testButtonId'), observerPromise);
 
-      if (isReadyForCheck()) {
-        assert_greater_than(firstInputInteractionId, 0, 'The first input entry should have a non-trivial interactionId');
-        assert_equals(firstInputInteractionId, eventTimingPointerDownInteractionId, 'The first input entry should have the same interactionId as the event timing pointerdown entry');
-        t.done();
-      }
-    })).observe({ entryTypes: ["event", "first-input"] });
+    assert_greater_than(firstInputInteractionId, 0, 'The first input entry should have a non-trivial interactionId');
+    assert_equals(firstInputInteractionId, eventTimingPointerDownInteractionId, 'The first input entry should have the same interactionId as the event timing pointerdown entry');
 
-    addListenersAndClick(document.getElementById('testButtonId'));
   }, "The interactionId of the first input entry should match the same pointerdown entry of event timing when click.");
 </script>
 

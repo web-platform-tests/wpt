@@ -112,17 +112,21 @@ jobs:
   - script: |
       set -eux -o pipefail
       ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --channel dev chrome infrastructure/
+    condition: succeededOrFailed()
     displayName: 'Run tests (Chrome Dev)'
   - script: |
       set -eux -o pipefail
       ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --channel nightly firefox infrastructure/
+    condition: succeededOrFailed()
     displayName: 'Run tests (Firefox Nightly)'
   - script: |
       set -eux -o pipefail
       export SYSTEM_VERSION_COMPAT=0
       ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --channel preview safari infrastructure/
+    condition: succeededOrFailed()
     displayName: 'Run tests (Safari Technology Preview)'
   - template: tools/ci/azure/publish_logs.yml
+  - template: tools/ci/azure/sysdiagnose.yml
 
 - job: tools_unittest_mac_py37
   displayName: 'tools/ unittests: macOS + Python 3.7'
@@ -375,6 +379,7 @@ jobs:
     inputs:
       artifactName: 'edge-stable-results'
   - template: tools/ci/azure/publish_logs.yml
+  - template: tools/ci/azure/sysdiagnose.yml
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
     dependsOn: results_edge_stable
@@ -413,6 +418,7 @@ jobs:
     inputs:
       artifactName: 'edge-dev-results'
   - template: tools/ci/azure/publish_logs.yml
+  - template: tools/ci/azure/sysdiagnose.yml
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
     dependsOn: results_edge_dev
@@ -450,6 +456,7 @@ jobs:
     inputs:
       artifactName: 'edge-canary-results'
   - template: tools/ci/azure/publish_logs.yml
+  - template: tools/ci/azure/sysdiagnose.yml
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
     dependsOn: results_edge_canary
@@ -490,6 +497,7 @@ jobs:
     inputs:
       artifactName: 'safari-results'
   - template: tools/ci/azure/publish_logs.yml
+  - template: tools/ci/azure/sysdiagnose.yml
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
     dependsOn: results_safari
@@ -528,6 +536,7 @@ jobs:
     inputs:
       artifactName: 'safari-preview-results'
   - template: tools/ci/azure/publish_logs.yml
+  - template: tools/ci/azure/sysdiagnose.yml
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
     dependsOn: results_safari_preview

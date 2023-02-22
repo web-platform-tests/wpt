@@ -2240,5 +2240,15 @@
                 "hash": ""
             }
         }
+    ],
+    "href": [
+        {
+            "href": "file:///var/log/system.log",
+            "new_value": "http://0300.168.0xF0",
+            "expected": {
+                "href": "http://192.168.0.240/",
+                "protocol": "http:"
+            }
+        }
     ]
 }

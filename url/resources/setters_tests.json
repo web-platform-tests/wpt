@@ -1661,6 +1661,22 @@
                 "href": "javascript://x:12/",
                 "port": "12"
             }
+        },
+        {
+            "comment": "Leading u0009 on special scheme",
+            "href": "https://domain.com:443",
+            "new_value": "\u00098080",
+            "expected": {
+                "port": "8080"
+            }
+        },
+        {
+            "comment": "Leading u0009 on non-special scheme",
+            "href": "wpt++://domain.com:443",
+            "new_value": "\u00098080",
+            "expected": {
+                "port": "8080"
+            }
         }
     ],
     "pathname": [

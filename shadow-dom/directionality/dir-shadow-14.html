@@ -19,7 +19,7 @@ div {border: 1px solid gray; margin: 1em;}
 
 <script type="text/javascript">
   let root = host.attachShadow({mode:"open"});
-  root.innerHTML = `<style>p {width: 50%; border: 1px dotted;}</style><p>اختبر</p>`;
+  root.innerHTML = `<style>p {width: 50%; border: 1px dotted;}</style><p>اختبر.</p>`;
   result.innerHTML += getComputedStyle(root.querySelector('p')).direction + '.';
 </script>
 

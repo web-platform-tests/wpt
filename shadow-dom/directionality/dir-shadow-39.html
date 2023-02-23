@@ -16,12 +16,12 @@ span {border: 1px solid silver;}
 <body>
 
 <p>text in the light tree, slotted node</p>
-<div id="host">slotted text</div>
+<div id="host">slotted text.</div>
 <p id="result">The computed `direction` value for the defaultContent when there is a slotted node: </p>
 
 <script type="text/javascript">
   let root = host.attachShadow({mode:"open"});
-  root.innerHTML = `<slot dir=auto><div>&#1571;&#1582;&#1576;&#1575;&#1585;</div></slot>`;
+  root.innerHTML = `<slot dir=auto><div>&#1571;&#1582;&#1576;&#1575;&#1585;</div>.</slot>`;
   result.innerHTML += getComputedStyle(root.firstChild.firstChild).direction + " (on the " +  root.firstChild.firstChild.localName + ').';
 </script>
 

@@ -21,7 +21,7 @@ span {border: 1px solid silver;}
 
 <script type="text/javascript">
   let root = host.attachShadow({mode:"open"});
-  root.innerHTML = `<slot dir=auto><div>&#1571;&#1582;&#1576;&#1575;&#1585;</div></slot>`;
+  root.innerHTML = `<slot dir=auto><div>&#1571;&#1582;&#1576;&#1575;&#1585;.</div></slot>`;
   result.innerHTML += getComputedStyle(root.firstChild.firstChild).direction + " (on the " +  root.firstChild.firstChild.localName + ').';
 </script>
 

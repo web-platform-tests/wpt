@@ -16,12 +16,12 @@ span {border: 1px solid silver;}
 <body>
 
 <p>`dir=auto` and text in a div in the shadow tree, text in the light tree</p>
-<div id="host">123 456</div>
+<div id="host">123 456.</div>
 <p id="result">The computed `direction` value for the light tree text is: </p>
 
 <script type="text/javascript">
   let root = host.attachShadow({mode:"open"});
-  root.innerHTML = `<div dir="auto">اختبر<slot></slot></div>`;
+  root.innerHTML = `<div dir="auto">اختبر.<slot></slot></div>`;
   result.innerHTML += getComputedStyle(root.firstChild).direction + " (on the " +  root.firstChild.localName + ') and ' + getComputedStyle(host).direction + ' (on the ' + host.textContent + ').';
 </script>
 

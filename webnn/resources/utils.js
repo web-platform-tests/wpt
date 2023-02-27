@@ -268,6 +268,7 @@ const PrecisionMetrics = {
   sin: {ATOL: {float32: 1/1024, float16: 1/512}},
   tan: {ATOL: {float32: 1/1024, float16: 1/512}},
   // End Element-wise unary operations
+  hardSwish: {ULP: {float32: 4, float16: 4}},
   gemm: {ULP: {float32: getGemmPrecisionTolerance, float16: getGemmPrecisionTolerance}},
   leakyRelu: {ULP: {float32: 1, float16: 1}},
   matmul: {ULP: {float32: getMatmulPrecisionTolerance, float16: getMatmulPrecisionTolerance}},

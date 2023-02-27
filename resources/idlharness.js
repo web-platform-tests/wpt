@@ -2358,7 +2358,8 @@ IdlInterface.prototype.do_member_operation_asserts = function(memberHolderObject
                   "property must be a function");
 
     const ctors = this.members.filter(function(m) {
-        return m.type == "operation" && m.name == member.name;
+        return m.type == "operation" && m.name == member.name &&
+            (m.special === "static") === (member.special === "static");
     });
     assert_equals(
         memberHolderObject[member.name].length,

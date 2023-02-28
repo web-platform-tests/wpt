@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="author" href="mailto:sammy.gill@apple.com">
+<link rel="help" href="https://drafts.csswg.org/css-rhythm/#block-step-size">
+<meta name="assert" content="Item's margin box block size gets rounded up to the nearested multiple of block-step-size using font relative unit">
+<style>
+div {
+    inline-size: 50px;
+    block-size: 50px;
+    background-color: green;
+}
+div:first-child {
+    margin-block: 10px;
+}
+</style>
+</head>
+<body>
+<div></div>
+<div></div>
+</body>
+</html>

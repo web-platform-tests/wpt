@@ -1,8 +1,7 @@
 import asyncio
-
 import pytest
 
-from ... import create_console_api_message, recursive_compare
+from ... import create_console_api_message
 
 
 # The basic use case of subscribing to all contexts for a single event
@@ -35,12 +34,9 @@ async def test_subscribe_to_one_context(
     await on_entry_added
 
     assert len(events) == 1
-    recursive_compare(
-        {
-            "text": expected_text,
-        },
-        events[0],
-    )
+    assert {
+        "text": expected_text,
+    } <= events[0]
 
     remove_listener()
 
@@ -67,12 +63,9 @@ async def test_subscribe_to_one_context_twice(
     await on_entry_added
 
     assert len(events) == 1
-    recursive_compare(
-        {
-            "text": expected_text,
-        },
-        events[0],
-    )
+    assert {
+        "text": expected_text,
+    } <= events[0]
 
     assert len(events) == 1
 
@@ -107,12 +100,9 @@ async def test_subscribe_to_one_context_and_then_to_all(
     await on_entry_added
 
     assert len(events) == 1
-    recursive_compare(
-        {
-            "text": expected_text,
-        },
-        events[0],
-    )
+    assert {
+        "text": expected_text,
+    } <= events[0]
 
     events = []
 
@@ -121,35 +111,26 @@ async def test_subscribe_to_one_context_and_then_to_all(
 
     # Check that we received the buffered event
     assert len(events) == 1
-    recursive_compare(
-        {
-            "text": buffered_event_expected_text,
-        },
-        events[0],
-    )
+    assert {
+        "text": buffered_event_expected_text,
+    } <= events[0]
 
     # Trigger again events in each context
     expected_text = await create_console_api_message(bidi_session, new_tab, "text3")
     await on_entry_added
 
     assert len(events) == 2
-    recursive_compare(
-        {
-            "text": expected_text,
-        },
-        events[1],
-    )
+    assert {
+        "text": expected_text,
+    } <= events[1]
 
     expected_text = await create_console_api_message(bidi_session, top_context, "text4")
     await on_entry_added
 
     assert len(events) == 3
-    recursive_compare(
-        {
-            "text": expected_text,
-        },
-        events[2],
-    )
+    assert {
+        "text": expected_text,
+    } <= events[2]
 
     remove_listener()
 

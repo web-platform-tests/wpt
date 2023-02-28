@@ -1,8 +1,7 @@
 import pytest
 
+from anys import AnyLE
 from webdriver.bidi.modules.script import ContextTarget
-
-from ... import recursive_compare
 
 PAGE_ABOUT_BLANK = "about:blank"
 
@@ -21,14 +20,9 @@ async def test_type(bidi_session, top_context, type):
         await_promise=False,
     )
 
-    recursive_compare(
-        [
-            {
-                "context": top_context["context"],
-                "origin": "null",
-                "realm": top_context_result["realm"],
-                "type": type,
-            }
-        ],
-        result,
-    )
+    assert [AnyLE({
+        "context": top_context["context"],
+        "origin": "null",
+        "realm": top_context_result["realm"],
+        "type": type,
+    })] == result

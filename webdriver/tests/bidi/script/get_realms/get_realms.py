@@ -1,8 +1,7 @@
 import pytest
 
+from anys import AnyLE, ANY_STR
 from webdriver.bidi.modules.script import ContextTarget
-
-from ... import any_string, recursive_compare
 
 PAGE_ABOUT_BLANK = "about:blank"
 
@@ -11,17 +10,14 @@ PAGE_ABOUT_BLANK = "about:blank"
 async def test_payload_types(bidi_session):
     result = await bidi_session.script.get_realms()
 
-    recursive_compare(
-        [
-            {
-                "context": any_string,
-                "origin": any_string,
-                "realm": any_string,
-                "type": any_string,
-            }
-        ],
-        result,
-    )
+    assert [
+        AnyLE({
+            "context": ANY_STR,
+            "origin": ANY_STR,
+            "realm": ANY_STR,
+            "type": ANY_STR,
+        })
+    ] == result
 
 
 @pytest.mark.asyncio
@@ -67,23 +63,20 @@ async def test_multiple_top_level_contexts(bidi_session, top_context, type_hint)
         await_promise=False,
     )
 
-    recursive_compare(
-        [
-            {
-                "context": top_context["context"],
-                "origin": "null",
-                "realm": top_context_result["realm"],
-                "type": "window",
-            },
-            {
-                "context": new_context["context"],
-                "origin": "null",
-                "realm": new_context_result["realm"],
-                "type": "window",
-            },
-        ],
-        result,
-    )
+    assert [
+        AnyLE({
+            "context": top_context["context"],
+            "origin": "null",
+            "realm": top_context_result["realm"],
+            "type": "window",
+        }),
+        AnyLE({
+            "context": new_context["context"],
+            "origin": "null",
+            "realm": new_context_result["realm"],
+            "type": "window",
+        }),
+    ] == result
 
 
 @pytest.mark.asyncio
@@ -124,23 +117,20 @@ async def test_iframes(
         await_promise=False,
     )
 
-    recursive_compare(
-        [
-            {
-                "context": top_context["context"],
-                "origin": test_origin,
-                "realm": top_context_result["realm"],
-                "type": "window",
-            },
-            {
-                "context": frame_context,
-                "origin": test_alt_origin,
-                "realm": frame_context_result["realm"],
-                "type": "window",
-            },
-        ],
-        result,
-    )
+    assert [
+        AnyLE({
+            "context": top_context["context"],
+            "origin": test_origin,
+            "realm": top_context_result["realm"],
+            "type": "window",
+        }),
+        AnyLE({
+            "context": frame_context,
+            "origin": test_alt_origin,
+            "realm": frame_context_result["realm"],
+            "type": "window",
+        }),
+    ] == result
 
     # Clean up origin
     await bidi_session.browsing_context.navigate(
@@ -165,17 +155,14 @@ async def test_origin(bidi_session, inline, top_context, test_origin):
         await_promise=False,
     )
 
-    recursive_compare(
-        [
-            {
-                "context": top_context["context"],
-                "origin": test_origin,
-                "realm": top_context_result["realm"],
-                "type": "window",
-            }
-        ],
-        result,
-    )
+    assert [
+        AnyLE({
+            "context": top_context["context"],
+            "origin": test_origin,
+            "realm": top_context_result["realm"],
+            "type": "window",
+        })
+    ] == result
 
     # Clean up origin
     await bidi_session.browsing_context.navigate(

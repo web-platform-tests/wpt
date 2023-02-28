@@ -1,8 +1,7 @@
 import pytest
 
+from anys import AnyLE
 from webdriver.bidi.modules.script import ContextTarget
-
-from ... import recursive_compare
 
 
 @pytest.mark.asyncio
@@ -29,17 +28,14 @@ async def test_context(
 
     result = await bidi_session.script.get_realms(context=new_context["context"])
 
-    recursive_compare(
-        [
-            {
-                "context": new_context["context"],
-                "origin": test_origin,
-                "realm": new_context_result["realm"],
-                "type": "window",
-            },
-        ],
-        result,
-    )
+    assert [
+        AnyLE({
+            "context": new_context["context"],
+            "origin": test_origin,
+            "realm": new_context_result["realm"],
+            "type": "window",
+        }),
+    ] == result
 
     contexts = await bidi_session.browsing_context.get_tree(root=new_context["context"])
     assert len(contexts) == 1
@@ -57,14 +53,11 @@ async def test_context(
 
     result = await bidi_session.script.get_realms(context=frame_context)
 
-    recursive_compare(
-        [
-            {
-                "context": frame_context,
-                "origin": test_alt_origin,
-                "realm": frame_context_result["realm"],
-                "type": "window",
-            },
-        ],
-        result,
-    )
+    assert [
+        AnyLE({
+            "context": frame_context,
+            "origin": test_alt_origin,
+            "realm": frame_context_result["realm"],
+            "type": "window",
+        }),
+    ] == result

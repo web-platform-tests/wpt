@@ -1,3 +1,4 @@
+anys==0.2.1
 pytest==7.3.1
 pytest-cov==4.0.0
 hypothesis==6.72.4

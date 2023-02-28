@@ -1,8 +1,6 @@
 import pytest
 from webdriver.bidi.modules.script import ContextTarget, RealmTarget
 
-from ... import recursive_compare
-
 
 @pytest.mark.asyncio
 async def test_eval(bidi_session, top_context):
@@ -11,7 +9,7 @@ async def test_eval(bidi_session, top_context):
         target=ContextTarget(top_context["context"]),
         await_promise=True)
 
-    assert result == {
+    assert result <= {
         "type": "number",
         "value": 3}
 
@@ -23,7 +21,7 @@ async def test_interact_with_dom(bidi_session, top_context):
         target=ContextTarget(top_context["context"]),
         await_promise=True)
 
-    assert result == {
+    assert result <= {
         "type": "string",
         "value": "window.location.href: about:blank"}
 
@@ -37,7 +35,7 @@ async def test_target_realm(bidi_session, default_realm):
         await_promise=True,
     )
 
-    recursive_compare({"realm": default_realm, "result": {"type": "number", "value": 3}}, result)
+    assert {"realm": default_realm, "result": {"type": "number", "value": 3}} <= result
 
     result = await bidi_session.script.evaluate(
         raw_result=True,
@@ -46,9 +44,7 @@ async def test_target_realm(bidi_session, default_realm):
         await_promise=True,
     )
 
-    recursive_compare(
-        {"realm": default_realm, "result": {"type": "number", "value": 3}}, result
-    )
+    assert {"realm": default_realm, "result": {"type": "number", "value": 3}} <= result
 
 
 @pytest.mark.asyncio
@@ -80,9 +76,7 @@ async def test_different_target_realm(bidi_session):
         target=RealmTarget(first_tab_default_realm),
         await_promise=True,
     )
-    recursive_compare(
-        {"realm": first_tab_default_realm, "result": {"type": "number", "value": 3}}, top_context_result
-    )
+    assert {"realm": first_tab_default_realm, "result": {"type": "number", "value": 3}} <= top_context_result
 
     new_context_result = await bidi_session.script.evaluate(
         raw_result=True,
@@ -90,6 +84,4 @@ async def test_different_target_realm(bidi_session):
         target=RealmTarget(second_tab_default_realm),
         await_promise=True,
     )
-    recursive_compare(
-        {"realm": second_tab_default_realm, "result": {"type": "number", "value": 5}}, new_context_result
-    )
+    assert {"realm": second_tab_default_realm, "result": {"type": "number", "value": 5}} <= new_context_result

@@ -1,8 +1,7 @@
 import pytest
 
+from anys import AnyLE
 from webdriver.bidi.modules.script import ContextTarget
-
-from ... import recursive_compare
 
 PAGE_ABOUT_BLANK = "about:blank"
 
@@ -26,24 +25,21 @@ async def test_sandbox(bidi_session, top_context):
 
     result = await bidi_session.script.get_realms()
 
-    recursive_compare(
-        [
-            {
-                "context": top_context["context"],
-                "origin": "null",
-                "realm": evaluate_result["realm"],
-                "type": "window",
-            },
-            {
-                "context": top_context["context"],
-                "origin": "null",
-                "realm": evaluate_in_sandbox_result["realm"],
-                "sandbox": "sandbox",
-                "type": "window",
-            },
-        ],
-        result,
-    )
+    assert [
+        AnyLE({
+            "context": top_context["context"],
+            "origin": "null",
+            "realm": evaluate_result["realm"],
+            "type": "window",
+        }),
+        AnyLE({
+            "context": top_context["context"],
+            "origin": "null",
+            "realm": evaluate_in_sandbox_result["realm"],
+            "sandbox": "sandbox",
+            "type": "window",
+        }),
+    ] == result
 
     # Reload to clean up sandboxes
     await bidi_session.browsing_context.navigate(
@@ -75,24 +71,21 @@ async def test_origin(bidi_session, inline, top_context, test_origin):
 
     result = await bidi_session.script.get_realms()
 
-    recursive_compare(
-        [
-            {
-                "context": top_context["context"],
-                "origin": test_origin,
-                "realm": evaluate_result["realm"],
-                "type": "window",
-            },
-            {
-                "context": top_context["context"],
-                "origin": test_origin,
-                "realm": evaluate_in_sandbox_result["realm"],
-                "sandbox": "sandbox",
-                "type": "window",
-            },
-        ],
-        result,
-    )
+    assert [
+        AnyLE({
+            "context": top_context["context"],
+            "origin": test_origin,
+            "realm": evaluate_result["realm"],
+            "type": "window",
+        }),
+        AnyLE({
+            "context": top_context["context"],
+            "origin": test_origin,
+            "realm": evaluate_in_sandbox_result["realm"],
+            "sandbox": "sandbox",
+            "type": "window",
+        }),
+    ] == result
 
     # Reload to clean up sandboxes
     await bidi_session.browsing_context.navigate(
@@ -120,24 +113,21 @@ async def test_type(bidi_session, top_context):
     # Should be extended when more types are supported
     result = await bidi_session.script.get_realms(type="window")
 
-    recursive_compare(
-        [
-            {
-                "context": top_context["context"],
-                "origin": "null",
-                "realm": evaluate_result["realm"],
-                "type": "window",
-            },
-            {
-                "context": top_context["context"],
-                "origin": "null",
-                "realm": evaluate_in_sandbox_result["realm"],
-                "sandbox": "sandbox",
-                "type": "window",
-            },
-        ],
-        result,
-    )
+    assert [
+        AnyLE({
+            "context": top_context["context"],
+            "origin": "null",
+            "realm": evaluate_result["realm"],
+            "type": "window",
+        }),
+        AnyLE({
+            "context": top_context["context"],
+            "origin": "null",
+            "realm": evaluate_in_sandbox_result["realm"],
+            "sandbox": "sandbox",
+            "type": "window",
+        }),
+    ] == result
 
     # Reload to clean up sandboxes
     await bidi_session.browsing_context.navigate(
@@ -177,24 +167,21 @@ async def test_multiple_top_level_contexts(
     )
 
     result = await bidi_session.script.get_realms(context=new_context["context"])
-    recursive_compare(
-        [
-            {
-                "context": new_context["context"],
-                "origin": test_origin,
-                "realm": evaluate_result["realm"],
-                "type": "window",
-            },
-            {
-                "context": new_context["context"],
-                "origin": test_origin,
-                "realm": evaluate_in_sandbox_result["realm"],
-                "sandbox": "sandbox",
-                "type": "window",
-            },
-        ],
-        result,
-    )
+    assert [
+        AnyLE({
+            "context": new_context["context"],
+            "origin": test_origin,
+            "realm": evaluate_result["realm"],
+            "type": "window",
+        }),
+        AnyLE({
+            "context": new_context["context"],
+            "origin": test_origin,
+            "realm": evaluate_in_sandbox_result["realm"],
+            "sandbox": "sandbox",
+            "type": "window",
+        }),
+    ] == result
 
     contexts = await bidi_session.browsing_context.get_tree(root=new_context["context"])
     assert len(contexts) == 1
@@ -218,21 +205,18 @@ async def test_multiple_top_level_contexts(
     )
 
     result = await bidi_session.script.get_realms(context=frame_context)
-    recursive_compare(
-        [
-            {
-                "context": frame_context,
-                "origin": test_alt_origin,
-                "realm": evaluate_result["realm"],
-                "type": "window",
-            },
-            {
-                "context": frame_context,
-                "origin": test_alt_origin,
-                "realm": evaluate_in_sandbox_result["realm"],
-                "sandbox": "sandbox",
-                "type": "window",
-            },
-        ],
-        result,
-    )
+    assert [
+        AnyLE({
+            "context": frame_context,
+            "origin": test_alt_origin,
+            "realm": evaluate_result["realm"],
+            "type": "window",
+        }),
+        AnyLE({
+            "context": frame_context,
+            "origin": test_alt_origin,
+            "realm": evaluate_in_sandbox_result["realm"],
+            "sandbox": "sandbox",
+            "type": "window",
+        }),
+    ] == result

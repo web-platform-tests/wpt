@@ -3,8 +3,6 @@ from tests.support.sync import AsyncPoll
 import webdriver.bidi.error as error
 from webdriver.bidi.modules.script import ContextTarget, SerializationOptions
 
-from ... import any_string, recursive_compare
-
 
 @pytest.mark.asyncio
 async def test_default_arguments(bidi_session, top_context):
@@ -13,10 +11,10 @@ async def test_default_arguments(bidi_session, top_context):
         await_promise=False,
         target=ContextTarget(top_context["context"]))
 
-    recursive_compare({
+    assert {
         "type": "array",
         "value": []
-    }, result)
+    } <= result
 
 
 @pytest.mark.asyncio
@@ -50,7 +48,7 @@ async def test_primitive_value(bidi_session, top_context, argument, expected):
         target=ContextTarget(top_context["context"]),
     )
 
-    recursive_compare(argument, result)
+    assert argument <= result
 
 
 @pytest.mark.asyncio
@@ -68,7 +66,7 @@ async def test_primitive_value_NaN(bidi_session, top_context):
         target=ContextTarget(top_context["context"]),
     )
 
-    recursive_compare(nan_remote_value, result)
+    assert nan_remote_value <= result
 
 
 @pytest.mark.asyncio
@@ -131,7 +129,7 @@ async def test_local_value(bidi_session, top_context, argument, expected_type):
         target=ContextTarget(top_context["context"]),
     )
 
-    recursive_compare(argument, result)
+    assert argument <= result
 
 
 @pytest.mark.asyncio
@@ -242,7 +240,7 @@ async def test_remote_reference_argument(
         target=ContextTarget(top_context["context"]),
     )
 
-    assert result == expected
+    assert expected <= result
 
 
 @pytest.mark.asyncio
@@ -285,7 +283,7 @@ async def test_remote_reference_deserialization(
         function_declaration=function_declaration,
         arguments=[value_fn(remote_value)],
     )
-    assert result == {"type": "boolean", "value": True}
+    assert result <= {"type": "boolean", "value": True}
 
     # Reload the page to cleanup the state
     await bidi_session.browsing_context.navigate(
@@ -339,7 +337,7 @@ async def test_remote_reference_node_argument(
         target=ContextTarget(top_context["context"]),
     )
 
-    assert result == {"type": "number", "value": expected_node_type}
+    assert result <= {"type": "number", "value": expected_node_type}
 
 
 @pytest.mark.asyncio
@@ -363,7 +361,7 @@ async def test_remote_reference_node_cdata(bidi_session, inline, top_context):
         target=ContextTarget(top_context["context"]),
     )
 
-    assert result == {"type": "number", "value": 4}
+    assert result <= {"type": "number", "value": 4}
 
 
 @pytest.mark.asyncio
@@ -403,7 +401,7 @@ async def test_remote_reference_sharedId_precedence_over_handle(
             "(collection) => collection.item(0)",
             {
                 "type": "node",
-                "sharedId": any_string,
+                "sharedId": ANY_STR,
                 "value": {
                     "attributes": {},
                     "childNodeCount": 0,
@@ -419,7 +417,7 @@ async def test_remote_reference_sharedId_precedence_over_handle(
             "(nodeList) => nodeList.item(0)",
             {
                 "type": "node",
-                "sharedId": any_string,
+                "sharedId": ANY_STR,
                 "value": {
                     "attributes": {},
                     "childNodeCount": 0,

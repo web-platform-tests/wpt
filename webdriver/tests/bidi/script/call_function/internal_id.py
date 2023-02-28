@@ -1,7 +1,5 @@
 import pytest
 
-from ... import recursive_compare, any_string
-
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
@@ -49,7 +47,7 @@ async def test_remote_values_with_internal_id(
     # Make sure that the same duplicated objects have the same internal ids
     assert internalId1 == internalId2
 
-    recursive_compare(value, result_value)
+    assert value <= result_value
 
 
 @pytest.mark.asyncio

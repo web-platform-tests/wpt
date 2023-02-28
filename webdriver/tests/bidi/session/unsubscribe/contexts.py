@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 
-from ... import create_console_api_message, recursive_compare
+from ... import create_console_api_message
 
 
 # The basic use case of unsubscribing from all contexts for a single event
@@ -40,12 +40,9 @@ async def test_unsubscribe_from_one_context(
     await on_entry_added
 
     assert len(events) == 1
-    recursive_compare(
-        {
-            "text": expected_text,
-        },
-        events[0],
-    )
+    assert {
+        "text": expected_text,
+    } <= events[0]
 
     remove_listener()
     await bidi_session.session.unsubscribe(

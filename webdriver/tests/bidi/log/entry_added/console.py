@@ -2,7 +2,7 @@ import pytest
 from webdriver.bidi.modules.script import ContextTarget
 
 from . import assert_console_entry, create_console_api_message_for_primitive_value
-from ... import any_string, int_interval, recursive_compare
+from ... import any_string, int_interval
 
 
 @pytest.mark.asyncio

@@ -29,7 +29,9 @@
         const childFrame = document.createElement('iframe');
 
         childFrame.addEventListener('load', async () => {
-          const entries = performance.getEntries({ includeChildFrames: true });
+          const entries = Array.from(
+            performance.getEntries({ includeChildFrames: true })).filter(e =>
+            e.entryType !== "long-animation-frame");
 
           // Report number of performance entries to the parent.
           window.parent.postMessage(entries.length, "*");

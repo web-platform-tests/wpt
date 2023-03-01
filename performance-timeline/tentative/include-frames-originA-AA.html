@@ -9,7 +9,8 @@
 <body>
 <script>
   const verifyPerformanceEntries = () => {
-    const entries = performance.getEntries({ includeChildFrames: true });
+    const entries = Array.from(performance.getEntries({ includeChildFrames: true }))
+      .filter( e => e.entryType !== "long-animation-frame");
 
     const navigationEntries = performance.getEntries({ entryType: "navigation", includeChildFrames: true });
 

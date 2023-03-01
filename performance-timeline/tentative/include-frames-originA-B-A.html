@@ -36,7 +36,8 @@
       // Verify the number of performance entries in the child frame.
       assert_equals(childFrameEntrySize, 4, 'Child frame entries should be 4.');
 
-      const entries = performance.getEntries({ includeChildFrames: true });
+      const entries = Array.from(performance.getEntries({ includeChildFrames: true }))
+           .filter( e => e.entryType !== "long-animation-frame");
 
       const navigationEntries = performance.getEntries({ entryType: "navigation", includeChildFrames: true });
 
@@ -53,9 +54,11 @@
       assert_equals(markedEntries.length, 1, 'Mark entries should be 1.');
 
       // Test cases where includeChildFrames is false.
-      const entriesWithNoFitlerOptions = performance.getEntries();
+      const entriesWithNoFitlerOptions = performance.getEntries()
+           .filter( e => e.entryType !== "long-animation-frame");
 
-      const entriesWithoutIncludingChildFrames = performance.getEntries({ includeChildFrames: false });
+      const entriesWithoutIncludingChildFrames = performance.getEntries({ includeChildFrames: false })
+           .filter( e => e.entryType !== "long-animation-frame");;
 
       const navigationEntriesWithoutIncludingChildFrames = performance.getEntries({ entryType: "navigation", includeChildFrames: false });
 

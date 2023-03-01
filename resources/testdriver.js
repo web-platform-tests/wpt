@@ -228,8 +228,8 @@
          * <https://w3c.github.io/webdriver/#dfn-get-computed-label>`_
          * WebDriver command.
          *
-         * @param {Element} element 
-         * @returns {Promise} fulfilled after the computed label is returned, or 
+         * @param {Element} element
+         * @returns {Promise} fulfilled after the computed label is returned, or
          *                    rejected in the cases the WebDriver command errors
          */
         get_computed_label: async function(element) {
@@ -245,8 +245,8 @@
          * <https://w3c.github.io/webdriver/#dfn-get-computed-role>`_
          * WebDriver command.
          *
-         * @param {Element} element 
-         * @returns {Promise} fulfilled after the computed role is returned, or 
+         * @param {Element} element
+         * @returns {Promise} fulfilled after the computed role is returned, or
          *                    rejected in the cases the WebDriver command errors
          */
         get_computed_role: async function(element) {

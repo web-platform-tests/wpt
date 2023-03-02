@@ -2,7 +2,8 @@
 <meta charset="utf-8">
 <title>Popover combined with dialog/fullscreen behavior</title>
 <link rel=author href="mailto:masonf@chromium.org">
-<link rel=help href="https://open-ui.org/components/popup.research.explainer">
+<link rel=help href="https://open-ui.org/components/popover.research.explainer">
+<link rel=help href="https://html.spec.whatwg.org/multipage/popover.html">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -117,9 +118,8 @@ window.onload = () => requestAnimationFrame(() => requestAnimationFrame(() => {
       const button = document.createElement('button');
       t.add_cleanup(() => button.remove());
       document.body.appendChild(button);
-      assert_equals(ex.id,'');
-      ex.id = 'popover-id';
-      button.popoverToggleTargetElement = ex;
+      button.popoverTargetElement = ex;
+      button.popoverTargetAction = "toggle";
       assert_true(ex.matches(':closed'));
       await clickOn(button);
       ensureIsOpenPopover(ex,'Invoking element should be able to invoke all popovers');

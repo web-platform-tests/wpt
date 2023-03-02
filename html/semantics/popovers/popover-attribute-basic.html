@@ -15,6 +15,7 @@
   <div popover id=boolean>Pop up</div>
   <div popover="">Pop up</div>
   <div popover=auto>Pop up</div>
+  <div popover=hint>Pop up</div>
   <div popover=manual>Pop up</div>
   <article popover>Different element type</article>
   <header popover>Different element type</header>
@@ -32,16 +33,8 @@
   <dialog open>Dialog without popover attribute</dialog>
 </div>
 
-<div popover class=animated>Animated popover</div>
 <div id=outside></div>
 <style>
-[popover].animated {
-  opacity: 0;
-  transition: opacity 10s;
-}
-[popover].animated:open {
-  opacity: 1;
-}
 [popover] {
   inset:auto;
   top:0;
@@ -106,11 +99,11 @@ window.onload = () => {
     // be invisible. Otherwise, it should be visible.
     const expectVisible = !nonPopover.hasAttribute('popover');
     assertPopoverVisibility(nonPopover, /*isPopover*/false, expectVisible, 'A non-popover should start out visible');
-    assert_throws_dom("InvalidStateError",() => nonPopover.showPopover(),'Calling showPopover on a non-popover should throw InvalidStateError');
+    assert_throws_dom("NotSupportedError",() => nonPopover.showPopover(),'Calling showPopover on a non-popover should throw NotSupported');
     assertPopoverVisibility(nonPopover, /*isPopover*/false, expectVisible, 'Calling showPopover on a non-popover should leave it visible');
-    assert_throws_dom("InvalidStateError",() => nonPopover.hidePopover(),'Calling hidePopover on a non-popover should throw InvalidStateError');
+    assert_throws_dom("NotSupportedError",() => nonPopover.hidePopover(),'Calling hidePopover on a non-popover should throw NotSupported');
     assertPopoverVisibility(nonPopover, /*isPopover*/false, expectVisible, 'Calling hidePopover on a non-popover should leave it visible');
-    assert_throws_dom("InvalidStateError",() => nonPopover.togglePopover(),'Calling togglePopover on a non-popover should throw InvalidStateError');
+    assert_throws_dom("NotSupportedError",() => nonPopover.togglePopover(),'Calling togglePopover on a non-popover should throw NotSupported');
     assertPopoverVisibility(nonPopover, /*isPopover*/false, expectVisible, 'Calling togglePopover on a non-popover should leave it visible');
   }
 
@@ -171,6 +164,10 @@ window.onload = () => {
     assert_equals(popover.popover,'manual','Invalid values should reflect as "manual"');
     popover.removeAttribute('popover');
     assert_equals(popover.popover,null,'No value should reflect as null');
+    if (popoverHintSupported()) {
+      popover.popover='hint';
+      assert_equals(popover.getAttribute('popover'),'hint');
+    }
     popover.popover='auto';
     assert_equals(popover.getAttribute('popover'),'auto');
     popover.popover='';
@@ -231,7 +228,13 @@ window.onload = () => {
     const popover = createPopover(t);
     popover.showPopover();
     assert_true(popover.matches(':open'));
-    popover.setAttribute('popover','manual'); // Change popover type
+    if (popoverHintSupported()) {
+      popover.setAttribute('popover','hint'); // Change popover type
+      assert_false(popover.matches(':open'));
+      popover.showPopover();
+      assert_true(popover.matches(':open'));
+      popover.setAttribute('popover','manual');
+    }
     assert_false(popover.matches(':open'));
     popover.showPopover();
     assert_true(popover.matches(':open'));
@@ -245,16 +248,7 @@ window.onload = () => {
     assert_false(popover.matches(':open'),'From "auto" to "invalid" (which is interpreted as "manual") should close the popover');
   },'Changing attribute values should close open popovers');
 
-  function modalPseudoSupported() {
-    try {
-      document.createElement('dialog').matches(':modal');
-      return true; // No exception means :modal is supported.
-    } catch(e) {
-      return false;
-    }
-  }
-
-  const validTypes = ["auto","manual"];
+  const validTypes = popoverHintSupported() ? ["auto","hint","manual"] : ["auto","manual"];
   validTypes.forEach(type => {
     test((t) => {
       const popover = createPopover(t);
@@ -267,16 +261,14 @@ window.onload = () => {
       assert_false(popover.matches(':open'));
     },`Removing a visible popover=${type} element from the document should close the popover`);
 
-    if (modalPseudoSupported()) {
-      test((t) => {
-        const popover = createPopover(t);
-        popover.setAttribute('popover',type);
-        popover.showPopover();
-        assert_true(popover.matches(':open'));
-        assert_false(popover.matches(':modal'));
-        popover.hidePopover();
-      },`A showing popover=${type} does not match :modal`);
-    }
+    test((t) => {
+      const popover = createPopover(t);
+      popover.setAttribute('popover',type);
+      popover.showPopover();
+      assert_true(popover.matches(':open'));
+      assert_false(popover.matches(':modal'));
+      popover.hidePopover();
+    },`A showing popover=${type} does not match :modal`);
   });
 
   test((t) => {
@@ -395,6 +387,7 @@ window.onload = () => {
                     popover.hidePopover();
                     break;
                   case 'auto':
+                  case 'hint':
                     assert_false(popover.matches(':open'),'A popover=auto should light-dismiss');
                     break;
                 }
@@ -405,28 +398,6 @@ window.onload = () => {
       });
     });
   });
-
-  promise_test(async () => {
-    const popover = document.querySelector('[popover].animated');
-    assert_true(!!popover);
-    assert_false(isElementVisible(popover));
-    popover.showPopover();
-    assert_true(popover.matches(':open'));
-    assert_false(popover.matches(':closed'));
-    assert_true(getComputedStyle(popover).opacity < 0.1,'Animations should start on show');
-    assert_throws_dom("InvalidStateError",() => popover.showPopover(),'Calling showPopover on a popover that is in the process of animating show should throw InvalidStateError');
-    await finishAnimations(popover);
-    assert_true(getComputedStyle(popover).opacity > 0.9);
-    assert_true(isElementVisible(popover));
-    popover.hidePopover();
-    assert_false(popover.matches(':open'));
-    assert_false(popover.matches(':closed'),'Not :closed until animations finish');
-    assert_true(getComputedStyle(popover).opacity > 0.9,'Animations should start on hide');
-    assert_throws_dom("InvalidStateError",() => popover.hidePopover(),'Calling hidePopover on a popover that is in the process of animating hide should throw InvalidStateError');
-    assert_throws_dom("InvalidStateError",() => popover.showPopover(),'Calling showPopover on a popover that is in the process of animating hide should throw InvalidStateError');
-    await finishAnimations(popover);
-    assert_true(popover.matches(':closed'),':closed should match once animations finish');
-  },'Exceptions are thrown even when show/hide are animated');
 
   done();
 };

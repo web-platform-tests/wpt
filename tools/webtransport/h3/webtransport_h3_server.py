@@ -124,7 +124,8 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
                 self._session_stream_id = event.stream_id
                 self._handshake_webtransport(event, headers)
             else:
-                self._send_error_response(event.stream_id, 404)
+                status_code = 404 if origin else 403
+                self._send_error_response(event.stream_id, status_code)
 
         if isinstance(event, DataReceived) and\
            self._session_stream_id == event.stream_id:

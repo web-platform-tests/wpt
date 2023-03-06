@@ -7,8 +7,8 @@
 
 <dialog>
   <form method=dialog action="https://test:test/" rel=noopener>
-    <input type=submit formaction="https://test:test/">
-    <input type=submit>
+    <input type=submit formaction="https://test:test/" id=submit-1>
+    <input type=submit id=submit-2>
   </form>
 </dialog>
 
@@ -18,7 +18,7 @@ test(() => {
   dialog.showModal();
   assert_true(dialog.open);
 
-  document.querySelector("input").click();
+  document.getElementById("submit-1").click();
   assert_false(dialog.open);
 }, "A form's action and rel=noopener are ignored during submission");
 
@@ -27,7 +27,7 @@ test(() => {
   dialog.showModal();
   assert_true(dialog.open);
 
-  document.querySelectorAll("input")[1].click();
+  document.getElementById("submit-2").click();
   assert_false(dialog.open);
 }, "A form's action and rel=noopener are ignored during submission, part 2");
 

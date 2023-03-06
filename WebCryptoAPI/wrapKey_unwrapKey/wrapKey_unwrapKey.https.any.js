@@ -19,7 +19,7 @@
                 promises.push(testWrapping(wrapper, key));
             })
         });
-        return Promise.all(promises);
+        return Promise.allSettled(promises);
     });
     }, "setup");
 
@@ -48,7 +48,7 @@
             {
                 name: "AES-GCM",
                 generateParameters: {name: "AES-GCM", length: 128},
-                wrapParameters: {name: "AES-GCM", iv: new Uint8Array(16), additionalData: new Uint8Array(16), tagLength: 64}
+                wrapParameters: {name: "AES-GCM", iv: new Uint8Array(16), additionalData: new Uint8Array(16), tagLength: 128}
             },
             {
                 name: "AES-KW",

@@ -694,12 +694,7 @@ class WebKitTestRunner(BrowserSetup):
         raise NotImplementedError
 
     def setup_kwargs(self, kwargs):
-        if kwargs["binary"] is None:
-            binary = self.browser.find_binary(self.venv.path, None)
-
-            if binary is None:
-                raise WptrunError("Unable to find servo binary in PATH")
-            kwargs["binary"] = binary
+        pass
 
 
 class WebKitGTKMiniBrowser(BrowserSetup):

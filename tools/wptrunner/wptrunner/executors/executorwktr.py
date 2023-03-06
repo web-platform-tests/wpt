@@ -48,9 +48,9 @@ class WKTRTestPart(ProtocolPart):
     def do_test(self, command, timeout=None):
         """Send a command to wktr and return the resulting outputs.
 
-        A command consists of a URL to navigate to, followed by an optional
-        expected image hash and 'print' mode specifier. The syntax looks like:
-            http://web-platform.test:8000/test.html['<hash>['print]]
+        A command consists of a URL to navigate to, followed by an optional options; see
+        https://github.com/WebKit/WebKit/blob/main/Tools/TestRunnerShared/TestCommand.cpp.
+
         """
         self._send_command(command + "'--timeout'%d" % (timeout * 1000))
 
@@ -149,13 +149,9 @@ class WKTRErrorsPart(ProtocolPart):
 
 class WKTRProtocol(Protocol):
     implements = [WKTRTestPart, WKTRErrorsPart]
-    init_timeout = 10  # Timeout (seconds) to wait for #READY message.
 
     def connect(self):
-        """Waits for wktr to emit its "#READY" message which signals that it is fully
-        initialized. We wait for a maximum of self.init_timeout seconds.
-        """
-        return
+        pass
 
     def after_connect(self):
         pass
@@ -202,20 +198,10 @@ class WKTRRefTestExecutor(RefTestExecutor):
             return _convert_exception(test, exception, self.protocol.wktr_errors.read_errors())
 
     def screenshot(self, test, viewport_size, dpi, page_ranges):
-        # Currently, the page size and DPI are hardcoded for print-reftests:
-        #   https://chromium.googlesource.com/chromium/src/+/4e1b7bc33d42b401d7d9ad1dcba72883add3e2af/content/web_test/renderer/test_runner.cc#100
-        # Content shell has an internal `window.testRunner.setPrintingSize(...)`
-        # API, but it's not callable with protocol mode.
         assert dpi is None
         command = self.test_url(test)
         command += "'--pixel-test'"
-        if self.is_print:
-            # Currently, `wktr` uses the expected image hash to avoid
-            # dumping a matching image as an optimization. In Chromium, the
-            # hash can be computed from an expected screenshot checked into the
-            # source tree (i.e., without looking at a reference). This is not
-            # possible in `wpt`, so pass an empty hash here to force a dump.
-            command += "''print"
+        assert not self.is_print
         _, image = self.protocol.wktr_test.do_test(
             command, test.timeout * self.timeout_multiplier)
 

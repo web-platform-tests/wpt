@@ -49,17 +49,18 @@
 <li><p><a class="reference internal" href="#page-lifecycle" id="id10">Page Lifecycle</a></p></li>
 <li><p><a class="reference internal" href="#reporting-observer" id="id11">Reporting Observer</a></p></li>
 <li><p><a class="reference internal" href="#storage" id="id12">Storage</a></p></li>
-<li><p><a class="reference internal" href="#seure-payment-confirmation" id="id13">Seure Payment Confirmation</a></p></li>
-<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id14">Using test_driver in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#accessibility" id="id13">Accessibility</a></p></li>
+<li><p><a class="reference internal" href="#seure-payment-confirmation" id="id14">Seure Payment Confirmation</a></p></li>
+<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id15">Using test_driver in other browsing contexts</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#actions" id="id15">Actions</a></p>
+<li><p><a class="reference internal" href="#actions" id="id16">Actions</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id1" id="id16">Markup</a></p></li>
-<li><p><a class="reference internal" href="#id2" id="id17">API</a></p></li>
-<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id18">Using in other browsing contexts</a></p></li>
-<li><p><a class="reference internal" href="#send-keys" id="id19">send_keys</a></p></li>
-<li><p><a class="reference internal" href="#set-permission" id="id20">set_permission</a></p></li>
+<li><p><a class="reference internal" href="#id1" id="id17">Markup</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id18">API</a></p></li>
+<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id19">Using in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#send-keys" id="id20">send_keys</a></p></li>
+<li><p><a class="reference internal" href="#set-permission" id="id21">set_permission</a></p></li>
 </ul>
 </li>
 </ul>
@@ -536,6 +537,47 @@ WebDriver command.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the storage access rule has been set, or rejected if setting the rule fails.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="accessibility">
+<h3>Accessibility<a class="headerlink" href="#accessibility" title="Permalink to this headline">¶</a></h3>
+<dl class="js function">
+<dt class="sig sig-object js" id="test_driver.get_computed_label">
+<span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_computed_label</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_computed_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Computed Label for an element.</p>
+<p>This matches the behaviour of the
+<a class="reference external" href="https://w3c.github.io/webdriver/#dfn-get-computed-label">Get Computed Label</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Element()</span></code></span>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the computed label is returned, or rejected in the cases the WebDriver command errors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="test_driver.get_computed_role">
+<span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_computed_role</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_computed_role" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Computed Role for an element.</p>
+<p>This matches the behaviour of the
+<a class="reference external" href="https://w3c.github.io/webdriver/#dfn-get-computed-role">Get Computed Label</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Element()</span></code></span>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the computed role is returned, or rejected in the cases the WebDriver command errors</p>
 </dd>
 </dl>
 </dd></dl>

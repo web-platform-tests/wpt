@@ -1,3 +1,5 @@
+// META: global=window,worker
+
 promise_test(async t => {
   const error = new Error('cannot proceed');
   const rs = new ReadableStream({

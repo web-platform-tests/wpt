@@ -1,0 +1,29 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<div role="graphics-document" id="d">x</div>
+<div role="graphics-object" id="o">x</div>
+<div role="graphics-symbol" id="s">x</div>
+
+<script>
+
+promise_test(async t => {
+  const role = await test_driver.get_computed_role(document.getElementById('d'));
+  assert_true(role == "document");
+}, "graphics-document");
+
+promise_test(async t => {
+  const role = await test_driver.get_computed_role(document.getElementById('o'));
+  assert_true(role == "group");
+}, "graphics-object");
+
+promise_test(async t => {
+  const role = await test_driver.get_computed_role(document.getElementById('s'));
+  assert_true(role == "image");
+}, "graphics-symbol");
+
+</script>

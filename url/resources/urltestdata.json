@@ -8911,14 +8911,17 @@
   {
     "comment": "Empty host after domain to ASCII",
     "input": "https://\u00AD/",
+    "base": "about:blank",
     "failure": true
   },
   {
     "input": "https://%C2%AD/",
+    "base": "about:blank",
     "failure": true
   },
   {
     "input": "https://xn--/",
+    "base": "about:blank",
     "failure": true
   }
 ]

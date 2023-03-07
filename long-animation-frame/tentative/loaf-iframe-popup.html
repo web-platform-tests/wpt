@@ -1,8 +1,8 @@
 <!DOCTYPE HTML>
 <meta charset=utf-8>
-<title>Long Animation Frame Timing: iframes</title>
+<title>Long Animation Frame Timing: iframes & popups</title>
+<meta name="timeout" content="long">
 <body>
-
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
@@ -11,7 +11,6 @@
 <script src="resources/utils.js"></script>
 <div id="log"></div>
 <script>
-
 const host_info = get_host_info();
 const {ORIGIN, REMOTE_ORIGIN, HTTP_NOTSAMESITE_ORIGIN} = host_info;
 
@@ -45,7 +44,7 @@ promise_test(async t => {
     await expect_no_long_frame(() => executor.execute_script((duration) => {
         const deadline = performance.now() + duration;
         while (performance.now() < deadline) {}
-    }), t);
+    }, [very_long_frame_duration]), t);
 }, 'A long busy wait in a same-origin popup is a not long animation frame');
 
 for (const origin of ["ORIGIN", "REMOTE_ORIGIN", "HTTP_NOTSAMESITE_ORIGIN"]) {
@@ -61,7 +60,6 @@ for (const origin of ["ORIGIN", "REMOTE_ORIGIN", "HTTP_NOTSAMESITE_ORIGIN"]) {
         }, [very_long_frame_duration]);
     }, `frames receive own long animation frames (${origin})`);
 }
-
 
 </script>
 </body>

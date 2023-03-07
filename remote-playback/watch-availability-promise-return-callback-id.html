@@ -9,15 +9,17 @@
   <script src="/common/media.js"></script>
   <script>
     async_test((t) => {
-      var v = document.createElement("video");
+      let v = document.createElement("video");
       v.src = getVideoURI("/media/movie_5");
 
-      v.remote.watchAvailability(() => {}).then(
-        t.step_func_done((callbackId) => {
-          assert_true(typeof callbackId === "number");
-        }),
-        t.unreached_func()
-      );
+      v.remote
+        .watchAvailability(() => {})
+        .then(
+          t.step_func_done((callbackId) => {
+            assert_true(typeof callbackId === "number");
+          }),
+          t.unreached_func()
+        );
     }, "Test that the promise returns the callback id when calling watchAvailability().");
   </script>
 </html>

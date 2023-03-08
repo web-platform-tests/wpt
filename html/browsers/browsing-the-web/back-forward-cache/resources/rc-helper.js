@@ -49,7 +49,8 @@ async function assertNotRestoredFromBFCache(
   }
 
   let isFeatureEnabled = await remoteContextHelper.executeScript(() => {
-    return 'notRestoredReasons' in performance.getEntriesByType('navigation')[0];
+    return 'notRestoredReasons' in
+        performance.getEntriesByType('navigation')[0];
   });
 
   // Return if the `notRestoredReasons` API is not available.
@@ -75,11 +76,17 @@ async function assertNotRestoredFromBFCache(
   }
   collectReason(result);
 
-  assert_equals(notRestoredReasonsSet.length,
-      expectedNotRestoredReasonsSet.length);
+  assert_equals(
+      notRestoredReasonsSet.length,
+      expectedNotRestoredReasonsSet.length,
+      `Reported notRestoredReasons should have ` +
+      `${expectedNotRestoredReasonsSet.length} elements instead of ` +
+      `${notRestoredReasonsSet.length}.`);
 
   for (let reason of expectedNotRestoredReasonsSet) {
-    assert_true(notRestoredReasonsSet.has(reason));
+    assert_true(
+        notRestoredReasonsSet.has(reason),
+        `${reason} should be reported in notRestoredReasons.`);
   }
 }
 

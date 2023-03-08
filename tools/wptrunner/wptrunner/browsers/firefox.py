@@ -92,12 +92,20 @@ def check_args(**kwargs):
     require_arg(kwargs, "binary")
 
 
-def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
+def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs):
+    binary_args = kwargs["binary_args"][:]
+    if subsuite.config.get("binary_args"):
+        binary_args.extend(subsuite.config.get("binary_args"))
+
+    extra_prefs = kwargs["extra_prefs"][:]
+    if subsuite.config.get("prefs"):
+        extra_prefs.extend(subsuite.config.get("prefs"))
+
     return {"binary": kwargs["binary"],
             "webdriver_binary": kwargs["webdriver_binary"],
             "webdriver_args": kwargs["webdriver_args"],
             "prefs_root": kwargs["prefs_root"],
-            "extra_prefs": kwargs["extra_prefs"],
+            "extra_prefs": extra_prefs,
             "test_type": test_type,
             "debug_info": kwargs["debug_info"],
             "symbols_path": kwargs["symbols_path"],
@@ -107,7 +115,7 @@ def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
             "e10s": kwargs["gecko_e10s"],
             "enable_fission": run_info_data["fission"],
             "stackfix_dir": kwargs["stackfix_dir"],
-            "binary_args": kwargs["binary_args"],
+            "binary_args": binary_args,
             "timeout_multiplier": get_timeout_multiplier(test_type,
                                                          run_info_data,
                                                          **kwargs),
@@ -224,7 +232,7 @@ def run_info_browser_version(**kwargs):
 
 
 def update_properties():
-    return (["os", "debug", "fission", "processor", "swgl", "domstreams", "editorLegacyDirectionMode"],
+    return (["os", "debug", "fission", "processor", "swgl", "domstreams", "subsuite", "editorLegacyDirectionMode"],
             {"os": ["version"], "processor": ["bits"]})
 
 

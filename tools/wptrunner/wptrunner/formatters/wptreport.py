@@ -24,30 +24,40 @@ class WptreportFormatter(BaseFormatter):  # type: ignore
     def __init__(self):
         self.raw_results = {}
         self.results = {}
+        self.subsuites = {}
 
     def suite_start(self, data):
-        if 'run_info' in data:
-            self.results['run_info'] = data['run_info']
+        self.results['run_info'] = data.get('run_info', {})
         self.results['time_start'] = data['time']
         self.results["results"] = []
+        self.results["subsuites"] = {}
+
+    def add_subsuite(self, data):
+        self.results["subsuites"][data["name"]] = data.get("run_info", {})
 
     def suite_end(self, data):
         self.results['time_end'] = data['time']
-        for test_name in self.raw_results:
-            result = {"test": test_name}
-            result.update(self.raw_results[test_name])
-            self.results["results"].append(result)
+        for subsuite, results in self.raw_results.items():
+            for test_name, result in results.items():
+                result["test"] = test_name
+                result["subsuite"] = subsuite
+                self.results["results"].append(result)
         return json.dumps(self.results) + "\n"
 
     def find_or_create_test(self, data):
+        subsuite = data.get("subsuite")
         test_name = data["test"]
-        if test_name not in self.raw_results:
-            self.raw_results[test_name] = {
+        if subsuite not in self.raw_results:
+            self.raw_results[subsuite] = {}
+
+        subsuite_results = self.raw_results[subsuite]
+        if test_name not in subsuite_results:
+            subsuite_results[test_name] = {
                 "subtests": [],
                 "status": "",
                 "message": None
             }
-        return self.raw_results[test_name]
+        return subsuite_results[test_name]
 
     def test_start(self, data):
         test = self.find_or_create_test(data)
@@ -94,10 +104,12 @@ class WptreportFormatter(BaseFormatter):  # type: ignore
                 if type(item) == dict
             }
         test_name = data["test"]
-        result = {"test": data["test"]}
-        result.update(self.raw_results[test_name])
+        subsuite = data.get("subsuite")
+        result = {"test": test_name,
+                  "subsuite": subsuite}
+        result.update(self.raw_results[subsuite][test_name])
         self.results["results"].append(result)
-        self.raw_results.pop(test_name)
+        self.raw_results[subsuite].pop(test_name)
 
     def assertion_count(self, data):
         test = self.find_or_create_test(data)
@@ -113,7 +125,8 @@ class WptreportFormatter(BaseFormatter):  # type: ignore
         lsan_leaks = self.results["lsan_leaks"]
         lsan_leaks.append({"frames": data["frames"],
                            "scope": data["scope"],
-                           "allowed_match": data.get("allowed_match")})
+                           "allowed_match": data.get("allowed_match"),
+                           "subsuite": data.get("subsuite")})
 
     def find_or_create_mozleak(self, data):
         if "mozleak" not in self.results:
@@ -128,10 +141,12 @@ class WptreportFormatter(BaseFormatter):  # type: ignore
         scope_data["objects"].append({"process": data["process"],
                                       "name": data["name"],
                                       "allowed": data.get("allowed", False),
-                                      "bytes": data["bytes"]})
+                                      "bytes": data["bytes"],
+                                      "subsuite": data.get("subsuite")})
 
     def mozleak_total(self, data):
         scope_data = self.find_or_create_mozleak(data)
         scope_data["total"].append({"bytes": data["bytes"],
                                     "threshold": data.get("threshold", 0),
-                                    "process": data["process"]})
+                                    "process": data["process"],
+                                    "subsuite": data.get("subsuite")})

@@ -373,8 +373,10 @@ def write_new_expected(metadata_path, expected):
 class ExpectedUpdater:
     def __init__(self, id_test_map):
         self.id_test_map = id_test_map
-        self.run_info = None
+        self.base_run_info = None
+        self.run_info_by_subsuite = {}
         self.action_map = {"suite_start": self.suite_start,
+                           "add_subsuite": self.add_subsuite,
                            "test_start": self.test_start,
                            "test_status": self.test_status,
                            "test_end": self.test_end,
@@ -391,7 +393,8 @@ class ExpectedUpdater:
         # * raw log format
 
         # Try reading a single json object in wptreport format
-        self.run_info = None
+        self.base_run_info = None
+        self.run_info_by_subsuite = {}
         success = self.get_wptreport_data(log_file.read())
 
         if success:
@@ -436,21 +439,27 @@ class ExpectedUpdater:
     def update_from_wptreport_log(self, data):
         action_map = self.action_map
         action_map["suite_start"]({"run_info": data["run_info"]})
+        for subsuite, run_info in data.get("subsuites", {}).items():
+            action_map["add_subsuite"]({"name": subsuite, "run_info": run_info})
         for test in data["results"]:
-            action_map["test_start"]({"test": test["test"]})
+            action_map["test_start"]({"test": test["test"],
+                                      "subsuite": test.get("subsuite", "")})
             for subtest in test["subtests"]:
                 action_map["test_status"]({"test": test["test"],
+                                           "subsuite": test.get("subsuite", ""),
                                            "subtest": subtest["name"],
                                            "status": subtest["status"],
                                            "expected": subtest.get("expected"),
                                            "known_intermittent": subtest.get("known_intermittent", [])})
             action_map["test_end"]({"test": test["test"],
+                                    "subsuite": test.get("subsuite", ""),
                                     "status": test["status"],
                                     "expected": test.get("expected"),
                                     "known_intermittent": test.get("known_intermittent", [])})
             if "asserts" in test:
                 asserts = test["asserts"]
                 action_map["assertion_count"]({"test": test["test"],
+                                               "subsuite": data.get("subsuite", ""),
                                                "count": asserts["count"],
                                                "min_expected": asserts["min"],
                                                "max_expected": asserts["max"]})
@@ -467,7 +476,15 @@ class ExpectedUpdater:
                     action_map[action](item_data)
 
     def suite_start(self, data):
-        self.run_info = run_info_intern.store(RunInfo(data["run_info"]))
+        self.base_run_info = data["run_info"]
+        run_info = RunInfo(data["run_info"])
+        self.run_info_by_subsuite[None] = run_info_intern.store(run_info)
+
+    def add_subsuite(self, data):
+        run_info_data = self.base_run_info.copy()
+        run_info_data.update(data["run_info"])
+        run_info = RunInfo(run_info_data)
+        self.run_info_by_subsuite[data["name"]] = run_info_intern.store(run_info)
 
     def test_start(self, data):
         test_id = intern(ensure_str(data["test"]))
@@ -490,7 +507,7 @@ class ExpectedUpdater:
 
         result = pack_result(data)
 
-        test_data.set(test_id, subtest, "status", self.run_info, result)
+        test_data.set(test_id, subtest, "status", self.run_info_by_subsuite[data.get("subsuite", "")], result)
         status = data["status"]
         expected = data.get("expected")
         if expected and expected != status and status not in data.get("known_intermittent", []):
@@ -507,7 +524,7 @@ class ExpectedUpdater:
 
         result = pack_result(data)
 
-        test_data.set(test_id, None, "status", self.run_info, result)
+        test_data.set(test_id, None, "status", self.run_info_by_subsuite[data.get("subsuite", "")], result)
         status = data["status"]
         expected = data.get("expected")
         if expected and expected != status and status not in data.get("known_intermittent", []):
@@ -520,7 +537,7 @@ class ExpectedUpdater:
         if test_data is None:
             return
 
-        test_data.set(test_id, None, "asserts", self.run_info, data["count"])
+        test_data.set(test_id, None, "asserts", self.run_info_by_subsuite[data.get("subsuite", "")], data["count"])
         if data["count"] < data["min_expected"] or data["count"] > data["max_expected"]:
             test_data.set_requires_update()
 
@@ -537,7 +554,7 @@ class ExpectedUpdater:
             return
         dir_id, test_data = self.test_for_scope(data)
         test_data.set(dir_id, None, "lsan",
-                      self.run_info, (data["frames"], data.get("allowed_match")))
+                      self.run_info_by_subsuite[data.get("subsuite", "")], (data["frames"], data.get("allowed_match")))
         if not data.get("allowed_match"):
             test_data.set_requires_update()
 
@@ -547,7 +564,7 @@ class ExpectedUpdater:
             return
         dir_id, test_data = self.test_for_scope(data)
         test_data.set(dir_id, None, "leak-object",
-                      self.run_info, ("%s:%s", (data["process"], data["name"]),
+                      self.run_info_by_subsuite[data.get("subsuite", "")], ("%s:%s", (data["process"], data["name"]),
                                       data.get("allowed")))
         if not data.get("allowed"):
             test_data.set_requires_update()
@@ -559,7 +576,7 @@ class ExpectedUpdater:
         if data["bytes"]:
             dir_id, test_data = self.test_for_scope(data)
             test_data.set(dir_id, None, "leak-threshold",
-                          self.run_info, (data["process"], data["bytes"], data["threshold"]))
+                          self.run_info_by_subsuite[data.get("subsuite", "")], (data["process"], data["bytes"], data["threshold"]))
             if data["bytes"] > data["threshold"] or data["bytes"] < 0:
                 test_data.set_requires_update()
 

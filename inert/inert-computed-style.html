@@ -40,10 +40,12 @@
       "auto",
       "inert node doesn't change pointer-events computed value",
     );
-    assert_equals(
-      getComputedStyle(inert).userSelect,
-      "auto",
-      "inert node doesn't change user-select computed value",
-    );
+    if (CSS.supports("user-select: auto")) {
+      assert_equals(
+        getComputedStyle(inert).userSelect,
+        "auto",
+        "inert node doesn't change user-select computed value",
+      );
+    }
   });
 </script>

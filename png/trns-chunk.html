@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<title>PNG test: cICP chunk</title>
+<title>PNG test: tRNS chunk</title>
+<link rel="help" href="https://w3c.github.io/PNG-spec/#11tRNS">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/html/canvas/resources/canvas-tests.js"></script>
@@ -32,5 +33,5 @@ img.onload = () => {
     assert_approx_equals(pixel[3], pixel_expected[3], epsilon);
   });
 };
-img.src = "/images/trns.png";
+img.src = "../images/trns.png";
 </script>

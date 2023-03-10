@@ -85,8 +85,15 @@
 
     verifySerialization("calc(4vmin + 0pt + 3pc)", "calc(48px + 4vmin)", "testing calc(4vmin + 0pt + 3pc)");
 
-    verifySerialization("calc(4vmin + 0pt)", "calc(4vmin)", "testing calc(4vmin + 0pt)");
+    verifySerialization("calc(4vmin + 0pt)", "calc(0px + 4vmin)", "testing calc(4vmin + 0pt)");
 
+  /*
+
+  More info on the calc(4vmin + 0pt) sub-test:
+  https://github.com/web-platform-tests/wpt/pull/38245#issuecomment-1464215777
+  Date: March 10th 2023
+
+  */
 
   /* 6 Substractions */
 

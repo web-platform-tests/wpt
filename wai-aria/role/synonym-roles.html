@@ -20,22 +20,22 @@
 
 promise_test(async t => {
   const role = await test_driver.get_computed_role(document.getElementById('none'));
-  assert_true(role == "none");
+  assert_equals(role, "none");
 }, "none role == computedrole none");
 
 promise_test(async t => {
   const role = await test_driver.get_computed_role(document.getElementById('presentation'));
-  assert_true(role == "none");
+  assert_equals(role, "none");
 }, "synonym presentation role == computedrole none");
 
 promise_test(async t => {
   const role = await test_driver.get_computed_role(document.getElementById('image'));
-  assert_true(role == "image");
+  assert_equals(role, "image");
 }, "image role == computedrole image");
 
 promise_test(async t => {
   const role = await test_driver.get_computed_role(document.getElementById('img'));
-  assert_true(role == "image");
+  assert_equals(role, "image");
 }, "synonym img role == computedrole image");
 
 </script>

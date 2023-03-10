@@ -17,12 +17,12 @@
 
 promise_test(async t => {
   const role = await test_driver.get_computed_role(document.getElementById('no_label'));
-  assert_true(role == "generic");
+  assert_equals(role, "generic");
 }, "region with no label");
 
 promise_test(async t => {
   const role = await test_driver.get_computed_role(document.getElementById('label'));
-  assert_true(role == "region");
+  assert_equals(role, "region");
 }, "region with label");
 
 </script>

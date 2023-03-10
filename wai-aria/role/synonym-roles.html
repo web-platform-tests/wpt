@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <title>Region Role Verification Tests</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+</head>
+<body>
+
+<div role="none" id="none">x</div><!-- preferred -->
+<div role="presentation" id="presentation">x</div><!-- synonym -->
+
+<div role="image" id="image">x</div><!-- preferred -->
+<div role="img" id="img">x</div><!-- synonym -->
+
+<script>
+
+promise_test(async t => {
+  const role = await test_driver.get_computed_role(document.getElementById('none'));
+  assert_true(role == "none");
+}, "none role == computedrole none");
+
+promise_test(async t => {
+  const role = await test_driver.get_computed_role(document.getElementById('presentation'));
+  assert_true(role == "none");
+}, "synonym presentation role == computedrole none");
+
+promise_test(async t => {
+  const role = await test_driver.get_computed_role(document.getElementById('image'));
+  assert_true(role == "none");
+}, "image role == computedrole image");
+
+promise_test(async t => {
+  const role = await test_driver.get_computed_role(document.getElementById('img'));
+  assert_true(role == "none");
+}, "synonym img role == computedrole image");
+
+</script>
+</body>
+</html>

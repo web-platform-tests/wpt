@@ -88,13 +88,13 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     # authenticator devices anyway for testing and so SPC works.
     chrome_options["args"].append("--enable-features=SecurePaymentConfirmationBrowser")
 
-    # Classify `http-private`, `http-public` and https variants in the
+    # Classify `http-local`, `http-public` and https variants in the
     # appropriate IP address spaces.
     # For more details, see: https://github.com/web-platform-tests/rfcs/blob/master/rfcs/address_space_overrides.md
     address_space_overrides_ports = [
-        ("http-private", "private"),
+        ("http-local", "local"),
         ("http-public", "public"),
-        ("https-private", "private"),
+        ("https-local", "local"),
         ("https-public", "public"),
     ]
     address_space_overrides_arg = ",".join(

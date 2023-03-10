@@ -10,20 +10,20 @@
 </head>
 <body>
 
-<div role="region" id="no_label">x</div>
-<div role="region" id="label" aria-label="x">x</div>
+<nav role="region" id="nav_no_label">x</form>
+<nav role="region" id="nav_with_label" aria-label="x">x</nav>
 
 <script>
 
 promise_test(async t => {
-  const role = await test_driver.get_computed_role(document.getElementById('no_label'));
-  assert_equals(role, "generic");
-}, "region with no label");
+  const role = await test_driver.get_computed_role(document.getElementById('nav_no_label'));
+  assert_equals(role, "navigation", "<nav> region w/o label");
+}, "<nav> region w/o label");
 
 promise_test(async t => {
-  const role = await test_driver.get_computed_role(document.getElementById('label'));
-  assert_equals(role, "region");
-}, "region with label");
+  const role = await test_driver.get_computed_role(document.getElementById('nav_with_label'));
+  assert_equals(role, "region", "<nav> region w/ label");
+}, "<nav> region w/ label");
 
 </script>
 </body>

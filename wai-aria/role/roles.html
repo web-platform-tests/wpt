@@ -1,4 +1,5 @@
 <!doctype html>
+<html>
 <head>
   <title>Simple Core ARIA Role Verification Tests</title>
   <script src="/resources/testharness.js"></script>
@@ -10,15 +11,18 @@
 <body>
 <script>
 
-// Tests simple role assignment: <div role="alert">x</div>
+/*
 
-// Nested role structures (table>row>cell, etc) and 
-// Abstract roles (e.g. widget, composite) are listed 
-// here with pointers to a separate test file.
+Tests simple role assignment: <div role="alert">x</div>
 
-// ARIA extension specs (e.g. doc-*, graphics-*) are listed
-// here with pointers to a separate spec directory.
+- Nested role structures (table>row>cell, etc) and 
+  Abstract roles (e.g. widget, composite) are listed 
+  here with pointers to a separate test file.
 
+- ARIA extension specs (e.g. doc-*, graphics-*) are listed
+  here with pointers to a separate spec directory.
+
+*/
 
 let roles = [
   "alert",
@@ -58,8 +62,8 @@ let roles = [
   // "gridcell" -> ./grid-roles.html
   "group",
   "heading",
-  "image", // Needs Issue. 
-  // "img", -> ./synonym-roles.html
+  // "image" -> ./synonym-roles.html
+  // "img" -> ./synonym-roles.html
   // "input" -> ./abstract-roles.html
   "insertion",
   // "landmark" -> ./abstract-roles.html
@@ -78,11 +82,11 @@ let roles = [
   // "menubar" -> ./menu-roles.html
   "meter",
   "navigation",
-  "none",
+  // "none" -> ./synonym-roles.html
   "note",
   // "option" -> ./listbox-roles.html
   "paragraph",
-  //"presentation", -> ./synonym-roles.html
+  // "presentation" -> ./synonym-roles.html
   "progressbar",
   "radio",
   "radiogroup",
@@ -139,3 +143,4 @@ for (const role of roles) {
 
 </script>
 </body>
+</html>

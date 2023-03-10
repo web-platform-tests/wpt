@@ -30,12 +30,12 @@ promise_test(async t => {
 
 promise_test(async t => {
   const role = await test_driver.get_computed_role(document.getElementById('image'));
-  assert_true(role == "none");
+  assert_true(role == "image");
 }, "image role == computedrole image");
 
 promise_test(async t => {
   const role = await test_driver.get_computed_role(document.getElementById('img'));
-  assert_true(role == "none");
+  assert_true(role == "image");
 }, "synonym img role == computedrole image");
 
 </script>

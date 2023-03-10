@@ -1,10 +1,14 @@
-
 <!doctype html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
-<script src="/resources/testdriver-actions.js"></script>
+<html>
+<head>
+  <title>Region Role Verification Tests</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+</head>
+<body>
 
 <div role="region" id="no_label">x</div>
 <div role="region" id="label" aria-label="x">x</div>
@@ -13,7 +17,7 @@
 
 promise_test(async t => {
   const role = await test_driver.get_computed_role(document.getElementById('no_label'));
-  assert_true(role == "");
+  assert_true(role == "generic");
 }, "region with no label");
 
 promise_test(async t => {
@@ -22,3 +26,5 @@ promise_test(async t => {
 }, "region with label");
 
 </script>
+</body>
+</html>

@@ -7,6 +7,7 @@
   <script src="/resources/testdriver.js"></script>
   <script src="/resources/testdriver-vendor.js"></script>
   <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
 </head>
 <body>
 <script>
@@ -16,15 +17,15 @@
 Tests simple role assignment: <div role="alert">x</div>
 
 - Nested role structures (table>row>cell, etc) and 
-  Abstract roles (e.g. widget, composite) are listed 
-  here with pointers to a separate test file.
+  Abstract roles (e.g. widget, composite) are
+  commented with pointers to a separate test file.
 
-- ARIA extension specs (e.g. doc-*, graphics-*) are listed
-  here with pointers to a separate spec directory.
+- ARIA extension specs (e.g. doc-*, graphics-*) are 
+  commented with pointers to a separate spec directory.
 
 */
 
-let roles = [
+AriaUtils.assignAndVerifyRolesByRoleNames([
   "alert",
   "alertdialog",
   "application",
@@ -70,6 +71,8 @@ let roles = [
   "link",
   // "list" -> ./list-roles.html
   // "listitem" -> ./list-roles.html
+  // "listitemkey" [See: ARIA #1662] or possibly -> ./list-roles.html
+  // "listitemvalue" [See: ARIA #1662] or possibly -> ./list-roles.html
   // "listbox" -> ./listbox-roles.html
   "log",
   "main",
@@ -127,19 +130,7 @@ let roles = [
   // "treegrid" -> ./treegrid-roles.html
   // "widget" -> ./abstract-roles.html
   // "window" -> ./abstract-roles.html
-];
-
-for (const role of roles) {
-  promise_test(async t => {
-    let el = document.createElement("div");
-    el.appendChild(document.createTextNode("x"));
-    el.role = role;
-    el.id = `role_${role}`;
-    document.body.appendChild(el);
-    const computedRole = await test_driver.get_computed_role(document.getElementById(el.id));
-    assert_equals(computedRole, role);
-  }, `Assign/verify role: ${role}`);
-}
+]);
 
 </script>
 </body>

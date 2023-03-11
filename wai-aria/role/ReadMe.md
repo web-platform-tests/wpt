@@ -8,9 +8,9 @@
 - role testing of **ARIA extension specs** are in other directories (E.g., [graphics-aria](https://github.com/web-platform-tests/interop-2023-accessibility-testing/issues/9))
 - basic.html was the first to ensure basic test coverage of webdriver getcomputedrole
 - other context-dependent role tests, error handling, and edge cases are covered in separate files
-	- list-roles.html
-	- region-roles.html
-	- grid, listbox, menu, tree, etc
-	- fallback roles
-	- invalid roles
-	- error handling, etc.
+  - list-roles.html
+  - region-roles.html
+  - grid, listbox, menu, tree, etc
+  - fallback roles
+  - invalid roles
+  - error handling, etc.

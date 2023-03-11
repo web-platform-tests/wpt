@@ -7,24 +7,19 @@
   <script src="/resources/testdriver.js"></script>
   <script src="/resources/testdriver-vendor.js"></script>
   <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
 </head>
 <body>
 
-<nav role="region" id="nav_no_label">x</form>
-<nav role="region" id="nav_with_label" aria-label="x">x</nav>
+<!-- no label -->
+<nav role="region" data-expectedrole="navigation" class="ex">x</form>
+
+<!-- w/ label -->
+<nav role="region" data-expectedrole="region" aria-label="x" class="ex">x</nav>
 
 <script>
-
-promise_test(async t => {
-  const role = await test_driver.get_computed_role(document.getElementById('nav_no_label'));
-  assert_equals(role, "navigation", "<nav> region w/o label");
-}, "<nav> region w/o label");
-
-promise_test(async t => {
-  const role = await test_driver.get_computed_role(document.getElementById('nav_with_label'));
-  assert_equals(role, "region", "<nav> region w/ label");
-}, "<nav> region w/ label");
-
+AriaUtils.verifyRolesBySelector(".ex");
 </script>
+
 </body>
 </html>

@@ -24,7 +24,7 @@ const AriaUtils = {
   Tests computed role of all elements matching selector
   against the string value of their data-role attribute.
 
-  Ex: <div role="list" data-role="list" class="ex">
+  Ex: <div role="list" data-expectedrole="list" class="ex">
       AriaUtils.verifyRolesBySelector(".ex")
 
   */
@@ -34,9 +34,9 @@ const AriaUtils = {
 
     for (const el of els) {
       testCount++;
-      let role = el.getAttribute("data-role");
+      let role = el.getAttribute("data-expectedrole");
       promise_test(async t => {
-        const expectedRole = el.getAttribute("data-role");
+        const expectedRole = el.getAttribute("data-expectedrole");
 
         // ensure ID uniqueness when testing multiple elements of the same role type
         if (!el.id) {

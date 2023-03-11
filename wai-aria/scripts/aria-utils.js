@@ -2,7 +2,7 @@
 
 const AriaUtils = {
 
-  /* 
+  /*
   Tests simple role assignment: <div role="alert">x</div>
   Not intended for nest, context-dependent, or other complex roles.
   */
@@ -37,7 +37,7 @@ const AriaUtils = {
       let role = el.getAttribute("data-role");
       promise_test(async t => {
         const expectedRole = el.getAttribute("data-role");
-        
+
         // ensure ID uniqueness when testing multiple elements of the same role type
         if (!el.id) {
           let roleCount = 1;
@@ -48,7 +48,7 @@ const AriaUtils = {
           }
           el.id = elID;
         }
-        
+
         const computedRole = await test_driver.get_computed_role(document.getElementById(el.id));
         assert_equals(computedRole, expectedRole, el.outerHTML);
       }, `${testCount} ${role}`);

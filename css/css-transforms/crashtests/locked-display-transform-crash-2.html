@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html class=test-wait>
+<style type="text/css">
+</style>
+<div id="container">
+    <div id="div" style="transform:translateX(100px);"></div>
+</div>
+<script>
+  function runTest() {
+    document.getElementById('container').style = 'content-visibility: hidden;';
+    //document.getElementById('div').style = 'transform:translateX(200px)';
+    // forceLayout = document.getElementById('div').offsetWidth;
+    // var range = document.createRange();
+    // range.setStart(document.getElementById('container'), 0);
+    // range.setEnd(document.getElementById('div'), 0);
+    // range.getBoundingClientRect();
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+      //  document.documentElement.classList.remove('test-wait');
+      });
+    });
+  }
+  onload = runTest;
+</script>
+</html>

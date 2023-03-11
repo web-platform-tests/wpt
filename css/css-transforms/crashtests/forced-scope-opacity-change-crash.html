@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+
+<script type="text/javascript">
+    function testFunction() {
+        element1 = document.createElement('div');
+        document.documentElement.appendChild(element1);
+        element2 = document.createElement('div');
+        element2.innerHTML = 'Hello world';
+        element1.appendChild(element2);
+        element1.setAttribute('style', 'content-visibility: hidden;');
+        element3 = document.createElement('div');
+        document.documentElement.appendChild(element3);
+        element4 = document.createElement('div');
+        element4.innerHTML = 'Some text';
+        element3.setAttribute('style', 'background: red');
+        element4.setAttribute('style', 'opacity: 0.5');
+        element3.appendChild(element4);
+        document.elementFromPoint(1,1);
+        element4.setAttribute('style', 'opacity: 0.1');
+        element3.setAttribute('style', 'background: purple');
+        element2.getBoundingClientRect();
+        document.elementFromPoint(1,1);
+    }
+    onload = testFunction;
+</script>
+
+</html>

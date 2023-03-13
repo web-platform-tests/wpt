@@ -3,40 +3,40 @@
 //
 // Spec: https://wicg.github.io/private-network-access/#integration-fetch
 //
-// These tests verify that documents fetched from the `local` address space yet
+// These tests verify that documents fetched from the `loopback` address space yet
 // carrying the `treat-as-public-address` CSP directive are treated as if they
 // had been fetched from the `public` address space.
 
 promise_test(t => xhrTest(t, {
   source: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     treatAsPublic: true,
   },
   target: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     behavior: { response: ResponseBehavior.allowCrossOrigin() },
   },
   expected: XhrTestResult.FAILURE,
-}), "treat-as-public to local: failed preflight.");
+}), "treat-as-public to loopback: failed preflight.");
 
 promise_test(t => xhrTest(t, {
   source: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     treatAsPublic: true,
   },
   target: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     behavior: {
       preflight: PreflightBehavior.optionalSuccess(token()),
       response: ResponseBehavior.allowCrossOrigin(),
     },
   },
   expected: XhrTestResult.SUCCESS,
-}), "treat-as-public to local: success.");
+}), "treat-as-public to loopback: success.");
 
 promise_test(t => xhrTest(t, {
   source: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     treatAsPublic: true,
   },
   target: {
@@ -48,7 +48,7 @@ promise_test(t => xhrTest(t, {
 
 promise_test(t => xhrTest(t, {
   source: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     treatAsPublic: true,
   },
   target: {
@@ -63,7 +63,7 @@ promise_test(t => xhrTest(t, {
 
 promise_test(t => xhrTest(t, {
   source: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     treatAsPublic: true,
   },
   target: {

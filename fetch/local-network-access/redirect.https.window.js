@@ -1,20 +1,20 @@
 // META: script=/common/utils.js
 // META: script=resources/support.sub.js
 //
-// Spec: https://wicg.github.io/private-network-access/#integration-fetch
+// Spec: https://wicg.github.io/local-network-access/#integration-fetch
 //
-// This test verifies that Private Network Access checks are applied to all
+// This test verifies that Local Network Access checks are applied to all
 // the endpoints in a redirect chain, relative to the same client context.
 
-// local -> private -> public
+// loopback -> local -> public
 //
-// Request 1 (local -> private): no preflight.
-// Request 2 (local -> public): no preflight.
+// Request 1 (loopback -> local): no preflight.
+// Request 2 (loopback -> public): no preflight.
 
 promise_test(t => fetchTest(t, {
-  source: { server: Server.HTTPS_LOCAL },
+  source: { server: Server.HTTPS_LOOPBACK },
   target: {
-    server: Server.HTTPS_PRIVATE,
+    server: Server.HTTPS_LOCAL,
     behavior: {
       response: ResponseBehavior.allowCrossOrigin(),
       redirect: preflightUrl({
@@ -24,59 +24,59 @@ promise_test(t => fetchTest(t, {
     }
   },
   expected: FetchTestResult.SUCCESS,
-}), "local to private to public: success.");
+}), "loopback to local to public: success.");
 
-// local -> private -> local
+// loopback -> local -> loopback
 //
-// Request 1 (local -> private): no preflight.
-// Request 2 (local -> local): no preflight.
+// Request 1 (loopback -> local): no preflight.
+// Request 2 (loopback -> loopback): no preflight.
 //
 // This checks that the client for the second request is still the initial
 // context, not the redirector.
 
 promise_test(t => fetchTest(t, {
-  source: { server: Server.HTTPS_LOCAL },
+  source: { server: Server.HTTPS_LOOPBACK },
   target: {
-    server: Server.HTTPS_PRIVATE,
+    server: Server.HTTPS_LOCAL,
     behavior: {
       response: ResponseBehavior.allowCrossOrigin(),
       redirect: preflightUrl({
-        server: Server.HTTPS_LOCAL,
+        server: Server.HTTPS_LOOPBACK,
         behavior: { response: ResponseBehavior.allowCrossOrigin() },
       }),
     }
   },
   expected: FetchTestResult.SUCCESS,
-}), "local to private to local: success.");
+}), "loopback to local to loopback: success.");
 
-// private -> private -> local
+// local -> private -> loopback
 //
-// Request 1 (private -> private): no preflight.
-// Request 2 (private -> local): preflight required.
+// Request 1 (local -> private): no preflight.
+// Request 2 (local -> loopback): preflight required.
 //
-// This verifies that PNA checks are applied after redirects.
+// This verifies that LNA checks are applied after redirects.
 
 promise_test(t => fetchTest(t, {
-  source: { server: Server.HTTPS_PRIVATE },
+  source: { server: Server.HTTPS_LOCAL },
   target: {
-    server: Server.HTTPS_PRIVATE,
+    server: Server.HTTPS_LOCAL,
     behavior: {
       redirect: preflightUrl({
-        server: Server.HTTPS_LOCAL,
+        server: Server.HTTPS_LOOPBACK,
         behavior: { response: ResponseBehavior.allowCrossOrigin() },
       }),
     }
   },
   expected: FetchTestResult.FAILURE,
-}), "private to private to local: failed preflight.");
+}), "local to private to loopback: failed preflight.");
 
 promise_test(t => fetchTest(t, {
-  source: { server: Server.HTTPS_PRIVATE },
+  source: { server: Server.HTTPS_LOCAL },
   target: {
-    server: Server.HTTPS_PRIVATE,
+    server: Server.HTTPS_LOCAL,
     behavior: {
       redirect: preflightUrl({
-        server: Server.HTTPS_LOCAL,
+        server: Server.HTTPS_LOOPBACK,
         behavior: {
           preflight: PreflightBehavior.success(token()),
           response: ResponseBehavior.allowCrossOrigin(),
@@ -85,89 +85,89 @@ promise_test(t => fetchTest(t, {
     }
   },
   expected: FetchTestResult.SUCCESS,
-}), "private to private to local: success.");
+}), "local to private to loopback: success.");
 
 promise_test(t => fetchTest(t, {
-  source: { server: Server.HTTPS_PRIVATE },
+  source: { server: Server.HTTPS_LOCAL },
   target: {
-    server: Server.HTTPS_PRIVATE,
+    server: Server.HTTPS_LOCAL,
     behavior: {
       redirect: preflightUrl({
-        server: Server.HTTPS_LOCAL,
+        server: Server.HTTPS_LOOPBACK,
         behavior: { preflight: PreflightBehavior.success(token()) },
       }),
     }
   },
   fetchOptions: { mode: "no-cors" },
   expected: FetchTestResult.OPAQUE,
-}), "private to private to local: no-cors success.");
+}), "local to private to loopback: no-cors success.");
 
-// private -> local -> private
+// local -> loopback -> private
 //
-// Request 1 (private -> local): preflight required.
-// Request 2 (private -> private): no preflight.
+// Request 1 (local -> loopback): preflight required.
+// Request 2 (local -> private): no preflight.
 //
-// This verifies that PNA checks are applied independently to every step in a
+// This verifies that LNA checks are applied independently to every step in a
 // redirect chain.
 
 promise_test(t => fetchTest(t, {
-  source: { server: Server.HTTPS_PRIVATE },
+  source: { server: Server.HTTPS_LOCAL },
   target: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     behavior: {
       response: ResponseBehavior.allowCrossOrigin(),
       redirect: preflightUrl({
-        server: Server.HTTPS_PRIVATE,
+        server: Server.HTTPS_LOCAL,
       }),
     }
   },
   expected: FetchTestResult.FAILURE,
-}), "private to local to private: failed preflight.");
+}), "local to loopback to private: failed preflight.");
 
 promise_test(t => fetchTest(t, {
-  source: { server: Server.HTTPS_PRIVATE },
+  source: { server: Server.HTTPS_LOCAL },
   target: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     behavior: {
       preflight: PreflightBehavior.success(token()),
       response: ResponseBehavior.allowCrossOrigin(),
       redirect: preflightUrl({
-        server: Server.HTTPS_PRIVATE,
+        server: Server.HTTPS_LOCAL,
         behavior: { response: ResponseBehavior.allowCrossOrigin() },
       }),
     }
   },
   expected: FetchTestResult.SUCCESS,
-}), "private to local to private: success.");
+}), "local to loopback to private: success.");
 
 promise_test(t => fetchTest(t, {
-  source: { server: Server.HTTPS_PRIVATE },
+  source: { server: Server.HTTPS_LOCAL },
   target: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     behavior: {
       preflight: PreflightBehavior.success(token()),
-      redirect: preflightUrl({ server: Server.HTTPS_PRIVATE }),
+      redirect: preflightUrl({ server: Server.HTTPS_LOCAL }),
     }
   },
   fetchOptions: { mode: "no-cors" },
   expected: FetchTestResult.OPAQUE,
-}), "private to local to private: no-cors success.");
+}), "local to loopback to private: no-cors success.");
 
-// public -> private -> local
+// public -> local -> loopback
 //
-// Request 1 (public -> private): preflight required.
-// Request 2 (public -> local): preflight required.
+// Request 1 (public -> local): preflight required.
+// Request 2 (public -> loopback): preflight required.
 //
-// This verifies that PNA checks are applied to every step in a redirect chain.
+// This verifies that LNA checks are applied to every step in a redirect chain.
 
 promise_test(t => fetchTest(t, {
   source: { server: Server.HTTPS_PUBLIC },
   target: {
-    server: Server.HTTPS_PRIVATE,
+    server: Server.HTTPS_LOCAL,
     behavior: {
       response: ResponseBehavior.allowCrossOrigin(),
       redirect: preflightUrl({
-        server: Server.HTTPS_LOCAL,
+        server: Server.HTTPS_LOOPBACK,
         behavior: {
           preflight: PreflightBehavior.success(token()),
           response: ResponseBehavior.allowCrossOrigin(),
@@ -176,17 +176,17 @@ promise_test(t => fetchTest(t, {
     }
   },
   expected: FetchTestResult.FAILURE,
-}), "public to private to local: failed first preflight.");
+}), "public to local to loopback: failed first preflight.");
 
 promise_test(t => fetchTest(t, {
   source: { server: Server.HTTPS_PUBLIC },
   target: {
-    server: Server.HTTPS_PRIVATE,
+    server: Server.HTTPS_LOCAL,
     behavior: {
       preflight: PreflightBehavior.success(token()),
       response: ResponseBehavior.allowCrossOrigin(),
       redirect: preflightUrl({
-        server: Server.HTTPS_LOCAL,
+        server: Server.HTTPS_LOOPBACK,
         behavior: {
           response: ResponseBehavior.allowCrossOrigin(),
         },
@@ -194,17 +194,17 @@ promise_test(t => fetchTest(t, {
     }
   },
   expected: FetchTestResult.FAILURE,
-}), "public to private to local: failed second preflight.");
+}), "public to local to loopback: failed second preflight.");
 
 promise_test(t => fetchTest(t, {
   source: { server: Server.HTTPS_PUBLIC },
   target: {
-    server: Server.HTTPS_PRIVATE,
+    server: Server.HTTPS_LOCAL,
     behavior: {
       preflight: PreflightBehavior.success(token()),
       response: ResponseBehavior.allowCrossOrigin(),
       redirect: preflightUrl({
-        server: Server.HTTPS_LOCAL,
+        server: Server.HTTPS_LOOPBACK,
         behavior: {
           preflight: PreflightBehavior.success(token()),
           response: ResponseBehavior.allowCrossOrigin(),
@@ -213,41 +213,41 @@ promise_test(t => fetchTest(t, {
     }
   },
   expected: FetchTestResult.SUCCESS,
-}), "public to private to local: success.");
+}), "public to local to loopback: success.");
 
 promise_test(t => fetchTest(t, {
   source: { server: Server.HTTPS_PUBLIC },
   target: {
-    server: Server.HTTPS_PRIVATE,
+    server: Server.HTTPS_LOCAL,
     behavior: {
       preflight: PreflightBehavior.success(token()),
       redirect: preflightUrl({
-        server: Server.HTTPS_LOCAL,
+        server: Server.HTTPS_LOOPBACK,
         behavior: { preflight: PreflightBehavior.success(token()) },
       }),
     }
   },
   fetchOptions: { mode: "no-cors" },
   expected: FetchTestResult.OPAQUE,
-}), "public to private to local: no-cors success.");
+}), "public to local to loopback: no-cors success.");
 
-// treat-as-public -> local -> private
+// treat-as-public -> loopback -> local
 
-// Request 1 (treat-as-public -> local): preflight required.
-// Request 2 (treat-as-public -> private): preflight required.
+// Request 1 (treat-as-public -> loopback): preflight required.
+// Request 2 (treat-as-public -> local): preflight required.
 
-// This verifies that PNA checks are applied to every step in a redirect chain.
+// This verifies that LNA checks are applied to every step in a redirect chain.
 
 promise_test(t => fetchTest(t, {
   source: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     treatAsPublic: true,
   },
   target: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     behavior: {
       redirect: preflightUrl({
-        server: Server.HTTPS_PRIVATE,
+        server: Server.HTTPS_LOCAL,
         behavior: {
           preflight: PreflightBehavior.success(token()),
           response: ResponseBehavior.allowCrossOrigin(),
@@ -256,19 +256,19 @@ promise_test(t => fetchTest(t, {
     }
   },
   expected: FetchTestResult.FAILURE,
-}), "treat-as-public to local to private: failed first preflight.");
+}), "treat-as-public to loopback to local: failed first preflight.");
 
 promise_test(t => fetchTest(t, {
   source: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     treatAsPublic: true,
   },
   target: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     behavior: {
       preflight: PreflightBehavior.success(token()),
       redirect: preflightUrl({
-        server: Server.HTTPS_PRIVATE,
+        server: Server.HTTPS_LOCAL,
         behavior: {
           preflight: PreflightBehavior.noPnaHeader(token()),
           response: ResponseBehavior.allowCrossOrigin(),
@@ -277,140 +277,17 @@ promise_test(t => fetchTest(t, {
     }
   },
   expected: FetchTestResult.FAILURE,
-}), "treat-as-public to local to private: failed second preflight.");
+}), "treat-as-public to loopback to local: failed second preflight.");
 
 promise_test(t => fetchTest(t, {
   source: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     treatAsPublic: true,
   },
   target: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     behavior: {
       preflight: PreflightBehavior.success(token()),
-      redirect: preflightUrl({
-        server: Server.HTTPS_PRIVATE,
-        behavior: {
-          preflight: PreflightBehavior.success(token()),
-          response: ResponseBehavior.allowCrossOrigin(),
-        },
-      }),
-    }
-  },
-  expected: FetchTestResult.SUCCESS,
-}), "treat-as-public to local to private: success.");
-
-promise_test(t => fetchTest(t, {
-  source: {
-    server: Server.HTTPS_LOCAL,
-    treatAsPublic: true,
-  },
-  target: {
-    server: Server.HTTPS_LOCAL,
-    behavior: {
-      redirect: preflightUrl({
-        server: Server.HTTPS_PRIVATE,
-        behavior: { preflight: PreflightBehavior.success(token()) },
-      }),
-    }
-  },
-  fetchOptions: { mode: "no-cors" },
-  expected: FetchTestResult.FAILURE,
-}), "treat-as-public to local to private: no-cors failed first preflight.");
-
-promise_test(t => fetchTest(t, {
-  source: {
-    server: Server.HTTPS_LOCAL,
-    treatAsPublic: true,
-  },
-  target: {
-    server: Server.HTTPS_LOCAL,
-    behavior: {
-      preflight: PreflightBehavior.success(token()),
-      redirect: preflightUrl({ server: Server.HTTPS_PRIVATE }),
-    }
-  },
-  fetchOptions: { mode: "no-cors" },
-  expected: FetchTestResult.FAILURE,
-}), "treat-as-public to local to private: no-cors failed second preflight.");
-
-promise_test(t => fetchTest(t, {
-  source: {
-    server: Server.HTTPS_LOCAL,
-    treatAsPublic: true,
-  },
-  target: {
-    server: Server.HTTPS_LOCAL,
-    behavior: {
-      preflight: PreflightBehavior.success(token()),
-      redirect: preflightUrl({
-        server: Server.HTTPS_PRIVATE,
-        behavior: { preflight: PreflightBehavior.success(token()) },
-      }),
-    }
-  },
-  fetchOptions: { mode: "no-cors" },
-  expected: FetchTestResult.OPAQUE,
-}), "treat-as-public to local to private: no-cors success.");
-
-// treat-as-public -> private -> local
-
-// Request 1 (treat-as-public -> private): preflight required.
-// Request 2 (treat-as-public -> local): preflight required.
-
-// This verifies that PNA checks are applied to every step in a redirect chain.
-
-promise_test(t => fetchTest(t, {
-  source: {
-    server: Server.HTTPS_LOCAL,
-    treatAsPublic: true,
-  },
-  server: Server.HTTPS_PRIVATE,
-  target: {
-    behavior: {
-      preflight: PreflightBehavior.noPnaHeader(token()),
-      response: ResponseBehavior.allowCrossOrigin(),
-      redirect: preflightUrl({
-        server: Server.HTTPS_LOCAL,
-        behavior: {
-          preflight: PreflightBehavior.success(token()),
-          response: ResponseBehavior.allowCrossOrigin(),
-        },
-      }),
-    }
-  },
-  expected: FetchTestResult.FAILURE,
-}), "treat-as-public to private to local: failed first preflight.");
-
-promise_test(t => fetchTest(t, {
-  source: {
-    server: Server.HTTPS_LOCAL,
-    treatAsPublic: true,
-  },
-  target: {
-    server: Server.HTTPS_PRIVATE,
-    behavior: {
-      preflight: PreflightBehavior.success(token()),
-      response: ResponseBehavior.allowCrossOrigin(),
-      redirect: preflightUrl({
-        server: Server.HTTPS_LOCAL,
-        behavior: { response: ResponseBehavior.allowCrossOrigin() },
-      }),
-    }
-  },
-  expected: FetchTestResult.FAILURE,
-}), "treat-as-public to private to local: failed second preflight.");
-
-promise_test(t => fetchTest(t, {
-  source: {
-    server: Server.HTTPS_LOCAL,
-    treatAsPublic: true,
-  },
-  target: {
-    server: Server.HTTPS_PRIVATE,
-    behavior: {
-      preflight: PreflightBehavior.success(token()),
-      response: ResponseBehavior.allowCrossOrigin(),
       redirect: preflightUrl({
         server: Server.HTTPS_LOCAL,
         behavior: {
@@ -421,15 +298,15 @@ promise_test(t => fetchTest(t, {
     }
   },
   expected: FetchTestResult.SUCCESS,
-}), "treat-as-public to private to local: success.");
+}), "treat-as-public to loopback to local: success.");
 
 promise_test(t => fetchTest(t, {
   source: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     treatAsPublic: true,
   },
   target: {
-    server: Server.HTTPS_PRIVATE,
+    server: Server.HTTPS_LOOPBACK,
     behavior: {
       redirect: preflightUrl({
         server: Server.HTTPS_LOCAL,
@@ -439,15 +316,15 @@ promise_test(t => fetchTest(t, {
   },
   fetchOptions: { mode: "no-cors" },
   expected: FetchTestResult.FAILURE,
-}), "treat-as-public to private to local: no-cors failed first preflight.");
+}), "treat-as-public to loopback to local: no-cors failed first preflight.");
 
 promise_test(t => fetchTest(t, {
   source: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     treatAsPublic: true,
   },
   target: {
-    server: Server.HTTPS_PRIVATE,
+    server: Server.HTTPS_LOOPBACK,
     behavior: {
       preflight: PreflightBehavior.success(token()),
       redirect: preflightUrl({ server: Server.HTTPS_LOCAL }),
@@ -455,15 +332,15 @@ promise_test(t => fetchTest(t, {
   },
   fetchOptions: { mode: "no-cors" },
   expected: FetchTestResult.FAILURE,
-}), "treat-as-public to private to local: no-cors failed second preflight.");
+}), "treat-as-public to loopback to local: no-cors failed second preflight.");
 
 promise_test(t => fetchTest(t, {
   source: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     treatAsPublic: true,
   },
   target: {
-    server: Server.HTTPS_PRIVATE,
+    server: Server.HTTPS_LOOPBACK,
     behavior: {
       preflight: PreflightBehavior.success(token()),
       redirect: preflightUrl({
@@ -474,4 +351,127 @@ promise_test(t => fetchTest(t, {
   },
   fetchOptions: { mode: "no-cors" },
   expected: FetchTestResult.OPAQUE,
-}), "treat-as-public to private to local: no-cors success.");
+}), "treat-as-public to loopback to local: no-cors success.");
+
+// treat-as-public -> local -> loopback
+
+// Request 1 (treat-as-public -> local): preflight required.
+// Request 2 (treat-as-public -> loopback): preflight required.
+
+// This verifies that LNA checks are applied to every step in a redirect chain.
+
+promise_test(t => fetchTest(t, {
+  source: {
+    server: Server.HTTPS_LOOPBACK,
+    treatAsPublic: true,
+  },
+  server: Server.HTTPS_LOCAL,
+  target: {
+    behavior: {
+      preflight: PreflightBehavior.noPnaHeader(token()),
+      response: ResponseBehavior.allowCrossOrigin(),
+      redirect: preflightUrl({
+        server: Server.HTTPS_LOOPBACK,
+        behavior: {
+          preflight: PreflightBehavior.success(token()),
+          response: ResponseBehavior.allowCrossOrigin(),
+        },
+      }),
+    }
+  },
+  expected: FetchTestResult.FAILURE,
+}), "treat-as-public to local to loopback: failed first preflight.");
+
+promise_test(t => fetchTest(t, {
+  source: {
+    server: Server.HTTPS_LOOPBACK,
+    treatAsPublic: true,
+  },
+  target: {
+    server: Server.HTTPS_LOCAL,
+    behavior: {
+      preflight: PreflightBehavior.success(token()),
+      response: ResponseBehavior.allowCrossOrigin(),
+      redirect: preflightUrl({
+        server: Server.HTTPS_LOOPBACK,
+        behavior: { response: ResponseBehavior.allowCrossOrigin() },
+      }),
+    }
+  },
+  expected: FetchTestResult.FAILURE,
+}), "treat-as-public to local to loopback: failed second preflight.");
+
+promise_test(t => fetchTest(t, {
+  source: {
+    server: Server.HTTPS_LOOPBACK,
+    treatAsPublic: true,
+  },
+  target: {
+    server: Server.HTTPS_LOCAL,
+    behavior: {
+      preflight: PreflightBehavior.success(token()),
+      response: ResponseBehavior.allowCrossOrigin(),
+      redirect: preflightUrl({
+        server: Server.HTTPS_LOOPBACK,
+        behavior: {
+          preflight: PreflightBehavior.success(token()),
+          response: ResponseBehavior.allowCrossOrigin(),
+        },
+      }),
+    }
+  },
+  expected: FetchTestResult.SUCCESS,
+}), "treat-as-public to local to loopback: success.");
+
+promise_test(t => fetchTest(t, {
+  source: {
+    server: Server.HTTPS_LOOPBACK,
+    treatAsPublic: true,
+  },
+  target: {
+    server: Server.HTTPS_LOCAL,
+    behavior: {
+      redirect: preflightUrl({
+        server: Server.HTTPS_LOOPBACK,
+        behavior: { preflight: PreflightBehavior.success(token()) },
+      }),
+    }
+  },
+  fetchOptions: { mode: "no-cors" },
+  expected: FetchTestResult.FAILURE,
+}), "treat-as-public to local to loopback: no-cors failed first preflight.");
+
+promise_test(t => fetchTest(t, {
+  source: {
+    server: Server.HTTPS_LOOPBACK,
+    treatAsPublic: true,
+  },
+  target: {
+    server: Server.HTTPS_LOCAL,
+    behavior: {
+      preflight: PreflightBehavior.success(token()),
+      redirect: preflightUrl({ server: Server.HTTPS_LOOPBACK }),
+    }
+  },
+  fetchOptions: { mode: "no-cors" },
+  expected: FetchTestResult.FAILURE,
+}), "treat-as-public to local to loopback: no-cors failed second preflight.");
+
+promise_test(t => fetchTest(t, {
+  source: {
+    server: Server.HTTPS_LOOPBACK,
+    treatAsPublic: true,
+  },
+  target: {
+    server: Server.HTTPS_LOCAL,
+    behavior: {
+      preflight: PreflightBehavior.success(token()),
+      redirect: preflightUrl({
+        server: Server.HTTPS_LOOPBACK,
+        behavior: { preflight: PreflightBehavior.success(token()) },
+      }),
+    }
+  },
+  fetchOptions: { mode: "no-cors" },
+  expected: FetchTestResult.OPAQUE,
+}), "treat-as-public to local to loopback: no-cors success.");

@@ -1,7 +1,7 @@
 // META: script=/common/utils.js
 // META: script=resources/support.sub.js
 //
-// Spec: https://wicg.github.io/local-network-access
+// Spec: https://wicg.github.io/loopback-network-access
 //
 // These tests verify that secure contexts can fetch non-secure subresources
 // from more local address spaces, avoiding mixed context checks, as long as
@@ -185,7 +185,7 @@ makeNoBypassTests({ source: "loopback", target: "public" });
 // Source: local secure context.
 //
 // Fetches to the loopback address space requires the right `targetAddressSpace`
-// option, as well as a successful preflight response carrying a PNA-specific
+// option, as well as a successful preflight response carrying a LNA-specific
 // header.
 //
 // Fetches to the local address space cannot use `targetAddressSpace` to
@@ -201,7 +201,7 @@ makeNoBypassTests({ source: "local", target: "public" });
 //
 // Fetches to the loopback and local address spaces require the right
 // `targetAddressSpace` option, as well as a successful preflight response
-// carrying a PNA-specific header.
+// carrying a LNA-specific header.
 
 makeTests({ source: "public", target: "loopback" });
 makeTests({ source: "public", target: "local" });
@@ -215,11 +215,11 @@ makeNoBypassTests({ source: "public", target: "public" });
 promise_test_parallel(
     t => fetchTest(t, {
       source: {
-        server: Server.HTTPS_LOCAL,
+        server: Server.HTTPS_LOOPBACK,
         treatAsPublic: true,
       },
       target: {
-        server: Server.HTTP_LOCAL,
+        server: Server.HTTP_LOOPBACK,
         behavior: {
           preflight: PreflightBehavior.optionalSuccess(token()),
           response: ResponseBehavior.allowCrossOrigin(),
@@ -232,11 +232,11 @@ promise_test_parallel(
 
 promise_test_parallel(t => fetchTest(t, {
   source: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     treatAsPublic: true,
   },
   target: {
-    server: Server.HTTP_LOCAL,
+    server: Server.HTTP_LOOPBACK,
     behavior: {
       preflight: PreflightBehavior.optionalSuccess(token()),
       response: ResponseBehavior.allowCrossOrigin(),
@@ -248,11 +248,11 @@ promise_test_parallel(t => fetchTest(t, {
 
 promise_test_parallel(t => fetchTest(t, {
   source: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     treatAsPublic: true,
   },
   target: {
-    server: Server.HTTP_PRIVATE,
+    server: Server.HTTP_LOCAL,
     behavior: {
       preflight: PreflightBehavior.success(token()),
       response: ResponseBehavior.allowCrossOrigin(),
@@ -264,11 +264,11 @@ promise_test_parallel(t => fetchTest(t, {
 
 promise_test_parallel(t => fetchTest(t, {
   source: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     treatAsPublic: true,
   },
   target: {
-    server: Server.HTTP_PRIVATE,
+    server: Server.HTTP_LOCAL,
     behavior: {
       preflight: PreflightBehavior.success(token()),
       response: ResponseBehavior.allowCrossOrigin(),

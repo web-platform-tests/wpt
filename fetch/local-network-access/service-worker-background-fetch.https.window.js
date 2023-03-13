@@ -1,11 +1,11 @@
 // META: script=/common/utils.js
 // META: script=resources/support.sub.js
 //
-// Spec: https://wicg.github.io/private-network-access/#integration-fetch
+// Spec: https://wicg.github.io/local-network-access/#integration-fetch
 // Spec: https://wicg.github.io/background-fetch/
 //
 // These tests check that background fetches from within `ServiceWorker` scripts
-// are not subject to Private Network Access checks.
+// are not subject to Local Network Access checks.
 
 // Results that may be expected in tests.
 const TestResult = {
@@ -64,25 +64,34 @@ async function makeTest(t, { source, target, expected }) {
 }
 
 promise_test(t => makeTest(t, {
+  source: { server: Server.HTTPS_LOOPBACK },
+  target: { server: Server.HTTPS_LOOPBACK },
+  expected: TestResult.SUCCESS,
+}), "loopback to loopback: success.");
+
+promise_test(t => makeTest(t, {
+  source: { server: Server.HTTPS_LOCAL },
+  target: {
+    server: Server.HTTPS_LOOPBACK,
+    behavior: { response: ResponseBehavior.allowCrossOrigin() },
+  },
+  expected: TestResult.SUCCESS,
+}), "local to loopback: success.");
+
+promise_test(t => makeTest(t, {
   source: { server: Server.HTTPS_LOCAL },
   target: { server: Server.HTTPS_LOCAL },
   expected: TestResult.SUCCESS,
 }), "local to local: success.");
 
 promise_test(t => makeTest(t, {
-  source: { server: Server.HTTPS_PRIVATE },
+  source: { server: Server.HTTPS_PUBLIC },
   target: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     behavior: { response: ResponseBehavior.allowCrossOrigin() },
   },
   expected: TestResult.SUCCESS,
-}), "private to local: success.");
-
-promise_test(t => makeTest(t, {
-  source: { server: Server.HTTPS_PRIVATE },
-  target: { server: Server.HTTPS_PRIVATE },
-  expected: TestResult.SUCCESS,
-}), "private to private: success.");
+}), "public to loopback: success.");
 
 promise_test(t => makeTest(t, {
   source: { server: Server.HTTPS_PUBLIC },
@@ -95,43 +104,34 @@ promise_test(t => makeTest(t, {
 
 promise_test(t => makeTest(t, {
   source: { server: Server.HTTPS_PUBLIC },
-  target: {
-    server: Server.HTTPS_PRIVATE,
-    behavior: { response: ResponseBehavior.allowCrossOrigin() },
-  },
-  expected: TestResult.SUCCESS,
-}), "public to private: success.");
-
-promise_test(t => makeTest(t, {
-  source: { server: Server.HTTPS_PUBLIC },
   target: { server: Server.HTTPS_PUBLIC },
   expected: TestResult.SUCCESS,
 }), "public to public: success.");
 
 promise_test(t => makeTest(t, {
   source: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     treatAsPublic: true,
   },
-  target: { server: Server.HTTPS_LOCAL },
+  target: { server: Server.HTTPS_LOOPBACK },
+  expected: TestResult.SUCCESS,
+}), "treat-as-public to loopback: success.");
+
+promise_test(t => makeTest(t, {
+  source: {
+    server: Server.HTTPS_LOOPBACK,
+    treatAsPublic: true,
+  },
+  target: {
+    server: Server.HTTPS_LOCAL,
+    behavior: { response: ResponseBehavior.allowCrossOrigin() },
+  },
   expected: TestResult.SUCCESS,
 }), "treat-as-public to local: success.");
 
 promise_test(t => makeTest(t, {
   source: {
-    server: Server.HTTPS_LOCAL,
-    treatAsPublic: true,
-  },
-  target: {
-    server: Server.HTTPS_PRIVATE,
-    behavior: { response: ResponseBehavior.allowCrossOrigin() },
-  },
-  expected: TestResult.SUCCESS,
-}), "treat-as-public to private: success.");
-
-promise_test(t => makeTest(t, {
-  source: {
-    server: Server.HTTPS_LOCAL,
+    server: Server.HTTPS_LOOPBACK,
     treatAsPublic: true,
   },
   target: {

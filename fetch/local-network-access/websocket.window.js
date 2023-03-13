@@ -1,6 +1,6 @@
 // META: script=resources/support.sub.js
 //
-// Spec: https://wicg.github.io/private-network-access/#integration-fetch
+// Spec: https://wicg.github.io/local-network-access/#integration-fetch
 
 // These tests verify that websocket connections behave similarly to fetches.
 //
@@ -13,28 +13,28 @@ setup(() => {
 });
 
 promise_test(t => websocketTest(t, {
-  source: { server: Server.HTTP_LOCAL },
-  target: { server: Server.WS_LOCAL },
+  source: { server: Server.HTTP_LOOPBACK },
+  target: { server: Server.WS_LOOPBACK },
   expected: WebsocketTestResult.SUCCESS,
-}), "local to local: websocket success.");
+}), "loopback to loopback: websocket success.");
 
 promise_test(t => websocketTest(t, {
-  source: { server: Server.HTTP_PRIVATE },
-  target: { server: Server.WS_LOCAL },
+  source: { server: Server.HTTP_LOCAL },
+  target: { server: Server.WS_LOOPBACK },
   expected: WebsocketTestResult.FAILURE,
-}), "private to local: websocket failure.");
+}), "local to loopback: websocket failure.");
 
 promise_test(t => websocketTest(t, {
   source: { server: Server.HTTP_PUBLIC },
-  target: { server: Server.WS_LOCAL },
+  target: { server: Server.WS_LOOPBACK },
   expected: WebsocketTestResult.FAILURE,
-}), "public to local: websocket failure.");
+}), "public to loopback: websocket failure.");
 
 promise_test(t => websocketTest(t, {
   source: {
-    server: Server.HTTP_LOCAL,
+    server: Server.HTTP_LOOPBACK,
     treatAsPublic: true,
   },
-  target: { server: Server.WS_LOCAL },
+  target: { server: Server.WS_LOOPBACK },
   expected: WebsocketTestResult.FAILURE,
-}), "treat-as-public to local: websocket failure.");
+}), "treat-as-public to loopback: websocket failure.");

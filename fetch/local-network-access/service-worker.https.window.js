@@ -1,10 +1,10 @@
 // META: script=/common/utils.js
 // META: script=resources/support.sub.js
 //
-// Spec: https://wicg.github.io/private-network-access/#integration-fetch
+// Spec: https://wicg.github.io/local-network-access/#integration-fetch
 //
 // These tests check that initial `ServiceWorker` script fetches are subject to
-// Private Network Access checks, just like a regular `fetch()`.
+// Local Network Access checks, just like a regular `fetch()`.
 //
 // See also: worker.https.window.js
 
@@ -60,6 +60,27 @@ async function makeTest(t, { source, target, expected }) {
 
 promise_test(t => makeTest(t, {
   source: {
+    server: Server.HTTPS_LOOPBACK,
+    treatAsPublic: true,
+  },
+  target: { server: Server.HTTPS_LOOPBACK },
+  expected: TestResult.FAILURE,
+}), "treat-as-public to loopback: failed preflight.");
+
+promise_test(t => makeTest(t, {
+  source: {
+    server: Server.HTTPS_LOOPBACK,
+    treatAsPublic: true,
+  },
+  target: {
+    server: Server.HTTPS_LOOPBACK,
+    behavior: { preflight: PreflightBehavior.serviceWorkerSuccess(token()) },
+  },
+  expected: TestResult.SUCCESS,
+}), "treat-as-public to loopback: success.");
+
+promise_test(t => makeTest(t, {
+  source: {
     server: Server.HTTPS_LOCAL,
     treatAsPublic: true,
   },
@@ -78,27 +99,6 @@ promise_test(t => makeTest(t, {
   },
   expected: TestResult.SUCCESS,
 }), "treat-as-public to local: success.");
-
-promise_test(t => makeTest(t, {
-  source: {
-    server: Server.HTTPS_PRIVATE,
-    treatAsPublic: true,
-  },
-  target: { server: Server.HTTPS_PRIVATE },
-  expected: TestResult.FAILURE,
-}), "treat-as-public to private: failed preflight.");
-
-promise_test(t => makeTest(t, {
-  source: {
-    server: Server.HTTPS_PRIVATE,
-    treatAsPublic: true,
-  },
-  target: {
-    server: Server.HTTPS_PRIVATE,
-    behavior: { preflight: PreflightBehavior.serviceWorkerSuccess(token()) },
-  },
-  expected: TestResult.SUCCESS,
-}), "treat-as-public to private: success.");
 
 promise_test(t => makeTest(t, {
   source: { server: Server.HTTPS_PUBLIC },

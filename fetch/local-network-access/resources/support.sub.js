@@ -95,7 +95,7 @@ const SERVER_PORTS = {
 // A `Server` is a web server accessible by tests. It has the following shape:
 //
 // {
-//   addressSpace: the IP address space of the server ("local", "private" or
+//   addressSpace: the IP address space of the server ("loopback", "local" or
 //     "public"),
 //   name: a human-readable name for the server,
 //   port: the port on which the server listens for connections,
@@ -126,14 +126,14 @@ class Server {
     };
   }
 
-  static HTTP_LOCAL = Server.get("http", "loopback");
-  static HTTP_PRIVATE = Server.get("http", "local");
+  static HTTP_LOOPBACK = Server.get("http", "loopback");
+  static HTTP_LOCAL = Server.get("http", "local");
   static HTTP_PUBLIC = Server.get("http", "public");
-  static HTTPS_LOCAL = Server.get("https", "loopback");
-  static HTTPS_PRIVATE = Server.get("https", "local");
+  static HTTPS_LOOPBACK = Server.get("https", "loopback");
+  static HTTPS_LOCAL = Server.get("https", "local");
   static HTTPS_PUBLIC = Server.get("https", "public");
-  static WS_LOCAL = Server.get("ws", "loopback");
-  static WSS_LOCAL = Server.get("wss", "loopback");
+  static WS_LOOPBACK = Server.get("ws", "loopback");
+  static WSS_LOOPBACK = Server.get("wss", "loopback");
 };
 
 // Resolves a URL relative to the current location, returning an absolute URL.

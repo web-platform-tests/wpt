@@ -2,14 +2,14 @@
 // META: script=/common/utils.js
 // META: script=resources/support.sub.js
 // META: variant=?include=baseline
+// META: variant=?include=from-loopback
 // META: variant=?include=from-local
-// META: variant=?include=from-private
 // META: variant=?include=from-public
 //
-// Spec: https://wicg.github.io/private-network-access/#integration-fetch
+// Spec: https://wicg.github.io/local-network-access/#integration-fetch
 //
 // These tests verify that secure contexts can fetch subresources from all
-// address spaces, provided that the target server, if more private than the
+// address spaces, provided that the target server, if more local than the
 // initiator, respond affirmatively to preflight requests.
 //
 // This file covers only those tests that must execute in a secure context.
@@ -20,41 +20,41 @@ setup(() => {
   assert_true(window.isSecureContext);
 });
 
-// Source: secure local context.
+// Source: secure loopback context.
 //
-// All fetches unaffected by Private Network Access.
+// All fetches unaffected by Local Network Access.
 
-subsetTestByKey("from-local", promise_test, t => fetchTest(t, {
-  source: { server: Server.HTTPS_LOCAL },
-  target: { server: Server.HTTPS_LOCAL },
+subsetTestByKey("from-loopback", promise_test, t => fetchTest(t, {
+  source: { server: Server.HTTPS_LOOPBACK },
+  target: { server: Server.HTTPS_LOOPBACK },
   expected: FetchTestResult.SUCCESS,
-}), "local to local: no preflight required.");
+}), "loopback to loopback: no preflight required.");
 
-subsetTestByKey("from-local", promise_test, t => fetchTest(t, {
-  source: { server: Server.HTTPS_LOCAL },
+subsetTestByKey("from-loopback", promise_test, t => fetchTest(t, {
+  source: { server: Server.HTTPS_LOOPBACK },
   target: {
-    server: Server.HTTPS_PRIVATE,
+    server: Server.HTTPS_LOCAL,
     behavior: { response: ResponseBehavior.allowCrossOrigin() },
   },
   expected: FetchTestResult.SUCCESS,
-}), "local to private: no preflight required.");
+}), "loopback to local: no preflight required.");
 
 
-subsetTestByKey("from-local", promise_test, t => fetchTest(t, {
-  source: { server: Server.HTTPS_LOCAL },
+subsetTestByKey("from-loopback", promise_test, t => fetchTest(t, {
+  source: { server: Server.HTTPS_LOOPBACK },
   target: {
     server: Server.HTTPS_PUBLIC,
     behavior: { response: ResponseBehavior.allowCrossOrigin() },
   },
   expected: FetchTestResult.SUCCESS,
-}), "local to public: no preflight required.");
+}), "loopback to public: no preflight required.");
 
-// Strictly speaking, the following two tests do not exercise PNA-specific
-// logic, but they serve as a baseline for comparison, ensuring that non-PNA
+// Strictly speaking, the following two tests do not exercise LNA-specific
+// logic, but they serve as a baseline for comparison, ensuring that non-LNA
 // preflight requests are sent and handled as expected.
 
 subsetTestByKey("baseline", promise_test, t => fetchTest(t, {
-  source: { server: Server.HTTPS_LOCAL },
+  source: { server: Server.HTTPS_LOOPBACK },
   target: {
     server: Server.HTTPS_PUBLIC,
     behavior: {
@@ -64,10 +64,10 @@ subsetTestByKey("baseline", promise_test, t => fetchTest(t, {
   },
   fetchOptions: { method: "PUT" },
   expected: FetchTestResult.FAILURE,
-}), "local to public: PUT preflight failure.");
+}), "loopback to public: PUT preflight failure.");
 
 subsetTestByKey("baseline", promise_test, t => fetchTest(t, {
-  source: { server: Server.HTTPS_LOCAL },
+  source: { server: Server.HTTPS_LOOPBACK },
   target: {
     server: Server.HTTPS_PUBLIC,
     behavior: {
@@ -77,7 +77,7 @@ subsetTestByKey("baseline", promise_test, t => fetchTest(t, {
   },
   fetchOptions: { method: "PUT" },
   expected: FetchTestResult.SUCCESS,
-}), "local to public: PUT preflight success.");
+}), "loopback to public: PUT preflight success.");
 
 // Generates tests of preflight behavior for a single (source, target) pair.
 //
@@ -86,14 +86,14 @@ subsetTestByKey("baseline", promise_test, t => fetchTest(t, {
 //  - cors mode:
 //    - preflight response has non-2xx HTTP code
 //    - preflight response is missing CORS headers
-//    - preflight response is missing the PNA-specific `Access-Control` header
+//    - preflight response is missing the LNA-specific `Access-Control` header
 //    - final response is missing CORS headers
 //    - success
 //    - success with PUT method (non-"simple" request)
 //  - no-cors mode:
 //    - preflight response has non-2xx HTTP code
 //    - preflight response is missing CORS headers
-//    - preflight response is missing the PNA-specific `Access-Control` header
+//    - preflight response is missing the LNA-specific `Access-Control` header
 //    - success
 //
 function makePreflightTests({
@@ -140,7 +140,7 @@ function makePreflightTests({
       },
     },
     expected: FetchTestResult.FAILURE,
-  }), prefix + "missing PNA header on preflight response.");
+  }), prefix + "missing LNA header on preflight response.");
 
   subsetTestByKey(subsetKey, promise_test, t => fetchTest(t, {
     source,
@@ -201,7 +201,7 @@ function makePreflightTests({
     },
     fetchOptions: { mode: "no-cors" },
     expected: FetchTestResult.FAILURE,
-  }), prefix + "no-CORS mode missing PNA header on preflight response.");
+  }), prefix + "no-CORS mode missing LNA header on preflight response.");
 
   subsetTestByKey(subsetKey, promise_test, t => fetchTest(t, {
     source,
@@ -214,38 +214,46 @@ function makePreflightTests({
   }), prefix + "no-CORS mode success.");
 }
 
-// Source: private secure context.
+// Source: local secure context.
 //
-// Fetches to the local address space require a successful preflight response
-// carrying a PNA-specific header.
+// Fetches to the loopback address space require a successful preflight response
+// carrying a LNA-specific header.
 
 makePreflightTests({
-  subsetKey: "from-private",
-  source: { server: Server.HTTPS_PRIVATE },
-  sourceDescription: "private",
-  targetServer: Server.HTTPS_LOCAL,
-  targetDescription: "local",
+  subsetKey: "from-local",
+  source: { server: Server.HTTPS_LOCAL },
+  sourceDescription: "local",
+  targetServer: Server.HTTPS_LOOPBACK,
+  targetDescription: "loopback",
 });
 
-subsetTestByKey("from-private", promise_test, t => fetchTest(t, {
-  source: { server: Server.HTTPS_PRIVATE },
-  target: { server: Server.HTTPS_PRIVATE },
+subsetTestByKey("from-local", promise_test, t => fetchTest(t, {
+  source: { server: Server.HTTPS_LOCAL },
+  target: { server: Server.HTTPS_LOCAL },
   expected: FetchTestResult.SUCCESS,
-}), "private to private: no preflight required.");
+}), "local to local: no preflight required.");
 
-subsetTestByKey("from-private", promise_test, t => fetchTest(t, {
-  source: { server: Server.HTTPS_PRIVATE },
+subsetTestByKey("from-local", promise_test, t => fetchTest(t, {
+  source: { server: Server.HTTPS_LOCAL },
   target: {
-    server: Server.HTTPS_PRIVATE,
+    server: Server.HTTPS_LOCAL,
     behavior: { response: ResponseBehavior.allowCrossOrigin() },
   },
   expected: FetchTestResult.SUCCESS,
-}), "private to public: no preflight required.");
+}), "local to public: no preflight required.");
 
 // Source: public secure context.
 //
-// Fetches to the local and private address spaces require a successful
-// preflight response carrying a PNA-specific header.
+// Fetches to the loopback and local address spaces require a successful
+// preflight response carrying a LNA-specific header.
+
+makePreflightTests({
+  subsetKey: "from-public",
+  source: { server: Server.HTTPS_PUBLIC },
+  sourceDescription: "public",
+  targetServer: Server.HTTPS_LOOPBACK,
+  targetDescription: "loopback",
+});
 
 makePreflightTests({
   subsetKey: "from-public",
@@ -253,14 +261,6 @@ makePreflightTests({
   sourceDescription: "public",
   targetServer: Server.HTTPS_LOCAL,
   targetDescription: "local",
-});
-
-makePreflightTests({
-  subsetKey: "from-public",
-  source: { server: Server.HTTPS_PUBLIC },
-  sourceDescription: "public",
-  targetServer: Server.HTTPS_PRIVATE,
-  targetDescription: "private",
 });
 
 subsetTestByKey("from-public", promise_test, t => fetchTest(t, {

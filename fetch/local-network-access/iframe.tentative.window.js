@@ -2,7 +2,7 @@
 // META: script=/common/utils.js
 // META: script=resources/support.sub.js
 //
-// Spec: https://wicg.github.io/private-network-access/#integration-fetch
+// Spec: https://wicg.github.io/local-network-access/#integration-fetch
 //
 // These tests verify that non-secure contexts cannot navigate iframes to
 // less-public address spaces, and can navigate them otherwise.
@@ -16,16 +16,34 @@ setup(() => {
 });
 
 promise_test_parallel(t => iframeTest(t, {
+  source: { server: Server.HTTP_LOOPBACK },
+  target: { server: Server.HTTP_LOOPBACK },
+  expected: IframeTestResult.SUCCESS,
+}), "loopback to loopback: no preflight required.");
+
+promise_test_parallel(t => iframeTest(t, {
+  source: { server: Server.HTTP_LOOPBACK },
+  target: { server: Server.HTTP_LOCAL },
+  expected: IframeTestResult.SUCCESS,
+}), "loopback to local: no preflight required.");
+
+promise_test_parallel(t => iframeTest(t, {
+  source: { server: Server.HTTP_LOOPBACK },
+  target: { server: Server.HTTP_PUBLIC },
+  expected: IframeTestResult.SUCCESS,
+}), "loopback to public: no preflight required.");
+
+promise_test_parallel(t => iframeTest(t, {
+  source: { server: Server.HTTP_LOCAL },
+  target: { server: Server.HTTP_LOOPBACK },
+  expected: IframeTestResult.FAILURE,
+}), "local to loopback: failure.");
+
+promise_test_parallel(t => iframeTest(t, {
   source: { server: Server.HTTP_LOCAL },
   target: { server: Server.HTTP_LOCAL },
   expected: IframeTestResult.SUCCESS,
 }), "local to local: no preflight required.");
-
-promise_test_parallel(t => iframeTest(t, {
-  source: { server: Server.HTTP_LOCAL },
-  target: { server: Server.HTTP_PRIVATE },
-  expected: IframeTestResult.SUCCESS,
-}), "local to private: no preflight required.");
 
 promise_test_parallel(t => iframeTest(t, {
   source: { server: Server.HTTP_LOCAL },
@@ -34,22 +52,10 @@ promise_test_parallel(t => iframeTest(t, {
 }), "local to public: no preflight required.");
 
 promise_test_parallel(t => iframeTest(t, {
-  source: { server: Server.HTTP_PRIVATE },
-  target: { server: Server.HTTP_LOCAL },
+  source: { server: Server.HTTP_PUBLIC },
+  target: { server: Server.HTTP_LOOPBACK },
   expected: IframeTestResult.FAILURE,
-}), "private to local: failure.");
-
-promise_test_parallel(t => iframeTest(t, {
-  source: { server: Server.HTTP_PRIVATE },
-  target: { server: Server.HTTP_PRIVATE },
-  expected: IframeTestResult.SUCCESS,
-}), "private to private: no preflight required.");
-
-promise_test_parallel(t => iframeTest(t, {
-  source: { server: Server.HTTP_PRIVATE },
-  target: { server: Server.HTTP_PUBLIC },
-  expected: IframeTestResult.SUCCESS,
-}), "private to public: no preflight required.");
+}), "public to loopback: failure.");
 
 promise_test_parallel(t => iframeTest(t, {
   source: { server: Server.HTTP_PUBLIC },
@@ -59,19 +65,22 @@ promise_test_parallel(t => iframeTest(t, {
 
 promise_test_parallel(t => iframeTest(t, {
   source: { server: Server.HTTP_PUBLIC },
-  target: { server: Server.HTTP_PRIVATE },
-  expected: IframeTestResult.FAILURE,
-}), "public to private: failure.");
-
-promise_test_parallel(t => iframeTest(t, {
-  source: { server: Server.HTTP_PUBLIC },
   target: { server: Server.HTTP_PUBLIC },
   expected: IframeTestResult.SUCCESS,
 }), "public to public: no preflight required.");
 
 promise_test_parallel(t => iframeTest(t, {
   source: {
-    server: Server.HTTP_LOCAL,
+    server: Server.HTTP_LOOPBACK,
+    treatAsPublic: true,
+  },
+  target: { server: Server.HTTP_LOOPBACK },
+  expected: IframeTestResult.FAILURE,
+}), "treat-as-public-address to loopback: failure.");
+
+promise_test_parallel(t => iframeTest(t, {
+  source: {
+    server: Server.HTTP_LOOPBACK,
     treatAsPublic: true,
   },
   target: { server: Server.HTTP_LOCAL },
@@ -80,16 +89,7 @@ promise_test_parallel(t => iframeTest(t, {
 
 promise_test_parallel(t => iframeTest(t, {
   source: {
-    server: Server.HTTP_LOCAL,
-    treatAsPublic: true,
-  },
-  target: { server: Server.HTTP_PRIVATE },
-  expected: IframeTestResult.FAILURE,
-}), "treat-as-public-address to private: failure.");
-
-promise_test_parallel(t => iframeTest(t, {
-  source: {
-    server: Server.HTTP_LOCAL,
+    server: Server.HTTP_LOOPBACK,
     treatAsPublic: true,
   },
   target: { server: Server.HTTP_PUBLIC },
@@ -102,9 +102,9 @@ promise_test_parallel(t => iframeTest(t, {
 // case is the grandparent, not the parent.
 
 iframeGrandparentTest({
-  name: "local to local, grandparent navigates: success.",
-  grandparentServer: Server.HTTP_LOCAL,
+  name: "loopback to loopback, grandparent navigates: success.",
+  grandparentServer: Server.HTTP_LOOPBACK,
   child: { server: Server.HTTP_PUBLIC },
-  grandchild: { server: Server.HTTP_LOCAL },
+  grandchild: { server: Server.HTTP_LOOPBACK },
   expected: IframeTestResult.SUCCESS,
 });

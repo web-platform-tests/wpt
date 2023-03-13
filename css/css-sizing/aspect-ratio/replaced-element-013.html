@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="reftest-wait" onload="document.documentElement.classList.remove('reftest-wait');">
+<html class="reftest-wait">
 <title>CSS aspect-ratio: img</title>
 <link rel="author" title="Google LLC" href="https://www.google.com/">
 <link rel="help" href="https://drafts.csswg.org/css-sizing-4/#aspect-ratio">
@@ -9,5 +9,11 @@
 
 <!-- Replaced elements should always use content-box sizing for the purpose of
      aspect ratio. -->
-<img src="support/20x50-green.png" style="aspect-ratio: 20/50; background: green; padding-right: 80px; padding-bottom: 50px; box-sizing: border-box;">
+<img src="support/20x50-green.png" style="aspect-ratio: 20/50; background: green; padding-right: 80px; padding-bottom: 50px; box-sizing: border-box;" id="img">
+
+<script>
+img.onload = () => {
+    document.documentElement.classList.remove("reftest-wait");
+};
+</script>
 </html>

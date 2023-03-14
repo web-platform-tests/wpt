@@ -390,36 +390,6 @@ PRINT STATEMENT: css/*
 CONTENT-VISUAL: css/*
 CONTENT-MANUAL: css/*
 
-## Support files not in /support/ or similar
-SUPPORT-WRONG-DIR: css/README.md
-SUPPORT-WRONG-DIR: css/*/reftest.list
-SUPPORT-WRONG-DIR: css/*/README
-SUPPORT-WRONG-DIR: css/*/README.md
-SUPPORT-WRONG-DIR: css/*-README
-SUPPORT-WRONG-DIR: css/*/LICENSE
-SUPPORT-WRONG-DIR: css/*/LICENSE-*
-SUPPORT-WRONG-DIR: css/*/Makefile
-
-# The selectors-3 testsuite has a weird build system
-SUPPORT-WRONG-DIR: css/selectors/*
-
-# Things we should fix
-SUPPORT-WRONG-DIR: css/css-animations/animationevent-interface.js
-SUPPORT-WRONG-DIR: css/css-backgrounds/justfortest.html
-SUPPORT-WRONG-DIR: css/css-backgrounds/background-attachment-local/aqua-yellow-32x32.png
-SUPPORT-WRONG-DIR: css/css-backgrounds/background-clip/list.txt
-SUPPORT-WRONG-DIR: css/css-backgrounds/background-origin/list.txt
-SUPPORT-WRONG-DIR: css/css-color/htaccess
-SUPPORT-WRONG-DIR: css/css-fonts/font-variant-debug.html
-SUPPORT-WRONG-DIR: css/css-masking/clip-path/svg-clipPath.svg
-SUPPORT-WRONG-DIR: css/css-multicol/multicol-red.png
-SUPPORT-WRONG-DIR: css/CSS2/section-index.xht
-SUPPORT-WRONG-DIR: css/CSS2/other-formats/xml/background-18.css
-SUPPORT-WRONG-DIR: css/CSS2/other-formats/xml/background-19-alt.xml
-SUPPORT-WRONG-DIR: css/CSS2/other-formats/xml/background-19.css
-SUPPORT-WRONG-DIR: css/WOFF2/testcaseindex.xht
-
-
 ## Whitespace rules that we can't enforce yet
 INDENT TABS: css/compositing/*
 INDENT TABS: css/CSS2/*
@@ -511,7 +481,6 @@ SET TIMEOUT: resource-timing/resources/run-async-tasks-promise.js
 
 # CSS tests that used to be at the top level and weren't subject to lints
 MISSING-LINK: css/css-fonts/matching/fixed-stretch-style-over-weight.html
-SUPPORT-WRONG-DIR: css/css-fonts/matching/font-matching.css
 MISSING-LINK: css/css-fonts/matching/stretch-distance-over-weight-distance.html
 MISSING-LINK: css/css-fonts/matching/style-ranges-over-weight-direction.html
 MISSING-LINK: css/css-fonts/variations/font-parse-numeric-stretch-style-weight.html
@@ -537,10 +506,8 @@ MISSING-LINK: css/css-scroll-anchoring/position-change-heuristic.html
 MISSING-LINK: css/css-scroll-anchoring/start-edge-in-block-layout-direction.html
 MISSING-LINK: css/css-scroll-anchoring/subtree-exclusion.html
 MISSING-LINK: css/css-scroll-anchoring/wrapped-text.html
-SUPPORT-WRONG-DIR: css/css-easing/testcommon.js
 MISSING-LINK: css/css-typed-om/CSSMatrixComponent-DOMMatrix-mutable.html
 MISSING-LINK: css/css-typed-om/declared-styleMap-accepts-inherit.html
-SUPPORT-WRONG-DIR: css/cssom/stylesheet-same-origin.css
 MISSING-LINK: css/cssom-view/DOMRectList.html
 MISSING-LINK: css/cssom-view/elementFromPoint-002.html
 MISSING-LINK: css/cssom-view/elementFromPoint-003.html
@@ -555,7 +522,6 @@ MISSING-LINK: css/cssom-view/elementsFromPoint-table.html
 MISSING-LINK: css/cssom-view/elementsFromPoint.html
 MISSING-LINK: css/cssom-view/historical.html
 MISSING-LINK: css/cssom-view/HTMLBody-ScrollArea_quirksmode.html
-SUPPORT-WRONG-DIR: css/cssom-view/iframe.html
 MISSING-LINK: css/cssom-view/mouseEvent.html
 MISSING-LINK: css/cssom-view/negativeMargins.html
 MISSING-LINK: css/cssom-view/offsetTopLeftInScrollableParent.html

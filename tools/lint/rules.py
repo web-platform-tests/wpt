@@ -108,11 +108,6 @@ class IgnoredPath(Rule):
     """)
 
 
-class SupportWrongDir(Rule):
-    name = "SUPPORT-WRONG-DIR"
-    description = "Support file not in support directory"
-
-
 class ParseFailed(Rule):
     name = "PARSE-FAILED"
     description = "Unable to parse file"

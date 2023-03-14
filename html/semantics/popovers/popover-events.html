@@ -2,7 +2,8 @@
 <meta charset="utf-8" />
 <title>Popover events</title>
 <link rel="author" href="mailto:masonf@chromium.org">
-<link rel=help href="https://open-ui.org/components/popup.research.explainer">
+<link rel=help href="https://open-ui.org/components/popover.research.explainer">
+<link rel=help href="https://html.spec.whatwg.org/multipage/popover.html">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/popover-utils.js"></script>
@@ -20,28 +21,34 @@ function getPopoverAndSignal(t) {
 window.onload = () => {
   for(const method of ["listener","attribute"]) {
     promise_test(async t => {
-      const popover = document.querySelector('[popover]');
+      const {popover,signal} = getPopoverAndSignal(t);
       assert_false(popover.matches(':open'));
       let showCount = 0;
       let afterShowCount = 0;
       let hideCount = 0;
       let afterHideCount = 0;
       function listener(e) {
+        assert_false(e.bubbles,'toggle events should not bubble');
         if (e.type === "beforetoggle") {
           if (e.newState === "open") {
             ++showCount;
             assert_equals(e.oldState,"closed",'The "beforetoggle" event should be fired before the popover is open');
             assert_true(e.target.matches(':closed'),'The popover should be in the :closed state when the opening event fires.');
             assert_false(e.target.matches(':open'),'The popover should *not* be in the :open state when the opening event fires.');
+            assert_true(e.cancelable,'beforetoggle should be cancelable only for the "show" transition');
           } else {
             ++hideCount;
             assert_equals(e.newState,"closed",'Popover toggleevent states should be "open" and "closed"');
             assert_equals(e.oldState,"open",'The "beforetoggle" event should be fired before the popover is closed')
             assert_true(e.target.matches(':open'),'The popover should be in the :open state when the hiding event fires.');
             assert_false(e.target.matches(':closed'),'The popover should *not* be in the :closed state when the hiding event fires.');
+            assert_false(e.cancelable,'beforetoggle should be cancelable only for the "show" transition');
+            e.preventDefault(); // beforetoggle should be cancelable only for the "show" transition
           }
         } else {
           assert_equals(e.type,"toggle",'Popover events should be "beforetoggle" and "toggle"')
+          assert_false(e.cancelable,'toggle should never be cancelable');
+          e.preventDefault(); // toggle should never be cancelable
           if (e.newState === "open") {
             ++afterShowCount;
             if (document.body.contains(e.target)) {
@@ -59,10 +66,9 @@ window.onload = () => {
       };
       switch (method) {
         case "listener":
-          const {signal} = getPopoverAndSignal(t);
-          // These events bubble.
-          document.addEventListener('beforetoggle', listener, {signal});
-          document.addEventListener('toggle', listener, {signal});
+          // These events do *not* bubble.
+          popover.addEventListener('beforetoggle', listener, {signal});
+          popover.addEventListener('toggle', listener, {signal});
           break;
         case "attribute":
           assert_false(popover.hasAttribute('onbeforetoggle'));

@@ -193,8 +193,7 @@ def check_gitignore_file(repo_root, path):
         return []
 
     if (path_parts[0] in ["tools", "docs"] or
-        path_parts[:2] == ["resources", "webidl2"] or
-        path_parts[:3] == ["css", "tools", "apiclient"]):
+        path_parts[:2] == ["resources", "webidl2"]):
         return []
 
     return [rules.GitIgnoreFile.error(path)]

@@ -365,8 +365,6 @@ SET TIMEOUT: common/rendering-utils.js
 SET TIMEOUT: acid/acid3/test.html
 
 # Third party code
-*: css/tools/apiclient/*
-*: css/tools/w3ctestlib/*
 *: resources/webidl2/*
 *: tools/*
 *: */third_party/*
@@ -377,9 +375,6 @@ SET TIMEOUT: acid/acid3/test.html
 *: css/css-writing-modes/tools/generators/.gitignore
 *: resources/.gitignore
 *: webaudio/.gitignore
-
-# Build system virtualenv
-*: css/tools/_virtualenv/*
 
 ## Third party data files
 TRAILING WHITESPACE: resources/chromium/*

@@ -8976,6 +8976,11 @@
     "failure": true
   },
   {
+    "input": "data://test:test",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
     "input": "data://[:1]",
     "base": "about:blank",
     "failure": true
@@ -9031,7 +9036,72 @@
     "failure": true
   },
   {
+    "input": "javascript://test:test",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
     "input": "javascript://[:1]",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "mailto://example.com:8080/pathname?search#hash",
+    "base": "about:blank",
+    "href": "mailto://example.com:8080/pathname?search#hash",
+    "origin": "null",
+    "protocol": "mailto:",
+    "username": "",
+    "password": "",
+    "host": "example.com:8080",
+    "hostname": "example.com",
+    "port": "8080",
+    "pathname": "/pathname",
+    "search": "?search",
+    "hash": "#hash"
+  },
+  {
+    "input": "mailto:///test",
+    "base": "about:blank",
+    "href": "mailto:///test",
+    "origin": "null",
+    "protocol": "mailto:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/test",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "mailto://test/a/../b",
+    "base": "about:blank",
+    "href": "mailto://test/b",
+    "origin": "null",
+    "protocol": "mailto:",
+    "username": "",
+    "password": "",
+    "host": "test",
+    "hostname": "test",
+    "port": "",
+    "pathname": "/b",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "mailto://:443",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "mailto://test:test",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "mailto://[:1]",
     "base": "about:blank",
     "failure": true
   },
@@ -9082,6 +9152,11 @@
   },
   {
     "input": "intent://:443",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "intent://test:test",
     "base": "about:blank",
     "failure": true
   },
@@ -9141,6 +9216,11 @@
     "failure": true
   },
   {
+    "input": "urn://test:test",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
     "input": "urn://[:1]",
     "base": "about:blank",
     "failure": true
@@ -9196,6 +9276,11 @@
     "failure": true
   },
   {
+    "input": "turn://test:test",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
     "input": "turn://[:1]",
     "base": "about:blank",
     "failure": true
@@ -9247,6 +9332,11 @@
   },
   {
     "input": "stun://:443",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "stun://test:test",
     "base": "about:blank",
     "failure": true
   },

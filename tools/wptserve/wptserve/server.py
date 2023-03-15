@@ -294,13 +294,12 @@ class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
                 response.set_error(e.code, str(e))
             except Exception as e:
                 self.respond_with_error(response, e)
-        self.logger.debug("%i %s %s (%s) %i" % (response.status[0],
-                                                request.method,
-                                                request.request_path,
-                                                request.headers.get('Referer'),
-                                                request.raw_input.length))
 
         if not response.writer.content_written:
+            if not response.can_iter_content():
+                self.respond_with_error(response,
+                    "Response content is not iterable!")
+
             response.write()
 
         # If a python handler has been used, the old ones won't send a END_STR data frame, so this
@@ -308,6 +307,11 @@ class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
         if isinstance(response, H2Response) and not response.writer.stream_ended:
             response.writer.end_stream()
 
+        self.logger.debug("%i %s %s (%s) %i" % (response.status[0],
+                                                request.method,
+                                                request.request_path,
+                                                request.headers.get('Referer'),
+                                                request.raw_input.length))
         # If we want to remove this in the future, a solution is needed for
         # scripts that produce a non-string iterable of content, since these
         # can't set a Content-Length header. A notable example of this kind of

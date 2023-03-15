@@ -194,6 +194,29 @@ class TestFunctionHandler(TestUsingServer):
         assert "Content-Length" not in resp.info()
         assert resp.read() == b""
 
+    def test_non_iterable_rv(self):
+        @wptserve.handlers.handler
+        def handler(request, response):
+            response.content = 1
+            return ()
+
+        route = ("GET", "/non_iterable_rv", handler)
+        self.server.router.register(*route)
+        with pytest.raises(HTTPError) as cm:
+            self.request(route[1])
+        assert cm.value.code == 500
+
+    def test_non_iterable_content_rv(self):
+        @wptserve.handlers.handler
+        def handler(request, response):
+            response.content = 2
+            return response.content
+
+        route = ("GET", "/non_iterable_content_rv", handler)
+        self.server.router.register(*route)
+        with pytest.raises(HTTPError) as cm:
+            self.request(route[1])
+        assert cm.value.code == 500
 
 class TestJSONHandler(TestUsingServer):
     def test_json_0(self):

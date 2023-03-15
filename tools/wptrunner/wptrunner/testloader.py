@@ -7,6 +7,7 @@ import json
 import os
 from urllib.parse import urlsplit
 from abc import ABCMeta, abstractmethod
+from datetime import datetime
 from queue import Empty
 from collections import defaultdict, deque, namedtuple
 from typing import cast, Any, Mapping
@@ -59,14 +60,24 @@ class TestGroups:
 def load_subsuites(logger, base_run_info, path: str | None, include_subsuites: set[str]):
     subsuites: Mapping[str, Subsuite] = {}
     run_all_subsuites = not include_subsuites
+    now = datetime.now()
 
-    def maybe_add_subsuite(name, **kwargs):
+    def maybe_add_subsuite(name, data):
         if run_all_subsuites or name in include_subsuites:
-            subsuites[name] = Subsuite(name, base_run_info, **kwargs)
+            if data.get("expires"):
+                if datetime.fromisoformat(data["expires"]) < now:
+                    logger.warning(f"Tried to run expired subsuite {name}")
+                    return
+            subsuites[name] = Subsuite(name,
+                                       base_run_info,
+                                       config=data.get("config", {}),
+                                       run_info=data.get("run_info", {}),
+                                       include=data.get("include"),
+                                       tags=set(data["tags"]) if "tags" in subsuite else None)
             if name in include_subsuites:
                 include_subsuites.remove(name)
 
-    maybe_add_subsuite("")
+    maybe_add_subsuite("", {})
 
     if path is None:
         if not run_all_subsuites and include_subsuites:
@@ -83,11 +94,7 @@ def load_subsuites(logger, base_run_info, path: str | None, include_subsuites: s
     for key, subsuite in data.items():
         if key == "":
             raise ValueError("Subsuites must have a non-empty name")
-        maybe_add_subsuite(key,
-                           config=subsuite["config"],
-                           run_info=subsuite.get("run_info", {}),
-                           include=subsuite.get("include"),
-                           tags=set(subsuite["tags"]) if "tags" in subsuite else None)
+        maybe_add_subsuite(key, subsuite)
 
     if not run_all_subsuites and include_subsuites:
         raise ValueError(f"Unrecognised subsuites {','.join(include_subsuites)}")
@@ -95,16 +102,15 @@ def load_subsuites(logger, base_run_info, path: str | None, include_subsuites: s
     return subsuites
 
 
-
 class Subsuite:
     def __init__(self,
                  name: str,
                  base_run_info,
-                 config: Mapping[str, Any] | None = None,
-                 run_info_extras: Mapping[str, Any] | None = None,
+                 config: Mapping[str, Any],
+                 run_info_extras: Mapping[str, Any],
                  include: list[str] | None = None,
                  tags: set[str] | None = None):
-        self.config = config if config is not None else {}
+        self.config = config
         self.run_info_extras = run_info_extras if run_info_extras is not None else {}
         self.run_info_extras["subsuite"] = name
         self.include = include

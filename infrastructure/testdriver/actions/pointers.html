@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>TestDriver actions: element position</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<div id="test"></div>
+
+<script>
+function waitFor(event_name, type) {
+  return new Promise((resolve) => {
+      document.addEventListener(event_name, resolve);
+    })
+    .then((event) => {
+      assert_equals(event.pointerType, type, "type of " + event_name + "event");
+    });
+}
+
+test(() => {
+  const actions = new test_driver.Actions();
+
+  assert_throws(new Error(), () => {
+    actions.addPointer("moose_pointer", "moose");
+  });
+}, "unrecognized type");
+
+promise_test(() => {
+  const actions = new test_driver.Actions()
+    .addPointer("mouse_pointer1")
+    .pointerMove(0, 0)
+    .pointerDown()
+    .pointerMove(30, 30)
+    .pointerUp();
+
+  return Promise.all([
+      actions.send(),
+      waitFor("pointerdown", "mouse"),
+      waitFor("pointermove", "mouse"),
+      waitFor("pointerup", "mouse")
+    ]);
+}, "default type (mouse)");
+
+promise_test(() => {
+  const actions = new test_driver.Actions()
+    .addPointer("mouse_pointer2", "mouse")
+    .pointerMove(0, 0)
+    .pointerDown()
+    .pointerMove(30, 30)
+    .pointerUp();
+
+  return Promise.all([
+      actions.send(),
+      waitFor("pointerdown", "mouse"),
+      waitFor("pointermove", "mouse"),
+      waitFor("pointerup", "mouse")
+    ]);
+}, "specified type: mouse");
+
+promise_test(() => {
+  const actions = new test_driver.Actions()
+    .addPointer("touch_pointer", "touch")
+    .pointerMove(0, 0)
+    .pointerDown()
+    .pointerMove(30, 30)
+    .pointerUp();
+
+  return Promise.all([
+      actions.send(),
+      waitFor("pointerdown", "touch"),
+      waitFor("pointermove", "touch"),
+      waitFor("pointerup", "touch")
+    ]);
+}, "specified type: touch");
+
+promise_test(() => {
+  const actions = new test_driver.Actions()
+    .addPointer("pen_pointer", "pen")
+    .pointerMove(0, 0)
+    .pointerDown()
+    .pointerMove(30, 30)
+    .pointerUp();
+
+  return Promise.all([
+      actions.send(),
+      waitFor("pointerdown", "pen"),
+      waitFor("pointermove", "pen"),
+      waitFor("pointerup", "pen")
+    ]);
+}, "specified type: pen");
+</script>

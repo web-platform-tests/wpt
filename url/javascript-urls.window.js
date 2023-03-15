@@ -24,6 +24,20 @@
     "input": "javascript://host/1%0a//../0/;globalThis.shouldBeOne=1;/%0aglobalThis.shouldBeOne=2;/..///",
     "property": "shouldBeOne",
     "expected": 1
+  },
+  {
+    "description": "javascript: URL containing a JavaScript string split over path and query",
+    // Use ";undefined" to avoid returning a string.
+    "input": "javascript:globalThis.shouldBeAStringA = \"https://whatsoever.com/?a=b&c=5&x=y\";undefined",
+    "property": "shouldBeAStringA",
+    "expected": "https://whatsoever.com/?a=b&c=5&x=y"
+  },
+  {
+    "description": "javascript: URL containing a JavaScript string split over path and query and has a U+000A in scheme",
+    // Use ";undefined" to avoid returning a string.
+    "input": "java\x0Ascript:globalThis.shouldBeAStringB = \"https://whatsoever.com/?a=b&c=5&x=y\";undefined",
+    "property": "shouldBeAStringB",
+    "expected": "https://whatsoever.com/?a=b&c=5&x=y"
   }
 ].forEach(({ description, input, property, expected }) => {
   // Use promise_test so the tests run in sequence. Needed for globalThis.verify below.

@@ -18,6 +18,7 @@ bluetooth_test(async (t) => {
       optionalManufacturerData: [0x0001]
     }
   });
+  test_driver.set_permission({ name: "bluetooth", deviceId: device.id }, "granted");
   const watcher = new EventWatcher(t, device, ['advertisementreceived']);
 
   await device.watchAdvertisements();

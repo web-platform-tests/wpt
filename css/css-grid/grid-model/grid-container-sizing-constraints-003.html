@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Grid Layout Test: Indefinite sizing constraints on inline-grid containers</title>
+<link rel="author" title="Javier Fernandez Garcia-Boente" href="mailto:jfernandez@igalia.com">
+<link rel="help" href="https://www.w3.org/TR/css-grid-1/#intrinsic-sizes">
+<link rel="help" href="https://www.w3.org/TR/css-sizing-3/#sizing-values">
+<meta name="assert" content="The test checks the intrinsic size of a grid container when sized under indefinite constraints.">
+<style>
+  .grid {
+    display: inline-grid;
+    height: 100px;
+    background: green;
+    font: 20px/1 Ahem;
+  }
+
+  .tracks-minmax-100-200 { grid-template-columns: minmax(100px, 200px); }
+  .tracks-minmax-50-200 { grid-template-columns: minmax(50px, 200px); }
+
+  .fixed-100 { width: 100px; }
+  .fixed-50 { width: 50px; }
+  .calc { width: calc(100px + 50px); }
+  .relative { width: 50%; }
+  .min-content { width: min-content; }
+  .fit-content { width: fit-content; }
+  .max-content { width: max-content; }
+
+  .fixed-min-width-100 { min-width: 100px; }
+  .fixed-min-width-50 { min-width: 50px; }
+  .min-content-min-width { min-width: min-content; }
+  .max-content-min-width { min-width: max-content; }
+
+  .fixed-max-width-100 { max-width: 100px; }
+  .fixed-max-width-50 { max-width: 50px; }
+  .min-content-max-width { max-width: min-content; }
+  .max-content-max-width { max-width: max-content; }
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+
+<body onload="checkLayout('.grid');">
+
+  <div style="float: left" data-expected-width="100">
+      <div class="grid fixed-100"></div>
+  </div>
+
+  <br clear="all">
+  <br clear="all">
+
+  <div style="float: left" data-expected-width="150">
+      <div class="grid calc"></div>
+  </div>
+
+  <br clear="all">
+  <br clear="all">
+
+  <div style="float: left" data-expected-width="100">
+      <div class="grid tracks-minmax-100-200 min-content"></div>
+  </div>
+
+  <br clear="all">
+  <br clear="all">
+
+  <div style="float: left" data-expected-width="120">
+      <div class="grid fit-content">XX X X</div>
+  </div>
+
+  <br clear="all">
+  <br clear="all">
+
+  <div style="float: left" data-expected-width="200">
+      <div class="grid tracks-minmax-100-200 fit-content"></div>
+  </div>
+
+  <br clear="all">
+  <br clear="all">
+
+  <div style="float: left" data-expected-width="200">
+      <div class="grid tracks-minmax-100-200 max-content"></div>
+  </div>
+
+  <br clear="all">
+  <br clear="all">
+
+  <div style="float: left" data-expected-width="100">
+      <div class="grid fixed-min-width-100"></div>
+  </div>
+
+  <br clear="all">
+  <br clear="all">
+
+  <div style="float: left" data-expected-width="100">
+      <div class="grid fixed-50 fixed-min-width-100"></div>
+  </div>
+
+  <br clear="all">
+  <br clear="all">
+
+  <div style="float: left" data-expected-width="100">
+      <div class="grid fixed-100 fixed-min-width-50"></div>
+  </div>
+
+  <br clear="all">
+  <br clear="all">
+
+  <div style="float: left" data-expected-width="200">
+      <div class="grid tracks-minmax-50-200 fixed-min-width-100"></div>
+  </div>
+
+  <br clear="all">
+  <br clear="all">
+
+  <div style="float: left" data-expected-width="100">
+      <div class="grid tracks-minmax-50-200 min-content fixed-min-width-100"></div>
+  </div>
+
+  <br clear="all">
+  <br clear="all">
+
+  <div style="float: left" data-expected-width="50">
+      <div class="grid fixed-100 fixed-max-width-50"></div>
+  </div>
+
+  <br clear="all">
+  <br clear="all">
+
+  <div style="float: left" data-expected-width="100">
+      <div class="grid tracks-minmax-50-200 fixed-max-width-100"></div>
+  </div>
+
+  <br clear="all">
+  <br clear="all">
+
+  <div style="float: left" data-expected-width="50">
+      <div class="grid tracks-minmax-100-200 fixed-max-width-50"></div>
+  </div>
+
+  <br clear="all">
+  <br clear="all">
+
+  <div style="float: left" data-expected-width="50">
+      <div class="grid tracks-minmax-100-200 max-content fixed-max-width-50"></div>
+  </div>
+
+  <br clear="all">
+  <br clear="all">
+
+  <div style="float: left" data-expected-width="50">
+      <div class="grid tracks-minmax-100-200 min-content fixed-max-width-50"></div>
+  </div>
+
+  <br clear="all">
+  <br clear="all">
+
+  <div style="float: left" data-expected-width="100">
+      <div class="grid tracks-minmax-100-200 fixed-50 min-content-min-width"></div>
+  </div>
+
+  <br clear="all">
+
+  <div id="log"></div>
+</body>

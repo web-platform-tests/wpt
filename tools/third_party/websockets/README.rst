@@ -31,8 +31,8 @@ What is ``websockets``?
 ``websockets`` is a library for building WebSocket servers_ and clients_ in
 Python with a focus on correctness and simplicity.
 
-.. _servers: https://github.com/aaugustin/websockets/blob/master/example/server.py
-.. _clients: https://github.com/aaugustin/websockets/blob/master/example/client.py
+.. _servers: https://github.com/aaugustin/websockets/blob/main/example/quickstart/server.py
+.. _clients: https://github.com/aaugustin/websockets/blob/main/example/quickstart/client.py
 
 Built on top of ``asyncio``, Python's standard asynchronous I/O framework, it
 provides an elegant coroutine-based API.
@@ -115,7 +115,7 @@ Docs`_ and see for yourself.
 
 .. _Read the Docs: https://websockets.readthedocs.io/
 .. _handle backpressure correctly: https://vorpus.org/blog/some-thoughts-on-asynchronous-api-design-in-a-post-asyncawait-world/#websocket-servers
-.. _Autobahn Testsuite: https://github.com/aaugustin/websockets/blob/master/compliance/README.rst
+.. _Autobahn Testsuite: https://github.com/aaugustin/websockets/blob/main/compliance/README.rst
 
 Why shouldn't I use ``websockets``?
 -----------------------------------
@@ -147,8 +147,8 @@ For anything else, please open an issue_ or send a `pull request`_.
 
 Participants must uphold the `Contributor Covenant code of conduct`_.
 
-.. _Contributor Covenant code of conduct: https://github.com/aaugustin/websockets/blob/master/CODE_OF_CONDUCT.md
+.. _Contributor Covenant code of conduct: https://github.com/aaugustin/websockets/blob/main/CODE_OF_CONDUCT.md
 
 ``websockets`` is released under the `BSD license`_.
 
-.. _BSD license: https://github.com/aaugustin/websockets/blob/master/LICENSE
+.. _BSD license: https://github.com/aaugustin/websockets/blob/main/LICENSE

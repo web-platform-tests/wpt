@@ -1,0 +1,139 @@
+
+<!DOCTYPE HTML>
+<html><head>;
+<title>Writing modes: isolate by default for display:block elements</title>
+<link rel="author" title="Noam Rosenthal" href="noam@webkit.org">
+<link rel="match" href="reference/bidi-isolate-display-block.html" />
+<link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#bidi-rendering" />
+<meta name="assert" content="Assertthat elements that are display:block by default are also unicode-bidi:isolate by default">
+<style>
+  .inline {display: inline;}
+  .inline-block {display: inline-block;}
+</style>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head><body>
+<div>
+  I like:
+  <div class="inline">A</div>
+  <address class="inline">&#x05D0;</address>
+  <div class="inline">&#x05D1;</div>
+  (3 things total).
+</div>
+<div>
+  Address :
+  <address class="inline">A</address>
+  <div class="inline">&#x05D0;</div>
+  <address class="inline">&#x05D1;</address>
+  (3 things total)
+</div>
+<div>
+  Center :
+  <center class="inline">A</center>
+  <center class="inline">&#x05D0;</center>
+  <center class="inline">&#x05D1;</center>
+  (3 things total)
+</div>
+<div>
+  Figure :
+  <figure class="inline">
+    <p class="inline">A</p>
+    <figcaption class="inline">&#x05D0;</figcaption>
+    <blockquote class="inline">&#x05D1;</blockquote>
+  </figure>
+  (3 things total)
+</div>
+<h1>
+  Header :
+  <hgroup class="inline">
+  <h2 class="inline">A</h2>
+  <h3 class="inline">B</h3>
+  <h4 class="inline">&#x05D0;</h4>
+  <h5 class="inline">&#x05D1;</h5>
+  <h6 class="inline">&#x05D2;</h6>
+  (5 things total)
+  <hgroup>
+</h1>
+<table>
+  Table :
+  <thead class="inline">
+    Head :
+    <tr class="inline">
+      row
+      <th class="inline">&#x05D0;</th>
+      <th class="inline">&#x05D1;</th>
+    </tr>
+    (3 things total)
+  </thead>
+</table>
+<table>
+  <tfoot class="inline">
+    Foot :
+    <tr class="inline">
+      row
+      <td class="inline">&#x05D0;</td>
+      <td class="inline">&#x05D1;</td>
+    </tr>
+    (3 things total)
+  </tfoot>
+</table>
+<table>
+  <tbody class="inline">
+    Body :
+    <tr class="inline">
+      row
+      <td class="inline">&#x05D0;</td>
+      <td class="inline">&#x05D1;</td>
+    </tr>
+    (3 things total)
+  </tbody>
+</table>
+<dl>
+  list :
+  <dt class="inline">A</dt>
+  <dd class="inline">&#x05D0;</dd>
+  <dt class="inline">B</dt>
+  <dd class="inline">&#x05D1;</dd>
+  (4 things total)
+</dl>
+<ol>
+  One ordered :
+  <li class="inline">A</li>
+  <li class="inline">&#x05D0;</li>
+  <li class="inline">&#x05D1;</li>
+  (3 things total)
+</ol>
+<ul>
+  One unordered :
+  <li class="inline">A</li>
+  <li class="inline">&#x05D0;</li>
+  <li class="inline">&#x05D1;</li>
+  (3 things total)
+</ul>
+<div>
+  I like:
+  <div class="inline-block">A</div>
+  <div class="inline-block">&#x05D0;</div>
+  <div class="inline-block">&#x05D1;</div>
+  (3 things total).
+</div>
+<p>
+  <summary class="inline">A</summary>
+  <p class="inline">B</p>
+  <pre class="inline">content &#x05D1;</pre>
+  (7 Lorem)
+<p>
+<div>
+  I like:
+  <div class="inline">A</div>
+  <div class="inline" dir="rtl">&#x05D0;</div>
+  <div class="inline" dir="rtl">&#x05D1;</div>
+  (3 things total).
+</div>
+<div>
+  I like:
+  <div class="inline-block">A</div>
+  <div class="inline-block" dir="rtl">&#x05D0;</div>
+  <div class="inline-block" dir="rtl">&#x05D1;</div>
+  (3 things total).
+</div>
+</body></html>

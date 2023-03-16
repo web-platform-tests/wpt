@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" title="David Grogan" href="dgrogan@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-tables-3/#computing-the-table-width">
+<link rel="match" href="cell-width-with-inline-children-001-ref.html">
+<meta name="flags" content="" />
+<meta name="assert" content="Table width is calculated correctly when columns have inline content and one column is constrained" />
+<title>
+Inline content and table width
+</title>
+
+<style>
+table {
+  border-spacing: 0px;
+}
+
+td {
+  border: 1px solid black;
+  line-height:12px; /* Something predictable >10 */
+  padding: 0px;
+}
+
+td > * {
+  display: inline-block;
+  height: 10px;
+  vertical-align:top; /* FF and Chrome disagree about where the baseline is, so just ignore it */
+}
+
+x-word {
+  width: 50px;
+  background: skyblue;
+}
+
+x-long-word {
+  width: 200px;
+  background: purple;
+}
+</style>
+
+<a href=http://crbug.com/860084>https://crbug.com/860084 {table,cell} width too big when cell has inline and other column has width restriction</a>
+
+<table>
+  <tr>
+    <td></td>
+    <td> <!-- putting width:150px here doesn't repro -->
+      <x-word></x-word>
+      <x-word></x-word>
+      <x-word></x-word>
+      <x-word></x-word>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <x-long-word></x-long-word>
+    </td>
+    <td style="width: 150px"></td>
+  </tr>
+</table>

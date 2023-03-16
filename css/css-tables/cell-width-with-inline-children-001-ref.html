@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<style>
+div.inline-block {
+  border: 1px solid black;
+  line-height:12px;
+  display:inline-block;
+  vertical-align:top; /* The baselines of the siblings don't match */
+}
+
+#topline > div.inline-block {
+  height:24px; /* 2 lines of 12px each */
+}
+
+#bottomline > div.inline-block {
+  height:12px;
+}
+
+div.inline-block > * {
+  display: inline-block;
+  height: 10px;
+  vertical-align:top; /* FF and Chrome disagree about where the baseline is, so just ignore it */
+}
+
+x-word {
+  width: 50px;
+  background: skyblue;
+}
+
+x-long-word {
+  width: 200px;
+  background: purple;
+}
+</style>
+
+<a href=http://crbug.com/860084>https://crbug.com/860084 {table,cell} width too big when cell has inline and other column has width restriction</a>
+
+<div id=topline>
+  <div class=inline-block id="empty" style="width:200px;"></div><div
+    class=inline-block style="width:150px;">
+          <x-word></x-word>
+          <x-word></x-word>
+          <x-word></x-word>
+          <x-word></x-word>
+  </div>
+</div>
+<div id=bottomline>
+  <div class=inline-block style="width:200px;">
+    <x-long-word></x-long-word>
+  </div><div class=inline-block style="width:150px;">
+</div>

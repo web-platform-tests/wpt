@@ -1,0 +1,37 @@
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script>
+async_test(t => {
+  let frame = document.createElement('iframe');
+  frame.src = get_host_info()["HTTPS_REMOTE_ORIGIN"] + "/client-hints/resources/expect_client_hints_headers_iframe.html";
+  frame.allow = "ch-device-memory";
+  window.addEventListener('message', t.step_func(function(e) {
+    if(!e.source === frame.contentWindow)
+      return;
+    if(typeof e.data != "string")
+      return;
+    assert_equals(e.data, "PASS");
+    t.done();
+  }));
+  document.body.appendChild(frame);
+}, "Client hint loaded in iframe with feature policy.");
+
+async_test(t => {
+  let frame = document.createElement('iframe');
+  frame.src = get_host_info()["HTTPS_REMOTE_ORIGIN"] + "/client-hints/resources/expect_client_hints_headers_iframe.html";
+  window.addEventListener('message', t.step_func(function(e) {
+    if(!e.source === frame.contentWindow)
+      return;
+    if(typeof e.data != "string")
+      return;
+    assert_equals(e.data, "FAIL");
+    t.done();
+  }));
+  document.body.appendChild(frame);
+}, "Client hint not loaded in iframe with no feature policy.");
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+div::after {
+  padding: 10px;
+  border: 1px solid black;
+  position: relative;
+  content: "Hello, world!"
+}
+</style>
+
+<div></div>
+
+<script>
+addEventListener('load', evt => {
+  async_test(t => {
+    let div = document.querySelector('div');
+    let left = 0;
+    let runCount = 0;
+    let runLoop = () => {
+      requestAnimationFrame(() => {
+        t.step_func(() => {
+          assert_false(navigator.scheduling.isFramePending(), "Frame is pending during rAF");
+        });
+        let t0 = performance.now();
+        step_timeout(() => {
+          t.step_func(() => {
+            assert_false(navigator.scheduling.isFramePending(), "Frame is pending immediately after frame completion.");
+          });
+          div.style.left = String(++left) + "px";
+          while (performance.now() - t0 < 50 && !navigator.scheduling.isFramePending()) {
+            for (let i = 0; i < 0x100000; i++) {
+              let j = i;
+            }
+          }
+          t.step_func(() => {
+            assert_true(navigator.scheduling.isFramePending(), "Frame is pending " + String(performance.now() - t0) + "ms after previous frame");
+          });
+          if (runCount++ < 4) {
+            runLoop();
+          } else {
+            t.done();
+          }
+        });
+      });
+    };
+    runLoop();
+  });
+});
+</script>

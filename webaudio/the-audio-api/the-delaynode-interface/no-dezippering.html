@@ -43,7 +43,7 @@
             src.connect(delay).connect(context.destination);
 
             // After a render quantum, change the delay to |delay1Frame|.
-            context.suspend(RENDER_QUANTUM_FRAMES / context.sampleRate)
+            context.suspend(renderQuantumFrames(context) / context.sampleRate)
                 .then(() => {
                   delay.delayTime.value = delay1Frame / context.sampleRate;
                 })
@@ -62,29 +62,29 @@
 
                   // Now we have the ramp should show up from the delay.
                   let ramp0 =
-                      new Float32Array(RENDER_QUANTUM_FRAMES - delay0Frame);
+                      new Float32Array(renderQuantumFrames(context) - delay0Frame);
                   for (let k = 0; k < ramp0.length; ++k) {
                     ramp0[k] = rampData[k];
                   }
 
                   should(
-                      renderedData.slice(delay0Frame, RENDER_QUANTUM_FRAMES),
+                      renderedData.slice(delay0Frame, renderQuantumFrames(context)),
                       'output[' + delay0Frame + ':' +
-                          (RENDER_QUANTUM_FRAMES - 1) + ']')
+                          (renderQuantumFrames(context) - 1) + ']')
                       .beEqualToArray(ramp0);
 
                   // After one rendering quantum, the delay is changed to
                   // |delay1Frame|.
                   let ramp1 =
-                      new Float32Array(context.length - RENDER_QUANTUM_FRAMES);
+                      new Float32Array(context.length - renderQuantumFrames(context));
                   for (let k = 0; k < ramp1.length; ++k) {
-                    // ramp1[k] = 1 + k + RENDER_QUANTUM_FRAMES - delay1Frame;
+                    // ramp1[k] = 1 + k + renderQuantumFrames(context) - delay1Frame;
                     ramp1[k] =
-                        rampData[k + RENDER_QUANTUM_FRAMES - delay1Frame];
+                        rampData[k + renderQuantumFrames(context) - delay1Frame];
                   }
                   should(
-                      renderedData.slice(RENDER_QUANTUM_FRAMES),
-                      'output[' + RENDER_QUANTUM_FRAMES + ':]')
+                      renderedData.slice(renderQuantumFrames(context)),
+                      'output[' + renderQuantumFrames(context) + ':]')
                       .beEqualToArray(ramp1);
                 })
                 .then(() => task.done());
@@ -150,7 +150,7 @@
         // The time at which the delay time of |delayTest| node will be
         // changed.  This MUST be on a render quantum boundary, but is
         // otherwise arbitrary.
-        let changeTime = 3 * RENDER_QUANTUM_FRAMES / context.sampleRate;
+        let changeTime = 3 * renderQuantumFrames(context) / context.sampleRate;
 
         // Schedule the delay change on |delayRef| and also apply the value
         // setter for |delayTest| at |changeTime|.

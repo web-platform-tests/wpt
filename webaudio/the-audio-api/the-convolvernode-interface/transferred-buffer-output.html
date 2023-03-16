@@ -17,7 +17,7 @@
 
       // Number of frames to render.  Just need to have at least 2 render
       // quanta.
-      const lengthInFrames = 10 * RENDER_QUANTUM_FRAMES;
+      const lengthInFrames = 10 * renderQuantumFrames();
 
       let audit = Audit.createTaskRunner();
 
@@ -28,7 +28,7 @@
       function setUpWorkerForTest() {
         impulseBuffer = new AudioBuffer({
           numberOfChannels: 2,
-          length: 2 * RENDER_QUANTUM_FRAMES,
+          length: 2 * renderQuantumFrames(),
           sampleRate: sampleRate
         });
 

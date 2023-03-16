@@ -17,7 +17,7 @@
           async (task, should) => {
             // Only need a few outputs samples.  The sample rate is arbitrary.
             const context =
-                new OfflineAudioContext(1, RENDER_QUANTUM_FRAMES, 8192);
+                new OfflineAudioContext(1, renderQuantumFrames(), 8192);
             let src;
             let delay;
 

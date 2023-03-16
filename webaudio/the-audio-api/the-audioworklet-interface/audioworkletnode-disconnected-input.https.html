@@ -17,7 +17,7 @@
       // The sample rate is a power of two to eliminate roundoff in computing
       // the suspend time needed for the test.
       let sampleRate = 16384;
-      let renderLength = 8 * RENDER_QUANTUM_FRAMES;
+      let renderLength = 8 * 1024;
       let context;
 
       let filePath = 'processors/input-length-processor.js';
@@ -47,7 +47,7 @@
               workletNode.connect(context.destination);
 
               // Connect the source now.
-              let connectFrame = RENDER_QUANTUM_FRAMES;
+              let connectFrame = renderQuantumFrames(context);
 
               context.suspend(connectFrame / sampleRate)
                   .then(() => {
@@ -57,7 +57,7 @@
               ;
 
               // Then disconnect the source after a few renders
-              let disconnectFrame = 3 * RENDER_QUANTUM_FRAMES;
+              let disconnectFrame = 3 * renderQuantumFrames(context);
               context.suspend(disconnectFrame / sampleRate)
                   .then(() => {
                     sourceNode.disconnect(workletNode);
@@ -84,7 +84,7 @@
                             nonZeroIndex,
                             nonZeroIndex + (disconnectFrame - connectFrame)),
                         'While source is connected: Input array length')
-                        .beConstantValueOf(RENDER_QUANTUM_FRAMES);
+                        .beConstantValueOf(renderQuantumFrames(context));
                     should(
                         data.slice(disconnectFrame),
                         'After disconnecting the source: Input array length')

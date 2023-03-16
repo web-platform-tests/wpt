@@ -23,7 +23,7 @@
       audit.define('Initializing AudioWorklet and Context', (task, should) => {
         should(() => {
           context = new OfflineAudioContext(
-              1, 10 * RENDER_QUANTUM_FRAMES, sampleRate);
+              1, 10 * 1024, sampleRate);
         }, 'Creating offline context for testing').notThrow();
 
         should(
@@ -40,7 +40,7 @@
 
         node.connect(context.destination);
 
-        let renderQuantumDuration = RENDER_QUANTUM_FRAMES / context.sampleRate;
+        let renderQuantumDuration = renderQuantumFrames(context) / context.sampleRate;
 
         // Set up some automations, after one render quantum.  We want the first
         // render not to have any automations, just to be sure we handle that
@@ -63,27 +63,28 @@
         context.startRendering()
             .then(renderedBuffer => {
               let data = renderedBuffer.getChannelData(0);
+              let renderSize = renderQuantumFrames(context);
 
               // The very first render quantum should be constant, so the array
               // has length 1.
               should(
-                  data.slice(0, RENDER_QUANTUM_FRAMES),
+                  data.slice(0, renderSize),
                   'Render quantum 0: array size')
                   .beConstantValueOf(1);
 
               should(
-                  data.slice(RENDER_QUANTUM_FRAMES, 2 * RENDER_QUANTUM_FRAMES),
+                  data.slice(renderSize, 2 * renderSize),
                   'Render quantum 1: array size')
                   .beConstantValueOf(1);
 
               should(
                   data.slice(
-                      2 * RENDER_QUANTUM_FRAMES, 4 * RENDER_QUANTUM_FRAMES),
+                      2 * renderSize, 4 * renderSize),
                   'Render quantum 2-3: array size')
-                  .beConstantValueOf(RENDER_QUANTUM_FRAMES);
+                  .beConstantValueOf(renderSize);
 
               should(
-                  data.slice(4 * RENDER_QUANTUM_FRAMES),
+                  data.slice(4 * renderSize),
                   'Remaining renders: array size')
                   .beConstantValueOf(1);
             })

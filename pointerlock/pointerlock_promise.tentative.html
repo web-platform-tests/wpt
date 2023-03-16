@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<div id="locktarget">Target</div>
+<div id="locktarget2">Target2</div>
+<iframe id="iframe"></iframe>
+<script>
+var locktarget = document.querySelector('#locktarget')
+var locktarget2 = document.querySelector('#locktarget2')
+var targetIframe = document.getElementById("iframe");
+
+// Pointer lock requests with out user gesture fails and rejects the returned
+// Promise with the correct error.
+promise_test(async (t) => {
+    await promise_rejects_dom(t,
+          'NotAllowedError',
+          locktarget2.requestPointerLock(),
+          'Pointer lock requests without user gesture should reject with a NotAllowedError.');
+}, 'Requests for Pointer Lock without user gesture should fail with a NotAllowedError.');
+
+// Simple successful pointer lock requests should return a promise that
+// resolves.
+promise_test(async () => {
+    await test_driver.bless('user gesture requests pointer lock', async () => {
+        let promise = locktarget.requestPointerLock();
+        assert_true(promise instanceof Promise);
+        await promise;
+    });
+}, "Promise is resolved when successfully acquiring pointer lock.");
+
+// Changes to Pointer Lock targets with a different shadow root document from
+// the current pointer lock holder should fail with a WrongDocument error.
+promise_test(async () => {
+    let success = false
+    await test_driver.bless('user gesture requests pointer lock', async () => {
+        await locktarget.requestPointerLock();
+    });
+    await test_driver.bless('user gesture requests pointer lock', async () => {
+        targetIframe.contentDocument.body.requestPointerLock()
+        .catch(error => {
+            if(error.name == "WrongDocumentError") {
+                success = true;
+            }
+        });
+    });
+    assert_true(success, 'Requests for changing Pointer Lock target to an element from a different Shadow-root should be rejected with a WrongDocumentError.');
+}, 'Changing Pointer Lock to an element in a different Shadow-root properly failed.');
+</script>

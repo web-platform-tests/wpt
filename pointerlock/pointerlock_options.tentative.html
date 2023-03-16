@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<div id="locktarget">Target</div>
+<div id="locktarget2">Target2</div>
+<iframe id="iframe"></iframe>
+<script>
+var locktarget = document.querySelector('#locktarget')
+var locktarget2 = document.querySelector('#locktarget2')
+
+// Changes to Pointer Lock options and targets do not need user gestures.
+promise_test(async () => {
+    await test_driver.bless('user gesture requests pointer lock', async () => {
+        try {
+            await locktarget.requestPointerLock({unadjustedMovement:true});
+        } catch(error) {
+            assert_unreachable('Pointer Lock requests with user gestures should succeed');
+        }
+    });
+    try {
+        await locktarget.requestPointerLock({unadjustedMovement:false});
+        await locktarget2.requestPointerLock({unadjustedMovement:true});
+        await locktarget2.requestPointerLock({unadjustedMovement:false});
+    } catch(error) {
+        assert_unreached('Valid changes to pointer lock targets and/or options should succeed.');
+    }
+}, 'Valid changes to pointer lock targets and/or options should not require a user gesture.');
+</script>

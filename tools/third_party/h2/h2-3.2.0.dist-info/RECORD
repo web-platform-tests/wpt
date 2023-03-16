@@ -1,0 +1,16 @@
+h2/__init__.py,sha256=UK9LH4mhXn3zPFY031BWM2iT9OItwfZlorUEFdEMX8I,86
+h2/config.py,sha256=HPs1Q8ss9h9daPzCZ9jB1YIhJSWc2hiukI4NO8gwfJo,6624
+h2/connection.py,sha256=Rf6_hA7cIJSLN0iL5JXu4lDD7CmxeNsgwlyPeAo5bhk,83073
+h2/errors.py,sha256=zVc5DO6IBAv1EkJxdb-mpRdqxUBfb5W0gwdqBLpqy80,1553
+h2/events.py,sha256=_zttawGqPVmEVeZN1S3kGREQ-VSt1xP07SebUxLqAF4,21962
+h2/exceptions.py,sha256=rdeQYMyQ46s6gkRkkb02YXsKZnc1VFuPqpPKr8Q-8a8,5379
+h2/frame_buffer.py,sha256=NBeQ94joXLE9XkGpfGFeB_VIOBNq_9fINy90YUG0qD4,6771
+h2/settings.py,sha256=hUohNoWHMouGhOWiDc2r5sceqMGTuVsDpi9KmsPCDMY,11814
+h2/stream.py,sha256=AL5KGnEZFKaLp2JtKw-XEEInJVccKmgGjOjM2ay12W4,54447
+h2/utilities.py,sha256=JI6DcBWD0rXiAafbCfnXmroYK1Q28g4bqHLqeqA29_4,22818
+h2/windows.py,sha256=XRuu1Y2WlTq6TuEpuhfvl5R6TIGysoU9s0mpFVgjIUA,5603
+h2-3.2.0.dist-info/LICENSE,sha256=Zj-SU-E1GbgqtKaxyqtr7QWq2nBRfyjNAlS-ip-hntY,1102
+h2-3.2.0.dist-info/METADATA,sha256=yGS02B_LKuEIUMLMOk4mHLCf7DdkOiP7PALglUwOK34,32348
+h2-3.2.0.dist-info/WHEEL,sha256=kGT74LWyRUZrL4VgLh6_g12IeVl_9u9ZVhadrgXZUEY,110
+h2-3.2.0.dist-info/top_level.txt,sha256=Hiulx8KxI2jFUM1dG7-CZeRkO3j50MBwCLG36Vrq-kI,3
+h2-3.2.0.dist-info/RECORD,,

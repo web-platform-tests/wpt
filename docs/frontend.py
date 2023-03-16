@@ -15,7 +15,7 @@ link_dirs = [
     "tools/certs",
     "tools/wptrunner",
     "tools/webtransport",
-    "tools/third_party/pywebsocket3",
+    "tools/third_party/mod_pywebsocket",
 ]
 
 logger = logging.getLogger()

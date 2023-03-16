@@ -16,7 +16,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.insert(0, os.path.abspath('../tools/wptserve'))
-sys.path.insert(0, os.path.abspath('../tools/third_party/pywebsocket3'))
+sys.path.insert(0, os.path.abspath('../tools/third_party/mod_pywebsocket'))
 sys.path.insert(0, os.path.abspath('../tools'))
 import localpaths
 
@@ -69,7 +69,7 @@ nitpick_ignore = [
     # wptserve
     ('py:class', 'Callable'),
     ('py:obj', 'None'),
-    # pywebsocket3
+    # mod_pywebsocket
     ('py:exc', 'AbortedByUserException'),
     ('py:exc', 'HandshakeException'),
     ('py:exc', 'InvalidFrameException'),

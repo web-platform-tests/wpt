@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Child frame two deep cross origin marked as frozen</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+async_test((t) => {
+
+  var child = document.createElement('iframe');
+
+  var loaded = false;
+  var frozen = false;
+
+  window.addEventListener('message', t.step_func((e) => {
+    if (e.data == "load") {
+      loaded = true;
+      child.style = "display: none";
+    } else if (e.data == "freeze") {
+      assert_true(loaded);
+      frozen = true;
+      child.style = "display: block";
+    } else if (e.data == "resume") {
+      assert_true(loaded);
+      assert_true(frozen);
+      t.done();
+    }
+  }));
+
+  child.allow = "execution-while-not-rendered 'none'";
+  child.src = "http://{{domains[www1]}}:{{ports[http][1]}}{{location[path]}}/../resources/intermediate-subframe.html";
+  document.body.appendChild(child);
+}, "Child frame frozen");
+
+</script>
+</body>

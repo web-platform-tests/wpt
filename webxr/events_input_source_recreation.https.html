@@ -15,7 +15,7 @@ let testFunction = function(session, fakeDeviceController, t) {
   let eventWatcher = new EventWatcher(t, session, ["watcherdone"]);
   let eventPromise = eventWatcher.wait_for(["watcherdone"]);
 
-  let inputChangeEvents = 0;
+  let inputChangeEvents = 0;F
   let cached_input_source = null;
   function onInputSourcesChange(event) {
     t.step(() => {

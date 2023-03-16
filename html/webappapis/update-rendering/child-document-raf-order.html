@@ -48,7 +48,7 @@ callbacks for each.
 <script>
 
 async_test(function (t) {
-  step_timeout(setup, 0);
+  step_timeout(setup, 1);
 
   let first_frame, second_frame;
 
@@ -104,7 +104,7 @@ async_test(function (t) {
     // Request another notification to help ensure we're getting expected behavior.
     second_frame.contentWindow.requestAnimationFrame(second_child_raf);
 
-    step_timeout(finish, 0);
+    step_timeout(finish, 1);
   });
 
   let finish = t.step_func(function() {

@@ -37,63 +37,77 @@
               }, description);
           }
 
-          twoMediaElementTest(function(test, firstMediaTag, secondMediaTag)
+          function simultaneousMediaSourceAttachTest(useSameURL, description)
           {
-              // When attachment of mediaSource to two MediaElements is done
-              // without an intervening stable state, exactly one of the two
-              // MediaElements should successfully attach, and the other one
-              // should get error event due to mediaSource already in 'open'
-              // readyState.
-              var mediaSource = new MediaSource();
-              var mediaSourceURL = URL.createObjectURL(mediaSource);
-              var gotSourceOpen = false;
-              var gotError = false;
-              var doneIfFinished = test.step_func(function()
+              twoMediaElementTest(function(test, firstMediaTag, secondMediaTag)
               {
-                  if (gotSourceOpen && gotError)
-                      test.done();
-              });
-              var errorHandler = test.step_func(function(e)
-              {
-                  firstMediaTag.removeEventListener('error', errorHandler);
-                  secondMediaTag.removeEventListener('error', errorHandler);
+                  // When attachment of mediaSource to two MediaElements is done
+                  // without an intervening stable state, exactly one of the two
+                  // MediaElements should successfully attach, and the other one
+                  // should get error event due to mediaSource already in 'open'
+                  // readyState.
+                  var mediaSource = new MediaSource();
+                  var mediaSourceURL = URL.createObjectURL(mediaSource);
+                  var gotSourceOpen = false;
+                  var gotError = false;
+                  var doneIfFinished = test.step_func(function()
+                  {
+                      if (gotSourceOpen && gotError)
+                          test.done();
+                  });
+                  var errorHandler = test.step_func(function(e)
+                  {
+                      firstMediaTag.removeEventListener('error', errorHandler);
+                      secondMediaTag.removeEventListener('error', errorHandler);
 
-                  var eventTarget = e.target;
-                  var otherTarget;
-                  if (eventTarget == firstMediaTag) {
-                      otherTarget = secondMediaTag;
+                      var eventTarget = e.target;
+                      var otherTarget;
+                      if (eventTarget == firstMediaTag) {
+                          otherTarget = secondMediaTag;
+                      } else {
+                          assert_equals(eventTarget, secondMediaTag, 'Error target check');
+                          otherTarget = firstMediaTag;
+                      }
+
+                      assert_true(eventTarget.error != null, 'Error state on one tag');
+                      assert_equals(eventTarget.error.code, MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED, 'Expected error code');
+                      assert_equals(otherTarget.error, null, 'No error on other tag');
+
+                      assert_equals(eventTarget.networkState, HTMLMediaElement.NETWORK_NO_SOURCE,
+                                    'Tag with error state networkState');
+                      assert_equals(otherTarget.networkState, HTMLMediaElement.NETWORK_LOADING,
+                                    'Tag without error state networkState');
+
+                      gotError = true;
+                      doneIfFinished();
+                  });
+
+                  test.expectEvent(mediaSource, 'sourceopen', 'An attachment succeeded');
+                  firstMediaTag.addEventListener('error', errorHandler);
+                  secondMediaTag.addEventListener('error', errorHandler);
+
+                  if (useSameURL) {
+                      firstMediaTag.src = mediaSourceURL;
+                      secondMediaTag.src = mediaSourceURL;
                   } else {
-                      assert_equals(eventTarget, secondMediaTag, 'Error target check');
-                      otherTarget = firstMediaTag;
+                      var secondURLForSameMediaSource = URL.createObjectURL(mediaSource);
+                      assert_not_equals(mediaSourceURL, secondURLForSameMediaSource);
+                      firstMediaTag.src = mediaSourceURL;
+                      secondMediaTag.src = secondURLForSameMediaSource;
                   }
 
-                  assert_true(eventTarget.error != null, 'Error state on one tag');
-                  assert_equals(eventTarget.error.code, MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED, 'Expected error code');
-                  assert_equals(otherTarget.error, null, 'No error on other tag');
+                  test.waitForExpectedEvents(function()
+                  {
+                      assert_equals(mediaSource.readyState, 'open', 'Source is opened');
+                      gotSourceOpen = true;
+                      doneIfFinished();
+                  });
+              }, description);
+          }
 
-                  assert_equals(eventTarget.networkState, HTMLMediaElement.NETWORK_NO_SOURCE,
-                                'Tag with error state networkState');
-                  assert_equals(otherTarget.networkState, HTMLMediaElement.NETWORK_LOADING,
-                                'Tag without error state networkState');
+          simultaneousMediaSourceAttachTest(true, 'Test exactly one succeeds when trying to attach same MediaSource to two MediaElements using the same objectURL string');
 
-                  gotError = true;
-                  doneIfFinished();
-              });
-
-              test.expectEvent(mediaSource, 'sourceopen', 'An attachment succeeded');
-              firstMediaTag.addEventListener('error', errorHandler);
-              secondMediaTag.addEventListener('error', errorHandler);
-
-              firstMediaTag.src = mediaSourceURL;
-              secondMediaTag.src = mediaSourceURL;
-
-              test.waitForExpectedEvents(function()
-              {
-                  assert_equals(mediaSource.readyState, 'open', 'Source is opened');
-                  gotSourceOpen = true;
-                  doneIfFinished();
-              });
-          }, 'Test exactly one succeeds when two MediaElements attach to same MediaSource');
+          simultaneousMediaSourceAttachTest(false, 'Test exactly one succeeds when trying to attach same MediaSource to two MediaElements using different objectURL strings');
 
           mediasource_test(function(test, mediaElement, mediaSource) {
               assert_equals(mediaSource.readyState, 'open', 'Source open');

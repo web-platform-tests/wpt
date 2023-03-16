@@ -1,0 +1,173 @@
+<!doctype html>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script src="/resources/check-layout-th.js"></script>
+<meta name="flags" content="ahem">
+<title>TABLE baseline tests</title>
+<link rel="stylesheet" type="text/css" href="../../../fonts/ahem.css" />
+<link rel="author" title="Aleks Totic" href="atotic@chromium.org" />
+<link rel="help" href="https://drafts.csswg.org/css-tables-3/" />
+<link rel="help" href="https://www.w3.org/TR/CSS2/visudet.html#propdef-vertical-align" />
+<style>
+  table {
+    display: inline-table;
+    border: 15px solid green;
+    background: gray;
+    width: 0px;
+    height: 0px;
+    vertical-align:baseline;
+    border-spacing: 0;
+  }
+  td {
+    background: #BFB;
+  }
+  td > div {
+    display: inline-block;
+    background: rgba(56,162,56,0.3);
+  }
+  .container {
+    position: relative;
+    outline: black dotted 1px;
+    height: 100px;
+    width: 400px;
+    font: 50px/1 Ahem; /* baseline is 40px */
+  }
+  .target {
+    display:inline-block;
+    background:gray;
+    width:20px;
+    height:40px;
+    vertical-align: baseline;
+  }
+  .bordersized {
+    display: inline-block;
+    border: 5px solid rgba(0,255,0, 0.5);
+  }
+  .csssized {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: rgba(0,255,0, 0.5);
+  }
+  td {
+    padding: 0;
+  }
+</style>
+<h2>&lt;TABLE&gt; baseline tests</h2>
+
+<p>Standard font example</p>
+<div class="container" style="font: 50px/1 fixed">
+  Xp<table>
+  </table>
+</div>
+
+<p>Empty table's baseline is bottom of table's border box.</p>
+<div class="container">
+  Xp<table data-offset-y="10">
+  </table>
+</div>
+
+<p>Empty body's baseline is bottom of table's border box.</p>
+<div class="container">
+  Xp<table data-offset-y="10">
+    <tbody>
+    </tbody>
+  </table>
+</div>
+
+<p>Empty row's baseline is center of the row.</p>
+<div class="container">
+  Xp<table data-offset-y="25">
+    <tbody>
+      <tr></tr>
+    </tbody>
+  </table>
+</div>
+
+<p>First row defines baseline even if empty.</p>
+<div class="container">
+  Xp<table style="font: 12px fixed" data-offset-y="25">
+    <tbody>
+      <tr></tr>
+      <tr><td>1,0</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p>Cell's baseline defined row's baseline only if cell is vertical-align:baseline.</p>
+<div class="container">
+  Xp<div style="display:inline-block"><table style="font-size: 24px" data-offset-y="6">
+    <tbody>
+      <tr><td style="vertical-align:baseline">Xp</td></tr>
+    </tbody>
+  </table></div>
+</div>
+<div class="container">
+  Xp<table style="font-size:24px" data-offset-y="1">
+    <tbody>
+      <tr><td style="vertical-align:middle">Xp</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<p>Table's vertical-align: top.</p>
+<div class="container">
+  Xp<table style="vertical-align:top" data-offset-y="0"></table>
+</div>
+
+<p>Table's vertical-align: middle. </p>
+<div class="container">
+  Xp<table style="vertical-align:middle" data-offset-y="5"></table>
+</div>
+
+<p>Table's vertical-align: bottom. </p>
+<div class="container">
+  Xp<table style="vertical-align:bottom" data-offset-y="20"></table>
+</div>
+
+<p>Table's top/middle/bottom combined. </p>
+<div class="container">
+  Xp<table style="vertical-align:top" data-offset-y="0"></table>
+  <table style="vertical-align:middle" data-offset-y="5"></table>
+  <table style="vertical-align:bottom" data-offset-y="20"></table>
+</div>
+
+<p>Block level table inside inline block does not produce a baseline.</p>
+<div class="container" style="font: 10px/1 Ahem;width:500px">
+  Xp<br>Xp<table
+  title="inline table produces a baseline"
+  data-offset-y=37><td style="vertical-align:baseline">Xp</td></table>
+  <div style="display:inline-block;height:50px;background:yellow;width:50px;"
+    title="empty inline block baseline is bottom of the block"
+    data-offset-y=10
+  ></div>
+  <div style="display:inline-block;height:50px;background:yellow;width:50px;"
+    title="inline block's content defines its baseline"
+    data-offset-y=52
+  >X</div>
+  <div style="display:inline-block;height:50px;background:yellow"
+    title="table inside inline block does not produce a baseline"
+    data-offset-y=10
+  ><table style="display:table"><td style="vertical-align:baseline">X</td></table></div>
+  <div style="display:inline-block;height:50px;background:yellow"
+  title="but inline table inside inline block does produce a baseline"
+  data-offset-y=37
+  ><table style="display:inline-table"><td style="vertical-align:baseline">X</td></table></div>
+</div>
+
+<!-- anonymous-table-no-baseline-align replica -->
+<p>Anonymous tables should not generate baselines</p>
+<div class="container">
+  <div style="height:60px;width:100px;display:inline-block;background:green"
+    data-offset-y=0>
+      <div style="display:table-cell;vertical-align:middle;color:yellow">&nbsp;</div>
+  </div>
+  <div style="height:60px;width:100px;display:inline-block;background:green"
+    data-offset-y=0>
+      <div style="display:table-cell;vertical-align:middle;color:yellow">>&nbsp;<br>&nbsp;<br></div>
+  </div>
+</div>
+<script>
+  checkLayout(".container");
+</script>

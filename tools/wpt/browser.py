@@ -119,7 +119,7 @@ class Browser:
         with open(output_path, "wb") as f:
             f.write(resp.content)
 
-        return installer_path
+        return output_path
 
     @abstractmethod
     def install(self, dest=None, channel=None):
@@ -221,9 +221,6 @@ class Firefox(Browser):
             ("macos", "arm64"): "osx",
         }
         os_key = (self.platform, uname[4])
-
-        if dest is None:
-            dest = self._get_browser_binary_dir(None, channel)
 
         if channel not in product:
             raise ValueError("Unrecognised release channel: %s" % channel)
@@ -1952,8 +1949,8 @@ class WebKitGTKMiniBrowser(WebKit):
         with open(bundle_file_path, "w+b") as f:
             get_download_to_descriptor(f, bundle_url)
 
-        bundle_filename_no_ext, _ = os.path.splitext(bundle_filename)
-        bundle_hash_url = base_download_dir + bundle_filename_no_ext + ".sha256sum"
+        bundle_url_no_ext, _ = bundle_url.rsplit(".", maxsplits=1)
+        bundle_hash_url = bundle_url_no_ext + ".sha256sum"
         bundle_expected_hash = get(bundle_hash_url).text.strip().split(" ")[0]
         bundle_computed_hash = sha256sum(bundle_file_path)
 

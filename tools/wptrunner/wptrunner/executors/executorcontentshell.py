@@ -56,7 +56,6 @@ class ContentShellTestPart(ProtocolPart):
         expected image hash and 'print' mode specifier. The syntax looks like:
             http://web-platform.test:8000/test.html['<hash>['print]]
         """
-        print("starting do test")
         self._send_command(command)
 
         deadline = time() + timeout if timeout else None
@@ -69,8 +68,6 @@ class ContentShellTestPart(ProtocolPart):
     def _send_command(self, command):
         """Sends a single `command`, i.e. a URL to open, to content_shell.
         """
-        print("sending command " + command)
-        print("sending command " + command)
         self.stdin_queue.put((command + "\n").encode("utf-8"))
 
     def _read_block(self, deadline=None):
@@ -78,7 +75,7 @@ class ContentShellTestPart(ProtocolPart):
         """
         while True:
             line = _read_line(self.stdout_queue, deadline, "latin-1").rstrip()
-            print(line)
+
             if line == "Content-Type: text/plain":
                 return self._read_text_block(deadline)
 

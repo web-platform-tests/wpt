@@ -1,4 +1,5 @@
 // META: script=/workers/modules/resources/import-test-cases.js
+// META: timeout=long
 
 // Imports |testCase.scriptURL| on a dedicated worker loaded from a data URL,
 // and waits until the list of imported modules is sent from the worker. Passes

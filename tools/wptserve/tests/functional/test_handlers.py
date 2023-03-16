@@ -22,15 +22,17 @@ class TestFileHandler(TestUsingServer):
         self.assertEqual(open(os.path.join(doc_root, "document.txt"), 'rb').read(), resp.read())
 
     def test_headers(self):
-        resp = self.request("/with_headers.txt")
+        resp = self.request("/with_headers.sub.txt")
         self.assertEqual(200, resp.getcode())
         self.assertEqual("text/html", resp.info()["Content-Type"])
         self.assertEqual("PASS", resp.info()["Custom-Header"])
         # This will fail if it isn't a valid uuid
-        uuid.UUID(resp.info()["Another-Header"])
-        self.assertEqual(resp.info()["Same-Value-Header"], resp.info()["Another-Header"])
+        id = resp.info()["Another-Header"]
+        uuid.UUID(id)
+        self.assertEqual(resp.info()["Same-Value-Header"], id)
         self.assert_multiple_headers(resp, "Double-Header", ["PA", "SS"])
-
+        data = resp.read()
+        self.assertEqual(b"Test document with custom headers\n%b\n" % bytes(id, 'utf-8'), data)
 
     def test_range(self):
         resp = self.request("/document.txt", headers={"Range":"bytes=10-19"})

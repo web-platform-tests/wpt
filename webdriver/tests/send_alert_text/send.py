@@ -1,6 +1,6 @@
 import pytest
 
-from webdriver.error import NoSuchAlertException
+from webdriver.error import NoSuchAlertException, InvalidElementStateException
 from webdriver.transport import Response
 
 from tests.support.asserts import assert_error, assert_success
@@ -72,13 +72,28 @@ def test_chained_alert_element_not_interactable(session, inline, dialog_type):
 
 
 @pytest.mark.parametrize("text", ["", "Federer", " Fed erer ", "Fed\terer"])
-def test_send_alert_text(session, page, text):
+def test_send_prompt_text(session, page, text):
     send_response = send_alert_text(session, text)
     assert_success(send_response)
 
     session.alert.accept()
 
     assert session.execute_script("return window.result") == text
+
+def test_send_alert_text_should_fail(session, inline):
+    session.url = inline("""
+        <input type=button onClick='doAlert()' id=button value='click me'>
+        <script>function doAlert() {
+            alert('cheese')
+        }
+        </script>
+    """)
+
+    session.find.css('#button', all=False).click()
+    alert = session.alert
+    with pytest.raises(InvalidElementStateException):
+        send_alert_text(session, "sausages")
+    alert.accept()
 
 
 def test_unexpected_alert(session):

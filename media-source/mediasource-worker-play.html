@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<!-- Copyright © 2019 Chromium authors and World Wide Web Consortium, (Massachusetts Institute of Technology, ERCIM, Keio University, Beihang). -->
+<html>
+    <head>
+        <title>Simple MediaSource-in-Worker playback test case.</title>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="mediasource-util.js"></script>
+    </head>
+    <body>
+        <video id="vid"></video>
+        <div id="log"></div>
+        <script>
+          var video = document.getElementById("vid");
+          var start = performance.now();
+          var logDiv = document.getElementById("log");
+          function log(msg) {  // TODO: remove. only for debugging
+            logDiv.innerHTML += performance.now() - start + "\t" + msg + "<br>";
+          }
+
+          var do_waiting = true;
+          var wait_duration_ms = 100;
+          var use_worker = true;
+          var timeout_handle1;
+          var timeout_handle2;
+
+
+          // for when !use_worker:
+          var mediaSource;
+          var sourceBuffer;
+          var mediaData;
+          var mediaLoaded;
+
+          function busy_wait1() {
+            var wait_start = performance.now();
+            //log("busy waiting " + wait_duration_ms + " milliseconds");
+            while (true) {
+              if (performance.now() - wait_start >= wait_duration_ms) {
+                timeout_handle1 = setTimeout(busy_wait1, 0);
+                break;
+              }
+            }
+          }
+
+          function busy_wait2() {
+            var wait_start = performance.now();
+            //log("busy waiting " + wait_duration_ms + " milliseconds");
+            while (true) {
+              if (performance.now() - wait_start >= wait_duration_ms) {
+                timeout_handle2 = setTimeout(busy_wait2, 0);
+                break;
+              }
+            }
+          }
+
+          function demo_with_worker(test) {
+            log("worker about to be constructed");
+            var worker = new Worker("mediasource-worker-util.js");
+            log("worker constructed");
+            worker.onmessage = test.step_func(function(evt) {
+              log("main window context received message: " + evt + " with data: " + evt.data);
+              if (evt.data.substr(0,23) == "createMediaSource_done:") {
+                var objectUrl = evt.data.substr(23);
+                video.src = objectUrl;
+                video.play();
+              } else if (evt.data == "onsourceopen" || evt.data == "onupdateend first time" ||
+                         evt.data == "onupdateend second time" ||
+                         evt.data == "media loaded" || evt.data == "endOfStream") {
+                // no-op other than debug logging..
+              } else {
+                assert_unreached();
+              }
+            });
+
+            log("main window context about to send msg: createMediaSource");
+            worker.postMessage("createMediaSource");
+          }
+
+// Duplicated helpers inline (same as done in worker)
+function loadData_(url, callback, isBinary)
+{
+    var request = new XMLHttpRequest();
+    request.open("GET", url, true);
+    if (isBinary) {
+        request.responseType = 'arraybuffer';
+    }
+    request.onload = function(event)
+    {
+        if (request.status != 200) {
+            postMessage("Unexpected loadData_ status code : " + request.status);
+            return;
+        }
+        var response = request.response;
+        if (isBinary) {
+            response = new Uint8Array(response);
+        }
+        callback(response);
+    };
+    request.onerror = function(event)
+    {
+        postMessage("Unexpected loadData_ error");
+    };
+    request.send();
+}
+
+loadData_('webm/test.webm', function(response) {
+    mediaData = response;
+    mediaLoaded = true;
+    postMessage("media loaded");
+}, true);
+
+function waitUntilLoadedThenAppend() {
+    if (!mediaLoaded) {
+        setTimeout(waitUntilLoadedThenAppend, 10); // This is not ideal, just a hacky busy-wait.
+        return;
+    }
+    sourceBuffer.appendBuffer(mediaData);
+}
+
+          function demo_without_worker(test) {
+            var mediaSource = new MediaSource();
+            log("mediaSource constructed");
+            mediaSource.onsourceopen = test.step_func(function() {
+              log("onsourceopen");
+              sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp8,vorbis"');
+              sourceBuffer.onupdateend = function() {
+                  log("onupdateend first time");
+                  sourceBuffer.onupdateend = function() {
+                      log("onupdateend second time");
+                      mediaSource.endOfStream();
+                      log("endOfStream");
+                  };
+                sourceBuffer.appendBuffer(mediaData);
+              };
+              waitUntilLoadedThenAppend();
+            });
+            video.src = URL.createObjectURL(mediaSource);
+            video.play();
+          }
+
+          // BIG TODO: Consider making a workers (and shared worker) equivalent of
+          // mediasource_utils, then do most/all of the existing web_tests in each of dedicated and
+          // shared-worker contexts...
+          async_test(function(test) {
+            video.onended = test.step_func(function () {
+              if (do_waiting) {
+                log("received ended, stopping busy waiter");
+                clearTimeout(timeout_handle1);
+                clearTimeout(timeout_handle2);
+              }
+            });
+
+            if (do_waiting) {
+              log("starting repeated main thread busy waits of duration " + wait_duration_ms + " milliseconds");
+              setTimeout(busy_wait1, 0);
+              setTimeout(busy_wait2, 0);
+            }
+
+            if (use_worker)
+              demo_with_worker(test);
+            else
+              demo_without_worker(test);
+
+          }, "MediaSource-in-Workers: Test worker MediaSource construction, attachment, buffering and basic playback");
+
+        </script>
+    </body>
+</html>

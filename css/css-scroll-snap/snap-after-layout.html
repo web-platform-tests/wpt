@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+div {
+  position: absolute;
+}
+#scroller {
+  overflow: scroll;
+  scroll-snap-type: both mandatory;
+  padding: 0px;
+  width: 400px;
+  height: 400px;
+}
+#space {
+  width: 2000px;
+  height: 2000px;
+}
+#target1 {
+  scroll-snap-align: none start;
+  background-color: green;
+  top: 0px;
+  left: 200px;
+  width: 200px;
+  height: 200px;
+}
+#target2 {
+  scroll-snap-align: none start;
+  background-color: green;
+  top: 0px;
+  left: 400px;
+  width: 200px;
+  height: 200px;
+}
+</style>
+
+<div id="scroller">
+  <div id="space"></div>
+  <div id="target1"></div>
+  <div id="target2"></div>
+</div>
+
+<script>
+var scroller = document.getElementById("scroller");
+var target1 = document.getElementById("target1");
+
+test(() => {
+  assert_equals(scroller.scrollLeft, 200);
+  assert_equals(scroller.scrollTop, 0);
+}, "After the page loads, scroller should snap to its first snap position.");
+
+test(() => {
+  assert_equals(scroller.scrollLeft, 200);
+  target1.style.top = "100px";
+  target1.style.left = "100px";
+  assert_equals(scroller.scrollLeft, 100);
+  target1.style.top = "";
+  target1.style.left = "";
+  assert_equals(scroller.scrollLeft, 200);
+}, "After page re-layout caused by element's style change, scroller re-snaps"
++ " to its closest snap position.");
+
+test(() => {
+  assert_equals(scroller.scrollLeft, 200);
+  scroller.removeChild(target1);
+  assert_equals(scroller.scrollLeft, 400);
+  scroller.appendChild(target1);
+}, "After page re-layout caused by removing the current snapped snap area, the "
++ "scroller re-snaps to another closest snap area.");
+
+test(() => {
+  scroller.scrollTo(0, 0);
+  assert_equals(scroller.scrollLeft, 200);
+  assert_equals(scroller.scrollTop, 0);
+
+  var target3 = document.createElement("div");
+  target3.style.scrollSnapAlign = "start none";
+  target3.style.top = "50px";
+  target3.style.left = "150px";
+  target3.style.width = "200px";
+  target3.style.height = "200px";
+  scroller.appendChild(target3);
+  // Stays at the snap position of 200 on x.
+  assert_equals(scroller.scrollLeft, 200);
+  // The new area introduces a snap position of 50 on y.
+  assert_equals(scroller.scrollTop, 50);
+  scroller.removeChild(target3);
+}, "After page re-layout caused by adding a new snap area, the scroller "
++ "re-evaluate all the snap areas based on the current position.")
+</script>

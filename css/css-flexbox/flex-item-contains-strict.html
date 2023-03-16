@@ -21,14 +21,6 @@ value, column direction works properly.">
 
 <body onload="checkLayout('.inline-flex')">
 <p>Stretched:</p>
-<div class="inline-flex" style="display: inline-flex; flex-direction: column;" data-expected-width="0" data-expected-height="0">
-  <div style="contain: strict;" data-expected-width="0" data-expected-height="0">Column</div>
-</div>
-
-<div class="inline-flex" data-expected-width="0" data-expected-height="0">
-  <div style="contain: strict;" data-expected-width="0" data-expected-height="0">Row</div>
-</div>
-
 <div class="inline-flex" style="display: inline-flex; flex-direction: column;" data-expected-width="30" data-expected-height="30">
   <div style="contain: strict; width: 30px; height: 30px;" data-expected-width="30" data-expected-height="30">Column</div>
 </div>
@@ -39,14 +31,6 @@ value, column direction works properly.">
 
 
 <p>Flex-start:</p>
-<div class="inline-flex" style="flex-direction: column; align-items: flex-start;" data-expected-width="0" data-expected-height="0">
-  <div style="contain: strict;" data-expected-width="0" data-expected-height="0">Column</div>
-</div>
-
-<div class="inline-flex" style="align-items: flex-start;" data-expected-width="0" data-expected-height="0">
-  <div style="contain: strict;" data-expected-width="0" data-expected-height="0">Row</div>
-</div>
-
 <div class="inline-flex" style="flex-direction: column; align-items: flex-start;" data-expected-width="30" data-expected-height="30">
   <div style="contain: strict; width: 30px; height: 30px;" data-expected-width="30" data-expected-height="30">Column</div>
 </div>

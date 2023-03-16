@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml" viewBox="0 0 800 500">
+	<title>CSS Test: CSS Animation of CSS transform on an SVG filter primitive</title>
+	<metadata>
+		<h:meta name="assert" content="This should not crash or assert."/>
+	</metadata>
+	<style><![CDATA[
+		@keyframes kf { to { transform: rotate(20deg); } }
+		feColorMatrix { animation-name: kf; animation-duration: 4s;  }
+	]]></style>
+	<defs>
+		<filter filterUnits="objectBoundingBox" x="0%" y="0%" width="100%" height="100%">
+			<feColorMatrix type="matrix" in="SourceGraphic" values=".33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0"></feColorMatrix>
+		</filter>
+	</defs>
+</svg>

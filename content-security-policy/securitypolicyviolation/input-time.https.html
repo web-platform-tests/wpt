@@ -1,0 +1,34 @@
+<html>
+<head>
+ <script src="/resources/testharness.js"></script>
+ <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+ <div id="target"></div>
+ <img id ="img" src="">
+ <script>
+    // Some elements (e.g. form input for time values) can be implemented in
+    // terms of HTML & CSS. This ensures they do not trigger spurious CSP
+    // violation reports.
+    promise_test(t => {
+      let promise = new EventWatcher(t, document, ["securitypolicyviolation"]).
+          wait_for('securitypolicyviolation').then(e => {
+             // The only SPV we should receive is for the example.org image.
+             assert_true(e.blockedURI.includes("example.org"));
+             t.done();
+          });
+
+      // Create the <input type=time> element. This should not report a SPV.
+      document.getElementById("target").innerHTML = "<input type=time>";
+
+      // Trigger an SPV, so we have at least one SPV event to wait on.
+      // This needs to happen after styles are processed, hence the timeout.
+      t.step_timeout(_ => {
+        document.getElementById("img").src = "https://example.org/image.jpg";
+      }, 1000);
+
+       return promise;
+  }, "Test that input with type=time does not report a Security Policy Violation.");
+ </script>
+</body>
+</html>

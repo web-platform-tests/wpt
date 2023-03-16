@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+function assert_array_approx_equals(actual, expected, epsilon)
+{
+  assert_true(actual.length === expected.length);
+  for (var i=0; i < actual.length; i++)
+    assert_approx_equals(actual[i], expected[i], epsilon);
+}
+
+// Random HDR values in (-2, 2) for color components
+var hdr_data = new Float32Array([
+    0.12,   -0.92,  -0.51,  -0.27,
+    0.47,   -0.28,  -1.71,  0.51,
+    -1.38,  -0.23,  1.09,   -1.7,
+    -1.47,  0.69,   -0.65,  -1.44]);
+
+function CreateWideGamutCanvas() {
+    var canvas = document.createElement('canvas');
+    canvas.width = 2;
+    canvas.height = 2;
+    var ctx = canvas.getContext('2d',
+        {colorSpace: 'srgb', pixelFormat:'float16'})
+    return canvas;
+}
+
+function CreateWideGamutCanvasWithHDRContent() {
+    var canvas = CreateWideGamutCanvas();
+    var ctx = canvas.getContext('2d');
+    var imageData = ctx.createImageData(hdr_data, 2, 2,
+        {colorSpace: 'srgb', storageFormat:'float32'});
+    ctx.putImageData(imageData, 0, 0);
+    return canvas;
+}
+
+function putImageDataHDR_ThenGetImageDataHDR() {
+    var canvas = CreateWideGamutCanvasWithHDRContent();
+    var ctx = canvas.getContext('2d');
+    var actual = ctx.getImageData(0, 0, 2, 2).dataUnion;
+    assert_array_approx_equals(actual, hdr_data, 0.01);
+}
+
+function drawHDRContentOnCanvasRoundtrip() {
+    var canvas1 = CreateWideGamutCanvas();
+    var canvas2 = CreateWideGamutCanvasWithHDRContent();
+    canvas1.getContext('2d').drawImage(canvas2, 0, 0);
+    var canvas3 = CreateWideGamutCanvas();
+    canvas3.getContext('2d').drawImage(canvas1, 0, 0);
+    var actual = canvas3.getContext('2d').getImageData(0, 0, 2, 2).dataUnion;
+    assert_array_approx_equals(actual, hdr_data, 0.04);
+}
+
+function drawImageBitmapHDROnCanvasHDRRoundtrip() {
+    promise_test(function() {
+        var canvas1 = CreateWideGamutCanvasWithHDRContent();
+        return createImageBitmap(canvas1).then(function(bitmap){
+            var canvas2 = CreateWideGamutCanvas();
+            canvas2.getContext('2d').drawImage(bitmap, 0, 0);
+            var canvas3 = CreateWideGamutCanvas();
+            canvas3.getContext('2d').drawImage(canvas2, 0, 0);
+            var actual = canvas3.getContext('2d').getImageData(0, 0, 2, 2).dataUnion;
+            assert_array_approx_equals(actual, hdr_data, 0.04);
+        });
+    }, 'tests roundtrip drawing image bitmap with hdr data on wide gamut canvas.');
+}
+
+function CreateWideGamutOffscreenCanvas() {
+    var canvas = document.createElement('canvas');
+    canvas.width = 2;
+    canvas.height = 2;
+    var offscreen = canvas.transferControlToOffscreen();
+    var ctx = offscreen.getContext('2d',
+        {colorSpace: 'srgb', pixelFormat:'float16'})
+    return offscreen;
+}
+
+function CreateWideGamutOffscreenCanvasWithHDRContent() {
+    var offscreen = CreateWideGamutOffscreenCanvas();
+    var ctx = offscreen.getContext('2d');
+    var imageData = ctx.createImageData(hdr_data, 2, 2,
+        {colorSpace: 'srgb', storageFormat:'float32'});
+    ctx.putImageData(imageData, 0, 0);
+    return offscreen;
+}
+
+function drawHDRContentOnOffscreenCanvasRoundtrip() {
+    var offscreen1 = CreateWideGamutOffscreenCanvas();
+    var offscreen2 = CreateWideGamutOffscreenCanvasWithHDRContent();
+    offscreen1.getContext('2d').drawImage(offscreen2, 0, 0);
+    var offscreen3 = CreateWideGamutOffscreenCanvas();
+    offscreen3.getContext('2d').drawImage(offscreen1, 0, 0);
+    var actual = offscreen3.getContext('2d').getImageData(0, 0, 2, 2).dataUnion;
+    assert_array_approx_equals(actual, hdr_data, 0.04);
+}
+
+function runAllTests() {
+    // Put HDR content as ImageData and read back HDR
+    test(
+        function() {
+            putImageDataHDR_ThenGetImageDataHDR();
+        }, 'tests putting and getting hdr image data on wide gamut srgb canvas.');
+
+    // Draw wide gamut canvas with HDR content twice and read back HDR
+    test(
+        function() {
+            drawHDRContentOnCanvasRoundtrip();
+        }, 'tests roundtrip drawing wide gamut canvas with hdr data on wide ' +
+            'gamut canvas.');
+
+    // draw ImageBitmap with HDR data on canvas and read back HDR
+    drawImageBitmapHDROnCanvasHDRRoundtrip();
+
+    // Draw wide gamut offscreen canvas with HDR content twice and read back HDR
+    test(
+        function() {
+            drawHDRContentOnOffscreenCanvasRoundtrip();
+        }, 'tests roundtrip drawing wide gamut offscreen canvas with hdr data' +
+           ' on wide gamut offscreen canvas.');
+
+runAllTests();
+
+</script>
+</body>

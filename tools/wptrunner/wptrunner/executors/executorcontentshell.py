@@ -12,7 +12,7 @@ class CrashError(BaseException):
     pass
 
 
-def _read_line(io_queue, deadline=None, encoding=None, errors="strict", raise_crash=True):
+def _read_line(io_queue, deadline=None, encoding=None, errors="strict", raise_crash=True, raise_leak=False):
     """Reads a single line from the io queue. The read must succeed before `deadline` or
     a TimeoutError is raised. The line is returned as a bytestring or optionally with the
     specified `encoding`. If `raise_crash` is set, a CrashError is raised if the line
@@ -26,6 +26,8 @@ def _read_line(io_queue, deadline=None, encoding=None, errors="strict", raise_cr
     try:
         line = io_queue.get(True, deadline - current_time if deadline else None)
         if raise_crash and line.startswith(b"#CRASHED"):
+            raise CrashError()
+        if raise_leak and line.startswith(b"#LEAK"):
             raise CrashError()
     except Empty:
         raise TimeoutError()
@@ -54,6 +56,7 @@ class ContentShellTestPart(ProtocolPart):
         expected image hash and 'print' mode specifier. The syntax looks like:
             http://web-platform.test:8000/test.html['<hash>['print]]
         """
+        print("starting do test")
         self._send_command(command)
 
         deadline = time() + timeout if timeout else None
@@ -66,6 +69,8 @@ class ContentShellTestPart(ProtocolPart):
     def _send_command(self, command):
         """Sends a single `command`, i.e. a URL to open, to content_shell.
         """
+        print("sending command " + command)
+        print("sending command " + command)
         self.stdin_queue.put((command + "\n").encode("utf-8"))
 
     def _read_block(self, deadline=None):
@@ -73,7 +78,7 @@ class ContentShellTestPart(ProtocolPart):
         """
         while True:
             line = _read_line(self.stdout_queue, deadline, "latin-1").rstrip()
-
+            print(line)
             if line == "Content-Type: text/plain":
                 return self._read_text_block(deadline)
 
@@ -89,7 +94,7 @@ class ContentShellTestPart(ProtocolPart):
         result = ""
 
         while True:
-            line = _read_line(self.stdout_queue, deadline, "utf-8", "replace", False)
+            line = _read_line(self.stdout_queue, deadline, "utf-8", "replace", False, True)
 
             if line.endswith(self.eof_marker):
                 result += line[:-len(self.eof_marker)]

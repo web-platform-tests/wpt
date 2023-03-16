@@ -66,13 +66,8 @@ def get_download_filename(resp, default=None):
     return filename or default
 
 
-def get_taskcluster_artifact(index, path):
-    TC_INDEX_BASE = FIREFOX_CI_ROOT_URL + "/api/index/v1/"
-
-    resp = get(TC_INDEX_BASE + "task/%s/artifacts/%s" % (index, path))
-    resp.raise_for_status()
-
-    return resp
+def get_taskcluster_artifact_url(index, path):
+    return f"{FIREFOX_CI_ROOT_URL}/api/index/v1/task/{index}/artifacts/{path}"
 
 
 class Browser:
@@ -94,7 +89,14 @@ class Browser:
         return dest
 
     @abstractmethod
-    def download(self, dest=None, channel=None, rename=None):
+    def download_url(self, channel=None):
+        """Download a package or installer for the browser
+        :param channel: Browser channel to download
+        :return: The URL to the package/installer
+        """
+        return NotImplemented
+
+    def download(self, dest=None, channel=None, rename=None, default_name="download"):
         """Download a package or installer for the browser
         :param dest: Directory in which to put the dowloaded package
         :param channel: Browser channel to download
@@ -102,7 +104,22 @@ class Browser:
                        extension is preserved.
         :return: The path to the downloaded package/installer
         """
-        return NotImplemented
+        url = self.download_url(channel=channel)
+        self.logger.info("Downloading from %s" % url)
+
+        resp = get(url)
+        resp.raise_for_status()
+
+        filename = get_download_filename(resp, default_name)
+        if rename:
+            filename = "%s%s" % (rename, get_ext(filename))
+
+        output_path = os.path.join(dest, filename)
+
+        with open(output_path, "wb") as f:
+            f.write(resp.content)
+
+        return installer_path
 
     @abstractmethod
     def install(self, dest=None, channel=None):
@@ -188,7 +205,7 @@ class Firefox(Browser):
 
         return "%s%s" % (self.platform, bits)
 
-    def download(self, dest=None, channel="nightly", rename=None):
+    def download_url(self, channel="nightly"):
         product = {
             "nightly": "firefox-nightly-latest-ssl",
             "beta": "firefox-beta-latest-ssl",
@@ -216,20 +233,11 @@ class Firefox(Browser):
 
         url = "https://download.mozilla.org/?product=%s&os=%s&lang=en-US" % (product[channel],
                                                                              os_builds[os_key])
-        self.logger.info("Downloading Firefox from %s" % url)
-        resp = get(url)
 
-        filename = get_download_filename(resp, "firefox.tar.bz2")
+        return url
 
-        if rename:
-            filename = "%s%s" % (rename, get_ext(filename))
-
-        installer_path = os.path.join(dest, filename)
-
-        with open(installer_path, "wb") as f:
-            f.write(resp.content)
-
-        return installer_path
+    def download(self, *args, **kwargs):
+        return super().download(default_name="firefox.tar.bz2", *args, **kwargs)
 
     def install(self, dest=None, channel="nightly"):
         """Install Firefox."""
@@ -456,9 +464,10 @@ class Firefox(Browser):
         archive_name = "public/build/geckodriver%s" % archive_ext
 
         try:
-            resp = get_taskcluster_artifact(
+            resp = get(get_taskcluster_artifact_url(
                 "gecko.v2.mozilla-central.latest.geckodriver.%s" % tc_platform,
-                archive_name)
+                archive_name))
+            resp.raise_for_status()
         except Exception:
             self.logger.info("Geckodriver download failed")
             return
@@ -494,23 +503,13 @@ class FirefoxAndroid(Browser):
         super().__init__(logger)
         self.apk_path = None
 
-    def download(self, dest=None, channel=None, rename=None):
-        if dest is None:
-            dest = os.pwd
-
-        resp = get_taskcluster_artifact(
+    def download_url(self, channel=None):
+        return get_taskcluster_artifact_url(
             "gecko.v2.mozilla-central.latest.mobile.android-x86_64-opt",
             "public/build/geckoview-androidTest.apk")
 
-        filename = "geckoview-androidTest.apk"
-        if rename:
-            filename = "%s%s" % (rename, get_ext(filename)[1])
-        self.apk_path = os.path.join(dest, filename)
-
-        with open(self.apk_path, "wb") as f:
-            f.write(resp.content)
-
-        return self.apk_path
+    def download(self, *args, **kwargs):
+        return super().download(default_name="geckoview-androidTest.apk", *args, **kwargs)
 
     def install(self, dest=None, channel=None):
         return self.download(dest, channel)
@@ -815,7 +814,21 @@ class Chromium(ChromeChromiumBase):
 
         return self._build_snapshots_url(revision, filename)
 
+    def download_url(self, channel=None, version=None, revision=None):
+        filename = f"{self._chromium_package_name}.zip"
+
+        if revision is None:
+            revision = self._get_chromium_revision(filename, version)
+        elif revision == "latest":
+            revision = self._get_latest_chromium_revision()
+        elif revision == "pinned":
+            revision = self._get_pinned_chromium_revision()
+
+        return self._build_snapshots_url(revision, filename)
+
     def download(self, dest=None, channel=None, rename=None, version=None, revision=None):
+        # Completely override the default download method so we can keep track
+        # of the revision we download.
         if dest is None:
             dest = self._get_browser_binary_dir(None, channel)
 
@@ -831,6 +844,7 @@ class Chromium(ChromeChromiumBase):
         url = self._build_snapshots_url(revision, filename)
         self.logger.info(f"Downloading Chromium from {url}")
         resp = get(url)
+        resp.raise_for_status()
         installer_path = os.path.join(dest, filename)
         with open(installer_path, "wb") as f:
             f.write(resp.content)
@@ -937,7 +951,7 @@ class Chrome(ChromeChromiumBase):
                 return self._build_snapshots_url(revision, filename)
         return f"https://chromedriver.storage.googleapis.com/{latest}/{filename}"
 
-    def download(self, dest=None, channel=None, rename=None):
+    def download_url(self, channel=None):
         raise NotImplementedError("Downloading of Chrome browser binary not implemented.")
 
     def find_binary(self, venv_path=None, channel=None):
@@ -1037,7 +1051,7 @@ class ContentShell(Browser):
     product = "content_shell"
     requirements = None
 
-    def download(self, dest=None, channel=None, rename=None):
+    def download_url(self, channel=None):
         raise NotImplementedError
 
     def install(self, dest=None, channel=None):
@@ -1073,7 +1087,7 @@ class ChromeAndroidBase(Browser):
         self.device_serial = None
         self.adb_binary = "adb"
 
-    def download(self, dest=None, channel=None, rename=None):
+    def download_url(self, channel=None):
         raise NotImplementedError
 
     def install(self, dest=None, channel=None):
@@ -1181,7 +1195,7 @@ class ChromeiOS(Browser):
     product = "chrome_ios"
     requirements = None
 
-    def download(self, dest=None, channel=None, rename=None):
+    def download_url(self, channel=None):
         raise NotImplementedError
 
     def install(self, dest=None, channel=None):
@@ -1217,7 +1231,7 @@ class Opera(Browser):
         self.logger.warning("Unable to find the browser binary.")
         return None
 
-    def download(self, dest=None, channel=None, rename=None):
+    def download_url(self, channel=None):
         raise NotImplementedError
 
     def install(self, dest=None, channel=None):
@@ -1289,7 +1303,7 @@ class EdgeChromium(Browser):
     edgedriver_name = "msedgedriver"
     requirements = "requirements_chromium.txt"
 
-    def download(self, dest=None, channel=None, rename=None):
+    def download_url(self, channel=None):
         raise NotImplementedError
 
     def install(self, dest=None, channel=None):
@@ -1463,7 +1477,7 @@ class Edge(Browser):
     product = "edge"
     requirements = "requirements_edge.txt"
 
-    def download(self, dest=None, channel=None, rename=None):
+    def download_url(self, channel=None):
         raise NotImplementedError
 
     def install(self, dest=None, channel=None):
@@ -1497,7 +1511,7 @@ class InternetExplorer(Browser):
     product = "ie"
     requirements = "requirements_ie.txt"
 
-    def download(self, dest=None, channel=None, rename=None):
+    def download_url(self, channel=None):
         raise NotImplementedError
 
     def install(self, dest=None, channel=None):
@@ -1619,9 +1633,14 @@ class Safari(Browser):
 
         return stp_downloads
 
-    def _download_image(self, downloads, dest, system_version=None):
+    def download_url(self, channel=None, system_version=None):
+        if channel != "preview":
+            raise ValueError(f"can only install 'preview', not '{channel}'")
+
         if system_version is None:
             system_version, _, _ = platform.mac_ver()
+
+        downloads = self._find_downloads()
 
         chosen_url = None
         for version_spec, url in downloads:
@@ -1633,15 +1652,7 @@ class Safari(Browser):
         if chosen_url is None:
             raise ValueError(f"no download for {system_version}")
 
-        self.logger.info(f"Downloading Safari from {chosen_url}")
-        resp = get(chosen_url)
-
-        filename = get_download_filename(resp, "SafariTechnologyPreview.dmg")
-        installer_path = os.path.join(dest, filename)
-        with open(installer_path, "wb") as f:
-            f.write(resp.content)
-
-        return installer_path
+        return chosen_url
 
     def _download_extract(self, image_path, dest, rename=None):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -1704,16 +1715,13 @@ class Safari(Browser):
         return dest_path
 
     def download(self, dest=None, channel="preview", rename=None, system_version=None):
-        if channel != "preview":
-            raise ValueError(f"can only install 'preview', not '{channel}'")
-
+        # Override the default implementation to not only download but extract
+        # the package from the download.
         if dest is None:
             dest = self._get_browser_binary_dir(None, channel)
 
-        stp_downloads = self._find_downloads()
-
         with tempfile.TemporaryDirectory() as tmpdir:
-            image_path = self._download_image(stp_downloads, tmpdir, system_version)
+            image_path = super().download(dest=tmpdir, channel=channel)
             return self._download_extract(image_path, dest, rename)
 
     def install(self, dest=None, channel=None):
@@ -1777,24 +1785,16 @@ class Servo(Browser):
 
         return (platform, extension, decompress)
 
-    def _get(self, channel="nightly"):
+    def download_url(self, channel="nightly"):
         if channel != "nightly":
             raise ValueError("Only nightly versions of Servo are available")
 
         platform, extension, _ = self.platform_components()
-        url = "https://download.servo.org/nightly/%s/servo-latest%s" % (platform, extension)
-        return get(url)
+        return "https://download.servo.org/nightly/%s/servo-latest%s" % (platform, extension)
 
-    def download(self, dest=None, channel="nightly", rename=None):
-        if dest is None:
-            dest = os.pwd
-
-        resp = self._get(dest, channel)
+    def download(self, *args, **kwargs):
         _, extension, _ = self.platform_components()
-
-        filename = rename if rename is not None else "servo-latest"
-        with open(os.path.join(dest, "%s%s" % (filename, extension,)), "w") as f:
-            f.write(resp.content)
+        return super().download(default_name=f"servo-latest{extension}", *args, **kwargs)
 
     def install(self, dest=None, channel="nightly"):
         """Install latest Browser Engine."""
@@ -1803,8 +1803,11 @@ class Servo(Browser):
 
         _, _, decompress = self.platform_components()
 
-        resp = self._get(channel)
-        decompress(resp.raw, dest=dest)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            download_path = self.download(dest=tmpdir, channel=channel)
+            with open(download_path, "rb") as fd:
+                decompress(fd.read(), dest=dest)
+
         path = find_executable("servo", os.path.join(dest, "servo"))
         st = os.stat(path)
         os.chmod(path, st.st_mode | stat.S_IEXEC)
@@ -1840,7 +1843,7 @@ class Sauce(Browser):
     product = "sauce"
     requirements = "requirements_sauce.txt"
 
-    def download(self, dest=None, channel=None, rename=None):
+    def download_url(self, channel=None):
         raise NotImplementedError
 
     def install(self, dest=None, channel=None):
@@ -1865,7 +1868,7 @@ class WebKit(Browser):
     product = "webkit"
     requirements = None
 
-    def download(self, dest=None, channel=None, rename=None):
+    def download_url(self, channel=None):
         raise NotImplementedError
 
     def install(self, dest=None, channel=None):
@@ -1891,7 +1894,7 @@ class WebKitTestRunner(Browser):
     product = "wktr"
     requirements = None
 
-    def download(self, dest=None, channel=None, rename=None):
+    def download_url(self, channel=None):
         raise NotImplementedError
 
     def install(self, dest=None, channel=None):
@@ -1927,23 +1930,22 @@ class WebKitGTKMiniBrowser(WebKit):
         assert(len(osidversion) > 3)
         return osidversion.capitalize()
 
-
-    def download(self, dest=None, channel=None, rename=None):
+    def download_url(self, channel=None):
         base_dowload_uri = "https://webkitgtk.org/built-products/"
         base_download_dir = base_dowload_uri + "x86_64/release/" + channel + "/" + self._get_osidversion() + "/MiniBrowser/"
-        try:
-            response = get(base_download_dir + "LAST-IS")
-        except requests.exceptions.HTTPError as e:
-            if e.response.status_code == 404:
-                raise RuntimeError("Can't find a WebKitGTK MiniBrowser %s bundle for %s at %s"
-                                   % (channel, self._get_osidversion(), base_dowload_uri))
-            raise
+        response = get(base_download_dir + "LAST-IS")
+        response.raise_for_status()
 
         bundle_filename = response.text.strip()
-        bundle_url = base_download_dir + bundle_filename
+        return base_download_dir + bundle_filename
 
+    def download(self, dest=None, channel=None, rename=None):
         if dest is None:
             dest = self._get_browser_binary_dir(None, channel)
+
+        bundle_url = self.download_url(channel=channel)
+        _, bundle_filename = bundle_url.rsplit("/", maxsplits=1)
+
         bundle_file_path = os.path.join(dest, bundle_filename)
 
         self.logger.info("Downloading WebKitGTK MiniBrowser bundle from %s" % bundle_url)
@@ -2049,7 +2051,7 @@ class Epiphany(Browser):
     product = "epiphany"
     requirements = None
 
-    def download(self, dest=None, channel=None, rename=None):
+    def download_url(self, channel=None):
         raise NotImplementedError
 
     def install(self, dest=None, channel=None):

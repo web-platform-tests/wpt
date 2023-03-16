@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" title="Joey Arhar" href="mailto:jarhar@chromium.org">
+
+<!-- This behavior is not explicitly specified, but is interoperable. -->
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<iframe id=myframe></iframe>
+<script>
+  async_test(t => {
+    window.onmessage = t.step_func(event => {
+      assert_equals(event.data, 'navigated to form');
+      t.done();
+    });
+
+    myframe.src = 'resources/double-iframe-src-submit-frame.html';
+  });
+</script>

@@ -66,6 +66,10 @@ test(function(){
             inherits: false
         });
 
+        // The below line is where the crash happens because
+        // state.old_style doesn't have a value for the custom property.
+        // Seems odd since just before this we got the computed style and checked
+        // that the custom property has a value of 'green'...
         assert_equals(getComputedStyle(target).getPropertyValue(name), 'rgb(0, 128, 0)');
     } finally {
         target.style = '';

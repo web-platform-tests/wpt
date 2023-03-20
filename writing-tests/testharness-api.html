@@ -159,8 +159,8 @@ other way.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">TestFunction()</span></code></span>) – Test function. This is executed immediately. If it returns without error, the test status is set to <code class="docutils literal notranslate"><span class="pre">PASS</span></code>. If it throws an <a class="reference internal" href="#AssertionError" title="AssertionError"><code class="xref js js-class docutils literal notranslate"><span class="pre">AssertionError()</span></code></a>, or any other exception, the test status is set to <code class="docutils literal notranslate"><span class="pre">FAIL</span></code> (typically from an <cite>assert</cite> function).</p></li>
-<li><p><strong>name</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">String()</span></code></span>) – Test name. This must be unique in a given file and must be invariant between runs.</p></li>
+<li><p><strong>func</strong> (<em>TestFunction</em>) – Test function. This is executed immediately. If it returns without error, the test status is set to <code class="docutils literal notranslate"><span class="pre">PASS</span></code>. If it throws an <a class="reference internal" href="#AssertionError" title="AssertionError"><code class="xref js js-class docutils literal notranslate"><span class="pre">AssertionError()</span></code></a>, or any other exception, the test status is set to <code class="docutils literal notranslate"><span class="pre">FAIL</span></code> (typically from an <cite>assert</cite> function).</p></li>
+<li><p><strong>name</strong> (<em>String</em>) – Test name. This must be unique in a given file and must be invariant between runs.</p></li>
 </ul>
 </dd>
 </dl>
@@ -187,8 +187,8 @@ be rather low-level but applicable to many situations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>funcOrName</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">TestFunction|string()</span></code></span>) – Initial step function to call immediately with the test name as an argument (if any), or name of the test.</p></li>
-<li><p><strong>name</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">String()</span></code></span>) – Test name (if a test function was provided). This must be unique in a given file and must be invariant between runs.</p></li>
+<li><p><strong>funcOrName</strong> (<em>TestFunction|string</em>) – Initial step function to call immediately with the test name as an argument (if any), or name of the test.</p></li>
+<li><p><strong>name</strong> (<em>String</em>) – Test name (if a test function was provided). This must be unique in a given file and must be invariant between runs.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -269,8 +269,8 @@ rejected the test fails, otherwise the test passes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">TestFunction()</span></code></span>) – Test function. This must return a promise. The test is automatically marked as complete once the promise settles.</p></li>
-<li><p><strong>name</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">String()</span></code></span>) – Test name. This must be unique in a given file and must be invariant between runs.</p></li>
+<li><p><strong>func</strong> (<em>TestFunction</em>) – Test function. This must return a promise. The test is automatically marked as complete once the promise settles.</p></li>
+<li><p><strong>name</strong> (<em>String</em>) – Test name. This must be unique in a given file and must be invariant between runs.</p></li>
 </ul>
 </dd>
 </dl>
@@ -606,8 +606,8 @@ produce stable results in all test environments.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – Function to run after the timeout</p></li>
-<li><p><strong>timeout</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Time in ms to wait before running the test step. The actual wait time is <code class="docutils literal notranslate"><span class="pre">timeout</span></code> x <code class="docutils literal notranslate"><span class="pre">timeout_multiplier</span></code>.</p></li>
+<li><p><strong>func</strong> (<em>function</em>) – Function to run after the timeout</p></li>
+<li><p><strong>timeout</strong> (<em>number</em>) – Time in ms to wait before running the test step. The actual wait time is <code class="docutils literal notranslate"><span class="pre">timeout</span></code> x <code class="docutils literal notranslate"><span class="pre">timeout_multiplier</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -626,8 +626,8 @@ produce stable results in all test environments.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>funcOrProperties</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function|SettingsObject()</span></code></span>) – Either a setup function to run, or a set of properties. If this is a function that function is run synchronously. Any exception in the function will set the overall harness status to <cite>ERROR</cite>.</p></li>
-<li><p><strong>maybeProperties</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">SettingsObject()</span></code></span>) – An object containing the settings to use, if the first argument is a function.</p></li>
+<li><p><strong>funcOrProperties</strong> (<em>function|SettingsObject</em>) – Either a setup function to run, or a set of properties. If this is a function that function is run synchronously. Any exception in the function will set the overall harness status to <cite>ERROR</cite>.</p></li>
+<li><p><strong>maybeProperties</strong> (<em>SettingsObject</em>) – An object containing the settings to use, if the first argument is a function.</p></li>
 </ul>
 </dd>
 </dl>
@@ -641,8 +641,8 @@ before running any <cite>promise_test</cite> tests.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – Function returning a promise that’s run synchronously. Promise tests are not run until after this function has resolved.</p></li>
-<li><p><strong>properties</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">SettingsObject()</span></code></span>) – An object containing the harness settings to use.</p></li>
+<li><p><strong>func</strong> (<em>function</em>) – Function returning a promise that’s run synchronously. Promise tests are not run until after this function has resolved.</p></li>
+<li><p><strong>properties</strong> (<em>SettingsObject</em>) – An object containing the harness settings to use.</p></li>
 </ul>
 </dd>
 </dl>
@@ -763,7 +763,7 @@ worker</a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>callback</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – Callback function. This is called without arguments.</p></li>
+<li><p><strong>callback</strong> (<em>function</em>) – Callback function. This is called without arguments.</p></li>
 </ul>
 </dd>
 </dl>
@@ -776,7 +776,7 @@ worker</a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>callback</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – Callback function, called with the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> as the only argument.</p></li>
+<li><p><strong>callback</strong> (<em>function</em>) – Callback function, called with the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> as the only argument.</p></li>
 </ul>
 </dd>
 </dl>
@@ -789,7 +789,7 @@ worker</a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>callback</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – Callback function, called with the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> as the only argument.</p></li>
+<li><p><strong>callback</strong> (<em>function</em>) – Callback function, called with the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> as the only argument.</p></li>
 </ul>
 </dd>
 </dl>
@@ -802,7 +802,7 @@ worker</a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>callback</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – Callback function, called with an array of <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> objects, a <a class="reference internal" href="#TestsStatus" title="TestsStatus"><code class="xref js js-class docutils literal notranslate"><span class="pre">TestsStatus()</span></code></a> object and an array of <a class="reference internal" href="#AssertRecord" title="AssertRecord"><code class="xref js js-class docutils literal notranslate"><span class="pre">AssertRecord()</span></code></a> objects. If the debug setting is <code class="docutils literal notranslate"><span class="pre">false</span></code> the final argument will be an empty array. For performance reasons asserts are only tracked when the debug setting is <code class="docutils literal notranslate"><span class="pre">true</span></code>. In other cases the array of asserts will be empty.</p></li>
+<li><p><strong>callback</strong> (<em>function</em>) – Callback function, called with an array of <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> objects, a <a class="reference internal" href="#TestsStatus" title="TestsStatus"><code class="xref js js-class docutils literal notranslate"><span class="pre">TestsStatus()</span></code></a> object and an array of <a class="reference internal" href="#AssertRecord" title="AssertRecord"><code class="xref js js-class docutils literal notranslate"><span class="pre">AssertRecord()</span></code></a> objects. If the debug setting is <code class="docutils literal notranslate"><span class="pre">false</span></code> the final argument will be an empty array. For performance reasons asserts are only tracked when the debug setting is <code class="docutils literal notranslate"><span class="pre">true</span></code>. In other cases the array of asserts will be empty.</p></li>
 </ul>
 </dd>
 </dl>
@@ -855,9 +855,9 @@ worker</a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>test</strong> (<span><a class="reference internal" href="#Test" title="Test"><code class="xref js js-func docutils literal notranslate"><span class="pre">Test()</span></code></a></span>) – The test which ran the assert.</p></li>
-<li><p><strong>assert_name</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – The function name of the assert.</p></li>
-<li><p><strong>args</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Any()</span></code></span>) – The arguments passed to the assert function.</p></li>
+<li><p><strong>test</strong> (<a class="reference internal" href="#Test" title="Test"><em>Test</em></a>) – The test which ran the assert.</p></li>
+<li><p><strong>assert_name</strong> (<em>string</em>) – The function name of the assert.</p></li>
+<li><p><strong>args</strong> (<em>Any</em>) – The arguments passed to the assert function.</p></li>
 </ul>
 </dd>
 </dl>
@@ -926,8 +926,8 @@ object. These objects are structured as follows:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Any()</span></code></span>) – Value that is asserted to be true</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested</p></li>
+<li><p><strong>actual</strong> (<em>Any</em>) – Value that is asserted to be true</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested</p></li>
 </ul>
 </dd>
 </dl>
@@ -940,8 +940,8 @@ object. These objects are structured as follows:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Any()</span></code></span>) – Value that is asserted to be false</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested</p></li>
+<li><p><strong>actual</strong> (<em>Any</em>) – Value that is asserted to be false</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested</p></li>
 </ul>
 </dd>
 </dl>
@@ -957,9 +957,9 @@ of NaN.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Any()</span></code></span>) – Test value.</p></li>
-<li><p><strong>expected</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Any()</span></code></span>) – Expected value.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>actual</strong> (<em>Any</em>) – Test value.</p></li>
+<li><p><strong>expected</strong> (<em>Any</em>) – Expected value.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -973,9 +973,9 @@ of NaN.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Any()</span></code></span>) – Test value.</p></li>
-<li><p><strong>expected</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Any()</span></code></span>) – The value <code class="docutils literal notranslate"><span class="pre">actual</span></code> is expected to be different to.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>actual</strong> (<em>Any</em>) – Test value.</p></li>
+<li><p><strong>expected</strong> (<em>Any</em>) – The value <code class="docutils literal notranslate"><span class="pre">actual</span></code> is expected to be different to.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -989,9 +989,9 @@ This is implemented using <code class="docutils literal notranslate"><span class
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Any()</span></code></span>) – Test value.</p></li>
-<li><p><strong>expected</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Array()</span></code></span>) – An array that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is expected to be a member of.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>actual</strong> (<em>Any</em>) – Test value.</p></li>
+<li><p><strong>expected</strong> (<em>Array</em>) – An array that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is expected to be a member of.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1005,9 +1005,9 @@ This is implemented using <code class="docutils literal notranslate"><span class
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Array()</span></code></span>) – Test array.</p></li>
-<li><p><strong>expected</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Array()</span></code></span>) – Array that is expected to contain the same values as <code class="docutils literal notranslate"><span class="pre">actual</span></code>.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>actual</strong> (<em>Array</em>) – Test array.</p></li>
+<li><p><strong>expected</strong> (<em>Array</em>) – Array that is expected to contain the same values as <code class="docutils literal notranslate"><span class="pre">actual</span></code>.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1020,10 +1020,10 @@ This is implemented using <code class="docutils literal notranslate"><span class
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Test value.</p></li>
-<li><p><strong>expected</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Value number is expected to be close to.</p></li>
-<li><p><strong>epsilon</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Magnitude of allowed difference between <code class="docutils literal notranslate"><span class="pre">actual</span></code> and <code class="docutils literal notranslate"><span class="pre">expected</span></code>.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
+<li><p><strong>expected</strong> (<em>number</em>) – Value number is expected to be close to.</p></li>
+<li><p><strong>epsilon</strong> (<em>number</em>) – Magnitude of allowed difference between <code class="docutils literal notranslate"><span class="pre">actual</span></code> and <code class="docutils literal notranslate"><span class="pre">expected</span></code>.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1037,10 +1037,10 @@ This is implemented using <code class="docutils literal notranslate"><span class
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Array()</span></code></span>) – Array of test values.</p></li>
-<li><p><strong>expected</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Array()</span></code></span>) – Array of values expected to be close to the values in <code class="docutils literal notranslate"><span class="pre">actual</span></code>.</p></li>
-<li><p><strong>epsilon</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Magnitude of allowed difference between each value in <code class="docutils literal notranslate"><span class="pre">actual</span></code> and <code class="docutils literal notranslate"><span class="pre">expected</span></code>.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>actual</strong> (<em>Array</em>) – Array of test values.</p></li>
+<li><p><strong>expected</strong> (<em>Array</em>) – Array of values expected to be close to the values in <code class="docutils literal notranslate"><span class="pre">actual</span></code>.</p></li>
+<li><p><strong>epsilon</strong> (<em>number</em>) – Magnitude of allowed difference between each value in <code class="docutils literal notranslate"><span class="pre">actual</span></code> and <code class="docutils literal notranslate"><span class="pre">expected</span></code>.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1053,9 +1053,9 @@ This is implemented using <code class="docutils literal notranslate"><span class
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Test value.</p></li>
-<li><p><strong>expected</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
+<li><p><strong>expected</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1068,9 +1068,9 @@ This is implemented using <code class="docutils literal notranslate"><span class
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Test value.</p></li>
-<li><p><strong>expected</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
+<li><p><strong>expected</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1084,10 +1084,10 @@ than <code class="docutils literal notranslate"><span class="pre">upper</span></
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Test value.</p></li>
-<li><p><strong>lower</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than.</p></li>
-<li><p><strong>upper</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
+<li><p><strong>lower</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than.</p></li>
+<li><p><strong>upper</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1100,9 +1100,9 @@ than <code class="docutils literal notranslate"><span class="pre">upper</span></
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Test value.</p></li>
-<li><p><strong>expected</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than or equal to.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
+<li><p><strong>expected</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than or equal to.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1115,9 +1115,9 @@ than <code class="docutils literal notranslate"><span class="pre">upper</span></
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Test value.</p></li>
-<li><p><strong>expected</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than or equal to.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
+<li><p><strong>expected</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than or equal to.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1131,10 +1131,10 @@ than or equal to <code class="docutils literal notranslate"><span class="pre">up
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Test value.</p></li>
-<li><p><strong>lower</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than or equal to.</p></li>
-<li><p><strong>upper</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than or equal to.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
+<li><p><strong>lower</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than or equal to.</p></li>
+<li><p><strong>upper</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than or equal to.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1147,9 +1147,9 @@ than or equal to <code class="docutils literal notranslate"><span class="pre">up
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">String()</span></code></span>) – Test string.</p></li>
-<li><p><strong>expected</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">RegExp()</span></code></span>) – RegExp <code class="docutils literal notranslate"><span class="pre">actual</span></code> must match.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>actual</strong> (<em>String</em>) – Test string.</p></li>
+<li><p><strong>expected</strong> (<em>RegExp</em>) – RegExp <code class="docutils literal notranslate"><span class="pre">actual</span></code> must match.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1163,9 +1163,9 @@ than or equal to <code class="docutils literal notranslate"><span class="pre">up
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>object</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Object()</span></code></span>) – Object to stringify.</p></li>
-<li><p><strong>class_string</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Expected class string for <code class="docutils literal notranslate"><span class="pre">object</span></code>.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>object</strong> (<em>Object</em>) – Object to stringify.</p></li>
+<li><p><strong>class_string</strong> (<em>string</em>) – Expected class string for <code class="docutils literal notranslate"><span class="pre">object</span></code>.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1178,9 +1178,9 @@ than or equal to <code class="docutils literal notranslate"><span class="pre">up
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>object</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Object()</span></code></span>) – Object that should have the given property.</p></li>
-<li><p><strong>property_name</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Expected property name.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>object</strong> (<em>Object</em>) – Object that should have the given property.</p></li>
+<li><p><strong>property_name</strong> (<em>string</em>) – Expected property name.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1193,9 +1193,9 @@ than or equal to <code class="docutils literal notranslate"><span class="pre">up
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>object</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Object()</span></code></span>) – Object that should not have the given property.</p></li>
-<li><p><strong>property_name</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Property name to test.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>object</strong> (<em>Object</em>) – Object that should not have the given property.</p></li>
+<li><p><strong>property_name</strong> (<em>string</em>) – Property name to test.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1209,9 +1209,9 @@ than or equal to <code class="docutils literal notranslate"><span class="pre">up
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>object</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Object()</span></code></span>) – Object that should have the given property in its prototype chain.</p></li>
-<li><p><strong>property_name</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Expected property name.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>object</strong> (<em>Object</em>) – Object that should have the given property in its prototype chain.</p></li>
+<li><p><strong>property_name</strong> (<em>string</em>) – Expected property name.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1224,9 +1224,9 @@ than or equal to <code class="docutils literal notranslate"><span class="pre">up
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>object</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Object()</span></code></span>) – Object that should have the given property in its prototype chain.</p></li>
-<li><p><strong>property_name</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Expected property name.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>object</strong> (<em>Object</em>) – Object that should have the given property in its prototype chain.</p></li>
+<li><p><strong>property_name</strong> (<em>string</em>) – Expected property name.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1242,9 +1242,9 @@ encouraged to instead inspect the property descriptor of <code class="docutils l
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>object</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Object()</span></code></span>) – Object that should have the given property in its prototype chain.</p></li>
-<li><p><strong>property_name</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Expected property name.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>object</strong> (<em>Object</em>) – Object that should have the given property in its prototype chain.</p></li>
+<li><p><strong>property_name</strong> (<em>string</em>) – Expected property name.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1265,9 +1265,9 @@ argument the assertion description.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>type</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number|string()</span></code></span>) – The expected exception name or code.  See the <a class="reference external" href="https://webidl.spec.whatwg.org/#dfn-error-names-table">table of names and codes</a>. If a number is passed it should be one of the numeric code values in that table (e.g. 3, 4, etc).  If a string is passed it can either be an exception name (e.g. “HierarchyRequestError”, “WrongDocumentError”) or the name of the corresponding error code (e.g. “<code class="docutils literal notranslate"><span class="pre">HIERARCHY_REQUEST_ERR</span></code>”, “<code class="docutils literal notranslate"><span class="pre">WRONG_DOCUMENT_ERR</span></code>”).</p></li>
-<li><p><strong>descriptionOrFunc</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – The function expected to throw (if the exception comes from another global), or the optional description of the condition being tested (if the exception comes from the current global).</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested (if the exception comes from another global).</p></li>
+<li><p><strong>type</strong> (<em>number|string</em>) – The expected exception name or code.  See the <a class="reference external" href="https://webidl.spec.whatwg.org/#dfn-error-names-table">table of names and codes</a>. If a number is passed it should be one of the numeric code values in that table (e.g. 3, 4, etc).  If a string is passed it can either be an exception name (e.g. “HierarchyRequestError”, “WrongDocumentError”) or the name of the corresponding error code (e.g. “<code class="docutils literal notranslate"><span class="pre">HIERARCHY_REQUEST_ERR</span></code>”, “<code class="docutils literal notranslate"><span class="pre">WRONG_DOCUMENT_ERR</span></code>”).</p></li>
+<li><p><strong>descriptionOrFunc</strong> (<em>function</em>) – The function expected to throw (if the exception comes from another global), or the optional description of the condition being tested (if the exception comes from the current global).</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested (if the exception comes from another global).</p></li>
 </ul>
 </dd>
 </dl>
@@ -1280,9 +1280,9 @@ argument the assertion description.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>constructor</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">object()</span></code></span>) – The expected exception constructor.</p></li>
-<li><p><strong>func</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – Function which should throw.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Error description for the case that the error is not thrown.</p></li>
+<li><p><strong>constructor</strong> (<em>object</em>) – The expected exception constructor.</p></li>
+<li><p><strong>func</strong> (<em>function</em>) – Function which should throw.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Error description for the case that the error is not thrown.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1295,9 +1295,9 @@ argument the assertion description.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>exception</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">value()</span></code></span>) – The expected exception.</p></li>
-<li><p><strong>func</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – Function which should throw.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Error description for the case that the error is not thrown.</p></li>
+<li><p><strong>exception</strong> (<em>value</em>) – The expected exception.</p></li>
+<li><p><strong>func</strong> (<em>function</em>) – Function which should throw.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Error description for the case that the error is not thrown.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1316,8 +1316,8 @@ feature. For example:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>condition</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">object()</span></code></span>) – The truthy value to test</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Error description for the case that the condition is not truthy.</p></li>
+<li><p><strong>condition</strong> (<em>object</em>) – The truthy value to test</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Error description for the case that the condition is not truthy.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1339,8 +1339,8 @@ spec feature. For example:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>condition</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">object()</span></code></span>) – The truthy value to test</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Error description for the case that the condition is not truthy.</p></li>
+<li><p><strong>condition</strong> (<em>object</em>) – The truthy value to test</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Error description for the case that the condition is not truthy.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1354,7 +1354,7 @@ not taken e.g. that an error event isn’t fired.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1372,10 +1372,10 @@ hide UA bugs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>assert_func</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">AssertFunc()</span></code></span>) – Function to compare actual and expected. It must throw when the comparison fails and return when the comparison passes.</p></li>
-<li><p><strong>actual</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Any()</span></code></span>) – Test value.</p></li>
-<li><p><strong>expected_array</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Array()</span></code></span>) – Array of possible expected values.</p></li>
-<li><p><strong>args</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Array.</span></code></span>) – Additional arguments to pass to <code class="docutils literal notranslate"><span class="pre">assert_func</span></code>.</p></li>
+<li><p><strong>assert_func</strong> (<em>AssertFunc</em>) – Function to compare actual and expected. It must throw when the comparison fails and return when the comparison passes.</p></li>
+<li><p><strong>actual</strong> (<em>Any</em>) – Test value.</p></li>
+<li><p><strong>expected_array</strong> (<em>Array</em>) – Array of possible expected values.</p></li>
+<li><p><strong>args</strong> (<em>Array.&lt;Any&gt;</em>) – Additional arguments to pass to <code class="docutils literal notranslate"><span class="pre">assert_func</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1389,7 +1389,7 @@ hide UA bugs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>message</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Error message.</p></li>
+<li><p><strong>message</strong> (<em>string</em>) – Error message.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1413,11 +1413,11 @@ optional, argument the assertion description.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>test</strong> (<span><a class="reference internal" href="#Test" title="Test"><code class="xref js js-func docutils literal notranslate"><span class="pre">Test()</span></code></a></span>) – the <cite>Test</cite> to use for the assertion.</p></li>
-<li><p><strong>type</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number|string()</span></code></span>) – See documentation for <a class="reference external" href="#assert_throws_dom">assert_throws_dom</a>.</p></li>
-<li><p><strong>promiseOrConstructor</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – Either the constructor for the expected exception (if the exception comes from another global), or the promise that’s expected to reject (if the exception comes from the current global).</p></li>
-<li><p><strong>descriptionOrPromise</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function|string()</span></code></span>) – Either the promise that’s expected to reject (if the exception comes from another global), or the optional description of the condition being tested (if the exception comes from the current global).</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested (if the exception comes from another global).</p></li>
+<li><p><strong>test</strong> (<a class="reference internal" href="#Test" title="Test"><em>Test</em></a>) – the <cite>Test</cite> to use for the assertion.</p></li>
+<li><p><strong>type</strong> (<em>number|string</em>) – See documentation for <a class="reference external" href="#assert_throws_dom">assert_throws_dom</a>.</p></li>
+<li><p><strong>promiseOrConstructor</strong> (<em>function</em>) – Either the constructor for the expected exception (if the exception comes from another global), or the promise that’s expected to reject (if the exception comes from the current global).</p></li>
+<li><p><strong>descriptionOrPromise</strong> (<em>function|string</em>) – Either the promise that’s expected to reject (if the exception comes from another global), or the optional description of the condition being tested (if the exception comes from the current global).</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested (if the exception comes from another global).</p></li>
 </ul>
 </dd>
 </dl>
@@ -1430,10 +1430,10 @@ optional, argument the assertion description.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>test</strong> (<span><a class="reference internal" href="#Test" title="Test"><code class="xref js js-func docutils literal notranslate"><span class="pre">Test()</span></code></a></span>) – the <cite>Test</cite> to use for the assertion.</p></li>
-<li><p><strong>constructor</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – The expected exception constructor.</p></li>
-<li><p><strong>promise</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Promise()</span></code></span>) – The promise that’s expected to reject with the given exception.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Error message to add to assert in case of failure.</p></li>
+<li><p><strong>test</strong> (<a class="reference internal" href="#Test" title="Test"><em>Test</em></a>) – the <cite>Test</cite> to use for the assertion.</p></li>
+<li><p><strong>constructor</strong> (<em>function</em>) – The expected exception constructor.</p></li>
+<li><p><strong>promise</strong> (<em>Promise</em>) – The promise that’s expected to reject with the given exception.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Error message to add to assert in case of failure.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1446,10 +1446,10 @@ optional, argument the assertion description.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>test</strong> (<span><a class="reference internal" href="#Test" title="Test"><code class="xref js js-func docutils literal notranslate"><span class="pre">Test()</span></code></a></span>) – the <cite>Test</cite> to use for the assertion.</p></li>
-<li><p><strong>exception</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Any()</span></code></span>) – The expected value of the rejected promise.</p></li>
-<li><p><strong>promise</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Promise()</span></code></span>) – The promise that’s expected to reject.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Error message to add to assert in case of failure.</p></li>
+<li><p><strong>test</strong> (<a class="reference internal" href="#Test" title="Test"><em>Test</em></a>) – the <cite>Test</cite> to use for the assertion.</p></li>
+<li><p><strong>exception</strong> (<em>Any</em>) – The expected value of the rejected promise.</p></li>
+<li><p><strong>promise</strong> (<em>Promise</em>) – The promise that’s expected to reject.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Error message to add to assert in case of failure.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1480,7 +1480,7 @@ with a TypeError:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – This must be unique in a given file and must be invariant between runs.</p></li>
+<li><p><strong>name</strong> (<em>string</em>) – This must be unique in a given file and must be invariant between runs.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1536,7 +1536,7 @@ test harness will report an error.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>callback</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – The cleanup function to run. This is called with no arguments.</p></li>
+<li><p><strong>callback</strong> (<em>function</em>) – The cleanup function to run. This is called with no arguments.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1573,8 +1573,8 @@ be run.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Callback function to run as a step. If this throws an <a class="reference internal" href="#AssertionError" title="AssertionError"><code class="xref js js-func docutils literal notranslate"><span class="pre">AssertionError()</span></code></a>, or any other exception, the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> status is set to <code class="docutils literal notranslate"><span class="pre">FAIL</span></code>.</p></li>
-<li><p><strong>this_obj</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Object()</span></code></span>) – The object to use as the this value when calling <code class="docutils literal notranslate"><span class="pre">func</span></code>. Defaults to the  <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> object.</p></li>
+<li><p><strong>func</strong> (<em>string</em>) – Callback function to run as a step. If this throws an <a class="reference internal" href="#AssertionError" title="AssertionError"><code class="xref js js-func docutils literal notranslate"><span class="pre">AssertionError()</span></code></a>, or any other exception, the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> status is set to <code class="docutils literal notranslate"><span class="pre">FAIL</span></code>.</p></li>
+<li><p><strong>this_obj</strong> (<em>Object</em>) – The object to use as the this value when calling <code class="docutils literal notranslate"><span class="pre">func</span></code>. Defaults to the  <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> object.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1589,8 +1589,8 @@ test step.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Function to run as a step. If this throws an <a class="reference internal" href="#AssertionError" title="AssertionError"><code class="xref js js-func docutils literal notranslate"><span class="pre">AssertionError()</span></code></a>, or any other exception, the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> status is set to <code class="docutils literal notranslate"><span class="pre">FAIL</span></code>.</p></li>
-<li><p><strong>this_obj</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Object()</span></code></span>) – The object to use as the this value when calling <code class="docutils literal notranslate"><span class="pre">func</span></code>. Defaults to the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> object.</p></li>
+<li><p><strong>func</strong> (<em>string</em>) – Function to run as a step. If this throws an <a class="reference internal" href="#AssertionError" title="AssertionError"><code class="xref js js-func docutils literal notranslate"><span class="pre">AssertionError()</span></code></a>, or any other exception, the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> status is set to <code class="docutils literal notranslate"><span class="pre">FAIL</span></code>.</p></li>
+<li><p><strong>this_obj</strong> (<em>Object</em>) – The object to use as the this value when calling <code class="docutils literal notranslate"><span class="pre">func</span></code>. Defaults to the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> object.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1614,8 +1614,8 @@ returns without error.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Function to run as a step. If this throws an <a class="reference internal" href="#AssertionError" title="AssertionError"><code class="xref js js-func docutils literal notranslate"><span class="pre">AssertionError()</span></code></a>, or any other exception, the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> status is set to <code class="docutils literal notranslate"><span class="pre">FAIL</span></code>. If it returns without error the status is set to <code class="docutils literal notranslate"><span class="pre">PASS</span></code>.</p></li>
-<li><p><strong>this_obj</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Object()</span></code></span>) – The object to use as the this value when calling <cite>func</cite>. Defaults to the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> object.</p></li>
+<li><p><strong>func</strong> (<em>string</em>) – Function to run as a step. If this throws an <a class="reference internal" href="#AssertionError" title="AssertionError"><code class="xref js js-func docutils literal notranslate"><span class="pre">AssertionError()</span></code></a>, or any other exception, the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> status is set to <code class="docutils literal notranslate"><span class="pre">FAIL</span></code>. If it returns without error the status is set to <code class="docutils literal notranslate"><span class="pre">PASS</span></code>.</p></li>
+<li><p><strong>this_obj</strong> (<em>Object</em>) – The object to use as the this value when calling <cite>func</cite>. Defaults to the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> object.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1635,8 +1635,8 @@ as they provide better test performance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – Function to run as a test step.</p></li>
-<li><p><strong>timeout</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Time in ms to wait before running the test step. The actual wait time is <code class="docutils literal notranslate"><span class="pre">timeout</span></code> x <code class="docutils literal notranslate"><span class="pre">timeout_multiplier</span></code>.</p></li>
+<li><p><strong>func</strong> (<em>function</em>) – Function to run as a test step.</p></li>
+<li><p><strong>timeout</strong> (<em>number</em>) – Time in ms to wait before running the test step. The actual wait time is <code class="docutils literal notranslate"><span class="pre">timeout</span></code> x <code class="docutils literal notranslate"><span class="pre">timeout_multiplier</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1654,10 +1654,10 @@ when the condition is quickly met.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cond</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – A function taking no arguments and returning a boolean.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Error message to add to assert in case of failure.</p></li>
-<li><p><strong>timeout</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Timeout in ms. This is multiplied by the global timeout_multiplier</p></li>
-<li><p><strong>interval</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Polling interval in ms</p></li>
+<li><p><strong>cond</strong> (<em>function</em>) – A function taking no arguments and returning a boolean.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Error message to add to assert in case of failure.</p></li>
+<li><p><strong>timeout</strong> (<em>number</em>) – Timeout in ms. This is multiplied by the global timeout_multiplier</p></li>
+<li><p><strong>interval</strong> (<em>number</em>) – Polling interval in ms</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1686,11 +1686,11 @@ speed when the condition is quickly met.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cond</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – A function taking no arguments and returning a boolean. The callback is called when this function returns true.</p></li>
-<li><p><strong>func</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – A function taking no arguments to call once the condition is met.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Error message to add to assert in case of failure.</p></li>
-<li><p><strong>timeout</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Timeout in ms. This is multiplied by the global timeout_multiplier</p></li>
-<li><p><strong>interval</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Polling interval in ms</p></li>
+<li><p><strong>cond</strong> (<em>function</em>) – A function taking no arguments and returning a boolean. The callback is called when this function returns true.</p></li>
+<li><p><strong>func</strong> (<em>function</em>) – A function taking no arguments to call once the condition is met.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Error message to add to assert in case of failure.</p></li>
+<li><p><strong>timeout</strong> (<em>number</em>) – Timeout in ms. This is multiplied by the global timeout_multiplier</p></li>
+<li><p><strong>interval</strong> (<em>number</em>) – Polling interval in ms</p></li>
 </ul>
 </dd>
 </dl>
@@ -1708,11 +1708,11 @@ when the condition is quickly met.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cond</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – A function taking no arguments and returning a boolean. The callback is called when this function returns true.</p></li>
-<li><p><strong>func</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – A function taking no arguments to call once the condition is met.</p></li>
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Error message to add to assert in case of failure.</p></li>
-<li><p><strong>timeout</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Timeout in ms. This is multiplied by the global timeout_multiplier</p></li>
-<li><p><strong>interval</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Polling interval in ms</p></li>
+<li><p><strong>cond</strong> (<em>function</em>) – A function taking no arguments and returning a boolean. The callback is called when this function returns true.</p></li>
+<li><p><strong>func</strong> (<em>function</em>) – A function taking no arguments to call once the condition is met.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Error message to add to assert in case of failure.</p></li>
+<li><p><strong>timeout</strong> (<em>number</em>) – Timeout in ms. This is multiplied by the global timeout_multiplier</p></li>
+<li><p><strong>interval</strong> (<em>number</em>) – Polling interval in ms</p></li>
 </ul>
 </dd>
 </dl>
@@ -1746,7 +1746,7 @@ when the condition is quickly met.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Error message to add to assert in case of failure.</p></li>
+<li><p><strong>description</strong> (<em>string</em>) – Error message to add to assert in case of failure.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1772,10 +1772,10 @@ expected occur, in the correct order, and with the correct timing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>test</strong> (<span><a class="reference internal" href="#Test" title="Test"><code class="xref js js-func docutils literal notranslate"><span class="pre">Test()</span></code></a></span>) – The <cite>Test</cite> to use for the assertion.</p></li>
-<li><p><strong>watchedNode</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">EventTarget()</span></code></span>) – The target expected to receive the events.</p></li>
-<li><p><strong>eventTypes</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Array.</span></code></span>) – List of events to watch for.</p></li>
-<li><p><strong>timeoutPromise</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Promise()</span></code></span>) – Promise that will cause the test to be set to <cite>TIMEOUT</cite> once fulfilled.</p></li>
+<li><p><strong>test</strong> (<a class="reference internal" href="#Test" title="Test"><em>Test</em></a>) – The <cite>Test</cite> to use for the assertion.</p></li>
+<li><p><strong>watchedNode</strong> (<em>EventTarget</em>) – The target expected to receive the events.</p></li>
+<li><p><strong>eventTypes</strong> (<em>Array.&lt;string&gt;</em>) – List of events to watch for.</p></li>
+<li><p><strong>timeoutPromise</strong> (<em>Promise</em>) – Promise that will cause the test to be set to <cite>TIMEOUT</cite> once fulfilled.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1787,7 +1787,7 @@ series of events has occurred.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>options</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Object()</span></code></span>) – An optional options object. If the ‘record’ property on this object has the value ‘all’, when the Promise returned by this function is resolved,  <em>all</em> Event objects that were waited for will be returned as an array.</p></li>
+<li><p><strong>options</strong> (<em>Object</em>) – An optional options object. If the ‘record’ property on this object has the value ‘all’, when the Promise returned by this function is resolved,  <em>all</em> Event objects that were waited for will be returned as an array.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1853,7 +1853,7 @@ representations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>val</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Any()</span></code></span>) – The value to convert to a string.</p></li>
+<li><p><strong>val</strong> (<em>Any</em>) – The value to convert to a string.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1893,8 +1893,8 @@ use to generate the parameter list array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – The function that will be called for each generated tests.</p></li>
-<li><p><strong>args</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Array.</span></code></span>) – An array of arrays. Each nested array has the structure <cite>[testName, …testArgs]</cite>. For each of these nested arrays array, a test is generated with name <cite>testName</cite> and test function equivalent to <cite>func(..testArgs)</cite>.</p></li>
+<li><p><strong>func</strong> (<em>function</em>) – The function that will be called for each generated tests.</p></li>
+<li><p><strong>args</strong> (<em>Array.&lt;Array.&lt;Any&gt;&gt;</em>) – An array of arrays. Each nested array has the structure <cite>[testName, …testArgs]</cite>. For each of these nested arrays array, a test is generated with name <cite>testName</cite> and test function equivalent to <cite>func(..testArgs)</cite>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1911,9 +1911,9 @@ use to generate the parameter list array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>object</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">EventTarget()</span></code></span>) – Event target</p></li>
-<li><p><strong>event</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Event name</p></li>
-<li><p><strong>callback</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – Event handler.</p></li>
+<li><p><strong>object</strong> (<em>EventTarget</em>) – Event target</p></li>
+<li><p><strong>event</strong> (<em>string</em>) – Event name</p></li>
+<li><p><strong>callback</strong> (<em>function</em>) – Event handler.</p></li>
 </ul>
 </dd>
 </dl>

@@ -72,9 +72,9 @@ messages sent to that context.</p>
 <p>The context must call either <code class="docutils literal notranslate"><span class="pre">global_channel</span></code> or
 <code class="docutils literal notranslate"><span class="pre">start_global_channel</span></code> when it’s ready to receive messages. This
 returns a <code class="docutils literal notranslate"><span class="pre">RecvChannel</span></code> that can be used to add message handlers.</p>
-<dl class="js function">
+<dl class="js staticfunction">
 <dt class="sig sig-object js" id="global_channel">
-<span class="sig-name descname"><span class="n"><span class="pre">global_channel</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#global_channel" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="n"><span class="pre">global_channel</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#global_channel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an unconnected channel defined by a <cite>uuid</cite> in
 <code class="docutils literal notranslate"><span class="pre">location.href</span></code> for listening for <a class="reference external" href="#RemoteGlobal">RemoteGlobal</a> messages.</p>
 <dl class="field-list simple">
@@ -84,9 +84,9 @@ returns a <code class="docutils literal notranslate"><span class="pre">RecvChann
 </dl>
 </dd></dl>
 
-<dl class="js function">
+<dl class="js staticfunction">
 <dt class="sig sig-object js" id="start_global_channel">
-<span class="sig-name descname"><span class="n"><span class="pre">start_global_channel</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#start_global_channel" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="n"><span class="pre">start_global_channel</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#start_global_channel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start listening for <a class="reference external" href="#RemoteGlobal">RemoteGlobal</a> messages on
 a channel defined by a <cite>uuid</cite> in <cite>location.href</cite></p>
 <dl class="field-list simple">
@@ -110,7 +110,7 @@ a channel defined by a <cite>uuid</cite> in <cite>location.href</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fn</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – Callback function that receives the message.</p></li>
+<li><p><strong>fn</strong> (<em>function</em>) – Callback function that receives the message.</p></li>
 </ul>
 </dd>
 </dl>
@@ -147,7 +147,7 @@ a channel defined by a <cite>uuid</cite> in <cite>location.href</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fn</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – Callback function to remove</p></li>
+<li><p><strong>fn</strong> (<em>function</em>) – Callback function to remove</p></li>
 </ul>
 </dd>
 </dl>
@@ -170,7 +170,7 @@ object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dest</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">SendChannel|string()</span></code></span>) – Either a SendChannel to the destination, or the UUID of the destination. If ommitted, a new UUID is generated, which can be used when constructing the URL for the global.</p></li>
+<li><p><strong>dest</strong> (<em>SendChannel|string</em>) – Either a SendChannel to the destination, or the UUID of the destination. If ommitted, a new UUID is generated, which can be used when constructing the URL for the global.</p></li>
 </ul>
 </dd>
 </dl>
@@ -189,8 +189,8 @@ promise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fn</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – Function to run in the remote global.</p></li>
-<li><p><strong>args</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Any()</span></code></span>) – Arguments to pass to the function</p></li>
+<li><p><strong>fn</strong> (<em>function</em>) – Function to run in the remote global.</p></li>
+<li><p><strong>args</strong> (<em>Any</em>) – Arguments to pass to the function</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -231,7 +231,7 @@ side.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>msg</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Any()</span></code></span>) – The message to send.</p></li>
+<li><p><strong>msg</strong> (<em>Any</em>) – The message to send.</p></li>
 </ul>
 </dd>
 </dl>
@@ -265,14 +265,14 @@ this <code class="docutils literal notranslate"><span class="pre">RemoteObject</
 object in this realm.</p>
 </dd></dl>
 
-<dl class="js function">
+<dl class="js staticfunction">
 <dt class="sig sig-object js" id="RemoteObject.from">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">RemoteObject</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">from</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RemoteObject.from" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">RemoteObject</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">from</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#RemoteObject.from" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a RemoteObject containing a handle to reference obj</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>obj</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Any()</span></code></span>) – The object to reference.</p></li>
+<li><p><strong>obj</strong> (<em>Any</em>) – The object to reference.</p></li>
 </ul>
 </dd>
 </dl>
@@ -345,8 +345,8 @@ messages over a channel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>type</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Message type.</p></li>
-<li><p><strong>fn</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – Callback function. This is called with an event-like object, with <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">data</span></code> properties.</p></li>
+<li><p><strong>type</strong> (<em>string</em>) – Message type.</p></li>
+<li><p><strong>fn</strong> (<em>function</em>) – Callback function. This is called with an event-like object, with <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">data</span></code> properties.</p></li>
 </ul>
 </dd>
 </dl>
@@ -365,7 +365,7 @@ messages over a channel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>onmessage</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – Event handler function for the underlying websocket message.</p></li>
+<li><p><strong>onmessage</strong> (<em>function</em>) – Event handler function for the underlying websocket message.</p></li>
 </ul>
 </dd>
 </dl>
@@ -378,8 +378,8 @@ messages over a channel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>type</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Event type.</p></li>
-<li><p><strong>fn</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – Callback function to remove.</p></li>
+<li><p><strong>type</strong> (<em>string</em>) – Event type.</p></li>
+<li><p><strong>fn</strong> (<em>function</em>) – Callback function to remove.</p></li>
 </ul>
 </dd>
 </dl>
@@ -418,7 +418,7 @@ any, on the server side.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>msg</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">Object()</span></code></span>) – The message object to send.</p></li>
+<li><p><strong>msg</strong> (<em>Object</em>) – The message object to send.</p></li>
 </ul>
 </dd>
 </dl>

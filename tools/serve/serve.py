@@ -315,6 +315,19 @@ class WindowHandler(HtmlWrapperHandler):
 """
 
 
+class WindowModulesHandler(HtmlWrapperHandler):
+    path_replace = [(".any.window-module.html", ".any.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+%(script)s
+<div id=log></div>
+<script src="%(path)s" type="module"></script>
+"""
+
+
 class AnyHtmlHandler(HtmlWrapperHandler):
     global_type = "window"
     path_replace = [(".any.html", ".any.js")]
@@ -561,6 +574,7 @@ class RoutesBuilder:
             ("GET", "*.worker-module.html", WorkerModulesHandler),
             ("GET", "*.window.html", WindowHandler),
             ("GET", "*.any.html", AnyHtmlHandler),
+            ("GET", "*.any.window-module.html", WindowModulesHandler),
             ("GET", "*.any.sharedworker.html", SharedWorkersHandler),
             ("GET", "*.any.sharedworker-module.html", SharedWorkerModulesHandler),
             ("GET", "*.any.serviceworker.html", ServiceWorkersHandler),

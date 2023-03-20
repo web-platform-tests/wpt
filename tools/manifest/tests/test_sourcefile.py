@@ -358,6 +358,7 @@ test()"""
 
 @pytest.mark.parametrize("input,expected", [
     (b"window", {"window"}),
+    (b"window-module", {"window-module"}),
     (b"sharedworker", {"sharedworker"}),
     (b"sharedworker,serviceworker", {"serviceworker", "sharedworker"}),
     (b"worker", {"dedicatedworker", "serviceworker", "sharedworker"}),
@@ -386,6 +387,7 @@ test()""" % input
         "serviceworker": "/html/test.any.serviceworker.html",
         "sharedworker": "/html/test.any.sharedworker.html",
         "window": "/html/test.any.html",
+        "window-module": "/html/test.any.window-module.html"
     }
 
     expected_urls = sorted(urls[ty] for ty in expected)

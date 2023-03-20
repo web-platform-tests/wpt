@@ -36,7 +36,7 @@
     "expected": true
   }
 ].forEach(({ url, base, expected }) => {
-  test(t => {
+  test(() => {
     assert_equals(URL.canParse(url, base), expected);
   }, `URL.canParse(${url}, ${base})`);
 });

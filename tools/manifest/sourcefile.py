@@ -861,10 +861,10 @@ class SourceFile:
 
         if self.name_is_non_test:
             rv: Tuple[str, List[ManifestItem]] = ("support", [
-                 SupportFile(
-                     self.tests_root,
-                     self.rel_path
-                 )])
+                SupportFile(
+                    self.tests_root,
+                    self.rel_path
+                )])
 
         elif self.name_is_manual:
             rv = ManualTest.item_type, [

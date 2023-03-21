@@ -82,7 +82,8 @@ class GitHasher:
 
 
 class FileSystem:
-    def __init__(self, tests_root: str, url_base: str, cache_path: Optional[str], manifest_path: Optional[str] = None, rebuild: bool = False) -> None:
+    def __init__(self, tests_root: str, url_base: str, cache_path: Optional[str], manifest_path: Optional[str] = None,
+                 rebuild: bool = False) -> None:
         self.tests_root = tests_root
         self.url_base = url_base
         self.ignore_cache = None

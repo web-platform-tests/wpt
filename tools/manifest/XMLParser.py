@@ -11,7 +11,6 @@ if MYPY:
     from typing import Dict
     from typing import List
     from typing import Optional
-    from typing import Text
     from typing import Union
 
 _catalog = join(dirname(__file__), "catalog")
@@ -23,9 +22,9 @@ def _wrap_error(e):
     err.position = e.lineno, e.offset
     raise err
 
-_names = {}  # type: Dict[Text, Text]
+_names = {}  # type: Dict[str, str]
 def _fixname(key):
-    # type: (Text) -> Text
+    # type: (str) -> str
     try:
         name = _names[key]
     except KeyError:
@@ -49,7 +48,7 @@ class XMLParser:
     Python does, rather than just those supported by expat.
     """
     def __init__(self, encoding=None):
-        # type: (Optional[Text]) -> None
+        # type: (Optional[str]) -> None
         self._parser = expat.ParserCreate(encoding, "}")
         self._target = etree.TreeBuilder()
         # parser settings
@@ -65,33 +64,33 @@ class XMLParser:
         self._parser.SkippedEntityHandler = self._skipped  # type: ignore
         # used for our horrible re-encoding hack
         self._fed_data = []  # type: Optional[List[bytes]]
-        self._read_encoding = None  # type: Optional[Text]
+        self._read_encoding = None  # type: Optional[str]
 
     def _xml_decl(self, version, encoding, standalone):
-        # type: (Text, Optional[Text], int) -> None
+        # type: (str, Optional[str], int) -> None
         self._read_encoding = encoding
 
     def _start(self, tag, attrib_in):
-        # type: (Text, List[str]) -> etree.Element
+        # type: (str, List[str]) -> etree.Element
         assert isinstance(tag, str)
         self._fed_data = None
         tag = _fixname(tag)
-        attrib = OrderedDict()  # type: Dict[Union[bytes, Text], Union[bytes, Text]]
+        attrib = OrderedDict()  # type: Dict[Union[bytes, str], Union[bytes, str]]
         if attrib_in:
             for i in range(0, len(attrib_in), 2):
                 attrib[_fixname(attrib_in[i])] = attrib_in[i+1]
         return self._target.start(tag, attrib)
 
     def _data(self, text):
-        # type: (Text) -> None
+        # type: (str) -> None
         self._target.data(text)
 
     def _end(self, tag):
-        # type: (Text) -> etree.Element
+        # type: (str) -> etree.Element
         return self._target.end(_fixname(tag))
 
     def _external(self, context, base, system_id, public_id):
-        # type: (Text, Optional[Text], Optional[Text], Optional[Text]) -> bool
+        # type: (str, Optional[str], Optional[str], Optional[str]) -> bool
         if public_id in {
                 "-//W3C//DTD XHTML 1.0 Transitional//EN",
                 "-//W3C//DTD XHTML 1.1//EN",
@@ -113,7 +112,7 @@ class XMLParser:
         return True
 
     def _skipped(self, name, is_parameter_entity):
-        # type: (Text, bool) -> None
+        # type: (str, bool) -> None
         err = expat.error("undefined entity %s: line %d, column %d" %
                           (name, self._parser.ErrorLineNumber,
                            self._parser.ErrorColumnNumber))

@@ -5,7 +5,7 @@ import json
 MYPY = False
 if MYPY:
     # MYPY is set to True when run under Mypy.
-    from typing import Any, AnyStr, Callable, Dict, IO, Text
+    from typing import Any, AnyStr, Callable, Dict, IO
 
 
 __all__ = ["load", "dump_local", "dump_local", "dump_dist", "dumps_dist"]
@@ -79,12 +79,12 @@ else:
 
 if has_ujson:
     def dumps_local(obj):
-        # type: (Any) -> Text
+        # type: (Any) -> str
         return ujson.dumps(obj, **_ujson_dump_local_kwargs)
 
 else:
     def dumps_local(obj):
-        # type: (Any) -> Text
+        # type: (Any) -> str
         return json.dumps(obj, **_json_dump_local_kwargs)
 
 
@@ -127,7 +127,7 @@ if has_ujson:
         fp.write(_ujson_fixup(ujson.dumps(obj, **_ujson_dump_dist_kwargs)))
 
     def dumps_dist(obj):
-        # type: (Any) -> Text
+        # type: (Any) -> str
         return _ujson_fixup(ujson.dumps(obj, **_ujson_dump_dist_kwargs))
 else:
     def dump_dist(obj, fp):
@@ -135,5 +135,5 @@ else:
         json.dump(obj, fp, **_json_dump_dist_kwargs)
 
     def dumps_dist(obj):
-        # type: (Any) -> Text
+        # type: (Any) -> str
         return json.dumps(obj, **_json_dump_dist_kwargs)

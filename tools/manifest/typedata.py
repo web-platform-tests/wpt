@@ -10,7 +10,6 @@ if MYPY:
     from typing import List
     from typing import Optional
     from typing import Set
-    from typing import Text
     from typing import Tuple
     from typing import Type
     from typing import Union
@@ -43,13 +42,13 @@ class TypeData(TypeDataType):
         over the class."""
         self._manifest = m
         self._type_cls = type_cls  # type: Type[item.ManifestItem]
-        self._json_data = {}  # type: Dict[Text, Any]
-        self._data = {}  # type: Dict[Text, Any]
-        self._hashes = {}  # type: Dict[Tuple[Text, ...], Text]
+        self._json_data = {}  # type: Dict[str, Any]
+        self._data = {}  # type: Dict[str, Any]
+        self._hashes = {}  # type: Dict[Tuple[str, ...], str]
         self.hashes = PathHash(self)
 
     def _delete_node(self, data, key):
-        # type: (Dict[Text, Any], Tuple[Text, ...]) -> None
+        # type: (Dict[str, Any], Tuple[str, ...]) -> None
         """delete a path from a Dict data with a given key"""
         path = []
         node = data
@@ -68,8 +67,8 @@ class TypeData(TypeDataType):
                 break
 
     def __getitem__(self, key):
-        # type: (Tuple[Text, ...]) -> Set[item.ManifestItem]
-        node = self._data  # type: Union[Dict[Text, Any], Set[item.ManifestItem], List[Any]]
+        # type: (Tuple[str, ...]) -> Set[item.ManifestItem]
+        node = self._data  # type: Union[Dict[str, Any], Set[item.ManifestItem], List[Any]]
         for pathseg in key:
             if isinstance(node, dict) and pathseg in node:
                 node = node[pathseg]
@@ -118,7 +117,7 @@ class TypeData(TypeDataType):
         return data
 
     def __setitem__(self, key, value):
-        # type: (Tuple[Text, ...], Set[item.ManifestItem]) -> None
+        # type: (Tuple[str, ...], Set[item.ManifestItem]) -> None
         try:
             self._delete_node(self._json_data, key)
         except KeyError:
@@ -132,7 +131,7 @@ class TypeData(TypeDataType):
         node[key[-1]] = value
 
     def __delitem__(self, key):
-        # type: (Tuple[Text, ...]) -> None
+        # type: (Tuple[str, ...]) -> None
         try:
             self._delete_node(self._data, key)
         except KeyError:
@@ -144,11 +143,11 @@ class TypeData(TypeDataType):
                 pass
 
     def __iter__(self):
-        # type: () -> Iterator[Tuple[Text, ...]]
+        # type: () -> Iterator[Tuple[str, ...]]
         """Iterator over keys in the TypeData in codepoint order"""
-        data_node = self._data  # type: Optional[Union[Dict[Text, Any], Set[item.ManifestItem]]]
-        json_node = self._json_data  # type: Optional[Union[Dict[Text, Any], List[Any]]]
-        path = tuple()  # type: Tuple[Text, ...]
+        data_node = self._data  # type: Optional[Union[Dict[str, Any], Set[item.ManifestItem]]]
+        json_node = self._json_data  # type: Optional[Union[Dict[str, Any], List[Any]]]
+        path = tuple()  # type: Tuple[str, ...]
         stack = [(data_node, json_node, path)]
         while stack:
             data_node, json_node, path = stack.pop()
@@ -159,7 +158,7 @@ class TypeData(TypeDataType):
                 assert data_node is None or isinstance(data_node, dict)
                 assert json_node is None or isinstance(json_node, dict)
 
-                keys = set()  # type: Set[Text]
+                keys = set()  # type: Set[str]
                 if data_node is not None:
                     keys |= set(iter(data_node))
                 if json_node is not None:
@@ -174,7 +173,7 @@ class TypeData(TypeDataType):
         # type: () -> int
         count = 0
 
-        stack = [self._data]  # type: List[Union[Dict[Text, Any], Set[item.ManifestItem]]]
+        stack = [self._data]  # type: List[Union[Dict[str, Any], Set[item.ManifestItem]]]
         while stack:
             v = stack.pop()
             if isinstance(v, set):
@@ -182,7 +181,7 @@ class TypeData(TypeDataType):
             else:
                 stack.extend(v.values())
 
-        json_stack = [self._json_data]  # type: List[Union[Dict[Text, Any], List[Any]]]
+        json_stack = [self._json_data]  # type: List[Union[Dict[str, Any], List[Any]]]
         while json_stack:
             json_v = json_stack.pop()
             if isinstance(json_v, list):
@@ -230,7 +229,7 @@ class TypeData(TypeDataType):
         self._hashes.clear()
 
     def set_json(self, json_data):
-        # type: (Dict[Text, Any]) -> None
+        # type: (Dict[str, Any]) -> None
         """Provide the object with a raw JSON blob
 
         Note that this object graph is assumed to be owned by the TypeData
@@ -243,7 +242,7 @@ class TypeData(TypeDataType):
         self._json_data = json_data
 
     def to_json(self):
-        # type: () -> Dict[Text, Any]
+        # type: () -> Dict[str, Any]
         """Convert the current data to JSON
 
         Note that the returned object may contain references to the internal
@@ -262,7 +261,7 @@ class TypeData(TypeDataType):
             else:
                 return element
 
-        stack = [(self._data, json_rv, tuple())]  # type: List[Tuple[Dict[Text, Any], Dict[Text, Any], Tuple[Text, ...]]]
+        stack = [(self._data, json_rv, tuple())]  # type: List[Tuple[Dict[str, Any], Dict[str, Any], Tuple[str, ...]]]
         while stack:
             data_node, json_node, par_full_key = stack.pop()
             for k, v in data_node.items():
@@ -284,7 +283,7 @@ class PathHash(PathHashType):
         self._data = data
 
     def __getitem__(self, k):
-        # type: (Tuple[Text, ...]) -> Text
+        # type: (Tuple[str, ...]) -> str
         if k not in self._data:
             raise KeyError
 
@@ -304,7 +303,7 @@ class PathHash(PathHashType):
         raise KeyError
 
     def __setitem__(self, k, v):
-        # type: (Tuple[Text, ...], Text) -> None
+        # type: (Tuple[str, ...], str) -> None
         if k not in self._data:
             raise KeyError
 
@@ -324,11 +323,11 @@ class PathHash(PathHashType):
         self._data._hashes[k] = v
 
     def __delitem__(self, k):
-        # type: (Tuple[Text, ...]) -> None
+        # type: (Tuple[str, ...]) -> None
         raise ValueError("keys here must match underlying data")
 
     def __iter__(self):
-        # type: () -> Iterator[Tuple[Text, ...]]
+        # type: () -> Iterator[Tuple[str, ...]]
         return iter(self._data)
 
     def __len__(self):

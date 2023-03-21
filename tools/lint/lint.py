@@ -35,7 +35,6 @@ if MYPY:
     from typing import Optional
     from typing import Sequence
     from typing import Set
-    from typing import Text
     from typing import Tuple
     from typing import Type
     from typing import TypeVar
@@ -99,7 +98,7 @@ you could add the following line to the lint.ignore file.
 
 
 def all_filesystem_paths(repo_root, subdir=None):
-    # type: (Text, Optional[Text]) -> Iterable[Text]
+    # type: (str, Optional[str]) -> Iterable[str]
     path_filter = PathFilter(repo_root.encode("utf8"),
                              extras=[b".git/"])
     if subdir:
@@ -117,7 +116,7 @@ def all_filesystem_paths(repo_root, subdir=None):
 
 
 def _all_files_equal(paths):
-    # type: (Iterable[Text]) -> bool
+    # type: (Iterable[str]) -> bool
     """
     Checks all the paths are files that are byte-for-byte identical
 
@@ -156,21 +155,21 @@ def _all_files_equal(paths):
 
 
 def check_path_length(repo_root, path):
-    # type: (Text, Text) -> List[rules.Error]
+    # type: (str, str) -> List[rules.Error]
     if len(path) + 1 > 150:
         return [rules.PathLength.error(path, (path, len(path) + 1))]
     return []
 
 
 def check_file_type(repo_root, path):
-    # type: (Text, Text) -> List[rules.Error]
+    # type: (str, str) -> List[rules.Error]
     if os.path.islink(path):
         return [rules.FileType.error(path, (path, "symlink"))]
     return []
 
 
 def check_worker_collision(repo_root, path):
-    # type: (Text, Text) -> List[rules.Error]
+    # type: (str, str) -> List[rules.Error]
     endings = [(".any.html", ".any.js"),
                (".any.worker.html", ".any.js"),
                (".worker.html", ".worker.js")]
@@ -181,7 +180,7 @@ def check_worker_collision(repo_root, path):
 
 
 def check_gitignore_file(repo_root, path):
-    # type: (Text, Text) -> List[rules.Error]
+    # type: (str, str) -> List[rules.Error]
     if not path.endswith(".gitignore"):
         return []
 
@@ -201,14 +200,14 @@ def check_gitignore_file(repo_root, path):
 
 
 def check_mojom_js(repo_root, path):
-    # type: (Text, Text) -> List[rules.Error]
+    # type: (str, str) -> List[rules.Error]
     if path.endswith(".mojom.js"):
         return [rules.MojomJSFile.error(path)]
     return []
 
 
 def check_ahem_copy(repo_root, path):
-    # type: (Text, Text) -> List[rules.Error]
+    # type: (str, str) -> List[rules.Error]
     lpath = path.lower()
     if "ahem" in lpath and lpath.endswith(".ttf"):
         return [rules.AhemCopy.error(path)]
@@ -216,7 +215,7 @@ def check_ahem_copy(repo_root, path):
 
 
 def check_tentative_directories(repo_root, path):
-    # type: (Text, Text) -> List[rules.Error]
+    # type: (str, str) -> List[rules.Error]
     path_parts = path.split(os.path.sep)
     for directory in path_parts[:-1]:
         if "tentative" in directory and directory != "tentative":
@@ -225,7 +224,7 @@ def check_tentative_directories(repo_root, path):
 
 
 def check_git_ignore(repo_root, paths):
-    # type: (Text, List[Text]) -> List[rules.Error]
+    # type: (str, List[str]) -> List[rules.Error]
     errors = []
 
     with tempfile.TemporaryFile('w+', newline='') as f:
@@ -255,7 +254,7 @@ w3c_dev_re = re.compile(r"https?\:\/\/dev\.w3c?\.org\/[^/?#]+\/([^/?#]+)")
 
 
 def check_css_globally_unique(repo_root, paths):
-    # type: (Text, List[Text]) -> List[rules.Error]
+    # type: (str, List[str]) -> List[rules.Error]
     """
     Checks that CSS filenames are sufficiently unique
 
@@ -273,9 +272,9 @@ def check_css_globally_unique(repo_root, paths):
     :returns: a list of errors found in ``paths``
 
     """
-    test_files = defaultdict(set)  # type: Dict[Text, Set[Text]]
-    ref_files = defaultdict(set)  # type: Dict[Text, Set[Text]]
-    support_files = defaultdict(set)  # type: Dict[Text, Set[Text]]
+    test_files = defaultdict(set)  # type: Dict[str, Set[str]]
+    ref_files = defaultdict(set)  # type: Dict[str, Set[str]]
+    support_files = defaultdict(set)  # type: Dict[str, Set[str]]
 
     for path in paths:
         if os.name == "nt":
@@ -304,7 +303,7 @@ def check_css_globally_unique(repo_root, paths):
         elif source_file.name_is_reference:
             ref_files[source_file.name].add(path)
         else:
-            test_name = source_file.name  # type: Text
+            test_name = source_file.name  # type: str
             test_name = test_name.replace('-manual', '')
             test_files[test_name].add(path)
 
@@ -314,7 +313,7 @@ def check_css_globally_unique(repo_root, paths):
         if len(colliding) > 1:
             if not _all_files_equal([os.path.join(repo_root, x) for x in colliding]):
                 # Only compute by_spec if there are prima-facie collisions because of cost
-                by_spec = defaultdict(set)  # type: Dict[Text, Set[Text]]
+                by_spec = defaultdict(set)  # type: Dict[str, Set[str]]
                 for path in colliding:
                     source_file = SourceFile(repo_root, path, "/")
                     for link in source_file.spec_links:
@@ -348,7 +347,7 @@ def check_css_globally_unique(repo_root, paths):
 
 
 def check_unique_testharness_basenames(repo_root, paths):
-    # type: (Text, List[Text]) -> List[rules.Error]
+    # type: (str, List[str]) -> List[rules.Error]
     """
     Checks that all testharness files have unique basename paths.
 
@@ -383,8 +382,8 @@ def check_unique_testharness_basenames(repo_root, paths):
 
 
 def check_unique_case_insensitive_paths(repo_root, paths):
-    # type: (Text, List[Text]) -> List[rules.Error]
-    seen = {}  # type: Dict[Text, Text]
+    # type: (str, List[str]) -> List[rules.Error]
+    seen = {}  # type: Dict[str, str]
     errors = []
     for path in paths:
         lower_path = path.lower()
@@ -397,7 +396,7 @@ def check_unique_case_insensitive_paths(repo_root, paths):
 
 
 def parse_ignorelist(f):
-    # type: (IO[Text]) -> Tuple[Ignorelist, Set[Text]]
+    # type: (IO[str]) -> Tuple[Ignorelist, Set[str]]
     """
     Parse the ignorelist file given by `f`, and return the parsed structure.
 
@@ -406,7 +405,7 @@ def parse_ignorelist(f):
     """
 
     data = defaultdict(lambda:defaultdict(set))  # type: Ignorelist
-    skipped_files = set()  # type: Set[Text]
+    skipped_files = set()  # type: Set[str]
 
     for line in f:
         line = line.strip()
@@ -478,7 +477,7 @@ regexps = [item() for item in  # type: ignore
 
 
 def check_regexp_line(repo_root, path, f):
-    # type: (Text, Text, IO[bytes]) -> List[rules.Error]
+    # type: (str, str, IO[bytes]) -> List[rules.Error]
     errors = []  # type: List[rules.Error]
 
     applicable_regexps = [regexp for regexp in regexps if regexp.applies(path)]
@@ -492,7 +491,7 @@ def check_regexp_line(repo_root, path, f):
 
 
 def check_parsed(repo_root, path, f):
-    # type: (Text, Text, IO[bytes]) -> List[rules.Error]
+    # type: (str, str, IO[bytes]) -> List[rules.Error]
     source_file = SourceFile(repo_root, path, "/", contents=f.read())
 
     errors = []  # type: List[rules.Error]
@@ -561,7 +560,7 @@ def check_parsed(repo_root, path, f):
         if timeout_value != "long":
             errors.append(rules.InvalidTimeout.error(path, (timeout_value,)))
 
-    required_elements = []  # type: List[Text]
+    required_elements = []  # type: List[str]
 
     testharnessreport_nodes = []  # type: List[ElementTree.Element]
     if source_file.testharness_nodes:
@@ -642,7 +641,7 @@ def check_parsed(repo_root, path, f):
         src = element.attrib["src"]
 
         def incorrect_path(script, src):
-            # type: (Text, Text) -> bool
+            # type: (str, str) -> bool
             return (script == src or
                 ("/%s" % script in src and src != "/resources/%s" % script))
 
@@ -698,7 +697,7 @@ class OpenModeCheck(ASTCheck):
 ast_checkers = [item() for item in [OpenModeCheck]]
 
 def check_python_ast(repo_root, path, f):
-    # type: (Text, Text, IO[bytes]) -> List[rules.Error]
+    # type: (str, str, IO[bytes]) -> List[rules.Error]
     if not path.endswith(".py"):
         return []
 
@@ -729,7 +728,7 @@ def check_global_metadata(value):
 
 
 def check_script_metadata(repo_root, path, f):
-    # type: (Text, Text, IO[bytes]) -> List[rules.Error]
+    # type: (str, str, IO[bytes]) -> List[rules.Error]
     if path.endswith((".worker.js", ".any.js")):
         meta_re = js_meta_re
         broken_metadata = broken_js_metadata
@@ -780,7 +779,7 @@ ahem_stylesheet_re = re.compile(br"\/fonts\/ahem\.css|support\/ahem.css",
 
 
 def check_ahem_system_font(repo_root, path, f):
-    # type: (Text, Text, IO[bytes]) -> List[rules.Error]
+    # type: (str, str, IO[bytes]) -> List[rules.Error]
     if not path.endswith((".html", ".htm", ".xht", ".xhtml")):
         return []
     contents = f.read()
@@ -791,7 +790,7 @@ def check_ahem_system_font(repo_root, path, f):
 
 
 def check_path(repo_root, path):
-    # type: (Text, Text) -> List[rules.Error]
+    # type: (str, str) -> List[rules.Error]
     """
     Runs lints that check the file path.
 
@@ -807,7 +806,7 @@ def check_path(repo_root, path):
 
 
 def check_all_paths(repo_root, paths):
-    # type: (Text, List[Text]) -> List[rules.Error]
+    # type: (str, List[str]) -> List[rules.Error]
     """
     Runs lints that check all paths globally.
 
@@ -823,7 +822,7 @@ def check_all_paths(repo_root, paths):
 
 
 def check_file_contents(repo_root, path, f=None):
-    # type: (Text, Text, Optional[IO[bytes]]) -> List[rules.Error]
+    # type: (str, str, Optional[IO[bytes]]) -> List[rules.Error]
     """
     Runs lints that check the file contents.
 
@@ -843,7 +842,7 @@ def check_file_contents(repo_root, path, f=None):
 
 
 def check_file_contents_apply(args):
-    # type: (Tuple[Text, Text]) -> List[rules.Error]
+    # type: (Tuple[str, str]) -> List[rules.Error]
     return check_file_contents(*args)
 
 
@@ -903,7 +902,7 @@ def output_errors_github_checks(outputter, errors, first_reported):
 
 
 def output_error_count(error_count):
-    # type: (Dict[Text, int]) -> None
+    # type: (Dict[str, int]) -> None
     if not error_count:
         return
 
@@ -918,14 +917,14 @@ def output_error_count(error_count):
 
 
 def changed_files(wpt_root):
-    # type: (Text) -> List[Text]
+    # type: (str) -> List[str]
     revish = testfiles.get_revish(revish=None)
     changed, _ = testfiles.files_changed(revish, None, include_uncommitted=True, include_new=True)
     return [os.path.relpath(item, wpt_root) for item in changed]
 
 
 def lint_paths(kwargs, wpt_root):
-    # type: (Dict[Text, Any], Text) -> List[Text]
+    # type: (Dict[str, Any], str) -> List[str]
     if kwargs.get("paths"):
         paths = []
         for path in kwargs.get("paths", []):
@@ -1019,8 +1018,8 @@ MIN_FILES_FOR_PARALLEL = 80
 
 
 def lint(repo_root, paths, output_format, ignore_glob=None, github_checks_outputter=None, jobs=0):
-    # type: (Text, List[Text], Text, Optional[List[Text]], Optional[GitHubChecksOutputter], int) -> int
-    error_count = defaultdict(int)  # type: Dict[Text, int]
+    # type: (str, List[str], str, Optional[List[str]], Optional[GitHubChecksOutputter], int) -> int
+    error_count = defaultdict(int)  # type: Dict[str, int]
     last = None
 
     if jobs == 0:
@@ -1042,7 +1041,7 @@ def lint(repo_root, paths, output_format, ignore_glob=None, github_checks_output
                      "normal": output_errors_text}[output_format]
 
     def process_errors(errors):
-        # type: (List[rules.Error]) -> Optional[Tuple[Text, Text]]
+        # type: (List[rules.Error]) -> Optional[Tuple[str, str]]
         """
         Filters and prints the errors, and updates the ``error_count`` object.
 

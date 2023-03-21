@@ -23,7 +23,6 @@ if MYPY:
     from typing import Callable
     from typing import List
     from typing import Optional
-    from typing import Text
 
 here = os.path.dirname(__file__)
 
@@ -32,12 +31,12 @@ logger = log.get_logger()
 
 
 def abs_path(path):
-    # type: (Text) -> Text
+    # type: (str) -> str
     return os.path.abspath(os.path.expanduser(path))
 
 
 def should_download(manifest_path, rebuild_time=timedelta(days=5)):
-    # type: (Text, timedelta) -> bool
+    # type: (str, timedelta) -> bool
     if not os.path.exists(manifest_path):
         return True
     mtime = datetime.fromtimestamp(os.path.getmtime(manifest_path))
@@ -48,9 +47,9 @@ def should_download(manifest_path, rebuild_time=timedelta(days=5)):
 
 
 def merge_pr_tags(repo_root, max_count=50):
-    # type: (Text, int) -> List[Text]
+    # type: (str, int) -> List[str]
     gitfunc = git(repo_root)
-    tags = []  # type: List[Text]
+    tags = []  # type: List[str]
     if gitfunc is None:
         return tags
     for line in gitfunc("log", "--format=%D", "--max-count=%s" % max_count).split("\n"):
@@ -61,7 +60,7 @@ def merge_pr_tags(repo_root, max_count=50):
 
 
 def score_name(name):
-    # type: (Text) -> Optional[int]
+    # type: (str) -> Optional[int]
     """Score how much we like each filename, lower wins, None rejects"""
 
     # Accept both ways of naming the manifest asset, even though
@@ -77,7 +76,7 @@ def score_name(name):
 
 
 def github_url(tags):
-    # type: (List[Text]) -> Optional[List[Text]]
+    # type: (List[str]) -> Optional[List[str]]
     for tag in tags:
         url = "https://api.github.com/repos/web-platform-tests/wpt/releases/tags/%s" % tag
         try:
@@ -108,9 +107,9 @@ def github_url(tags):
 
 
 def download_manifest(
-        manifest_path,  # type: Text
-        tags_func,  # type: Callable[[], List[Text]]
-        url_func,  # type: Callable[[List[Text]], Optional[List[Text]]]
+        manifest_path,  # type: str
+        tags_func,  # type: Callable[[], List[str]]
+        url_func,  # type: Callable[[List[str]], Optional[List[str]]]
         force=False  # type: bool
 ):
     # type: (...) -> bool
@@ -192,7 +191,7 @@ def create_parser():
 
 
 def download_from_github(path, tests_root, force=False):
-    # type: (Text, Text, bool) -> bool
+    # type: (str, str, bool) -> bool
     return download_manifest(path, lambda: merge_pr_tags(tests_root), github_url,
                              force=force)
 

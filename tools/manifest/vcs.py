@@ -15,7 +15,7 @@ from gitignore import gitignore  # type: ignore
 MYPY = False
 if MYPY:
     # MYPY is set to True when run under Mypy.
-    from typing import Dict, Optional, List, Set, Text, Iterable, Any, Tuple, Iterator
+    from typing import Dict, Optional, List, Set, Iterable, Any, Tuple, Iterator
     from .manifest import Manifest  # cyclic import under MYPY guard
     stat_result = os.stat_result
 
@@ -26,7 +26,7 @@ else:
 
 def get_tree(tests_root, manifest, manifest_path, cache_root,
              working_copy=True, rebuild=False):
-    # type: (Text, Manifest, Optional[Text], Optional[Text], bool, bool) -> FileSystem
+    # type: (str, Manifest, Optional[str], Optional[str], bool, bool) -> FileSystem
     tree = None
     if cache_root is None:
         cache_root = os.path.join(tests_root, ".wptcache")
@@ -50,11 +50,11 @@ def get_tree(tests_root, manifest, manifest_path, cache_root,
 
 class GitHasher:
     def __init__(self, path):
-        # type: (Text) -> None
+        # type: (str) -> None
         self.git = git(path)
 
     def _local_changes(self):
-        # type: () -> Set[Text]
+        # type: () -> Set[str]
         """get a set of files which have changed between HEAD and working copy"""
         assert self.git is not None
         # note that git runs the command with tests_root as the cwd, which may
@@ -64,11 +64,11 @@ class GitHasher:
         return set(data.split("\0"))
 
     def hash_cache(self):
-        # type: () -> Dict[Text, Optional[Text]]
+        # type: () -> Dict[str, Optional[str]]
         """
         A dict of rel_path -> current git object id if the working tree matches HEAD else None
         """
-        hash_cache = {}  # type: Dict[Text, Optional[Text]]
+        hash_cache = {}  # type: Dict[str, Optional[str]]
 
         if self.git is None:
             return hash_cache
@@ -77,7 +77,7 @@ class GitHasher:
         # not be the root of the git repo (e.g., within a browser repo)
         cmd = ["ls-tree", "-r", "-z", "HEAD"]
         local_changes = self._local_changes()
-        for result in self.git(*cmd).split("\0")[:-1]:  # type: Text
+        for result in self.git(*cmd).split("\0")[:-1]:  # type: str
             data, rel_path = result.rsplit("\t", 1)
             hash_cache[rel_path] = None if rel_path in local_changes else data.split(" ", 3)[2]
 
@@ -87,7 +87,7 @@ class GitHasher:
 
 class FileSystem:
     def __init__(self, tests_root, url_base, cache_path, manifest_path=None, rebuild=False):
-        # type: (Text, Text, Optional[Text], Optional[Text], bool) -> None
+        # type: (str, str, Optional[str], Optional[str], bool) -> None
         self.tests_root = tests_root
         self.url_base = url_base
         self.ignore_cache = None
@@ -105,7 +105,7 @@ class FileSystem:
         self.hash_cache = git.hash_cache()
 
     def __iter__(self):
-        # type: () -> Iterator[Tuple[Text, Optional[Text], bool]]
+        # type: () -> Iterator[Tuple[str, Optional[str], bool]]
         mtime_cache = self.mtime_cache
         for dirpath, dirnames, filenames in self.path_filter(
                 walk(self.tests_root.encode("utf8"))):
@@ -126,7 +126,7 @@ class FileSystem:
 
 class CacheFile(metaclass=abc.ABCMeta):
     def __init__(self, cache_root, tests_root, rebuild=False):
-        # type: (Text, Text, bool) -> None
+        # type: (str, str, bool) -> None
         self.tests_root = tests_root
         if not os.path.exists(cache_root):
             os.makedirs(cache_root)
@@ -136,7 +136,7 @@ class CacheFile(metaclass=abc.ABCMeta):
 
     @abc.abstractproperty
     def file_name(self):
-        # type: () -> Text
+        # type: () -> str
         pass
 
     def dump(self):
@@ -147,8 +147,8 @@ class CacheFile(metaclass=abc.ABCMeta):
             jsonlib.dump_local(self.data, f)
 
     def load(self, rebuild=False):
-        # type: (bool) -> Dict[Text, Any]
-        data = {}  # type: Dict[Text, Any]
+        # type: (bool) -> Dict[str, Any]
+        data = {}  # type: Dict[str, Any]
         try:
             if not rebuild:
                 with open(self.path) as f:
@@ -162,7 +162,7 @@ class CacheFile(metaclass=abc.ABCMeta):
         return data
 
     def check_valid(self, data):
-        # type: (Dict[Text, Any]) -> Dict[Text, Any]
+        # type: (Dict[str, Any]) -> Dict[str, Any]
         """Check if the cached data is valid and return an updated copy of the
         cache containing only data that can be used."""
         return data
@@ -172,12 +172,12 @@ class MtimeCache(CacheFile):
     file_name = "mtime.json"
 
     def __init__(self, cache_root, tests_root, manifest_path, rebuild=False):
-        # type: (Text, Text, Text, bool) -> None
+        # type: (str, str, str, bool) -> None
         self.manifest_path = manifest_path
         super().__init__(cache_root, tests_root, rebuild)
 
     def updated(self, rel_path, stat):
-        # type: (Text, stat_result) -> bool
+        # type: (str, stat_result) -> bool
         """Return a boolean indicating whether the file changed since the cache was last updated.
 
         This implicitly updates the cache with the new mtime data."""

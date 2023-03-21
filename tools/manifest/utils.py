@@ -5,7 +5,6 @@ import sys
 MYPY = False
 if MYPY:
     # MYPY is set to True when run under Mypy.
-    from typing import Text
     from typing import Callable
     from typing import Any
     from typing import Generic
@@ -20,7 +19,7 @@ else:
 
 
 def rel_path_to_url(rel_path, url_base="/"):
-    # type: (Text, Text) -> Text
+    # type: (str, str) -> str
     assert not os.path.isabs(rel_path), rel_path
     if url_base[0] != "/":
         url_base = "/" + url_base
@@ -30,7 +29,7 @@ def rel_path_to_url(rel_path, url_base="/"):
 
 
 def from_os_path(path):
-    # type: (Text) -> Text
+    # type: (str) -> str
     assert os.path.sep == "/" or sys.platform == "win32"
     if "/" == os.path.sep:
         rv = path
@@ -42,7 +41,7 @@ def from_os_path(path):
 
 
 def to_os_path(path):
-    # type: (Text) -> Text
+    # type: (str) -> str
     assert os.path.sep == "/" or sys.platform == "win32"
     if "\\" in path:
         raise ValueError("normalised path contains \\")
@@ -52,9 +51,9 @@ def to_os_path(path):
 
 
 def git(path):
-    # type: (Text) -> Optional[Callable[..., Text]]
+    # type: (str) -> Optional[Callable[..., str]]
     def gitfunc(cmd, *args):
-        # type: (Text, *Text) -> Text
+        # type: (str, *str) -> str
         full_cmd = ["git", cmd] + list(args)
         try:
             return subprocess.check_output(full_cmd, cwd=path, stderr=subprocess.STDOUT).decode('utf8')

@@ -13,7 +13,6 @@ if MYPY:
     from typing import Dict
     from typing import Iterable
     from typing import List
-    from typing import Text
 
 wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
@@ -56,9 +55,9 @@ def create_parser():
 
 
 def get_path_id_map(src_root, tests_root, manifest_file, test_ids):
-    # type: (Text, Text, Manifest, Iterable[Text]) -> Dict[Text, List[Text]]
+    # type: (str, str, Manifest, Iterable[str]) -> Dict[str, List[str]]
     test_ids = set(test_ids)
-    path_id_map = defaultdict(list)  # type: Dict[Text, List[Text]]
+    path_id_map = defaultdict(list)  # type: Dict[str, List[str]]
 
     compute_rel_path = src_root != tests_root
 
@@ -75,7 +74,7 @@ def get_path_id_map(src_root, tests_root, manifest_file, test_ids):
 
 
 def get_paths(**kwargs):
-    # type: (**Any) -> Dict[Text, List[Text]]
+    # type: (**Any) -> Dict[str, List[str]]
     tests_root = kwargs["tests_root"]
     assert tests_root is not None
     path = kwargs["path"]
@@ -96,7 +95,7 @@ def get_paths(**kwargs):
 
 
 def write_output(path_id_map, as_json):
-    # type: (Dict[Text, List[Text]], bool) -> None
+    # type: (Dict[str, List[str]], bool) -> None
     if as_json:
         print(json.dumps(path_id_map))
     else:

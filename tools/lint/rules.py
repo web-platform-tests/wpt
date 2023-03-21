@@ -6,31 +6,31 @@ import re
 MYPY = False
 if MYPY:
     # MYPY is set to True when run under Mypy.
-    from typing import Any, List, Match, Optional, Pattern, Text, Tuple, cast
+    from typing import Any, List, Match, Optional, Pattern, Tuple, cast
     Error = Tuple[str, str, str, Optional[int]]
 
 
 def collapse(text):
-    # type: (Text) -> Text
+    # type: (str) -> str
     return inspect.cleandoc(str(text)).replace("\n", " ")
 
 
 class Rule(metaclass=abc.ABCMeta):
     @abc.abstractproperty
     def name(self):
-        # type: () -> Text
+        # type: () -> str
         pass
 
     @abc.abstractproperty
     def description(self):
-        # type: () -> Text
+        # type: () -> str
         pass
 
-    to_fix = None  # type: Optional[Text]
+    to_fix = None  # type: Optional[str]
 
     @classmethod
     def error(cls, path, context=(), line_no=None):
-        # type: (Text, Tuple[Any, ...], Optional[int]) -> Error
+        # type: (str, Tuple[Any, ...], Optional[int]) -> Error
         if MYPY:
             name = cast(str, cls.name)
             description = cast(str, cls.description)
@@ -379,22 +379,22 @@ class Regexp(metaclass=abc.ABCMeta):
 
     @abc.abstractproperty
     def name(self):
-        # type: () -> Text
+        # type: () -> str
         pass
 
     @abc.abstractproperty
     def description(self):
-        # type: () -> Text
+        # type: () -> str
         pass
 
-    file_extensions = None  # type: Optional[List[Text]]
+    file_extensions = None  # type: Optional[List[str]]
 
     def __init__(self):
         # type: () -> None
         self._re = re.compile(self.pattern)  # type: Pattern[bytes]
 
     def applies(self, path):
-        # type: (Text) -> bool
+        # type: (str) -> bool
         return (self.file_extensions is None or
                 os.path.splitext(path)[1] in self.file_extensions)
 

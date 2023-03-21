@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os.path
 from inspect import isabstract
 from urllib.parse import urljoin, urlparse, parse_qs

@@ -12,10 +12,10 @@
 <body>
 
 <!-- no label -->
-<nav role="region" data-expectedrole="navigation" class="ex">x</form>
+<nav role="region" data-testname="region without label" data-expectedrole="navigation" class="ex">x</nav>
 
 <!-- w/ label -->
-<nav role="region" data-expectedrole="region" aria-label="x" class="ex">x</nav>
+<nav role="region" data-testname="region with label" data-expectedrole="region" aria-label="x" class="ex">x</nav>
 
 <script>
 AriaUtils.verifyRolesBySelector(".ex");

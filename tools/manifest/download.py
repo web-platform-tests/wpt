@@ -30,13 +30,11 @@ wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 logger = log.get_logger()
 
 
-def abs_path(path):
-    # type: (str) -> str
+def abs_path(path: str) -> str:
     return os.path.abspath(os.path.expanduser(path))
 
 
-def should_download(manifest_path, rebuild_time=timedelta(days=5)):
-    # type: (str, timedelta) -> bool
+def should_download(manifest_path: str, rebuild_time: timedelta = timedelta(days=5)) -> bool:
     if not os.path.exists(manifest_path):
         return True
     mtime = datetime.fromtimestamp(os.path.getmtime(manifest_path))
@@ -46,10 +44,9 @@ def should_download(manifest_path, rebuild_time=timedelta(days=5)):
     return False
 
 
-def merge_pr_tags(repo_root, max_count=50):
-    # type: (str, int) -> List[str]
+def merge_pr_tags(repo_root: str, max_count: int = 50) -> List[str]:
     gitfunc = git(repo_root)
-    tags = []  # type: List[str]
+    tags: List[str] = []
     if gitfunc is None:
         return tags
     for line in gitfunc("log", "--format=%D", "--max-count=%s" % max_count).split("\n"):
@@ -59,8 +56,7 @@ def merge_pr_tags(repo_root, max_count=50):
     return tags
 
 
-def score_name(name):
-    # type: (str) -> Optional[int]
+def score_name(name: str) -> Optional[int]:
     """Score how much we like each filename, lower wins, None rejects"""
 
     # Accept both ways of naming the manifest asset, even though
@@ -75,8 +71,7 @@ def score_name(name):
     return None
 
 
-def github_url(tags):
-    # type: (List[str]) -> Optional[List[str]]
+def github_url(tags: List[str]) -> Optional[List[str]]:
     for tag in tags:
         url = "https://api.github.com/repos/web-platform-tests/wpt/releases/tags/%s" % tag
         try:
@@ -107,12 +102,11 @@ def github_url(tags):
 
 
 def download_manifest(
-        manifest_path,  # type: str
-        tags_func,  # type: Callable[[], List[str]]
-        url_func,  # type: Callable[[List[str]], Optional[List[str]]]
-        force=False  # type: bool
-):
-    # type: (...) -> bool
+        manifest_path: str,
+        tags_func: Callable[[], List[str]],
+        url_func: Callable[[List[str]], Optional[List[str]]],
+        force: bool = False
+) -> bool:
     if not force and not should_download(manifest_path):
         return False
 
@@ -177,8 +171,7 @@ def download_manifest(
     return True
 
 
-def create_parser():
-    # type: () -> argparse.ArgumentParser
+def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-p", "--path", type=abs_path, help="Path to manifest file.")
@@ -190,14 +183,12 @@ def create_parser():
     return parser
 
 
-def download_from_github(path, tests_root, force=False):
-    # type: (str, str, bool) -> bool
+def download_from_github(path: str, tests_root: str, force: bool = False) -> bool:
     return download_manifest(path, lambda: merge_pr_tags(tests_root), github_url,
                              force=force)
 
 
-def run(**kwargs):
-    # type: (**Any) -> int
+def run(**kwargs: Any) -> int:
     if kwargs["path"] is None:
         path = os.path.join(kwargs["tests_root"], "MANIFEST.json")
     else:

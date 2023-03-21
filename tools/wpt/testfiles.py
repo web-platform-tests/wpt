@@ -42,13 +42,11 @@ wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 logger = logging.getLogger()
 
 
-def display_branch_point():
-    # type: () -> None
+def display_branch_point() -> None:
     print(branch_point())
 
 
-def branch_point():
-    # type: () -> Optional[str]
+def branch_point() -> Optional[str]:
     git = get_git_cmd(wpt_root)
     if git is None:
         raise Exception("git not found")
@@ -61,7 +59,7 @@ def branch_point():
         # This is a PR, so the base branch is in GITHUB_BRANCH
         base_branch = os.environ.get("GITHUB_BRANCH")
         assert base_branch, "GITHUB_BRANCH environment variable is defined"
-        branch_point = git("merge-base", "HEAD", base_branch)  # type: Optional[str]
+        branch_point: Optional[str] = git("merge-base", "HEAD", base_branch)
     else:
         # Otherwise we aren't on a PR, so we try to find commits that are only in the
         # current branch c.f.
@@ -86,7 +84,7 @@ def branch_point():
                                                 cmd,
                                                 commits_bytes)
 
-        commit_parents = OrderedDict()  # type: Dict[str, List[str]]
+        commit_parents: Dict[str, List[str]] = OrderedDict()
         commits = commits_bytes.decode("ascii")
         if commits:
             for line in commits.split("\n"):
@@ -132,8 +130,7 @@ def branch_point():
     return branch_point
 
 
-def compile_ignore_rule(rule):
-    # type: (str) -> Pattern[str]
+def compile_ignore_rule(rule: str) -> Pattern[str]:
     rule = rule.replace(os.path.sep, "/")
     parts = rule.split("/")
     re_parts = []
@@ -147,8 +144,7 @@ def compile_ignore_rule(rule):
     return re.compile("^%s$" % "/".join(re_parts))
 
 
-def repo_files_changed(revish, include_uncommitted=False, include_new=False):
-    # type: (str, bool, bool) -> Set[str]
+def repo_files_changed(revish: str, include_uncommitted: bool = False, include_new: bool = False) -> Set[str]:
     git = get_git_cmd(wpt_root)
     if git is None:
         raise Exception("git not found")
@@ -185,8 +181,7 @@ def repo_files_changed(revish, include_uncommitted=False, include_new=False):
     return files
 
 
-def exclude_ignored(files, ignore_rules):
-    # type: (Iterable[str], Optional[Sequence[str]]) -> Tuple[List[str], List[str]]
+def exclude_ignored(files: Iterable[str], ignore_rules: Optional[Sequence[str]]) -> Tuple[List[str], List[str]]:
     if ignore_rules is None:
         ignore_rules = DEFAULT_IGNORE_RULES
     compiled_ignore_rules = [compile_ignore_rule(item) for item in set(ignore_rules)]
@@ -206,12 +201,11 @@ def exclude_ignored(files, ignore_rules):
     return changed, ignored
 
 
-def files_changed(revish,  # type: str
-                  ignore_rules=None,  # type: Optional[Sequence[str]]
-                  include_uncommitted=False,  # type: bool
-                  include_new=False  # type: bool
-                  ):
-    # type: (...) -> Tuple[List[str], List[str]]
+def files_changed(revish: str,
+                  ignore_rules: Optional[Sequence[str]] = None,
+                  include_uncommitted: bool = False,
+                  include_new: bool = False
+                  ) -> Tuple[List[str], List[str]]:
     """Find files changed in certain revisions.
 
     The function passes `revish` directly to `git diff`, so `revish` can have a
@@ -227,27 +221,24 @@ def files_changed(revish,  # type: str
     return exclude_ignored(files, ignore_rules)
 
 
-def _in_repo_root(full_path):
-    # type: (str) -> bool
+def _in_repo_root(full_path: str) -> bool:
     rel_path = os.path.relpath(full_path, wpt_root)
     path_components = rel_path.split(os.sep)
     return len(path_components) < 2
 
 
-def load_manifest(manifest_path=None, manifest_update=True):
-    # type: (Optional[str], bool) -> manifest.Manifest
+def load_manifest(manifest_path: Optional[str] = None, manifest_update: bool = True) -> manifest.Manifest:
     if manifest_path is None:
         manifest_path = os.path.join(wpt_root, "MANIFEST.json")
     return manifest.load_and_update(wpt_root, manifest_path, "/",
                                     update=manifest_update)
 
 
-def affected_testfiles(files_changed,  # type: Iterable[str]
-                       skip_dirs=None,  # type: Optional[Set[str]]
-                       manifest_path=None,  # type: Optional[str]
-                       manifest_update=True  # type: bool
-                       ):
-    # type: (...) -> Tuple[Set[str], Set[str]]
+def affected_testfiles(files_changed: Iterable[str],
+                       skip_dirs: Optional[Set[str]] = None,
+                       manifest_path: Optional[str] = None,
+                       manifest_update: bool = True
+                       ) -> Tuple[Set[str], Set[str]]:
     """Determine and return list of test files that reference changed files."""
     if skip_dirs is None:
         skip_dirs = {"conformance-checkers", "docs", "tools"}
@@ -276,7 +267,7 @@ def affected_testfiles(files_changed,  # type: Iterable[str]
     tests_changed = {item for item in files_changed if item in test_files}
 
     nontest_changed_paths = set()
-    rewrites = {"/resources/webidl2/lib/webidl2.js": "/resources/WebIDLParser.js"}  # type: Dict[str, str]
+    rewrites: Dict[str, str] = {"/resources/webidl2/lib/webidl2.js": "/resources/WebIDLParser.js"}
     for full_path in nontests_changed:
         rel_path = os.path.relpath(full_path, wpt_root)
         path_components = rel_path.split(os.sep)
@@ -292,8 +283,7 @@ def affected_testfiles(files_changed,  # type: Iterable[str]
     interfaces_changed_names = [os.path.splitext(os.path.basename(interface))[0]
                                 for interface in interfaces_changed]
 
-    def affected_by_wdspec(test):
-        # type: (str) -> bool
+    def affected_by_wdspec(test: str) -> bool:
         affected = False
         if test in wdspec_test_files:
             for support_full_path, _ in nontest_changed_paths:
@@ -308,8 +298,7 @@ def affected_testfiles(files_changed,  # type: Iterable[str]
                     break
         return affected
 
-    def affected_by_interfaces(file_contents):
-        # type: (str) -> bool
+    def affected_by_interfaces(file_contents: str) -> bool:
         if len(interfaces_changed_names) > 0:
             if 'idlharness.js' in file_contents:
                 for interface in interfaces_changed_names:
@@ -334,9 +323,9 @@ def affected_testfiles(files_changed,  # type: Iterable[str]
                 continue
 
             with open(test_full_path, "rb") as fh:
-                raw_file_contents = fh.read()  # type: bytes
+                raw_file_contents: bytes = fh.read()
                 if raw_file_contents.startswith(b"\xfe\xff"):
-                    file_contents = raw_file_contents.decode("utf-16be", "replace")  # type: str
+                    file_contents: str = raw_file_contents.decode("utf-16be", "replace")
                 elif raw_file_contents.startswith(b"\xff\xfe"):
                     file_contents = raw_file_contents.decode("utf-16le", "replace")
                 else:
@@ -350,8 +339,7 @@ def affected_testfiles(files_changed,  # type: Iterable[str]
     return tests_changed, affected_testfiles
 
 
-def get_parser():
-    # type: () -> argparse.ArgumentParser
+def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("revish", default=None, help="Commits to consider. Defaults to the "
                         "commits on the current branch", nargs="?")
@@ -374,8 +362,7 @@ def get_parser():
     return parser
 
 
-def get_parser_affected():
-    # type: () -> argparse.ArgumentParser
+def get_parser_affected() -> argparse.ArgumentParser:
     parser = get_parser()
     parser.add_argument("--metadata",
                         dest="metadata_root",
@@ -385,16 +372,14 @@ def get_parser_affected():
     return parser
 
 
-def get_revish(**kwargs):
-    # type: (**Any) -> str
+def get_revish(**kwargs: Any) -> str:
     revish = kwargs.get("revish")
     if revish is None:
         revish = "%s..HEAD" % branch_point()
     return revish.strip()
 
 
-def run_changed_files(**kwargs):
-    # type: (**Any) -> None
+def run_changed_files(**kwargs: Any) -> None:
     revish = get_revish(**kwargs)
     changed, _ = files_changed(revish,
                                kwargs["ignore_rule"],
@@ -408,8 +393,7 @@ def run_changed_files(**kwargs):
         sys.stdout.write(line)
 
 
-def run_tests_affected(**kwargs):
-    # type: (**Any) -> None
+def run_tests_affected(**kwargs: Any) -> None:
     revish = get_revish(**kwargs)
     changed, _ = files_changed(revish,
                                kwargs["ignore_rule"],

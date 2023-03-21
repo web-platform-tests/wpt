@@ -13,7 +13,7 @@ if MYPY:
     Fuzzy = Dict[Optional[Tuple[str, str, str]], List[int]]
     PageRanges = Dict[str, List[int]]
 
-item_types = {}  # type: Dict[str, Type[ManifestItem]]
+item_types: Dict[str, Type[ManifestItem]] = {}
 
 
 class ManifestItemMeta(ABCMeta):
@@ -21,8 +21,7 @@ class ManifestItemMeta(ABCMeta):
     item_types dictionary according to the value of their item_type
     attribute, and otherwise behaves like an ABCMeta."""
 
-    def __new__(cls, name, bases, attrs):
-        # type: (Type[ManifestItemMeta], str, Tuple[type], Dict[str, Any]) -> ManifestItemMeta
+    def __new__(cls: Type[ManifestItemMeta], name: str, bases: Tuple[type], attrs: Dict[str, Any]) -> ManifestItemMeta:
         inst = super().__new__(cls, name, bases, attrs)
         if isabstract(inst):
             return inst
@@ -44,58 +43,48 @@ class ManifestItemMeta(ABCMeta):
 class ManifestItem(metaclass=ManifestItemMeta):
     __slots__ = ("_tests_root", "path")
 
-    def __init__(self, tests_root, path):
-        # type: (str, str) -> None
+    def __init__(self, tests_root: str, path: str) -> None:
         self._tests_root = tests_root
         self.path = path
 
     @abstractproperty
-    def id(self):
-        # type: () -> str
+    def id(self) -> str:
         """The test's id (usually its url)"""
         pass
 
     @abstractproperty
-    def item_type(self):
-        # type: () -> str
+    def item_type(self) -> str:
         """The item's type"""
         pass
 
     @property
-    def path_parts(self):
-        # type: () -> Tuple[str, ...]
+    def path_parts(self) -> Tuple[str, ...]:
         return tuple(self.path.split(os.path.sep))
 
-    def key(self):
-        # type: () -> Hashable
+    def key(self) -> Hashable:
         """A unique identifier for the test"""
         return (self.item_type, self.id)
 
-    def __eq__(self, other):
-        # type: (Any) -> bool
+    def __eq__(self, other: Any) -> bool:
         if not hasattr(other, "key"):
             return False
         return bool(self.key() == other.key())
 
-    def __hash__(self):
-        # type: () -> int
+    def __hash__(self) -> int:
         return hash(self.key())
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return f"<{self.__module__}.{self.__class__.__name__} id={self.id!r}, path={self.path!r}>"
 
-    def to_json(self):
-        # type: () -> Tuple[Any, ...]
+    def to_json(self) -> Tuple[Any, ...]:
         return ()
 
     @classmethod
     def from_json(cls,
-                  manifest,  # type: Manifest
-                  path,  # type: str
-                  obj  # type: Any
-                  ):
-        # type: (...) -> ManifestItem
+                  manifest: Manifest,
+                  path: str,
+                  obj: Any
+                  ) -> ManifestItem:
         path = to_os_path(path)
         tests_root = manifest.tests_root
         assert tests_root is not None
@@ -106,13 +95,12 @@ class URLManifestItem(ManifestItem):
     __slots__ = ("url_base", "_url", "_extras", "_flags")
 
     def __init__(self,
-                 tests_root,  # type: str
-                 path,  # type: str
-                 url_base,  # type: str
-                 url,  # type: Optional[str]
-                 **extras  # type: Any
-                 ):
-        # type: (...) -> None
+                 tests_root: str,
+                 path: str,
+                 url_base: str,
+                 url: Optional[str],
+                 **extras: Any
+                 ) -> None:
         super().__init__(tests_root, path)
         assert url_base[0] == "/"
         self.url_base = url_base
@@ -124,13 +112,11 @@ class URLManifestItem(ManifestItem):
                        set(parse_qs(parsed_url.query).get("wpt_flags", [])))
 
     @property
-    def id(self):
-        # type: () -> str
+    def id(self) -> str:
         return self.url
 
     @property
-    def url(self):
-        # type: () -> str
+    def url(self) -> str:
         rel_url = self._url or self.path.replace(os.path.sep, "/")
         # we can outperform urljoin, because we know we just have path relative URLs
         if self.url_base == "/":
@@ -138,35 +124,30 @@ class URLManifestItem(ManifestItem):
         return urljoin(self.url_base, rel_url)
 
     @property
-    def https(self):
-        # type: () -> bool
+    def https(self) -> bool:
         return "https" in self._flags or "serviceworker" in self._flags or "serviceworker-module" in self._flags
 
     @property
-    def h2(self):
-        # type: () -> bool
+    def h2(self) -> bool:
         return "h2" in self._flags
 
     @property
-    def subdomain(self):
-        # type: () -> bool
+    def subdomain(self) -> bool:
         # Note: this is currently hard-coded to check for `www`, rather than
         # all possible valid subdomains. It can be extended if needed.
         return "www" in self._flags
 
-    def to_json(self):
-        # type: () -> Tuple[Optional[str], Dict[Any, Any]]
+    def to_json(self) -> Tuple[Optional[str], Dict[Any, Any]]:
         rel_url = None if self._url == self.path.replace(os.path.sep, "/") else self._url
-        rv = (rel_url, {})  # type: Tuple[Optional[str], Dict[Any, Any]]
+        rv: Tuple[Optional[str], Dict[Any, Any]] = (rel_url, {})
         return rv
 
     @classmethod
     def from_json(cls,
-                  manifest,  # type: Manifest
-                  path,  # type: str
-                  obj  # type: Tuple[str, Dict[Any, Any]]
-                  ):
-        # type: (...) -> URLManifestItem
+                  manifest: Manifest,
+                  path: str,
+                  obj: Tuple[str, Dict[Any, Any]]
+                  ) -> URLManifestItem:
         path = to_os_path(path)
         url, extras = obj
         tests_root = manifest.tests_root
@@ -184,32 +165,26 @@ class TestharnessTest(URLManifestItem):
     item_type = "testharness"
 
     @property
-    def timeout(self):
-        # type: () -> Optional[str]
+    def timeout(self) -> Optional[str]:
         return self._extras.get("timeout")
 
     @property
-    def pac(self):
-        # type: () -> Optional[str]
+    def pac(self) -> Optional[str]:
         return self._extras.get("pac")
 
     @property
-    def testdriver(self):
-        # type: () -> Optional[str]
+    def testdriver(self) -> Optional[str]:
         return self._extras.get("testdriver")
 
     @property
-    def jsshell(self):
-        # type: () -> Optional[str]
+    def jsshell(self) -> Optional[str]:
         return self._extras.get("jsshell")
 
     @property
-    def script_metadata(self):
-        # type: () -> Optional[List[Tuple[str, str]]]
+    def script_metadata(self) -> Optional[List[Tuple[str, str]]]:
         return self._extras.get("script_metadata")
 
-    def to_json(self):
-        # type: () -> Tuple[Optional[str], Dict[str, Any]]
+    def to_json(self) -> Tuple[Optional[str], Dict[str, Any]]:
         rv = super().to_json()
         if self.timeout is not None:
             rv[-1]["timeout"] = self.timeout
@@ -230,45 +205,41 @@ class RefTest(URLManifestItem):
     item_type = "reftest"
 
     def __init__(self,
-                 tests_root,  # type: str
-                 path,  # type: str
-                 url_base,  # type: str
-                 url,  # type: Optional[str]
-                 references=None,  # type: Optional[List[Tuple[str, str]]]
-                 **extras  # type: Any
+                 tests_root: str,
+                 path: str,
+                 url_base: str,
+                 url: Optional[str],
+                 references: Optional[List[Tuple[str, str]]] = None,
+                 **extras: Any
                  ):
         super().__init__(tests_root, path, url_base, url, **extras)
         if references is None:
-            self.references = []  # type: List[Tuple[str, str]]
+            self.references: List[Tuple[str, str]] = []
         else:
             self.references = references
 
     @property
-    def timeout(self):
-        # type: () -> Optional[str]
+    def timeout(self) -> Optional[str]:
         return self._extras.get("timeout")
 
     @property
-    def viewport_size(self):
-        # type: () -> Optional[str]
+    def viewport_size(self) -> Optional[str]:
         return self._extras.get("viewport_size")
 
     @property
-    def dpi(self):
-        # type: () -> Optional[str]
+    def dpi(self) -> Optional[str]:
         return self._extras.get("dpi")
 
     @property
-    def fuzzy(self):
-        # type: () -> Fuzzy
-        fuzzy = self._extras.get("fuzzy", {})  # type: Union[Fuzzy, List[Tuple[Optional[Sequence[str]], List[int]]]]
+    def fuzzy(self) -> Fuzzy:
+        fuzzy: Union[Fuzzy, List[Tuple[Optional[Sequence[str]], List[int]]]] = self._extras.get("fuzzy", {})
         if not isinstance(fuzzy, list):
             return fuzzy
 
-        rv = {}  # type: Fuzzy
+        rv: Fuzzy = {}
         for k, v in fuzzy:  # type: Tuple[Optional[Sequence[str]], List[int]]
             if k is None:
-                key = None  # type: Optional[Tuple[str, str, str]]
+                key: Optional[Tuple[str, str, str]] = None
             else:
                 # mypy types this as Tuple[str, ...]
                 assert len(k) == 3
@@ -276,10 +247,9 @@ class RefTest(URLManifestItem):
             rv[key] = v
         return rv
 
-    def to_json(self):  # type: ignore
-        # type: () -> Tuple[Optional[str], List[Tuple[str, str]], Dict[str, Any]]
+    def to_json(self) -> Tuple[Optional[str], List[Tuple[str, str]], Dict[str, Any]]:  # type: ignore
         rel_url = None if self._url == self.path else self._url
-        rv = (rel_url, self.references, {})  # type: Tuple[Optional[str], List[Tuple[str, str]], Dict[str, Any]]
+        rv: Tuple[Optional[str], List[Tuple[str, str]], Dict[str, Any]] = (rel_url, self.references, {})
         extras = rv[-1]
         if self.timeout is not None:
             extras["timeout"] = self.timeout
@@ -293,11 +263,10 @@ class RefTest(URLManifestItem):
 
     @classmethod
     def from_json(cls,  # type: ignore
-                  manifest,  # type: Manifest
-                  path,  # type: str
-                  obj  # type: Tuple[str, List[Tuple[str, str]], Dict[Any, Any]]
-                  ):
-        # type: (...) -> RefTest
+                  manifest: Manifest,
+                  path: str,
+                  obj: Tuple[str, List[Tuple[str, str]], Dict[Any, Any]]
+                  ) -> RefTest:
         tests_root = manifest.tests_root
         assert tests_root is not None
         path = to_os_path(path)
@@ -316,8 +285,7 @@ class PrintRefTest(RefTest):
     item_type = "print-reftest"
 
     @property
-    def page_ranges(self):
-        # type: () -> PageRanges
+    def page_ranges(self) -> PageRanges:
         return self._extras.get("page_ranges", {})
 
     def to_json(self):  # type: ignore
@@ -351,8 +319,7 @@ class CrashTest(URLManifestItem):
     item_type = "crashtest"
 
     @property
-    def timeout(self):
-        # type: () -> Optional[str]
+    def timeout(self) -> Optional[str]:
         return None
 
 
@@ -362,12 +329,10 @@ class WebDriverSpecTest(URLManifestItem):
     item_type = "wdspec"
 
     @property
-    def timeout(self):
-        # type: () -> Optional[str]
+    def timeout(self) -> Optional[str]:
         return self._extras.get("timeout")
 
-    def to_json(self):
-        # type: () -> Tuple[Optional[str], Dict[str, Any]]
+    def to_json(self) -> Tuple[Optional[str], Dict[str, Any]]:
         rv = super().to_json()
         if self.timeout is not None:
             rv[-1]["timeout"] = self.timeout
@@ -380,6 +345,5 @@ class SupportFile(ManifestItem):
     item_type = "support"
 
     @property
-    def id(self):
-        # type: () -> str
+    def id(self) -> str:
         return self.path

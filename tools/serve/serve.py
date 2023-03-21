@@ -97,7 +97,7 @@ class WrapperHandler:
 
     __meta__ = abc.ABCMeta
 
-    headers = []  # type: ClassVar[List[Tuple[str, str]]]
+    headers: ClassVar[List[Tuple[str, str]]] = []
 
     def __init__(self, base_path=None, url_base="/"):
         self.base_path = base_path
@@ -214,7 +214,7 @@ class WrapperHandler:
 
 
 class HtmlWrapperHandler(WrapperHandler):
-    global_type = None  # type: ClassVar[str]
+    global_type: ClassVar[str] = None
     headers = [('Content-Type', 'text/html')]
 
     def check_exposure(self, request):

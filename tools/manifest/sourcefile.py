@@ -45,11 +45,10 @@ python_meta_re = re.compile(br"#\s*META:\s*(\w*)=(.*)$")
 
 reference_file_re = re.compile(r'(^|[\-_])(not)?ref[0-9]*([\-_]|$)')
 
-space_chars = "".join(html5lib.constants.spaceCharacters)  # type: str
+space_chars: str = "".join(html5lib.constants.spaceCharacters)
 
 
-def replace_end(s, old, new):
-    # type: (str, str, str) -> str
+def replace_end(s: str, old: str, new: str) -> str:
     """
     Given a string `s` that ends with `old`, replace that occurrence of `old`
     with `new`.
@@ -58,8 +57,7 @@ def replace_end(s, old, new):
     return s[:-len(old)] + new
 
 
-def read_script_metadata(f, regexp):
-    # type: (BinaryIO, Pattern[bytes]) -> Iterable[Tuple[str, str]]
+def read_script_metadata(f: BinaryIO, regexp: Pattern[bytes]) -> Iterable[Tuple[str, str]]:
     """
     Yields any metadata (pairs of strings) from the file-like object `f`,
     as specified according to a supplied regexp.
@@ -76,7 +74,7 @@ def read_script_metadata(f, regexp):
         yield (m.groups()[0].decode("utf8"), m.groups()[1].decode("utf8"))
 
 
-_any_variants = {
+_any_variants: Dict[str, Dict[str, Any]] = {
     "window": {"suffix": ".any.html"},
     "serviceworker": {"force_https": True},
     "serviceworker-module": {"force_https": True},
@@ -88,11 +86,10 @@ _any_variants = {
     "worker-module": {},
     "shadowrealm": {},
     "jsshell": {"suffix": ".any.js"},
-}  # type: Dict[str, Dict[str, Any]]
+}
 
 
-def get_any_variants(item):
-    # type: (str) -> Set[str]
+def get_any_variants(item: str) -> Set[str]:
     """
     Returns a set of variants (strings) defined by the given keyword.
     """
@@ -105,16 +102,14 @@ def get_any_variants(item):
     return variant.get("longhand", {item})
 
 
-def get_default_any_variants():
-    # type: () -> Set[str]
+def get_default_any_variants() -> Set[str]:
     """
     Returns a set of variants (strings) that will be used by default.
     """
     return set({"window", "dedicatedworker"})
 
 
-def parse_variants(value):
-    # type: (str) -> Set[str]
+def parse_variants(value: str) -> Set[str]:
     """
     Returns a set of variants (strings) defined by a comma-separated value.
     """
@@ -130,8 +125,7 @@ def parse_variants(value):
     return globals
 
 
-def global_suffixes(value):
-    # type: (str) -> Set[Tuple[str, bool]]
+def global_suffixes(value: str) -> Set[Tuple[str, bool]]:
     """
     Yields tuples of the relevant filename suffix (a string) and whether the
     variant is intended to run in a JS shell, for the variants defined by the
@@ -150,8 +144,7 @@ def global_suffixes(value):
     return rv
 
 
-def global_variant_url(url, suffix):
-    # type: (str, str) -> str
+def global_variant_url(url: str, suffix: str) -> str:
     """
     Returns a url created from the given url and suffix (all strings).
     """
@@ -165,8 +158,7 @@ def global_variant_url(url, suffix):
     return replace_end(url, ".js", suffix)
 
 
-def _parse_html(f):
-    # type: (BinaryIO) -> ElementTree.Element
+def _parse_html(f: BinaryIO) -> ElementTree.Element:
     doc = html5lib.parse(f, treebuilder="etree", useChardet=False)
     if MYPY:
         return cast(ElementTree.Element, doc)
@@ -174,8 +166,7 @@ def _parse_html(f):
         # (needs to be in else for mypy to believe this is reachable)
         return doc
 
-def _parse_xml(f):
-    # type: (BinaryIO) -> ElementTree.Element
+def _parse_xml(f: BinaryIO) -> ElementTree.Element:
     try:
         # raises ValueError with an unsupported encoding,
         # ParseError when there's an undefined entity
@@ -186,9 +177,9 @@ def _parse_xml(f):
 
 
 class SourceFile:
-    parsers = {"html":_parse_html,
+    parsers: Dict[str, Callable[[BinaryIO], ElementTree.Element]] = {"html":_parse_html,
                "xhtml":_parse_xml,
-               "svg":_parse_xml}  # type: Dict[str, Callable[[BinaryIO], ElementTree.Element]]
+               "svg":_parse_xml}
 
     root_dir_non_test = {"common"}
 
@@ -196,12 +187,11 @@ class SourceFile:
                     "support",
                     "tools"}
 
-    dir_path_non_test = {("css21", "archive"),
+    dir_path_non_test: Set[Tuple[str, ...]] = {("css21", "archive"),
                          ("css", "CSS2", "archive"),
-                         ("css", "common")}  # type: Set[Tuple[str, ...]]
+                         ("css", "common")}
 
-    def __init__(self, tests_root, rel_path, url_base, hash=None, contents=None):
-        # type: (str, str, str, Optional[str], Optional[bytes]) -> None
+    def __init__(self, tests_root: str, rel_path: str, url_base: str, hash: Optional[str] = None, contents: Optional[bytes] = None) -> None:
         """Object representing a file in a source tree.
 
         :param tests_root: Path to the root of the source tree
@@ -224,21 +214,20 @@ class SourceFile:
 
         meta_flags = name.split(".")[1:]
 
-        self.tests_root = tests_root  # type: str
-        self.rel_path = rel_path  # type: str
-        self.dir_path = dir_path  # type: str
-        self.filename = filename  # type: str
-        self.name = name  # type: str
-        self.ext = ext  # type: str
-        self.type_flag = type_flag  # type: Optional[str]
-        self.meta_flags = meta_flags  # type: Union[List[bytes], List[str]]
+        self.tests_root: str = tests_root
+        self.rel_path: str = rel_path
+        self.dir_path: str = dir_path
+        self.filename: str = filename
+        self.name: str = name
+        self.ext: str = ext
+        self.type_flag: Optional[str] = type_flag
+        self.meta_flags: Union[List[bytes], List[str]] = meta_flags
         self.url_base = url_base
         self.contents = contents
-        self.items_cache = None  # type: Optional[Tuple[str, List[ManifestItem]]]
+        self.items_cache: Optional[Tuple[str, List[ManifestItem]]] = None
         self._hash = hash
 
-    def __getstate__(self):
-        # type: () -> Dict[str, Any]
+    def __getstate__(self) -> Dict[str, Any]:
         # Remove computed properties if we pickle this class
         rv = self.__dict__.copy()
 
@@ -248,58 +237,50 @@ class SourceFile:
             del rv["__cached_properties__"]
         return rv
 
-    def name_prefix(self, prefix):
-        # type: (str) -> bool
+    def name_prefix(self, prefix: str) -> bool:
         """Check if the filename starts with a given prefix
 
         :param prefix: The prefix to check"""
         return self.name.startswith(prefix)
 
-    def is_dir(self):
-        # type: () -> bool
+    def is_dir(self) -> bool:
         """Return whether this file represents a directory."""
         if self.contents is not None:
             return False
 
         return os.path.isdir(self.rel_path)
 
-    def open(self):
-        # type: () -> BinaryIO
+    def open(self) -> BinaryIO:
         """
         Return either
         * the contents specified in the constructor, if any;
         * a File object opened for reading the file contents.
         """
         if self.contents is not None:
-            file_obj = BytesIO(self.contents)  # type: BinaryIO
+            file_obj: BinaryIO = BytesIO(self.contents)
         else:
             file_obj = open(self.path, 'rb')
         return file_obj
 
     @cached_property
-    def rel_path_parts(self):
-        # type: () -> Tuple[str, ...]
+    def rel_path_parts(self) -> Tuple[str, ...]:
         return tuple(self.rel_path.split(os.path.sep))
 
     @cached_property
-    def path(self):
-        # type: () -> str
+    def path(self) -> str:
         return os.path.join(self.tests_root, self.rel_path)
 
     @cached_property
-    def rel_url(self):
-        # type: () -> str
+    def rel_url(self) -> str:
         assert not os.path.isabs(self.rel_path), self.rel_path
         return self.rel_path.replace(os.sep, "/")
 
     @cached_property
-    def url(self):
-        # type: () -> str
+    def url(self) -> str:
         return urljoin(self.url_base, self.rel_url)
 
     @cached_property
-    def hash(self):
-        # type: () -> str
+    def hash(self) -> str:
         if not self._hash:
             with self.open() as f:
                 content = f.read()
@@ -309,8 +290,7 @@ class SourceFile:
 
         return self._hash
 
-    def in_non_test_dir(self):
-        # type: () -> bool
+    def in_non_test_dir(self) -> bool:
         if self.dir_path == "":
             return True
 
@@ -322,13 +302,11 @@ class SourceFile:
             return True
         return False
 
-    def in_conformance_checker_dir(self):
-        # type: () -> bool
+    def in_conformance_checker_dir(self) -> bool:
         return self.rel_path_parts[0] == "conformance-checkers"
 
     @property
-    def name_is_non_test(self):
-        # type: () -> bool
+    def name_is_non_test(self) -> bool:
         """Check if the file name matches the conditions for the file to
         be a non-test file"""
         return (self.is_dir() or
@@ -340,54 +318,46 @@ class SourceFile:
                 self.in_non_test_dir())
 
     @property
-    def name_is_conformance(self):
-        # type: () -> bool
+    def name_is_conformance(self) -> bool:
         return (self.in_conformance_checker_dir() and
                 self.type_flag in ("is-valid", "no-valid"))
 
     @property
-    def name_is_conformance_support(self):
-        # type: () -> bool
+    def name_is_conformance_support(self) -> bool:
         return self.in_conformance_checker_dir()
 
     @property
-    def name_is_manual(self):
-        # type: () -> bool
+    def name_is_manual(self) -> bool:
         """Check if the file name matches the conditions for the file to
         be a manual test file"""
         return self.type_flag == "manual"
 
     @property
-    def name_is_visual(self):
-        # type: () -> bool
+    def name_is_visual(self) -> bool:
         """Check if the file name matches the conditions for the file to
         be a visual test file"""
         return self.type_flag == "visual"
 
     @property
-    def name_is_multi_global(self):
-        # type: () -> bool
+    def name_is_multi_global(self) -> bool:
         """Check if the file name matches the conditions for the file to
         be a multi-global js test file"""
         return "any" in self.meta_flags and self.ext == ".js"
 
     @property
-    def name_is_worker(self):
-        # type: () -> bool
+    def name_is_worker(self) -> bool:
         """Check if the file name matches the conditions for the file to
         be a worker js test file"""
         return "worker" in self.meta_flags and self.ext == ".js"
 
     @property
-    def name_is_window(self):
-        # type: () -> bool
+    def name_is_window(self) -> bool:
         """Check if the file name matches the conditions for the file to
         be a window js test file"""
         return "window" in self.meta_flags and self.ext == ".js"
 
     @property
-    def name_is_webdriver(self):
-        # type: () -> bool
+    def name_is_webdriver(self) -> bool:
         """Check if the file name matches the conditions for the file to
         be a webdriver spec test file"""
         # wdspec tests are in subdirectories of /webdriver excluding __init__.py
@@ -400,21 +370,18 @@ class SourceFile:
                 fnmatch(self.filename, wd_pattern))
 
     @property
-    def name_is_reference(self):
-        # type: () -> bool
+    def name_is_reference(self) -> bool:
         """Check if the file name matches the conditions for the file to
         be a reference file (not a reftest)"""
         return "/reference/" in self.url or bool(reference_file_re.search(self.name))
 
     @property
-    def name_is_crashtest(self):
-        # type: () -> bool
+    def name_is_crashtest(self) -> bool:
         return (self.markup_type is not None and
                 (self.type_flag == "crash" or "crashtests" in self.dir_path.split(os.path.sep)))
 
     @property
-    def name_is_tentative(self):
-        # type: () -> bool
+    def name_is_tentative(self) -> bool:
         """Check if the file name matches the conditions for the file to be a
         tentative file.
 
@@ -422,14 +389,12 @@ class SourceFile:
         return "tentative" in self.meta_flags or "tentative" in self.dir_path.split(os.path.sep)
 
     @property
-    def name_is_print_reftest(self):
-        # type: () -> bool
+    def name_is_print_reftest(self) -> bool:
         return (self.markup_type is not None and
                 (self.type_flag == "print" or "print" in self.dir_path.split(os.path.sep)))
 
     @property
-    def markup_type(self):
-        # type: () -> Optional[str]
+    def markup_type(self) -> Optional[str]:
         """Return the type of markup contained in a file, based on its extension,
         or None if it doesn't contain markup"""
         ext = self.ext
@@ -447,8 +412,7 @@ class SourceFile:
         return None
 
     @cached_property
-    def root(self):
-        # type: () -> Optional[ElementTree.Element]
+    def root(self) -> Optional[ElementTree.Element]:
         """Return an ElementTree Element for the root node of the file if it contains
         markup, or None if it does not"""
         if not self.markup_type:
@@ -465,24 +429,21 @@ class SourceFile:
         return tree
 
     @cached_property
-    def timeout_nodes(self):
-        # type: () -> List[ElementTree.Element]
+    def timeout_nodes(self) -> List[ElementTree.Element]:
         """List of ElementTree Elements corresponding to nodes in a test that
         specify timeouts"""
         assert self.root is not None
         return self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='timeout']")
 
     @cached_property
-    def pac_nodes(self):
-        # type: () -> List[ElementTree.Element]
+    def pac_nodes(self) -> List[ElementTree.Element]:
         """List of ElementTree Elements corresponding to nodes in a test that
         specify PAC (proxy auto-config)"""
         assert self.root is not None
         return self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='pac']")
 
     @cached_property
-    def script_metadata(self):
-        # type: () -> Optional[List[Tuple[str, str]]]
+    def script_metadata(self) -> Optional[List[Tuple[str, str]]]:
         if self.name_is_worker or self.name_is_multi_global or self.name_is_window:
             regexp = js_meta_re
         elif self.name_is_webdriver:
@@ -494,8 +455,7 @@ class SourceFile:
             return list(read_script_metadata(f, regexp))
 
     @cached_property
-    def timeout(self):
-        # type: () -> Optional[str]
+    def timeout(self) -> Optional[str]:
         """The timeout of a test or reference file. "long" if the file has an extended timeout
         or None otherwise"""
         if self.script_metadata:
@@ -506,15 +466,14 @@ class SourceFile:
             return None
 
         if self.timeout_nodes:
-            timeout_str = self.timeout_nodes[0].attrib.get("content", None)  # type: Optional[str]
+            timeout_str: Optional[str] = self.timeout_nodes[0].attrib.get("content", None)
             if timeout_str and timeout_str.lower() == "long":
                 return "long"
 
         return None
 
     @cached_property
-    def pac(self):
-        # type: () -> Optional[str]
+    def pac(self) -> Optional[str]:
         """The PAC (proxy config) of a test or reference file. A URL or null"""
         if self.script_metadata:
             for (meta, content) in self.script_metadata:
@@ -530,16 +489,14 @@ class SourceFile:
         return None
 
     @cached_property
-    def viewport_nodes(self):
-        # type: () -> List[ElementTree.Element]
+    def viewport_nodes(self) -> List[ElementTree.Element]:
         """List of ElementTree Elements corresponding to nodes in a test that
         specify viewport sizes"""
         assert self.root is not None
         return self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='viewport-size']")
 
     @cached_property
-    def viewport_size(self):
-        # type: () -> Optional[str]
+    def viewport_size(self) -> Optional[str]:
         """The viewport size of a test or reference file"""
         if self.root is None:
             return None
@@ -550,16 +507,14 @@ class SourceFile:
         return self.viewport_nodes[0].attrib.get("content", None)
 
     @cached_property
-    def dpi_nodes(self):
-        # type: () -> List[ElementTree.Element]
+    def dpi_nodes(self) -> List[ElementTree.Element]:
         """List of ElementTree Elements corresponding to nodes in a test that
         specify device pixel ratios"""
         assert self.root is not None
         return self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='device-pixel-ratio']")
 
     @cached_property
-    def dpi(self):
-        # type: () -> Optional[str]
+    def dpi(self) -> Optional[str]:
         """The device pixel ratio of a test or reference file"""
         if self.root is None:
             return None
@@ -569,13 +524,12 @@ class SourceFile:
 
         return self.dpi_nodes[0].attrib.get("content", None)
 
-    def parse_ref_keyed_meta(self, node):
-        # type: (ElementTree.Element) -> Tuple[Optional[Tuple[str, str, str]], str]
-        item = node.attrib.get("content", "")  # type: str
+    def parse_ref_keyed_meta(self, node: ElementTree.Element) -> Tuple[Optional[Tuple[str, str, str]], str]:
+        item: str = node.attrib.get("content", "")
 
         parts = item.rsplit(":", 1)
         if len(parts) == 1:
-            key = None  # type: Optional[Tuple[str, str, str]]
+            key: Optional[Tuple[str, str, str]] = None
             value = parts[0]
         else:
             key_part = urljoin(self.url, parts[0])
@@ -593,8 +547,7 @@ class SourceFile:
 
 
     @cached_property
-    def fuzzy_nodes(self):
-        # type: () -> List[ElementTree.Element]
+    def fuzzy_nodes(self) -> List[ElementTree.Element]:
         """List of ElementTree Elements corresponding to nodes in a test that
         specify reftest fuzziness"""
         assert self.root is not None
@@ -602,9 +555,8 @@ class SourceFile:
 
 
     @cached_property
-    def fuzzy(self):
-        # type: () -> Dict[Optional[Tuple[str, str, str]], List[List[int]]]
-        rv = {}  # type: Dict[Optional[Tuple[str, str, str]], List[List[int]]]
+    def fuzzy(self) -> Dict[Optional[Tuple[str, str, str]], List[List[int]]]:
+        rv: Dict[Optional[Tuple[str, str, str]], List[List[int]]] = {}
         if self.root is None:
             return rv
 
@@ -618,10 +570,10 @@ class SourceFile:
             ranges = value.split(";")
             if len(ranges) != 2:
                 raise ValueError("Malformed fuzzy value %s" % value)
-            arg_values = {}  # type: Dict[str, List[int]]
-            positional_args = deque()  # type: Deque[List[int]]
+            arg_values: Dict[str, List[int]] = {}
+            positional_args: Deque[List[int]] = deque()
             for range_str_value in ranges:  # type: str
-                name = None  # type: Optional[str]
+                name: Optional[str] = None
                 if "=" in range_str_value:
                     name, range_str_value = (part.strip()
                                              for part in range_str_value.split("=", 1))
@@ -654,19 +606,17 @@ class SourceFile:
         return rv
 
     @cached_property
-    def page_ranges_nodes(self):
-        # type: () -> List[ElementTree.Element]
+    def page_ranges_nodes(self) -> List[ElementTree.Element]:
         """List of ElementTree Elements corresponding to nodes in a test that
         specify print-reftest """
         assert self.root is not None
         return self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='reftest-pages']")
 
     @cached_property
-    def page_ranges(self):
-        # type: () -> Dict[str, List[List[Optional[int]]]]
+    def page_ranges(self) -> Dict[str, List[List[Optional[int]]]]:
         """List of ElementTree Elements corresponding to nodes in a test that
         specify print-reftest page ranges"""
-        rv = {}  # type: Dict[str, List[List[Optional[int]]]]
+        rv: Dict[str, List[List[Optional[int]]]] = {}
         for node in self.page_ranges_nodes:
             key_data, value = self.parse_ref_keyed_meta(node)
             # Just key by url
@@ -696,16 +646,14 @@ class SourceFile:
         return rv
 
     @cached_property
-    def testharness_nodes(self):
-        # type: () -> List[ElementTree.Element]
+    def testharness_nodes(self) -> List[ElementTree.Element]:
         """List of ElementTree Elements corresponding to nodes representing a
         testharness.js script"""
         assert self.root is not None
         return self.root.findall(".//{http://www.w3.org/1999/xhtml}script[@src='/resources/testharness.js']")
 
     @cached_property
-    def content_is_testharness(self):
-        # type: () -> Optional[bool]
+    def content_is_testharness(self) -> Optional[bool]:
         """Boolean indicating whether the file content represents a
         testharness.js test"""
         if self.root is None:
@@ -713,17 +661,15 @@ class SourceFile:
         return bool(self.testharness_nodes)
 
     @cached_property
-    def variant_nodes(self):
-        # type: () -> List[ElementTree.Element]
+    def variant_nodes(self) -> List[ElementTree.Element]:
         """List of ElementTree Elements corresponding to nodes representing a
         test variant"""
         assert self.root is not None
         return self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='variant']")
 
     @cached_property
-    def test_variants(self):
-        # type: () -> List[str]
-        rv = []  # type: List[str]
+    def test_variants(self) -> List[str]:
+        rv: List[str] = []
         if self.ext == ".js":
             script_metadata = self.script_metadata
             assert script_metadata is not None
@@ -733,7 +679,7 @@ class SourceFile:
         else:
             for element in self.variant_nodes:
                 if "content" in element.attrib:
-                    variant = element.attrib["content"]  # type: str
+                    variant: str = element.attrib["content"]
                     rv.append(variant)
 
         for variant in rv:
@@ -750,16 +696,14 @@ class SourceFile:
         return rv
 
     @cached_property
-    def testdriver_nodes(self):
-        # type: () -> List[ElementTree.Element]
+    def testdriver_nodes(self) -> List[ElementTree.Element]:
         """List of ElementTree Elements corresponding to nodes representing a
         testdriver.js script"""
         assert self.root is not None
         return self.root.findall(".//{http://www.w3.org/1999/xhtml}script[@src='/resources/testdriver.js']")
 
     @cached_property
-    def has_testdriver(self):
-        # type: () -> Optional[bool]
+    def has_testdriver(self) -> Optional[bool]:
         """Boolean indicating whether the file content represents a
         testharness.js test"""
         if self.root is None:
@@ -767,8 +711,7 @@ class SourceFile:
         return bool(self.testdriver_nodes)
 
     @cached_property
-    def reftest_nodes(self):
-        # type: () -> List[ElementTree.Element]
+    def reftest_nodes(self) -> List[ElementTree.Element]:
         """List of ElementTree Elements corresponding to nodes representing a
         to a reftest <link>"""
         if self.root is None:
@@ -779,11 +722,10 @@ class SourceFile:
         return match_links + mismatch_links
 
     @cached_property
-    def references(self):
-        # type: () -> List[Tuple[str, str]]
+    def references(self) -> List[Tuple[str, str]]:
         """List of (ref_url, relation) tuples for any reftest references specified in
         the file"""
-        rv = []  # type: List[Tuple[str, str]]
+        rv: List[Tuple[str, str]] = []
         rel_map = {"match": "==", "mismatch": "!="}
         for item in self.reftest_nodes:
             if "href" in item.attrib:
@@ -793,15 +735,13 @@ class SourceFile:
         return rv
 
     @cached_property
-    def content_is_ref_node(self):
-        # type: () -> bool
+    def content_is_ref_node(self) -> bool:
         """Boolean indicating whether the file is a non-leaf node in a reftest
         graph (i.e. if it contains any <link rel=[mis]match>"""
         return bool(self.references)
 
     @cached_property
-    def css_flag_nodes(self):
-        # type: () -> List[ElementTree.Element]
+    def css_flag_nodes(self) -> List[ElementTree.Element]:
         """List of ElementTree Elements corresponding to nodes representing a
         flag <meta>"""
         if self.root is None:
@@ -809,10 +749,9 @@ class SourceFile:
         return self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='flags']")
 
     @cached_property
-    def css_flags(self):
-        # type: () -> Set[str]
+    def css_flags(self) -> Set[str]:
         """Set of flags specified in the file"""
-        rv = set()  # type: Set[str]
+        rv: Set[str] = set()
         for item in self.css_flag_nodes:
             if "content" in item.attrib:
                 for flag in item.attrib["content"].split():
@@ -820,8 +759,7 @@ class SourceFile:
         return rv
 
     @cached_property
-    def content_is_css_manual(self):
-        # type: () -> Optional[bool]
+    def content_is_css_manual(self) -> Optional[bool]:
         """Boolean indicating whether the file content represents a
         CSS WG-style manual test"""
         if self.root is None:
@@ -830,8 +768,7 @@ class SourceFile:
         return bool(self.css_flags & {"animated", "font", "history", "interact", "paged", "speech", "userstyle"})
 
     @cached_property
-    def spec_link_nodes(self):
-        # type: () -> List[ElementTree.Element]
+    def spec_link_nodes(self) -> List[ElementTree.Element]:
         """List of ElementTree Elements corresponding to nodes representing a
         <link rel=help>, used to point to specs"""
         if self.root is None:
@@ -839,18 +776,16 @@ class SourceFile:
         return self.root.findall(".//{http://www.w3.org/1999/xhtml}link[@rel='help']")
 
     @cached_property
-    def spec_links(self):
-        # type: () -> Set[str]
+    def spec_links(self) -> Set[str]:
         """Set of spec links specified in the file"""
-        rv = set()  # type: Set[str]
+        rv: Set[str] = set()
         for item in self.spec_link_nodes:
             if "href" in item.attrib:
                 rv.add(item.attrib["href"].strip(space_chars))
         return rv
 
     @cached_property
-    def content_is_css_visual(self):
-        # type: () -> Optional[bool]
+    def content_is_css_visual(self) -> Optional[bool]:
         """Boolean indicating whether the file content represents a
         CSS WG-style visual test"""
         if self.root is None:
@@ -859,8 +794,7 @@ class SourceFile:
                     self.spec_links)
 
     @property
-    def type(self):
-        # type: () -> str
+    def type(self) -> str:
         possible_types = self.possible_types
         if len(possible_types) == 1:
             return possible_types.pop()
@@ -869,8 +803,7 @@ class SourceFile:
         return rv
 
     @property
-    def possible_types(self):
-        # type: () -> Set[str]
+    def possible_types(self) -> Set[str]:
         """Determines the set of possible types without reading the file"""
 
         if self.items_cache:
@@ -923,8 +856,7 @@ class SourceFile:
                 RefTest.item_type,
                 SupportFile.item_type}
 
-    def manifest_items(self):
-        # type: () -> Tuple[str, List[ManifestItem]]
+    def manifest_items(self) -> Tuple[str, List[ManifestItem]]:
         """List of manifest items corresponding to the file. There is typically one
         per test, but in the case of reftests a node may have corresponding manifest
         items without being a test itself."""
@@ -935,11 +867,11 @@ class SourceFile:
         drop_cached = "root" not in self.__dict__
 
         if self.name_is_non_test:
-            rv = "support", [
-                SupportFile(
-                    self.tests_root,
-                    self.rel_path
-                )]  # type: Tuple[str, List[ManifestItem]]
+            rv: Tuple[str, List[ManifestItem]] = ("support", [
+                 SupportFile(
+                     self.tests_root,
+                     self.rel_path
+                 )])
 
         elif self.name_is_manual:
             rv = ManualTest.item_type, [
@@ -1021,7 +953,7 @@ class SourceFile:
                     globals = value
                     break
 
-            tests = [
+            tests: List[ManifestItem] = [
                 TestharnessTest(
                     self.tests_root,
                     self.rel_path,
@@ -1034,7 +966,7 @@ class SourceFile:
                 )
                 for (suffix, jsshell) in sorted(global_suffixes(globals))
                 for variant in self.test_variants
-            ]   # type: List[ManifestItem]
+            ]
             rv = TestharnessTest.item_type, tests
 
         elif self.name_is_worker:

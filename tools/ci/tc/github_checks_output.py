@@ -13,12 +13,10 @@ class GitHubChecksOutputter:
 
     https://docs.taskcluster.net/docs/reference/integrations/github/checks#custom-text-output-in-checks
     """
-    def __init__(self, path):
-        # type: (str) -> None
+    def __init__(self, path: str) -> None:
         self.path = path
 
-    def output(self, line):
-        # type: (str) -> None
+    def output(self, line: str) -> None:
         with open(self.path, mode="a") as f:
             f.write(line)
             f.write("\n")
@@ -27,8 +25,7 @@ class GitHubChecksOutputter:
 __outputter = None
 
 
-def get_gh_checks_outputter(filepath):
-    # type: (Optional[str]) -> Optional[GitHubChecksOutputter]
+def get_gh_checks_outputter(filepath: Optional[str]) -> Optional[GitHubChecksOutputter]:
     """Return the outputter for GitHub Checks output, if enabled.
 
     :param filepath: The filepath to write GitHub Check output information to,

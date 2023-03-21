@@ -19,13 +19,11 @@ wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os
 logger = get_logger()
 
 
-def abs_path(path):
-    # type: (str) -> str
+def abs_path(path: str) -> str:
     return os.path.abspath(os.path.expanduser(path))
 
 
-def create_parser():
-    # type: () -> argparse.ArgumentParser
+def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-p", "--path", type=abs_path, help="Path to manifest file.")
@@ -54,10 +52,9 @@ def create_parser():
     return parser
 
 
-def get_path_id_map(src_root, tests_root, manifest_file, test_ids):
-    # type: (str, str, Manifest, Iterable[str]) -> Dict[str, List[str]]
+def get_path_id_map(src_root: str, tests_root: str, manifest_file: Manifest, test_ids: Iterable[str]) -> Dict[str, List[str]]:
     test_ids = set(test_ids)
-    path_id_map = defaultdict(list)  # type: Dict[str, List[str]]
+    path_id_map: Dict[str, List[str]] = defaultdict(list)
 
     compute_rel_path = src_root != tests_root
 
@@ -73,8 +70,7 @@ def get_path_id_map(src_root, tests_root, manifest_file, test_ids):
     return path_id_map
 
 
-def get_paths(**kwargs):
-    # type: (**Any) -> Dict[str, List[str]]
+def get_paths(**kwargs: Any) -> Dict[str, List[str]]:
     tests_root = kwargs["tests_root"]
     assert tests_root is not None
     path = kwargs["path"]
@@ -94,8 +90,7 @@ def get_paths(**kwargs):
     return get_path_id_map(src_root, tests_root, manifest_file, kwargs["test_ids"])
 
 
-def write_output(path_id_map, as_json):
-    # type: (Dict[str, List[str]], bool) -> None
+def write_output(path_id_map: Dict[str, List[str]], as_json: bool) -> None:
     if as_json:
         print(json.dumps(path_id_map))
     else:
@@ -105,7 +100,6 @@ def write_output(path_id_map, as_json):
                 print("  " + test_id)
 
 
-def run(**kwargs):
-    # type: (**Any) -> None
+def run(**kwargs: Any) -> None:
     path_id_map = get_paths(**kwargs)
     write_output(path_id_map, as_json=kwargs["json"])

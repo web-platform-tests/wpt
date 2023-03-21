@@ -11,15 +11,13 @@ if MYPY:
 __all__ = ["fnmatch", "fnmatchcase", "filter", "translate"]
 
 
-def fnmatch(name, pat):
-    # type: (str, str) -> bool
+def fnmatch(name: str, pat: str) -> bool:
     name = os.path.normcase(name)
     pat = os.path.normcase(pat)
     return fnmatchcase(name, pat)
 
 
-def fnmatchcase(name, pat):
-    # type: (str, str) -> bool
+def fnmatchcase(name: str, pat: str) -> bool:
     if '?' not in pat and '[' not in pat:
         wildcards = pat.count("*")
         if wildcards == 0:
@@ -31,8 +29,7 @@ def fnmatchcase(name, pat):
     return _stdlib_fnmatch.fnmatchcase(name, pat)
 
 
-def filter(names, pat):
-    # type: (Iterable[str], str) -> List[str]
+def filter(names: Iterable[str], pat: str) -> List[str]:
     return [n for n in names if fnmatch(n, pat)]
 
 

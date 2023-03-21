@@ -10,27 +10,23 @@ if MYPY:
     Error = Tuple[str, str, str, Optional[int]]
 
 
-def collapse(text):
-    # type: (str) -> str
+def collapse(text: str) -> str:
     return inspect.cleandoc(str(text)).replace("\n", " ")
 
 
 class Rule(metaclass=abc.ABCMeta):
     @abc.abstractproperty
-    def name(self):
-        # type: () -> str
+    def name(self) -> str:
         pass
 
     @abc.abstractproperty
-    def description(self):
-        # type: () -> str
+    def description(self) -> str:
         pass
 
-    to_fix = None  # type: Optional[str]
+    to_fix: Optional[str] = None
 
     @classmethod
-    def error(cls, path, context=(), line_no=None):
-        # type: (str, Tuple[Any, ...], Optional[int]) -> Error
+    def error(cls, path: str, context: Tuple[Any, ...] = (), line_no: Optional[int] = None) -> Error:
         if MYPY:
             name = cast(str, cls.name)
             description = cast(str, cls.description)
@@ -373,33 +369,27 @@ class TentativeDirectoryName(Rule):
 
 class Regexp(metaclass=abc.ABCMeta):
     @abc.abstractproperty
-    def pattern(self):
-        # type: () -> bytes
+    def pattern(self) -> bytes:
         pass
 
     @abc.abstractproperty
-    def name(self):
-        # type: () -> str
+    def name(self) -> str:
         pass
 
     @abc.abstractproperty
-    def description(self):
-        # type: () -> str
+    def description(self) -> str:
         pass
 
-    file_extensions = None  # type: Optional[List[str]]
+    file_extensions: Optional[List[str]] = None
 
-    def __init__(self):
-        # type: () -> None
-        self._re = re.compile(self.pattern)  # type: Pattern[bytes]
+    def __init__(self) -> None:
+        self._re: Pattern[bytes] = re.compile(self.pattern)
 
-    def applies(self, path):
-        # type: (str) -> bool
+    def applies(self, path: str) -> bool:
         return (self.file_extensions is None or
                 os.path.splitext(path)[1] in self.file_extensions)
 
-    def search(self, line):
-        # type: (bytes) -> Optional[Match[bytes]]
+    def search(self, line: bytes) -> Optional[Match[bytes]]:
         return self._re.search(line)
 
 

@@ -11,7 +11,7 @@ const AriaUtils = {
       promise_test(async t => {
         let el = document.createElement("div");
         el.appendChild(document.createTextNode("x"));
-        el.role = role;
+        el.setAttribute("role", role); // el.role not yet supported by Gecko.
         el.id = `role_${role}`;
         document.body.appendChild(el);
         const computedRole = await test_driver.get_computed_role(document.getElementById(el.id));

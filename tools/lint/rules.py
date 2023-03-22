@@ -10,23 +10,23 @@ if MYPY:
     Error = Tuple[str, str, str, Optional[int]]
 
 
-def collapse(text: Text) -> Text:
+def collapse(text: str) -> str:
     return inspect.cleandoc(str(text)).replace("\n", " ")
 
 
 class Rule(metaclass=abc.ABCMeta):
     @abc.abstractproperty
-    def name(self) -> Text:
+    def name(self) -> str:
         pass
 
     @abc.abstractproperty
-    def description(self) -> Text:
+    def description(self) -> str:
         pass
 
-    to_fix: Optional[Text] = None
+    to_fix: Optional[str] = None
 
     @classmethod
-    def error(cls, path: Text, context: Tuple[Any, ...] = (), line_no: Optional[int] = None) -> Error:
+    def error(cls, path: str, context: Tuple[Any, ...] = (), line_no: Optional[int] = None) -> Error:
         if MYPY:
             name = cast(str, cls.name)
             description = cast(str, cls.description)
@@ -373,19 +373,19 @@ class Regexp(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractproperty
-    def name(self) -> Text:
+    def name(self) -> str:
         pass
 
     @abc.abstractproperty
-    def description(self) -> Text:
+    def description(self) -> str:
         pass
 
-    file_extensions: Optional[List[Text]] = None
+    file_extensions: Optional[List[str]] = None
 
     def __init__(self) -> None:
         self._re: Pattern[bytes] = re.compile(self.pattern)
 
-    def applies(self, path: Text) -> bool:
+    def applies(self, path: str) -> bool:
         return (self.file_extensions is None or
                 os.path.splitext(path)[1] in self.file_extensions)
 

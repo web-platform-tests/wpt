@@ -76,11 +76,11 @@ else:
 #
 
 if has_ujson:
-    def dumps_local(obj: Any) -> Text:
+    def dumps_local(obj: Any) -> str:
         return ujson.dumps(obj, **_ujson_dump_local_kwargs)
 
 else:
-    def dumps_local(obj: Any) -> Text:
+    def dumps_local(obj: Any) -> str:
         return json.dumps(obj, **_json_dump_local_kwargs)
 
 
@@ -119,11 +119,11 @@ if has_ujson:
     def dump_dist(obj: Any, fp: IO[str]) -> None:
         fp.write(_ujson_fixup(ujson.dumps(obj, **_ujson_dump_dist_kwargs)))
 
-    def dumps_dist(obj: Any) -> Text:
+    def dumps_dist(obj: Any) -> str:
         return _ujson_fixup(ujson.dumps(obj, **_ujson_dump_dist_kwargs))
 else:
     def dump_dist(obj: Any, fp: IO[str]) -> None:
         json.dump(obj, fp, **_json_dump_dist_kwargs)
 
-    def dumps_dist(obj: Any) -> Text:
+    def dumps_dist(obj: Any) -> str:
         return json.dumps(obj, **_json_dump_dist_kwargs)

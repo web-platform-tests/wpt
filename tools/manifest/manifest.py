@@ -55,7 +55,7 @@ class InvalidCacheError(Exception):
     pass
 
 
-item_classes: Dict[Text, Type[ManifestItem]] = {"testharness": TestharnessTest,
+item_classes: dict[str, type[ManifestItem]] = {"testharness": TestharnessTest,
                 "reftest": RefTest,
                 "print-reftest": PrintRefTest,
                 "crashtest": CrashTest,
@@ -66,7 +66,7 @@ item_classes: Dict[Text, Type[ManifestItem]] = {"testharness": TestharnessTest,
                 "support": SupportFile}
 
 
-def compute_manifest_items(source_file: SourceFile) -> Tuple[Tuple[Text, ...], Text, Set[ManifestItem], Text]:
+def compute_manifest_items(source_file: SourceFile) -> tuple[tuple[str, ...], str, set[ManifestItem], str]:
     rel_path_parts = source_file.rel_path_parts
     new_type, manifest_items = source_file.manifest_items()
     file_hash = source_file.hash
@@ -89,21 +89,21 @@ class ManifestData(ManifestDataType):
         self.initialized = True
         self.json_obj: None = None
 
-    def __setitem__(self, key: Text, value: TypeData) -> None:
+    def __setitem__(self, key: str, value: TypeData) -> None:
         if self.initialized:
             raise AttributeError
         dict.__setitem__(self, key, value)
 
-    def paths(self) -> Set[Text]:
+    def paths(self) -> set[str]:
         """Get a list of all paths containing test items
         without actually constructing all the items"""
-        rv: Set[Text] = set()
+        rv: set[str] = set()
         for item_data in self.values():
             for item in item_data:
                 rv.add(os.path.sep.join(item))
         return rv
 
-    def type_by_path(self) -> Dict[Tuple[Text, ...], Text]:
+    def type_by_path(self) -> dict[tuple[str, ...], str]:
         rv = {}
         for item_type, item_data in self.items():
             for item in item_data:
@@ -112,23 +112,23 @@ class ManifestData(ManifestDataType):
 
 
 class Manifest:
-    def __init__(self, tests_root: Text, url_base: Text = "/") -> None:
+    def __init__(self, tests_root: str, url_base: str = "/") -> None:
         assert url_base is not None
         self._data: ManifestData = ManifestData(self)
-        self.tests_root: Text = tests_root
-        self.url_base: Text = url_base
+        self.tests_root: str = tests_root
+        self.url_base: str = url_base
 
-    def __iter__(self) -> Iterator[Tuple[Text, Text, Set[ManifestItem]]]:
+    def __iter__(self) -> Iterator[tuple[str, str, set[ManifestItem]]]:
         return self.itertypes()
 
-    def itertypes(self, *types: Text) -> Iterator[Tuple[Text, Text, Set[ManifestItem]]]:
+    def itertypes(self, *types: str) -> Iterator[tuple[str, str, set[ManifestItem]]]:
         for item_type in (types or sorted(self._data.keys())):
             for path in self._data[item_type]:
                 rel_path = os.sep.join(path)
                 tests = self._data[item_type][path]
                 yield item_type, rel_path, tests
 
-    def iterpath(self, path: Text) -> Iterable[ManifestItem]:
+    def iterpath(self, path: str) -> Iterable[ManifestItem]:
         tpath = tuple(path.split(os.path.sep))
 
         for type_tests in self._data.values():
@@ -136,7 +136,7 @@ class Manifest:
             assert i is not None
             yield from i
 
-    def iterdir(self, dir_name: Text) -> Iterable[ManifestItem]:
+    def iterdir(self, dir_name: str) -> Iterable[ManifestItem]:
         tpath = tuple(dir_name.split(os.path.sep))
         tpath_len = len(tpath)
 
@@ -145,7 +145,7 @@ class Manifest:
                 if path[:tpath_len] == tpath:
                     yield from tests
 
-    def update(self, tree: Iterable[Tuple[Text, Optional[Text], bool]], parallel: bool = True) -> bool:
+    def update(self, tree: Iterable[tuple[str, str | None, bool]], parallel: bool = True) -> bool:
         """Update the manifest given an iterable of items that make up the updated manifest.
 
         The iterable must either generate tuples of the form (SourceFile, True) for paths
@@ -230,7 +230,7 @@ class Manifest:
             logger.debug("Doing a multiprocessed update. CPU count: %s, "
                 "processes: %s, chunksize: %s" % (cpu_count(), processes, chunksize))
             results: Iterator[
-                Tuple[Tuple[Text, ...], Text, Set[ManifestItem], Text]
+                tuple[tuple[str, ...], str, set[ManifestItem], str]
             ] = pool.imap_unordered(
                 compute_manifest_items, to_update, chunksize=chunksize
             )
@@ -256,7 +256,7 @@ class Manifest:
 
         return changed
 
-    def to_json(self, caller_owns_obj: bool = True) -> Dict[Text, Any]:
+    def to_json(self, caller_owns_obj: bool = True) -> dict[str, Any]:
         """Dump a manifest into a object which can be serialized as JSON
 
         If caller_owns_obj is False, then the return value remains
@@ -275,7 +275,7 @@ class Manifest:
         if caller_owns_obj:
             out_items = deepcopy(out_items)
 
-        rv: Dict[Text, Any] = {"url_base": self.url_base,
+        rv: dict[str, Any] = {"url_base": self.url_base,
               "items": out_items,
               "version": CURRENT_VERSION}
         return rv
@@ -283,9 +283,9 @@ class Manifest:
     @classmethod
     def from_json(
         cls,
-        tests_root: Text,
-        obj: Dict[Text, Any],
-        types: Optional[Container[Text]] = None,
+        tests_root: str,
+        obj: dict[str, Any],
+        types: Container[str] | None = None,
         callee_owns_obj: bool = False,
     ) -> Manifest:
         """Load a manifest from a JSON object
@@ -323,22 +323,22 @@ class Manifest:
         return self
 
 
-def load(tests_root: Text, manifest: Union[IO[bytes], Text], types: Optional[Container[Text]] = None) -> Optional[Manifest]:
+def load(tests_root: str, manifest: IO[bytes] | str, types: Container[str] | None = None) -> Manifest | None:
     logger = get_logger()
 
     logger.warning("Prefer load_and_update instead")
     return _load(logger, tests_root, manifest, types)
 
 
-__load_cache: Dict[Text, Manifest] = {}
+__load_cache: dict[str, Manifest] = {}
 
 
 def _load(logger: Logger,
-          tests_root: Text,
-          manifest: Union[IO[bytes], Text],
-          types: Optional[Container[Text]] = None,
+          tests_root: str,
+          manifest: IO[bytes] | str,
+          types: Container[str] | None = None,
           allow_cached: bool = True
-          ) -> Optional[Manifest]:
+          ) -> Manifest | None:
     manifest_path = (manifest if isinstance(manifest, str)
                      else manifest.name)
     if allow_cached and manifest_path in __load_cache:
@@ -371,15 +371,15 @@ def _load(logger: Logger,
     return rv
 
 
-def load_and_update(tests_root: Text,
-                    manifest_path: Text,
-                    url_base: Text,
+def load_and_update(tests_root: str,
+                    manifest_path: str,
+                    url_base: str,
                     update: bool = True,
                     rebuild: bool = False,
-                    metadata_path: Optional[Text] = None,
-                    cache_root: Optional[Text] = None,
+                    metadata_path: str | None = None,
+                    cache_root: str | None = None,
                     working_copy: bool = True,
-                    types: Optional[Container[Text]] = None,
+                    types: Container[str] | None = None,
                     write_manifest: bool = True,
                     allow_cached: bool = True,
                     parallel: bool = True
@@ -430,7 +430,7 @@ def load_and_update(tests_root: Text,
     return manifest
 
 
-def write(manifest: Manifest, manifest_path: Text) -> None:
+def write(manifest: Manifest, manifest_path: str) -> None:
     dir_name = os.path.dirname(manifest_path)
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)

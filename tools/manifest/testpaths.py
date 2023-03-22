@@ -53,9 +53,9 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def get_path_id_map(src_root: Text, tests_root: Text, manifest_file: Manifest, test_ids: Iterable[Text]) -> Dict[Text, List[Text]]:
+def get_path_id_map(src_root: str, tests_root: str, manifest_file: Manifest, test_ids: Iterable[str]) -> Dict[str, List[str]]:
     test_ids = set(test_ids)
-    path_id_map: Dict[Text, List[Text]] = defaultdict(list)
+    path_id_map: Dict[str, List[str]] = defaultdict(list)
 
     compute_rel_path = src_root != tests_root
 
@@ -71,7 +71,7 @@ def get_path_id_map(src_root: Text, tests_root: Text, manifest_file: Manifest, t
     return path_id_map
 
 
-def get_paths(**kwargs: Any) -> Dict[Text, List[Text]]:
+def get_paths(**kwargs: Any) -> Dict[str, List[str]]:
     tests_root = kwargs["tests_root"]
     assert tests_root is not None
     path = kwargs["path"]
@@ -91,7 +91,7 @@ def get_paths(**kwargs: Any) -> Dict[Text, List[Text]]:
     return get_path_id_map(src_root, tests_root, manifest_file, kwargs["test_ids"])
 
 
-def write_output(path_id_map: Dict[Text, List[Text]], as_json: bool) -> None:
+def write_output(path_id_map: Dict[str, List[str]], as_json: bool) -> None:
     if as_json:
         print(json.dumps(path_id_map))
     else:

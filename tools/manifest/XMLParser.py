@@ -22,8 +22,8 @@ def _wrap_error(e: expat.error) -> etree.ParseError:
     err.position = e.lineno, e.offset
     raise err
 
-_names: Dict[Text, Text] = {}
-def _fixname(key: Text) -> Text:
+_names: Dict[str, str] = {}
+def _fixname(key: str) -> str:
     try:
         name = _names[key]
     except KeyError:
@@ -46,7 +46,7 @@ class XMLParser:
     (therefore allowing XHTML entities) and supports all encodings
     Python does, rather than just those supported by expat.
     """
-    def __init__(self, encoding: Optional[Text] = None) -> None:
+    def __init__(self, encoding: Optional[str] = None) -> None:
         self._parser = expat.ParserCreate(encoding, "}")
         self._target = etree.TreeBuilder()
         # parser settings
@@ -62,28 +62,28 @@ class XMLParser:
         self._parser.SkippedEntityHandler = self._skipped
         # used for our horrible re-encoding hack
         self._fed_data: Optional[List[bytes]] = []
-        self._read_encoding: Optional[Text] = None
+        self._read_encoding: Optional[str] = None
 
-    def _xml_decl(self, version: Text, encoding: Optional[Text], standalone: int) -> None:
+    def _xml_decl(self, version: str, encoding: Optional[str], standalone: int) -> None:
         self._read_encoding = encoding
 
-    def _start(self, tag: Text, attrib_in: List[str]) -> etree.Element:
+    def _start(self, tag: str, attrib_in: List[str]) -> etree.Element:
         assert isinstance(tag, str)
         self._fed_data = None
         tag = _fixname(tag)
-        attrib: Dict[Union[bytes, Text], Union[bytes, Text]] = OrderedDict()
+        attrib: Dict[Union[bytes, str], Union[bytes, str]] = OrderedDict()
         if attrib_in:
             for i in range(0, len(attrib_in), 2):
                 attrib[_fixname(attrib_in[i])] = attrib_in[i+1]
         return self._target.start(tag, attrib)
 
-    def _data(self, text: Text) -> None:
+    def _data(self, text: str) -> None:
         self._target.data(text)
 
-    def _end(self, tag: Text) -> etree.Element:
+    def _end(self, tag: str) -> etree.Element:
         return self._target.end(_fixname(tag))
 
-    def _external(self, context: Text, base: Optional[Text], system_id: Optional[Text], public_id: Optional[Text]) -> bool:
+    def _external(self, context: str, base: Optional[str], system_id: Optional[str], public_id: Optional[str]) -> bool:
         if public_id in {
                 "-//W3C//DTD XHTML 1.0 Transitional//EN",
                 "-//W3C//DTD XHTML 1.1//EN",
@@ -104,7 +104,7 @@ class XMLParser:
 
         return True
 
-    def _skipped(self, name: Text, is_parameter_entity: bool) -> None:
+    def _skipped(self, name: str, is_parameter_entity: bool) -> None:
         err = expat.error("undefined entity %s: line %d, column %d" %
                           (name, self._parser.ErrorLineNumber,
                            self._parser.ErrorColumnNumber))

@@ -19,7 +19,7 @@ else:
     Generic[T] = object
 
 
-def rel_path_to_url(rel_path: Text, url_base: Text = "/") -> Text:
+def rel_path_to_url(rel_path: str, url_base: str = "/") -> str:
     assert not os.path.isabs(rel_path), rel_path
     if url_base[0] != "/":
         url_base = "/" + url_base
@@ -28,7 +28,7 @@ def rel_path_to_url(rel_path: Text, url_base: Text = "/") -> Text:
     return url_base + rel_path.replace(os.sep, "/")
 
 
-def from_os_path(path: Text) -> Text:
+def from_os_path(path: str) -> str:
     assert os.path.sep == "/" or sys.platform == "win32"
     if "/" == os.path.sep:
         rv = path
@@ -39,7 +39,7 @@ def from_os_path(path: Text) -> Text:
     return rv
 
 
-def to_os_path(path: Text) -> Text:
+def to_os_path(path: str) -> str:
     assert os.path.sep == "/" or sys.platform == "win32"
     if "\\" in path:
         raise ValueError("normalised path contains \\")
@@ -48,8 +48,8 @@ def to_os_path(path: Text) -> Text:
     return path.replace("/", os.path.sep)
 
 
-def git(path: Text) -> Optional[Callable[..., Text]]:
-    def gitfunc(cmd: Text, *args: Text) -> Text:
+def git(path: str) -> Optional[Callable[..., str]]:
+    def gitfunc(cmd: str, *args: str) -> str:
         full_cmd = ["git", cmd] + list(args)
         try:
             return subprocess.check_output(full_cmd, cwd=path, stderr=subprocess.STDOUT).decode('utf8')

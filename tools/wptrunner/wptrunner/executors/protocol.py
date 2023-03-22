@@ -33,7 +33,7 @@ class Protocol:
     :param Browser browser: The Browser using this protocol"""
     __metaclass__ = ABCMeta
 
-    implements: ClassVar[List[Type[ProtocolPart]]] = []
+    implements: ClassVar[list[type[ProtocolPart]]] = []
 
     def __init__(self, executor, browser):
         self.executor = executor

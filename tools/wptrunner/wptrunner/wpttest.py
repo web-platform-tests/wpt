@@ -4,7 +4,7 @@ import os
 import subprocess
 import sys
 from collections import defaultdict
-from typing import Any, ClassVar, Dict, Type
+from typing import Any, ClassVar, Dict, Optional, Type
 from urllib.parse import urljoin
 
 from .wptmanifest.parser import atoms
@@ -205,9 +205,9 @@ def server_protocol(manifest_item):
 
 class Test:
 
-    result_cls: ClassVar[Type[Result]] = None
-    subtest_result_cls: ClassVar[Type[SubtestResult]] = None
-    test_type: ClassVar[str] = None
+    result_cls: ClassVar[Optional[Type[Result]]] = None
+    subtest_result_cls: ClassVar[Optional[Type[SubtestResult]]] = None
+    test_type: ClassVar[Optional[str]] = None
     pac = None
 
     default_timeout = 10  # seconds

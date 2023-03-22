@@ -19,7 +19,7 @@ from collections import defaultdict, OrderedDict
 from io import IOBase
 from itertools import chain, product
 from html5lib import html5parser
-from typing import ClassVar, List, Set, Tuple
+from typing import ClassVar, List, Optional, Set, Tuple
 
 from localpaths import repo_root  # type: ignore
 
@@ -214,7 +214,7 @@ class WrapperHandler:
 
 
 class HtmlWrapperHandler(WrapperHandler):
-    global_type: ClassVar[str] = None
+    global_type: ClassVar[Optional[str]] = None
     headers = [('Content-Type', 'text/html')]
 
     def check_exposure(self, request):

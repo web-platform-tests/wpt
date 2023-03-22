@@ -5,7 +5,7 @@ import os
 import platform
 import sys
 from distutils.spawn import find_executable
-from typing import ClassVar, Tuple, Type
+from typing import ClassVar, Optional, Tuple, Type
 
 wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 sys.path.insert(0, os.path.abspath(os.path.join(wpt_root, "tools")))
@@ -158,8 +158,8 @@ in PowerShell with Administrator privileges.""" % (wpt_path, hosts_path)
 
 
 class BrowserSetup:
-    name: ClassVar[str] = None
-    browser_cls: ClassVar[Type[browser.Browser]] = None
+    name: ClassVar[Optional[str]] = None
+    browser_cls: ClassVar[Optional[Type[browser.Browser]]] = None
 
     def __init__(self, venv, prompt=True):
         self.browser = self.browser_cls(logger)

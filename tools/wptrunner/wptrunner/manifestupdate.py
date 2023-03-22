@@ -4,7 +4,7 @@ import os
 from urllib.parse import urljoin, urlsplit
 from collections import namedtuple, defaultdict, deque
 from math import ceil
-from typing import Any, Callable, ClassVar, Dict, List
+from typing import Any, Callable, ClassVar, Dict, List, Optional
 
 from .wptmanifest import serialize
 from .wptmanifest.node import (DataNode, ConditionalNode, BinaryExpressionNode,
@@ -336,13 +336,13 @@ def build_unconditional_tree(_, run_info_properties, results):
 
 
 class PropertyUpdate:
-    property_name: ClassVar[str] = None
+    property_name: ClassVar[Optional[str]] = None
     cls_default_value: ClassVar[Any] = None
-    value_type: ClassVar[type] = None
+    value_type: ClassVar[Optional[type]] = None
     # property_builder is a class variable set to either build_conditional_tree
     # or build_unconditional_tree. TODO: Make this type stricter when those
     # methods are annotated.
-    property_builder: ClassVar[Callable[..., Any]] = None
+    property_builder: ClassVar[Optional[Callable[..., Any]]] = None
 
     def __init__(self, node):
         self.node = node

@@ -3,7 +3,7 @@
 import collections
 import json
 
-from typing import ClassVar, DefaultDict, Type
+from typing import ClassVar, DefaultDict, Optional, Type
 
 
 class WebDriverException(Exception):
@@ -12,8 +12,8 @@ class WebDriverException(Exception):
     # However, http_status need not match, and both are set as instance
     # variables, shadowing the class variables. TODO: Match on both http_status
     # and status_code and let these be class variables only.
-    http_status: ClassVar[int] = None
-    status_code: ClassVar[str] = None
+    http_status: ClassVar[Optional[int]] = None
+    status_code: ClassVar[Optional[str]] = None
 
     def __init__(self, http_status=None, status_code=None, message=None, stacktrace=None):
         super()
@@ -228,5 +228,5 @@ def get(error_code):
 
 _errors: DefaultDict[str, Type[WebDriverException]] = collections.defaultdict()
 for item in list(locals().values()):
-    if type(item) == type and issubclass(item, WebDriverException):
+    if type(item) == type and issubclass(item, WebDriverException) and type(item.status_code) == str:
         _errors[item.status_code] = item

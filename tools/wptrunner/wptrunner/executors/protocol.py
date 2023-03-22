@@ -4,7 +4,7 @@ import traceback
 from http.client import HTTPConnection
 
 from abc import ABCMeta, abstractmethod
-from typing import ClassVar, List, Type
+from typing import ClassVar, List, Optional, Type
 
 
 def merge_dicts(target, source):
@@ -98,7 +98,7 @@ class ProtocolPart:
     :param Protocol parent: The parent protocol"""
     __metaclass__ = ABCMeta
 
-    name: ClassVar[str] = None
+    name: ClassVar[Optional[str]] = None
 
     def __init__(self, parent):
         self.parent = parent

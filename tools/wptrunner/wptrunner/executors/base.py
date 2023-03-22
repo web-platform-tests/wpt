@@ -10,7 +10,7 @@ import traceback
 import socket
 import sys
 from abc import ABCMeta, abstractmethod
-from typing import Any, Callable, ClassVar, Tuple, Type
+from typing import Any, Callable, ClassVar, Optional, Tuple, Type
 from urllib.parse import urljoin, urlsplit, urlunsplit
 
 from . import pytestrunner
@@ -245,14 +245,14 @@ class TestExecutor:
     """
     __metaclass__ = ABCMeta
 
-    test_type: ClassVar[str] = None
+    test_type: ClassVar[Optional[str]] = None
     # convert_result is a class variable set to a callable converter
     # (e.g. reftest_result_converter) converting from an instance of
     # URLManifestItem (e.g. RefTest) + type-dependent results object +
     # type-dependent extra data, returning a tuple of Result and list of
     # SubtestResult. For now, any callable is accepted. TODO: Make this type
     # stricter when more of the surrounding code is annotated.
-    convert_result: ClassVar[Callable[..., Any]] = None
+    convert_result: ClassVar[Optional[Callable[..., Any]]] = None
     supports_testdriver = False
     supports_jsshell = False
     # Extra timeout to use after internal test timeout at which the harness

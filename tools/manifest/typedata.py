@@ -1,25 +1,21 @@
+from __future__ import annotations
+
 from collections.abc import MutableMapping
 
+from typing import Any
+from typing import Dict
+from typing import Iterator
+from typing import List
+from typing import Optional
+from typing import Set
+from typing import Tuple
+from typing import Type
+from typing import Union
+from typing import TYPE_CHECKING
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any
-    from typing import Dict
-    from typing import Iterator
-    from typing import List
-    from typing import Optional
-    from typing import Set
-    from typing import Tuple
-    from typing import Type
-    from typing import Union
-
-    # avoid actually importing these, they're only used by type comments
+if TYPE_CHECKING:
     from . import item
     from . import manifest
-
-
-if MYPY:
     TypeDataType = MutableMapping[Tuple[str, ...], Set[item.ManifestItem]]
     PathHashType = MutableMapping[Tuple[str, ...], str]
 else:

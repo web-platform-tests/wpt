@@ -5,13 +5,10 @@ from collections import OrderedDict
 from xml.parsers import expat
 import xml.etree.ElementTree as etree  # noqa: N813
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Dict
-    from typing import List
-    from typing import Optional
-    from typing import Union
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
 
 _catalog = join(dirname(__file__), "catalog")
 

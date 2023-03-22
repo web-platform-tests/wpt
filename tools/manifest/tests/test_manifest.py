@@ -10,11 +10,8 @@ import pytest
 
 from .. import manifest, sourcefile, item, utils
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any
-    from typing import Type
+from typing import Any
+from typing import Type
 
 
 def SourceFileWithTest(path: str, hash: str, cls: Type[item.ManifestItem], **kwargs: Any) -> sourcefile.SourceFile:

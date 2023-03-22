@@ -21,18 +21,15 @@ except ValueError:
     from manifest import manifest  # type: ignore
     from manifest.utils import git as get_git_cmd  # type: ignore
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any
-    from typing import Dict
-    from typing import Iterable
-    from typing import List
-    from typing import Optional
-    from typing import Pattern
-    from typing import Sequence
-    from typing import Set
-    from typing import Tuple
+from typing import Any
+from typing import Dict
+from typing import Iterable
+from typing import List
+from typing import Optional
+from typing import Pattern
+from typing import Sequence
+from typing import Set
+from typing import Tuple
 
 DEFAULT_IGNORE_RULES = ("resources/testharness*", "resources/testdriver*")
 

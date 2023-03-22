@@ -3,11 +3,8 @@ import inspect
 import os
 import re
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any, List, Match, Optional, Pattern, Tuple, cast
-    Error = Tuple[str, str, str, Optional[int]]
+from typing import Any, List, Match, Optional, Pattern, Tuple, cast
+Error = Tuple[str, str, str, Optional[int]]
 
 
 def collapse(text: str) -> str:
@@ -27,13 +24,8 @@ class Rule(metaclass=abc.ABCMeta):
 
     @classmethod
     def error(cls, path: str, context: Tuple[Any, ...] = (), line_no: Optional[int] = None) -> Error:
-        if MYPY:
-            name = cast(str, cls.name)
-            description = cast(str, cls.description)
-        else:
-            name = cls.name
-            description = cls.description
-        description = description % context
+        name = cast(str, cls.name)
+        description = cast(str, cls.description) % context
         return (name, description, path, line_no)
 
 

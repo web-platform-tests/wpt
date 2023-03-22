@@ -7,22 +7,19 @@ from urllib.parse import urljoin
 from fnmatch import fnmatch
 from xml.etree import ElementTree
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any
-    from typing import BinaryIO
-    from typing import Callable
-    from typing import Deque
-    from typing import Dict
-    from typing import Iterable
-    from typing import List
-    from typing import Optional
-    from typing import Pattern
-    from typing import Set
-    from typing import Tuple
-    from typing import Union
-    from typing import cast
+from typing import Any
+from typing import BinaryIO
+from typing import Callable
+from typing import Deque
+from typing import Dict
+from typing import Iterable
+from typing import List
+from typing import Optional
+from typing import Pattern
+from typing import Set
+from typing import Tuple
+from typing import Union
+from typing import cast
 
 import html5lib
 
@@ -160,11 +157,7 @@ def global_variant_url(url: str, suffix: str) -> str:
 
 def _parse_html(f: BinaryIO) -> ElementTree.Element:
     doc = html5lib.parse(f, treebuilder="etree", useChardet=False)
-    if MYPY:
-        return cast(ElementTree.Element, doc)
-    else:
-        # (needs to be in else for mypy to believe this is reachable)
-        return doc
+    return cast(ElementTree.Element, doc)
 
 def _parse_xml(f: BinaryIO) -> ElementTree.Element:
     try:

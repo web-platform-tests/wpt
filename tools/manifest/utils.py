@@ -2,20 +2,12 @@ import os
 import subprocess
 import sys
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Callable
-    from typing import Any
-    from typing import Generic
-    from typing import TypeVar
-    from typing import Optional
-    T = TypeVar("T")
-else:
-    # eww, eww, ewwww
-    Generic = {}
-    T = object()
-    Generic[T] = object
+from typing import Callable
+from typing import Any
+from typing import Generic
+from typing import TypeVar
+from typing import Optional
+T = TypeVar("T")
 
 
 def rel_path_to_url(rel_path: str, url_base: str = "/") -> str:

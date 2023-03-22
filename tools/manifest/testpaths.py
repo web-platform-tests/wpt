@@ -6,13 +6,10 @@ from collections import defaultdict
 from .manifest import load_and_update, Manifest
 from .log import get_logger
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any
-    from typing import Dict
-    from typing import Iterable
-    from typing import List
+from typing import Any
+from typing import Dict
+from typing import Iterable
+from typing import List
 
 wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 

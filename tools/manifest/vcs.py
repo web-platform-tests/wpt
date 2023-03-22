@@ -13,12 +13,10 @@ from .utils import git
 # relative import beyond toplevel throws *ImportError*!
 from gitignore import gitignore  # type: ignore
 
+from typing import Dict, Optional, List, Set, Iterable, Any, Tuple, Iterator, TYPE_CHECKING
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Dict, Optional, List, Set, Iterable, Any, Tuple, Iterator
-    from .manifest import Manifest  # cyclic import under MYPY guard
+if TYPE_CHECKING:
+    from .manifest import Manifest  # cyclic import under TYPE_CHECKING guard
     stat_result = os.stat_result
 
     GitIgnoreCacheType = MutableMapping[bytes, bool]

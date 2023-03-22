@@ -22,21 +22,19 @@ from .log import get_logger
 from .sourcefile import SourceFile
 from .typedata import TypeData
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from logging import Logger
-    from typing import Any
-    from typing import Container
-    from typing import Dict
-    from typing import IO
-    from typing import Iterator
-    from typing import Iterable
-    from typing import Optional
-    from typing import Set
-    from typing import Tuple
-    from typing import Type
-    from typing import Union
+from logging import Logger
+from typing import Any
+from typing import Container
+from typing import Dict
+from typing import IO
+from typing import Iterator
+from typing import Iterable
+from typing import Optional
+from typing import Set
+from typing import Tuple
+from typing import Type
+from typing import Union
+from typing import TYPE_CHECKING
 
 
 CURRENT_VERSION: int = 8
@@ -72,7 +70,7 @@ def compute_manifest_items(source_file: SourceFile) -> Tuple[Tuple[str, ...], st
     return rel_path_parts, new_type, set(manifest_items), file_hash
 
 
-if MYPY:
+if TYPE_CHECKING:
     ManifestDataType = Dict[Any, TypeData]
 else:
     ManifestDataType = dict

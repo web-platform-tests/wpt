@@ -7,11 +7,10 @@ from abc import ABCMeta, abstractproperty
 
 from .utils import to_os_path
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any, Dict, Hashable, List, Optional, Sequence, Tuple, Type, Union, cast
-    from .manifest import Manifest
+from typing import Any, Dict, Hashable, List, Optional, Sequence, Tuple, Type, Union, cast, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .manifest import Manifest  # cyclic import under TYPE_CHECKING guard
     Fuzzy = Dict[Optional[Tuple[str, str, str]], List[int]]
     PageRanges = Dict[str, List[int]]
 
@@ -29,7 +28,7 @@ class ManifestItemMeta(ABCMeta):
             return inst
 
         assert issubclass(inst, ManifestItem)
-        if MYPY:
+        if TYPE_CHECKING:
             inst_ = cast(Type[ManifestItem], inst)
             item_type = cast(str, inst_.item_type)
         else:

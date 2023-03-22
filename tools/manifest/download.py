@@ -16,13 +16,10 @@ from .utils import git
 
 from . import log
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any
-    from typing import Callable
-    from typing import List
-    from typing import Optional
+from typing import Any
+from typing import Callable
+from typing import List
+from typing import Optional
 
 here = os.path.dirname(__file__)
 

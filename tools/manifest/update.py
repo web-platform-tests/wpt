@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+
+from __future__ import annotations
+
 import argparse
 import os
 
@@ -13,16 +16,12 @@ wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 
 logger = get_logger()
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any
-    from typing import Optional
-    from .manifest import Manifest  # avoid cyclic import
+from typing import Any
+from typing import Optional
 
 
 def update(tests_root: str,
-           manifest: Manifest,
+           manifest: manifest.Manifest,
            manifest_path: Optional[str] = None,
            working_copy: bool = True,
            cache_root: Optional[str] = None,

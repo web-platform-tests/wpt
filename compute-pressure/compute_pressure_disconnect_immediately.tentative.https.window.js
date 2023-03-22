@@ -47,8 +47,8 @@ promise_test(async t => {
     }, {sampleRate: 1});
     t.add_cleanup(() => observer2.disconnect());
     const promise = observer1.observe('cpu');
-    observer2.observe('cpu');
     observer1.disconnect();
+    observer2.observe('cpu');
     await promise_rejects_dom(t, 'NotSupportedError', promise);
   });
 

@@ -45,6 +45,7 @@ class MockPressureService {
     this.pressureServiceReadingTimerId_ = null;
     this.pressureStatus_ = PressureStatus.kOk;
     this.updatesDelivered_ = 0;
+    this.samplingInterval_ = 0;
   }
 
   async addClient(observer) {
@@ -60,10 +61,24 @@ class MockPressureService {
     return {status: this.pressureStatus_};
   }
 
-  startPlatformCollector(sampleRate) {
-    if (sampleRate === 0)
-      return;
+  addClientConfiguration(observerConfig) {
+    // TODO(crbug.com/1412385): support more than 1 config.
+    // Because we cannot control the binding timing in wpt testing,
+    // the platform collector is still started manually.
+    // Furthermore, we left the possibility to set manually the sampling
+    // rate since it doesn't affect the web interface testing.
+    const samplingInterval = Number(observerConfig.samplingInterval.microseconds) / 1000;
+    if (this.samplingInterval_ === 0 || samplingInterval < this.samplingInterval_)
+      this.samplingInterval_ = samplingInterval;
+  }
 
+  removeClientConfiguration(observerConfig) {
+    // TODO(crbug.com/1412385): support more than 1 config.
+    this.stopPlatformCollector();
+    this.observer_ = null;
+  }
+
+  startPlatformCollector(sampleRate = 0) {
     if (this.pressureServiceReadingTimerId_ != null)
       this.stopPlatformCollector();
 
@@ -82,7 +97,10 @@ class MockPressureService {
     // |epochDeltaInMs| equals to base::Time::kTimeTToMicrosecondsOffset.
     const epochDeltaInMs = unixEpoch - windowsEpoch;
 
-    const timeout = (1 / sampleRate) * 1000;
+    const timeout = Number.isSafeInteger(sampleRate) && sampleRate > 0 ?
+                    (this.samplingInterval_ / 1000) :
+                    ((1 / sampleRate) * 1000);
+
     this.pressureServiceReadingTimerId_ = window.setInterval(() => {
       if (this.pressureUpdate_ === null || this.observer_ === null)
         return;

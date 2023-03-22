@@ -92,6 +92,24 @@ const unsupportedBlobRange = [
     range: "",
   },
   {
+    name: "Blob range with incorrect range header",
+    data: ["A"],
+    type: "text/plain",
+    range: "byte=0-"
+  },
+  {
+    name: "Blob range with incorrect range header #2",
+    data: ["A"],
+    type: "text/plain",
+    range: "bytes"
+  },
+  {
+    name: "Blob range with incorrect range header #3",
+    data: ["A"],
+    type: "text/plain",
+    range: "bytes\t \t"
+  },
+  {
     name: "Blob range request with multiple range values",
     data: ["Multiple ranges are not currently supported"],
     type: "text/plain",
@@ -176,20 +194,18 @@ supportedBlobRange.forEach(({ name, data, type, range, content_length, content_r
     const blob = new Blob(data, { "type" : type });
     const blobURL = URL.createObjectURL(blob);
     t.add_cleanup(() => URL.revokeObjectURL(blobURL));
-    return fetch(blobURL, {
+    const resp = await fetch(blobURL, {
       "headers": {
         "Range": range
       }
-    }).then(function(resp) {
-      assert_equals(resp.status, 206, "HTTP status is 206");
-      assert_equals(resp.type, "basic", "response type is basic");
-      assert_equals(resp.headers.get("Content-Type"), type, "Content-Type is " + resp.headers.get("Content-Type"));
-      assert_equals(resp.headers.get("Content-Length"), content_length.toString(), "Content-Length is " + resp.headers.get("Content-Length"));
-      assert_equals(resp.headers.get("Content-Range"), content_range, "Content-Range is " + resp.headers.get("Content-Range"));
-      return resp.text();
-    }).then(function(text) {
-      assert_equals(text, result, "Response's body is correct");
     });
+    assert_equals(resp.status, 206, "HTTP status is 206");
+    assert_equals(resp.type, "basic", "response type is basic");
+    assert_equals(resp.headers.get("Content-Type"), type, "Content-Type is " + resp.headers.get("Content-Type"));
+    assert_equals(resp.headers.get("Content-Length"), content_length.toString(), "Content-Length is " + resp.headers.get("Content-Length"));
+    assert_equals(resp.headers.get("Content-Range"), content_range, "Content-Range is " + resp.headers.get("Content-Range"));
+    const text = await resp.text();
+    assert_equals(text, result, "Response's body is correct");
   }, name);
 });
 

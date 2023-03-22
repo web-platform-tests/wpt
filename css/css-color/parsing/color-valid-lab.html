@@ -42,6 +42,8 @@ test_valid_value("color", "lab(0 0 0 / none)", "lab(0 0 0 / none)");
 test_valid_value("color", "lab(calc(infinity) 0 0)", "lab(100 0 0)");
 test_valid_value("color", "lab(50 calc(infinity) 0)", "lab(50 calc(infinity) 0)");
 test_valid_value("color", "lab(50 calc(-infinity) 0)", "lab(50 calc(-infinity) 0)");
+test_valid_value("color", "lab(calc(NaN) 0 0)", "lab(calc(NaN) 0 0)");
+test_valid_value("color", "lab(calc(0 / 0) 0 0)", "lab(calc(NaN) 0 0)");
 
 // oklab()
 test_valid_value("color", "oklab(0 0 0)", "oklab(0 0 0)");
@@ -70,6 +72,8 @@ test_valid_value("color", "oklab(0 0 0 / none)", "oklab(0 0 0 / none)");
 test_valid_value("color", "oklab(calc(infinity) 0 0)", "oklab(1 0 0)");
 test_valid_value("color", "oklab(0.5 calc(infinity) 0)", "oklab(0.5 calc(infinity) 0)");
 test_valid_value("color", "oklab(0.5 calc(-infinity) 0)", "oklab(0.5 calc(-infinity) 0)");
+test_valid_value("color", "oklab(calc(NaN) 0 0)", "oklab(calc(NaN) 0 0)");
+test_valid_value("color", "oklab(calc(0 / 0) 0 0)", "oklab(calc(NaN) 0 0)");
 
 // lch()
 test_valid_value("color", "lch(0 0 0deg)", "lch(0 0 0)");
@@ -102,6 +106,8 @@ test_valid_value("color", "lch(0 0 0 / none)", "lch(0 0 0 / none)");
 test_valid_value("color", "lch(calc(infinity) 0 0)", "lch(100 0 0)");
 test_valid_value("color", "lch(50 calc(infinity) 0)", "lch(50 calc(infinity) 0)");
 test_valid_value("color", "lch(50 calc(-infinity) 0)", "lch(50 0 0)");
+test_valid_value("color", "lch(calc(NaN) 0 0)", "lch(calc(NaN) 0 0)");
+test_valid_value("color", "lch(calc(0 / 0) 0 0)", "lch(calc(NaN) 0 0)");
 
 // oklch()
 test_valid_value("color", "oklch(0 0 0deg)", "oklch(0 0 0)");
@@ -134,6 +140,8 @@ test_valid_value("color", "oklch(0 0 0 / none)", "oklch(0 0 0 / none)");
 test_valid_value("color", "oklch(calc(infinity) 0 0)", "oklch(1 0 0)");
 test_valid_value("color", "oklch(0.5 calc(infinity) 0)", "oklch(0.5 calc(infinity) 0)");
 test_valid_value("color", "oklch(0.5 calc(-infinity) 0)", "oklch(0.5 0 0)");
+test_valid_value("color", "oklch(calc(NaN) 0 0)", "oklch(calc(NaN) 0 0)");
+test_valid_value("color", "oklch(calc(0 / 0) 0 0)", "oklch(calc(NaN) 0 0)");
 </script>
 </body>
 </html>

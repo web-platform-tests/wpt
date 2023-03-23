@@ -12,6 +12,7 @@ import tempfile
 
 from collections import defaultdict
 from urllib.parse import urlsplit, urljoin
+from xml.etree import ElementTree
 
 from . import fnmatch
 from . import rules
@@ -49,11 +50,6 @@ if MYPY:
 
     # Define an arbitrary typevar
     T = TypeVar("T")
-
-    try:
-        from xml.etree import cElementTree as ElementTree
-    except ImportError:
-        from xml.etree import ElementTree as ElementTree  # type: ignore
 
 
 logger = None  # type: Optional[logging.Logger]

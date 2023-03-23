@@ -199,7 +199,7 @@ class PathFilter:
             if literal:
                 rule = cast(Tuple[bytes, ...], rule)
                 if len(rule) == 1:
-                    dir_name, pattern = None, rule[0]  # type: Tuple[Optional[bytes], bytes]
+                    dir_name, pattern = None, rule[0]
                 else:
                     dir_name, pattern = rule
                 self.literals_dir[dir_name][pattern] = []

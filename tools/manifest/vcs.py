@@ -73,7 +73,7 @@ class GitHasher:
         # not be the root of the git repo (e.g., within a browser repo)
         cmd = ["ls-tree", "-r", "-z", "HEAD"]
         local_changes = self._local_changes()
-        for result in self.git(*cmd).split("\0")[:-1]:  # type: str
+        for result in self.git(*cmd).split("\0")[:-1]:
             data, rel_path = result.rsplit("\t", 1)
             hash_cache[rel_path] = None if rel_path in local_changes else data.split(" ", 3)[2]
 

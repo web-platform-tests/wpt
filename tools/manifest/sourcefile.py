@@ -527,7 +527,7 @@ class SourceFile:
         else:
             key_part = urljoin(self.url, parts[0])
             reftype = None
-            for ref in self.references:  # type: Tuple[str, str]
+            for ref in self.references:
                 if ref[0] == key_part:
                     reftype = ref[1]
                     break
@@ -565,7 +565,7 @@ class SourceFile:
                 raise ValueError("Malformed fuzzy value %s" % value)
             arg_values: Dict[str, List[int]] = {}
             positional_args: Deque[List[int]] = deque()
-            for range_str_value in ranges:  # type: str
+            for range_str_value in ranges:
                 name: Optional[str] = None
                 if "=" in range_str_value:
                     name, range_str_value = (part.strip()

@@ -236,7 +236,7 @@ class RefTest(URLManifestItem):
             return fuzzy
 
         rv: Fuzzy = {}
-        for k, v in fuzzy:  # type: Tuple[Optional[Sequence[str]], List[int]]
+        for k, v in fuzzy:
             if k is None:
                 key: Optional[Tuple[str, str, str]] = None
             else:

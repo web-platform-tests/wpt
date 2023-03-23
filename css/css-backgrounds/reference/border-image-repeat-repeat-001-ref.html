@@ -14,22 +14,28 @@
 
   div.vertical
     {
-      height: 150px;
-      margin-left: 150px;
-      width: 100px;
+      height: 75px;
+      margin-left: 75px;
+      width: 50px;
     }
 
-  div#horizontal
+  div.horizontal
     {
-      height: 100px;
-      width: 400px;
+      height: 50px;
+      width: 200px;
     }
   </style>
 
-  <p>Test passes if there is a big filled green plus ("+") sign and <strong>no red</strong>.
+  <p>Test passes if there are 2 identical filled green plus ("+") signs and <strong>no red</strong>.
 
   <div class="vertical"></div>
 
-  <div id="horizontal"></div>
+  <div class="horizontal"></div>
+
+  <div class="vertical" style="margin-bottom: 10px;"></div>
+
+  <div class="vertical"></div>
+
+  <div class="horizontal"></div>
 
   <div class="vertical"></div>

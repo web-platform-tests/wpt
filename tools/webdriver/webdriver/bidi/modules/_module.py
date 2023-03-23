@@ -82,7 +82,7 @@ class command:
 
     def __call__(*args: Any, **kwargs: Any) -> Awaitable[Any]:
         # This isn't really used, but mypy doesn't understand __set_name__
-        pass
+        raise NotImplementedError
 
 
 class BidiModule:

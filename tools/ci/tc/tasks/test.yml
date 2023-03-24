@@ -112,6 +112,7 @@ components:
     env:
       TOXENV: py37
       PY_COLORS: "0"
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
     install:
       - python3.7
       - python3.7-distutils

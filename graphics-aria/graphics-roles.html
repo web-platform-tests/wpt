@@ -13,17 +13,17 @@
 
 promise_test(async t => {
   const role = await test_driver.get_computed_role(document.getElementById('d'));
-  assert_true(role == "document");
+  assert_equals(role, "document");
 }, "graphics-document");
 
 promise_test(async t => {
   const role = await test_driver.get_computed_role(document.getElementById('o'));
-  assert_true(role == "group");
+  assert_equals(role, "group");
 }, "graphics-object");
 
 promise_test(async t => {
   const role = await test_driver.get_computed_role(document.getElementById('s'));
-  assert_true(role == "image");
+  assert_equals(role, "image");
 }, "graphics-symbol");
 
 </script>

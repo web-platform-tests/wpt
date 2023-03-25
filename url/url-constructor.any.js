@@ -6,13 +6,14 @@
 // META: variant=?exclude=(file|javascript|mailto)
 
 function bURL(url, base) {
-  return base ? new URL(url, base) : new URL(url)
+  return base !== null ? new URL(url, base) : new URL(url);
 }
 
-function runURLTests(urltests) {
-  for(var i = 0, l = urltests.length; i < l; i++) {
-    var expected = urltests[i]
-    if (typeof expected === "string") continue // skip comments
+function runURLTests(urlTests) {
+  for (const expected of urlTests) {
+    // Skip comments
+    if (typeof expected === "string")
+      continue;
 
     function getKey(expected) {
       if (expected.protocol) {
@@ -28,8 +29,8 @@ function runURLTests(urltests) {
       if (expected.failure) {
         assert_throws_js(TypeError, function() {
           bURL(expected.input, expected.base)
-        })
-        return
+        });
+        return;
       }
 
       var url = bURL(expected.input, expected.base)

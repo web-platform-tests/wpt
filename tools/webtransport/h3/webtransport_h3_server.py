@@ -15,7 +15,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from aioquic.buffer import Buffer  # type: ignore
 from aioquic.asyncio import QuicConnectionProtocol, serve  # type: ignore
 from aioquic.asyncio.client import connect  # type: ignore
-from aioquic.h3.connection import H3_ALPN, FrameType, H3Connection, ProtocolError, Setting  # type: ignore
+from aioquic.h3.connection import H3_ALPN, FrameType, H3Connection, ProtocolError  # type: ignore
 from aioquic.h3.events import H3Event, HeadersReceived, WebTransportStreamDataReceived, DatagramReceived, DataReceived  # type: ignore
 from aioquic.quic.configuration import QuicConfiguration  # type: ignore
 from aioquic.quic.connection import logger as quic_connection_logger  # type: ignore
@@ -158,6 +158,7 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
                 raise ProtocolError((
                     "Receiving a capsule with type = {} after receiving " +
                     "CLOSE_WEBTRANSPORT_SESSION").format(capsule.type))
+            assert self._http.datagram_setting is not None
             if self._http.datagram_setting == H3DatagramSetting.RFC:
                 self._receive_h3_datagram_rfc_capsule_data(
                     capsule=capsule, fin=fin)

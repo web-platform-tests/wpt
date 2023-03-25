@@ -150,6 +150,7 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
                     self._handler.datagram_received(data=event.data)
 
     def _receive_data_on_session_stream(self, data: bytes, fin: bool) -> None:
+        assert self._http is not None
         self._capsule_decoder_for_session_stream.append(data)
         if fin:
             self._capsule_decoder_for_session_stream.final()

@@ -14,9 +14,9 @@ objects. The keys for each test case are:
 
   * `failure` whose value is `true`, indicating that parsing `input` relative to `base` returns
     failure
-  * `relativeTo` whose value is "`non-opaque-path-base`" or "`any-base`", or is omitted in its
-    entirety, indicating that parsing `input` relative to an arbitrary base URL without an opaque
-    path ("`non-opaque-path-base`"), or any base URL, would not result in failure
+  * `relativeTo` whose value is "`non-opaque-path-base`" (input does parse against a non-null base
+    URL without an opaque path) or "`any-base`" (input parses against any non-null base URL), or is
+    omitted in its entirety (input never parses successfully)
 
   or `href`, `origin`, `protocol`, `username`, `password`, `host`, `hostname`, `port`,
   `pathname`, `search`, and `hash` with string values; indicating that parsing `input` should return

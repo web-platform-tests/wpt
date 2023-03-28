@@ -2,25 +2,22 @@
 <html  lang="en" >
 <head>
 <meta charset="utf-8"/>
-<title>:lang(cs-CZ), lang="cs-Latn-CZ"</title>
-<link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
-<link rel='help' href='http://www.w3.org/TR/css3-selectors/#lang-pseudo'>
+<title>:lang(*-DE), lang="de"</title>
+<link rel='author' title='Roger Zanoni' href='mailto:rzanoni@igalia.com'>
+<link rel='help' href='https://www.w3.org/TR/selectors-4/#the-lang-pseudo'>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style type='text/css'>
 .test div { width: 50px; }
  		#colonlangcontroltest { color: red; font-weight: bold; width: 400px; }
 		#colonlangcontroltest:lang(xx) { display:none; }
-#box:lang(cs-CZ) { width: 100px; }
+#box:lang(\*-DE) { width: 100px; }
 </style>
 </head>
 <body>
 
-
-
-<div class="test"><div id="box" lang="cs-Latn-CZ">&#xA0;</div></div>
+<div class="test"><div id="box" lang="de">&#xA0;</div></div>
 <p lang='xx' id='colonlangcontroltest'>This test failed because it relies on :lang for results, but :lang is not supported by this browser.
-
 
 <!--Notes:
 This tests a detail related to :lang support. If :lang is not supported, a message will appear and the test will fail.
@@ -29,7 +26,7 @@ This tests a detail related to :lang support. If :lang is not supported, a messa
 test(function() {
 assert_equals(document.getElementById('colonlangcontroltest').offsetWidth, 0)
 assert_equals(document.getElementById('box').offsetWidth, 50);
-}, "A :lang value with language and region subtags will NOT match a lang attribute value with language, script and region subtags.");
+}, "A :lang value containing a wildcards will NOT match a lang attribute value when the former contains more subtags");
 </script>
 
 <div id='log'></div>

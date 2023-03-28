@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8"/>
+<title>:lang(de-DE), lang="de-Latn-DE-1996"</title>
+<link rel='author' title='Roger Zanoni' href='mailto:rzanoni@igalia.com'>
+<link rel='help' href='https://www.w3.org/TR/selectors-4/#the-lang-pseudo'>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style type='text/css'>
+.test div { width: 50px; }
+ 		#colonlangcontroltest { color: red; font-weight: bold; width: 400px; }
+		#colonlangcontroltest:lang(xx) { display:none; }
+#box:lang(de-DE) { width: 100px; }
+</style>
+</head>
+<body>
+
+<div class="test"><div id="box" lang="de-Latn-DE-1996">&#xA0;</div></div>
+<p lang='xx' id='colonlangcontroltest'>This test failed because it relies on :lang for results, but :lang is not supported by this browser.
+
+<!--Notes:
+This tests a detail related to :lang support. If :lang is not supported, a message will appear and the test will fail.
+-->
+<script>
+test(function() {
+assert_equals(document.getElementById('colonlangcontroltest').offsetWidth, 0)
+assert_equals(document.getElementById('box').offsetWidth, 100);
+}, "A :lang value with a language range will match a lang attribute value when all subtags from the range have a match, even if the lang attribute still have unmatched remaining tags.");
+</script>
+
+<div id='log'></div>
+
+</body>
+</html>

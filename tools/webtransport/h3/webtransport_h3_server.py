@@ -48,7 +48,7 @@ quic_connection_logger.setLevel(logging.WARNING)
 class H3DatagramSetting(IntEnum):
     # https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-04#section-8.1
     DRAFT04 = 0xffd277
-    # https://datatracker.ietf.org/doc/html/rfc9297#name-http-3-setting
+    # https://datatracker.ietf.org/doc/html/rfc9220#section-5-2.2.1
     RFC = 0x33
 
 

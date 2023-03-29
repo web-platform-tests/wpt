@@ -177,7 +177,7 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
                 data=capsule.data, fin=fin)
         else:
             # Ignore unknown capsules.
-            pass
+            return
 
     def _receive_h3_datagram_draft04_capsule_data(
             self, capsule: H3Capsule, fin: bool) -> None:

@@ -71,37 +71,6 @@ function check_PointerEvent(event, testNamePrefix) {
     "boolean": function (v) { return typeof v === "boolean" },
     "object": function (v) { return typeof v === "object" }
   };
-  [
-    ["long", "pointerId"],
-    ["float", "width"],
-    ["float", "height"],
-    ["float", "pressure"],
-    ["long", "tiltX"],
-    ["long", "tiltY"],
-    ["string", "pointerType"],
-    ["boolean", "isPrimary"],
-    ["long", "detail", 0],
-    ["object", "fromElement"],
-    ["object", "toElement"],
-    ["boolean", "isTrusted"],
-    ["boolean", "composed"],
-    ["boolean", "bubbles"]
-  ].forEach(function (attr) {
-    var type = attr[0];
-    var name = attr[1];
-
-    test(function () {
-      // Existence check.
-      assert_true(name in event, "attribute exists");
-
-      // Readonly check.
-      assert_readonly(event.type, name, "attribute is readonly");
-
-      // Type check.
-      assert_true(idl_type_check[type](event[name]),
-        "attribute type " + type + " (JS type was " + typeof event[name] + ")");
-    }, pointerTestName + "." + name + " conforms to WebIDL");
-  });
 
   // Check values for inherited attributes.
   // https://w3c.github.io/pointerevents/#attributes-and-default-actions

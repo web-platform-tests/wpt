@@ -75,9 +75,11 @@ function check_PointerEvent(event, testNamePrefix) {
   // Check values for inherited attributes.
   // https://w3c.github.io/pointerevents/#attributes-and-default-actions
   test(function () {
+    assert_implements_optional("fromElement" in event);
     assert_equals(event.fromElement, null);
   }, pointerTestName + ".fromElement value is null");
   test(function () {
+    assert_implements_optional("toElement" in event);
     assert_equals(event.toElement, null);
   }, pointerTestName + ".toElement value is null");
   test(function () {

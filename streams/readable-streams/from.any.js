@@ -342,6 +342,28 @@ promise_test(async t => {
 
 }, `ReadableStream.from: return() is not called when iterator completes normally`);
 
+promise_test(async t => {
+
+  const theError = new Error('a unique string');
+
+  const iterable = {
+    next: t.unreached_func('next() should not be called'),
+    throw: t.unreached_func('throw() should not be called'),
+    async return() {
+      return 42;
+    },
+    [Symbol.asyncIterator]: () => iterable
+  };
+
+  const rs = ReadableStream.from(iterable);
+  const reader = rs.getReader();
+
+  await promise_rejects_js(t, TypeError, reader.cancel(theError), 'cancel() should reject with a TypeError');
+
+  await reader.closed;
+
+}, `ReadableStream.from: cancel() rejects when return() fulfills with a non-object`);
+
 promise_test(async () => {
 
   let nextCalls = 0;
@@ -413,6 +435,7 @@ promise_test(async t => {
     async return() {
       returnCalls++;
       await reader.cancel();
+      return { done: true };
     },
     [Symbol.asyncIterator]: () => iterable
   };

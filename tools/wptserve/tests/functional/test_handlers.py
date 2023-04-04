@@ -137,6 +137,7 @@ class TestFunctionHandler(TestUsingServer):
             self.request(route[1])
 
         assert cm.value.code == 500
+        del cm
 
     def test_tuple_2_rv(self):
         @wptserve.handlers.handler
@@ -188,6 +189,7 @@ class TestFunctionHandler(TestUsingServer):
             self.request(route[1])
 
         assert cm.value.code == 500
+        del cm
 
     def test_none_rv(self):
         @wptserve.handlers.handler
@@ -278,18 +280,21 @@ class TestPythonHandler(TestUsingServer):
             self.request("/no_main.py")
 
         assert cm.value.code == 500
+        del cm
 
     def test_invalid(self):
         with pytest.raises(HTTPError) as cm:
             self.request("/invalid.py")
 
         assert cm.value.code == 500
+        del cm
 
     def test_missing(self):
         with pytest.raises(HTTPError) as cm:
             self.request("/missing.py")
 
         assert cm.value.code == 404
+        del cm
 
 
 class TestDirectoryHandler(TestUsingServer):

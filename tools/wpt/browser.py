@@ -869,7 +869,7 @@ class Chromium(ChromeChromiumBase):
 
         self.last_revision_used = meta["revision"]
         with open(os.path.join(dest, "revision"), "w") as f:
-            f.write(revision)
+            f.write(self.last_revision_used)
 
         return output_path
 

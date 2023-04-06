@@ -693,7 +693,7 @@
 
         async click(element, coords) {
             if (this.in_automation) {
-                throw new Error("click() can't be called when test_driver_internal.in_automation is true");
+                throw new Error("click() is not implemented by test driver-vendor.js");
             }
 
             return new Promise(function(resolve, reject) {

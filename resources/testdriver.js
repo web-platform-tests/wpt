@@ -715,7 +715,7 @@
 
         async send_keys(element, keys) {
             if (this.in_automation) {
-                throw new Error("send_keys() can't be called when test_driver_internal.in_automation is true");
+                throw new Error("send_keys() is not implemented by test driver-vendor.js");
             }
 
             return new Promise(function(resolve, reject) {

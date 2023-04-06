@@ -11,7 +11,7 @@ PAGE_EMPTY_HTML = "/webdriver/tests/bidi/network/support/empty.html"
 
 
 @pytest.fixture
-def fetch(bidi_session, top_context):
+def fetch(bidi_session, top_context, configuration):
     """Perform a fetch from the page of the provided context, default to the
     top context.
     """
@@ -21,6 +21,8 @@ def fetch(bidi_session, top_context):
         headers_arg = ""
         if headers != None:
             headers_arg = f"headers: {json.dumps(headers)},"
+
+        timeout = timeout * configuration["timeout_multiplier"]
 
         # Wait for fetch() to resolve a response and for response.text() to
         # resolve as well to make sure the request/response is completed when

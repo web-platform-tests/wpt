@@ -15,7 +15,7 @@ def fetch(bidi_session, top_context):
     """Perform a fetch from the page of the provided context, default to the
     top context.
     """
-    async def fetch(url, method="GET", headers=None, context=top_context):
+    async def fetch(url, method="GET", headers=None, context=top_context, timeout=1000):
         method_arg = f"method: '{method}',"
 
         headers_arg = ""
@@ -27,9 +27,12 @@ def fetch(bidi_session, top_context):
         # the helper returns.
         await bidi_session.script.evaluate(
             expression=f"""
+                 const controller = new AbortController();
+                 setTimeout(() => controller.abort(), {timeout});
                  fetch("{url}", {{
                    {method_arg}
                    {headers_arg}
+                   signal: controller.signal
                  }}).then(response => response.text());""",
             target=ContextTarget(context["context"]),
             await_promise=True,

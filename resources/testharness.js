@@ -2566,6 +2566,12 @@
             return;
         }
 
+        if (this.phase !== this.phases.STARTED) {
+            console.log("STARTIIING")
+            window.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "START", content: {'isSecure': window.isSecureContext, 'wid': window.__id__, 'name': this.name}, ts: Date.now()}}))
+            console.log("LOG", window)
+        }
+
         if (settings.debug && this.phase !== this.phases.STARTED) {
             console.log("TEST START", this.name);
         }
@@ -2639,6 +2645,13 @@
 
         return function()
         {
+            // console.log("ARGS", arguments[0])Vjj
+            // console.log("ARGS2", arguments)
+            // console.log("ARGS", func.toString())
+            
+            var msg = {'isSecure': window.isSecureContext ,'orig': document.url, 'frame': frameElement, 'type': `Step`, 'args': [func.toString(), "RESPONSE PLACEHOLDER"]}
+            window.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "EVENT", content: msg, ts: Date.now()}}))
+
             return test_this.step.apply(test_this, [func, this_obj].concat(
                 Array.prototype.slice.call(arguments)));
         };
@@ -2945,6 +2958,8 @@
      * be cancelled.
      */
     Test.prototype.cleanup = function() {
+        for(let i = 0; i < 1000000; i++);
+        window.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "END", content: {'isSecure': window.isSecureContext, 'wid': window.__id__, 'name': this.name, 'status': !this.status}, ts: Date.now()}}))
         var errors = [];
         var bad_value_count = 0;
         function on_error(e) {
@@ -4334,6 +4349,8 @@
             log.appendChild(document.createElementNS(xhtml_ns, "pre"))
                .textContent = html;
         }
+
+        window.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "DOWNLOAD", content: "", ts: Date.now()}}))
     };
 
     /*

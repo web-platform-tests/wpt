@@ -9,7 +9,7 @@
   <script src="/resources/testdriver-actions.js"></script>
   <script src="/wai-aria/scripts/aria-utils.js"></script>
 </head>
-<body data-testname="el-body" data-expectedrole="generic" class="ex-invalid-test">
+<body>
 
 <!-- Most test names correspond to unique ID defined in the https://w3c.github.io/html-aam/ spec. -->
 
@@ -17,16 +17,7 @@
 <a data-testname="el-a-no-href" data-expectedrole="generic" class="ex">x</a>
 <!-- todo: abbr -->
 <address data-testname="el-address" data-expectedrole="group" class="ex">x</address>
-
-<!-- todo: area (crash) -->
-<!-- 
-<map name="areamap">
-    <area shape="rect" coords="0,0,15,15" href="#" alt="x" data-testname="el-area" data-expectedrole="link" class="ex">
-    <area shape="rect" coords="15,15,31,31" alt="x" data-testname="el-area-no-href" data-expectedrole="generic" class="ex">
-</map>
-<img usemap="#areamap" src="#" style="width: 32px; height: 32px;" alt="x">
- -->
-
+<!-- area -> ./fragile/area-role.html -->
 <article data-testname="el-article" data-expectedrole="article" class="ex">x</article>
 
 <!-- el-aside -->
@@ -43,17 +34,11 @@
 <bdi data-testname="el-bdi" data-expectedrole="generic" class="ex">x</bdi>
 <bdo data-testname="el-bdo" data-expectedrole="generic" class="ex">x</bdo>
 <blockquote data-testname="el-blockquote" data-expectedrole="blockquote" class="ex">x</blockquote>
-<!-- skip: body (tested above) -->
+<!-- todo: body -->
 <!-- skip: br -->
 <button data-testname="el-button" data-expectedrole="button" class="ex">x</button>
 <!-- todo: canvas -->
-
-<!-- caption -->
-<table>
-  <caption data-testname="el-caption" data-expectedrole="caption" class="ex">x</caption>
-  <tr><td>x</td></tr>
-</table>
-
+<!-- caption -> ./table-roles.html -->
 <!-- todo: cite -->
 <code data-testname="el-code" data-expectedrole="code" class="ex">x</code>
 <!-- todo: col -->
@@ -112,7 +97,7 @@
 
 <hgroup data-testname="el-hgroup" data-expectedrole="group" class="ex"><h1>x</h1></hgroup>
 <hr data-testname="el-hr" data-expectedrole="separator" class="ex">
-<!-- todo: html (not certain this gets rendered per-se, or should be 'document') -->
+<!-- todo: html -->
 <i data-testname="el-i" data-expectedrole="generic" class="ex">x</i>
 <!-- todo: iframe -->
 <img src="#" alt="x" data-testname="el-img" data-expectedrole="image" class="ex">
@@ -131,7 +116,10 @@
 <!-- todo: input type="file" -->
 <!-- skip: input type="hidden" -->
 <!-- todo: input type="month" -->
-<input type="number" data-testname="el-input-number" data-expectedrole="spinbutton" class="ex">
+
+<!-- Blocked: HTML-AAM Issue #467 -->
+<!-- <input type="number" data-testname="el-input-number" data-expectedrole="spinbutton" class="ex"> -->
+
 <!-- todo: input type="password" -->
 <input type="radio" data-testname="el-input-radio" data-expectedrole="radio" class="ex">
 <input type="range" data-testname="el-input-range" data-expectedrole="slider" class="ex">
@@ -167,18 +155,12 @@
 <!-- skip: object -->
 <ol data-testname="el-ol" data-expectedrole="list" class="ex"><li>x</li><li>x</li></ol>
 
-<!-- optgroup and option -->
+<!-- optgroup -> ./fragile/optgroup-role.html -->
+
+<!-- option -->
 <select>
-  <!-- todo: optgroup (crash) -->
-  <optgroup label="x" data-testname="el-optgroup" data-expectedrole="group" class="ex-crash">
-    <!-- run option -->
-    <option data-testname="el-option" data-expectedrole="option" class="ex">x1</option>
-    <option>x2</option>
-  </optgroup>
-  <optgroup label="y">
-    <option>y1</option>
-    <option>y2</option>
-  </optgroup>
+  <option data-testname="el-option" data-expectedrole="option" class="ex">x</option>
+  <option>x</option>
 </select>
 
 <output data-testname="el-output" data-expectedrole="status" class="ex">x</output>
@@ -188,9 +170,9 @@
 <pre data-testname="el-pre" data-expectedrole="generic" class="ex">x</pre>
 <progress data-testname="el-progress" data-expectedrole="progressbar" class="ex">x</progress>
 <q data-testname="el-q" data-expectedrole="generic" class="ex">x</q>
-<!-- todo: rp -->
-<!-- todo: rt -->
-<!-- todo: ruby -->
+<!-- todo: rp -> /ruby-aam? -->
+<!-- todo: rt -> /ruby-aam? -->
+<!-- todo: ruby -> /ruby-aam? -->
 <s data-testname="el-s" data-expectedrole="deletion" class="ex">x</s>
 <samp data-testname="el-samp" data-expectedrole="generic" class="ex">x</samp>
 <!-- skip: script -->
@@ -200,8 +182,8 @@
 <section data-testname="el-section" aria-label="x" data-expectedrole="region" class="ex">x</section>
 <section data-testname="el-section-no-name" data-expectedrole="generic" class="ex">x</section>
 
-<!-- HTML-AAM Issue TBD: Mac presents as popup button, so possibly should not equate to computedrole combobox; that's a Windows-style presentation. Need to discuss further. -->
-<!-- <select data-testname="el-select-combobox" data-expectedrole="combobox" class="ex"><option>a1</option><option>a2</option></select> -->
+<!-- Blocked: HTML-AAM Issue #467 -->
+<!-- <select data-testname="el-select-combobox" data-expectedrole="combobox" class="ex"><option>a1</option><option>a2</option></select>-->
 
 <select data-testname="el-select-listbox" size="2" data-expectedrole="listbox" class="ex"><option>b1</option><option>b2</option></select>
 

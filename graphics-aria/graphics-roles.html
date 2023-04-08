@@ -1,29 +1,22 @@
 <!doctype html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
-<script src="/resources/testdriver-actions.js"></script>
+<html>
+<head>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+</head>
+<body>
 
-<div role="graphics-document" id="d">x</div>
-<div role="graphics-object" id="o">x</div>
-<div role="graphics-symbol" id="s">x</div>
+<div role="graphics-document" data-expectedrole="document" class="ex">x</div>
+<div role="graphics-object" data-expectedrole="group" class="ex">x</div>
+<div role="graphics-symbol" data-expectedrole="image" class="ex">x</div>
 
 <script>
-
-promise_test(async t => {
-  const role = await test_driver.get_computed_role(document.getElementById('d'));
-  assert_equals(role, "document");
-}, "graphics-document");
-
-promise_test(async t => {
-  const role = await test_driver.get_computed_role(document.getElementById('o'));
-  assert_equals(role, "group");
-}, "graphics-object");
-
-promise_test(async t => {
-  const role = await test_driver.get_computed_role(document.getElementById('s'));
-  assert_equals(role, "image");
-}, "graphics-symbol");
-
+AriaUtils.verifyRolesBySelector(".ex");
 </script>
+
+</body>
+</html>

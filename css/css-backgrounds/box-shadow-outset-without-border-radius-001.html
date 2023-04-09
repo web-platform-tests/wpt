@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+ <meta charset="UTF-8">
+
+  <title>CSS Backgrounds and Borders Test: box-shadow outset with spread</title>
+  <link rel="author" title="Zhang Xiaochong" href="mailto:joy.xczhang@gmail.com">
+  <link rel="help" href="http://www.w3.org/TR/css3-background/#the-box-shadow">
+  <link rel="match" href="reference/box-shadow-inset-without-border-radius-ref.html">
+
+  <meta content="" name="flags">
+
+  <!--
+
+  Reviewed by Gérard Talbot on April 9th 2023
+
+  More info: https://github.com/web-platform-tests/wpt/issues/10013
+
+  -->
+
+  <style type="text/css">
+  div
+    {
+      background-color: green;
+      display: inline-block;
+      height: 20px;
+      vertical-align: top;
+      width: 20px;
+    }
+
+  div#first-subtest  /* outset with a 40px spread */
+    {
+      box-shadow: green 0px 20px 0 40px;
+      margin-left: 40px;
+      margin-top: 20px;
+    }
+
+  div#second-subtest  /* outset with a 40px spread */
+    {
+      box-shadow: green 20px 0px 0 40px;
+      margin-top: 40px;
+      margin-left: 60px; /* <-- so that we can reuse another reference file */
+    }
+
+  div.ref-overlapped-red
+    {
+      background-color: red;
+      height: 100px;
+      position: relative;
+      right: 60px;
+      width: 100px;
+      z-index: -1;
+    }
+    </style>
+
+  <p>The test passes if there are 2 filled green squares and <strong>no red</strong>.
+
+  <div class="test-overlapping-green" id="first-subtest"></div><div class="ref-overlapped-red "></div><div class="test-overlapping-green" id="second-subtest"></div><div class="ref-overlapped-red" style="margin-left: 20px;"></div>

@@ -1,35 +1,50 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>CSS Backgrounds and Borders Test: box-shadow</title>
-    <link rel="author" title="Zhang Xiaochong" href="mailto:joy.xczhang@gmail.com">
-    <link rel="help" href="http://www.w3.org/TR/css3-background/#the-box-shadow">
-    <link rel="match" href="reference/box-shadow-inset-without-border-radius.html">
-    <meta name="assert" content="inset box-shadow should show shadow.">
-    <style type="text/css">
-        .container {
-            position: relative;
-        }
-        .container div {
-            position: absolute;
-            height: 150px;
-            width: 150px;
-            left: 0;
-            top: 0;
-        }
-        .container .test {
-            box-shadow: red 10px 10px inset;
-        }
-        .container .ref {
-            background-color: green;
-        }
+
+ <meta charset="UTF-8">
+
+  <title>CSS Backgrounds and Borders Test: box-shadow inset</title>
+
+  <link rel="author" title="Zhang Xiaochong" href="mailto:joy.xczhang@gmail.com">
+  <link rel="help" href="http://www.w3.org/TR/css3-background/#the-box-shadow">
+  <link rel="match" href="reference/box-shadow-inset-without-border-radius-ref.html">
+
+  <meta content="" name="flags">
+
+  <!--
+
+  Reviewed by Gérard Talbot on April 9th 2023
+
+  More info: https://github.com/web-platform-tests/wpt/issues/10013
+
+  -->
+
+  <style type="text/css">
+  div
+    {
+      display: inline-block;
+      height: 100px;
+      width: 100px;
+    }
+
+  div#first-subtest /* inset with a 50px spread */
+    {
+      box-shadow: green 20px 20px 0 50px inset;
+    }
+
+  div#second-subtest /* inset with NO spread */
+    {
+      box-shadow: green 100px 100px inset;
+    }
+
+  div.ref-overlapped-red
+    {
+      background-color: red;
+      position: relative;
+      right: 100px;
+      z-index: -1;
+    }
     </style>
-</head>
-<body>
-    <p>The test passes if there is a filled green square and no red.</p>
-    <div class="container">
-        <div class="test"></div>
-        <div class="ref"></div>
-    </div>
-</body>
-</html>
+
+  <p>The test passes if there are 2 filled green squares and <strong>no red</strong>.
+
+  <div class="test-overlapping-green" id="first-subtest"></div><div class="ref-overlapped-red"></div><div class="test-overlapping-green" id="second-subtest"></div><div class="ref-overlapped-red"></div>

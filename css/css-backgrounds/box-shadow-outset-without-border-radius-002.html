@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+ <meta charset="UTF-8">
+
+  <title>CSS Backgrounds and Borders Test: box-shadow outset without spread</title>
+  <link rel="author" title="Zhang Xiaochong" href="mailto:joy.xczhang@gmail.com">
+  <link rel="help" href="http://www.w3.org/TR/css3-background/#the-box-shadow">
+  <link rel="match" href="reference/ref-filled-green-100px-square.xht">
+
+  <meta content="" name="flags">
+
+  <!--
+
+  Reviewed by Gérard Talbot on April 9th 2023
+
+  More info: https://github.com/web-platform-tests/wpt/issues/10013
+
+  -->
+
+  <style type="text/css">
+  div
+    {
+      display: inline-block;
+    }
+
+  div.test-overlapping-green
+    {
+      background-color: green;
+      height: 50px;
+      vertical-align: top;
+      width: 50px;
+    }
+
+  div#first-subtest  /* outset with NO spread */
+    {
+      box-shadow: green 50px 50px;
+    }
+
+  div#second-subtest  /* outset with NO spread */
+    {
+      box-shadow: green -50px 50px;
+    }
+
+  div.ref-overlapped-red
+    {
+      background-color: red;
+      height: 100px;
+      position: relative;
+      right: 100px;
+      width: 100px;
+      z-index: -1;
+    }
+    </style>
+
+  <p>The test passes if there is a filled green square and <strong>no red</strong>.
+
+  <div class="test-overlapping-green" id="first-subtest"></div><div class="test-overlapping-green" id="second-subtest"></div><div class="ref-overlapped-red"></div>

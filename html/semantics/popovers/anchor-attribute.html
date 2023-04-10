@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id=myanchor></div>
+<div id=target anchor=myanchor></div>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
+div {
+  width: 50px;
+  height: 50px;
+}
+#myanchor {
+  margin-left: 100px;
+  margin-top: 100px;
+}
+#target {
+  position: absolute;
+  left: anchor(right);
+  top: anchor(bottom);
+}
+</style>
+
+<script>
+test(() => {
+  assert_equals(target.offsetLeft, 150);
+  assert_equals(target.offsetTop, 150);
+}, 'The anchor attribute should position the element next to its target element.');
+
+test(() => {
+  assert_equals(target.anchorElement, myanchor);
+}, 'The element.anchorElement IDL should reflect the element pointed to by the anchor attribute.');
+</script>

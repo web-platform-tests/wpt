@@ -693,7 +693,7 @@
 
         async click(element, coords) {
             if (this.in_automation) {
-                throw new Error("click() is not implemented by test driver-vendor.js");
+                throw new Error("click() is not implemented by testdriver-vendor.js");
             }
 
             return new Promise(function(resolve, reject) {
@@ -715,7 +715,7 @@
 
         async send_keys(element, keys) {
             if (this.in_automation) {
-                throw new Error("send_keys() is not implemented by test driver-vendor.js");
+                throw new Error("send_keys() is not implemented by testdriver-vendor.js");
             }
 
             return new Promise(function(resolve, reject) {
@@ -774,7 +774,7 @@
         },
 
         async remove_virtual_authenticator(authenticator_id, context=null) {
-            throw new Error("remove_virtual_authenticator() not implemented");
+            throw new Error("remove_virtual_authenticator() is not implemented by testdriver-vendor.js");
         },
 
         async add_credential(authenticator_id, credential, context=null) {

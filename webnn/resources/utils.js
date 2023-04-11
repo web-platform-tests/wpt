@@ -33,11 +33,12 @@ const loadTests = (operationName) => {
     }
   };
 
-  const capitalLetterMatches = operationName.match(/[A-Z]/);
+  const capitalLetterMatches = operationName.match(/[A-Z]/g);
   if (capitalLetterMatches !== null) {
-    // for example: the test data JSON file for leakyRelu is leaky_relu.json
-    const capitalLetter = capitalLetterMatches[0];
-    operationName = operationName.replace(capitalLetter, `_${capitalLetter.toLowerCase()}`);
+    // for example: the test data JSON file for leakyRelu is leaky_relu.json and for reduceLogSum is reduce_log_sum.json
+    capitalLetterMatches.forEach(
+      capitalLetter => operationName = operationName.replace(capitalLetter, `_${capitalLetter.toLowerCase()}`)
+    )
   }
   const json = loadJSON(`/webnn/resources/test_data/${operationName}.json`);
   const resources = JSON.parse(json.replace(/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g, (m, g) => g ? "" : m));
@@ -232,8 +233,29 @@ const getReductionPrecisionTolerance = (resources, operationName) => {
   let tolerance = sizes.reduce(
                       (accumulator, currentValue) => accumulator * currentValue
   );
-  if (operationName === 'reduceMean') {
-    tolerance += 2;
+  switch (operationName) {
+    case 'reduceL1':
+    case 'reduceProduct':
+    case 'reduceSum':
+      // directly use above computed tolerance
+      break;
+    case 'reduceL2':
+      tolerance = tolerance * 2 + 1;
+      break;
+    case 'reduceMean':
+      tolerance += 2;
+      break;
+    case 'reduceLogSum':
+      tolerance += 18;
+      break;
+    case 'reduceLogSumExp':
+      tolerance = tolerance * 2 + 18;
+      break;
+    case 'reduceSumSquare':
+      tolerance = tolerance * 2;
+      break;
+    default:
+      break;
   }
   return tolerance;
 };
@@ -276,11 +298,16 @@ const PrecisionMetrics = {
   // End Pooling operations
   prelu: {ULP: {float32: 1, float16: 1}},
   // Begin Reduction operations
+  reduceL1: {ULP: {float32: getReductionPrecisionTolerance, float16: getReductionPrecisionTolerance}},
+  reduceL2: {ULP: {float32: getReductionPrecisionTolerance, float16: getReductionPrecisionTolerance}},
+  reduceLogSum: {ULP: {float32: getReductionPrecisionTolerance, float16: getReductionPrecisionTolerance}},
+  reduceLogSumExp: {ULP: {float32: getReductionPrecisionTolerance, float16: getReductionPrecisionTolerance}},
   reduceMax: {ULP: {float32: 0, float16: 0}},
   reduceMean: {ULP: {float32: getReductionPrecisionTolerance, float16: getReductionPrecisionTolerance}},
   reduceMin: {ULP: {float32: 0, float16: 0}},
   reduceProduct: {ULP: {float32: getReductionPrecisionTolerance, float16: getReductionPrecisionTolerance}},
   reduceSum: {ULP: {float32: getReductionPrecisionTolerance, float16: getReductionPrecisionTolerance}},
+  reduceSumSquare: {ULP: {float32: getReductionPrecisionTolerance, float16: getReductionPrecisionTolerance}},
   // End Reduction operations
   relu: {ULP: {float32: 0, float16: 0}},
   reshape: {ULP: {float32: 0, float16: 0}},

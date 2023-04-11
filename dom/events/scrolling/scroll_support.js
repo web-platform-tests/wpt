@@ -258,21 +258,31 @@ function conditionHolds(condition, error_message = 'Condition is not true anymor
 }
 
 function scrollElementDown(element, scroll_amount) {
-  let x = 0;
-  let y = 0;
+  // Manually place the mouse cursor over the element as
+  // geckodriver doesn't seem to handle
+  // Actions().scroll(..., { origin: element }) correctly.
+  let x = Math.round(element.getBoundingClientRect().left +
+                     element.clientWidth / 2);
+  let y = Math.round(element.getBoundingClientRect().top +
+                     element.clientHeight / 2);
   let delta_x = 0;
   let delta_y = scroll_amount;
   let actions = new test_driver.Actions()
-  .scroll(x, y, delta_x, delta_y, {origin: element});
+  .scroll(x, y, delta_x, delta_y);
   return  actions.send();
 }
 
 function scrollElementLeft(element, scroll_amount) {
-  let x = 0;
-  let y = 0;
+  // Manually place the mouse cursor over the element as
+  // geckodriver doesn't seem to handle
+  // Actions().scroll(..., { origin: element }) correctly.
+  let x = Math.round(element.getBoundingClientRect().left +
+                     element.clientWidth / 2);
+  let y = Math.round(element.getBoundingClientRect().top +
+                     element.clientHeight / 2);
   let delta_x = scroll_amount;
   let delta_y = 0;
   let actions = new test_driver.Actions()
-  .scroll(x, y, delta_x, delta_y, {origin: element});
+  .scroll(x, y, delta_x, delta_y);
   return  actions.send();
 }

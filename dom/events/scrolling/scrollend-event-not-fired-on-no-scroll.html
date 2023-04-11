@@ -54,12 +54,17 @@
 
   async function upwardScroll(scrolling_element, button_element, scroll_type) {
     if (scroll_type == "wheel") {
-      let x = 0;
-      let y = 0;
+      // Manually place the mouse cursor over the element as
+      // geckodriver doesn't seem to handle
+      // Actions().scroll(..., { origin: element }) correctly.
+      let x = Math.round(scrolling_element.getBoundingClientRect().left +
+        scrolling_element.clientWidth / 2);
+      let y = Math.round(scrolling_element.getBoundingClientRect().top +
+      scrolling_element.clientHeight / 2);
       let delta_x = 0;
       let delta_y = -50;
       let actions = new test_driver.Actions()
-      .scroll(x, y, delta_x, delta_y, {origin: scrolling_element});
+        .scroll(x, y, delta_x, delta_y);
       await actions.send();
     } else if (scroll_type == "keys") {
       const num_keydowns = 5;
@@ -71,13 +76,13 @@
   }
 
   async function testScrollendNotFiredOnNoScroll(test, scrolling_element,
-                                                 listening_element,
-                                                 button_element, scroll_type) {
+    listening_element,
+    button_element, scroll_type) {
     await resetScrollers(test);
     await waitForCompositorCommit();
 
     assert_greater_than(scrolling_element.scrollHeight,
-                        scrolling_element.clientHeight);
+      scrolling_element.clientHeight);
     assert_equals(scrolling_element.scrollTop, 0);
 
     let scrollend_promise = waitForScrollendEvent(test, listening_element);
@@ -93,22 +98,22 @@
   function runTest() {
     promise_test(async (t) => {
       await testScrollendNotFiredOnNoScroll(t, target_div, target_div,
-                                            targetButton, "wheel");
+        targetButton, "wheel");
     }, "No scroll via wheel on div shouldn't fire scrollend.");
 
     promise_test(async (t) => {
       await testScrollendNotFiredOnNoScroll(t, target_div, target_div,
-                                            targetButton, "keys");
+        targetButton, "keys");
     }, "No scroll via keys on div shouldn't fire scrollend.");
 
     promise_test(async (t) => {
       await testScrollendNotFiredOnNoScroll(t, document.scrollingElement,
-                                            document, docButton, "wheel");
+        document, docButton, "wheel");
     }, "No scroll via wheel on document shouldn't fire scrollend.");
 
     promise_test(async (t) => {
       await testScrollendNotFiredOnNoScroll(t, document.scrollingElement,
-                                            document, docButton, "keys");
+        document, docButton, "keys");
     }, "No scroll via keys on document shouldn't fire scrollend.")
   }
 </script>

@@ -10,6 +10,12 @@
   const responder_html = "/storage-access-api/resources/script-with-cookie-header.py?script=embedded_responder.js";
 
   if (window === window.top) {
+    promise_test(async (t) => {
+      const status =
+          await navigator.permissions.query({name: 'storage-access'});
+      assert_equals(status.state, 'granted');
+    }, 'Permissions query should be granted by default in top-level');
+
     // Test the interaction between two (same-origin) iframes.
     promise_test(async (t) => {
       const [frame1, frame2] = await Promise.all([

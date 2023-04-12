@@ -15,14 +15,14 @@ def fetch(bidi_session, top_context, configuration):
     """Perform a fetch from the page of the provided context, default to the
     top context.
     """
-    async def fetch(url, method="GET", headers=None, context=top_context, timeout=1000):
+    async def fetch(url, method="GET", headers=None, context=top_context, timeout_in_seconds=1):
         method_arg = f"method: '{method}',"
 
         headers_arg = ""
         if headers != None:
             headers_arg = f"headers: {json.dumps(headers)},"
 
-        timeout = timeout * configuration["timeout_multiplier"]
+        timeout_in_seconds = timeout_in_seconds * configuration["timeout_multiplier"]
 
         # Wait for fetch() to resolve a response and for response.text() to
         # resolve as well to make sure the request/response is completed when
@@ -30,7 +30,7 @@ def fetch(bidi_session, top_context, configuration):
         await bidi_session.script.evaluate(
             expression=f"""
                  const controller = new AbortController();
-                 setTimeout(() => controller.abort(), {timeout});
+                 setTimeout(() => controller.abort(), {timeout_in_seconds * 1000});
                  fetch("{url}", {{
                    {method_arg}
                    {headers_arg}

@@ -30,12 +30,12 @@
 <!-- todo: audio -->
 <!-- todo: autonomous custom element -->
 <b data-testname="el-b" data-expectedrole="strong" class="ex">x</b>
-<!-- skip: base -->
+<!-- base (not mapped) -->
 <bdi data-testname="el-bdi" data-expectedrole="generic" class="ex">x</bdi>
 <bdo data-testname="el-bdo" data-expectedrole="generic" class="ex">x</bdo>
 <blockquote data-testname="el-blockquote" data-expectedrole="blockquote" class="ex">x</blockquote>
 <!-- todo: body -->
-<!-- skip: br -->
+<!-- br (not mapped) -->
 <button data-testname="el-button" data-expectedrole="button" class="ex">x</button>
 <!-- todo: canvas -->
 <!-- caption -> ./table-roles.html -->
@@ -87,7 +87,7 @@
 <h5 data-testname="el-h5" data-expectedrole="heading" class="ex">x</h5>
 <h6 data-testname="el-h6" data-expectedrole="heading" class="ex">x</h6>
 
-<!-- skip: head -->
+<!-- head (not mapped) -->
 
 <!-- el-header -->
 <nav>
@@ -114,7 +114,7 @@
 <!-- todo: input type="datetime-local" -->
 <input type="email" data-testname="el-input-email" data-expectedrole="textbox" class="ex">
 <!-- todo: input type="file" -->
-<!-- skip: input type="hidden" -->
+<!-- input type="hidden" (not mapped) -->
 <!-- todo: input type="month" -->
 
 <!-- Blocked: HTML-AAM Issue #467 -->
@@ -142,17 +142,17 @@
 <ul><li data-testname="el-li-in-ul" data-expectedrole="listitem" class="ex">x</li><li>x</li></ul>
 <ol><li data-testname="el-li-in-ol" data-expectedrole="listitem" class="ex">x</li><li>x</li></ol>
 
-<!-- skip: link -->
+<!-- link (not mapped) -->
 <main data-testname="el-main" data-expectedrole="main" class="ex">x</main>
-<!-- skip: map -->
+<!-- map (not mapped) -->
 <mark data-testname="el-mark" data-expectedrole="mark" class="ex">x</mark>
 <!-- todo: math -->
 <menu data-testname="el-menu" data-expectedrole="list" class="ex"><li>x</li></menu>
-<!-- skip: meta -->
+<!-- meta (not mapped) -->
 <meter data-testname="el-meter" data-expectedrole="meter" class="ex" min="0" max="100" low="20" high="80" optimum="60" value="50">x</meter>
 <nav data-testname="el-nav" data-expectedrole="navigation" class="ex">x</nav>
-<!-- skip: noscript -->
-<!-- skip: object -->
+<!-- noscript (not mapped) -->
+<!-- object (not mapped) -->
 <ol data-testname="el-ol" data-expectedrole="list" class="ex"><li>x</li><li>x</li></ol>
 
 <!-- optgroup -> ./fragile/optgroup-role.html -->
@@ -165,7 +165,7 @@
 
 <output data-testname="el-output" data-expectedrole="status" class="ex">x</output>
 <p data-testname="el-p" data-expectedrole="paragraph" class="ex">x</p>
-<!-- skip: param -->
+<!-- param (not mapped) -->
 <!-- todo: picture -->
 <pre data-testname="el-pre" data-expectedrole="generic" class="ex">x</pre>
 <progress data-testname="el-progress" data-expectedrole="progressbar" class="ex">x</progress>
@@ -175,7 +175,7 @@
 <!-- todo: ruby -> /ruby-aam? -->
 <s data-testname="el-s" data-expectedrole="deletion" class="ex">x</s>
 <samp data-testname="el-samp" data-expectedrole="generic" class="ex">x</samp>
-<!-- skip: script -->
+<!-- script (not mapped) -->
 <search data-testname="el-search" data-expectedrole="search" class="ex">x</search>
 
 <!-- el-section -->
@@ -187,33 +187,33 @@
 
 <select data-testname="el-select-listbox" size="2" data-expectedrole="listbox" class="ex"><option>b1</option><option>b2</option></select>
 
-<!-- skip: slot -->
+<!-- slot (not mapped) -->
 <small data-testname="el-small" data-expectedrole="generic" class="ex">x</small>
-<!-- skip: source -->
+<!-- source (not mapped) -->
 <span data-testname="el-span" data-expectedrole="generic" class="ex">x</span>
 <strong data-testname="el-strong" data-expectedrole="strong" class="ex">x</strong>
-<!-- skip: style -->
+<!-- style (not mapped) -->
 <sub data-testname="el-sub" data-expectedrole="subscript" class="ex">x</sub>
 <!-- todo: summary -->
 <sup data-testname="el-sup" data-expectedrole="superscript" class="ex">x</sup>
-<!-- skip: svg (see /graphics-aam and /svg-aam tests) -->
+<!-- todo: svg (see /graphics-aam and /svg-aam tests) -->
 <!-- table -> ./table-roles.html -->
 <!-- tbody -> ./table-roles.html -->
 <!-- td -> ./table-roles.html -->
-<!-- skip: template -->
+<!-- template (not mapped) -->
 <!-- tfoot -> ./table-roles.html -->
 <!-- th -> ./table-roles.html -->
 <!-- thead -> ./table-roles.html -->
 <time data-testname="el-time" data-expectedrole="time" class="ex">x</time>
-<!-- skip: title -->
+<!-- title (not mapped) -->
 <!-- tr -> ./table-roles.html -->
 <textarea data-testname="el-textarea" data-expectedrole="textbox" class="ex">x</textarea>
-<!-- skip: track -->
+<!-- track (not mapped) -->
 <u data-testname="el-u" data-expectedrole="generic" class="ex">x</u>
 <ul data-testname="el-ul" data-expectedrole="list" class="ex"><li>x</li><li>x</li></ul>
-<!-- skip: var -->
+<!-- var (not mapped) -->
 <!-- todo: video -->
-<!-- skip: wbr -->
+<!-- wbr (not mapped) -->
 
 <script>
 AriaUtils.verifyRolesBySelector(".ex");

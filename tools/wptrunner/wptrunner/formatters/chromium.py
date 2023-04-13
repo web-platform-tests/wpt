@@ -259,7 +259,7 @@ class ChromiumFormatter(base.BaseFormatter):  # type: ignore
         if self.start_timestamp_seconds is None:
             self.start_timestamp_seconds = self._get_time(data)
         if 'run_info' in data:
-            self.flag_specific = data['run_info'].get('flag_specific') or ''
+            self.flag_specific = data['run_info'].get('flag_specific', '')
 
     def test_start(self, data):
         test_name = data["test"]

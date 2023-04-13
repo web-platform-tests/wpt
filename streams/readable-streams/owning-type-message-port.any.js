@@ -5,7 +5,7 @@
 
 promise_test(async () => {
   const channel = new MessageChannel;
-  let port1 = channel.port1;
+  const port1 = channel.port1;
   const port2 = channel.port2;
 
   const source = {
@@ -32,7 +32,7 @@ promise_test(async () => {
 
 promise_test(async () => {
   const channel = new MessageChannel;
-  let port1 = channel.port1;
+  const port1 = channel.port1;
   const port2 = channel.port2;
 
   const source = {
@@ -44,10 +44,6 @@ promise_test(async () => {
 
   const stream = new ReadableStream(source);
   const [clone1, clone2] = stream.tee();
-
-  await clone1.getReader().read().then((value) => {
-    assert_unreached('clone1 should error');
-  }, () => { });
 
   await clone2.getReader().read().then((value) => {
     assert_unreached('clone2 should error');

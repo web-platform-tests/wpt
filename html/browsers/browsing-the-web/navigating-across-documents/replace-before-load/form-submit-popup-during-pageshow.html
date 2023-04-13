@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+
+<form action="resources/message-opener.html"></form>
+
+<script>
+"use strict";
+promise_test(async t => {
+  const form = document.querySelector("form");
+
+  // Wait until after _self has finished firing the load event.
+  await new Promise(r => { window.onload = () => { t.step_timeout(r, 0); }; });
+
+  const windowName = token();
+  form.target = windowName;
+
+  const code = `
+    window.onpageshow = () => {
+      opener.document.querySelector("form").submit();
+    };
+  `;
+
+  const startURL = "resources/code-injector.html?pipe=sub(none)&code=" + encodeURIComponent(code);
+  const absoluteStartURL = (new URL(startURL, location.href)).href;
+  const w = window.open(startURL, windowName);
+  t.add_cleanup(() => w.close());
+
+  await new Promise(r => { window.onmessage = r; });
+  assert_equals(w.history.length, 1, "history.length must never go past 1");
+  assert_equals(w.location.href, form.action + "?");
+}, "Replace during the pageshow event, triggered by formElement.submit() in the opener window, after the opener has loaded");
+</script>

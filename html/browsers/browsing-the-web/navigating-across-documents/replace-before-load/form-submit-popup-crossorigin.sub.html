@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+
+<form></form>
+
+<script>
+"use strict";
+promise_test(async t => {
+  const form = document.querySelector("form");
+
+  // Wait until after _self has finished firing the load event.
+  await new Promise(r => { window.onload = () => { t.step_timeout(r, 0); }; });
+
+  const windowName = token();
+  form.target = windowName;
+
+  const targetURL = new URL("resources/message-opener-with-history-and-location.html", location.href);
+  targetURL.hostname = "{{hosts[][www]}}";
+  form.action = targetURL;
+
+  const code = `
+    opener.postMessage("ready", "*");
+  `;
+  const startURL = new URL("resources/slow-code-injector.html?pipe=sub(none)&code=" + encodeURIComponent(code), location.href);
+  startURL.hostname = "{{hosts[][www]}}";
+  const w = window.open(startURL, windowName);
+  t.add_cleanup(() => w.close());
+
+  await new Promise(r => { window.onmessage = r; });
+
+  // At this point `w` has run the top-level code that postMessage()ed us, but almost certainly hasn't yet run the load
+  // event (since it is busy loading the slow image).
+  form.submit();
+
+  const { historyLength, locationHref } = await new Promise(r => { window.onmessage = e => { r(e.data); }; });
+  assert_equals(historyLength, 1, "history.length must not increase");
+  assert_equals(locationHref, form.action + "?");
+}, "Replace before load, triggered by formElement.submit() in the opener window, after the opener has loaded: opened window is cross-origin");
+</script>

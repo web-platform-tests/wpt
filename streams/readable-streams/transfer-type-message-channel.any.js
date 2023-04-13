@@ -1,0 +1,57 @@
+// META: global=window,worker
+// META: script=../resources/test-utils.js
+// META: script=../resources/rs-utils.js
+'use strict';
+
+promise_test(async () => {
+  const channel = new MessageChannel;
+  let port1 = channel.port1;
+  const port2 = channel.port2;
+
+  const source = {
+    start(controller) {
+      controller.enqueue(port1, { transfer : port1 });
+    },
+    type: 'transfer'
+  };
+
+  const stream = new ReadableStream(source);
+
+  const chunk = await clone1.getReader().read().then((value) => {
+    assert_unreached('clone2 should error');
+  }, () => { });
+
+  assert_not_equals(chunk.value, port1);
+
+  let promise = new Promise(resolve => port2.onmessage = e => resolve(e.data));
+  chunk.value.postMessage("toPort2");
+  assert_equals(await promise, "toPort2");
+
+  promise = new Promise(resolve => chunk.value.onmessage = e => resolve(e.data));
+  port2.postMessage("toPort1");
+  assert_equals(await promise, "toPort1");
+}, 'Transferred MessageChannel works as expected');
+
+promise_test(async () => {
+  const channel = new MessageChannel;
+  let port1 = channel.port1;
+  const port2 = channel.port2;
+
+  const source = {
+    start(controller) {
+      controller.enqueue({port1}, { transfer : port1 });
+    },
+    type: 'transfer'
+  };
+
+  const stream = new ReadableStream(source);
+  const [clone1, clone2] = stream.tee();
+
+  await clone1.getReader().read().then((value) => {
+    assert_unreached('clone1 should error');
+  }, () => { });
+
+  await clone2.getReader().read().then((value) => {
+    assert_unreached('clone2 should error');
+  }, () => { });
+}, 'Second branch of transfer-only value ReadableStream tee should end up into errors');

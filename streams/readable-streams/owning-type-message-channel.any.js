@@ -10,16 +10,14 @@ promise_test(async () => {
 
   const source = {
     start(controller) {
-      controller.enqueue(port1, { transfer : port1 });
+      controller.enqueue(port1, { transfer : [ port1 ] });
     },
-    type: 'transfer'
+    type: 'owning'
   };
 
   const stream = new ReadableStream(source);
 
-  const chunk = await clone1.getReader().read().then((value) => {
-    assert_unreached('clone2 should error');
-  }, () => { });
+  const chunk = await stream.getReader().read();
 
   assert_not_equals(chunk.value, port1);
 
@@ -39,9 +37,9 @@ promise_test(async () => {
 
   const source = {
     start(controller) {
-      controller.enqueue({port1}, { transfer : port1 });
+      controller.enqueue({ port1 }, { transfer : [ port1 ] });
     },
-    type: 'transfer'
+    type: 'owning'
   };
 
   const stream = new ReadableStream(source);
@@ -54,4 +52,4 @@ promise_test(async () => {
   await clone2.getReader().read().then((value) => {
     assert_unreached('clone2 should error');
   }, () => { });
-}, 'Second branch of transfer-only value ReadableStream tee should end up into errors');
+}, 'Second branch of owning ReadableStream tee should end up into errors with transfer only values');

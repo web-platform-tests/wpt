@@ -29,11 +29,10 @@
     const event = await new Promise((resolve, reject) => {
       self.addEventListener("message", t.step_func(resolve), { once: true });
       const frame = document.body.appendChild(document.createElement("iframe"));
-      frame.onload = t.step_func(() => {
-        // The assumption is that postMessage() is quicker
-        t.step_timeout(reject, 500);
-      });
       t.add_cleanup(() => frame.remove());
+
+      // The assumption is that postMessage() is quicker
+      t.step_timeout(reject, 500);
       frame.src = input;
     });
     assert_equals(event.data, result);
@@ -60,11 +59,10 @@
     const event = await new Promise((resolve, reject) => {
       self.addEventListener("message", t.step_func(reject), { once: true });
       const frame = document.body.appendChild(document.createElement("iframe"));
-      frame.onload = t.step_func(() => {
-        // The assumption is that postMessage() is quicker
-        t.step_timeout(resolve, 500);
-      });
       t.add_cleanup(() => frame.remove());
+
+      // The assumption is that postMessage() is quicker
+      t.step_timeout(resolve, 500);
       frame.src = input;
     });
   }, name);

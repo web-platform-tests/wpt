@@ -50,6 +50,8 @@ def get_parser():
                         help='name of component')
     parser.add_argument('--download-only', action="store_true",
                         help="Download the selected component but don't install it")
+    parser.add_argument('--download-url-only', action="store_true",
+                        help="Find the URL to download the selected component and output it")
     parser.add_argument('--rename', action="store", default=None,
                         help="Filename, excluding extension for downloaded archive "
                         "(only with --download-only)")
@@ -91,18 +93,41 @@ def run(venv, **kwargs):
     if kwargs["revision"] is not None and browser != "chromium":
         raise argparse.ArgumentError(None, "--revision flag cannot be used for non-Chromium browsers.")
 
-    install(browser, kwargs["component"], destination, channel, logger=logger,
-            download_only=kwargs["download_only"], rename=kwargs["rename"],
-            revision=kwargs["revision"])
+    install(
+        browser,
+        kwargs["component"],
+        destination,
+        channel,
+        logger=logger,
+        download_only=kwargs["download_only"],
+        download_url_only=kwargs["download_url_only"],
+        rename=kwargs["rename"],
+        revision=kwargs["revision"],
+    )
 
 
-def install(name, component, destination, channel="nightly", logger=None, download_only=False,
-            rename=None, revision=None):
+def install(
+    name,
+    component,
+    destination,
+    channel="nightly",
+    logger=None,
+    download_only=False,
+    download_url_only=False,
+    rename=None,
+    revision=None,
+):
     if logger is None:
         import logging
         logger = logging.getLogger("install")
 
-    prefix = "download" if download_only else "install"
+    if download_url_only:
+        prefix = "download_url"
+    elif download_only:
+        prefix = "download"
+    else:
+        prefix = "install"
+
     suffix = "_webdriver" if component == 'webdriver' else ""
 
     method = prefix + suffix
@@ -110,11 +135,15 @@ def install(name, component, destination, channel="nightly", logger=None, downlo
     browser_cls = getattr(browser, name.title())
     logger.info('Now installing %s %s...', name, component)
     kwargs = {}
+    if not download_url_only:
+        kwargs["dest"] = destination
     if download_only and rename:
         kwargs["rename"] = rename
     if revision:
         kwargs["revision"] = revision
 
-    path = getattr(browser_cls(logger), method)(dest=destination, channel=channel, **kwargs)
-    if path:
+    path = getattr(browser_cls(logger), method)(channel=channel, **kwargs)
+    if download_url_only:
+        print(path)
+    elif path:
         logger.info('Binary %s as %s', "downloaded" if download_only else "installed", path)

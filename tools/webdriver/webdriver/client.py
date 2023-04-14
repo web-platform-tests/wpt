@@ -310,9 +310,6 @@ class Window:
 
         return handles
 
-    # The many "type: ignore" comments here and below are to silence mypy's
-    # "Decorated property not supported" error, which is due to a limitation
-    # in mypy, see https://github.com/python/mypy/issues/1362.
     @property
     @command
     def rect(self):

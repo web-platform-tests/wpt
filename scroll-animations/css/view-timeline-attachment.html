@@ -122,6 +122,50 @@
   }, 'Deferred timeline with two attachments');
 </script>
 
+<template id=view_timeline_lonely_ancestor>
+  <div class=scroller>
+    <div class="content timeline ancestor">
+      <div class=target>Test</div>
+    </div>
+  </div>
+</template>
+<script>
+  promise_test(async (t) => {
+    inflate(t, view_timeline_lonely_ancestor);
+    let scroller = main.querySelector('.scroller');
+    let target = main.querySelector('.target');
+    await scrollTop(scroller, 350); // 50%
+    assert_equals(getComputedStyle(target).width, '100px'); // 0px => 200px, 50%
+  }, 'Ancestor attachment treated as local without corresponding defer');
+</script>
+
+<template id=view_timeline_ancestor_attached_invisible>
+  <div class="scroller timeline defer">
+    <div class=target>Test</div>
+    <div class="content timeline ancestor">
+      <div class=target>Test</div>
+    </div>
+  </div>
+</template>
+<script>
+  promise_test(async (t) => {
+    inflate(t, view_timeline_ancestor_attached_invisible);
+    let scroller = main.querySelector('.scroller');
+    let target = main.querySelectorAll('.target');
+    let get_timeline = (e) => e.getAnimations()[0].timeline;
+
+    // Both animations should be connected to the same timeline.
+    let timelines = Array.from(target).map(get_timeline);
+    assert_equals(timelines[0], timelines[1]);
+
+    // This makes the previously deferred timeline local. It also effectively
+    // makes the ancestor-attached timeline behave as a local timeline.
+    scroller.classList.remove('defer');
+    timelines = Array.from(target).map(get_timeline);
+    assert_not_equals(timelines[0], timelines[1]);
+  }, 'Ancestor-attached timeline is invisible to timeline lookup');
+</script>
+
 <!-- Effective Axis of ViewTimeline -->
 
 <template id=view_timeline_defer_axis>

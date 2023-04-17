@@ -38,7 +38,7 @@ const waitForLoad = new Promise(resolve => { addEventListener('load', resolve); 
 
 idl_test(
   ['html'],
-  ['SVG', 'cssom', 'touch-events', 'uievents', 'dom', 'xhr', 'FileAPI'],
+  ['wai-aria', 'SVG', 'cssom', 'touch-events', 'uievents', 'dom', 'xhr', 'FileAPI', 'mediacapture-streams'],
   async idlArray => {
     self.documentWithHandlers = new Document();
     const handler = function(e) {};
@@ -59,7 +59,10 @@ idl_test(
       Transferable: [],
       Document: ['iframe.contentDocument', 'new Document()', 'documentWithHandlers'],
       XMLDocument: ['document.implementation.createDocument(null, "", null)'],
-      HTMLElement: ['document.createElement("noscript")'], // more tests in html/semantics/interfaces.js
+      HTMLElement: [
+        'document.createElement("noscript")',
+        'Object.assign(document.createElement("noscript"),{popover:"auto"})',
+      ], // more tests in html/semantics/interfaces.js
       HTMLUnknownElement: ['document.createElement("bgsound")'], // more tests in html/semantics/interfaces.js
       HTMLHtmlElement: ['document.createElement("html")'],
       HTMLHeadElement: ['document.createElement("head")'],
@@ -98,7 +101,7 @@ idl_test(
       ],
       HTMLPictureElement: ['document.createElement("picture")'],
       HTMLImageElement: ['document.createElement("img")', 'new Image()'],
-      HTMLIframeElement: ['document.createElement("iframe")'],
+      HTMLIFrameElement: ['document.createElement("iframe")'],
       HTMLEmbedElement: ['document.createElement("embed")'],
       HTMLObjectElement: ['document.createElement("object")'],
       HTMLParamElement: ['document.createElement("param")'],
@@ -125,6 +128,7 @@ idl_test(
       CanvasRenderingContext2D: ['document.createElement("canvas").getContext("2d")'],
       CanvasGradient: [],
       CanvasPattern: [],
+      ToggleEvent: ['new ToggleEvent("beforetoggle")'],
       TextMetrics: [],
       ImageData: ['new ImageData(10, 10)'],
       HTMLMapElement: ['document.createElement("map")'],
@@ -195,8 +199,8 @@ idl_test(
       HashChangeEvent: [],
       PageTransitionEvent: [],
       BeforeUnloadEvent: [],
-      ApplicationCache: ['window.applicationCache'],
       WindowModal: [],
+      DOMParser: ['new DOMParser()'],
       Navigator: ['window.navigator'],
       External: ['window.external'],
       DataTransfer: [],
@@ -210,9 +214,7 @@ idl_test(
       PeerConnection: [],
       MediaStreamEvent: [],
       ErrorEvent: [],
-      // https://web-platform-tests.org/writing-tests/server-features.html?tests-involving-multiple-origins
-      WebSocket: ['new WebSocket("wss://nonexistent.' + get_host_info().ORIGINAL_HOST + '")'],
-      CloseEvent: ['new CloseEvent("close")'],
+      EventSource: ['new EventSource("http://invalid")'],
       AbstractWorker: [],
       Worker: [],
       SharedWorker: [],
@@ -225,6 +227,11 @@ idl_test(
       HTMLDirectoryElement: ['document.createElement("dir")'],
       HTMLFontElement: ['document.createElement("font")'],
       DOMStringList: ['location.ancestorOrigins'],
+      Storage: [
+        'localStorage',
+        'sessionStorage',
+      ],
+      StorageEvent: ['new StorageEvent("storage")']
     });
     idlArray.prevent_multiple_testing('HTMLElement');
     await waitForLoad;

@@ -3,7 +3,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/helper.sub.js"></script>
 
-<meta http-equiv="Content-Security-Policy" content="trusted-types *">
 <body>
 <div id="target"></div>
 <script>
@@ -25,7 +24,7 @@
   }, "sanity check trustedTypes.getTypeMapping");
 
 
-  // getPropertyType tests adapted from WICG/trusted-types polyfill:
+  // getPropertyType tests adapted from w3c/trusted-types polyfill:
   test(t => {
     // returns the proper type for attribute-related properties
     assert_equals(trustedTypes.getPropertyType("script", "src"), "TrustedScriptURL");
@@ -47,7 +46,7 @@
     ["text", "innerText", "textContent"].forEach((prop) => {
       assert_equals(trustedTypes.getPropertyType("script", prop), "TrustedScript");
     });
-  }, "getPropertyType tests adapted from WICG/trusted-types polyfill");
+  }, "getPropertyType tests adapted from w3c/trusted-types polyfill");
 
   test(t => {
     // returns the proper type
@@ -70,7 +69,7 @@
     // defaults to undefined
     assert_equals(trustedTypes.getAttributeType('unknown', 'src'), null);
     assert_equals(trustedTypes.getAttributeType('img', 'bar'), null);
-  }, "getAttributeType tests adapted from WICG/trusted-types polyfill");
+  }, "getAttributeType tests adapted from w3c/trusted-types polyfill");
 
 
   test(t=> {
@@ -87,8 +86,8 @@
     assert_equals(trustedTypes.getTypeMapping()["*"].attributes["foo"], undefined);
 ;
     // Unknown namespaces:
-    assert_equals(trustedTypes.getTypeMapping("http://foo/bar"), undefined);
-  }, "getTypeMapping tests adapted from WICG/trusted-types polyfill");
+    assert_equals(trustedTypes.getTypeMapping("http://foo/bar"), null);
+  }, "getTypeMapping tests adapted from w3c/trusted-types polyfill");
 
   // Test case handling for both attributes and properties.
   for (let attr of ["codeBase", "CODEBASE", "codebase"]) {

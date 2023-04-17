@@ -1,13 +1,12 @@
-"""
- test correct setup/teardowns at
- module, class, and instance level
-"""
-from __future__ import absolute_import, division, print_function
+"""Test correct setup/teardowns at module, class, and instance level."""
+from typing import List
+
 import pytest
+from _pytest.pytester import Pytester
 
 
-def test_module_and_function_setup(testdir):
-    reprec = testdir.inline_runsource(
+def test_module_and_function_setup(pytester: Pytester) -> None:
+    reprec = pytester.inline_runsource(
         """
         modlevel = []
         def setup_module(module):
@@ -39,8 +38,8 @@ def test_module_and_function_setup(testdir):
     assert rep.passed
 
 
-def test_module_setup_failure_no_teardown(testdir):
-    reprec = testdir.inline_runsource(
+def test_module_setup_failure_no_teardown(pytester: Pytester) -> None:
+    reprec = pytester.inline_runsource(
         """
         values = []
         def setup_module(module):
@@ -59,8 +58,8 @@ def test_module_setup_failure_no_teardown(testdir):
     assert calls[0].item.module.values == [1]
 
 
-def test_setup_function_failure_no_teardown(testdir):
-    reprec = testdir.inline_runsource(
+def test_setup_function_failure_no_teardown(pytester: Pytester) -> None:
+    reprec = pytester.inline_runsource(
         """
         modlevel = []
         def setup_function(function):
@@ -78,8 +77,8 @@ def test_setup_function_failure_no_teardown(testdir):
     assert calls[0].item.module.modlevel == [1]
 
 
-def test_class_setup(testdir):
-    reprec = testdir.inline_runsource(
+def test_class_setup(pytester: Pytester) -> None:
+    reprec = pytester.inline_runsource(
         """
         class TestSimpleClassSetup(object):
             clslevel = []
@@ -104,8 +103,8 @@ def test_class_setup(testdir):
     reprec.assertoutcome(passed=1 + 2 + 1)
 
 
-def test_class_setup_failure_no_teardown(testdir):
-    reprec = testdir.inline_runsource(
+def test_class_setup_failure_no_teardown(pytester: Pytester) -> None:
+    reprec = pytester.inline_runsource(
         """
         class TestSimpleClassSetup(object):
             clslevel = []
@@ -125,8 +124,8 @@ def test_class_setup_failure_no_teardown(testdir):
     reprec.assertoutcome(failed=1, passed=1)
 
 
-def test_method_setup(testdir):
-    reprec = testdir.inline_runsource(
+def test_method_setup(pytester: Pytester) -> None:
+    reprec = pytester.inline_runsource(
         """
         class TestSetupMethod(object):
             def setup_method(self, meth):
@@ -144,8 +143,8 @@ def test_method_setup(testdir):
     reprec.assertoutcome(passed=2)
 
 
-def test_method_setup_failure_no_teardown(testdir):
-    reprec = testdir.inline_runsource(
+def test_method_setup_failure_no_teardown(pytester: Pytester) -> None:
+    reprec = pytester.inline_runsource(
         """
         class TestMethodSetup(object):
             clslevel = []
@@ -166,64 +165,8 @@ def test_method_setup_failure_no_teardown(testdir):
     reprec.assertoutcome(failed=1, passed=1)
 
 
-def test_method_generator_setup(testdir):
-    reprec = testdir.inline_runsource(
-        """
-        class TestSetupTeardownOnInstance(object):
-            def setup_class(cls):
-                cls.classsetup = True
-
-            def setup_method(self, method):
-                self.methsetup = method
-
-            def test_generate(self):
-                assert self.classsetup
-                assert self.methsetup == self.test_generate
-                yield self.generated, 5
-                yield self.generated, 2
-
-            def generated(self, value):
-                assert self.classsetup
-                assert self.methsetup == self.test_generate
-                assert value == 5
-    """
-    )
-    reprec.assertoutcome(passed=1, failed=1)
-
-
-def test_func_generator_setup(testdir):
-    reprec = testdir.inline_runsource(
-        """
-        import sys
-
-        def setup_module(mod):
-            print ("setup_module")
-            mod.x = []
-
-        def setup_function(fun):
-            print ("setup_function")
-            x.append(1)
-
-        def teardown_function(fun):
-            print ("teardown_function")
-            x.pop()
-
-        def test_one():
-            assert x == [1]
-            def check():
-                print ("check")
-                sys.stderr.write("e\\n")
-                assert x == [1]
-            yield check
-            assert x == [1]
-    """
-    )
-    rep = reprec.matchreport("test_one", names="pytest_runtest_logreport")
-    assert rep.passed
-
-
-def test_method_setup_uses_fresh_instances(testdir):
-    reprec = testdir.inline_runsource(
+def test_method_setup_uses_fresh_instances(pytester: Pytester) -> None:
+    reprec = pytester.inline_runsource(
         """
         class TestSelfState1(object):
             memory = []
@@ -237,8 +180,8 @@ def test_method_setup_uses_fresh_instances(testdir):
     reprec.assertoutcome(passed=2, failed=0)
 
 
-def test_setup_that_skips_calledagain(testdir):
-    p = testdir.makepyfile(
+def test_setup_that_skips_calledagain(pytester: Pytester) -> None:
+    p = pytester.makepyfile(
         """
         import pytest
         def setup_module(mod):
@@ -249,12 +192,12 @@ def test_setup_that_skips_calledagain(testdir):
             pass
     """
     )
-    reprec = testdir.inline_run(p)
+    reprec = pytester.inline_run(p)
     reprec.assertoutcome(skipped=2)
 
 
-def test_setup_fails_again_on_all_tests(testdir):
-    p = testdir.makepyfile(
+def test_setup_fails_again_on_all_tests(pytester: Pytester) -> None:
+    p = pytester.makepyfile(
         """
         import pytest
         def setup_module(mod):
@@ -265,12 +208,12 @@ def test_setup_fails_again_on_all_tests(testdir):
             pass
     """
     )
-    reprec = testdir.inline_run(p)
+    reprec = pytester.inline_run(p)
     reprec.assertoutcome(failed=2)
 
 
-def test_setup_funcarg_setup_when_outer_scope_fails(testdir):
-    p = testdir.makepyfile(
+def test_setup_funcarg_setup_when_outer_scope_fails(pytester: Pytester) -> None:
+    p = pytester.makepyfile(
         """
         import pytest
         def setup_module(mod):
@@ -284,31 +227,33 @@ def test_setup_funcarg_setup_when_outer_scope_fails(testdir):
             pass
     """
     )
-    result = testdir.runpytest(p)
+    result = pytester.runpytest(p)
     result.stdout.fnmatch_lines(
         [
             "*function1*",
             "*ValueError*42*",
             "*function2*",
             "*ValueError*42*",
-            "*2 error*",
+            "*2 errors*",
         ]
     )
-    assert "xyz43" not in result.stdout.str()
+    result.stdout.no_fnmatch_line("*xyz43*")
 
 
 @pytest.mark.parametrize("arg", ["", "arg"])
 def test_setup_teardown_function_level_with_optional_argument(
-    testdir, monkeypatch, arg
-):
-    """parameter to setup/teardown xunit-style functions parameter is now optional (#1728)."""
+    pytester: Pytester,
+    monkeypatch,
+    arg: str,
+) -> None:
+    """Parameter to setup/teardown xunit-style functions parameter is now optional (#1728)."""
     import sys
 
-    trace_setups_teardowns = []
+    trace_setups_teardowns: List[str] = []
     monkeypatch.setattr(
         sys, "trace_setups_teardowns", trace_setups_teardowns, raising=False
     )
-    p = testdir.makepyfile(
+    p = pytester.makepyfile(
         """
         import pytest
         import sys
@@ -334,7 +279,7 @@ def test_setup_teardown_function_level_with_optional_argument(
             arg=arg
         )
     )
-    result = testdir.inline_run(p)
+    result = pytester.inline_run(p)
     result.assertoutcome(passed=4)
 
     expected = [

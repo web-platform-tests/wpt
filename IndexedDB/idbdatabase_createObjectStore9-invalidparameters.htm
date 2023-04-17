@@ -4,14 +4,14 @@
 <link rel="author" href="mailto:odinho@opera.com" title="Odin Hørthe Omdal">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=support.js></script>
+<script src=resources/support.js></script>
 
 <script>
     function invalid_optionalParameters(desc, params, exception = "InvalidAccessError") {
         var t = async_test(document.title + " - " + desc);
 
         createdb(t).onupgradeneeded = function(e) {
-            assert_throws(exception, function() {
+            assert_throws_dom(exception, function() {
                 e.target.result.createObjectStore("store", params);
             });
 

@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import copy
 import functools
 import imp
@@ -10,9 +12,12 @@ from mozlog import reader
 from mozlog.formatters import JSONFormatter
 from mozlog.handlers import BaseHandler, StreamHandler, LogLevelFilter
 
+from . import wptrunner
+
 here = os.path.dirname(__file__)
 localpaths = imp.load_source("localpaths", os.path.abspath(os.path.join(here, os.pardir, os.pardir, "localpaths.py")))
-from wpt.markdown import markdown_adjust, table
+from ci.tc.github_checks_output import get_gh_checks_outputter  # type: ignore
+from wpt.markdown import markdown_adjust, table  # type: ignore
 
 
 # If a test takes more than (FLAKY_THRESHOLD*timeout) and does not consistently
@@ -20,7 +25,7 @@ from wpt.markdown import markdown_adjust, table
 FLAKY_THRESHOLD = 0.8
 
 
-class LogActionFilter(BaseHandler):
+class LogActionFilter(BaseHandler):  # type: ignore
 
     """Handler that filters out messages not of a given set of actions.
 
@@ -42,7 +47,7 @@ class LogActionFilter(BaseHandler):
             return self.inner(item)
 
 
-class LogHandler(reader.LogHandler):
+class LogHandler(reader.LogHandler):  # type: ignore
 
     """Handle updating test and subtest status in log.
 
@@ -140,10 +145,10 @@ def process_results(log, iterations):
     handler = LogHandler()
     reader.handle_log(reader.read(log), handler)
     results = handler.results
-    for test_name, test in results.iteritems():
+    for test_name, test in results.items():
         if is_inconsistent(test["status"], iterations):
             inconsistent.append((test_name, None, test["status"], []))
-        for subtest_name, subtest in test["subtests"].iteritems():
+        for subtest_name, subtest in test["subtests"].items():
             if is_inconsistent(subtest["status"], iterations):
                 inconsistent.append((test_name, subtest_name, subtest["status"], subtest["messages"]))
 
@@ -177,8 +182,32 @@ def err_string(results_dict, iterations):
     return rv
 
 
+def write_github_checks_summary_inconsistent(log, inconsistent, iterations):
+    """Outputs a summary of inconsistent tests for GitHub Checks."""
+    log("Some affected tests had inconsistent (flaky) results:\n")
+    write_inconsistent(log, inconsistent, iterations)
+    log("\n")
+    log("These may be pre-existing or new flakes. Please try to reproduce (see "
+        "the above WPT command, though some flags may not be needed when "
+        "running locally) and determine if your change introduced the flake. "
+        "If you are unable to reproduce the problem, please tag "
+        "`@web-platform-tests/wpt-core-team` in a comment for help.\n")
+
+
+def write_github_checks_summary_slow_tests(log, slow):
+    """Outputs a summary of slow tests for GitHub Checks."""
+    log("Some affected tests had slow results:\n")
+    write_slow_tests(log, slow)
+    log("\n")
+    log("These may be pre-existing or newly slow tests. Slow tests indicate "
+        "that a test ran very close to the test timeout limit and so may "
+        "become TIMEOUT-flaky in the future. Consider speeding up the test or "
+        "breaking it into multiple tests. For help, please tag "
+        "`@web-platform-tests/wpt-core-team` in a comment.\n")
+
+
 def write_inconsistent(log, inconsistent, iterations):
-    """Output inconsistent tests to logger.error."""
+    """Output inconsistent tests to the passed in logging function."""
     log("## Unstable results ##\n")
     strings = [(
         "`%s`" % markdown_adjust(test),
@@ -190,6 +219,7 @@ def write_inconsistent(log, inconsistent, iterations):
 
 
 def write_slow_tests(log, slow):
+    """Output slow tests to the passed in logging function."""
     log("## Slow tests ##\n")
     strings = [(
         "`%s`" % markdown_adjust(test),
@@ -208,7 +238,7 @@ def write_results(log, results, iterations, pr_number=None, use_details=False):
                                                   "tests" if len(results) > 1
                                                   else "test"))
 
-    for test_name, test in results.iteritems():
+    for test_name, test in results.items():
         baseurl = "http://w3c-test.org/submissions"
         if "https" in os.path.splitext(test_name)[0].split(".")[1:]:
             baseurl = "https://w3c-test.org/submissions"
@@ -236,7 +266,6 @@ def write_results(log, results, iterations, pr_number=None, use_details=False):
 
 
 def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwargs):
-    import wptrunner
     kwargs = copy.deepcopy(kwargs)
 
     if restart_after_iteration:
@@ -248,7 +277,7 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
     kwargs.update(kwargs_extras)
 
     def wrap_handler(x):
-        if not kwargs["verify_log_full"]:
+        if not kwargs.get("verify_log_full", False):
             x = LogLevelFilter(x, "WARNING")
             x = LogActionFilter(x, ["log", "process_output"])
         return x
@@ -262,15 +291,17 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
     # warning+ level logs only
     logger.add_handler(StreamHandler(log, JSONFormatter()))
 
-    wptrunner.run_tests(**kwargs)
+    _, test_status = wptrunner.run_tests(**kwargs)
 
     logger._state.handlers = initial_handlers
     logger._state.running_tests = set()
     logger._state.suite_started = False
 
     log.seek(0)
-    results, inconsistent, slow = process_results(log, iterations)
-    return results, inconsistent, slow, iterations
+    total_iterations = test_status.repeated_runs * kwargs.get("rerun", 1)
+    all_skipped = test_status.all_skipped
+    results, inconsistent, slow = process_results(log, total_iterations)
+    return total_iterations, all_skipped, results, inconsistent, slow
 
 
 def get_steps(logger, repeat_loop, repeat_restart, kwargs_extras):
@@ -278,19 +309,31 @@ def get_steps(logger, repeat_loop, repeat_restart, kwargs_extras):
     for kwargs_extra in kwargs_extras:
         if kwargs_extra:
             flags_string = " with flags %s" % " ".join(
-                "%s=%s" % item for item in kwargs_extra.iteritems())
+                "%s=%s" % item for item in kwargs_extra.items())
         else:
             flags_string = ""
 
         if repeat_loop:
             desc = "Running tests in a loop %d times%s" % (repeat_loop,
                                                            flags_string)
-            steps.append((desc, functools.partial(run_step, logger, repeat_loop, False, kwargs_extra)))
+            steps.append((desc,
+                          functools.partial(run_step,
+                                            logger,
+                                            repeat_loop,
+                                            False,
+                                            kwargs_extra),
+                          repeat_loop))
 
         if repeat_restart:
             desc = "Running tests in a loop with restarts %s times%s" % (repeat_restart,
                                                                          flags_string)
-            steps.append((desc, functools.partial(run_step, logger, repeat_restart, True, kwargs_extra)))
+            steps.append((desc,
+                          functools.partial(run_step,
+                                            logger,
+                                            repeat_restart,
+                                            True,
+                                            kwargs_extra),
+                          repeat_restart))
 
     return steps
 
@@ -309,18 +352,21 @@ def write_summary(logger, step_results, final_result):
 
     logger.info(':::')
 
+
 def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, max_time=None,
                     output_results=True, **kwargs):
     kwargs_extras = [{}]
     if chaos_mode and kwargs["product"] == "firefox":
-        kwargs_extras.append({"chaos_mode_flags": 3})
+        kwargs_extras.append({"chaos_mode_flags": int("0xfb", base=16)})
 
     steps = get_steps(logger, repeat_loop, repeat_restart, kwargs_extras)
 
     start_time = datetime.now()
     step_results = []
 
-    for desc, step_func in steps:
+    github_checks_outputter = get_gh_checks_outputter(kwargs.get("github_checks_text_file"))
+
+    for desc, step_func, expected_iterations in steps:
         if max_time and datetime.now() - start_time > max_time:
             logger.info("::: Test verification is taking too long: Giving up!")
             logger.info("::: So far, all checks passed, but not all checks were run.")
@@ -330,22 +376,42 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
         logger.info(':::')
         logger.info('::: Running test verification step "%s"...' % desc)
         logger.info(':::')
-        results, inconsistent, slow, iterations = step_func(**kwargs)
+        total_iterations, all_skipped, results, inconsistent, slow = step_func(**kwargs)
+
+        logger.info(f"::: Ran {total_iterations} of expected {expected_iterations} iterations.")
+        if total_iterations <= 1 and expected_iterations > 1 and not all_skipped:
+            step_results.append((desc, "FAIL"))
+            logger.info("::: Reached iteration timeout before finishing 2 or more repeat runs.")
+            logger.info("::: At least 2 successful repeat runs are required to validate stability.")
+            write_summary(logger, step_results, "TIMEOUT")
+            return 1
+
         if output_results:
-            write_results(logger.info, results, iterations)
+            write_results(logger.info, results, total_iterations)
 
         if inconsistent:
             step_results.append((desc, "FAIL"))
-            write_inconsistent(logger.info, inconsistent, iterations)
+            if github_checks_outputter:
+                write_github_checks_summary_inconsistent(github_checks_outputter.output,
+                                                         inconsistent, total_iterations)
+            write_inconsistent(logger.info, inconsistent, total_iterations)
             write_summary(logger, step_results, "FAIL")
             return 1
 
         if slow:
             step_results.append((desc, "FAIL"))
+            if github_checks_outputter:
+                write_github_checks_summary_slow_tests(github_checks_outputter.output, slow)
             write_slow_tests(logger.info, slow)
             write_summary(logger, step_results, "FAIL")
             return 1
 
-        step_results.append((desc, "PASS"))
+        # If the tests passed but the number of iterations didn't match the number expected to run,
+        # it is likely that the runs were stopped early to avoid a timeout.
+        if total_iterations != expected_iterations:
+            result = f"PASS *  {total_iterations}/{expected_iterations} repeats completed"
+            step_results.append((desc, result))
+        else:
+            step_results.append((desc, "PASS"))
 
     write_summary(logger, step_results, "PASS")

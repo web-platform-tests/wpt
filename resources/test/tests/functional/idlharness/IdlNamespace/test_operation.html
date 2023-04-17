@@ -2,10 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <meta name="variant" content="">
-  <meta name="variant" content="?keep-promise">
   <title>idlharness: namespace operation</title>
-  <script src="../../../../variants.js"></script>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/resources/WebIDLParser.js"></script>
@@ -16,38 +13,57 @@
 <script>
 "use strict";
 
-self.foo = {
-  Truth: function() {},
-};
-Object.defineProperty(self.foo, "Truth", { writable: true });
-
-self.bar = {
-  Truth: function() {},
-}
-Object.defineProperty(self.bar, "Truth", {
-  writable: false,
-  configurable: false,
+Object.defineProperty(self, "foo", {
+  value: Object.defineProperty({}, "Truth", {
+    value: function() {},
+    writable: true,
+    enumerable: true,
+    configurable: true,
+  }),
+  writable: true,
+  enumerable: false,
+  configurable: true,
 });
 
-self.baz = {
-  LongStory: function(hero, ...details) {
-    return `${hero} went and ${details.join(', then')}`
+Object.defineProperty(self, "bar", {
+  value: Object.defineProperty({}, "Truth", {
+    value: function() {},
+    writable: false,
+    enumerable: true,
+    configurable: false,
+  }),
+  writable: true,
+  enumerable: false,
+  configurable: true,
+});
+
+Object.defineProperty(self, "baz", {
+  value: {
+    LongStory: function(hero, ...details) {
+      return `${hero} went and ${details.join(', then')}`
+    },
+    ShortStory: function(...details) {
+      return `${details.join('. ')}`;
+    },
   },
-  ShortStory: function(...details) {
-    return `${details.join('. ')}`;
-  },
-};
+  writable: true,
+  enumerable: false,
+  configurable: true,
+});
 
 var idlArray = new IdlArray();
-idlArray.add_idls(
-`namespace foo {
-  void Truth();
-  void Lies();
+idlArray.add_idls(`
+[Exposed=Window]
+namespace foo {
+  undefined Truth();
+  undefined Lies();
 };
+[Exposed=Window]
 namespace bar {
-  [Unforgeable]
-  void Truth();
+  [LegacyUnforgeable]
+  undefined Truth();
 };
+[Exposed=Window]
 namespace baz {
   DOMString LongStory(any hero, DOMString... details);
   DOMString ShortStory(DOMString... details);
@@ -62,19 +78,43 @@ idlArray.test();
   },
   "summarized_tests": [
     {
-      "name": "bar namespace: operation Truth()",
+      "name": "foo namespace: extended attributes",
       "status_string": "PASS",
       "properties": {},
       "message": null
     },
     {
-      "name": "baz namespace: operation LongStory(any, DOMString...)",
+      "name": "foo namespace: property descriptor",
       "status_string": "PASS",
       "properties": {},
       "message": null
     },
     {
-      "name": "baz namespace: operation ShortStory(DOMString...)",
+      "name": "foo namespace: [[Extensible]] is true",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "foo namespace: [[Prototype]] is Object.prototype",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "foo namespace: typeof is \"object\"",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "foo namespace: has no length property",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "foo namespace: has no name property",
       "status_string": "PASS",
       "properties": {},
       "message": null
@@ -90,6 +130,109 @@ idlArray.test();
       "status_string": "FAIL",
       "properties": {},
       "message": "assert_own_property: namespace object missing operation \"Lies\" expected property \"Lies\" missing"
+    },
+    {
+      "name": "bar namespace: extended attributes",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "bar namespace: property descriptor",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "bar namespace: [[Extensible]] is true",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "bar namespace: [[Prototype]] is Object.prototype",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "bar namespace: typeof is \"object\"",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "bar namespace: has no length property",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "bar namespace: has no name property",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "bar namespace: operation Truth()",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+
+    {
+      "name": "baz namespace: extended attributes",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "baz namespace: property descriptor",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "baz namespace: [[Extensible]] is true",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "baz namespace: [[Prototype]] is Object.prototype",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "baz namespace: typeof is \"object\"",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "baz namespace: has no length property",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "baz namespace: has no name property",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "baz namespace: operation LongStory(any, DOMString...)",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "baz namespace: operation ShortStory(DOMString...)",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
     }
   ],
   "type": "complete"

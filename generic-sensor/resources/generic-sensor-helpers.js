@@ -8,42 +8,30 @@
 // these tests the browser must be run with these options:
 //
 //   --enable-blink-features=MojoJS,MojoJSTest
-const loadChromiumResources = async () => {
-  if (!('MojoInterfaceInterceptor' in self)) {
-    // Do nothing on non-Chromium-based browsers or when the Mojo bindings are
-    // not present in the global namespace.
-    return;
-  }
-
-  const resources = [
-    '/gen/layout_test_data/mojo/public/js/mojo_bindings.js',
-    '/gen/mojo/public/mojom/base/string16.mojom.js',
-    '/gen/services/device/public/mojom/sensor.mojom.js',
-    '/gen/services/device/public/mojom/sensor_provider.mojom.js',
-    '/resources/chromium/generic_sensor_mocks.js',
-  ];
-
-  await Promise.all(resources.map(path => {
-    const script = document.createElement('script');
-    script.src = path;
-    script.async = false;
-    const promise = new Promise((resolve, reject) => {
-      script.onload = resolve;
-      script.onerror = reject;
-    });
-    document.head.appendChild(script);
-    return promise;
-  }));
-};
+async function loadChromiumResources() {
+  await loadScript('/resources/testdriver.js');
+  await loadScript('/resources/testdriver-vendor.js');
+  await loadScript('/page-visibility/resources/window_state_context.js');
+  await import('/resources/chromium/generic_sensor_mocks.js');
+}
 
 async function initialize_generic_sensor_tests() {
   if (typeof GenericSensorTest === 'undefined') {
-    await loadChromiumResources();
+    const script = document.createElement('script');
+    script.src = '/resources/test-only-api.js';
+    script.async = false;
+    const p = new Promise((resolve, reject) => {
+      script.onload = () => { resolve(); };
+      script.onerror = e => { reject(e); };
+    })
+    document.head.appendChild(script);
+    await p;
+
+    if (isChromiumBased) {
+      await loadChromiumResources();
+    }
   }
-  assert_true(
-    typeof GenericSensorTest !== 'undefined',
-    'Mojo testing interface is not available.'
-  );
+
   let sensorTest = new GenericSensorTest();
   await sensorTest.initialize();
   return sensorTest;
@@ -51,12 +39,13 @@ async function initialize_generic_sensor_tests() {
 
 function sensor_test(func, name, properties) {
   promise_test(async (t) => {
+    t.add_cleanup(() => {
+      if (sensorTest)
+        return sensorTest.reset();
+    });
+
     let sensorTest = await initialize_generic_sensor_tests();
-    try {
-      await func(t, sensorTest.getSensorProvider());
-    } finally {
-      await sensorTest.reset();
-    };
+    return func(t, sensorTest.getSensorProvider());
   }, name, properties);
 }
 
@@ -99,28 +88,55 @@ function verifyProximitySensorReading(pattern, {distance, max, near, timestamp},
   return verifySensorReading(pattern, [distance, max, near], timestamp, isNull);
 }
 
-// A "sliding window" that iterates over |data| and returns one item at a
-// time, advancing and wrapping around as needed. |data| must be an array of
-// arrays.
-class RingBuffer {
-  constructor(data) {
-    this.bufferPosition_ = 0;
-    // Validate |data|'s format and deep-copy every element.
-    this.data_ = Array.from(data, element => {
-      if (!Array.isArray(element)) {
-        throw new TypeError('Every |data| element must be an array.');
-      }
-      return Array.from(element);
-    })
+// Assert that two Sensor objects have the same properties and values.
+//
+// Verifies that ``actual`` and ``expected`` have the same sensor properties
+// and, if so, that their values are the same.
+//
+// @param {Sensor} actual - Test value.
+// @param {Sensor} expected - Expected value.
+function assert_sensor_equals(actual, expected) {
+  assert_true(
+      actual instanceof Sensor,
+      'assert_sensor_equals: actual must be a Sensor');
+  assert_true(
+      expected instanceof Sensor,
+      'assert_sensor_equals: expected must be a Sensor');
+
+  // These properties vary per sensor type.
+  const CUSTOM_PROPERTIES = [
+    ['illuminance'], ['quaternion'], ['x', 'y', 'z'],
+    [
+      'latitude', 'longitude', 'altitude', 'accuracy', 'altitudeAccuracy',
+      'heading', 'speed'
+    ]
+  ];
+
+  // These properties are present on all objects derived from Sensor.
+  const GENERAL_PROPERTIES = ['timestamp'];
+
+  for (let customProperties of CUSTOM_PROPERTIES) {
+    if (customProperties.every(p => p in actual) &&
+        customProperties.every(p => p in expected)) {
+      customProperties.forEach(p => {
+        if (customProperties == 'quaternion') {
+          assert_array_equals(
+              actual[p], expected[p],
+              `assert_sensor_equals: property '${p}' does not match`);
+        } else {
+          assert_equals(
+              actual[p], expected[p],
+              `assert_sensor_equals: property '${p}' does not match`);
+        }
+      });
+      GENERAL_PROPERTIES.forEach(p => {
+        assert_equals(
+            actual[p], expected[p],
+            `assert_sensor_equals: property '${p}' does not match`);
+      });
+      return;
+    }
   }
 
-  next() {
-    const value = this.data_[this.bufferPosition_];
-    this.bufferPosition_ = (this.bufferPosition_ + 1) % this.data_.length;
-    return { done: false, value: value };
-  }
-
-  [Symbol.iterator]() {
-    return this;
-  }
+  assert_true(false, 'assert_sensor_equals: sensors have different attributes');
 }

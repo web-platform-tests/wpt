@@ -1,17 +1,16 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Payment Handler API (https://w3c.github.io/payment-handler/)
 
 partial interface ServiceWorkerRegistration {
   [SameObject] readonly attribute PaymentManager paymentManager;
 };
 
-[SecureContext, Exposed=(Window,Worker)]
+[SecureContext, Exposed=(Window)]
 interface PaymentManager {
-  [SameObject] readonly attribute PaymentInstruments instruments;
   attribute DOMString userHint;
-  Promise<void> enableDelegations(FrozenArray<PaymentDelegation> delegations);
+  Promise<undefined> enableDelegations(sequence<PaymentDelegation> delegations);
 };
 
 enum PaymentDelegation {
@@ -21,46 +20,14 @@ enum PaymentDelegation {
   "payerEmail"
 };
 
-[SecureContext, Exposed=(Window,Worker)]
-interface PaymentInstruments {
-  Promise<boolean> delete(DOMString instrumentKey);
-  Promise<any> get(DOMString instrumentKey);
-  Promise<sequence<DOMString>>  keys();
-  Promise<boolean> has(DOMString instrumentKey);
-  Promise<void> set(DOMString instrumentKey, PaymentInstrument details);
-  Promise<void> clear();
-};
-
-dictionary PaymentInstrument {
-  required DOMString name;
-  sequence<ImageObject> icons;
-  DOMString method;
-  object capabilities;
-};
-
-dictionary ImageObject {
-    required USVString src;
-    DOMString sizes;
-    DOMString type;
-};
-
 partial interface ServiceWorkerGlobalScope {
   attribute EventHandler oncanmakepayment;
 };
 
 [Exposed=ServiceWorker]
 interface CanMakePaymentEvent : ExtendableEvent {
-  constructor(DOMString type, CanMakePaymentEventInit eventInitDict);
-  readonly attribute USVString topOrigin;
-  readonly attribute USVString paymentRequestOrigin;
-  readonly attribute FrozenArray<PaymentMethodData> methodData;
-  void respondWith(Promise<boolean> canMakePaymentResponse);
-};
-
-dictionary CanMakePaymentEventInit : ExtendableEventInit {
-  USVString topOrigin;
-  USVString paymentRequestOrigin;
-  sequence<PaymentMethodData> methodData;
+  constructor(DOMString type);
+  undefined respondWith(Promise<boolean> canMakePaymentResponse);
 };
 
 partial interface ServiceWorkerGlobalScope {
@@ -70,30 +37,28 @@ partial interface ServiceWorkerGlobalScope {
 dictionary PaymentRequestDetailsUpdate {
   DOMString error;
   PaymentCurrencyAmount total;
-  FrozenArray<PaymentDetailsModifier> modifiers;
-  FrozenArray<PaymentShippingOption> shippingOptions;
+  sequence<PaymentDetailsModifier> modifiers;
+  sequence<PaymentShippingOption> shippingOptions;
   object paymentMethodErrors;
   AddressErrors shippingAddressErrors;
 };
 
 [Exposed=ServiceWorker]
 interface PaymentRequestEvent : ExtendableEvent {
-  constructor(DOMString type, PaymentRequestEventInit eventInitDict);
+  constructor(DOMString type, optional PaymentRequestEventInit eventInitDict = {});
   readonly attribute USVString topOrigin;
   readonly attribute USVString paymentRequestOrigin;
   readonly attribute DOMString paymentRequestId;
   readonly attribute FrozenArray<PaymentMethodData> methodData;
   readonly attribute object total;
   readonly attribute FrozenArray<PaymentDetailsModifier> modifiers;
-  readonly attribute DOMString instrumentKey;
-  readonly attribute boolean requestBillingAddress;
   readonly attribute object? paymentOptions;
   readonly attribute FrozenArray<PaymentShippingOption>? shippingOptions;
   Promise<WindowClient?> openWindow(USVString url);
   Promise<PaymentRequestDetailsUpdate?> changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
-  Promise<PaymentRequestDetailsUpdate?> changeShippingAddress(AddressInit shippingAddress);
+  Promise<PaymentRequestDetailsUpdate?> changeShippingAddress(optional AddressInit shippingAddress = {});
   Promise<PaymentRequestDetailsUpdate?> changeShippingOption(DOMString shippingOption);
-  void respondWith(Promise<PaymentHandlerResponse> handlerResponsePromise);
+  undefined respondWith(Promise<PaymentHandlerResponse> handlerResponsePromise);
 };
 
 dictionary PaymentRequestEventInit : ExtendableEventInit {
@@ -103,7 +68,6 @@ dictionary PaymentRequestEventInit : ExtendableEventInit {
   sequence<PaymentMethodData> methodData;
   PaymentCurrencyAmount total;
   sequence<PaymentDetailsModifier> modifiers;
-  DOMString instrumentKey;
   PaymentOptions paymentOptions;
   sequence<PaymentShippingOption> shippingOptions;
 };
@@ -116,4 +80,52 @@ DOMString? payerEmail;
 DOMString? payerPhone;
 AddressInit shippingAddress;
 DOMString? shippingOption;
+};
+
+dictionary AddressInit {
+  DOMString country = "";
+  sequence<DOMString> addressLine = [];
+  DOMString region = "";
+  DOMString city = "";
+  DOMString dependentLocality = "";
+  DOMString postalCode = "";
+  DOMString sortingCode = "";
+  DOMString organization = "";
+  DOMString recipient = "";
+  DOMString phone = "";
+};
+
+dictionary PaymentOptions {
+  boolean requestPayerName = false;
+  boolean requestBillingAddress = false;
+  boolean requestPayerEmail = false;
+  boolean requestPayerPhone = false;
+  boolean requestShipping = false;
+  PaymentShippingType shippingType = "shipping";
+};
+
+dictionary PaymentShippingOption {
+  required DOMString id;
+  required DOMString label;
+  required PaymentCurrencyAmount amount;
+  boolean selected = false;
+};
+
+enum PaymentShippingType {
+  "shipping",
+  "delivery",
+  "pickup"
+};
+
+dictionary AddressErrors {
+  DOMString addressLine;
+  DOMString city;
+  DOMString country;
+  DOMString dependentLocality;
+  DOMString organization;
+  DOMString phone;
+  DOMString postalCode;
+  DOMString recipient;
+  DOMString region;
+  DOMString sortingCode;
 };

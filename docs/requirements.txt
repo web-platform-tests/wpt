@@ -1,4 +1,6 @@
-recommonmark==0.6.0
-# pin this to the last Py2 release
-Sphinx==1.8.5  # pyup: <2.0
-sphinx-argparse==0.2.5
+recommonmark==0.7.1
+sphinx-argparse==0.4.0
+sphinx-autobuild==2021.3.14
+sphinx-js==3.2.1
+sphinx==4.4.0
+markupsafe==2.0.1

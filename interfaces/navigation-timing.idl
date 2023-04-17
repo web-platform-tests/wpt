@@ -1,24 +1,24 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Navigation Timing Level 2 (https://w3c.github.io/navigation-timing/)
 
 [Exposed=Window]
 interface PerformanceNavigationTiming : PerformanceResourceTiming {
-    readonly        attribute DOMHighResTimeStamp unloadEventStart;
-    readonly        attribute DOMHighResTimeStamp unloadEventEnd;
-    readonly        attribute DOMHighResTimeStamp domInteractive;
-    readonly        attribute DOMHighResTimeStamp domContentLoadedEventStart;
-    readonly        attribute DOMHighResTimeStamp domContentLoadedEventEnd;
-    readonly        attribute DOMHighResTimeStamp domComplete;
-    readonly        attribute DOMHighResTimeStamp loadEventStart;
-    readonly        attribute DOMHighResTimeStamp loadEventEnd;
-    readonly        attribute NavigationType      type;
-    readonly        attribute unsigned short      redirectCount;
+    readonly        attribute DOMHighResTimeStamp  unloadEventStart;
+    readonly        attribute DOMHighResTimeStamp  unloadEventEnd;
+    readonly        attribute DOMHighResTimeStamp  domInteractive;
+    readonly        attribute DOMHighResTimeStamp  domContentLoadedEventStart;
+    readonly        attribute DOMHighResTimeStamp  domContentLoadedEventEnd;
+    readonly        attribute DOMHighResTimeStamp  domComplete;
+    readonly        attribute DOMHighResTimeStamp  loadEventStart;
+    readonly        attribute DOMHighResTimeStamp  loadEventEnd;
+    readonly        attribute NavigationTimingType type;
+    readonly        attribute unsigned short       redirectCount;
     [Default] object toJSON();
 };
 
-enum NavigationType {
+enum NavigationTimingType {
     "navigate",
     "reload",
     "back_forward",

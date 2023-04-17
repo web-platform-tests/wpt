@@ -1,11 +1,4 @@
-var inWorker = false;
 var RESOURCES_DIR = "../resources/";
-
-try {
-  inWorker = !(self instanceof Window);
-} catch (e) {
-  inWorker = true;
-}
 
 function dirname(path) {
     return path.replace(/\/[^\/]*$/, '/')
@@ -64,12 +57,13 @@ function validateBufferFromString(buffer, expectedValue, message)
 }
 
 function validateStreamFromString(reader, expectedValue, retrievedArrayBuffer) {
-  return reader.read().then(function(data) {
+  // Passing Uint8Array for byte streams; non-byte streams will simply ignore it
+  return reader.read(new Uint8Array(64)).then(function(data) {
     if (!data.done) {
       assert_true(data.value instanceof Uint8Array, "Fetch ReadableStream chunks should be Uint8Array");
       var newBuffer;
       if (retrievedArrayBuffer) {
-        newBuffer =  new ArrayBuffer(data.value.length + retrievedArrayBuffer.length);
+        newBuffer =  new Uint8Array(data.value.length + retrievedArrayBuffer.length);
         newBuffer.set(retrievedArrayBuffer, 0);
         newBuffer.set(data.value, retrievedArrayBuffer.length);
       } else {
@@ -82,12 +76,13 @@ function validateStreamFromString(reader, expectedValue, retrievedArrayBuffer) {
 }
 
 function validateStreamFromPartialString(reader, expectedValue, retrievedArrayBuffer) {
-  return reader.read().then(function(data) {
+  // Passing Uint8Array for byte streams; non-byte streams will simply ignore it
+  return reader.read(new Uint8Array(64)).then(function(data) {
     if (!data.done) {
       assert_true(data.value instanceof Uint8Array, "Fetch ReadableStream chunks should be Uint8Array");
       var newBuffer;
       if (retrievedArrayBuffer) {
-        newBuffer =  new ArrayBuffer(data.value.length + retrievedArrayBuffer.length);
+        newBuffer =  new Uint8Array(data.value.length + retrievedArrayBuffer.length);
         newBuffer.set(retrievedArrayBuffer, 0);
         newBuffer.set(data.value, retrievedArrayBuffer.length);
       } else {

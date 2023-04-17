@@ -28,7 +28,7 @@ var TestUtils = (function() {
   TestUtils.STORAGE = [
     {
       "name": "local storage",
-      "supported": function() { !!window.localStorage; },
+      "supported": function() { return !!window.localStorage; },
       "add": function() {
         return new Promise(function(resolve, reject) {
           localStorage.setItem(randomString(), randomString());
@@ -121,7 +121,7 @@ var TestUtils = (function() {
       "add": function() {
         return navigator.serviceWorker.register(
             "support/service_worker.js",
-            { scope: "support/"});
+            { scope: "support/page_using_service_worker.html"});
       },
       "isEmpty": function() {
         return new Promise(function(resolve, reject) {

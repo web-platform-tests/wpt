@@ -1,24 +1,35 @@
+# mypy: allow-untyped-defs
+
 import collections
 import json
 
-from six import itervalues
+from typing import ClassVar, DefaultDict, Type
+
 
 class WebDriverException(Exception):
-    http_status = None
-    status_code = None
+    # The status_code class variable is used to map the JSON Error Code (see
+    # https://w3c.github.io/webdriver/#errors) to a WebDriverException subclass.
+    # However, http_status need not match, and both are set as instance
+    # variables, shadowing the class variables. TODO: Match on both http_status
+    # and status_code and let these be class variables only.
+    http_status = None  # type: ClassVar[int]
+    status_code = None  # type: ClassVar[str]
 
     def __init__(self, http_status=None, status_code=None, message=None, stacktrace=None):
-        super(WebDriverException, self)
-        self.http_status = http_status
-        self.status_code = status_code
+        super()
+
+        if http_status is not None:
+            self.http_status = http_status
+        if status_code is not None:
+            self.status_code = status_code
         self.message = message
         self.stacktrace = stacktrace
 
     def __repr__(self):
-        return "<%s http_status=%s>" % (self.__class__.__name__, self.http_status)
+        return f"<{self.__class__.__name__} http_status={self.http_status}>"
 
     def __str__(self):
-        message = "%s (%s)" % (self.status_code, self.http_status)
+        message = f"{self.status_code} ({self.http_status})"
 
         if self.message is not None:
             message += ": %s" % self.message
@@ -28,6 +39,11 @@ class WebDriverException(Exception):
             message += ("\nRemote-end stacktrace:\n\n%s" % self.stacktrace)
 
         return message
+
+
+class DetachedShadowRootException(WebDriverException):
+    http_status = 404
+    status_code = "detached shadow root"
 
 
 class ElementClickInterceptedException(WebDriverException):
@@ -108,6 +124,11 @@ class NoSuchElementException(WebDriverException):
 class NoSuchFrameException(WebDriverException):
     http_status = 404
     status_code = "no such frame"
+
+
+class NoSuchShadowRootException(WebDriverException):
+    http_status = 404
+    status_code = "no such shadow root"
 
 
 class NoSuchWindowException(WebDriverException):
@@ -205,7 +226,7 @@ def get(error_code):
     return _errors.get(error_code, WebDriverException)
 
 
-_errors = collections.defaultdict()
-for item in list(itervalues(locals())):
+_errors: DefaultDict[str, Type[WebDriverException]] = collections.defaultdict()
+for item in list(locals().values()):
     if type(item) == type and issubclass(item, WebDriverException):
         _errors[item.status_code] = item

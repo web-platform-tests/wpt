@@ -4,20 +4,30 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 
-test(function(t) {
-  window.navigator.mediaSession.setActionHandler("play", null);
-  window.navigator.mediaSession.setActionHandler("pause", null);
-  window.navigator.mediaSession.setActionHandler("previoustrack", null);
-  window.navigator.mediaSession.setActionHandler("nexttrack", null);
-  window.navigator.mediaSession.setActionHandler("seekbackward", null);
-  window.navigator.mediaSession.setActionHandler("seekforward", null);
-  window.navigator.mediaSession.setActionHandler("stop", null);
-  window.navigator.mediaSession.setActionHandler("seekto", null);
-}, "Test that setActionHandler() can be executed for supported actions");
+[
+  "play",
+  "pause",
+  "previoustrack",
+  "nexttrack",
+  "seekbackward",
+  "seekforward",
+  "stop",
+  "seekto",
+  "skipad",
+  "togglemicrophone",
+  "togglecamera",
+  "hangup",
+  "previousslide",
+  "nextslide",
+].forEach((action) =>
+  test((t) => {
+    window.navigator.mediaSession.setActionHandler(action, null);
+  }, `Test that setActionHandler("${action}") succeeds`)
+);
 
 test(function(t) {
-  assert_throws(
-      new TypeError,
+  assert_throws_js(
+      TypeError,
       _ => { window.navigator.mediaSession.setActionHandler("invalid", null); });
 }, "Test that setActionHandler() throws exception for unsupported actions");
 

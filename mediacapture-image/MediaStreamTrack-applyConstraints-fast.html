@@ -43,7 +43,7 @@ return videoTrack.applyConstraints({advanced: []});
 
 // This test verifies that applyConstraints() rejects the returned Promise if
 // passed a non-supported image-capture constraint (https://crbug.com/711694).
-promise_test(function(t) {
+promise_test(async function(t) {
   var canvas = document.getElementById('canvas');
   var context = canvas.getContext("2d");
   context.fillStyle = "red";
@@ -51,35 +51,17 @@ promise_test(function(t) {
 
   var stream = canvas.captureStream();
   var videoTrack = stream.getVideoTracks()[0];
-
-  var expectedError =
-      new DOMException('Unsupported constraint(s)', 'NotSupportedError');
 
   // Use e.g. |torch| as an example of unsupported constraint.
   assert_false("torch" in videoTrack.getCapabilities());
-  return promise_rejects(
-      t, expectedError,
-      videoTrack.applyConstraints({advanced : [ {torch : true} ]}));
+  try {
+    await videoTrack.applyConstraints({advanced : [ {torch : true} ]});
+  } catch (error) {
+    assert_equals(error.name, 'OverconstrainedError');
+    assert_equals(error.constraint, 'torch');
+    return;
+  }
+  assert_unreached('expected applyConstraints to reject');
 }, 'MediaStreamTrack.applyConstraints() with unsupported constraint');
-
-// This test verifies that applyConstraints() rejects the returned Promise if
-// passed mixed ImageCapture and non-ImageCapture constraints.
-// TODO(mcasas): remove entirely after https://crbug.com/338503.
-promise_test(function(t) {
-  var canvas = document.getElementById('canvas');
-  var context = canvas.getContext("2d");
-  context.fillStyle = "red";
-  context.fillRect(0, 0, 10, 10);
-
-  var stream = canvas.captureStream();
-  var videoTrack = stream.getVideoTracks()[0];
-
-  var expectedError = new OverconstrainedError(
-      '', 'Mixing ImageCapture and non-ImageCapture constraints is not currently supported');
-
-  return promise_rejects(
-      t, expectedError,
-      videoTrack.applyConstraints({advanced : [ {width : 640, torch: true} ]}));
-}, 'MediaStreamTrack.applyConstraints() with non Image-Capture constraint');
 
 </script>

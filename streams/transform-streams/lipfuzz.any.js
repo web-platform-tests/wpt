@@ -1,4 +1,4 @@
-// META: global=worker,jsshell
+// META: global=window,worker
 'use strict';
 
 class LipFuzzTransformer {

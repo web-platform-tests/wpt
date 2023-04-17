@@ -9,7 +9,7 @@
 <link rel="help" href="https://w3c.github.io/IndexedDB/#dom-idbindex-openkeycursor">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="resources/support.js"></script>
 <script>
 
 ['get',
@@ -29,7 +29,7 @@
       store2.deleteIndex('i');
 
       setTimeout(t.step_func(() => {
-        assert_throws(
+        assert_throws_dom(
           'InvalidStateError', () => { index[method]('key'); },
           '"has been deleted" check (InvalidStateError) should precede ' +
           '"not active" check (TransactionInactiveError)');
@@ -47,12 +47,12 @@
       const index = store.createIndex('i', 'keyPath');
     },
     (t, db) => {
-      const tx = db.transaction('s');
+      const tx = db.transaction('s', 'readonly', {durability: 'relaxed'});
       const store = tx.objectStore('s');
       const index = store.index('i');
 
       setTimeout(t.step_func(() => {
-        assert_throws(
+        assert_throws_dom(
           'TransactionInactiveError', () => { index[method]({}); },
           '"not active" check (TransactionInactiveError) should precede ' +
           'query check (DataError)');

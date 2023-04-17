@@ -3,7 +3,7 @@
 <link rel="author" title="Microsoft" href="http://www.microsoft.com">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="resources/support.js"></script>
 
 <script>
     var db,
@@ -22,7 +22,7 @@
     };
 
     open_rq.onsuccess = function(e) {
-        var cursor_rq = db.transaction("test")
+        var cursor_rq = db.transaction("test", "readonly", {durability: 'relaxed'})
                           .objectStore("test")
                           .openCursor();
 
@@ -30,7 +30,7 @@
             var cursor = e.target.result;
 
             assert_true(cursor != null, "cursor exist");
-            assert_throws('ReadOnlyError', function() { cursor.delete(); });
+            assert_throws_dom('ReadOnlyError', function() { cursor.delete(); });
             t.done();
         });
     }

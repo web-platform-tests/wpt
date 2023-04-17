@@ -8,7 +8,7 @@ array, and after the playback has stopped, the contents are compared
 to those of a loaded AudioBuffer with the same source.
 
 Somewhat similiar to a test from Mozilla:
-(http://dxr.mozilla.org/mozilla-central/source/content/media/webaudio/test/test_mediaElementAudioSourceNode.html?force=1)
+https://searchfox.org/mozilla-central/source/dom/media/webaudio/test/test_mediaElementAudioSourceNode.html
 -->
 
 <html class="a">
@@ -73,13 +73,16 @@ Somewhat similiar to a test from Mozilla:
    let audioprocessListener = elementSourceTest.step_func(processListener);
    processor.addEventListener('audioprocess', audioprocessListener);
 
+   context.addEventListener('statechange', elementSourceTest.step_func(() => {
+     assert_equals(context.state, "running", "context.state");
+     audio.play();
+   }), {once: true});
+
    // When media playback ended, save the begin to compare with expected buffer
    audio.addEventListener("ended", elementSourceTest.step_func(function(e) {
      // Setting a timeout since we need audioProcess event to run for all samples
      window.setTimeout(elementSourceTest.step_func(loadExpectedBuffer), 50);
    }));
-
-   audio.play();
 
    function runTests(expected) {
      source.disconnect();

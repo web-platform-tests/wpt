@@ -1,11 +1,16 @@
+// META: global=window,worker
 // META: script=../resources/utils.js
+// META: script=/common/utils.js
+// META: script=/common/get-host-info.sub.js
 
 function testUpload(desc, url, method, createBody, expectedBody) {
-  var requestInit = {"method": method}
+  const requestInit = {method};
   promise_test(function(test){
-    let body = createBody();
-    if (body)
+    const body = createBody();
+    if (body) {
       requestInit["body"] = body;
+      requestInit.duplex = "half";
+    }
     return fetch(url, requestInit).then(function(resp) {
       return resp.text().then((text)=> {
         assert_equals(text, expectedBody);
@@ -15,16 +20,17 @@ function testUpload(desc, url, method, createBody, expectedBody) {
 }
 
 function testUploadFailure(desc, url, method, createBody) {
-  const requestInit = {"method": method};
-  promise_test(test => {
-    let body = createBody();
-    if (body)
+  const requestInit = {method};
+  promise_test(t => {
+    const body = createBody();
+    if (body) {
       requestInit["body"] = body;
-    return promise_rejects(new TypeError(), fetch(url, requestInit));
+    }
+    return promise_rejects_js(t, TypeError, fetch(url, requestInit));
   }, desc);
 }
 
-var url = RESOURCES_DIR + "echo-content.py"
+const url = RESOURCES_DIR + "echo-content.py"
 
 testUpload("Fetch with PUT with body", url,
   "PUT",
@@ -70,20 +76,11 @@ testUpload("Fetch with POST with Blob body with mime type", url,
   "POST",
   () => new Blob(["Test"], { type: "text/maybe" }),
   "Test");
-testUpload("Fetch with POST with ReadableStream", url,
-  "POST",
-  () => {
-    new ReadableStream({start: controller => {
-      const encoder = new TextEncoder();
-      controller.enqueue(encoder.encode("Test"));
-      controller.close();
-    }})
-  },
-  "Test");
+
 testUploadFailure("Fetch with POST with ReadableStream containing String", url,
   "POST",
   () => {
-    new ReadableStream({start: controller => {
+    return new ReadableStream({start: controller => {
       controller.enqueue("Test");
       controller.close();
     }})
@@ -91,7 +88,7 @@ testUploadFailure("Fetch with POST with ReadableStream containing String", url,
 testUploadFailure("Fetch with POST with ReadableStream containing null", url,
   "POST",
   () => {
-    new ReadableStream({start: controller => {
+    return new ReadableStream({start: controller => {
       controller.enqueue(null);
       controller.close();
     }})
@@ -99,7 +96,7 @@ testUploadFailure("Fetch with POST with ReadableStream containing null", url,
 testUploadFailure("Fetch with POST with ReadableStream containing number", url,
   "POST",
   () => {
-    new ReadableStream({start: controller => {
+    return new ReadableStream({start: controller => {
       controller.enqueue(99);
       controller.close();
     }})
@@ -107,7 +104,7 @@ testUploadFailure("Fetch with POST with ReadableStream containing number", url,
 testUploadFailure("Fetch with POST with ReadableStream containing ArrayBuffer", url,
   "POST",
   () => {
-    new ReadableStream({start: controller => {
+    return new ReadableStream({start: controller => {
       controller.enqueue(new ArrayBuffer());
       controller.close();
     }})
@@ -115,8 +112,24 @@ testUploadFailure("Fetch with POST with ReadableStream containing ArrayBuffer", 
 testUploadFailure("Fetch with POST with ReadableStream containing Blob", url,
   "POST",
   () => {
-    new ReadableStream({start: controller => {
+    return new ReadableStream({start: controller => {
       controller.enqueue(new Blob());
       controller.close();
     }})
   });
+
+promise_test(async (test) => {
+  const resp = await fetch(
+    "/fetch/connection-pool/resources/network-partition-key.py?"
+    + `status=421&uuid=${token()}&partition_id=${get_host_info().ORIGIN}`
+    + `&dispatch=check_partition&addcounter=true`,
+    {method: "POST", body: "foobar"});
+  assert_equals(resp.status, 421);
+  const text = await resp.text();
+  assert_equals(text, "ok. Request was sent 2 times. 2 connections were created.");
+}, "Fetch with POST with text body on 421 response should be retried once on new connection.");
+
+promise_test(async (test) => {
+  const body = new ReadableStream({start: c => c.close()});
+  await promise_rejects_js(test, TypeError, fetch('/', {method: 'POST', body}));
+}, "Streaming upload shouldn't work on Http/1.1.");

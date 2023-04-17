@@ -10,6 +10,7 @@ test(function() {
   performance.clearMarks();
   const detail = { randomInfo: 123 }
   const markEntry = performance.mark("A", { detail });
+  assert_equals(markEntry.detail.randomInfo, detail.randomInfo);
   assert_not_equals(markEntry.detail, detail);
 }, "The detail property in the mark method should be structured-clone.");
 
@@ -22,7 +23,7 @@ test(function() {
 test(function() {
   performance.clearMarks();
   const detail = { unserializable: Symbol() };
-  assert_throws("DataCloneError", ()=>{
+  assert_throws_dom("DataCloneError", ()=>{
     new PerformanceMark("A", { detail });
   }, "Trying to structured-serialize a Symbol.");
 }, "Mark: Throw an exception when the detail property cannot be structured-serialized.");
@@ -31,6 +32,7 @@ test(function() {
   performance.clearMeasures();
   const detail = { randomInfo: 123 }
   const measureEntry = performance.measure("A", { start: 0, detail });
+  assert_equals(measureEntry.detail.randomInfo, detail.randomInfo);
   assert_not_equals(measureEntry.detail, detail);
 }, "The detail property in the measure method should be structured-clone.");
 
@@ -50,7 +52,7 @@ test(function() {
 test(function() {
   performance.clearMeasures();
   const detail = { unserializable: Symbol() };
-  assert_throws("DataCloneError", ()=>{
+  assert_throws_dom("DataCloneError", ()=>{
     performance.measure("A", { start: 0, detail });
   }, "Trying to structured-serialize a Symbol.");
 }, "Measure: Throw an exception when the detail property cannot be structured-serialized.");

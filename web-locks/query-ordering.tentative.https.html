@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
 <title>Web Locks API: navigator.locks.query ordering</title>
-<link rel=help href="https://wicg.github.io/web-locks/">
+<link rel=help href="https://w3c.github.io/web-locks/">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/helpers.js"></script>
@@ -42,6 +42,7 @@ function nextMessage() {
 // distinguishable client_ids (otherwise it would not be possible to
 // distinguish the requests and thus impossible to verify ordering).
 promise_test(async testCase => {
+  assert_implements(navigator.locks);
   const resourceName = uniqueName(testCase);
 
   // Set up clients.

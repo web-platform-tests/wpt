@@ -1,6 +1,4 @@
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this file,
-# You can obtain one at http://mozilla.org/MPL/2.0/.
+# mypy: allow-untyped-defs
 
 import glob
 import os
@@ -9,9 +7,10 @@ import subprocess
 import tarfile
 import tempfile
 import time
-from cStringIO import StringIO as CStringIO
 
 import requests
+
+from io import StringIO
 
 from .base import Browser, ExecutorBrowser, require_arg
 from .base import get_timeout_multiplier   # noqa: F401
@@ -19,7 +18,7 @@ from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorselenium import (SeleniumTestharnessExecutor,  # noqa: F401
                                           SeleniumRefTestExecutor)  # noqa: F401
 
-here = os.path.split(__file__)[0]
+here = os.path.dirname(__file__)
 # Number of seconds to wait between polling operations when detecting status of
 # Sauce Connect sub-process.
 sc_poll_period = 1
@@ -58,7 +57,7 @@ def get_capabilities(**kwargs):
         "browserName": browser_name,
         "build": build,
         "disablePopupHandler": True,
-        "name": "%s %s on %s" % (browser_name, version, platform),
+        "name": f"{browser_name} {version} on {platform}",
         "platform": platform,
         "public": "public",
         "selenium-version": "3.3.1",
@@ -68,9 +67,6 @@ def get_capabilities(**kwargs):
         "prerun": prerun_script.get(browser_name)
     }
 
-    if browser_name == 'MicrosoftEdge':
-        capabilities['selenium-version'] = '2.4.8'
-
     return capabilities
 
 
@@ -79,7 +75,7 @@ def get_sauce_config(**kwargs):
     sauce_user = kwargs["sauce_user"]
     sauce_key = kwargs["sauce_key"]
 
-    hub_url = "%s:%s@localhost:4445" % (sauce_user, sauce_key)
+    hub_url = f"{sauce_user}:{sauce_key}@localhost:4445"
     data = {
         "url": "http://%s/wd/hub" % hub_url,
         "browserName": browser_name,
@@ -97,16 +93,15 @@ def check_args(**kwargs):
     require_arg(kwargs, "sauce_key")
 
 
-def browser_kwargs(test_type, run_info_data, config, **kwargs):
+def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
     sauce_config = get_sauce_config(**kwargs)
 
     return {"sauce_config": sauce_config}
 
 
-def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
+def executor_kwargs(logger, test_type, test_environment, run_info_data,
                     **kwargs):
-    executor_kwargs = base_executor_kwargs(test_type, server_config,
-                                           cache_manager, run_info_data, **kwargs)
+    executor_kwargs = base_executor_kwargs(test_type, test_environment, run_info_data, **kwargs)
 
     executor_kwargs["capabilities"] = get_capabilities(**kwargs)
 
@@ -124,7 +119,7 @@ def env_options():
 def get_tar(url, dest):
     resp = requests.get(url, stream=True)
     resp.raise_for_status()
-    with tarfile.open(fileobj=CStringIO(resp.raw.read())) as f:
+    with tarfile.open(fileobj=StringIO(resp.raw.read())) as f:
         f.extractall(path=dest)
 
 
@@ -178,7 +173,7 @@ class SauceConnect():
 
         tot_wait = 0
         while not os.path.exists('./sauce_is_ready') and self.sc_process.poll() is None:
-            if tot_wait >= self.sauce_init_timeout:
+            if not self.sauce_init_timeout or (tot_wait >= self.sauce_init_timeout):
                 self.quit()
 
                 raise SauceException("Sauce Connect Proxy was not ready after %d seconds" % tot_wait)
@@ -200,7 +195,7 @@ class SauceConnect():
 
     def upload_prerun_exec(self, file_name):
         auth = (self.sauce_user, self.sauce_key)
-        url = "https://saucelabs.com/rest/v1/storage/%s/%s?overwrite=true" % (self.sauce_user, file_name)
+        url = f"https://saucelabs.com/rest/v1/storage/{self.sauce_user}/{file_name}?overwrite=true"
 
         with open(os.path.join(here, 'sauce_setup', file_name), 'rb') as f:
             requests.post(url, data=f, auth=auth)
@@ -230,7 +225,7 @@ class SauceException(Exception):
 class SauceBrowser(Browser):
     init_timeout = 300
 
-    def __init__(self, logger, sauce_config):
+    def __init__(self, logger, sauce_config, **kwargs):
         Browser.__init__(self, logger)
         self.sauce_config = sauce_config
 

@@ -1,6 +1,4 @@
-import sys
-
-import pytest
+# mypy: allow-untyped-defs
 
 from .. import expectedtree, metadata
 from collections import defaultdict
@@ -14,10 +12,10 @@ def dump_tree(tree):
         if not node.prop:
             data = "root"
         else:
-            data = "%s:%s" % (node.prop, node.value)
+            data = f"{node.prop}:{node.value}"
         if node.result_values:
             data += " result_values:%s" % (",".join(sorted(node.result_values)))
-        rv.append("%s<%s>" % (prefix, data))
+        rv.append(f"{prefix}<{data}>")
         for child in sorted(node.children, key=lambda x:x.value):
             dump_node(child, indent + 2)
     dump_node(tree)
@@ -32,8 +30,6 @@ def results_object(results):
     return results_obj
 
 
-@pytest.mark.xfail(sys.version[0] == "3",
-                   reason="metadata doesn't support py3")
 def test_build_tree_0():
     # Pass if debug
     results = [({"os": "linux", "version": "18.04", "debug": True}, "FAIL"),
@@ -53,8 +49,6 @@ def test_build_tree_0():
     assert dump_tree(tree) == expected
 
 
-@pytest.mark.xfail(sys.version[0] == "3",
-                   reason="metadata doesn't support py3")
 def test_build_tree_1():
     # Pass if linux or windows 10
     results = [({"os": "linux", "version": "18.04", "debug": True}, "PASS"),
@@ -77,8 +71,6 @@ def test_build_tree_1():
     assert dump_tree(tree) == expected
 
 
-@pytest.mark.xfail(sys.version[0] == "3",
-                   reason="metadata doesn't support py3")
 def test_build_tree_2():
     # Fails in a specific configuration
     results = [({"os": "linux", "version": "18.04", "debug": True}, "PASS"),
@@ -104,8 +96,6 @@ def test_build_tree_2():
     assert dump_tree(tree) == expected
 
 
-@pytest.mark.xfail(sys.version[0] == "3",
-                   reason="metadata doesn't support py3")
 def test_build_tree_3():
 
     results = [({"os": "linux", "version": "18.04", "debug": True, "unused": False}, "PASS"),
@@ -118,8 +108,6 @@ def test_build_tree_3():
     assert dump_tree(tree) == expected
 
 
-@pytest.mark.xfail(sys.version[0] == "3",
-                   reason="metadata doesn't support py3")
 def test_build_tree_4():
     # Check counts for multiple statuses
     results = [({"os": "linux", "version": "18.04", "debug": False}, "FAIL"),

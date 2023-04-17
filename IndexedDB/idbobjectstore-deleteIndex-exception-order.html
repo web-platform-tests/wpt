@@ -4,7 +4,7 @@
 <link rel="help" href="https://w3c.github.io/IndexedDB/#dom-idbobjectstore-deleteindex">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="resources/support.js"></script>
 <script>
 
 indexeddb_test(
@@ -13,11 +13,11 @@ indexeddb_test(
     store.createIndex('i', 'keyPath');
   },
   (t, db) => {
-    const tx = db.transaction('s');
+    const tx = db.transaction('s', 'readonly', {durability: 'relaxed'});
     const store = tx.objectStore('s');
 
     setTimeout(t.step_func(() => {
-      assert_throws(
+      assert_throws_dom(
         'InvalidStateError', () => { store.deleteIndex('i'); },
         '"running an upgrade transaction" check (InvalidStateError) ' +
         'should precede "not active" check (TransactionInactiveError)');
@@ -36,7 +36,7 @@ indexeddb_test(
     db.deleteObjectStore('s');
 
     setTimeout(t.step_func(() => {
-      assert_throws(
+      assert_throws_dom(
         'InvalidStateError', () => { store.deleteIndex('i'); },
         '"deleted" check (InvalidStateError) ' +
         'should precede "not active" check (TransactionInactiveError)');
@@ -53,7 +53,7 @@ indexeddb_test(
     const store = db.createObjectStore('s');
 
     setTimeout(t.step_func(() => {
-      assert_throws(
+      assert_throws_dom(
         'TransactionInactiveError', () => { store.deleteIndex('nope'); },
         '"not active" check (TransactionInactiveError) should precede ' +
         '"name in store" check (NotFoundError)');

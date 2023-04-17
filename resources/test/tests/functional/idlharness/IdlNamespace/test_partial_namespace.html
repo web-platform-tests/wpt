@@ -3,10 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="variant" content="">
-  <meta name="variant" content="?keep-promise">
   <title>idlharness: Partial namespace</title>
-  <script src="/resources/test/variants.js"></script>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/resources/WebIDLParser.js"></script>
@@ -40,7 +37,7 @@
 
         [Exposed=(Worker)]
         partial namespace C {};`);
-      idlArray.collapse_partials();
+      idlArray.merge_partials();
     })();
 
     // Invalid exposure
@@ -52,7 +49,7 @@
       idlArray.add_idls(`
         [Exposed=(DedicatedWorker)]
         partial namespace D {};`);
-      idlArray.collapse_partials();
+      idlArray.merge_partials();
     })();
 
     // Original is an interface, not a namespace.
@@ -61,7 +58,7 @@
       idlArray.add_idls(`
         partial namespace E {};
         interface E {};`);
-      idlArray.collapse_partials();
+      idlArray.merge_partials();
     })();
   </script>
   <script type="text/json" id="expected">

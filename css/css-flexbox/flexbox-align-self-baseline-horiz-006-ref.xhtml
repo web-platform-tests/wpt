@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+     Any copyright is dedicated to the Public Domain.
+     http://creativecommons.org/publicdomain/zero/1.0/
+-->
+<!-- Reference case for behavior of the 'baseline' value for align-items and
+     align-self when tested against content with an orthogonal writing-mode.
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>CSS Reftest Reference</title>
+    <link rel="author" title="Brad Werth" href="mailto:bwerth@mozilla.com"/>
+    <style>
+      .container {
+        border: 1px dashed blue;
+        font: 14px sans-serif;
+        height: 50px;
+      }
+
+      .container > div {
+        display: inline-block;
+      }
+
+      .ortho  {
+        writing-mode: vertical-rl;
+        width: 17px;
+        height: 40px;
+      }
+
+      .lime   { background: lime;   }
+      .yellow { background: yellow; }
+      .orange { background: orange; }
+      .pink   { background: pink;   }
+   </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="lime ortho">ortho</div
+      ><div class="yellow">one line</div
+      ><div class="orange" style="display: inline-flex;">two<br/>lines</div
+      ><div class="pink">offset</div>
+    </div>
+    <div class="container">
+      <div class="lime ortho" style="margin-top: 4px;">ortho</div
+      ><div class="yellow">one line</div
+      ><div class="orange">two<br/>lines</div
+      ><div class="pink">offset</div>
+    </div>
+  </body>
+</html>

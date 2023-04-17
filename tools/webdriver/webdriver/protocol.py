@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import json
 
 import webdriver
@@ -9,7 +11,7 @@ import webdriver
 class Encoder(json.JSONEncoder):
     def __init__(self, *args, **kwargs):
         kwargs.pop("session")
-        super(Encoder, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def default(self, obj):
         if isinstance(obj, (list, tuple)):
@@ -20,13 +22,15 @@ class Encoder(json.JSONEncoder):
             return {webdriver.Frame.identifier: obj.id}
         elif isinstance(obj, webdriver.Window):
             return {webdriver.Frame.identifier: obj.id}
-        return super(Encoder, self).default(obj)
+        elif isinstance(obj, webdriver.ShadowRoot):
+            return {webdriver.ShadowRoot.identifier: obj.id}
+        return super().default(obj)
 
 
 class Decoder(json.JSONDecoder):
     def __init__(self, *args, **kwargs):
         self.session = kwargs.pop("session")
-        super(Decoder, self).__init__(
+        super().__init__(
             object_hook=self.object_hook, *args, **kwargs)
 
     def object_hook(self, payload):
@@ -38,6 +42,8 @@ class Decoder(json.JSONDecoder):
             return webdriver.Frame.from_json(payload, self.session)
         elif isinstance(payload, dict) and webdriver.Window.identifier in payload:
             return webdriver.Window.from_json(payload, self.session)
+        elif isinstance(payload, dict) and webdriver.ShadowRoot.identifier in payload:
+            return webdriver.ShadowRoot.from_json(payload, self.session)
         elif isinstance(payload, dict):
-            return {k: self.object_hook(v) for k, v in payload.iteritems()}
+            return {k: self.object_hook(v) for k, v in payload.items()}
         return payload

@@ -1,14 +1,14 @@
-# -*- coding: utf-8 -*-
+from _pytest.pytester import Pytester
 
 
-def test_no_items_should_not_show_output(testdir):
-    result = testdir.runpytest("--fixtures-per-test")
-    assert "fixtures used by" not in result.stdout.str()
+def test_no_items_should_not_show_output(pytester: Pytester) -> None:
+    result = pytester.runpytest("--fixtures-per-test")
+    result.stdout.no_fnmatch_line("*fixtures used by*")
     assert result.ret == 0
 
 
-def test_fixtures_in_module(testdir):
-    p = testdir.makepyfile(
+def test_fixtures_in_module(pytester: Pytester) -> None:
+    p = pytester.makepyfile(
         '''
         import pytest
         @pytest.fixture
@@ -22,22 +22,22 @@ def test_fixtures_in_module(testdir):
     '''
     )
 
-    result = testdir.runpytest("--fixtures-per-test", p)
+    result = pytester.runpytest("--fixtures-per-test", p)
     assert result.ret == 0
 
     result.stdout.fnmatch_lines(
         [
             "*fixtures used by test_arg1*",
             "*(test_fixtures_in_module.py:9)*",
-            "arg1",
+            "arg1 -- test_fixtures_in_module.py:6",
             "    arg1 docstring",
         ]
     )
-    assert "_arg0" not in result.stdout.str()
+    result.stdout.no_fnmatch_line("*_arg0*")
 
 
-def test_fixtures_in_conftest(testdir):
-    testdir.makeconftest(
+def test_fixtures_in_conftest(pytester: Pytester) -> None:
+    pytester.makeconftest(
         '''
         import pytest
         @pytest.fixture
@@ -53,7 +53,7 @@ def test_fixtures_in_conftest(testdir):
             """
     '''
     )
-    p = testdir.makepyfile(
+    p = pytester.makepyfile(
         """
         def test_arg2(arg2):
             pass
@@ -61,30 +61,29 @@ def test_fixtures_in_conftest(testdir):
             pass
     """
     )
-    result = testdir.runpytest("--fixtures-per-test", p)
+    result = pytester.runpytest("--fixtures-per-test", p)
     assert result.ret == 0
 
     result.stdout.fnmatch_lines(
         [
             "*fixtures used by test_arg2*",
             "*(test_fixtures_in_conftest.py:2)*",
-            "arg2",
+            "arg2 -- conftest.py:6",
             "    arg2 docstring",
             "*fixtures used by test_arg3*",
             "*(test_fixtures_in_conftest.py:4)*",
-            "arg1",
+            "arg1 -- conftest.py:3",
             "    arg1 docstring",
-            "arg2",
+            "arg2 -- conftest.py:6",
             "    arg2 docstring",
-            "arg3",
+            "arg3 -- conftest.py:9",
             "    arg3",
-            "    docstring",
         ]
     )
 
 
-def test_should_show_fixtures_used_by_test(testdir):
-    testdir.makeconftest(
+def test_should_show_fixtures_used_by_test(pytester: Pytester) -> None:
+    pytester.makeconftest(
         '''
         import pytest
         @pytest.fixture
@@ -95,7 +94,7 @@ def test_should_show_fixtures_used_by_test(testdir):
             """arg2 from conftest"""
     '''
     )
-    p = testdir.makepyfile(
+    p = pytester.makepyfile(
         '''
         import pytest
         @pytest.fixture
@@ -105,23 +104,23 @@ def test_should_show_fixtures_used_by_test(testdir):
             pass
     '''
     )
-    result = testdir.runpytest("--fixtures-per-test", p)
+    result = pytester.runpytest("--fixtures-per-test", p)
     assert result.ret == 0
 
     result.stdout.fnmatch_lines(
         [
             "*fixtures used by test_args*",
             "*(test_should_show_fixtures_used_by_test.py:6)*",
-            "arg1",
+            "arg1 -- test_should_show_fixtures_used_by_test.py:3",
             "    arg1 from testmodule",
-            "arg2",
+            "arg2 -- conftest.py:6",
             "    arg2 from conftest",
         ]
     )
 
 
-def test_verbose_include_private_fixtures_and_loc(testdir):
-    testdir.makeconftest(
+def test_verbose_include_private_fixtures_and_loc(pytester: Pytester) -> None:
+    pytester.makeconftest(
         '''
         import pytest
         @pytest.fixture
@@ -132,7 +131,7 @@ def test_verbose_include_private_fixtures_and_loc(testdir):
             """arg2 from conftest"""
     '''
     )
-    p = testdir.makepyfile(
+    p = pytester.makepyfile(
         '''
         import pytest
         @pytest.fixture
@@ -142,7 +141,7 @@ def test_verbose_include_private_fixtures_and_loc(testdir):
             pass
     '''
     )
-    result = testdir.runpytest("--fixtures-per-test", "-v", p)
+    result = pytester.runpytest("--fixtures-per-test", "-v", p)
     assert result.ret == 0
 
     result.stdout.fnmatch_lines(
@@ -159,8 +158,8 @@ def test_verbose_include_private_fixtures_and_loc(testdir):
     )
 
 
-def test_doctest_items(testdir):
-    testdir.makepyfile(
+def test_doctest_items(pytester: Pytester) -> None:
+    pytester.makepyfile(
         '''
         def foo():
             """
@@ -169,15 +168,87 @@ def test_doctest_items(testdir):
             """
     '''
     )
-    testdir.maketxtfile(
+    pytester.maketxtfile(
         """
         >>> 1 + 1
         2
     """
     )
-    result = testdir.runpytest(
+    result = pytester.runpytest(
         "--fixtures-per-test", "--doctest-modules", "--doctest-glob=*.txt", "-v"
     )
     assert result.ret == 0
 
     result.stdout.fnmatch_lines(["*collected 2 items*"])
+
+
+def test_multiline_docstring_in_module(pytester: Pytester) -> None:
+    p = pytester.makepyfile(
+        '''
+        import pytest
+        @pytest.fixture
+        def arg1():
+            """Docstring content that spans across multiple lines,
+            through second line,
+            and through third line.
+
+            Docstring content that extends into a second paragraph.
+
+            Docstring content that extends into a third paragraph.
+            """
+        def test_arg1(arg1):
+            pass
+    '''
+    )
+
+    result = pytester.runpytest("--fixtures-per-test", p)
+    assert result.ret == 0
+
+    result.stdout.fnmatch_lines(
+        [
+            "*fixtures used by test_arg1*",
+            "*(test_multiline_docstring_in_module.py:13)*",
+            "arg1 -- test_multiline_docstring_in_module.py:3",
+            "    Docstring content that spans across multiple lines,",
+            "    through second line,",
+            "    and through third line.",
+        ]
+    )
+
+
+def test_verbose_include_multiline_docstring(pytester: Pytester) -> None:
+    p = pytester.makepyfile(
+        '''
+        import pytest
+        @pytest.fixture
+        def arg1():
+            """Docstring content that spans across multiple lines,
+            through second line,
+            and through third line.
+
+            Docstring content that extends into a second paragraph.
+
+            Docstring content that extends into a third paragraph.
+            """
+        def test_arg1(arg1):
+            pass
+    '''
+    )
+
+    result = pytester.runpytest("--fixtures-per-test", "-v", p)
+    assert result.ret == 0
+
+    result.stdout.fnmatch_lines(
+        [
+            "*fixtures used by test_arg1*",
+            "*(test_verbose_include_multiline_docstring.py:13)*",
+            "arg1 -- test_verbose_include_multiline_docstring.py:3",
+            "    Docstring content that spans across multiple lines,",
+            "    through second line,",
+            "    and through third line.",
+            "    ",
+            "    Docstring content that extends into a second paragraph.",
+            "    ",
+            "    Docstring content that extends into a third paragraph.",
+        ]
+    )

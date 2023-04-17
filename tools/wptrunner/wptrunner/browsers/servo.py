@@ -1,20 +1,28 @@
+# mypy: allow-untyped-defs
+
 import os
 
-from .base import NullBrowser, ExecutorBrowser, require_arg
+from .base import ExecutorBrowser, NullBrowser, WebDriverBrowser, require_arg
 from .base import get_timeout_multiplier   # noqa: F401
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.executorservo import ServoTestharnessExecutor, ServoRefTestExecutor, ServoWdspecExecutor  # noqa: F401
+from ..executors.base import WdspecExecutor  # noqa: F401
+from ..executors.executorservo import (ServoCrashtestExecutor,  # noqa: F401
+                                       ServoTestharnessExecutor,  # noqa: F401
+                                       ServoRefTestExecutor)  # noqa: F401
 
-here = os.path.join(os.path.split(__file__)[0])
+
+here = os.path.dirname(__file__)
 
 __wptrunner__ = {
     "product": "servo",
     "check_args": "check_args",
-    "browser": "ServoBrowser",
+    "browser": {None: "ServoBrowser",
+                "wdspec": "ServoWdspecBrowser"},
     "executor": {
+        "crashtest": "ServoCrashtestExecutor",
         "testharness": "ServoTestharnessExecutor",
         "reftest": "ServoRefTestExecutor",
-        "wdspec": "ServoWdspecExecutor",
+        "wdspec": "WdspecExecutor",
     },
     "browser_kwargs": "browser_kwargs",
     "executor_kwargs": "executor_kwargs",
@@ -29,7 +37,7 @@ def check_args(**kwargs):
     require_arg(kwargs, "binary")
 
 
-def browser_kwargs(test_type, run_info_data, config, **kwargs):
+def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
     return {
         "binary": kwargs["binary"],
         "debug_info": kwargs["debug_info"],
@@ -39,10 +47,9 @@ def browser_kwargs(test_type, run_info_data, config, **kwargs):
     }
 
 
-def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
+def executor_kwargs(logger, test_type, test_environment, run_info_data,
                     **kwargs):
-    rv = base_executor_kwargs(test_type, server_config,
-                              cache_manager, run_info_data, **kwargs)
+    rv = base_executor_kwargs(test_type, test_environment, run_info_data, **kwargs)
     rv["pause_after_test"] = kwargs["pause_after_test"]
     if test_type == "wdspec":
         rv["capabilities"] = {}
@@ -66,7 +73,7 @@ def update_properties():
 
 class ServoBrowser(NullBrowser):
     def __init__(self, logger, binary, debug_info=None, binary_args=None,
-                 user_stylesheets=None, ca_certificate_path=None):
+                 user_stylesheets=None, ca_certificate_path=None, **kwargs):
         NullBrowser.__init__(self, logger)
         self.binary = binary
         self.debug_info = debug_info
@@ -82,3 +89,31 @@ class ServoBrowser(NullBrowser):
             "user_stylesheets": self.user_stylesheets,
             "ca_certificate_path": self.ca_certificate_path,
         }
+
+
+class ServoWdspecBrowser(WebDriverBrowser):
+    # TODO: could share an implemenation with servodriver.py, perhaps
+    def __init__(self, logger, binary="servo", webdriver_binary="servo",
+                 binary_args=None, webdriver_args=None, env=None, port=None,
+                 **kwargs):
+
+        env = os.environ.copy() if env is None else env
+        env["RUST_BACKTRACE"] = "1"
+
+        super().__init__(logger,
+                         binary=binary,
+                         webdriver_binary=webdriver_binary,
+                         webdriver_args=webdriver_args,
+                         port=port,
+                         env=env,
+                         **kwargs)
+        self.binary_args = binary_args
+
+    def make_command(self):
+        command = [self.binary,
+                   f"--webdriver={self.port}",
+                   "--hard-fail",
+                   "--headless"] + self.webdriver_args
+        if self.binary_args:
+            command += self.binary_args
+        return command

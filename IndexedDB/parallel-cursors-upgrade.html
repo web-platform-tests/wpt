@@ -5,11 +5,11 @@
 <link rel="author" href="pwnall@chromium.org" title="Victor Costan">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support-promises.js"></script>
+<script src="resources/support-promises.js"></script>
 <script>
 'use strict';
 
-for (let cursorCount of [2, 10, 100, 1000, 10000]) {
+for (let cursorCount of [2, 20, 200, 2000]) {
   promise_test(testCase => {
     return createDatabase(testCase, (database, transaction) => {
       const store = database.createObjectStore('cache', { keyPath: 'key' });

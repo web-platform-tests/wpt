@@ -5,7 +5,7 @@
 <link rel=assert title="The value passed into the count parameter was zero or a negative number.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="resources/support.js"></script>
 
 <script>
 
@@ -26,7 +26,7 @@
     };
 
     open_rq.onsuccess = function(e) {
-        var cursor_rq = db.transaction("test")
+        var cursor_rq = db.transaction("test", "readonly", {durability: 'relaxed'})
                           .objectStore("test")
                           .index("index")
                           .openCursor();
@@ -35,7 +35,7 @@
             var cursor = e.target.result;
 
             assert_true(cursor != null, "cursor exist");
-            assert_throws(new TypeError(),
+            assert_throws_js(TypeError,
                 function() { cursor.advance(document); });
 
             t.done();

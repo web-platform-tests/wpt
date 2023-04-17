@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Tests the Private Token API's hasPrivateToken behavior in documents with no top frame</title>
+<link rel="help" href="https://github.com/WICG/trust-token-api" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+  <script>
+    'use strict';
+
+    const frame = document.createElement('iframe');
+    document.body.appendChild(frame);
+    const cachedDocument = window[0].document;
+    frame.remove();
+
+    test(() => {
+      assert_equals(cachedDocument.hasPrivateToken("https://issuer.example", 'private-state-token'), undefined,
+        "Can't construct a Promise in a destroyed execution context.");
+    }, 'hasPrivateToken in a destroyed document.');
+  </script>
+</body>

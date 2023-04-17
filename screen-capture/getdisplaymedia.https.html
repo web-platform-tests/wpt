@@ -1,6 +1,7 @@
 <!doctype html>
 <meta charset=utf-8>
 <title>getDisplayMedia</title>
+<meta name="timeout" content="long">
 <button id="button">User gesture</button>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -22,21 +23,23 @@ async function getDisplayMedia(constraints) {
   return navigator.mediaDevices.getDisplayMedia(constraints);
 }
 
-promise_test(async t => {
-  try {
-    stopTracks(await navigator.mediaDevices.getDisplayMedia({video: true}));
-  } catch (err) {
-    assert_equals(err.name, 'InvalidStateError', err.message);
-    return;
-  }
-  assert_unreached('getDisplayMedia should have failed');
+promise_test(t => {
+  const p = navigator.mediaDevices.getDisplayMedia({video: true});
+  t.add_cleanup(async () => {
+    try { stopTracks(await p) } catch {}
+  });
+  // Race a settled promise to check that the returned promise is already
+  // rejected.
+  return promise_rejects_dom(
+    t, 'InvalidStateError', Promise.race([p, Promise.resolve()]),
+    'getDisplayMedia should have returned an already-rejected promise.');
 }, `getDisplayMedia() must require user activation`);
 
 [
  {video: true},
  {video: true, audio: false},
+ {video: {}},
  {audio: false},
- {audio: true},
  {},
  undefined
 ].forEach(constraints => promise_test(async t => {
@@ -58,17 +61,19 @@ promise_test(async t => {
  {video: {frameRate: {exact: 4}}},
  {video: false, audio: true},
 ].forEach(constraints => promise_test(async t => {
-  try {
-    stopTracks(await getDisplayMedia(constraints));
-  } catch (err) {
-    assert_equals(err.name, 'TypeError', err.message);
-    return;
-  }
-  assert_unreached('getDisplayMedia should have failed');
+  await test_driver.bless('getDisplayMedia()');
+  const p = navigator.mediaDevices.getDisplayMedia(constraints);
+  t.add_cleanup(async () => {
+    try { stopTracks(await p) } catch {}
+  });
+  await promise_rejects_js(
+    t, TypeError, Promise.race([p, Promise.resolve()]),
+    'getDisplayMedia should have returned an already-rejected promise.');
 }, `getDisplayMedia(${j(constraints)}) must fail with TypeError`));
 
 [
  {video: true, audio: true},
+ {audio: true},
 ].forEach(constraints => promise_test(async t => {
   const stream = await getDisplayMedia(constraints);
   t.add_cleanup(() => stopTracks(stream));
@@ -79,15 +84,15 @@ promise_test(async t => {
 }, `getDisplayMedia(${j(constraints)}) must succeed with video maybe audio`));
 
 [
- {video: {width: {max: 360}}},
- {video: {height: {max: 240}}},
- {video: {width: {max: 360}, height: {max: 240}}},
- {video: {frameRate: {max: 4}}},
- {video: {frameRate: {max: 4}, width: {max: 360}}},
- {video: {frameRate: {max: 4}, height: {max: 240}}},
- {video: {frameRate: {max: 4}, width: {max: 360}, height: {max: 240}}},
+ {width: {max: 360}},
+ {height: {max: 240}},
+ {width: {max: 360}, height: {max: 240}},
+ {frameRate: {max: 4}},
+ {frameRate: {max: 4}, width: {max: 360}},
+ {frameRate: {max: 4}, height: {max: 240}},
+ {frameRate: {max: 4}, width: {max: 360}, height: {max: 240}},
 ].forEach(constraints => promise_test(async t => {
-  const stream = await getDisplayMedia(constraints);
+  const stream = await getDisplayMedia({video: constraints});
   t.add_cleanup(() => stopTracks(stream));
   const {width, height, frameRate} = stream.getTracks()[0].getSettings();
   assert_greater_than_equal(width, 1);
@@ -102,7 +107,46 @@ promise_test(async t => {
   if (constraints.frameRate) {
     assert_less_than_equal(frameRate, constraints.frameRate.max);
   }
-}, `getDisplayMedia(${j(constraints)}) must be constrained`));
+}, `getDisplayMedia({video: ${j(constraints)}}) must be constrained`));
+
+const someSizes = [
+ {width: 160},
+ {height: 120},
+ {width: 80},
+ {height: 60},
+ {width: 158},
+ {height: 118},
+];
+
+someSizes.forEach(constraints => promise_test(async t => {
+  const stream = await getDisplayMedia({video: constraints});
+  t.add_cleanup(() => stopTracks(stream));
+  const {width, height, frameRate} = stream.getTracks()[0].getSettings();
+  if (constraints.width) {
+    assert_equals(width, constraints.width);
+  } else {
+    assert_equals(height, constraints.height);
+  }
+  assert_greater_than_equal(frameRate, 1);
+}, `getDisplayMedia({video: ${j(constraints)}}) must be downscaled precisely`));
+
+promise_test(async t => {
+  const video = {height: 240};
+  const stream = await getDisplayMedia({video});
+  t.add_cleanup(() => stopTracks(stream));
+  const [track] = stream.getVideoTracks();
+  const {height} = track.getSettings();
+  assert_equals(height, video.height);
+  for (const constraints of someSizes) {
+    await track.applyConstraints(constraints);
+    const {width, height} = track.getSettings();
+    if (constraints.width) {
+      assert_equals(width, constraints.width);
+    } else {
+      assert_equals(height, constraints.height);
+    }
+  }
+}, `applyConstraints(width or height) must downscale precisely`);
 
 [
  {video: {width: {max: 0}}},
@@ -134,15 +178,102 @@ promise_test(async t => {
   assert_equals(track.readyState, "ended");
 }, 'getDisplayMedia() resolves with stream with video track');
 
+{
+  const displaySurfaces = ['monitor', 'window', 'browser'];
+  displaySurfaces.forEach((displaySurface) => {
+    promise_test(async t => {
+      const stream = await getDisplayMedia({video: {displaySurface}});
+      t.add_cleanup(() => stopTracks(stream));
+      const settings = stream.getVideoTracks()[0].getSettings();
+      assert_equals(settings.displaySurface, displaySurface);
+      assert_any(assert_equals, settings.logicalSurface, [true, false]);
+      assert_any(assert_equals, settings.cursor, ['never', 'always', 'motion']);
+      assert_false("suppressLocalAudioPlayback" in settings);
+    }, `getDisplayMedia({"video":{"displaySurface":"${displaySurface}"}}) with getSettings`);
+  })
+}
+
+{
+  const properties = ["displaySurface"];
+  properties.forEach((property) => {
+    test(() => {
+      const supportedConstraints =
+        navigator.mediaDevices.getSupportedConstraints();
+      assert_true(supportedConstraints[property]);
+    }, property + " is supported");
+  });
+}
+
+[
+ {video: {displaySurface: "monitor"}},
+ {video: {displaySurface: "window"}},
+ {video: {displaySurface: "browser"}},
+ {selfBrowserSurface: "include"},
+ {selfBrowserSurface: "exclude"},
+ {surfaceSwitching: "include"},
+ {surfaceSwitching: "exclude"},
+ {systemAudio: "include"},
+ {systemAudio: "exclude"},
+].forEach(constraints => promise_test(async t => {
+  const stream = await getDisplayMedia(constraints);
+  t.add_cleanup(() => stopTracks(stream));
+}, `getDisplayMedia(${j(constraints)}) must succeed`));
+
+[
+ {selfBrowserSurface: "invalid"},
+ {surfaceSwitching: "invalid"},
+ {systemAudio: "invalid"},
+].forEach(constraints => promise_test(async t => {
+  await test_driver.bless('getDisplayMedia()');
+  const p = navigator.mediaDevices.getDisplayMedia(constraints);
+  t.add_cleanup(async () => {
+    try { stopTracks(await p) } catch {}
+  });
+  await promise_rejects_js(
+    t, TypeError, Promise.race([p, Promise.resolve()]),
+    'getDisplayMedia should have returned an already-rejected promise.');
+}, `getDisplayMedia(${j(constraints)}) must fail with TypeError`));
+
+test(() => {
+  const supportedConstraints =
+    navigator.mediaDevices.getSupportedConstraints();
+  assert_true(supportedConstraints.suppressLocalAudioPlayback);
+}, "suppressLocalAudioPlayback is supported");
+
+{
+  const suppressLocalAudioPlaybacks = [true, false];
+  suppressLocalAudioPlaybacks.forEach((suppressLocalAudioPlayback) => {
+    promise_test(async (t) => {
+      const stream = await getDisplayMedia({
+        audio: { suppressLocalAudioPlayback },
+      });
+      t.add_cleanup(() => stopTracks(stream));
+      const [videoTrack] = stream.getVideoTracks();
+      assert_false("suppressLocalAudioPlayback" in videoTrack.getSettings());
+      const [audioTrack] = stream.getAudioTracks();
+      const audioTrackSettings = audioTrack.getSettings();
+      assert_true("suppressLocalAudioPlayback" in audioTrackSettings);
+      assert_equals(
+        audioTrackSettings.suppressLocalAudioPlayback,
+        suppressLocalAudioPlayback
+      );
+      await audioTrack.applyConstraints();
+      assert_true("suppressLocalAudioPlayback" in audioTrackSettings);
+      assert_equals(
+        audioTrackSettings.suppressLocalAudioPlayback,
+        suppressLocalAudioPlayback
+      );
+    }, `getDisplayMedia({"audio":{"suppressLocalAudioPlayback":${suppressLocalAudioPlayback}}}) with getSettings`);
+  });
+}
+
 promise_test(async t => {
   const stream = await getDisplayMedia({video: true});
   t.add_cleanup(() => stopTracks(stream));
-  const settings = stream.getVideoTracks()[0].getSettings();
+  const capabilities = stream.getVideoTracks()[0].getCapabilities();
   assert_any(
-      assert_equals, settings.displaySurface,
-      ['monitor', 'window', 'application', 'browser']);
-  assert_any(assert_equals, settings.logicalSurface, [true, false]);
-  assert_any(assert_equals, settings.cursor, ['never', 'always', 'motion']);
-}, 'getDisplayMedia() with getSettings');
+      assert_equals, capabilities.displaySurface,
+      ['monitor', 'window', 'browser']);
+}, 'getDisplayMedia() with getCapabilities');
 
 </script>

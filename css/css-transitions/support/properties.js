@@ -90,15 +90,6 @@ var values = {
             keyword: ['visible', 'hidden', {discrete: true}]
         };
     },
-    'auto': function(property) {
-        var types = properties[property] || unspecified_properties[property];
-        var val = values[types[0]](property);
-        var key = Object.keys(val).shift();
-        return {
-            to: [val[key][1], 'auto'],
-            from: ['auto', val[key][1]]
-        };
-    },
     // types reqired for non-specified properties
     'border-radius': function() {
         return {
@@ -160,6 +151,13 @@ var values = {
         return {
             'static to absolute': ['none', 'block', {discrete: true}],
             'block to inline-block': ['block', 'inline-block', {discrete: true}]
+        };
+    },
+    'object-view-box': function() {
+        return {
+            inset: ['inset(10% 10% 20% 20%)', 'inset(20% 20% 30% 30%)'],
+            rect: ['rect(10px 20px 30px 40px)', 'rect(20px 30px 40px 50px)'],
+            xywh: ['xywh(10px 20px 30px 40px)', 'xywh(20px 30px 40px 50px)'],
         };
     }
 };
@@ -229,26 +227,6 @@ var properties = {
 };
 
 /*
- * Property to auto-value mapping
- * (lazily taken from http://www.siliconbaytraining.com/pages/csspv.html)
- */
-var properties_auto = [
-    'margin-top',
-    'margin-right',
-    'margin-bottom',
-    'margin-left',
-    'height',
-    'width',
-    'clip',
-    'marker-offset',
-    'top',
-    'right',
-    'left',
-    'bottom',
-    'z-index'
-];
-
-/*
  * Property to Type table
  * (missing value-types of specified properties)
  */
@@ -281,7 +259,6 @@ var unspecified_properties = {
     'box-shadow': ['box-shadow'],
     'font-size-adjust': ['number'],
     'font-stretch': ['font-stretch'],
-    'marker-offset': ['length'],
     'text-decoration-color': ['color'],
     'column-count': ['integer'],
     'column-gap': ['length'],
@@ -291,12 +268,9 @@ var unspecified_properties = {
     'transform': ['transform'],
     'transform-origin': ['horizontal'],
     'zoom': ['number'],
-    'outline-radius-topleft': ['length', 'percentage'],
-    'outline-radius-topright': ['length', 'percentage'],
-    'outline-radius-bottomright': ['length', 'percentage'],
-    'outline-radius-bottomleft': ['length', 'percentage'],
     'display': ['display'],
-    'position': ['position']
+    'position': ['position'],
+    'object-view-box': ['object-view-box']
 };
 
 /*
@@ -400,16 +374,6 @@ root.getFontSizeRelativePropertyTests = function() {
         if (properties[key].indexOf('length') > -1) {
             accepted[key] = ['length-em'];
         }
-    }
-
-    return assemble(accepted);
-};
-
-root.getAutoPropertyTests = function() {
-    var accepted = {};
-
-    for (var i = 0, key; key = properties_auto[i]; i++) {
-        accepted[key] = ['auto'];
     }
 
     return assemble(accepted);

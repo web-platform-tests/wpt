@@ -1,8 +1,7 @@
 import pytest
 
-from webdriver.error import NoSuchElementException, StaleElementReferenceException
+from webdriver import error
 
-from tests.support.inline import inline
 from tests.support.asserts import assert_error, assert_success
 
 
@@ -11,7 +10,7 @@ def refresh(session):
         "POST", "session/{session_id}/refresh".format(**vars(session)))
 
 
-def test_null_response_value(session):
+def test_null_response_value(session, inline):
     session.url = inline("<div>")
 
     response = refresh(session)
@@ -19,12 +18,12 @@ def test_null_response_value(session):
     assert value is None
 
 
-def test_no_browsing_context(session, closed_window):
+def test_no_top_browsing_context(session, closed_window):
     response = refresh(session)
     assert_error(response, "no such window")
 
 
-def test_basic(session):
+def test_no_browsing_context(session, closed_frame, inline):
     url = inline("<div id=foo>")
 
     session.url = url
@@ -33,14 +32,30 @@ def test_basic(session):
     response = refresh(session)
     assert_success(response)
 
-    with pytest.raises(StaleElementReferenceException):
+    with pytest.raises(error.StaleElementReferenceException):
         element.property("id")
 
     assert session.url == url
     assert session.find.css("#foo", all=False)
 
 
-def test_dismissed_beforeunload(session):
+def test_basic(session, inline):
+    url = inline("<div id=foo>")
+
+    session.url = url
+    element = session.find.css("#foo", all=False)
+
+    response = refresh(session)
+    assert_success(response)
+
+    with pytest.raises(error.StaleElementReferenceException):
+        element.property("id")
+
+    assert session.url == url
+    assert session.find.css("#foo", all=False)
+
+
+def test_dismissed_beforeunload(session, inline):
     url_beforeunload = inline("""
       <input type="text">
       <script>
@@ -57,13 +72,13 @@ def test_dismissed_beforeunload(session):
     response = refresh(session)
     assert_success(response)
 
-    with pytest.raises(StaleElementReferenceException):
+    with pytest.raises(error.StaleElementReferenceException):
         element.property("id")
 
     session.find.css("input", all=False)
 
 
-def test_history_pushstate(session, url):
+def test_history_pushstate(session, inline):
     pushstate_page = inline("""
       <script>
         function pushState() {
@@ -91,15 +106,15 @@ def test_history_pushstate(session, url):
     assert session.url == "{}#pushstate".format(pushstate_page)
     assert session.execute_script("return history.state;") == {"foo": "bar"}
 
-    with pytest.raises(StaleElementReferenceException):
+    with pytest.raises(error.StaleElementReferenceException):
         element.property("id")
 
 
-def test_refresh_switches_to_parent_browsing_context(session, create_frame):
+def test_refresh_switches_to_parent_browsing_context(session, create_frame, inline):
     session.url = inline("<div id=foo>")
 
     session.switch_frame(create_frame())
-    with pytest.raises(NoSuchElementException):
+    with pytest.raises(error.NoSuchElementException):
         session.find.css("#foo", all=False)
 
     response = refresh(session)

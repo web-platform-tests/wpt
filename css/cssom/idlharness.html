@@ -4,6 +4,7 @@
 <title>CSSOM automated IDL tests</title>
 <link rel="author" title="Ms2ger" href="mailto:Ms2ger@gmail.com">
 <link rel="help" href="https://drafts.csswg.org/cssom-1/#idl-index">
+<meta name="timeout" content="long">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=/resources/WebIDLParser.js></script>
@@ -34,7 +35,7 @@ const waitForLoad = new Promise(r => { addEventListener('load', r); });
 
 idl_test(
   ['cssom'],
-  ['SVG', 'uievents', 'html', 'dom'],
+  ['SVG', 'uievents', 'html', 'dom', 'mathml-core'],
   async idlArray => {
     idlArray.add_objects({
       Document: ['document', 'new Document()'],

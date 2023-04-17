@@ -83,6 +83,10 @@ which is commonly referred to as the "upstream" repository. Synchronizing your
 forked repository with the upstream repository will keep your forked local copy
 up-to-date with the latest commits.
 
+In the vast majority of cases, the **only** upstream branch that you should
+need to care about is `master`. If you see other branches in the repository,
+you can generally safely ignore them.
+
 1.  On the command line, navigate to to the directory where your forked copy of
     the repository is located.
 
@@ -99,17 +103,20 @@ up-to-date with the latest commits.
 4.  To pull in changes in the original repository that are not present in your
     local repository first fetch them:
 
-        $ git fetch upstream
+        $ git fetch -p upstream
 
     Then merge them into your local repository:
 
         $ git merge upstream/master
 
-    For additional information, please see the [GitHub docs][github-fork-docs].
+    We recommend using `-p` to "prune" the outdated branches that would
+    otherwise accumulate in your local repository.
+
+For additional information, please see the [GitHub docs][github-fork-docs].
 
 ## Configure your environment
 
-If all you intend to do is to load [manual tests](../writing-tests/manual) or [ref tests](../writing-tests/reftests) from your local file system,
+If all you intend to do is to load [manual tests](../writing-tests/manual) or [reftests](../writing-tests/reftests) from your local file system,
 the above setup should be sufficient.
 But many tests (and in particular, all [testharness.js tests](../writing-tests/testharness)) require a local web server.
 

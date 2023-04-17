@@ -11,7 +11,7 @@ clear information about the circumstances and a simple example which
 reproduces the problem.
 
 The issue tracker is of course not empty now.  We have many remaining
-"enhacement" issues which we'll hopefully can tackle in 2014 with your
+"enhancement" issues which we'll hopefully can tackle in 2014 with your
 help.
 
 For those who use older Python versions, please note that pytest is not
@@ -91,7 +91,7 @@ holger krekel
   it might be the cause for other finalizers to fail.
 
 - fix ordering when mock.patch or other standard decorator-wrappings
-  are used with test methods.  This fixues issue346 and should
+  are used with test methods.  This fixes issue346 and should
   help with random "xdist" collection failures.  Thanks to
   Ronny Pfannschmidt and Donald Stufft for helping to isolate it.
 

@@ -1,29 +1,32 @@
+# mypy: allow-untyped-defs
+
 import json
 import os
 import socket
 import threading
 import time
 import traceback
-import urlparse
 import uuid
+from urllib.parse import urljoin
 
 from .base import (CallbackHandler,
                    RefTestExecutor,
                    RefTestImplementation,
                    TestharnessExecutor,
-                   extra_timeout,
+                   TimedRunner,
                    strip_server)
 from .protocol import (BaseProtocolPart,
                        TestharnessProtocolPart,
                        Protocol,
                        SelectorProtocolPart,
                        ClickProtocolPart,
+                       CookiesProtocolPart,
                        SendKeysProtocolPart,
+                       WindowProtocolPart,
                        ActionSequenceProtocolPart,
                        TestDriverProtocolPart)
-from ..testrunner import Stop
 
-here = os.path.join(os.path.split(__file__)[0])
+here = os.path.dirname(__file__)
 
 webdriver = None
 exceptions = None
@@ -60,18 +63,25 @@ class SeleniumBaseProtocolPart(BaseProtocolPart):
     def set_window(self, handle):
         self.webdriver.switch_to_window(handle)
 
+    def window_handles(self):
+        return self.webdriver.window_handles
+
+    def load(self, url):
+        self.webdriver.get(url)
+
     def wait(self):
         while True:
             try:
-                self.webdriver.execute_async_script("")
+                return self.webdriver.execute_async_script("""let callback = arguments[arguments.length - 1];
+addEventListener("__test_restart", e => {e.preventDefault(); callback(true)})""")
             except exceptions.TimeoutException:
                 pass
-            except (socket.timeout, exceptions.NoSuchWindowException,
-                    exceptions.ErrorInResponseException, IOError):
+            except (socket.timeout, exceptions.NoSuchWindowException, exceptions.ErrorInResponseException, OSError):
                 break
-            except Exception as e:
-                self.logger.error(traceback.format_exc(e))
+            except Exception:
+                self.logger.error(traceback.format_exc())
                 break
+        return False
 
 
 class SeleniumTestharnessProtocolPart(TestharnessProtocolPart):
@@ -80,12 +90,14 @@ class SeleniumTestharnessProtocolPart(TestharnessProtocolPart):
         self.runner_handle = None
         with open(os.path.join(here, "runner.js")) as f:
             self.runner_script = f.read()
+        with open(os.path.join(here, "window-loaded.js")) as f:
+            self.window_loaded_script = f.read()
 
     def load_runner(self, url_protocol):
         if self.runner_handle:
             self.webdriver.switch_to_window(self.runner_handle)
-        url = urlparse.urljoin(self.parent.executor.server_url(url_protocol),
-                               "/testharness_runner.html")
+        url = urljoin(self.parent.executor.server_url(url_protocol),
+                      "/testharness_runner.html")
         self.logger.debug("Loading %s" % url)
         self.webdriver.get(url)
         self.runner_handle = self.webdriver.current_window_handle
@@ -141,6 +153,19 @@ class SeleniumTestharnessProtocolPart(TestharnessProtocolPart):
 
         raise Exception("unable to find test window")
 
+    def test_window_loaded(self):
+        """Wait until the page in the new window has been loaded.
+
+        Hereby ignore Javascript execptions that are thrown when
+        the document has been unloaded due to a process change.
+        """
+        while True:
+            try:
+                self.webdriver.execute_async_script(self.window_loaded_script)
+                break
+            except exceptions.JavascriptException:
+                pass
+
 
 class SeleniumSelectorProtocolPart(SelectorProtocolPart):
     def setup(self):
@@ -161,6 +186,38 @@ class SeleniumClickProtocolPart(ClickProtocolPart):
         return element.click()
 
 
+class SeleniumCookiesProtocolPart(CookiesProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def delete_all_cookies(self):
+        self.logger.info("Deleting all cookies")
+        return self.webdriver.delete_all_cookies()
+
+    def get_all_cookies(self):
+        self.logger.info("Getting all cookies")
+        return self.webdriver.get_all_cookies()
+
+    def get_named_cookie(self, name):
+        self.logger.info("Getting cookie named %s" % name)
+        try:
+            return self.webdriver.get_named_cookie(name)
+        except exceptions.NoSuchCookieException:
+            return None
+
+class SeleniumWindowProtocolPart(WindowProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def minimize(self):
+        self.previous_rect = self.webdriver.window.rect
+        self.logger.info("Minimizing")
+        return self.webdriver.minimize()
+
+    def set_rect(self, rect):
+        self.logger.info("Setting window rect")
+        self.webdriver.window.rect = rect
+
 class SeleniumSendKeysProtocolPart(SendKeysProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
@@ -176,13 +233,17 @@ class SeleniumActionSequenceProtocolPart(ActionSequenceProtocolPart):
     def send_actions(self, actions):
         self.webdriver.execute(Command.W3C_ACTIONS, {"actions": actions})
 
+    def release(self):
+        self.webdriver.execute(Command.W3C_CLEAR_ACTIONS, {})
+
 
 class SeleniumTestDriverProtocolPart(TestDriverProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
-    def send_message(self, message_type, status, message=None):
+    def send_message(self, cmd_id, message_type, status, message=None):
         obj = {
+            "cmd_id": cmd_id,
             "type": "testdriver-%s" % str(message_type),
             "status": str(status)
         }
@@ -196,14 +257,16 @@ class SeleniumProtocol(Protocol):
                   SeleniumTestharnessProtocolPart,
                   SeleniumSelectorProtocolPart,
                   SeleniumClickProtocolPart,
+                  SeleniumCookiesProtocolPart,
                   SeleniumSendKeysProtocolPart,
                   SeleniumTestDriverProtocolPart,
+                  SeleniumWindowProtocolPart,
                   SeleniumActionSequenceProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         do_delayed_imports()
 
-        super(SeleniumProtocol, self).__init__(executor, browser)
+        super().__init__(executor, browser)
         self.capabilities = capabilities
         self.url = browser.webdriver_url
         self.webdriver = None
@@ -237,39 +300,18 @@ class SeleniumProtocol(Protocol):
         self.testharness.load_runner(self.executor.last_environment["protocol"])
 
 
-class SeleniumRun(object):
-    def __init__(self, func, protocol, url, timeout):
-        self.func = func
-        self.result = None
-        self.protocol = protocol
-        self.url = url
-        self.timeout = timeout
-        self.result_flag = threading.Event()
-
-    def run(self):
+class SeleniumRun(TimedRunner):
+    def set_timeout(self):
         timeout = self.timeout
 
         try:
-            self.protocol.base.set_timeout(timeout + extra_timeout)
+            self.protocol.base.set_timeout(timeout + self.extra_timeout)
         except exceptions.ErrorInResponseException:
-            self.logger.error("Lost WebDriver connection")
-            return Stop
+            msg = "Lost WebDriver connection"
+            self.logger.error(msg)
+            return ("INTERNAL-ERROR", msg)
 
-        executor = threading.Thread(target=self._run)
-        executor.start()
-
-        flag = self.result_flag.wait(timeout + 2 * extra_timeout)
-        if self.result is None:
-            if flag:
-                # flag is True unless we timeout; this *shouldn't* happen, but
-                # it can if self._run fails to set self.result due to raising
-                self.result = False, ("INTERNAL-ERROR", "self._run didn't set a result")
-            else:
-                self.result = False, ("EXTERNAL-TIMEOUT", None)
-
-        return self.result
-
-    def _run(self):
+    def run_func(self):
         try:
             self.result = True, self.func(self.protocol, self.url, self.timeout)
         except exceptions.TimeoutException:
@@ -280,7 +322,7 @@ class SeleniumRun(object):
             message = str(getattr(e, "message", ""))
             if message:
                 message += "\n"
-            message += traceback.format_exc(e)
+            message += traceback.format_exc()
             self.result = False, ("INTERNAL-ERROR", message)
         finally:
             self.result_flag.set()
@@ -289,11 +331,11 @@ class SeleniumRun(object):
 class SeleniumTestharnessExecutor(TestharnessExecutor):
     supports_testdriver = True
 
-    def __init__(self, browser, server_config, timeout_multiplier=1,
+    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  close_after_done=True, capabilities=None, debug_info=None,
-                 **kwargs):
+                 supports_eager_pageload=True, **kwargs):
         """Selenium-based executor for testharness.js tests"""
-        TestharnessExecutor.__init__(self, browser, server_config,
+        TestharnessExecutor.__init__(self, logger, browser, server_config,
                                      timeout_multiplier=timeout_multiplier,
                                      debug_info=debug_info)
         self.protocol = SeleniumProtocol(self, browser, capabilities)
@@ -301,6 +343,7 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
             self.script_resume = f.read()
         self.close_after_done = close_after_done
         self.window_id = str(uuid.uuid4())
+        self.supports_eager_pageload = supports_eager_pageload
 
     def is_alive(self):
         return self.protocol.is_alive()
@@ -312,10 +355,12 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
     def do_test(self, test):
         url = self.test_url(test)
 
-        success, data = SeleniumRun(self.do_testharness,
+        success, data = SeleniumRun(self.logger,
+                                    self.do_testharness,
                                     self.protocol,
                                     url,
-                                    test.timeout * self.timeout_multiplier).run()
+                                    test.timeout * self.timeout_multiplier,
+                                    self.extra_timeout).run()
 
         if success:
             return self.convert_result(test, data)
@@ -328,10 +373,17 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
         parent_window = protocol.testharness.close_old_windows()
         # Now start the test harness
         protocol.base.execute_script("window.open('about:blank', '%s', 'noopener')" % self.window_id)
-        test_window = protocol.testharness.get_test_window(self.window_id, parent_window,
+        test_window = protocol.testharness.get_test_window(self.window_id,
+                                                           parent_window,
                                                            timeout=5*self.timeout_multiplier)
         self.protocol.base.set_window(test_window)
-        protocol.webdriver.get(url)
+        protocol.testharness.test_window_loaded()
+
+        protocol.base.load(url)
+
+        if not self.supports_eager_pageload:
+            self.wait_for_load(protocol)
+
         handler = CallbackHandler(self.logger, protocol, test_window)
         while True:
             result = protocol.base.execute_script(
@@ -341,13 +393,37 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
                 break
         return rv
 
+    def wait_for_load(self, protocol):
+        # pageLoadStrategy=eager doesn't work in Chrome so try to emulate in user script
+        loaded = False
+        seen_error = False
+        while not loaded:
+            try:
+                loaded = protocol.base.execute_script("""
+var callback = arguments[arguments.length - 1];
+if (location.href === "about:blank") {
+  callback(false);
+} else if (document.readyState !== "loading") {
+  callback(true);
+} else {
+  document.addEventListener("readystatechange", () => {if (document.readyState !== "loading") {callback(true)}});
+}""", asynchronous=True)
+            except Exception:
+                # We can get an error here if the script runs in the initial about:blank
+                # document before it has navigated, with the driver returning an error
+                # indicating that the document was unloaded
+                if seen_error:
+                    raise
+                seen_error = True
+
 
 class SeleniumRefTestExecutor(RefTestExecutor):
-    def __init__(self, browser, server_config, timeout_multiplier=1,
+    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  screenshot_cache=None, close_after_done=True,
                  debug_info=None, capabilities=None, **kwargs):
         """Selenium WebDriver-based executor for reftests"""
         RefTestExecutor.__init__(self,
+                                 logger,
                                  browser,
                                  server_config,
                                  screenshot_cache=screenshot_cache,
@@ -359,8 +435,8 @@ class SeleniumRefTestExecutor(RefTestExecutor):
         self.close_after_done = close_after_done
         self.has_window = False
 
-        with open(os.path.join(here, "reftest-wait_webdriver.js")) as f:
-            self.wait_script = f.read()
+        with open(os.path.join(here, "test-wait.js")) as f:
+            self.wait_script = f.read() % {"classname": "reftest-wait"}
 
     def reset(self):
         self.implementation.reset()
@@ -375,22 +451,24 @@ class SeleniumRefTestExecutor(RefTestExecutor):
             """return [window.outerWidth - window.innerWidth,
                        window.outerHeight - window.innerHeight];"""
         )
-        self.protocol.webdriver.set_window_size(0, 0)
-        self.protocol.webdriver.set_window_position(800 + width_offset, 600 + height_offset)
+        self.protocol.webdriver.set_window_position(0, 0)
+        self.protocol.webdriver.set_window_size(800 + width_offset, 600 + height_offset)
 
         result = self.implementation.run_test(test)
 
         return self.convert_result(test, result)
 
-    def screenshot(self, test, viewport_size, dpi):
+    def screenshot(self, test, viewport_size, dpi, page_ranges):
         # https://github.com/web-platform-tests/wpt/issues/7135
         assert viewport_size is None
         assert dpi is None
 
-        return SeleniumRun(self._screenshot,
+        return SeleniumRun(self.logger,
+                           self._screenshot,
                            self.protocol,
                            self.test_url(test),
-                           test.timeout).run()
+                           test.timeout,
+                           self.extra_timeout).run()
 
     def _screenshot(self, protocol, url, timeout):
         webdriver = protocol.webdriver

@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import errno
 import os
 import shutil
@@ -6,21 +8,21 @@ import subprocess
 import sys
 import tempfile
 import time
-import urllib2
+
+from urllib.request import urlopen
+from urllib.error import URLError
 
 import pytest
 
-from tools.wpt import wpt
-
-
 here = os.path.abspath(os.path.dirname(__file__))
+from tools.wpt import utils, wpt
 
 
 def is_port_8000_in_use():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         s.bind(("127.0.0.1", 8000))
-    except socket.error as e:
+    except OSError as e:
         if e.errno == errno.EADDRINUSE:
             return True
         else:
@@ -52,7 +54,7 @@ def manifest_dir():
                         os.path.join(path, "MANIFEST.json"))
         yield path
     finally:
-        shutil.rmtree(path)
+        utils.rmtree(path)
 
 
 @pytest.fixture
@@ -77,7 +79,7 @@ def temp_test():
 
     yield make_test
 
-    shutil.rmtree("../../.tools-tests")
+    utils.rmtree("../../.tools-tests")
 
 
 def test_missing():
@@ -93,15 +95,25 @@ def test_help():
     assert excinfo.value.code == 0
 
 
+def test_load_commands():
+    commands = wpt.load_commands()
+    # The `wpt run` command has conditional requirements.
+    assert "conditional_requirements" in commands["run"]
+
+
 @pytest.mark.slow
+@pytest.mark.skipif(sys.platform == "win32",
+                    reason="https://github.com/web-platform-tests/wpt/issues/28745")
 def test_list_tests(manifest_dir):
     """The `--list-tests` option should not produce an error under normal
     conditions."""
 
     with pytest.raises(SystemExit) as excinfo:
         wpt.main(argv=["run", "--metadata", manifest_dir, "--list-tests",
-                       "--channel", "dev", "--yes", "chrome",
-                       "/dom/nodes/Element-tagName.html"])
+                       "--channel", "dev", "--yes",
+                       # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
+                       "--enable-swiftshader",
+                       "chrome", "/dom/nodes/Element-tagName.html"])
     assert excinfo.value.code == 0
 
 
@@ -158,6 +170,8 @@ def test_list_tests_invalid_manifest(manifest_dir):
 
 @pytest.mark.slow
 @pytest.mark.remote_network
+@pytest.mark.skipif(sys.platform == "win32",
+                    reason="https://github.com/web-platform-tests/wpt/issues/28745")
 def test_run_zero_tests():
     """A test execution describing zero tests should be reported as an error
     even in the presence of the `--no-fail-on-unexpected` option."""
@@ -165,19 +179,25 @@ def test_run_zero_tests():
         pytest.skip("port 8000 already in use")
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--yes", "--no-pause", "--binary-arg", "headless",
-                       "--channel", "dev", "chrome",
-                       "/non-existent-dir/non-existent-file.html"])
-    assert excinfo.value.code != 0
-
-    with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--yes", "--no-pause", "--binary-arg", "headless",
-                       "--no-fail-on-unexpected", "--channel", "dev",
+        wpt.main(argv=["run", "--yes", "--no-pause", "--channel", "dev",
+                       # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
+                       "--enable-swiftshader",
                        "chrome", "/non-existent-dir/non-existent-file.html"])
     assert excinfo.value.code != 0
 
+    with pytest.raises(SystemExit) as excinfo:
+        wpt.main(argv=["run", "--yes", "--no-pause", "--no-fail-on-unexpected",
+                       "--channel", "dev",
+                       # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
+                       "--enable-swiftshader",
+                       "chrome", "/non-existent-dir/non-existent-file.html"])
+    assert excinfo.value.code != 0
+
+
 @pytest.mark.slow
 @pytest.mark.remote_network
+@pytest.mark.skipif(sys.platform == "win32",
+                    reason="https://github.com/web-platform-tests/wpt/issues/28745")
 def test_run_failing_test():
     """Failing tests should be reported with a non-zero exit status unless the
     `--no-fail-on-unexpected` option has been specified."""
@@ -188,19 +208,25 @@ def test_run_failing_test():
     assert os.path.isfile("../../%s" % failing_test)
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--yes", "--no-pause", "--binary-arg", "headless",
-                       "--channel", "dev", "chrome", failing_test])
+        wpt.main(argv=["run", "--yes", "--no-pause", "--channel", "dev",
+                       # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
+                       "--enable-swiftshader",
+                       "chrome", failing_test])
     assert excinfo.value.code != 0
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--yes", "--no-pause", "--binary-arg", "headless",
-                       "--no-fail-on-unexpected", "--channel", "dev",
+        wpt.main(argv=["run", "--yes", "--no-pause", "--no-fail-on-unexpected",
+                       "--channel", "dev",
+                       # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
+                       "--enable-swiftshader",
                        "chrome", failing_test])
     assert excinfo.value.code == 0
 
 
 @pytest.mark.slow
 @pytest.mark.remote_network
+@pytest.mark.skipif(sys.platform == "win32",
+                    reason="https://github.com/web-platform-tests/wpt/issues/28745")
 def test_run_verify_unstable(temp_test):
     """Unstable tests should be reported with a non-zero exit status. Stable
     tests should be reported with a zero exit status."""
@@ -217,56 +243,26 @@ def test_run_verify_unstable(temp_test):
     """)
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--yes", "--verify", "--binary-arg", "headless",
-                       "--channel", "dev", "chrome", unstable_test])
+        wpt.main(argv=["run", "--yes", "--verify", "--channel", "dev",
+                       # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
+                       "--enable-swiftshader",
+                       "chrome", unstable_test])
     assert excinfo.value.code != 0
 
     stable_test = temp_test("test(function() {}, 'my test');")
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--yes", "--verify", "--binary-arg", "headless",
-                       "--channel", "dev", "chrome", stable_test])
+        wpt.main(argv=["run", "--yes", "--verify", "--channel", "dev",
+                       # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
+                       "--enable-swiftshader",
+                       "chrome", stable_test])
     assert excinfo.value.code == 0
-
-
-@pytest.mark.slow
-@pytest.mark.remote_network
-def test_install_chromedriver():
-    if sys.platform == "win32":
-        chromedriver_path = os.path.join(wpt.localpaths.repo_root, "_venv", "Scripts", "chromedriver.exe")
-    else:
-        chromedriver_path = os.path.join(wpt.localpaths.repo_root, "_venv", "bin", "chromedriver")
-    if os.path.exists(chromedriver_path):
-        os.unlink(chromedriver_path)
-    with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["install", "chrome", "webdriver"])
-    assert excinfo.value.code == 0
-    assert os.path.exists(chromedriver_path)
-    os.unlink(chromedriver_path)
-
-
-@pytest.mark.slow
-@pytest.mark.remote_network
-@pytest.mark.xfail(sys.platform == "win32",
-                   reason="https://github.com/web-platform-tests/wpt/issues/17074")
-def test_install_firefox():
-    if sys.platform == "darwin":
-        fx_path = os.path.join(wpt.localpaths.repo_root, "_venv", "browsers", "nightly", "Firefox Nightly.app")
-    else:
-        fx_path = os.path.join(wpt.localpaths.repo_root, "_venv", "browsers", "nightly", "firefox")
-    if os.path.exists(fx_path):
-        shutil.rmtree(fx_path)
-    with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["install", "firefox", "browser", "--channel=nightly"])
-    assert excinfo.value.code == 0
-    assert os.path.exists(fx_path)
-    shutil.rmtree(fx_path)
 
 
 def test_files_changed(capsys):
     commit = "9047ac1d9f51b1e9faa4f9fad9c47d109609ab09"
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["files-changed", "%s~..%s" % (commit, commit)])
+        wpt.main(argv=["files-changed", f"{commit}~..{commit}"])
     assert excinfo.value.code == 0
     out, err = capsys.readouterr()
     expected = """html/browsers/offline/appcache/workers/appcache-worker.html
@@ -284,7 +280,7 @@ html/browsers/offline/appcache/workers/resources/appcache-worker.py
 def test_files_changed_null(capsys):
     commit = "9047ac1d9f51b1e9faa4f9fad9c47d109609ab09"
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["files-changed", "--null", "%s~..%s" % (commit, commit)])
+        wpt.main(argv=["files-changed", "--null", f"{commit}~..{commit}"])
     assert excinfo.value.code == 0
     out, err = capsys.readouterr()
     expected = "\0".join(["html/browsers/offline/appcache/workers/appcache-worker.html",
@@ -329,7 +325,7 @@ def test_tests_affected(capsys, manifest_dir):
     # The test will fail if the file we assert is renamed, so we choose a stable one.
     commit = "3a055e818218f548db240c316654f3cc1aeeb733"
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["tests-affected", "--metadata", manifest_dir, "%s~..%s" % (commit, commit)])
+        wpt.main(argv=["tests-affected", "--metadata", manifest_dir, f"{commit}~..{commit}"])
     assert excinfo.value.code == 0
     out, err = capsys.readouterr()
     assert "infrastructure/reftest-wait.html" in out
@@ -343,10 +339,15 @@ def test_tests_affected(capsys, manifest_dir):
 def test_tests_affected_idlharness(capsys, manifest_dir):
     commit = "47cea8c38b88c0ddd3854e4edec0c5b6f2697e62"
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["tests-affected", "--metadata", manifest_dir, "%s~..%s" % (commit, commit)])
+        wpt.main(argv=["tests-affected", "--metadata", manifest_dir, f"{commit}~..{commit}"])
     assert excinfo.value.code == 0
     out, err = capsys.readouterr()
-    assert "webrtc-identity/idlharness.https.window.js\nwebrtc-stats/idlharness.window.js\nwebrtc/idlharness.https.window.js\n" == out
+    assert ("mst-content-hint/idlharness.window.js\n" +
+            "webrtc-encoded-transform/idlharness.https.window.js\n" +
+            "webrtc-identity/idlharness.https.window.js\n" +
+            "webrtc-stats/idlharness.window.js\n" +
+            "webrtc-stats/supported-stats.https.html\n" +
+            "webrtc/idlharness.https.window.js\n") == out
 
 
 @pytest.mark.slow  # this updates the manifest
@@ -361,7 +362,7 @@ def test_tests_affected_null(capsys, manifest_dir):
     # The test will fail if the file we assert is renamed, so we choose a stable one.
     commit = "2614e3316f1d3d1a744ed3af088d19516552a5de"
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["tests-affected", "--null", "--metadata", manifest_dir, "%s~..%s" % (commit, commit)])
+        wpt.main(argv=["tests-affected", "--null", "--metadata", manifest_dir, f"{commit}~..{commit}"])
     assert excinfo.value.code == 0
     out, err = capsys.readouterr()
 
@@ -388,9 +389,9 @@ def test_serve():
             if time.time() - start > 60:
                 assert False, "server did not start responding within 60s"
             try:
-                resp = urllib2.urlopen("http://web-platform.test:8000")
+                resp = urlopen("http://web-platform.test:8000")
                 print(resp)
-            except urllib2.URLError:
+            except URLError:
                 print("URLError")
                 time.sleep(1)
             else:

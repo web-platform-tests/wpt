@@ -1,17 +1,13 @@
 import os
-import platform
 import subprocess
-
-from six import BytesIO
+import sys
 
 MYPY = False
 if MYPY:
     # MYPY is set to True when run under Mypy.
     from typing import Text
     from typing import Callable
-    from typing import AnyStr
     from typing import Any
-    from typing import BinaryIO
     from typing import Generic
     from typing import TypeVar
     from typing import Optional
@@ -22,8 +18,9 @@ else:
     T = object()
     Generic[T] = object
 
+
 def rel_path_to_url(rel_path, url_base="/"):
-    # type: (bytes, Text) -> Text
+    # type: (Text, Text) -> Text
     assert not os.path.isabs(rel_path), rel_path
     if url_base[0] != "/":
         url_base = "/" + url_base
@@ -33,8 +30,8 @@ def rel_path_to_url(rel_path, url_base="/"):
 
 
 def from_os_path(path):
-    # type: (AnyStr) -> AnyStr
-    assert os.path.sep == "/" or platform.system() == "Windows"
+    # type: (Text) -> Text
+    assert os.path.sep == "/" or sys.platform == "win32"
     if "/" == os.path.sep:
         rv = path
     else:
@@ -45,8 +42,8 @@ def from_os_path(path):
 
 
 def to_os_path(path):
-    # type: (AnyStr) -> AnyStr
-    assert os.path.sep == "/" or platform.system() == "Windows"
+    # type: (Text) -> Text
+    assert os.path.sep == "/" or sys.platform == "win32"
     if "\\" in path:
         raise ValueError("normalised path contains \\")
     if "/" == os.path.sep:
@@ -55,16 +52,16 @@ def to_os_path(path):
 
 
 def git(path):
-    # type: (bytes) -> Optional[Callable[..., bytes]]
+    # type: (Text) -> Optional[Callable[..., Text]]
     def gitfunc(cmd, *args):
-        # type: (bytes, *bytes) -> bytes
+        # type: (Text, *Text) -> Text
         full_cmd = ["git", cmd] + list(args)
         try:
-            return subprocess.check_output(full_cmd, cwd=path, stderr=subprocess.STDOUT)
+            return subprocess.check_output(full_cmd, cwd=path, stderr=subprocess.STDOUT).decode('utf8')
         except Exception as e:
-            if platform.uname()[0] == "Windows" and isinstance(e, WindowsError):
+            if sys.platform == "win32" and isinstance(e, WindowsError):
                 full_cmd[0] = "git.bat"
-                return subprocess.check_output(full_cmd, cwd=path, stderr=subprocess.STDOUT)
+                return subprocess.check_output(full_cmd, cwd=path, stderr=subprocess.STDOUT).decode('utf8')
             else:
                 raise
 
@@ -75,17 +72,6 @@ def git(path):
         return None
     else:
         return gitfunc
-
-
-class ContextManagerBytesIO(BytesIO):  # type: ignore
-    def __enter__(self):
-        # type: () -> BinaryIO
-        return self  # type: ignore
-
-    def __exit__(self, *args, **kwargs):
-        # type: (*Any, **Any) -> bool
-        self.close()
-        return True
 
 
 class cached_property(Generic[T]):
@@ -103,4 +89,5 @@ class cached_property(Generic[T]):
         # we can unconditionally assign as next time this won't be called
         assert self.name not in obj.__dict__
         rv = obj.__dict__[self.name] = self.func(obj)
+        obj.__dict__.setdefault("__cached_properties__", set()).add(self.name)
         return rv

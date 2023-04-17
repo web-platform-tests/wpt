@@ -31,10 +31,15 @@ css/ directory, regardless of where they are in the directory structure.
 ### HTTPS
 
 By default, tests are served over plain HTTP. If a test requires HTTPS
-it must be given a filename containing `.https` before the extension,
-e.g., `test-secure.https.html`, or be the generated service worker test
-of a `.https`-less `.any` test. For more details see the documentation
-on [file names][file-name-flags].
+it must be given a filename containing `.https.` e.g.,
+`test-secure.https.html`, or be the generated service worker test of a
+`.https`-less `.any` test. For more details see the documentation on
+[file names][file-name-flags].
+
+### HTTP2
+
+If a test must be served from an HTTP/2 server, it must be given a
+filename containing `.h2`.
 
 #### Support Files
 
@@ -69,9 +74,9 @@ Some test types support other formats:
   features])
 - [WebDriver specification tests](wdspec) are expressed as Python files
 
-The best way to determine how to format a new test is to look at how similar
-tests have been formatted. You can also ask for advice in [the project's IRC
-room][IRC].
+The best way to determine how to format a new test is to look at how
+similar tests have been formatted. You can also ask for advice in [the
+project's matrix channel][matrix].
 
 
 ### Character Encoding
@@ -101,7 +106,7 @@ the test (for a typical testharness test, the only content on the page
 will be rendered by the harness itself).
 
 
-### Be Minimal
+### Be Conservative
 
 Tests should generally avoid depending on edge case behavior of
 features that they don't explicitly intend on testing. For example,
@@ -110,7 +115,32 @@ no [parse errors](https://validator.nu).
 
 This is not, however, to discourage testing of edge cases or
 interactions between multiple features; such tests are an essential
-part of ensuring interoperability of the web platform.
+part of ensuring interoperability of the web platform. When possible, use the
+canonical support libraries provided by features; for more information, see the documentation on [testing interactions between features][interacting-features].
+
+Tests should pass when the feature under test exposes the expected behavior,
+and they should fail when the feature under test is not implemented or is
+implemented incorrectly. Tests should not rely on unrelated features if doing
+so causes failures in the latest stable release of [Apple
+Safari][apple-safari], [Google Chrome][google-chrome], or [Mozilla
+Firefox][mozilla-firefox]. They should, therefore, not rely on any features
+aside from the one under test unless they are supported in all three browsers.
+
+Existing tests can be used as a guide to identify acceptable features. For
+language features that are not used in existing tests, community-maintained
+projects such as [the ECMAScript compatibility tables][es-compat] and
+[caniuse.com][caniuse] provide an overview of basic feature support across the
+browsers listed above.
+
+For JavaScript code that is re-used across many tests (e.g. `testharness.js`
+and the files located in the directory named `common`), only use language
+features that have been supported by each of the major browser engines above
+for over a year. This practice avoids introducing test failures for consumers
+maintaining older JavaScript runtimes.
+
+Patches to make tests run on older versions or other browsers will be accepted
+provided they are relatively simple and do not add undue complexity to the
+test.
 
 
 ### Be Cross-Platform
@@ -129,12 +159,12 @@ should be used.
 
 ### Be Self-Contained
 
-Tests must not depend on external network resources, including
-w3c-test.org. When these tests are run on CI systems they are
-typically configured with access to external resources disabled, so
-tests that try to access them will fail. Where tests want to use
-multiple hosts this is possible through a known set of subdomains and
-the [text substitution features of wptserve](server-features).
+Tests must not depend on external network resources. When these tests
+are run on CI systems, they are typically configured with access to
+external resources disabled, so tests that try to access them will
+fail. Where tests want to use multiple hosts, this is possible through
+a known set of subdomains and the [text substitution features of
+wptserve](server-features).
 
 
 ### Be Self-Describing
@@ -170,7 +200,7 @@ see the [lint-tool documentation][lint-tool].
 
 But in the unusual case of error reports for things essential to a certain
 test or that for other exceptional reasons shouldn't prevent a merge of a
-test, update and commit the `lint.whitelist` file in the web-platform-tests
+test, update and commit the `lint.ignore` file in the web-platform-tests
 root directory to suppress the error reports. For details on doing that,
 see the [lint-tool documentation][lint-tool].
 
@@ -187,8 +217,14 @@ for CSS have some additional requirements for:
 [server features]: server-features
 [assumptions]: assumptions
 [ahem]: ahem
-[IRC]: irc://irc.w3.org:6667/testing
+[matrix]: https://app.element.io/#/room/#wpt:matrix.org
 [lint-tool]: lint-tool
 [css-metadata]: css-metadata
 [css-user-styles]: css-user-styles
 [file-name-flags]: file-names
+[interacting-features]: interacting-features
+[mozilla-firefox]: https://mozilla.org/firefox
+[google-chrome]: https://google.com/chrome/browser/desktop/
+[apple-safari]: https://apple.com/safari
+[es-compat]: https://kangax.github.io/compat-table/
+[caniuse]: https://caniuse.com/

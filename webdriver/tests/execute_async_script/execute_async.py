@@ -1,18 +1,12 @@
 import pytest
 
+from webdriver import Element
+from webdriver.error import NoSuchAlertException
 from webdriver.transport import Response
 
 from tests.support.asserts import assert_error, assert_success
-
-
-def execute_async_script(session, script, args=None):
-    if args is None:
-        args = []
-    body = {"script": script, "args": args}
-
-    return session.transport.send(
-        "POST", "/session/{session_id}/execute/async".format(**vars(session)),
-        body)
+from tests.support.sync import Poll
+from . import execute_async_script
 
 
 def test_null_parameter_value(session, http):
@@ -21,9 +15,35 @@ def test_null_parameter_value(session, http):
         assert_error(Response.from_http(response), "invalid argument")
 
 
-def test_no_browsing_context(session, closed_window):
+def test_no_top_browsing_context(session, closed_window):
     response = execute_async_script(session, "argument[0](1);")
     assert_error(response, "no such window")
+
+
+def test_no_browsing_context(session, closed_frame):
+    response = execute_async_script(session, "argument[0](1);")
+    assert_error(response, "no such window")
+
+
+@pytest.mark.parametrize("expression, expected", [
+    ("null", None),
+    ("undefined", None),
+    ("true", True),
+    ("false", False),
+    ("23", 23),
+    ("'foo'", "foo"),
+    (
+        # Compute value in the runtime to reduce the potential for
+        # interference from encoding literal bytes or escape sequences in
+        # Python and HTTP.
+        "String.fromCharCode(0)",
+        "\x00"
+    )
+])
+def test_primitive_serialization(session, expression, expected):
+    response = execute_async_script(session, "arguments[0]({});".format(expression))
+    value = assert_success(response)
+    assert value == expected
 
 
 @pytest.mark.parametrize("dialog_type", ["alert", "confirm", "prompt"])
@@ -45,9 +65,16 @@ def test_abort_by_user_prompt_twice(session, dialog_type):
 
     session.alert.accept()
 
-    # The first alert has been accepted by the user prompt handler, the second one remains.
-    # FIXME: this is how browsers currently work, but the spec should clarify if this is the
-    #        expected behavior, see https://github.com/w3c/webdriver/issues/1153.
-    assert session.alert.text == "Bye"
+    # The first alert has been accepted by the user prompt handler, the second
+    # alert will still be opened because the current step isn't aborted.
+    wait = Poll(
+        session,
+        timeout=5,
+        message="Second alert has not been opened",
+        ignored_exceptions=NoSuchAlertException
+    )
+    text = wait.until(lambda s: s.alert.text)
+
+    assert text == "Bye"
 
     session.alert.accept()

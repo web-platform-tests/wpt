@@ -3,17 +3,20 @@
 <link rel="author" href="mailto:odinho@opera.com" title="Odin Hørthe Omdal">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="resources/support.js"></script>
 
 <div id="log"></div>
 
 <script>
 
-    var t = async_test("Delete an existing database");
+    var t = async_test("Delete an existing database"),
+        dbname = location + '-' + t.name;
 
     t.step(function() {
+        indexedDB.deleteDatabase(dbname);
+
         var db;
-        var openrq = indexedDB.open('db', 3);
+        var openrq = indexedDB.open(dbname, 3);
 
         openrq.onupgradeneeded = function(e) {
             e.target.result.createObjectStore('store');
@@ -36,7 +39,7 @@
     });
 
     function Second(e) {
-        var deleterq = indexedDB.deleteDatabase('db');
+        var deleterq = indexedDB.deleteDatabase(dbname);
 
         deleterq.onsuccess = function(e) { t.done(); }
 

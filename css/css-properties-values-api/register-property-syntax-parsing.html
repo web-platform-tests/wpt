@@ -18,7 +18,7 @@ function assert_valid(syntax, initialValue) {
 function assert_invalid(syntax, initialValue) {
     test(function(){
         var name = '--syntax-test-' + (test_count++);
-        assert_throws(new SyntaxError(),
+        assert_throws_dom("SyntaxError",
             () => CSS.registerProperty({name: name, syntax: syntax, initialValue: initialValue, inherits: false}));
     }, "syntax:'" + syntax + "', initialValue:'" + initialValue + "' is invalid");
 }
@@ -41,6 +41,7 @@ assert_valid("*", "([ brackets ]) { yay (??)}");
 assert_valid("*", "yep 'this is valid too'");
 assert_valid("*", "unmatched opening bracket is valid :(");
 assert_valid("*", '"');
+assert_valid("*", "default");
 
 assert_valid("<length>", "0");
 assert_valid("<length>", "10px /*:)*/");
@@ -86,6 +87,33 @@ assert_valid("<color>", "lightgoldenrodyellow");
 assert_valid("<image>", "url(a)");
 assert_valid("<image>", "linear-gradient(yellow, blue)");
 assert_valid("<url>", "url(a)");
+
+assert_valid("<color>+", "yellow blue");
+assert_valid("<color>+ | <color>", "yellow blue");
+assert_valid("<color> | <color>+", "yellow blue");
+assert_valid("<color># | <color>", "yellow, blue");
+assert_valid("<color> | <color>#", "yellow, blue");
+assert_valid("<color># | <color>+", "yellow blue");
+assert_valid("<color>+ | <color>#", "yellow, blue");
+assert_valid("<color>+ | yellow", "yellow blue");
+assert_valid("yellow", "yellow");
+assert_valid("yellow | <color>+", "yellow blue");
+assert_valid("<color># | yellow", "yellow, blue");
+assert_valid("yellow | <color>#", "yellow, blue");
+assert_valid("<transform-list> | <transform-function> ", "scale(2) rotate(90deg)");
+assert_valid("<transform-function> | <transform-list>", "scale(2) rotate(90deg)");
+assert_valid("<transform-list> | <transform-function>+ ", "scale(2) rotate(90deg)");
+assert_valid("<transform-function>+ | <transform-list>", "scale(2) rotate(90deg)");
+assert_valid("<transform-list> | <transform-function># ", "scale(2) rotate(90deg)");
+assert_valid("<transform-function># | <transform-list>", "scale(2) rotate(90deg)");
+assert_valid("<transform-list> | <transform-function># ", "scale(2), rotate(90deg)");
+assert_valid("<transform-function># | <transform-list>", "scale(2), rotate(90deg)");
+assert_valid("<integer>+ | <percentage>+ | <length>+ ", "1");
+assert_valid("<integer>+ | <percentage>+ | <length>+ ", "1 1");
+assert_valid("<integer>+ | <percentage>+ | <length>+ ", "1%");
+assert_valid("<integer>+ | <percentage>+ | <length>+ ", "1% 1%");
+assert_valid("<integer>+ | <percentage>+ | <length>+ ", "1px");
+assert_valid("<integer>+ | <percentage>+ | <length>+ ", "1px 1px");
 
 assert_valid("banana", "banana");
 assert_valid("bAnAnA", "bAnAnA");
@@ -141,10 +169,18 @@ assert_invalid("foo \\1F914 bar", "foo \\1F914 bar");
 assert_invalid("<length> <number>", "0px 0");
 assert_invalid("<length> <length> <length>", "0px 0px 0px");
 
+assert_invalid("<integer>+ | <percentage>+ | <length>+ ", "1 1%");
+assert_invalid("<integer>+ | <percentage>+ | <length>+ ", "1% 1");
+assert_invalid("<integer>+ | <percentage>+ | <length>+ ", "1px 1");
+assert_invalid("<integer>+ | <percentage>+ | <length>+ ", "1 1px");
+assert_invalid("<integer>+ | <percentage>+ | <length>+ ", "1px 1%");
+assert_invalid("<integer>+ | <percentage>+ | <length>+ ", "1% 1px");
+
 assert_invalid("initial", "initial");
 assert_invalid("inherit", "inherit");
 assert_invalid("unset", "unset");
 assert_invalid("revert", "revert");
+assert_invalid("revert-layer", "revert-layer");
 assert_invalid("default", "default");
 assert_invalid("<length>|initial", "10px");
 assert_invalid("<length>|INHERIT", "10px");
@@ -153,20 +189,26 @@ assert_invalid("<color>|REVert", "red");
 assert_invalid("<integer>|deFAUlt", "1");
 
 // Invalid initialValue
+// The 5 tests that follow are not clearly backed by the specification,
+// but they're probably a good idea and we should change the spec. See
+// https://github.com/w3c/css-houdini-drafts/issues/1076 .
 assert_invalid("*", "initial");
 assert_invalid("*", "inherit");
 assert_invalid("*", "unset");
 assert_invalid("*", "revert");
-assert_invalid("*", "default");
+assert_invalid("*", "revert-layer");
+// ... end possibly-invalid tests.
 assert_invalid("<custom-ident>", "initial");
 assert_invalid("<custom-ident>", "inherit");
 assert_invalid("<custom-ident>", "unset");
 assert_invalid("<custom-ident>", "revert");
+assert_invalid("<custom-ident>", "revert-layer");
 assert_invalid("<custom-ident>", "default");
 assert_invalid("<custom-ident>+", "foo initial bar");
 assert_invalid("<custom-ident>+", "foo inherit bar");
 assert_invalid("<custom-ident>+", "foo unset bar");
 assert_invalid("<custom-ident>+", "foo revert bar");
+assert_invalid("<custom-ident>+", "foo revert-layer bar");
 assert_invalid("<custom-ident>+", "foo default bar");
 
 assert_invalid("*", ")");

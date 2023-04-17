@@ -1,7 +1,9 @@
-import mock
+# mypy: allow-untyped-defs
+
 import tempfile
 import shutil
 import sys
+from unittest import mock
 
 import pytest
 
@@ -69,5 +71,6 @@ def test_setup_wptrunner(venv, logger, product):
     kwargs["binary"] = sys.argv[0]
     kwargs["webdriver_binary"] = sys.argv[0]
     if kwargs["product"] == "sauce":
-        kwargs["product"] = "sauce:firefox:63"
+        kwargs["sauce_browser"] = "firefox"
+        kwargs["sauce_version"] = "63"
     run.setup_wptrunner(venv, **kwargs)

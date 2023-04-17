@@ -5,7 +5,7 @@
 <link rel="help" href="https://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#widl-IDBCursor-delete-IDBRequest">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="resources/support.js"></script>
 <div id="log"></div>
 <script>
     var db,
@@ -23,14 +23,14 @@
     }
 
     open_rq.onsuccess = function (event) {
-        var txn = db.transaction("store", "readwrite");
+        var txn = db.transaction("store", "readwrite", {durability: 'relaxed'});
         var rq = txn.objectStore("store").openCursor();
         rq.onsuccess = t.step_func(function(event) {
             var cursor = event.target.result;
             assert_true(cursor instanceof IDBCursor, "cursor exist");
 
             cursor.continue();
-            assert_throws("InvalidStateError", function() {
+            assert_throws_dom("InvalidStateError", function() {
                 cursor.delete();
             });
 

@@ -1,7 +1,11 @@
-from .node import NodeVisitor, ValueNode, ListNode, BinaryExpressionNode
-from .parser import atoms, precedence
+# mypy: allow-untyped-defs
 
-atom_names = {v:"@%s" % k for (k,v) in atoms.items()}
+from six import ensure_text
+
+from .node import NodeVisitor, ValueNode, ListNode, BinaryExpressionNode
+from .parser import atoms, precedence, token_types
+
+atom_names = {v: "@%s" % k for (k,v) in atoms.items()}
 
 named_escapes = {"\a", "\b", "\f", "\n", "\r", "\t", "\v"}
 
@@ -10,7 +14,7 @@ def escape(string, extras=""):
     rv = ""
     for c in string:
         if c in named_escapes:
-            rv += c.encode("unicode_escape")
+            rv += c.encode("unicode_escape").decode()
         elif c == "\\":
             rv += "\\\\"
         elif c < '\x20':
@@ -19,10 +23,7 @@ def escape(string, extras=""):
             rv += "\\" + c
         else:
             rv += c
-    if isinstance(rv, unicode):
-        return rv.encode("utf8")
-    else:
-        return rv
+    return ensure_text(rv)
 
 
 class ManifestSerializer(NodeVisitor):
@@ -34,9 +35,23 @@ class ManifestSerializer(NodeVisitor):
         rv = "\n".join(self.visit(root))
         if not rv:
             return rv
+        rv = rv.strip()
         if rv[-1] != "\n":
             rv = rv + "\n"
         return rv
+
+    def visit(self, node):
+        lines = super().visit(node)
+        comments = [f"#{comment}" for _, comment in node.comments]
+        # Simply checking if the first line contains '#' is less than ideal; the
+        # character might be escaped or within a string.
+        if lines and "#" not in lines[0]:
+            for i, (token_type, comment) in enumerate(node.comments):
+                if token_type == token_types.inline_comment:
+                    lines[0] += f"  #{comment}"
+                    comments.pop(i)
+                    break
+        return comments + lines
 
     def visit_DataNode(self, node):
         rv = []
@@ -63,7 +78,7 @@ class ManifestSerializer(NodeVisitor):
             rv[0] += " %s" % self.visit(node.children[0])[0]
         else:
             for child in node.children:
-                rv.append(indent + self.visit(child)[0])
+                rv.extend(indent + line for line in self.visit(child))
 
         return rv
 
@@ -74,10 +89,7 @@ class ManifestSerializer(NodeVisitor):
         return ["".join(rv)]
 
     def visit_ValueNode(self, node):
-        if not isinstance(node.data, (str, unicode)):
-            data = unicode(node.data)
-        else:
-            data = node.data
+        data = ensure_text(node.data)
         if ("#" in data or
             data.startswith("if ") or
             (isinstance(node.parent, ListNode) and
@@ -103,7 +115,7 @@ class ManifestSerializer(NodeVisitor):
         return rv
 
     def visit_NumberNode(self, node):
-        return [str(node.data)]
+        return [ensure_text(node.data)]
 
     def visit_VariableNode(self, node):
         rv = escape(node.data)
@@ -137,10 +149,10 @@ class ManifestSerializer(NodeVisitor):
         return [" ".join(children)]
 
     def visit_UnaryOperatorNode(self, node):
-        return [str(node.data)]
+        return [ensure_text(node.data)]
 
     def visit_BinaryOperatorNode(self, node):
-        return [str(node.data)]
+        return [ensure_text(node.data)]
 
 
 def serialize(tree, *args, **kwargs):

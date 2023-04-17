@@ -4,7 +4,7 @@
 <link rel="author" title="Intel" href="http://www.intel.com">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="resources/support.js"></script>
 <div id="log"> </div>
 <script>
     var db,
@@ -22,7 +22,7 @@
     };
 
     open_rq.onsuccess = function(e) {
-        var cursor_rq = db.transaction("test")
+        var cursor_rq = db.transaction("test", "readonly", {durability: 'relaxed'})
                           .objectStore("test")
                           .openCursor();
 
@@ -31,7 +31,7 @@
             assert_true(cursor instanceof IDBCursor, "cursor exists");
 
             e.target.transaction.abort();
-            assert_throws("TransactionInactiveError", function() {
+            assert_throws_dom("TransactionInactiveError", function() {
                 cursor.continue();
             }, "Calling continue() should throws an exception TransactionInactiveError when the transaction is not active.");
 

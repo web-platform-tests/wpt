@@ -1,5 +1,4 @@
 import uuid
-
 import pytest
 
 from tests.support.asserts import assert_success
@@ -8,21 +7,21 @@ from tests.support.asserts import assert_success
 def test_sessionid(new_session, add_browser_capabilities):
     response, _ = new_session({"capabilities": {"alwaysMatch": add_browser_capabilities({})}})
     value = assert_success(response)
-    assert isinstance(value["sessionId"], basestring)
+    assert isinstance(value["sessionId"], str)
     uuid.UUID(hex=value["sessionId"])
 
 
 @pytest.mark.parametrize("capability, type", [
-    ("browserName", basestring),
-    ("browserVersion", basestring),
-    ("platformName", basestring),
+    ("browserName", str),
+    ("browserVersion", str),
+    ("platformName", str),
     ("acceptInsecureCerts", bool),
-    ("pageLoadStrategy", basestring),
+    ("pageLoadStrategy", str),
     ("proxy", dict),
     ("setWindowRect", bool),
     ("timeouts", dict),
     ("strictFileInteractability", bool),
-    ("unhandledPromptBehavior", basestring),
+    ("unhandledPromptBehavior", str),
 ])
 def test_capability_type(session, capability, type):
     assert isinstance(session.capabilities, dict)

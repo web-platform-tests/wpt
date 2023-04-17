@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/test-only-api.js"></script>
 <script src="/webusb/resources/fake-devices.js"></script>
 <script src="/webusb/resources/usb-helpers.js"></script>
 <script>
@@ -15,7 +16,7 @@ async function connectInWorker() {
     return new Promise(resolve => worker.addEventListener(
         'message', e => resolve(e.data)));
   }
-  worker.postMessage({ type: 'Ready' });
+  worker.postMessage({ type: 'ConnectEvent' });
 
   assert_equals('Ready', (await nextWorkerMessage()).type);
   let fakeDevice = navigator.usb.test.addFakeDevice(fakeDeviceInit);

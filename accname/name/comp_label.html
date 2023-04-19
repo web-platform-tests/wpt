@@ -11,10 +11,9 @@
 </head>
 <body>
 
-<!-- Todo: test https://w3c.github.io/accname/#comp_label -->
+<div aria-label="label" data-expectedlabel="label" data-testname="label valid on group" role="group" class="ex">x</div>
 
-<div aria-label="label" data-expectedlabel="label" data-testname="aria-label ignored on generic">x</div>
-<div aria-label="label" data-expectedlabel="label" data-testname="aria-label valid on group" role="group">x</div>
+<!-- Todo: test all remaining cases of https://w3c.github.io/accname/#comp_label -->
 
 <script>
 AriaUtils.verifyLabelsBySelector(".ex");

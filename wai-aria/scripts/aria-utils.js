@@ -10,6 +10,9 @@ const AriaUtils = {
 
   */
   assignAndVerifyRolesByRoleNames: function(roleNames) {
+    if (typeof roleNames != "Array" || !roleNames.length) {
+      throw `Param roleNames of assignAndVerifyRolesByRoleNames("${roleNames}") should be an array containing at least one role string.`;
+    }
     for (const role of roleNames) {
       promise_test(async t => {
         let el = document.createElement("div");
@@ -38,6 +41,9 @@ const AriaUtils = {
   */
   verifyRolesBySelector: function(selector) {
     const els = document.querySelectorAll(selector);
+    if (!els.length) {
+      throw `Selector passed in verifyRolesBySelector("${selector}") should match at least one element.`;
+    }
     for (const el of els) {
       let role = el.getAttribute("data-expectedrole");
       let testName = el.getAttribute("data-testname") || role; // data-testname optional if role is unique per test file
@@ -76,6 +82,9 @@ const AriaUtils = {
   */
   verifyLabelsBySelector: function(selector) {
     const els = document.querySelectorAll(selector);
+    if (!els.length) {
+      throw `Selector passed in verifyLabelsBySelector("${selector}") should match at least one element.`;
+    }
     for (const el of els) {
       let label = el.getAttribute("data-expectedlabel");
       let testName = el.getAttribute("data-testname") || label; // data-testname optional if label is unique per test file

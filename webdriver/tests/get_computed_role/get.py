@@ -77,7 +77,7 @@ def test_stale_element_reference(session, stale_element, as_frame):
 
 
 @pytest.mark.parametrize("html,tag,expected", [
-    ("<main>foo</main>", "main", "main"),
+    ("<nav>foo</nav>", "nav", "navigation"),
     ("<input role=searchbox>", "input", "searchbox"),
     ("<img role=button tabindex=0>", "img", "button")])
 def test_computed_roles(session, inline, html, tag, expected):

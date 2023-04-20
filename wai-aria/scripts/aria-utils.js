@@ -10,7 +10,7 @@ const AriaUtils = {
 
   */
   assignAndVerifyRolesByRoleNames: function(roleNames) {
-    if (typeof roleNames != "Array" || !roleNames.length) {
+    if (!Array.isArray(roleNames) || !roleNames.length) {
       throw `Param roleNames of assignAndVerifyRolesByRoleNames("${roleNames}") should be an array containing at least one role string.`;
     }
     for (const role of roleNames) {

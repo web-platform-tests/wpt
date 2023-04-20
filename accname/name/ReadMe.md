@@ -48,7 +48,7 @@ If a new section of the AccName algorithm is added, please list it here when che
 
 ### [comp_text_node](comp_text_node.html)
 
-### [comp_recursive_name_from_content](comp_recursive_name_from_content.html)
+### comp_recursive_name_from_content (tested with [comp_name_from_content](comp_name_from_content.html))
 
 ### [comp_tooltip](comp_tooltip.html)
 

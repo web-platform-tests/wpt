@@ -368,7 +368,11 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
             data = connection.data_to_send()
             window_size = connection.remote_settings.initial_window_size
 
-        self.request.sendall(data)
+        try:
+            self.request.sendall(data)
+        except ConnectionResetError:
+            self.logger.warning("Connection reset during h2 setup")
+            return
 
         # Dict of { stream_id: (thread, queue) }
         stream_queues = {}

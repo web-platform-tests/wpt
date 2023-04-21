@@ -57,5 +57,29 @@ const AriaUtils = {
     }
   },
 
+  /*
+  Tests computed label of all elements matching the selector against the string value of their
+  data-expectedlabel attribute.
+
+  Ex: <div class="foo"
+           data-testname="optional unique test name"
+           data-expectedlabel="my label"></div>
+
+      AriaUtils.verifyLabelsBySelector('.foo')
+
+   */
+  verifyLabelsBySelector: function(selector) {
+    const els = document.querySelectorAll(selector);
+    for (const el of els) {
+      const expectedLabel = el.getAttribute('data-expectedlabel');
+      const testName = el.getAttribute('data-testname') || expectedLabel;
+
+      promise_test(async t => {
+        const computedLabel = await test_driver.get_computed_label(el);
+        assert_equals(computedLabel, expectedLabel);
+      }, `${testName}`);
+    }
+  },
+
 };
 

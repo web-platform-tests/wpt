@@ -230,29 +230,30 @@ const getReductionPrecisionTolerance = (resources, operationName) => {
   } else {
     sizes = inputShape;
   }
-  let tolerance = sizes.reduce(
-                      (accumulator, currentValue) => accumulator * currentValue
+  const reducedElementCount = sizes.reduce(
+                                  (accumulator, currentValue) => accumulator * currentValue
   );
+  let tolerance;
   switch (operationName) {
     case 'reduceL1':
     case 'reduceProduct':
     case 'reduceSum':
-      // directly use above computed tolerance
+      tolerance = reducedElementCount;
       break;
     case 'reduceL2':
-      tolerance = tolerance * 2 + 1;
+      tolerance = reducedElementCount * 2 + 1;
       break;
     case 'reduceMean':
-      tolerance += 2;
+      tolerance = reducedElementCount + 2;
       break;
     case 'reduceLogSum':
-      tolerance += 18;
+      tolerance = reducedElementCount + 18;
       break;
     case 'reduceLogSumExp':
-      tolerance = tolerance * 2 + 18;
+      tolerance = reducedElementCount * 2 + 18;
       break;
     case 'reduceSumSquare':
-      tolerance = tolerance * 2;
+      tolerance = reducedElementCount * 2;
       break;
     default:
       break;

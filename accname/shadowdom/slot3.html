@@ -1,0 +1,20 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<label id="label">
+  <div id="host">slotted</div>
+</label>
+<button id="test" type="button" aria-labelledby="label"></button>
+<script>
+document.getElementById('host').attachShadow({ mode: 'open' }).innerHTML = 'foo <slot aria-label="label"></slot> bar';
+
+promise_test(async t => {
+  const label = await test_driver.get_computed_label(document.getElementById('test'));
+  assert_equals(label, "foo slotted bar");
+}, "tests computed label - aria-label on slot with slotted content");
+
+</script>

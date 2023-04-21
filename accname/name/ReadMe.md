@@ -1,11 +1,11 @@
 
-## Breakdown of AccName Name Computation files...  
+## Breakdown of AccName Name Computation files...
 
 Portions of the AccName algorithm are referenced via unique IDs such as `comp_labelledby` and `comp_embedded_control`. This ReadMe lists those sections (and subsections) in order as they appear in [AccName Computation Steps](https://w3c.github.io/accname/#computation-steps).
 
 In order to make the WPT test files digestible and understandable, the tests are broken up more or less in the structure of the algorithm, with the file struction listed below. Sub-section test (such as `comp_labelledby_recursion`) are tested as part of the main section `comp_labelledby` in [comp_labelledby.html](comp_labelledby.html).
 
-Non-name portions of the AccName spec (such as Descrkipton Computation) should be tested in another directory.
+Non-name portions of the AccName spec (such as Descripton Computation) should be tested in another directory.
 
 If a new section of the AccName algorithm is added, please list it here when checking in new tests. Thanks.
 

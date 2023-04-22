@@ -23,6 +23,49 @@ test(() => {
   assert_true(startCalled);
 }, 'ReadableStream of type owning should call start with a ReadableStreamDefaultController');
 
+test(() => {
+  let startCalled = false;
+
+  const source = {
+    start(controller) {
+      controller.enqueue("a", { transfer: [] });
+      controller.enqueue("a", { transfer: undefined });
+      startCalled = true;
+    },
+    type: 'owning'
+  };
+
+  new ReadableStream(source);
+  assert_true(startCalled);
+}, 'ReadableStream should be able to call enqueue with an empty transfer list');
+
+test(() => {
+  let startCalled = false;
+
+  const uint8Array = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]);
+  const buffer = uint8Array.buffer;
+  let source = {
+    start(controller) {
+      startCalled = true;
+      assert_throws_js(TypeError, () => { controller.enqueue(buffer, { transfer : [ buffer ] }); }, "transfer list is not empty");
+    }
+  };
+
+  new ReadableStream(source);
+  assert_true(startCalled);
+
+  startCalled = false;
+  source = {
+    start(controller) {
+      startCalled = true;
+      assert_throws_js(TypeError, () => { controller.enqueue(buffer, { get transfer() { throw new TypeError(); } }) }, "getter throws");
+    }
+  };
+
+  new ReadableStream(source);
+  assert_true(startCalled);
+}, 'ReadableStream should check transfer parameter');
+
 promise_test(async () => {
   const uint8Array = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]);
   const buffer = uint8Array.buffer;

@@ -47,8 +47,11 @@ div {
 </div>
 
 <script>
-test(() => {
-  document.querySelector(".no-snap").focus();
+promise_test(() => {
+  await new Promise(resolve => {
+    document.addEventListener("scroll", () => step_timeout(resolve, 0));
+    document.querySelector(".no-snap").focus();
+  });
   assert_equals(scroller.scrollTop, 1200);
 }, "scroll snap should happens on Element.focus()");
 

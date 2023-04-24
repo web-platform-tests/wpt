@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=utf-8>
+    <title>Submitting element directionality: the dirname attribute</title>
+    <link rel="author" title="Vincent Hilla" href="mailto:vhilla@mozilla.com">
+    <link rel=help href="https://html.spec.whatwg.org/multipage/#submitting-element-directionality:-the-dirname-attribute">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <form action="dirname-ltr-iframe.html" method=get target="iframe">
+      <p><button type=submit>Submit</button></p>
+    </form>
+    <iframe name="iframe"></iframe>
+
+    <script>
+      function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        results = regex.exec(document.querySelector("iframe").contentWindow.location.search);
+        return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+      }
+      function hasParameter(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        results = regex.exec(document.querySelector("iframe").contentWindow.location.search);
+        return results != null;
+      }
+
+      const types_applies = ["text", "search"];
+      const types_not = ["hidden", "tel", "url", "email", "password", "date", "month", "week", "time", "datetime-local", "number", "range", "color", "checkbox", "radio", "file", "submit", "image" , "reset", "button"];
+      const types = [...types_applies, ...types_not];
+      let form = document.querySelector("form");
+      for (const type of types) {
+        let p = document.createElement("p");
+        let lbl = document.createElement("label");
+        let txt = document.createTextNode(type + ": ");
+        let inp = document.createElement("input");
+        inp.type = type;
+        inp.name = type;
+        inp.dirName = type + ".dir";
+        lbl.appendChild(txt);
+        lbl.appendChild(inp);
+        p.appendChild(lbl);
+        form.appendChild(p);
+      }
+      const t = async_test("submit input element directionality only for text and search type");
+      document.querySelector("button").click();
+
+      const iframe = document.querySelector("iframe");
+      iframe.onload = t.step_func_done(function() {
+        // The initial about:blank load event can be fired before the form navigation occurs.
+        // See https://github.com/whatwg/html/issues/490 for more information.
+        if(iframe.contentWindow.location.href == "about:blank") { return; }
+
+        for (const type of types_applies) {
+            assert_equals(getParameterByName(type + ".dir"), "ltr");
+        }
+        for (const type of types_not) {
+            assert_false(hasParameter(type + ".dir"));
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -18,19 +18,20 @@
     <script>
       function getParameterByName(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
-        results = regex.exec(document.querySelector("iframe").contentWindow.location.search);
-        return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        const regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        const results = regex.exec(document.querySelector("iframe").contentWindow.location.search);
+        return results == null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
       }
       function hasParameter(name) {
-        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
-        results = regex.exec(document.querySelector("iframe").contentWindow.location.search);
-        return results != null;
+        return getParameterByName(name) !== null;
       }
 
       const types_applies = ["text", "search"];
-      const types_not = ["hidden", "tel", "url", "email", "password", "date", "month", "week", "time", "datetime-local", "number", "range", "color", "checkbox", "radio", "file", "submit", "image" , "reset", "button"];
+      const types_not = [
+        "hidden", "tel", "url", "email", "password", "date", "month", "week", "time",
+        "datetime-local", "number", "range", "color", "checkbox", "radio", "file", "submit",
+        "image", "reset", "button"
+      ];
       const types = [...types_applies, ...types_not];
       let form = document.querySelector("form");
       for (const type of types) {
@@ -41,25 +42,30 @@
         inp.type = type;
         inp.name = type;
         inp.dirName = type + ".dir";
+        inp.id = "testelement." + type
         lbl.appendChild(txt);
         lbl.appendChild(inp);
         p.appendChild(lbl);
         form.appendChild(p);
       }
-      const t = async_test("submit input element directionality only for text and search type");
+      // Avoid continue in https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#constructing-form-data-set:attr-fe-dirname
+      document.getElementById("testelement.checkbox").checked = true;
+      document.getElementById("testelement.radio").checked = true;
+
+      const test = async_test("submit input element directionality only for text and search type");
       document.querySelector("button").click();
 
       const iframe = document.querySelector("iframe");
-      iframe.onload = t.step_func_done(function() {
+      iframe.onload = test.step_func_done(function() {
         // The initial about:blank load event can be fired before the form navigation occurs.
         // See https://github.com/whatwg/html/issues/490 for more information.
         if(iframe.contentWindow.location.href == "about:blank") { return; }
 
         for (const type of types_applies) {
-            assert_equals(getParameterByName(type + ".dir"), "ltr");
+            assert_equals(getParameterByName(type + ".dir"), "ltr", "Submit tlr for type=" + type);
         }
         for (const type of types_not) {
-            assert_false(hasParameter(type + ".dir"));
+            assert_false(hasParameter(type + ".dir"), "Do not submit dirname for type=" + type);
         }
       });
     </script>

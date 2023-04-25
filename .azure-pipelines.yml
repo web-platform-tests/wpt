@@ -34,7 +34,7 @@ jobs:
   displayName: 'affected tests: Safari Technology Preview'
   condition: eq(variables['Build.Reason'], 'PullRequest')
   pool:
-    vmImage: 'macOS-12'
+    vmImage: 'macOS-13'
   steps:
   - task: UsePythonVersion@0
     inputs:
@@ -51,7 +51,7 @@ jobs:
   displayName: 'affected tests without changes: Safari Technology Preview'
   condition: eq(variables['Build.Reason'], 'PullRequest')
   pool:
-    vmImage: 'macOS-12'
+    vmImage: 'macOS-13'
   steps:
   - task: UsePythonVersion@0
     inputs:
@@ -93,7 +93,7 @@ jobs:
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wptrunner_infrastructure']
   pool:
-    vmImage: 'macOS-12'
+    vmImage: 'macOS-13'
   steps:
   - task: UsePythonVersion@0
     inputs:
@@ -139,7 +139,7 @@ jobs:
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.tools_unittest']
   pool:
-    vmImage: 'macOS-12'
+    vmImage: 'macOS-13'
   steps:
   - task: UsePythonVersion@0
     inputs:
@@ -155,7 +155,7 @@ jobs:
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.tools_unittest']
   pool:
-    vmImage: 'macOS-12'
+    vmImage: 'macOS-13'
   steps:
   - task: UsePythonVersion@0
     inputs:
@@ -171,7 +171,7 @@ jobs:
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wptrunner_unittest']
   pool:
-    vmImage: 'macOS-12'
+    vmImage: 'macOS-13'
   steps:
   - task: UsePythonVersion@0
     inputs:
@@ -187,7 +187,7 @@ jobs:
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wptrunner_unittest']
   pool:
-    vmImage: 'macOS-12'
+    vmImage: 'macOS-13'
   steps:
   - task: UsePythonVersion@0
     inputs:
@@ -203,7 +203,7 @@ jobs:
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wpt_integration']
   pool:
-    vmImage: 'macOS-12'
+    vmImage: 'macOS-13'
   steps:
   # full checkout required
   - task: UsePythonVersion@0
@@ -223,7 +223,7 @@ jobs:
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wpt_integration']
   pool:
-    vmImage: 'macOS-12'
+    vmImage: 'macOS-13'
   steps:
   # full checkout required
   - task: UsePythonVersion@0
@@ -478,7 +478,7 @@ jobs:
     parallel: 8 # chosen to make runtime ~2h
   timeoutInMinutes: 180
   pool:
-    vmImage: 'macOS-12'
+    vmImage: 'macOS-13'
   steps:
   - task: UsePythonVersion@0
     inputs:
@@ -520,7 +520,7 @@ jobs:
     parallel: 8 # chosen to make runtime ~2h
   timeoutInMinutes: 180
   pool:
-    vmImage: 'macOS-12'
+    vmImage: 'macOS-13'
   steps:
   - task: UsePythonVersion@0
     inputs:
@@ -559,7 +559,7 @@ jobs:
     parallel: 8 # chosen to make runtime ~2h
   timeoutInMinutes: 180
   pool:
-    vmImage: 'macOS-12'
+    vmImage: 'macOS-13'
   steps:
   - task: UsePythonVersion@0
     inputs:

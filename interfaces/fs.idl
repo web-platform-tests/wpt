@@ -15,7 +15,6 @@ interface FileSystemHandle {
 
   Promise<boolean> isSameEntry(FileSystemHandle other);
 };
-
 dictionary FileSystemCreateWritableOptions {
   boolean keepExistingData = false;
 };
@@ -27,7 +26,6 @@ interface FileSystemFileHandle : FileSystemHandle {
   [Exposed=DedicatedWorker]
   Promise<FileSystemSyncAccessHandle> createSyncAccessHandle();
 };
-
 dictionary FileSystemGetFileOptions {
   boolean create = false;
 };
@@ -51,7 +49,6 @@ interface FileSystemDirectoryHandle : FileSystemHandle {
 
   Promise<sequence<USVString>?> resolve(FileSystemHandle possibleDescendant);
 };
-
 enum WriteCommandType {
   "write",
   "seek",
@@ -73,9 +70,8 @@ interface FileSystemWritableFileStream : WritableStream {
   Promise<undefined> seek(unsigned long long position);
   Promise<undefined> truncate(unsigned long long size);
 };
-
 dictionary FileSystemReadWriteOptions {
-  [EnforceRange] unsigned long long at = 0;
+  [EnforceRange] unsigned long long at;
 };
 
 [Exposed=DedicatedWorker, SecureContext]
@@ -85,10 +81,10 @@ interface FileSystemSyncAccessHandle {
   unsigned long long write([AllowShared] BufferSource buffer,
                            optional FileSystemReadWriteOptions options = {});
 
-  Promise<undefined> truncate([EnforceRange] unsigned long long newSize);
-  Promise<unsigned long long> getSize();
-  Promise<undefined> flush();
-  Promise<undefined> close();
+  undefined truncate([EnforceRange] unsigned long long newSize);
+  unsigned long long getSize();
+  undefined flush();
+  undefined close();
 };
 
 [SecureContext]

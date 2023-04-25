@@ -15,11 +15,12 @@ var t_pass = t.done.bind(t);
 var t_fail = t.step_func(function(reason) {
     throw reason;
 });
-t.step(function() {
+t.step(async function() {
 
 var canvas = new OffscreenCanvas(100, 50);
 var ctx = canvas.getContext('2d');
 
+await (function(canvas, ctx) {
 // From https://www.w3.org/TR/SVG11/filters.html#feComponentTransferElement
 function getTransformedValue(C, V) {
     // Get the right interval
@@ -41,10 +42,10 @@ function getColor(inputColor, tableValues) {
 tableValuesR = [0, 0, 1, 1];
 tableValuesG = [2, 0, 0.5, 3];
 tableValuesB = [1, -1, 5, 0];
-ctx.filter = new CanvasFilter({filter: "componentTransfer",
-    funcR: {type: "discrete", tableValues: tableValuesR},
-    funcG: {type: "discrete", tableValues: tableValuesG},
-    funcB: {type: "discrete", tableValues: tableValuesB},
+ctx.filter = new CanvasFilter({filter: 'componentTransfer',
+    funcR: {type: 'discrete', tableValues: tableValuesR},
+    funcG: {type: 'discrete', tableValues: tableValuesG},
+    funcB: {type: 'discrete', tableValues: tableValuesB},
 });
 
 const inputColors = [
@@ -61,6 +62,7 @@ for (const color of inputColors) {
     ctx.fillRect(0, 0, 10, 10);
     _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, 2);
 }
+})(canvas, ctx);
 t.done();
 
 });

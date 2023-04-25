@@ -33,9 +33,53 @@ def test_no_browsing_context(session, closed_frame):
     assert_error(response, "no such window")
 
 
+def test_no_such_element_with_shadow_root(session, get_test_page):
+    session.url = get_test_page()
+
+    element = session.find.css("custom-element", all=False)
+
+    result = find_element(session, element.shadow_root.id, "css selector", "#in-shadow-dom")
+    assert_error(result, "no such element")
+
+
+@pytest.mark.parametrize(
+    "selector",
+    ["#same1", "#in-frame", "#in-shadow-dom"],
+    ids=["not-existent", "existent-other-frame", "existent-inside-shadow-root"],
+)
+def test_no_such_element_with_unknown_selector(session, get_test_page, selector):
+    session.url = get_test_page()
+
+    from_element = session.find.css(":root", all=False)
+    response = find_element(session, from_element.id, "css selector", selector)
+    assert_error(response, "no such element")
+
+
+def test_no_such_element_with_startnode_from_other_window_handle(session, inline):
+    session.url = inline("<div id='parent'><p/>")
+    from_element = session.find.css("#parent", all=False)
+
+    new_handle = session.new_window()
+    session.window_handle = new_handle
+
+    response = find_element(session, from_element.id, "css selector", "p")
+    assert_error(response, "no such element")
+
+
+def test_no_such_element_with_startnode_from_other_frame(session, iframe, inline):
+    session.url = inline(iframe("<div id='parent'><p/>"))
+
+    session.switch_frame(0)
+    from_element = session.find.css("#parent", all=False)
+    session.switch_frame("parent")
+
+    response = find_element(session, from_element.id, "css selector", "p")
+    assert_error(response, "no such element")
+
+
 @pytest.mark.parametrize("as_frame", [False, True], ids=["top_context", "child_context"])
 def test_stale_element_reference(session, stale_element, as_frame):
-    element = stale_element("<div><p>foo</p></div>", "div", as_frame=as_frame)
+    element = stale_element("div#with-children", as_frame=as_frame)
 
     response = find_element(session, element.id, "css selector", "p")
     assert_error(response, "stale element reference")
@@ -43,14 +87,12 @@ def test_stale_element_reference(session, stale_element, as_frame):
 
 @pytest.mark.parametrize("using", ["a", True, None, 1, [], {}])
 def test_invalid_using_argument(session, using):
-    # Step 1 - 2
     response = find_element(session, "notReal", using, "value")
     assert_error(response, "invalid argument")
 
 
 @pytest.mark.parametrize("value", [None, [], {}])
 def test_invalid_selector_argument(session, value):
-    # Step 3 - 4
     response = find_element(session, "notReal", "css selector", value)
     assert_error(response, "invalid argument")
 
@@ -62,7 +104,6 @@ def test_invalid_selector_argument(session, value):
                           ("tag name", "a"),
                           ("xpath", "//a")])
 def test_find_element(session, inline, using, value):
-    # Step 8 - 9
     session.url = inline("<div><a href=# id=linkText>full link text</a></div>")
     element = session.find.css("div", all=False)
     response = find_element(session, element.id, using, value)
@@ -96,21 +137,11 @@ def test_find_element_link_text(session, inline, document, value):
     ("<a href=# style='text-transform: uppercase'>partial link text</a>", "LINK"),
 ])
 def test_find_element_partial_link_text(session, inline, document, value):
-    # Step 8 - 9
     session.url = inline("<div>{0}</div>".format(document))
     element = session.find.css("div", all=False)
 
     response = find_element(session, element.id, "partial link text", value)
     assert_success(response)
-
-
-@pytest.mark.parametrize("using,value", [("css selector", "#wontExist")])
-def test_no_element(session, inline, using, value):
-    # Step 8 - 9
-    session.url = inline("<div></div>")
-    element = session.find.css("div", all=False)
-    response = find_element(session, element.id, using, value)
-    assert_error(response, "no such element")
 
 
 @pytest.mark.parametrize("using,value",

@@ -87,6 +87,13 @@ the global scope.
 
 ```
 
+### Accessibility ###
+```eval_rst
+.. js:autofunction:: test_driver.get_computed_label
+.. js:autofunction:: test_driver.get_computed_role
+
+```
+
 ### Seure Payment Confirmation ###
 ```eval_rst
 .. js:autofunction:: test_driver.set_spc_transaction_mode
@@ -206,15 +213,13 @@ _Note: these special-key codepoints are not necessarily what you would expect. F
 
 ### set_permission
 
-Usage: `test_driver.set_permission(descriptor, state, one_realm=false, context=null)`
+Usage: `test_driver.set_permission(descriptor, state, context=null)`
  * _descriptor_: a
    [PermissionDescriptor](https://w3c.github.io/permissions/#dictdef-permissiondescriptor)
    or derived object
  * _state_: a
    [PermissionState](https://w3c.github.io/permissions/#enumdef-permissionstate)
    value
- * _one_realm_: a boolean that indicates whether the permission settings
-   apply to only one realm
  * context: a WindowProxy for the browsing context in which to perform the call
 
 This function causes permission requests and queries for the status of a
@@ -226,5 +231,5 @@ Example:
 
 ``` js
 await test_driver.set_permission({ name: "background-fetch" }, "denied");
-await test_driver.set_permission({ name: "push", userVisibleOnly: true }, "granted", true);
+await test_driver.set_permission({ name: "push", userVisibleOnly: true }, "granted");
 ```

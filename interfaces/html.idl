@@ -98,7 +98,6 @@ partial interface Document {
   // also has obsolete members
 };
 Document includes GlobalEventHandlers;
-Document includes DocumentAndElementEventHandlers;
 
 partial interface mixin DocumentOrShadowRoot {
   readonly attribute Element? activeElement;
@@ -128,10 +127,15 @@ interface HTMLElement : Element {
   [CEReactions] attribute [LegacyNullToEmptyString] DOMString outerText;
 
   ElementInternals attachInternals();
+
+  // The popover API
+  undefined showPopover();
+  undefined hidePopover();
+  undefined togglePopover(optional boolean force);
+  [CEReactions] attribute DOMString? popover;
 };
 
 HTMLElement includes GlobalEventHandlers;
-HTMLElement includes DocumentAndElementEventHandlers;
 HTMLElement includes ElementContentEditable;
 HTMLElement includes HTMLOrSVGElement;
 
@@ -204,6 +208,7 @@ interface HTMLLinkElement : HTMLElement {
   [CEReactions] attribute DOMString referrerPolicy;
   [SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;
   [CEReactions] attribute boolean disabled;
+  [CEReactions] attribute DOMString fetchPriority;
 
   // also has obsolete members
 };
@@ -432,6 +437,7 @@ interface HTMLImageElement : HTMLElement {
   [CEReactions] attribute DOMString referrerPolicy;
   [CEReactions] attribute DOMString decoding;
   [CEReactions] attribute DOMString loading;
+  [CEReactions] attribute DOMString fetchPriority;
 
   Promise<undefined> decode();
 
@@ -886,7 +892,7 @@ interface HTMLInputElement : HTMLElement {
   [CEReactions] attribute DOMString formTarget;
   [CEReactions] attribute unsigned long height;
   attribute boolean indeterminate;
-  readonly attribute HTMLElement? list;
+  readonly attribute HTMLDataListElement? list;
   [CEReactions] attribute DOMString max;
   [CEReactions] attribute long maxLength;
   [CEReactions] attribute DOMString min;
@@ -931,6 +937,7 @@ interface HTMLInputElement : HTMLElement {
 
   // also has obsolete members
 };
+HTMLInputElement includes PopoverInvokerElement;
 
 [Exposed=Window]
 interface HTMLButtonElement : HTMLElement {
@@ -956,6 +963,7 @@ interface HTMLButtonElement : HTMLElement {
 
   readonly attribute NodeList labels;
 };
+HTMLButtonElement includes PopoverInvokerElement;
 
 [Exposed=Window]
 interface HTMLSelectElement : HTMLElement {
@@ -1216,6 +1224,7 @@ interface HTMLScriptElement : HTMLElement {
   [CEReactions] attribute DOMString integrity;
   [CEReactions] attribute DOMString referrerPolicy;
   [SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;
+  [CEReactions] attribute DOMString fetchPriority;
 
   static boolean supports(DOMString type);
 
@@ -1706,6 +1715,23 @@ dictionary DragEventInit : MouseEventInit {
   DataTransfer? dataTransfer = null;
 };
 
+interface mixin PopoverInvokerElement {
+  [CEReactions] attribute Element? popoverTargetElement;
+  [CEReactions] attribute DOMString popoverTargetAction;
+};
+
+[Exposed=Window]
+interface ToggleEvent : Event {
+  constructor(DOMString type, optional ToggleEventInit eventInitDict = {});
+  readonly attribute DOMString oldState;
+  readonly attribute DOMString newState;
+};
+
+dictionary ToggleEventInit : EventInit {
+  DOMString oldState = "";
+  DOMString newState = "";
+};
+
 [Global=Window,
  Exposed=Window,
  LegacyUnenumerableNamedProperties]
@@ -1739,10 +1765,11 @@ interface Window : EventTarget {
   [Replaceable] readonly attribute WindowProxy? parent;
   readonly attribute Element? frameElement;
   WindowProxy? open(optional USVString url = "", optional DOMString target = "_blank", optional [LegacyNullToEmptyString] DOMString features = "");
-  getter object (DOMString name);
+
   // Since this is the global object, the IDL named getter adds a NamedPropertiesObject exotic
   // object on the prototype chain. Indeed, this does not make the global object an exotic object.
   // Indexed access is taken care of by the WindowProxy exotic object.
+  getter object (DOMString name);
 
   // the user agent
   readonly attribute Navigator navigator;
@@ -1773,20 +1800,6 @@ interface BarProp {
   readonly attribute boolean visible;
 };
 
-enum ScrollRestoration { "auto", "manual" };
-
-[Exposed=Window]
-interface History {
-  readonly attribute unsigned long length;
-  attribute ScrollRestoration scrollRestoration;
-  readonly attribute any state;
-  undefined go(optional long delta = 0);
-  undefined back();
-  undefined forward();
-  undefined pushState(any data, DOMString unused, optional USVString? url = null);
-  undefined replaceState(any data, DOMString unused, optional USVString? url = null);
-};
-
 [Exposed=Window]
 interface Location { // but see also additional creation steps and overridden internal methods
   [LegacyUnforgeable] stringifier attribute USVString href;
@@ -1804,6 +1817,20 @@ interface Location { // but see also additional creation steps and overridden in
   [LegacyUnforgeable] undefined reload();
 
   [LegacyUnforgeable, SameObject] readonly attribute DOMStringList ancestorOrigins;
+};
+
+enum ScrollRestoration { "auto", "manual" };
+
+[Exposed=Window]
+interface History {
+  readonly attribute unsigned long length;
+  attribute ScrollRestoration scrollRestoration;
+  readonly attribute any state;
+  undefined go(optional long delta = 0);
+  undefined back();
+  undefined forward();
+  undefined pushState(any data, DOMString unused, optional USVString? url = null);
+  undefined replaceState(any data, DOMString unused, optional USVString? url = null);
 };
 
 [Exposed=Window]
@@ -1895,6 +1922,7 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onauxclick;
   attribute EventHandler onbeforeinput;
   attribute EventHandler onbeforematch;
+  attribute EventHandler onbeforetoggle;
   attribute EventHandler onblur;
   attribute EventHandler oncancel;
   attribute EventHandler oncanplay;
@@ -1905,7 +1933,9 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler oncontextlost;
   attribute EventHandler oncontextmenu;
   attribute EventHandler oncontextrestored;
+  attribute EventHandler oncopy;
   attribute EventHandler oncuechange;
+  attribute EventHandler oncut;
   attribute EventHandler ondblclick;
   attribute EventHandler ondrag;
   attribute EventHandler ondragend;
@@ -1936,6 +1966,7 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onmouseout;
   attribute EventHandler onmouseover;
   attribute EventHandler onmouseup;
+  attribute EventHandler onpaste;
   attribute EventHandler onpause;
   attribute EventHandler onplay;
   attribute EventHandler onplaying;
@@ -1944,6 +1975,7 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onreset;
   attribute EventHandler onresize;
   attribute EventHandler onscroll;
+  attribute EventHandler onscrollend;
   attribute EventHandler onsecuritypolicyviolation;
   attribute EventHandler onseeked;
   attribute EventHandler onseeking;
@@ -1980,12 +2012,6 @@ interface mixin WindowEventHandlers {
   attribute EventHandler onstorage;
   attribute EventHandler onunhandledrejection;
   attribute EventHandler onunload;
-};
-
-interface mixin DocumentAndElementEventHandlers {
-  attribute EventHandler oncopy;
-  attribute EventHandler oncut;
-  attribute EventHandler onpaste;
 };
 
 typedef (DOMString or Function) TimerHandler;
@@ -2136,13 +2162,13 @@ typedef (CanvasImageSource or
          Blob or
          ImageData) ImageBitmapSource;
 
-enum ImageOrientation { "none", "flipY" };
+enum ImageOrientation { "from-image", "flipY" };
 enum PremultiplyAlpha { "none", "premultiply", "default" };
 enum ColorSpaceConversion { "none", "default" };
 enum ResizeQuality { "pixelated", "low", "medium", "high" };
 
 dictionary ImageBitmapOptions {
-  ImageOrientation imageOrientation = "none";
+  ImageOrientation imageOrientation = "from-image";
   PremultiplyAlpha premultiplyAlpha = "default";
   ColorSpaceConversion colorSpaceConversion = "default";
   [EnforceRange] unsigned long resizeWidth;

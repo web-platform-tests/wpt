@@ -20,6 +20,7 @@ from .protocol import (BaseProtocolPart,
                        TestharnessProtocolPart,
                        Protocol,
                        SelectorProtocolPart,
+                       AccessibilityProtocolPart,
                        ClickProtocolPart,
                        CookiesProtocolPart,
                        SendKeysProtocolPart,
@@ -186,6 +187,17 @@ class WebDriverSelectorProtocolPart(SelectorProtocolPart):
         return self.webdriver.find.css(selector)
 
 
+class WebDriverAccessibilityProtocolPart(AccessibilityProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def get_computed_label(self, element):
+        return element.get_computed_label()
+
+    def get_computed_role(self, element):
+        return element.get_computed_role()
+
+
 class WebDriverClickProtocolPart(ClickProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
@@ -290,13 +302,11 @@ class WebDriverSetPermissionProtocolPart(SetPermissionProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
-    def set_permission(self, descriptor, state, one_realm):
+    def set_permission(self, descriptor, state):
         permission_params_dict = {
             "descriptor": descriptor,
             "state": state,
         }
-        if one_realm is not None:
-            permission_params_dict["oneRealm"] = one_realm
         self.webdriver.send_session_command("POST", "permissions", permission_params_dict)
 
 
@@ -344,6 +354,7 @@ class WebDriverProtocol(Protocol):
     implements = [WebDriverBaseProtocolPart,
                   WebDriverTestharnessProtocolPart,
                   WebDriverSelectorProtocolPart,
+                  WebDriverAccessibilityProtocolPart,
                   WebDriverClickProtocolPart,
                   WebDriverCookiesProtocolPart,
                   WebDriverSendKeysProtocolPart,

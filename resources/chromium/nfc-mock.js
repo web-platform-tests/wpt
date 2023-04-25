@@ -50,7 +50,7 @@ function toByteArray(data) {
     tmpData = JSON.stringify(tmpData);
 
   if (typeof tmpData === 'string')
-    byteArray = new TextEncoder('utf-8').encode(tmpData);
+    byteArray = new TextEncoder().encode(tmpData);
 
   return byteArray;
 }
@@ -410,7 +410,7 @@ self.WebNFCTest = (() => {
         throw new Error('Call reset() before initialize().');
 
       // Grant nfc permissions for Chromium testdriver.
-      await test_driver.set_permission({ name: 'nfc' }, 'granted', false);
+      await test_driver.set_permission({ name: 'nfc' }, 'granted');
 
       if (testInternal.mockNFC == null) {
         testInternal.mockNFC = new MockNFC();

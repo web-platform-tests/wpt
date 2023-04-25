@@ -80,13 +80,6 @@ async function createFileWithContents(test, name, contents, parent) {
   return handle;
 }
 
-function garbageCollect() {
-  // TODO(https://github.com/web-platform-tests/wpt/issues/7899): Change to
-  // some sort of cross-browser GC trigger.
-  if (self.gc)
-    self.gc();
-};
-
 async function cleanup(test, value, cleanup_func) {
   test.add_cleanup(async () => {
     try {
@@ -101,6 +94,11 @@ async function cleanup(test, value, cleanup_func) {
 
 async function cleanup_writable(test, value) {
   return cleanup(test, value, async () => {
-    value.close();
+    try {
+      await value.close();
+    } catch (e) {
+      // Ignore any errors when closing writables, since attempting to close
+      // aborted or closed writables will error.
+    }
   });
 }

@@ -1,144 +1,165 @@
 var counter = 0;
 var clicked;
 var timestamps = []
-const max_clicks = 50;
-const url = "/foobar.html";
-const test_soft_navigation =
-    (add_content, button, push_state, clicks, extra_validations, test_name,
-     push_url = true) => {
+const MAX_CLICKS = 50;
+// Entries for one hard navigation + 50 soft navigations.
+const MAX_PAINT_ENTRIES = 51;
+const URL = "foobar.html";
+const readValue = (value, defaultValue) => {
+  return value != undefined ? value : defaultValue;
+}
+const testSoftNavigation =
+    options => {
+      const addContent = options.addContent;
+      const link = options.link;
+      const pushState = readValue(options.pushState,
+        url=>{history.pushState({}, '', url)});
+      const clicks = readValue(options.clicks, 1);
+      const extraValidations = readValue(options.extraValidations,
+                                                   () => {});
+      const testName = options.testName;
+      const pushUrl = readValue(options.pushUrl, true);
+      const eventType = readValue(options.eventType, "click");
       promise_test(async t => {
-        const pre_click_lcp = await get_lcp_entries();
-        setClickEvent(t, button, push_state, add_content, push_url);
+        const preClickLcp = await getLcpEntries();
+        setEvent(t, link, pushState, addContent, pushUrl, eventType);
         for (let i = 0; i < clicks; ++i) {
+          let paint_entries_promise = waitOnPaintEntriesPromise();
           clicked = false;
-          click(button);
+          click(link);
 
           await new Promise(resolve => {
             (new PerformanceObserver(() => resolve())).observe({
               type: 'soft-navigation'
             });
           });
+          // Ensure paint timing entries are fired before moving on to the next
+          // click.
+          await paint_entries_promise;
         }
         assert_equals(
             document.softNavigations, clicks,
             'Soft Navigations detected are the same as the number of clicks');
-        await validate_soft_navigation_entry(
-            clicks, extra_validations, push_url);
+        await validateSoftNavigationEntry(
+            clicks, extraValidations, pushUrl);
 
-        await run_entry_validations(pre_click_lcp);
-      }, test_name);
+        await runEntryValidations(preClickLcp, clicks + 1);
+      }, testName);
     };
 
-const test_navigation_api = (test_name, navigate_event_handler, link) => {
+const testNavigationApi = (testName, navigateEventHandler, link) => {
   promise_test(async t => {
-    const pre_click_lcp = await get_lcp_entries();
-    navigation.addEventListener('navigate', navigate_event_handler);
+    const preClickLcp = await getLcpEntries();
+    navigation.addEventListener('navigate', navigateEventHandler);
+    const navigated = new Promise(resolve => {
+      navigation.addEventListener('navigatesuccess', resolve);
+      navigation.addEventListener('navigateerror', resolve);
+    });
     click(link);
     await new Promise(resolve => {
       (new PerformanceObserver(() => resolve())).observe({
         type: 'soft-navigation'
       });
     });
+    await navigated;
     assert_equals(document.softNavigations, 1, 'Soft Navigation detected');
-    await validate_soft_navigation_entry(1, () => {}, 'foobar.html');
+    await validateSoftNavigationEntry(1, () => {}, 'foobar.html');
 
-    await run_entry_validations(pre_click_lcp);
-  }, test_name);
+    await runEntryValidations(preClickLcp);
+  }, testName);
 };
 
-const test_navigation_api_not_detected =
-    (test_name, navigate_event_handler, link) => {
-      promise_test(async t => {
-        const pre_click_lcp = await get_lcp_entries();
-        navigation.addEventListener('navigate', navigate_event_handler);
-        click(link);
-        await new Promise((resolve, reject) => {
-          (new PerformanceObserver(() => reject())).observe({
-            type: 'soft-navigation'
-          });
-          t.step_timeout(resolve, 1000);
+const testSoftNavigationNotDetected = options => {
+    promise_test(async t => {
+      const preClickLcp = await getLcpEntries();
+      options.eventTarget.addEventListener(options.eventName, options.eventHandler);
+      click(options.link);
+      await new Promise((resolve, reject) => {
+        (new PerformanceObserver(() =>
+            reject("Soft navigation should not be triggered"))).observe({
+          type: 'soft-navigation',
+          buffered: true
         });
-        assert_equals(
-            document.softNavigations, 0, 'Soft Navigation not detected');
-      }, test_name);
-    };
-const run_entry_validations = async pre_click_lcp => {
-  await double_raf();
-  validate_paint_entries('first-contentful-paint');
-  validate_paint_entries('first-paint');
-  const post_click_lcp = await get_lcp_entries();
+        t.step_timeout(resolve, 1000);
+      });
+      assert_equals(
+          document.softNavigations, 0, 'Soft Navigation not detected');
+    }, options.testName);
+  };
+
+const runEntryValidations = async (preClickLcp, entries_expected_number = 2) => {
+  await validatePaintEntries('first-contentful-paint', entries_expected_number);
+  await validatePaintEntries('first-paint', entries_expected_number);
+  const postClickLcp = await getLcpEntries();
+  const postClickLcpWithoutSoftNavs = await getLcpEntriesWithoutSoftNavs();
   assert_greater_than(
-      post_click_lcp.length, pre_click_lcp.length,
+      postClickLcp.length, preClickLcp.length,
       'Soft navigation should have triggered at least an LCP entry');
+  assert_equals(
+      postClickLcpWithoutSoftNavs.length, preClickLcp.length,
+      'Soft navigation should not have triggered an LCP entry when the ' +
+      'observer did not opt in');
   assert_not_equals(
-      post_click_lcp[post_click_lcp.length - 1].size,
-      pre_click_lcp[pre_click_lcp.length - 1].size,
+      postClickLcp[postClickLcp.length - 1].size,
+      preClickLcp[preClickLcp.length - 1].size,
       'Soft navigation LCP element should not have identical size to the hard ' +
           'navigation LCP element');
 };
 
-const click = button => {
+const click = link => {
   if (test_driver) {
-    test_driver.click(button);
-    timestamps[counter] = {"sync_post_click": performance.now()};
+    test_driver.click(link);
+    timestamps[counter] = {"syncPostClick": performance.now()};
   }
 }
 
-const double_raf = () => {
-  return new Promise(r => {
-    requestAnimationFrame(()=>requestAnimationFrame(r));
-  });
-};
-
-const setClickEvent = (t, button, push_state, add_content, push_url) => {
-  button.addEventListener("click", async e => {
-    timestamps[counter]["click_event_start"] = performance.now();
+const setEvent = (t, button, pushState, addContent, pushUrl, eventType) => {
+  const eventObject = (eventType == "click") ? button : window;
+  eventObject.addEventListener(eventType, async e => {
+    timestamps[counter]["eventStart"] = performance.now();
     // Jump through a task, to ensure task tracking is working properly.
     await new Promise(r => t.step_timeout(r, 0));
 
-    // Fetch some content
-    const response = await fetch("/soft-navigation-heuristics/resources/content.json");
-    const json = await response.json();
-
-    if (push_state) {
+    const url = URL + "?" + counter;
+    if (pushState) {
       // Change the URL
-      if (push_url) {
-        push_state(url + "?" + counter);
+      if (pushUrl) {
+        pushState(url);
       } else {
-        push_state();
+        pushState();
       }
     }
 
     // Wait 10 ms to make sure the timestamps are correct.
     await new Promise(r => t.step_timeout(r, 10));
 
-    await add_content(json);
+    await addContent(url);
     ++counter;
 
     clicked = true;
   });
 };
 
-const validate_soft_navigation_entry = async (clicks, extra_validations,
-                                              push_url) => {
+const validateSoftNavigationEntry = async (clicks, extraValidations,
+                                              pushUrl) => {
   const [entries, options] = await new Promise(resolve => {
     (new PerformanceObserver((list, obs, options) => resolve(
       [list.getEntries(), options]))).observe(
       {type: 'soft-navigation', buffered: true});
     });
-  const expected_clicks = Math.min(clicks, max_clicks);
+  const expectedClicks = Math.min(clicks, MAX_CLICKS);
 
-  assert_equals(entries.length, expected_clicks,
+  assert_equals(entries.length, expectedClicks,
                 "Performance observer got an entry");
   for (let i = 0; i < entries.length; ++i) {
     const entry = entries[i];
-    assert_true(entry.name.includes(push_url ? url : document.location.href),
+    assert_true(entry.name.includes(pushUrl ? URL : document.location.href),
                 "The soft navigation name is properly set");
-    const entry_timestamp = entry.startTime;
-    assert_less_than_equal(timestamps[i]["sync_post_click"], entry_timestamp);
+    const entryTimestamp = entry.startTime;
+    assert_less_than_equal(timestamps[i]["syncPostClick"], entryTimestamp);
     assert_greater_than_equal(
-        timestamps[i]['click_event_start'], entry_timestamp,
-        'Click event start timestamp matches');
+        timestamps[i]['eventStart'], entryTimestamp,
+        'Event start timestamp matches');
     assert_not_equals(entry.navigationId,
                       performance.getEntriesByType("navigation")[0].navigationId,
                       "The navigation ID was incremented");
@@ -149,26 +170,49 @@ const validate_soft_navigation_entry = async (clicks, extra_validations,
     }
   }
   assert_equals(performance.getEntriesByType("soft-navigation").length,
-                expected_clicks, "Performance timeline got an entry");
-  extra_validations(entries, options);
+                expectedClicks, "Performance timeline got an entry");
+  await extraValidations(entries, options);
 
 };
 
-const validate_paint_entries = async type => {
+const validatePaintEntries = async (type, entries_number) => {
+  const expected_entries_number = Math.min(entries_number, MAX_PAINT_ENTRIES);
   const entries = await new Promise(resolve => {
+    const entries = [];
+    (new PerformanceObserver(list => {
+      entries.push(...list.getEntriesByName(type));
+      if (entries.length >= expected_entries_number) {
+        resolve(entries);
+      }
+    })).observe(
+      {type: 'paint', buffered: true, includeSoftNavigationObservations: true});
+    });
+  const entries_without_softnavs = await new Promise(resolve => {
     (new PerformanceObserver(list => resolve(
       list.getEntriesByName(type)))).observe(
       {type: 'paint', buffered: true});
     });
-  // TODO(crbug/1372997): investigate why this is not failing when multiple
-  // clicks are fired. Also, make sure the observer waits on the number of
-  // required clicks, instead of counting on double rAF.
-  assert_equals(entries.length, 2, "There are two entries for " + type);
-  assert_not_equals(entries[0].startTime, entries[1].startTime,
-    "Entries have different timestamps for " + type);
+  assert_equals(entries.length, expected_entries_number,
+    `There are ${entries_number} entries for ${type}`);
+  assert_equals(entries_without_softnavs.length, 1,
+    `There is one non-softnav entry for ${type}`);
+  if (entries_number > 1) {
+    assert_not_equals(entries[0].startTime, entries[1].startTime,
+      "Entries have different timestamps for " + type);
+  }
 };
 
-const get_lcp_entries = async () => {
+const getLcpEntries = async () => {
+  const entries = await new Promise(resolve => {
+    (new PerformanceObserver(list => resolve(
+      list.getEntries()))).observe(
+      {type: 'largest-contentful-paint', buffered: true,
+       includeSoftNavigationObservations: true});
+    });
+  return entries;
+};
+
+const getLcpEntriesWithoutSoftNavs = async () => {
   const entries = await new Promise(resolve => {
     (new PerformanceObserver(list => resolve(
       list.getEntries()))).observe(
@@ -177,11 +221,39 @@ const get_lcp_entries = async () => {
   return entries;
 };
 
-const add_image_to_main = async () => {
-  // Add the content to the main element
-  const main = document.getElementById('main');
+const addImage = async (element) => {
   const img = new Image();
-  img.src = '/images/blue.png';
+  img.src = '/images/blue.png' + "?" + Math.random();
   await img.decode();
-  main.appendChild(img);
+  element.appendChild(img);
+};
+const addImageToMain = async () => {
+  await addImage(document.getElementById('main'));
+};
+
+const addTextToDivOnMain = () => {
+  const main = document.getElementById("main");
+  const prevDiv = document.getElementsByTagName("div")[0];
+  if (prevDiv) {
+    main.removeChild(prevDiv);
+  }
+  const div = document.createElement("div");
+  const text = document.createTextNode("Lorem Ipsum");
+  div.appendChild(text);
+  div.style="font-size: 3em";
+  main.appendChild(div);
+}
+
+const waitOnPaintEntriesPromise = () => {
+  return new Promise((resolve, reject) => {
+    const paint_entries = []
+    new PerformanceObserver(list => {
+      paint_entries.push(...list.getEntries());
+      if (paint_entries.length == 2) {
+        resolve();
+      } else if (paint_entries.length > 2) {
+        reject();
+      }
+    }).observe({type: 'paint', includeSoftNavigationObservations: true});
+  });
 };

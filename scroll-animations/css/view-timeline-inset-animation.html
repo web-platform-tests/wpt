@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <title>Animations using view-timeline-inset</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
 <link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#propdef-view-timeline-inset">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/web-animations/testcommon.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
   @keyframes anim {
     from { z-index: 0; }
@@ -23,6 +25,8 @@
 </style>
 <main id=main></main>
 <script>
+  setup(assert_implements_animation_timeline);
+
   function inflate(t, template) {
     t.add_cleanup(() => main.replaceChildren());
     main.append(template.content.cloneNode(true));
@@ -89,7 +93,8 @@
     #target {
       view-timeline: t1;
       view-timeline-inset: 10px;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller class=vertical>
@@ -112,7 +117,8 @@
     #target {
       view-timeline: t1;
       view-timeline-inset: 10px 20px;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller class=vertical>
@@ -136,7 +142,8 @@
       font-size: 10px;
       view-timeline: t1;
       view-timeline-inset: 10px 2em;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller class=vertical>
@@ -160,7 +167,8 @@
       font-size: 10px;
       view-timeline: t1;
       view-timeline-inset: calc(5px + max(1%, 5%)) 20%;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller class=vertical>
@@ -183,7 +191,8 @@
     #target {
       view-timeline: t1;
       view-timeline-inset: -10px -20px;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller class=vertical>
@@ -206,7 +215,8 @@
     #target {
       view-timeline: t1 horizontal;
       view-timeline-inset: 10px 20px;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -229,7 +239,8 @@
     #target {
       view-timeline: t1 block;
       view-timeline-inset: 10px 20px;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -252,7 +263,8 @@
     #target {
       view-timeline: t1 inline;
       view-timeline-inset: 10px 20px;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -278,7 +290,8 @@
     #target {
       view-timeline: t1 block;
       view-timeline-inset: auto auto;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -305,7 +318,8 @@
     #target {
       view-timeline: t1 block;
       view-timeline-inset: auto auto;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -332,7 +346,8 @@
     #target {
       view-timeline: t1 block;
       view-timeline-inset: auto auto;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -359,7 +374,8 @@
     #target {
       view-timeline: t1 inline;
       view-timeline-inset: auto auto;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -386,7 +402,8 @@
     #target {
       view-timeline: t1 inline;
       view-timeline-inset: auto auto;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -413,7 +430,8 @@
     #target {
       view-timeline: t1 inline;
       view-timeline-inset: auto auto;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -440,7 +458,8 @@
     #target {
       view-timeline: t1 inline;
       view-timeline-inset: auto auto;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -468,7 +487,8 @@
     #target {
       view-timeline: t1 inline;
       view-timeline-inset: auto auto;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -496,7 +516,8 @@
     #target {
       view-timeline: t1 inline;
       view-timeline-inset: auto auto;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -522,7 +543,8 @@
     #target {
       view-timeline: t1 vertical;
       view-timeline-inset: auto auto;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -549,7 +571,8 @@
     #target {
       view-timeline: t1 vertical;
       view-timeline-inset: auto auto;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -577,7 +600,8 @@
     #target {
       view-timeline: t1 vertical;
       view-timeline-inset: auto auto;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -603,7 +627,8 @@
     #target {
       view-timeline: t1 horizontal;
       view-timeline-inset: auto auto;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -630,7 +655,8 @@
     #target {
       view-timeline: t1 horizontal;
       view-timeline-inset: auto auto;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -657,7 +683,8 @@
     #target {
       view-timeline: t1 horizontal;
       view-timeline-inset: auto auto;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -684,7 +711,8 @@
     #target {
       view-timeline: t1 horizontal;
       view-timeline-inset: auto auto;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>
@@ -711,7 +739,8 @@
     #target {
       view-timeline: t1;
       view-timeline-inset: 10% auto;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller>

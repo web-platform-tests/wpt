@@ -19,7 +19,7 @@ self.DirectSocketsServiceTest = (() => {
       this.interceptor_.stop();
     }
 
-    openTcpSocket(
+    openTCPSocket(
       options,
       receiver,
       observer) {
@@ -29,10 +29,29 @@ self.DirectSocketsServiceTest = (() => {
       });
     }
 
-    openUdpSocket(
+    openConnectedUDPSocket(
       options,
       receiver,
       listener) {
+      return Promise.resolve({
+        // return result = net:Error::NOT_IMPLEMENTED (code -11)
+        result: -11
+      });
+    }
+
+    openBoundUDPSocket(
+      options,
+      receiver,
+      listener) {
+      return Promise.resolve({
+        // return result = net:Error::NOT_IMPLEMENTED (code -11)
+        result: -11
+      });
+    }
+
+    openTCPServerSocket(
+      options,
+      receiver) {
       return Promise.resolve({
         // return result = net:Error::NOT_IMPLEMENTED (code -11)
         result: -11

@@ -3,6 +3,10 @@
 // (https://github.com/w3c/webref)
 // Source: Web Animations (https://drafts.csswg.org/web-animations-1/)
 
+[Exposed=Window]
+interface AnimationTimeline {
+};
+
 dictionary DocumentTimelineOptions {
   DOMHighResTimeStamp originTime = 0;
 };

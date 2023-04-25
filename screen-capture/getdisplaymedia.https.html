@@ -7,7 +7,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<video id="display"></video>
 <script>
   'use strict';
 test(() => {
@@ -35,25 +34,6 @@ promise_test(t => {
     t, 'InvalidStateError', Promise.race([p, Promise.resolve()]),
     'getDisplayMedia should have returned an already-rejected promise.');
 }, `getDisplayMedia() must require user activation`);
-
-promise_test( async t => {
-  const v = document.getElementById('display');
-  v.autoplay = true;
-  // work around firefox bug 1586505, orthogonal to what's being tested
-  const frames = () => v.getVideoPlaybackQuality()?.totalVideoFrames || v.mozPaintedFrames;
-  const target_rate = 5;
-  const stream = await getDisplayMedia({video: {width:160, frameRate: target_rate}});
-  t.add_cleanup(() => stopTracks(stream));
-  v.srcObject = stream;
-  const intitial_time = v.currentTime;
-  const initial_frame_count = frames();
-  await new Promise(r => t.step_timeout(r, 10000));
-  const total_elapsed_frames = frames() - initial_frame_count;
-  const total_elapsed_time = v.currentTime - intitial_time;
-  const average_fps = total_elapsed_frames / total_elapsed_time;
-  assert_greater_than_equal(average_fps, target_rate * 0.50);
-  assert_less_than_equal(average_fps, target_rate * 1.75);
-}, "getDisplayMedia() must adhere to frameRate if set");
 
 [
  {video: true},
@@ -208,6 +188,7 @@ promise_test(async t => {
       assert_equals(settings.displaySurface, displaySurface);
       assert_any(assert_equals, settings.logicalSurface, [true, false]);
       assert_any(assert_equals, settings.cursor, ['never', 'always', 'motion']);
+      assert_false("suppressLocalAudioPlayback" in settings);
     }, `getDisplayMedia({"video":{"displaySurface":"${displaySurface}"}}) with getSettings`);
   })
 }
@@ -252,5 +233,47 @@ promise_test(async t => {
     t, TypeError, Promise.race([p, Promise.resolve()]),
     'getDisplayMedia should have returned an already-rejected promise.');
 }, `getDisplayMedia(${j(constraints)}) must fail with TypeError`));
+
+test(() => {
+  const supportedConstraints =
+    navigator.mediaDevices.getSupportedConstraints();
+  assert_true(supportedConstraints.suppressLocalAudioPlayback);
+}, "suppressLocalAudioPlayback is supported");
+
+{
+  const suppressLocalAudioPlaybacks = [true, false];
+  suppressLocalAudioPlaybacks.forEach((suppressLocalAudioPlayback) => {
+    promise_test(async (t) => {
+      const stream = await getDisplayMedia({
+        audio: { suppressLocalAudioPlayback },
+      });
+      t.add_cleanup(() => stopTracks(stream));
+      const [videoTrack] = stream.getVideoTracks();
+      assert_false("suppressLocalAudioPlayback" in videoTrack.getSettings());
+      const [audioTrack] = stream.getAudioTracks();
+      const audioTrackSettings = audioTrack.getSettings();
+      assert_true("suppressLocalAudioPlayback" in audioTrackSettings);
+      assert_equals(
+        audioTrackSettings.suppressLocalAudioPlayback,
+        suppressLocalAudioPlayback
+      );
+      await audioTrack.applyConstraints();
+      assert_true("suppressLocalAudioPlayback" in audioTrackSettings);
+      assert_equals(
+        audioTrackSettings.suppressLocalAudioPlayback,
+        suppressLocalAudioPlayback
+      );
+    }, `getDisplayMedia({"audio":{"suppressLocalAudioPlayback":${suppressLocalAudioPlayback}}}) with getSettings`);
+  });
+}
+
+promise_test(async t => {
+  const stream = await getDisplayMedia({video: true});
+  t.add_cleanup(() => stopTracks(stream));
+  const capabilities = stream.getVideoTracks()[0].getCapabilities();
+  assert_any(
+      assert_equals, capabilities.displaySurface,
+      ['monitor', 'window', 'browser']);
+}, 'getDisplayMedia() with getCapabilities');
 
 </script>

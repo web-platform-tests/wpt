@@ -11,10 +11,9 @@ class BidiException(Exception):
     # TODO: Match on error and let it be a class variables only.
     error_code = None  # type: ClassVar[str]
 
-    def __init__(self, error: str, message: str, stacktrace: Optional[str]):
+    def __init__(self, message: str, stacktrace: Optional[str] = None):
         super()
 
-        self.error = error
         self.message = message
         self.stacktrace = stacktrace
 
@@ -24,9 +23,9 @@ class BidiException(Exception):
 
     def __str__(self):
         """Return the string representation of the object."""
-        message = f"{self.error} ({self.message})"
+        message = f"{self.error_code} ({self.message})"
 
-        if self.stacktrace:
+        if self.stacktrace is not None:
             message += f"\n\nRemote-end stacktrace:\n\n{self.stacktrace}"
 
         return message
@@ -38,6 +37,17 @@ class InvalidArgumentException(BidiException):
 
 class NoSuchFrameException(BidiException):
     error_code = "no such frame"
+
+class NoSuchHandleException(BidiException):
+    error_code = "no such handle"
+
+
+class NoSuchNodeException(BidiException):
+    error_code = "no such node"
+
+
+class NoSuchScriptException(BidiException):
+    error_code = "no such script"
 
 
 class UnknownCommandException(BidiException):
@@ -54,7 +64,7 @@ def from_error_details(error: str, message: str, stacktrace: Optional[str]) -> B
     Defaults to ``UnknownErrorException`` if `error` is unknown.
     """
     cls = get(error)
-    return cls(error, message, stacktrace)
+    return cls(message, stacktrace)
 
 
 def get(error_code: str) -> Type[BidiException]:

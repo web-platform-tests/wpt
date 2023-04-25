@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
 <link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#scroll-timelines">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -109,6 +110,25 @@
   dynamic_rule_test(async (t, assert_width) => {
     let element = insertElement();
 
+    // Flush style and create the animation with play pending.
+    getComputedStyle(element).animation;
+
+    let anim = element.getAnimations()[0];
+    assert_true(anim.pending, "The animation is in play pending");
+
+    // Switch to scroll timeline for a pending animation.
+    scroller1.style.scrollTimelineName = 'timeline';
+    element.style.animationTimeline = 'timeline';
+
+    await anim.ready;
+    assert_false(anim.pending, "The animation is not pending");
+
+    await assert_width(element, '120px');
+  }, 'Switching pending animation from document to scroll timelines');
+
+  dynamic_rule_test(async (t, assert_width) => {
+    let element = insertElement();
+
     // Note: #scroller1 is at 20%, and #scroller2 is at 40%.
     scroller1.style.scrollTimelineName = 'timeline1';
     scroller2.style.scrollTimelineName = 'timeline2';
@@ -139,6 +159,10 @@
     // DocumentTimeline applies by default.
     await assert_width(element, '100px');
 
+    // Wait for the animation to be ready so that we a start time and no hold
+    // time.
+    await element.getAnimations()[0].ready;
+
     // DocumentTimeline -> none
     element.style.animationTimeline = 'none';
     await assert_width(element, '0px');
@@ -153,7 +177,7 @@
 
     // ScrollTimeline -> none
     element.style.animationTimeline = 'none';
-    await assert_width(element, '0px');
+    await assert_width(element, '120px');
 
     // none -> ScrollTimeline
     element.style.animationTimeline = 'timeline';

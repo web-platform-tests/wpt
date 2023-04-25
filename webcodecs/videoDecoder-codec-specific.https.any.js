@@ -133,6 +133,22 @@ function view(buffer, {offset, size}) {
   return new Uint8Array(buffer, offset, size);
 }
 
+async function checkImplements() {
+  // Don't run any tests if the codec is not supported.
+  assert_equals("function", typeof VideoDecoder.isConfigSupported);
+  let supported = false;
+  try {
+    // TODO(sandersd): To properly support H.264 in AVC format, this should
+    // include the `description`. For now this test assumes that H.264 Annex B
+    // support is the same as H.264 AVC support.
+    const support =
+        await VideoDecoder.isConfigSupported({codec: CONFIG.codec});
+    supported = support.supported;
+  } catch (e) {
+  }
+  assert_implements_optional(supported, CONFIG.codec + ' unsupported');
+}
+
 let CONFIG = null;
 let CHUNK_DATA = null;
 let CHUNKS = null;
@@ -144,19 +160,6 @@ promise_setup(async () => {
     '?h264_avc': H264_AVC_DATA,
     '?h264_annexb': H264_ANNEXB_DATA
   }[location.search];
-
-  // Don't run any tests if the codec is not supported.
-  let supported = false;
-  try {
-    // TODO(sandersd): To properly support H.264 in AVC format, this should
-    // include the `description`. For now this test assumes that H.264 Annex B
-    // support is the same as H.264 AVC support.
-    const support =
-        await VideoDecoder.isConfigSupported({codec: data.config.codec});
-    supported = support.supported;
-  } catch (e) {
-  }
-  assert_implements_optional(supported, data.config.codec + ' unsupported');
 
   // Fetch the media data and prepare buffers.
   const response = await fetch(data.src);
@@ -175,11 +178,13 @@ promise_setup(async () => {
 });
 
 promise_test(async t => {
+  await checkImplements();
   const support = await VideoDecoder.isConfigSupported(CONFIG);
   assert_true(support.supported, 'supported');
 }, 'Test isConfigSupported()');
 
 promise_test(async t => {
+  await checkImplements();
   // TODO(sandersd): Create a 1080p `description` for H.264 in AVC format.
   // This version is testing only the H.264 Annex B path.
   const config = {
@@ -195,6 +200,7 @@ promise_test(async t => {
 }, 'Test isConfigSupported() with 1080p crop');
 
 promise_test(async t => {
+  await checkImplements();
   // Define a valid config that includes a hypothetical `futureConfigFeature`,
   // which is not yet recognized by the User Agent.
   const config = {
@@ -213,9 +219,9 @@ promise_test(async t => {
   assert_equals(support.config.displayAspectWidth, config.displayAspectWidth, 'displayAspectWidth');
   assert_equals(support.config.displayAspectHeight, config.displayAspectHeight, 'displayAspectHeight');
   assert_equals(support.config.colorSpace.primaries, config.colorSpace.primaries, 'color primaries');
-  assert_equals(support.config.colorSpace.transfer, undefined, 'color transfer');
-  assert_equals(support.config.colorSpace.matrix, undefined, 'color matrix');
-  assert_equals(support.config.colorSpace.fullRange, undefined, 'color range');
+  assert_equals(support.config.colorSpace.transfer, null, 'color transfer');
+  assert_equals(support.config.colorSpace.matrix, null, 'color matrix');
+  assert_equals(support.config.colorSpace.fullRange, null, 'color range');
   assert_false(support.config.hasOwnProperty('futureConfigFeature'), 'futureConfigFeature');
 
   if (config.description) {
@@ -232,6 +238,7 @@ promise_test(async t => {
 }, 'Test that isConfigSupported() returns a parsed configuration');
 
 promise_test(async t => {
+  await checkImplements();
   async function test(t, config, description) {
     await promise_rejects_js(
         t, TypeError, VideoDecoder.isConfigSupported(config), description);
@@ -246,12 +253,14 @@ promise_test(async t => {
 }, 'Test invalid configs');
 
 promise_test(async t => {
+  await checkImplements();
   const decoder = createVideoDecoder(t);
   decoder.configure(CONFIG);
   assert_equals(decoder.state, 'configured', 'state');
 }, 'Test configure()');
 
 promise_test(async t => {
+  await checkImplements();
   const callbacks = {};
   const decoder = createVideoDecoder(t, callbacks);
   decoder.configure(CONFIG);
@@ -270,6 +279,7 @@ promise_test(async t => {
 }, 'Decode a key frame');
 
 promise_test(async t => {
+  await checkImplements();
   const callbacks = {};
   const decoder = createVideoDecoder(t, callbacks);
   decoder.configure(CONFIG);
@@ -280,6 +290,7 @@ promise_test(async t => {
 }, 'Decode a non key frame first fails');
 
 promise_test(async t => {
+  await checkImplements();
   const callbacks = {};
   const decoder = createVideoDecoder(t, callbacks);
   decoder.configure(CONFIG);
@@ -322,6 +333,7 @@ promise_test(async t => {
 }, 'Verify reset() suppresses outputs');
 
 promise_test(async t => {
+  await checkImplements();
   const decoder = createVideoDecoder(t);
   assert_equals(decoder.state, 'unconfigured');
 
@@ -333,6 +345,7 @@ promise_test(async t => {
 }, 'Test unconfigured VideoDecoder operations');
 
 promise_test(async t => {
+  await checkImplements();
   const decoder = createVideoDecoder(t);
   decoder.close();
   assert_equals(decoder.state, 'closed');
@@ -346,10 +359,12 @@ promise_test(async t => {
 }, 'Test closed VideoDecoder operations');
 
 promise_test(async t => {
+  await checkImplements();
   const callbacks = {};
 
   let errors = 0;
   callbacks.error = e => errors++;
+  callbacks.output = frame => { frame.close(); };
 
   const decoder = createVideoDecoder(t, callbacks);
   decoder.configure(CONFIG);
@@ -365,6 +380,7 @@ promise_test(async t => {
 
 
 promise_test(async t => {
+  await checkImplements();
   const callbacks = {};
 
   let errors = 0;
@@ -389,6 +405,7 @@ promise_test(async t => {
 }, 'Decode corrupt frame');
 
 promise_test(async t => {
+  await checkImplements();
   const decoder = createVideoDecoder(t);
 
   decoder.configure(CONFIG);
@@ -404,6 +421,7 @@ promise_test(async t => {
 }, 'Close while decoding corrupt frame');
 
 promise_test(async t => {
+  await checkImplements();
   const callbacks = {};
   const decoder = createVideoDecoder(t, callbacks);
 
@@ -425,6 +443,7 @@ promise_test(async t => {
 }, 'Test decoding after flush');
 
 promise_test(async t => {
+  await checkImplements();
   const callbacks = {};
   const decoder = createVideoDecoder(t, callbacks);
 
@@ -444,6 +463,7 @@ promise_test(async t => {
 }, 'Test decoding a with negative timestamp');
 
 promise_test(async t => {
+  await checkImplements();
   const callbacks = {};
   const decoder = createVideoDecoder(t, callbacks);
 
@@ -471,6 +491,7 @@ promise_test(async t => {
 }, 'Test reset during flush');
 
 promise_test(async t => {
+  await checkImplements();
   const callbacks = {};
   const decoder = createVideoDecoder(t, callbacks);
 
@@ -488,7 +509,9 @@ promise_test(async t => {
 
 
 promise_test(async t => {
+  await checkImplements();
   const callbacks = {};
+  callbacks.output = frame => { frame.close(); };
   const decoder = createVideoDecoder(t, callbacks);
 
   // No decodes yet.

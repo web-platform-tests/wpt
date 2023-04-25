@@ -22,16 +22,9 @@ test_computed_value('animation-timeline', 'auto, auto');
 test_computed_value('animation-timeline', 'none, none');
 test_computed_value('animation-timeline', 'auto, none');
 test_computed_value('animation-timeline', 'none, auto');
-test_computed_value('animation-timeline', '"test"', ["test", '"test"']);
-test_computed_value('animation-timeline', '"none"');
-test_computed_value('animation-timeline', '"auto"');
-test_computed_value('animation-timeline', '"initial"');
-test_computed_value('animation-timeline', '"inherit"');
-test_computed_value('animation-timeline', '"unset"');
-test_computed_value('animation-timeline', '"revert"');
 test_computed_value('animation-timeline', 'test');
 test_computed_value('animation-timeline', 'test1, test2');
-test_computed_value('animation-timeline', 'test1, "test2", none, test3, auto', ["test1, test2, none, test3, auto", 'test1, "test2", none, test3, auto']);
+test_computed_value('animation-timeline', 'test1, test2, none, test3, auto', 'test1, test2, none, test3, auto');
 
 test(() => {
   let style = getComputedStyle(document.getElementById('target'));
@@ -47,7 +40,7 @@ test(() => {
 //
 // animation-timeline: scroll(<axis>? <scroller>?);
 // <axis> = block | inline | vertical | horizontal
-// <scroller> = root | nearest
+// <scroller> = root | nearest | self
 test_computed_value('animation-timeline', 'scroll()');
 test_computed_value('animation-timeline', 'scroll(block)', 'scroll()');
 test_computed_value('animation-timeline', 'scroll(inline)');
@@ -55,6 +48,26 @@ test_computed_value('animation-timeline', 'scroll(horizontal)');
 test_computed_value('animation-timeline', 'scroll(vertical)');
 test_computed_value('animation-timeline', 'scroll(root)');
 test_computed_value('animation-timeline', 'scroll(nearest)', 'scroll()');
+test_computed_value('animation-timeline', 'scroll(self)');
+test_computed_value('animation-timeline', 'scroll(self), scroll(nearest)', 'scroll(self), scroll()');
 test_computed_value('animation-timeline', 'scroll(inline nearest)', 'scroll(inline)');
-test_computed_value('animation-timeline', 'scroll(vertical root)');
+test_computed_value('animation-timeline', 'scroll(nearest inline)', 'scroll(inline)');
+test_computed_value('animation-timeline', 'scroll(block self)', 'scroll(self)');
+test_computed_value('animation-timeline', 'scroll(self block)', 'scroll(self)');
+test_computed_value('animation-timeline', 'scroll(vertical root)', 'scroll(root vertical)');
+
+// https://drafts.csswg.org/scroll-animations-1/#view-notation
+test_computed_value('animation-timeline', 'view()');
+test_computed_value('animation-timeline', 'view(block)', 'view()');
+test_computed_value('animation-timeline', 'view(inline)', 'view(inline)');
+test_computed_value('animation-timeline', 'view(horizontal)', 'view(horizontal)');
+test_computed_value('animation-timeline', 'view(vertical)', 'view(vertical)');
+test_computed_value('animation-timeline', 'view(vertical 1px)');
+test_computed_value('animation-timeline', 'view(1px auto)');
+test_computed_value('animation-timeline', 'view(auto 1px)');
+test_computed_value('animation-timeline', 'view(vertical 1px auto)');
+test_computed_value('animation-timeline', 'view(1px vertical)', 'view(vertical 1px)');
+test_computed_value('animation-timeline', 'view(vertical auto)', 'view(vertical)');
+test_computed_value('animation-timeline', 'view(vertical auto auto)', 'view(vertical)');
+
 </script>

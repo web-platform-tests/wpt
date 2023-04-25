@@ -122,23 +122,8 @@ async def test_primitive_values(bidi_session, top_context, await_promise, expres
         # TODO(sadym): add `proxy` test.
         ("new Int32Array()", {"type": "typedarray"}),
         ("new ArrayBuffer()", {"type": "arraybuffer"}),
-        (
-            "document.createElement('div')",
-            {
-                "type": "node",
-                "value": {
-                    "attributes": {},
-                    "childNodeCount": 0,
-                    "children": [],
-                    "localName": "div",
-                    "namespaceURI": "http://www.w3.org/1999/xhtml",
-                    "nodeName": "",
-                    "nodeType": 1,
-                    "nodeValue": "",
-                },
-            },
-        ),
         ("window", {"type": "window"}),
+        ("new URL('https://example.com')", {"type": "object", },),
     ],
 )
 async def test_remote_values(bidi_session, top_context, await_promise, expression, expected):

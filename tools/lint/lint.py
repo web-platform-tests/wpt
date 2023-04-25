@@ -689,7 +689,7 @@ class OpenModeCheck(ASTCheck):
         errors = []
         for node in ast.walk(root):
             if isinstance(node, ast.Call):
-                if hasattr(node.func, "id") and node.func.id in ("open", "file"):  # type: ignore
+                if hasattr(node.func, "id") and node.func.id in ("open", "file"):
                     if (len(node.args) < 2 and
                         all(item.arg != "mode" for item in node.keywords)):
                         errors.append(node.lineno)
@@ -1134,7 +1134,7 @@ file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_me
 try:
     subprocess.check_output(["git", "--version"])
     all_paths_lints += [check_git_ignore]
-except subprocess.CalledProcessError:
+except (subprocess.CalledProcessError, FileNotFoundError):
     print('No git present; skipping .gitignore lint.')
 
 if __name__ == "__main__":

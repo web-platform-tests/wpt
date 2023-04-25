@@ -258,7 +258,7 @@ test_with_at_property({
 test(() => {
   let name = generate_name();
   with_style_node(`div { ${name}: 100px; transition: ${name} steps(2, start) 100s; }`, () => {
-    assert_equals(getComputedStyle(div).getPropertyValue(name), ' 100px');
+    assert_equals(getComputedStyle(div).getPropertyValue(name), '100px');
 
     let style1 = document.createElement('style');
     style1.textContent = `
@@ -287,12 +287,165 @@ test(() => {
       // (making the computed value a token sequence again). We should snap
       // to the new token sequence.
       style1.remove();
-      assert_equals(getComputedStyle(div).getPropertyValue(name), ' 400px');
+      assert_equals(getComputedStyle(div).getPropertyValue(name), '400px');
     } finally {
       style1.remove();
       style2.remove();
     }
   });
 }, 'No transition when removing @property rule');
+
+test_with_at_property({
+  syntax: '"<length>"',
+  inherits: false,
+  initialValue: '0px'
+}, (name) => {
+  with_style_node(`
+    @keyframes test {
+      from { ${name}: 100px; }
+      to { ${name}: 200px; }
+    }
+    #div {
+        animation: test 100s -50s linear;
+        --unregistered: var(${name});
+    }
+  `, () => {
+    assert_equals(getComputedStyle(div).getPropertyValue('--unregistered'), '150px');
+  });
+}, 'Unregistered properties referencing animated properties update correctly.');
+
+test_with_at_property({
+  syntax: '"<length>"',
+  inherits: false,
+  initialValue: '0px'
+}, (name) => {
+  with_style_node(`
+    @keyframes test {
+      from { ${name}: 100px; }
+      to { ${name}: 200px; }
+    }
+    @property --registered {
+        syntax: "<length>";
+        inherits: false;
+        initialValue: 0px;
+    }
+    #div {
+        animation: test 100s -50s linear;
+        --registered: var(${name});
+    }
+  `, () => {
+    assert_equals(getComputedStyle(div).getPropertyValue('--registered'), '150px');
+  });
+}, 'Registered properties referencing animated properties update correctly.');
+
+test_with_at_property({
+  syntax: '"<length>"',
+  inherits: false,
+  initialValue: '0px'
+}, (name) => {
+  with_style_node(`
+    @keyframes test {
+      from { ${name}: inherit; }
+      to { ${name}: 300px; }
+    }
+    #outer {
+      ${name}: 100px;
+    }
+    #div {
+      animation: test 100s -50s linear paused;
+    }
+  `, () => {
+    assert_equals(getComputedStyle(div).getPropertyValue(name), '200px');
+
+    outer.style.setProperty(name, '200px');
+    assert_equals(getComputedStyle(div).getPropertyValue(name), '250px');
+
+    outer.style.setProperty(name, '0px');
+    assert_equals(getComputedStyle(div).getPropertyValue(name), '150px');
+
+    outer.style.removeProperty(name);
+  });
+}, 'CSS animation setting "inherit" for a custom property on a keyframe is responsive to changing that custom property on the parent.');
+
+test_with_at_property({
+  syntax: '"<length>"',
+  inherits: false,
+  initialValue: '0px'
+}, (name) => {
+  with_style_node(`
+    #outer {
+      ${name}: 100px;
+    }
+  `, () => {
+    const animation = div.animate({ [name]: ["inherit", "300px"]}, 1000);
+    animation.currentTime = 500;
+    animation.pause();
+
+    assert_equals(getComputedStyle(div).getPropertyValue(name), '200px');
+
+    outer.style.setProperty(name, '200px');
+    assert_equals(getComputedStyle(div).getPropertyValue(name), '250px');
+
+    outer.style.setProperty(name, '0px');
+    assert_equals(getComputedStyle(div).getPropertyValue(name), '150px');
+
+    outer.style.removeProperty(name);
+  });
+}, 'JS-originated animation setting "inherit" for a custom property on a keyframe is responsive to changing that custom property on the parent.');
+
+test_with_at_property({
+  syntax: '"<color>"',
+  inherits: false,
+  initialValue: 'black'
+}, (name) => {
+  with_style_node(`
+    @keyframes test {
+      from { ${name}: currentcolor; }
+      to { ${name}: rgb(200, 200, 200); }
+    }
+    #outer {
+      color: rgb(100, 100, 100);
+    }
+    #div {
+      animation: test 100s -50s linear paused;
+    }
+  `, (style) => {
+    assert_equals(getComputedStyle(div).getPropertyValue(name), 'rgb(150, 150, 150)');
+
+    outer.style.color = 'rgb(50, 50, 50)';
+    assert_equals(getComputedStyle(div).getPropertyValue(name), 'rgb(125, 125, 125)');
+
+    outer.style.color = 'rgb(150, 150, 150)';
+    assert_equals(getComputedStyle(div).getPropertyValue(name), 'rgb(175, 175, 175)');
+
+    outer.style.removeProperty("color");
+  });
+}, 'CSS animation setting "currentColor" for a custom property on a keyframe is responsive to changing "color" on the parent.');
+
+test_with_at_property({
+  syntax: '"<color>"',
+  inherits: false,
+  initialValue: 'black'
+}, (name) => {
+  with_style_node(`
+    #outer {
+      color: rgb(100, 100, 100);
+    }
+  `, () => {
+    const animation = div.animate({ [name]: ["currentcolor", "rgb(200, 200, 200)"]}, 1000);
+    animation.currentTime = 500;
+    animation.pause();
+
+    assert_equals(getComputedStyle(div).getPropertyValue(name), 'rgb(150, 150, 150)');
+
+    outer.style.color = 'rgb(50, 50, 50)';
+    assert_equals(getComputedStyle(div).getPropertyValue(name), 'rgb(125, 125, 125)');
+
+    outer.style.color = 'rgb(150, 150, 150)';
+    assert_equals(getComputedStyle(div).getPropertyValue(name), 'rgb(175, 175, 175)');
+
+    outer.style.removeProperty("color");
+  });
+}, 'JS-originated animation setting "currentColor" for a custom property on a keyframe is responsive to changing "color" on the parent.');
 
 </script>

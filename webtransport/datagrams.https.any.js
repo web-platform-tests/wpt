@@ -23,7 +23,22 @@ async function write_datagrams(writer, signal) {
   return sentTokens;
 }
 
-// Read datagrams until the consumer has received enough i.e. N datagrams.
+// Write N datagrams without waiting, then wait for them
+async function write_N_datagrams(writer, n) {
+  const encoder = new TextEncoder();
+  const sentTokens = [];
+  const promises = [];
+  while (sentTokens.length < n) {
+    const token = sentTokens.length.toString();
+    sentTokens.push(token);
+    promises.push(writer.write(encoder.encode(token)));
+  }
+  await Promise.all(promises);
+  return sentTokens;
+}
+
+// Read datagrams until the consumer has received enough i.e. N datagrams. Call
+// abort() after reading.
 async function read_datagrams(reader, controller, N) {
   const decoder = new TextDecoder();
   const receivedTokens = [];
@@ -40,11 +55,10 @@ async function read_datagrams(reader, controller, N) {
 async function write_numbers(writer, signal) {
   let counter = 0;
   const sentNumbers = [];
-  const aborted = new Promise((resolve) => {
-    signal.addEventListener('abort', resolve);
-  });
+  const aborted =
+    new Promise((resolve) => signal.addEventListener('abort', resolve));
   // Counter should be less than 256 because reader stores numbers in Uint8Array.
-  while (true && counter < 256) {
+  while (counter < 256) {
     await Promise.race([writer.ready, aborted])
     if (signal.aborted) {
       break;
@@ -58,7 +72,22 @@ async function write_numbers(writer, signal) {
   return sentNumbers;
 }
 
-// Read datagrams with BYOB reader until the consumer has received enough i.e. N datagrams.
+// Write large datagrams of size 10 until the producer receives the AbortSignal.
+async function write_large_datagrams(writer, signal) {
+  const aborted = new Promise((resolve) => {
+    signal.addEventListener('abort', resolve);
+  });
+  while (true) {
+    await Promise.race([writer.ready, aborted]);
+    if (signal.aborted) {
+      break;
+    }
+    writer.write(new Uint8Array(10));
+  }
+}
+
+// Read datagrams with BYOB reader until the consumer has received enough i.e. N
+// datagrams. Call abort() after reading.
 async function read_numbers_byob(reader, controller, N) {
   let buffer = new ArrayBuffer(N);
   buffer = await readInto(reader, buffer);
@@ -117,6 +146,61 @@ promise_test(async t => {
 }, 'Successfully reading datagrams with BYOB reader.');
 
 promise_test(async t => {
+  // Establish a WebTransport session.
+  const wt = new WebTransport(webtransport_url('echo.py'));
+  await wt.ready;
+
+  const writer = wt.datagrams.writable.getWriter();
+  const reader = wt.datagrams.readable.getReader({ mode: 'byob' });
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  // Write datagrams of size 10, but only 1 byte buffer is provided for BYOB
+  // reader. To avoid splitting a datagram, stream will be errored.
+  const buffer = new ArrayBuffer(1);
+  const [error, _] = await Promise.all([
+    reader.read(new Uint8Array(buffer)).catch(e => {
+      controller.abort();
+      return e;
+    }),
+    write_large_datagrams(writer, signal)
+  ]);
+  assert_equals(error.name, 'RangeError');
+}, 'Reading datagrams with insufficient buffer should be rejected.');
+
+promise_test(async t => {
+  // Establish a WebTransport session.
+  const wt = new WebTransport(webtransport_url('echo.py'));
+  await wt.ready;
+
+  const writer = wt.datagrams.writable.getWriter();
+  const reader = wt.datagrams.readable.getReader();
+
+  // Write and read max-size datagram.
+  await writer.write(new Uint8Array(wt.datagrams.maxDatagramSize));
+  const { value: token, done } = await reader.read();
+  assert_false(done);
+  assert_equals(token.length, wt.datagrams.maxDatagramSize);
+}, 'Transfer max-size datagram');
+
+promise_test(async t => {
+  // Establish a WebTransport session.
+  const wt = new WebTransport(webtransport_url('echo.py'));
+  await wt.ready;
+
+  const writer = wt.datagrams.writable.getWriter();
+  const reader = wt.datagrams.readable.getReader();
+
+  // Write and read max-size datagram.
+  await writer.write(new Uint8Array(wt.datagrams.maxDatagramSize+1));
+  // This should resolve with no datagram sent, which is hard to test for.
+  // Wait for incoming datagrams to arrive, and if they do, fail.
+  const result = await Promise.race([reader.read(), wait(500)]);
+  assert_equals(result, undefined);
+}, 'Fail to transfer max-size+1 datagram');
+
+promise_test(async t => {
   // Make a WebTransport connection, but session is not necessarily established.
   const wt = new WebTransport(webtransport_url('echo.py'));
 
@@ -127,9 +211,10 @@ promise_test(async t => {
   const signal = controller.signal;
 
   // Write and read datagrams.
-  const N = 1;
+  const N = 5;
+  wt.datagrams.outgoingHighWaterMark = N;
   const [sentTokens, receivedTokens] = await Promise.all([
-      write_datagrams(writer, signal),
+      write_N_datagrams(writer, N),
       read_datagrams(reader, controller, N)
   ]);
 
@@ -230,3 +315,56 @@ promise_test(async t => {
   // incomingHighWaterMark.
   assert_less_than_equal(receivedDatagrams, N);
 }, 'Datagrams read is less than or equal to the incomingHighWaterMark');
+
+promise_test(async t => {
+  // Establish a WebTransport session.
+  const wt = new WebTransport(webtransport_url('echo.py'));
+  await wt.ready;
+
+  assert_equals(wt.datagrams.incomingMaxAge, Infinity);
+  assert_equals(wt.datagrams.outgoingMaxAge, Infinity);
+
+  wt.datagrams.incomingMaxAge = 5;
+  assert_equals(wt.datagrams.incomingMaxAge, 5);
+  wt.datagrams.outgoingMaxAge = 5;
+  assert_equals(wt.datagrams.outgoingMaxAge, 5);
+
+  assert_throws_js(RangeError, () => { wt.datagrams.incomingMaxAge = -1; });
+  assert_throws_js(RangeError, () => { wt.datagrams.outgoingMaxAge = -1; });
+  assert_throws_js(RangeError, () => { wt.datagrams.incomingMaxAge = NaN; });
+  assert_throws_js(RangeError, () => { wt.datagrams.outgoingMaxAge = NaN; });
+
+  wt.datagrams.incomingMaxAge = 0;
+  assert_equals(wt.datagrams.incomingMaxAge, Infinity);
+  wt.datagrams.outgoingMaxAge = 0;
+  assert_equals(wt.datagrams.outgoingMaxAge, Infinity);
+}, 'Datagram MaxAge getters/setters work correctly');
+
+promise_test(async t => {
+  // Establish a WebTransport session.
+  const wt = new WebTransport(webtransport_url('echo.py'));
+  await wt.ready;
+
+  // Initial values are implementation-defined
+  assert_greater_than_equal(wt.datagrams.incomingHighWaterMark, 1);
+  assert_greater_than_equal(wt.datagrams.outgoingHighWaterMark, 1);
+
+  wt.datagrams.incomingHighWaterMark = 5;
+  assert_equals(wt.datagrams.incomingHighWaterMark, 5);
+  wt.datagrams.outgoingHighWaterMark = 5;
+  assert_equals(wt.datagrams.outgoingHighWaterMark, 5);
+
+  assert_throws_js(RangeError, () => { wt.datagrams.incomingHighWaterMark = -1; });
+  assert_throws_js(RangeError, () => { wt.datagrams.outgoingHighWaterMark = -1; });
+  assert_throws_js(RangeError, () => { wt.datagrams.incomingHighWaterMark = NaN; });
+  assert_throws_js(RangeError, () => { wt.datagrams.outgoingHighWaterMark = NaN; });
+
+  wt.datagrams.incomingHighWaterMark = 0.5;
+  assert_equals(wt.datagrams.incomingHighWaterMark, 1);
+  wt.datagrams.outgoingHighWaterMark = 0.5;
+  assert_equals(wt.datagrams.outgoingHighWaterMark, 1);
+  wt.datagrams.incomingHighWaterMark = 0;
+  assert_equals(wt.datagrams.incomingHighWaterMark, 1);
+  wt.datagrams.outgoingHighWaterMark = 0;
+  assert_equals(wt.datagrams.outgoingHighWaterMark, 1);
+}, 'Datagram HighWaterMark getters/setters work correctly');

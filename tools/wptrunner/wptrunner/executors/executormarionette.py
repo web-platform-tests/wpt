@@ -611,13 +611,11 @@ class MarionetteSetPermissionProtocolPart(SetPermissionProtocolPart):
     def setup(self):
         self.marionette = self.parent.marionette
 
-    def set_permission(self, descriptor, state, one_realm):
+    def set_permission(self, descriptor, state):
         body = {
             "descriptor": descriptor,
             "state": state,
         }
-        if one_realm is not None:
-            body["oneRealm"] = one_realm
         try:
             self.marionette._send_message("WebDriver:SetPermission", body)
         except errors.UnsupportedOperationException:
@@ -630,7 +628,7 @@ class MarionettePrintProtocolPart(PrintProtocolPart):
         self.runner_handle = None
 
     def load_runner(self):
-        url = urljoin(self.parent.executor.server_url("http"), "/print_reftest_runner.html")
+        url = urljoin(self.parent.executor.server_url("http"), "/print_pdf_runner.html")
         self.logger.debug("Loading %s" % url)
         try:
             self.marionette.navigate(url)
@@ -657,7 +655,7 @@ class MarionettePrintProtocolPart(PrintProtocolPart):
                 "bottom": margin,
             },
             "shrinkToFit": False,
-            "printBackground": True,
+            "background": True,
         }
         return self.marionette._send_message("WebDriver:Print", body, key="value")
 

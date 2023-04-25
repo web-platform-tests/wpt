@@ -1,3 +1,5 @@
+'use strict';
+
 directory_test(async (t, dir) => {
   await promise_rejects_dom(
       t, 'NotFoundError', dir.getFileHandle('non-existing-file'));
@@ -12,6 +14,47 @@ directory_test(async (t, dir) => {
   assert_equals(await getFileSize(handle), 0);
   assert_equals(await getFileContents(handle), '');
 }, 'getFileHandle(create=true) creates an empty file for non-existing files');
+
+directory_test(async (t, dir) => {
+  var name = '';
+  // test the ascii characters -- start after the non-character ASCII values, exclude DEL
+  for (let i = 32; i < 127; i++) {
+    // Path separators are disallowed
+    let disallow = false;
+    for (let j = 0; j < kPathSeparators.length; ++j) {
+      if (String.fromCharCode(i) == kPathSeparators[j]) {
+        disallow = true;
+      }
+    }
+    if (!disallow) {
+      name += String.fromCharCode(i);
+    }
+  }
+  // Add in CR, LF, FF, Tab, Vertical Tab
+  for (let i = 9; i < 14; i++) {
+    name += String.fromCharCode(i);
+  }
+  const handle = await dir.getFileHandle(name, {create: true});
+  t.add_cleanup(() => dir.removeEntry(name));
+
+  assert_equals(handle.kind, 'file');
+  assert_equals(handle.name, name);
+  assert_equals(await getFileSize(handle), 0);
+  assert_equals(await getFileContents(handle), '');
+}, 'getFileHandle(create=true) creates an empty file with all valid ASCII characters in the name');
+
+directory_test(async (t, dir) => {
+  var name;
+  // A non-ASCII name
+  name = 'Funny cat \u{1F639}'
+  const handle = await dir.getFileHandle(name, {create: true});
+  t.add_cleanup(() => dir.removeEntry(name));
+
+  assert_equals(handle.kind, 'file');
+  assert_equals(handle.name, name);
+  assert_equals(await getFileSize(handle), 0);
+  assert_equals(await getFileContents(handle), '');
+}, 'getFileHandle(create=true) creates an empty file with non-ASCII characters in the name');
 
 directory_test(async (t, dir) => {
   const existing_handle = await createFileWithContents(

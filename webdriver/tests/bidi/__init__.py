@@ -1,5 +1,7 @@
 from typing import Any, Callable
 
+from webdriver.bidi.modules.script import ContextTarget
+
 
 # Compares 2 objects recursively.
 # Actual value can have more keys as part of the forwards-compat design.
@@ -27,16 +29,34 @@ def recursive_compare(expected: Any, actual: Any) -> None:
     assert expected == actual
 
 
-def any_string(actual: Any) -> None:
-    assert isinstance(actual, str)
+def any_bool(actual: Any) -> None:
+    assert isinstance(actual, bool)
+
+
+def any_dict(actual: Any) -> None:
+    assert isinstance(actual, dict)
 
 
 def any_int(actual: Any) -> None:
     assert isinstance(actual, int)
 
 
+def any_int_or_null(actual: Any) -> None:
+    if actual is not None:
+        any_int(actual)
+
+
 def any_list(actual: Any) -> None:
     assert isinstance(actual, list)
+
+
+def any_string(actual: Any) -> None:
+    assert isinstance(actual, str)
+
+
+def any_string_or_null(actual: Any) -> None:
+    if actual is not None:
+        any_string(actual)
 
 
 def int_interval(start: int, end: int) -> Callable[[Any], None]:
@@ -45,3 +65,16 @@ def int_interval(start: int, end: int) -> Callable[[Any], None]:
         assert start <= actual <= end
 
     return _
+
+def positive_int(actual: Any) -> None:
+    assert isinstance(actual, int) and actual > 0
+
+
+async def create_console_api_message(bidi_session, context, text):
+    await bidi_session.script.call_function(
+        function_declaration="""(text) => console.log(text)""",
+        arguments=[{"type": "string", "value": text}],
+        await_promise=False,
+        target=ContextTarget(context["context"]),
+    )
+    return text

@@ -1,4 +1,6 @@
 import pytest
+
+from webdriver import Element
 from webdriver.error import NoSuchAlertException
 from webdriver.transport import Response
 
@@ -23,31 +25,25 @@ def test_no_browsing_context(session, closed_frame):
     assert_error(response, "no such window")
 
 
-@pytest.mark.parametrize("as_frame", [False, True], ids=["top_context", "child_context"])
-def test_stale_element_reference_as_argument(session, stale_element, as_frame):
-    element = stale_element("<div>", "div", as_frame=as_frame)
-
-    result = execute_script(session, "return 1;", args=[element])
-    assert_error(result, "stale element reference")
-
-
-@pytest.mark.parametrize("as_frame", [False, True], ids=["top_context", "child_context"])
-def test_stale_element_reference_as_returned_value(session, iframe, inline, as_frame):
-    if as_frame:
-        session.url = inline(iframe("<div>"))
-        frame = session.find.css("iframe", all=False)
-        session.switch_frame(frame)
-    else:
-        session.url = inline("<div>")
-
-    element = session.find.css("div", all=False)
-
-    result = execute_script(session, """
-        const elem = arguments[0];
-        elem.remove();
-        return elem;
-        """, args=[element])
-    assert_error(result, "stale element reference")
+@pytest.mark.parametrize("expression, expected", [
+    ("null", None),
+    ("undefined", None),
+    ("true", True),
+    ("false", False),
+    ("23", 23),
+    ("'foo'", "foo"),
+    (
+        # Compute value in the runtime to reduce the potential for
+        # interference from encoding literal bytes or escape sequences in
+        # Python and HTTP.
+        "String.fromCharCode(0)",
+        "\x00"
+    )
+])
+def test_primitive_serialization(session, expression, expected):
+    response = execute_script(session, "return {};".format(expression))
+    value = assert_success(response)
+    assert value == expected
 
 
 def test_opening_new_window_keeps_current_window_handle(session, inline):

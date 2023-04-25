@@ -1,7 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into webref
 // (https://github.com/w3c/webref)
-// Source: Scroll-linked Animations (https://drafts.csswg.org/scroll-animations-1/)
+// Source: Scroll-driven Animations (https://drafts.csswg.org/scroll-animations-1/)
 
 enum ScrollAxis {
   "block",
@@ -25,6 +25,7 @@ interface ScrollTimeline : AnimationTimeline {
 dictionary ViewTimelineOptions {
   Element subject;
   ScrollAxis axis = "block";
+  (DOMString or sequence<(CSSNumericValue or CSSKeywordValue)>) inset = "auto";
 };
 
 [Exposed=Window]
@@ -36,7 +37,6 @@ interface ViewTimeline : ScrollTimeline {
 };
 
 [Exposed=Window]
-interface AnimationTimeline {
-  readonly attribute CSSNumberish? currentTime;
+partial interface AnimationTimeline {
   CSSNumericValue? getCurrentTime(optional CSSOMString rangeName);
 };

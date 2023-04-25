@@ -1,6 +1,7 @@
 from enum import Enum
-from typing import Any, Optional, Mapping, List, MutableMapping, Union, Dict
+from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Union
 
+from ..error import UnknownErrorException
 from ._module import BidiModule, command
 
 
@@ -44,6 +45,30 @@ Target = Union[RealmTarget, ContextTarget]
 
 class Script(BidiModule):
     @command
+    def add_preload_script(
+        self,
+        function_declaration: str,
+        arguments: Optional[List[Mapping[str, Any]]] = None,
+        sandbox: Optional[str] = None
+    ) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {
+            "functionDeclaration": function_declaration
+        }
+
+        if arguments is not None:
+            params["arguments"] = arguments
+        if sandbox is not None:
+            params["sandbox"] = sandbox
+
+        return params
+
+    @add_preload_script.result
+    def _add_preload_script(self, result: Mapping[str, Any]) -> Any:
+        assert "script" in result
+
+        return result["script"]
+
+    @command
     def call_function(
         self,
         function_declaration: str,
@@ -69,9 +94,14 @@ class Script(BidiModule):
 
     @call_function.result
     def _call_function(self, result: Mapping[str, Any]) -> Any:
-        if "result" not in result:
+        assert "type" in result
+
+        if result["type"] == "success":
+            return result["result"]
+        elif result["type"] == "exception":
             raise ScriptEvaluateResultException(result)
-        return result["result"]
+        else:
+            raise UnknownErrorException(f"""Invalid type '{result["type"]}' in response""")
 
     @command
     def disown(self, handles: List[str], target: Target) -> Mapping[str, Any]:
@@ -98,9 +128,14 @@ class Script(BidiModule):
 
     @evaluate.result
     def _evaluate(self, result: Mapping[str, Any]) -> Any:
-        if "result" not in result:
+        assert "type" in result
+
+        if result["type"] == "success":
+            return result["result"]
+        elif result["type"] == "exception":
             raise ScriptEvaluateResultException(result)
-        return result["result"]
+        else:
+            raise UnknownErrorException(f"""Invalid type '{result["type"]}' in response""")
 
     @command
     def get_realms(
@@ -123,3 +158,11 @@ class Script(BidiModule):
         assert isinstance(result["realms"], list)
 
         return result["realms"]
+
+    @command
+    def remove_preload_script(self, script: str) -> Any:
+        params: MutableMapping[str, Any] = {
+            "script": script
+        }
+
+        return params

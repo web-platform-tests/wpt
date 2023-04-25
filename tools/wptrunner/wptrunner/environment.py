@@ -211,15 +211,19 @@ class TestEnvironment:
 
         config.server_host = self.options.get("server_host", None)
         config.doc_root = serve_path(self.test_paths)
+        config.inject_script = self.inject_script
 
         return config
 
     def get_routes(self):
-        route_builder = serve.RoutesBuilder(inject_script=self.inject_script)
+        route_builder = serve.get_route_builder(
+            self.server_logger,
+            self.config.aliases,
+            self.config)
 
         for path, format_args, content_type, route in [
                 ("testharness_runner.html", {}, "text/html", "/testharness_runner.html"),
-                ("print_reftest_runner.html", {}, "text/html", "/print_reftest_runner.html"),
+                ("print_pdf_runner.html", {}, "text/html", "/print_pdf_runner.html"),
                 (os.path.join(here, "..", "..", "third_party", "pdf_js", "pdf.js"), None,
                  "text/javascript", "/_pdf_js/pdf.js"),
                 (os.path.join(here, "..", "..", "third_party", "pdf_js", "pdf.worker.js"), None,
@@ -288,8 +292,7 @@ class TestEnvironment:
                 for port, server in servers:
                     if scheme == "webtransport-h3":
                         if not webtranport_h3_server_is_running(host, port, timeout=5.0):
-                            # TODO(bashi): Consider supporting retry.
-                            failed.append((host, port))
+                            pending.append((host, port))
                         continue
                     s = socket.socket()
                     s.settimeout(0.1)

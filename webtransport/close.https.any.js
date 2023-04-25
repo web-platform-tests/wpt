@@ -2,6 +2,7 @@
 // META: script=/common/get-host-info.sub.js
 // META: script=resources/webtransport-test-helpers.sub.js
 // META: script=/common/utils.js
+// META: timeout=long
 
 promise_test(async t => {
   const id = token();
@@ -13,8 +14,8 @@ promise_test(async t => {
 
   const close_info = await wt.closed;
 
-  assert_not_own_property(close_info, 'closeCode');
-  assert_not_own_property(close_info, 'reason');
+  assert_equals(close_info.closeCode, 0 , 'code');
+  assert_equals(close_info.reason, '', 'reason');
 
   await wait(10);
   const data = await query(id);
@@ -63,6 +64,9 @@ promise_test(async t => {
   const close_info = await wt.closed;
 
   assert_equals(close_info.closeCode, 11, 'code');
+  // `close_info.reason` should report the original, non-truncated reason as
+  // step 9 of https://w3c.github.io/webtransport/#dom-webtransport-close
+  // uses the original `closeInfo` to perform `Cleanup`.
   assert_equals(close_info.reason, reason, 'reason');
 
   await wait(10);
@@ -71,6 +75,8 @@ promise_test(async t => {
   assert_own_property(data, 'session-close-info');
   const info = data['session-close-info']
 
+  // Server should have received truncated reason as step 6 of
+  // https://w3c.github.io/webtransport/#dom-webtransport-close specifies.
   const expected_reason =
     new TextDecoder().decode(
       new TextEncoder().encode(reason).slice(0, 1024)).replaceAll('\ufffd', '');

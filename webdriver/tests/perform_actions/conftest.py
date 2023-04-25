@@ -2,8 +2,6 @@ import pytest
 
 from webdriver.error import NoSuchWindowException
 
-from tests.perform_actions.support.keys import Keys
-
 
 @pytest.fixture
 def session_new_window(capabilities, session):
@@ -69,7 +67,7 @@ def release_actions(session, request):
 
 @pytest.fixture
 def key_reporter(session, test_actions_page, request):
-    """Represents focused input element from `test_keys_page` fixture."""
+    """Represents focused input element from `test_actions_page` fixture."""
     input_el = session.find.css("#keys", all=False)
     input_el.click()
     session.execute_script("resetEvents();")
@@ -77,16 +75,8 @@ def key_reporter(session, test_actions_page, request):
 
 
 @pytest.fixture
-def modifier_key(session):
-    if session.capabilities["platformName"] == "mac":
-        return Keys.META
-    else:
-        return Keys.CONTROL
-
-
-@pytest.fixture
 def test_actions_page(session, url):
-    session.url = url("/webdriver/tests/perform_actions/support/test_actions_wdspec.html")
+    session.url = url("/webdriver/tests/support/html/test_actions.html")
 
 
 @pytest.fixture

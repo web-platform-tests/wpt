@@ -11,7 +11,7 @@
   <body>
     <div id="log"></div>
     <form action="dirname-ltr-iframe.html" method=get target="iframe">
-      <p><button type=submit>Submit</button></p>
+      <p><button id="btn-submit" type=submit>Submit</button></p>
     </form>
     <iframe name="iframe"></iframe>
 
@@ -53,7 +53,7 @@
       document.getElementById("testelement.radio").checked = true;
 
       const test = async_test("submit input element directionality only for text and search type");
-      document.querySelector("button").click();
+      document.getElementById("btn-submit").click();
 
       const iframe = document.querySelector("iframe");
       iframe.onload = test.step_func_done(function() {
@@ -62,7 +62,7 @@
         if(iframe.contentWindow.location.href == "about:blank") { return; }
 
         for (const type of types_applies) {
-            assert_equals(getParameterByName(type + ".dir"), "ltr", "Submit tlr for type=" + type);
+            assert_equals(getParameterByName(type + ".dir"), "ltr", "Submit ltr for type=" + type);
         }
         for (const type of types_not) {
             assert_false(hasParameter(type + ".dir"), "Do not submit dirname for type=" + type);

@@ -102,7 +102,11 @@ const AriaUtils = {
           el.id = elID;
         }
 
-        const computedLabel = await test_driver.get_computed_label(document.getElementById(el.id));
+        let computedLabel = await test_driver.get_computed_label(el);
+
+        // Todo: Remove whitespace normalization after https://github.com/w3c/accname/issues/192 is addressed. Change prior line back to `const`, too.
+        computedLabel = computedLabel.trim()
+
         assert_equals(computedLabel, expectedLabel, el.outerHTML);
       }, `${testName}`);
     }

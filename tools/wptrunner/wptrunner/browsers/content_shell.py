@@ -84,6 +84,10 @@ class ContentShellBrowser(Browser):
     process are connected to multiprocessing Queues so that the runner process can
     interact with content_shell through its protocol mode.
     """
+    # Seconds to wait for the process to stop after it was sent `SIGTERM` or
+    # `TerminateProcess()`. The value is inherited from:
+    # https://chromium.googlesource.com/chromium/src/+/b175d48d3ea4ea66eea35c88c11aa80d233f3bee/third_party/blink/tools/blinkpy/web_tests/port/base.py#476
+    termination_timeout: float = 3
 
     def __init__(self, logger, binary="content_shell", binary_args=[], **kwargs):
         super().__init__(logger)
@@ -123,8 +127,11 @@ class ContentShellBrowser(Browser):
         if self.is_alive():
             self._proc.terminate()
             try:
-                self._proc.wait(timeout=5)
+                self._proc.wait(timeout=self.termination_timeout)
             except subprocess.TimeoutExpired:
+                self.logger.warning(
+                    "Content shell failed to stop gracefully (PID: "
+                    f"{self._proc.pid}, timeout: {self.termination_timeout}s)")
                 if force:
                     self._proc.kill()
 

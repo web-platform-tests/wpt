@@ -213,7 +213,7 @@ const getSoftmaxPrecisionTolerance = (resources, operationName) => {
 };
 
 /**
- * Get ULP tolerance of reduceMean, reduceProduct, reduceSum operations.
+ * Get ULP tolerance of reduction operations.
  * @param {Object} resources - Resources used for building a graph
  * @param {String} operationName - An operation name
  * @returns {Number} A tolerance number

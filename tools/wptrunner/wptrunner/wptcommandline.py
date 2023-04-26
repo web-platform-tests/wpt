@@ -1,6 +1,7 @@
 # mypy: allow-untyped-defs
 
 import argparse
+import multiprocessing
 import os
 import sys
 from collections import OrderedDict
@@ -13,6 +14,14 @@ from .formatters import chromium, wptreport, wptscreenshot
 
 def abs_path(path):
     return os.path.abspath(os.path.expanduser(path))
+
+
+def cpu_count():
+    cpu_count = multiprocessing.cpu_count()
+    if sys.platform == 'win32':
+        # Use no more than 56 cores on Windows or Python3 may hang.
+        cpu_count = min(cpu_count, 56)
+    return cpu_count
 
 
 def url_or_path(path):
@@ -581,7 +590,7 @@ def check_args(kwargs):
             sys.exit(1)
 
     if kwargs["processes"] is None:
-        kwargs["processes"] = 1
+        kwargs["processes"] = cpu_count()
 
     if kwargs["debugger"] is not None:
         import mozdebug

@@ -430,8 +430,11 @@ class GroupedSource(TestSource):
 
         for item in groups:
             test_queue.put(item)
-        cls.add_sentinal(test_queue, kwargs["processes"])
-        return test_queue
+
+        # Do not launch more workers than the number of groups
+        processes = min(len(groups), kwargs["processes"])
+        cls.add_sentinal(test_queue, processes)
+        return test_queue, processes
 
     @classmethod
     def tests_by_group(cls, tests_by_type, **kwargs):
@@ -451,6 +454,7 @@ class SingleTestSource(TestSource):
     def make_queue(cls, tests_by_type, **kwargs):
         mp = mpcontext.get_context()
         test_queue = mp.Queue()
+        num_of_groups = 0
         for test_type, tests in tests_by_type.items():
             processes = kwargs["processes"]
             queues = [deque([]) for _ in range(processes)]
@@ -465,9 +469,12 @@ class SingleTestSource(TestSource):
             for item in zip(queues, itertools.repeat(test_type), metadatas):
                 if len(item[0]) > 0:
                     test_queue.put(TestGroup(*item))
-        cls.add_sentinal(test_queue, kwargs["processes"])
+                    num_of_groups += 1
 
-        return test_queue
+        # Do not launch more workers than the number of groups
+        processes = min(num_of_groups, kwargs["processes"])
+        cls.add_sentinal(test_queue, processes)
+        return test_queue, processes
 
     @classmethod
     def tests_by_group(cls, tests_by_type, **kwargs):
@@ -498,6 +505,7 @@ class GroupFileTestSource(TestSource):
     def make_queue(cls, tests_by_type, **kwargs):
         mp = mpcontext.get_context()
         test_queue = mp.Queue()
+        num_of_groups = 0
 
         for test_type, tests in tests_by_type.items():
             tests_by_group = cls.tests_by_group({test_type: tests},
@@ -515,10 +523,12 @@ class GroupFileTestSource(TestSource):
                     test.update_metadata(group_metadata)
 
                 test_queue.put(TestGroup(group, test_type, group_metadata))
+                num_of_groups += 1
 
-        cls.add_sentinal(test_queue, kwargs["processes"])
-
-        return test_queue
+        # Do not launch more workers than the number of groups
+        processes = min(num_of_groups, kwargs["processes"])
+        cls.add_sentinal(test_queue, processes)
+        return test_queue, processes
 
     @classmethod
     def tests_by_group(cls, tests_by_type, **kwargs):

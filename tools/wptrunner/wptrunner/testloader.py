@@ -432,8 +432,7 @@ class GroupedSource(TestSource):
             test_queue.put(item)
 
         # Do not launch more workers than the number of groups
-        print(f'#1 groups = f{len(groups)}, kwargs = {kwargs["processes"]}')
-        processes = min(len(groups), kwargs["processes"])
+        processes = max(1, min(len(groups), kwargs["processes"]))
         cls.add_sentinal(test_queue, processes)
         return test_queue, processes
 
@@ -473,8 +472,7 @@ class SingleTestSource(TestSource):
                     num_of_groups += 1
 
         # Do not launch more workers than the number of groups
-        print(f'#2 groups = f{num_of_groups}, kwargs = {kwargs["processes"]}')
-        processes = min(num_of_groups, kwargs["processes"])
+        processes = max(1, min(num_of_groups, kwargs["processes"]))
         cls.add_sentinal(test_queue, processes)
         return test_queue, processes
 
@@ -528,8 +526,7 @@ class GroupFileTestSource(TestSource):
                 num_of_groups += 1
 
         # Do not launch more workers than the number of groups
-        print(f'#3 groups = f{num_of_groups}, kwargs = {kwargs["processes"]}')
-        processes = min(num_of_groups, kwargs["processes"])
+        processes = max(1, min(num_of_groups, kwargs["processes"]))
         cls.add_sentinal(test_queue, processes)
         return test_queue, processes
 

@@ -54,9 +54,12 @@ window.checkSentinelIframe = async (t, sentinelIframe) => {
   await waitForLoad(t, sentinelIframe, "/common/blank.html?sentinelstart");
 };
 
-window.insertIframe = (t, url) => {
+window.insertIframe = (t, url, name) => {
   const iframe = document.createElement("iframe");
   iframe.src = url;
+  if (name) {
+    iframe.name = name;
+  }
   document.body.append(iframe);
 
   // Intentionally not including the following:
@@ -65,10 +68,18 @@ window.insertIframe = (t, url) => {
   return iframe;
 };
 
+// TODO(domenic): clean up other tests in the parent directory to use this.
 window.absoluteURL = relativeURL => {
   return (new URL(relativeURL, location.href)).href;
 };
 
+// TODO(domenic): clean up other tests in the parent directory to use this.
 window.codeInjectorURL = code => {
   return absoluteURL("resources/code-injector.html?pipe=sub(none)&code=" + encodeURIComponent(code));
+};
+
+window.changeURLHost = (url, newHost) => {
+  const urlObj = new URL(url);
+  urlObj.host = newHost;
+  return urlObj.href;
 };

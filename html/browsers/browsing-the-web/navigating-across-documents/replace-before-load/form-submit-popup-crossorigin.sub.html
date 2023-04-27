@@ -2,42 +2,38 @@
 <meta charset="utf-8">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/utils.js"></script>
-<link rel="help" href="https://github.com/whatwg/html/pull/9156">
+<script src="resources/helpers.js"></script>
 
-<form></form>
+<form target="the-window">
+  <input type="hidden" name="pushed">
+</form>
 
 <script>
 "use strict";
 promise_test(async t => {
   const form = document.querySelector("form");
+  const wEndingURL = changeURLHost(
+    absoluteURL("resources/slow-message-source-with-history-and-location.html?pushed="),
+    "{{hosts[][www]}}"
+  );
+  form.action = wEndingURL;
 
-  // Wait until after _self has finished firing the load event.
-  await new Promise(r => { window.onload = () => { t.step_timeout(r, 0); }; });
-
-  const windowName = token();
-  form.target = windowName;
-
-  const targetURL = new URL("resources/message-opener-with-history-and-location.html", location.href);
-  targetURL.hostname = "{{hosts[][www]}}";
-  form.action = targetURL;
-
-  const code = `
-    opener.postMessage("ready", "*");
+  const wStartingCode = `
+    opener.postMessage({ historyLength: history.length, locationHref: location.href }, "*");
   `;
-  const startURL = new URL("resources/slow-code-injector.html?pipe=sub(none)&code=" + encodeURIComponent(code), location.href);
-  startURL.hostname = "{{hosts[][www]}}";
-  const w = window.open(startURL, windowName);
+
+  const wStartingURL = codeInjectorURL(wStartingCode);
+  const w = window.open(wStartingURL, "the-window");
   t.add_cleanup(() => w.close());
 
-  await new Promise(r => { window.onmessage = r; });
+  const wBeforeLoadedMessage = await waitForMessage();
+  assert_equals(wBeforeLoadedMessage.historyLength, 1, "window's starting history.length");
+  assert_equals(wBeforeLoadedMessage.locationHref, wStartingURL, "window's starting location.href");
 
-  // At this point `w` has run the top-level code that postMessage()ed us, but almost certainly hasn't yet run the load
-  // event (since it is busy loading the slow image).
   form.submit();
 
-  const { historyLength, locationHref } = await new Promise(r => { window.onmessage = e => { r(e.data); }; });
-  assert_equals(historyLength, 2, "history.length must increase");
-  assert_equals(locationHref, form.action + "?");
-}, "No replace before load, triggered by formElement.submit() in the opener window, after the opener has loaded: opened window is cross-origin");
+  const wAfterFormSubmitMessage = await waitForMessage();
+  assert_equals(wAfterFormSubmitMessage.historyLength, 2, "window's after-submit history.length");
+  assert_equals(wAfterFormSubmitMessage.locationHref, wEndingURL, "window's after-submit location.href");
+}, "No replace before load, triggered by formElement.submit() in the opener window, after the opener has loaded [window is cross-origin]");
 </script>

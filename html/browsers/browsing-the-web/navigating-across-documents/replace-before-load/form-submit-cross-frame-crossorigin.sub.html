@@ -14,13 +14,14 @@ promise_test(async t => {
   const startingHistoryLength = history.length;
 
   const form = document.querySelector("form");
-  const frameEndingURL = absoluteURL("resources/slow-message-source-with-history-and-location.html?pushed=");
+  const frameEndingURL = changeURLHost(
+    absoluteURL("resources/slow-message-source-with-history-and-location.html?pushed="),
+    "{{hosts[][www]}}"
+  );
   form.action = frameEndingURL;
 
   const frameStartingCode = `
-    window.onload = () => { window.onloadFired = true; };
     parent.postMessage({ historyLength: history.length, locationHref: location.href }, "*");
-    parent.document.querySelector("form").submit();
   `;
 
   const frameStartingURL = codeInjectorURL(frameStartingCode);
@@ -31,10 +32,11 @@ promise_test(async t => {
   const frameBeforeLoadedMessage = await waitForMessage();
   assert_equals(frameBeforeLoadedMessage.historyLength, startingHistoryLength, "frame's starting history.length");
   assert_equals(frameBeforeLoadedMessage.locationHref, frame.src, "frame's starting location.href");
-  assert_equals(frame.contentWindow.onloadFired, undefined, "frame's onload not fired yet");
+
+  form.submit();
 
   const frameAfterFormSubmitMessage = await waitForMessage();
   assert_equals(frameAfterFormSubmitMessage.historyLength, startingHistoryLength + 1, "frame's after-submit history.length");
   assert_equals(frameAfterFormSubmitMessage.locationHref, frameEndingURL, "frame's after-submit location.href");
-}, "No replace before load, triggered by cross-iframe formElement.submit()");
+}, "No replace before load, triggered by cross-iframe formElement.submit() [iframe is cross-origin]");
 </script>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<title>PNG test: sRGB chunk</title>
+<link rel="assert" content="sRGB chunk, relative colorimetric intent, displays as sRGB">
+<link rel="help" href="https://drafts.csswg.org/css-color-4/#tagged-images">
+<link rel="help" href="https://drafts.csswg.org/css-color-4/#untagged">
+<link rel="match" href="macbeth-srgb-ref.html">
+<style>
+    body {
+        background: rgb(46.6% 46.6% 46.6%); /* lab(50% 0 0) */
+    }
+    img {
+        padding: 0;
+    }
+    p.test {
+        background-image: url(./support/macbeth-indexed-sRGB-sRGB-chunk.png);
+        background-repeat: no-repeat;
+    }
+</style>
+<p>Test passes if you see no circles on the square patches</p>
+<p class="test"><img src="./support/reference-circles.png" alt=""></p>

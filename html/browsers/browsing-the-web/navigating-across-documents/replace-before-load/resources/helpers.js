@@ -25,12 +25,11 @@ window.waitForLoadAllowingIntermediateLoads = (t, iframe, urlRelativeToThisDocum
   });
 };
 
-window.waitForMessage = (t, expected) => {
+window.waitForMessage = () => {
   return new Promise(resolve => {
-    window.addEventListener("message", t.step_func(e => {
-      assert_equals(e.data, expected);
-      resolve();
-    }), { once: true });
+    window.addEventListener("message", e => {
+      resolve(e.data);
+    }, { once: true });
   });
 };
 
@@ -64,4 +63,12 @@ window.insertIframe = (t, url) => {
   //  t.add_cleanup(() => iframe.remove());
   // Doing so breaks some of the testdriver.js tests with "cannot find window" errors.
   return iframe;
+};
+
+window.absoluteURL = relativeURL => {
+  return (new URL(relativeURL, location.href)).href;
+};
+
+window.codeInjectorURL = code => {
+  return absoluteURL("resources/code-injector.html?pipe=sub(none)&code=" + encodeURIComponent(code));
 };

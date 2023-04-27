@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+
+<body>
+<script>
+"use strict";
+promise_test(async t => {
+  const startingHistoryLength = history.length;
+
+  const frame2EndingURL = absoluteURL("resources/message-parent-with-history-and-location.html");
+
+  const frame1Code = `
+    const form = document.createElement("form");
+    form.action = "${frame2EndingURL}";
+    form.target = "frame2";
+
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "thenextpage";
+    form.append(input);
+
+    document.currentScript.before(form);
+
+    parent.postMessage("ready", "*");
+  `;
+
+  const frame1URL = codeInjectorURL(frame1Code);
+  const frame1 = insertIframe(t, frame1URL);
+  frame1.name = "frame1";
+  assert_equals(await waitForMessage(), "ready", "frame1 finished loading");
+  assert_equals(history.length, startingHistoryLength, "Inserting frame1 must not change history.length");
+
+  const frame2StartingCode = `
+    parent.postMessage({ historyLength: history.length, locationHref: location.href }, "*");
+    parent.document.querySelector("[name='frame1']").contentDocument.querySelector("form").submit();
+  `;
+
+  const frame2StartingURL = codeInjectorURL(frame2StartingCode);
+  const frame2 = insertIframe(t, frame2StartingURL);
+  frame2.name = "frame2";
+  assert_equals(history.length, startingHistoryLength, "Inserting frame2 must not change history.length");
+
+  const frame2BeforeLoadedMessage = await waitForMessage();
+  assert_equals(frame2BeforeLoadedMessage.historyLength, startingHistoryLength, "frame2's starting history.length");
+  assert_equals(frame2BeforeLoadedMessage.locationHref, frame2.src, "frame2's starting location.href");
+
+  const frame2AfterFormSubmitMessage = await waitForMessage();
+  assert_equals(frame2BeforeLoadedMessage.historyLength, startingHistoryLength + 1, "frame2's after-submit history.length");
+  assert_equals(frame2BeforeLoadedMessage.locationHref, frame2EndingURL, "frame2's after-submit location.href");
+}, "No replace before load, triggered by cross-iframe formElement.submit()");
+</script>

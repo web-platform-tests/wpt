@@ -3,6 +3,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
+<link rel="help" href="https://github.com/whatwg/html/pull/9156">
 
 <form></form>
 
@@ -36,7 +37,7 @@ promise_test(async t => {
   form.submit();
 
   const { historyLength, locationHref } = await new Promise(r => { window.onmessage = e => { r(e.data); }; });
-  assert_equals(historyLength, 1, "history.length must not increase");
+  assert_equals(historyLength, 2, "history.length must increase");
   assert_equals(locationHref, form.action + "?");
-}, "Replace before load, triggered by formElement.submit() in the opener window, after the opener has loaded: opened window is cross-origin");
+}, "No replace before load, triggered by formElement.submit() in the opener window, after the opener has loaded: opened window is cross-origin");
 </script>

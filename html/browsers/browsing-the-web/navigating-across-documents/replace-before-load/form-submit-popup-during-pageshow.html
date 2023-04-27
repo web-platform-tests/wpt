@@ -29,7 +29,7 @@ promise_test(async t => {
   t.add_cleanup(() => w.close());
 
   await new Promise(r => { window.onmessage = r; });
-  assert_equals(w.history.length, 1, "history.length must never go past 1");
+  assert_equals(w.history.length, 2, "history.length must increase");
   assert_equals(w.location.href, form.action + "?");
-}, "Replace during the pageshow event, triggered by formElement.submit() in the opener window, after the opener has loaded");
+}, "No replace during the pageshow event, triggered by formElement.submit() in the opener window, after the opener has loaded");
 </script>

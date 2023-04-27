@@ -30,7 +30,7 @@ promise_test(async t => {
     if (w.location.href === absoluteStartURL) {
       break;
     }
-    await new Promise(r => setTimeout(r, 0));
+    await new Promise(r => t.step_timeout(r, 0));
   }
 
   assert_equals(w.onloadFired, undefined, "onload must not yet have fired");
@@ -39,7 +39,7 @@ promise_test(async t => {
   form.submit();
 
   await new Promise(r => { window.onmessage = r; });
-  assert_equals(w.history.length, 1, "history.length must not increase");
+  assert_equals(w.history.length, 2, "history.length must increase");
   assert_equals(w.location.href, form.action + "?");
-}, "Replace before load, triggered by formElement.submit() in the opener window, after the opener has loaded");
+}, "No replace before load, triggered by formElement.submit() in the opener window, after the opener has loaded");
 </script>

@@ -3,6 +3,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
+<link rel="help" href="https://github.com/whatwg/html/pull/9156">
 
 <form action="resources/message-opener.html"></form>
 
@@ -29,7 +30,7 @@ promise_test(async t => {
   t.add_cleanup(() => w.close());
 
   await new Promise(r => { window.onmessage = r; });
-  assert_equals(w.history.length, 1, "history.length must never go past 1");
+  assert_equals(w.history.length, 2, "history.length must increase");
   assert_equals(w.location.href, form.action + "?");
-}, "Replace during the load event, triggered by formElement.submit() in the opener window, after the opener has loaded");
+}, "No replace during the load event, triggered by formElement.submit() in the opener window, after the opener has loaded");
 </script>

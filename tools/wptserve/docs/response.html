@@ -206,7 +206,7 @@ time or interval from now when the cookie expires</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="wptserve.response.Response.set_error">
-<span class="sig-name descname"><span class="pre">set_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.set_error" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">err</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.set_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the response status headers and return a JSON error object:</p>
 <p>{“error”: {“code”: code, “message”: message}}
 code is an int (HTTP status code), and message is a text string.</p>

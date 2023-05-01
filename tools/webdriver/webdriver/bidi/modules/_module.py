@@ -1,7 +1,6 @@
 import functools
 from typing import (
     Any,
-    Awaitable,
     Callable,
     Optional,
     Mapping,
@@ -49,7 +48,7 @@ class command:
         self.params_fn = fn
         self.result_fn: Optional[Callable[..., Any]] = None
 
-    def result(self, fn: Callable[[Any, MutableMapping[str, Any]], Mapping[str, Any]]) -> None:
+    def result(self, fn: Callable[[Any, MutableMapping[str, Any]], Any]) -> None:
         self.result_fn = fn
 
     def __set_name__(self, owner: Any, name: str) -> None:
@@ -79,10 +78,6 @@ class command:
 
         # Overwrite the method on the owner class with the wrapper
         setattr(owner, name, inner)
-
-    def __call__(*args: Any, **kwargs: Any) -> Awaitable[Any]:
-        # This isn't really used, but mypy doesn't understand __set_name__
-        pass
 
 
 class BidiModule:

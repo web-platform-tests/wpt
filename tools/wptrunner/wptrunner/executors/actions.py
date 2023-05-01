@@ -38,6 +38,34 @@ class GetAllCookiesAction:
         return self.protocol.cookies.get_all_cookies()
 
 
+class GetComputedLabelAction:
+    name = "get_computed_label"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        selector = payload["selector"]
+        element = self.protocol.select.element_by_selector(selector)
+        self.logger.debug("Getting computed label for element: %s" % element)
+        return self.protocol.accessibility.get_computed_label(element)
+
+
+class GetComputedRoleAction:
+    name = "get_computed_role"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        selector = payload["selector"]
+        element = self.protocol.select.element_by_selector(selector)
+        self.logger.debug("Getting computed role for element: %s" % element)
+        return self.protocol.accessibility.get_computed_role(element)
+
+
 class GetNamedCookieAction:
     name = "get_named_cookie"
 
@@ -143,9 +171,8 @@ class SetPermissionAction:
         descriptor = permission_params["descriptor"]
         name = descriptor["name"]
         state = permission_params["state"]
-        one_realm = permission_params.get("oneRealm", False)
-        self.logger.debug("Setting permission %s to %s, oneRealm=%s" % (name, state, one_realm))
-        self.protocol.set_permission.set_permission(descriptor, state, one_realm)
+        self.logger.debug("Setting permission %s to %s" % (name, state))
+        self.protocol.set_permission.set_permission(descriptor, state)
 
 class AddVirtualAuthenticatorAction:
     name = "add_virtual_authenticator"
@@ -254,6 +281,8 @@ actions = [ClickAction,
            DeleteAllCookiesAction,
            GetAllCookiesAction,
            GetNamedCookieAction,
+           GetComputedLabelAction,
+           GetComputedRoleAction,
            SendKeysAction,
            MinimizeWindowAction,
            SetWindowRectAction,

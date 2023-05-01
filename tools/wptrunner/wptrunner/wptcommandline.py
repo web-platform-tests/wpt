@@ -184,11 +184,9 @@ scheme host and port.""")
     debugging_group.add_argument("--repeat-until-unexpected", action="store_true", default=None,
                                  help="Run tests in a loop until one returns an unexpected result")
     debugging_group.add_argument('--retry-unexpected', type=int, default=0,
-                                 help=('Maximum number of times to retry '
-                                       'each test that consistently runs '
-                                       'unexpectedly in the initial repeat '
-                                       'loop. A retried test takes any '
-                                       'expected status as its final result.'))
+                                 help=('Maximum number of times to retry unexpected tests. '
+                                       'A test is retried until it gets one of the expected status, '
+                                       'or until it exhausts the maximum number of retries.'))
     debugging_group.add_argument('--pause-after-test', action="store_true", default=None,
                                  help="Halt the test runner after each test (this happens by default if only a single test is run)")
     debugging_group.add_argument('--no-pause-after-test', dest="pause_after_test", action="store_false",
@@ -263,6 +261,11 @@ scheme host and port.""")
                               help="Don't run browser in headless mode")
     config_group.add_argument("--instrument-to-file", action="store",
                               help="Path to write instrumentation logs to")
+    config_group.add_argument("--suppress-handler-traceback", action="store_true", default=None,
+                              help="Don't write the stacktrace for exceptions in server handlers")
+    config_group.add_argument("--no-suppress-handler-traceback", action="store_false",
+                              dest="supress_handler_traceback",
+                              help="Write the stacktrace for exceptions in server handlers")
 
     build_type = parser.add_mutually_exclusive_group()
     build_type.add_argument("--debug-build", dest="debug", action="store_true",
@@ -333,7 +336,7 @@ scheme host and port.""")
                              choices=["always", "fail", "unexpected"], default=None,
                              help="With --reftest-internal, when to take a screenshot")
     gecko_group.add_argument("--chaos", dest="chaos_mode_flags", action="store",
-                             nargs="?", const=0xFFFFFFFF, type=int,
+                             nargs="?", const=0xFFFFFFFF, type=lambda x: int(x, 16),
                              help="Enable chaos mode with the specified feature flag "
                              "(see http://searchfox.org/mozilla-central/source/mfbt/ChaosMode.h for "
                              "details). If no value is supplied, all features are activated")

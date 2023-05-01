@@ -4,6 +4,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/web-animations/testcommon.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
   @keyframes anim {
     from { z-index: 0; }
@@ -33,7 +34,8 @@
     #target {
       height: 0px;
       view-timeline: t1;
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller class=scroller>
@@ -60,7 +62,8 @@
       view-timeline: t1;
     }
     #target {
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller class=scroller>
@@ -88,7 +91,8 @@
       view-timeline: t1;
     }
     #target {
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller class=scroller>
@@ -119,7 +123,8 @@
       view-timeline: t1;
     }
     #target {
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller class=scroller>
@@ -150,7 +155,8 @@
       view-timeline: t1;
     }
     #target {
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller class=scroller>
@@ -186,7 +192,8 @@
       view-timeline: t2;
     }
     #target {
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller class=scroller>
@@ -225,7 +232,8 @@
       height: 50px;
     }
     #target {
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller class=scroller>
@@ -252,8 +260,7 @@
   }, 'view-timeline on ancestor sibling, closer scroll-timeline wins');
 </script>
 
-
-<template id=timeline_ancestor_view_timeline_wins_on_same_element>
+<template id=timeline_ancestor_scroll_timeline_wins_on_same_element>
   <style>
     #timelines {
       height: 0px;
@@ -265,7 +272,8 @@
       height: 50px;
     }
     #target {
-      animation: anim 1s linear t1;
+      animation: anim 1s linear;
+      animation-timeline: t1;
     }
   </style>
   <div id=scroller class=scroller>
@@ -285,8 +293,11 @@
 </template>
 <script>
   promise_test(async (t) => {
-    inflate(t, timeline_ancestor_view_timeline_wins_on_same_element);
+    inflate(t, timeline_ancestor_scroll_timeline_wins_on_same_element);
     await waitForNextFrame();
-    assert_equals(getComputedStyle(target).zIndex, '75');
-  }, 'view-timeline on ancestor sibling, view-timeline wins on same element');
+    // In case of a name conflict on the same element, scroll progress timelines
+    // take precedence over view progress timelines.
+    // https://drafts.csswg.org/scroll-animations-1/#timeline-scope
+    assert_equals(getComputedStyle(target).zIndex, '0');
+  }, 'view-timeline on ancestor sibling, scroll-timeline wins on same element');
 </script>

@@ -7,12 +7,13 @@
 <script src="resources/largest-contentful-paint-helpers.js"></script>
 <script src="/common/utils.js"></script>
 <script>
+    setup({"hide_test_state": true});
     setup(() =>
         assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint is not implemented"));
 
     const imageURL = `${window.location.origin}/images/blue.png`;
     async function load_image_and_get_lcp_size(t, imageStyle = {}, containerStyle = {}) {
-        const popup = window.open('about:blank');
+        const popup = window.open();
         t.add_cleanup(() => popup.close());
         const image = popup.document.createElement('img');
         image.src = imageURL;
@@ -29,15 +30,18 @@
         applyStyle(image, imageStyle);
         applyStyle(container, containerStyle);
         image.id = token();
+        container.id = token();
         const entryReported = new Promise(resolve => new popup.PerformanceObserver(entryList => {
             entryList.getEntries().forEach(entry => {
-                if (entry.id === image.id)
+                if (entry.id === image.id || entry.id === container.id)
                     resolve(entry.size);
             });
         }).observe({type: 'largest-contentful-paint'}));
         popup.document.body.appendChild(container);
-        const timeout = new Promise(resolve => t.step_timeout(() => resolve('not reported'), 1000));
-        return {lcpSize: (await Promise.any([entryReported, timeout])), naturalSize};
+        return {
+            lcpSize: (await await_with_timeout(1000, 'not reported', entryReported)),
+            naturalSize
+        };
     }
 
     // We set the image to display: none when testing background, so that only the background is reported

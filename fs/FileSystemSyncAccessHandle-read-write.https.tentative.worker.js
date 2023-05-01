@@ -196,7 +196,7 @@ sync_access_handle_test((t, handle) => {
   const bufferLength = expected.length;
   const readBuffer = new Uint8Array(expected.length);
   // No options parameter provided, should read at offset 0.
-  const readBytes = handle.read(readBuffer);
+  const readBytes = handle.read(readBuffer, {at: 0});
   assert_equals(expected.length, readBytes, 'Check that all bytes were read');
   const actual = new TextDecoder().decode(readBuffer);
   assert_equals(
@@ -239,7 +239,64 @@ sync_access_handle_test((t, handle) => {
 
   const readBuffer = new Uint8Array(24);
   const readBytes = handle.read(readBuffer, {at: 0});
+
   assert_equals(0, readBytes, 'Check that no bytes were written');
 }, 'Test writing at a negative offset fails.');
+
+sync_access_handle_test((t, handle) => {
+  if (!('TextEncoder' in self)) {
+    return;
+  }
+
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
+
+  let writeBuffer = encoder.encode("Hello ");
+  let writtenBytes = handle.write(writeBuffer);
+  writeBuffer = encoder.encode("World");
+  writtenBytes += handle.write(writeBuffer);
+  let readBuffer = new Uint8Array(256);
+  let readBytes = handle.read(readBuffer, {at: 0});
+  assert_equals(readBytes, "Hello World".length, 'Check that all bytes were read');
+  let actual = decoder.decode(readBuffer).substring(0, readBytes);
+  assert_equals(
+    actual, "Hello World",
+    'Check content read from the handle');
+
+  readBuffer = new Uint8Array(5);
+  readBytes = handle.read(readBuffer, {at: 0});
+  assert_equals(readBytes, 5, 'Check that all bytes were read');
+  actual = decoder.decode(readBuffer).substring(0, readBytes);
+  assert_equals(
+    actual, "Hello",
+    'Check content read from the handle');
+
+  readBuffer = new Uint8Array(256);
+  readBytes = handle.read(readBuffer);
+  assert_equals(readBytes, "Hello World".length - 5, 'Check that all bytes were read');
+  actual = decoder.decode(readBuffer).substring(0, readBytes);
+  assert_equals(
+    actual, " World",
+    'Check content read from the handle');
+
+  readBuffer = new Uint8Array(5);
+  readBytes = handle.read(readBuffer, {at: 0});
+  assert_equals(readBytes, 5, 'Check that all bytes were read');
+  actual = decoder.decode(readBuffer);
+  assert_equals(
+    actual, "Hello",
+    'Check content read from the handle');
+  writeBuffer = encoder.encode(" X");
+  writtenBytes = handle.write(writeBuffer);
+  assert_equals(writtenBytes, 2, 'Check overwrite length');
+
+  readBuffer = new Uint8Array(256);
+  readBytes = handle.read(readBuffer, {at: 0});
+  assert_equals(readBytes, "Hello Xorld".length, 'Check that all bytes were read');
+  actual = decoder.decode(readBuffer).substring(0, readBytes);
+  assert_equals(
+    actual, "Hello Xorld",
+    'Check content read from the handle');
+}, 'Test reading and writing a file using the cursor');
 
 done();

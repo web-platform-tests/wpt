@@ -198,7 +198,7 @@ def run_info_extras(**kwargs):
           "headless": kwargs.get("headless", False) or "MOZ_HEADLESS" in os.environ,
           "fission": enable_fission,
           "sessionHistoryInParent": (enable_fission or
-                                     get_bool_pref("fission.sessionHistoryInParent")),
+                                     not get_bool_pref("fission.disableSessionHistoryInParent")),
           "swgl": get_bool_pref("gfx.webrender.software")}
 
     rv.update(run_info_browser_version(**kwargs))
@@ -251,7 +251,7 @@ def get_environ(logger, binary, debug_info, stylo_threads, headless,
     # Disable window occlusion. Bug 1733955
     env["MOZ_WINDOW_OCCLUSION"] = "0"
     if chaos_mode_flags is not None:
-        env["MOZ_CHAOSMODE"] = str(chaos_mode_flags)
+        env["MOZ_CHAOSMODE"] = hex(chaos_mode_flags)
     if headless:
         env["MOZ_HEADLESS"] = "1"
     return env

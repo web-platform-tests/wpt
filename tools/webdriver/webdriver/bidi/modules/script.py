@@ -1,6 +1,7 @@
 from enum import Enum
-from typing import Any, Optional, Mapping, List, MutableMapping, Union, Dict
+from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Union
 
+from ..error import UnknownErrorException
 from ._module import BidiModule, command
 
 
@@ -42,7 +43,46 @@ class ContextTarget(Dict[str, Any]):
 Target = Union[RealmTarget, ContextTarget]
 
 
+class SerializationOptions(Dict[str, Any]):
+    def __init__(
+            self,
+            max_dom_depth: Optional[int] = None,
+            max_object_depth: Optional[int] = None,
+            include_shadow_tree: Optional[str] = None
+    ):
+        if max_dom_depth is not None:
+            self["maxDomDepth"] = max_dom_depth
+        if max_object_depth is not None:
+            self["maxObjectDepth"] = max_object_depth
+        if include_shadow_tree is not None:
+            self["includeShadowTree"] = include_shadow_tree
+
+
 class Script(BidiModule):
+    @command
+    def add_preload_script(
+        self,
+        function_declaration: str,
+        arguments: Optional[List[Mapping[str, Any]]] = None,
+        sandbox: Optional[str] = None
+    ) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {
+            "functionDeclaration": function_declaration
+        }
+
+        if arguments is not None:
+            params["arguments"] = arguments
+        if sandbox is not None:
+            params["sandbox"] = sandbox
+
+        return params
+
+    @add_preload_script.result
+    def _add_preload_script(self, result: Mapping[str, Any]) -> Any:
+        assert "script" in result
+
+        return result["script"]
+
     @command
     def call_function(
         self,
@@ -52,6 +92,7 @@ class Script(BidiModule):
         arguments: Optional[List[Mapping[str, Any]]] = None,
         this: Optional[Mapping[str, Any]] = None,
         result_ownership: Optional[OwnershipModel] = None,
+        serialization_options: Optional[SerializationOptions] = None
     ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "functionDeclaration": function_declaration,
@@ -65,13 +106,20 @@ class Script(BidiModule):
             params["this"] = this
         if result_ownership is not None:
             params["resultOwnership"] = result_ownership
+        if serialization_options is not None:
+            params["serializationOptions"] = serialization_options
         return params
 
     @call_function.result
     def _call_function(self, result: Mapping[str, Any]) -> Any:
-        if "result" not in result:
+        assert "type" in result
+
+        if result["type"] == "success":
+            return result["result"]
+        elif result["type"] == "exception":
             raise ScriptEvaluateResultException(result)
-        return result["result"]
+        else:
+            raise UnknownErrorException(f"""Invalid type '{result["type"]}' in response""")
 
     @command
     def disown(self, handles: List[str], target: Target) -> Mapping[str, Any]:
@@ -85,6 +133,7 @@ class Script(BidiModule):
         target: Target,
         await_promise: bool,
         result_ownership: Optional[OwnershipModel] = None,
+        serialization_options: Optional[SerializationOptions] = None
     ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "expression": expression,
@@ -94,13 +143,20 @@ class Script(BidiModule):
 
         if result_ownership is not None:
             params["resultOwnership"] = result_ownership
+        if serialization_options is not None:
+            params["serializationOptions"] = serialization_options
         return params
 
     @evaluate.result
     def _evaluate(self, result: Mapping[str, Any]) -> Any:
-        if "result" not in result:
+        assert "type" in result
+
+        if result["type"] == "success":
+            return result["result"]
+        elif result["type"] == "exception":
             raise ScriptEvaluateResultException(result)
-        return result["result"]
+        else:
+            raise UnknownErrorException(f"""Invalid type '{result["type"]}' in response""")
 
     @command
     def get_realms(
@@ -123,3 +179,11 @@ class Script(BidiModule):
         assert isinstance(result["realms"], list)
 
         return result["realms"]
+
+    @command
+    def remove_preload_script(self, script: str) -> Any:
+        params: MutableMapping[str, Any] = {
+            "script": script
+        }
+
+        return params

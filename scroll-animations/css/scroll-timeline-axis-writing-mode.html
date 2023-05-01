@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
 <link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-axis">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -21,34 +22,35 @@
     scroll-timeline: timeline_initial_axis;
   }
   #timeline_vertical {
-    scroll-timeline: vertical timeline_vertical;
+    scroll-timeline: timeline_vertical vertical;
   }
   #timeline_horizontal {
-    scroll-timeline: horizontal timeline_horizontal;
+    scroll-timeline: timeline_horizontal horizontal;
   }
   #timeline_block_in_horizontal {
-    scroll-timeline: block timeline_block_in_horizontal;
+    scroll-timeline: timeline_block_in_horizontal block;
   }
   #timeline_inline_in_horizontal {
-    scroll-timeline: inline timeline_inline_in_horizontal;
+    scroll-timeline: timeline_inline_in_horizontal inline;
   }
   #timeline_block_in_vertical {
-    scroll-timeline: block timeline_block_in_vertical;
+    scroll-timeline: timeline_block_in_vertical block;
     writing-mode: vertical-lr;
   }
   #timeline_inline_in_vertical {
-    scroll-timeline: inline timeline_inline_in_vertical;
+    scroll-timeline: timeline_inline_in_vertical inline;
     writing-mode: vertical-lr;
   }
-  #container > div {
+  .target {
     width: 0px;
     animation-name: expand;
     animation-duration: 10s;
     animation-timing-function: linear;
+    position: absolute;
   }
   /* Ensure stable expectations if feature is not supported */
   @supports not (animation-timeline:foo) {
-    #container > div { animation-play-state: paused; }
+    .target { animation-play-state: paused; }
   }
   #element_initial_axis { animation-timeline: timeline_initial_axis; }
   #element_vertical { animation-timeline: timeline_vertical; }
@@ -58,21 +60,33 @@
   #element_block_in_vertical { animation-timeline: timeline_block_in_vertical; }
   #element_inline_in_vertical { animation-timeline: timeline_inline_in_vertical; }
 </style>
-<div class=scroller id=timeline_initial_axis><div class=contents></div></div>
-<div class=scroller id=timeline_vertical><div class=contents></div></div>
-<div class=scroller id=timeline_horizontal><div class=contents></div></div>
-<div class=scroller id=timeline_block_in_horizontal><div class=contents></div></div>
-<div class=scroller id=timeline_inline_in_horizontal><div class=contents></div></div>
-<div class=scroller id=timeline_block_in_vertical><div class=contents></div></div>
-<div class=scroller id=timeline_inline_in_vertical><div class=contents></div></div>
-<div id=container>
-  <div id=element_initial_axis></div>
-  <div id=element_vertical></div>
-  <div id=element_horizontal></div>
-  <div id=element_block_in_horizontal></div>
-  <div id=element_inline_in_horizontal></div>
-  <div id=element_block_in_vertical></div>
-  <div id=element_inline_in_vertical></div>
+<div class=scroller id=timeline_initial_axis>
+  <div class=contents></div>
+  <div class=target id=element_initial_axis></div>
+</div>
+<div class=scroller id=timeline_vertical>
+  <div class=contents></div>
+  <div class=target id=element_vertical></div>
+</div>
+<div class=scroller id=timeline_horizontal>
+  <div class=contents></div>
+  <div class=target id=element_horizontal></div>
+</div>
+<div class=scroller id=timeline_block_in_horizontal>
+  <div class=contents></div>
+  <div class=target id=element_block_in_horizontal></div>
+</div>
+<div class=scroller id=timeline_inline_in_horizontal>
+  <div class=contents></div>
+  <div class=target id=element_inline_in_horizontal></div>
+</div>
+<div class=scroller id=timeline_block_in_vertical>
+  <div class=contents></div>
+  <div class=target id=element_block_in_vertical></div>
+</div>
+<div class=scroller id=timeline_inline_in_vertical>
+  <div class=contents></div>
+  <div class=target id=element_inline_in_vertical></div>
 </div>
 <script>
   // Animations linked to vertical scroll-timelines are at 75% progress.

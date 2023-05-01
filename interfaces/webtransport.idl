@@ -9,10 +9,10 @@ interface WebTransportDatagramDuplexStream {
   readonly attribute WritableStream writable;
 
   readonly attribute unsigned long maxDatagramSize;
-  attribute double? incomingMaxAge;
-  attribute double? outgoingMaxAge;
-  attribute long incomingHighWaterMark;
-  attribute long outgoingHighWaterMark;
+  attribute unrestricted double incomingMaxAge;
+  attribute unrestricted double outgoingMaxAge;
+  attribute unrestricted double incomingHighWaterMark;
+  attribute unrestricted double outgoingHighWaterMark;
 };
 
 [Exposed=(Window,Worker), SecureContext]
@@ -24,15 +24,18 @@ interface WebTransport {
   readonly attribute WebTransportReliabilityMode reliability;
   readonly attribute WebTransportCongestionControl congestionControl;
   readonly attribute Promise<WebTransportCloseInfo> closed;
+  readonly attribute Promise<undefined> draining;
   undefined close(optional WebTransportCloseInfo closeInfo = {});
 
   readonly attribute WebTransportDatagramDuplexStream datagrams;
 
-  Promise<WebTransportBidirectionalStream> createBidirectionalStream();
+  Promise<WebTransportBidirectionalStream> createBidirectionalStream(
+      optional WebTransportSendStreamOptions options = {});
   /* a ReadableStream of WebTransportBidirectionalStream objects */
   readonly attribute ReadableStream incomingBidirectionalStreams;
 
-  Promise<WebTransportSendStream> createUnidirectionalStream();
+  Promise<WebTransportSendStream> createUnidirectionalStream(
+      optional WebTransportSendStreamOptions options = {});
   /* a ReadableStream of WebTransportReceiveStream objects */
   readonly attribute ReadableStream incomingUnidirectionalStreams;
 };
@@ -63,7 +66,11 @@ enum WebTransportCongestionControl {
 
 dictionary WebTransportCloseInfo {
   unsigned long closeCode = 0;
-  DOMString reason = "";
+  USVString reason = "";
+};
+
+dictionary WebTransportSendStreamOptions {
+  long long? sendOrder = null;
 };
 
 dictionary WebTransportStats {
@@ -79,6 +86,7 @@ dictionary WebTransportStats {
   DOMHighResTimeStamp rttVariation;
   DOMHighResTimeStamp minRtt;
   WebTransportDatagramStats datagrams;
+  unsigned long long? estimatedSendRate;
 };
 
 dictionary WebTransportDatagramStats {
@@ -88,7 +96,7 @@ dictionary WebTransportDatagramStats {
   unsigned long long lostOutgoing;
 };
 
-[Exposed=(Window,Worker), SecureContext]
+[Exposed=(Window,Worker), SecureContext, Transferable]
 interface WebTransportSendStream : WritableStream {
   Promise<WebTransportSendStreamStats> getStats();
 };
@@ -100,7 +108,7 @@ dictionary WebTransportSendStreamStats {
   unsigned long long bytesAcknowledged;
 };
 
-[Exposed=(Window,Worker), SecureContext]
+[Exposed=(Window,Worker), SecureContext, Transferable]
 interface WebTransportReceiveStream : ReadableStream {
   Promise<WebTransportReceiveStreamStats> getStats();
 };
@@ -117,17 +125,17 @@ interface WebTransportBidirectionalStream {
   readonly attribute WebTransportSendStream writable;
 };
 
-[Exposed=(Window,Worker), SecureContext]
+[Exposed=(Window,Worker), Serializable, SecureContext]
 interface WebTransportError : DOMException {
-  constructor(optional WebTransportErrorInit init = {});
+  constructor(optional DOMString message = "", optional WebTransportErrorOptions options = {});
 
   readonly attribute WebTransportErrorSource source;
   readonly attribute octet? streamErrorCode;
 };
 
-dictionary WebTransportErrorInit {
-  [Clamp] octet streamErrorCode;
-  DOMString message;
+dictionary WebTransportErrorOptions {
+  WebTransportErrorSource source = "stream";
+  [Clamp] octet? streamErrorCode = null;
 };
 
 enum WebTransportErrorSource {

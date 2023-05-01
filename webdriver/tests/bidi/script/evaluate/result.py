@@ -1,5 +1,5 @@
 import pytest
-from webdriver.bidi.modules.script import ContextTarget
+from webdriver.bidi.modules.script import ContextTarget, SerializationOptions
 
 
 @pytest.mark.asyncio
@@ -126,23 +126,8 @@ async def test_primitive_values(bidi_session, top_context, expression, expected)
         ("Promise.resolve()", {"type": "promise", },),
         ("new Int32Array()", {"type": "typedarray", },),
         ("new ArrayBuffer()", {"type": "arraybuffer", },),
-        (
-            "document.createElement('div')",
-            {
-                "type": "node",
-                'value': {
-                    'attributes': {},
-                    'childNodeCount': 0,
-                    'children': [],
-                    'localName': 'div',
-                    'namespaceURI': 'http://www.w3.org/1999/xhtml',
-                    'nodeName': '',
-                    'nodeType': 1,
-                    'nodeValue': ''
-                }
-            },
-        ),
         ("window", {"type": "window", },),
+        ("new URL('https://example.com')", {"type": "object", },),
     ]
 )
 async def test_remote_values(bidi_session, top_context, expression, expected):
@@ -150,6 +135,7 @@ async def test_remote_values(bidi_session, top_context, expression, expected):
         expression=expression,
         target=ContextTarget(top_context["context"]),
         await_promise=False,
+        serialization_options=SerializationOptions(max_object_depth=1),
     )
 
     assert result == expected

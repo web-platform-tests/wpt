@@ -1,4 +1,5 @@
 import pytest
+
 from webdriver import Element, Frame, ShadowRoot, Window
 
 from tests.support.asserts import assert_error, assert_same_element, assert_success
@@ -29,14 +30,59 @@ def test_no_browsing_context(session, closed_frame):
     assert_error(response, "no such window")
 
 
-def test_element_not_found(session):
-    response = get_element_property(session, "foo", "id")
+def test_no_such_element_with_invalid_value(session):
+    element = Element(session, "foo")
+
+    response = get_element_property(session, element.id, "id")
+    assert_error(response, "no such element")
+
+
+def test_no_such_element_with_shadow_root(session, get_test_page):
+    session.url = get_test_page()
+
+    element = session.find.css("custom-element", all=False)
+
+    result = get_element_property(session, element.shadow_root.id, "id")
+    assert_error(result, "no such element")
+
+
+@pytest.mark.parametrize("closed", [False, True], ids=["open", "closed"])
+def test_no_such_element_from_other_window_handle(session, inline, closed):
+    session.url = inline("<div id='parent'><p/>")
+    element = session.find.css("#parent", all=False)
+
+    new_handle = session.new_window()
+
+    if closed:
+        session.window.close()
+
+    session.window_handle = new_handle
+
+    response = get_element_property(session, element.id, "id")
+    assert_error(response, "no such element")
+
+
+@pytest.mark.parametrize("closed", [False, True], ids=["open", "closed"])
+def test_no_such_element_from_other_frame(session, get_test_page, closed):
+    session.url = get_test_page(as_frame=True)
+
+    frame = session.find.css("iframe", all=False)
+    session.switch_frame(frame)
+
+    element = session.find.css("div", all=False)
+
+    session.switch_frame("parent")
+
+    if closed:
+        session.execute_script("arguments[0].remove();", args=[frame])
+
+    response = get_element_property(session, element.id, "id")
     assert_error(response, "no such element")
 
 
 @pytest.mark.parametrize("as_frame", [False, True], ids=["top_context", "child_context"])
 def test_stale_element_reference(session, stale_element, as_frame):
-    element = stale_element("<input>", "input", as_frame=as_frame)
+    element = stale_element("input#text", as_frame=as_frame)
 
     result = get_element_property(session, element.id, "id")
     assert_error(result, "stale element reference")
@@ -91,6 +137,16 @@ def test_primitives(session, inline, js_primitive, py_primitive):
     assert_success(response, py_primitive)
 
 
+def test_collection_dom_token_list(session, inline):
+    session.url = inline("""<div class="no cheese">""")
+    element = session.find.css("div", all=False)
+
+    response = get_element_property(session, element.id, "classList")
+    value = assert_success(response)
+
+    assert value == ["no", "cheese"]
+
+
 @pytest.mark.parametrize("js_primitive,py_primitive", [
     ("\"foobar\"", "foobar"),
     (42, 42),
@@ -114,32 +170,18 @@ def test_primitives_set_by_execute_script(session, inline, js_primitive, py_prim
     ("shadowRoot", ShadowRoot),
     ("window", Window),
 ])
-def test_web_reference(session, inline, js_web_reference, py_web_reference):
-    session.url = inline("""
-        <div id="parent"></div>
-        <p id="element"></p>
-        <iframe id="frame"></iframe>
-        <shadow-element id="custom"></shadow-element>
+def test_web_reference(session, get_test_page, js_web_reference, py_web_reference):
+    session.url = get_test_page()
 
-        <script>
-            customElements.define("shadow-element",
-                class extends HTMLElement {
-                    constructor() {
-                        super();
-                        this.attachShadow({ mode: "open" }).innerHTML = "<p>foo";
-                    }
-                }
-            );
-
-            const parent = document.getElementById("parent");
-            parent.__element = document.getElementById("element");
-            parent.__frame = document.getElementById("frame").contentWindow;
-            parent.__shadowRoot = document.getElementById("custom").shadowRoot;
-            parent.__window = document.defaultView;
-        </script>
+    session.execute_script("""
+        const parent = document.querySelector("body");
+        parent.__element = document.querySelector("div");
+        parent.__frame = document.querySelector("iframe").contentWindow;
+        parent.__shadowRoot = document.querySelector("custom-element").shadowRoot;
+        parent.__window = document.defaultView;
         """)
 
-    elem = session.find.css("#parent", all=False)
+    elem = session.find.css("body", all=False)
     response = get_element_property(session, elem.id, "__{}".format(js_web_reference))
     value = assert_success(response)
 

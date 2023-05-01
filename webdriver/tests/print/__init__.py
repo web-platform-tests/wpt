@@ -1,21 +1,21 @@
-def load_pdf_document(session, inline, pdf_data):
-    """Load a PDF document in the browser using pdf.js"""
-    session.url = inline("""
-<!doctype html>
-<script src="/_pdf_js/pdf.js"></script>
-<canvas></canvas>
-<script>
-async function getText() {
-  pages = [];
-  let loadingTask = pdfjsLib.getDocument({data: atob("%s")});
-  let pdf = await loadingTask.promise;
-  for (let pageNumber=1; pageNumber<=pdf.numPages; pageNumber++) {
-    let page = await pdf.getPage(pageNumber);
-    textContent = await page.getTextContent()
-    text = textContent.items.map(x => x.str).join("");
-    pages.push(text);
-  }
-  return pages
-}
-</script>
-""" % pdf_data)
+def do_print(session, options={}):
+    params = {}
+
+    if options.get("background", None) is not None:
+        params["background"] = options["background"]
+    if options.get("margin", None) is not None:
+        params["margin"] = options["margin"]
+    if options.get("orientation") is not None:
+        params["orientation"] = options["orientation"]
+    if options.get("page") is not None:
+        params["page"] = options["page"]
+    if options.get("pageRanges") is not None:
+        params["pageRanges"] = options["pageRanges"]
+    if options.get("scale") is not None:
+        params["scale"] = options["scale"]
+    if options.get("shrinkToFit") is not None:
+        params["shrinkToFit"] = options["shrinkToFit"]
+
+    return session.transport.send(
+        "POST", "session/{session_id}/print".format(**vars(session)), params
+    )

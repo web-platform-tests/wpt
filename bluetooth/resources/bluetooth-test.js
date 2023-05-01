@@ -89,6 +89,25 @@ function bluetooth_test(
   }, name, properties);
 }
 
+function bluetooth_test_crbug1430625(
+  test_function, name, properties, validate_response_consumed = true) {
+return promise_test(async (t) => {
+  assert_implements(navigator.bluetooth, 'missing navigator.bluetooth');
+  // Trigger Chromium-specific setup.
+  await performChromiumSetup();
+  assert_implements(
+      navigator.bluetooth.test, 'missing navigator.bluetooth.test');
+  console.log('[crbug.com/1430625] To test_function');
+  await test_function(t);
+  if (validate_response_consumed) {
+    console.log('[crbug.com/1430625] To wait allResponsesConsumed');
+    let consumed = await navigator.bluetooth.test.allResponsesConsumed();
+    assert_true(consumed);
+  }
+  console.log('[crbug.com/1430625] End');
+}, name, properties);
+}
+
 /**
  * Test Helpers
  */
@@ -176,18 +195,6 @@ function assert_promise_rejects_with_message(promise, expected, description) {
               error.message, expected.message, 'Unexpected Error Message:');
         }
       });
-}
-
-/**
- * Runs the garbage collection.
- * @returns {Promise<void>} Resolves when garbage collection has finished.
- */
-function runGarbageCollection() {
-  // Run gc() as a promise.
-  return new Promise(function(resolve, reject) {
-    GCController.collect();
-    step_timeout(resolve, 0);
-  });
 }
 
 /**

@@ -2449,7 +2449,7 @@ IdlInterface.prototype.test_member_maplike = function(member) {
             methods.push(
                 ["set", 2],
                 ["delete", 1],
-                ["clear", 1]
+                ["clear", 0]
             );
         }
 
@@ -2474,8 +2474,8 @@ IdlInterface.prototype.test_member_maplike = function(member) {
         assert_equals(sizeDesc.set, undefined, `size should not have a setter`);
         assert_equals(sizeDesc.enumerable, true, `size enumerable`);
         assert_equals(sizeDesc.configurable, true, `size configurable`);
-        assert_equals(sizeDesc.get.length, 0, `size getter length should have the right length`);
-        assert_equals(sizeDesc.get.name, "get size", `size getter have the right name`);
+        assert_equals(sizeDesc.get.length, 0, `size getter length`);
+        assert_equals(sizeDesc.get.name, "get size", `size getter name`);
     }, `${this.name} interface: maplike<${member.idlType.map(t => t.idlType).join(", ")}>`);
 };
 
@@ -2494,7 +2494,7 @@ IdlInterface.prototype.test_member_setlike = function(member) {
             methods.push(
                 ["add", 1],
                 ["delete", 1],
-                ["clear", 1]
+                ["clear", 0]
             );
         }
 
@@ -2519,8 +2519,8 @@ IdlInterface.prototype.test_member_setlike = function(member) {
         assert_equals(sizeDesc.set, undefined, `size should not have a setter`);
         assert_equals(sizeDesc.enumerable, true, `size enumerable`);
         assert_equals(sizeDesc.configurable, true, `size configurable`);
-        assert_equals(sizeDesc.get.length, 0, `size getter length should have the right length`);
-        assert_equals(sizeDesc.get.name, "size", `size getter have the right name`);
+        assert_equals(sizeDesc.get.length, 0, `size getter length`);
+        assert_equals(sizeDesc.get.name, "get size", `size getter name`);
     }, `${this.name} interface: setlike<${member.idlType.map(t => t.idlType).join(", ")}>`);
 };
 
@@ -2668,6 +2668,7 @@ IdlInterface.prototype.test_member_stringifier = function(member)
 
 IdlInterface.prototype.test_members = function()
 {
+    var unexposed_members = new Set();
     for (var i = 0; i < this.members.length; i++)
     {
         var member = this.members[i];
@@ -2676,15 +2677,18 @@ IdlInterface.prototype.test_members = function()
         }
 
         if (!exposed_in(exposure_set(member, this.exposureSet))) {
-            subsetTestByKey(this.name, test, function() {
-                // It's not exposed, so we shouldn't find it anywhere.
-                assert_false(member.name in this.get_interface_object(),
-                             "The interface object must not have a property " +
-                             format_value(member.name));
-                assert_false(member.name in this.get_interface_object().prototype,
-                             "The prototype object must not have a property " +
-                             format_value(member.name));
-            }.bind(this), this.name + " interface: member " + member.name);
+            if (!unexposed_members.has(member.name)) {
+                unexposed_members.add(member.name);
+                subsetTestByKey(this.name, test, function() {
+                    // It's not exposed, so we shouldn't find it anywhere.
+                    assert_false(member.name in this.get_interface_object(),
+                                "The interface object must not have a property " +
+                                format_value(member.name));
+                    assert_false(member.name in this.get_interface_object().prototype,
+                                "The prototype object must not have a property " +
+                                format_value(member.name));
+                }.bind(this), this.name + " interface: member " + member.name);
+            }
             continue;
         }
 
@@ -2763,21 +2767,26 @@ IdlInterface.prototype.test_object = function(desc)
         expected_typeof = "object";
     }
 
-    this.test_primary_interface_of(desc, obj, exception, expected_typeof);
+    if (this.is_callback()) {
+        assert_equals(exception, null, "Unexpected exception when evaluating object");
+        assert_equals(typeof obj, expected_typeof, "wrong typeof object");
+    } else {
+        this.test_primary_interface_of(desc, obj, exception, expected_typeof);
 
-    var current_interface = this;
-    while (current_interface)
-    {
-        if (!(current_interface.name in this.array.members))
+        var current_interface = this;
+        while (current_interface)
         {
-            throw new IdlHarnessError("Interface " + current_interface.name + " not found (inherited by " + this.name + ")");
+            if (!(current_interface.name in this.array.members))
+            {
+                throw new IdlHarnessError("Interface " + current_interface.name + " not found (inherited by " + this.name + ")");
+            }
+            if (current_interface.prevent_multiple_testing && current_interface.already_tested)
+            {
+                return;
+            }
+            current_interface.test_interface_of(desc, obj, exception, expected_typeof);
+            current_interface = this.array.members[current_interface.base];
         }
-        if (current_interface.prevent_multiple_testing && current_interface.already_tested)
-        {
-            return;
-        }
-        current_interface.test_interface_of(desc, obj, exception, expected_typeof);
-        current_interface = this.array.members[current_interface.base];
     }
 };
 
@@ -2850,17 +2859,23 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
         return;
     }
 
+    var unexposed_properties = new Set();
     for (var i = 0; i < this.members.length; i++)
     {
         var member = this.members[i];
         if (member.untested) {
             continue;
         }
-        if (!exposed_in(exposure_set(member, this.exposureSet))) {
-            subsetTestByKey(this.name, test, function() {
-                assert_equals(exception, null, "Unexpected exception when evaluating object");
-                assert_false(member.name in obj);
-            }.bind(this), this.name + " interface: " + desc + ' must not have property "' + member.name + '"');
+        if (!exposed_in(exposure_set(member, this.exposureSet)))
+        {
+            if (!unexposed_properties.has(member.name))
+            {
+                unexposed_properties.add(member.name);
+                subsetTestByKey(this.name, test, function() {
+                    assert_equals(exception, null, "Unexpected exception when evaluating object");
+                    assert_false(member.name in obj);
+                }.bind(this), this.name + " interface: " + desc + ' must not have property "' + member.name + '"');
+            }
             continue;
         }
         if (member.type == "attribute" && member.isUnforgeable)

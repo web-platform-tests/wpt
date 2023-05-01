@@ -9,17 +9,17 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <style>
-  html {
+  html,selectmenu {
     font-family: Ahem;
   }
   selectmenu {
     position: absolute;
     top: 0px;
     left: 0px;
-    height: 20px;
+    height: 30px;
   }
 
-  [popup] {
+  [popover] {
     width: fit-content;
     height: fit-content;
     background: white;
@@ -39,7 +39,7 @@
 </style>
 
 <selectmenu id="selectMenu0">
-  <div popup slot="listbox" behavior="listbox">
+  <div popover slot="listbox" behavior="listbox">
     <option>
       option with image displayed
       <img src="/images/green-256x256.png">

@@ -5,7 +5,6 @@ from .protocol import Protocol, ProtocolPart
 from time import time
 from queue import Empty
 from base64 import b64encode
-from os import linesep
 import json
 
 
@@ -41,7 +40,7 @@ class ContentShellTestPart(ProtocolPart):
     https://chromium.googlesource.com/chromium/src.git/+/HEAD/content/web_test/browser/test_info_extractor.h
     """
     name = "content_shell_test"
-    eof_marker = "#EOF" + linesep  # Marker sent by content_shell after blocks.
+    eof_marker = '#EOF\n'  # Marker sent by content_shell after blocks.
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -67,7 +66,7 @@ class ContentShellTestPart(ProtocolPart):
     def _send_command(self, command):
         """Sends a single `command`, i.e. a URL to open, to content_shell.
         """
-        self.stdin_queue.put((command + linesep).encode("utf-8"))
+        self.stdin_queue.put((command + "\n").encode("utf-8"))
 
     def _read_block(self, deadline=None):
         """Tries to read a single block of content from stdout before the `deadline`.
@@ -94,6 +93,10 @@ class ContentShellTestPart(ProtocolPart):
 
             if line.endswith(self.eof_marker):
                 result += line[:-len(self.eof_marker)]
+                break
+            elif line.endswith('#EOF\r\n'):
+                result += line[:-len('#EOF\r\n')]
+                self.logger.warning('Got a CRLF-terminated #EOF - this is a driver bug.')
                 break
 
             result += line
@@ -261,6 +264,15 @@ class ContentShellTestharnessExecutor(TestharnessExecutor):
             if not text:
                 return (test.result_cls("ERROR", errors), [])
 
-            return self.convert_result(test, json.loads(text))
+            result_url, status, message, stack, subtest_results = json.loads(text)
+            if result_url != test.url:
+                # Suppress `convert_result`'s URL validation.
+                # See `testharnessreport-content-shell.js` for details.
+                self.logger.warning('Got results from %s, expected %s' % (result_url, test.url))
+                self.logger.warning('URL mismatch may be a false positive '
+                                    'if the test navigates')
+                result_url = test.url
+            raw_result = result_url, status, message, stack, subtest_results
+            return self.convert_result(test, raw_result)
         except BaseException as exception:
             return _convert_exception(test, exception, self.protocol.content_shell_errors.read_errors())

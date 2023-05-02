@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Reference Test</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+
+  <style>
+  body
+    {
+      overflow-y: hidden;
+      /*
+      We want to neutralize the generation of a
+      vertical scrollbar in case of an 600x600
+      viewport size
+      */
+    }
+
+  div.black-wrapper
+    {
+      background-color: black;
+      display: inline-block;
+      height: 220px;
+      margin: 64px 32px;
+      position: relative;
+      vertical-align: top;
+      width: 220px;
+    }
+
+  div.small
+    {
+      height: 160px;
+      width: 160px;
+
+  /*
+        16px
+     +
+        32px
+     +
+        64px
+     +
+        32px
+     +
+        16px
+     ========
+       160px
+  */
+    }
+
+  div.blue-box
+    {
+      background-color: orange; /* padding belt is orange */
+      background-image: linear-gradient(yellow, yellow); /* content area is yellow */
+      background-origin: content-box;
+      background-repeat: no-repeat;
+      border: blue solid 16px;
+      height: 64px;
+      padding: 32px;
+      position: relative;
+      width: 64px;
+    }
+  </style>
+
+  <div class="black-wrapper small" style="top: 20px; right: 20px;"><div class="blue-box" style="bottom: 20px; left: 20px;"></div></div><div class="black-wrapper" style="bottom: 10px; right: 50px;"><div class="blue-box" style="top: 10px; left: 50px;"></div></div><br>
+
+  <div class="black-wrapper small" style="bottom: 80px; right: 20px;"><div class="blue-box" style="top: 20px; left: 20px;"></div></div><div class="black-wrapper" style="bottom: 110px; right: 50px;"><div class="blue-box" style="top: 50px; left: 50px;"></div></div>

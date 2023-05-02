@@ -2,10 +2,12 @@
 
  <meta charset="UTF-8">
 
-  <title>CSS Backgrounds and Borders Test: box-shadow outset without spread</title>
+  <title>CSS Backgrounds and Borders Test: box-shadow outset with spread</title>
+
   <link rel="author" title="Zhang Xiaochong" href="mailto:joy.xczhang@gmail.com">
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="http://www.w3.org/TR/css3-background/#the-box-shadow">
-  <link rel="match" href="reference/ref-filled-green-100px-square.xht">
+  <link rel="match" href="reference/box-shadow-outset-without-border-radius-002-ref.html">
 
   <meta content="" name="flags">
 
@@ -17,41 +19,85 @@
 
   -->
 
-  <style type="text/css">
+  <style>
+  body
+    {
+      overflow-y: hidden;
+      /*
+      We want to neutralize the generation of a
+      vertical scrollbar in case of an 600x600
+      viewport size
+      */
+    }
+
   div
     {
+      background-color: orange; /* padding belt is orange */
+      background-image: linear-gradient(yellow, yellow); /* content area is yellow */
+      background-origin: content-box;
+      background-repeat: no-repeat;
+      border: blue solid 16px; /* border belt is blue */
       display: inline-block;
-    }
-
-  div.test-overlapping-green
-    {
-      background-color: green;
-      height: 50px;
+      height: 64px;
+      margin: 64px 32px;
+      padding: 32px;
       vertical-align: top;
-      width: 50px;
+      width: 64px;
     }
 
-  div#first-subtest  /* outset with NO spread */
+  /*
+
+  An outer box-shadow casts a shadow as if the border-box
+  of the element were opaque. Assuming a spread distance
+  of zero, its perimeter has the exact same size and
+  shape as the border box. The shadow is drawn outside
+  the border edge only: it is clipped inside the border-box
+  of the element.
+
+  If a spread distance is defined, the shadow perimeter
+  defined above is expanded outward (for outer box-shadows)
+  by outset withting the shadow’s straight edges by the spread
+  distance (and flooring the resulting width/height at zero).
+
+  */
+
+  div#fifth-subtest /* outset with NO spread */
     {
-      box-shadow: green 50px 50px;
+      box-shadow: black -20px 20px 0px 0px;
     }
 
-  div#second-subtest  /* outset with NO spread */
+  div#sixth-subtest /* outset with a 30px spread */
     {
-      box-shadow: green -50px 50px;
+      box-shadow: black -20px 20px 0px 30px;
     }
 
-  div.ref-overlapped-red
+  div#seventh-subtest /* outset with NO spread */
     {
-      background-color: red;
-      height: 100px;
-      position: relative;
-      right: 100px;
-      width: 100px;
-      z-index: -1;
+      box-shadow: black -20px -20px 0px 0px;
     }
-    </style>
 
-  <p>The test passes if there is a filled green square and <strong>no red</strong>.
+  div#eighth-subtest /* outset with a 30px spread */
+    {
+      box-shadow: black -20px -20px 0px 30px;
+    }
 
-  <div class="test-overlapping-green" id="first-subtest"></div><div class="test-overlapping-green" id="second-subtest"></div><div class="ref-overlapped-red"></div>
+  /*
+
+   Color meaning
+   = = = = = = =
+
+   yellow is the content area only
+
+   orange is the padding belt only
+
+   black is the inset box shadow only
+
+   blue is the border belt only
+
+  */
+
+  </style>
+
+  <div id="fifth-subtest"></div><div id="sixth-subtest"></div><br>
+
+  <div id="seventh-subtest"></div><div id="eighth-subtest"></div>

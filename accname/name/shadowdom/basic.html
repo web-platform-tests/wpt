@@ -14,7 +14,7 @@
         type="button"
         aria-labelledby="label1"
         data-expectedlabel="foo"
-        data-testname="content inside shadow DOM"></button>
+        data-testname="aria-labelledby reference to element with text content inside shadow DOM"></button>
 
 <label id="label2">
   <div id="host2"></div>
@@ -24,7 +24,7 @@
         type="button"
         aria-labelledby="label2"
         data-expectedlabel="bar"
-        data-testname="aria-label inside shadow DOM"></button>
+        data-testname="aria-labelledby reference to element with aria-label inside shadow DOM"></button>
 <script>
 
 document.getElementById('host1').attachShadow({ mode: 'open' }).innerHTML = 'foo';

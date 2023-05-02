@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<iframe height="300" width="300" scrolling="no" frameborder="0" id="iframe"></iframe>
+<script>
+promise_test(async t => {
+  iframe.src =
+    get_host_info().HTTP_NOTSAMESITE_ORIGIN + "/html/semantics/embedded-content/the-img-element/resources/lazy-load-adopt-cross-origin-child-iframe.html";
+
+  await new Promise(resolve => {
+    window.addEventListener("message", event => resolve(event.data));
+  }, { once: true } );
+});
+</script>

@@ -2,7 +2,7 @@ function window_state_context(t) {
     let rect = null;
     let state = "restored";
     t.add_cleanup(async () => {
-        if (state === "minimized") await restore();
+      if (state === "minimized") await restore();
     });
     async function restore() {
         if (state !== "minimized") return;
@@ -17,22 +17,25 @@ function window_state_context(t) {
     }
 
     function visibilityEventPromise() {
-      return new Promise(resolve => new PerformanceObserver(
-        (entries, observer) => { observer.disconnect(); resolve(); }).observe(
-          {type: "visibility-state"}))
+      return new Promise((resolve) =>
+          new PerformanceObserver((entries, observer) => {
+              observer.disconnect();
+              resolve();
+          }).observe({ type: "visibility-state" })
+      );
     }
 
     async function minimizeAndWait() {
       const promise = visibilityEventPromise();
       await Promise.all([minimize(), promise]);
-      await new Promise(resolve => t.step_timeout(resolve, 0));
+      await new Promise((resolve) => t.step_timeout(resolve, 0));
     }
 
     async function restoreAndWait() {
       const promise = visibilityEventPromise();
       await Promise.all([restore(), promise]);
-      await new Promise(resolve => t.step_timeout(resolve, 0));
+      await new Promise((resolve) => t.step_timeout(resolve, 0));
     }
 
-    return {minimize, restore, minimizeAndWait, restoreAndWait};
+  return { minimize, restore, minimizeAndWait, restoreAndWait };
 }

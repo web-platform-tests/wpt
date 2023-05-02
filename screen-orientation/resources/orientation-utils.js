@@ -33,20 +33,11 @@ export function getOppositeOrientation() {
     : "portrait";
 }
 
-export function makeCleanup(
-  initialOrientation = screen.orientation?.type.split(/-/)[0]
-) {
+export function makeCleanup() {
   return async () => {
-    if (initialOrientation) {
-      try {
-        await screen.orientation.lock(initialOrientation);
-      } catch {}
-    }
     screen.orientation.unlock();
-    requestAnimationFrame(async () => {
-      try {
-        await document.exitFullscreen();
-      } catch {}
-    });
+    if (document.fullscreenElement) {
+      await document.fullscreenElement.ownerDocument.exitFullscreen();
+    }
   };
 }

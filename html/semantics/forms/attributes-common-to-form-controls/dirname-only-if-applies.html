@@ -18,8 +18,6 @@
     <iframe name="iframe"></iframe>
 
     <script>
-      setup({ explicit_done: true });
-
       const types_applies = ["text", "search"];
       const types_not = [
         "hidden", "tel", "url", "email", "password", "date", "month", "week", "time",
@@ -59,23 +57,19 @@
       test(function() {
         assertInputSubmission(data);
       }, "Submit input element directionality to FormData, if dirname applies.");
-
       test(function() {
         assert_equals(data.get("textarea.dir"), "ltr", "Submit ltr for textarea");
       }, "Submit textarea element directionality to FormData.");
 
       document.getElementById("btn-submit").click();
-      onIframeLoaded(function(params) {
-        test(function(){
-          assertInputSubmission(params);
-        }, "Submit input element directionality, if dirname applies.")
-
-        test(function() {
-          assert_equals(params.get("textarea.dir"), "ltr", "Submit ltr for textarea");
-        }, "Submit textarea element directionality.");
-
-        done();
-      })
+      const t_inp = async_test("Submit input element directionality, if dirname applies.");
+      onIframeLoadedDone(t_inp, function(params) {
+        assertInputSubmission(params);
+      });
+      const t_ta = async_test("Submit textarea element directionality.");
+      onIframeLoadedDone(t_ta, function(params) {
+        assert_equals(params.get("textarea.dir"), "ltr", "Submit ltr for textarea");
+      });
     </script>
   </body>
 </html>

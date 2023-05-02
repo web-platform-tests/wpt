@@ -19,7 +19,7 @@
   document.querySelector("input").value = "foobar";
   document.querySelector("button").click();
 
-  onIframeLoaded(t.step_func_done(function(params) {
+  onIframeLoadedDone(t, function(params) {
     assert_equals(params.get("comment.dir"), "rtl");
-  }));
+  });
 </script>

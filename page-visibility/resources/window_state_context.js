@@ -37,5 +37,5 @@ function window_state_context(t) {
       await new Promise((resolve) => t.step_timeout(resolve, 0));
     }
 
-  return { minimize, restore, minimizeAndWait, restoreAndWait };
+    return { minimize, restore, minimizeAndWait, restoreAndWait };
 }

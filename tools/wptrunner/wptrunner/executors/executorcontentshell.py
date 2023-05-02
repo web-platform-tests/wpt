@@ -207,7 +207,7 @@ class ContentShellCrashtestExecutor(CrashtestExecutor):
 _SanitizerMixin = make_sanitizer_mixin(ContentShellCrashtestExecutor)
 
 
-class ContentShellRefTestExecutor(RefTestExecutor, _SanitizerMixin):
+class ContentShellRefTestExecutor(RefTestExecutor, _SanitizerMixin):  # type: ignore
     def __init__(self, logger, browser, server_config, timeout_multiplier=1, screenshot_cache=None,
             debug_info=None, reftest_screenshot="unexpected", **kwargs):
         super().__init__(logger, browser, server_config, timeout_multiplier, screenshot_cache,
@@ -253,7 +253,7 @@ class ContentShellPrintRefTestExecutor(ContentShellRefTestExecutor):
     is_print = True
 
 
-class ContentShellTestharnessExecutor(TestharnessExecutor, _SanitizerMixin):
+class ContentShellTestharnessExecutor(TestharnessExecutor, _SanitizerMixin):  # type: ignore
     def __init__(self, logger, browser, server_config, timeout_multiplier=1, debug_info=None,
             **kwargs):
         super().__init__(logger, browser, server_config, timeout_multiplier, debug_info, **kwargs)

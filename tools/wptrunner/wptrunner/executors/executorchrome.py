@@ -7,7 +7,6 @@ from urllib.parse import urljoin
 
 from .base import (
     CrashtestExecutor,
-    TestExecutor,
     TestharnessExecutor,
     get_pages,
 )
@@ -23,9 +22,9 @@ from .protocol import PrintProtocolPart
 here = os.path.dirname(__file__)
 
 
-def make_sanitizer_mixin(crashtest_executor_cls: Type[CrashtestExecutor]):
+def make_sanitizer_mixin(crashtest_executor_cls: Type[CrashtestExecutor]):  # type: ignore[no-untyped-def]
     class SanitizerMixin:
-        def __new__(cls, logger, browser, **kwargs) -> Type[TestExecutor]:
+        def __new__(cls, logger, browser, **kwargs):
             # Overriding `__new__` is the least worst way we can force tests to run
             # as crashtests at runtime while still supporting:
             #   * Class attributes (e.g., `extra_timeout`)
@@ -58,11 +57,11 @@ def make_sanitizer_mixin(crashtest_executor_cls: Type[CrashtestExecutor]):
 _SanitizerMixin = make_sanitizer_mixin(WebDriverCrashtestExecutor)
 
 
-class ChromeDriverRefTestExecutor(WebDriverRefTestExecutor, _SanitizerMixin):
+class ChromeDriverRefTestExecutor(WebDriverRefTestExecutor, _SanitizerMixin):  # type: ignore
     pass
 
 
-class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor, _SanitizerMixin):
+class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor, _SanitizerMixin):  # type: ignore
     pass
 
 

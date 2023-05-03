@@ -2,7 +2,7 @@
 
 import os
 import plistlib
-from distutils.spawn import find_executable
+from shutil import which
 from distutils.version import LooseVersion
 
 import psutil
@@ -161,7 +161,7 @@ class SafariBrowser(WebDriverBrowser):
                          env=env)
 
         if "/" not in webdriver_binary:
-            wd_path = find_executable(webdriver_binary)
+            wd_path = which(webdriver_binary)
         else:
             wd_path = webdriver_binary
         self.safari_path = self._find_safari_executable(wd_path)

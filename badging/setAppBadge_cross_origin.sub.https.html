@@ -3,26 +3,25 @@
 <title>Test cross-origin and same-origin use of setAppBadge</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<iframe id="testIframe"></iframe>
+<body></body>
 <script>
-  const iframe = document.getElementById("testIframe");
-
-  function sendMessageToIframe(message) {
+  function sendMessage(iframe, data) {
     return new Promise((resolve) => {
       window.addEventListener("message", function listener(event) {
-        const { messageId } = event.data;
-        if (event.data.message !== message) return;
+        if (event.data.message !== data.message) return;
         window.removeEventListener("message", listener);
         resolve(event);
       });
-      iframe.contentWindow.postMessage("callSetAppBadge", "*");
+      iframe.contentWindow.postMessage(data, "*");
     });
   }
 
   function loadIframe(src) {
+    const iframe = document.createElement("iframe");
+    iframe.src = src;
     return new Promise((resolve) => {
-      iframe.addEventListener("load", resolve);
-      iframe.src = src;
+      iframe.addEventListener("load", () => resolve(iframe));
+      document.body.appendChild(iframe);
     });
   }
 
@@ -34,10 +33,10 @@
   }, "Test that navigator.setAppBadge is available");
 
   promise_test(async () => {
-    await loadIframe(
+    const iframe = await loadIframe(
       `https://{{hosts[][]}}:{{ports[https][1]}}/badging/resources/setAppBadge_iframe.html`
     );
-    const event = await sendMessageToIframe("callSetAppBadge");
+    const event = await sendMessage(iframe, { message: "callSetAppBadge" });
     const { exceptionType, status } = event.data;
     assert_equals(
       status,
@@ -49,16 +48,37 @@
       "SecurityError",
       "setAppBadge should throw a SecurityError when called in a cross-origin iframe"
     );
+    iframe.remove();
   }, "Test that calling setAppBadge in a cross-origin iframe throws a SecurityError");
 
   promise_test(async () => {
-    await loadIframe("./resources/setAppBadge_iframe.html");
-    const event = await sendMessageToIframe("callSetAppBadge");
+    const iframe = await loadIframe("./resources/setAppBadge_iframe.html");
+    const event = await sendMessage(iframe, { message: "callSetAppBadge" });
     const { status } = event.data;
     assert_equals(
       status,
       "success",
       "setAppBadge should succeed when called in a same-origin iframe"
     );
+    iframe.remove();
   }, "Test that calling setAppBadge in a same-origin iframe succeeds");
+
+  promise_test(async () => {
+    const origin = `https://${window.location.hostname}:{{ports[https][1]}}`;
+    const sameOriginDomainURL = new URL(
+      "/badging/resources/setAppBadge_iframe.html",
+      origin
+    );
+    const iframe = await loadIframe(sameOriginDomainURL);
+    const { origin: domain } = window.location;
+    const data = { message: "callSetAppBadge", domain };
+    const event = await sendMessage(iframe, data);
+    const { status } = event.data;
+    assert_equals(
+      status,
+      "success",
+      "setAppBadge should succeed when called in a same-origin iframe"
+    );
+    iframe.remove();
+  }, "Test that calling setAppBadge in a same origin-domain iframe succeeds");
 </script>

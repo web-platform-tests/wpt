@@ -2,32 +2,35 @@
 <meta charset="utf-8" />
 <title>setAppBadge iframe</title>
 <script>
-  async function callSetAppBadge() {
-    const postMessageData = { message: "callSetAppBadge" };
-
+  async function callSetAppBadge(data) {
+    const responseData = { message: "callSetAppBadge" };
     try {
+      // checks for same origin-domain
+      if (data.domain) {
+        document.domain = data.domain;
+      }
       await navigator.setAppBadge();
-      postMessageData.status = "success";
+      responseData.status = "success";
     } catch (e) {
       if (e instanceof DOMException) {
-        postMessageData.status = "error";
-        postMessageData.exceptionType = e.name;
+        responseData.status = "error";
+        responseData.exceptionType = e.name;
       } else {
-        postMessageData.status = "unknown_error";
-        postMessageData.error = e.toString();
+        responseData.status = "unknown_error";
+        responseData.error = e.toString();
       }
     } finally {
-      window.parent.postMessage(postMessageData, "*");
+      window.parent.postMessage(responseData, "*");
     }
   }
 
-  window.addEventListener("message", async (event) => {
-    switch (event.data) {
+  window.addEventListener("message", async ({ data }) => {
+    switch (data.message) {
       case "callSetAppBadge":
-        await callSetAppBadge();
+        await callSetAppBadge(data);
         break;
       default:
-        throw new Error(`Unexpected message: ${event.data}`);
+        throw new Error(`Unexpected message: ${JSON.stringify(data)}`);
     }
   });
 </script>

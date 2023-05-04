@@ -21,6 +21,7 @@ trigger:
 - triggers/edge_canary
 - triggers/safari_stable
 - triggers/safari_preview
+- triggers/wktr_preview
 
 # Set safaridriver_diagnose to true to enable safaridriver diagnostics. The
 # logs won't appear in `./wpt run` output but will be uploaded as an artifact.

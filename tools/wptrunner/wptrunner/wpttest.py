@@ -1,10 +1,10 @@
 # mypy: allow-untyped-defs
-
 import os
 import subprocess
 import sys
+from abc import ABC
 from collections import defaultdict
-from typing import Any, ClassVar, Dict, Type
+from typing import Any, ClassVar, Dict, Optional, Type
 from urllib.parse import urljoin
 
 from .wptmanifest.parser import atoms
@@ -13,7 +13,7 @@ atom_reset = atoms["Reset"]
 enabled_tests = {"testharness", "reftest", "wdspec", "crashtest", "print-reftest"}
 
 
-class Result:
+class Result(ABC):
     def __init__(self,
                  status,
                  message,
@@ -34,7 +34,7 @@ class Result:
         return f"<{self.__module__}.{self.__class__.__name__} {self.status}>"
 
 
-class SubtestResult:
+class SubtestResult(ABC):
     def __init__(self, name, status, message, stack=None, expected=None, known_intermittent=None):
         self.name = name
         if status not in self.statuses:
@@ -203,9 +203,9 @@ def server_protocol(manifest_item):
     return "http"
 
 
-class Test:
+class Test(ABC):
     result_cls: ClassVar[Type[Result]]
-    subtest_result_cls: ClassVar[Type[SubtestResult]]
+    subtest_result_cls: ClassVar[Optional[Type[SubtestResult]]] = None
     test_type: ClassVar[str]
     pac = None
 

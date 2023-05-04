@@ -82,5 +82,5 @@ def get(error_code: str) -> Type[BidiException]:
 
 _errors: DefaultDict[str, Type[BidiException]] = collections.defaultdict()
 for item in list(locals().values()):
-    if type(item) == type and issubclass(item, BidiException):
+    if type(item) == type and item != BidiException and issubclass(item, BidiException):
         _errors[item.error_code] = item

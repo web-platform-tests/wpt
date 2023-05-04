@@ -63,7 +63,8 @@ const tests = [
   {loading: 'lazy', sizes: 'AUTO', width: '10', 'data-ref': 'ref1'},
   {loading: 'lazy', width: '10', 'data-ref': 'ref1'},
   {loading: 'lazy', style: 'width: 10px', 'data-ref': 'ref1'},
-  {loading: 'lazy', style: 'max-width: 10px', 'data-ref': 'ref1'},
+  {loading: 'lazy', style: 'max-width: 10px', 'data-ref': 'ref2'}, // no specified width -> 0 -> 100vw
+  {loading: 'lazy', style: 'width: 100%; max-width: 10px', 'data-ref': 'ref1'},
   {loading: 'lazy', sizes: 'auto', width: '500', 'data-ref': 'ref2'},
   {loading: 'lazy', sizes: 'auto', width: '10', style: 'visibility: hidden', 'data-ref': 'ref1'},
   {loading: 'lazy', sizes: 'auto', width: '10', style: 'display: inline', hidden: '', 'data-ref': 'ref1'},

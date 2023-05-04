@@ -42,4 +42,73 @@ promise_test(async t => {
   assert_equals(typeof metadata.codecSpecifics.beginningOfPartition, 'boolean',
                 'codecSpecifics.beginningOfPartition is a boolean');
 }, "[VP8] getMetadata() supports the expected codec specifics");
+
+promise_test(async t => {
+  const senderReader = await setupLoopbackWithCodecAndGetReader(t, 'VP9');
+  const result = await senderReader.read();
+  const metadata = result.value.getMetadata();
+  // RTCEncodedVideoFrameAdditionalMetadata-only fields.
+  assert_true(Array.isArray(metadata.decodeTargetIndications),
+              'decodeTargetIndication is an array');
+  assert_equals(typeof metadata.isLastFrameInPicture, 'boolean',
+                'isLastFrameInPicture is a boolean');
+  assert_equals(typeof metadata.simulcastIdx, 'number',
+                'simulcastIdx is a number');
+  assert_equals(metadata.codec, 'vp9');
+  assert_equals(typeof metadata.codecSpecifics, 'object',
+                'codecSpecifics is an object');
+  // VP9-only
+  assert_equals(typeof metadata.codecSpecifics.interPicPredicted,
+                'boolean', 'codecSpecifics.interPicPredicted');
+  assert_equals(typeof metadata.codecSpecifics.flexibleMode,
+                'boolean', 'codecSpecifics.flexibleMode');
+  assert_equals(typeof metadata.codecSpecifics.beginningOfFrame,
+                'boolean', 'codecSpecifics.beginningOfFrame');
+  assert_equals(typeof metadata.codecSpecifics.endOfFrame,
+                'boolean', 'codecSpecifics.endOfFrame');
+  assert_equals(typeof metadata.codecSpecifics.nonRefForInterLayerPred,
+                'boolean', 'codecSpecifics.nonRefForInterLayerPred');
+  assert_equals(typeof metadata.codecSpecifics.pictureId,
+                'number', 'codecSpecifics.pictureId');
+  assert_equals(typeof metadata.codecSpecifics.maxPictureId,
+                'number', 'codecSpecifics.maxPictureId');
+  assert_equals(typeof metadata.codecSpecifics.tl0PicIdx,
+                'number', 'codecSpecifics.tl0PicIdx');
+  assert_equals(typeof metadata.codecSpecifics.temporalIdx,
+                'number', 'codecSpecifics.temporalIdx');
+  assert_equals(typeof metadata.codecSpecifics.spatialIdx,
+                'number', 'codecSpecifics.spatialIdx');
+  assert_equals(typeof metadata.codecSpecifics.temporalUpSwitch,
+                'boolean', 'codecSpecifics.temporalUpSwitch');
+  assert_equals(typeof metadata.codecSpecifics.interLayerPredicted,
+                'boolean', 'codecSpecifics.interLayerPredicted');
+  assert_equals(typeof metadata.codecSpecifics.gofIdx,
+                'number', 'codecSpecifics.gofIdx');
+  assert_true(Array.isArray(metadata.codecSpecifics.refPictures),
+              'isArray(codecSpecifics.refPictures)');
+  assert_equals(typeof metadata.codecSpecifics.ss,
+                'object', 'codecSpecifics.ss');
+  assert_true(Array.isArray(metadata.codecSpecifics.ss.frameSizes),
+              'isArray(codecSpecifics.ss.frameSizes)');
+  assert_equals(metadata.codecSpecifics.ss.frameSizes.length,
+                1, 'codecSpecifics.ss.frameSizes.length');
+  assert_equals(typeof metadata.codecSpecifics.ss.frameSizes[0].width,
+                'number', 'codecSpecifics.ss.frameSizes[0].width');
+  assert_equals(typeof metadata.codecSpecifics.ss.frameSizes[0].height,
+                'number', 'codecSpecifics.ss.frameSizes[0].height');
+  assert_true(Array.isArray(metadata.codecSpecifics.ss.frames),
+              'isArray(codecSpecifics.ss.frames)');
+  assert_equals(metadata.codecSpecifics.ss.frames.length,
+                1, 'codecSpecifics.ss.frames.length');
+  assert_equals(typeof metadata.codecSpecifics.ss.frames[0].temporalIdx,
+                'number', 'codecSpecifics.ss.frames[0].temporalIdx');
+  assert_equals(typeof metadata.codecSpecifics.ss.frames[0].temporalUpSwitch,
+                'boolean', 'codecSpecifics.ss.frames[0].temporalUpSwitch');
+  assert_true(Array.isArray(metadata.codecSpecifics.ss.frames[0].pidDiff),
+              'isArray(codecSpecifics.ss.frames[0].pidDiff)');
+  assert_equals(metadata.codecSpecifics.ss.frames[0].pidDiff.length,
+                1, 'codecSpecifics.ss.frames[0].pidDiff.length');
+  assert_equals(typeof metadata.codecSpecifics.ss.frames[0].pidDiff[0],
+                'number', 'codecSpecifics.ss.frames[0].pidDiff[0]');
+}, "[VP9] getMetadata() supports the expected codec specifics");
 </script>

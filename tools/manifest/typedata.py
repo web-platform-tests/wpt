@@ -1,6 +1,5 @@
-from collections.abc import MutableMapping
-from typing import (Any, Dict, Iterator, List, Optional, Set, Text, Tuple, Type,
-                    TYPE_CHECKING, Union)
+from typing import (Any, Dict, Iterator, List, Optional, MutableMapping, Set, Text, Tuple,
+                    Type, TYPE_CHECKING, Union)
 
 from .item import ManifestItem
 

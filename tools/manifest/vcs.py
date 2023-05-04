@@ -2,9 +2,9 @@ import abc
 import os
 import stat
 from collections import deque
-from collections.abc import MutableMapping
 from os import stat_result
-from typing import Any, Dict, Iterable, Iterator, List, Optional, Set, Text, Tuple, TYPE_CHECKING
+from typing import (Any, Dict, Iterable, Iterator, List, MutableMapping, Optional, Set, Text, Tuple,
+                    TYPE_CHECKING)
 
 from . import jsonlib
 from .utils import git

@@ -2,7 +2,10 @@ import os
 import sys
 from atomicwrites import atomic_write
 from copy import deepcopy
+from logging import Logger
 from multiprocessing import Pool, cpu_count
+from typing import (Any, Container, Dict, IO, Iterator, Iterable, Optional, Set, Text, Tuple, Type,
+                    Union)
 
 from . import jsonlib
 from . import vcs
@@ -20,22 +23,6 @@ from .log import get_logger
 from .sourcefile import SourceFile
 from .typedata import TypeData
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from logging import Logger
-    from typing import Any
-    from typing import Container
-    from typing import Dict
-    from typing import IO
-    from typing import Iterator
-    from typing import Iterable
-    from typing import Optional
-    from typing import Set
-    from typing import Text
-    from typing import Tuple
-    from typing import Type
-    from typing import Union
 
 
 CURRENT_VERSION: int = 8
@@ -71,10 +58,7 @@ def compute_manifest_items(source_file: SourceFile) -> Tuple[Tuple[Text, ...], T
     return rel_path_parts, new_type, set(manifest_items), file_hash
 
 
-if MYPY:
-    ManifestDataType = Dict[Any, TypeData]
-else:
-    ManifestDataType = dict
+ManifestDataType = Dict[Any, TypeData]
 
 
 class ManifestData(ManifestDataType):

@@ -5,6 +5,7 @@ import json
 import io
 import os
 from datetime import datetime, timedelta
+from typing import Any, Callable, List, Optional, Text
 from urllib.request import urlopen
 
 try:
@@ -16,14 +17,6 @@ from .utils import git
 
 from . import log
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any
-    from typing import Callable
-    from typing import List
-    from typing import Optional
-    from typing import Text
 
 here = os.path.dirname(__file__)
 

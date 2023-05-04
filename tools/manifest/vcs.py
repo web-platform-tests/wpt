@@ -3,6 +3,8 @@ import os
 import stat
 from collections import deque
 from collections.abc import MutableMapping
+from os import stat_result
+from typing import Any, Dict, Iterable, Iterator, List, Optional, Set, Text, Tuple, TYPE_CHECKING
 
 from . import jsonlib
 from .utils import git
@@ -12,20 +14,18 @@ from .utils import git
 from gitignore import gitignore  # type: ignore
 
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Dict, Optional, List, Set, Text, Iterable, Any, Tuple, Iterator
-    from .manifest import Manifest  # cyclic import under MYPY guard
-    stat_result = os.stat_result
+if TYPE_CHECKING:
+    from .manifest import Manifest  # avoid cyclic import
 
-    GitIgnoreCacheType = MutableMapping[bytes, bool]
-else:
-    GitIgnoreCacheType = MutableMapping
+GitIgnoreCacheType = MutableMapping[bytes, bool]
 
 
-def get_tree(tests_root: Text, manifest: Manifest, manifest_path: Optional[Text], cache_root: Optional[Text],
-             working_copy: bool = True, rebuild: bool = False) -> "FileSystem":
+def get_tree(tests_root: Text,
+             manifest: "Manifest",
+             manifest_path: Optional[Text],
+             cache_root: Optional[Text],
+             working_copy: bool = True,
+             rebuild: bool = False) -> "FileSystem":
     tree = None
     if cache_root is None:
         cache_root = os.path.join(tests_root, ".wptcache")

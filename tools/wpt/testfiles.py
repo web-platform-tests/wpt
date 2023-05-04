@@ -16,24 +16,12 @@ except ValueError:
     # reference
     #
     # note we need both because depending on caller we may/may not have the
-    # paths set up correctly to handle both and MYPY has no knowledge of our
+    # paths set up correctly to handle both and mypy has no knowledge of our
     # sys.path magic
     from manifest import manifest  # type: ignore
     from manifest.utils import git as get_git_cmd  # type: ignore
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any
-    from typing import Dict
-    from typing import Iterable
-    from typing import List
-    from typing import Optional
-    from typing import Pattern
-    from typing import Sequence
-    from typing import Set
-    from typing import Text
-    from typing import Tuple
+from typing import Any, Dict, Iterable, List, Optional, Pattern, Sequence, Set, Text, Tuple
 
 DEFAULT_IGNORE_RULES = ("resources/testharness*", "resources/testdriver*")
 

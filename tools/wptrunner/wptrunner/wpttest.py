@@ -483,14 +483,6 @@ class TestharnessTest(Test):
         return self.url
 
 
-class ManualTest(Test):
-    test_type = "manual"
-
-    @property
-    def id(self):
-        return self.url
-
-
 class ReftestTest(Test):
     """A reftest
 
@@ -703,7 +695,6 @@ class CrashTest(Test):
 manifest_test_cls = {"reftest": ReftestTest,
                      "print-reftest": PrintReftestTest,
                      "testharness": TestharnessTest,
-                     "manual": ManualTest,
                      "wdspec": WdspecTest,
                      "crashtest": CrashTest}
 

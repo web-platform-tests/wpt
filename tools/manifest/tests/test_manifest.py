@@ -17,8 +17,7 @@ if MYPY:
     from typing import Type
 
 
-def SourceFileWithTest(path, hash, cls, **kwargs):
-    # type: (str, str, Type[item.ManifestItem], **Any) -> sourcefile.SourceFile
+def SourceFileWithTest(path: str, hash: str, cls: Type[item.ManifestItem], **kwargs: Any) -> sourcefile.SourceFile:
     rel_path_parts = tuple(path.split(os.path.sep))
     s = mock.Mock(rel_path=path,
                   rel_path_parts=rel_path_parts,
@@ -32,8 +31,7 @@ def SourceFileWithTest(path, hash, cls, **kwargs):
     return s  # type: ignore
 
 
-def SourceFileWithTests(path, hash, cls, variants):
-    # type: (str, str, Type[item.URLManifestItem], **Any) -> sourcefile.SourceFile
+def SourceFileWithTests(path: str, hash: str, cls: Type[item.URLManifestItem], variants: Any) -> sourcefile.SourceFile:
     rel_path_parts = tuple(path.split(os.path.sep))
     s = mock.Mock(rel_path=path,
                   rel_path_parts=rel_path_parts,

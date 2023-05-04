@@ -173,8 +173,8 @@ class SourceFile:
                     "tools"}
 
     dir_path_non_test: Set[Tuple[Text, ...]] = {("css21", "archive"),
-                         ("css", "CSS2", "archive"),
-                         ("css", "common")}
+                                                ("css", "CSS2", "archive"),
+                                                ("css", "common")}
 
     def __init__(self, tests_root: Text,
                  rel_path: Text,

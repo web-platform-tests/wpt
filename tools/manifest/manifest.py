@@ -41,14 +41,14 @@ class InvalidCacheError(Exception):
 
 
 item_classes: Dict[Text, Type[ManifestItem]] = {"testharness": TestharnessTest,
-                "reftest": RefTest,
-                "print-reftest": PrintRefTest,
-                "crashtest": CrashTest,
-                "manual": ManualTest,
-                "wdspec": WebDriverSpecTest,
-                "conformancechecker": ConformanceCheckerTest,
-                "visual": VisualTest,
-                "support": SupportFile}
+                                                "reftest": RefTest,
+                                                "print-reftest": PrintRefTest,
+                                                "crashtest": CrashTest,
+                                                "manual": ManualTest,
+                                                "wdspec": WebDriverSpecTest,
+                                                "conformancechecker": ConformanceCheckerTest,
+                                                "visual": VisualTest,
+                                                "support": SupportFile}
 
 
 def compute_manifest_items(source_file: SourceFile) -> Tuple[Tuple[Text, ...], Text, Set[ManifestItem], Text]:

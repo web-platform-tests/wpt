@@ -98,7 +98,7 @@ class ProtocolPart:
     :param Protocol parent: The parent protocol"""
     __metaclass__ = ABCMeta
 
-    name: ClassVar[str] = None
+    name: ClassVar[str]
 
     def __init__(self, parent):
         self.parent = parent

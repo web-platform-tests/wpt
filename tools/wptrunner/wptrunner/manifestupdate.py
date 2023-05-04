@@ -336,13 +336,13 @@ def build_unconditional_tree(_, run_info_properties, results):
 
 
 class PropertyUpdate:
-    property_name: ClassVar[str] = None
-    cls_default_value: ClassVar[Any] = None
-    value_type: ClassVar[type] = None
+    property_name: ClassVar[str]
+    cls_default_value: ClassVar[Any]
+    value_type: ClassVar[type]
     # property_builder is a class variable set to either build_conditional_tree
     # or build_unconditional_tree. TODO: Make this type stricter when those
     # methods are annotated.
-    property_builder: ClassVar[Callable[..., Any]] = None
+    property_builder: ClassVar[Callable[..., Any]]
 
     def __init__(self, node):
         self.node = node

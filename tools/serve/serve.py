@@ -214,7 +214,7 @@ class WrapperHandler:
 
 
 class HtmlWrapperHandler(WrapperHandler):
-    global_type: ClassVar[str] = None
+    global_type: ClassVar[str]
     headers = [('Content-Type', 'text/html')]
 
     def check_exposure(self, request):

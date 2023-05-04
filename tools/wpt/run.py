@@ -158,8 +158,8 @@ in PowerShell with Administrator privileges.""" % (wpt_path, hosts_path)
 
 
 class BrowserSetup:
-    name: ClassVar[str] = None
-    browser_cls: ClassVar[Type[browser.Browser]] = None
+    name: ClassVar[str]
+    browser_cls: ClassVar[Type[browser.Browser]]
 
     def __init__(self, venv, prompt=True):
         self.browser = self.browser_cls(logger)

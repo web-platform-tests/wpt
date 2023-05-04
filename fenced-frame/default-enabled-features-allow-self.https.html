@@ -61,10 +61,10 @@ promise_test(async(t) => {
   // or not. Instead, set up a timeout. If the document loads, "FAIL" will be
   // sent to the server. Otherwise "blocked" will be sent after 2 seconds.
   const fencedframe_blocked = new Promise(r => t.step_timeout(r, 1000));
-  assert_equals("blocked", await Promise.any([
+  assert_equals(await Promise.any([
     nextValueFromServer(redirect_key).then(() => "loaded"),
     fencedframe_blocked.then(() => "blocked")
-  ]), "The fenced frame redirect should not be successful.");
+  ]), "blocked", "The fenced frame redirect should not be successful.");
 }, 'A fenced frame redirected to a page that does not allow feature policies ' +
     'does not navigate');
 

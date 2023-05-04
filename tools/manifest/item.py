@@ -13,7 +13,7 @@ if MYPY:
     Fuzzy = Dict[Optional[Tuple[str, str, str]], List[int]]
     PageRanges = Dict[str, List[int]]
 
-item_types: Dict[str, Type[ManifestItem]] = {}
+item_types: Dict[str, Type["ManifestItem"]] = {}
 
 
 class ManifestItemMeta(ABCMeta):
@@ -21,7 +21,7 @@ class ManifestItemMeta(ABCMeta):
     item_types dictionary according to the value of their item_type
     attribute, and otherwise behaves like an ABCMeta."""
 
-    def __new__(cls: Type[ManifestItemMeta], name: str, bases: Tuple[type], attrs: Dict[str, Any]) -> ManifestItemMeta:
+    def __new__(cls: Type["ManifestItemMeta"], name: str, bases: Tuple[type], attrs: Dict[str, Any]) -> "ManifestItemMeta":
         inst = super().__new__(cls, name, bases, attrs)
         if isabstract(inst):
             return inst
@@ -82,7 +82,7 @@ class ManifestItem(metaclass=ManifestItemMeta):
                   manifest: Manifest,
                   path: Text,
                   obj: Any
-                  ) -> ManifestItem:
+                  ) -> "ManifestItem":
         path = to_os_path(path)
         tests_root = manifest.tests_root
         assert tests_root is not None
@@ -145,7 +145,7 @@ class URLManifestItem(ManifestItem):
                   manifest: Manifest,
                   path: Text,
                   obj: Tuple[Text, Dict[Any, Any]]
-                  ) -> URLManifestItem:
+                  ) -> "URLManifestItem":
         path = to_os_path(path)
         url, extras = obj
         tests_root = manifest.tests_root
@@ -264,7 +264,7 @@ class RefTest(URLManifestItem):
                   manifest: Manifest,
                   path: Text,
                   obj: Tuple[Text, List[Tuple[Text, Text]], Dict[Any, Any]]
-                  ) -> RefTest:
+                  ) -> "RefTest":
         tests_root = manifest.tests_root
         assert tests_root is not None
         path = to_os_path(path)

@@ -881,7 +881,12 @@ def main(**kwargs: Any) -> int:
 MIN_FILES_FOR_PARALLEL = 80
 
 
-def lint(repo_root: Text, paths: List[Text], output_format: Text, ignore_glob: Optional[List[Text]] = None, github_checks_outputter: Optional[GitHubChecksOutputter] = None, jobs: int = 0) -> int:
+def lint(repo_root: Text,
+         paths: List[Text],
+         output_format: Text,
+         ignore_glob: Optional[List[Text]] = None,
+         github_checks_outputter: Optional[GitHubChecksOutputter] = None,
+         jobs: int = 0) -> int:
     error_count: Dict[Text, int] = defaultdict(int)
     last = None
 

@@ -78,7 +78,7 @@ else:
 
 
 class ManifestData(ManifestDataType):
-    def __init__(self, manifest: Manifest) -> None:
+    def __init__(self, manifest: "Manifest") -> None:
         """Dictionary subclass containing a TypeData instance for each test type,
         keyed by type name"""
         self.initialized: bool = False
@@ -227,10 +227,12 @@ class Manifest:
             chunksize = max(1, len(to_update) // 10000)
             logger.debug("Doing a multiprocessed update. CPU count: %s, "
                 "processes: %s, chunksize: %s" % (cpu_count(), processes, chunksize))
-            results: Iterator[Tuple[Tuple[Text, ...], Text, Set[ManifestItem], Text]] = pool.imap_unordered(compute_manifest_items,
-                                          to_update,
-                                          chunksize=chunksize
-                                          )
+            results: Iterator[Tuple[Tuple[Text, ...],
+                                    Text,
+                                    Set[ManifestItem], Text]] = pool.imap_unordered(
+                                        compute_manifest_items,
+                                        to_update,
+                                        chunksize=chunksize)
         else:
             results = map(compute_manifest_items, to_update)
 
@@ -278,7 +280,11 @@ class Manifest:
         return rv
 
     @classmethod
-    def from_json(cls, tests_root: Text, obj: Dict[Text, Any], types: Optional[Container[Text]] = None, callee_owns_obj: bool = False) -> Manifest:
+    def from_json(cls,
+                  tests_root: Text,
+                  obj: Dict[Text, Any],
+                  types: Optional[Container[Text]] = None,
+                  callee_owns_obj: bool = False) -> "Manifest":
         """Load a manifest from a JSON object
 
         This loads a manifest for a given local test_root path from an

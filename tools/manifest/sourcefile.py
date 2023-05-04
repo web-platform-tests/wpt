@@ -196,7 +196,11 @@ class SourceFile:
                          ("css", "CSS2", "archive"),
                          ("css", "common")}
 
-    def __init__(self, tests_root: Text, rel_path: Text, url_base: Text, hash: Optional[Text] = None, contents: Optional[bytes] = None) -> None:
+    def __init__(self, tests_root: Text,
+                 rel_path: Text,
+                 url_base: Text,
+                 hash: Optional[Text] = None,
+                 contents: Optional[bytes] = None) -> None:
         """Object representing a file in a source tree.
 
         :param tests_root: Path to the root of the source tree
@@ -873,10 +877,10 @@ class SourceFile:
 
         if self.name_is_non_test:
             rv: Tuple[Text, List[ManifestItem]] = ("support", [
-                 SupportFile(
-                     self.tests_root,
-                     self.rel_path
-                 )])
+                SupportFile(
+                    self.tests_root,
+                    self.rel_path
+                )])
 
         elif self.name_is_manual:
             rv = ManualTest.item_type, [

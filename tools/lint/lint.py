@@ -9,9 +9,16 @@ import re
 import subprocess
 import sys
 import tempfile
-
 from collections import defaultdict
+from typing import (Any, Callable, Dict, IO, Iterable, List, Optional, Sequence, Set, Text, Tuple,
+                    Type, TypeVar)
+
 from urllib.parse import urlsplit, urljoin
+
+try:
+    from xml.etree import cElementTree as ElementTree
+except ImportError:
+    from xml.etree import ElementTree as ElementTree  # type: ignore
 
 from . import fnmatch
 from . import rules
@@ -23,37 +30,16 @@ from ..manifest.vcs import walk
 
 from ..manifest.sourcefile import SourceFile, js_meta_re, python_meta_re, space_chars, get_any_variants
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any
-    from typing import Callable
-    from typing import Dict
-    from typing import IO
-    from typing import Iterable
-    from typing import List
-    from typing import Optional
-    from typing import Sequence
-    from typing import Set
-    from typing import Text
-    from typing import Tuple
-    from typing import Type
-    from typing import TypeVar
 
-    # The Ignorelist is a two level dictionary. The top level is indexed by
-    # error names (e.g. 'TRAILING WHITESPACE'). Each of those then has a map of
-    # file patterns (e.g. 'foo/*') to a set of specific line numbers for the
-    # exception. The line numbers are optional; if missing the entire file
-    # ignores the error.
-    Ignorelist = Dict[str, Dict[str, Set[Optional[int]]]]
+# The Ignorelist is a two level dictionary. The top level is indexed by
+# error names (e.g. 'TRAILING WHITESPACE'). Each of those then has a map of
+# file patterns (e.g. 'foo/*') to a set of specific line numbers for the
+# exception. The line numbers are optional; if missing the entire file
+# ignores the error.
+Ignorelist = Dict[str, Dict[str, Set[Optional[int]]]]
 
-    # Define an arbitrary typevar
-    T = TypeVar("T")
-
-    try:
-        from xml.etree import cElementTree as ElementTree
-    except ImportError:
-        from xml.etree import ElementTree as ElementTree  # type: ignore
+# Define an arbitrary typevar
+T = TypeVar("T")
 
 
 logger: Optional[logging.Logger] = None

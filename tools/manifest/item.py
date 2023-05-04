@@ -1,18 +1,17 @@
 import os.path
-from inspect import isabstract
-from urllib.parse import urljoin, urlparse, parse_qs
 from abc import ABCMeta, abstractproperty
+from inspect import isabstract
+from typing import (Any, Dict, Hashable, List, Optional, Sequence, Text, Tuple, Type,
+                    TYPE_CHECKING, Union, cast)
+from urllib.parse import urljoin, urlparse, parse_qs
 
 from .utils import to_os_path
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any, Dict, Hashable, List, Optional, Sequence, Text, Tuple, Type, Union, cast
+if TYPE_CHECKING:
     from .manifest import Manifest
-    Fuzzy = Dict[Optional[Tuple[str, str, str]], List[int]]
-    PageRanges = Dict[str, List[int]]
 
+Fuzzy = Dict[Optional[Tuple[str, str, str]], List[int]]
+PageRanges = Dict[str, List[int]]
 item_types: Dict[str, Type["ManifestItem"]] = {}
 
 
@@ -27,11 +26,7 @@ class ManifestItemMeta(ABCMeta):
             return inst
 
         assert issubclass(inst, ManifestItem)
-        if MYPY:
-            item_type = cast(str, inst.item_type)
-        else:
-            assert isinstance(inst.item_type, str)
-            item_type = inst.item_type
+        item_type = cast(str, inst.item_type)
 
         item_types[item_type] = inst
 
@@ -79,7 +74,7 @@ class ManifestItem(metaclass=ManifestItemMeta):
 
     @classmethod
     def from_json(cls,
-                  manifest: Manifest,
+                  manifest: "Manifest",
                   path: Text,
                   obj: Any
                   ) -> "ManifestItem":
@@ -142,7 +137,7 @@ class URLManifestItem(ManifestItem):
 
     @classmethod
     def from_json(cls,
-                  manifest: Manifest,
+                  manifest: "Manifest",
                   path: Text,
                   obj: Tuple[Text, Dict[Any, Any]]
                   ) -> "URLManifestItem":
@@ -261,7 +256,7 @@ class RefTest(URLManifestItem):
 
     @classmethod
     def from_json(cls,  # type: ignore
-                  manifest: Manifest,
+                  manifest: "Manifest",
                   path: Text,
                   obj: Tuple[Text, List[Tuple[Text, Text]], Dict[Any, Any]]
                   ) -> "RefTest":

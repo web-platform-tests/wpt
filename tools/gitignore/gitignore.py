@@ -2,24 +2,11 @@ import re
 import os
 import itertools
 from collections import defaultdict
+from typing import (Any, Dict, Iterable, List, MutableMapping, Optional, Pattern, Tuple, TypeVar,
+                    Union, cast)
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any
-    from typing import Dict
-    from typing import Iterable
-    from typing import List
-    from typing import MutableMapping
-    from typing import Optional
-    from typing import Pattern
-    from typing import Tuple
-    from typing import TypeVar
-    from typing import Union
-    from typing import cast
 
-    T = TypeVar('T')
-
+T = TypeVar('T')
 
 end_space = re.compile(r"([^\\]\s)*$")
 
@@ -184,8 +171,7 @@ class PathFilter:
             # that we can match patterns out of order and check if they were later
             # overriden by an exclude rule
             assert not literal
-            if MYPY:
-                rule = cast(Tuple[bool, Pattern[bytes]], rule)
+            rule = cast(Tuple[bool, Pattern[bytes]], rule)
             if not dir_only:
                 rules_iter: Iterable[Tuple[Any, List[Tuple[bool, Pattern[bytes]]]]] = itertools.chain(
                     itertools.chain(*(item.items() for item in self.literals_dir.values())),
@@ -201,8 +187,7 @@ class PathFilter:
                 rules[1].append(rule)
         else:
             if literal:
-                if MYPY:
-                    rule = cast(Tuple[bytes, ...], rule)
+                rule = cast(Tuple[bytes, ...], rule)
                 if len(rule) == 1:
                     dir_name, pattern = None, rule[0]  # type: Tuple[Optional[bytes], bytes]
                 else:
@@ -211,8 +196,7 @@ class PathFilter:
                 if not dir_only:
                     self.literals_file[dir_name][pattern] = []
             else:
-                if MYPY:
-                    rule = cast(Tuple[bool, Pattern[bytes]], rule)
+                rule = cast(Tuple[bool, Pattern[bytes]], rule)
                 self.patterns_dir.append((rule, []))
                 if not dir_only:
                     self.patterns_file.append((rule, []))

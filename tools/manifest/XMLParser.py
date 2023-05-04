@@ -1,18 +1,9 @@
-from os.path import dirname, join
-
 from collections import OrderedDict
-
+from typing import Dict, List, Optional, Text, Union
+from os.path import dirname, join
 from xml.parsers import expat
 import xml.etree.ElementTree as etree  # noqa: N813
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Dict
-    from typing import List
-    from typing import Optional
-    from typing import Text
-    from typing import Union
 
 _catalog = join(dirname(__file__), "catalog")
 

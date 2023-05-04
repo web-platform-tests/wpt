@@ -1,11 +1,6 @@
 import re
 import json
-
-
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any, AnyStr, Callable, Dict, IO, Text
+from typing import Any, AnyStr, Callable, Dict, IO, Text
 
 
 __all__ = ["load", "dump_local", "dump_local", "dump_dist", "dumps_dist"]

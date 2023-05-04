@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 import argparse
 import os
+from typing import Any, Optional, TYPE_CHECKING
 
 from . import manifest
 from . import vcs
 from .log import get_logger, enable_debug_logging
 from .download import download_from_github
+if TYPE_CHECKING:
+    from .manifest import Manifest  # avoid cyclic import
+
 
 here = os.path.dirname(__file__)
 
@@ -13,16 +17,9 @@ wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 
 logger = get_logger()
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any
-    from typing import Optional
-    from .manifest import Manifest  # avoid cyclic import
-
 
 def update(tests_root: str,
-           manifest: Manifest,
+           manifest: "Manifest",
            manifest_path: Optional[str] = None,
            working_copy: bool = True,
            cache_root: Optional[str] = None,

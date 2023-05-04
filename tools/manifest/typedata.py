@@ -1,35 +1,19 @@
 from collections.abc import MutableMapping
+from typing import (Any, Dict, Iterator, List, Optional, Set, Text, Tuple, Type,
+                    TYPE_CHECKING, Union)
 
+from .item import ManifestItem
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any
-    from typing import Dict
-    from typing import Iterator
-    from typing import List
-    from typing import Optional
-    from typing import Set
-    from typing import Text
-    from typing import Tuple
-    from typing import Type
-    from typing import Union
-
+if TYPE_CHECKING:
     # avoid actually importing these, they're only used by type comments
-    from . import item
-    from . import manifest
+    from .manifest import Manifest
 
-
-if MYPY:
-    TypeDataType = MutableMapping[Tuple[str, ...], Set[item.ManifestItem]]
-    PathHashType = MutableMapping[Tuple[str, ...], str]
-else:
-    TypeDataType = MutableMapping
-    PathHashType = MutableMapping
+TypeDataType = MutableMapping[Tuple[str, ...], Set[ManifestItem]]
+PathHashType = MutableMapping[Tuple[str, ...], str]
 
 
 class TypeData(TypeDataType):
-    def __init__(self, m: manifest.Manifest, type_cls: Type[item.ManifestItem]) -> None:
+    def __init__(self, m: "Manifest", type_cls: Type[ManifestItem]) -> None:
         """Dict-like object containing the TestItems for each test type.
 
         Loading an actual Item class for each test is unnecessarily
@@ -41,7 +25,7 @@ class TypeData(TypeDataType):
         from iteration, we do egerly load all items when iterating
         over the class."""
         self._manifest = m
-        self._type_cls: Type[item.ManifestItem] = type_cls
+        self._type_cls: Type[ManifestItem] = type_cls
         self._json_data: Dict[Text, Any] = {}
         self._data: Dict[Text, Any] = {}
         self._hashes: Dict[Tuple[Text, ...], Text] = {}
@@ -65,8 +49,8 @@ class TypeData(TypeDataType):
             else:
                 break
 
-    def __getitem__(self, key: Tuple[Text, ...]) -> Set[item.ManifestItem]:
-        node: Union[Dict[Text, Any], Set[item.ManifestItem], List[Any]] = self._data
+    def __getitem__(self, key: Tuple[Text, ...]) -> Set[ManifestItem]:
+        node: Union[Dict[Text, Any], Set[ManifestItem], List[Any]] = self._data
         for pathseg in key:
             if isinstance(node, dict) and pathseg in node:
                 node = node[pathseg]
@@ -114,7 +98,7 @@ class TypeData(TypeDataType):
 
         return data
 
-    def __setitem__(self, key: Tuple[Text, ...], value: Set[item.ManifestItem]) -> None:
+    def __setitem__(self, key: Tuple[Text, ...], value: Set[ManifestItem]) -> None:
         try:
             self._delete_node(self._json_data, key)
         except KeyError:
@@ -140,7 +124,7 @@ class TypeData(TypeDataType):
 
     def __iter__(self) -> Iterator[Tuple[Text, ...]]:
         """Iterator over keys in the TypeData in codepoint order"""
-        data_node: Optional[Union[Dict[Text, Any], Set[item.ManifestItem]]] = self._data
+        data_node: Optional[Union[Dict[Text, Any], Set[ManifestItem]]] = self._data
         json_node: Optional[Union[Dict[Text, Any], List[Any]]] = self._json_data
         path: Tuple[Text, ...] = tuple()
         stack = [(data_node, json_node, path)]
@@ -167,7 +151,7 @@ class TypeData(TypeDataType):
     def __len__(self) -> int:
         count = 0
 
-        stack: List[Union[Dict[Text, Any], Set[item.ManifestItem]]] = [self._data]
+        stack: List[Union[Dict[Text, Any], Set[ManifestItem]]] = [self._data]
         while stack:
             v = stack.pop()
             if isinstance(v, set):

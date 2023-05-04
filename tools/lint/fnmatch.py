@@ -1,12 +1,6 @@
 import fnmatch as _stdlib_fnmatch
 import os
-
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Iterable
-    from typing import List
-    from typing import Text
+from typing import Iterable, List, Text
 
 
 __all__ = ["fnmatch", "fnmatchcase", "filter", "translate"]

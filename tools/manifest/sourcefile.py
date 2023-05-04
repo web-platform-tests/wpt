@@ -2,27 +2,11 @@ import hashlib
 import re
 import os
 from collections import deque
-from io import BytesIO
-from urllib.parse import urljoin
 from fnmatch import fnmatch
-
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any
-    from typing import BinaryIO
-    from typing import Callable
-    from typing import Deque
-    from typing import Dict
-    from typing import Iterable
-    from typing import List
-    from typing import Optional
-    from typing import Pattern
-    from typing import Set
-    from typing import Text
-    from typing import Tuple
-    from typing import Union
-    from typing import cast
+from io import BytesIO
+from typing import (Any, BinaryIO, Callable, Deque, Dict, Iterable, List, Optional, Pattern,
+                    Set, Text, Tuple, Union, cast)
+from urllib.parse import urljoin
 
 try:
     from xml.etree import cElementTree as ElementTree
@@ -165,11 +149,7 @@ def global_variant_url(url: Text, suffix: Text) -> Text:
 
 def _parse_html(f: BinaryIO) -> ElementTree.Element:
     doc = html5lib.parse(f, treebuilder="etree", useChardet=False)
-    if MYPY:
-        return cast(ElementTree.Element, doc)
-    else:
-        # (needs to be in else for mypy to believe this is reachable)
-        return doc
+    return cast(ElementTree.Element, doc)
 
 def _parse_xml(f: BinaryIO) -> ElementTree.Element:
     try:

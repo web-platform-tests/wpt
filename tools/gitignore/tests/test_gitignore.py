@@ -1,15 +1,10 @@
 # mypy: allow-untyped-defs
+from typing import Iterable, Sequence, Tuple
 
 import pytest
 
 from ..gitignore import fnmatch_translate, PathFilter
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Tuple
-    from typing import Iterable
-    from typing import Sequence
 
 match_data: Sequence[Tuple[bytes, bool, Iterable[bytes]]] = [
     (b"foo", True, [b"a/foo", b"foo"]),

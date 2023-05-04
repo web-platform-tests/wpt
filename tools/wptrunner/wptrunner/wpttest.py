@@ -204,10 +204,9 @@ def server_protocol(manifest_item):
 
 
 class Test:
-
-    result_cls: ClassVar[Type[Result]] = None
-    subtest_result_cls: ClassVar[Type[SubtestResult]] = None
-    test_type: ClassVar[str] = None
+    result_cls: ClassVar[Type[Result]]
+    subtest_result_cls: ClassVar[Type[SubtestResult]]
+    test_type: ClassVar[str]
     pac = None
 
     default_timeout = 10  # seconds

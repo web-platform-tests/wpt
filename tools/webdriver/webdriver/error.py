@@ -12,8 +12,8 @@ class WebDriverException(Exception):
     # However, http_status need not match, and both are set as instance
     # variables, shadowing the class variables. TODO: Match on both http_status
     # and status_code and let these be class variables only.
-    http_status: ClassVar[int] = None
-    status_code: ClassVar[str] = None
+    http_status: ClassVar[int]
+    status_code: ClassVar[str]
 
     def __init__(self, http_status=None, status_code=None, message=None, stacktrace=None):
         super()

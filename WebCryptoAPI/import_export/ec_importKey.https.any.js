@@ -85,14 +85,13 @@
                 });
 
                 // Next, test private keys
-                allValidUsages(vector.privateUsages, []).forEach(function(usages) {
-                    ['pkcs8', 'jwk'].forEach(function(format) {
-                        var algorithm = {name: vector.name, namedCurve: curve};
-                        var data = keyData[curve];
-
+                ['pkcs8', 'jwk'].forEach(function(format) {
+                    var algorithm = {name: vector.name, namedCurve: curve};
+                    var data = keyData[curve];
+                    allValidUsages(vector.privateUsages, []).forEach(function(usages) {
                         testFormat(format, algorithm, data, curve, usages, extractable);
-                        testEmptyUsages(format, algorithm, data, curve, extractable);
                     });
+                    testEmptyUsages(format, algorithm, data, curve, extractable);
                 });
             });
 

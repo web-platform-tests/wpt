@@ -41,18 +41,18 @@
         }
 
         rawKeyData.forEach(function(keyData) {
-            // Generate all combinations of valid usages for testing
-            allValidUsages(vector.legalUsages, []).forEach(function(usages) {
-                // Try each legal value of the extractable parameter
-                vector.extractable.forEach(function(extractable) {
-                    vector.formats.forEach(function(format) {
-                        var data = keyData;
-                        if (format === "jwk") {
-                            data = jwkData(keyData, algorithm);
-                        }
+            // Try each legal value of the extractable parameter
+            vector.extractable.forEach(function(extractable) {
+                vector.formats.forEach(function(format) {
+                    var data = keyData;
+                    if (format === "jwk") {
+                        data = jwkData(keyData, algorithm);
+                    }
+                    // Generate all combinations of valid usages for testing
+                    allValidUsages(vector.legalUsages, []).forEach(function(usages) {
                         testFormat(format, algorithm, data, keyData.length * 8, usages, extractable);
-                        testEmptyUsages(format, algorithm, data, keyData.length * 8, extractable);
                     });
+                    testEmptyUsages(format, algorithm, data, keyData.length * 8, extractable);
                 });
             });
 

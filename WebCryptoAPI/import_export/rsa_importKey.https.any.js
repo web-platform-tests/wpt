@@ -92,14 +92,13 @@
                     });
 
                     // Next, test private keys
-                    allValidUsages(vector.privateUsages, []).forEach(function(usages) {
-                        ['pkcs8', 'jwk'].forEach(function(format) {
-                            var algorithm = {name: vector.name, hash: hash};
-                            var data = keyData[size];
-
+                    ['pkcs8', 'jwk'].forEach(function(format) {
+                        var algorithm = {name: vector.name, hash: hash};
+                        var data = keyData[size];
+                        allValidUsages(vector.privateUsages, []).forEach(function(usages) {
                             testFormat(format, algorithm, data, size, usages, extractable);
-                            testEmptyUsages(format, algorithm, data, size, extractable);
                         });
+                        testEmptyUsages(format, algorithm, data, size, extractable);
                     });
                 });
             });

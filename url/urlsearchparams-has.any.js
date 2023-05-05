@@ -33,5 +33,5 @@ test(() => {
   assert_false(params.has('first', ''));
   assert_true(params.has('first', 'null'));
   params.delete('a', 'b');
-  assert_true(params.has('a', 'd'));  
+  assert_true(params.has('a', 'd'));
 }, "Two-argument has()");

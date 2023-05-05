@@ -91,6 +91,7 @@
                         var data = keyData[curve];
 
                         testFormat(format, algorithm, data, curve, usages, extractable);
+                        testEmptyUsages(format, algorithm, data, curve, extractable);
                     });
                 });
             });
@@ -134,6 +135,21 @@
                 }
             });
         }, "Good parameters: " + keySize.toString() + " bits " + parameterString(format, compressed, keyData, algorithm, extractable, usages));
+    }
+
+    // Test importKey with a given key format and other parameters but with empty usages.
+    // Should fail with SyntaxError
+    function testEmptyUsages(format, algorithm, data, keySize, extractable) {
+        const keyData = data[format];
+        const usages = [];
+        promise_test(function(test) {
+            return subtle.importKey(format, keyData, algorithm, extractable, usages).
+            then(function(key) {
+                assert_unreached("importKey succeeded but should have failed with SyntaxError");
+            }, function(err) {
+                assert_equals(err.name, "SyntaxError", "Should throw correct error, not " + err.name + ": " + err.message);
+            });
+        }, "Empty Usages: " + keySize.toString() + " bits " + parameterString(format, false, keyData, algorithm, extractable, usages));
     }
 
 

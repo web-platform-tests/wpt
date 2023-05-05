@@ -104,6 +104,7 @@ jobs:
       packages: virtualenv
   - template: tools/ci/azure/install_fonts.yml
   - template: tools/ci/azure/install_certs.yml
+  - template: tools/ci/azure/color_profile.yml
   - template: tools/ci/azure/install_chrome.yml
   - template: tools/ci/azure/install_firefox.yml
   - template: tools/ci/azure/install_safari.yml
@@ -487,6 +488,7 @@ jobs:
     parameters:
       packages: virtualenv
   - template: tools/ci/azure/install_certs.yml
+  - template: tools/ci/azure/color_profile.yml
   - template: tools/ci/azure/install_safari.yml
     parameters:
       channel: stable
@@ -528,6 +530,7 @@ jobs:
     parameters:
       packages: virtualenv
   - template: tools/ci/azure/install_certs.yml
+  - template: tools/ci/azure/color_profile.yml
   - template: tools/ci/azure/install_safari.yml
   - template: tools/ci/azure/update_hosts.yml
   - template: tools/ci/azure/update_manifest.yml
@@ -566,6 +569,7 @@ jobs:
     parameters:
       packages: virtualenv
   - template: tools/ci/azure/install_certs.yml
+  - template: tools/ci/azure/color_profile.yml
   - template: tools/ci/azure/update_hosts.yml
   - template: tools/ci/azure/update_manifest.yml
   - script: |

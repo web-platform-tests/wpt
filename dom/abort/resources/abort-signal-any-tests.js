@@ -130,7 +130,7 @@ function abortSignalAnyTests(signalInterface, controllerInterface) {
 
     const combinedSignal = signalInterface.any([controller.signal, timeoutSignal]);
 
-    const ref = setTimeout(assert_unreached, 10);
+    const ref = step_timeout(assert_unreached, 10);
     combinedSignal.onabort = t.step_func_done(() => {
       assert_true(combinedSignal.aborted);
       assert_true(combinedSignal.reason instanceof DOMException,

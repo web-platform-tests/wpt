@@ -130,12 +130,14 @@ function abortSignalAnyTests(signalInterface, controllerInterface) {
 
     const combinedSignal = signalInterface.any([controller.signal, timeoutSignal]);
 
+    const ref = setTimeout(assert_unreached, 10);
     combinedSignal.onabort = t.step_func_done(() => {
       assert_true(combinedSignal.aborted);
       assert_true(combinedSignal.reason instanceof DOMException,
           "combinedSignal.reason is a DOMException");
       assert_equals(combinedSignal.reason.name, "TimeoutError",
           "combinedSignal.reason is a TimeoutError");
+      clearTimeout(ref);
     });
   }, `${desc} works with signals returned by AbortSignal.timeout() ${suffix}`);
 

@@ -1,6 +1,6 @@
 import pytest
 
-from ... import recursive_compare, any_string
+from ... import recursive_compare, any_int
 
 
 @pytest.mark.asyncio
@@ -33,15 +33,15 @@ async def test_remote_values_with_internal_id(
 
     if result_type == "array":
         value = [
-            {"type": type, "internalId": any_string},
-            {"type": type, "internalId": any_string},
+            {"type": type, "internalId": any_int},
+            {"type": type, "internalId": any_int},
         ]
         internalId1 = result_value[0]["internalId"]
         internalId2 = result_value[1]["internalId"]
     else:
         value = [
-            ["foo", {"type": type, "internalId": any_string}],
-            ["bar", {"type": type, "internalId": any_string}],
+            ["foo", {"type": type, "internalId": any_int}],
+            ["bar", {"type": type, "internalId": any_int}],
         ]
         internalId1 = result_value[0][1]["internalId"]
         internalId2 = result_value[1][1]["internalId"]

@@ -2022,7 +2022,7 @@ class WebKitTestRunner(Browser):
 
     def version(self, binary=None, webdriver_binary=None):
         dirname = os.path.dirname(binary)
-        identifier = os.path.join(dirname, "identifier")
+        identifier = os.path.join(dirname, "..", "identifier")
         if not os.path.exists(identifier):
             return None
 

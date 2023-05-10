@@ -18,10 +18,12 @@
   main {
     height: 0px;
     overflow: hidden;
+    scroll-timeline: timeline1 defer, timeline2 defer;
   }
   .scroller {
     height: 100px;
     overflow: scroll;
+    scroll-timeline: timeline1 ancestor, timeline2 ancestor;
   }
   .scroller > div {
     height: 200px;
@@ -65,11 +67,12 @@
       // remains inactive until the next frame.
       //
       // https://drafts.csswg.org/scroll-animations-1/#avoiding-cycles
-      assert_equals(getComputedStyle(element1).width, '1px');
+      assert_equals(getComputedStyle(element1).width, '1px', 'element1.width');
       (new ResizeObserver(entries => {
         events1.push(entries);
         insertScroller('timeline2');
-        assert_equals(getComputedStyle(element2).height, '1px');
+        assert_equals(getComputedStyle(element2).height, '1px',
+            'element2.height');
       })).observe(element1);
 
       (new ResizeObserver(entries => {
@@ -103,7 +106,9 @@
       assert_equals(events2[0][0].contentBoxSize.length, 1);
       assert_equals(events2[0][0].contentBoxSize[0].blockSize, 1);
 
-      assert_equals(getComputedStyle(element1).width, '100px');
-      assert_equals(getComputedStyle(element2).height, '100px');
+      assert_equals(getComputedStyle(element1).width, '100px',
+          'element1.width');
+      assert_equals(getComputedStyle(element2).height, '100px',
+          'element2.height');
     }, 'Multiple style/layout passes occur when necessary');
 </script>

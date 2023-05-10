@@ -109,6 +109,7 @@
                                'Keyframes with invalid view timeline');
 
       block.style.display = 'block';
+      await waitForNextFrame();
       // Ensure that keyframes with timeline-offsets are restored.
       frames = anim.effect.getKeyframes();
 

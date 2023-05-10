@@ -1,9 +1,12 @@
 # mypy: allow-untyped-defs
 
 import os
+import time
 import traceback
 from typing import Type
 from urllib.parse import urljoin
+
+from webdriver import error
 
 from .base import (
     CrashtestExecutor,
@@ -16,6 +19,7 @@ from .executorwebdriver import (
     WebDriverRefTestExecutor,
     WebDriverRun,
     WebDriverTestharnessExecutor,
+    WebDriverTestharnessProtocolPart,
 )
 from .protocol import PrintProtocolPart
 
@@ -57,12 +61,86 @@ def make_sanitizer_mixin(crashtest_executor_cls: Type[CrashtestExecutor]):  # ty
 _SanitizerMixin = make_sanitizer_mixin(WebDriverCrashtestExecutor)
 
 
-class ChromeDriverRefTestExecutor(WebDriverRefTestExecutor, _SanitizerMixin):  # type: ignore
-    pass
+class ChromeDriverTestharnessProtocolPart(WebDriverTestharnessProtocolPart):
+    """Implementation of `testharness.js` tests controlled by ChromeDriver.
 
+    The main difference from the default WebDriver testharness implementation is
+    that the test window can be reused between tests for better performance.
+    """
 
-class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor, _SanitizerMixin):  # type: ignore
-    pass
+    def setup(self):
+        super().setup()
+        self.test_window = None
+        self.reuse_window = self.parent.reuse_window
+
+    def load_runner(self, url_protocol):
+        prev_runner_handle = self.runner_handle
+        super().load_runner(url_protocol)
+        if self.runner_handle != prev_runner_handle:
+            # Ensure the orphaned test window is closed.
+            self.close_test_window()
+
+    def close_test_window(self):
+        if self.test_window:
+            self._close_window(self.test_window)
+            self.test_window = None
+
+    def close_old_windows(self):
+        self.webdriver.actions.release()
+        for handle in self.webdriver.handles:
+            if handle not in {self.runner_handle, self.test_window}:
+                self._close_window(handle)
+        if not self.reuse_window:
+            self.close_test_window()
+        self.webdriver.window_handle = self.runner_handle
+        return self.runner_handle
+
+    def _close_window(self, window_handle):
+        try:
+            self.webdriver.window_handle = window_handle
+            self.webdriver.window.close()
+        except error.NoSuchWindowException:
+            pass
+
+    def open_test_window(self, window_id):
+        if self.test_window:
+            # Try to reuse the existing test window by emulating the `about:blank`
+            # page with no history you would get with a new window.
+            try:
+                self.webdriver.window_handle = self.test_window
+                # Reset navigation history with Chrome DevTools Protocol:
+                # https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-resetNavigationHistory
+                body = {
+                    "cmd": "Page.resetNavigationHistory",
+                    "params": {},
+                }
+                self.webdriver.send_session_command("POST", "goog/cdp/execute",
+                                                    body=body)
+                self.webdriver.url = "about:blank"
+                return
+            except error.NoSuchWindowException:
+                self.test_window = None
+        super().open_test_window(window_id)
+
+    def get_test_window(self, window_id, parent, timeout=5):
+        if self.test_window:
+            return self.test_window
+        # Poll the handles endpoint for the test window like the base WebDriver
+        # protocol part, but don't bother checking for the serialized
+        # WindowProxy (not supported by Chrome currently).
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            handles = self.webdriver.handles
+            if len(handles) == 2:
+                self.test_window = next(iter(set(handles) - {parent}))
+            elif handles[0] == parent and len(handles) > 2:
+                # Hope the first one here is the test window
+                self.test_window = handles[1]
+            if self.test_window is not None:
+                assert self.test_window != parent
+                return self.test_window
+            time.sleep(0.03)
+        raise Exception("unable to find test window")
 
 
 class ChromeDriverPrintProtocolPart(PrintProtocolPart):
@@ -117,7 +195,25 @@ render('%s').then(result => callback(result))""" % pdf_base64)
 
 
 class ChromeDriverProtocol(WebDriverProtocol):
-    implements = WebDriverProtocol.implements + [ChromeDriverPrintProtocolPart]
+    implements = [
+        ChromeDriverPrintProtocolPart,
+        ChromeDriverTestharnessProtocolPart,
+        *(part for part in WebDriverProtocol.implements
+          if part.name != ChromeDriverTestharnessProtocolPart.name)
+    ]
+    reuse_window = False
+
+
+class ChromeDriverRefTestExecutor(WebDriverRefTestExecutor, _SanitizerMixin):  # type: ignore
+    protocol_cls = ChromeDriverProtocol
+
+
+class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor, _SanitizerMixin):  # type: ignore
+    protocol_cls = ChromeDriverProtocol
+
+    def __init__(self, *args, reuse_window=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.protocol.reuse_window = reuse_window
 
 
 class ChromeDriverPrintRefTestExecutor(ChromeDriverRefTestExecutor):

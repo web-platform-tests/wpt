@@ -127,6 +127,10 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
         self.webdriver.window_handle = self.runner_handle
         return self.runner_handle
 
+    def open_test_window(self, window_id):
+        self.webdriver.execute_script(
+            "window.open('about:blank', '%s', 'noopener')" % window_id)
+
     def get_test_window(self, window_id, parent, timeout=5):
         """Find the test window amongst all the open windows.
         This is assumed to be either the named window or the one after the parent in the list of
@@ -513,7 +517,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         parent_window = protocol.testharness.close_old_windows()
 
         # Now start the test harness
-        protocol.base.execute_script("window.open('about:blank', '%s', 'noopener')" % self.window_id)
+        protocol.testharness.open_test_window(self.window_id)
         test_window = protocol.testharness.get_test_window(self.window_id,
                                                            parent_window,
                                                            timeout=5*self.timeout_multiplier)

@@ -345,6 +345,35 @@ class WebDriverSPCTransactionsProtocolPart(SPCTransactionsProtocolPart):
         return self.webdriver.send_session_command("POST", "secure-payment-confirmation/set-mode", body)
 
 
+class WebDriverFedCMProtocolPart(FedCMProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def cancel_fedcm_dialog(self):
+        return self.webdriver.send_session_command("POST", "fedcm/canceldialog")
+
+    def select_fedcm_account(self, account_index):
+        parameters = {"accountIndex": account_index}
+        body = {"parameters": parameters}
+        return self.webdriver.send_session_command("POST", "fedcm/selectaccount", body)
+
+    def get_fedcm_account_list(self):
+        return self.webdriver.send_session_command("GET", "fedcm/accountlist")
+
+    def get_fedcm_dialog_title(self):
+        return self.webdriver.send_session_command("GET", "fedcm/gettitle")
+
+    def get_fedcm_dialog_type(self):
+        return self.webdriver.send_session_command("GET", "fedcm/getdialogtype")
+
+    def set_fedcm_delay_enabled(self, enabled):
+        parameters = {"enabled": enabled}
+        body = {"parameters": parameters}
+        return self.webdriver.send_session_command("POST", "fedcm/setdelayenabled", body)
+
+    def reset_fedcm_cooldown(self):
+        return self.webdriver.send_session_command("POST", "fedcm/resetcooldown")
+
 class WebDriverDebugProtocolPart(DebugProtocolPart):
     def load_devtools(self):
         raise NotImplementedError()

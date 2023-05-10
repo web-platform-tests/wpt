@@ -680,6 +680,34 @@
         set_spc_transaction_mode: function(mode, context=null) {
           return window.test_driver_internal.set_spc_transaction_mode(mode, context);
         },
+
+        cancel_fedcm_dialog: function(context=null) {
+          return window.test_driver_internal.cancel_fedcm_dialog(context);
+        },
+
+        select_fedcm_account: function(account_index, context=null) {
+          return window.test_driver_internal.select_fedcm_account(account_index, context);
+        },
+
+        get_fedcm_account_list: function(context=null) {
+        return window.test_driver_internal.get_fedcm_account_list(context);
+        },
+
+        get_fedcm_dialog_title: function(context=null) {
+          return window.test_driver_internal.get_fedcm_dialog_title(context);
+        },
+        
+        get_fedcm_dialog_type: function(context=null) {
+          return window.test_driver_internal.get_fedcm_dialog_type(context);
+        },
+
+        set_fedcm_delay_enabled: function(enabled, context=null) {
+        return window.test_driver_internal.set_fedcm_delay_enabled(enabled, context);
+        },
+
+        reset_fedcm_cooldown: function(context=null) {
+        return window.test_driver_internal.reset_fedcm_cooldown(context);
+        },
     };
 
     window.test_driver_internal = {
@@ -805,5 +833,32 @@
             throw new Error("set_spc_transaction_mode() is not implemented by testdriver-vendor.js");
         },
 
+        async cancel_fedcm_dialog(context=null) {
+            throw new Error("cancel_fedcm_dialog() is not implemented by testdriver-vendor.js");
+        },
+
+        async select_fedcm_account(account_index, context=null) {
+            throw new Error("select_fedcm_account() is not implemented by testdriver-vendor.js");
+        },
+
+        async get_fedcm_account_list(context=null) {
+            throw new Error("get_fedcm_account_list() is not implemented by testdriver-vendor.js");
+        },
+        
+        async get_fedcm_dialog_title(context=null) {
+            throw new Error("get_fedcm_dialog_title() is not implemented by testdriver-vendor.js");
+        },
+
+        async get_fedcm_dialog_type(context=null) {
+            throw new Error("get_fedcm_dialog_type() is not implemented by testdriver-vendor.js");
+        },
+
+        async set_fedcm_delay_enabled(enabled, context=null) {
+            throw new Error("set_fedcm_delay_enabled() is not implemented by testdriver-vendor.js");
+        },
+
+        async reset_fedcm_cooldown(context=null) {
+            throw new Error("reset_fedcm_cooldown() is not implemented by testdriver-vendor.js");
+        },
     };
 })();

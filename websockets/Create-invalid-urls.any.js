@@ -1,8 +1,14 @@
-test(function() {assert_throws_dom("SyntaxError", function(){new WebSocket("ws://foo bar.com/")})});
-test(function() {assert_throws_dom("SyntaxError", function(){new WebSocket("wss://foo bar.com/")})});
-test(function() {assert_throws_dom("SyntaxError", function(){new WebSocket("ftp://"+location.host+"/")})});
-test(function() {assert_throws_dom("SyntaxError", function(){new WebSocket("mailto:example@example.org")})});
-test(function() {assert_throws_dom("SyntaxError", function(){new WebSocket("about:blank")})});
-test(function() {assert_throws_dom("SyntaxError", function(){new WebSocket(SCHEME_DOMAIN_PORT+"/#")})});
-test(function() {assert_throws_dom("SyntaxError", function(){new WebSocket(SCHEME_DOMAIN_PORT+"/#test")})});
-test(function() {assert_throws_dom("SyntaxError", function(){new WebSocket("#test")})});
+[
+  "ws://foo bar.com/",
+  "wss://foo bar.com/",
+  "ftp://"+location.host+"/",
+  "mailto:example@example.org",
+  "about:blank",
+  location.origin + "/#",
+  location.origin + "/#test",
+  "#test"
+].forEach(input => {
+  test(() => {
+    assert_throws_dom("SyntaxError", () => new WebSocket(input)); 
+  }, `new WebSocket("${input}") should throw a "SyntaxError" DOMException`);
+});

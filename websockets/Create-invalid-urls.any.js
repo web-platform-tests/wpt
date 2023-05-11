@@ -9,6 +9,6 @@
   "#test"
 ].forEach(input => {
   test(() => {
-    assert_throws_dom("SyntaxError", () => new WebSocket(input)); 
+    assert_throws_dom("SyntaxError", () => new WebSocket(input));
   }, `new WebSocket("${input}") should throw a "SyntaxError" DOMException`);
 });

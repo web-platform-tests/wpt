@@ -11,16 +11,17 @@
 </head>
 <body>
 
+<!-- static rowgroups -->
 <table data-testname="el-table" data-expectedrole="table" class="ex">
   <caption data-testname="el-caption" data-expectedrole="caption" class="ex">caption</caption>
-  <thead data-testname="el-thead" data-expectedrole="rowgroup" class="ex">
+  <thead data-testname="el-thead" data-expectedrole="" class="ex">
     <tr data-testname="el-tr-thead" data-expectedrole="row" class="ex">
       <th data-testname="el-th" data-expectedrole="columnheader" class="ex">a</th>
       <th>b</th>
       <th>c</th>
     </tr>
   </thead>
-  <tbody data-testname="el-tbody" data-expectedrole="rowgroup" class="ex">
+  <tbody data-testname="el-tbody" data-expectedrole="" class="ex">
     <tr data-testname="el-tr-tbody" data-expectedrole="row" class="ex">
       <th data-testname="el-th-in-row" data-expectedrole="rowheader" class="ex">1</th>
       <td data-testname="el-td" data-expectedrole="cell" class="ex">2</td>
@@ -32,12 +33,26 @@
       <td>6</td>
     </tr>
   </tbody>
-  <tfoot data-testname="el-tfoot" data-expectedrole="rowgroup" class="ex">
+  <tfoot data-testname="el-tfoot" data-expectedrole="" class="ex">
     <tr>
       <th>x</th>
       <th>y</th>
       <th>z</th>
     </tr>
+  </tfoot>
+</table>
+
+<!-- focusable rowgroups -->
+<table>
+  <thead tabindex="0" data-testname="el-thead-focusable" data-expectedrole="rowgroup" class="ex">
+    <tr><th>a</th><th>b</th><th>c</th></tr>
+  </thead>
+  <tbody tabindex="0" data-testname="el-tbody-focusable" data-expectedrole="rowgroup" class="ex">
+    <tr><th>1</th><td>2</td><td>3</td></tr>
+    <tr><th>4</th><td>5</td><td>6</td></tr>
+  </tbody>
+  <tfoot tabindex="0" data-testname="el-tfoot-focusable" data-expectedrole="rowgroup" class="ex">
+    <tr><th>x</th><th>y</th><th>z</th></tr>
   </tfoot>
 </table>
 

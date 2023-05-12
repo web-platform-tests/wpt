@@ -70,6 +70,13 @@ class ChromeDriverTestharnessProtocolPart(WebDriverTestharnessProtocolPart):
 
     def setup(self):
         super().setup()
+        # Handle (an alphanumeric string) that may be set if window reuse is
+        # enabled. This state allows the protocol to distinguish the test
+        # window from other windows a test itself may create that the "Get
+        # Window Handles" command also returns.
+        #
+        # Because test window persistence is a Chrome-only feature, it's not
+        # exposed to the base WebDriver testharness executor.
         self.test_window = None
         self.reuse_window = self.parent.reuse_window
 

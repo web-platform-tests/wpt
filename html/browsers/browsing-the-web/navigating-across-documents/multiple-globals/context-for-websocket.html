@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/context-helper.js"></script>
+<script>
+window.scriptToRun = `
+const result = {};
+try {
+  const ws = new WebSocket('foo');
+  ws.close();
+  result.url = ws.url;
+} catch (ex) {
+  result.url = ex.name;
+}
+top.postMessage(result, '*');
+`;
+
+async_test(t => {
+  window.addEventListener("message", t.step_func_done(function(e) {
+    // Base URL used for parsing a relative URL to `target`
+    // should be the base URL of the relevant settings object in
+    // https://websockets.spec.whatwg.org/#dom-websocket-websocket
+    const expectedUrl = new URL('foo', relevantUrl);
+    expectedUrl.protocol = 'ws:';
+    assert_equals(
+        e.data.url,
+        expectedUrl.href,
+        'Base URL should use the relevant settings object');
+  }));
+}, 'URL resolution for WebSocket');
+</script>
+<iframe id="entry" src="entry/entry.html"></iframe>

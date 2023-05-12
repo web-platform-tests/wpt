@@ -130,12 +130,7 @@ class ChromeDriverTestharnessProtocolPart(WebDriverTestharnessProtocolPart):
         # WindowProxy (not supported by Chrome currently).
         deadline = time.time() + timeout
         while time.time() < deadline:
-            handles = self.webdriver.handles
-            if len(handles) == 2:
-                self.test_window = next(iter(set(handles) - {parent}))
-            elif handles[0] == parent and len(handles) > 2:
-                # Hope the first one here is the test window
-                self.test_window = handles[1]
+            self.test_window = self._poll_handles_for_test_window(parent)
             if self.test_window is not None:
                 assert self.test_window != parent
                 return self.test_window

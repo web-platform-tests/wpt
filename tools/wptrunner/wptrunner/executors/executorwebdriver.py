@@ -154,12 +154,7 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
                 pass
 
             if test_window is None:
-                after = self.webdriver.handles
-                if len(after) == 2:
-                    test_window = next(iter(set(after) - {parent}))
-                elif after[0] == parent and len(after) > 2:
-                    # Hope the first one here is the test window
-                    test_window = after[1]
+                test_window = self._poll_handles_for_test_window(parent)
 
             if test_window is not None:
                 assert test_window != parent
@@ -168,6 +163,16 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
             time.sleep(0.1)
 
         raise Exception("unable to find test window")
+
+    def _poll_handles_for_test_window(self, parent):
+        test_window = None
+        after = self.webdriver.handles
+        if len(after) == 2:
+            test_window = next(iter(set(after) - {parent}))
+        elif after[0] == parent and len(after) > 2:
+            # Hope the first one here is the test window
+            test_window = after[1]
+        return test_window
 
     def test_window_loaded(self):
         """Wait until the page in the new window has been loaded.

@@ -80,13 +80,6 @@ class ChromeDriverTestharnessProtocolPart(WebDriverTestharnessProtocolPart):
         self.test_window = None
         self.reuse_window = self.parent.reuse_window
 
-    def load_runner(self, url_protocol):
-        prev_runner_handle = self.runner_handle
-        super().load_runner(url_protocol)
-        if self.runner_handle != prev_runner_handle:
-            # Ensure the orphaned test window is closed.
-            self.close_test_window()
-
     def close_test_window(self):
         if self.test_window:
             self._close_window(self.test_window)

@@ -95,13 +95,6 @@ class ChromeDriverTestharnessProtocolPart(WebDriverTestharnessProtocolPart):
         self.webdriver.window_handle = self.runner_handle
         return self.runner_handle
 
-    def _close_window(self, window_handle):
-        try:
-            self.webdriver.window_handle = window_handle
-            self.webdriver.window.close()
-        except error.NoSuchWindowException:
-            pass
-
     def open_test_window(self, window_id):
         if self.test_window:
             # Try to reuse the existing test window by emulating the `about:blank`

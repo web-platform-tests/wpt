@@ -119,13 +119,16 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
         self.webdriver.actions.release()
         handles = [item for item in self.webdriver.handles if item != self.runner_handle]
         for handle in handles:
-            try:
-                self.webdriver.window_handle = handle
-                self.webdriver.window.close()
-            except error.NoSuchWindowException:
-                pass
+            self._close_window(handle)
         self.webdriver.window_handle = self.runner_handle
         return self.runner_handle
+
+    def _close_window(self, window_handle):
+        try:
+            self.webdriver.window_handle = window_handle
+            self.webdriver.window.close()
+        except error.NoSuchWindowException:
+            pass
 
     def open_test_window(self, window_id):
         self.webdriver.execute_script(

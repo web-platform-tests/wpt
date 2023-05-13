@@ -114,6 +114,26 @@ function define_tests() {
                             });
                         }, testName + " with null length");
 
+                        // length undefined (OperationError)
+                        subsetTest(promise_test, function(test) {
+                            return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, baseKeys[passwordSize], undefined)
+                            .then(function(derivation) {
+                                assert_unreached("undefined length should have thrown an OperationError");
+                            }, function(err) {
+                                assert_equals(err.name, "OperationError", "deriveBits with undefined length correctly threw OperationError: " + err.message);
+                            });
+                        }, testName + " with undefined length");
+
+                        // length omitted (OperationError)
+                        subsetTest(promise_test, function(test) {
+                            return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, baseKeys[passwordSize])
+                            .then(function(derivation) {
+                                assert_unreached("omitted length should have thrown an OperationError");
+                            }, function(err) {
+                                assert_equals(err.name, "OperationError", "deriveBits with omitted length correctly threw OperationError: " + err.message);
+                            });
+                        }, testName + " with omitted length");
+
                         // 0 length (OperationError)
                         subsetTest(promise_test, function(test) {
                             return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, baseKeys[passwordSize], 0)

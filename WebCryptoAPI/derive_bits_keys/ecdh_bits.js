@@ -65,6 +65,26 @@ function define_tests() {
                 });
             }, namedCurve + " with null length");
 
+            // undefined length
+            promise_test(function(test) {
+                return subtle.deriveBits({name: "ECDH", public: publicKeys[namedCurve]}, privateKeys[namedCurve], undefined)
+                .then(function(derivation) {
+                    assert_true(equalBuffers(derivation, derivations[namedCurve]), "Derived correct bits");
+                }, function(err) {
+                    assert_unreached("deriveBits failed with error " + err.name + ": " + err.message);
+                });
+            }, namedCurve + " with undefined length");
+
+            // omitted length
+            promise_test(function(test) {
+                return subtle.deriveBits({name: "ECDH", public: publicKeys[namedCurve]}, privateKeys[namedCurve])
+                .then(function(derivation) {
+                    assert_true(equalBuffers(derivation, derivations[namedCurve]), "Derived correct bits");
+                }, function(err) {
+                    assert_unreached("deriveBits failed with error " + err.name + ": " + err.message);
+                });
+            }, namedCurve + " with omitted length");
+
             // Shorter than entire derivation per algorithm
             promise_test(function(test) {
                 return subtle.deriveBits({name: "ECDH", public: publicKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve] - 32)

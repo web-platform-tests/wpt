@@ -1,4 +1,4 @@
-function __onIframeLoaded(t, cb, selector, done) {
+function onIframeLoadedDone(t, cb, selector="iframe") {
   const iframe = document.querySelector(selector);
   iframe.addEventListener("load", function() {
     // The initial about:blank load event can be fired before the form navigation occurs.
@@ -7,14 +7,6 @@ function __onIframeLoaded(t, cb, selector, done) {
 
     const params = new URLSearchParams(iframe.contentWindow.location.search);
     t.step(() => cb(params))
-    if (done) t.done();
+    t.done();
   });
-}
-
-function onIframeLoaded(t, cb, selector="iframe") {
-  return __onIframeLoaded(t, cb, selector, false);
-}
-
-function onIframeLoadedDone(t, cb, selector="iframe") {
-  return __onIframeLoaded(t, cb, selector, true);
 }

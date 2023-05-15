@@ -236,6 +236,17 @@ def available_screen_size(session):
         ];
         """))
 
+
+def viewport_size(session):
+    """Returns the available width/height size of the viewport."""
+    return tuple(session.execute_script("""
+        return [
+            window.innerWidth,
+            window.innerHeight,
+        ];
+        """))
+
+
 def filter_dict(source, d):
     """Filter `source` dict to only contain same keys as `d` dict.
 
@@ -269,3 +280,26 @@ def wait_for_new_handle(session, handles_before):
 
     return wait.until(find_new_handle)
 
+
+def element_position(session, element):
+    """Returns the dimensions and location of the specified element."""
+    return dict(session.execute_script("""
+        return {
+            x: arguments[0].offsetLeft,
+            y: arguments[0].offsetTop,
+            width: arguments[0].clientWidth,
+            height: arguments[0].clientHeight,
+        };
+        """, args=(element,)))
+
+
+def scroll_to(session, x, y):
+    """Scroll to the specified location within the docuemnt."""
+    return session.execute_script("window.scrollTo({0}, {1});".format(x, y))
+
+
+def get_element_property(session, element, prop):
+    """Get the named property of the element."""
+    return session.execute_script("""
+        return arguments[0].{0}
+        """.format(prop), args=(element,))

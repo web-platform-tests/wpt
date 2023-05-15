@@ -626,11 +626,11 @@ class FedCMProtocolPart(ProtocolPart):
     def cancel_fedcm_dialog(self):
         """Cancel the FedCM dialog"""
         pass
-        
+
     @abstractmethod
     def select_fedcm_account(self, account_index):
         """Select a FedCM account
-        
+
         :param int account_index: The index of the account to select"""
         pass
 

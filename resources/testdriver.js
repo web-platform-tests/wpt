@@ -698,7 +698,7 @@
         cancel_fedcm_dialog: function(context=null) {
             return window.test_driver_internal.cancel_fedcm_dialog(context);
         },
-        
+
         /**
          * Selects an account from the Federated Credential Management dialog
          *
@@ -711,7 +711,7 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fulfilled after the account selection request is sent, 
+         * @returns {Promise} fulfilled after the account selection request is sent,
          *                    or rejected in case the WebDriver command errors
          */
         select_fedcm_account: function(account_index, context=null) {
@@ -753,7 +753,7 @@
         get_fedcm_dialog_title: function(context=null) {
           return window.test_driver_internal.get_fedcm_dialog_title(context);
         },
-        
+
         /**
          * Gets the type of the Federated Credential Management dialog
          *
@@ -944,7 +944,7 @@
         async get_fedcm_account_list(context=null) {
             throw new Error("get_fedcm_account_list() is not implemented by testdriver-vendor.js");
         },
-        
+
         async get_fedcm_dialog_title(context=null) {
             throw new Error("get_fedcm_dialog_title() is not implemented by testdriver-vendor.js");
         },

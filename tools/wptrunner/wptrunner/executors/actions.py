@@ -296,7 +296,7 @@ class SelectFedCMAccountAction:
         self.protocol = protocol
 
     def __call__(self, payload):
-        account_index = payload["account_index"]
+        account_index = payload["accountIndex"]
         self.logger.debug("Selecting FedCM account of index %s" % account_index)
         return self.protocol.fedcm.select_fedcm_account(account_index)
 

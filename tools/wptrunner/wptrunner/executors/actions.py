@@ -277,7 +277,7 @@ class SetSPCTransactionModeAction:
         self.logger.debug("Setting SPC transaction mode to %s" % mode)
         return self.protocol.spc_transactions.set_spc_transaction_mode(mode)
 
-class CancelFedCMDialog:
+class CancelFedCMDialogAction:
     name = "cancel_fedcm_dialog"
 
     def __init__(self, logger, protocol):
@@ -288,7 +288,7 @@ class CancelFedCMDialog:
         self.logger.debug("Canceling FedCM dialog")
         return self.protocol.fedcm.cancel_fedcm_dialog()
 
-class SelectFedCMAccount:
+class SelectFedCMAccountAction:
     name = "select_fedcm_account"
 
     def __init__(self, logger, protocol):
@@ -300,7 +300,7 @@ class SelectFedCMAccount:
         self.logger.debug("Selecting FedCM account of index %s" % account_index)
         return self.protocol.fedcm.select_fedcm_account(account_index)
 
-class GetFedCMAccountList:
+class GetFedCMAccountListAction:
     name = "get_fedcm_account_list"
 
     def __init__(self, logger, protocol):
@@ -311,7 +311,7 @@ class GetFedCMAccountList:
         self.logger.debug("Getting FedCM account list")
         return self.protocol.fedcm.get_fedcm_account_list()
 
-class GetFedCMDialogTitle:
+class GetFedCMDialogTitleAction:
     name = "get_fedcm_dialog_title"
 
     def __init__(self, logger, protocol):
@@ -322,7 +322,7 @@ class GetFedCMDialogTitle:
         self.logger.debug("Getting FedCM dialog title")
         return self.protocol.fedcm.get_fedcm_dialog_title()
 
-class GetFedCMDialogType:
+class GetFedCMDialogTypeAction:
     name = "get_fedcm_dialog_type"
 
     def __init__(self, logger, protocol):
@@ -330,11 +330,10 @@ class GetFedCMDialogType:
         self.protocol = protocol
 
     def __call__(self, payload):
-        name = payload["name"]
         self.logger.debug("Getting FedCM dialog type")
-        return self.protocol.fedcm.get_fedcm_dialog_type(name)
+        return self.protocol.fedcm.get_fedcm_dialog_type()
 
-class SetFedCMDelayEnabled:
+class SetFedCMDelayEnabledAction:
     name = "set_fedcm_delay_enabled"
 
     def __init__(self, logger, protocol):
@@ -346,7 +345,7 @@ class SetFedCMDelayEnabled:
         self.logger.debug("Setting FedCM delay enabled as %s" % enabled)
         return self.protocol.fedcm.set_fedcm_delay_enabled(enabled)
 
-class ResetFedCMCooldown:
+class ResetFedCMCooldownAction:
     name = "reset_fedcm_cooldown"
 
     def __init__(self, logger, protocol):
@@ -377,4 +376,10 @@ actions = [ClickAction,
            RemoveAllCredentialsAction,
            SetUserVerifiedAction,
            SetSPCTransactionModeAction,
-           GetFedcmDialogTitle]
+           CancelFedCMDialogAction,
+           SelectFedCMAccountAction,
+           GetFedCMAccountListAction,
+           GetFedCMDialogTitleAction,
+           GetFedCMDialogTypeAction,
+           SetFedCMDelayEnabledAction,
+           ResetFedCMCooldownAction]

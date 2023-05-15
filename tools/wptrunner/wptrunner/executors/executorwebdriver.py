@@ -32,6 +32,7 @@ from .protocol import (BaseProtocolPart,
                        WindowProtocolPart,
                        DebugProtocolPart,
                        SPCTransactionsProtocolPart,
+                       FedCMProtocolPart,
                        merge_dicts)
 
 from webdriver.client import Session
@@ -353,8 +354,7 @@ class WebDriverFedCMProtocolPart(FedCMProtocolPart):
         return self.webdriver.send_session_command("POST", "fedcm/canceldialog")
 
     def select_fedcm_account(self, account_index):
-        parameters = {"accountIndex": account_index}
-        body = {"parameters": parameters}
+        body = {"accountIndex": account_index}
         return self.webdriver.send_session_command("POST", "fedcm/selectaccount", body)
 
     def get_fedcm_account_list(self):
@@ -367,8 +367,7 @@ class WebDriverFedCMProtocolPart(FedCMProtocolPart):
         return self.webdriver.send_session_command("GET", "fedcm/getdialogtype")
 
     def set_fedcm_delay_enabled(self, enabled):
-        parameters = {"enabled": enabled}
-        body = {"parameters": parameters}
+        body = {"enabled": enabled}
         return self.webdriver.send_session_command("POST", "fedcm/setdelayenabled", body)
 
     def reset_fedcm_cooldown(self):
@@ -394,6 +393,7 @@ class WebDriverProtocol(Protocol):
                   WebDriverSetPermissionProtocolPart,
                   WebDriverVirtualAuthenticatorProtocolPart,
                   WebDriverSPCTransactionsProtocolPart,
+                  WebDriverFedCMProtocolPart,
                   WebDriverDebugProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):

@@ -711,8 +711,8 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fulfilled after the account selection request is sent, or rejected
-         *                    in case the WebDriver command errors
+         * @returns {Promise} fulfilled after the account selection request is sent, 
+         *                    or rejected in case the WebDriver command errors
          */
         select_fedcm_account: function(account_index, context=null) {
           return window.test_driver_internal.select_fedcm_account(account_index, context);
@@ -729,8 +729,8 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fulfilled after the account list request is sent, or rejected
-         *                    in case the WebDriver command errors
+         * @returns {Promise} fulfilled after the account list request is sent, or
+         *                    rejected in case the WebDriver command errors
          */
         get_fedcm_account_list: function(context=null) {
           return window.test_driver_internal.get_fedcm_account_list(context);
@@ -765,8 +765,8 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fulfilled after the dialog type request is sent, or rejected
-         *                    in case the WebDriver command errors
+         * @returns {Promise} fulfilled after the dialog type request is sent, or
+         *                    rejected in case the WebDriver command errors
          */
         get_fedcm_dialog_type: function(context=null) {
           return window.test_driver_internal.get_fedcm_dialog_type(context);
@@ -784,8 +784,8 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fulfilled after the set delay enabled request is sent, or rejected
-         *                    in case the WebDriver command errors
+         * @returns {Promise} fulfilled after the set delay enabled request is sent,
+         *                    or rejected in case the WebDriver command errors
          */
         set_fedcm_delay_enabled: function(enabled, context=null) {
           return window.test_driver_internal.set_fedcm_delay_enabled(enabled, context);
@@ -802,8 +802,8 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fulfilled after the reset cooldown request is sent, or rejected
-         *                    in case the WebDriver command errors
+         * @returns {Promise} fulfilled after the reset cooldown request is sent,
+         *                    or rejected in case the WebDriver command errors
          */
         reset_fedcm_cooldown: function(context=null) {
           return window.test_driver_internal.reset_fedcm_cooldown(context);

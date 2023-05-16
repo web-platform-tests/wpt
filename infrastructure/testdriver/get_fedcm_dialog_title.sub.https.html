@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>TestDriver get fedcm dialog title method</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<script>
+function checkTitle(t) {
+  try {
+    let result = test_driver.get_fedcm_dialog_title();
+    console.log("trying");
+    if (result.title != undefined) {
+      console.log(result.title);
+      t.done();
+    } else {
+      console.log("result.title is undefined");
+      throw "oops";
+    }
+  } catch (e) { 
+    console.log(e);
+    setTimeout(checkTitle, 1000);
+  }
+}
+
+promise_test(t => {
+  const cred = navigator.credentials.get({
+    identity: {
+      providers: [{
+        configURL: "https://sedate-silly-fountain.glitch.me/test/fedcm.json",
+        clientId: "1234",
+        nonce: "5678",
+      }],
+    },
+  });
+
+  checkTitle(t);
+});
+</script>

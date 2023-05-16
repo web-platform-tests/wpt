@@ -30,7 +30,7 @@ promise_test(async () => {
   assert_equals(await promise, "toPort1");
 }, 'Transferred MessageChannel works as expected');
 
-promise_test(async () => {
+promise_test(async t => {
   const channel = new MessageChannel;
   const port1 = channel.port1;
   const port2 = channel.port2;
@@ -45,7 +45,5 @@ promise_test(async () => {
   const stream = new ReadableStream(source);
   const [clone1, clone2] = stream.tee();
 
-  await clone2.getReader().read().then((value) => {
-    assert_unreached('clone2 should error');
-  }, () => { });
+  await promise_rejects_dom(t, "DataCloneError", clone2.getReader().read());
 }, 'Second branch of owning ReadableStream tee should end up into errors with transfer only values');

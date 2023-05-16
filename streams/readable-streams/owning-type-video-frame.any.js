@@ -61,17 +61,12 @@ promise_test(async () => {
   chunk.value.videoFrame.close();
 }, 'ReadableStream of type owning should transfer JS chunks with transferred values');
 
-promise_test(async () => {
+promise_test(async t => {
   const videoFrame = createVideoFrame();
   videoFrame.close();
   const source = {
     start(controller) {
-      try {
-        controller.enqueue(videoFrame, { transfer : [ videoFrame ] });
-        assert_unreached('enqueue should throw');
-      } catch (e) {
-        //
-      }
+      assert_throws_dom("DataCloneError", () => controller.enqueue(videoFrame, { transfer : [ videoFrame ] }));
     },
     type: 'owning'
   };
@@ -79,10 +74,7 @@ promise_test(async () => {
   const stream = new ReadableStream(source);
   const reader = stream.getReader();
 
-  return reader.read().then(() => {
-      assert_unreached('enqueue should error the stream');
-  }, () => {
-  });
+  await promise_rejects_dom(t, "DataCloneError", reader.read());
 }, 'ReadableStream of type owning should error when trying to enqueue not serializable values');
 
 promise_test(async () => {

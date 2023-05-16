@@ -21,8 +21,9 @@
 <p role="none" data-testname="p role none without global attr aria-label (prohibited role)" data-expectedrole="none" class="ex">x</p>
 
 <!-- none with focusable header -->
-<h1 role="none" data-testname="none with focusable 0" data-expectedrole="heading" tabindex="0" class="ex">x</h1>
-<h1 role="none" data-testname="none with focusable -1" data-expectedrole="heading" tabindex="-1" class="ex">x</h1>
+<h1 role="none" data-testname="focusable heading role none with tabindex=0" data-expectedrole="heading" tabindex="0" class="ex">x</h1>
+<h1 role="none" data-testname="focusable heading role none with tabindex=0" data-expectedrole="heading" tabindex="-1" class="ex">x</h1>
+<h1 role="none" data-testname="non-focusable heading role none" data-expectedrole="none" class="ex">x</h1>
 
 <!-- none with non-global-->
 <h1 role="none" data-testname="none with non-global" data-expectedrole="none" class="ex" aria-level="2"> Sample Content </h1>

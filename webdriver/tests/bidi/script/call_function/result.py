@@ -57,7 +57,10 @@ async def test_primitive_values(bidi_session, top_context, await_promise, expres
                             "flags": "g",
                         },
                     },
-                    {"type": "array"},
+                    {
+                        "type": "array",
+                        "value": [{"type": "number", "value": 1}],
+                    },
                 ],
             },
         ),
@@ -66,7 +69,10 @@ async def test_primitive_values(bidi_session, top_context, await_promise, expres
             {
                 "type": "object",
                 "value": [
-                    ["foo", {"type": "object"}],
+                    ["foo", {
+                        "type": "object",
+                        "value": [["bar", {"type": "string", "value": "baz"}]]
+                    }],
                     ["qux", {"type": "string", "value": "quux"}],
                 ],
             },
@@ -97,7 +103,10 @@ async def test_primitive_values(bidi_session, top_context, await_promise, expres
                         {"type": "boolean", "value": True},
                         {"type": "boolean", "value": False},
                     ],
-                    ["baz", {"type": "array"}],
+                    ["baz", {
+                        "type": "array",
+                        "value": [{"type": "number", "value": 1}]
+                    }],
                 ],
             },
         ),
@@ -109,8 +118,17 @@ async def test_primitive_values(bidi_session, top_context, await_promise, expres
                     {"type": "number", "value": 1},
                     {"type": "string", "value": "foo"},
                     {"type": "boolean", "value": True},
-                    {"type": "array"},
-                    {"type": "map"},
+                    {
+                        "type": "array",
+                        "value": [{"type": "number", "value": 1}]
+                    },
+                    {
+                        "type": "map",
+                        "value": [[
+                            {"type": "number", "value": 1},
+                            {"type": "number", "value": 2}
+                        ]]
+                    },
                 ],
             },
         ),

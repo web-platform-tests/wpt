@@ -807,7 +807,7 @@
          */
         reset_fedcm_cooldown: function(context=null) {
           return window.test_driver_internal.reset_fedcm_cooldown(context);
-        },
+        }
     };
 
     window.test_driver_internal = {
@@ -959,6 +959,6 @@
 
         async reset_fedcm_cooldown(context=null) {
             throw new Error("reset_fedcm_cooldown() is not implemented by testdriver-vendor.js");
-        },
+        }
     };
 })();

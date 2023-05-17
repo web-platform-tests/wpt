@@ -373,6 +373,7 @@ class WebDriverFedCMProtocolPart(FedCMProtocolPart):
     def reset_fedcm_cooldown(self):
         return self.webdriver.send_session_command("POST", "fedcm/resetcooldown")
 
+
 class WebDriverDebugProtocolPart(DebugProtocolPart):
     def load_devtools(self):
         raise NotImplementedError()

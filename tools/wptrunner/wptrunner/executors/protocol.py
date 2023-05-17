@@ -617,7 +617,7 @@ class SPCTransactionsProtocolPart(ProtocolPart):
 
 
 class FedCMProtocolPart(ProtocolPart):
-    """Protocol part for FedCM"""
+    """Protocol part for Federated Credential Management"""
     __metaclass__ = ABCMeta
 
     name = "fedcm"

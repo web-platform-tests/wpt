@@ -42,7 +42,7 @@ here = os.path.dirname(__file__)
 
 class WebDriverCallbackHandler(CallbackHandler):
     unimplemented_exc = (NotImplementedError, error.UnknownCommandException)
-    expected_exc = (error.WebDriverException)
+    expected_exc = (error.WebDriverException,)
 
 
 class WebDriverBaseProtocolPart(BaseProtocolPart):

@@ -67,7 +67,7 @@ promise_test(function(t) {
     document.cookie = 'same=1';
     var link = document.createElement('link');
     link.rel = 'modulepreload';
-    link.crossorigin = 'anonymous';
+    link.crossOrigin = 'anonymous';
     link.href = 'resources/dummy.js?sameOriginAnonymous';
     return attachAndWaitForLoad(link).then(() => {
         verifyNumberOfDownloads('resources/dummy.js?sameOriginAnonymous', 1);
@@ -75,7 +75,7 @@ promise_test(function(t) {
         // Verify that <script> doesn't fetch the module again.
         var script = document.createElement('script');
         script.type = 'module';
-        script.crossorigin = 'anonymous';
+        script.crossOrigin = 'anonymous';
         script.src = 'resources/dummy.js?sameOriginAnonymous';
         return attachAndWaitForLoad(script);
     }).then(() => {
@@ -86,7 +86,7 @@ promise_test(function(t) {
 promise_test(function(t) {
     var link = document.createElement('link');
     link.rel = 'modulepreload';
-    link.crossorigin = 'use-credentials';
+    link.crossOrigin = 'use-credentials';
     link.href = 'resources/dummy.js?sameOriginUseCredentials';
     return attachAndWaitForLoad(link).then(() => {
         verifyNumberOfDownloads('resources/dummy.js?sameOriginUseCredentials', 1);
@@ -94,7 +94,7 @@ promise_test(function(t) {
         // Verify that <script> doesn't fetch the module again.
         var script = document.createElement('script');
         script.type = 'module';
-        script.crossorigin = 'use-credentials';
+        script.crossOrigin = 'use-credentials';
         script.src = 'resources/dummy.js?sameOriginUseCredentials';
         return attachAndWaitForLoad(script);
     }).then(() => {
@@ -131,7 +131,7 @@ promise_test(function(t) {
 promise_test(function(t) {
     var link = document.createElement('link');
     link.rel = 'modulepreload';
-    link.crossorigin = 'anonymous';
+    link.crossOrigin = 'anonymous';
     link.href = `${host_info.HTTP_REMOTE_ORIGIN}/preload/resources/cross-origin-module.py?crossOriginAnonymous`;
     return attachAndWaitForLoad(link).then(() => {
         verifyNumberOfDownloads(`${host_info.HTTP_REMOTE_ORIGIN}/preload/resources/cross-origin-module.py?crossOriginAnonymous`, 1, true);
@@ -139,7 +139,7 @@ promise_test(function(t) {
         // Verify that <script> doesn't fetch the module again.
         var script = document.createElement('script');
         script.type = 'module';
-        script.crossorigin = 'anonymous';
+        script.crossOrigin = 'anonymous';
         script.src = `${host_info.HTTP_REMOTE_ORIGIN}/preload/resources/cross-origin-module.py?crossOriginAnonymous`;
         return attachAndWaitForLoad(script);
     }).then(() => {
@@ -150,7 +150,7 @@ promise_test(function(t) {
 promise_test(function(t) {
     var link = document.createElement('link');
     link.rel = 'modulepreload';
-    link.crossorigin = 'use-credentials';
+    link.crossOrigin = 'use-credentials';
     link.href = `${host_info.HTTP_REMOTE_ORIGIN}/preload/resources/cross-origin-module.py?crossOriginUseCredentials`;
     return attachAndWaitForLoad(link).then(() => {
         verifyNumberOfDownloads(`${host_info.HTTP_REMOTE_ORIGIN}/preload/resources/cross-origin-module.py?crossOriginUseCredentials`, 1, true);
@@ -158,7 +158,7 @@ promise_test(function(t) {
         // Verify that <script> doesn't fetch the module again.
         var script = document.createElement('script');
         script.type = 'module';
-        script.crossorigin = 'use-credentials';
+        script.crossOrigin = 'use-credentials';
         script.src = `${host_info.HTTP_REMOTE_ORIGIN}/preload/resources/cross-origin-module.py?crossOriginUseCredentials`;
         return attachAndWaitForLoad(script);
     }).then(() => {
@@ -340,5 +340,44 @@ promise_test(function(t) {
     link.as = 'fetch';
     return attachAndWaitForTimeout(link, t);
 }, 'link rel=modulepreload with empty href and invalid as= value');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    var script = document.createElement('script');
+    link.rel = 'modulepreload';
+    script.type = 'module';
+    link.href = 'resources/module1.mjs?non-matching-crossorigin';
+    script.src = link.href;
+    script.crossOrigin = 'anonymous';
+    document.body.append(link);
+    return attachAndWaitForLoad(script);
+}, 'link rel=modulepreload and script with non-matching crossorigin values');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    var script = document.createElement('script');
+    link.rel = 'modulepreload';
+    script.type = 'module';
+    link.href = 'resources/module1.mjs?non-matching-crossorigin';
+    script.src = link.href;
+    link.crossOrigin = 'anonymous';
+    script.crossOrigin = 'use-credentials';
+    document.body.append(link);
+    return attachAndWaitForLoad(script);
+}, 'link rel=modulepreload and script with non-matching crossorigin values2');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    var moduleScript = document.createElement('script');
+    var classicScript = document.createElement('script');
+    link.rel = 'modulepreload';
+    moduleScript.type = 'module';
+    link.href = 'resources/dummy.js?non-module script';
+    classicScript.src = link.href;
+    moduleScript.src = link.href;
+    document.body.append(link);
+    document.body.append(classicScript);
+    return attachAndWaitForLoad(moduleScript);
+}, 'link rel=modulepreload and non-module script');
 </script>
 </body>

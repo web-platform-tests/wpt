@@ -1,0 +1,26 @@
+<!doctype html>
+<!-- TODO: Improve this! -->
+<script>
+  window.onload = async () => {
+    const video = document.getElementById('monitor');
+      try {
+          let controller = new CaptureController();
+          controller.oncapturedmousechange = (e) => {
+              document.getElementById('log').innerText =
+                  `type: ${e.type}, surfaceX: ${e.surfaceX}, surfaceY: ${e.surfaceY}`;
+          }
+          controller.dispatchEvent(new CapturedMouseEvent("capturedmousechange"));
+          video.srcObject = await navigator.mediaDevices.getDisplayMedia({
+              video: true,
+              controller: controller,
+          });
+          await new Promise(resolve => video.onloadedmetadata = resolve);
+      } catch (err) {
+          console.error(err);
+      }
+  }
+</script>
+<h1>Capturing mouse coordinates</h1>
+<p class="instructions">When prompted, share a window as a capture surface. Its content will then be displayed in the <code>&lt;video&gt;</code> element below. Verifying the cursor inside that window triggers corresponding changes of <code>surfaceX/surfaceY</code> below (with <code>surfaceX=surfaceY=-1</code> when the cursor is not over the window).</p>
+<pre id="log"></pre>
+<video width="1024" height="512" id="monitor" autoplay></video>

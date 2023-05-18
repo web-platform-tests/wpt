@@ -13,6 +13,31 @@
 
 <p>Tests the <a href="https://w3c.github.io/accname/#comp_hidden_not_referenced">#comp_hidden_not_referenced</a> portions of the AccName <em>Name Computation</em> algorithm.</p>
 
+<!-- Buttons hidden by assorted techniques -->
+<button class="ex" data-testname="hidden button" data-expectedlabel="" id="Apple" hidden>Apple</button>
+<button class="ex" data-testname="display:none button" data-expectedlabel="" id="Blueberry" style="display:none;">Blueberry</button>
+<button class="ex" data-testname="visibility:hidden button" data-expectedlabel="" id="Cantaloupe" style="visibility:hidden;">Cantaloupe</button>
+<button class="ex" data-testname="visibility:collapse button" data-expectedlabel="" id="Durian" style="visibility:collapse;">Durian</button>
+<button class="ex" data-testname="content-visibility:hidden button" data-expectedlabel="" id="Eggplant" style="content-visibility:hidden;">Eggplant</button>
+<button class="ex" data-testname="aria-hidden=true button" data-expectedlabel="" id="Fig" aria-hidden="true">Fig</button>
+
+<!-- Hidden buttons which are labeled by other hidden buttons -->
+<button class="ex" data-testname="hidden button, labelledby hidden button" data-expectedlabel="" id="Grape" hidden aria-labelledby="Apple">Grape</button>
+<button class="ex" data-testname="display:none button, labelledby display:none button" data-expectedlabel="" id="Honeydew" style="display:none;" aria-labelledby="Blueberry">Honeydew</button>
+<button class="ex" data-testname="visibility:hidden button, labelledby visibility:hidden button" data-expectedlabel="" id="Itapalm" style="visibility:hidden;" aria-labelledby="Cantaloupe">Itapalm</button>
+<button class="ex" data-testname="visibility:collapse button, labelledby visibility:collapse button" data-expectedlabel="" id="Jujube" style="visibility:collapse;" aria-labelledby="Durian">Jujube</button>
+<button class="ex" data-testname="content-visibility:hidden button, labelledby content-visibility:hidden button" data-expectedlabel="" id="Kiwi" style="content-visibility:hidden;" aria-labelledby="Eggplant">Kiwi</button>
+<button class="ex" data-testname="aria-hidden=true button, labelledby aria-hidden=true button" data-expectedlabel="" id="Lychee" aria-hidden="true" aria-labelledby="Fig">Lychee</button>
+
+<!-- Non-hidden buttons which are labelled by hidden buttons -->
+<button class="ex" data-testname="non-hidden button, labelled by hidden button" data-expectedlabel="Grape" aria-labelledby="Grape">Mangosteen</button>
+<button class="ex" data-testname="non-hidden button, labelled by display:none button" data-expectedlabel="Honeydew" aria-labelledby="Honeydew">Nectarine</button>
+<button class="ex" data-testname="non-hidden button, labelled by visibility:hidden button" data-expectedlabel="Itapalm" aria-labelledby="Itapalm">Orange</button>
+<button class="ex" data-testname="non-hidden button, labelled by visibility:collapse button" data-expectedlabel="Jujube" aria-labelledby="Jujube">Papaya</button>
+<button class="ex" data-testname="non-hidden button, labelled by content-visibility:hidden button" data-expectedlabel="Kiwi" aria-labelledby="Kiwi">Quince</button>
+<button class="ex" data-testname="non-hidden button, labelled by aria-hidden=true button" data-expectedlabel="Lychee" aria-labelledby="Lychee">Raspberry</button>
+
+<!-- Assorted other tests -->
 <h2 class="ex" data-expectedlabel="heading label" data-testname="heading with interior hidden node">
   heading
   <span hidden>bogus</span>

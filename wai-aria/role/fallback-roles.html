@@ -10,12 +10,12 @@
     <script src="/wai-aria/scripts/aria-utils.js"></script>
   </head>
   <body>
-  
+
   <p>Verifies Fallback Roles from <a href="https://w3c.github.io/aria/#document-handling_author-errors_roles">9.1 Roles - handling author errors</a></p>
-  
+
   <navigation role="region group" data-testname="fallback role w/ region with no label" data-expectedrole="group" class="ex">x</nav>
   <navigation role="region group" data-testname="fallback role w/ region with label" aria-label="x" data-expectedrole="region" class="ex">x</nav>
-  
+
 <script>
 AriaUtils.verifyRolesBySelector(".ex");
 </script>

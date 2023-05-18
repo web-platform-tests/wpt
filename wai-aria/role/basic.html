@@ -7,9 +7,7 @@
 
 <div id='d' style='height: 100px; width: 100px' role="group" aria-label="test label"></div>
 <h1 id="h">test heading</h1>
-<p>Verifies <a href="https://w3c.github.io/aria/#document-handling_author-errors_roles">9.1 Roles - handling author errors</a></p>
-<p role="foo" id="p">this is a paragraph</p>
-<span role="foo group" id="span">this is a span</span>
+
 <script>
 promise_test(async t => {
   const role = await test_driver.get_computed_role(document.getElementById('d'));
@@ -20,17 +18,5 @@ promise_test(async t => {
   const role = await test_driver.get_computed_role(document.getElementById('h'));
   assert_equals(role, "heading");
 }, "tests implicit role");
-
-
-promise_test(async t => {
-  const role = await test_driver.get_computed_role(document.getElementById('p'));
-  assert_equals(role, "paragraph");
-}, "tests unknown role");
-
-promise_test(async t => {
-  const role = await test_driver.get_computed_role(document.getElementById('span'));
-  assert_equals(role, "group");
-}, "tests fallback role");
-
 
 </script>

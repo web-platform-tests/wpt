@@ -7,7 +7,6 @@
 
 <div id='d' style='height: 100px; width: 100px' role="group" aria-label="test label"></div>
 <h1 id="h">test heading</h1>
-
 <script>
 promise_test(async t => {
   const role = await test_driver.get_computed_role(document.getElementById('d'));

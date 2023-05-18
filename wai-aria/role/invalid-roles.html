@@ -16,6 +16,19 @@
 <nav role="foo" data-testname="invalid role name foo" data-expectedrole="navigation" class="ex">x</nav>
 <nav role="foo bar" data-testname="multiple invalid role names" data-expectedrole="navigation" class="ex">x</nav>
 
+<!-- todo: additional invalid roles: 
+
+- whitespace tests (including line breaks, tabs, zero-width space, braille space)
+- diacritics
+- joiners (e.g. like emoji variants use)
+- non-western chars
+- RTL strings (Hebrew & Arabic)
+- escaped chars, URL-encoded chars
+- backslash closing quote and other obvious hack attempts
+- etc.
+
+-->
+
 <script>
 AriaUtils.verifyRolesBySelector(".ex");
 </script>

@@ -6,15 +6,15 @@
 
   <!--
 
-  Created: May 10th 2023
+  Created: May 18th 2023
 
-  Last modified: May 10th 2023
+  Last modified: May 18th 2023
 
   -->
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="https://www.w3.org/TR/css-backgrounds-3/#box-shadow">
-  <link rel="match" href="../css-writing-modes/reference/text-shadow-orientation-upright-001-ref.html">
+  <link rel="match" href="reference/box-shadow-multiple-001-ref.html">
 
   <meta content="" name="flags">
 
@@ -36,17 +36,38 @@
   div
     {
       background-color: yellow;
-      font-size: 100px;
-      box-shadow: purple 0em -1em, blue 1em 0em, fuchsia 0em 1em, orange -1em 0em;
+      font-size: 50px;
       height: 1em;
-      margin: calc(1em + 8px) auto auto 1em;
+      margin: 1em auto 2.2em 1em;
       width: 1em;
    }
+
+  div#multiple
+    {
+      box-shadow: purple 0em -1em, blue 1em 0em, fuchsia 0em 1em, orange -1em 0em;
+      margin-top: 58px;
+    }
+
+  div#multiple-overlapping1
+    {
+      box-shadow: purple 0em -1em, red 0em -1em, blue 1em 0em, red 1em 0em, fuchsia 0em 1em, red 0em 1em, orange -1em 0em, red -1em 0em;
+    }
+
+  div#multiple-overlapping2
+    {
+      box-shadow: rgb(128 0 128 / 50%) 0em -1em, rgb(255 255 0 / 50%) 0em -1em, rgb(0 0 255 / 50%) 1em 0em, rgb(255 255 0 / 50%) 1em 0em, rgb(255 0 255 / 50%) 0em 1em, rgb(255 255 0 / 50%) 0em 1em, rgb(255 165 0 / 50%) -1em 0em, rgb(255 255 0 / 50%) -1em 0em;
+    }
   </style>
 
-  <div></div>
+  <div id="multiple"></div>
+
+  <div id="multiple-overlapping1"></div>
+
+  <div id="multiple-overlapping2"></div>
 
   <!--
+
+  The top first 2 are:
 
                   .........
                   .       .
@@ -59,6 +80,22 @@
            .......................
                   .       .
                   .       . <-fuchsia
+                  .       .
+                  .........
+
+  The bottom one is:
+
+                  .........
+                  .       .
+                  .       . <-#BF7F7F
+                  .       .
+           .......................
+           .      .       .      .
+ #FFD23F-> .      .  yel  .      . <-#7F7FBF
+           .      .  low  .      .
+           .......................
+                  .       .
+                  .       . <-#FF7FBF
                   .       .
                   .........
 

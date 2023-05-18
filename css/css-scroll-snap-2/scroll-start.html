@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title> CSS Scroll Snap 2 Test: scroll-start-*</title>
+  <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#scroll-start">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/dom/events/scrolling/scroll_support.js"></script>
+</head>
+<style>
+  .spacer {
+    width: 500px;
+    height: 500px;
+    border: solid 1px green;
+  }
+  .scroller {
+    width: 100px;
+    height: 100px;
+    border: solid 1px black;
+    overflow: scroll;
+  }
+</style>
+<body>
+  <!-- <div id="lengthscroller" class="scroller" style="scroll-start: 100px">
+    <div class="spacer"></div>
+  </div>
+  <div id="percentscroller" class="scroller" style="scroll-start: 25%">
+    <div class="spacer"></div>
+  </div>
+  <div id="calcscroller" class="scroller" style="scroll-start: calc(50px)">
+    <div class="spacer"></div>
+  </div>
+  <div id="startscroller" class="scroller" style="scroll-start: start">
+    <div class="spacer"></div>
+  </div>
+  <div id="centerscroller" class="scroller" style="scroll-start: center">
+    <div class="spacer"></div>
+  </div>
+  <div id="endscroller" class="scroller" style="scroll-start: end">
+    <div class="spacer"></div>
+  </div>
+  <div id="topscroller" class="scroller" style="scroll-start: top">
+    <div class="spacer"></div>
+  </div>
+  <div id="bottomscroller" class="scroller" style="scroll-start: bottom">
+    <div class="spacer"></div>
+  </div>
+  <div id="leftscroller" class="scroller" style="scroll-start: auto left">
+    <div class="spacer"></div>
+  </div>
+  <div id="rightscroller" class="scroller" style="scroll-start: auto right">
+    <div class="spacer"></div>
+  </div> -->
+  <div id="scroller" class="scroller">
+    <div class="spacer"></div>
+  </div>
+</body>
+<script>
+  function assert_expectation(expectation) {
+    if (expectation.approx) {
+      assert_approx_equals(scroller.scrollTop, expectation.scrollTop,
+                           1, expectation.msg);
+      assert_approx_equals(scroller.scrollLeft, expectation.scrollLeft,
+                           1, expectation.msg);
+    } else {
+      assert_equals(scroller.scrollTop, expectation.scrollTop, expectation.msg);
+      assert_equals(scroller.scrollLeft, expectation.scrollLeft,
+                    expectation.msg);
+    }
+  }
+
+  function test_scroll_start_value(test, value, expectation) {
+    scroller.style["display"] = "none";
+    scroller.style["overflow"] = "scroll";
+    scroller.style["scroll-start"] = value;
+
+    // getComputedStyle to force the style update to take effect.
+    getComputedStyle(scroller)["scroll-start"];
+
+    // Cause the div to layout again.
+    scroller.style["display"] = "block";
+
+    // getComputedStyle to force the style update to take effect.
+    getComputedStyle(scroller)["scroll-start"];
+
+    assert_expectation(expectation);
+  }
+
+  test((t) => {
+    test_scroll_start_value(t, "50%", {
+      scrollTop: 0.5 * scroller.clientHeight,
+      scrollLeft: 0,
+      approx: true,
+      msg: "scroll-start: <percent> sets initial scroll position"});
+  });
+  test((t) => {
+    test_scroll_start_value(t, "50px", {
+      scrollTop: 50,
+      scrollLeft: 0,
+      approx: false,
+      msg: "scroll-start: <length> sets initial scroll position"});
+  });
+  test((t) => {
+    test_scroll_start_value(t, "start", {
+      scrollTop: 0,
+      scrollLeft: 0,
+      approx: false,
+      msg: "scroll-start: start sets initial scroll position"});
+  });
+  test((t) => {
+    test_scroll_start_value(t, "center", {
+      scrollTop: 0.5 * scroller.clientHeight,
+      scrollLeft: 0,
+      approx: true,
+      msg: "scroll-start: center sets initial scroll position"});
+  });
+  test((t) => {
+    test_scroll_start_value(t, "end", {
+      scrollTop: scroller.clientHeight,
+      scrollLeft: 0,
+      approx: false,
+      msg: "scroll-start: end sets initial scroll position"});
+  });
+  test((t) => {
+    test_scroll_start_value(t, "top", {
+      scrollTop: 0,
+      scrollLeft: 0,
+      approx: false,
+      msg: "scroll-start: top sets initial scroll position"});
+  });
+  test((t) => {
+    test_scroll_start_value(t, "bottom", {
+      scrollTop: scroller.clientHeight,
+      scrollLeft: 0,
+      approx: false,
+      msg: "scroll-start: bottom sets initial scroll position"});
+  });
+  test((t) => {
+    test_scroll_start_value(t, "100px left", {
+      scrollTop: 100,
+      scrollLeft: 0,
+      approx: false,
+      msg: "scroll-start: left sets initial scroll position"});
+  });
+  test((t) => {
+    test_scroll_start_value(t, "100px right", {
+      scrollTop: 100,
+      scrollLeft: scroller.clientWidth,
+      approx: false,
+      msg: "scroll-start: right sets initial scroll position"});
+  });
+  test((t) => {
+    test_scroll_start_value(t, "calc(20px)", {
+      scrollTop: 20,
+      scrollLeft: 0,
+      approx: false,
+      msg: "scroll-start: <calc> sets initial scroll position"});
+  });
+  // promise_test(async (t) => {
+  //   let length_scroller = document.getElementById("lengthscroller");
+
+  //   assert_equals(length_scroller.scrollTop, 100,
+  //     "scroll-start: <length> sets initial scroll position");
+  // });
+
+  // promise_test(async (t) => {
+  //   let percent_scroller = document.getElementById("percentscroller");
+
+  //   assert_approx_equals(percent_scroller.scrollTop, 0.25 * percent_scroller.clientHeight, 1,
+  //     "scroll-start: <percent> sets initial scroll position");
+  // });
+
+  // promise_test(async (t) => {
+  //   let calc_scroller = document.getElementById("calcscroller");
+
+  //   assert_equals(calc_scroller.scrollTop, 50,
+  //     "scroll-start: <calc> sets initial scroll position");
+  // });
+
+  // promise_test(async (t) => {
+  //   let start_scroller = document.getElementById("startscroller");
+
+  //   assert_equals(start_scroller.scrollTop, 0,
+  //     "scroll-start: start sets initial scroll position");
+  // });
+
+  // promise_test(async (t) => {
+  //   let center_scroller = document.getElementById("centerscroller");
+
+  //   assert_approx_equals(center_scroller.scrollTop,
+  //                       0.5 * center_scroller.clientHeight, 1,
+  //     "scroll-start: center sets initial scroll position");
+  // });
+
+  // promise_test(async (t) => {
+  //   let end_scroller = document.getElementById("endscroller");
+
+  //   assert_equals(end_scroller.scrollTop, end_scroller.clientHeight,
+  //     "scroll-start:  end sets initial scroll position");
+  // });
+
+  // promise_test(async (t) => {
+  //   let top_scroller = document.getElementById("topscroller");
+
+  //   assert_equals(top_scroller.scrollTop, 0,
+  //     "scroll-start: top sets initial scroll position");
+  // });
+
+  // promise_test(async (t) => {
+  //   let bottom_scroller = document.getElementById("bottomscroller");
+
+  //   assert_equals(bottom_scroller.scrollTop, bottom_scroller.clientHeight,
+  //     "scroll-start: bottom sets initial scroll position");
+  // });
+
+  // promise_test(async (t) => {
+  //   let left_scroller = document.getElementById("leftscroller");
+
+  //   assert_equals(  left_scroller.scrollLeft, 0,
+  //     "scroll-start: left sets initial scroll position");
+  // });
+
+  // promise_test(async (t) => {
+    // let right_scroller = document.getElementById("rightscroller");
+
+    // assert_equals(right_scroller.scrollLeft, right_scroller.clientWidth,
+      // "scroll-start: right sets initial scroll position");
+  // });
+</script>

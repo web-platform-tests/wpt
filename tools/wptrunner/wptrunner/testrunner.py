@@ -964,7 +964,7 @@ class ManagerGroup:
             self.pool.add(manager)
         self.wait()
 
-    def wait(self, timeout: Optional[float] = None):
+    def wait(self, timeout: Optional[float] = None) -> None:
         """Wait for all the managers in the group to finish.
 
         Arguments:

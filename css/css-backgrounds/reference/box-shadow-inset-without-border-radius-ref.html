@@ -2,44 +2,22 @@
 
   <meta charset="UTF-8">
 
-  <title>CSS Reference Test</title>
+  <title>CSS Reftest reference</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
 
   <style>
-  div.blue-wrapper
+  div
     {
-      border: blue solid 16px;
+      border-color: black;
+      border-style: solid;
       display: inline-block;
-      margin: 0px 8px 8px 0px;
+      margin: 8px 8px 16px 16px;
       vertical-align: top;
     }
 
-  div.inside
-    {
-      background-color: orange; /* padding belt is orange */
-      background-image: linear-gradient(yellow, yellow); /* content area is yellow */
-      background-origin: content-box;
-      background-repeat: no-repeat;
-      height: 64px;
-      width: 64px;
-    }
-
-  div.small
-    {
-      height: 46px; /* 64px minus (20 + 30 - 32) == 46px */
-      width: 46px;
-
-        64px
-     -
-        20px
-     -
-        30px
-     +
-        32px
-       ======
-        46px
-    }
   </style>
 
-  <div class="blue-wrapper"><div class="inside" style="padding: 12px 32px 32px 12px; border-top: black solid 20px; border-left: black solid 20px;"></div></div><div class="blue-wrapper"><div class="inside small" style="padding: 0px 22px 22px 0px; border-top: black solid 50px; border-right: black solid 10px; border-bottom: black solid 10px; border-left: black solid 50px;"></div></div><div class="blue-wrapper"><div class="inside" style="padding: 32px 32px 12px 12px; border-bottom: black solid 20px; border-left: black solid 20px;"></div></div><div class="blue-wrapper"><div class="inside small" style="padding: 22px 22px 0px 0px; border-top: black solid 10px; border-right: black solid 10px; border-bottom: black solid 50px; border-left: black solid 50px;"></div></div><div class="blue-wrapper"><div class="inside" style="padding: 12px 12px 32px 32px; border-top: black solid 20px; border-right: black solid 20px;"></div></div><div class="blue-wrapper"><div class="inside small" style="padding: 0px 0px 22px 22px; border-top: black solid 50px; border-right: black solid 50px; border-bottom: black solid 10px; border-left: black solid 10px;"></div></div><div class="blue-wrapper"><div class="inside" style="padding: 32px 12px 12px 32px; border-bottom: black solid 20px; border-right: black solid 20px;"></div></div><div class="blue-wrapper"><div class="inside small" style="padding: 22px 0px 0px 22px; border-top: black solid 10px; border-left: black solid 10px; border-bottom: black solid 50px; border-right: black solid 50px;"></div></div>
+  <div id="first-subtest" style="border-width: 10px 0px 0px 10px; height: 54px; width: 54px; margin-left: 8px;"></div><div id="second-subtest" style="border-width: 25px 5px 5px 25px; height: 34px; width: 34px;"></div><div id="third-subtest" style="border-width: 0px 0px 10px 10px; height: 54px; width: 54px;"></div><div id="fourth-subtest" style="border-width: 5px 5px 25px 25px; height: 34px; width: 34px;"></div><br>
+
+  <div id="fifth-subtest" style="border-width: 10px 10px 0px 0px; height: 54px; width: 54px; margin-left: 8px;"></div><div id="sixth-subtest" style="border-width: 25px 25px 5px 5px; height: 34px; width: 34px;"></div><div id="seventh-subtest" style="border-width: 0px 10px 10px 0px; height: 54px; width: 54px;"></div><div id="eighth-subtest" style="border-width: 5px 25px 25px 5px; height: 34px; width: 34px;"></div>

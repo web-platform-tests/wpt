@@ -2,7 +2,7 @@
 
  <meta charset="UTF-8">
 
-  <title>CSS Backgrounds and Borders Test: box-shadow outset with spread</title>
+  <title>CSS Backgrounds and Borders Test: box-shadow outset without border-radius</title>
 
   <link rel="author" title="Zhang Xiaochong" href="mailto:joy.xczhang@gmail.com">
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
@@ -17,32 +17,20 @@
 
   More info: https://github.com/web-platform-tests/wpt/issues/10013
 
+  https://github.com/web-platform-tests/wpt/pull/39445
+
   -->
 
   <style>
-  body
-    {
-      overflow-y: hidden;
-      /*
-      We want to neutralize the generation of a
-      vertical scrollbar in case of an 600x600
-      viewport size
-      */
-    }
-
   div
     {
-      background-color: orange; /* padding belt is orange */
-      background-image: linear-gradient(yellow, yellow); /* content area is yellow */
-      background-origin: content-box;
-      background-repeat: no-repeat;
-      border: blue solid 16px; /* border belt is blue */
+      border: transparent solid 8px;
       display: inline-block;
-      height: 64px;
-      margin: 64px 32px;
-      padding: 32px;
+      height: 32px;
+      margin: 32px 20px;
+      padding: 16px;
       vertical-align: top;
-      width: 64px;
+      width: 32px;
     }
 
   /*
@@ -63,41 +51,45 @@
 
   div#first-subtest /* outset with NO spread */
     {
-      box-shadow: black 20px 20px 0px 0px;
+      box-shadow: black 10px 10px 0px 0px;
     }
 
-  div#second-subtest /* outset with a 30px spread */
+  div#second-subtest /* outset with a 15px spread */
     {
-      box-shadow: black 20px 20px 0px 30px;
+      box-shadow: black 10px 10px 0px 15px;
     }
 
   div#third-subtest /* outset with NO spread */
     {
-      box-shadow: black 20px -20px 0px 0px;
+      box-shadow: black 10px -10px 0px 0px;
     }
 
-  div#fourth-subtest /* outset with a 30px spread */
+  div#fourth-subtest /* outset with a 15px spread */
     {
-      box-shadow: black 20px -20px 0px 30px;
+      box-shadow: black 10px -10px 0px 15px;
     }
 
-  /*
+  div#fifth-subtest /* outset with NO spread */
+    {
+      box-shadow: black -10px 10px 0px 0px;
+    }
 
-   Color meaning
-   = = = = = = =
+  div#sixth-subtest /* outset with a 15px spread */
+    {
+      box-shadow: black -10px 10px 0px 15px;
+    }
 
-   yellow is the content area only
+  div#seventh-subtest /* outset with NO spread */
+    {
+      box-shadow: black -10px -10px 0px 0px;
+    }
 
-   orange is the padding belt only
-
-   black is the inset box shadow only
-
-   blue is the border belt only
-
-  */
-
+  div#eighth-subtest /* outset with a 15px spread */
+    {
+      box-shadow: black -10px -10px 0px 15px;
+    }
   </style>
 
-  <div id="first-subtest"></div><div id="second-subtest"></div><br>
+  <div id="first-subtest"></div><div id="second-subtest"></div><div id="third-subtest"></div><div id="fourth-subtest"></div><br>
 
-  <div id="third-subtest"></div><div id="fourth-subtest"></div>
+  <div id="fifth-subtest"></div><div id="sixth-subtest"></div><div id="seventh-subtest"></div><div id="eighth-subtest"></div>

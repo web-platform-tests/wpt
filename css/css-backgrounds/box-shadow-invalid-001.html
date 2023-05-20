@@ -2,13 +2,13 @@
 
   <meta charset="UTF-8">
 
-  <title>CSS Backgrounds Test: multiple outset box-shadow</title>
+  <title>CSS Background and Borders Test: invalid box-shadow declarations</title>
 
   <!--
 
-  Created: May 10th 2023
+  Created: May 20th 2023
 
-  Last modified: May 10th 2023
+  Last modified: May 20th 2023
 
   -->
 
@@ -16,7 +16,7 @@
   <link rel="help" href="https://www.w3.org/TR/css-backgrounds-3/#box-shadow">
   <link rel="match" href="reference/ref-filled-green-100px-square.xht">
 
-  <meta content="This test checks that 'box-shadow' accepts either the 'none' value or (exclusive or) a comma-separated list of shadow but not both at the same time.">
+  <meta content="This test checks that 'box-shadow' accepts either the 'none' value or (exclusive or) a comma-separated list of shadows but not both at the same time." name="assert">
   <meta content="invalid" name="flags">
 
   <!--
@@ -33,11 +33,20 @@
   <style>
   div
     {
-      background-color: green;
-      font-size: 100px;
-      box-shadow: none, red 0em -1em, red 1em 0em, red 0em 1em, red -1em 0em;
-      height: 1em;
-      width: 1em;
+      background-color: red;
+      box-shadow: green 100px 100px inset;
+      /*
+      This inset 'box-shadow' declaration will paint and cover
+      the inside of the red square. This way, we verify that
+      the UA actually supports 'box-shadow'.
+      */
+      box-shadow: none, red 0px -100px, red 100px 0px, red 0px 100px, red -100px 0px; /* invalid */
+      box-shadow: red 0px -100px, none, red 100px 0px, red 0px 100px, red -100px 0px; /* invalid */
+      box-shadow: red 0px -100px, red 100px 0px, none, red 0px 100px, red -100px 0px; /* invalid */
+      box-shadow: red 0px -100px, red 100px 0px, red 0px 100px, none, red -100px 0px; /* invalid */
+      box-shadow: red 0px -100px, red 100px 0px, red 0px 100px, red -100px 0px, none; /* invalid */
+      height: 100px;
+      width: 100px;
    }
   </style>
 

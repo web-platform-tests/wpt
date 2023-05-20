@@ -9,9 +9,9 @@
       assert_equals((new CapturedMouseEvent("custom")).type, "custom");
   }, "type argument is passed to the Event's constructor");
 
-  let inherited_options = ["bubbles", "cancelable", "composed"];
+  const inherited_options = ["bubbles", "cancelable", "composed"];
   test(() => {
-      let event = new CapturedMouseEvent("");
+      const event = new CapturedMouseEvent("");
       inherited_options.forEach(name => {
           assert_equals(event[name], false, `event.${name} with default eventInitDict`);
       });
@@ -19,7 +19,7 @@
       inherited_options.forEach(name => {
           let options = {};
           options[name] = true;
-          let event = new CapturedMouseEvent("", options);
+          const event = new CapturedMouseEvent("", options);
           inherited_options.forEach(other_name => {
               assert_equals(event[other_name], other_name == name,
                   `event.${other_name} with eventInitDict={${name}: true}`);

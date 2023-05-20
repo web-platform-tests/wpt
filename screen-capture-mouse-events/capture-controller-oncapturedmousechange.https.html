@@ -5,12 +5,12 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
   test(() => {
-      let controller = new CaptureController();
+      const controller = new CaptureController();
       assert_equals(controller.oncapturedmousechange, null);
   }, "oncapturedmousechange is initially unset");
 
   test(() => {
-      let controller = new CaptureController();
+      const controller = new CaptureController();
       let result = undefined;
       controller.oncapturedmousechange = (e) => {
           result = {
@@ -19,9 +19,10 @@
               surfaceY: e.surfaceY,
           };
       };
-      let init = {surfaceX: 5, surfaceY: 7};
-      let event = new CapturedMouseEvent("capturedmousechange", init);
-      controller.dispatchEvent(event);
+      const init = {surfaceX: 5, surfaceY: 7};
+      controller.dispatchEvent(
+          new CapturedMouseEvent("capturedmousechange", init)
+      );
       assert_equals(result.target, controller);
       assert_equals(result.surfaceX, init.surfaceX);
       assert_equals(result.surfaceY, init.surfaceY);

@@ -974,9 +974,7 @@ class ManagerGroup:
         deadline = None if timeout is None else time.time() + timeout
         for manager in self.pool:
             manager_timeout = None
-            if deadline is None:
-                manager_timeout = None
-            else:
+            if deadline is not None:
                 manager_timeout = max(0, deadline - time.time())
             manager.join(manager_timeout)
 

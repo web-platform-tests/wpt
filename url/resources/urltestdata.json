@@ -7788,6 +7788,7 @@
   "blob: in blob:",
   {
     "input": "blob:blob:",
+    "base": null,
     "href": "blob:blob:",
     "origin": "null",
     "protocol": "blob:",
@@ -7802,6 +7803,7 @@
   },
   {
     "input": "blob:blob:https://example.org/",
+    "base": null,
     "href": "blob:blob:https://example.org/",
     "origin": "null",
     "protocol": "blob:",

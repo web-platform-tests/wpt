@@ -5,7 +5,6 @@ from typing import (Any,
                     List,
                     Mapping,
                     MutableMapping,
-                    MutableSet,
                     Optional,
                     Sequence,
                     Set,
@@ -318,15 +317,13 @@ class WheelInputSource(InputSource):
 class Actions:
     def __init__(self) -> None:
         self.input_sources: List[InputSource] = []
-        self.seen_names: MutableMapping[str, MutableSet[str]] = defaultdict(Set)
+        self.seen_names: MutableMapping[str, Set[str]] = defaultdict(set)
 
     def _add_source(self,
                     cls: Type[InputSourceType],
                     input_id: Optional[str] = None,
                     **kwargs: Any) -> InputSourceType:
         input_type = cls.input_type
-        if input_type not in self.seen_names:
-            self.seen_names[input_type] = set()
         if input_id is None:
             i = 0
             input_id = f"{input_type}-{i}"

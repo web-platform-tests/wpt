@@ -7785,6 +7785,35 @@
     "search": "",
     "hash": ""
   },
+  "blob: in blob:",
+  {
+    "input": "blob:blob:",
+    "href": "blob:blob:",
+    "origin": "null",
+    "protocol": "blob:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "blob:",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "blob:blob:https://example.org/",
+    "href": "blob:blob:https://example.org/",
+    "origin": "null",
+    "protocol": "blob:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "blob:https://example.org/",
+    "search": "",
+    "hash": ""
+  },
   "Invalid IPv4 radix digits",
   {
     "input": "http://0x7f.0.0.0x7g",

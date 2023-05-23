@@ -60,7 +60,9 @@ class Virtualenv:
     def pip_path(self):
         path = which("pip3", path=self.bin_path)
         if path is None:
-            raise ValueError("pip3 not found")
+            path = which("pip", path=self.bin_path)
+        if path is None:
+            raise ValueError("pip3 or pip not found")
         return path
 
     @property

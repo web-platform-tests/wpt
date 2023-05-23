@@ -8,7 +8,8 @@
 
 <img src="/images/green-2x2.png"> <!-- block the window load event -->
 
-<!-- should invoke update the image data -->
+<!-- should invoke update the image data, but omit events for layout changes -->
+<!-- but also see https://github.com/whatwg/html/issues/8492 -->
 
 <img srcset="/images/green-2x2.png 2w" sizes="auto" width="2" loading="lazy" data-desc="width attribute changes">
 
@@ -46,15 +47,15 @@ onload = async function() {
 
   t('width property changes', function(img) {
     img.style.width = '4px';
-  }, 'load');
+  }, 'timeout');
 
   t('percentage width, CB width changes', function(img) {
     img.parentNode.style.width = '4px';
-  }, 'load');
+  }, 'timeout');
 
   t('height property changes (with aspect-ratio)', function(img) {
     img.style.height = '4px';
-  }, 'load');
+  }, 'timeout');
 
   t('loading attribute state changes', function(img) {
     img.loading = 'eager';
@@ -62,7 +63,7 @@ onload = async function() {
 
   t('being rendered changes', function(img) {
     img.style.display = 'none';
-  }, 'load');
+  }, 'timeout');
 
   t('display property changes to inline-block', function(img) {
     img.style.display = 'inline-block';

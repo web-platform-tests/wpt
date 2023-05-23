@@ -7891,7 +7891,7 @@
     "pathname": "wss://example.org/",
     "search": "",
     "hash": ""
-  }
+  },
   "Invalid IPv4 radix digits",
   {
     "input": "http://0x7f.0.0.0x7g",

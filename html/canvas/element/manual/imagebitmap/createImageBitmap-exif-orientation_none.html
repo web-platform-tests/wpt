@@ -61,7 +61,7 @@ function runImageBitmapTest(promise, orientation, sourceType) {
 for (let orientation of [1, 2, 3, 4, 5, 6, 7, 8]) {
     const imageSrc = `resources/squares_${orientation}.jpg`;
 
-    runImageBitmapTest(loadImage(imageSrc), orientation, 'HTMLImage');
+    runImageBitmapTest(loadImage(imageSrc), orientation, 'HTMLImageElement');
     runImageBitmapTest(fetch(imageSrc).then(response => response.blob()), orientation, 'Blob');
 }
 

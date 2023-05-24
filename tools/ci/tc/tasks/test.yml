@@ -117,14 +117,14 @@ components:
       - python3.7-distutils
       - python3.7-dev
 
-  tox-python3_10:
+  tox-python3_11:
     env:
-      TOXENV: py310
+      TOXENV: py311
       PY_COLORS: "0"
     install:
-      - python3.10
-      - python3.10-distutils
-      - python3.10-dev
+      - python3.11
+      - python3.11-distutils
+      - python3.11-dev
 
   tests-affected:
     options:
@@ -429,7 +429,7 @@ tasks:
       use:
         - wpt-base
         - trigger-pr
-        - tox-python3_10
+        - tox-python3_11
       command: ./tools/ci/ci_tools_unittest.sh
       env:
         HYPOTHESIS_PROFILE: ci
@@ -465,7 +465,7 @@ tasks:
       use:
         - wpt-base
         - trigger-pr
-        - tox-python3_10
+        - tox-python3_11
       command: ./tools/ci/ci_tools_integration_test.sh
       install:
         - libnss3-tools
@@ -506,7 +506,7 @@ tasks:
       use:
         - wpt-base
         - trigger-pr
-        - tox-python3_10
+        - tox-python3_11
       command: ./tools/ci/ci_resources_unittest.sh
       install:
         - libnss3-tools

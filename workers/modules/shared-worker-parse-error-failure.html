@@ -31,6 +31,7 @@ promise_setup(async () => {
 promise_test(async () => {
   const scriptURL = 'resources/syntax-error.js';
   const worker = new SharedWorker(scriptURL, { type: 'module' });
+  await new Promise(resolve => setTimeout(resolve, 100));
   const args = await new Promise(resolve =>
       worker.onerror = (...args) => resolve(args));
   window.checkErrorArguments(args);

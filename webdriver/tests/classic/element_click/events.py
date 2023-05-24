@@ -2,20 +2,27 @@ from webdriver import Element
 from tests.support.asserts import assert_success
 from tests.support.helpers import filter_dict
 
+
 def get_events(session):
     """Return list of mouse events recorded in the fixture."""
     return session.execute_script("return allEvents.events;") or []
 
+
 def element_click(session, element):
     return session.transport.send(
-        "POST", "session/{session_id}/element/{element_id}/click".format(
-            session_id=session.session_id,
-            element_id=element.id))
+        "POST",
+        "session/{session_id}/element/{element_id}/click".format(
+            session_id=session.session_id, element_id=element.id
+        ),
+    )
+
 
 def test_event_mousemove(session, url):
-    session.url = url("/webdriver/tests/element_click/support/test_click_wdspec.html")
+    session.url = url(
+        "/webdriver/tests/classic/element_click/support/test_click_wdspec.html"
+    )
 
-    element = session.find.css('#outer', all=False)
+    element = session.find.css("#outer", all=False)
     response = element_click(session, element)
     assert_success(response)
 

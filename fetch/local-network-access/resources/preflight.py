@@ -62,7 +62,7 @@ _ACAO = ("Access-Control-Allow-Origin", "*")
 _ACAPN = ("Access-Control-Allow-Private-Network", "true")
 _ACAH = ("Access-Control-Allow-Headers", "Service-Worker")
 
-def _get_response_headers(method, mode):
+def _get_response_headers(method, mode, request_headers):
   acam = ("Access-Control-Allow-Methods", method)
 
   if mode == b"cors":
@@ -112,7 +112,7 @@ def _handle_preflight_request(request, response):
 
   method = request.headers.get("Access-Control-Request-Method")
   mode = request.GET.get(b"preflight-headers")
-  headers = _get_response_headers(method, mode)
+  headers = _get_response_headers(method, mode, request.headers)
 
   return (headers, "preflight")
 
@@ -144,7 +144,7 @@ def _handle_final_request(request, response):
       request.server.stash.put(uuid, "final")
 
     mode = request.GET.get(b"final-headers")
-    headers = _get_response_headers(request.method, mode)
+    headers = _get_response_headers(request.method, mode, request.headers)
 
   redirect = request.GET.get(b"redirect")
   if redirect is not None:
@@ -158,7 +158,36 @@ def _handle_final_request(request, response):
   body = _final_response_body(request)
   return (headers, body)
 
-def main(request, response):
+def pretty_request(request):
+  result = [
+      "Request:",
+      "  Method: {}".format(request.method),
+      "  URL: {}".format(request.url),
+      "  Headers:",
+  ]
+  for key in request.headers:
+    result.append("    {}: {}".format(key, request.headers[key]))
+  return "\n".join(result)
+
+def pretty_response(main_result):
+  try:
+    (headers, body) = main_result
+    code = 200
+  except ValueError:
+    (code, headers, body) = main_result
+
+  result = [
+      "Response:",
+      "  Code: {}".format(code),
+      "  Headers:",
+  ]
+  for (name, value) in headers:
+    result.append("    {}: {}".format(name, value))
+  result.append("  Body:")
+  result.append("    {}".format(body))
+  return "\n".join(result)
+
+def inner_main(request, response):
   try:
     if request.method == "OPTIONS":
       return _handle_preflight_request(request, response)
@@ -167,3 +196,10 @@ def main(request, response):
   except BaseException as e:
     # Surface exceptions to the client, where they show up as assertion errors.
     return (500, [("X-exception", str(e))], "exception: {}".format(e))
+
+def main(request, response):
+  with open("/tmp/preflight.log", "a") as f:
+    print(pretty_request(request), file=f)
+    result = inner_main(request, response)
+    print(pretty_response(result), file=f)
+    return result

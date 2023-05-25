@@ -297,7 +297,7 @@ class SelectFedCMAccountAction:
 
     def __call__(self, payload):
         account_index = payload["account_index"]
-        self.logger.debug("Selecting FedCM account of index: %s" % account_index)
+        self.logger.debug(f"Selecting FedCM account of index: {account_index}")
         return self.protocol.fedcm.select_fedcm_account(account_index)
 
 class GetFedCMAccountListAction:

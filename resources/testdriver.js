@@ -692,7 +692,7 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fulfilled after the cancel request is sent, or rejected
+         * @returns {Promise} Fulfilled after the dialog is canceled, or rejected
          *                    in case the WebDriver command errors
          */
         cancel_fedcm_dialog: function(context=null) {
@@ -706,12 +706,12 @@
          * <https://fedidcg.github.io/FedCM/#webdriver-selectaccount>`_
          * WebDriver command.
          *
-         * @param {int} account_index - Index of the account to select.
+         * @param {number} account_index - Index of the account to select.
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fulfilled after the account selection request is sent,
+         * @returns {Promise} Fulfilled after the account is selected,
          *                    or rejected in case the WebDriver command errors
          */
         select_fedcm_account: function(account_index, context=null) {
@@ -729,7 +729,7 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fulfilled after the account list request is sent, or
+         * @returns {Promise} fulfilled after the account list is returned, or
          *                    rejected in case the WebDriver command errors
          */
         get_fedcm_account_list: function(context=null) {
@@ -747,7 +747,7 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fulfilled after the title request is sent, or rejected
+         * @returns {Promise} Fulfilled after the title is returned, or rejected
          *                    in case the WebDriver command errors
          */
         get_fedcm_dialog_title: function(context=null) {
@@ -765,7 +765,7 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fulfilled after the dialog type request is sent, or
+         * @returns {Promise} Fulfilled after the dialog type is returned, or
          *                    rejected in case the WebDriver command errors
          */
         get_fedcm_dialog_type: function(context=null) {
@@ -773,18 +773,18 @@
         },
 
         /**
-         * Sets whether delay is enabled for the Federated Credential Management dialog
+         * Sets whether promise rejection delay is enabled for the Federated Credential Management dialog
          *
          * Matches the `Set delay enabled
          * <https://fedidcg.github.io/FedCM/#webdriver-setdelayenabled>`_
          * WebDriver command.
          *
-         * @param {boolean} enabled - Delay to set.
+         * @param {boolean} enabled - Whether to delay FedCM promise rejection.
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fulfilled after the set delay enabled request is sent,
+         * @returns {Promise} Fulfilled after the delay has been enabled or disabled,
          *                    or rejected in case the WebDriver command errors
          */
         set_fedcm_delay_enabled: function(enabled, context=null) {
@@ -802,7 +802,7 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fulfilled after the reset cooldown request is sent,
+         * @returns {Promise} Fulfilled after the cooldown has been reset,
          *                    or rejected in case the WebDriver command errors
          */
         reset_fedcm_cooldown: function(context=null) {

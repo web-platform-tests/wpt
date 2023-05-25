@@ -1,21 +1,16 @@
 # mypy: ignore-errors
 
-import imp
 import json
 import os
 
-here = os.path.dirname(__file__)
-localpaths = imp.load_source("localpaths", os.path.abspath(os.path.join(here, os.pardir, "localpaths.py")))
-
-root = localpaths.repo_root
-
 from manifest import manifest
+from localpaths import repo_root
 
 def main(request, response):
-    path = os.path.join(root, "MANIFEST.json")
+    path = os.path.join(repo_root, "MANIFEST.json")
 
     # TODO make this download rather than rebuilding from scratch when possible
-    manifest_file = manifest.load_and_update(root, path, "/", parallel=False)
+    manifest_file = manifest.load_and_update(repo_root, path, "/", parallel=False)
 
     supported_types = ["testharness", "reftest", "manual"]
     data = {"items": {},

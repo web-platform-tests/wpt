@@ -108,7 +108,7 @@ export class MockFederatedAuthRequest {
   async resolveTokenRequest(token) {
   }
 
-  async closeModalDialogView() {
+  async closePopupWindow() {
   }
 
   async preventSilentAccess() {

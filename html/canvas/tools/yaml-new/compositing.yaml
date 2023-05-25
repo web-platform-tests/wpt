@@ -101,14 +101,23 @@
 
 - name: 2d.composite.operation.get
   code: |
-    var modes = ['source-atop', 'source-in', 'source-out', 'source-over',
-        'destination-atop', 'destination-in', 'destination-out', 'destination-over',
-        'lighter', 'copy', 'xor'];
+    var modes = ['clear', 'source-atop', 'source-in', 'source-out',
+        'source-over', 'destination-atop', 'destination-in', 'destination-out',
+        'destination-over', 'lighter', 'copy', 'xor', 'multiply', 'screen',
+        'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn',
+        'hard-light', 'soft-light', 'difference', 'exclusion', 'hue',
+        'saturation', 'color', 'luminosity'];
     for (var i = 0; i < modes.length; ++i)
     {
         ctx.globalCompositeOperation = modes[i];
         @assert ctx.globalCompositeOperation === modes[i];
     }
+
+- name: 2d.composite.operation.normal
+  code: |
+    ctx.globalCompositeOperation = 'xor';
+    ctx.globalCompositeOperation = 'normal';
+    @assert ctx.globalCompositeOperation === 'source-over';
 
 - name: 2d.composite.operation.unrecognised
   code: |

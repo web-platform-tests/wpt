@@ -51,16 +51,17 @@
 <li><p><a class="reference internal" href="#storage" id="id12">Storage</a></p></li>
 <li><p><a class="reference internal" href="#accessibility" id="id13">Accessibility</a></p></li>
 <li><p><a class="reference internal" href="#seure-payment-confirmation" id="id14">Seure Payment Confirmation</a></p></li>
-<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id15">Using test_driver in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#federated-credential-management" id="id15">Federated Credential Management</a></p></li>
+<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id16">Using test_driver in other browsing contexts</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#actions" id="id16">Actions</a></p>
+<li><p><a class="reference internal" href="#actions" id="id17">Actions</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id1" id="id17">Markup</a></p></li>
-<li><p><a class="reference internal" href="#id2" id="id18">API</a></p></li>
-<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id19">Using in other browsing contexts</a></p></li>
-<li><p><a class="reference internal" href="#send-keys" id="id20">send_keys</a></p></li>
-<li><p><a class="reference internal" href="#set-permission" id="id21">set_permission</a></p></li>
+<li><p><a class="reference internal" href="#id1" id="id18">Markup</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id19">API</a></p></li>
+<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id20">Using in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#send-keys" id="id21">send_keys</a></p></li>
+<li><p><a class="reference internal" href="#set-permission" id="id22">set_permission</a></p></li>
 </ul>
 </li>
 </ul>
@@ -618,6 +619,137 @@ WebDriver command.</p>
 <span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">.</span><span class="nx">show</span><span class="p">();</span>
 </pre></div>
 </div>
+</dd></dl>
+
+</section>
+<section id="federated-credential-management">
+<h3>Federated Credential Management<a class="headerlink" href="#federated-credential-management" title="Permalink to this headline">¶</a></h3>
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.cancel_fedcm_dialog">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">cancel_fedcm_dialog</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.cancel_fedcm_dialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cancels the Federated Credential Management dialog</p>
+<p>Matches the <a class="reference external" href="https://fedidcg.github.io/FedCM/#webdriver-canceldialog">Cancel dialog</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the dialog is canceled, or rejected in case the WebDriver command errors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.select_fedcm_account">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">select_fedcm_account</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">account_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.select_fedcm_account" title="Permalink to this definition">¶</a></dt>
+<dd><p>Selects an account from the Federated Credential Management dialog</p>
+<p>Matches the <a class="reference external" href="https://fedidcg.github.io/FedCM/#webdriver-selectaccount">Select account</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>account_index</strong> (<em>number</em>) – Index of the account to select.</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the account is selected, or rejected in case the WebDriver command errors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.get_fedcm_account_list">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_fedcm_account_list</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_fedcm_account_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the account list from the Federated Credential Management dialog</p>
+<p>Matches the <a class="reference external" href="https://fedidcg.github.io/FedCM/#webdriver-accountlist">Account list</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the account list is returned, or rejected in case the WebDriver command errors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.get_fedcm_dialog_title">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_fedcm_dialog_title</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_fedcm_dialog_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the title of the Federated Credential Management dialog</p>
+<p>Matches the <a class="reference external" href="https://fedidcg.github.io/FedCM/#webdriver-gettitle">Get title</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the title is returned, or rejected in case the WebDriver command errors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.get_fedcm_dialog_type">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_fedcm_dialog_type</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_fedcm_dialog_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the type of the Federated Credential Management dialog</p>
+<p>Matches the <a class="reference external" href="https://fedidcg.github.io/FedCM/#webdriver-getdialogtype">Get dialog type</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the dialog type is returned, or rejected in case the WebDriver command errors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.set_fedcm_delay_enabled">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_fedcm_delay_enabled</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enabled</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_fedcm_delay_enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets whether promise rejection delay is enabled for the Federated Credential Management dialog</p>
+<p>Matches the <a class="reference external" href="https://fedidcg.github.io/FedCM/#webdriver-setdelayenabled">Set delay enabled</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>enabled</strong> (<em>boolean</em>) – Whether to delay FedCM promise rejection.</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the delay has been enabled or disabled, or rejected in case the WebDriver command errors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.reset_fedcm_cooldown">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">reset_fedcm_cooldown</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.reset_fedcm_cooldown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the Federated Credential Management dialog’s cooldown</p>
+<p>Matches the <a class="reference external" href="https://fedidcg.github.io/FedCM/#webdriver-resetcooldown">Reset cooldown</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the cooldown has been reset, or rejected in case the WebDriver command errors</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

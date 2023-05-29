@@ -728,6 +728,9 @@
         if (!tests.promise_tests) {
             tests.promise_tests = Promise.resolve();
         }
+        let promise_test_error = new Error(
+            "Unhandled rejection with value in the '" + test_name + "' promise_test"
+        );
         tests.promise_tests = tests.promise_tests.then(function() {
             return new Promise(function(resolve) {
                 var promise = test.step(func, test, test);
@@ -759,6 +762,18 @@
                             assert(false, "promise_test", null,
                                    "Unhandled rejection with value: ${value}", {value:value});
                         }))
+                    .catch(function (e) {
+                        // In the case of AssertionError, which is fired when
+                        // something unexpected happened in the promise_test,
+                        // report the error into console and let the other tests
+                        // to continue.
+                        if (e instanceof AssertionError) {
+                            promise_test_error.cause = e;
+                            console.error(promise_test_error);
+                            return;
+                        }
+                        throw e;
+                    })
                     .then(function() {
                         test.done();
                     });

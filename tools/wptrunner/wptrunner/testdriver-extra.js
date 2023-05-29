@@ -150,7 +150,7 @@
                 resolve(result);
             };
             const on_failure = data => {
-                reject(`${data.status}: ${data.message}`);
+                reject(new Error(`WebDriver action failed with '${data.status}' status (check stdout for the WebDriver error stack)`));
             };
             pending.set(cmd_id, [on_success, on_failure]);
         });

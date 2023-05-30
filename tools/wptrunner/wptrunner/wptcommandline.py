@@ -220,12 +220,12 @@ scheme host and port.""")
     config_group = parser.add_argument_group("Configuration")
     config_group.add_argument("--binary", action="store",
                               type=abs_path, help="Desktop binary to run tests against")
-    config_group.add_argument('--binary-arg',
+    config_group.add_argument('--binary-args',
                               default=[], action="append", dest="binary_args",
                               help="Extra argument for the binary")
     config_group.add_argument("--webdriver-binary", action="store", metavar="BINARY",
                               type=abs_path, help="WebDriver server binary to use")
-    config_group.add_argument('--webdriver-arg',
+    config_group.add_argument('--webdriver-args',
                               default=[], action="append", dest="webdriver_args",
                               help="Extra argument for the WebDriver binary")
     config_group.add_argument("--metadata", action="store", type=abs_path, dest="metadata_root",

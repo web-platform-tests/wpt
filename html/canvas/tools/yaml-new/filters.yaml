@@ -61,7 +61,7 @@
 
 - name: 2d.filter.canvasFilterObject.tentative
   desc: Test CanvasFilter() object
-  canvasType: ['OffscreenCanvas']
+  canvasType: ['OffscreenCanvas', 'Worker']
   code: |
     @assert ctx.filter == 'none';
     ctx.filter = 'blur(5px)';
@@ -349,13 +349,13 @@
 
 - name: 2d.filter.canvasFilterObject.dropShadow.tentative
   desc: Test CanvasFilter() dropShadow object.
-  size: 520, 420
+  size: [520, 420]
   code: |
     ctx.fillStyle = 'teal';
-    ctx.fillRect(0, 0, 520, 50);
-    ctx.fillRect(0, 100, 520, 50);
-    ctx.fillRect(0, 200, 520, 50);
-    ctx.fillRect(0, 300, 520, 50);
+    ctx.fillRect(0, 0, {{ size[0] }}, 50);
+    ctx.fillRect(0, 100, {{ size[0] }}, 50);
+    ctx.fillRect(0, 200, {{ size[0] }}, 50);
+    ctx.fillRect(0, 300, {{ size[0] }}, 50);
 
     ctx.fillStyle = 'crimson';
 
@@ -446,7 +446,7 @@
     ctx.fillRect(210, 310, 80, 80);
   html_reference: |
     <svg xmlns="http://www.w3.org/2000/svg"
-         width=520 height=420
+         width={{ size[0] }} height={{ size[1] }}
          color-interpolation-filters="sRGB">
       <rect x=0 y=0 width=100% height=50 fill="teal" />
       <rect x=0 y=100 width=100% height=50 fill="teal" />
@@ -500,34 +500,34 @@
 - name: 2d.filter.canvasFilterObject.dropShadow.exceptions.tentative
   desc: Test exceptions on CanvasFilter() dropShadow object
   code: |
-    @unroll @assert new CanvasFilter({\
-        filter: 'dropShadow', \
-        <dx | dy | floodOpacity>: \
+    @unroll @assert new CanvasFilter({\-
+        filter: 'dropShadow', \-
+        <dx | dy | floodOpacity>: \-
         <10 | -1 | 0.5 | null | true | false | [] | [20] | '30'>});
-    @unroll @assert new CanvasFilter({\
-        filter: 'dropShadow', \
-        <stdDeviation>: \
-        <10 | -1 | 0.5 | null | true | false | [] | [20] | '30' | \
-         [10, -1] | [0.5, null] | [true, false] | [[], [20]] | \
+    @unroll @assert new CanvasFilter({\-
+        filter: 'dropShadow', \-
+        <stdDeviation>: \-
+        <10 | -1 | 0.5 | null | true | false | [] | [20] | '30' | \-
+         [10, -1] | [0.5, null] | [true, false] | [[], [20]] | \-
          ['30', ['40']]>});
-    @unroll @assert new CanvasFilter({\
-        filter: 'dropShadow', \
-        <floodColor>: \
+    @unroll @assert new CanvasFilter({\-
+        filter: 'dropShadow', \-
+        <floodColor>: \-
         <'red' | 'canvas' | 'rgba(4, -3, 0.5, 1)' | '#aabbccdd' | '#abcd'>});
 
-    @unroll @assert throws TypeError new CanvasFilter({\
-        filter: 'dropShadow', \
-        <dx | dy | floodOpacity>: \
+    @unroll @assert throws TypeError new CanvasFilter({\-
+        filter: 'dropShadow', \-
+        <dx | dy | floodOpacity>: \-
         <NaN | Infinity | -Infinity | undefined | 'test' | {} | [1, 2]>});
-    @unroll @assert throws TypeError new CanvasFilter({\
-        filter: 'dropShadow', \
-        <stdDeviation>: \
-        <NaN | Infinity | -Infinity | undefined | 'test' | {} | [1, 2, 3] | \
-         [1, NaN] | [1, Infinity] | [1, -Infinity] | [1, undefined] | \
+    @unroll @assert throws TypeError new CanvasFilter({\-
+        filter: 'dropShadow', \-
+        <stdDeviation>: \-
+        <NaN | Infinity | -Infinity | undefined | 'test' | {} | [1, 2, 3] | \-
+         [1, NaN] | [1, Infinity] | [1, -Infinity] | [1, undefined] | \-
          [1, 'test'] | [1, {}] | [1, [2, 3]]>});
-    @unroll @assert throws TypeError new CanvasFilter({\
-        filter: 'dropShadow', \
-        <floodColor>: \
+    @unroll @assert throws TypeError new CanvasFilter({\-
+        filter: 'dropShadow', \-
+        <floodColor>: \-
         <'test' | 'rgba(NaN, 3, 2, 1)' | 10 | undefined | null | NaN>});
 
 - name: 2d.filter.canvasFilterObject.turbulence.inputTypes.tentative

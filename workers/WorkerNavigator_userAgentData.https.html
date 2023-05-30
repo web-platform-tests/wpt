@@ -43,5 +43,10 @@
 
     // Architecture should be one of two permitted values.
     assert_true(["x86", "arm"].some(arch => arch == e.data.architecture))
+
+    // Platform version on Linux should be the empty string.
+    if (e.data.platform == "Linux") {
+      assert_equals(highEntropyValues.platformVersion, "");
+    }
   }, "Test that userAgentData is available in workers in secure contexts");
 </script>

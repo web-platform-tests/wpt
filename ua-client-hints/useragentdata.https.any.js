@@ -18,3 +18,13 @@ promise_test(() => {
     hints => assert_true(["x86", "arm"].some(item => item == hints.architecture))
   );
 }, "Arch should be one of two permitted values.");
+
+promise_test(() => {
+  return navigator.userAgentData.getHighEntropyValues(["platformVersion"]).then(
+    hints => {
+      if (navigator.userAgentData.platform == "Linux") {
+        assert_equals(hints.platformVersion, "");
+      }
+    }
+  );
+}, "Platform version on Linux should be the empty string");

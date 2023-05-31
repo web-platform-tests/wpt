@@ -47,6 +47,7 @@ class ContentShellTestPart(ProtocolPart):
         super().__init__(parent)
         self.stdout_queue = parent.browser.stdout_queue
         self.stdin_queue = parent.browser.stdin_queue
+        self.leaked = False
 
     def do_test(self, command, timeout=None):
         """Send a command to content_shell and return the resulting outputs.
@@ -60,6 +61,16 @@ class ContentShellTestPart(ProtocolPart):
         deadline = time() + timeout if timeout else None
         # The first block can also contain audio data but not in WPT.
         text = self._read_block(deadline)
+
+        if type(text) == str and text.startswith('#LEAK'):
+            # will fail to parse text later as test results is expected.
+            # need to read text from next block
+
+            #ignore extra eof, below will be the #EOF
+            self.leaked = True
+            _read_line(self.stdout_queue, deadline, "latin-1").rstrip()
+            text = self._read_block(deadline)
+
         image = self._read_block(deadline)
 
         return text, image
@@ -276,6 +287,13 @@ class ContentShellTestharnessExecutor(TestharnessExecutor, _SanitizerMixin):  # 
                 self.logger.warning('URL mismatch may be a false positive '
                                     'if the test navigates')
                 result_url = test.url
+
+            if self.protocol.content_shell_test.leaked:
+                test.restart_test_after = True
+                if status == 0:
+                    # if status of test is passed with leak, we'll mark it
+                    # as error instead
+                    status = 1
             raw_result = result_url, status, message, stack, subtest_results
             return self.convert_result(test, raw_result)
         except BaseException as exception:

@@ -45,6 +45,7 @@ class Virtualenv:
         return os.path.lexists(python_link) and not os.path.exists(python_link)
 
     def create(self):
+        logger.debug(f"Virtualenv.create {self.path}")
         if os.path.exists(self.path):
             shutil.rmtree(self.path)
             self._working_set = None
@@ -83,6 +84,7 @@ class Virtualenv:
             else:
                 site_packages = os.path.join(base, "lib", f"python{sys.version[:3]}", "site-packages")
 
+        logger.debug(f"Virtualenv.lib_path {site_packages}")
         return site_packages
 
     @property
@@ -96,6 +98,7 @@ class Virtualenv:
         return self._working_set
 
     def activate(self):
+        logger.debug(f"Virtualenv.activate")
         if sys.platform == 'darwin':
             # The default Python on macOS sets a __PYVENV_LAUNCHER__ environment
             # variable which affects invocation of python (e.g. via pip) in a
@@ -131,16 +134,19 @@ class Virtualenv:
                 site.addsitedir(site_dir)
                 added.add(site_dir)
         sys.path[:] = sys.path[prev_length:] + sys.path[0:prev_length]
+        logger.debug(f"Set sys.path to {':'.join(sys.path)}")
 
         sys.real_prefix = sys.prefix
         sys.prefix = self.path
 
     def start(self):
+        logger.debug(f"Virtualenv.start")
         if not self.exists or self.broken_link:
             self.create()
         self.activate()
 
     def install(self, *requirements):
+        logger.debug(f"Virtualenv.install {' '.join(requirements)}")
         try:
             self.working_set.require(*requirements)
         except Exception:
@@ -153,6 +159,7 @@ class Virtualenv:
         call(self.pip_path, "install", "--prefer-binary", *requirements)
 
     def install_requirements(self, *requirements_paths):
+        logger.debug(f"Virtualenv.install_requirements {' '.join(requirements_paths)}")
         install = []
         # Check which requirements are already satisfied, to skip calling pip
         # at all in the case that we've already installed everything, and to

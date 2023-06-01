@@ -1,4 +1,4 @@
-// META: title=Blob Stream
+// META: title=Blob Stream BYOB
 // META: script=../support/Blob.js
 // META: script=/common/gc.js
 'use strict';
@@ -37,38 +37,10 @@ async function read_all_chunks(stream, { perform_gc = false, mode } = {}) {
 }
 
 promise_test(async () => {
-  const blob = new Blob(["PASS"]);
-  const stream = blob.stream();
-  const chunks = await read_all_chunks(stream);
-  for (let [index, value] of chunks.entries()) {
-    assert_equals(value, "PASS".charCodeAt(index));
-  }
-}, "Blob.stream()")
-
-promise_test(async () => {
-  const blob = new Blob();
-  const stream = blob.stream();
-  const chunks = await read_all_chunks(stream);
-  assert_array_equals(chunks, []);
-}, "Blob.stream() empty Blob")
-
-promise_test(async () => {
-  const input_arr = [8, 241, 48, 123, 151];
-  const typed_arr = new Uint8Array(input_arr);
-  const blob = new Blob([typed_arr]);
-  const stream = blob.stream();
-  const chunks = await read_all_chunks(stream);
-  assert_array_equals(chunks, input_arr);
-}, "Blob.stream() non-unicode input")
-
-promise_test(async() => {
   const input_arr = [8, 241, 48, 123, 151];
   const typed_arr = new Uint8Array(input_arr);
   let blob = new Blob([typed_arr]);
   const stream = blob.stream();
-  blob = null;
-  await garbageCollect();
-  const chunks = await read_all_chunks(stream, { perform_gc: true });
+  const chunks = await read_all_chunks(stream, { mode: "byob" });
   assert_array_equals(chunks, input_arr);
-}, "Blob.stream() garbage collection of blob shouldn't break stream" +
-"consumption")
+}, "Reading Blob.stream() with BYOB reader")

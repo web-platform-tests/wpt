@@ -20,12 +20,12 @@ var blob = new Blob([textData], { "type" : "text/plain" });
 var urlSearchParamsData = "name=value";
 var urlSearchParams = new URLSearchParams(urlSearchParamsData);
 
-for (const mode of [undefined, "byob"]) {
-    promise_test(function(test) {
-        var response = new Response(blob);
-        return validateStreamFromString(response.body.getReader({ mode }), textData);
-    }, `Read blob response's body as readableStream with mode=${mode}`);
+promise_test(function (test) {
+  var response = new Response(blob);
+  return validateStreamFromString(response.body.getReader(), textData);
+}, "Read blob response's body as readableStream");
 
+for (const mode of [undefined, "byob"]) {
     promise_test(function(test) {
         var response = new Response(textData);
         return validateStreamFromString(response.body.getReader({ mode }), textData);

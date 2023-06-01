@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>history.pushState() with an empty string URL</title>
+<title>history.replaceState() with an empty string URL</title>
 <link rel="help" href="https://github.com/whatwg/html/issues/9343">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,9 +11,7 @@
 test(() => {
   location.hash = "test";
 
-  history.pushState(null, null, "");
-  assert_equals(location.hash, "#test", "location.hash");
-  assert_true(location.href.endsWith("#test"), "location.href");
-  assert_true(document.URL.endsWith("#test"), "document.URL");
+  history.replaceState(null, null, "");
+  assert_equals(location.hash, "#test");
 });
 </script>

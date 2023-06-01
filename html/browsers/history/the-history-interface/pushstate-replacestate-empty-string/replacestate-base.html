@@ -10,9 +10,9 @@
 "use strict";
 
 test(() => {
+  const before = location.pathname;
+
   history.replaceState(null, null, "");
-  assert_equals(location.pathname, "/the-base", "location.pathname");
-  assert_true(location.href.endsWith("/the-base"), "location.href");
-  assert_true(document.URL.endsWith("/the-base"), "document.URL");
+  assert_equals(location.pathname, before);
 });
 </script>

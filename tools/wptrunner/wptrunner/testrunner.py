@@ -710,7 +710,7 @@ class TestRunnerManager(threading.Thread):
         # harness test, or PASS for reftest), and all unexpected results for
         # subtests (if any) are unexpected pass.
         is_unexpected_pass = ((is_unexpected or subtest_unexpected) and
-                               is_pass_or_expected and subtest_all_pass_or_expected)
+                              is_pass_or_expected and subtest_all_pass_or_expected)
         if is_unexpected_pass:
             self.unexpected_pass_tests.add(test.id)
 

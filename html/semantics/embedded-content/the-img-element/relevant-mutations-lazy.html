@@ -21,11 +21,11 @@
 
 <img srcset="/images/green-2x2.png 2w" sizes="auto" style="height: 2px; aspect-ratio: 2 / 2" loading="lazy" data-desc="height property changes (with aspect-ratio)">
 
-<img srcset="/images/green-2x2.png 2w" sizes="auto" style="width: 2px" loading="lazy" data-desc="loading attribute state changes">
-
 <img srcset="/images/green-2x2.png 2w" sizes="auto" style="width: 2px" loading="lazy" data-desc="being rendered changes">
 
 <!-- should not invoke update the image data -->
+
+<img srcset="/images/green-2x2.png 2w" sizes="auto" style="width: 2px" loading="lazy" data-desc="loading attribute state changes">
 
 <img srcset="/images/green-2x2.png 2w" sizes="auto" style="width: 2px" loading="lazy" data-desc="display property changes to inline-block">
 
@@ -59,7 +59,7 @@ onload = async function() {
 
   t('loading attribute state changes', function(img) {
     img.loading = 'eager';
-  }, 'load');
+  }, 'timeout');
 
   t('being rendered changes', function(img) {
     img.style.display = 'none';

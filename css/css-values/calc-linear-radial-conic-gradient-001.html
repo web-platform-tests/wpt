@@ -8,7 +8,7 @@
   <link rel="help" href="https://www.w3.org/TR/css-values-3/#calc-computed-value">
 
   <meta name="flags" content="">
-  <meta content="This test verifies how calc() functions inside 4 linear-gradient(), 1 radial-gradient() and 1 conic-gradient() are computed for 'background-image'." name="assert">
+  <meta content="This test verifies how calc() functions inside 6 linear-gradient(), 1 radial-gradient() and 1 conic-gradient() are computed for 'background-image'." name="assert">
 
   <!--
 
@@ -40,20 +40,20 @@
 
   var targetElement = document.getElementById("target");
 
-    function verifyComputedStyle(property_name, initial_value, specified_value, expected_value, description)
+    function verifyComputedStyle(property_name, specified_value, expected_value, description)
     {
 
     test(function()
       {
 
-      targetElement.style.setProperty(property_name, initial_value);
+      targetElement.style.setProperty(property_name, "initial");
 
       /*
-      The purpose of the initial_value is to act as a fallback
+      The purpose of setting to the initial is to act as a fallback
       value in case the calc() function in the specified value
       fails or in case it generates an invalid value. Since we
       are running 6 consecutive tests on the same element,
-      then it is necessary to 'reset' its property to an
+      then it is necessary to 'reset' its property to the
       initial value.
       */
 
@@ -64,30 +64,65 @@
       }, description);
     }
 
- /* verifyComputedStyle(property_name, initial_value, specified_value, expected_value, description) */
+ /* verifyComputedStyle(property_name, specified_value, expected_value, description) */
 
     /* LINEAR */
 
-    verifyComputedStyle("background-image", "initial", "linear-gradient(to bottom, rgb(0, 128, 0) calc(0%), rgb(0, 0, 255))", "linear-gradient(rgb(0, 128, 0) 0%, rgb(0, 0, 255))", "testing background-image: linear-gradient(to bottom, rgb(0, 128, 0) calc(0%), rgb(0, 0, 255))");
+    verifyComputedStyle(
+    "background-image",
+    "linear-gradient(rgb(0, 128, 0) calc(0%), rgb(0, 0, 255))",
+    "linear-gradient(rgb(0, 128, 0) 0%, rgb(0, 0, 255))",
+    "testing background-image: linear-gradient(rgb(0, 128, 0) calc(0%), rgb(0, 0, 255))");
 
-    verifyComputedStyle("background-image", "initial", "linear-gradient(calc(90deg), rgb(0, 128, 0), rgb(0, 0, 255))", "linear-gradient(90deg, rgb(0, 128, 0), rgb(0, 0, 255))", "testing background-image: linear-gradient(calc(90deg), rgb(0, 128, 0), rgb(0, 0, 255))");
+    verifyComputedStyle(
+    "background-image",
+    "linear-gradient(calc(90deg), rgb(0, 128, 0), rgb(0, 0, 255))",
+    "linear-gradient(90deg, rgb(0, 128, 0), rgb(0, 0, 255))",
+    "testing background-image: linear-gradient(calc(90deg), rgb(0, 128, 0), rgb(0, 0, 255))");
 
-    verifyComputedStyle("background-image", "initial", "linear-gradient(calc(90deg), rgb(0, 128, 0) calc(0%), rgb(0, 0, 255))", "linear-gradient(90deg, rgb(0, 128, 0) 0%, rgb(0, 0, 255))", "testing background-position: linear-gradient(calc(90deg), rgb(0, 128, 0) calc(0%), rgb(0, 0, 255))");
+    verifyComputedStyle(
+    "background-image",
+    "linear-gradient(calc(90deg), rgb(0, 128, 0) calc(0%), rgb(0, 0, 255))",
+    "linear-gradient(90deg, rgb(0, 128, 0) 0%, rgb(0, 0, 255))",
+    "testing background-position: linear-gradient(calc(90deg), rgb(0, 128, 0) calc(0%), rgb(0, 0, 255))");
 
-    verifyComputedStyle("background-image", "initial", "linear-gradient(calc(0.1turn + 0.15turn), rgb(0, 128, 0), rgb(0, 0, 255))", "linear-gradient(90deg, rgb(0, 128, 0), rgb(0, 0, 255))", "testing background-image: linear-gradient(calc(0.1turn + 0.15turn), rgb(0, 128, 0), rgb(0, 0, 255))");
+    verifyComputedStyle(
+    "background-image",
+    "linear-gradient(calc(0.1turn + 0.15turn), rgb(0, 128, 0), rgb(0, 0, 255))",
+    "linear-gradient(90deg, rgb(0, 128, 0), rgb(0, 0, 255))",
+    "testing background-image: linear-gradient(calc(0.1turn + 0.15turn), rgb(0, 128, 0), rgb(0, 0, 255))");
+
+    verifyComputedStyle(
+    "background-image",
+    "linear-gradient(calc(150grad - 50grad), rgb(0, 128, 0), rgb(0, 0, 255))",
+    "linear-gradient(90deg, rgb(0, 128, 0), rgb(0, 0, 255))",
+    "testing background-image: linear-gradient(calc(150grad - 50grad), rgb(0, 128, 0), rgb(0, 0, 255))");
+
+    verifyComputedStyle(
+    "background-image",
+    "linear-gradient(calc(200grad - 90deg), rgb(0, 128, 0), rgb(0, 0, 255))",
+    "linear-gradient(90deg, rgb(0, 128, 0), rgb(0, 0, 255))",
+    "testing background-image: linear-gradient(calc(200grad - 90deg), rgb(0, 128, 0), rgb(0, 0, 255))");
 
 
     /* RADIAL */
 
-    verifyComputedStyle("background-image", "initial", "radial-gradient(green calc(10% + 20%), blue calc(30% + 40%))", "radial-gradient(rgb(0, 128, 0) 30%, rgb(0, 0, 255) 70%)", "testing background-image: radial-gradient(green calc(10% + 20%), blue calc(30% + 40%))");
+    verifyComputedStyle(
+    "background-image",
+    "radial-gradient(rgb(0, 128, 0) calc(10% + 20%), rgb(0, 0, 255) calc(30% + 40%))",
+    "radial-gradient(rgb(0, 128, 0) 30%, rgb(0, 0, 255) 70%)",
+    "testing background-image: radial-gradient(rgb(0, 128, 0) calc(10% + 20%), rgb(0, 0, 255) calc(30% + 40%))");
 
 
     /* CONIC */
 
-    verifyComputedStyle("background-image", "initial", "conic-gradient(green calc(50% + 10%), blue calc(60% + 20%))", "conic-gradient(rgb(0, 128, 0) 60%, rgb(0, 0, 255) 80%)", "testing background-image: conic-gradient(green calc(50% + 10%), blue calc(60% + 20%))");
+    verifyComputedStyle(
+    "background-image",
+    "conic-gradient(rgb(0, 128, 0) calc(50% + 10%), rgb(0, 0, 255) calc(60% + 20%))",
+    "conic-gradient(rgb(0, 128, 0) 60%, rgb(0, 0, 255) 80%)",
+    "testing background-image: conic-gradient(rgb(0, 128, 0) calc(50% + 10%), rgb(0, 0, 255) calc(60% + 20%))");
 
-
- /* verifyComputedStyle(property_name, initial_value, specified_value, expected_value, description) */
+ /* verifyComputedStyle(property_name, specified_value, expected_value, description) */
 
   }
 

@@ -30,6 +30,10 @@ from .utils import cached_property
 
 wd_pattern = "*.py"
 js_meta_re = re.compile(br"//\s*META:\s*(\w*)=(.*)$")
+# Matching <link rel="help" href="https://www.w3.org/TR/accelerometer/">.
+js_link_rel_re = re.compile(br"<link\s*rel=(\w*).*href=(.*).*$")
+# Matching <link href='foo' media='not screen' rel='stylesheet'>.
+js_link_href_re = re.compile(br"<link\s*href=(\w*).*rel=(.*).*$")
 python_meta_re = re.compile(br"#\s*META:\s*(\w*)=(.*)$")
 
 reference_file_re = re.compile(r'(^|[\-_])(not)?ref[0-9]*([\-_]|$)')
@@ -61,6 +65,25 @@ def read_script_metadata(f: BinaryIO, regexp: Pattern[bytes]) -> Iterable[Tuple[
             break
 
         yield (m.groups()[0].decode("utf8"), m.groups()[1].decode("utf8"))
+
+def read_spec_link(f: BinaryIO, regexp: Pattern[bytes], reversed: bool) -> Iterable[Tuple[Text, Text]]:
+    """
+    Yields a value pair of (rel, href) from the file-like object `f`,
+    as specified according to a supplied regexp.
+
+    `regexp` - Regexp containing two groups containing the metadata name and
+               value.
+    """
+    for line in f:
+        assert isinstance(line, bytes), line
+        m = regexp.match(line)
+        # Early termination when hit the <script> tag.
+        if not m and line.startswith(b'<script'):
+            break
+        if reversed:
+            yield (m.groups()[1].decode("utf8"), m.groups()[0].decode("utf8"))
+        else:
+            yield (m.groups()[0].decode("utf8"), m.groups()[1].decode("utf8"))
 
 
 _any_variants: Dict[Text, Dict[Text, Any]] = {
@@ -442,6 +465,16 @@ class SourceFile:
 
         with self.open() as f:
             return list(read_script_metadata(f, regexp))
+
+    @cached_property
+    def script_spec_link(self) -> Optional[List[Tuple[Text, Text]]]:
+        spec_list = []
+        with self.open() as f:
+            spec_list = list(read_spec_link(f, js_link_rel_re))
+
+        with self.open() as f:
+            spec_list = spec_list + list(read_spec_link(f, js_link_href_re, True))
+        return spec_list
 
     @cached_property
     def timeout(self) -> Optional[Text]:
@@ -1056,5 +1089,7 @@ class SourceFile:
                 if prop in self.__dict__:
                     del self.__dict__[prop]
             del self.__dict__["__cached_properties__"]
+
+        rv.set_spec_list = self.script_spec_link
 
         return rv

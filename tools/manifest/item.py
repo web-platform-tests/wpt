@@ -34,11 +34,12 @@ class ManifestItemMeta(ABCMeta):
 
 
 class ManifestItem(metaclass=ManifestItemMeta):
-    __slots__ = ("_tests_root", "path")
+    __slots__ = ("_tests_root", "path", "spec_list")
 
     def __init__(self, tests_root: Text, path: Text) -> None:
         self._tests_root = tests_root
         self.path = path
+        self.spec_list = []
 
     @abstractproperty
     def id(self) -> Text:
@@ -53,6 +54,9 @@ class ManifestItem(metaclass=ManifestItemMeta):
     @property
     def path_parts(self) -> Tuple[Text, ...]:
         return tuple(self.path.split(os.path.sep))
+
+    def set_spec_list(self, spec_list: List[Tuple[Text, Text]]) -> None:
+        self.spec_list = spec_list
 
     def key(self) -> Hashable:
         """A unique identifier for the test"""

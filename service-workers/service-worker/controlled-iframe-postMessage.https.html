@@ -21,8 +21,9 @@ promise_test(async (test) => {
     });
 }, "Register service worker");
 
-function with_iframe(url) {
-    return new Promise(function(resolve) {
+function with_iframe(test, url) {
+    return new Promise(function(resolve, reject) {
+        test.step_timeout(() => reject("with_iframe timed out"), 3000);
         var frame = document.createElement('iframe');
         frame.className = 'test-iframe';
         frame.src = url;
@@ -32,7 +33,7 @@ function with_iframe(url) {
 }
 
 promise_test(async (test) => {
-    const frame = await with_iframe('resources/controlled-frame-postMessage.html');
+    const frame = await with_iframe(test, 'resources/controlled-frame-postMessage.html');
     let counter = 0;
     while (counter++ < 100 && frame.contentWindow.messageData == undefined)
        await new Promise(resolve => test.step_timeout(resolve, 50));
@@ -41,7 +42,7 @@ promise_test(async (test) => {
 }, "Verify frame gets early messages if setting synchronously message event listener");
 
 promise_test(async (test) => {
-    const frame = await with_iframe('resources/controlled-frame-postMessage.html?repeatMessages');
+    const frame = await with_iframe(test, 'resources/controlled-frame-postMessage.html?repeatMessages');
     let counter = 0;
     while (counter++ < 100 && frame.contentWindow.messageData == undefined)
        await new Promise(resolve => test.step_timeout(resolve, 50));
@@ -50,7 +51,7 @@ promise_test(async (test) => {
 }, "Verify frame does not get all messages if not setting event listener early");
 
 promise_test(async (test) => {
-    const frame = await with_iframe('resources/controlled-frame-postMessage.html?repeatMessages&listener');
+    const frame = await with_iframe(test, 'resources/controlled-frame-postMessage.html?repeatMessages&listener');
     let counter = 0;
     while (counter++ < 100 && frame.contentWindow.messageData.length < 5)
        await new Promise(resolve => test.step_timeout(resolve, 50));

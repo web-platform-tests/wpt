@@ -23,7 +23,7 @@ promise_test(async (test) => {
 
 function with_iframe(test, url) {
     return new Promise(function(resolve, reject) {
-        test.step_timeout(() => reject("with_iframe timed out"), 3000);
+        test.step_timeout(() => reject("with_iframe timed out"), 2000);
         var frame = document.createElement('iframe');
         frame.className = 'test-iframe';
         frame.src = url;

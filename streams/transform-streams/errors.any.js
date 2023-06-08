@@ -9,7 +9,8 @@ promise_test(t => {
   const ts = new TransformStream({
     transform() {
       throw thrownError;
-    }
+    },
+    cancel: t.unreached_func('cancel should not be called')
   });
 
   const reader = ts.readable.getReader();
@@ -34,7 +35,8 @@ promise_test(t => {
     },
     flush() {
       throw thrownError;
-    }
+    },
+    cancel: t.unreached_func('cancel should not be called')
   });
 
   const reader = ts.readable.getReader();
@@ -54,13 +56,14 @@ promise_test(t => {
   ]);
 }, 'TransformStream errors thrown in flush put the writable and readable in an errored state');
 
-test(() => {
+test(t => {
   new TransformStream({
     start(c) {
       c.enqueue('a');
       c.error(new Error('generic error'));
       assert_throws_js(TypeError, () => c.enqueue('b'), 'enqueue() should throw');
-    }
+    },
+    cancel: t.unreached_func('cancel should not be called')
   });
 }, 'errored TransformStream should not enqueue new chunks');
 
@@ -72,7 +75,8 @@ promise_test(t => {
       });
     },
     transform: t.unreached_func('transform should not be called'),
-    flush: t.unreached_func('flush should not be called')
+    flush: t.unreached_func('flush should not be called'),
+    cancel: t.unreached_func('cancel should not be called')
   });
 
   const writer = ts.writable.getWriter();
@@ -96,7 +100,8 @@ promise_test(t => {
         });
     },
     transform: t.unreached_func('transform should never be called if start() fails'),
-    flush: t.unreached_func('flush should never be called if start() fails')
+    flush: t.unreached_func('flush should never be called if start() fails'),
+    cancel: t.unreached_func('cancel should never be called if start() fails')
   });
 
   const writer = ts.writable.getWriter();

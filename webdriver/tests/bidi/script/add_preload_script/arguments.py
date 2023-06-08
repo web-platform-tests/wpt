@@ -21,7 +21,7 @@ pytestmark = pytest.mark.asyncio
                         "baz",
                         {
                             "type": "object",
-                            "value": [["1", {"type": "number", "value": 2}]],
+                            "value": [["qux", {"type": "number", "value": 2}]],
                         },
                     ],
                 ],
@@ -51,7 +51,7 @@ pytestmark = pytest.mark.asyncio
                         "baz",
                         {
                             "type": "object",
-                            "value": [["1", {"type": "number", "value": 2}]],
+                            "value": [["qux", {"type": "number", "value": 2}]],
                         },
                     ],
                 ],
@@ -72,7 +72,7 @@ async def test_channel(
 
     on_script_message = wait_for_event("script.message")
     await add_preload_script(
-        function_declaration="""(channel) => channel({'foo': 'bar', 'baz': {'1': 2}})""",
+        function_declaration="""(channel) => channel({'foo': 'bar', 'baz': {'qux': 2}})""",
         arguments=[channel],
     )
 

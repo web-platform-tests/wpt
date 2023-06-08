@@ -126,10 +126,10 @@ function testCloner(testFunction, name) {
     }, name + ' must enqueue an attributeChanged reaction when cloning an element only for observed attributes');
 }
 
-function testReflectAttributeWithContentValues(jsAttributeName, contentAttributeName, validValue1, contentValue1, validValue2, contentValue2, name, elementName, interfaceName, isOptional) {
+function testReflectAttributeWithContentValues(jsAttributeName, contentAttributeName, validValue1, contentValue1, validValue2, contentValue2, name, elementName, interfaceName, optionalSupportPredicate) {
     test(function () {
-        if (isOptional) {
-            assert_implements_optional(isOptional());
+        if (optionalSupportPredicate) {
+            assert_implements_optional(optionalSupportPredicate());
         }
         if (elementName === undefined) {
             var element = define_new_custom_element([contentAttributeName]);
@@ -147,8 +147,8 @@ function testReflectAttributeWithContentValues(jsAttributeName, contentAttribute
     }, name + ' must enqueue an attributeChanged reaction when adding ' + contentAttributeName + ' content attribute');
 
     test(function () {
-        if (isOptional) {
-            assert_implements_optional(isOptional());
+        if (optionalSupportPredicate) {
+            assert_implements_optional(optionalSupportPredicate());
         }
         if (elementName === undefined) {
             var element = define_new_custom_element([contentAttributeName]);
@@ -166,8 +166,8 @@ function testReflectAttributeWithContentValues(jsAttributeName, contentAttribute
     }, name + ' must enqueue an attributeChanged reaction when replacing an existing attribute');
 }
 
-function testReflectAttribute(jsAttributeName, contentAttributeName, validValue1, validValue2, name, elementName, interfaceName, isOptional) {
-    testReflectAttributeWithContentValues(jsAttributeName, contentAttributeName, validValue1, validValue1, validValue2, validValue2, name, elementName, interfaceName, isOptional);
+function testReflectAttribute(jsAttributeName, contentAttributeName, validValue1, validValue2, name, elementName, interfaceName, optionalSupportPredicate) {
+    testReflectAttributeWithContentValues(jsAttributeName, contentAttributeName, validValue1, validValue1, validValue2, validValue2, name, elementName, interfaceName, optionalSupportPredicate);
 }
 
 function testReflectBooleanAttribute(jsAttributeName, contentAttributeName, name, elementName, interfaceName) {

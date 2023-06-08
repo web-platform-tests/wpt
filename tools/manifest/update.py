@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 here = os.path.dirname(__file__)
 
-wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
+wpt_root = os.path.join(os.path.abspath(os.path.join(here, os.pardir, os.pardir)), "css")
 
 logger = get_logger()
 
@@ -35,6 +35,8 @@ def update(tests_root: str,
 
 
 def update_from_cli(**kwargs: Any) -> None:
+    print("GIVE ME SPEC LABELLING NOWWWWW")
+    print(wpt_root)
     tests_root = kwargs["tests_root"]
     path = kwargs["path"]
     assert tests_root is not None

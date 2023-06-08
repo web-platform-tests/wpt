@@ -137,6 +137,11 @@ class URLManifestItem(ManifestItem):
     def to_json(self) -> Tuple[Optional[Text], Dict[Any, Any]]:
         rel_url = None if self._url == self.path.replace(os.path.sep, "/") else self._url
         rv: Tuple[Optional[Text], Dict[Any, Any]] = (rel_url, {})
+        if len(self.spec_list) == 0:
+            return rv
+        rel, href = self.spec_list[0]
+        rv[-1]["rel"] = rel
+        rv[-1]["href"] = href
         return rv
 
     @classmethod

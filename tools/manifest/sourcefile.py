@@ -78,6 +78,8 @@ def read_spec_link(f: BinaryIO, regexp: Pattern[bytes], reversed: bool) -> Itera
         assert isinstance(line, bytes), line
         m = regexp.match(line)
         # Early termination when hit the <script> tag.
+        if not m:
+            continue
         if not m and line.startswith(b'<script'):
             break
         if reversed:
@@ -470,7 +472,7 @@ class SourceFile:
     def script_spec_link(self) -> Optional[List[Tuple[Text, Text]]]:
         spec_list = []
         with self.open() as f:
-            spec_list = list(read_spec_link(f, js_link_rel_re))
+            spec_list = list(read_spec_link(f, js_link_rel_re, False))
 
         with self.open() as f:
             spec_list = spec_list + list(read_spec_link(f, js_link_href_re, True))
@@ -1090,6 +1092,8 @@ class SourceFile:
                     del self.__dict__[prop]
             del self.__dict__["__cached_properties__"]
 
-        rv.set_spec_list = self.script_spec_link
+        spec_list = self.script_spec_link
+        print(spec_list)
+        rv[1][0].set_spec_list(spec_list)
 
         return rv

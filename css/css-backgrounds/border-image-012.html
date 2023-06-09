@@ -25,23 +25,23 @@
   div#red-overlapped-ref
     {
       background-color: red;
+      width: 100px;
       height: 100px;
       overflow: auto;
-      width: 100px;
     }
 
   div#green-overlapping-test
     {
       background-color: green;
-      border: red solid 25px;
-      height: 50px;
-      width: 50px;
+      border: 1px solid red;
+      width: 98px;
+      height: 98px;
       /* border-box is therefore 100px by 100px */
 
-      border-image-outset: 50px; /* more than needed to trigger an overflow */
-      border-image-slice: 25; /* we make sure not to slice more than 60 / 2 */
       border-image-source: url("support/60x60-green.png");
-      border-image-width: 51px;
+      border-image-slice: 10;
+      border-image-width: 10px;
+      border-image-outset: 9px;
     }
   </style>
 

@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
 
-  <title>CSS Reference Test</title>
+  <title>CSS Reftest reference</title>
 
   <style>
-  div
+  div.outer
     {
       height: 20px;
       margin-bottom: 16px;
       width: 20px;
+    }
+
+  div.inside
+    {
+      background-color: blue;
+      height: 12px;
+      margin: 2px 4px 6px 8px;
+      width: 8px;
     }
 
   div#first-subtest
@@ -46,10 +54,10 @@
     }
   </style>
 
-  <div id="first-subtest"></div>
+  <div class="outer" id="first-subtest"><div class="inside"></div></div>
 
-  <div id="second-subtest"></div>
+  <div class="outer" id="second-subtest"><div class="inside"></div></div>
 
-  <div id="third-subtest"></div>
+  <div class="outer" id="third-subtest"><div class="inside"></div></div>
 
-  <div id="fourth-subtest"></div>
+  <div class="outer" id="fourth-subtest"><div class="inside"></div></div>

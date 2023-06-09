@@ -22,14 +22,22 @@
   -->
 
   <style>
-  div
+  div.outer-parent
     {
       border: red solid 40px;
       border-image-slice: 24;
       border-image-source: url("support/50x50-green.png");
-      height: 20px;
+      height: 12px;
       margin-bottom: 16px;
-      width: 20px;
+      padding: 2px 4px 6px 8px;
+      width: 8px;
+    }
+
+  div.inner-child
+    {
+      background-color: blue;
+      height: 100%;
+      width: 100%;
     }
 
   div#first-subtest
@@ -53,10 +61,10 @@
     }
   </style>
 
-  <div id="first-subtest"></div>
+  <div class="outer-parent" id="first-subtest"><div class="inner-child"></div></div>
 
-  <div id="second-subtest"></div>
+  <div class="outer-parent" id="second-subtest"><div class="inner-child"></div></div>
 
-  <div id="third-subtest"></div>
+  <div class="outer-parent" id="third-subtest"><div class="inner-child"></div></div>
 
-  <div id="fourth-subtest"></div>
+  <div class="outer-parent" id="fourth-subtest"><div class="inner-child"></div></div>

@@ -2,7 +2,6 @@
 
 import copy
 import functools
-import imp
 import io
 import os
 from collections import OrderedDict, defaultdict
@@ -14,10 +13,8 @@ from mozlog.handlers import BaseHandler, StreamHandler, LogLevelFilter
 
 from . import wptrunner
 
-here = os.path.dirname(__file__)
-localpaths = imp.load_source("localpaths", os.path.abspath(os.path.join(here, os.pardir, os.pardir, "localpaths.py")))
-from ci.tc.github_checks_output import get_gh_checks_outputter  # type: ignore
-from wpt.markdown import markdown_adjust, table  # type: ignore
+from tools.ci.tc.github_checks_output import get_gh_checks_outputter
+from tools.wpt.markdown import markdown_adjust, table
 
 
 # If a test takes more than (FLAKY_THRESHOLD*timeout) and does not consistently

@@ -1,5 +1,3 @@
-import asyncio
-
 import pytest
 from webdriver.error import TimeoutException
 from webdriver.bidi.modules.script import ContextTarget

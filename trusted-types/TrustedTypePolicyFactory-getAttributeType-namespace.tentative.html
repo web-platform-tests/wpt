@@ -12,7 +12,7 @@ const parser = new DOMParser();
     '<!doctype html><html><head><script src="./foo.js"><'+'/script></head></html>',
     'text/html'),
   parser.parseFromString(
-    '<html xmlns="http://www.w3.org/1999/xhtml"><head><script src="./foo.js"></script></head></html>',
+    '<html xmlns="http://www.w3.org/1999/xhtml"><head><script src="./foo.js" /></head></html>',
     'application/xhtml+xml'),
   parser.parseFromString(
   '<xml xmlns:html="http://www.w3.org/1999/xhtml"><html:script src="./foo.js" /></xml>',

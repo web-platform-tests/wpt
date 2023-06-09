@@ -139,9 +139,10 @@ class URLManifestItem(ManifestItem):
         rv: Tuple[Optional[Text], Dict[Any, Any]] = (rel_url, {})
         if len(self.spec_list) == 0:
             return rv
-        rel, href = self.spec_list[0]
-        rv[-1]["rel"] = rel
-        rv[-1]["href"] = href
+        for i in range(len(self.spec_list)):
+            rel, href = self.spec_list[i]
+            spec_key = 'spec_link' + str(i+1)
+            rv[-1][spec_key] = href
         return rv
 
     @classmethod

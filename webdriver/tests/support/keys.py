@@ -20,6 +20,7 @@
 from collections import OrderedDict
 from inspect import getmembers
 
+
 class Keys(object):
     """
     Set of special keys codes.

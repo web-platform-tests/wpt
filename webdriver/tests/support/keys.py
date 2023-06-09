@@ -17,8 +17,6 @@
 
 """The Keys implementation."""
 
-import sys
-
 from collections import OrderedDict
 from inspect import getmembers
 

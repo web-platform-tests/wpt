@@ -290,11 +290,8 @@ class ContentShellTestharnessExecutor(TestharnessExecutor, _SanitizerMixin):  # 
 
             if self.protocol.content_shell_test.leaked:
                 test.restart_test_after = True
-                if status == 0:
-                    # if status of test is passed with leak, we'll mark it
-                    # as error instead
-                    status = 1
-            raw_result = result_url, status, message, stack, subtest_results
+            raw_result = (result_url, status, message, stack, subtest_results, 
+                self.protocol.content_shell_test.leaked)
             return self.convert_result(test, raw_result)
         except BaseException as exception:
             return _convert_exception(test, exception, self.protocol.content_shell_errors.read_errors())

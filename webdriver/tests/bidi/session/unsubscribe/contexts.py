@@ -1,5 +1,3 @@
-import asyncio
-
 import pytest
 
 from ... import create_console_api_message, recursive_compare

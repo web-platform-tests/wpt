@@ -30,7 +30,7 @@ async def test_subscribe_status(bidi_session, top_context, wait_for_event, url, 
     # Track all received network.responseStarted events in the events array
     events = []
 
-    async def on_event(method, data):
+    async def on_event(_, data):
         events.append(data)
 
     remove_listener = bidi_session.add_event_listener(

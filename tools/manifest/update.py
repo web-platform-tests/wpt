@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 here = os.path.dirname(__file__)
 
-wpt_root = os.path.join(os.path.abspath(os.path.join(here, os.pardir, os.pardir)), "css")
+wpt_root = os.path.join(os.path.abspath(os.path.join(here, os.pardir, os.pardir)), "accessibility")
 
 logger = get_logger()
 

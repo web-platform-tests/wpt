@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <title>Tests boxes are trimmed at text-over/text-under baselines</title>
 <meta description="Verify that an ex trimmed text has a height of 1ex" />
+<link rel="match" href="text-box-trim-half-leading-inline-box-003-ref.html">
 <link rel="help" href="https://drafts.csswg.org/css-inline-3/#leading-trim">
-<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
-<link rel="match" href="text-box-trim-half-leading-inline-box-001-ref.html">
 
 <style>
 div {
-  display: flex;
+  display: inline-flex;
   font-size: 72px;
   /* the text will not be at the same position as the reference,
      but the height of the inline box should be the same */

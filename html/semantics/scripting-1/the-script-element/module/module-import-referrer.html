@@ -36,7 +36,7 @@ test(t => {
 
 test(t => {
   assert_equals(
-    referrerExternalDynamic, location.href,
+    referrerExternalDynamic, scriptURL.href,
       "Referrer should be the document URL");
 }, "Dynamic imports from external modules");
 

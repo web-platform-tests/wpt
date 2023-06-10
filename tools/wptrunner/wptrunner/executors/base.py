@@ -76,11 +76,7 @@ class TestharnessResultConverter:
 
     def __call__(self, test, result, extra=None):
         """Convert a JSON result into a (TestResult, [SubtestResult]) tuple"""
-        result_url, status, message, stack, subtest_results, leaked = result
-        # 0 as "OK" from the harness_codes map
-        if leaked and status == 0:
-            # mark as an error
-            status = 1
+        result_url, status, message, stack, subtest_results = result
         assert result_url == test.url, ("Got results from %s, expected %s" %
                                         (result_url, test.url))
         harness_result = test.result_cls(self.harness_codes[status], message, extra=extra, stack=stack)

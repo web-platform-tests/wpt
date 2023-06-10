@@ -264,11 +264,39 @@ class ContentShellPrintRefTestExecutor(ContentShellRefTestExecutor):
     is_print = True
 
 
+class TestharnessResultConverterExecutorContentShell:
+    harness_codes = {0: "OK",
+                     1: "ERROR",
+                     2: "TIMEOUT",
+                     3: "PRECONDITION_FAILED"}
+
+    test_codes = {0: "PASS",
+                  1: "FAIL",
+                  2: "TIMEOUT",
+                  3: "NOTRUN",
+                  4: "PRECONDITION_FAILED"}
+
+    def __call__(self, test, result, extra=None):
+        """Convert a JSON result into a (TestResult, [SubtestResult]) tuple"""
+        result_url, status, message, stack, subtest_results, leaked = result
+        # 0 as "OK" from the harness_codes map
+        if leaked and status == 0:
+            # mark as an error
+            status = 1
+            test.restart_test_after = True
+        assert result_url == test.url, ("Got results from %s, expected %s" %
+                                        (result_url, test.url))
+        harness_result = test.result_cls(self.harness_codes[status], message, extra=extra, stack=stack)
+        return (harness_result,
+                [test.subtest_result_cls(st_name, self.test_codes[st_status], st_message, st_stack)
+                 for st_name, st_status, st_message, st_stack in subtest_results])
+
 class ContentShellTestharnessExecutor(TestharnessExecutor, _SanitizerMixin):  # type: ignore
     def __init__(self, logger, browser, server_config, timeout_multiplier=1, debug_info=None,
             **kwargs):
         super().__init__(logger, browser, server_config, timeout_multiplier, debug_info, **kwargs)
         self.protocol = ContentShellProtocol(self, browser)
+        self.convert_result = TestharnessResultConverterExecutorContentShell()
 
     def do_test(self, test):
         try:
@@ -288,10 +316,9 @@ class ContentShellTestharnessExecutor(TestharnessExecutor, _SanitizerMixin):  # 
                                     'if the test navigates')
                 result_url = test.url
 
-            if self.protocol.content_shell_test.leaked:
-                test.restart_test_after = True
             raw_result = (result_url, status, message, stack, subtest_results,
                 self.protocol.content_shell_test.leaked)
             return self.convert_result(test, raw_result)
         except BaseException as exception:
             return _convert_exception(test, exception, self.protocol.content_shell_errors.read_errors())
+        

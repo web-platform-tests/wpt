@@ -291,6 +291,7 @@ class TestharnessResultConverterExecutorContentShell:
                 [test.subtest_result_cls(st_name, self.test_codes[st_status], st_message, st_stack)
                  for st_name, st_status, st_message, st_stack in subtest_results])
 
+
 class ContentShellTestharnessExecutor(TestharnessExecutor, _SanitizerMixin):  # type: ignore
     def __init__(self, logger, browser, server_config, timeout_multiplier=1, debug_info=None,
             **kwargs):
@@ -321,4 +322,3 @@ class ContentShellTestharnessExecutor(TestharnessExecutor, _SanitizerMixin):  # 
             return self.convert_result(test, raw_result)
         except BaseException as exception:
             return _convert_exception(test, exception, self.protocol.content_shell_errors.read_errors())
-        

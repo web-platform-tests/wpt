@@ -8,12 +8,9 @@
 div {
   display: inline-flex;
   font-size: 72px;
-  /*
-     for browser which don't support text-box-trim the text will not be at the same position
-     as the reference, but the height of the inline box should be the same
-  */
-  color: transparent;
   border-top: 2px solid orange;
+  /* hide the text as this test is about the box height */
+  color: transparent;
 }
 
 section {
@@ -30,7 +27,7 @@ span {
 </style>
 
 <div>
-  <section>
+  <section>a
     <span>test</span>
   </section>
 </div>

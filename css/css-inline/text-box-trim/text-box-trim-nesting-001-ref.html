@@ -3,7 +3,6 @@
 <meta description="Verify that a nested ex trimmed text has a height of 1ex" />
 
 <link rel="help" href="https://drafts.csswg.org/css-inline-3/#leading-trim">
-<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 
 <style>
 div {
@@ -18,14 +17,15 @@ div {
 }
 
 span {
-  border: 1px solid blue;
-  display: inline-block;
-  /* limit theight to 1ex height using text-box-trim */
+  outline: 1px solid blue;
+  /* limit the height to 1ex using overflow */
   overflow: hidden;
-  height: 1ex;
+  max-height: 1ex;
 }
 </style>
 
 <div>
-  <span>e</span>
+  <section>
+    <span>test</span>
+  </section>
 </div>

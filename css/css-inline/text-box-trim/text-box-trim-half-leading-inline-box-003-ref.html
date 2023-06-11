@@ -8,20 +8,18 @@
 div {
   display: inline-flex;
   font-size: 72px;
-  /* the text will not be at the same position as the test,
-     but the height of the inline box should be the same */
+  /* hide the text as this test is about the box height */
   color: transparent;
 }
 
 span {
-  border: 1px solid blue;
-  display: inline-block;
-  /* limit theight to 1ex height using text-box-trim */
+  outline: 1px solid blue;
+  /* limit the height to 1ex height using overflow */
   overflow: hidden;
   height: 1ex;
 }
 </style>
 
 <div>
-  <span>e</span>
+  <span>test</span>
 </div>

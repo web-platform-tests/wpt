@@ -29,11 +29,11 @@ class ScriptEvaluateResultException(Exception):
 
         return stack
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return the object representation in string format."""
         return f"<{self.__class__.__name__}(), {self.text})>"
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return the string representation of the object."""
         message = self.text
 

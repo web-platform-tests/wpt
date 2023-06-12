@@ -1,4 +1,6 @@
 // META: script=helpers.js
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 'use strict';
 
 const {testPrefix, topLevelDocument} = processQueryParams();

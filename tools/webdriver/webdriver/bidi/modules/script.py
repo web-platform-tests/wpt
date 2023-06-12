@@ -18,7 +18,7 @@ class ScriptEvaluateResultException(Exception):
         self.stacktrace = self.process_stacktrace(details.get("stackTrace", {}))
         self.text = details.get("text")
 
-    def process_stacktrace(self, stacktrace):
+    def process_stacktrace(self, stacktrace: Mapping[str, Any]) -> str:
         stack = ""
         for frame in stacktrace.get("callFrames", []):
             data = frame.get("functionName") or "eval code"

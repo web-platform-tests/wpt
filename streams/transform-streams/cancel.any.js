@@ -5,6 +5,9 @@
 const thrownError = new Error('bad things are happening!');
 thrownError.name = 'error1';
 
+const originalReason = new Error('original reason');
+originalReason.name = 'error2';
+
 promise_test(async t => {
   let cancelled = undefined;
   const ts = new TransformStream({
@@ -18,7 +21,6 @@ promise_test(async t => {
 }, 'cancelling the readable side should call transformer.cancel()');
 
 promise_test(async t => {
-  const originalReason = new Error('original reason');
   const ts = new TransformStream({
     cancel(reason) {
       assert_equals(reason, originalReason, 'transformer.cancel() should be called with the passed reason');
@@ -28,7 +30,7 @@ promise_test(async t => {
   const writer = ts.writable.getWriter();
   const cancelPromise = ts.readable.cancel(originalReason)
   await promise_rejects_exactly(t, thrownError, cancelPromise, 'readable.cancel() should reject with thrownError');
-  await promise_rejects_exactly(t, originalReason, writer.closed, 'writer.closed should reject with original reason');
+  await promise_rejects_exactly(t, thrownError, writer.closed, 'writer.closed should reject with thrownError');
 }, 'cancelling the readable side should reject if transformer.cancel() throws');
 
 promise_test(async t => {
@@ -45,7 +47,6 @@ promise_test(async t => {
 }, 'aborting the writable side should call transformer.abort()');
 
 promise_test(async t => {
-  const originalReason = new Error('original reason');
   const ts = new TransformStream({
     cancel(reason) {
       assert_equals(reason, originalReason, 'transformer.cancel() should be called with the passed reason');
@@ -56,11 +57,10 @@ promise_test(async t => {
   const reader = ts.readable.getReader();
   const abortPromise = ts.writable.abort(originalReason)
   await promise_rejects_exactly(t, thrownError, abortPromise, 'writable.abort() should reject with thrownError');
-  await promise_rejects_exactly(t, originalReason, reader.closed, 'reader.closed should reject with original reason');
+  await promise_rejects_exactly(t, thrownError, reader.closed, 'reader.closed should reject with thrownError');
 }, 'aborting the writable side should reject if transformer.cancel() throws');
 
 promise_test(async t => {
-  const originalReason = new Error('original reason');
   const ts = new TransformStream({
     async cancel(reason) {
       assert_equals(reason, originalReason, 'transformer.cancel() should be called with the passed reason');
@@ -72,7 +72,7 @@ promise_test(async t => {
   const closePromise = ts.writable.close();
   await Promise.all([
     promise_rejects_exactly(t, thrownError, cancelPromise, 'cancelPromise should reject with thrownError'),
-    promise_rejects_exactly(t, originalReason, closePromise, 'closePromise should reject with thrownError'),
+    promise_rejects_exactly(t, thrownError, closePromise, 'closePromise should reject with thrownError'),
   ]);
 }, 'closing the writable side should reject if a parallel transformer.cancel() throws');
 

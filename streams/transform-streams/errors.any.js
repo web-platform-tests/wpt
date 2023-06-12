@@ -203,13 +203,14 @@ promise_test(t => {
   // The microtask following transformer.start() hasn't completed yet, so the abort is queued and not notified to the
   // TransformStream yet.
   const abortPromise = writer.abort(thrownError);
-  const cancelPromise = ts.readable.cancel(new Error('cancel reason'));
+  const cancelPromise = ts.readable.cancel(new Error('cancel reason'))
   return Promise.all([
     abortPromise,
     cancelPromise,
-    promise_rejects_exactly(t, thrownError, writer.closed, 'writer.closed should reject with thrownError')]);
-}, 'abort should set the close reason for the writable when it happens before cancel during start, but cancel should ' +
-             'still succeed');
+    promise_rejects_exactly(t, thrownError, writer.closed, 'writer.closed should reject'),
+  ]);
+}, 'abort should set the close reason for the writable when it happens before cancel during start, and cancel should ' +
+             'reject');
 
 promise_test(t => {
   let resolveTransform;
@@ -256,13 +257,26 @@ promise_test(t => {
       controller = c;
     }
   });
-  const cancelPromise = ts.readable.cancel(thrownError);
-  controller.error(ignoredError);
+  const cancelPromise = ts.readable.cancel(ignoredError);
+  controller.error(thrownError);
   return Promise.all([
     cancelPromise,
     promise_rejects_exactly(t, thrownError, ts.writable.getWriter().closed, 'closed should reject with thrownError')
   ]);
-}, 'controller.error() should do nothing after readable.cancel()');
+}, 'controller.error() should close writable immediately after readable.cancel()');
+
+promise_test(t => {
+  let controller;
+  const ts = new TransformStream({
+    start(c) {
+      controller = c;
+    }
+  });
+  return ts.readable.cancel(thrownError).then(() => {
+    controller.error(ignoredError);
+    return promise_rejects_exactly(t, thrownError, ts.writable.getWriter().closed, 'closed should reject with thrownError');
+  });
+}, 'controller.error() should do nothing after readable.cancel() resolves');
 
 promise_test(t => {
   let controller;

@@ -35,7 +35,7 @@ class ScriptEvaluateResultException(Exception):
 
     def __str__(self) -> str:
         """Return the string representation of the object."""
-        message = self.text
+        message: str = self.text
 
         if self.stacktrace:
             message += f"\n\nStacktrace:\n\n{self.stacktrace}"

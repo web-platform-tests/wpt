@@ -1,3 +1,4 @@
+from math import floor
 import base64
 
 from tests.support.image import cm_to_px, png_dimensions, ImageDifference
@@ -207,8 +208,8 @@ def assert_pdf_dimensions(render_pdf_to_png_bidi):
         png = await render_pdf_to_png_bidi(pdf)
         width, height = png_dimensions(png)
 
-        assert (height - 1) <= cm_to_px(expected_dimensions["height"]) <= (height + 1)
-        assert (width - 1) <= cm_to_px(expected_dimensions["width"]) <= (width + 1)
+        assert floor(cm_to_px(expected_dimensions["height"])) == height
+        assert floor(cm_to_px(expected_dimensions["width"])) == width
 
     return assert_pdf_dimensions
 

@@ -1,6 +1,7 @@
 # mypy: allow-untyped-defs
 
 from .base import RefTestExecutor, RefTestImplementation, CrashtestExecutor, TestharnessExecutor
+from .base import _ensure_hash_in_reftest_screenshots
 from .executorchrome import make_sanitizer_mixin
 from .protocol import Protocol, ProtocolPart
 from time import time
@@ -210,6 +211,8 @@ class ContentShellCrashtestExecutor(CrashtestExecutor):
         try:
             _ = self.protocol.content_shell_test.do_test(self.test_url(test), test.timeout * self.timeout_multiplier)
             self.protocol.content_shell_errors.read_errors()
+            if self.protocol.content_shell_test.leaked:
+                return self.convert_result(test, {"status": "FAIL", "message": None})
             return self.convert_result(test, {"status": "PASS", "message": None})
         except BaseException as exception:
             return _convert_exception(test, exception, self.protocol.content_shell_errors.read_errors())
@@ -217,6 +220,17 @@ class ContentShellCrashtestExecutor(CrashtestExecutor):
 
 _SanitizerMixin = make_sanitizer_mixin(ContentShellCrashtestExecutor)
 
+def reftest_result_converter_content_shell(self, test, result):
+    extra = result.get("extra", {})
+    _ensure_hash_in_reftest_screenshots(extra)
+    if result.get("leaked", False) and result["status"] == "OK":
+        result["status"] = "ERROR"
+
+    return (test.result_cls(
+        result["status"],
+        result["message"],
+        extra=extra,
+        stack=result.get("stack")), [])
 
 class ContentShellRefTestExecutor(RefTestExecutor, _SanitizerMixin):  # type: ignore
     def __init__(self, logger, browser, server_config, timeout_multiplier=1, screenshot_cache=None,
@@ -225,6 +239,7 @@ class ContentShellRefTestExecutor(RefTestExecutor, _SanitizerMixin):  # type: ig
                 debug_info, reftest_screenshot, **kwargs)
         self.implementation = RefTestImplementation(self)
         self.protocol = ContentShellProtocol(self, browser)
+        self.convert_result = reftest_result_converter_content_shell
 
     def reset(self):
         self.implementation.reset()
@@ -232,6 +247,7 @@ class ContentShellRefTestExecutor(RefTestExecutor, _SanitizerMixin):  # type: ig
     def do_test(self, test):
         try:
             result = self.implementation.run_test(test)
+            result['leaked'] = self.protocol.content_shell_test.leaked
             self.protocol.content_shell_errors.read_errors()
             return self.convert_result(test, result)
         except BaseException as exception:

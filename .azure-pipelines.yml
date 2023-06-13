@@ -144,6 +144,7 @@ jobs:
   steps:
   - task: UsePythonVersion@0
     inputs:
+      # TODO(#40525): Revert back to 3.7 once the Mac agent's Python v3.7 contains bz2 again.
       versionSpec: '3.7.16'
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/tox_pytest.yml
@@ -176,6 +177,7 @@ jobs:
   steps:
   - task: UsePythonVersion@0
     inputs:
+      # TODO(#40525): Revert back to 3.7 once the Mac agent's Python v3.7 contains bz2 again.
       versionSpec: '3.7.16'
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/tox_pytest.yml
@@ -209,6 +211,7 @@ jobs:
   # full checkout required
   - task: UsePythonVersion@0
     inputs:
+      # TODO(#40525): Revert back to 3.7 once the Mac agent's Python v3.7 contains bz2 again.
       versionSpec: '3.7.16'
   - template: tools/ci/azure/install_chrome.yml
   - template: tools/ci/azure/install_firefox.yml

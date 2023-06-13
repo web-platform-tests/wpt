@@ -3,17 +3,12 @@ import argparse
 import os
 from typing import Any, Optional, TYPE_CHECKING
 
-from . import manifest
-from .log import get_logger, enable_debug_logging
-if TYPE_CHECKING:
-    from .manifest import Manifest  # avoid cyclic import
+from ..manifest.manifest import load_and_update
 
 
 here = os.path.dirname(__file__)
 
 wpt_root = os.path.join(os.path.abspath(os.path.join(here, os.pardir, os.pardir)), "accessibility")
-
-logger = get_logger()
 
 
 def update_from_cli(**kwargs: Any) -> None:
@@ -23,13 +18,13 @@ def update_from_cli(**kwargs: Any) -> None:
     path = kwargs["path"]
     assert tests_root is not None
 
-    manifest.load_and_update(tests_root,
-                             path,
-                             kwargs["url_base"],
-                             update=True,
-                             rebuild=kwargs["rebuild"],
-                             cache_root=kwargs["cache_root"],
-                             parallel=kwargs["parallel"])
+    load_and_update(tests_root,
+                    path,
+                    kwargs["url_base"],
+                    update=True,
+                    rebuild=kwargs["rebuild"],
+                    cache_root=kwargs["cache_root"],
+                    parallel=kwargs["parallel"])
 
 
 def abs_path(path: str) -> str:
@@ -66,12 +61,10 @@ def create_parser() -> argparse.ArgumentParser:
 def run(*args: Any, **kwargs: Any) -> None:
     if kwargs["path"] is None:
         kwargs["path"] = os.path.join(kwargs["tests_root"], "SPEC_MANIFEST.json")
-    if kwargs["verbose"]:
-        enable_debug_logging()
     update_from_cli(**kwargs)
 
 
-def main() -> None:
+if __name__ == "__main__":
     opts = create_parser().parse_args()
 
     run(**vars(opts))

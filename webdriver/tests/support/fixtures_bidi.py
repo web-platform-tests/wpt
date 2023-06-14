@@ -208,8 +208,8 @@ def assert_pdf_dimensions(render_pdf_to_png_bidi):
         png = await render_pdf_to_png_bidi(pdf)
         width, height = png_dimensions(png)
 
-        assert height in [floor(cm_to_px(expected_dimensions["height"])), round(cm_to_px(expected_dimensions["height"]))]
-        assert width in [floor(cm_to_px(expected_dimensions["width"])), round(cm_to_px(expected_dimensions["width"]))]
+        assert floor(cm_to_px(expected_dimensions["height"])) == height
+        assert floor(cm_to_px(expected_dimensions["width"])) == width
 
     return assert_pdf_dimensions
 

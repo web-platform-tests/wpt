@@ -220,7 +220,7 @@ class ContentShellCrashtestExecutor(CrashtestExecutor):
 
 _SanitizerMixin = make_sanitizer_mixin(ContentShellCrashtestExecutor)
 
-def reftest_result_converter_content_shell(self, test, result):
+def reftest_result_converter_content_shell(test, result):
     extra = result.get("extra", {})
     _ensure_hash_in_reftest_screenshots(extra)
     if result.get("leaked", False) and result["status"] == "OK":

@@ -1,16 +1,17 @@
 <!doctype html>
 <title>img parse a sizes attribute: sizes=auto</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#parse-a-sizes-attribute">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-img { height: 10px; } /* Keep all images in the viewport, so lazy images load */
-#narrow-div { width: 10px; }
-#wide-div { width: 500px; }
+img { position: absolute; top: 0; left: 0; } /* Keep all images in the viewport, so lazy images load */
+#narrow-div { width: 10px; position: relative; }
+#wide-div { width: 100px; position: relative; }
 </style>
 <div id=log></div>
 <script src="support/parse-a-sizes-attribute.js"></script>
-<img srcset='/images/green-1x1.png?ref1 50w, /images/green-16x16.png?ref1 51w' sizes='1px' id=ref1>
-<img srcset='/images/green-1x1.png?ref2 50w, /images/green-16x16.png?ref2 51w' sizes='100vw' id=ref2>
+<img srcset='/images/green-10x10.png?ref1 10w, /images/green-16x16.png?ref1 16w' sizes='1px' id=ref1>
+<img srcset='/images/green-10x10.png?ref2 10w, /images/green-16x16.png?ref2 16w' sizes='100vw' id=ref2>
 <div id='narrow-div'></div>
 <div id='wide-div'></div>
 <script>
@@ -63,7 +64,7 @@ const tests = [
   {loading: 'lazy', sizes: 'AUTO', width: '10', 'data-ref': 'ref1'},
   {loading: 'lazy', width: '10', 'data-ref': 'ref1'},
   {loading: 'lazy', style: 'width: 10px', 'data-ref': 'ref1'},
-  {loading: 'lazy', style: 'max-width: 10px', 'data-ref': 'ref2'}, // no specified width -> 0 -> 100vw
+  {loading: 'lazy', style: 'max-width: 16px', 'data-ref': 'ref2'}, // no specified width -> 0 -> 100vw
   {loading: 'lazy', style: 'width: 100%; max-width: 10px', 'data-ref': 'ref1'},
   {loading: 'lazy', sizes: 'auto', width: '500', 'data-ref': 'ref2'},
   {loading: 'lazy', sizes: 'auto', width: '10', style: 'visibility: hidden', 'data-ref': 'ref1'},
@@ -103,7 +104,7 @@ function test_img(obj, i) {
       img.setAttribute(attr, obj[attr]);
     }
   }
-  img.srcset = `/images/green-1x1.png?img${i} 50w, /images/green-16x16.png?img${i} 51w`
+  img.srcset = `/images/green-10x10.png?img${i} 10w, /images/green-16x16.png?img${i} 16w`
   parent.appendChild(img);
   check(img);
 }
@@ -128,7 +129,7 @@ function test_picture(obj, i) {
         break;
     }
   }
-  source.srcset = `/images/green-1x1.png?picture${i} 50w, /images/green-16x16.png?picture${i} 51w`;
+  source.srcset = `/images/green-10x10.png?picture${i} 10w, /images/green-16x16.png?picture${i} 16w`;
   picture.appendChild(source);
   picture.appendChild(img);
   parent.appendChild(picture);

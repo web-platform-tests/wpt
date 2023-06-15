@@ -1,0 +1,25 @@
+<!doctype html>
+<html class="reftest-wait">
+<title>Auto sizes rendering</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#sizes-attributes">
+<link rel="match" href="reference/sizes-auto-rendering-ref.html">
+<script src="/common/rendering-utils.js"></script>
+<script src="/common/reftest-wait.js"></script>
+<meta name="assert" content="auto sizes rendering">
+<img
+  id="testImg"
+  loading="lazy"
+  srcset="
+    /images/red.png 50w,
+    /images/green.png 100w
+  "
+  sizes="auto"
+  width="100px"
+>
+<script>
+  function imageLoaded() {
+    waitForAtLeastOneFrame().then(takeScreenshot);
+  }
+
+  testImg.addEventListener('load', imageLoaded);
+</script>

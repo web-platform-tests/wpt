@@ -1,0 +1,31 @@
+<!doctype html>
+<html class="reftest-wait">
+<title>Auto sizes dynamic rendering</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#sizes-attributes">
+<link rel="match" href="reference/sizes-auto-rendering-ref.html">
+<script src="/common/rendering-utils.js"></script>
+<script src="/common/reftest-wait.js"></script>
+<meta name="assert" content="auto sizes dynamic rendering">
+<img
+  id="testImg"
+  loading="lazy"
+  srcset="
+    /images/fail.gif 200w,
+    /images/green.png 100w,
+    /images/red.png 50w
+  "
+  sizes="auto"
+  width="50px"
+>
+<script>
+  function secondImageLoaded() {
+    waitForAtLeastOneFrame().then(takeScreenshot);
+  }
+
+  function firstImageLoaded() {
+    testImg.addEventListener('load', secondImageLoaded);
+    testImg.style.width = '100px';
+  }
+
+  testImg.addEventListener('load', firstImageLoaded, {once: true});
+</script>

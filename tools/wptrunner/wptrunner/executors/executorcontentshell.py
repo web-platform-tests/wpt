@@ -63,7 +63,7 @@ class ContentShellTestPart(ProtocolPart):
         # The first block can also contain audio data but not in WPT.
         text = self._read_block(deadline)
 
-        if type(text) == str and text.startswith('#LEAK'):
+        if text is not None and text.startswith('#LEAK'):
             # will fail to parse text later as test results is expected.
             # need to read text from next block
 

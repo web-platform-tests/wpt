@@ -1,10 +1,7 @@
 import asyncio
-import json
 from urllib.parse import quote
 
 import pytest
-
-from webdriver.bidi.modules.script import ContextTarget
 
 from tests.support.sync import AsyncPoll
 

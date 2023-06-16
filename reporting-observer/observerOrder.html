@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Reporting: Observer order</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+window.onload = function() {
+  async_test(function(test) {
+    var observedBy1 = false;
+
+    var observer2 = new ReportingObserver(function(reports, observer) {
+      test.step(function() {
+        assert_true(observedBy1);
+        assert_equals(reports.length, 1);
+        assert_equals(reports[0].body.message, "Test message.");
+      });
+
+      test.done();
+    });
+
+    var observer1 = new ReportingObserver(function(reports, observer) {
+      test.step(function() {
+        assert_equals(reports.length, 1);
+        assert_equals(reports[0].body.message, "Test message.");
+        assert_false(observedBy1);
+        observedBy1 = true;
+      });
+    });
+
+    observer1.observe();
+    observer2.observe();
+
+    // This report should be received by observers in the order that they are
+    // registered.
+    let report = new CustomReport("Test message.");
+    report.send();
+  });
+};
+</script>
+</body>
+</html>

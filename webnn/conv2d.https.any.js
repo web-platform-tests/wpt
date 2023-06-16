@@ -7,13 +7,13 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-conv2d
 
-const buildConv2d= (operationName, builder, resources) => {
+const buildConv2d= (operationName, builder, resources, dataType) => {
   // MLOperand conv2d(MLOperand input, MLOperand filter, optional MLConv2dOptions options = {});
   const namedOutputOperand = {};
-  const [inputOperand, filterOperand] = createMultiInputOperands(builder, resources);
+  const [inputOperand, filterOperand] = createMultiInputOperands(builder, resources, dataType);
   let conv2dOptions = {...resources.options};
   if (conv2dOptions.bias) {
-    conv2dOptions.bias = createConstantOperand(builder, conv2dOptions.bias);
+    conv2dOptions.bias = createConstantOperand(builder, conv2dOptions.bias, dataType);
   }
   if (conv2dOptions.activation) {
     conv2dOptions.activation = builder[conv2dOptions.activation]();

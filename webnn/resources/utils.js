@@ -9,6 +9,54 @@ const TypedArrayDict = {
   uint32: Uint32Array,
   int8: Int8Array,
   uint8: Uint8Array,
+  // workaround for float16
+  float16: Uint16Array,
+};
+
+const toHalf = (value) => {
+  let floatView = new Float32Array(1);
+  let int32View = new Int32Array(floatView.buffer);
+
+  /* This method is faster than the OpenEXR implementation (very often
+   * used, eg. in Ogre), with the additional benefit of rounding, inspired
+   * by James Tursa?s half-precision code. */
+
+  floatView[0] = value;
+  let x = int32View[0];
+
+  let bits = (x >> 16) & 0x8000; /* Get the sign */
+  let m = (x >> 12) & 0x07ff; /* Keep one extra bit for rounding */
+  let e = (x >> 23) & 0xff; /* Using int is faster here */
+
+  /* If zero, or denormal, or exponent underflows too much for a denormal
+    * half, return signed zero. */
+  if (e < 103) {
+    return bits;
+  }
+
+  /* If NaN, return NaN. If Inf or exponent overflow, return Inf. */
+  if (e > 142) {
+    bits |= 0x7c00;
+    /* If exponent was 0xff and one mantissa bit was set, it means NaN,
+      * not Inf, so make sure we set one mantissa bit too. */
+    bits |= ((e == 255) ? 0 : 1) && (x & 0x007fffff);
+    return bits;
+  }
+
+  /* If exponent underflows but not too much, return a denormal */
+  if (e < 113) {
+    m |= 0x0800;
+    /* Extra rounding may overflow and set mantissa to 0 and exponent
+      * to 1, which is OK. */
+    bits |= (m >> (114 - e)) + ((m >> (113 - e)) & 1);
+    return bits;
+  }
+
+  bits |= ((e - 112) << 10) | (m >> 1);
+  /* Extra rounding. An overflow will set mantissa to 0 and increment
+    * the exponent, which is OK. */
+  bits += m & 1;
+  return bits;
 };
 
 const sizeOfShape = (array) => {
@@ -46,16 +94,29 @@ const loadTests = (operationName) => {
 };
 
 /**
+ * Get type string.
+ * @param {String} type
+ * @param {String} [float16Type]
+ * @returns {String}
+ */
+const getType = (type, float16Type) => {
+  return float16Type && float16Type === 'float16' ? 'float16' : type;
+};
+
+/**
  * Get exptected data and data type from given resources with output name.
  * @param {Array} resources - An array of expected resources
  * @param {String} outputName - An output name
+ * @param {String} [dataType] - Only use this parameter for float16 tests reusing test data of float32 tests
  * @returns {Array.<[Number[], String]>} An array of expected data array and data type
  */
-const getExpectedDataAndType = (resources, outputName) => {
+const getExpectedDataAndType = (resources, outputName, dataType) => {
   let ret;
+  let type;
   for (let subResources of resources) {
     if (subResources.name === outputName) {
-      ret = [subResources.data, subResources.type];
+      type = getType(subResources.type, dataType);
+      ret = [subResources.data, type];
       break;
     }
   }
@@ -332,9 +393,11 @@ const PrecisionMetrics = {
  * @param {Object} resources - Resources used for building a graph
  * @returns {Number} A tolerance number
  */
-const getPrecisonTolerance = (operationName, metricType, resources) => {
+const getPrecisonTolerance = (operationName, metricType, resources, dataType) => {
   // the outputs by split or gru is a sequence
-  const precisionType = Array.isArray(resources.expected) ? resources.expected[0].type : resources.expected.type;
+  let precisionType = getType(
+      Array.isArray(resources.expected) ? resources.expected[0].type : resources.expected.type,
+      dataType);
   let tolerance = PrecisionMetrics[operationName][metricType][precisionType];
   // If the tolerance is dynamic, then evaluate the function to get the value.
   if (tolerance instanceof Function) {
@@ -352,17 +415,21 @@ const getPrecisonTolerance = (operationName, metricType, resources) => {
  * @return {Number} A 64-bit signed integer.
  */
 const getBitwise = (value, dataType) => {
-  const buffer = new ArrayBuffer(8);
-  const int64Array = new BigInt64Array(buffer);
-  int64Array[0] = value < 0 ? ~BigInt(0) : BigInt(0);
-  let typedArray;
-  if (dataType === "float32") {
-    typedArray = new Float32Array(buffer);
+  if (dataType === "float16") {
+    return toHalf(value);
   } else {
-    throw new AssertionError(`Data type ${dataType} is not supported`);
+    const buffer = new ArrayBuffer(8);
+    const int64Array = new BigInt64Array(buffer);
+    int64Array[0] = value < 0 ? ~BigInt(0) : BigInt(0);
+    let typedArray;
+    if (dataType === "float32") {
+      typedArray = new Float32Array(buffer);
+    } else {
+      throw new AssertionError(`Data type ${dataType} is not supported`);
+    }
+    typedArray[0] = value;
+    return int64Array[0];
   }
-  typedArray[0] = value;
-  return int64Array[0];
 };
 
 /**
@@ -389,12 +456,13 @@ const assert_array_approx_equals_ulp = (actual, expected, nulp, dataType, descri
       continue;
     } else {
       // measure the ULP distance
-      actualBitwise = getBitwise(actual[i], dataType);
+      // workaround of using Uint16Array to save output buffer for float16, no need to call getBitwise()
+      actualBitwise = dataType === 'float16'? actual[i] : getBitwise(actual[i], dataType);
       expectedBitwise = getBitwise(expected[i], dataType);
       distance = actualBitwise - expectedBitwise;
       distance = distance >= 0 ? distance : -distance;
       assert_true(distance <= nulp,
-                  `assert_array_approx_equals_ulp: ${description} actual ${actual[i]} should be close enough to expected ${expected[i]} by the acceptable ${nulp} ULP distance, but they have ${distance} ULP distance`);
+                  `assert_array_approx_equals_ulp: ${description} bitwise ${actualBitwise} of actual ${actual[i]} should be close enough to bitwise ${expectedBitwise} of expected ${expected[i]} by the acceptable ${nulp} ULP distance, but they have ${distance} ULP distance`);
     }
   }
 };
@@ -430,8 +498,9 @@ const doAssert = (operationName, actual, expected, tolerance, operandType, metri
  * @param {Object.<String, MLOperand>} namedOutputOperands
  * @param {Object.<MLNamedArrayBufferViews>} outputs - The resources of required outputs
  * @param {Object} resources - Resources used for building a graph
+ * @param {String} [dataType] - Only use this parameter for float16 tests reusing test data of float32 tests
  */
-const checkResults = (operationName, namedOutputOperands, outputs, resources) => {
+const checkResults = (operationName, namedOutputOperands, outputs, resources, dataType) => {
   const metricType = Object.keys(PrecisionMetrics[operationName])[0];
   const expected = resources.expected;
   let tolerance;
@@ -443,28 +512,42 @@ const checkResults = (operationName, namedOutputOperands, outputs, resources) =>
     for (let operandName in namedOutputOperands) {
       outputData = outputs[operandName];
       // for some operations which may have multi outputs of different types
-      [expectedData, operandType] = getExpectedDataAndType(expected, operandName);
-      tolerance = getPrecisonTolerance(operationName, metricType, resources);
+      [expectedData, operandType] = getExpectedDataAndType(expected, operandName, dataType);
+      tolerance = getPrecisonTolerance(operationName, metricType, resources, dataType);
       doAssert(operationName, outputData, expectedData, tolerance, operandType, metricType)
     }
   } else {
     outputData = outputs[expected.name];
     expectedData = expected.data;
-    operandType = expected.type;
-    tolerance = getPrecisonTolerance(operationName, metricType, resources);
+    operandType = getType(expected.type, dataType);
+    tolerance = getPrecisonTolerance(operationName, metricType, resources, dataType);
     doAssert(operationName, outputData, expectedData, tolerance, operandType, metricType)
   }
+};
+
+const getBufferView = (resources, dataType) => {
+  let resultBufferView;
+  if ((dataType && dataType === 'float16') || resources.type === 'float16') {
+    const count = resources.data.length;
+    resultBufferView = new Uint16Array(count);
+    resources.data.map((element, index) => resultBufferView[index] = toHalf(element));
+  } else {
+    resultBufferView = new TypedArrayDict[resources.type](resources.data);
+  }
+  return resultBufferView;
 };
 
 /**
  * Create a constant operand
  * @param {MLGraphBuilder} builder - A ML graph builder
  * @param {Object} resources - Resources used for constant operand
+ * @param {String} [dataType] - Only use this parameter for float16 tests reusing test data of float32 tests
  * @returns {MLOperand} A constant operand
  */
-const createConstantOperand = (builder, resources) => {
-  const bufferView = new TypedArrayDict[resources.type](resources.data);
-  return builder.constant({type: resources.type, dimensions: resources.shape}, bufferView);
+const createConstantOperand = (builder, resources, dataType) => {
+  const bufferView = getBufferView(resources, dataType);
+  let type = getType(resources.type, dataType);
+  return builder.constant({type, dimensions: resources.shape}, bufferView);
 };
 
 /**
@@ -472,29 +555,32 @@ const createConstantOperand = (builder, resources) => {
  * @param {MLGraphBuilder} builder - A ML graph builder
  * @param {Object} resources - Resources used for building a graph
  * @param {String} [inputOperandName] - An inputOperand name
+ * @param {String} [dataType] - Only use this parameter for float16 tests reusing test data of float32 tests
  * @returns {MLOperand} An input operand
  */
-const createSingleInputOperand = (builder, resources, inputOperandName) => {
-  inputOperandName = inputOperandName ? inputOperandName : Object.keys(resources.inputs)[0];
+const createSingleInputOperand = (builder, resources, inputOperandName, dataType) => {
+  inputOperandName ??= Object.keys(resources.inputs)[0];
   const inputResources = resources.inputs[inputOperandName];
-  return builder.input(inputOperandName, {type: inputResources.type, dimensions: inputResources.shape});
+  const type = getType(inputResources.type, dataType);
+  return builder.input(inputOperandName, {type, dimensions: inputResources.shape});
 };
 
 /**
  * Create multi input operands for a graph.
  * @param {MLGraphBuilder} builder - A ML graph builder
  * @param {Object} resources - Resources used for building a graph
+ * @param {String} [dataType] - Only use this parameter for float16 tests reusing test data of float32 tests
  * @returns {MLOperand[]} Input operands array
  */
-const createMultiInputOperands = (builder, resources) => {
+const createMultiInputOperands = (builder, resources, dataType) => {
   let inputOperands = [];
   const inputOperandNameArray = Object.keys(resources.inputs);
   inputOperandNameArray.forEach(inputOperandName => {
     let operand;
     if (resources.inputs[inputOperandName].hasOwnProperty('constant') && resources.inputs[inputOperandName]['constant']) {
-      operand = createConstantOperand(builder, resources.inputs[inputOperandName]);
+      operand = createConstantOperand(builder, resources.inputs[inputOperandName], dataType);
     } else {
-      operand = createSingleInputOperand(builder, resources, inputOperandName);
+      operand = createSingleInputOperand(builder, resources, inputOperandName, dataType);
     }
     inputOperands.push(operand);
   });
@@ -506,11 +592,12 @@ const createMultiInputOperands = (builder, resources) => {
  * @param {String} operationName - An operation name
  * @param {MLGraphBuilder} builder - A ML graph builder
  * @param {Object} resources - Resources used for building a graph
+ * @param {String} [dataType] - Only use this parameter for float16 tests reusing test data of float32 tests
  * @returns {MLNamedOperands}
  */
-const buildOperationWithSingleInput = (operationName, builder, resources) => {
+const buildOperationWithSingleInput = (operationName, builder, resources, dataType) => {
   const namedOutputOperand = {};
-  const inputOperand = createSingleInputOperand(builder, resources);
+  const inputOperand = createSingleInputOperand(builder, resources, undefined, dataType);
   const outputOperand = resources.options ?
       builder[operationName](inputOperand, resources.options) : builder[operationName](inputOperand);
   namedOutputOperand[resources.expected.name] = outputOperand;
@@ -522,12 +609,13 @@ const buildOperationWithSingleInput = (operationName, builder, resources) => {
  * @param {String} operationName - An operation name
  * @param {MLGraphBuilder} builder - A ML graph builder
  * @param {Object} resources - Resources used for building a graph
+ * @param {String} [dataType] - Only use this parameter for float16 tests reusing test data of float32 tests
  * @returns {MLNamedOperands}
  */
-const buildOperationWithTwoInputs= (operationName, builder, resources) => {
+const buildOperationWithTwoInputs= (operationName, builder, resources, dataType) => {
   // For example: MLOperand matmul(MLOperand a, MLOperand b);
   const namedOutputOperand = {};
-  const [inputOperandA, inputOperandB] = createMultiInputOperands(builder, resources);
+  const [inputOperandA, inputOperandB] = createMultiInputOperands(builder, resources, dataType);
   const outputOperand = resources.options ?
       builder[operationName](inputOperandA, inputOperandB, resources.options) : builder[operationName](inputOperandA, inputOperandB);
   namedOutputOperand[resources.expected.name] = outputOperand;
@@ -540,23 +628,24 @@ const buildOperationWithTwoInputs= (operationName, builder, resources) => {
  * @param {MLGraphBuilder} builder - A ML graph builder
  * @param {Object} resources - Resources used for building a graph
  * @param {Function} buildFunc - A build function for an operation
+ * @param {String} [dataType] - Only use this parameter for float16 tests reusing test data of float32 tests
  * @returns [namedOperands, inputs, outputs]
  */
-const buildGraph = (operationName, builder, resources, buildFunc) => {
-  const namedOperands = buildFunc(operationName, builder, resources);
+const buildGraph = (operationName, builder, resources, buildFunc, dataType) => {
+  const namedOperands = buildFunc(operationName, builder, resources, dataType);
   let inputs = {};
   if (Array.isArray(resources.inputs)) {
     // the inputs of concat() is a sequence
     for (let subInput of resources.inputs) {
       if (!subInput.hasOwnProperty('constant') || !subInput.constant) {
-        inputs[subInput.name] = new TypedArrayDict[subInput.type](subInput.data);
+        inputs[subInput.name] = getBufferView(subInput, dataType);
       }
     }
   } else {
     for (let inputName in resources.inputs) {
       const subTestByName = resources.inputs[inputName];
       if (!subTestByName.hasOwnProperty('constant') || !subTestByName.constant) {
-        inputs[inputName] = new TypedArrayDict[subTestByName.type](subTestByName.data);
+        inputs[inputName] = getBufferView(subTestByName, dataType);
       }
     }
   }
@@ -565,12 +654,14 @@ const buildGraph = (operationName, builder, resources, buildFunc) => {
     // the outputs of split() or gru() is a sequence
     for (let i = 0; i < resources.expected.length; i++) {
       const subExpected = resources.expected[i];
-      outputs[subExpected.name] = new TypedArrayDict[subExpected.type](sizeOfShape(subExpected.shape));
+      let expectedDataType = getType(subExpected.type, dataType);
+      outputs[subExpected.name] = new TypedArrayDict[expectedDataType](sizeOfShape(subExpected.shape));
     }
   } else {
     // matmul 1D with 1D produces a scalar which doesn't have its shape
     const shape = resources.expected.shape ? resources.expected.shape : [1];
-    outputs[resources.expected.name] = new TypedArrayDict[resources.expected.type](sizeOfShape(shape));
+    let expectedDataType = getType(resources.expected.type, dataType);
+    outputs[resources.expected.name] = new TypedArrayDict[expectedDataType](sizeOfShape(shape));
   }
   return [namedOperands, inputs, outputs];
 };
@@ -582,15 +673,16 @@ const buildGraph = (operationName, builder, resources, buildFunc) => {
  * @param {MLGraphBuilder} builder - A ML graph builder
  * @param {Object} resources - Resources used for building a graph
  * @param {Function} buildFunc - A build function for an operation
+ * @param {String} [dataType] - Only use this parameter for float16 tests reusing test data of float32 tests
  */
-const runSync = (operationName, context, builder, resources, buildFunc) => {
+const runSync = (operationName, context, builder, resources, buildFunc, dataType) => {
   // build a graph
-  const [namedOutputOperands, inputs, outputs] = buildGraph(operationName, builder, resources, buildFunc);
+  const [namedOutputOperands, inputs, outputs] = buildGraph(operationName, builder, resources, buildFunc, dataType);
   // synchronously compile the graph up to the output operand
   const graph = builder.buildSync(namedOutputOperands);
   // synchronously execute the compiled graph.
   context.computeSync(graph, inputs, outputs);
-  checkResults(operationName, namedOutputOperands, outputs, resources);
+  checkResults(operationName, namedOutputOperands, outputs, resources, dataType);
 };
 
 /**
@@ -600,15 +692,16 @@ const runSync = (operationName, context, builder, resources, buildFunc) => {
  * @param {MLGraphBuilder} builder - A ML graph builder
  * @param {Object} resources - Resources used for building a graph
  * @param {Function} buildFunc - A build function for an operation
+ * @param {String} [dataType] - Only use this parameter for float16 tests reusing test data of float32 tests
  */
-const run = async (operationName, context, builder, resources, buildFunc) => {
+const run = async (operationName, context, builder, resources, buildFunc, dataType) => {
   // build a graph
-  const [namedOutputOperands, inputs, outputs] = buildGraph(operationName, builder, resources, buildFunc);
+  const [namedOutputOperands, inputs, outputs] = buildGraph(operationName, builder, resources, buildFunc, dataType);
   // asynchronously compile the graph up to the output operand
   const graph = await builder.build(namedOutputOperands);
   // asynchronously execute the compiled graph
   const result = await context.compute(graph, inputs, outputs);
-  checkResults(operationName, namedOutputOperands, result.outputs, resources);
+  checkResults(operationName, namedOutputOperands, result.outputs, resources, dataType);
 };
 
 /**
@@ -643,6 +736,11 @@ const testWebNNOperation = (operationName, buildFunc) => {
           test(() => {
             runSync(subOperationName, context, builder, subTest, buildFunc);
           }, `${subTest.name} / ${executionType}`);
+          if (subTest.name.includes('float32')) {
+            test(() => {
+              runSync(subOperationName, context, builder, subTest, buildFunc, 'float16');
+            }, `${subTest.name.replace('float32', 'float16')} / ${executionType}`);
+          }
         }
       });
     } else {
@@ -657,6 +755,12 @@ const testWebNNOperation = (operationName, buildFunc) => {
           promise_test(async () => {
             await run(subOperationName, context, builder, subTest, buildFunc);
           }, `${subTest.name} / ${executionType}`);
+          if (subTest.name.includes('float32')) {
+            // resue test data of float32 for float16
+            promise_test(async () => {
+              await run(subOperationName, context, builder, subTest, buildFunc, 'float16');
+            }, `${subTest.name.replace('float32', 'float16')} / ${executionType}`);
+          }
         }
       });
     }

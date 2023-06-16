@@ -7,14 +7,14 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-gemm
 
-const buildGemm= (operationName, builder, resources) => {
+const buildGemm= (operationName, builder, resources, dataType) => {
   // MLOperand gemm(MLOperand a, MLOperand b, optional MLGemmOptions options = {});
   const namedOutputOperand = {};
-  const [inputOperandA, inputOperandB] = createMultiInputOperands(builder, resources);
+  const [inputOperandA, inputOperandB] = createMultiInputOperands(builder, resources, dataType);
   let gemmOptions = {...resources.options};
   if (gemmOptions.c) {
     if (gemmOptions.c.shape) {
-      gemmOptions.c = createConstantOperand(builder, gemmOptions.c);
+      gemmOptions.c = createConstantOperand(builder, gemmOptions.c, dataType);
     } else {
       // MLOperand c;
       // Create a single-value operand when c is a scalar

@@ -7,10 +7,10 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-reshape
 
-const buildReshape = (operationName, builder, resources) => {
+const buildReshape = (operationName, builder, resources, dataType) => {
   // MLOperand reshape(MLOperand input, sequence<unsigned long?> newShape);
   const namedOutputOperand = {};
-  const inputOperand = createSingleInputOperand(builder, resources);
+  const inputOperand = createSingleInputOperand(builder, resources, undefined, dataType);
   // invoke builder.reshape()
   namedOutputOperand[resources.expected.name] = builder[operationName](inputOperand, resources.newShape);
   return namedOutputOperand;

@@ -7,13 +7,13 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-convtranspose2d
 
-const buildConvTranspose2d = (operationName, builder, resources) => {
+const buildConvTranspose2d = (operationName, builder, resources, dataType) => {
   // MLOperand convTranspose2d(MLOperand input, MLOperand filter, optional MLConvTranspose2dOptions options = {});
   const namedOutputOperand = {};
-  const [inputOperand, filterOperand] = createMultiInputOperands(builder, resources);
+  const [inputOperand, filterOperand] = createMultiInputOperands(builder, resources, dataType);
   let convTranspose2dOptions = {...resources.options};
   if (convTranspose2dOptions.bias) {
-    convTranspose2dOptions.bias = createConstantOperand(builder, convTranspose2dOptions.bias);
+    convTranspose2dOptions.bias = createConstantOperand(builder, convTranspose2dOptions.bias, dataType);
   }
   if (convTranspose2dOptions.activation) {
     convTranspose2dOptions.activation = builder[convTranspose2dOptions.activation]();

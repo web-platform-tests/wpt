@@ -7,10 +7,10 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-slice
 
-const buildSlice = (operationName, builder, resources) => {
+const buildSlice = (operationName, builder, resources, dataType) => {
   // MLOperand slice(MLOperand input, sequence<unsigned long> starts, sequence<unsigned long> sizes);
   const namedOutputOperand = {};
-  const inputOperand = createSingleInputOperand(builder, resources);
+  const inputOperand = createSingleInputOperand(builder, resources, undefined, dataType);
   // invoke builder.slice()
   namedOutputOperand[resources.expected.name] = builder[operationName](inputOperand, resources.starts, resources.sizes);
   return namedOutputOperand;

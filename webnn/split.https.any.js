@@ -7,12 +7,12 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-split
 
-const buildSplit = (operationName, builder, resources) => {
+const buildSplit = (operationName, builder, resources, dataType) => {
   // sequence<MLOperand> split(MLOperand input,
   //                           (unsigned long or sequence<unsigned long>) splits,
   //                           optional MLSplitOptions options = {});
   const namedOutputOperand = {};
-  const inputOperand = createSingleInputOperand(builder, resources);
+  const inputOperand = createSingleInputOperand(builder, resources, undefined, dataType);
   // invoke builder.split()
   const outputOperands = builder[operationName](inputOperand, resources.splits, resources.options);
   resources.expected.forEach((resourceDict, index) => {

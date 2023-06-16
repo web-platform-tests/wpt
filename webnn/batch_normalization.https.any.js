@@ -7,17 +7,17 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-batchnorm
 
-const buildBatchNorm = (operationName, builder, resources) => {
+const buildBatchNorm = (operationName, builder, resources, dataType) => {
   // MLOperand batchNormalization(MLOperand input, MLOperand mean, MLOperand variance,
   //                              optional MLBatchNormalizationOptions options = {});
   const namedOutputOperand = {};
-  const [inputOperand, meanOperand, varianceOperand] = createMultiInputOperands(builder, resources);
+  const [inputOperand, meanOperand, varianceOperand] = createMultiInputOperands(builder, resources, dataType);
   const batchNormOptions = {...resources.options};
   if (batchNormOptions.scale) {
-    batchNormOptions.scale = createConstantOperand(builder, batchNormOptions.scale);
+    batchNormOptions.scale = createConstantOperand(builder, batchNormOptions.scale, dataType);
   }
   if (batchNormOptions.bias) {
-    batchNormOptions.bias = createConstantOperand(builder, batchNormOptions.bias);
+    batchNormOptions.bias = createConstantOperand(builder, batchNormOptions.bias, dataType);
   }
   if (batchNormOptions.activation) {
     batchNormOptions.activation = builder[batchNormOptions.activation]();

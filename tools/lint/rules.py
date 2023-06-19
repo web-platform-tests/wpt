@@ -505,7 +505,11 @@ class AssertPreconditionRegexp(Regexp):
 
 
 class HTMLInvalidSyntaxRegexp(Regexp):
-    pattern = br"<(a|abbr|article|audio|b|bdi|bdo|blockquote|body|button|canvas|caption|cite|code|colgroup|data|datalist|dd|del|details|dfn|dialog|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h[1-6]|head|header|html|i|iframe|ins|kbd|label|legend|li|main|map|mark|menu|meter|nav|noscript|object|ol|optgroup|option|output|p|picture|pre|progress|q|rp|rt|ruby|s|samp|script|search|section|select|slot|small|span|strong|style|sub|summary|sup|table|tbody|td|template|textarea|tfoot|th|thead|time|title|tr|u|ul|var|video|wbr)(\s+[^>]+)?\s*/>"
+    pattern = (br"<(a|abbr|article|audio|b|bdi|bdo|blockquote|body|button|canvas|caption|cite|code|colgroup|data|datalist|dd|del|details|"
+               br"dfn|dialog|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h[1-6]|head|header|html|i|iframe|ins|kbd|label|legend|li|"
+               br"main|map|mark|menu|meter|nav|noscript|object|ol|optgroup|option|output|p|picture|pre|progress|q|rp|rt|ruby|s|samp|script|"
+               br"search|section|select|slot|small|span|strong|style|sub|summary|sup|table|tbody|td|template|textarea|tfoot|th|thead|time|"
+               br"title|tr|u|ul|var|video)(\s+[^>]+)?\s*/>")
     name = "HTML INVALID SYNTAX"
     file_extensions = [".html", ".htm"]
     description = "Test-file line has a non-void HTML tag with /> syntax"

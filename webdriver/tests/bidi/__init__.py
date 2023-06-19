@@ -79,3 +79,25 @@ async def create_console_api_message(bidi_session, context, text):
         target=ContextTarget(context["context"]),
     )
     return text
+
+def remote_mapping_to_dict(js_object):
+    obj = {}
+    for key, value in js_object:
+        obj[key] = value["value"]
+
+    return obj
+
+async def get_viewport_dimensions(bidi_session, context):
+    expression = """
+        ({
+          height: window.innerHeight || document.documentElement.clientHeight,
+          width: window.innerWidth || document.documentElement.clientWidth,
+        });
+    """
+    result = await bidi_session.script.evaluate(
+        expression=expression,
+        target=ContextTarget(context["context"]),
+        await_promise=False,
+    )
+
+    return remote_mapping_to_dict(result["value"])

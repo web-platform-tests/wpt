@@ -80,6 +80,7 @@ async def create_console_api_message(bidi_session, context, text):
     )
     return text
 
+
 def remote_mapping_to_dict(js_object):
     obj = {}
     for key, value in js_object:

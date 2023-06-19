@@ -81,12 +81,20 @@ async def create_console_api_message(bidi_session, context, text):
     return text
 
 
-def remote_mapping_to_dict(js_object):
-    obj = {}
-    for key, value in js_object:
-        obj[key] = value["value"]
+async def get_device_pixel_ratio(bidi_session, context):
+    """Get the DPR of the context.
 
-    return obj
+    :param bidi_session: BiDiSession
+    :param context: Browsing context ID
+    :returns: (int) devicePixelRatio.
+    """
+    result = await bidi_session.script.call_function(
+        function_declaration="""() => {
+        return Math.floor(window.devicePixelRatio);
+    }""",
+        target=ContextTarget(context["context"]),
+        await_promise=False)
+    return result["value"]
 
 
 async def get_viewport_dimensions(bidi_session, context):
@@ -103,3 +111,11 @@ async def get_viewport_dimensions(bidi_session, context):
     )
 
     return remote_mapping_to_dict(result["value"])
+
+
+def remote_mapping_to_dict(js_object):
+    obj = {}
+    for key, value in js_object:
+        obj[key] = value["value"]
+
+    return obj

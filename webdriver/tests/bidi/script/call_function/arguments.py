@@ -481,7 +481,7 @@ async def test_remote_reference_dom_collection(
                         "baz",
                         {
                             "type": "object",
-                            "value": [["qux", {"type": "number", "value": 2}]],
+                            "value": [["1", {"type": "number", "value": 2}]],
                         },
                     ],
                 ],
@@ -513,7 +513,7 @@ async def test_remote_reference_dom_collection(
                         "baz",
                         {
                             "type": "object",
-                            "value": [["qux", {"type": "number", "value": 2}]],
+                            "value": [["1", {"type": "number", "value": 2}]],
                         },
                     ],
                 ],
@@ -530,7 +530,7 @@ async def test_channel(
     on_script_message = wait_for_event("script.message")
     result = await bidi_session.script.call_function(
         raw_result=True,
-        function_declaration="""(channel) => channel({'foo': 'bar', 'baz': {'qux': 2}})""",
+        function_declaration="""(channel) => channel({'foo': 'bar', 'baz': {'1': 2}})""",
         arguments=[channel],
         await_promise=False,
         target=ContextTarget(top_context["context"]),

@@ -88,6 +88,7 @@ def remote_mapping_to_dict(js_object):
 
     return obj
 
+
 async def get_viewport_dimensions(bidi_session, context):
     expression = """
         ({

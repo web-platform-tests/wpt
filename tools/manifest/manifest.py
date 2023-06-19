@@ -58,6 +58,17 @@ def compute_manifest_items(source_file: SourceFile) -> Tuple[Tuple[Text, ...], T
     return rel_path_parts, new_type, set(manifest_items), file_hash
 
 
+def compute_manifest_spec_items(source_file: SourceFile) -> Tuple[Tuple[Text, ...], Text, Set[ManifestItem], Text]:
+    spec_tuple = source_file.manifest_spec_items()
+    if not spec_tuple:
+        return ()
+    
+    new_type, manifest_items = spec_tuple
+    rel_path_parts = source_file.rel_path_parts
+    file_hash = source_file.hash
+    return rel_path_parts, new_type, set(manifest_items), file_hash
+
+
 ManifestDataType = Dict[Any, TypeData]
 
 
@@ -126,8 +137,8 @@ class Manifest:
             for path, tests in type_tests.items():
                 if path[:tpath_len] == tpath:
                     yield from tests
-
-    def update(self, tree: Iterable[Tuple[Text, Optional[Text], bool]], parallel: bool = True) -> bool:
+    
+    def update(self, tree: Iterable[Tuple[Text, Optional[Text], bool]], parallel: bool = True, is_spec: bool = False) -> bool:
         """Update the manifest given an iterable of items that make up the updated manifest.
 
         The iterable must either generate tuples of the form (SourceFile, True) for paths
@@ -189,6 +200,9 @@ class Manifest:
             logger.debug("Computing manifest update for %s items" % len(to_update))
             changed = True
 
+        update_func = compute_manifest_items
+        if is_spec:
+            update_func = compute_manifest_spec_items
 
         # 25 items was derived experimentally (2020-01) to be approximately the
         # point at which it is quicker to create a Pool and parallelize update.
@@ -214,11 +228,11 @@ class Manifest:
             results: Iterator[Tuple[Tuple[Text, ...],
                                     Text,
                                     Set[ManifestItem], Text]] = pool.imap_unordered(
-                                        compute_manifest_items,
+                                        update_func,
                                         to_update,
                                         chunksize=chunksize)
         else:
-            results = map(compute_manifest_items, to_update)
+            results = map(update_func, to_update)
 
         for result in results:
             rel_path_parts, new_type, manifest_items, file_hash = result
@@ -396,7 +410,7 @@ def load_and_update(tests_root: Text,
             try:
                 tree = vcs.get_tree(tests_root, manifest, manifest_path, cache_root,
                                     working_copy, rebuild)
-                changed = manifest.update(tree, parallel)
+                changed = manifest.update(tree, parallel, True)
                 break
             except InvalidCacheError:
                 logger.warning("Manifest cache was invalid, doing a complete rebuild")

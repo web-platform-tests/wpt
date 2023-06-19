@@ -13,6 +13,7 @@ wpt_root = os.path.join(os.path.abspath(os.path.join(here, os.pardir, os.pardir)
 
 logger = get_logger()
 
+# TODO: define a new spec format
 
 def update_from_cli(**kwargs: Any) -> None:
     print("GIVE ME SPEC LABELLING NOWWWWW")

@@ -1,4 +1,5 @@
 from webdriver.bidi.modules.script import ContextTarget
+
 from ... import get_viewport_dimensions, remote_mapping_to_dict
 
 async def get_inview_center_bidi(bidi_session, context, element):

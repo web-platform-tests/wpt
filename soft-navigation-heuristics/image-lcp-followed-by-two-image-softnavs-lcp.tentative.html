@@ -1,14 +1,16 @@
 <!DOCTYPE HTML>
 <html>
+
 <head>
-<meta charset="utf-8">
-<title>Detect simple soft navigation.</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
-<script src="resources/soft-navigation-helper.js"></script>
+  <meta charset="utf-8">
+  <title>Detect simple soft navigation.</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="resources/soft-navigation-helper.js"></script>
 </head>
+
 <body>
   <main id=main>
     <div>
@@ -22,54 +24,92 @@
       validatePaintEntries('first-contentful-paint', 1);
       validatePaintEntries('first-paint', 1);
       const preClickLcp = await getLcpEntries();
-      setEvent(t, link, /*pushState=*/url=>history.pushState({}, '', url),
+      setEvent(t, link, /*pushState=*/url => history.pushState({}, '', url),
         /*addContent=*/async () => await addImageToMain(), /*pushUrl=*/true,
         /*eventType=*/"click");
 
       const first_click_paint_promise = waitOnPaintEntriesPromise();
 
       click(link);
-      await new Promise(resolve => {
-        (new PerformanceObserver(resolve)).observe({
-          type: 'soft-navigation'
+
+      // Get 1st soft navigation entry
+      const first_soft_nav_entry = await new Promise(resolve => {
+        (new PerformanceObserver(list => {
+          if (list.getEntries().length > 0) {
+            resolve(list.getEntries()[0]);
+          }
+        })).observe({
+          type: 'soft-navigation', buffered: true
         });
       });
+
       assert_equals(
-          document.softNavigations, 1,
-          'One Soft Navigation detected');
+        document.softNavigations, 1,
+        'One Soft Navigation detected');
 
       await first_click_paint_promise;
       const postClickLcp = await getLcpEntries();
       assert_greater_than(
-          postClickLcp.length, preClickLcp.length,
-          'Soft navigation should have triggered at least an LCP entry');
+        postClickLcp.length, preClickLcp.length,
+        'Soft navigation should have triggered at least an LCP entry');
       assert_less_than(
-          postClickLcp[postClickLcp.length - 1].size,
-          preClickLcp[preClickLcp.length - 1].size,
-          'Soft navigation LCP element should have a smaller size than the hard'
-              + ' navigation LCP element');
+        postClickLcp[postClickLcp.length - 1].size,
+        preClickLcp[preClickLcp.length - 1].size,
+        'Soft navigation LCP element should have a smaller size than the hard'
+        + ' navigation LCP element');
 
       const second_click_paint_promise = waitOnPaintEntriesPromise();
       const preClickLcp2 = await getLcpEntries();
       click(link);
-      await new Promise(resolve => {
-        (new PerformanceObserver(() => resolve())).observe({
+
+      // Get 1st soft navigation entry
+      const second_soft_nav_entry = await new Promise(resolve => {
+        (new PerformanceObserver(list => {
+          if (list.getEntries().length > 0) {
+            resolve(list.getEntries()[0]);
+          }
+        })).observe({
           type: 'soft-navigation'
         });
       });
+
       assert_equals(
-          document.softNavigations, 2,
-          'Two Soft Navigations detected');
+        document.softNavigations, 2,
+        'Two Soft Navigations detected');
 
       await second_click_paint_promise;
       const postClickLcp2 = await getLcpEntries();
       assert_equals(postClickLcp2.length, 3, 'We expected 3 LCP entries at this point');
       assert_greater_than(
-          postClickLcp2.length, preClickLcp2.length,
-          'Soft navigation should have triggered at least an LCP entry');
+        postClickLcp2.length, preClickLcp2.length,
+        'Soft navigation should have triggered at least an LCP entry');
+
+      // Verify the navigation id of the lcp entry corresponding to the
+      // added image that caused a soft navigation.
+      const first_lcp_entry = postClickLcp[1];
+      assert_true(
+        first_soft_nav_entry.navigationId == first_lcp_entry.navigationId,
+        'The navigation id of the 1st largest contentful paint entry of a soft\ navigation should be the same as that of the corresponding soft\ navigation entry');
+
+      const second_lcp_entry = postClickLcp2[2];
+      assert_true(
+        second_soft_nav_entry.navigationId == second_lcp_entry.navigationId,
+        'The navigation id of the 2nd largest contentful paint entry of a soft\ navigation should be the same as that of the corresponding soft\ navigation entry');
+
+      // Verify the navigation id of the resource entry corresponding to the
+      // added image that caused a soft navigation.
+      const resource_timing_entries = performance.getEntriesByType('resource').filter(e => e.name.includes('blue.png'));
+
+      assert_equals(resource_timing_entries.length, 2,
+        '2 resource timing entries is expected.');
+
+      assert_true(
+        first_soft_nav_entry.navigationId == resource_timing_entries[0].navigationId, 'The navigation id of the 1st resource timing entry of\  a soft navigation should be the same as that of the corresponding soft\ navigation entry');
+
+      assert_true(
+        second_soft_nav_entry.navigationId == resource_timing_entries[1].navigationId, 'The navigation id of the 2nd resource timing entry of a\ soft navigation should be the same as that of the corresponding soft\ navigation entry');
     }, "Multiple soft navigations get FP, FCP and LCP for each one");
   </script>
 </body>
+
 </html>
-
-

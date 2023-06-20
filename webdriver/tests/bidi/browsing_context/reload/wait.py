@@ -11,7 +11,7 @@ async def test_expected_url(bidi_session, inline, new_tab, wait):
     url = inline("<div>foo</div>")
     await bidi_session.browsing_context.navigate(context=new_tab["context"],
                                                  url=url,
-                                                 wait=wait)
+                                                 wait="complete")
     result = await bidi_session.browsing_context.reload(
         context=new_tab["context"], wait=wait)
     assert result == {}
@@ -37,7 +37,7 @@ async def test_slow_image_blocks_load(bidi_session, inline, new_tab, wait,
 
     await bidi_session.browsing_context.navigate(context=new_tab["context"],
                                                  url=url,
-                                                 wait=wait)
+                                                 wait="complete")
 
     # Ultimately, "interactive" and "complete" should support a timeout argument.
     # See https://github.com/w3c/webdriver-bidi/issues/188.
@@ -97,7 +97,7 @@ async def test_slow_page(bidi_session, new_tab, url, wait, expect_timeout,
 
     await bidi_session.browsing_context.navigate(context=new_tab["context"],
                                                  url=url,
-                                                 wait=wait)
+                                                 wait="complete")
 
     # Ultimately, "interactive" and "complete" should support a timeout argument.
     # See https://github.com/w3c/webdriver-bidi/issues/188.
@@ -163,7 +163,7 @@ async def test_slow_script_blocks_domContentLoaded(bidi_session, inline,
 
     await bidi_session.browsing_context.navigate(context=new_tab["context"],
                                                  url=url,
-                                                 wait=wait)
+                                                 wait="complete")
 
     # Ultimately, "interactive" and "complete" should support a timeout argument.
     # See https://github.com/w3c/webdriver-bidi/issues/188.

@@ -15,6 +15,7 @@ from .item import (ConformanceCheckerTest,
                    ManualTest,
                    PrintRefTest,
                    RefTest,
+                   SpecItem,
                    SupportFile,
                    TestharnessTest,
                    VisualTest,
@@ -48,6 +49,7 @@ item_classes: Dict[Text, Type[ManifestItem]] = {"testharness": TestharnessTest,
                                                 "wdspec": WebDriverSpecTest,
                                                 "conformancechecker": ConformanceCheckerTest,
                                                 "visual": VisualTest,
+                                                "spec": SpecItem,
                                                 "support": SupportFile}
 
 
@@ -234,7 +236,10 @@ class Manifest:
         else:
             results = map(update_func, to_update)
 
+        print(results)
         for result in results:
+            if not result:
+                continue
             rel_path_parts, new_type, manifest_items, file_hash = result
             data[new_type][rel_path_parts] = manifest_items
             data[new_type].hashes[rel_path_parts] = file_hash

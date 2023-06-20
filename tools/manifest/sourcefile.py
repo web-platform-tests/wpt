@@ -1093,10 +1093,10 @@ class SourceFile:
         return rv
     
     def manifest_spec_items(self) -> Tuple[Text, List[ManifestItem]]:
-        specs = self.spec_links
+        specs = list(self.spec_links)
+        print(specs)
         if not specs:
             return ()
-
         rv: Tuple[Text, List[ManifestItem]] = (SpecItem.item_type, [
             SpecItem(
                 self.tests_root,

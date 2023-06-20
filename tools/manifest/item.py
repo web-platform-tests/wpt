@@ -350,7 +350,7 @@ class SupportFile(ManifestItem):
     @property
     def id(self) -> Text:
         return self.path
-    
+
 
 class SpecItem(ManifestItem):
     __slots__ = ("specs")
@@ -365,8 +365,12 @@ class SpecItem(ManifestItem):
         super().__init__(tests_root, path)
         self.specs = specs
 
+    @property
+    def id(self) -> Text:
+        return self.path
+
     def to_json(self) -> Tuple[Optional[Text], Dict[Text, Any]]:
-        rv = super().to_json()
+        rv: Tuple[Optional[Text], Dict[Any, Any]] = (None, {})
         for i in range(len(self.specs)):
             spec_key = 'spec_link' + str(i+1)
             rv[-1][spec_key] = self.specs[i]

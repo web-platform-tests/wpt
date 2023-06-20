@@ -1,0 +1,37 @@
+{
+ "items": {
+  "spec": {
+   "crashtests": {
+    "bdo-table-cell.html": [
+     "ae12541f8d8cb97248a7a7f3a3683f753aa96377",
+     [
+      null,
+      {
+       "spec_link1": "https://crbug.com/1314808"
+      }
+     ]
+    ],
+    "displaylocked-serialize.html": [
+     "76784291b441566da93071ed92b959829a59c846",
+     [
+      null,
+      {
+       "spec_link1": "https://bugs.chromium.org/p/chromium/issues/detail?id=1291169"
+      }
+     ]
+    ],
+    "multicol-with-text-change-role-relayout-crash.html": [
+     "d1ecd16dcb07af8f253045748b94290d2c485cfb",
+     [
+      null,
+      {
+       "spec_link1": "https://bugs.chromium.org/p/chromium/issues/detail?id=1278439"
+      }
+     ]
+    ]
+   }
+  }
+ },
+ "url_base": "/",
+ "version": 8
+}

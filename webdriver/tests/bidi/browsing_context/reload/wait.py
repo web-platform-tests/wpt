@@ -32,8 +32,8 @@ async def test_expected_url(bidi_session, inline, new_tab, wait):
 async def test_slow_image_blocks_load(bidi_session, inline, new_tab, wait,
                                       expect_timeout):
 
-    script_url = "/webdriver/tests/bidi/browsing_context/navigate/support/empty.svg"
-    url = inline(f"<img src='{script_url}?pipe=trickle(d3)'>")
+    image_url = "/webdriver/tests/bidi/browsing_context/navigate/support/empty.svg"
+    url = inline(f"<img src='{image_url}?pipe=trickle(d3)'>")
 
     await bidi_session.browsing_context.navigate(context=new_tab["context"],
                                                  url=url,

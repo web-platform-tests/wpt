@@ -63,16 +63,14 @@ class ContentShellTestPart(ProtocolPart):
         # The first block can also contain audio data but not in WPT.
         text = self._read_block(deadline)
 
-        if text is not None and text.startswith('#LEAK'):
-            # will fail to parse text later as test results is expected.
-            # need to read text from next block
-
-            #ignore extra eof, below will be the #EOF
-            self.leaked = True
-            _read_line(self.stdout_queue, deadline, "latin-1").rstrip()
-            text = self._read_block(deadline)
+        # in this scenario # leak comes first so we replace it with the text
+        text = self._check_leak(text, deadline)
 
         image = self._read_block(deadline)
+
+        # if leak comes after text then it'll end up in image block, so similarly replace
+        # with the actual image value
+        image = self._check_leak(image, deadline)
 
         return text, image
 
@@ -80,6 +78,24 @@ class ContentShellTestPart(ProtocolPart):
         """Sends a single `command`, i.e. a URL to open, to content_shell.
         """
         self.stdin_queue.put((command + "\n").encode("utf-8"))
+
+    def _starts_with_leak(self, text):
+        return (text is not None and
+            ((type(text) == str and text.startswith('#LEAK')) or (type(text) == bytes and text.startswith(b'#LEAK'))))
+
+    def _check_leak(self, text, deadline):
+        if self._starts_with_leak(text):
+            # will fail to parse text later as test results is expected.
+            # need to read text from next block
+
+            #ignore extra eof, below will be the #EOF
+            self.leaked = True
+            _read_line(self.stdout_queue, deadline, "latin-1").rstrip()
+            text = self._read_block(deadline)
+            print("found leak, text result = ", text)
+            return text
+        else:
+            return text
 
     def _read_block(self, deadline=None):
         """Tries to read a single block of content from stdout before the `deadline`.

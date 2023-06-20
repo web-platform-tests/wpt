@@ -1,6 +1,6 @@
 """Helpers for inlining extracts of documents in tests."""
 
-from typing import Literal, Optional
+from typing import Optional
 from urllib.parse import urlencode
 
 
@@ -26,10 +26,13 @@ MIME_TYPES = {
 }
 
 
-def build_inline(build_url, src,
-                 doctype: Literal["html", "xhtml", "xml"] = "html",
-                 mime: Optional[str] = None, charset: Optional[str] = None,
-                 parameters = None, **kwargs):
+def build_inline(build_url,
+                 src,
+                 doctype="html",
+                 mime: Optional[str] = None,
+                 charset: Optional[str] = None,
+                 parameters=None,
+                 **kwargs):
     if mime is None:
         mime = MIME_TYPES[doctype]
     if charset is None:

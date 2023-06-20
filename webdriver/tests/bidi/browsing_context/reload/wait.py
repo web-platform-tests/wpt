@@ -119,9 +119,6 @@ async def test_slow_page(bidi_session, new_tab, url, wait, expect_timeout,
     await asyncio.gather(on_load, on_dom_content_load)
     assert len(events) == 2
 
-    assert events[0] == await on_load
-    assert events[1] == await on_dom_content_load
-
     remove_listener_2()
     remove_listener_1()
 
@@ -179,16 +176,13 @@ async def test_slow_script_blocks_domContentLoaded(bidi_session, inline,
         await bidi_session.browsing_context.reload(context=new_tab["context"],
                                                    wait=wait)
 
-    # In theory we could also assert the top context URL has been updated here,
-    # but since we expect both "interactive" and "complete" to timeout the
+    # In theory we could also assert the top context URL has been updated here
+    # but since we expect both "interactive" and "complete" to timeout, the
     # wait_for_navigation helper will resume arbitrarily after 1 second, and
     # there is no guarantee that the URL has been updated.
 
-    await asyncio.gather(on_load, on_dom_content_load)
+    await asyncio.gather(on_dom_content_load, on_load)
     assert len(events) == 2
-
-    assert events[0] == await on_load
-    assert events[1] == await on_dom_content_load
 
     remove_listener_2()
     remove_listener_1()

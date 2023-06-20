@@ -72,6 +72,14 @@ async def test_slow_image_blocks_load(bidi_session, inline, new_tab, wait,
 )
 async def test_slow_page(bidi_session, new_tab, url, wait, expect_timeout,
                          subscribe_events, wait_for_event):
+    url = url(
+        "/webdriver/tests/bidi/browsing_context/navigate/support/empty.html?pipe=trickle(d3)"
+    )
+
+    await bidi_session.browsing_context.navigate(context=new_tab["context"],
+                                                 url=url,
+                                                 wait="complete")
+
     await subscribe_events(
         events=["browsingContext.domContentLoaded", "browsingContext.load"],
         contexts=[new_tab["context"]])
@@ -90,14 +98,6 @@ async def test_slow_page(bidi_session, new_tab, url, wait, expect_timeout,
 
     on_dom_content_load = wait_for_event("browsingContext.domContentLoaded")
     on_load = wait_for_event("browsingContext.load")
-
-    url = url(
-        "/webdriver/tests/bidi/browsing_context/navigate/support/empty.html?pipe=trickle(d3)"
-    )
-
-    await bidi_session.browsing_context.navigate(context=new_tab["context"],
-                                                 url=url,
-                                                 wait="complete")
 
     # Ultimately, "interactive" and "complete" should support a timeout argument.
     # See https://github.com/w3c/webdriver-bidi/issues/188.
@@ -136,6 +136,13 @@ async def test_slow_script_blocks_domContentLoaded(bidi_session, inline,
                                                    expect_timeout,
                                                    subscribe_events,
                                                    wait_for_event):
+    script_url = "/webdriver/tests/bidi/browsing_context/navigate/support/empty.js"
+    url = inline(f"<script src='{script_url}?pipe=trickle(d3)'></script>")
+
+    await bidi_session.browsing_context.navigate(context=new_tab["context"],
+                                                 url=url,
+                                                 wait="complete")
+
     await subscribe_events(
         events=["browsingContext.domContentLoaded", "browsingContext.load"],
         contexts=[new_tab["context"]])
@@ -154,13 +161,6 @@ async def test_slow_script_blocks_domContentLoaded(bidi_session, inline,
 
     on_dom_content_load = wait_for_event("browsingContext.domContentLoaded")
     on_load = wait_for_event("browsingContext.load")
-
-    script_url = "/webdriver/tests/bidi/browsing_context/navigate/support/empty.js"
-    url = inline(f"<script src='{script_url}?pipe=trickle(d3)'></script>")
-
-    await bidi_session.browsing_context.navigate(context=new_tab["context"],
-                                                 url=url,
-                                                 wait="complete")
 
     # Ultimately, "interactive" and "complete" should support a timeout argument.
     # See https://github.com/w3c/webdriver-bidi/issues/188.

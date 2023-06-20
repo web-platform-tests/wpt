@@ -92,7 +92,7 @@ async def test_slow_script_blocks_domContentLoaded(bidi_session, inline, new_tab
 
     await wait_for_navigation(bidi_session, new_tab["context"], url, wait, expect_timeout)
 
-    # In theory we could also assert the top context URL has been updated here,
-    # but since we expect both "interactive" and "complete" to timeout the
+    # In theory we could also assert the top context URL has been updated here
+    # but since we expect both "interactive" and "complete" to timeout, the
     # wait_for_navigation helper will resume arbitrarily after 1 second, and
     # there is no guarantee that the URL has been updated.

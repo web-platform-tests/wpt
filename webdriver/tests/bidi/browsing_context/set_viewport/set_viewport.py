@@ -1,29 +1,78 @@
 import pytest
 
-from . import layout_viewport_dimensions
+from ... import get_viewport_dimensions
 
 @pytest.mark.asyncio
-async def test_set_viewport(bidi_session, top_context, inline):
-    original_viewport = await layout_viewport_dimensions(bidi_session, top_context)
-
-    await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url="about:blank", wait="complete"
-    )
+async def test_set_viewport(bidi_session, new_tab):
+    test_viewport = {"width": 250, "height": 300}
 
     await bidi_session.browsing_context.set_viewport(
-        context=top_context["context"],
-        viewport={
-          "width": 250,
-          "height": 300,
-      })
-    assert await layout_viewport_dimensions(bidi_session, top_context) == (250, 300)
+        context=new_tab["context"],
+        viewport=test_viewport)
+    
+    assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport
 
-    await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=inline("<div>foo</div>"), wait="complete"
-    )
-    assert await layout_viewport_dimensions(bidi_session, top_context) == (250, 300)
+
+@pytest.mark.asyncio
+async def test_set_viewport_reset(bidi_session, new_tab):
+    original_viewport = await get_viewport_dimensions(bidi_session, new_tab)
+
+    test_viewport = {"width": 333, "height": 333}
+    await bidi_session.browsing_context.set_viewport(
+      context=new_tab["context"],
+      viewport=test_viewport)
+
+    assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport
 
     await bidi_session.browsing_context.set_viewport(
-      context=top_context["context"],
+      context=new_tab["context"],
       viewport=None)
-    assert await layout_viewport_dimensions(bidi_session, top_context) == original_viewport
+    assert await get_viewport_dimensions(bidi_session, new_tab) == original_viewport
+
+
+@pytest.mark.asyncio
+async def test_set_viewport_affects_specific_context(bidi_session, top_context, new_tab):
+    original_viewport = await get_viewport_dimensions(bidi_session, top_context)
+
+    test_viewport = {"width": 333, "height": 333}
+    await bidi_session.browsing_context.set_viewport(
+      context=new_tab["context"],
+      viewport=test_viewport)
+
+    assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport
+    assert await get_viewport_dimensions(bidi_session, top_context) == original_viewport
+
+
+@pytest.mark.asyncio
+async def test_set_viewport_persists_on_navigation(bidi_session, new_tab, inline):
+    test_viewport = {"width": 499, "height": 599}
+
+    await bidi_session.browsing_context.set_viewport(
+        context=new_tab["context"],
+        viewport=test_viewport)
+    
+    assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport
+
+    url = inline("<div>foo</div>")
+    result = await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=inline("<div>foo</div>"), wait="complete"
+    )
+
+    assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport
+
+@pytest.mark.asyncio
+async def test_set_viewport_persists_on_reload(bidi_session, new_tab, inline):
+    test_viewport = {"width": 499, "height": 599}
+
+    await bidi_session.browsing_context.set_viewport(
+        context=new_tab["context"],
+        viewport=test_viewport)
+
+    assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport
+
+    url = inline("<div>foo</div>")
+    result = await bidi_session.browsing_context.reload(
+        context=new_tab["context"], wait="complete"
+    )
+
+    assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport

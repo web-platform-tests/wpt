@@ -1,0 +1,69 @@
+<!doctype html>
+<title>default styles for embedded content</title>
+<meta name="viewport" content="width=device-width">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/html/rendering/support/test-ua-stylesheet.js"></script>
+<style>
+/* Specify this bogus namespace, so the rules in this stylesheet only apply to the `fakeClone`d elements in #refs, not the HTML elements in #tests. */
+@namespace url(urn:not-html);
+@namespace svg url(urn:not-svg);
+
+iframe { border: 2px inset; }
+video { object-fit: contain; }
+img, video, canvas, svg|svg:not(:root) {
+  overflow: clip;
+  overflow-clip-margin: content-box;
+}
+iframe, object, embed {
+  overflow: clip !important;
+  overflow-clip-margin: content-box !important;
+}
+</style>
+
+<style>
+/* Check that !important rules are actually !important */
+@namespace url(http://www.w3.org/1999/xhtml);
+
+iframe, object, embed {
+  overflow: auto;
+  overflow-clip-margin: border-box;
+}
+</style>
+
+<div id="log"></div>
+
+<div id="tests">
+  <iframe></iframe>
+  <video></video>
+  <img>
+  <canvas></canvas>
+  <svg></svg>
+  <object></object>
+  <embed>
+</div>
+
+<div id="refs"></div>
+
+<script>
+  const props = [
+    'border-top-style',
+    'border-right-style',
+    'border-bottom-style',
+    'border-left-style',
+    'border-top-width',
+    'border-right-width',
+    'border-bottom-width',
+    'border-left-width',
+    'border-top-color',
+    'border-right-color',
+    'border-bottom-color',
+    'border-left-color',
+    'object-fit',
+    'overflow-x',
+    'overflow-y',
+    'overflow-clip-margin',
+    ];
+  runUAStyleTests(props);
+
+</script>

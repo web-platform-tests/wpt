@@ -53,7 +53,7 @@ item_classes: Dict[Text, Type[ManifestItem]] = {"testharness": TestharnessTest,
                                                 "support": SupportFile}
 
 
-def compute_manifest_items(source_file: SourceFile) -> Tuple[Tuple[Text, ...], Text, Set[ManifestItem], Text]:
+def compute_manifest_items(source_file: SourceFile) -> Optional[Tuple[Tuple[Text, ...], Text, Set[ManifestItem], Text]]:
     rel_path_parts = source_file.rel_path_parts
     new_type, manifest_items = source_file.manifest_items()
     file_hash = source_file.hash
@@ -227,9 +227,9 @@ class Manifest:
             chunksize = max(1, len(to_update) // 10000)
             logger.debug("Doing a multiprocessed update. CPU count: %s, "
                 "processes: %s, chunksize: %s" % (cpu_count(), processes, chunksize))
-            results: Iterator[Tuple[Tuple[Text, ...],
+            results: Iterator[Optional[Tuple[Tuple[Text, ...],
                                     Text,
-                                    Set[ManifestItem], Text]] = pool.imap_unordered(
+                                    Set[ManifestItem], Text]]] = pool.imap_unordered(
                                         update_func,
                                         to_update,
                                         chunksize=chunksize)

@@ -367,7 +367,7 @@ class SpecItem(ManifestItem):
         return rv
 
     @classmethod
-    def from_json(cls,  # type: ignore
+    def from_json(cls,
                   manifest: "Manifest",
                   path: Text,
                   obj: Any

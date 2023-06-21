@@ -414,7 +414,7 @@ def load_and_update(tests_root: Text,
             try:
                 tree = vcs.get_tree(tests_root, manifest, manifest_path, cache_root,
                                     working_copy, rebuild)
-                changed = manifest.update(tree, parallel, True)
+                changed = manifest.update(tree, parallel)
                 break
             except InvalidCacheError:
                 logger.warning("Manifest cache was invalid, doing a complete rebuild")

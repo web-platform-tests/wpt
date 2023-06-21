@@ -24,12 +24,17 @@ function import_csp_test(
       `${importType === 'static'
           ? '?pipe=header(Content-Security-Policy, ' + cspHeader + ')'
           : ''}`;
+
+  // Use a unique URL fragment to prevent potential interference from other tests
+  // which might use the same SharedWorker URL.
+  const uniqueFragment = '#shared-worker-import-csp';
+
   // Append CSP header to scriptURL for dynamic import tests since dynamic
   // import scripts should obey SharedWorker script's responce's CSP.
   const scriptURL = `${importType}-import-remote-origin-script-worker.sub.js` +
       `${importType === 'dynamic'
           ? '?pipe=header(Content-Security-Policy, ' + cspHeader + ')'
-          : ''}`;
+          : ''}` + uniqueFragment;
   promise_test(async () => {
     // Open a window that has the given CSP header.
     const win = await openWindow(windowURL);

@@ -2,6 +2,7 @@ import pytest
 
 from ... import get_viewport_dimensions
 
+
 @pytest.mark.asyncio
 async def test_set_viewport(bidi_session, new_tab):
     test_viewport = {"width": 250, "height": 300}

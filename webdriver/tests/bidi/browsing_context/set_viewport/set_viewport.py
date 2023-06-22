@@ -35,7 +35,7 @@ async def test_set_viewport_reset(bidi_session, new_tab):
 async def test_set_viewport_affects_specific_context(bidi_session, top_context, new_tab):
     original_viewport = await get_viewport_dimensions(bidi_session, top_context)
 
-    test_viewport = {"width": 333, "height": 333}
+    test_viewport = {"width": 333, "height": 666}
     await bidi_session.browsing_context.set_viewport(
       context=new_tab["context"],
       viewport=test_viewport)
@@ -63,7 +63,14 @@ async def test_set_viewport_persists_on_navigation(bidi_session, new_tab, inline
 
     assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport
 
-    url = inline("<div>foo</div>", parameters=parameters, protocol=protocol, domain="alt")
+    url = inline("<div>foo</div>", parameters=parameters, protocol=protocol)
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=url, wait="complete"
+    )
+
+    assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport
+
+    url = inline("<div>bar</div>", parameters=parameters, protocol=protocol, domain="alt")
     await bidi_session.browsing_context.navigate(
         context=new_tab["context"], url=url, wait="complete"
     )

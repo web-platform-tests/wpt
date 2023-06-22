@@ -133,10 +133,7 @@ class BrowsingContext(BidiModule):
         params: MutableMapping[str, Any] = {"context": context}
 
         if viewport is not None:
-            params["viewport"] = {
-                "width": viewport["width"],
-                "height": viewport["height"]
-            }
+            params["viewport"] = viewport
         else:
             params["viewport"] = None
 

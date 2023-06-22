@@ -3,7 +3,7 @@ import pytest
 from tests.support.image import png_dimensions
 
 from . import get_physical_viewport_dimensions
-from ... import get_device_pixel_ratio
+from ... import get_device_pixel_ratio, get_viewport_dimensions
 
 
 @pytest.mark.asyncio
@@ -38,11 +38,18 @@ async def test_capture(bidi_session, top_context, inline, compare_png_bidi):
     assert comparison.equal()
 
 
+@pytest.mark.parametrize("delta_width", [-10, +20])
+@pytest.mark.parametrize("delta_height", [-30, +40])
 @pytest.mark.asyncio
-async def test_capture_with_viewport(bidi_session, new_tab):
+async def test_capture_with_viewport(bidi_session, new_tab, delta_width, delta_height):
+    original_viewport = await get_viewport_dimensions(bidi_session, new_tab)
+
     dpr = await get_device_pixel_ratio(bidi_session, new_tab)
 
-    test_viewport = {"width": 499, "height": 599}
+    test_viewport = {
+        "width": original_viewport["width"] + delta_width,
+        "height": original_viewport["height"] + delta_height
+    }
     await bidi_session.browsing_context.set_viewport(
         context=new_tab["context"],
         viewport=test_viewport)

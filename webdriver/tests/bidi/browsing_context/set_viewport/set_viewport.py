@@ -10,7 +10,7 @@ async def test_set_viewport(bidi_session, new_tab):
     await bidi_session.browsing_context.set_viewport(
         context=new_tab["context"],
         viewport=test_viewport)
-    
+
     assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport
 
 
@@ -51,15 +51,16 @@ async def test_set_viewport_persists_on_navigation(bidi_session, new_tab, inline
     await bidi_session.browsing_context.set_viewport(
         context=new_tab["context"],
         viewport=test_viewport)
-    
+
     assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport
 
     url = inline("<div>foo</div>")
-    result = await bidi_session.browsing_context.navigate(
+    await bidi_session.browsing_context.navigate(
         context=new_tab["context"], url=url, wait="complete"
     )
 
     assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport
+
 
 @pytest.mark.asyncio
 async def test_set_viewport_persists_on_reload(bidi_session, new_tab, inline):
@@ -71,8 +72,7 @@ async def test_set_viewport_persists_on_reload(bidi_session, new_tab, inline):
 
     assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport
 
-    url = inline("<div>foo</div>")
-    result = await bidi_session.browsing_context.reload(
+    await bidi_session.browsing_context.reload(
         context=new_tab["context"], wait="complete"
     )
 

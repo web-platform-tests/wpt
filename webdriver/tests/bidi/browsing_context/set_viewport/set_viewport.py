@@ -55,7 +55,7 @@ async def test_set_viewport_persists_on_navigation(bidi_session, new_tab, inline
 
     url = inline("<div>foo</div>")
     result = await bidi_session.browsing_context.navigate(
-        context=new_tab["context"], url=inline("<div>foo</div>"), wait="complete"
+        context=new_tab["context"], url=url, wait="complete"
     )
 
     assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport

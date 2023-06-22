@@ -8,5 +8,9 @@
         const response = await fetch('http://not-a-real-domain.wpt.test/infrastructure/resources/ok.txt');
         const text = await response.text();
         assert_equals(text, 'OK');
+
+        const response2 = await fetch('https://not-a-real-domain.wpt.test/infrastructure/resources/ok.txt');
+        const text2 = await response2.text();
+        assert_equals(text2, 'OK');
     }, 'test that PAC metadata is respected');
 </script>

@@ -37,6 +37,7 @@ async def test_capture(bidi_session, top_context, inline, compare_png_bidi):
     comparison = await compare_png_bidi(new_data, data)
     assert comparison.equal()
 
+
 @pytest.mark.asyncio
 async def test_capture_with_viewport(bidi_session, new_tab, inline, compare_png_bidi):
     dpr = await get_device_pixel_ratio(bidi_session, new_tab)

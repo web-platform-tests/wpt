@@ -44,8 +44,17 @@ async def test_set_viewport_affects_specific_context(bidi_session, top_context, 
     assert await get_viewport_dimensions(bidi_session, top_context) == original_viewport
 
 
+@pytest.mark.parametrize("protocol,parameters", [
+    ("http", ""),
+    ("https", ""),
+    ("https", {"pipe": "header(Cross-Origin-Opener-Policy,same-origin)"})
+], ids=[
+    "http",
+    "https",
+    "https coop"
+])
 @pytest.mark.asyncio
-async def test_set_viewport_persists_on_navigation(bidi_session, new_tab, inline):
+async def test_set_viewport_persists_on_navigation(bidi_session, new_tab, inline, protocol, parameters):
     test_viewport = {"width": 499, "height": 599}
 
     await bidi_session.browsing_context.set_viewport(
@@ -54,7 +63,7 @@ async def test_set_viewport_persists_on_navigation(bidi_session, new_tab, inline
 
     assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport
 
-    url = inline("<div>foo</div>")
+    url = inline("<div>foo</div>", parameters=parameters, protocol=protocol, domain="alt")
     await bidi_session.browsing_context.navigate(
         context=new_tab["context"], url=url, wait="complete"
     )
@@ -63,7 +72,7 @@ async def test_set_viewport_persists_on_navigation(bidi_session, new_tab, inline
 
 
 @pytest.mark.asyncio
-async def test_set_viewport_persists_on_reload(bidi_session, new_tab, inline):
+async def test_set_viewport_persists_on_reload(bidi_session, new_tab):
     test_viewport = {"width": 499, "height": 599}
 
     await bidi_session.browsing_context.set_viewport(

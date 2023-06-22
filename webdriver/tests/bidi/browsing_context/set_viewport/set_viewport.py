@@ -17,7 +17,7 @@ async def test_set_viewport(bidi_session, new_tab):
 async def test_set_viewport_reset(bidi_session, new_tab):
     original_viewport = await get_viewport_dimensions(bidi_session, new_tab)
 
-    test_viewport = {"width": 333, "height": 333}
+    test_viewport = {"width": 666, "height": 333}
     await bidi_session.browsing_context.set_viewport(
       context=new_tab["context"],
       viewport=test_viewport)

@@ -1,5 +1,6 @@
 import pytest
 
+from math import floor
 from tests.support.image import png_dimensions
 
 from . import get_physical_viewport_dimensions
@@ -55,8 +56,8 @@ async def test_capture_with_viewport(bidi_session, new_tab, delta_width, delta_h
         viewport=test_viewport)
 
     expected_size = {
-        "width": test_viewport["width"] * dpr,
-        "height": test_viewport["height"] * dpr
+        "width": floor(test_viewport["width"] * dpr),
+        "height": floor(test_viewport["height"] * dpr)
     }
 
     await bidi_session.browsing_context.navigate(

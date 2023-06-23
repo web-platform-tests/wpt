@@ -46,7 +46,8 @@ async def test_params_viewport_height_invalid_type(bidi_session, new_tab, height
         })
 
 
+@pytest.mark.parametrize("viewport", [{"width": -1, "height": -1}, {"width": -1, "height": 100}, {"width": 100, "height": -1}])
 @pytest.mark.asyncio
-async def test_params_viewport_invalid_value(bidi_session, new_tab):
+async def test_params_viewport_invalid_value(bidi_session, new_tab, viewport):
     with pytest.raises(error.InvalidArgumentException):
-        await bidi_session.browsing_context.set_viewport(context=new_tab["context"], viewport={"width": -1, "height": -1})
+        await bidi_session.browsing_context.set_viewport(context=new_tab["context"], viewport=viewport)

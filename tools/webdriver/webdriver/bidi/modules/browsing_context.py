@@ -130,11 +130,4 @@ class BrowsingContext(BidiModule):
 
     @command
     def set_viewport(self, context: str, viewport: Optional[Mapping[str, Any]] = None) -> Mapping[str, Any]:
-        params: MutableMapping[str, Any] = {"context": context}
-
-        if viewport is not None:
-            params["viewport"] = viewport
-        else:
-            params["viewport"] = None
-
-        return params
+        return {"context": context, "viewport": viewport}

@@ -56,20 +56,12 @@ async def test_primitive_values(bidi_session, top_context, expression, expected)
             },
         ),
         (
-            "({'foo': {'bar': 'baz'}, 'qux': 'quux'})",
+            "({'foo': {'bar': 'baz'}, 'qux': 'quux', 1: 'fred', '2': 'thud'})",
             {
                 "type": "object",
                 "value": [
                     ["foo", {"type": "object"}],
                     ["qux", {"type": "string", "value": "quux"}],
-                ],
-            },
-        ),
-        (
-            "(1: 'fred', '2': 'thud'})",
-            {
-                "type": "object",
-                "value": [
                     ["1", {"type": "string", "value": "fred"}],
                     ["2", {"type": "string", "value": "thud"}],
                 ],

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>PNG test: iCCP chunk, ICC v4 Display P3 profile</title>
+<link rel="author" title="Chris Lilley" href="mailto:chris@w3.org">
+<link rel="match" href="macbeth-srgb-ref.html">
+<link rel="help" href="https://w3c.github.io/PNG-spec/#11iCCP">
+<link rel="help" href="https://drafts.csswg.org/css-color-4/#tagged-images">
+<link rel="assert" content="PNG decoders that recognize it and are capable of colour management shall use the iCCP chunk">
+<style>
+    body {
+        background: rgb(46.6% 46.6% 46.6%); /* lab(50% 0 0) */
+    }
+    img {
+        padding: 0;
+    }
+    p.test {
+        background-image: url(./support/macbeth-v40-DisplayP3.png);
+        background-repeat: no-repeat;
+    }
+</style>
+<p>Test passes if you see no circles on the square patches</p>
+<p class="test"><img src="./support/reference-circles.png" alt=""></p>

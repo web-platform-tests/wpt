@@ -8,7 +8,7 @@
 
   Created: June 21st 2023
 
-  Last modified: June 22nd 2023
+  Last modified: June 25th 2023
 
   -->
 
@@ -53,21 +53,14 @@
       height: 96px;
       width: 96px;
       /*
-      96px divided by 64px == 1.5
-      which is rounded up to 2.
-      So, each image should be
-      96px divided by 2 == 48px
-      wide or tall. That means
-      that the top and bottom
-      bicolor (yellow and purple)
-      images should be 48px wide
-      and the left and right
-      bicolor (orange and blue)
+      96px divided by 64px == 1.5 which is rounded up to 2.
+      So, each image should be 96px divided by 2 == 48px
+      wide or tall. That means that the top and bottom
+      bicolor (yellow and purple) images should be 48px wide
+      and the left and right bicolor (orange and blue)
       images should be 48px tall.
-      So, in this first-subtest,
-      the 4 side border-image is
-      rescaled down, from sliced 64px
-      to 48px.
+      So, in this first-subtest, the 4 side border-image is
+      rescaled down, from sliced 64px to 48px.
       */
     }
 
@@ -76,21 +69,14 @@
       height: 80px;
       width: 80px;
       /*
-      80px divided by 64px == 1.25
-      which is rounded down to 1.
-      So, each image should be
-      80px divided by 1 == 80px
-      wide or tall. That means
-      that the top and bottom
-      bicolor (yellow and purple)
-      images should be 80px wide
-      and the left and right
-      bicolor (orange and blue)
+      80px divided by 64px == 1.25 which is rounded down to 1.
+      So, each image should be 80px divided by 1 == 80px
+      wide or tall. That means that the top and bottom
+      bicolor (yellow and purple) images should be 80px wide
+      and the left and right bicolor (orange and blue)
       images should be 80px tall.
-      So, in this second-subtest,
-      the 4 side border-image are
-      rescaled up, from sliced 64px
-      to 80px.
+      So, in this second-subtest, the 4 side border-image are
+      rescaled up, from sliced 64px to 80px.
       */
     }
 
@@ -101,37 +87,24 @@
       height: 144px;
       width: 168px;
       /*
-      168px divided by 64px == 2.625
-      which is rounded up to 3.
-      So, each image should be
-      168px divided by 3 == 56px
-      wide. That means
-      that the top and bottom
-      bicolor (yellow and purple)
-      images should be 56px wide.
-
-      144px divided by 64px == 2.25
-      which is rounded down to 2.
-      So, each image should be
-      144px divided by 2 == 72px
-      tall. That means
-      that the left and right
-      bicolor (orange and blue)
-      images should be 72px tall.
-      So, in this third-subtest,
-      the 2 top and bottom sides
-      border-image are rescaled
-      down, from sliced 64px to
-      56px while the 2 left and
-      right sides border-image are
-      rescaled up, from sliced 64px
-      to 72px.
+      168px divided by 64px == 2.625 which is rounded up to 3.
+      So, each image should be 168px divided by 3 == 56px
+      wide. That means that the top and bottom
+      bicolor (yellow and purple) images should be 56px wide.
+      144px divided by 64px == 2.25 which is rounded down to 2.
+      So, each image should be 144px divided by 2 == 72px
+      tall. That means that the left and right
+      bicolor (orange and blue) images should be 72px tall.
+      So, in this third-subtest, the 2 top and bottom sides
+      border-image are rescaled down, from sliced 64px to
+      56px while the 2 left and right sides border-image are
+      rescaled up, from sliced 64px to 72px.
       */
     }
   </style>
 
-  <div id="first-subtest" class="test"></div>
+  <div id="first-subtest"></div>
 
-  <div id="second-subtest" class="test"></div><br>
+  <div id="second-subtest"></div><br>
 
-  <div id="third-subtest" class="test"></div>
+  <div id="third-subtest"></div>

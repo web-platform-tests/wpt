@@ -39,7 +39,6 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
                                            run_info_data,
                                            **kwargs)
     executor_kwargs["close_after_done"] = True
-    executor_kwargs["supports_eager_pageload"] = False
 
     capabilities = {
         "ms:edgeOptions": {
@@ -56,9 +55,6 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
         }
     }
 
-    if test_type == "testharness":
-        capabilities["pageLoadStrategy"] = "none"
-
     for (kwarg, capability) in [("binary", "binary"), ("binary_args", "args")]:
         if kwargs[kwarg] is not None:
             capabilities["ms:edgeOptions"][capability] = kwargs[kwarg]
@@ -69,6 +65,7 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
         if "--headless" not in capabilities["ms:edgeOptions"]["args"]:
             capabilities["ms:edgeOptions"]["args"].append("--headless")
         capabilities["ms:edgeOptions"]["args"].append("--use-fake-device-for-media-stream")
+        capabilities["ms:edgeOptions"]["args"].append("--use-fake-ui-for-fedcm")
 
     if kwargs["enable_experimental"]:
         capabilities["ms:edgeOptions"]["args"].append("--enable-experimental-web-platform-features")

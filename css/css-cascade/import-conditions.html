@@ -4,13 +4,43 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-  .target { color: red; }
+  @layer {
+    .target { color: red; }
+  }
 </style>
 <div id="target" class="target"></div>
 <script>
   const testCases = [
     {
       importCondition: "supports(display:block)",
+      matches: true
+    },
+    {
+      importCondition: "supports((display:flex))",
+      matches: true
+    },
+    {
+      importCondition: "supports((display:block) and (display:flex))",
+      matches: true
+    },
+    {
+      importCondition: "supports((display:block) and (foo:bar))",
+      matches: false
+    },
+    {
+      importCondition: "supports((display:block) or (display:flex))",
+      matches: true
+    },
+    {
+      importCondition: "supports((display:block) or (foo:bar))",
+      matches: true
+    },
+    {
+      importCondition: "supports(not (display: flex))",
+      matches: false
+    },
+    {
+      importCondition: "supports(display: block !important)",
       matches: true
     },
     {
@@ -28,7 +58,57 @@
     {
       importCondition: "(width >= 0px) supports(display:block)",
       matches: false
-    }
+    },
+
+    // selector()
+    {
+      importCondition: "supports(selector(a))",
+      matches: true
+    },
+    {
+      importCondition: "supports(selector(p a))",
+      matches: true
+    },
+    {
+      importCondition: "supports(selector(p > a))",
+      matches: true
+    },
+    {
+      importCondition: "supports(selector(p + a))",
+      matches: true
+    },
+
+    // font-tech()
+    {
+      importCondition: "supports(font-tech(color-COLRv1))",
+      matches: true
+    },
+    {
+      importCondition: "supports(font-tech(invalid))",
+      matches: false
+    },
+
+    // font-format()
+    {
+      importCondition: "supports(font-format(opentype))",
+      matches: true
+    },
+    {
+      importCondition: "supports(font-format(woff))",
+      matches: true
+    },
+    {
+      importCondition: "supports(font-format(invalid))",
+      matches: false
+    },
+    {
+      importCondition: "layer(A.B) supports(font-format(opentype))",
+      matches: true
+    },
+    {
+      importCondition: "layer supports(selector(a))",
+      matches: true
+    },
   ];
   let target = document.getElementById("target");
   for (let testCase of testCases) {

@@ -122,8 +122,9 @@ def deep_update(source, overrides):
 
 def document_dimensions(session):
     return tuple(session.execute_script("""
-        let rect = document.documentElement.getBoundingClientRect();
-        return [rect.width, rect.height];
+        const {devicePixelRatio} = window;
+        const {width, height} = document.documentElement.getBoundingClientRect();
+        return [width * devicePixelRatio, height * devicePixelRatio];
         """))
 
 
@@ -206,14 +207,6 @@ def is_fullscreen(session):
         """)
 
 
-def document_dimensions(session):
-    return tuple(session.execute_script("""
-        let {devicePixelRatio} = window;
-        let {width, height} = document.documentElement.getBoundingClientRect();
-        return [width * devicePixelRatio, height * devicePixelRatio];
-        """))
-
-
 def screen_size(session):
     """Returns the available width/height size of the screen."""
     return tuple(session.execute_script("""
@@ -236,6 +229,7 @@ def available_screen_size(session):
         ];
         """))
 
+
 def filter_dict(source, d):
     """Filter `source` dict to only contain same keys as `d` dict.
 
@@ -243,6 +237,16 @@ def filter_dict(source, d):
     :param d: dictionary whose keys determine the filtering.
     """
     return {k: source[k] for k in d.keys()}
+
+
+def filter_supported_key_events(all_events, expected):
+    events = [filter_dict(e, expected[0]) for e in all_events]
+    if len(events) > 0 and events[0]["code"] is None:
+        # Remove 'code' entry if browser doesn't support it
+        expected = [filter_dict(e, {"key": "", "type": ""}) for e in expected]
+        events = [filter_dict(e, expected[0]) for e in events]
+
+    return (events, expected)
 
 
 def wait_for_new_handle(session, handles_before):
@@ -258,4 +262,3 @@ def wait_for_new_handle(session, handles_before):
         message="No new window has been opened")
 
     return wait.until(find_new_handle)
-

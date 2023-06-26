@@ -1,19 +1,35 @@
 // Utility functions to help testing keepalive requests.
 
-// Returns a different-site URL to an iframe that loads a keepalive URL.
+// Returns a URL to an iframe that loads a keepalive URL on iframe loaded.
 //
 // The keepalive URL points to a target that stores `token`. The token will then
-// be posted back to parent document.
+// be posted back on iframe loaded to the parent document.
 // `method` defaults to GET.
-// `sendOnPagehide` to tell if request should be sent on pagehide instead.
-function getKeepAliveIframeUrl(token, method, sendOnPagehide = false) {
+// `frameOrigin` to specify the origin of the iframe to load. If not set,
+// default to a different site origin.
+// `requestOrigin` to specify the origin of the fetch request target.
+// `sendOn` to specify the name of the event when the keepalive request should
+// be sent instead of the default 'load'.
+// `mode` to specify the fetch request's CORS mode.
+// `disallowOrigin` to ask the iframe to set up a server that forbids CORS
+// requests.
+function getKeepAliveIframeUrl(token, method, {
+  frameOrigin = 'DEFAULT',
+  requestOrigin = '',
+  sendOn = 'load',
+  mode = 'cors',
+  disallowOrigin = false
+} = {}) {
   const https = location.protocol.startsWith('https');
-  const frameOrigin =
-      get_host_info()[https ? 'HTTPS_NOTSAMESITE_ORIGIN' : 'HTTP_NOTSAMESITE_ORIGIN'];
+  frameOrigin = frameOrigin === 'DEFAULT' ?
+      get_host_info()[https ? 'HTTPS_NOTSAMESITE_ORIGIN' : 'HTTP_NOTSAMESITE_ORIGIN'] :
+      frameOrigin;
   return `${frameOrigin}/fetch/api/resources/keepalive-iframe.html?` +
       `token=${token}&` +
       `method=${method}&` +
-      `sendOnPagehide=${sendOnPagehide}`;
+      `sendOn=${sendOn}&` +
+      `mode=${mode}&` + (disallowOrigin ? `disallowOrigin=1&` : ``) +
+      `origin=${requestOrigin}`;
 }
 
 // Returns a different-site URL to an iframe that loads a keepalive URL.
@@ -60,7 +76,7 @@ async function queryToken(token) {
 // for the rest of the work. Note that we want the serialized behavior
 // for the steps so far, so we don't want to make the entire test case
 // an async_test.
-function assertStashedTokenAsync(testName, token) {
+function assertStashedTokenAsync(testName, token, {shouldPass = true} = {}) {
   async_test((test) => {
     new Promise((resolve) => test.step_timeout(resolve, 3000))
         .then(() => {
@@ -73,7 +89,11 @@ function assertStashedTokenAsync(testName, token) {
           test.done();
         })
         .catch(test.step_func((e) => {
-          assert_unreached(e);
+          if (shouldPass) {
+            assert_unreached(e);
+          } else {
+            test.done();
+          }
         }));
   }, testName);
 }

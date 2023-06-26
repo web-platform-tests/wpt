@@ -1,7 +1,7 @@
 import base64
 
+from tests.support.asserts import assert_pdf
 from tests.support.image import cm_to_px, png_dimensions, ImageDifference
-from tests.support.pdf import assert_pdf
 from typing import Any, Mapping
 
 import pytest
@@ -207,8 +207,8 @@ def assert_pdf_dimensions(render_pdf_to_png_bidi):
         png = await render_pdf_to_png_bidi(pdf)
         width, height = png_dimensions(png)
 
-        assert cm_to_px(expected_dimensions["height"]) == height
-        assert cm_to_px(expected_dimensions["width"]) == width
+        assert (height - 1) <= cm_to_px(expected_dimensions["height"]) <= (height + 1)
+        assert (width - 1) <= cm_to_px(expected_dimensions["width"]) <= (width + 1)
 
     return assert_pdf_dimensions
 
@@ -285,6 +285,18 @@ def compare_png_bidi(bidi_session, url):
 
 
 @pytest.fixture
+def get_element(bidi_session, top_context):
+    async def get_element(css_selector, context=top_context):
+        result = await bidi_session.script.evaluate(
+            expression=f"document.querySelector('{css_selector}')",
+            target=ContextTarget(context["context"]),
+            await_promise=False,
+        )
+        return result
+    return get_element
+
+
+@pytest.fixture
 def get_reference_png(
     bidi_session, inline, render_pdf_to_png_bidi, top_context
 ):
@@ -334,3 +346,17 @@ def render_pdf_to_png_bidi(bidi_session, new_tab, url):
         return base64.b64decode(image_string_without_data_type)
 
     return render_pdf_to_png_bidi
+
+
+@pytest.fixture
+def load_static_test_page(bidi_session, url, top_context):
+    """Navigate to a test page from the support/html folder."""
+
+    async def load_static_test_page(page, context=top_context):
+        await bidi_session.browsing_context.navigate(
+            context=context["context"],
+            url=url(f"/webdriver/tests/support/html/{page}"),
+            wait="complete",
+        )
+
+    return load_static_test_page

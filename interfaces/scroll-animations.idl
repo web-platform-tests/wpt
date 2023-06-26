@@ -25,6 +25,7 @@ interface ScrollTimeline : AnimationTimeline {
 dictionary ViewTimelineOptions {
   Element subject;
   ScrollAxis axis = "block";
+  (DOMString or sequence<(CSSNumericValue or CSSKeywordValue)>) inset = "auto";
 };
 
 [Exposed=Window]
@@ -35,7 +36,11 @@ interface ViewTimeline : ScrollTimeline {
   readonly attribute CSSNumericValue endOffset;
 };
 
+dictionary AnimationTimeOptions {
+  DOMString? range;
+};
+
 [Exposed=Window]
 partial interface AnimationTimeline {
-  CSSNumericValue? getCurrentTime(optional CSSOMString rangeName);
+  CSSNumericValue? getCurrentTime(optional AnimationTimeOptions options = {});
 };

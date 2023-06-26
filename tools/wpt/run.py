@@ -4,7 +4,7 @@ import argparse
 import os
 import platform
 import sys
-from distutils.spawn import find_executable
+from shutil import which
 from typing import ClassVar, Tuple, Type
 
 wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -92,7 +92,7 @@ def args_general(kwargs):
         if kwargs["host_cert_path"] is None:
             kwargs["host_cert_path"] = os.path.join(cert_root, "web-platform.test.pem")
     elif kwargs["ssl_type"] == "openssl":
-        if not find_executable(kwargs["openssl_binary"]):
+        if not which(kwargs["openssl_binary"]):
             if os.uname()[0] == "Windows":
                 raise WptrunError("""OpenSSL binary not found. If you need HTTPS tests, install OpenSSL from
 
@@ -158,8 +158,8 @@ in PowerShell with Administrator privileges.""" % (wpt_path, hosts_path)
 
 
 class BrowserSetup:
-    name = None  # type: ClassVar[str]
-    browser_cls = None  # type: ClassVar[Type[browser.Browser]]
+    name: ClassVar[str]
+    browser_cls: ClassVar[Type[browser.Browser]]
 
     def __init__(self, venv, prompt=True):
         self.browser = self.browser_cls(logger)
@@ -180,11 +180,10 @@ class BrowserSetup:
         if self.prompt_install(self.name):
             return self.browser.install(self.venv.path, channel)
 
-    def install_requirements(self):
-        if not self.venv.skip_virtualenv_setup and self.browser.requirements:
-            self.venv.install_requirements(os.path.join(
-                wpt_root, "tools", "wptrunner", self.browser.requirements))
-
+    def requirements(self):
+        if self.browser.requirements:
+            return [os.path.join(wpt_root, "tools", "wptrunner", self.browser.requirements)]
+        return []
 
     def setup(self, kwargs):
         self.setup_kwargs(kwargs)
@@ -265,6 +264,9 @@ Consider installing certutil via your OS package manager or directly.""")
             kwargs["headless"] = True
             logger.info("Running in headless mode, pass --no-headless to disable")
 
+        if kwargs["browser_channel"] == "nightly" and kwargs["enable_webtransport_h3"] is None:
+            kwargs["enable_webtransport_h3"] = True
+
         # Turn off Firefox WebRTC ICE logging on WPT (turned on by mozrunner)
         safe_unsetenv('R_LOG_LEVEL')
         safe_unsetenv('R_LOG_DESTINATION')
@@ -332,8 +334,8 @@ class FirefoxAndroid(BrowserSetup):
 
 class Chrome(BrowserSetup):
     name = "chrome"
-    browser_cls = browser.Chrome  # type: ClassVar[Type[browser.ChromeChromiumBase]]
-    experimental_channels = ("dev", "canary", "nightly")  # type: ClassVar[Tuple[str, ...]]
+    browser_cls: ClassVar[Type[browser.ChromeChromiumBase]] = browser.Chrome
+    experimental_channels: ClassVar[Tuple[str, ...]] = ("dev", "canary", "nightly")
 
     def setup_kwargs(self, kwargs):
         browser_channel = kwargs["browser_channel"]
@@ -426,7 +428,7 @@ class ContentShell(BrowserSetup):
 
 class Chromium(Chrome):
     name = "chromium"
-    browser_cls = browser.Chromium  # type: ClassVar[Type[browser.ChromeChromiumBase]]
+    browser_cls: ClassVar[Type[browser.ChromeChromiumBase]] = browser.Chromium
     experimental_channels = ("nightly",)
 
 
@@ -503,6 +505,11 @@ class AndroidWeblayer(ChromeAndroidBase):
 class AndroidWebview(ChromeAndroidBase):
     name = "android_webview"
     browser_cls = browser.AndroidWebview
+
+    def setup_kwargs(self, kwargs):
+        if kwargs["mojojs_path"]:
+            kwargs["enable_mojojs"] = True
+            logger.info("--mojojs-path is provided, enabling MojoJS")
 
 
 class Opera(BrowserSetup):
@@ -691,10 +698,16 @@ class WebKitTestRunner(BrowserSetup):
     browser_cls = browser.WebKitTestRunner
 
     def install(self, channel=None):
-        raise NotImplementedError
+        if self.prompt_install(self.name):
+            return self.browser.install(self.venv.path, channel=channel)
 
     def setup_kwargs(self, kwargs):
-        pass
+        if kwargs["binary"] is None:
+            binary = self.browser.find_binary(self.venv.path, channel=kwargs["browser_channel"])
+
+            if binary is None:
+                raise WptrunError("Unable to find binary in PATH")
+            kwargs["binary"] = binary
 
 
 class WebKitGTKMiniBrowser(BrowserSetup):
@@ -804,7 +817,10 @@ def setup_wptrunner(venv, **kwargs):
         raise WptrunError("Unsupported product %s" % kwargs["product"])
 
     setup_cls = product_setup[kwargs["product"]](venv, kwargs["prompt"])
-    setup_cls.install_requirements()
+    if not venv.skip_virtualenv_setup:
+        requirements = [os.path.join(wpt_root, "tools", "wptrunner", "requirements.txt")]
+        requirements.extend(setup_cls.requirements())
+        venv.install_requirements(*requirements)
 
     affected_revish = kwargs.get("affected")
     if affected_revish is not None:
@@ -853,11 +869,6 @@ def setup_wptrunner(venv, **kwargs):
         del wptrunner_kwargs[kwarg]
 
     wptcommandline.check_args(wptrunner_kwargs)
-
-    wptrunner_path = os.path.join(wpt_root, "tools", "wptrunner")
-
-    if not venv.skip_virtualenv_setup:
-        venv.install_requirements(os.path.join(wptrunner_path, "requirements.txt"))
 
     # Only update browser_version if it was not given as a command line
     # argument, so that it can be overridden on the command line.

@@ -50,10 +50,3 @@ dictionary PaymentCredentialInstrument {
     required USVString icon;
     boolean iconMustBeShown = true;
 };
-
-enum TransactionAutomationMode {
-  "none",
-  "autoAccept",
-  "autoReject",
-  "autoOptOut"
-};

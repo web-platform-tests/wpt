@@ -293,13 +293,11 @@ class Test(ABC):
 
     @property
     def restart_after(self):
-        if self.restart_test_after:
-            return True
         for meta in self.itermeta(None):
             restart_after = meta.restart_after
             if restart_after is not None:
                 return True
-        return False
+        return self.restart_test_after
 
     @property
     def leaks(self):

@@ -17,6 +17,25 @@ async def test_set_viewport(bidi_session, new_tab):
 
 
 @pytest.mark.asyncio
+async def test_set_viewport_twice(bidi_session, new_tab):
+    test_viewport = {"width": 250, "height": 300}
+
+    assert await get_viewport_dimensions(bidi_session, new_tab) != test_viewport
+
+    await bidi_session.browsing_context.set_viewport(
+        context=new_tab["context"],
+        viewport=test_viewport)
+
+    assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport
+
+    await bidi_session.browsing_context.set_viewport(
+        context=new_tab["context"],
+        viewport=test_viewport)
+
+    assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport
+
+
+@pytest.mark.asyncio
 async def test_set_viewport_reset(bidi_session, new_tab):
     original_viewport = await get_viewport_dimensions(bidi_session, new_tab)
 

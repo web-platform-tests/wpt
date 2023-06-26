@@ -39,8 +39,8 @@ async def test_capture(bidi_session, top_context, inline, compare_png_bidi):
     assert comparison.equal()
 
 
-@pytest.mark.parametrize("delta_width", [-10, +20])
-@pytest.mark.parametrize("delta_height", [-30, +40])
+@pytest.mark.parametrize("delta_width", [-10, +20], ids=["width smaller than original", "width larger than original"])
+@pytest.mark.parametrize("delta_height", [-30, +40], ids=["height smaller than original", "height larger than original"])
 @pytest.mark.asyncio
 async def test_capture_with_viewport(bidi_session, new_tab, delta_width, delta_height):
     original_viewport = await get_viewport_dimensions(bidi_session, new_tab)

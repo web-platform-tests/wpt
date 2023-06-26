@@ -17,7 +17,7 @@ async def test_set_viewport(bidi_session, new_tab):
 
 
 @pytest.mark.asyncio
-async def test_set_viewport_twice(bidi_session, new_tab):
+async def test_set_viewport_same_dimensions(bidi_session, new_tab):
     test_viewport = {"width": 250, "height": 300}
 
     assert await get_viewport_dimensions(bidi_session, new_tab) != test_viewport

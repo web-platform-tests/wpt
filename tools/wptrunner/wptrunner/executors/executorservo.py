@@ -61,9 +61,9 @@ def build_servo_command(test, test_url_func, browser, binary, pause_after_test, 
 class ServoTestharnessExecutor(ProcessTestExecutor):
     convert_result = testharness_result_converter
 
-    def __init__(self, logger, browser, server_config, timeout_multiplier=1, debug_info=None,
+    def __init__(self, browser, server_config, timeout_multiplier=1, debug_info=None,
                  pause_after_test=False, **kwargs):
-        ProcessTestExecutor.__init__(self, logger, browser, server_config,
+        ProcessTestExecutor.__init__(self, browser, server_config,
                                      timeout_multiplier=timeout_multiplier,
                                      debug_info=debug_info)
         self.pause_after_test = pause_after_test
@@ -178,11 +178,10 @@ class TempFilename:
 class ServoRefTestExecutor(ProcessTestExecutor):
     convert_result = reftest_result_converter
 
-    def __init__(self, logger, browser, server_config, binary=None, timeout_multiplier=1,
+    def __init__(self, browser, server_config, binary=None, timeout_multiplier=1,
                  screenshot_cache=None, debug_info=None, pause_after_test=False,
                  reftest_screenshot="unexpected", **kwargs):
         ProcessTestExecutor.__init__(self,
-                                     logger,
                                      browser,
                                      server_config,
                                      timeout_multiplier=timeout_multiplier,
@@ -301,11 +300,10 @@ class ServoTimedRunner(TimedRunner):
 class ServoCrashtestExecutor(ProcessTestExecutor):
     convert_result = crashtest_result_converter
 
-    def __init__(self, logger, browser, server_config, binary=None, timeout_multiplier=1,
+    def __init__(self, browser, server_config, binary=None, timeout_multiplier=1,
                  screenshot_cache=None, debug_info=None, pause_after_test=False,
                  **kwargs):
         ProcessTestExecutor.__init__(self,
-                                     logger,
                                      browser,
                                      server_config,
                                      timeout_multiplier=timeout_multiplier,

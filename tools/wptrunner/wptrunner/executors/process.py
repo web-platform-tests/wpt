@@ -12,6 +12,7 @@ class ProcessTestExecutor(TestExecutor):
 
     def setup(self, runner):
         self.runner = runner
+        self.logger = runner.logger
         self.runner.send_message("init_succeeded")
         return True
 

@@ -31,6 +31,11 @@ TestImplementation = namedtuple('TestImplementation',
                                  'browser_cls', 'browser_kwargs'])
 
 
+ExecutorImplementation = namedtuple('ExecutorImplementation',
+                                ['executor_cls', 'executor_kwargs',
+                                 'executor_browser_cls', 'executor_browser_kwargs'])
+
+
 class LogMessageHandler:
     def __init__(self, send_message):
         self.send_message = send_message
@@ -52,11 +57,13 @@ class TestRunner:
                          parent TestRunnerManager process
     :param executor: TestExecutor object that will actually run a test.
     """
-    def __init__(self, logger, command_queue, result_queue, executor, recording):
+    def __init__(self, logger, command_queue, result_queue, executor_implementation, recording):
         self.command_queue = command_queue
         self.result_queue = result_queue
-
-        self.executor = executor
+        browser = executor_implementation.executor_browser_cls(
+            **executor_implementation.executor_browser_kwargs)
+        self.executor = executor_implementation.executor_cls(
+            browser, **executor_implementation.executor_kwargs)
         self.name = mpcontext.get_context().current_process().name
         self.logger = logger
         self.recording = recording
@@ -78,6 +85,16 @@ class TestRunner:
             self.send_message("init_succeeded")
         self.logger.debug("Executor setup done")
 
+    def set_executor(self, executor_implementation):
+        if self.executor:
+            self.executor.teardown()
+        browser = executor_implementation.executor_browser_cls(
+            **executor_implementation.executor_browser_kwargs)
+        self.executor = executor_implementation.executor_cls(
+            browser, **executor_implementation.executor_kwargs)
+        self.executor.setup(self)
+        self.logger.debug("Executor setup done")
+
     def teardown(self):
         self.executor.teardown()
         self.send_message("runner_teardown")
@@ -95,6 +112,7 @@ class TestRunner:
                                 traceback.format_exc())
             raise
         commands = {"run_test": self.run_test,
+                    "set_executor": self.set_executor,
                     "reset": self.reset,
                     "stop": self.stop,
                     "wait": self.wait}
@@ -132,9 +150,8 @@ class TestRunner:
 
 
 def start_runner(runner_command_queue, runner_result_queue,
-                 executor_cls, executor_kwargs,
-                 executor_browser_cls, executor_browser_kwargs,
-                 capture_stdio, stop_flag, recording):
+                 executor_implementation, capture_stdio,
+                 stop_flag, recording):
     """Launch a TestRunner in a new process"""
 
     def send_message(command, *args):
@@ -154,9 +171,11 @@ def start_runner(runner_command_queue, runner_result_queue,
 
     with capture.CaptureIO(logger, capture_stdio):
         try:
-            browser = executor_browser_cls(**executor_browser_kwargs)
-            executor = executor_cls(logger, browser, **executor_kwargs)
-            with TestRunner(logger, runner_command_queue, runner_result_queue, executor, recording) as runner:
+            with TestRunner(logger,
+                            runner_command_queue,
+                            runner_result_queue,
+                            executor_implementation,
+                            recording) as runner:
                 try:
                     runner.run()
                 except KeyboardInterrupt:
@@ -532,19 +551,12 @@ class TestRunnerManager(threading.Thread):
         assert self.command_queue is not None
         assert self.remote_queue is not None
         self.logger.info("Starting runner")
-        impl = self.test_implementation_by_type[self.state.test_type]
-        self.executor_cls = impl.executor_cls
-        self.executor_kwargs = impl.executor_kwargs
-        self.executor_kwargs["group_metadata"] = self.state.group_metadata
-        self.executor_kwargs["browser_settings"] = self.browser.browser_settings
-        executor_browser_cls, executor_browser_kwargs = self.browser.browser.executor_browser()
+        self.executor_implementation = self.get_executor_implementation_by_type(
+            self.state.test_type, self.state.group_metadata)
 
         args = (self.remote_queue,
                 self.command_queue,
-                self.executor_cls,
-                self.executor_kwargs,
-                executor_browser_cls,
-                executor_browser_kwargs,
+                self.executor_implementation,
                 self.capture_stdio,
                 self.child_stop_flag,
                 self.recording)
@@ -557,6 +569,18 @@ class TestRunnerManager(threading.Thread):
         self.test_runner_proc.start()
         self.logger.debug("Test runner started")
         # Now we wait for either an init_succeeded event or an init_failed event
+
+
+    def get_executor_implementation_by_type(self, test_type, group_metadata):
+        impl = self.test_implementation_by_type[test_type]
+        executor_kwargs = impl.executor_kwargs
+        executor_kwargs["group_metadata"] = group_metadata
+        executor_kwargs["browser_settings"] = self.browser.browser_settings
+        executor_browser_cls, executor_browser_kwargs = self.browser.browser.executor_browser()
+        return ExecutorImplementation(impl.executor_cls,
+                                      executor_kwargs,
+                                      executor_browser_cls,
+                                      executor_browser_kwargs)
 
     def init_succeeded(self):
         assert isinstance(self.state, RunnerManagerState.initializing)
@@ -613,8 +637,9 @@ class TestRunnerManager(threading.Thread):
             # Factor of 3 on the extra timeout here is based on allowing the executor
             # at least test.timeout + 2 * extra_timeout to complete,
             # which in turn is based on having several layers of timeout inside the executor
-            wait_timeout = (self.state.test.timeout * self.executor_kwargs['timeout_multiplier'] +
-                            3 * self.executor_cls.extra_timeout)
+            wait_timeout = ((self.state.test.timeout *
+                             self.executor_implementation.executor_kwargs['timeout_multiplier']) +
+                            3 * self.executor_implementation.executor_cls.extra_timeout)
             self.timer = threading.Timer(wait_timeout, self._timeout)
 
         self.send_message("run_test", self.state.test)
@@ -722,7 +747,8 @@ class TestRunnerManager(threading.Thread):
                                             test.min_assertion_count,
                                             test.max_assertion_count)
 
-        file_result.extra["test_timeout"] = test.timeout * self.executor_kwargs['timeout_multiplier']
+        file_result.extra["test_timeout"] = (test.timeout *
+                                             self.executor_implementation.executor_kwargs['timeout_multiplier'])
 
         self.logger.test_end(test.id,
                              status,
@@ -765,8 +791,13 @@ class TestRunnerManager(threading.Thread):
             if test is None:
                 return RunnerManagerState.stop(force_stop)
             if test_type != self.state.test_type:
-                self.logger.info(f"Restarting browser for new test type:{test_type}")
-                restart = True
+                if self.browser.browser.restart_on_test_type_change(test_type, self.state.test_type):
+                    self.logger.info(f"Restarting browser for new test type:{test_type}")
+                    restart = True
+                elif not restart:
+                    # notify test runner to update executor
+                    self.executor_implementation = self.get_executor_implementation_by_type(test_type, group_metadata)
+                    self.send_message("set_executor", self.executor_implementation)
             elif self.restart_on_new_group and test_group is not self.state.test_group:
                 self.logger.info("Restarting browser for new test group")
                 restart = True

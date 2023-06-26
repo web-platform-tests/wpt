@@ -509,11 +509,11 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
     supports_testdriver = True
     protocol_cls = WebDriverProtocol
 
-    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
+    def __init__(self, browser, server_config, timeout_multiplier=1,
                  close_after_done=True, capabilities=None, debug_info=None,
                  cleanup_after_test=True, **kwargs):
         """WebDriver-based executor for testharness.js tests"""
-        TestharnessExecutor.__init__(self, logger, browser, server_config,
+        TestharnessExecutor.__init__(self, browser, server_config,
                                      timeout_multiplier=timeout_multiplier,
                                      debug_info=debug_info)
         self.protocol = self.protocol_cls(self, browser, capabilities)
@@ -602,13 +602,12 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
 class WebDriverRefTestExecutor(RefTestExecutor):
     protocol_cls = WebDriverProtocol
 
-    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
+    def __init__(self, browser, server_config, timeout_multiplier=1,
                  screenshot_cache=None, close_after_done=True,
                  debug_info=None, capabilities=None, debug_test=False,
                  reftest_screenshot="unexpected", **kwargs):
         """WebDriver-based executor for reftests"""
         RefTestExecutor.__init__(self,
-                                 logger,
                                  browser,
                                  server_config,
                                  screenshot_cache=screenshot_cache,
@@ -682,12 +681,11 @@ class WebDriverRefTestExecutor(RefTestExecutor):
 class WebDriverCrashtestExecutor(CrashtestExecutor):
     protocol_cls = WebDriverProtocol
 
-    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
+    def __init__(self, browser, server_config, timeout_multiplier=1,
                  screenshot_cache=None, close_after_done=True,
                  debug_info=None, capabilities=None, **kwargs):
         """WebDriver-based executor for reftests"""
         CrashtestExecutor.__init__(self,
-                                   logger,
                                    browser,
                                    server_config,
                                    screenshot_cache=screenshot_cache,

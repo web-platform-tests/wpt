@@ -882,11 +882,11 @@ class ExecuteAsyncScriptRun(TimedRunner):
 class MarionetteTestharnessExecutor(TestharnessExecutor):
     supports_testdriver = True
 
-    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
+    def __init__(self, browser, server_config, timeout_multiplier=1,
                  close_after_done=True, debug_info=None, capabilities=None,
                  debug=False, ccov=False, debug_test=False, **kwargs):
         """Marionette-based executor for testharness.js tests"""
-        TestharnessExecutor.__init__(self, logger, browser, server_config,
+        TestharnessExecutor.__init__(self, browser, server_config,
                                      timeout_multiplier=timeout_multiplier,
                                      debug_info=debug_info)
         self.protocol = MarionetteProtocol(self,
@@ -993,7 +993,7 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
 class MarionetteRefTestExecutor(RefTestExecutor):
     is_print = False
 
-    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
+    def __init__(self, browser, server_config, timeout_multiplier=1,
                  screenshot_cache=None, close_after_done=True,
                  debug_info=None, reftest_internal=False,
                  reftest_screenshot="unexpected", ccov=False,
@@ -1001,7 +1001,6 @@ class MarionetteRefTestExecutor(RefTestExecutor):
                  browser_version=None, debug_test=False, **kwargs):
         """Marionette-based executor for reftests"""
         RefTestExecutor.__init__(self,
-                                 logger,
                                  browser,
                                  server_config,
                                  screenshot_cache=screenshot_cache,
@@ -1195,11 +1194,11 @@ class InternalRefTestImplementation(RefTestImplementation):
 
 
 class MarionetteCrashtestExecutor(CrashtestExecutor):
-    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
+    def __init__(self, browser, server_config, timeout_multiplier=1,
                  debug_info=None, capabilities=None, debug=False,
                  ccov=False, **kwargs):
         """Marionette-based executor for testharness.js tests"""
-        CrashtestExecutor.__init__(self, logger, browser, server_config,
+        CrashtestExecutor.__init__(self, browser, server_config,
                                    timeout_multiplier=timeout_multiplier,
                                    debug_info=debug_info)
         self.protocol = MarionetteProtocol(self,
@@ -1266,14 +1265,13 @@ class MarionetteCrashtestExecutor(CrashtestExecutor):
 class MarionettePrintRefTestExecutor(MarionetteRefTestExecutor):
     is_print = True
 
-    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
+    def __init__(self, browser, server_config, timeout_multiplier=1,
                  screenshot_cache=None, close_after_done=True,
                  debug_info=None, reftest_screenshot="unexpected", ccov=False,
                  group_metadata=None, capabilities=None, debug=False,
                  reftest_internal=False, **kwargs):
         """Marionette-based executor for reftests"""
         MarionetteRefTestExecutor.__init__(self,
-                                           logger,
                                            browser,
                                            server_config,
                                            timeout_multiplier=timeout_multiplier,
@@ -1330,8 +1328,8 @@ class MarionettePrintRefTestExecutor(MarionetteRefTestExecutor):
 
 
 class MarionetteWdspecExecutor(WdspecExecutor):
-    def __init__(self, logger, browser, *args, **kwargs):
-        super().__init__(logger, browser, *args, **kwargs)
+    def __init__(self, browser, *args, **kwargs):
+        super().__init__(browser, *args, **kwargs)
 
         args = self.capabilities["moz:firefoxOptions"].setdefault("args", [])
         args.extend(["--profile", self.browser.profile])

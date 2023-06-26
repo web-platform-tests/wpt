@@ -28,7 +28,7 @@ here = os.path.dirname(__file__)
 
 def make_sanitizer_mixin(crashtest_executor_cls: Type[CrashtestExecutor]):  # type: ignore[no-untyped-def]
     class SanitizerMixin:
-        def __new__(cls, logger, browser, **kwargs):
+        def __new__(cls, browser, **kwargs):
             # Overriding `__new__` is the least worst way we can force tests to run
             # as crashtests at runtime while still supporting:
             #   * Class attributes (e.g., `extra_timeout`)
@@ -38,7 +38,7 @@ def make_sanitizer_mixin(crashtest_executor_cls: Type[CrashtestExecutor]):  # ty
             # These requirements rule out approaches with `functools.partial(...)`
             # or global variables.
             if kwargs.get("sanitizer_enabled"):
-                executor = crashtest_executor_cls(logger, browser, **kwargs)
+                executor = crashtest_executor_cls(browser, **kwargs)
 
                 def convert_from_crashtest_result(test, result):
                     if issubclass(cls, TestharnessExecutor):

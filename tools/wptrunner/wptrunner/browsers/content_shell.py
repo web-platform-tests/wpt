@@ -102,6 +102,10 @@ class ContentShellBrowser(Browser):
         self._args = [binary] + binary_args
         self._output_handler = None
         self._proc = None
+        self.connected = False
+
+    def restart_on_test_type_change(self, new_test_type, old_test_type):
+        return False
 
     def start(self, group_metadata, **kwargs):
         self.logger.debug("Starting content shell: %s..." % self._args[0])
@@ -134,6 +138,7 @@ class ContentShellBrowser(Browser):
         # Content shell is likely still in the process of initializing. The actual waiting
         # for the startup to finish is done in the ContentShellProtocol.
         self.logger.debug("Content shell has been started.")
+        self.connected = False
         self._output_handler.start(group_metadata=group_metadata, **kwargs)
 
     def stop(self, force=False):

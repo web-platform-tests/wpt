@@ -261,10 +261,10 @@ class TestExecutor:
     extra_timeout = 5  # seconds
 
 
-    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
+    def __init__(self, browser, server_config, timeout_multiplier=1,
                  debug_info=None, **kwargs):
-        self.logger = logger
         self.runner = None
+        self.logger = None
         self.browser = browser
         self.server_config = server_config
         self.timeout_multiplier = timeout_multiplier
@@ -279,6 +279,7 @@ class TestExecutor:
 
         :param runner: TestRunner instance that is going to run the tests"""
         self.runner = runner
+        self.logger = runner.logger
         if self.protocol is not None:
             self.protocol.setup(runner)
 
@@ -360,9 +361,9 @@ class RefTestExecutor(TestExecutor):
     convert_result = reftest_result_converter
     is_print = False
 
-    def __init__(self, logger, browser, server_config, timeout_multiplier=1, screenshot_cache=None,
+    def __init__(self, browser, server_config, timeout_multiplier=1, screenshot_cache=None,
                  debug_info=None, reftest_screenshot="unexpected", **kwargs):
-        TestExecutor.__init__(self, logger, browser, server_config,
+        TestExecutor.__init__(self, browser, server_config,
                               timeout_multiplier=timeout_multiplier,
                               debug_info=debug_info)
 
@@ -608,10 +609,10 @@ class WdspecExecutor(TestExecutor):
     convert_result = pytest_result_converter
     protocol_cls: ClassVar[Type[Protocol]] = WdspecProtocol
 
-    def __init__(self, logger, browser, server_config, webdriver_binary,
+    def __init__(self, browser, server_config, webdriver_binary,
                  webdriver_args, timeout_multiplier=1, capabilities=None,
                  debug_info=None, binary=None, binary_args=None, **kwargs):
-        super().__init__(logger, browser, server_config,
+        super().__init__(browser, server_config,
                          timeout_multiplier=timeout_multiplier,
                          debug_info=debug_info)
         self.webdriver_binary = webdriver_binary

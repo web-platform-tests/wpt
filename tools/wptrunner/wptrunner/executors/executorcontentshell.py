@@ -160,9 +160,9 @@ class ContentShellProtocol(Protocol):
         """
         deadline = time() + self.init_timeout
 
-        while True:
+        while not self.browser.connected:
             if _read_line(self.browser.stdout_queue, deadline).rstrip() == b"#READY":
-                break
+                self.browser.connected = True
 
     def after_connect(self):
         pass
@@ -190,9 +190,9 @@ def _convert_exception(test, exception, errors):
 
 
 class ContentShellCrashtestExecutor(CrashtestExecutor):
-    def __init__(self, logger, browser, server_config, timeout_multiplier=1, debug_info=None,
+    def __init__(self, browser, server_config, timeout_multiplier=1, debug_info=None,
             **kwargs):
-        super().__init__(logger, browser, server_config, timeout_multiplier, debug_info, **kwargs)
+        super().__init__(browser, server_config, timeout_multiplier, debug_info, **kwargs)
         self.protocol = ContentShellProtocol(self, browser)
 
     def do_test(self, test):
@@ -208,9 +208,9 @@ _SanitizerMixin = make_sanitizer_mixin(ContentShellCrashtestExecutor)
 
 
 class ContentShellRefTestExecutor(RefTestExecutor, _SanitizerMixin):  # type: ignore
-    def __init__(self, logger, browser, server_config, timeout_multiplier=1, screenshot_cache=None,
+    def __init__(self, browser, server_config, timeout_multiplier=1, screenshot_cache=None,
             debug_info=None, reftest_screenshot="unexpected", **kwargs):
-        super().__init__(logger, browser, server_config, timeout_multiplier, screenshot_cache,
+        super().__init__(browser, server_config, timeout_multiplier, screenshot_cache,
                 debug_info, reftest_screenshot, **kwargs)
         self.implementation = RefTestImplementation(self)
         self.protocol = ContentShellProtocol(self, browser)
@@ -254,9 +254,9 @@ class ContentShellPrintRefTestExecutor(ContentShellRefTestExecutor):
 
 
 class ContentShellTestharnessExecutor(TestharnessExecutor, _SanitizerMixin):  # type: ignore
-    def __init__(self, logger, browser, server_config, timeout_multiplier=1, debug_info=None,
+    def __init__(self, browser, server_config, timeout_multiplier=1, debug_info=None,
             **kwargs):
-        super().__init__(logger, browser, server_config, timeout_multiplier, debug_info, **kwargs)
+        super().__init__(browser, server_config, timeout_multiplier, debug_info, **kwargs)
         self.protocol = ContentShellProtocol(self, browser)
 
     def do_test(self, test):

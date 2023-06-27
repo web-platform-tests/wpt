@@ -362,7 +362,7 @@ class SpecItem(ManifestItem):
     def to_json(self) -> Tuple[Optional[Text], Dict[Text, Any]]:
         rv: Tuple[Optional[Text], Dict[Any, Any]] = (None, {})
         for i in range(len(self.specs)):
-            spec_key = "spec_link" + str(i+1)
+            spec_key = f"spec_link{i+1}"
             rv[-1][spec_key] = self.specs[i]
         return rv
 

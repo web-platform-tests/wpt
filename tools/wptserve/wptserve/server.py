@@ -198,7 +198,8 @@ class WebTestServer(http.server.ThreadingHTTPServer):
             with ConfigBuilder(self.logger,
                                browser_host=server_address[0],
                                ports={"http": [self.server_address[1]]}) as config:
-                assert config["ssl_config"] is None
+                self.logger.error(config)
+                assert config["ssl_config"] is None or config.ssl_config["encrypt_after_connect"]
                 Server.config = config
 
 
@@ -842,7 +843,7 @@ class WebTestHttpd:
             self.started = False
 
             _host, self.port = self.httpd.socket.getsockname()
-        except Exception:
+        except Exception as e:
             self.logger.critical("Failed to start HTTP server on port %s; "
                                  "is something already using that port?" % port)
             raise

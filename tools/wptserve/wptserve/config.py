@@ -332,7 +332,10 @@ class ConfigBuilder:
         self._ssl_env.__enter__()
         key_path, cert_path = self._ssl_env.host_cert_path(data["domains_set"])
         ca_cert_path = self._ssl_env.ca_cert_path(data["domains_set"])
-        return {"key_path": key_path,
-                "ca_cert_path": ca_cert_path,
-                "cert_path": cert_path,
-                "encrypt_after_connect": data["ssl"].get("encrypt_after_connect", not self._ssl_env.ssl_enabled)}
+        # Always enable SSL if we have the necessary data, either directly
+        # or with encrypt_after_connect.
+        if key_path is not None and cert_path is not None and ca_cert_path is not None:
+            return {"key_path": key_path,
+                    "ca_cert_path": ca_cert_path,
+                    "cert_path": cert_path,
+                    "encrypt_after_connect": data["ssl"].get("encrypt_after_connect", not self._ssl_env.ssl_enabled)}

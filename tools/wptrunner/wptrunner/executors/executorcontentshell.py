@@ -18,8 +18,9 @@ class LeakError(BaseException):
 def _read_line(io_queue, deadline=None, encoding=None, errors="strict", raise_crash_leak=True):
     """Reads a single line from the io queue. The read must succeed before `deadline` or
     a TimeoutError is raised. The line is returned as a bytestring or optionally with the
-    specified `encoding`. If `raise_crash` is set, a CrashError is raised if the line
-    happens to be a crash message.
+    specified `encoding`. If `raise_crash_leak` is set, a CrashError is raised if the line
+    happens to be a crash message, or a LeakError is raised if the line happens to be a
+    leak message.
     """
     current_time = time()
 
@@ -118,7 +119,7 @@ class ContentShellTestPart(ProtocolPart):
         result = bytearray()
 
         while True:
-            line = _read_line(self.stdout_queue, deadline, raise_crash=False)
+            line = _read_line(self.stdout_queue, deadline, raise_crash_leak=False)
             excess = len(line) + len(result) - content_length
 
             if excess > 0:

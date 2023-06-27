@@ -4,7 +4,7 @@ from atomicwrites import atomic_write
 from copy import deepcopy
 from logging import Logger
 from multiprocessing import Pool, cpu_count
-from typing import (Any, Container, Dict, IO, Iterator, Iterable, Optional, Set, Text, Tuple, Type,
+from typing import (Any, Callable, Container, Dict, IO, Iterator, Iterable, Optional, Set, Text, Tuple, Type,
                     Union)
 
 from . import jsonlib
@@ -140,7 +140,8 @@ class Manifest:
                 if path[:tpath_len] == tpath:
                     yield from tests
 
-    def update(self, tree: Iterable[Tuple[Text, Optional[Text], bool]], parallel: bool = True, is_spec: bool = False) -> bool:
+    def update(self, tree: Iterable[Tuple[Text, Optional[Text], bool]], parallel: bool = True,
+               update_func: Callable[..., Any] = compute_manifest_items) -> bool:
         """Update the manifest given an iterable of items that make up the updated manifest.
 
         The iterable must either generate tuples of the form (SourceFile, True) for paths
@@ -201,10 +202,6 @@ class Manifest:
         if to_update:
             logger.debug("Computing manifest update for %s items" % len(to_update))
             changed = True
-
-        update_func = compute_manifest_items
-        if is_spec:
-            update_func = compute_manifest_spec_items
 
         # 25 items was derived experimentally (2020-01) to be approximately the
         # point at which it is quicker to create a Pool and parallelize update.

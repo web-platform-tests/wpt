@@ -4,7 +4,7 @@ import os
 from typing import Any, Optional, Text
 
 from . import vcs
-from .manifest import InvalidCacheError, Manifest, write
+from .manifest import compute_manifest_spec_items, InvalidCacheError, Manifest, write
 from .log import get_logger, enable_debug_logging
 
 
@@ -21,28 +21,22 @@ def update_spec(tests_root: Text,
                 cache_root: Optional[Text] = None,
                 working_copy: bool = True,
                 parallel: bool = True
-                ) -> Manifest:
+                ) -> None:
 
     manifest = Manifest(tests_root, url_base)
 
     logger.info("Updating SPEC_MANIFEST")
-    for retry in range(2):
-        try:
-            tree = vcs.get_tree(tests_root, manifest, manifest_path, cache_root,
-                                working_copy, True)
-            changed = manifest.update(tree, parallel, True)
-            break
-        except InvalidCacheError:
-            logger.warning("Manifest cache was invalid, doing a complete rebuild")
-    else:
-        # If we didn't break there was an error
-        raise
+    try:
+        tree = vcs.get_tree(tests_root, manifest, manifest_path, cache_root,
+                            working_copy, True)
+        changed = manifest.update(tree, parallel, compute_manifest_spec_items)
+    except InvalidCacheError:
+        logger.warning("Manifest cache in spec.py was invalid.")
+        return
 
     if changed:
         write(manifest, manifest_path)
     tree.dump_caches()
-
-    return manifest
 
 
 def update_from_cli(**kwargs: Any) -> None:

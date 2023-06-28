@@ -234,3 +234,8 @@ async function loadScriptAsIframe(script) {
   await iframeLoaded;
   return iframe;
 }
+
+// Returns a promise, resolving when `element` triggers `event_name` event.
+const future = (element, event_name) => {
+  return new Promise(resolve => element.addEventListener(event_name, resolve));
+};

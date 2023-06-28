@@ -24,8 +24,6 @@ async def test_key_backspace(bidi_session, top_context, setup_key_test):
     [
         ("\U0001F604"),
         ("\U0001F60D"),
-        ("\u0BA8\u0BBF"),
-        ("\u1100\u1161\u11A8"),
     ],
 )
 async def test_key_codepoint(

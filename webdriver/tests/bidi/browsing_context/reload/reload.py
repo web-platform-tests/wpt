@@ -3,7 +3,7 @@ import pytest
 pytestmark = pytest.mark.asyncio
 
 
-async def test_payload(bidi_session, inline, new_tab):
+async def test_return_value(bidi_session, inline, new_tab):
     url = inline("<div>foo</div>")
     await bidi_session.browsing_context.navigate(context=new_tab["context"],
                                                  url=url)
@@ -15,13 +15,11 @@ async def test_payload(bidi_session, inline, new_tab):
 
 @pytest.mark.parametrize(
     "url",
-    [
-        "about:blank",
-        "https://example.com/#foo",
-    ],
+    ["about:blank", "https://example.com/#foo", "data:text/html,<p>foo</p>"],
     ids=[
-        "blank",
+        "about:blank",
         "hash",
+        "data url",
     ],
 )
 async def test_reload(bidi_session, new_tab, url):

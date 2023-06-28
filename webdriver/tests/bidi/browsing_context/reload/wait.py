@@ -6,6 +6,21 @@ import pytest
 pytestmark = pytest.mark.asyncio
 
 
+async def wait_for_reload(bidi_session, context, wait, expect_timeout):
+    # Ultimately, "interactive" and "complete" should support a timeout argument.
+    # See https://github.com/w3c/webdriver-bidi/issues/188.
+    if expect_timeout:
+        with pytest.raises(asyncio.TimeoutError):
+            await asyncio.wait_for(
+                asyncio.shield(
+                    bidi_session.browsing_context.reload(context=context,
+                                                         wait=wait)),
+                timeout=1,
+            )
+    else:
+        await bidi_session.browsing_context.reload(context=context, wait=wait)
+
+
 @pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
 async def test_expected_url(bidi_session, inline, new_tab, wait):
     url = inline("<div>foo</div>")
@@ -39,19 +54,8 @@ async def test_slow_image_blocks_load(bidi_session, inline, new_tab, wait,
                                                  url=url,
                                                  wait="complete")
 
-    # Ultimately, "interactive" and "complete" should support a timeout argument.
-    # See https://github.com/w3c/webdriver-bidi/issues/188.
-    if expect_timeout:
-        with pytest.raises(asyncio.TimeoutError):
-            await asyncio.wait_for(
-                asyncio.shield(
-                    bidi_session.browsing_context.reload(
-                        context=new_tab["context"], wait=wait)),
-                timeout=1,
-            )
-    else:
-        await bidi_session.browsing_context.reload(context=new_tab["context"],
-                                                   wait=wait)
+    await wait_for_reload(bidi_session, new_tab["context"], wait,
+                          expect_timeout)
 
     # We cannot assert the URL for "none" by definition, and for "complete", since
     # we expect a timeout. For the timeout case, the wait_for_navigation helper will
@@ -99,20 +103,8 @@ async def test_slow_page(bidi_session, new_tab, url, wait, expect_timeout,
     on_dom_content_load = wait_for_event("browsingContext.domContentLoaded")
     on_load = wait_for_event("browsingContext.load")
 
-    # Ultimately, "interactive" and "complete" should support a timeout argument.
-    # See https://github.com/w3c/webdriver-bidi/issues/188.
-    if expect_timeout:
-        with pytest.raises(asyncio.TimeoutError):
-            await asyncio.wait_for(
-                asyncio.shield(
-                    bidi_session.browsing_context.reload(
-                        context=new_tab["context"], wait=wait)),
-                timeout=1,
-            )
-    else:
-        await bidi_session.browsing_context.reload(context=new_tab["context"],
-                                                   wait=wait)
-
+    await wait_for_reload(bidi_session, new_tab["context"], wait,
+                          expect_timeout)
     # Note that we cannot assert the top context url here, because the navigation
     # is blocked on the initial url for this test case.
 
@@ -162,19 +154,8 @@ async def test_slow_script_blocks_domContentLoaded(bidi_session, inline,
     on_dom_content_load = wait_for_event("browsingContext.domContentLoaded")
     on_load = wait_for_event("browsingContext.load")
 
-    # Ultimately, "interactive" and "complete" should support a timeout argument.
-    # See https://github.com/w3c/webdriver-bidi/issues/188.
-    if expect_timeout:
-        with pytest.raises(asyncio.TimeoutError):
-            await asyncio.wait_for(
-                asyncio.shield(
-                    bidi_session.browsing_context.reload(
-                        context=new_tab["context"], wait=wait)),
-                timeout=1,
-            )
-    else:
-        await bidi_session.browsing_context.reload(context=new_tab["context"],
-                                                   wait=wait)
+    await wait_for_reload(bidi_session, new_tab["context"], wait,
+                          expect_timeout)
 
     # In theory we could also assert the top context URL has been updated here
     # but since we expect both "interactive" and "complete" to timeout, the

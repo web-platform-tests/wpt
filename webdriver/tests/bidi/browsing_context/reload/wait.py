@@ -47,7 +47,7 @@ async def test_expected_url(bidi_session, inline, new_tab, wait):
 async def test_slow_image_blocks_load(bidi_session, inline, new_tab, wait,
                                       expect_timeout):
 
-    image_url = "/webdriver/tests/bidi/browsing_context/navigate/support/empty.svg"
+    image_url = "/webdriver/tests/bidi/browsing_context/support/empty.svg"
     url = inline(f"<img src='{image_url}?pipe=trickle(d3)'>")
 
     await bidi_session.browsing_context.navigate(context=new_tab["context"],
@@ -77,7 +77,7 @@ async def test_slow_image_blocks_load(bidi_session, inline, new_tab, wait,
 async def test_slow_page(bidi_session, new_tab, url, wait, expect_timeout,
                          subscribe_events, wait_for_event):
     url = url(
-        "/webdriver/tests/bidi/browsing_context/navigate/support/empty.html?pipe=trickle(d3)"
+        "/webdriver/tests/bidi/browsing_context/support/empty.html?pipe=trickle(d3)"
     )
 
     await bidi_session.browsing_context.navigate(context=new_tab["context"],
@@ -128,7 +128,7 @@ async def test_slow_script_blocks_domContentLoaded(bidi_session, inline,
                                                    expect_timeout,
                                                    subscribe_events,
                                                    wait_for_event):
-    script_url = "/webdriver/tests/bidi/browsing_context/navigate/support/empty.js"
+    script_url = "/webdriver/tests/bidi/browsing_context/support/empty.js"
     url = inline(f"<script src='{script_url}?pipe=trickle(d3)'></script>")
 
     await bidi_session.browsing_context.navigate(context=new_tab["context"],

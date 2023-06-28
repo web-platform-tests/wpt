@@ -2,7 +2,7 @@ import pytest
 
 pytestmark = pytest.mark.asyncio
 
-PNG_BLACK_DOT = "/webdriver/tests/bidi/browsing_context/navigate/support/black_dot.png"
+PNG_BLACK_DOT = "/webdriver/tests/bidi/browsing_context/support/black_dot.png"
 
 
 async def test_return_value(bidi_session, inline, new_tab):

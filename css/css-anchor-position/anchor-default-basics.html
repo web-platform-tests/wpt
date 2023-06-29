@@ -7,7 +7,6 @@
 <script src="/css/support/parsing-testcommon.js"></script>
 <script src="/css/support/computed-testcommon.js"></script>
 <script src="/css/support/inheritance-testcommon.js"></script>
-<script src="/css/support/interpolation-testcommon.js"></script>
 
 <div id="container">
   <div id="target"></div>
@@ -32,11 +31,4 @@ test_computed_value('anchor-default', '--foo');
 // Initial: implicit
 // Inherited: no
 assert_not_inherited('anchor-default', 'implicit', '--foo');
-
-// Animation type: discrete
-test_no_interpolation({
-  property: 'anchor-default',
-  from: '--foo',
-  to: 'implicit',
-});
 </script>

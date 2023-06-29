@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"></script>
+<script src="../resources/utils.js"></script>
+
+<meta name="variant" content="?prefetch">
+<meta name="variant" content="?prerender">
+
+<script>
+setup(() => assertSpeculationRulesIsSupported());
+
+const preloadingType = location.search.substring(1);
+
+promise_test(async t => {
+  const rcHelper = new PreloadingRemoteContextHelper();
+  const referrerRC = await rcHelper.addWindow();
+
+  const destinationRC = await referrerRC.createPreloadedContext(preloadingType, {
+    extrasInSpeculationRule: { invalid_key: "value" }
+  });
+
+  await referrerRC.navigateTo(destinationRC.url);
+
+  assert_equals(await destinationRC.getPreloadingStatusFromHeaders(), "none");
+}, `an unrecognized key in a ${preloadingType} rule should prevent it from being preloaded`);
+</script>

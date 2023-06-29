@@ -162,95 +162,6 @@
   const DEFAULT_CONTEXT_CONFIG = new RemoteContextConfig();
 
   /**
-   * This class represents a configuration for creating remote contexts. This is
-   * the entry-point
-   * for creating remote contexts, providing @see addWindow .
-   */
-  class RemoteContextHelper {
-    /**
-     * @param {RemoteContextConfig|object} config The configuration
-     *     for this remote context.
-     */
-    constructor(config) {
-      this.config = RemoteContextConfig.ensure(config);
-    }
-
-    /**
-     * Creates a new remote context and returns a `RemoteContextWrapper` giving
-     * access to it.
-     * @private
-     * @param {Object} options
-     * @param {(url: string) => Promise<undefined>} options.executorCreator A
-     *     function that takes a URL and causes the browser to navigate some
-     *     window to that URL, e.g. via an iframe or a new window.
-     * @param {RemoteContextConfig|object} [options.extraConfig] If supplied,
-     *     extra configuration for this remote context to be merged with
-     *     `this`'s existing config. If it's not a `RemoteContextConfig`, it
-     *     will be used to construct a new one.
-     * @returns {Promise<RemoteContextWrapper>}
-     */
-    async createContext({
-      executorCreator,
-      extraConfig,
-      isWorker = false,
-    }) {
-      const config =
-          this.config.merged(RemoteContextConfig.ensure(extraConfig));
-
-      const origin = finalizeOrigin(config.origin);
-      const url = new URL(
-          isWorker ? WORKER_EXECUTOR_PATH : WINDOW_EXECUTOR_PATH, origin);
-
-      // UUID is needed for executor.
-      const uuid = token();
-      url.searchParams.append('uuid', uuid);
-
-      if (config.headers) {
-        addHeaders(url, config.headers);
-      }
-      for (const script of config.scripts) {
-        url.searchParams.append('script', makeAbsolute(script));
-      }
-
-      if (config.startOn) {
-        url.searchParams.append('startOn', config.startOn);
-      }
-
-      await executorCreator(url.href);
-      return new RemoteContextWrapper(new RemoteContext(uuid), this, url.href);
-    }
-
-    /**
-     * Creates a window with a remote context. @see createContext for
-     * @param {RemoteContextConfig|object} [extraConfig] Will be
-     *     merged with `this`'s config.
-     * @param {Object} [options]
-     * @param {string} [options.target] Passed to `window.open` as the
-     *     2nd argument
-     * @param {string} [options.features] Passed to `window.open` as the
-     *     3rd argument
-     * @returns {Promise<RemoteContextWrapper>}
-     */
-    addWindow(extraConfig, options) {
-      return this.createContext({
-        executorCreator: windowExecutorCreator(options),
-        extraConfig,
-      });
-    }
-
-    async createContextWithUrl(extraConfig) {
-      let saveUrl;
-      let wrapper = await this.createContext({
-        executorCreator: (url) => {saveUrl = url},
-        extraConfig,
-      });
-      return [wrapper, saveUrl];
-    }
-  }
-  // Export this class.
-  self.RemoteContextHelper = RemoteContextHelper;
-
-  /**
    * Attaches header to the URL. See
    * https://web-platform-tests.org/writing-tests/server-pipes.html#headers
    * @param {string} url the URL to which headers should be attached.
@@ -328,6 +239,15 @@
      */
     async executeScript(fn, args) {
       return this.context.execute_script(fn, args);
+    }
+
+    /**
+     * Returns a JavaScript object containing a subset of the request headers.
+     * The specific headers that are recorded are in ./executor.sub.html.
+     * @returns {Object<string, string>}
+     */
+    async getRequestHeaders() {
+      return this.executeScript(() => window.requestHeaders);
     }
 
     /**
@@ -530,4 +450,103 @@
       }
     }
   }
+
+
+  /**
+   * This class represents a configuration for creating remote contexts. This is
+   * the entry-point
+   * for creating remote contexts, providing @see addWindow .
+   */
+  class RemoteContextHelper {
+    /**
+     * The constructor to use when creating new remote context wrappers.
+     * Can be overridden by subclasses.
+     */
+    static RemoteContextWrapper = RemoteContextWrapper;
+
+    /**
+     * @param {RemoteContextConfig|object} config The configuration
+     *     for this remote context.
+     */
+    constructor(config) {
+      this.config = RemoteContextConfig.ensure(config);
+    }
+
+    /**
+     * Creates a new remote context and returns a `RemoteContextWrapper` giving
+     * access to it.
+     * @private
+     * @param {Object} options
+     * @param {(url: string) => Promise<undefined>} options.executorCreator A
+     *     function that takes a URL and causes the browser to navigate some
+     *     window to that URL, e.g. via an iframe or a new window.
+     * @param {RemoteContextConfig|object} [options.extraConfig] If supplied,
+     *     extra configuration for this remote context to be merged with
+     *     `this`'s existing config. If it's not a `RemoteContextConfig`, it
+     *     will be used to construct a new one.
+     * @param {Function} [options.remoteContextWrapperConstructor] If supplied,
+     *     the constructor to use when creating the returned
+     *     `RemoteContextWrapper`. (Useful for subclassing.)
+     * @returns {Promise<RemoteContextWrapper>}
+     */
+    async createContext({
+      executorCreator,
+      extraConfig,
+      isWorker = false
+    }) {
+      const config =
+          this.config.merged(RemoteContextConfig.ensure(extraConfig));
+
+      const origin = finalizeOrigin(config.origin);
+      const url = new URL(
+          isWorker ? WORKER_EXECUTOR_PATH : WINDOW_EXECUTOR_PATH, origin);
+
+      // UUID is needed for executor.
+      const uuid = token();
+      url.searchParams.append('uuid', uuid);
+
+      if (config.headers) {
+        addHeaders(url, config.headers);
+      }
+      for (const script of config.scripts) {
+        url.searchParams.append('script', makeAbsolute(script));
+      }
+
+      if (config.startOn) {
+        url.searchParams.append('startOn', config.startOn);
+      }
+
+      await executorCreator(url.href);
+      return new this.constructor.RemoteContextWrapper(new RemoteContext(uuid), this, url.href);
+    }
+
+    /**
+     * Creates a window with a remote context. @see createContext for
+     * @param {RemoteContextConfig|object} [extraConfig] Will be
+     *     merged with `this`'s config.
+     * @param {Object} [options]
+     * @param {string} [options.target] Passed to `window.open` as the
+     *     2nd argument
+     * @param {string} [options.features] Passed to `window.open` as the
+     *     3rd argument
+     * @returns {Promise<RemoteContextWrapper>}
+     */
+    addWindow(extraConfig, options) {
+      return this.createContext({
+        executorCreator: windowExecutorCreator(options),
+        extraConfig,
+      });
+    }
+
+    async createContextWithUrl(extraConfig) {
+      let saveUrl;
+      let wrapper = await this.createContext({
+        executorCreator: (url) => {saveUrl = url},
+        extraConfig,
+      });
+      return [wrapper, saveUrl];
+    }
+  }
+  // Export this class.
+  self.RemoteContextHelper = RemoteContextHelper;
 }

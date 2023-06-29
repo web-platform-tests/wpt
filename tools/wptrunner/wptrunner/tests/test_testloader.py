@@ -277,9 +277,7 @@ def test_loader_filter_tags():
         assert (len(loader.tests["testharness"] == 0))
 
         loader = TestLoader({manifest: {"metadata_path": metadata_path}}, ["testharness"], None,
-                            test_filters=[
-                                TagFilter({"test-include", "test-exclude"}, {"test-include"})
-                            ])
+                            test_filters=[TagFilter({"test-include", "test-exclude"}, {"test-include"})])
         assert len(loader.tests["testharness"]) == 1
         assert loader.tests["testharness"][0].id == "/b/baz.html"
         assert loader.tests["testharness"][0].tags == {"dir:b", "test-include", "test-exclude"}

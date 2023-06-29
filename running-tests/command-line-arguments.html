@@ -572,7 +572,7 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">VERIFY_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">repeat</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">REPEAT_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">reftest</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">crashtest</span><span class="p">,</span><span class="n">testharness</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">testharness</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">crashtest</span><span class="p">,</span><span class="n">reftest</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="n">INCLUDE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">file</span> <span class="n">INCLUDE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="n">EXCLUDE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">manifest</span> <span class="n">INCLUDE_MANIFEST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">groups</span> <span class="n">TEST_GROUPS_FILE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">timeout</span><span class="p">]</span>
@@ -608,8 +608,9 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">specialpowers</span><span class="o">-</span><span class="n">path</span> <span class="n">SPECIALPOWERS_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">setpref</span> <span class="n">PREF</span><span class="o">=</span><span class="n">VALUE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">leak</span><span class="o">-</span><span class="n">check</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">leak</span><span class="o">-</span><span class="n">check</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reftest</span><span class="o">-</span><span class="n">internal</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">reftest</span><span class="o">-</span><span class="n">external</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reftest</span><span class="o">-</span><span class="n">screenshot</span> <span class="p">{</span><span class="n">always</span><span class="p">,</span><span class="n">fail</span><span class="p">,</span><span class="n">unexpected</span><span class="p">}]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">chaos</span> <span class="p">[</span><span class="n">CHAOS_MODE_FLAGS</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">user</span><span class="o">-</span><span class="n">stylesheet</span> <span class="n">USER_STYLESHEETS</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">mojojs</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mojojs</span><span class="o">-</span><span class="n">path</span> <span class="n">MOJOJS_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">swiftshader</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">chaos</span> <span class="p">[</span><span class="n">CHAOS_MODE_FLAGS</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">setenv</span> <span class="n">ENV</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">user</span><span class="o">-</span><span class="n">stylesheet</span> <span class="n">USER_STYLESHEETS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">mojojs</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">mojojs</span><span class="o">-</span><span class="n">path</span> <span class="n">MOJOJS_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">swiftshader</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">experimental</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">enable</span><span class="o">-</span><span class="n">experimental</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">sanitizer</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reuse</span><span class="o">-</span><span class="n">window</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">browser</span> <span class="n">SAUCE_BROWSER</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">platform</span> <span class="n">SAUCE_PLATFORM</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">version</span> <span class="n">SAUCE_VERSION</span><span class="p">]</span>
@@ -782,9 +783,9 @@ channel.) This flag overrides –browser-channel.</p>
 <h4>Test Selection<a class="headerlink" href="#test-selection" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--test-types</kbd></dt>
-<dd><p>Possible choices: reftest, print-reftest, wdspec, crashtest, testharness</p>
+<dd><p>Possible choices: testharness, wdspec, print-reftest, crashtest, reftest</p>
 <p>Test types to run</p>
-<p>Default: {‘reftest’, ‘print-reftest’, ‘wdspec’, ‘crashtest’, ‘testharness’}</p>
+<p>Default: {‘testharness’, ‘wdspec’, ‘print-reftest’, ‘crashtest’, ‘reftest’}</p>
 </dd>
 <dt><kbd>--include</kbd></dt>
 <dd><p>URL prefix to include</p>
@@ -1067,6 +1068,15 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 <dt><kbd>--chaos</kbd></dt>
 <dd><p>Enable chaos mode with the specified feature flag (see <a class="reference external" href="http://searchfox.org/mozilla-central/source/mfbt/ChaosMode.h">http://searchfox.org/mozilla-central/source/mfbt/ChaosMode.h</a> for details). If no value is supplied, all features are activated</p>
+</dd>
+</dl>
+</section>
+<section id="geckoview-specific">
+<h4>GeckoView-specific<a class="headerlink" href="#geckoview-specific" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--setenv</kbd></dt>
+<dd><p>Set target environment variable, like FOO=BAR</p>
+<p>Default: []</p>
 </dd>
 </dl>
 </section>

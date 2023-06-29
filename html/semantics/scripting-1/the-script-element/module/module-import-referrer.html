@@ -4,6 +4,7 @@
 <title>Referrer for module imports</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script>setup({ explicit_done: true })</script>
 </head>
 <body>
 <script type="module">
@@ -39,6 +40,8 @@ test(t => {
     referrerExternalDynamic, scriptURL.href,
       "Referrer should be the document URL");
 }, "Dynamic imports from external modules");
+
+done();
 
 </script>
 </body>

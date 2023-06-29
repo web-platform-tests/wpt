@@ -1,5 +1,7 @@
 import pytest
 
+from pathlib import Path
+
 pytestmark = pytest.mark.asyncio
 
 PNG_BLACK_DOT = "/webdriver/tests/bidi/browsing_context/support/black_dot.png"
@@ -21,11 +23,13 @@ async def test_return_value(bidi_session, inline, new_tab):
         "about:blank",
         "https://example.com/#foo",
         "data:text/html,<p>foo</p>",
+        f'file://{Path(__file__).parent.parent.resolve() / "support/empty.html"}',
     ],
     ids=[
         "about:blank",
         "hash",
         "data url",
+        "file url",
     ],
 )
 async def test_reload(bidi_session, new_tab, initial_url):

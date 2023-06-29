@@ -32,3 +32,4 @@ async def test_origin(bidi_session, new_tab, inline, domain):
     contexts = await bidi_session.browsing_context.get_tree(
         root=frame['context'])
     assert len(contexts) == 1
+    assert contexts[0]["url"] == frame_start_url

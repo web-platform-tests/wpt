@@ -34,11 +34,12 @@ class ManifestItemMeta(ABCMeta):
 
 
 class ManifestItem(metaclass=ManifestItemMeta):
-    __slots__ = ("_tests_root", "path")
+    __slots__ = ("_tests_root", "path", "spec_list")
 
     def __init__(self, tests_root: Text, path: Text) -> None:
         self._tests_root = tests_root
         self.path = path
+        self.spec_list = []
 
     @abstractproperty
     def id(self) -> Text:
@@ -53,6 +54,9 @@ class ManifestItem(metaclass=ManifestItemMeta):
     @property
     def path_parts(self) -> Tuple[Text, ...]:
         return tuple(self.path.split(os.path.sep))
+
+    def set_spec_list(self, spec_list: List[Tuple[Text, Text]]) -> None:
+        self.spec_list = spec_list
 
     def key(self) -> Hashable:
         """A unique identifier for the test"""
@@ -133,6 +137,12 @@ class URLManifestItem(ManifestItem):
     def to_json(self) -> Tuple[Optional[Text], Dict[Any, Any]]:
         rel_url = None if self._url == self.path.replace(os.path.sep, "/") else self._url
         rv: Tuple[Optional[Text], Dict[Any, Any]] = (rel_url, {})
+        if len(self.spec_list) == 0:
+            return rv
+        for i in range(len(self.spec_list)):
+            rel, href = self.spec_list[i]
+            spec_key = 'spec_link' + str(i+1)
+            rv[-1][spec_key] = href
         return rv
 
     @classmethod
@@ -340,3 +350,28 @@ class SupportFile(ManifestItem):
     @property
     def id(self) -> Text:
         return self.path
+
+
+class SpecItem(ManifestItem):
+    __slots__ = ("specs")
+
+    item_type = "spec"
+
+    def __init__(self,
+                 tests_root: Text,
+                 path: Text,
+                 specs: List[Text]
+                 ) -> None:
+        super().__init__(tests_root, path)
+        self.specs = specs
+
+    @property
+    def id(self) -> Text:
+        return self.path
+
+    def to_json(self) -> Tuple[Optional[Text], Dict[Text, Any]]:
+        rv: Tuple[Optional[Text], Dict[Any, Any]] = (None, {})
+        for i in range(len(self.specs)):
+            spec_key = 'spec_link' + str(i+1)
+            rv[-1][spec_key] = self.specs[i]
+        return rv

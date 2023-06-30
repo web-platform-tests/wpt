@@ -3,12 +3,8 @@ import argparse
 import os
 from typing import Any, Optional, TYPE_CHECKING
 
-from . import manifest
-from . import vcs
-from .log import get_logger, enable_debug_logging
-from .download import download_from_github
-if TYPE_CHECKING:
-    from .manifest import Manifest  # avoid cyclic import
+from ..manifest.manifest import load_and_update
+from ..manifest.log import get_logger, enable_debug_logging
 
 
 here = os.path.dirname(__file__)
@@ -17,22 +13,7 @@ wpt_root = os.path.join(os.path.abspath(os.path.join(here, os.pardir, os.pardir)
 
 logger = get_logger()
 
-
-def update(tests_root: str,
-           manifest: "Manifest",
-           manifest_path: Optional[str] = None,
-           working_copy: bool = True,
-           cache_root: Optional[str] = None,
-           rebuild: bool = False,
-           parallel: bool = True
-           ) -> bool:
-    logger.warning("Deprecated; use manifest.load_and_update instead")
-    logger.info("Updating manifest")
-
-    tree = vcs.get_tree(tests_root, manifest, manifest_path, cache_root,
-                        working_copy, rebuild)
-    return manifest.update(tree, parallel)
-
+# TODO: define a new spec format
 
 def update_from_cli(**kwargs: Any) -> None:
     print("GIVE ME SPEC LABELLING NOWWWWW")
@@ -41,16 +22,13 @@ def update_from_cli(**kwargs: Any) -> None:
     path = kwargs["path"]
     assert tests_root is not None
 
-    if not kwargs["rebuild"] and kwargs["download"]:
-        download_from_github(path, tests_root)
-
-    manifest.load_and_update(tests_root,
-                             path,
-                             kwargs["url_base"],
-                             update=True,
-                             rebuild=kwargs["rebuild"],
-                             cache_root=kwargs["cache_root"],
-                             parallel=kwargs["parallel"])
+    load_and_update(tests_root,
+                    path,
+                    kwargs["url_base"],
+                    update=True,
+                    rebuild=kwargs["rebuild"],
+                    cache_root=kwargs["cache_root"],
+                    parallel=kwargs["parallel"])
 
 
 def abs_path(path: str) -> str:
@@ -86,13 +64,7 @@ def create_parser() -> argparse.ArgumentParser:
 
 def run(*args: Any, **kwargs: Any) -> None:
     if kwargs["path"] is None:
-        kwargs["path"] = os.path.join(kwargs["tests_root"], "MANIFEST.json")
+        kwargs["path"] = os.path.join(kwargs["tests_root"], "SPEC_MANIFEST.json")
     if kwargs["verbose"]:
         enable_debug_logging()
     update_from_cli(**kwargs)
-
-
-def main() -> None:
-    opts = create_parser().parse_args()
-
-    run(**vars(opts))

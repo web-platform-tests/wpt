@@ -4,4 +4,5 @@ tools/docker/
 tools/lint/
 tools/manifest/
 tools/serve/
+tools/spec/
 tools/wpt/

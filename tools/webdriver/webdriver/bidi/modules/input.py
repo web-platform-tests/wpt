@@ -1,21 +1,12 @@
 from collections import defaultdict
 
-from typing import (Any,
-                    ClassVar,
-                    List,
-                    Mapping,
-                    MutableMapping,
-                    Optional,
-                    Sequence,
-                    Set,
-                    Type,
-                    TypeVar,
-                    Union)
+from typing import (Any, ClassVar, List, Mapping, MutableMapping, Optional,
+                    Sequence, Set, Type, TypeVar, Union)
 
 from ._module import BidiModule, command
 
-
 InputSourceType = TypeVar('InputSourceType', bound="InputSource")
+
 
 class Action:
     action_type: ClassVar[str]
@@ -38,6 +29,7 @@ class PauseAction(Action):
 
 
 class KeyAction(Action):
+
     def __init__(self, key: str):
         self.value = key
 
@@ -45,6 +37,7 @@ class KeyAction(Action):
         rv = super().to_json()
         rv["value"] = self.value
         return rv
+
 
 class KeyUpAction(KeyAction):
     action_type = "keyUp"
@@ -55,6 +48,7 @@ class KeyDownAction(KeyAction):
 
 
 class PointerAction(Action):
+
     def __init__(self,
                  button: Optional[int] = None,
                  x: Optional[int] = None,
@@ -132,10 +126,19 @@ class PointerDownAction(PointerAction):
                  twist: Optional[int] = None,
                  altitude_angle: Optional[float] = None,
                  azimuth_angle: Optional[float] = None):
-        super().__init__(button=button, x=None, y=None, duration=None,
-                         origin=None, width=width, height=height, pressure=pressure,
-                         tangential_pressure=tangential_pressure, tilt_x=tilt_x,
-                         tilt_y=tilt_y, twist=twist, altitude_angle=altitude_angle,
+        super().__init__(button=button,
+                         x=None,
+                         y=None,
+                         duration=None,
+                         origin=None,
+                         width=width,
+                         height=height,
+                         pressure=pressure,
+                         tangential_pressure=tangential_pressure,
+                         tilt_x=tilt_x,
+                         tilt_y=tilt_y,
+                         twist=twist,
+                         altitude_angle=altitude_angle,
                          azimuth_angle=azimuth_angle)
 
 
@@ -153,10 +156,19 @@ class PointerUpAction(PointerAction):
                  twist: Optional[int] = None,
                  altitude_angle: Optional[float] = None,
                  azimuth_angle: Optional[float] = None):
-        super().__init__(button=button, x=None, y=None, duration=None,
-                         origin=None, width=width, height=height, pressure=pressure,
-                         tangential_pressure=tangential_pressure, tilt_x=tilt_x,
-                         tilt_y=tilt_y, twist=twist, altitude_angle=altitude_angle,
+        super().__init__(button=button,
+                         x=None,
+                         y=None,
+                         duration=None,
+                         origin=None,
+                         width=width,
+                         height=height,
+                         pressure=pressure,
+                         tangential_pressure=tangential_pressure,
+                         tilt_x=tilt_x,
+                         tilt_y=tilt_y,
+                         twist=twist,
+                         altitude_angle=altitude_angle,
                          azimuth_angle=azimuth_angle)
 
 
@@ -166,7 +178,7 @@ class PointerMoveAction(PointerAction):
     def __init__(self,
                  x: int,
                  y: int,
-                 duration:Optional[int] = None,
+                 duration: Optional[int] = None,
                  origin: Optional[Union[str, Mapping[str, Any]]] = None,
                  width: Optional[int] = None,
                  height: Optional[int] = None,
@@ -177,10 +189,19 @@ class PointerMoveAction(PointerAction):
                  twist: Optional[int] = None,
                  altitude_angle: Optional[float] = None,
                  azimuth_angle: Optional[float] = None):
-        super().__init__(button=None, x=x, y=y, duration=duration,
-                         origin=origin, width=width, height=height, pressure=pressure,
-                         tangential_pressure=tangential_pressure, tilt_x=tilt_x,
-                         tilt_y=tilt_y, twist=twist, altitude_angle=altitude_angle,
+        super().__init__(button=None,
+                         x=x,
+                         y=y,
+                         duration=duration,
+                         origin=origin,
+                         width=width,
+                         height=height,
+                         pressure=pressure,
+                         tangential_pressure=tangential_pressure,
+                         tilt_x=tilt_x,
+                         tilt_y=tilt_y,
+                         twist=twist,
+                         altitude_angle=altitude_angle,
                          azimuth_angle=azimuth_angle)
 
 
@@ -235,14 +256,13 @@ class InputSource:
         for i in range(total_ticks - len(self)):
             actions.append(PauseAction().to_json())
 
-        return {"id": self.id,
-                "type": self.input_type,
-                "actions": actions}
+        return {"id": self.id, "type": self.input_type, "actions": actions}
 
     def done(self) -> List[Action]:
         return self.actions
 
-    def pause(self: InputSourceType, duration: Optional[int] = None) -> InputSourceType:
+    def pause(self: InputSourceType,
+              duration: Optional[int] = None) -> InputSourceType:
         self.actions.append(PauseAction(duration))
         return self
 
@@ -291,30 +311,36 @@ class PointerInputSource(InputSource):
                      duration: Optional[int] = None,
                      origin: Union[str, Mapping[str, Any]] = "viewport",
                      **kwargs: Any) -> "PointerInputSource":
-        self.actions.append(PointerMoveAction(x, y, duration=duration, origin=origin, **kwargs))
+        self.actions.append(
+            PointerMoveAction(x, y, duration=duration, origin=origin,
+                              **kwargs))
         return self
 
 
 class WheelInputSource(InputSource):
     input_type = "wheel"
 
-    def scroll(self,
-               x: int,
-               y: int,
-               delta_x: int = 0,
-               delta_y: int = 0,
-               duration: Optional[int] = None,
-               origin: Union[str, Mapping[str, Any]] = "viewport") -> "WheelInputSource":
-        self.actions.append(WheelScrollAction(x,
-                                              y,
-                                              delta_x=delta_x,
-                                              delta_y=delta_y,
-                                              duration=duration,
-                                              origin=origin))
+    def scroll(
+        self,
+        x: int,
+        y: int,
+        delta_x: int = 0,
+        delta_y: int = 0,
+        duration: Optional[int] = None,
+        origin: Union[str, Mapping[str,
+                                   Any]] = "viewport") -> "WheelInputSource":
+        self.actions.append(
+            WheelScrollAction(x,
+                              y,
+                              delta_x=delta_x,
+                              delta_y=delta_y,
+                              duration=duration,
+                              origin=origin))
         return self
 
 
 class Actions:
+
     def __init__(self) -> None:
         self.input_sources: List[InputSource] = []
         self.seen_names: MutableMapping[str, Set[str]] = defaultdict(set)
@@ -342,8 +368,12 @@ class Actions:
     def add_key(self, input_id: Optional[str] = None) -> "KeyInputSource":
         return self._add_source(KeyInputSource, input_id)
 
-    def add_pointer(self, input_id: Optional[str] = None, pointer_type: str = "mouse") -> "PointerInputSource":
-        return self._add_source(PointerInputSource, input_id, pointer_type=pointer_type)
+    def add_pointer(self,
+                    input_id: Optional[str] = None,
+                    pointer_type: str = "mouse") -> "PointerInputSource":
+        return self._add_source(PointerInputSource,
+                                input_id,
+                                pointer_type=pointer_type)
 
     def add_wheel(self, input_id: Optional[str] = None) -> "WheelInputSource":
         return self._add_source(WheelInputSource, input_id)
@@ -354,14 +384,11 @@ class Actions:
 
 
 class Input(BidiModule):
+
     @command
-    def perform_actions(self,
-                        actions: Union[Actions, List[Any]],
-                        context: str
-                        ) -> Mapping[str, Any]:
-        params: MutableMapping[str, Any] = {
-            "context": context
-        }
+    def perform_actions(self, actions: Union[Actions, List[Any]],
+                        context: str) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {"context": context}
         if isinstance(actions, Actions):
             params["actions"] = actions.to_json()
         else:

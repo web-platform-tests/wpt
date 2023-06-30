@@ -31,7 +31,7 @@ def update_spec(tests_root: Text,
                             working_copy, True)
         changed = manifest.update(tree, parallel, compute_manifest_spec_items)
     except InvalidCacheError:
-        logger.warning("Manifest cache in spec.py was invalid.")
+        logger.error("Manifest cache in spec.py was invalid.")
         return
 
     if changed:

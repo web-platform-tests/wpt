@@ -8,7 +8,7 @@ from .. import assert_navigation_info
 
 pytestmark = pytest.mark.asyncio
 
-EMPTY_PAGE = "/webdriver/tests/bidi/browsing_context/navigate/support/empty.html"
+EMPTY_PAGE = "/webdriver/tests/bidi/support/empty.html"
 FRAGMENT_NAVIGATED_EVENT = "browsingContext.fragmentNavigated"
 
 

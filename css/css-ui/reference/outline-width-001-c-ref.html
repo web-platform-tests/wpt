@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Basic User Interface Reference Test: outline-width pixel snapping</title>
+<link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
+<body>
+<p>The test passes if it has the same output than the reference and you see no red.</p>
+<script>
+  const values = [
+    "2px",
+    "2.25px",
+    "2.5px",
+    "2.9px",
+    "3px",
+    "3.2px",
+    "3.75px",
+  ];
+
+  values.forEach((value) => {
+    let borderElement = document.createElement("div");
+    borderElement.style.margin = "10px";
+    borderElement.style.border = `solid ${value} blue`;
+    borderElement.innerHTML = value;
+    document.body.appendChild(borderElement);
+  });
+</script>
+</body>

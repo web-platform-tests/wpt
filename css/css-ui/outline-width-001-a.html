@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Basic User Interface Test: outline-width pixel snapping</title>
+<link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-ui/#outline-width">
+<link rel="match" href="reference/outline-width-001-a-ref.html">
+<meta name="assert" content="Test checks that outline-width works the same than border-width when you use decimal values and the browser needs to do pixel snapping.">
+<body>
+<p>The test passes if it has the same output than the reference and you see no red.</p>
+<script>
+  const values = [
+    "0px",
+    "0.25px",
+    "0.5px",
+    "0.9px",
+    "1px",
+    "1.2px",
+    "1.75px",
+  ];
+
+  values.forEach((value) => {
+    let wrapper = document.createElement("div");
+    wrapper.style.margin = "10px";
+    wrapper.style.border = `solid ${value} red`;
+    let outlineElement = document.createElement("div");
+    outlineElement.style.outline = `solid ${value} blue`;
+    outlineElement.innerHTML = value;
+    wrapper.appendChild(outlineElement);
+    document.body.appendChild(wrapper);
+  });
+</script>
+</body>

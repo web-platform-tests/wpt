@@ -40,7 +40,7 @@ with WPT. The functionality is organized into “sub-commands”, and each accep
 a different set of command-line arguments.</p>
 <p>This page documents all of the available sub-commands and associated arguments.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">wpt</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
-           <span class="p">{</span><span class="n">build</span><span class="o">-</span><span class="n">docs</span><span class="p">,</span><span class="n">test</span><span class="o">-</span><span class="n">jobs</span><span class="p">,</span><span class="n">make</span><span class="o">-</span><span class="n">hosts</span><span class="o">-</span><span class="n">file</span><span class="p">,</span><span class="n">regen</span><span class="o">-</span><span class="n">certs</span><span class="p">,</span><span class="n">update</span><span class="o">-</span><span class="n">built</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">decision</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">sink</span><span class="o">-</span><span class="n">task</span><span class="p">,</span><span class="n">docker</span><span class="o">-</span><span class="n">run</span><span class="p">,</span><span class="n">docker</span><span class="o">-</span><span class="n">push</span><span class="p">,</span><span class="n">lint</span><span class="p">,</span><span class="n">manifest</span><span class="p">,</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">test</span><span class="o">-</span><span class="n">paths</span><span class="p">,</span><span class="n">serve</span><span class="p">,</span><span class="n">serve</span><span class="o">-</span><span class="n">wave</span><span class="p">,</span><span class="n">run</span><span class="p">,</span><span class="n">create</span><span class="p">,</span><span class="n">update</span><span class="o">-</span><span class="n">expectations</span><span class="p">,</span><span class="n">files</span><span class="o">-</span><span class="n">changed</span><span class="p">,</span><span class="n">tests</span><span class="o">-</span><span class="n">affected</span><span class="p">,</span><span class="n">install</span><span class="p">,</span><span class="n">rev</span><span class="o">-</span><span class="nb">list</span><span class="p">,</span><span class="n">install</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span><span class="p">,</span><span class="n">start</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span><span class="p">}</span>
+           <span class="p">{</span><span class="n">build</span><span class="o">-</span><span class="n">docs</span><span class="p">,</span><span class="n">test</span><span class="o">-</span><span class="n">jobs</span><span class="p">,</span><span class="n">make</span><span class="o">-</span><span class="n">hosts</span><span class="o">-</span><span class="n">file</span><span class="p">,</span><span class="n">regen</span><span class="o">-</span><span class="n">certs</span><span class="p">,</span><span class="n">update</span><span class="o">-</span><span class="n">built</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">decision</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">sink</span><span class="o">-</span><span class="n">task</span><span class="p">,</span><span class="n">docker</span><span class="o">-</span><span class="n">run</span><span class="p">,</span><span class="n">docker</span><span class="o">-</span><span class="n">push</span><span class="p">,</span><span class="n">lint</span><span class="p">,</span><span class="n">manifest</span><span class="p">,</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">test</span><span class="o">-</span><span class="n">paths</span><span class="p">,</span><span class="n">spec</span><span class="p">,</span><span class="n">serve</span><span class="p">,</span><span class="n">serve</span><span class="o">-</span><span class="n">wave</span><span class="p">,</span><span class="n">run</span><span class="p">,</span><span class="n">create</span><span class="p">,</span><span class="n">update</span><span class="o">-</span><span class="n">expectations</span><span class="p">,</span><span class="n">files</span><span class="o">-</span><span class="n">changed</span><span class="p">,</span><span class="n">tests</span><span class="o">-</span><span class="n">affected</span><span class="p">,</span><span class="n">install</span><span class="p">,</span><span class="n">rev</span><span class="o">-</span><span class="nb">list</span><span class="p">,</span><span class="n">install</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span><span class="p">,</span><span class="n">start</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span><span class="p">}</span>
            <span class="o">...</span>
 </pre></div>
 </div>
@@ -453,6 +453,42 @@ a different set of command-line arguments.</p>
 </dl>
 </section>
 </section>
+<section id="spec">
+<h3>spec<a class="headerlink" href="#spec" title="Permalink to this headline">¶</a></h3>
+<p>Update the SPEC_MANIFEST.json file</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">spec</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tests</span><span class="o">-</span><span class="n">root</span> <span class="n">TESTS_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">url</span><span class="o">-</span><span class="n">base</span> <span class="n">URL_BASE</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">cache</span><span class="o">-</span><span class="n">root</span> <span class="n">CACHE_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">parallel</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="named-arguments_repeat13">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat13" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>-v, --verbose</kbd></dt>
+<dd><p>Turn on verbose logging</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>-p, --path</kbd></dt>
+<dd><p>Path to manifest file.</p>
+</dd>
+<dt><kbd>--tests-root</kbd></dt>
+<dd><p>Path to root of tests.</p>
+<p>Default: /home/runner/work/wpt/wpt</p>
+</dd>
+<dt><kbd>--url-base</kbd></dt>
+<dd><p>Base url to use as the mount point for tests in this manifest.</p>
+<p>Default: “/”</p>
+</dd>
+<dt><kbd>--cache-root</kbd></dt>
+<dd><p>Path in which to store any caches (default &lt;tests_root&gt;/.wptcache/)</p>
+<p>Default: “/home/runner/work/wpt/wpt/.wptcache”</p>
+</dd>
+<dt><kbd>--no-parallel</kbd></dt>
+<dd><p>Do not parallelize building the manifest</p>
+<p>Default: True</p>
+</dd>
+</dl>
+</section>
+</section>
 <section id="serve">
 <h3>serve<a class="headerlink" href="#serve" title="Permalink to this headline">¶</a></h3>
 <p>Run wptserve server</p>
@@ -462,8 +498,8 @@ a different set of command-line arguments.</p>
           <span class="p">[</span><span class="o">--</span><span class="n">webtransport</span><span class="o">-</span><span class="n">h3</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="named-arguments_repeat13">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat13" title="Permalink to this headline">¶</a></h4>
+<section id="named-arguments_repeat14">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat14" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--latency</kbd></dt>
 <dd><p>Artificial latency to add before sending http responses, in ms</p>
@@ -511,8 +547,8 @@ a different set of command-line arguments.</p>
                <span class="p">[</span><span class="o">--</span><span class="n">report</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="named-arguments_repeat14">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat14" title="Permalink to this headline">¶</a></h4>
+<section id="named-arguments_repeat15">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat15" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--latency</kbd></dt>
 <dd><p>Artificial latency to add before sending http responses, in ms</p>
@@ -572,7 +608,7 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">VERIFY_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">repeat</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">REPEAT_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">crashtest</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="n">wdspec</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">wdspec</span><span class="p">,</span><span class="n">crashtest</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="n">reftest</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="n">INCLUDE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">file</span> <span class="n">INCLUDE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="n">EXCLUDE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">manifest</span> <span class="n">INCLUDE_MANIFEST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">groups</span> <span class="n">TEST_GROUPS_FILE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">timeout</span><span class="p">]</span>
@@ -646,8 +682,8 @@ a different set of command-line arguments.</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat15">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat15" title="Permalink to this headline">¶</a></h4>
+<section id="named-arguments_repeat16">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat16" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--channel</kbd></dt>
 <dd><p>Possible choices: stable, release, beta, dev, canary, nightly, preview, experimental</p>
@@ -783,9 +819,9 @@ channel.) This flag overrides –browser-channel.</p>
 <h4>Test Selection<a class="headerlink" href="#test-selection" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--test-types</kbd></dt>
-<dd><p>Possible choices: crashtest, reftest, print-reftest, testharness, wdspec</p>
+<dd><p>Possible choices: wdspec, crashtest, print-reftest, testharness, reftest</p>
 <p>Test types to run</p>
-<p>Default: {‘crashtest’, ‘reftest’, ‘print-reftest’, ‘testharness’, ‘wdspec’}</p>
+<p>Default: {‘wdspec’, ‘crashtest’, ‘print-reftest’, ‘testharness’, ‘reftest’}</p>
 </dd>
 <dt><kbd>--include</kbd></dt>
 <dd><p>URL prefix to include</p>
@@ -1269,8 +1305,8 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat16">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat16" title="Permalink to this headline">¶</a></h4>
+<section id="named-arguments_repeat17">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat17" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--no-editor</kbd></dt>
 <dd><p>Don’t try to open the test in an editor</p>
@@ -1345,8 +1381,8 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat17">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat17" title="Permalink to this headline">¶</a></h4>
+<section id="named-arguments_repeat18">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat18" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--config</kbd></dt>
 <dd><p>Path to config file</p>
@@ -1478,8 +1514,8 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat18">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat18" title="Permalink to this headline">¶</a></h4>
+<section id="named-arguments_repeat19">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat19" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--ignore-rule</kbd></dt>
 <dd><p>Override the rules for paths to exclude from lists of changes. Rules are paths relative to the test root, with * before a separator or the end matching anything other than a path separator and ** in that position matching anything. This flag can be used multiple times for multiple rules. Specifying this flag overrides the default: resources/testharness*, resources/testdriver*</p>
@@ -1519,8 +1555,8 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat19">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat19" title="Permalink to this headline">¶</a></h4>
+<section id="named-arguments_repeat20">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat20" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--ignore-rule</kbd></dt>
 <dd><p>Override the rules for paths to exclude from lists of changes. Rules are paths relative to the test root, with * before a separator or the end matching anything other than a path separator and ** in that position matching anything. This flag can be used multiple times for multiple rules. Specifying this flag overrides the default: resources/testharness*, resources/testdriver*</p>
@@ -1571,8 +1607,8 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat20">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat20" title="Permalink to this headline">¶</a></h4>
+<section id="named-arguments_repeat21">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat21" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--channel</kbd></dt>
 <dd><p>Possible choices: stable, release, beta, dev, canary, nightly, preview, experimental</p>
@@ -1607,8 +1643,8 @@ channel.) This flag overrides –browser-channel.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">rev</span><span class="o">-</span><span class="nb">list</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">epoch</span> <span class="n">EPOCH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">count</span> <span class="n">MAX_COUNT</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="named-arguments_repeat21">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat21" title="Permalink to this headline">¶</a></h4>
+<section id="named-arguments_repeat22">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat22" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--epoch</kbd></dt>
 <dd><p>regular interval of time selected to get the tagged revisions. Valid values are digits followed by h/d/w (e.x. 9h, 9d, 9w …) where the mimimun selectable interval is one hour (1h)</p>
@@ -1627,8 +1663,8 @@ channel.) This flag overrides –browser-channel.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">install</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reinstall</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="named-arguments_repeat22">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat22" title="Permalink to this headline">¶</a></h4>
+<section id="named-arguments_repeat23">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat23" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--reinstall</kbd></dt>
 <dd><p>Force reinstall even if the emulator already exists</p>
@@ -1643,8 +1679,8 @@ channel.) This flag overrides –browser-channel.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">start</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reinstall</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="named-arguments_repeat23">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat23" title="Permalink to this headline">¶</a></h4>
+<section id="named-arguments_repeat24">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat24" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--reinstall</kbd></dt>
 <dd><p>Force reinstall even if the emulator already exists</p>

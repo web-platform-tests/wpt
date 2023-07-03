@@ -71,7 +71,7 @@ def positive_int(actual: Any) -> None:
     assert isinstance(actual, int) and actual > 0
 
 
-async def create_console_api_message(bidi_session, context: str, text):
+async def create_console_api_message(bidi_session, context: str, text: str):
     await bidi_session.script.call_function(
         function_declaration="""(text) => console.log(text)""",
         arguments=[{"type": "string", "value": text}],

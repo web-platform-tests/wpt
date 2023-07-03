@@ -133,7 +133,6 @@ async def test_invalid_script(bidi_session, top_context):
         ("new Error('SOME_ERROR_TEXT')", {"type": "error"},),
         ("([1, 2][Symbol.iterator]())", {
             "type": "iterator",
-            "value": [],
         }),
         ("new Proxy({}, {})", {
             "type": "proxy"

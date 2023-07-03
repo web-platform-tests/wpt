@@ -122,7 +122,6 @@ async def test_primitive_values(bidi_session, top_context, await_promise, expres
         ("new Error('SOME_ERROR_TEXT')", {"type": "error"}),
         ("([1, 2][Symbol.iterator]())", {
             "type": "iterator",
-            "value": [],
         }),
         ("new Proxy({}, {})", {
             "type": "proxy"

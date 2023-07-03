@@ -2,6 +2,7 @@ import pytest
 
 from tests.support.sync import AsyncPoll
 from webdriver.bidi.modules.script import ContextTarget
+from webdriver.error import TimeoutException
 
 from ... import any_int, any_string, recursive_compare, int_interval
 from .. import assert_navigation_info
@@ -62,14 +63,58 @@ async def test_timestamp(bidi_session, current_time, subscribe_events, inline, n
 
     time_end = await current_time()
 
-
     assert_navigation_info(
         event,
         {"context": new_tab["context"], "timestamp": int_interval(time_start, time_end)}
     )
 
 
-async def test_navigate_to_new_document(
+async def test_iframe(bidi_session, subscribe_events, new_tab, test_page, test_page_same_origin_frame):
+    events = []
+
+    async def on_event(method, data):
+        # Filter out events for about:blank to avoid browser differences
+        if data["url"] != 'about:blank':
+            events.append(data)
+
+    remove_listener = bidi_session.add_event_listener(
+        FRAGMENT_NAVIGATED_EVENT, on_event
+    )
+    await subscribe_events(events=[FRAGMENT_NAVIGATED_EVENT])
+
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=test_page_same_origin_frame
+    )
+
+    wait = AsyncPoll(
+        bidi_session, message="Didn't receive browsingContext.fragmentNavigated for frames"
+    )
+    await wait.until(lambda _: len(events) >= 2)
+    assert len(events) == 2
+
+    contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
+
+    assert len(contexts) == 1
+    root_info = contexts[0]
+    assert len(root_info["children"]) == 1
+    child_info = root_info["children"][0]
+
+    # The ordering of fragmentNavigated events is not guaranteed between the
+    # root page and the iframe, find the appropriate events in the current list.
+    first_is_root = events[0]["context"] == root_info["context"]
+    root_event = events[0] if first_is_root else events[1]
+    child_event = events[1] if first_is_root else events[0]
+
+    assert_navigation_info(
+        root_event,
+        {"context": root_info["context"], "url": test_page_same_origin_frame}
+    )
+    assert_navigation_info(child_event, {"context": child_info["context"], "url": test_page})
+
+    remove_listener()
+
+
+async def test_cross_document(
     bidi_session, new_tab, url, subscribe_events, wait_for_event
 ):
     await subscribe_events([FRAGMENT_NAVIGATED_EVENT])
@@ -109,7 +154,7 @@ async def test_navigate_to_new_document(
         "with hash to without hash",
     ],
 )
-async def test_navigate_to_same_document(
+async def test_history_api(
     bidi_session, new_tab, url, subscribe_events, wait_for_event, hash_before, hash_after, navigation_kind
 ):
     await bidi_session.browsing_context.navigate(
@@ -157,3 +202,23 @@ async def test_navigate_to_same_document(
       )
     else:
        raise Exception("Unknown navigation_kind")
+
+
+@pytest.mark.parametrize("type_hint", ["tab", "window"])
+async def test_new_context(bidi_session, subscribe_events, wait_for_event, type_hint):
+    await subscribe_events(events=[FRAGMENT_NAVIGATED_EVENT])
+
+    events = []
+
+    async def on_event(method, data):
+        events.append(data)
+
+    remove_listener = bidi_session.add_event_listener(FRAGMENT_NAVIGATED_EVENT, on_event)
+
+    new_context = await bidi_session.browsing_context.create(type_hint=type_hint)
+
+    wait = AsyncPoll(bidi_session, timeout=0.5)
+    with pytest.raises(TimeoutException):
+        await wait.until(lambda _: len(events) > 0)
+
+    remove_listener()

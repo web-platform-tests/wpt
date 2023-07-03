@@ -154,7 +154,7 @@ async def test_cross_document(
         "with hash to without hash",
     ],
 )
-async def test_history_api(
+async def test_navigate_in_the_same_document(
     bidi_session, new_tab, url, subscribe_events, wait_for_event, hash_before, hash_after, navigation_kind
 ):
     await bidi_session.browsing_context.navigate(

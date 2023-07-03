@@ -121,7 +121,7 @@ async def test_primitive_values(bidi_session, top_context, await_promise, expres
         ("new WeakSet()", {"type": "weakset"}),
         ("new Error('SOME_ERROR_TEXT')", {"type": "error"}),
         ("([1, 2][Symbol.iterator]())", {
-            "type": "object",
+            "type": "iterator",
             "value": [],
         }),
         ("new Proxy({}, {})", {

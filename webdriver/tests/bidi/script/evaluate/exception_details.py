@@ -132,7 +132,7 @@ async def test_invalid_script(bidi_session, top_context):
         ("new WeakSet()", {"type": "weakset", },),
         ("new Error('SOME_ERROR_TEXT')", {"type": "error"},),
         ("([1, 2][Symbol.iterator]())", {
-            "type": "object",
+            "type": "iterator",
             "value": [],
         }),
         ("new Proxy({}, {})", {

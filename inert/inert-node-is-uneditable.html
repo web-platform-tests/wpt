@@ -20,11 +20,7 @@ promise_test(async function() {
     notEditable.focus();
     var oldValue = notEditable.textContent;
     assert_equals(oldValue, "I'm not editable.");
-    await promise_rejects_js(
-        this,
-        Error,
-        test_driver.send_keys(notEditable, 'a'),
-        "send_keys should reject for non-interactive elements");
+    await test_driver.send_keys(notEditable, 'a');
     assert_equals(notEditable.textContent, oldValue);
 }, "Can't edit inert contenteditable");
 

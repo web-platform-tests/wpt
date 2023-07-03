@@ -182,7 +182,7 @@ async def test_navigate_in_the_same_document(
       await bidi_session.script.call_function(
           raw_result=True,
           function_declaration="""(url) => {
-              history.pushState(null, null, url);
+              document.location = url;
           }""",
           arguments=[
               {"type": "string", "value": url(EMPTY_PAGE + hash_after)},
@@ -194,7 +194,6 @@ async def test_navigate_in_the_same_document(
       recursive_compare(
           {
               'context': new_tab["context"],
-              'navigation': None,
               'timestamp': any_int,
               'url': url(EMPTY_PAGE + hash_after)
           },
@@ -215,10 +214,47 @@ async def test_new_context(bidi_session, subscribe_events, wait_for_event, type_
 
     remove_listener = bidi_session.add_event_listener(FRAGMENT_NAVIGATED_EVENT, on_event)
 
-    new_context = await bidi_session.browsing_context.create(type_hint=type_hint)
+    await bidi_session.browsing_context.create(type_hint=type_hint)
 
     wait = AsyncPoll(bidi_session, timeout=0.5)
     with pytest.raises(TimeoutException):
         await wait.until(lambda _: len(events) > 0)
 
     remove_listener()
+
+
+async def test_document_write(bidi_session, subscribe_events, top_context, wait_for_event):
+    await subscribe_events(events=[FRAGMENT_NAVIGATED_EVENT])
+
+    on_entry = wait_for_event(FRAGMENT_NAVIGATED_EVENT)
+
+
+    events = []
+
+    async def on_event(method, data):
+        events.append(data)
+
+    remove_listener = bidi_session.add_event_listener(FRAGMENT_NAVIGATED_EVENT, on_event)
+
+    await bidi_session.script.evaluate(
+        expression="""document.open(); document.write("<h1>Replaced</h1>"); document.close();""",
+        target=ContextTarget(top_context["context"]),
+        await_promise=False
+    )
+
+    wait = AsyncPoll(bidi_session, timeout=0.5)
+    with pytest.raises(TimeoutException):
+        await wait.until(lambda _: len(events) > 0)
+
+    remove_listener()
+
+
+async def test_page_with_base_tag(bidi_session, subscribe_events, inline, new_tab, wait_for_event):
+    await subscribe_events(events=[FRAGMENT_NAVIGATED_EVENT])
+
+    on_entry = wait_for_event(FRAGMENT_NAVIGATED_EVENT)
+    url = inline("""<base href="/relative-path">""")
+    await bidi_session.browsing_context.navigate(context=new_tab["context"], url=url)
+    event = await on_entry
+
+    assert_navigation_info(event, {"context": new_tab["context"], "url": url})

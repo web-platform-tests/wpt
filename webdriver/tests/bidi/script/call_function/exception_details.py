@@ -140,7 +140,7 @@ async def test_invalid_function(bidi_session, top_context):
         }),
         # generator
         ("(function*() { yield 'a'; })", {
-            "type": "function"
+            "type": "generator"
         }),
         ("Promise.resolve()", {"type": "promise", },),
         ("new Int32Array()", {"type": "typedarray", },),

@@ -18,7 +18,7 @@ var notEditable = document.querySelector('#not-editable');
 var editable = document.querySelector('#editable');
 
 function sendKey(key) {
-    return test_driver.Actions()
+    return new test_driver.Actions()
         .keyDown(key)
         .keyUp(key)
         .send();

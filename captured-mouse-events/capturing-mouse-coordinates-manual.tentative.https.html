@@ -1,0 +1,80 @@
+<!doctype html>
+<meta charset=utf-8>
+<h1>Capturing mouse coordinates</h1>
+<link rel='help' href='https://screen-share.github.io/mouse-events'>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+setup({explicit_timeout: true})
+</script>
+<ol class="instructions">
+  <li><button id="start_capture">Click here</button> and share this window as
+    a captured surface.</li>
+  <li>Move the mouse near each corner of the window, in the following
+    order:
+    <ol>
+      <li>top left corner</li>
+      <li>top right corner</li>
+      <li>bottom right corner</li>
+      <li>bottom left corner</li>
+    </ol>
+  </li>
+  <li>Move the mouse near the center of the window.</li>
+  <li>Move the mouse outside the window.</li>
+  <li>Move the mouse inside the window.</li>
+</ol>
+<pre id="log"></pre>
+<video width="1024" height="512" id="monitor" autoplay></video>
+<script>
+let mouse_event_listener = null;
+promise_test(async () => {
+  await new Promise(resolve => {
+    document.getElementById('start_capture')
+        .addEventListener('click', resolve, {once: true});
+  });
+  let controller = new CaptureController();
+  controller.addEventListener('capturedmousechange', (event) => {
+    if (mouse_event_listener)
+      mouse_event_listener({x: event.surfaceX, y: event.surfaceY});
+  });
+  const video = document.getElementById('monitor');
+  video.srcObject = await navigator.mediaDevices.getDisplayMedia({controller});
+  await new Promise(resolve => video.onloadedmetadata = resolve);
+}, 'Starting Screen Capture');
+
+let max_distance = 100;
+[{x: 0, y: 0, name: 'top left corner'},
+ {x: window.outerWidth, y: 0, name: 'top right corner'},
+ {x: window.outerWidth, y: window.outerHeight, name: 'bottom right corner'},
+ {x: 0, y: window.outerHeight, name: 'bottom left corner'},
+ {x: window.outerWidth / 2, y: window.outerHeight / 2, name: 'center'},
+].forEach(target => {
+  promise_test(async () => {
+    await new Promise(resolve => {
+      mouse_event_listener = (mouse) => {
+        if (mouse.x >= 0 && mouse.y >= 0 &&
+            Math.hypot(target.x - mouse.x, target.y - mouse.y) < max_distance)
+          resolve();
+      };
+    });
+  }, `Moving mouse to the ${target.name} of the window.`);
+});
+
+promise_test(async () => {
+  await new Promise(resolve => {
+    mouse_event_listener = (mouse) => {
+      if (mouse.x == -1 && mouse.y == -1)
+        resolve();
+    };
+  });
+}, `Moving mouse outside the window.`);
+
+promise_test(async () => {
+  await new Promise(resolve => {
+    mouse_event_listener = (mouse) => {
+      if (mouse.x >= 0 && mouse.y >= 0)
+        resolve();
+    };
+  });
+}, `Moving mouse inside the window.`);
+</script>

@@ -92,7 +92,7 @@ async def test_navigation_id(
 
     target_url = url(EMPTY_PAGE + '#foo');
     result = await bidi_session.browsing_context.navigate(
-        context=new_tab["context"], url=target_url)
+        context=new_tab["context"], url=target_url, wait="complete")
 
     recursive_compare(
         {
@@ -168,7 +168,7 @@ async def test_navigate_in_the_same_document(
     target_url = url(EMPTY_PAGE + hash_after)
     if navigation_kind == "browsing_context.navigate":
       result = await bidi_session.browsing_context.navigate(
-          context=target_context, url=target_url)
+          context=target_context, url=target_url, wait="complete")
 
       recursive_compare(
           {
@@ -258,7 +258,7 @@ async def test_page_with_base_tag(bidi_session, subscribe_events, inline, new_ta
     remove_listener = bidi_session.add_event_listener(FRAGMENT_NAVIGATED_EVENT, on_event)
 
     url = inline("""<base href="/relative-path">""")
-    await bidi_session.browsing_context.navigate(context=new_tab["context"], url=url)
+    await bidi_session.browsing_context.navigate(context=new_tab["context"], url=url, wait="complete")
 
     wait = AsyncPoll(bidi_session, timeout=0.5)
     with pytest.raises(TimeoutException):

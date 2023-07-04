@@ -20,9 +20,11 @@ pytestmark = pytest.mark.asyncio
         (Keys.ESCAPE, "ESCAPE"),
         (Keys.RIGHT, "RIGHT"),
     ],
+
 )
-async def test_non_printable_key_sends_events(bidi_session, top_context, key,
-                                              event):
+async def test_non_printable_key_sends_events(
+    bidi_session, top_context, key, event
+):
     code = ALL_EVENTS[event]["code"]
     value = ALL_EVENTS[event]["key"]
 

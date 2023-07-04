@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<script src="/js-test-resources/js-test.js"></script>
+<script>
+description('Tests that subsequent navigation in an iframe restored from history does not report resource timing.');
+window.jsTestIsAsync = true;
+
+function runTest() {
+    if (!sessionStorage.didNav) {
+        sessionStorage.didNav = true;
+        // Navigate a timeout to make sure we generate a history entry that we can go back to.
+        step_timeout(function() {
+            location.href = 'resources/alert-then-back.html';
+        }, 0);
+    } else {
+        delete sessionStorage.didNav;
+      const iframe = document.getElementById('target-iframe')
+        window.addEventListener('message', (event) => {
+            resources = performance.getEntriesByType('resource');
+          shouldBe('resources.length', '2');
+            shouldBeEqualToString('resources[0].name', 'http://127.0.0.1:8000/js-test-resources/js-test.js');
+          shouldBeEqualToString('resources[1].name', iframe.src);
+            if (window.testRunner)
+                finishJSTest();
+        });
+      iframe.contentWindow.postMessage('post-message-to-parent.html', '*');
+    }
+}
+
+window.onload = runTest;
+
+</script>
+
+<p>Back-forward cache keeps and restores the resource timing of the iframe on
+back navigation. Back-forward cache needs to be disabled to run this test.
+</p>
+
+<iframe id="target-iframe" src="http://localhost:8080/misc/resources/navigate-on-message.html"></iframe>

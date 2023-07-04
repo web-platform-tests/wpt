@@ -105,6 +105,26 @@ async def test_navigation_id(
     )
 
 
+async def test_url_with_base_tag(bidi_session, subscribe_events, inline, new_tab, wait_for_event):
+    url = inline("""<base href="/relative-path">""")
+    await bidi_session.browsing_context.navigate(context=new_tab["context"], url=url, wait="complete")
+
+    await subscribe_events(events=[FRAGMENT_NAVIGATED_EVENT])
+
+    on_frame_navigated = wait_for_event(FRAGMENT_NAVIGATED_EVENT)
+
+    target_url = url + '#foo';
+    await bidi_session.browsing_context.navigate(context=new_tab["context"], url=target_url, wait="complete")
+
+    recursive_compare(
+        {
+            'context': new_tab["context"],
+            'url': target_url
+        },
+        await on_frame_navigated,
+    )
+
+
 @pytest.mark.parametrize(
     "context_kind",
     ["top-level", "iframe"],
@@ -239,26 +259,6 @@ async def test_document_write(bidi_session, subscribe_events, top_context):
         target=ContextTarget(top_context["context"]),
         await_promise=False
     )
-
-    wait = AsyncPoll(bidi_session, timeout=0.5)
-    with pytest.raises(TimeoutException):
-        await wait.until(lambda _: len(events) > 0)
-
-    remove_listener()
-
-
-async def test_page_with_base_tag(bidi_session, subscribe_events, inline, new_tab):
-    await subscribe_events(events=[FRAGMENT_NAVIGATED_EVENT])
-
-    events = []
-
-    async def on_event(method, data):
-        events.append(data)
-
-    remove_listener = bidi_session.add_event_listener(FRAGMENT_NAVIGATED_EVENT, on_event)
-
-    url = inline("""<base href="/relative-path">""")
-    await bidi_session.browsing_context.navigate(context=new_tab["context"], url=url, wait="complete")
 
     wait = AsyncPoll(bidi_session, timeout=0.5)
     with pytest.raises(TimeoutException):

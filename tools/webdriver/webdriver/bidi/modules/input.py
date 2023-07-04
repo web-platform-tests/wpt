@@ -1,7 +1,16 @@
 from collections import defaultdict
 
-from typing import (Any, ClassVar, List, Mapping, MutableMapping, Optional,
-                    Sequence, Set, Type, TypeVar, Union)
+from typing import (Any,
+                    ClassVar,
+                    List,
+                    Mapping,
+                    MutableMapping,
+                    Optional,
+                    Sequence,
+                    Set,
+                    Type,
+                    TypeVar,
+                    Union)
 
 from ._module import BidiModule, command
 
@@ -320,22 +329,19 @@ class PointerInputSource(InputSource):
 class WheelInputSource(InputSource):
     input_type = "wheel"
 
-    def scroll(
-        self,
-        x: int,
-        y: int,
-        delta_x: int = 0,
-        delta_y: int = 0,
-        duration: Optional[int] = None,
-        origin: Union[str, Mapping[str,
-                                   Any]] = "viewport") -> "WheelInputSource":
-        self.actions.append(
-            WheelScrollAction(x,
-                              y,
-                              delta_x=delta_x,
-                              delta_y=delta_y,
-                              duration=duration,
-                              origin=origin))
+    def scroll(self,
+               x: int,
+               y: int,
+               delta_x: int = 0,
+               delta_y: int = 0,
+               duration: Optional[int] = None,
+               origin: Union[str, Mapping[str, Any]] = "viewport") -> "WheelInputSource":
+        self.actions.append(WheelScrollAction(x,
+                                              y,
+                                              delta_x=delta_x,
+                                              delta_y=delta_y,
+                                              duration=duration,
+                                              origin=origin))
         return self
 
 
@@ -386,9 +392,13 @@ class Actions:
 class Input(BidiModule):
 
     @command
-    def perform_actions(self, actions: Union[Actions, List[Any]],
-                        context: str) -> Mapping[str, Any]:
-        params: MutableMapping[str, Any] = {"context": context}
+    def perform_actions(self,
+                        actions: Union[Actions, List[Any]],
+                        context: str
+                        ) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {
+            "context": context
+        }
         if isinstance(actions, Actions):
             params["actions"] = actions.to_json()
         else:

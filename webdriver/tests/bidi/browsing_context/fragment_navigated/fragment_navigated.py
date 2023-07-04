@@ -135,10 +135,11 @@ async def test_url_with_base_tag(bidi_session, subscribe_events, inline, new_tab
 )
 @pytest.mark.parametrize(
     "navigation_kind",
-    ["browsing_context.navigate", "script.call_function"],
+    ["browsing_context.navigate", "document.location", "history.pushState"],
     ids=[
         "navigation via browsing_context.navigate",
-        "navigation via script.call_function",
+        "navigation via document.location",
+        "navigation via history.pushState"
     ]
 )
 @pytest.mark.parametrize(
@@ -187,19 +188,9 @@ async def test_navigate_in_the_same_document(
 
     target_url = url(EMPTY_PAGE + hash_after)
     if navigation_kind == "browsing_context.navigate":
-      result = await bidi_session.browsing_context.navigate(
+      await bidi_session.browsing_context.navigate(
           context=target_context, url=target_url, wait="complete")
-
-      recursive_compare(
-          {
-              'context': target_context,
-              'navigation': result["navigation"],
-              'timestamp': any_int,
-              'url': target_url
-          },
-          await on_frame_navigated,
-      )
-    elif navigation_kind == "script.call_function":
+    elif navigation_kind == "document.location":
       await bidi_session.script.call_function(
           raw_result=True,
           function_declaration="""(url) => {
@@ -211,18 +202,41 @@ async def test_navigate_in_the_same_document(
           await_promise=False,
           target=ContextTarget(target_context),
       )
-
-      recursive_compare(
-          {
-              'context': target_context,
-              'timestamp': any_int,
-              'url': target_url
-          },
-          await on_frame_navigated,
+    elif navigation_kind == "document.location":
+      await bidi_session.script.call_function(
+          raw_result=True,
+          function_declaration="""(url) => {
+              document.location = url;
+          }""",
+          arguments=[
+              {"type": "string", "value": target_url},
+          ],
+          await_promise=False,
+          target=ContextTarget(target_context),
+      )
+    elif navigation_kind == "history.pushState":
+      await bidi_session.script.call_function(
+          raw_result=True,
+          function_declaration="""(url) => {
+              history.pushState(null, null, url);
+          }""",
+          arguments=[
+              {"type": "string", "value": target_url},
+          ],
+          await_promise=False,
+          target=ContextTarget(target_context),
       )
     else:
       raise Exception("Unknown navigation_kind")
 
+    recursive_compare(
+        {
+            'context': target_context,
+            'timestamp': any_int,
+            'url': target_url
+        },
+        await on_frame_navigated,
+    )
 
 @pytest.mark.parametrize("type_hint", ["tab", "window"])
 async def test_new_context(bidi_session, subscribe_events, type_hint):

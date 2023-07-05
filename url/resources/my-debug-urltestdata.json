@@ -1,0 +1,18 @@
+[
+  "See ../README.md for a description of the format.",
+  {
+    "input": "x",
+    "base": "sc://ñ",
+    "href": "sc://%C3%B1/x",
+    "origin": "null",
+    "protocol": "sc:",
+    "username": "",
+    "password": "",
+    "host": "%C3%B1",
+    "hostname": "%C3%B1",
+    "port": "",
+    "pathname": "/x",
+    "search": "",
+    "hash": ""
+  }
+]

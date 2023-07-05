@@ -145,6 +145,7 @@ REMOTE_VALUES = pytest.mark.parametrize(
 )
 
 
+# TODO: Find a way to reuse the above params here.
 PRIMITIVE_AND_REMOTE_VALUES = pytest.mark.parametrize(
     "expression, expected",
     [

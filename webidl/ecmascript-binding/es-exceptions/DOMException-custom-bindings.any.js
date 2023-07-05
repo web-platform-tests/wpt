@@ -47,6 +47,23 @@ test(() => {
 }, "name getter performs brand checks (i.e. is not [LegacyLenientThis])");
 
 test(() => {
+  const e = new DOMException("message", { cause: "cause" });
+  assert_false(e.hasOwnProperty("cause"), "property is not own");
+
+  const propDesc = Object.getOwnPropertyDescriptor(DOMException.prototype, "cause");
+  assert_equals(typeof propDesc.get, "function", "property descriptor is a getter");
+  assert_equals(propDesc.set, undefined, "property descriptor is not a setter");
+  assert_true(propDesc.enumerable, "property descriptor enumerable");
+  assert_true(propDesc.configurable, "property descriptor configurable");
+}, "cause property descriptor");
+
+test(() => {
+  const getter = Object.getOwnPropertyDescriptor(DOMException.prototype, "cause").get;
+
+  assert_throws_js(TypeError, () => getter.apply({}));
+}, "cause getter performs brand checks (i.e. is not [LegacyLenientThis])");
+
+test(() => {
   const e = new DOMException("message", "name");
   assert_false(e.hasOwnProperty("code"), "property is not own");
 

@@ -22,7 +22,8 @@ async def test_this(bidi_session, top_context):
 
     assert result == {
         'type': 'number',
-        'value': 42}
+        'value': 42
+    }
 
 
 @pytest.mark.asyncio

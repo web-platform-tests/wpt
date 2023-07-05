@@ -8,13 +8,13 @@ from . import PRIMITIVE_AND_REMOTE_VALUES
 
 @pytest.mark.asyncio
 @PRIMITIVE_AND_REMOTE_VALUES
-async def test_exception_details(bidi_session, top_context, expression,
-                                 expected):
+async def test_exception_details_await_promise(bidi_session, top_context,
+                                               expression, expected):
     with pytest.raises(ScriptEvaluateResultException) as exception:
         await bidi_session.script.evaluate(
-            expression=f"throw {expression}",
+            expression=f"Promise.reject({expression})",
             target=ContextTarget(top_context["context"]),
-            await_promise=False,
+            await_promise=True,
         )
 
     recursive_compare(

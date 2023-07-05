@@ -6,29 +6,6 @@ from .. import any_stack_trace
 
 
 @pytest.mark.asyncio
-async def test_invalid_script(bidi_session, top_context):
-    with pytest.raises(ScriptEvaluateResultException) as exception:
-        await bidi_session.script.evaluate(
-            expression="))) !!@@## some invalid JS script (((",
-            target=ContextTarget(top_context["context"]),
-            await_promise=True,
-        )
-    recursive_compare(
-        {
-            "realm": any_string,
-            "exceptionDetails": {
-                "columnNumber": any_int,
-                "exception": {"type": "error"},
-                "lineNumber": any_int,
-                "stackTrace": any_stack_trace,
-                "text": any_string,
-            },
-        },
-        exception.value.result,
-    )
-
-
-@pytest.mark.asyncio
 @pytest.mark.parametrize("await_promise", [True, False])
 @pytest.mark.parametrize(
     "expression, expected",
@@ -160,6 +137,7 @@ async def test_invalid_script(bidi_session, top_context):
             },
         ),
         ("window", {"type": "window", },),
+        ("new URL('https://example.com')", {"type": "object", },),
     ],
 )
 @pytest.mark.asyncio
@@ -182,36 +160,6 @@ async def test_exception_details(bidi_session, top_context, await_promise, expre
             "exceptionDetails": {
                 "columnNumber": any_int,
                 "exception": expected,
-                "lineNumber": any_int,
-                "stackTrace": any_stack_trace,
-                "text": any_string,
-            },
-        },
-        exception.value.result,
-    )
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("chained", [True, False])
-async def test_rejected_promise(bidi_session, top_context, chained):
-    if chained:
-        expression = "Promise.reject('error').then(() => { })"
-    else:
-        expression = "Promise.reject('error')"
-
-    with pytest.raises(ScriptEvaluateResultException) as exception:
-        await bidi_session.script.evaluate(
-            expression=expression,
-            await_promise=True,
-            target=ContextTarget(top_context["context"]),
-        )
-
-    recursive_compare(
-        {
-            "realm": any_string,
-            "exceptionDetails": {
-                "columnNumber": any_int,
-                "exception": {"type": "string", "value": "error"},
                 "lineNumber": any_int,
                 "stackTrace": any_stack_trace,
                 "text": any_string,

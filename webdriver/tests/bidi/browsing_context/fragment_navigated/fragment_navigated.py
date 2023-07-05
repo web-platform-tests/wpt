@@ -125,14 +125,40 @@ async def test_url_with_base_tag(bidi_session, subscribe_events, inline, new_tab
     )
 
 
-@pytest.mark.parametrize(
-    "context_kind",
-    ["top-level", "iframe"],
-    ids=[
-        "in a top-level context",
-        "in an iframe context",
-    ]
-)
+async def test_iframe(
+    bidi_session, new_tab, url, inline, subscribe_events, wait_for_event
+):
+    initial_url = url(EMPTY_PAGE + '#foo')
+    parent_url = inline(f"<iframe src='{initial_url}'></iframe>")
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=parent_url, wait="complete"
+    )
+    all_contexts = await bidi_session.browsing_context.get_tree()
+
+    # about:blank + a new tab are top-level contexts.
+    assert len(all_contexts) == 2
+    parent_info = all_contexts[1]
+    assert len(parent_info["children"]) == 1
+    child_info = parent_info["children"][0]
+
+    await subscribe_events([FRAGMENT_NAVIGATED_EVENT])
+
+    on_frame_navigated = wait_for_event(FRAGMENT_NAVIGATED_EVENT)
+
+    target_url = url(EMPTY_PAGE + '#bar')
+    await bidi_session.browsing_context.navigate(
+        context=child_info["context"], url=target_url, wait="complete")
+
+    recursive_compare(
+        {
+            'context': child_info["context"],
+            'timestamp': any_int,
+            'url': target_url
+        },
+        await on_frame_navigated,
+    )
+
+
 @pytest.mark.parametrize(
     "navigation_kind",
     ["browsing_context.navigate", "document.location", "history.pushState"],
@@ -158,50 +184,23 @@ async def test_url_with_base_tag(bidi_session, subscribe_events, inline, new_tab
     ],
 )
 async def test_navigate_in_the_same_document(
-    bidi_session, new_tab, url, inline, subscribe_events, wait_for_event, hash_before, hash_after, navigation_kind, context_kind
+    bidi_session, new_tab, url, subscribe_events, wait_for_event, hash_before, hash_after, navigation_kind
 ):
-    initial_url = url(EMPTY_PAGE + hash_before)
     target_context = new_tab["context"]
-    if context_kind == 'top-level':
-      await bidi_session.browsing_context.navigate(
-          context=new_tab["context"], url=initial_url, wait="complete"
-      )
-    elif context_kind == 'iframe':
-      parent_url = inline(f"<iframe src='{initial_url}'></iframe>")
-      await bidi_session.browsing_context.navigate(
-          context=new_tab["context"], url=parent_url, wait="complete"
-      )
-      all_contexts = await bidi_session.browsing_context.get_tree()
 
-      # about:blank + a new tab are top-level contexts.
-      assert len(all_contexts) == 2
-      parent_info = all_contexts[1]
-      assert len(parent_info["children"]) == 1
-      child_info = parent_info["children"][0]
-      target_context = child_info["context"]
-    else:
-      raise Exception("Unknown context_kind")
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=url(EMPTY_PAGE + hash_before), wait="complete"
+    )
 
     await subscribe_events([FRAGMENT_NAVIGATED_EVENT])
 
     on_frame_navigated = wait_for_event(FRAGMENT_NAVIGATED_EVENT)
 
     target_url = url(EMPTY_PAGE + hash_after)
+
     if navigation_kind == "browsing_context.navigate":
       await bidi_session.browsing_context.navigate(
           context=target_context, url=target_url, wait="complete")
-    elif navigation_kind == "document.location":
-      await bidi_session.script.call_function(
-          raw_result=True,
-          function_declaration="""(url) => {
-              document.location = url;
-          }""",
-          arguments=[
-              {"type": "string", "value": target_url},
-          ],
-          await_promise=False,
-          target=ContextTarget(target_context),
-      )
     elif navigation_kind == "document.location":
       await bidi_session.script.call_function(
           raw_result=True,
@@ -237,6 +236,7 @@ async def test_navigate_in_the_same_document(
         },
         await on_frame_navigated,
     )
+
 
 @pytest.mark.parametrize("type_hint", ["tab", "window"])
 async def test_new_context(bidi_session, subscribe_events, type_hint):

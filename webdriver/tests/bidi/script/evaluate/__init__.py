@@ -1,5 +1,5 @@
 import pytest
-from ... import any_str
+from ... import any_string
 
 
 PRIMITIVE_VALUES = pytest.mark.parametrize(
@@ -127,7 +127,7 @@ REMOTE_VALUES = pytest.mark.parametrize(
         (
             "document.createElement('div')",
             {
-                "sharedId": any_str,
+                "sharedId": any_string,
                 "type": "node",
                 'value': {
                     'attributes': {},
@@ -265,7 +265,7 @@ PRIMITIVE_AND_REMOTE_VALUES = pytest.mark.parametrize(
         (
             "document.createElement('div')",
             {
-                "sharedId": any_str,
+                "sharedId": any_string,
                 "type": "node",
                 'value': {
                     'attributes': {},

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html class=reftest-wait>
 <title>Both focusable and unfocusable custom elements can show validation bubbles</title>
-<link rel=match href=ElementInternals-reportValidity-bubble-ref.html>
+<link rel=mismatch href=ElementInternals-reportValidity-bubble-ref.html>
 <link rel=help href=https://html.spec.whatwg.org/C/#report-validity-steps>
 <unfocusable-custom-element></unfocusable-custom-element>
 <script>
@@ -27,8 +26,4 @@ class UnfocusableCustomElement extends HTMLElement {
 customElements.define('unfocusable-custom-element', UnfocusableCustomElement);
 
 document.querySelector('unfocusable-custom-element').reportValidity();
-
-setTimeout(() => {
-  document.documentElement.classList.remove('reftest-wait');
-}, 2000);
 </script>

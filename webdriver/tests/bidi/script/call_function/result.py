@@ -136,21 +136,10 @@ async def test_primitive_values(bidi_session, top_context, await_promise, expres
         ("(function*() { yield 'a'; })", {
             "type": "generator"
         }),
-        ("new Int32Array()", {
-            "type": "typedarray"
-        }),
-        ("new ArrayBuffer()", {
-            "type": "arraybuffer"
-        }),
-        ("window", {
-            "type": "window"
-        }),
-        (
-            "new URL('https://example.com')",
-            {
-                "type": "object",
-            },
-        ),
+        ("new Int32Array()", {"type": "typedarray"}),
+        ("new ArrayBuffer()", {"type": "arraybuffer"}),
+        ("window", {"type": "window"}),
+        ("new URL('https://example.com')", {"type": "object", },),
     ],
 )
 async def test_remote_values(bidi_session, top_context, await_promise, expression, expected):

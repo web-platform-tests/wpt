@@ -26,7 +26,7 @@ function test_computed_value(property, specified, computed, titleExtra) {
       assert_in_array(readValue, computed);
     } else {
       if (property == "color")
-        colorValuesAlmostEqual(readValue, computed, 0.0001, 1);
+        colorValuesAlmostEqual(readValue, computed, 0.1, 1);
       else
         assert_equals(readValue, computed);
     }

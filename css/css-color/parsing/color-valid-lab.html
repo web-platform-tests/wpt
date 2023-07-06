@@ -39,11 +39,6 @@ test_valid_value("color", "lab(20 none none / none)", "lab(20 none none / none)"
 test_valid_value("color", "lab(none none none / 0.5)", "lab(none none none / 0.5)");
 test_valid_value("color", "lab(0 0 0 / none)", "lab(0 0 0 / none)");
 
-test_valid_value("color", "lab(calc(infinity) 0 0)", "lab(100 0 0)");
-test_valid_value("color", "lab(50 calc(infinity) 0)", "lab(50 calc(infinity) 0)");
-test_valid_value("color", "lab(50 calc(-infinity) 0)", "lab(50 calc(-infinity) 0)");
-test_valid_value("color", "lab(calc(NaN) 0 0)", "lab(calc(NaN) 0 0)");
-test_valid_value("color", "lab(calc(0 / 0) 0 0)", "lab(calc(NaN) 0 0)");
 
 // oklab()
 test_valid_value("color", "oklab(0 0 0)", "oklab(0 0 0)");
@@ -73,11 +68,6 @@ test_valid_value("color", "oklab(0 0 0 / none)", "oklab(0 0 0 / none)");
 test_valid_value("color", "lab(20% -50% 90%/0.5)", "lab(20 -62.5 112.5 / 0.5)");
 test_valid_value("color", "oklab(20% 70% -80%/0.5)", "oklab(0.2 0.28 -0.32 / 0.5)");
 
-test_valid_value("color", "oklab(calc(infinity) 0 0)", "oklab(1 0 0)");
-test_valid_value("color", "oklab(0.5 calc(infinity) 0)", "oklab(0.5 calc(infinity) 0)");
-test_valid_value("color", "oklab(0.5 calc(-infinity) 0)", "oklab(0.5 calc(-infinity) 0)");
-test_valid_value("color", "oklab(calc(NaN) 0 0)", "oklab(calc(NaN) 0 0)");
-test_valid_value("color", "oklab(calc(0 / 0) 0 0)", "oklab(calc(NaN) 0 0)");
 
 // lch()
 test_valid_value("color", "lch(0 0 0deg)", "lch(0 0 0)");

@@ -106,7 +106,10 @@
 <!-- skipped: img:not([alt]) -->
 <!-- skipped: img[alt=""] -->
 <img src="#" alt="image label" data-expectedlabel="image label" data-testname="html: img[alt] (non-empty)" class="ex">
-<!-- todo: same variants for picture element -->
+<picture>
+  <source srcset="#">
+  <img src="#" alt="picture label" data-expectedlabel="picture label" data-testname="html: picture > img[alt] (non-empty)" class="ex">
+</picture>
 <!-- elsewhere: image map area alt -> ./fragile/area-alt.html -->
 
 

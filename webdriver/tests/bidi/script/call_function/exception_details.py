@@ -80,6 +80,9 @@ async def test_invalid_function(bidi_session, top_context):
         ("(function(){})", {"type": "function", },),
         ("(async ()=>{})", {"type": "function", },),
         ("(async function(){})", {"type": "function", },),
+        ("(function*() { yield 'a'; })", {
+            "type": "function"
+        }),
         (
             "new RegExp(/foo/g)",
             {

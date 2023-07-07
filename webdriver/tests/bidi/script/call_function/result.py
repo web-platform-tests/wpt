@@ -78,6 +78,9 @@ async def test_primitive_values(bidi_session, top_context, await_promise, expres
         ("(function(){})", {"type": "function"}),
         ("(async ()=>{})", {"type": "function"}),
         ("(async function(){})", {"type": "function"}),
+        ("(function*() { yield 'a'; })", {
+            "type": "function"
+        }),
         (
             "new RegExp(/foo/g)",
             {"type": "regexp", "value": {"pattern": "foo", "flags": "g"}},

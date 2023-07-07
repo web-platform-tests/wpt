@@ -81,6 +81,9 @@ async def test_primitive_values(bidi_session, top_context, expression, expected)
                 },
             },
         ),
+        ("(function*() { yield 'a'; })", {
+            "type": "function"
+        }),
         (
             "new Date(1654004849000)",
             {

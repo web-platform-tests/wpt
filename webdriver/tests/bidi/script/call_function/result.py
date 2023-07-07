@@ -132,8 +132,7 @@ async def test_primitive_values(bidi_session, top_context, await_promise, expres
         ("new Proxy({}, {})", {
             "type": "proxy"
         }),
-        # generator
-        ("(function*() { yield 'a'; })", {
+        ("(function*() { yield 'a'; })()", {
             "type": "generator"
         }),
         ("new Int32Array()", {"type": "typedarray"}),

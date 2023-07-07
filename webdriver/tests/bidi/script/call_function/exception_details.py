@@ -137,8 +137,7 @@ async def test_invalid_function(bidi_session, top_context):
         ("new Proxy({}, {})", {
             "type": "proxy"
         }),
-        # generator
-        ("(function*() { yield 'a'; })", {
+        ("(function*() { yield 'a'; })()", {
             "type": "generator"
         }),
         ("Promise.resolve()", {"type": "promise", },),

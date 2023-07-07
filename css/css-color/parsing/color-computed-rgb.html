@@ -86,7 +86,7 @@ tests = [
     ["rgba(0%, 0%, 0%)", "rgb(0, 0, 0)", "RGB and RGBA are synonyms"],
     ["rgba(0, 0, 0)", "rgb(0, 0, 0)", "RGB and RGBA are synonyms"],
 
-    // calc(+/-infinity) remains infinity but calc(NaN) becomes zero for all channels.
+    // calc(+/-infinity) become 0, 255 respectively and calc(NaN) becomes zero for all channels.
     // See: https://github.com/w3c/csswg-drafts/issues/8629
     ["rgb(calc(infinity), 0, 0)", "rgb(255, 0, 0)", "Red channel resolves positive infinity to 255"],
     ["rgb(0, calc(infinity), 0)", "rgb(0, 255, 0)", "Green channel resolves positive infinity to 255"],

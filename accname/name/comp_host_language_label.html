@@ -28,7 +28,12 @@
 <label for="da">date label</label><input id="da" type="date" data-expectedlabel="date label" data-testname="html: label[for] input[type=date]" class="ex"><br>
 <label for="dtl">datetime-local label</label><input id="dtl" type="date" data-expectedlabel="datetime-local label" data-testname="html: label[for] input[type=datetime-local]" class="ex"><br>
 <label for="em">email label</label><input id="em" type="email" data-expectedlabel="email label" data-testname="html: label[for] input[type=email]" class="ex"><br>
+
+<!-- todo: results for input[type=file] currently differ in all engines -->
+<!--
 <label for="fi">file label</label><input id="fi" type="file" data-expectedlabel="file label" data-testname="html: label[for] input[type=file]" class="ex"><br>
+-->
+
 <!-- skipped: input[type=hidden] for/id n/a -->
 <!-- above: input[type=image] -->
 <label for="mo">month label</label><input id="mo" type="month" data-expectedlabel="month label" data-testname="html: label[for] input[type=month]" class="ex"><br>
@@ -53,7 +58,12 @@
 <label><input type="date" data-expectedlabel="date label" data-testname="html: label input[type=date] encapsulation" class="ex">date label</label><br>
 <label><input type="datetime-local" data-expectedlabel="datetime-local label" data-testname="html: label input[type=datetime-local] encapsulation" class="ex">datetime-local label</label><br>
 <label><input type="email" data-expectedlabel="email label" data-testname="html: label input[type=email] encapsulation" class="ex">email label</label><br>
+
+<!-- todo: results for input[type=file] currently differ in all engines -->
+<!--
 <label><input type="file" data-expectedlabel="file label" data-testname="html: label input[type=file] encapsulation" class="ex">file label</label><br>
+-->
+
 <!-- skipped: input[type=hidden] n/a -->
 <!-- above: input[type=image] -->
 <label><input type="month" data-expectedlabel="month label" data-testname="html: label input[type=month] encapsulation" class="ex">month label</label><br>
@@ -93,13 +103,15 @@
     <option>foo</option>
   </select>
 </label><br>
-<!-- select labeled by selected option -->
+<!-- todo: select labeled by selected option. All engines currently fail in different ways. Not sure which is correct. -->
+<!--
 <select data-expectedlabel="select label" data-testname="html: select w/selected option" class="ex">
   <option>foo</option>
   <option selected>select label</option>
   <option>bar</option>
 </select>
 <br>
+-->
 
 
 <h2>HTML img/picture</h2>

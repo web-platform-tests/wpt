@@ -40,4 +40,47 @@ test_serialization(
     'calc(sqrt(1) - 1)',
     'calc(0)',
     '0');
+
+test_serialization(
+    'pow(NaN, 1)',
+    'calc(NaN)',
+    'NaN');
+test_serialization(
+    'pow(1, NaN)',
+    'calc(NaN)',
+    'NaN');
+test_serialization(
+    'hypot(NaN)',
+    'calc(NaN)',
+    'NaN');
+test_serialization(
+    'sqrt(NaN)',
+    'calc(NaN)',
+    'NaN');
+
+test_serialization(
+    'pow(-infinity, 1)',
+    'calc(-infinity)',
+    '-infinity');
+test_serialization(
+    'hypot(-infinity)',
+    'calc(-infinity)',
+    '-infinity');
+test_serialization(
+    'sqrt(-infinity)',
+    'calc(-infinity)',
+    '-infinity');
+
+test_serialization(
+    'pow(infinity, 1)',
+    'calc(infinity)',
+    'infinity');
+test_serialization(
+    'hypot(infinity)',
+    'calc(infinity)',
+    'infinity');
+test_serialization(
+    'sqrt(infinity)',
+    'calc(infinity)',
+    'infinity');
 </script>

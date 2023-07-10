@@ -3,7 +3,7 @@ import webdriver.bidi.error as error
 from webdriver.bidi.modules.script import ContextTarget, SerializationOptions
 
 from ... import any_string, recursive_compare
-
+from .. import PRIMITIVE_VALUES
 
 @pytest.mark.asyncio
 async def test_default_arguments(bidi_session, top_context):
@@ -19,23 +19,7 @@ async def test_default_arguments(bidi_session, top_context):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "argument, expected",
-    [
-        ({"type": "undefined"}, "undefined"),
-        ({"type": "null"}, "null"),
-        ({"type": "string", "value": "foobar"}, "'foobar'"),
-        ({"type": "string", "value": "2"}, "'2'"),
-        ({"type": "number", "value": "-0"}, "-0"),
-        ({"type": "number", "value": "Infinity"}, "Infinity"),
-        ({"type": "number", "value": "-Infinity"}, "-Infinity"),
-        ({"type": "number", "value": 3}, "3"),
-        ({"type": "number", "value": 1.4}, "1.4"),
-        ({"type": "boolean", "value": True}, "true"),
-        ({"type": "boolean", "value": False}, "false"),
-        ({"type": "bigint", "value": "42"}, "42n"),
-    ],
-)
+@pytest.mark.parametrize("expected, argument", PRIMITIVE_VALUES)
 async def test_primitive_value(bidi_session, top_context, argument, expected):
     result = await bidi_session.script.call_function(
         function_declaration=f"""(arg) => {{

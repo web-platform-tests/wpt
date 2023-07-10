@@ -10,12 +10,12 @@ from . import PRIMITIVE_VALUES, REMOTE_VALUES
 @pytest.mark.parametrize("expression, expected", PRIMITIVE_VALUES + REMOTE_VALUES)
 @pytest.mark.asyncio
 async def test_exception_details(bidi_session, top_context, expression, expected):
-    function_declaration = f"()=>{{ throw {expression} }}"
+    function_declaration = f"async()=>{{ throw {expression} }}"
 
     with pytest.raises(ScriptEvaluateResultException) as exception:
         await bidi_session.script.call_function(
             function_declaration=function_declaration,
-            await_promise=False,
+            await_promise=True,
             target=ContextTarget(top_context["context"]),
         )
 

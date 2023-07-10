@@ -4,7 +4,7 @@ from . import REMOTE_VALUES
 
 
 @pytest.mark.asyncio
-@REMOTE_VALUES
+@pytest.mark.parametrize("expression, expected", REMOTE_VALUES)
 async def test_remote_values(bidi_session, top_context, expression, expected):
     result = await bidi_session.script.evaluate(
         expression=expression,

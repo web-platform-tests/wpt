@@ -4,7 +4,7 @@ from . import PRIMITIVE_VALUES
 
 
 @pytest.mark.asyncio
-@PRIMITIVE_VALUES
+@pytest.mark.parametrize("expression, expected", PRIMITIVE_VALUES)
 async def test_primitive_values(bidi_session, top_context, expression,
                                 expected):
     result = await bidi_session.script.evaluate(

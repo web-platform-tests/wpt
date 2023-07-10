@@ -3,11 +3,11 @@ from webdriver.bidi.modules.script import ContextTarget, ScriptEvaluateResultExc
 
 from ... import any_int, any_string, recursive_compare
 from .. import any_stack_trace
-from . import PRIMITIVE_AND_REMOTE_VALUES
+from . import PRIMITIVE_VALUES, REMOTE_VALUES
 
 
 @pytest.mark.asyncio
-@PRIMITIVE_AND_REMOTE_VALUES
+@pytest.mark.parametrize("expression, expected", PRIMITIVE_VALUES + REMOTE_VALUES)
 async def test_exception_details_await_promise(
     bidi_session, top_context, expression, expected
 ):

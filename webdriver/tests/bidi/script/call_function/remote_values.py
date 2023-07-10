@@ -1,6 +1,7 @@
 import pytest
 
 from webdriver.bidi.modules.script import ContextTarget, SerializationOptions
+from ... import recursive_compare
 from . import REMOTE_VALUES
 
 pytestmark = pytest.mark.asyncio
@@ -8,7 +9,8 @@ pytestmark = pytest.mark.asyncio
 
 @pytest.mark.parametrize("await_promise", [True, False])
 @pytest.mark.parametrize("expression, expected", REMOTE_VALUES)
-async def test_remote_values(bidi_session, top_context, await_promise, expression, expected):
+async def test_remote_values(bidi_session, top_context, await_promise,
+                             expression, expected):
     function_declaration = f"()=>{expression}"
     if await_promise:
         function_declaration = "async" + function_declaration
@@ -20,7 +22,7 @@ async def test_remote_values(bidi_session, top_context, await_promise, expressio
         serialization_options=SerializationOptions(max_object_depth=1),
     )
 
-    assert result == expected
+    recursive_compare(expected, result)
 
 
 async def test_remote_value_promise_await(bidi_session, top_context):

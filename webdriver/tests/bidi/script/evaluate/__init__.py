@@ -16,7 +16,7 @@ PRIMITIVE_VALUES: list[tuple[str, dict]] = [
     ("true", {"type": "boolean", "value": True}),
     ("false", {"type": "boolean", "value": False}),
     ("42n", {"type": "bigint", "value": "42"}),
-],
+]
 
 """Format: List[(expression, expected)]"""
 REMOTE_VALUES: list[tuple[str, dict]] = [

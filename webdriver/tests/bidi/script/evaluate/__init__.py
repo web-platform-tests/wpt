@@ -56,6 +56,9 @@ REMOTE_VALUES: list[tuple[str, dict]] = [
     ("(function(){})", {"type": "function", },),
     ("(async ()=>{})", {"type": "function", },),
     ("(async function(){})", {"type": "function", },),
+    ("(function*() { yield 'a'; })", {
+        "type": "function",
+    }),
     (
         "new RegExp(/foo/g)",
         {
@@ -66,9 +69,6 @@ REMOTE_VALUES: list[tuple[str, dict]] = [
             },
         },
     ),
-    ("(function*() { yield 'a'; })", {
-        "type": "function",
-    }),
     (
         "new Date(1654004849000)",
         {

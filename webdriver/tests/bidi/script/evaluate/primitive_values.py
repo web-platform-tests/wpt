@@ -1,6 +1,6 @@
 import pytest
 from webdriver.bidi.modules.script import ContextTarget
-from . import PRIMITIVE_VALUES
+from .. import PRIMITIVE_VALUES
 
 
 @pytest.mark.asyncio

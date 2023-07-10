@@ -1,7 +1,7 @@
 import pytest
 from webdriver.bidi.modules.script import ContextTarget, SerializationOptions
-from . import REMOTE_VALUES
 from ... import recursive_compare
+from .. import REMOTE_VALUES
 
 
 @pytest.mark.asyncio

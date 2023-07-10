@@ -1,6 +1,8 @@
 # META: timeout=long
 import pytest
 
+from webdriver.bidi.error import UnsupportedOperationException
+
 pytestmark = pytest.mark.asyncio
 
 
@@ -115,9 +117,9 @@ async def test_margin_same_as_page_dimension(
 
         # Check that content is out of page dimensions.
         await assert_pdf_content(print_value, [{"type": "string", "value": ""}])
-    except Exception as e:
-        # Some implementations are not capable of producing an empty PDF.
-        assert e.args[0] == 'invalid print parameters: content area is empty'
+    except UnsupportedOperationException:
+        # Empty content area: https://github.com/w3c/webdriver-bidi/issues/473
+        ...
 
 
 @pytest.mark.parametrize(

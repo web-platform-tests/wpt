@@ -70,6 +70,9 @@ REMOTE_VALUES = pytest.mark.parametrize(
                 },
             },
         ),
+        ("(function*() { yield 'a'; })", {
+            "type": "function",
+        }),
         (
             "new Date(1654004849000)",
             {
@@ -115,11 +118,10 @@ REMOTE_VALUES = pytest.mark.parametrize(
             "type": "iterator",
         }),
         ("new Proxy({}, {})", {
-            "type": "proxy"
+            "type": "proxy",
         }),
-        # generator
-        ("(function*() { yield 'a'; })", {
-            "type": "generator"
+        ("(function*() { yield 'a'; })()", {
+            "type": "generator",
         }),
         ("Promise.resolve()", {"type": "promise", },),
         ("new Int32Array()", {"type": "typedarray", },),
@@ -208,6 +210,9 @@ PRIMITIVE_AND_REMOTE_VALUES = pytest.mark.parametrize(
                 },
             },
         ),
+        ("(function*() { yield 'a'; })", {
+            "type": "function",
+        }),
         (
             "new Date(1654004849000)",
             {
@@ -253,11 +258,10 @@ PRIMITIVE_AND_REMOTE_VALUES = pytest.mark.parametrize(
             "type": "iterator",
         }),
         ("new Proxy({}, {})", {
-            "type": "proxy"
+            "type": "proxy",
         }),
-        # generator
-        ("(function*() { yield 'a'; })", {
-            "type": "generator"
+        ("(function*() { yield 'a'; })()", {
+            "type": "generator",
         }),
         ("Promise.resolve()", {"type": "promise", },),
         ("new Int32Array()", {"type": "typedarray", },),

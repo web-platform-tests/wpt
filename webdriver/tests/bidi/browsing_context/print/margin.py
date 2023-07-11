@@ -119,7 +119,7 @@ async def test_margin_same_as_page_dimension(
         await assert_pdf_content(print_value, [{"type": "string", "value": ""}])
     except UnsupportedOperationException:
         # Empty content area: https://github.com/w3c/webdriver-bidi/issues/473
-        ...
+        pass
 
 
 @pytest.mark.parametrize(

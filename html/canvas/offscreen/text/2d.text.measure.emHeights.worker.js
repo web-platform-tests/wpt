@@ -6,21 +6,16 @@
 importScripts("/resources/testharness.js");
 importScripts("/html/canvas/resources/canvas-tests.js");
 
-var t = async_test("Testing emHeights for OffscreenCanvas");
-var t_pass = t.done.bind(t);
-var t_fail = t.step_func(function(reason) {
-    throw reason;
-});
-t.step(function() {
+promise_test(async t => {
 
   var canvas = new OffscreenCanvas(100, 50);
   var ctx = canvas.getContext('2d');
 
   var f = new FontFace("CanvasTest", "url('/fonts/CanvasTest.ttf')");
   let fonts = (self.fonts ? self.fonts : document.fonts);
-  f.load();
+  await f.load();
   fonts.add(f);
-  fonts.ready.then(function() {
+
       ctx.font = '50px CanvasTest';
       ctx.direction = 'ltr';
       ctx.align = 'left'
@@ -31,6 +26,6 @@ t.step(function() {
       _assertSame(ctx.measureText('ABCD').emHeightAscent, 37.5, "ctx.measureText('ABCD').emHeightAscent", "37.5");
       _assertSame(ctx.measureText('ABCD').emHeightDescent, 12.5, "ctx.measureText('ABCD').emHeightDescent", "12.5");
       _assertSame(ctx.measureText('ABCD').emHeightDescent + ctx.measureText('ABCD').emHeightAscent, 50, "ctx.measureText('ABCD').emHeightDescent + ctx.measureText('ABCD').emHeightAscent", "50");
-  }).then(t_pass, t_fail);
-});
+  t.done();
+}, "Testing emHeights for OffscreenCanvas");
 done();

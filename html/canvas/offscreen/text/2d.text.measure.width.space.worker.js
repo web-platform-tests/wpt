@@ -6,21 +6,16 @@
 importScripts("/resources/testharness.js");
 importScripts("/html/canvas/resources/canvas-tests.js");
 
-var t = async_test("Space characters are converted to U+0020 and NOT collapsed");
-var t_pass = t.done.bind(t);
-var t_fail = t.step_func(function(reason) {
-    throw reason;
-});
-t.step(function() {
+promise_test(async t => {
 
   var canvas = new OffscreenCanvas(100, 50);
   var ctx = canvas.getContext('2d');
 
   var f = new FontFace("CanvasTest", "url('/fonts/CanvasTest.ttf')");
   let fonts = (self.fonts ? self.fonts : document.fonts);
-  f.load();
+  await f.load();
   fonts.add(f);
-  fonts.ready.then(function() {
+
       ctx.font = '50px CanvasTest';
       _assertSame(ctx.measureText('A B').width, 150, "ctx.measureText('A B').width", "150");
       _assertSame(ctx.measureText('A  B').width, 200, "ctx.measureText('A  B').width", "200");
@@ -29,6 +24,6 @@ t.step(function() {
 
       _assertSame(ctx.measureText(' AB').width, 150, "ctx.measureText(' AB').width", "150");
       _assertSame(ctx.measureText('AB ').width, 150, "ctx.measureText('AB ').width", "150");
-  }).then(t_pass, t_fail);
-});
+  t.done();
+}, "Space characters are converted to U+0020 and NOT collapsed");
 done();

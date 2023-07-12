@@ -522,7 +522,7 @@ class RefTestImplementation:
             fuzzy = self.get_fuzzy(test, nodes, relation)
 
             for i, node in enumerate(nodes):
-                success, data = self.get_hash(subsuite, node, viewport_size, dpi, page_ranges)
+                success, data = self.get_hash(node, viewport_size, dpi, page_ranges)
                 if success is False:
                     return {"status": data[0], "message": data[1]}
 

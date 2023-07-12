@@ -1,10 +1,11 @@
 # mypy: allow-untyped-defs
 
+import itertools
 import threading
 import time
 import traceback
 from queue import Empty
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from typing import Any, Mapping, Optional
 
 from mozlog import structuredlog, capture
@@ -335,8 +336,8 @@ class TestRunnerManager(threading.Thread):
         self.logger = None
 
         self.test_count = 0
-        self.unexpected_tests = set()
-        self.unexpected_pass_tests = set()
+        self.unexpected_fail_tests = defaultdict(list)
+        self.unexpected_pass_tests = defaultdict(list)
 
         # This may not really be what we want
         self.daemon = True
@@ -708,9 +709,6 @@ class TestRunnerManager(threading.Thread):
         is_unexpected = expected != status and status not in known_intermittent
         is_pass_or_expected = status in ["OK", "PASS"] or (not is_unexpected)
 
-        if is_unexpected or subtest_unexpected:
-            self.unexpected_tests.add(test.id)
-
         # A result is unexpected pass if the test or any subtest run
         # unexpectedly, and the overall status is expected or passing (OK for test
         # harness test, or PASS for reftest), and all unexpected results for
@@ -718,7 +716,9 @@ class TestRunnerManager(threading.Thread):
         is_unexpected_pass = ((is_unexpected or subtest_unexpected) and
                               is_pass_or_expected and subtest_all_pass_or_expected)
         if is_unexpected_pass:
-            self.unexpected_pass_tests.add(test.id)
+            self.unexpected_pass_tests[self.state.subsuite, test.test_type].append(test)
+        elif is_unexpected or subtest_unexpected:
+            self.unexpected_fail_tests[self.state.subsuite, test.test_type].append(test)
 
         if "assertion_count" in file_result.extra:
             assertion_count = file_result.extra["assertion_count"]
@@ -787,7 +787,7 @@ class TestRunnerManager(threading.Thread):
                 subsuite, test_type, test, test_group, group_metadata, force_stop)
         else:
             return RunnerManagerState.running(
-                subsuite, test_type, test_group, group_metadata)
+                subsuite, test_type, test, test_group, group_metadata)
 
     def restart_runner(self):
         """Stop and restart the TestRunner"""
@@ -993,8 +993,16 @@ class ManagerGroup:
     def test_count(self):
         return sum(manager.test_count for manager in self.pool)
 
-    def unexpected_tests(self):
-        return set().union(*(manager.unexpected_tests for manager in self.pool))
+    def unexpected_fail_tests(self):
+        rv = defaultdict(list)
+        for manager in self.pool:
+            for (subsuite, test_type), tests in manager.unexpected_fail_tests.items():
+                rv[(subsuite, test_type)].extend(tests)
+        return rv
 
     def unexpected_pass_tests(self):
-        return set().union(*(manager.unexpected_pass_tests for manager in self.pool))
+        rv = defaultdict(list)
+        for manager in self.pool:
+            for (subsuite, test_type), tests in manager.unexpected_pass_tests.items():
+                rv[(subsuite, test_type)].extend(tests)
+        return rv

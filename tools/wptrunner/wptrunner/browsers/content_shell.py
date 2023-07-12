@@ -42,8 +42,10 @@ def check_args(**kwargs):
     pass
 
 
-def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
+def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs):
     args = list(kwargs["binary_args"])
+    if subsuite.config.get("binary_args"):
+        args.extend(subsuite.config.get("binary_args"))
 
     args.append("--ignore-certificate-errors-spki-list=%s" %
         ','.join(chrome_spki_certs.IGNORE_CERTIFICATE_ERRORS_SPKI_LIST))
@@ -159,9 +161,11 @@ class ContentShellBrowser(Browser):
         self._stdin_queue.put(None)
         self._stdin_writer.join(2)
 
-        for thread in [self._stdout_reader, self._stderr_reader, self._stdin_writer]:
+        threads = [self._stdout_reader, self._stderr_reader, self._stdin_writer]
+        thread_names = ["stdout-reader", "stderr-reader", "stdin-writer"]
+        for name, thread in zip(thread_names, threads):
             if thread.is_alive():
-                self.logger.warning("Content shell IO threads did not shut down gracefully.")
+                self.logger.warning(f"Content shell IO thread {name} did not shut down gracefully.")
                 return False
 
         stopped = not self.is_alive()

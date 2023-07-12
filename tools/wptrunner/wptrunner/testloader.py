@@ -10,7 +10,7 @@ from abc import ABCMeta, abstractmethod
 from datetime import datetime
 from queue import Empty
 from collections import defaultdict, deque, namedtuple
-from typing import cast, Any, Mapping
+from typing import cast, Any, List, Mapping, Optional, Set
 
 from . import manifestinclude
 from . import manifestexpected
@@ -51,15 +51,16 @@ class TestGroups:
                     subsuite = None
                 else:
                     subsuites, group_name = id_parts
-                elif subsuite not in subsuites:
-                    raise ValueError(f"Unknown subsuite {subsuite} in group data {group}")
+                    if subsuite not in subsuites:
+                        raise ValueError(f"Unknown subsuite {subsuite} in group data {group}")
                 self.group_by_test[(subsuite, test_id)] = group_name
                 self.tests_by_group[group_name].add(test_id)
 
 
-def load_subsuites(logger, base_run_info, path: str | None, include_subsuites: set[str]):
+def load_subsuites(logger, base_run_info, path: Optional[str], include_subsuites: Set[str]):
     subsuites: Mapping[str, Subsuite] = {}
     run_all_subsuites = not include_subsuites
+    include_subsuites.add("")
     now = datetime.now()
 
     def maybe_add_subsuite(name, data):
@@ -71,16 +72,16 @@ def load_subsuites(logger, base_run_info, path: str | None, include_subsuites: s
             subsuites[name] = Subsuite(name,
                                        base_run_info,
                                        config=data.get("config", {}),
-                                       run_info=data.get("run_info", {}),
+                                       run_info_extras=data.get("run_info", {}),
                                        include=data.get("include"),
-                                       tags=set(data["tags"]) if "tags" in subsuite else None)
+                                       tags=set(data["tags"]) if "tags" in data else None)
             if name in include_subsuites:
                 include_subsuites.remove(name)
 
     maybe_add_subsuite("", {})
 
     if path is None:
-        if not run_all_subsuites and include_subsuites:
+        if include_subsuites:
             raise ValueError("Unrecognised subsuites {','.join(include_subsuites)}, missing --subsuite-file?")
         return subsuites
 
@@ -96,7 +97,7 @@ def load_subsuites(logger, base_run_info, path: str | None, include_subsuites: s
             raise ValueError("Subsuites must have a non-empty name")
         maybe_add_subsuite(key, subsuite)
 
-    if not run_all_subsuites and include_subsuites:
+    if include_subsuites:
         raise ValueError(f"Unrecognised subsuites {','.join(include_subsuites)}")
 
     return subsuites
@@ -108,8 +109,9 @@ class Subsuite:
                  base_run_info,
                  config: Mapping[str, Any],
                  run_info_extras: Mapping[str, Any],
-                 include: list[str] | None = None,
-                 tags: set[str] | None = None):
+                 include: Optional[List[str]] = None,
+                 tags: Optional[Set[str]] = None):
+        self.name = name
         self.config = config
         self.run_info_extras = run_info_extras if run_info_extras is not None else {}
         self.run_info_extras["subsuite"] = name
@@ -120,17 +122,20 @@ class Subsuite:
         run_info.update(self.run_info_extras)
         self.run_info = run_info
 
-    @property
-    def test_filters(self):
-        filters = []
-        if self.include is not None:
-            # This is quite slow because we end up needing to read all the metadata files
-            # We could instead handle include as part of IncludeManifest
-            filters.append(IdFilter([f"/{item}" if not item.startswith("/") else item for item in self.include]))
-        if self.tags is not None:
-            filters.append(TagFilter(self.tags))
-        return filters
+    def manifest_filters(self, manifests):
+        if self.name:
+            manifest_filters = [TestFilter(manifests,
+                                           include=self.include,
+                                           explicit=True)]
+            return manifest_filters
 
+        # use base manifest_filters for default subsuite
+        return []
+
+    def __repr__(self):
+        return "Subsuite('%s', config:%s, run_info:%s)" % (self.name or 'default',
+                                                           str(self.config),
+                                                           str(self.run_info))
 
 
 def read_include_from_file(file):
@@ -261,15 +266,6 @@ class TestFilter:
                 yield test_type, test_path, include_tests
 
 
-class IdFilter:
-    def __init__(self, id_prefixes):
-        self.id_prefixes = id_prefixes
-
-    def __call__(self, test):
-        #TODO: this should probably only match either entire directories, entire files or the full test ID
-        return any(test.id.startswith(prefix) for prefix in self.id_prefixes)
-
-
 class TagFilter:
     def __init__(self, tags):
         self.tags = set(tags)
@@ -339,7 +335,7 @@ class TestLoader:
         self.subsuites = subsuites
 
         self.manifest_filters = manifest_filters if manifest_filters is not None else []
-        self.base_test_filters = test_filters if test_filters is not None else []
+        self.test_filters = test_filters if test_filters is not None else []
 
         self.manifests = test_manifests
         self.tests = None
@@ -404,12 +400,12 @@ class TestLoader:
             metadata_path, test_path, run_info)
         return inherit_metadata, test_metadata
 
-    def iter_tests(self, run_info, test_filters):
+    def iter_tests(self, run_info, manifest_filters):
         manifest_items = []
         manifests_by_url_base = {}
 
         for manifest in sorted(self.manifests.keys(), key=lambda x:x.url_base):
-            manifest_iter = iterfilter(self.manifest_filters,
+            manifest_iter = iterfilter(manifest_filters,
                                        manifest.itertypes(*self.test_types))
             manifest_items.extend(manifest_iter)
             manifests_by_url_base[manifest.url_base] = manifest
@@ -424,7 +420,7 @@ class TestLoader:
             inherit_metadata, test_metadata = self.load_metadata(run_info, manifest_file, metadata_path, test_path)
             for test in tests:
                 wpt_test = self.get_test(manifest_file, test, inherit_metadata, test_metadata)
-                if all(f(wpt_test) for f in test_filters):
+                if all(f(wpt_test) for f in self.test_filters):
                     yield test_path, test_type, wpt_test
 
     def _load_tests(self):
@@ -436,8 +432,11 @@ class TestLoader:
             tests_enabled[subsuite_name] = defaultdict(list)
             tests_disabled[subsuite_name] = defaultdict(list)
             run_info = subsuite.run_info
-            test_filters = self.base_test_filters[:] + subsuite.test_filters
-            for test_path, test_type, test in self.iter_tests(run_info, test_filters):
+            if not subsuite_name:
+                manifest_filters = self.manifest_filters
+            else:
+                manifest_filters = subsuite.manifest_filters(self.manifests)
+            for test_path, test_type, test in self.iter_tests(run_info, manifest_filters):
                 enabled = not test.disabled()
                 if not self.include_https and test.environment["protocol"] == "https":
                     enabled = False
@@ -602,10 +601,10 @@ class PathGroupedSource(TestSource):
         groups, state = [], {}
         for (subsuite, test_type), tests in tests_by_type.items():
             for test in tests:
-                if cls.new_group(state, test_type, test, **kwargs):
+                if cls.new_group(state, subsuite, test_type, test, **kwargs):
                     group_metadata = cls.group_metadata(state)
-                    groups.append(TestGroup(deque(), test_type, group_metadata))
-                group, _, metadata = groups[-1]
+                    groups.append(TestGroup(deque(), subsuite, test_type, group_metadata))
+                group, _, _, metadata = groups[-1]
                 group.append(test)
                 test.update_metadata(metadata)
         return groups
@@ -627,7 +626,7 @@ class PathGroupedSource(TestSource):
 
     @classmethod
     def group_metadata(cls, state):
-        return {"scope": "/%s" % "/".join(state["prev_path"])}
+        return {"scope": "/%s" % "/".join(state["prev_group_key"][2])}
 
 
 class GroupFileTestSource(TestSource):

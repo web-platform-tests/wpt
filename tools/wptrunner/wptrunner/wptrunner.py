@@ -59,9 +59,16 @@ def get_loader(test_paths, product, **kwargs):
                                          device_serials=kwargs.get("device_serial"),
                                          adb_binary=kwargs.get("adb_binary"))
 
+    subsuites = testloader.load_subsuites(logger,
+                                          base_run_info,
+                                          kwargs["subsuite_file"],
+                                          set(kwargs["subsuites"] or []))
 
-    subsuites = testloader.load_subsuites(logger, base_run_info, kwargs["subsuite_file"], kwargs["subsuites"])
-    test_groups = testloader.TestGroups(logger, kwargs["test_groups_file"]) if kwargs["test_groups_file"] is not None else None
+    if kwargs["test_groups_file"] is not None:
+        test_groups = testloader.TestGroups(logger,
+                                            kwargs["test_groups_file"])
+    else:
+        test_groups = None
 
     test_manifests = testloader.ManifestLoader(test_paths,
                                                force_manifest_update=kwargs["manifest_update"],
@@ -169,8 +176,7 @@ def log_suite_start(tests_by_group, base_run_info, subsuites, run_by_dir):
                        extra={"run_by_dir": run_by_dir})
 
     for name, subsuite in subsuites.items():
-        if name is not None:
-            logger.add_subsuite(name=name, run_info=subsuite.run_info_extras)
+        logger.add_subsuite(name=name, run_info=subsuite.run_info_extras)
 
 
 def run_test_iteration(test_status, test_loader, test_source,
@@ -189,6 +195,11 @@ def run_test_iteration(test_status, test_loader, test_source,
             tests_by_type[(subsuite_name, test_type)].extend(test_loader.disabled_tests[subsuite_name][test_type])
 
     tests_by_group = test_source.cls.tests_by_group(tests_by_type, **kwargs)
+
+    log_suite_start(tests_by_group,
+                    test_loader.base_run_info,
+                    test_loader.subsuites,
+                    kwargs["run_by_dir"])
 
     for test_type in kwargs["test_types"]:
         executor_cls = product.executor_classes.get(test_type)
@@ -237,27 +248,25 @@ def run_test_iteration(test_status, test_loader, test_source,
             else:
                 tests_to_run[(subsuite_name, test_type)] = test_loader.tests[subsuite_name][test_type]
 
-    log_suite_start(tests_by_group, test_loader.base_run_info, test_loader.subsuites, kwargs["run_by_dir"])
-
-    unexpected_tests = set()
-    unexpected_pass_tests = set()
+    unexpected_fail_tests = defaultdict(list)
+    unexpected_pass_tests = defaultdict(list)
     recording.pause()
     retry_counts = kwargs["retry_unexpected"]
     for i in range(retry_counts + 1):
         if i > 0:
-            if not kwargs["fail_on_unexpected_pass"]:
-                unexpected_fail_tests = unexpected_tests - unexpected_pass_tests
-            else:
-                unexpected_fail_tests = unexpected_tests
-            if len(unexpected_fail_tests) == 0:
+            if kwargs["fail_on_unexpected_pass"]:
+                for (subtests, test_type), tests in unexpected_pass_tests.items():
+                    unexpected_fail_tests[(subtests, test_type)].extend(tests)
+            tests_to_run = unexpected_fail_tests
+            if sum(len(tests) for tests in tests_to_run.values()) == 0:
                 break
-            for key, tests in tests_to_run.items():
-                tests_to_run[key] = [test for test in tests
-                                     if test.id in unexpected_fail_tests]
+            tests_by_group = test_source.cls.tests_by_group(tests_to_run, **kwargs)
 
             logger.suite_end()
-            # TODO: The first argument here is wrong, because it's (subsuite, test_type) not group
-            log_suite_start(tests_to_run, test_loader.base_run_info, test_loader.subsuites, kwargs["run_by_dir"])
+            log_suite_start(tests_by_group,
+                            test_loader.base_run_info,
+                            test_loader.subsuites,
+                            kwargs["run_by_dir"])
 
         with ManagerGroup("web-platform-tests",
                           test_source,
@@ -282,11 +291,12 @@ def run_test_iteration(test_status, test_loader, test_source,
                 raise
 
             test_status.total_tests += manager_group.test_count()
-            unexpected_tests = manager_group.unexpected_tests()
+            unexpected_fail_tests = manager_group.unexpected_fail_tests()
             unexpected_pass_tests = manager_group.unexpected_pass_tests()
 
-    test_status.unexpected += len(unexpected_tests)
-    test_status.unexpected_pass += len(unexpected_pass_tests)
+    test_status.unexpected_pass += sum(len(tests) for tests in unexpected_pass_tests.values())
+    test_status.unexpected += sum(len(tests) for tests in unexpected_pass_tests.values())
+    test_status.unexpected += sum(len(tests) for tests in unexpected_fail_tests.values())
     logger.suite_end()
     return True
 

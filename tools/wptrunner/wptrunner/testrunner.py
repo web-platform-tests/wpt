@@ -1,6 +1,5 @@
 # mypy: allow-untyped-defs
 
-import itertools
 import threading
 import time
 import traceback
@@ -789,7 +788,7 @@ class TestRunnerManager(threading.Thread):
             return RunnerManagerState.running(
                 subsuite, test_type, test, test_group, group_metadata)
 
-    def restart_runner(self):
+    def restart_runner(self) -> None:
         """Stop and restart the TestRunner"""
         assert isinstance(self.state, RunnerManagerState.restarting)
         self.stop_runner(force=self.state.force_stop)
@@ -797,14 +796,14 @@ class TestRunnerManager(threading.Thread):
             self.state.subsuite, self.state.test_type, self.state.test,
             self.state.test_group, self.state.group_metadata, 0)
 
-    def log(self, data: Mapping[str, Any]):
+    def log(self, data: Mapping[str, Any]) -> None:
         self.logger.log_raw(data)
 
-    def error(self, message: str):
+    def error(self, message: str) -> None:
         self.logger.error(message)
         self.restart_runner()
 
-    def stop_runner(self, force: bool=False):
+    def stop_runner(self, force: bool = False) -> None:
         """Stop the TestRunner and the browser binary."""
         self.recording.set(["testrunner", "stop_runner"])
         if self.test_runner_proc is None:
@@ -827,7 +826,7 @@ class TestRunnerManager(threading.Thread):
         self.remote_queue = None
         self.recording.pause()
 
-    def ensure_runner_stopped(self):
+    def ensure_runner_stopped(self) -> None:
         self.logger.debug("ensure_runner_stopped")
         if self.test_runner_proc is None:
             return
@@ -863,15 +862,15 @@ class TestRunnerManager(threading.Thread):
         self.ensure_runner_stopped()
         return RunnerManagerState.stop(False)
 
-    def send_message(self, command: str, *args):
+    def send_message(self, command: str, *args) -> None:
         """Send a message to the remote queue (to Executor)."""
         self.remote_queue.put((command, args))
 
-    def inject_message(self, command: str, *args):
+    def inject_message(self, command: str, *args) -> None:
         """Inject a message to the command queue (from Executor)."""
         self.command_queue.put((command, args))
 
-    def cleanup(self):
+    def cleanup(self) -> None:
         self.logger.debug("TestRunnerManager cleanup")
         if self.browser:
             self.browser.cleanup()

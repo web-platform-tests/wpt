@@ -57,13 +57,16 @@ class TestGroups:
                 self.tests_by_group[group_name].add(test_id)
 
 
-def load_subsuites(logger, base_run_info, path: Optional[str], include_subsuites: Set[str]):
+def load_subsuites(logger,
+                   base_run_info: wpttest.RunInfo,
+                   path: Optional[str],
+                   include_subsuites: Set[str]) -> Mapping[str, Subsuite]:
     subsuites: Mapping[str, Subsuite] = {}
     run_all_subsuites = not include_subsuites
     include_subsuites.add("")
     now = datetime.now()
 
-    def maybe_add_subsuite(name, data):
+    def maybe_add_subsuite(name: str, data: Mapping[str, Any]) -> None:
         if run_all_subsuites or name in include_subsuites:
             if data.get("expires"):
                 if datetime.fromisoformat(data["expires"]) < now:
@@ -106,7 +109,7 @@ def load_subsuites(logger, base_run_info, path: Optional[str], include_subsuites
 class Subsuite:
     def __init__(self,
                  name: str,
-                 base_run_info,
+                 base_run_info: wpttest.RunInfo,
                  config: Mapping[str, Any],
                  run_info_extras: Mapping[str, Any],
                  include: Optional[List[str]] = None,

@@ -803,7 +803,7 @@ class TestRunnerManager(threading.Thread):
         self.logger.error(message)
         self.restart_runner()
 
-    def stop_runner(self, force: bool = False) -> None:
+    def stop_runner(self, force=False):
         """Stop the TestRunner and the browser binary."""
         self.recording.set(["testrunner", "stop_runner"])
         if self.test_runner_proc is None:
@@ -826,15 +826,13 @@ class TestRunnerManager(threading.Thread):
         self.remote_queue = None
         self.recording.pause()
 
-    def ensure_runner_stopped(self) -> None:
+    def ensure_runner_stopped(self):
         self.logger.debug("ensure_runner_stopped")
         if self.test_runner_proc is None:
             return
 
         self.browser.stop(force=True)
-        self.logger.debug("waiting for runner process to end")
         self.test_runner_proc.join(10)
-        self.logger.debug("After join")
         mp = mpcontext.get_context()
         if self.test_runner_proc.is_alive():
             # This might leak a file handle from the queue
@@ -862,15 +860,15 @@ class TestRunnerManager(threading.Thread):
         self.ensure_runner_stopped()
         return RunnerManagerState.stop(False)
 
-    def send_message(self, command: str, *args) -> None:
+    def send_message(self, command, *args):
         """Send a message to the remote queue (to Executor)."""
         self.remote_queue.put((command, args))
 
-    def inject_message(self, command: str, *args) -> None:
+    def inject_message(self, command, *args):
         """Inject a message to the command queue (from Executor)."""
         self.command_queue.put((command, args))
 
-    def cleanup(self) -> None:
+    def cleanup(self):
         self.logger.debug("TestRunnerManager cleanup")
         if self.browser:
             self.browser.cleanup()

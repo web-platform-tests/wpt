@@ -321,7 +321,7 @@ class TestLoader:
                  test_manifests,
                  test_types,
                  base_run_info,
-                 subsuites,
+                 subsuites=None,
                  manifest_filters=None,
                  test_filters=None,
                  chunk_type="none",
@@ -336,7 +336,7 @@ class TestLoader:
 
         self.test_types = test_types
         self.base_run_info = base_run_info
-        self.subsuites = subsuites
+        self.subsuites = subsuites or {}
 
         self.manifest_filters = manifest_filters if manifest_filters is not None else []
         self.test_filters = test_filters if test_filters is not None else []

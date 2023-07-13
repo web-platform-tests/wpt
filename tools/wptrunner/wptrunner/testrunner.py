@@ -788,7 +788,7 @@ class TestRunnerManager(threading.Thread):
             return RunnerManagerState.running(
                 subsuite, test_type, test, test_group, group_metadata)
 
-    def restart_runner(self) -> None:
+    def restart_runner(self):
         """Stop and restart the TestRunner"""
         assert isinstance(self.state, RunnerManagerState.restarting)
         self.stop_runner(force=self.state.force_stop)
@@ -799,7 +799,7 @@ class TestRunnerManager(threading.Thread):
     def log(self, data: Mapping[str, Any]) -> None:
         self.logger.log_raw(data)
 
-    def error(self, message: str) -> None:
+    def error(self, message):
         self.logger.error(message)
         self.restart_runner()
 

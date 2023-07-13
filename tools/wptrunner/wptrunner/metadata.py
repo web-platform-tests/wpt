@@ -478,7 +478,7 @@ class ExpectedUpdater:
     def suite_start(self, data):
         self.base_run_info = data["run_info"]
         run_info = RunInfo(data["run_info"])
-        self.run_info_by_subsuite[None] = run_info_intern.store(run_info)
+        self.run_info_by_subsuite[""] = run_info_intern.store(run_info)
 
     def add_subsuite(self, data):
         run_info_data = self.base_run_info.copy()

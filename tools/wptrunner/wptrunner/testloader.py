@@ -58,7 +58,7 @@ class TestGroups:
                 self.tests_by_group[group_name].add(test_id)
 
 
-def load_subsuites(logger,
+def load_subsuites(logger: Any,
                    base_run_info: wpttest.RunInfo,
                    path: Optional[str],
                    include_subsuites: Set[str]) -> Dict[str, Subsuite]:

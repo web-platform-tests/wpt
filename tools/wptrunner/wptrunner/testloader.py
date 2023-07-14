@@ -122,7 +122,7 @@ class Subsuite:
         self.include = include
         self.tags = tags
 
-        run_info = base_run_info.copy()
+        run_info = base_run_info.copy() if base_run_info is not None else {}
         run_info.update(self.run_info_extras)
         self.run_info = run_info
 

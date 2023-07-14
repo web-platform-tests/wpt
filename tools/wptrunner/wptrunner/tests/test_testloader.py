@@ -90,17 +90,17 @@ def test_loader_h2_tests():
 
     # By default, the loader should include the h2 test.
     loader = TestLoader({manifest: {"metadata_path": ""}}, ["testharness"], None, subsuites)
-    assert "testharness" in loader.tests
-    assert len(loader.tests["testharness"]) == 2
+    assert "testharness" in loader.tests[""]
+    assert len(loader.tests[""]["testharness"]) == 2
     assert len(loader.disabled_tests) == 0
 
     # We can also instruct it to skip them.
     loader = TestLoader({manifest: {"metadata_path": ""}}, ["testharness"], None, subsuites, include_h2=False)
-    assert "testharness" in loader.tests
-    assert len(loader.tests["testharness"]) == 1
-    assert "testharness" in loader.disabled_tests
-    assert len(loader.disabled_tests["testharness"]) == 1
-    assert loader.disabled_tests["testharness"][0].url == "/a/bar.h2.html"
+    assert "testharness" in loader.tests[""]
+    assert len(loader.tests[""]["testharness"]) == 1
+    assert "testharness" in loader.disabled_tests[""]
+    assert len(loader.disabled_tests[""]["testharness"]) == 1
+    assert loader.disabled_tests[""]["testharness"][0].url == "/a/bar.h2.html"
 
 
 @pytest.mark.xfail(sys.platform == "win32",
@@ -177,13 +177,13 @@ def test_loader_filter_tags():
                                  include=None,
                                  tags=None)
         loader = TestLoader({manifest: {"metadata_path": metadata_path}}, ["testharness"], None, subsuites)
-        assert len(loader.tests["testharness"]) == 2
+        assert len(loader.tests[""]["testharness"]) == 2
 
         loader = TestLoader({manifest: {"metadata_path": metadata_path}}, ["testharness"], None, subsuites,
                             test_filters=[TagFilter({"test-include"})])
-        assert len(loader.tests["testharness"]) == 1
-        assert loader.tests["testharness"][0].id == "/a/bar.html"
-        assert loader.tests["testharness"][0].tags == {"dir:a", "test-include"}
+        assert len(loader.tests[""]["testharness"]) == 1
+        assert loader.tests[""]["testharness"][0].id == "/a/bar.html"
+        assert loader.tests[""]["testharness"][0].tags == {"dir:a", "test-include"}
 
 
 def test_chunk_hash(manifest):

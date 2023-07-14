@@ -44,6 +44,7 @@ def test_webkitgtk_certificate_domain_list(product):
     kwargs["pause_after_test"] = False
     kwargs["pause_on_unexpected"] = False
     kwargs["debug_test"] = False
+    kwargs["subsuite"] = None
     with ConfigBuilder(logger,
                        browser_host="example.net",
                        alternate_hosts={"alt": "example.org"},

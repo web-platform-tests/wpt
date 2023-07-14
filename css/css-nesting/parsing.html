@@ -41,7 +41,12 @@
   testNestedSelector(":is(.bar, .baz)", {expected:"&:is(.bar, .baz)"});
   testNestedSelector("&:is(.bar, &.baz)");
   testNestedSelector(":is(.bar, &.baz)");
+  testNestedSelector("div&");
   testNestedSelector(".bar&");
+  testNestedSelector("[bar]&");
+  testNestedSelector("#bar&");
+  testNestedSelector(":hover&");
+  testNestedSelector(":is(div)&");
   testNestedSelector(".bar > &");
   testNestedSelector("& .bar & .baz & .qux");
   testNestedSelector("& > section, & > article");

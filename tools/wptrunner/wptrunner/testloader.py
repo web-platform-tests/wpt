@@ -336,6 +336,7 @@ class TestLoader:
 
         self.test_types = test_types
         self.base_run_info = base_run_info
+        self.subsuites = subsuites
 
         self.manifest_filters = manifest_filters if manifest_filters is not None else []
         self.test_filters = test_filters if test_filters is not None else []

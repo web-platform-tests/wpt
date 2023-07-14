@@ -22,9 +22,20 @@
       ss.insertRule(ruleText);
       assert_equals(ss.rules.length, 1, "Outer rule should exist.");
       const rule = ss.rules[0];
-      assert_equals(rule.cssRles.length, 1, "Inner rule should exist.");
+      assert_equals(rule.cssRules.length, 1, "Inner rule should exist.");
       assert_equals(rule.selectorText, expected, `Inner rule's selector should be "${expected}".`);
     }, ruleText);
+  }
+
+  function testInvalidSelector(sel {parent=".foo"}={}) {
+    resetStylesheet();
+    const ruleText = `${parent} { ${sel} { color: green; }}`
+    test(()=>{
+      ss.insertRule(ruleText);
+      assert_equals(ss.rules.length, 1, "Outer rule should exist.");
+      const rule = ss.rules[0];
+      assert_equals(rule.cssRules.length, 0, "Inner rule should not exist.");
+    }, "INVALID: " + ruleText);
   }
 
   testNestedSelector("&");
@@ -51,4 +62,6 @@
   testNestedSelector("& .bar & .baz & .qux");
   testNestedSelector("& > section, & > article");
   testNestedSelector("& + .baz, &.qux", {parent:".foo, .bar"});
+
+  testInvalidSelector("&div");
 </script>

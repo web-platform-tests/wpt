@@ -11,6 +11,7 @@ from ..testloader import (
     DirectoryHashChunker,
     IDHashChunker,
     PathHashChunker,
+    Subsuite,
     TestFilter,
     TestLoader,
     TagFilter,
@@ -79,15 +80,22 @@ def test_loader_h2_tests():
         "version": 8,
     }
     manifest = WPTManifest.from_json("/", manifest_json)
+    subsuites = {}
+    subsuites[""] = Subsuite("",
+                             None,
+                             config={},
+                             run_info_extras={},
+                             include=None,
+                             tags=None)
 
     # By default, the loader should include the h2 test.
-    loader = TestLoader({manifest: {"metadata_path": ""}}, ["testharness"], None)
+    loader = TestLoader({manifest: {"metadata_path": ""}}, ["testharness"], None, subsuites)
     assert "testharness" in loader.tests
     assert len(loader.tests["testharness"]) == 2
     assert len(loader.disabled_tests) == 0
 
     # We can also instruct it to skip them.
-    loader = TestLoader({manifest: {"metadata_path": ""}}, ["testharness"], None, include_h2=False)
+    loader = TestLoader({manifest: {"metadata_path": ""}}, ["testharness"], None, subsuites, include_h2=False)
     assert "testharness" in loader.tests
     assert len(loader.tests["testharness"]) == 1
     assert "testharness" in loader.disabled_tests
@@ -161,11 +169,17 @@ def test_loader_filter_tags():
         os.makedirs(a_path)
         with open(os.path.join(a_path, "bar.html.ini"), "w") as f:
             f.write("tags: [test-include]\n")
-
-        loader = TestLoader({manifest: {"metadata_path": metadata_path}}, ["testharness"], None)
+        subsuites = {}
+        subsuites[""] = Subsuite("",
+                                 None,
+                                 config={},
+                                 run_info_extras={},
+                                 include=None,
+                                 tags=None)
+        loader = TestLoader({manifest: {"metadata_path": metadata_path}}, ["testharness"], None, subsuites)
         assert len(loader.tests["testharness"]) == 2
 
-        loader = TestLoader({manifest: {"metadata_path": metadata_path}}, ["testharness"], None,
+        loader = TestLoader({manifest: {"metadata_path": metadata_path}}, ["testharness"], None, subsuites,
                             test_filters=[TagFilter({"test-include"})])
         assert len(loader.tests["testharness"]) == 1
         assert loader.tests["testharness"][0].id == "/a/bar.html"

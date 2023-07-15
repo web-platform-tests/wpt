@@ -92,7 +92,7 @@ def test_loader_h2_tests():
     loader = TestLoader({manifest: {"metadata_path": ""}}, ["testharness"], None, subsuites)
     assert "testharness" in loader.tests[""]
     assert len(loader.tests[""]["testharness"]) == 2
-    assert len(loader.disabled_tests) == 0
+    assert len(loader.disabled_tests[""]) == 0
 
     # We can also instruct it to skip them.
     loader = TestLoader({manifest: {"metadata_path": ""}}, ["testharness"], None, subsuites, include_h2=False)

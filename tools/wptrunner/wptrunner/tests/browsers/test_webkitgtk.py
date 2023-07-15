@@ -7,6 +7,7 @@ import pytest
 
 from wptserve.config import ConfigBuilder
 from ..base import active_products
+from testloader import Subsuite
 from wptrunner import environment, products
 
 test_paths = {"/": {"tests_path": join(dirname(__file__), "..", "..", "..", "..", "..")}}  # repo root
@@ -44,7 +45,13 @@ def test_webkitgtk_certificate_domain_list(product):
     kwargs["pause_after_test"] = False
     kwargs["pause_on_unexpected"] = False
     kwargs["debug_test"] = False
-    kwargs["subsuite"] = None
+    subsuite = Subsuite("",
+                             None,
+                             config={},
+                             run_info_extras={},
+                             include=None,
+                             tags=None)
+    kwargs["subsuite"] = subsuite
     with ConfigBuilder(logger,
                        browser_host="example.net",
                        alternate_hosts={"alt": "example.org"},

@@ -77,16 +77,40 @@ promise_test(async t => {
 }, 'closing the writable side should reject if a parallel transformer.cancel() throws');
 
 promise_test(async t => {
-  let flushed = false;
+  let controller;
   const ts = new TransformStream({
-    flush() {
-      flushed = true;
+    start(c) {
+      controller = c;
     },
-    cancel: t.unreached_func('cancel should not be called')
+    async cancel(reason) {
+      assert_equals(reason, originalReason, 'transformer.cancel() should be called with the passed reason');
+      controller.error(thrownError);
+    },
+    flush: t.unreached_func('flush should not be called')
   });
+  const cancelPromise = ts.readable.cancel(originalReason);
   const closePromise = ts.writable.close();
-  await delay(0);
-  const cancelPromise = ts.readable.cancel(thrownError);
-  await Promise.all([closePromise, cancelPromise]);
-  assert_equals(flushed, true, 'transformer.flush() should be called');
-}, 'closing the writable side should call transformer.flush() and a parallel readable.cancel() should not reject');
+  await Promise.all([
+    promise_rejects_exactly(t, thrownError, cancelPromise, 'cancelPromise should reject with thrownError'),
+    promise_rejects_exactly(t, thrownError, closePromise, 'closePromise should reject with thrownError'),
+  ]);
+}, 'readable.cancel() and a parallel writable.close() should reject if a transformer.cancel() calls controller.error()');
+
+promise_test(async t => {
+  let controller;
+  const ts = new TransformStream({
+    start(c) {
+      controller = c;
+    },
+    async cancel(reason) {
+      assert_equals(reason, originalReason, 'transformer.cancel() should be called with the passed reason');
+      controller.error(thrownError);
+    },
+    flush: t.unreached_func('flush should not be called')
+  });
+  const cancelPromise = ts.writable.abort(originalReason);
+  await promise_rejects_exactly(t, thrownError, cancelPromise, 'cancelPromise should reject with thrownError');
+  const closePromise = ts.readable.cancel(1);
+  await promise_rejects_exactly(t, thrownError, closePromise, 'closePromise should reject with thrownError');
+}, 'writable.abort() and readable.cancel() should reject if a transformer.cancel() calls controller.error()');
+  

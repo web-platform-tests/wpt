@@ -5,6 +5,16 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/html/canvas/resources/canvas-tests.js"></script>
 <link rel="stylesheet" href="/html/canvas/resources/canvas-tests.css">
+{% if fonts %}
+<style>
+{% for font in fonts %}
+@font-face {
+  font-family: {{ font }};
+  src: url("/fonts/{{ font }}.ttf");
+}
+{% endfor %}
+</style>
+{% endif %}
 <body class="show_output">
 
 <h1>{{ name }}</h1>

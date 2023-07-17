@@ -15,7 +15,7 @@ promise_test(async t => {
       cancelled = reason;
     }
   });
-  const res = await ts.readable.cancel(thrownError)
+  const res = await ts.readable.cancel(thrownError);
   assert_equals(res, undefined, 'readable.cancel() should return undefined');
   assert_equals(cancelled, thrownError, 'transformer.cancel() should be called with the passed reason');
 }, 'cancelling the readable side should call transformer.cancel()');
@@ -28,7 +28,7 @@ promise_test(async t => {
     }
   });
   const writer = ts.writable.getWriter();
-  const cancelPromise = ts.readable.cancel(originalReason)
+  const cancelPromise = ts.readable.cancel(originalReason);
   await promise_rejects_exactly(t, thrownError, cancelPromise, 'readable.cancel() should reject with thrownError');
   await promise_rejects_exactly(t, thrownError, writer.closed, 'writer.closed should reject with thrownError');
 }, 'cancelling the readable side should reject if transformer.cancel() throws');
@@ -41,7 +41,7 @@ promise_test(async t => {
     },
     flush: t.unreached_func('flush should not be called')
   });
-  const res = await ts.writable.abort(thrownError)
+  const res = await ts.writable.abort(thrownError);
   assert_equals(res, undefined, 'writable.abort() should return undefined');
   assert_equals(aborted, thrownError, 'transformer.abort() should be called with the passed reason');
 }, 'aborting the writable side should call transformer.abort()');
@@ -55,7 +55,7 @@ promise_test(async t => {
     flush: t.unreached_func('flush should not be called')
   });
   const reader = ts.readable.getReader();
-  const abortPromise = ts.writable.abort(originalReason)
+  const abortPromise = ts.writable.abort(originalReason);
   await promise_rejects_exactly(t, thrownError, abortPromise, 'writable.abort() should reject with thrownError');
   await promise_rejects_exactly(t, thrownError, reader.closed, 'reader.closed should reject with thrownError');
 }, 'aborting the writable side should reject if transformer.cancel() throws');

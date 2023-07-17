@@ -203,7 +203,7 @@ promise_test(t => {
   // The microtask following transformer.start() hasn't completed yet, so the abort is queued and not notified to the
   // TransformStream yet.
   const abortPromise = writer.abort(thrownError);
-  const cancelPromise = ts.readable.cancel(new Error('cancel reason'))
+  const cancelPromise = ts.readable.cancel(new Error('cancel reason'));
   return Promise.all([
     abortPromise,
     cancelPromise,

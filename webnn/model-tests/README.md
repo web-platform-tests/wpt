@@ -1,0 +1,1 @@
+These model tests under image-classification folder are based from https://github.com/webmachinelearning/webnn-samples. And those .npy files under resources/test-data are based from https://github.com/webmachinelearning/test-data.

@@ -64,7 +64,7 @@ promise_test(async () => {
     // This code runs inside the fenced frame.
     if (message_from_embedder == "Hello") {
       // Message that we received was expected.
-      return "Hello to you too");
+      return "Hello to you too";
     } else {
       // Message that we received was *not* expected, let's report an error to
       // the outer page so it fails the test.

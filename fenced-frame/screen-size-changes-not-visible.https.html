@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="resources/utils.js"></script>
+<title>Test changes to window.screen are not visible to the fenced frame</title>
+
+<body>
+
+  <script>
+    async function enterFullscreen() {
+      await document.body.requestFullscreen();
+    }
+
+    // window.screen is a special object, so we can't easily pass it over a
+    // client/server boundary using the RemoteContext pattern. We can get around
+    // this by storing window.screen's properties in a generic object and
+    // passing that around instead.
+    function getScreenInfo() {
+      return () => {
+        return {
+          availHeight: window.screen.availHeight,
+          availWidth: window.screen.availWidth,
+          height: window.screen.height,
+          width: window.screen.width,
+          colorDepth: window.screen.colorDepth,
+          pixelDepth: window.screen.pixelDepth,
+          // For nested ScreenOrientation object, unpack it to avoid passing a
+          // nested object over the boundary.
+          orientationAngle: window.screen.orientation.angle,
+          orientationOnChange: window.screen.orientation.onchange,
+          orientationType: window.screen.orientation.type,
+        }
+      }
+    }
+
+    // We can then compare the properties of the above-generated screen objects
+    // for equality.
+    function areScreenPropertiesEqual(s1, s2) {
+      if (Object.keys(s1).length != Object.keys(s2).length) {
+        return false;
+      }
+
+      for (screenProperty of Object.keys(s1)) {
+        if (s1[screenProperty] != s2[screenProperty]) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+  </script>
+
+  <button onclick="enterFullscreen()">Fullscreen</button>
+
+  <script>
+
+    promise_test(async (t) => {
+      var frame_context = attachFencedFrameContext();
+
+      let main_frame_prev_screen = getScreenInfo()();
+      let fenced_frame_prev_screen = await frame_context.execute(
+        getScreenInfo());
+
+      // Before any changes to the screen, the main frame and the fenced frame
+      // should have equivalent window.screen objects.
+      assert_true(areScreenPropertiesEqual(main_frame_prev_screen,
+                                           fenced_frame_prev_screen));
+
+      // After entering fullscreen, on some platforms, window.screen properties
+      // may change. We need to use test_driver because the fullscreen API only
+      // responds to actions by the user or the browser, not arbitrary script.
+      await test_driver.click(document.querySelector('button'));
+      assert_equals(document.fullscreenElement.nodeName, 'BODY');
+
+      let main_frame_new_screen = getScreenInfo()();
+      let fenced_frame_new_screen = await frame_context.execute(
+        getScreenInfo());
+
+      // If window.screen has changed in the main frame, ensure that the fenced
+      // frame's view of window.screen has not.
+      if (!areScreenPropertiesEqual(main_frame_new_screen,
+                                    main_frame_prev_screen)) {
+        assert_true(areScreenPropertiesEqual(fenced_frame_new_screen,
+                                             fenced_frame_prev_screen));
+      }
+    }, "Test changes to window.screen are not visible to the fenced frame.");
+  </script>
+
+</body>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<title>Tests basics of the 'anchor-clip' property</title>
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#anchor-clip">
+<link rel="match" href="anchor-clip-001-ref.html">
+<link rel="author" href="mailto:xiaochengh@chromium.org">
+
+<style>
+.cb {
+  position: relative;
+  margin-block: 15px;
+}
+
+.scroller {
+  overflow-x: scroll;
+  width: 100px;
+  height: 75px;
+}
+
+.anchor {
+  width: 50px;
+  height: 50px;
+  margin-right: 300px;
+  anchor-name: --a;
+  background: orange;
+}
+
+.target {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: lime;
+  anchor-default: --a;
+  top: anchor(top);
+}
+
+.target.in {
+  left: anchor(right);
+}
+.target.half-in {
+  left: calc(anchor(right) + 25px);
+}
+.target.out {
+  left: calc(anchor(right) + 50px);
+}
+.target.no-clip {
+  anchor-clip: none;
+}
+</style>
+
+<div class="cb">
+  <div class="scroller">
+    <div class="anchor"></div>
+  </div>
+  <div class="target in"></div>
+</div>
+
+<div class="cb">
+  <div class="scroller">
+    <div class="anchor"></div>
+  </div>
+  <div class="target half-in"></div>
+</div>
+
+<div class="cb">
+  <div class="scroller">
+    <div class="anchor"></div>
+  </div>
+  <div class="target out"></div>
+</div>
+
+<div class="cb">
+  <div class="scroller">
+    <div class="anchor"></div>
+  </div>
+  <div class="target in no-clip"></div>
+</div>
+
+<div class="cb">
+  <div class="scroller">
+    <div class="anchor"></div>
+  </div>
+  <div class="target half-in no-clip"></div>
+</div>
+
+<div class="cb">
+  <div class="scroller">
+    <div class="anchor"></div>
+  </div>
+  <div class="target out no-clip"></div>
+</div>

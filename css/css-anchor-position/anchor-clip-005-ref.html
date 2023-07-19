@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<style>
+.cb {
+  position: relative;
+  margin-block: 25px;
+}
+
+.scroller {
+  overflow-x: scroll;
+  width: 200px;
+  height: 125px;
+}
+
+.anchor {
+  width: 100px;
+  height: 100px;
+  margin-right: 300px;
+  anchor-name: --a;
+  background: orange;
+}
+
+.target {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: lime;
+  anchor-default: --a;
+  top: anchor(top);
+  left: calc(anchor(right) + 100px);
+}
+
+/* Moves target into scroller */
+.target.after {
+  left: anchor(right);
+}
+
+/* Enlarges scroller to contain target */
+.scroller.after {
+  width: 300px;
+}
+
+/* Removes clipping to reveal target */
+.scroller.remove-clip {
+  overflow: visible;
+}
+
+.no-clip {
+  anchor-clip: none;
+}
+</style>
+
+<div class="cb">
+  <div class="scroller">
+    <div class="anchor"></div>
+  </div>
+  <div class="target after"></div>
+</div>
+
+<div class="cb">
+  <div class="scroller after">
+    <div class="anchor"></div>
+  </div>
+  <div class="target"></div>
+</div>
+
+<div class="cb">
+  <div class="scroller remove-clip">
+    <div class="anchor"></div>
+  </div>
+  <div class="target"></div>
+</div>

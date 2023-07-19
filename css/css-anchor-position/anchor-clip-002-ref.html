@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<style>
+.cb {
+  position: relative;
+  width: 200px;
+  margin-block: 50px;
+}
+
+.scroller {
+  overflow-y: scroll;
+}
+
+.anchor {
+  width: 100px;
+  height: 100px;
+  background: orange;
+}
+
+.target {
+  position: absolute;
+  width: 100px;
+  background: lime;
+  left: 0;
+}
+</style>
+
+<div class="cb">
+  <div class="scroller" style="height: 200px">
+    <div style="height: 50px"></div>
+    <div class="scroller" style="height: 150px">
+      <div style="height: 200px"></div>
+      <div class="anchor"></div>
+    </div>
+    <div style="height: 50px"></div>
+  </div>
+  <div class="target" style="top:25px; height: 50px;"></div>
+</div>
+
+<div class="cb">
+  <div class="scroller" style="height: 200px">
+    <div style="height: 50px"></div>
+    <div class="scroller" style="height: 150px">
+      <div style="height: 150px"></div>
+      <div class="anchor"></div>
+      <div style="height: 100px"></div>
+    </div>
+    <div style="height: 150px"></div>
+  </div>
+  <div class="target" style="top:0; height:50px"></div>
+</div>
+
+<script>
+let scrollers = document.querySelectorAll('.scroller');
+scrollers[0].scrollTop = 25;
+scrollers[1].scrollTop = 150;
+scrollers[2].scrollTop = 100;
+scrollers[3].scrollTop = 50;
+</script>

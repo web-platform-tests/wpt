@@ -30,6 +30,7 @@ sys.path.insert(0, os.path.join(here, "third_party", "certifi"))
 sys.path.insert(0, os.path.join(here, "third_party", "hyper"))
 sys.path.insert(0, os.path.join(here, "third_party", "websockets", "src"))
 sys.path.insert(0, os.path.join(here, "third_party", "iniconfig", "src"))
+sys.path.insert(0, os.path.join(here, "third_party", "mozlog", "mozlog"))
 if sys.version_info < (3, 8):
     sys.path.insert(0, os.path.join(here, "third_party", "importlib_metadata"))
 sys.path.insert(0, os.path.join(here, "webdriver"))

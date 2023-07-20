@@ -199,7 +199,7 @@ class MalformedVariant(Rule):
     name = "MALFORMED-VARIANT"
     description = collapse("""
         %s `<meta name=variant>` 'content' attribute must be a non empty string
-        and starts with '?' or '#'
+        and start with '?' or '#'
     """)
 
 

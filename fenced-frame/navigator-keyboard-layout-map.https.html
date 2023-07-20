@@ -16,10 +16,24 @@ promise_test(async () => {
       [keyboard_layout_key]));
   const actual_result = await nextValueFromServer(keyboard_layout_key);
 
-  assert_equals(actual_result, "rejected",
-                "The fenced frame is not allowed to fetch keyboard map.");
+  assert_equals(actual_result, "resolved",
+      "The non-opaque fenced frame is allowed to fetch keyboard map.");
 
-}, "keyboard.getLayoutMap()");
+}, "keyboard.getLayoutMap() from non-opaque fenced frame");
+
+promise_test(async () => {
+  const keyboard_layout_key = token();
+
+  const urn = await generateURNFromFledge(
+      "resources/navigator-keyboard-layout-map-inner.html",
+      [keyboard_layout_key]);
+  attachFencedFrame(urn);
+  const actual_result = await nextValueFromServer(keyboard_layout_key);
+
+  assert_equals(actual_result, "rejected",
+      "The opaque fenced frame is not allowed to fetch keyboard map.");
+
+}, "keyboard.getLayoutMap() from opaque fenced frame");
 </script>
 
 </body>

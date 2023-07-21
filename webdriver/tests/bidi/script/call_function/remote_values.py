@@ -11,6 +11,9 @@ pytestmark = pytest.mark.asyncio
 @pytest.mark.parametrize("expression, expected", REMOTE_VALUES)
 async def test_remote_values(bidi_session, top_context, await_promise,
                              expression, expected):
+    if expected["type"] == "promise":
+        return
+
     function_declaration = f"()=>{expression}"
     if await_promise:
         function_declaration = "async" + function_declaration
@@ -21,25 +24,18 @@ async def test_remote_values(bidi_session, top_context, await_promise,
         target=ContextTarget(top_context["context"]),
         serialization_options=SerializationOptions(max_object_depth=1),
     )
-
     recursive_compare(expected, result)
 
 
-async def test_remote_value_promise_await(bidi_session, top_context):
+@pytest.mark.parametrize("await_promise", [True, False])
+async def test_remote_value_promise(bidi_session, top_context, await_promise):
     result = await bidi_session.script.call_function(
         function_declaration="()=>Promise.resolve(42)",
-        await_promise=True,
+        await_promise=await_promise,
         target=ContextTarget(top_context["context"]),
     )
 
-    assert result == {"type": "number", "value": 42}
-
-
-async def test_remote_value_promise_no_await(bidi_session, top_context):
-    result = await bidi_session.script.call_function(
-        function_declaration="()=>Promise.resolve(42)",
-        await_promise=False,
-        target=ContextTarget(top_context["context"]),
-    )
-
-    assert result == {"type": "promise"}
+    if await_promise:
+        assert result == {"type": "number", "value": 42}
+    else:
+        assert result == {"type": "promise"}

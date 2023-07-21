@@ -8,12 +8,12 @@ pytestmark = pytest.mark.asyncio
 
 
 @pytest.mark.parametrize("await_promise", [True, False])
-@pytest.mark.parametrize("expression, expected", REMOTE_VALUES)
+@pytest.mark.parametrize("expression, expected", [
+    remote_value
+    for remote_value in REMOTE_VALUES if remote_value[1]["type"] != "promise"
+])
 async def test_remote_values(bidi_session, top_context, await_promise,
                              expression, expected):
-    if expected["type"] == "promise":
-        return
-
     function_declaration = f"()=>{expression}"
     if await_promise:
         function_declaration = "async" + function_declaration

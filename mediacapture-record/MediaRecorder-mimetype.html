@@ -25,12 +25,25 @@ const AUDIO_CODECS_MIME_TYPES = [
 const VIDEO_ONLY_MIME_TYPES = [
   'video/mp4',
   'video/webm',
+  'video/x-matroska',
 ];
 
 const VIDEO_CODECS_MIME_TYPES = [
   'video/webm; codecs="vp8"',
   'video/webm; codecs="vp9"',
   'video/webm; codecs="av1"',
+  'video/x-matroska; codecs="avc1"',
+  'video/x-matroska; codecs="hvc1"',
+  'video/x-matroska; codecs="hev1"',
+  'video/x-matroska; codecs="avc1.64001E"',
+  'video/x-matroska; codecs="hvc1.1.6.L123.00"',
+  'video/x-matroska; codecs="hev1.1.6.L123.00"',
+  'video/mp4; codecs="avc1"',
+  'video/mp4; codecs="hvc1"',
+  'video/mp4; codecs="hev1"',
+  'video/mp4; codecs="avc1.64001E"',
+  'video/mp4; codecs="hvc1.1.6.L123.00"',
+  'video/mp4; codecs="hev1.1.6.L123.00"',
 ];
 
 const AUDIO_VIDEO_MIME_TYPES = [
@@ -39,6 +52,18 @@ const AUDIO_VIDEO_MIME_TYPES = [
   'video/webm; codecs="vp9, vorbis"',
   'video/webm; codecs="vp9, opus"',
   'video/webm; codecs="av1, opus"',
+  'video/x-matroska; codecs="avc1, vorbis"',
+  'video/x-matroska; codecs="hvc1, opus"',
+  'video/x-matroska; codecs="hev1, opus"',
+  'video/x-matroska; codecs="avc1.64001E, vorbis"',
+  'video/x-matroska; codecs="hvc1.1.6.L123.00, opus"',
+  'video/x-matroska; codecs="hev1.1.6.L123.00, vorbis"',
+  'video/mp4; codecs="avc1, opus"',
+  'video/mp4; codecs="hvc1, vorbis"',
+  'video/mp4; codecs="hev1, vorbis"',
+  'video/mp4; codecs="avc1.64001E, opus"',
+  'video/mp4; codecs="hvc1.1.6.L123.00, vorbis"',
+  'video/mp4; codecs="hev1.1.6.L123.00, opus"',
 ];
 
 const AUDIO_MIME_TYPES = [

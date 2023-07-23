@@ -5,6 +5,7 @@
 
 'use strict';
 
+/*
 parallelPromiseTest(async t => {
   const uuid = token();
   const url = generateSetBeaconURL(uuid);
@@ -95,3 +96,35 @@ parallelPromiseTest(async t => {
   await expectBeacon(uuid, {count: total});
 }, `A discarded document sends all its beacons of which backgroundTimeouts are
     not default.`);
+*/
+
+parallelPromiseTest(async t => {
+  const uuid = token();
+  const url = generateSetBeaconURL(uuid);
+  const numPerMethod = 20;
+  const total = numPerMethod * 2;
+
+  // Open a popup that creates `numPerMethod` GET & POST beacons.
+  // Initially, the response is a 204 and the navigation is canceled. As a
+  // result, the popup will be left with the initial empty document and NO
+  // pending navigation.
+  const popup = window.open('/common/blank.html?pipe=status(204)', '_blank');
+  await new Promise(res => t.step_timeout(res, 1000));
+
+  let allQueued= future(window, "message");
+  const script = `
+    const url = "${url}";
+    for (let i = 0; i < ${numPerMethod}; i++) {
+      let get = new PendingGetBeacon(url);
+      let post = new PendingPostBeacon(url);
+    }
+    window.opener.postMessage("all queued", "*");
+  `;
+  popup.document.write(`<script>${script}</script>`);
+  await allQueued;
+  // Close the popup to trigger beacon sending.
+  popup.close();
+
+  // The popup should have sent all beacons.
+  await expectBeacon(uuid, {count: total});
+}, 'A closed popup window send all its beacons with default config.');

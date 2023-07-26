@@ -28,4 +28,4 @@ steps:
   inputs:
     artifactName: '${{ parameters.artifactName }}'
   condition: succeededOrFailed()
-- template: tools/ci/azure/sysdiagnose.yml
+- template: sysdiagnose.yml

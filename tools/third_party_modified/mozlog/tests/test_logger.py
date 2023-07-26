@@ -35,13 +35,12 @@ class TestLogging(unittest.TestCase):
         self.assertEqual(len(default_logger.handlers), 1)
         self.assertTrue(isinstance(default_logger.handlers[0], mozlog.StreamHandler))
 
-        f = tempfile.NamedTemporaryFile()
-        list_logger = mozlog.getLogger(
-            "file.logger", handler=mozlog.FileHandler(f.name)
-        )
-        self.assertEqual(len(list_logger.handlers), 1)
-        self.assertTrue(isinstance(list_logger.handlers[0], mozlog.FileHandler))
-        f.close()
+        with tempfile.NamedTemporaryFile() as f:
+            list_logger = mozlog.getLogger(
+                "file.logger", handler=mozlog.FileHandler(f.name)
+            )
+            self.assertEqual(len(list_logger.handlers), 1)
+            self.assertTrue(isinstance(list_logger.handlers[0], mozlog.FileHandler))
 
         self.assertRaises(
             ValueError, mozlog.getLogger, "file.logger", handler=ListHandler()
@@ -194,7 +193,7 @@ class TestStructuredLogging(unittest.TestCase):
 
     def test_log_listener(self):
         connection = "127.0.0.1", 0
-        self.log_server = mozlog.LogMessageServer(
+        log_server = mozlog.LogMessageServer(
             connection, self.logger, message_callback=self.message_callback, timeout=0.5
         )
 
@@ -230,10 +229,10 @@ class TestStructuredLogging(unittest.TestCase):
             + "\n"
         )
 
-        server_thread = threading.Thread(target=self.log_server.handle_request)
+        server_thread = threading.Thread(target=log_server.handle_request)
         server_thread.start()
 
-        host, port = self.log_server.server_address
+        host, port = log_server.server_address
 
         sock = socket.socket()
         sock.connect((host, port))
@@ -250,6 +249,8 @@ class TestStructuredLogging(unittest.TestCase):
         time.sleep(0.01)
         sock.sendall(message_string[128:].encode())
 
+        sock.close()
+        log_server.server_close()
         server_thread.join()
 
 

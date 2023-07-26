@@ -98,7 +98,7 @@ class TestDataTypes(unittest.TestCase):
         d1 = t({"default": ["bar"]})  # doesn't raise
         d2 = t(["bar"])  # doesn't raise
 
-        self.assertDictContainsSubset(d1, d2)
+        self.assertEqual(d1, d2)
 
 
 if __name__ == "__main__":

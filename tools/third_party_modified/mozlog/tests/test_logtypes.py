@@ -103,4 +103,5 @@ class TestDataTypes(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    import mozunit
     mozunit.main()

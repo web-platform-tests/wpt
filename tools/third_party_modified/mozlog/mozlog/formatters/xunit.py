@@ -4,15 +4,13 @@
 
 from xml.etree import ElementTree
 
-import six
-
 from . import base
 
 
 def format_test_id(test_id):
     """Take a test id and return something that looks a bit like
     a class path"""
-    if not isinstance(test_id, six.string_types):
+    if not isinstance(test_id, str):
         # Not sure how to deal with reftests yet
         raise NotImplementedError
 

@@ -8,8 +8,6 @@ import os
 import sys
 from collections import defaultdict
 
-import six
-
 from . import formatters, handlers
 from .structuredlog import StructuredLogger, set_default_logger
 
@@ -179,14 +177,14 @@ def add_logging_group(parser, include_formatters=None):
         opt_log_type = log_file
         group_add = group.add_argument
 
-    for name, (cls, help_str) in six.iteritems(log_formatters):
+    for name, (cls, help_str) in log_formatters.items():
         if name in include_formatters:
             group_add(
                 "--log-" + name, action="append", type=opt_log_type, help=help_str
             )
 
     for fmt in include_formatters:
-        for optname, (cls, help_str, formatters_, action) in six.iteritems(fmt_options):
+        for optname, (cls, help_str, formatters_, action) in fmt_options.items():
             if fmt not in formatters_:
                 continue
             if optname.startswith("no-") and action == "store_false":
@@ -220,12 +218,12 @@ def setup_handlers(logger, formatters, formatter_options, allow_unused_options=F
         )
         raise ValueError(msg)
 
-    for fmt, streams in six.iteritems(formatters):
+    for fmt, streams in formatters.items():
         formatter_cls = log_formatters[fmt][0]
         formatter = formatter_cls()
         handler_wrappers_and_options = []
 
-        for option, value in six.iteritems(formatter_options[fmt]):
+        for option, value in formatter_options[fmt].items():
             wrapper, wrapper_args = None, ()
             if option == "valgrind":
                 wrapper = valgrind_handler_wrapper
@@ -291,7 +289,7 @@ def setup_logging(
         else:
             defaults = {"raw": sys.stdout}
 
-    for name, values in six.iteritems(args):
+    for name, values in args.items():
         parts = name.split("_")
         if len(parts) > 3:
             continue
@@ -305,7 +303,7 @@ def setup_logging(
                 _, formatter = parts
                 for value in values:
                     found = True
-                    if isinstance(value, six.string_types):
+                    if isinstance(value, str):
                         value = log_file(value)
                     if value == sys.stdout:
                         found_stdout_logger = True
@@ -320,11 +318,11 @@ def setup_logging(
 
     # If there is no user-specified logging, go with the default options
     if not found:
-        for name, value in six.iteritems(defaults):
+        for name, value in defaults.items():
             formatters[name].append(value)
 
     elif not found_stdout_logger and sys.stdout in list(defaults.values()):
-        for name, value in six.iteritems(defaults):
+        for name, value in defaults.items():
             if value == sys.stdout:
                 formatters[name].append(value)
 

@@ -9,8 +9,6 @@ import traceback
 from multiprocessing import current_process
 from threading import Lock, current_thread
 
-import six
-
 from .logtypes import (
     Any,
     Boolean,
@@ -263,7 +261,7 @@ class StructuredLogger(object):
 
         action = raw_data["action"]
         converted_data = convertor_registry[action].convert_known(**raw_data)
-        for k, v in six.iteritems(raw_data):
+        for k, v in raw_data.items():
             if (
                 k not in converted_data
                 and k not in convertor_registry[action].optional_args

@@ -7,10 +7,9 @@ import os
 import sys
 import tempfile
 import unittest
+from io import StringIO
 
-import six
 from mozlog import commandline, formatters, handlers, reader, stdadapter, structuredlog
-from six import StringIO
 
 
 class LogHandler:
@@ -46,7 +45,7 @@ class BaseStructuredTest(unittest.TestCase):
         specials = set(["time"])
 
         all_expected.update(expected)
-        for key, value in six.iteritems(all_expected):
+        for key, value in all_expected.items():
             self.assertEqual(actual[key], value)
 
         self.assertEqual(set(all_expected.keys()) | specials, set(actual.keys()))
@@ -653,24 +652,14 @@ class TestTypeConversions(BaseStructuredTest):
 
     def test_tuple(self):
         self.logger.suite_start([])
-        if six.PY3:
-            self.logger.test_start(
-                (
-                    b"\xf0\x90\x8d\x84\xf0\x90\x8c\xb4\xf0\x90"
-                    b"\x8d\x83\xf0\x90\x8d\x84".decode(),
-                    42,
-                    u"\u16a4",
-                )
+        self.logger.test_start(
+            (
+                b"\xf0\x90\x8d\x84\xf0\x90\x8c\xb4\xf0\x90"
+                b"\x8d\x83\xf0\x90\x8d\x84".decode(),
+                42,
+                u"\u16a4",
             )
-        else:
-            self.logger.test_start(
-                (
-                    "\xf0\x90\x8d\x84\xf0\x90\x8c\xb4\xf0\x90"
-                    "\x8d\x83\xf0\x90\x8d\x84",
-                    42,
-                    u"\u16a4",
-                )
-            )
+        )
         self.assert_log_equals(
             {
                 "action": "test_start",
@@ -684,22 +673,13 @@ class TestTypeConversions(BaseStructuredTest):
         self.logger.info(1)
         self.assert_log_equals({"action": "log", "message": "1", "level": "INFO"})
         self.logger.info([1, (2, "3"), "s", "s" + chr(255)])
-        if six.PY3:
-            self.assert_log_equals(
-                {
-                    "action": "log",
-                    "message": "[1, (2, '3'), 's', 's\xff']",
-                    "level": "INFO",
-                }
-            )
-        else:
-            self.assert_log_equals(
-                {
-                    "action": "log",
-                    "message": "[1, (2, '3'), 's', 's\\xff']",
-                    "level": "INFO",
-                }
-            )
+        self.assert_log_equals(
+            {
+                "action": "log",
+                "message": "[1, (2, '3'), 's', 's\xff']",
+                "level": "INFO",
+            }
+        )
 
         self.logger.suite_end()
 
@@ -712,10 +692,7 @@ class TestTypeConversions(BaseStructuredTest):
             self.logger.info("☺")
             logfile.seek(0)
             data = logfile.readlines()[-1].strip()
-            if six.PY3:
-                self.assertEqual(data.decode(), "☺")
-            else:
-                self.assertEqual(data, "☺")
+            self.assertEqual(data.decode(), "☺")
             self.logger.suite_end()
             self.logger.remove_handler(_handler)
 
@@ -967,7 +944,7 @@ class TestBuffer(BaseStructuredTest):
         specials = set(["time"])
 
         all_expected.update(expected)
-        for key, value in six.iteritems(all_expected):
+        for key, value in all_expected.items():
             self.assertEqual(actual[key], value)
 
         self.assertEqual(set(all_expected.keys()) | specials, set(actual.keys()))

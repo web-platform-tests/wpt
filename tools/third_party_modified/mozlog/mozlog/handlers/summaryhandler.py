@@ -4,8 +4,6 @@
 
 from collections import OrderedDict, defaultdict
 
-import six
-
 from ..reader import LogHandler
 
 
@@ -76,7 +74,7 @@ class SummaryHandler(LogHandler):
         Yields a tuple of (suite, summary). The summary returned is
         the same format as returned by 'get'.
         """
-        for suite, data in six.iteritems(self.summary):
+        for suite, data in self.summary.items():
             yield suite, data
 
     @classmethod

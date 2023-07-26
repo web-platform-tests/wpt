@@ -6,7 +6,6 @@
 import time
 from functools import reduce
 
-import six
 from mozterm import Terminal
 
 from ..handlers import SummaryHandler
@@ -142,7 +141,7 @@ class MachFormatter(base.BaseFormatter):
         return test_id
 
     def _get_file_name(self, test_id):
-        if isinstance(test_id, (str, six.text_type)):
+        if isinstance(test_id, str):
             return test_id
 
         if isinstance(test_id, tuple):
@@ -151,7 +150,7 @@ class MachFormatter(base.BaseFormatter):
         assert False, "unexpected test_id"
 
     def suite_start(self, data):
-        num_tests = reduce(lambda x, y: x + len(y), six.itervalues(data["tests"]), 0)
+        num_tests = reduce(lambda x, y: x + len(y), data["tests"].values(), 0)
         action = self.color_formatter.action(data["action"].upper())
         name = ""
         if "name" in data:

@@ -4,7 +4,6 @@
 
 import unittest
 
-import mozunit
 from mozlog.logtypes import Any, Dict, Int, List, TestList, Tuple, Unicode
 
 
@@ -103,4 +102,5 @@ class TestDataTypes(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    import mozunit
     mozunit.main()

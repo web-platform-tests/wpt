@@ -9,7 +9,6 @@ PACKAGE_VERSION = "8.0.0"
 DEPS = [
     "blessed>=1.19.1",
     "mozterm",
-    "mozfile",
 ]
 
 

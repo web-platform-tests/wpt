@@ -2,12 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
 import codecs
 import locale
+import tempfile
 from threading import Lock
-
-import mozfile
 
 from mozlog.handlers.messagehandler import MessageHandler
 from mozlog.structuredlog import log_levels
@@ -83,7 +81,7 @@ class StreamHandler(BaseHandler):
                 formatted = formatted.decode(source_enc, "replace")
             elif (
                 isinstance(self.stream, io.BytesIO)
-                or isinstance(self.stream, mozfile.NamedTemporaryFile)
+                or isinstance(self.stream, tempfile._TemporaryFileWrapper)
             ) and isinstance(formatted, str):
                 formatted = formatted.encode(target_enc, "replace")
             elif isinstance(formatted, str):

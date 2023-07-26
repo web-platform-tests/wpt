@@ -1,6 +1,6 @@
 steps:
 - script: |
-    mkdir -p /Users/runner/sysdiagnose
+    mkdir -p "/Users/runner/sysdiagnose-$(Agent.JobName)"
     # No UI, and no time sensitive, generated, or archived logs
     sudo sysdiagnose -ub -f "/Users/runner/sysdiagnose-$(Agent.JobName)" -A "sysdiagnose_$(System.JobPositionInPhase)"
   displayName: 'Collect sysdiagnose'

@@ -9,17 +9,12 @@ import os
 from collections import defaultdict
 from datetime import datetime
 
-import six
-
 from .. import base
 
 html = None
 raw = None
 
-if six.PY2:
-    from cgi import escape
-else:
-    from html import escape
+from html import escape
 
 base_path = os.path.split(__file__)[0]
 
@@ -185,17 +180,17 @@ class HTMLFormatter(base.BaseFormatter):
                     else:
                         href = content
                 else:
-                    if not isinstance(content, (six.text_type, six.binary_type)):
+                    if not isinstance(content, (str, bytes)):
                         # All types must be json serializable
                         content = json.dumps(content)
                         # Decode to text type if JSON output is byte string
-                        if not isinstance(content, six.text_type):
+                        if not isinstance(content, str):
                             content = content.decode("utf-8")
                     # Encode base64 to avoid that some browsers (such as Firefox, Opera)
                     # treats '#' as the start of another link if it is contained in the data URL.
-                    if isinstance(content, six.text_type):
+                    if isinstance(content, str):
                         is_known_utf8 = True
-                        content_bytes = six.text_type(content).encode(
+                        content_bytes = str(content).encode(
                             "utf-8", "xmlcharrefreplace"
                         )
                     else:
@@ -274,7 +269,7 @@ class HTMLFormatter(base.BaseFormatter):
                     html.p(
                         "%i tests ran in %.1f seconds."
                         % (
-                            sum(six.itervalues(self.test_count)),
+                            sum(self.test_count.values()),
                             (self.suite_times["end"] - self.suite_times["start"])
                             / 1000.0,
                         ),

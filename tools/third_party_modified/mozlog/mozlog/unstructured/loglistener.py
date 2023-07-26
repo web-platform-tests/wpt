@@ -4,8 +4,7 @@
 
 import json
 import socket
-
-from six.moves import socketserver
+import socketserver
 
 
 class LogMessageServer(socketserver.TCPServer):

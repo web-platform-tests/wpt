@@ -11,7 +11,6 @@ import unittest
 
 import mozfile
 import mozlog.unstructured as mozlog
-import mozunit
 
 
 class ListHandler(mozlog.Handler):
@@ -293,4 +292,5 @@ class TestLoggingMixin(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    import mozunit
     mozunit.main()

@@ -5,7 +5,6 @@
 import sys
 from io import StringIO
 
-import mozunit
 import pytest
 from mozterm import Terminal
 
@@ -57,4 +56,5 @@ def test_terminal_colors(terminal):
 
 
 if __name__ == "__main__":
+    import mozunit
     mozunit.main()

@@ -2,12 +2,12 @@ steps:
 - script: |
     mkdir -p /Users/runner/sysdiagnose
     # No UI, and no time sensitive, generated, or archived logs
-    sudo sysdiagnose -ub -PGR -f /Users/runner/sysdiagnose -A sysdiagnose_$(System.JobPositionInPhase)
+    sudo sysdiagnose -ub -f "/Users/runner/sysdiagnose-$(Agent.JobName)" -A "sysdiagnose_$(System.JobPositionInPhase)"
   displayName: 'Collect sysdiagnose'
   condition: and(succeeded(), eq(variables['Agent.OS'], 'Darwin'))
 - task: PublishBuildArtifacts@1
   displayName: 'Publish sysdiagnose'
   inputs:
-    pathtoPublish: /Users/runner/sysdiagnose/
-    artifactName: sysdiagnose
+    pathtoPublish: "/Users/runner/sysdiagnose-$(Agent.JobName)/"
+    artifactName: "sysdiagnose-$(Agent.JobName)"
   condition: and(succeeded(), eq(variables['Agent.OS'], 'Darwin'))

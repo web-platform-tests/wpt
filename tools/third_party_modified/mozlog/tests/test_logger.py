@@ -5,11 +5,11 @@
 import datetime
 import json
 import socket
+import tempfile
 import threading
 import time
 import unittest
 
-import mozfile
 import mozlog.unstructured as mozlog
 import six
 
@@ -36,7 +36,7 @@ class TestLogging(unittest.TestCase):
         self.assertEqual(len(default_logger.handlers), 1)
         self.assertTrue(isinstance(default_logger.handlers[0], mozlog.StreamHandler))
 
-        f = mozfile.NamedTemporaryFile()
+        f = tempfile.NamedTemporaryFile()
         list_logger = mozlog.getLogger(
             "file.logger", handler=mozlog.FileHandler(f.name)
         )

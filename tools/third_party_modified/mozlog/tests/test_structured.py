@@ -5,9 +5,9 @@ import json
 import optparse
 import os
 import sys
+import tempfile
 import unittest
 
-import mozfile
 import six
 from mozlog import commandline, formatters, handlers, reader, stdadapter, structuredlog
 from six import StringIO
@@ -704,7 +704,7 @@ class TestTypeConversions(BaseStructuredTest):
         self.logger.suite_end()
 
     def test_utf8str_write(self):
-        with mozfile.NamedTemporaryFile() as logfile:
+        with tempfile.NamedTemporaryFile() as logfile:
             _fmt = formatters.TbplFormatter()
             _handler = handlers.StreamHandler(logfile, _fmt)
             self.logger.add_handler(_handler)
@@ -858,7 +858,7 @@ class TestComponentFilter(BaseStructuredTest):
 
 class TestCommandline(unittest.TestCase):
     def setUp(self):
-        self.logfile = mozfile.NamedTemporaryFile()
+        self.logfile = tempfile.NamedTemporaryFile()
 
     @property
     def loglines(self):

@@ -13,7 +13,7 @@ from mozlog import commandline, formatters, handlers, reader, stdadapter, struct
 from six import StringIO
 
 
-class TestHandler(object):
+class LogHandler:
     def __init__(self):
         self.items = []
 
@@ -32,7 +32,7 @@ class TestHandler(object):
 class BaseStructuredTest(unittest.TestCase):
     def setUp(self):
         self.logger = structuredlog.StructuredLogger("test")
-        self.handler = TestHandler()
+        self.handler = LogHandler()
         self.logger.add_handler(self.handler)
 
     def pop_last_item(self):
@@ -560,7 +560,7 @@ class TestStructuredLog(BaseStructuredTest):
             logging.root.setLevel(old_level)
 
     def test_add_remove_handlers(self):
-        handler = TestHandler()
+        handler = LogHandler()
         self.logger.add_handler(handler)
         self.logger.info("test1")
 
@@ -974,7 +974,7 @@ class TestBuffer(BaseStructuredTest):
 
     def setUp(self):
         self.logger = structuredlog.StructuredLogger("testBuffer")
-        self.handler = handlers.BufferHandler(TestHandler(), message_limit=4)
+        self.handler = handlers.BufferHandler(LogHandler(), message_limit=4)
         self.logger.add_handler(self.handler)
 
     def tearDown(self):
@@ -1136,7 +1136,7 @@ class TestReader(unittest.TestCase):
 
         test = self
 
-        class ReaderTestHandler(reader.LogHandler):
+        class ReaderHandler(reader.LogHandler):
             def __init__(self):
                 self.action_0_count = 0
                 self.action_1_count = 0
@@ -1149,7 +1149,7 @@ class TestReader(unittest.TestCase):
                 test.assertEqual(item["action"], "action_1")
                 self.action_1_count += 1
 
-        handler = ReaderTestHandler()
+        handler = ReaderHandler()
         reader.handle_log(reader.read(f), handler)
 
         self.assertEqual(handler.action_0_count, 1)

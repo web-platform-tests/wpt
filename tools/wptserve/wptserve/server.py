@@ -843,7 +843,7 @@ class WebTestHttpd:
             self.started = False
 
             _host, self.port = self.httpd.socket.getsockname()
-        except Exception as e:
+        except Exception:
             self.logger.critical("Failed to start HTTP server on port %s; "
                                  "is something already using that port?" % port)
             raise

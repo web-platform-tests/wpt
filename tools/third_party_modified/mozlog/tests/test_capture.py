@@ -1,7 +1,6 @@
 import sys
 import unittest
 
-import mozunit
 from mozlog import capture, structuredlog
 from test_structured import TestHandler
 
@@ -34,4 +33,5 @@ class TestCaptureIO(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    import mozunit
     mozunit.main()

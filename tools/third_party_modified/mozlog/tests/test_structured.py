@@ -8,7 +8,6 @@ import sys
 import unittest
 
 import mozfile
-import mozunit
 import six
 from mozlog import commandline, formatters, handlers, reader, stdadapter, structuredlog
 from six import StringIO
@@ -1158,4 +1157,5 @@ class TestReader(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    import mozunit
     mozunit.main()

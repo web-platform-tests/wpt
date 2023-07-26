@@ -127,7 +127,7 @@ promise_test(async t => {
   // Target position for wheel scroll overshoots the boundary of the snap-area.
   // Ensure that we stop at the boundary.
   const scrollAmount =
-      target.clientHeight - scroller.clientHeight - scroller.scrollTop + 1;
+      target.clientHeight - scroller.clientHeight - scroller.scrollTop;
 
   await new test_driver.Actions()
        .scroll(50, 50, 0, scrollAmount, {origin: scroller})

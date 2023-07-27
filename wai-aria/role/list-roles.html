@@ -18,6 +18,8 @@
   <div role="listitem" data-testname="last simple listitem" data-expectedrole="listitem" class="ex">x</div>
 </div>
 
+<div role="listitem" data-testname="should not have role listitem outside of list" data-expectedrole="none">x</div>
+
 <script>
 AriaUtils.verifyRolesBySelector(".ex");
 </script>

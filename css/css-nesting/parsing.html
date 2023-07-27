@@ -63,12 +63,12 @@
   // Mixing nesting selector with other simple selectors
   testNestedSelector("div&");
   testInvalidNestingSelector("&div"); // type selector must be first
-  testNestedSelector(".bar&");
-  testNestedSelector("&.bar");
-  testNestedSelector("[bar]&");
-  testNestedSelector("&[bar]");
-  testNestedSelector("#bar&");
-  testNestedSelector("&#bar");
+  testNestedSelector(".class&");
+  testNestedSelector("&.class");
+  testNestedSelector("[attr]&");
+  testNestedSelector("&[attr]");
+  testNestedSelector("#id&");
+  testNestedSelector("&#id");
   testNestedSelector(":hover&");
   testNestedSelector("&:hover");
   testNestedSelector(":is(div)&");

@@ -76,6 +76,7 @@
 
   // Multiple nesting selectors
   testNestedSelector("& .bar & .baz & .qux");
+  testNestedSelector("&&");
 
   // Selector list in inner rule
   testNestedSelector("& > section, & > article");

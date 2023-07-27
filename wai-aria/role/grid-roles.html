@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Grid Role Verification Tests</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
+    <script src="/resources/testdriver-actions.js"></script>
+    <script src="/wai-aria/scripts/aria-utils.js"></script>
+  </head>
+  <body>
+
+  <p>Tests <a href="https://w3c.github.io/aria/#grid">grid</a> and related roles.</p>
+
+  <div role="grid" data-testname="first simple grid" data-expectedrole="grid" class="ex">
+    <div role="gridcell" data-testname="first simple gridcell" data-expectedrole="gridcell" class="ex">x</div>
+    <div role="gridcell" data-testname="last simple gridcell" data-expectedrole="gridcell" class="ex">x</div>
+    <div role="row" data-testname="first simple row in grid" data-expectedrole="row" class="ex">
+      <span role="columnheader" data-testname="first simple columnheader in grid>row" data-expectedrole="columnheader" class="ex">x</span>
+      <span role="columnheader" data-testname="last simple columnheader in grid>row" data-expectedrole="columnheader" class="ex">x</span>
+    </div>
+    <div role="row" data-testname="last simple row in grid" data-expectedrole="row" class="ex">
+      <span role="rowheader" data-testname="simple rowheader in grid>row" data-expectedrole="rowheader" class="ex">x</span>
+      <span role="gridcell" data-testname="simple gridcell in grid>row" data-expectedrole="gridcell" class="ex">x</span>
+    </div>
+  </div>
+
+  <div role="rowgroup" data-testname="first simple rowgroup" data-expectedrole="rowgroup" class="ex">
+    <div role="row" data-testname="first simple row in rowgroup" data-expectedrole="row" class="ex">
+      <span role="columnheader" data-testname="first simple columnheader in rowgroup>row" data-expectedrole="columnheader" class="ex">x</span>
+      <span role="columnheader" data-testname="last simple columnheader in rowgroup>row" data-expectedrole="columnheader" class="ex">x</span>
+    </div>
+    <div role="row" data-testname="last simple row in rowgroup" data-expectedrole="row" class="ex">
+      <span role="rowheader" data-testname="simple rowheader in rowgroup>row" data-expectedrole="rowheader" class="ex">x</span>
+      <span role="gridcell" data-testname="simple gridcell in rowgroup>row" data-expectedrole="gridcell" class="ex">x</span>
+    </div>
+  </div>
+
+  <div role="gridcell" data-testname="should not have role gridcell outside of row" data-expectedrole="none">x</div>
+  <div role="columnheader" data-testname="should not have role columnheader outside of row" data-expectedrole="none">x</div>
+  <div role="rowheader" data-testname="should not have role rowheader outside of row" data-expectedrole="none">x</div>
+
+<script>
+AriaUtils.verifyRolesBySelector(".ex");
+</script>
+
+</body>
+</html>

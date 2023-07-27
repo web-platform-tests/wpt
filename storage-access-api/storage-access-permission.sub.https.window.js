@@ -47,8 +47,8 @@
     }, "Permissions grants are observable across same-site iframes");
 
     promise_test(async (t) => {
-      // Finally run the simple tests below in a separate cross-origin iframe.
-      await RunTestsInIFrame('https://{{domains[www]}}:{{ports[https][0]}}/storage-access-api/resources/permissions-iframe.https.html');
+      // Finally run the simple tests below in a separate cross-site iframe.
+      await RunTestsInIFrame(wwwAlt + '/storage-access-api/resources/permissions-iframe.https.html');
     }, "IFrame tests");
     return;
   }
@@ -92,6 +92,8 @@
     });
 
     const permission = await navigator.permissions.query({name: "storage-access"});
+    assert_equals(permission.name, "storage-access");
+    assert_equals(permission.state, "prompt");
 
     const p = new Promise(resolve => {
       permission.addEventListener("change", (event) => resolve(event), { once: true });
@@ -104,5 +106,5 @@
 
     assert_equals(event.target.name, "storage-access");
     assert_equals(event.target.state, "granted");
-  }, "Permission state can be observed");
+  }, "Permission state change can be observed");
 })();

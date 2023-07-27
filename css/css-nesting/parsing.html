@@ -46,18 +46,19 @@
   testNestedSelector("& > .bar");
 
   // relative selector
-  testNestedSelector("> & .bar");
   testNestedSelector("> .bar", {expected:"& > .bar"});
+  testNestedSelector("> & .bar", {expected: "& > & .bar"});
   testNestedSelector("+ .bar &", {expected:"& + .bar &"});
   testNestedSelector("+ .bar, .foo, > .baz", {expected:"& + .bar, & .foo, & > .baz"});
 
   // implicit relative (and not)
+  testNestedSelector(".foo");
   testNestedSelector(".test > & .bar");
-  testNestedSelector(".foo, .foo &", {expected:"& .foo, .foo &"});
+  testNestedSelector(".foo, .foo &");
+  testNestedSelector(":is(.bar, .baz)");
   testNestedSelector("&:is(.bar, .baz)");
-  testNestedSelector(":is(.bar, .baz)", {expected:"&:is(.bar, .baz)"});
-  testNestedSelector("&:is(.bar, &.baz)");
   testNestedSelector(":is(.bar, &.baz)");
+  testNestedSelector("&:is(.bar, &.baz)");
 
   // Mixing nesting selector with other simple selectors
   testNestedSelector("div&");

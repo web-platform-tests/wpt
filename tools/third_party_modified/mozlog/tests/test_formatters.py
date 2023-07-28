@@ -7,7 +7,7 @@
 import os
 import signal
 import unittest
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as Et
 from textwrap import dedent
 
 import pytest
@@ -711,7 +711,7 @@ class TestXUnitFormatter(FormatterTest):
         return XUnitFormatter()
 
     def log_as_xml(self):
-        return ET.fromstring("\n".join(self.loglines))
+        return Et.fromstring("\n".join(self.loglines))
 
     def test_stacktrace_is_present(self):
         self.logger.suite_start([])
@@ -757,7 +757,7 @@ class TestXUnitFormatter(FormatterTest):
         )
         xml_string = formatter.suite_end(dict(time=55559))
 
-        root = ET.fromstring(xml_string)
+        root = Et.fromstring(xml_string)
         self.assertEqual(root.get("time"), "0.56")
         self.assertEqual(root.find("testcase").get("time"), "0.46")
 

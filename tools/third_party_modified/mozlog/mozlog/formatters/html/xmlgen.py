@@ -46,7 +46,7 @@ else:
 
 
 class NamespaceMetaclass(type):
-    def __getattr__(self, name):
+    def __getattr__(self, name):  # noqa: N804
         if name[:1] == "_":
             raise AttributeError(name)
         if self == Namespace:
@@ -77,9 +77,9 @@ class Tag(list):
     __str__ = __unicode__
 
     def unicode(self, indent=2):
-        l = []
-        SimpleUnicodeVisitor(l.append, indent).visit(self)
-        return u("").join(l)
+        lv = []
+        SimpleUnicodeVisitor(lv.append, indent).visit(self)
+        return u("").join(lv)
 
     def __repr__(self):
         name = self.__class__.__name__
@@ -99,9 +99,9 @@ Namespace = NamespaceMetaclass(
 
 class HtmlTag(Tag):
     def unicode(self, indent=2):
-        l = []
-        HtmlVisitor(l.append, indent, shortempty=False).visit(self)
-        return u("").join(l)
+        lv = []
+        HtmlVisitor(lv.append, indent, shortempty=False).visit(self)
+        return u("").join(lv)
 
 
 # exported plain html namespace
@@ -216,13 +216,13 @@ class SimpleUnicodeVisitor(object):
         # serialize attributes
         attrlist = dir(tag.attr)
         attrlist.sort()
-        l = []
+        lv = []
         for name in attrlist:
             res = self.repr_attribute(tag.attr, name)
             if res is not None:
-                l.append(res)
-        l.extend(self.getstyle(tag))
-        return u("").join(l)
+                lv.append(res)
+        lv.extend(self.getstyle(tag))
+        return u("").join(lv)
 
     def repr_attribute(self, attrs, name):
         if name[:2] != "__":

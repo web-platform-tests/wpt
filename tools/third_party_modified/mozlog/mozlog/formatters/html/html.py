@@ -220,8 +220,8 @@ class HTMLFormatter(base.BaseFormatter):
                     log.append(line[:80])
                 else:
                     if (
-                        line.lower().find("error") != -1
-                        or line.lower().find("exception") != -1
+                        line.lower().find("error") != -1 or
+                        line.lower().find("exception") != -1
                     ):
                         log.append(html.span(raw(escape(line)), class_="error"))
                     else:
@@ -270,8 +270,7 @@ class HTMLFormatter(base.BaseFormatter):
                         "%i tests ran in %.1f seconds."
                         % (
                             sum(self.test_count.values()),
-                            (self.suite_times["end"] - self.suite_times["start"])
-                            / 1000.0,
+                            (self.suite_times["end"] - self.suite_times["start"]) / 1000.0,
                         ),
                         html.br(),
                         html.span("%i passed" % self.test_count["PASS"], class_="pass"),

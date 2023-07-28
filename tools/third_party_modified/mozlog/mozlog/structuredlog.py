@@ -263,8 +263,8 @@ class StructuredLogger(object):
         converted_data = convertor_registry[action].convert_known(**raw_data)
         for k, v in raw_data.items():
             if (
-                k not in converted_data
-                and k not in convertor_registry[action].optional_args
+                k not in converted_data and
+                k not in convertor_registry[action].optional_args
             ):
                 converted_data[k] = v
 
@@ -272,9 +272,9 @@ class StructuredLogger(object):
 
         if action in ("test_status", "test_end"):
             if (
-                data["expected"] == data["status"]
-                or data["status"] == "SKIP"
-                or "expected" not in raw_data
+                data["expected"] == data["status"] or
+                data["status"] == "SKIP" or
+                "expected" not in raw_data
             ):
                 del data["expected"]
 
@@ -336,16 +336,16 @@ class StructuredLogger(object):
             if self._state.suite_started:
                 # limit data to reduce unnecessary log bloat
                 self.error(
-                    "Got second suite_start message before suite_end. "
-                    + "Logged with data: {}".format(json.dumps(data)[:100])
+                    "Got second suite_start message before suite_end. " +
+                    "Logged with data: {}".format(json.dumps(data)[:100])
                 )
                 return False
             self._state.suite_started = True
         elif action == "suite_end":
             if not self._state.suite_started:
                 self.error(
-                    "Got suite_end message before suite_start. "
-                    + "Logged with data: {}".format(json.dumps(data))
+                    "Got suite_end message before suite_start. " +
+                    "Logged with data: {}".format(json.dumps(data))
                 )
                 return False
             self._state.suite_started = False

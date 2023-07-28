@@ -51,9 +51,9 @@ class ErrorSummaryFormatter(BaseFormatter):
             if ginfo["status"] is None:
                 ginfo["status"] = "SKIP"
         elif (
-            ("expected" not in item and item["status"] in ["OK", "PASS"])
-            or ("expected" in item and item["status"] == item["expected"])
-            or item["status"] in item.get("known_intermittent", [])
+            ("expected" not in item and item["status"] in ["OK", "PASS"]) or
+            ("expected" in item and item["status"] == item["expected"]) or
+            item["status"] in item.get("known_intermittent", [])
         ):
             if ginfo["status"] in (None, "SKIP"):
                 ginfo["status"] = "OK"
@@ -136,13 +136,13 @@ class ErrorSummaryFormatter(BaseFormatter):
             # unlike test group summary, if we crash expect error unless expected
             if (
                 (
-                    "expected" in item
-                    and "status" in item
-                    and item["status"] in item["expected"]
-                )
-                or ("expected" in item and "CRASH" == item["expected"])
-                or "status" in item
-                and item["status"] in item.get("known_intermittent", [])
+                    "expected" in item and
+                    "status" in item and
+                    item["status"] in item["expected"]
+                ) or
+                ("expected" in item and "CRASH" == item["expected"]) or
+                "status" in item and
+                item["status"] in item.get("known_intermittent", [])
             ):
                 self.groups[data["group"]]["status"] = "PASS"
             else:

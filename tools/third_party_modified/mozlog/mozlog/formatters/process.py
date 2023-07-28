@@ -20,10 +20,10 @@ def strsig(n):
         _SIG_NAME = {}
         for k in dir(signal):
             if (
-                k.startswith("SIG")
-                and not k.startswith("SIG_")
-                and k != "SIGCLD"
-                and k != "SIGPOLL"
+                k.startswith("SIG") and
+                not k.startswith("SIG_") and
+                k != "SIGCLD" and
+                k != "SIGPOLL"
             ):
 
                 _SIG_NAME[getattr(signal, k)] = k

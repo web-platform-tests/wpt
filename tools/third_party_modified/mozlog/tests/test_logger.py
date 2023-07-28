@@ -221,12 +221,12 @@ class TestStructuredLogging(unittest.TestCase):
         )
 
         message_string = (
-            message_string_one
-            + "\n"
-            + message_string_two
-            + "\n"
-            + message_string_three
-            + "\n"
+            message_string_one +
+            "\n" +
+            message_string_two +
+            "\n" +
+            message_string_three +
+            "\n"
         )
 
         server_thread = threading.Thread(target=log_server.handle_request)

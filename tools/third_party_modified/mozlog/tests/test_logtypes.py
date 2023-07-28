@@ -40,25 +40,25 @@ class TestContainerTypes(unittest.TestCase):
         d({"foo": {"bar": [1]}})  # doesn't raise
 
     def test_list_type_basic(self):
-        l = List("name")
+        lst = List("name")
         with self.assertRaises(ValueError):
-            l(["foo"])
+            lst(["foo"])
 
-        l = List(Any, "name")
-        l(["foo", 1])  # doesn't raise
+        lst = List(Any, "name")
+        lst(["foo", 1])  # doesn't raise
 
     def test_list_type_with_recursive_item_types(self):
-        l = List(Dict(List(Tuple((Unicode, Int)))), "name")
+        lst = List(Dict(List(Tuple((Unicode, Int)))), "name")
         with self.assertRaises(ValueError):
-            l(["foo"])
+            lst(["foo"])
 
         with self.assertRaises(ValueError):
-            l([{"foo": "bar"}])
+            lst([{"foo": "bar"}])
 
         with self.assertRaises(ValueError):
-            l([{"foo": ["bar"]}])
+            lst([{"foo": ["bar"]}])
 
-        l([{"foo": [("bar", 1)]}])  # doesn't raise
+        lst([{"foo": [("bar", 1)]}])  # doesn't raise
 
     def test_tuple_type_basic(self):
         t = Tuple("name")

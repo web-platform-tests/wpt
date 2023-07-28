@@ -127,11 +127,10 @@ class GroupingFormatter(base.BaseFormatter):
             else:
                 max_width = sys.maxsize
             return (
-                new_display
-                + ("\n%s" % indent).join(
+                new_display +
+                ("\n%s" % indent).join(
                     val[:max_width] for val in self.running_tests.values()
-                )
-                + "\n"
+                ) + "\n"
             )
         else:
             return new_display + "No tests running.\n"

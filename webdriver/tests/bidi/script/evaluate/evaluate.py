@@ -93,3 +93,17 @@ async def test_different_target_realm(bidi_session):
     recursive_compare(
         {"realm": second_tab_default_realm, "result": {"type": "number", "value": 5}}, new_context_result
     )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("user_activation", [True, False])
+async def test_evaluate_userActivation(bidi_session, top_context, user_activation):
+    result = await bidi_session.script.evaluate(
+        expression="navigator.userActivation.isActive && navigator.userActivation.hasBeenActive",
+        target=ContextTarget(top_context["context"]),
+        await_promise=True,
+        user_activation=user_activation)
+
+    assert result == {
+        "type": "boolean",
+        "value": user_activation}

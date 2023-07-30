@@ -292,6 +292,8 @@ class FakeHidService {
     }
     return {success: true};
   }
+
+  addedEventListener() {}
 }
 
 export const fakeHidService = new FakeHidService();

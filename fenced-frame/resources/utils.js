@@ -3,7 +3,9 @@ const BEACON_URL = '/fenced-frame/resources/automatic-beacon-store.py';
 const REMOTE_EXECUTOR_URL = '/fenced-frame/resources/remote-context-executor.https.html';
 const FLEDGE_BIDDING_URL = '/fenced-frame/resources/fledge-bidding-logic.js';
 const FLEDGE_BIDDING_WITH_SIZE_URL = '/fenced-frame/resources/fledge-bidding-logic-with-size.js';
-const FLEDGE_DECISION_URL = '/fenced-frame/resources/fledge-decision-logic.js';
+
+//const FLEDGE_BIDDING_HANDLER = '/fenced-frame/resources/fledge-bidding-logic.py'
+const FLEDGE_DECISION_HANDLER = '/fenced-frame/resources/fledge-decision-logic.py'
 
 // Creates a URL that includes a list of stash key UUIDs that are being used
 // in the test. This allows us to generate UUIDs on the fly and let anything
@@ -83,26 +85,27 @@ async function generateURNFromFledgeRawURL(href,
   });
 
   const interestGroup = ad_with_size ?
-    {
-      name: 'testAd1',
-      owner: location.origin,
-      biddingLogicUrl: new URL(FLEDGE_BIDDING_WITH_SIZE_URL, location.origin),
-      ads: [{ renderUrl: href, sizeGroup: "group1", bid: 1 }],
-      userBiddingSignals: { biddingToken: bidding_token },
-      trustedBiddingSignalsKeys: ['key1'],
-      adComponents: ad_components_list,
-      adSizes: { "size1": { width: "100px", height: "50px" } },
-      sizeGroups: { "group1": ["size1"] }
-    } :
-    {
-      name: 'testAd1',
-      owner: location.origin,
-      biddingLogicUrl: new URL(FLEDGE_BIDDING_URL, location.origin),
-      ads: [{ renderUrl: href, bid: 1 }],
-      userBiddingSignals: { biddingToken: bidding_token },
-      trustedBiddingSignalsKeys: ['key1'],
-      adComponents: ad_components_list,
-    };
+      {
+        name: 'testAd1',
+        owner: location.origin,
+        biddingLogicUrl:
+            new URL(FLEDGE_BIDDING_WITH_SIZE_URL, location.origin),
+        ads: [{renderUrl: href, sizeGroup: 'group1', bid: 1}],
+        userBiddingSignals: {biddingToken: bidding_token},
+        trustedBiddingSignalsKeys: ['key1'],
+        adComponents: ad_components_list,
+        adSizes: {'size1': {width: '100px', height: '50px'}},
+        sizeGroups: {'group1': ['size1']}
+      } :
+      {
+        name: 'testAd1',
+        owner: location.origin,
+        biddingLogicUrl: new URL(FLEDGE_BIDDING_URL, location.origin),
+        ads: [{renderUrl: href, bid: 1}],
+        userBiddingSignals: {biddingToken: bidding_token},
+        trustedBiddingSignalsKeys: ['key1'],
+        adComponents: ad_components_list,
+      };
 
   // Pick an arbitrarily high duration to guarantee that we never leave the
   // ad interest group while the test runs.
@@ -111,7 +114,7 @@ async function generateURNFromFledgeRawURL(href,
   let auctionConfig = {
     seller: location.origin,
     interestGroupBuyers: [location.origin],
-    decisionLogicUrl: new URL(FLEDGE_DECISION_URL, location.origin),
+    decisionLogicUrl: new URL(FLEDGE_DECISION_HANDLER, location.origin),
     auctionSignals: {biddingToken: bidding_token, sellerToken: seller_token},
     resolveToConfig: resolve_to_config
   };

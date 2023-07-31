@@ -168,8 +168,11 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
     This is called for each repeat run requested."""
     tests_by_type = defaultdict(list)
     for test_type in test_loader.test_types:
-        tests_by_type[test_type].extend(test_loader.tests[test_type])
-        tests_by_type[test_type].extend(test_loader.disabled_tests[test_type])
+        type_tests_active = test_loader.tests[test_type]
+        type_tests_disabled = test_loader.disabled_tests[test_type]
+        if type_tests_active or type_tests_disabled:
+            tests_by_type[test_type].extend(type_tests_active)
+            tests_by_type[test_type].extend(type_tests_disabled)
 
     try:
         test_groups = test_source_cls.tests_by_group(tests_by_type, **test_source_kwargs)
@@ -184,7 +187,9 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
 
     test_implementation_by_type = {}
 
-    for test_type in run_test_kwargs["test_types"]:
+    for test_type in kwargs["test_types"]:
+        if test_type not in tests_by_type:
+            continue
         executor_cls = product.executor_classes.get(test_type)
         if executor_cls is None:
             logger.warning(f"Unsupported test type {test_type} for product {product.name}")

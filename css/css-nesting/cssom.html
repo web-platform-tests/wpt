@@ -156,6 +156,17 @@
 }`, 'invalid rule containing ampersand is kept in serialization');
   });
 
+  // Same with rules that do _not_ contain &.
+  test(() => {
+    const text = '.a { :is(!) { color: green; } }';
+    document.getElementById('ss').innerHTML = text;
+    let [ss] = document.styleSheets;
+    assert_equals(ss.cssRules[0].cssText,
+`.a {
+  :is(!) { color: green; }
+}`, 'invalid rule not containing ampersand is kept in serialization');
+  });
+
   test((t) => {
     let main = document.createElement('main');
     main.innerHTML = `

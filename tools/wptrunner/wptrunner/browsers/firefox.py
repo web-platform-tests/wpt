@@ -666,7 +666,7 @@ class ProfileCreator:
             if os.path.exists(path):
                 prefs.add(Preferences.read_prefs(path))
             else:
-                self.logger.warning("Failed to find base prefs file in %s" % path)
+                self.logger.warning(f"Failed to find prefs file in {path}")
 
         # Add any custom preferences
         prefs.add(self.extra_prefs, cast=True)

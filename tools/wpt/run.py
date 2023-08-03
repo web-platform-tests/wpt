@@ -302,20 +302,39 @@ class FirefoxAndroid(BrowserSetup):
         if not kwargs["device_serial"]:
             kwargs["device_serial"] = ["emulator-5554"]
 
+        if kwargs["webdriver_binary"] is None and "wdspec" in kwargs["test_types"]:
+            webdriver_binary = None
+            if not kwargs["install_webdriver"]:
+                webdriver_binary = self.browser.find_webdriver()
+
+            if webdriver_binary is None:
+                install = self.prompt_install("geckodriver")
+
+                if install:
+                    logger.info("Downloading geckodriver")
+                    webdriver_binary = self.browser.install_webdriver(
+                        dest=self.venv.bin_path,
+                        channel=kwargs["browser_channel"],
+                        browser_binary=kwargs["binary"])
+            else:
+                logger.info("Using webdriver binary %s" % webdriver_binary)
+
+            if webdriver_binary:
+                kwargs["webdriver_binary"] = webdriver_binary
+            else:
+                logger.info("Unable to find or install geckodriver, skipping wdspec tests")
+                kwargs["test_types"].remove("wdspec")
+
         for device_serial in kwargs["device_serial"]:
             if device_serial.startswith("emulator-"):
                 # We're running on an emulator so ensure that's set up
-                emulator = android.install(logger,
-                                           reinstall=False,
-                                           no_prompt=not self.prompt,
-                                           device_serial=device_serial)
                 android.start(logger,
-                              emulator=emulator,
                               reinstall=False,
-                              device_serial=device_serial)
+                              device_serial=device_serial,
+                              prompt=kwargs["prompt"])
 
         if "ADB_PATH" not in os.environ:
-            adb_path = os.path.join(android.get_sdk_path(None),
+            adb_path = os.path.join(android.get_paths(None)["sdk"],
                                     "platform-tools",
                                     "adb")
             os.environ["ADB_PATH"] = adb_path

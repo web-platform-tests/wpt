@@ -393,7 +393,7 @@ class Firefox(Browser):
         return "%s/archive/%s.zip/testing/profiles/" % (repo, tag)
 
     def install_prefs(self, binary, dest=None, channel=None):
-        if binary:
+        if binary and not binary.endswith(".apk"):
             version, channel_ = self.get_version_and_channel(binary)
             if channel is not None and channel != channel_:
                 # Beta doesn't always seem to have the b in the version string, so allow the
@@ -535,16 +535,17 @@ class FirefoxAndroid(Browser):
     def __init__(self, logger):
         super().__init__(logger)
         self.apk_path = None
+        self._fx_browser = Firefox(self.logger)
 
     def download(self, dest=None, channel=None, rename=None):
         if dest is None:
             dest = os.pwd
 
         resp = get_taskcluster_artifact(
-            "gecko.v2.mozilla-central.latest.mobile.android-x86_64-opt",
-            "public/build/geckoview-androidTest.apk")
+            "gecko.v2.mozilla-central.shippable.latest.mobile.android-x86_64-opt",
+            "public/build/geckoview-test_runner.apk")
 
-        filename = "geckoview-androidTest.apk"
+        filename = "geckoview-test_runner.apk"
         if rename:
             filename = "%s%s" % (rename, get_ext(filename)[1])
         self.apk_path = os.path.join(dest, filename)
@@ -558,17 +559,16 @@ class FirefoxAndroid(Browser):
         return self.download(dest, channel)
 
     def install_prefs(self, binary, dest=None, channel=None):
-        fx_browser = Firefox(self.logger)
-        return fx_browser.install_prefs(binary, dest, channel)
+        return self._fx_browser.install_prefs(binary, dest, channel)
 
     def find_binary(self, venv_path=None, channel=None):
         return self.apk_path
 
     def find_webdriver(self, venv_path=None, channel=None):
-        raise NotImplementedError
+        return self._fx_browser.find_webdriver(venv_path, channel)
 
     def install_webdriver(self, dest=None, channel=None, browser_binary=None):
-        raise NotImplementedError
+        return self._fx_browser.install_webdriver(dest, channel, None)
 
     def version(self, binary=None, webdriver_binary=None):
         return None

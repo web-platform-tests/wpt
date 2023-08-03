@@ -388,7 +388,7 @@ class Firefox(Browser):
         return "%s/archive/%s.zip/testing/profiles/" % (repo, tag)
 
     def install_prefs(self, binary, dest=None, channel=None):
-        if binary:
+        if binary and not binary.endswith(".apk"):
             version, channel_ = self.get_version_and_channel(binary)
             if channel is not None and channel != channel_:
                 # Beta doesn't always seem to have the b in the version string, so allow the
@@ -536,10 +536,10 @@ class FirefoxAndroid(Browser):
             dest = os.pwd
 
         resp = get_taskcluster_artifact(
-            "gecko.v2.mozilla-central.latest.mobile.android-x86_64-opt",
-            "public/build/geckoview-androidTest.apk")
+            "gecko.v2.mozilla-central.shippable.latest.mobile.android-x86_64-opt",
+            "public/build/geckoview-test_runner.apk")
 
-        filename = "geckoview-androidTest.apk"
+        filename = "geckoview-test_runner.apk"
         if rename:
             filename = "%s%s" % (rename, get_ext(filename)[1])
         self.apk_path = os.path.join(dest, filename)

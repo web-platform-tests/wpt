@@ -304,17 +304,13 @@ class FirefoxAndroid(BrowserSetup):
         for device_serial in kwargs["device_serial"]:
             if device_serial.startswith("emulator-"):
                 # We're running on an emulator so ensure that's set up
-                emulator = android.install(logger,
-                                           reinstall=False,
-                                           no_prompt=not self.prompt,
-                                           device_serial=device_serial)
                 android.start(logger,
-                              emulator=emulator,
                               reinstall=False,
-                              device_serial=device_serial)
+                              device_serial=device_serial,
+                              prompt=kwargs["prompt"])
 
         if "ADB_PATH" not in os.environ:
-            adb_path = os.path.join(android.get_sdk_path(None),
+            adb_path = os.path.join(android.get_paths(None)["sdk"],
                                     "platform-tools",
                                     "adb")
             os.environ["ADB_PATH"] = adb_path

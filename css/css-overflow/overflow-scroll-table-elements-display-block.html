@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<link rel="author" title="Robert Hogan" href="mailto:robhogan@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css2/#overflow">
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=368699">
+<link rel="match" href="../../reference/overflow-scroll-table-elements-display-block-ref.html">
+<style>
+.scrollingElement {
+        width: 100px;
+        height: 100px;
+        background-color: green;
+        overflow: scroll;
+        display: block;
+}
+table {
+        margin-bottom: 35px;
+}
+</style>
+<table class="scrollingElement" cellspacing=0>
+    <tbody>
+        <tr><td></td></tr>
+    </tbody>
+</table>
+<table cellspacing=0>
+    <tbody class="scrollingElement">
+        <tr><td></td></tr>
+    </tbody>
+</table>
+<table cellspacing=0>
+    <tbody>
+        <tr class="scrollingElement"><td></td></tr>
+    </tbody>
+</table>
+<p>When table elements have display: block, they should be allowed to have overflow:scroll. The exception is the table element, which doesn't permit anything other than visible per http://dev.w3.org/csswg/css2/visufx.html#overflow.</p>

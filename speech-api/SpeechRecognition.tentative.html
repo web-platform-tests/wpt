@@ -1,0 +1,22 @@
+<!doctype html>
+<!--
+This test is tentative because behavior of this API on insecure origins
+is not specified. https://www.w3.org/Bugs/Public/show_bug.cgi?id=30176
+-->
+
+<html>
+<head>
+<title>SpeechRecognition constructor algorithm</title>
+<link rel="help" href="https://dvcs.w3.org/hg/speech-api/raw-file/tip/webspeechapi.html">
+</head>
+<body>
+
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script>
+test(function() {
+  assert_throws({name: "NotSupportedError"}, function() {new webkitSpeechRecognition()});
+}, "SpeechRecognition fails on insecure origins");
+</script>
+</body>
+</html>

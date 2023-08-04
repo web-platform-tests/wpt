@@ -96,7 +96,8 @@ def test_chrome_webdriver_supports_browser():
 
     # Browser version matches.
     chrome = browser.Chrome(logger)
-    chrome.webdriver_version = mock.MagicMock(return_value='70.0.1')
+    # Versions should be an exact match to be compatible.
+    chrome.webdriver_version = mock.MagicMock(return_value='70.1.5')
     chrome.version = mock.MagicMock(return_value='70.1.5')
     assert chrome.webdriver_supports_browser('/usr/bin/chromedriver', '/usr/bin/chrome', 'stable')
 
@@ -105,15 +106,6 @@ def test_chrome_webdriver_supports_browser():
     chrome.webdriver_version = mock.MagicMock(return_value='70.0.1')
     chrome.version = mock.MagicMock(return_value='69.0.1')
     assert not chrome.webdriver_supports_browser('/usr/bin/chromedriver', '/usr/bin/chrome', 'stable')
-
-    # The dev channel switches between beta and ToT ChromeDriver, so is sometimes
-    # a version behind its ChromeDriver. As such, we accept browser version + 1 there.
-    chrome = browser.Chrome(logger)
-    chrome.webdriver_version = mock.MagicMock(return_value='70.0.1')
-    chrome.version = mock.MagicMock(return_value='70.1.0')
-    assert chrome.webdriver_supports_browser('/usr/bin/chromedriver', '/usr/bin/chrome', 'dev')
-    chrome.webdriver_version = mock.MagicMock(return_value='71.0.1')
-    assert chrome.webdriver_supports_browser('/usr/bin/chromedriver', '/usr/bin/chrome', 'dev')
 
 
 def test_chromium_webdriver_supports_browser():

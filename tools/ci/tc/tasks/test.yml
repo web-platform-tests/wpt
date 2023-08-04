@@ -108,6 +108,8 @@ components:
 
   browser-servo: {}
 
+  browser-firefox_android: {}
+
   tox-python3_7:
     env:
       TOXENV: py37
@@ -220,6 +222,11 @@ tasks:
                 channel: nightly
               use:
                 - trigger-weekly
+                - trigger-push
+            - vars:
+                browser: firefox_android
+                channel: nightly
+              use:
                 - trigger-push
           do:
             - ${vars.browser}-${vars.channel}-${vars.suite}:

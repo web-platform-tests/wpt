@@ -697,6 +697,9 @@
                 tests.set_status(tests.status.ERROR, msg);
                 tests.complete();
             }
+        } else {
+            // In his case, the test might not be stepped at all, and it even if it is, only the first START event counts for each test
+            window.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "START", content: {'isSecure': window.isSecureContext, 'wid': window.__id__, 'name': test_name}, ts: Date.now()}}))
         }
         return test_obj;
     }
@@ -2567,7 +2570,7 @@
         }
 
         if (this.phase !== this.phases.STARTED) {
-            console.log("STARTIIING")
+            console.log(`[${Date.now()}] prototype.step START`)
             window.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "START", content: {'isSecure': window.isSecureContext, 'wid': window.__id__, 'name': this.name}, ts: Date.now()}}))
             console.log("LOG", window)
         }

@@ -1094,16 +1094,16 @@
   - CanvasTest
   code: |
     {{ load_font }}
-    ctx.font = '50px CanvasTest';
+    ctx.font = '40px CanvasTest';
     ctx.direction = 'ltr';
     ctx.align = 'left'
-    @assert ctx.measureText('A').emHeightAscent === 37.5;
-    @assert ctx.measureText('A').emHeightDescent === 12.5;
-    @assert ctx.measureText('A').emHeightDescent + ctx.measureText('A').emHeightAscent === 50;
+    @assert ctx.measureText('A').emHeightAscent === 30;
+    @assert ctx.measureText('A').emHeightDescent === 10;
+    @assert ctx.measureText('A').emHeightDescent + ctx.measureText('A').emHeightAscent === 40;
 
-    @assert ctx.measureText('ABCD').emHeightAscent === 37.5;
-    @assert ctx.measureText('ABCD').emHeightDescent === 12.5;
-    @assert ctx.measureText('ABCD').emHeightDescent + ctx.measureText('ABCD').emHeightAscent === 50;
+    @assert ctx.measureText('ABCD').emHeightAscent === 30;
+    @assert ctx.measureText('ABCD').emHeightDescent === 10;
+    @assert ctx.measureText('ABCD').emHeightDescent + ctx.measureText('ABCD').emHeightAscent === 40;
   variants: *load-font-variant-definition
 
 - name: 2d.text.measure.baselines

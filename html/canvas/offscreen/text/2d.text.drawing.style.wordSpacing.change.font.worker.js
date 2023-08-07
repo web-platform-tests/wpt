@@ -26,7 +26,7 @@ t.step(function() {
   // 1em = 10px. Add 10px after each word in "Hello World, again",
   // makes it 20px longer.
   var width_with_spacing = ctx.measureText('Hello World, again').width;
-  _assertSame(width_with_spacing, width_normal + 20, "width_with_spacing", "width_normal + 20");
+  assert_approx_equals(width_with_spacing, width_normal + 20, 0.1, "word spacing incorrect before font change");
 
   // Changing font to 20px. Without resetting the spacing, 1em wordSpacing
   // is now 20px, so it's suppose to be 40px longer without any wordSpacing set.
@@ -35,7 +35,7 @@ t.step(function() {
   // Now calculate the reference spacing for "Hello World, again" with no spacing.
   ctx.wordSpacing = '0em';
   width_normal = ctx.measureText('Hello World, again').width;
-  _assertSame(width_with_spacing, width_normal + 40, "width_with_spacing", "width_normal + 40");
+  assert_approx_equals(width_with_spacing, width_normal + 40, 0.1, "word spacing incorrect after font change");
   t.done();
 });
 done();

@@ -22,7 +22,7 @@ _addTest(function(canvas, ctx) {
   _assertSame(ctx.letterSpacing, '0px', "ctx.letterSpacing", "'0px'");
   _assertSame(ctx.wordSpacing, '0px', "ctx.wordSpacing", "'0px'");
   var width_normal = ctx.measureText('Hello World, again').width;
-  var ch_width = width_normal / 18;
+  var ch_width = ctx.measureText('0').width;
 
   function test_word_spacing(value, difference_spacing, epsilon) {
     ctx.wordSpacing = value;

@@ -254,9 +254,9 @@ def setup_environment(args):
     if args.install_certificates:
         install_certificates()
 
-    # if "chrome" in args.browser:
-    #     assert args.channel is not None
-    #     install_chrome(args.channel)
+    if "chrome" in args.browser:
+        assert args.channel is not None
+        install_chrome(args.channel)
 
     if args.xvfb:
         start_xvfb()

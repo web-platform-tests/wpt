@@ -222,7 +222,6 @@ class Test(ABC):
         self.timeout = timeout if timeout is not None else self.default_timeout
         self.path = path
         self.subdomain = subdomain
-        self.restart_test_after = False
         self.environment = {"url_base": url_base,
                             "protocol": protocol,
                             "prefs": self.prefs}
@@ -297,7 +296,7 @@ class Test(ABC):
             restart_after = meta.restart_after
             if restart_after is not None:
                 return True
-        return self.restart_test_after
+        return False
 
     @property
     def leaks(self):

@@ -192,8 +192,7 @@ def _convert_exception(test, exception, errors):
     if isinstance(exception, CrashError):
         return (test.result_cls("CRASH", errors), [])
     if isinstance(exception, LeakError):
-        test.restart_test_after = True
-        return (test.result_cls("ERROR", errors), [])
+        return (test.result_cls("INTERNAL-ERROR", errors), [])
     raise exception
 
 

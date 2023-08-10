@@ -993,7 +993,7 @@ class Chrome(ChromeChromiumBase):
 
     def _get_webdriver_url_by_build(self, version):
         """Find a ChromeDriver download URL based on a MAJOR.MINOR.BUILD version.
-        
+
         Returns: Download URL string or None if no matching build is found.
         """
         version = self._get_build_version(version)
@@ -1024,7 +1024,7 @@ class Chrome(ChromeChromiumBase):
 
     def _get_download_urls_by_version(self, version):
         """Find Chrome for Testing and ChromeDriver download URLs matching a specific version.
-        
+
         Returns: Both binary downloads for Chrome and ChromeDriver.
         """
         try:
@@ -1065,7 +1065,7 @@ class Chrome(ChromeChromiumBase):
 
     def _get_download_urls_by_channel(self, channel):
         """Find Chrome for Testing and ChromeDriver download URLs matching the given channel.
-        
+
         Returns: Both binary downloads for Chrome and ChromeDriver.
         """
         try:

@@ -219,7 +219,7 @@ environments, the script will be imported using a static <code class="docutils l
 <section id="specifying-test-variants">
 <h3>Specifying test <a class="reference external" href="#variants">variants</a><a class="headerlink" href="#specifying-test-variants" title="Permalink to this headline">¶</a></h3>
 <p>Use <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">META:</span> <span class="pre">variant=url-suffix</span></code> at the beginning of the resource. For example,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// META: variant=
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// META: variant=?default
 // META: variant=?wss
 </pre></div>
 </div>
@@ -229,7 +229,7 @@ environments, the script will be imported using a static <code class="docutils l
 <h2>Variants<a class="headerlink" href="#variants" title="Permalink to this headline">¶</a></h2>
 <p>A test file can have multiple variants by including <code class="docutils literal notranslate"><span class="pre">meta</span></code> elements,
 for example:</p>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">&gt;</span>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;?default&quot;</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;?wss&quot;</span><span class="p">&gt;</span>
 </pre></div>
 </div>

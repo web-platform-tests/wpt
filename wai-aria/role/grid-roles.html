@@ -41,9 +41,9 @@
     </div>
   </div>
 
-  <div role="gridcell" data-testname="should not have role gridcell outside of row" data-expectedrole="none" class="ex">x</div>
-  <div role="rowheader" data-testname="should not have role rowheader outside of row" data-expectedrole="none" class="ex">x</div>
-  <div role="columnheader" data-testname="should not have role columnheader outside of row" data-expectedrole="none" class="ex">x</div>
+  <div role="gridcell" data-testname="orphaned gridcell outside the context of row" data-expectedrole="none" class="ex">x</div>
+  <div role="rowheader" data-testname="orphaned rowheader outside the context of row" data-expectedrole="none" class="ex">x</div>
+  <div role="columnheader" data-testname="orphaned columnheader outside the context of row" data-expectedrole="none" class="ex">x</div>
 
 <script>
 AriaUtils.verifyRolesBySelector(".ex");

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import contextlib
 import json
 import optparse
 import os
@@ -834,12 +835,26 @@ class TestComponentFilter(BaseStructuredTest):
 
 
 class TestCommandline(unittest.TestCase):
+    @contextlib.contextmanager
     def get_logfile(self):
-        return tempfile.NamedTemporaryFile()
+        temp_file = tempfile.NamedTemporaryFile(delete=False)
+        temp_file.close()
+        try:
+            yield temp_file
+        finally:
+            os.unlink(temp_file.name)
 
     def loglines(self, logfile):
-        logfile.seek(0)
-        return [line.rstrip() for line in logfile.readlines()]
+        close = False
+        if logfile.closed:
+            close = True
+            logfile = open(logfile.name, "rb")
+        try:
+            logfile.seek(0)
+            return [line.rstrip() for line in logfile.readlines()]
+        finally:
+            if close:
+                logfile.close()
 
     def test_setup_logging(self):
         parser = argparse.ArgumentParser()

@@ -35,15 +35,12 @@ class TestLogging(unittest.TestCase):
         self.assertEqual(len(default_logger.handlers), 1)
         self.assertTrue(isinstance(default_logger.handlers[0], mozlog.StreamHandler))
 
-        with tempfile.NamedTemporaryFile() as f:
-            list_logger = mozlog.getLogger(
-                "file.logger", handler=mozlog.FileHandler(f.name)
-            )
-            self.assertEqual(len(list_logger.handlers), 1)
-            self.assertTrue(isinstance(list_logger.handlers[0], mozlog.FileHandler))
+        list_logger = mozlog.getLogger("list.logger", handler=ListHandler())
+        self.assertEqual(len(list_logger.handlers), 1)
+        self.assertTrue(isinstance(list_logger.handlers[0], ListHandler))
 
         self.assertRaises(
-            ValueError, mozlog.getLogger, "file.logger", handler=ListHandler()
+            ValueError, mozlog.getLogger, "list.logger", handler=mozlog.StreamHandler()
         )
 
     def test_timestamps(self):

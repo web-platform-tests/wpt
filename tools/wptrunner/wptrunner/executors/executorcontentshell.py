@@ -192,6 +192,9 @@ def _convert_exception(test, exception, errors):
     if isinstance(exception, CrashError):
         return (test.result_cls("CRASH", errors), [])
     if isinstance(exception, LeakError):
+        # TODO: the internal error is to force a restart, but it doesn't correctly
+        # describe what the issue is. Need to find a way to return a "FAIL",
+        # and restart the content_shell after the test run.
         return (test.result_cls("INTERNAL-ERROR", errors), [])
     raise exception
 

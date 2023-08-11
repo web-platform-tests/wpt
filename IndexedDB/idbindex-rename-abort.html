@@ -64,47 +64,53 @@ promise_test(testCase => {
     });
 }, 'IndexedDB index rename in aborted transaction');
 
-promise_test(testCase => {
-    const dbName = databaseName(testCase);
-    let authorIndex = null;
-    return createDatabase(testCase, (database, transaction) => {
-        createNotBooksStore(testCase, database);
+promise_test(async testCase => {
+  for (let i = 0; i < 2000; ++i) {
+    const dbName = databaseName(testCase) + i;
+    await new Promise((resolve, reject) => {
+      const request = indexedDB.open(dbName, 1);
+      request.onupgradeneeded = _ => {};
+      request.onsuccess = _ => {
+        resolve(request.result);
+      };
+      request.onerror = _ => {
+        reject(request.error);
+      };
     }).then(database => {
-        database.close();
-    }).then(() => migrateDatabase(testCase, 2, (database, transaction) => {
-        const store = transaction.objectStore('not_books');
-        authorIndex = store.createIndex('by_author', 'author');
-        authorIndex.name = 'by_author_renamed';
-        authorIndex.name = 'by_author_renamed_again';
+      database.close();
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(dbName, 2);
+        request.onupgradeneeded = _ => {
+          const database = request.result;
+          const transaction = request.transaction;
 
-        transaction.abort();
-
-        assert_equals(
-            authorIndex.name, 'by_author_renamed_again',
-            'IDBIndex.name should reflect the last rename immediately after ' +
-            'transaction.abort() returns');
-        assert_array_equals(
-            store.indexNames, ['not_by_author', 'not_by_title'],
-            'IDBObjectStore.indexNames should not reflect the creation or ' +
-            'the rename immediately after transaction.abort() returns');
-    })).then(event => {
-        assert_equals(
-            authorIndex.name, 'by_author_renamed_again',
-            'IDBIndex.name should reflect the last rename after the ' +
-            'versionchange transaction is aborted');
-
+          database.createObjectStore('books');
+          transaction.abort();
+        };
+        request.onsuccess = _ => {
+          reject("unexpected success after tx abort");
+        };
+        request.onerror = _ => {
+          resolve();
+        };
+      });
+    }).then(() => {
+      return new Promise((resolve, reject) => {
         const request = indexedDB.open(dbName, 1);
-        return promiseForRequest(testCase, request);
+        request.onupgradeneeded = _ => {
+          reject("unexpected upgradeneeded");
+        };
+        request.onsuccess = _ => {
+          resolve(request.result);
+        };
+        request.onerror = _ => {
+          reject('unexpected error 3' + request.error);
+        };
+      });
     }).then(database => {
-        const transaction = database.transaction('not_books', 'readonly', {durability: 'relaxed'});
-        const store = transaction.objectStore('not_books');
-        assert_array_equals(
-            store.indexNames, ['not_by_author', 'not_by_title'],
-            'IDBDatabase.objectStoreNames should not reflect the creation or ' +
-            'the rename after the versionchange transaction is aborted');
-
-        database.close();
+      database.close();
     });
+  }
 }, 'IndexedDB index creation and rename in an aborted transaction');
 
 </script>

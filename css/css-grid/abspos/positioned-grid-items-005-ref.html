@@ -1,44 +1,29 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Grid Layout Test: Positioned grid items reference file</title>
-<link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
+<title>CSS Grid Layout Test: Fixed positioned element in grid.</title>
 <style>
-#grid {
-  display: grid;
-  grid: 150px 100px / 200px 300px;
-  justify-items: end;
-  align-items: start;
-  margin: 1px 2px 3px 4px;
-  padding: 20px 15px 10px 5px;
-  border-width: 9px 3px 12px 6px;
-  border-style: solid;
-  width: 550px;
-  height: 400px;
-}
 
-#firstItem {
-  background: magenta;
-}
+  #grid {
+    display: inline-grid;
+    grid: 50px 50px / 50px 50px;
+    padding: 5px;
+    border: 5px solid;
+    background-color: gray;
+    margin: 50px;
+  }
 
-#secondItem {
-  background: cyan;
-}
+  #fixed {
+    width: 50px;
+    height: 50px;
+    background-color: blue;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+  }
 
-#thirdItem {
-  background: yellow;
-}
-
-#fourthItem {
-  background: lime;
-}
 </style>
 
 <p>The test passes if it has the same output than the reference.</p>
 
-<div id="grid">
-  <div id="firstItem">First item</div>
-  <div id="secondItem">Second item</div>
-  <div id="thirdItem">Third item</div>
-  <div id="fourthItem">Fourth item</div>
-</div>
-
+<div id="fixed"></div>
+<div id="grid"></div>

@@ -4,7 +4,7 @@
 <link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
 <link rel="help" href="https://drafts.csswg.org/css-grid/#abspos" title="9. Absolute Positioning">
 <link rel="match" href="positioned-grid-items-001-ref.html">
-<meta name="assert" content="Checks that absolutely positioned grid items are properly placed and sized when they have a static position (left/rigth and top/bottom are 'auto').">
+<meta name="assert" content="Checks that absolutely positioned grid items are properly placed and sized when they have specific 'left' and 'top' offsets.">
 <style>
 #grid {
   display: grid;
@@ -20,6 +20,8 @@
 
 #grid > div {
   position: absolute;
+  left: 0;
+  top: 0;
 }
 
 #firstItem {

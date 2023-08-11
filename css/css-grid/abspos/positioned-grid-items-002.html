@@ -3,8 +3,8 @@
 <title>CSS Grid Layout Test: Positioned grid items</title>
 <link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
 <link rel="help" href="https://drafts.csswg.org/css-grid/#abspos" title="9. Absolute Positioning">
-<link rel="match" href="positioned-grid-items-001-ref.html">
-<meta name="assert" content="Checks that absolutely positioned grid items are properly placed and sized when they have a specific 'left' offset and a static block position (top/bottom are 'auto').">
+<link rel="match" href="positioned-grid-items-002-ref.html">
+<meta name="assert" content="Checks that absolutely positioned grid items are properly placed and sized when they have specific 'left, 'right', 'top' and 'bottom' offsets.">
 <style>
 #grid {
   display: grid;
@@ -21,6 +21,9 @@
 #grid > div {
   position: absolute;
   left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
 }
 
 #firstItem {

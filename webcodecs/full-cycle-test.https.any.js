@@ -34,10 +34,11 @@ promise_setup(async () => {
       hardwareAcceleration: 'prefer-software',
     },
     '?h264_avc': {
-      codec: 'avc1.42001E',
+      codec: 'avc1.640028',
       avc: {format: 'avc'},
       hasEmbeddedColorSpace: true,
       hardwareAcceleration: 'prefer-software',
+      latencyMode: 'realtime',
     },
     '?h264_annexb': {
       codec: 'avc1.42001E',

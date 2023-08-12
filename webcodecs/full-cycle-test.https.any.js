@@ -34,11 +34,10 @@ promise_setup(async () => {
       hardwareAcceleration: 'prefer-software',
     },
     '?h264_avc': {
-      codec: 'avc1.640028',
+      codec: 'avc1.42001E',
       avc: {format: 'avc'},
       hasEmbeddedColorSpace: true,
       hardwareAcceleration: 'prefer-software',
-      latencyMode: 'realtime',
     },
     '?h264_annexb': {
       codec: 'avc1.42001E',
@@ -64,6 +63,9 @@ promise_setup(async () => {
   config.bitrate = 1000000;
   config.bitrateMode = "constant";
   config.framerate = 30;
+  if (options.realTimeLatencyMode) {
+    config.latencyMode = 'realtime';
+  }
   ENCODER_CONFIG = config;
 });
 
@@ -161,6 +163,10 @@ async function runFullCycleTest(t, options) {
 promise_test(async t => {
   return runFullCycleTest(t, {});
 }, 'Encoding and decoding cycle');
+
+promise_test(async t => {
+  return runFullCycleTest(t, {realTimeLatencyMode: true});
+}, 'Encoding and decoding cycle w/ realtime latency mode');
 
 promise_test(async t => {
   if (ENCODER_CONFIG.hasEmbeddedColorSpace)

@@ -63,14 +63,14 @@ promise_setup(async () => {
   config.bitrate = 1000000;
   config.bitrateMode = "constant";
   config.framerate = 30;
-  if (options.realTimeLatencyMode) {
-    config.latencyMode = 'realtime';
-  }
   ENCODER_CONFIG = config;
 });
 
 async function runFullCycleTest(t, options) {
   let encoder_config = { ...ENCODER_CONFIG };
+  if (options.realTimeLatencyMode) {
+    encoder_config.latencyMode = 'realtime';
+  }
   let encoder_color_space = {};
   const w = encoder_config.width;
   const h = encoder_config.height;

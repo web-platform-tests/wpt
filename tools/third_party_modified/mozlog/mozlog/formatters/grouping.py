@@ -151,7 +151,7 @@ class GroupingFormatter(base.BaseFormatter):
             )
 
     def test_start(self, data):
-        self.running_tests[data["thread"]] = (data["subsuite"], data["test"])
+        self.running_tests[data["thread"]] = (data.get("subsuite"), data["test"])
         return self.generate_output(text=None, new_display=self.build_status_line())
 
     def wrap_and_indent_lines(self, lines, indent):
@@ -164,28 +164,8 @@ class GroupingFormatter(base.BaseFormatter):
             output += indent + u"\u2514 %s\n" % lines[-1]
         return output
 
-    def get_lines_for_unexpected_subtest_result(
-        self, subtest_name, status, expected, message, stack
-    ):
-        # Subtest names sometimes contain control characters, which we want
-        # to be printed in their raw form, and not their interpreted form.
-        subtest_name = subtest_name.encode("unicode-escape").decode("utf-8")
-
-        if expected:
-            expected_text = u" [expected %s]" % expected
-        else:
-            expected_text = u""
-
-        lines = [u"%s%s %s" % (status, expected_text, subtest_name)]
-        if message:
-            lines.append(u"  \u2192 %s" % message)
-        if stack:
-            lines.append("")
-            lines += [stackline for stackline in stack.splitlines()]
-        return lines
-
     def get_lines_for_unexpected_result(
-        self, subsuite, test_name, status, expected, message, stack
+        self, test_name, status, expected, message, stack
     ):
         # Test names sometimes contain control characters, which we want
         # to be printed in their raw form, and not their interpreted form.
@@ -196,13 +176,7 @@ class GroupingFormatter(base.BaseFormatter):
         else:
             expected_text = u""
 
-        lines = [u"%s%s %s"
-                 % (
-                     status,
-                     expected_text, 
-                     self.get_test_name_output(subsuite, test_name)
-                 )
-        ]
+        lines = [u"%s%s %s" % (status, expected_text, test_name)]
         if message:
             lines.append(u"  \u2192 %s" % message)
         if stack:
@@ -243,7 +217,7 @@ class GroupingFormatter(base.BaseFormatter):
             return ""
 
         def add_subtest_failure(lines, subtest, stack=None):
-            lines += self.get_lines_for_unexpected_subtest_result(
+            lines += self.get_lines_for_unexpected_result(
                 subtest.get("subtest", None),
                 subtest.get("status", None),
                 subtest.get("expected", None),
@@ -279,7 +253,7 @@ class GroupingFormatter(base.BaseFormatter):
         self.completed_tests += 1
         test_status = data["status"]
         test_name = data["test"]
-        subsuite = data["subsuite"]
+        subsuite = data.get("subsuite")
         known_intermittent_statuses = data.get("known_intermittent", [])
         subtest_failures = self.subtest_failures.pop((subsuite, test_name), [])
         if "expected" in data and test_status not in known_intermittent_statuses:
@@ -315,8 +289,7 @@ class GroupingFormatter(base.BaseFormatter):
         if had_unexpected_test_result:
             self.unexpected_tests[test_status].append(data)
             lines = self.get_lines_for_unexpected_result(
-                subsuite,
-                test_name,
+                self.get_test_name_output(subsuite, test_name),
                 test_status,
                 data.get("expected", None),
                 data.get("message", None),
@@ -337,10 +310,10 @@ class GroupingFormatter(base.BaseFormatter):
         if "expected" in data and data["status"] not in data.get(
             "known_intermittent", []
         ):
-            key = (data["subsuite"], data["test"])
+            key = (data.get("subsuite"), data["test"])
             self.subtest_failures[key].append(data)
         elif data["status"] in data.get("known_intermittent", []):
-            key = (data["subsuite"], data["test"], data["subtest"])
+            key = (data.get("subsuite"), data["test"], data["subtest"])
             self.known_intermittent_results[key] = data
 
     def suite_end(self, data):

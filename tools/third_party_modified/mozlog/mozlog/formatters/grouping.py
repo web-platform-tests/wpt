@@ -72,8 +72,8 @@ class GroupingFormatter(base.BaseFormatter):
             "CRASH": [],
         }
 
-        # Follows the format of {(<test>, <subtest>): <data>}, where
-        # (<test>, None) represents a top level test.
+        # Follows the format of {(<subsuite>, <test>, <subtest>): <data>}, where
+        # (<subsuite>, <test>, None) represents a top level test.
         self.known_intermittent_results = {}
 
     def _enable_show_logs(self):
@@ -129,7 +129,8 @@ class GroupingFormatter(base.BaseFormatter):
             return (
                 new_display +
                 ("\n%s" % indent).join(
-                    val[:max_width] for val in self.running_tests.values()
+                    f"{self.get_test_name_output(subsuite, test_name)}"[:max_width]
+                    for subsuite, test_name in self.running_tests.values()
                 ) + "\n"
             )
         else:
@@ -150,7 +151,7 @@ class GroupingFormatter(base.BaseFormatter):
             )
 
     def test_start(self, data):
-        self.running_tests[data["thread"]] = data["test"]
+        self.running_tests[data["thread"]] = (data["subsuite"], data["test"])
         return self.generate_output(text=None, new_display=self.build_status_line())
 
     def wrap_and_indent_lines(self, lines, indent):
@@ -163,8 +164,28 @@ class GroupingFormatter(base.BaseFormatter):
             output += indent + u"\u2514 %s\n" % lines[-1]
         return output
 
+    def get_lines_for_unexpected_subtest_result(
+        self, subtest_name, status, expected, message, stack
+    ):
+        # Subtest names sometimes contain control characters, which we want
+        # to be printed in their raw form, and not their interpreted form.
+        subtest_name = subtest_name.encode("unicode-escape").decode("utf-8")
+
+        if expected:
+            expected_text = u" [expected %s]" % expected
+        else:
+            expected_text = u""
+
+        lines = [u"%s%s %s" % (status, expected_text, subtest_name)]
+        if message:
+            lines.append(u"  \u2192 %s" % message)
+        if stack:
+            lines.append("")
+            lines += [stackline for stackline in stack.splitlines()]
+        return lines
+
     def get_lines_for_unexpected_result(
-        self, test_name, status, expected, message, stack
+        self, subsuite, test_name, status, expected, message, stack
     ):
         # Test names sometimes contain control characters, which we want
         # to be printed in their raw form, and not their interpreted form.
@@ -175,7 +196,13 @@ class GroupingFormatter(base.BaseFormatter):
         else:
             expected_text = u""
 
-        lines = [u"%s%s %s" % (status, expected_text, test_name)]
+        lines = [u"%s%s %s"
+                 % (
+                     status,
+                     expected_text, 
+                     self.get_test_name_output(subsuite, test_name)
+                 )
+        ]
         if message:
             lines.append(u"  \u2192 %s" % message)
         if stack:
@@ -186,7 +213,7 @@ class GroupingFormatter(base.BaseFormatter):
     def get_lines_for_known_intermittents(self, known_intermittent_results):
         lines = []
 
-        for (test, subtest), data in self.known_intermittent_results.items():
+        for (subsuite, test, subtest), data in self.known_intermittent_results.items():
             status = data["status"]
             known_intermittent = ", ".join(data["known_intermittent"])
             expected = " [expected %s, known intermittent [%s]" % (
@@ -198,19 +225,25 @@ class GroupingFormatter(base.BaseFormatter):
                 % (
                     status,
                     expected,
-                    test,
+                    self.get_test_name_output(subsuite, test),
                     (", %s" % subtest) if subtest is not None else "",
                 )
             ]
         output = self.wrap_and_indent_lines(lines, "  ") + "\n"
         return output
 
-    def get_output_for_unexpected_subtests(self, test_name, unexpected_subtests):
+    def get_test_name_output(self, subsuite, test_name):
+        # Generate human readable test name from subsuite and test_name.
+        # Vendors can override this function to produce output in a different
+        # format that suites their need.
+        return f"{subsuite}:{test_name}" if subsuite else test_name
+
+    def get_output_for_unexpected_subtests(self, subsuite, test_name, unexpected_subtests):
         if not unexpected_subtests:
             return ""
 
         def add_subtest_failure(lines, subtest, stack=None):
-            lines += self.get_lines_for_unexpected_result(
+            lines += self.get_lines_for_unexpected_subtest_result(
                 subtest.get("subtest", None),
                 subtest.get("status", None),
                 subtest.get("expected", None),
@@ -218,8 +251,9 @@ class GroupingFormatter(base.BaseFormatter):
                 stack,
             )
 
-        def make_subtests_failure(test_name, subtests, stack=None):
-            lines = [u"Unexpected subtest result in %s:" % test_name]
+        def make_subtests_failure(subsuite, test_name, subtests, stack=None):
+            lines = [u"Unexpected subtest result in %s:"
+                     % self.get_test_name_output(subsuite, test_name)]
             for subtest in subtests[:-1]:
                 add_subtest_failure(lines, subtest, None)
             add_subtest_failure(lines, subtests[-1], stack)
@@ -233,20 +267,21 @@ class GroupingFormatter(base.BaseFormatter):
         for failure in unexpected_subtests:
             # Print stackless results first. They are all separate.
             if "stack" not in failure:
-                output += make_subtests_failure(test_name, [failure], None)
+                output += make_subtests_failure(subsuite, test_name, [failure], None)
             else:
                 failures_by_stack[failure["stack"]].append(failure)
 
         for (stack, failures) in failures_by_stack.items():
-            output += make_subtests_failure(test_name, failures, stack)
+            output += make_subtests_failure(subsuite, test_name, failures, stack)
         return output
 
     def test_end(self, data):
         self.completed_tests += 1
         test_status = data["status"]
         test_name = data["test"]
+        subsuite = data["subsuite"]
         known_intermittent_statuses = data.get("known_intermittent", [])
-        subtest_failures = self.subtest_failures.pop(test_name, [])
+        subtest_failures = self.subtest_failures.pop((subsuite, test_name), [])
         if "expected" in data and test_status not in known_intermittent_statuses:
             had_unexpected_test_result = True
         else:
@@ -261,17 +296,18 @@ class GroupingFormatter(base.BaseFormatter):
                 return self.generate_output(text=None, new_display=new_display)
             else:
                 return self.generate_output(
-                    text="  %s\n" % test_name, new_display=new_display
+                    text="  %s\n" % self.get_test_name_output(subsuite, test_name),
+                    new_display=new_display
                 )
 
         if test_status in known_intermittent_statuses:
-            self.known_intermittent_results[(test_name, None)] = data
+            self.known_intermittent_results[(subsuite, test_name, None)] = data
 
         # If the test crashed or timed out, we also include any process output,
         # because there is a good chance that the test produced a stack trace
         # or other error messages.
         if test_status in ("CRASH", "TIMEOUT"):
-            stack = self.test_output[test_name] + data.get("stack", "")
+            stack = self.test_output[(subsuite, test_name)] + data.get("stack", "")
         else:
             stack = data.get("stack", None)
 
@@ -279,6 +315,7 @@ class GroupingFormatter(base.BaseFormatter):
         if had_unexpected_test_result:
             self.unexpected_tests[test_status].append(data)
             lines = self.get_lines_for_unexpected_result(
+                subsuite,
                 test_name,
                 test_status,
                 data.get("expected", None),
@@ -288,9 +325,9 @@ class GroupingFormatter(base.BaseFormatter):
             output += self.wrap_and_indent_lines(lines, "  ") + "\n"
 
         if subtest_failures:
-            self.tests_with_failing_subtests.append(test_name)
+            self.tests_with_failing_subtests.append((subsuite, test_name))
             output += self.get_output_for_unexpected_subtests(
-                test_name, subtest_failures
+                subsuite, test_name, subtest_failures
             )
         self.test_failure_text += output
 
@@ -300,9 +337,11 @@ class GroupingFormatter(base.BaseFormatter):
         if "expected" in data and data["status"] not in data.get(
             "known_intermittent", []
         ):
-            self.subtest_failures[data["test"]].append(data)
+            key = (data["subsuite"], data["test"])
+            self.subtest_failures[key].append(data)
         elif data["status"] in data.get("known_intermittent", []):
-            self.known_intermittent_results[(data["test"], data["subtest"])] = data
+            key = (data["subsuite"], data["test"], data["subtest"])
+            self.known_intermittent_results[key] = data
 
     def suite_end(self, data):
         self.end_time = data["time"]
@@ -365,8 +404,8 @@ class GroupingFormatter(base.BaseFormatter):
     def process_output(self, data):
         if data["thread"] not in self.running_tests:
             return
-        test_name = self.running_tests[data["thread"]]
-        self.test_output[test_name] += data["data"] + "\n"
+        test_key = self.running_tests[data["thread"]]
+        self.test_output[test_key] += data["data"] + "\n"
 
     def log(self, data):
         if data.get("component"):

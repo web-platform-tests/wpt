@@ -32,7 +32,10 @@ promise_test(async t => {
   ctx.font = '50px CanvasTest';
   ctx.direction = 'ltr';
   ctx.align = 'left'
-  _assertSame(Math.abs(ctx.measureText('A').alphabeticBaseline), 0, "Math.abs(ctx.measureText('A').alphabeticBaseline)", "0");
+  log.console(Math.abs(ctx.measureText('A').getBaselines().alphabetic));
+  log.console(Math.abs(ctx.measureText('A').ideographicBaseline));
+  log.console(Math.abs(ctx.measureText('A').hangingBaseline));
+  _assertSame(Math.abs(ctx.measureText('A').getBaselines().alphabetic), 0, "Math.abs(ctx.measureText('A').alphabeticBaseline)", "0");
   _assertSame(ctx.measureText('A').ideographicBaseline, 6.25, "ctx.measureText('A').ideographicBaseline", "6.25");
   _assertSame(ctx.measureText('A').hangingBaseline, 25, "ctx.measureText('A').hangingBaseline", "25");
 

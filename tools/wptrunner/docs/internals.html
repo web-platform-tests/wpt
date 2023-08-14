@@ -299,10 +299,10 @@ websockets servers</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="wptrunner.environment.wait_for_service">
-<span class="sig-prename descclassname"><span class="pre">wptrunner.environment.</span></span><span class="sig-name descname"><span class="pre">wait_for_service</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.environment.wait_for_service" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">wptrunner.environment.</span></span><span class="sig-name descname"><span class="pre">wait_for_service</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_process</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.environment.wait_for_service" title="Permalink to this definition">¶</a></dt>
 <dd><p>Waits until network service given as a tuple of (host, port) becomes
-available or the <cite>timeout</cite> duration is reached, at which point
-<code class="docutils literal notranslate"><span class="pre">socket.error</span></code> is raised.</p>
+available, <cite>timeout</cite> duration is reached, or the <cite>server_process</cite> exits at
+which point <code class="docutils literal notranslate"><span class="pre">socket.error</span></code> is raised.</p>
 </dd></dl>
 
 <span class="target" id="module-wptrunner.executors.base"></span><dl class="py class">

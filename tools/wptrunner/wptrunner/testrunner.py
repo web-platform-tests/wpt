@@ -296,16 +296,16 @@ class TestRunnerManager(threading.Thread):
 
         self.test_implementation_by_type = {}
         for test_type, test_implementation in test_implementation_by_type.items():
-            kwargs = test_implementation.browser_kwargs
-            if kwargs.get("device_serial"):
-                kwargs = kwargs.copy()
+            browser_kwargs = test_implementation.browser_kwargs
+            if browser_kwargs.get("device_serial"):
+                browser_kwargs = browser_kwargs.copy()
                 # Assign Android device to runner according to current manager index
-                kwargs["device_serial"] = kwargs["device_serial"][index]
+                browser_kwargs["device_serial"] = browser_kwargs["device_serial"][index]
                 self.test_implementation_by_type[test_type] = TestImplementation(
                     test_implementation.executor_cls,
                     test_implementation.executor_kwargs,
                     test_implementation.browser_cls,
-                    kwargs)
+                    browser_kwargs)
             else:
                 self.test_implementation_by_type[test_type] = test_implementation
 
@@ -330,7 +330,7 @@ class TestRunnerManager(threading.Thread):
 
         self.test_runner_proc = None
 
-        threading.Thread.__init__(self, name="TestRunnerManager-%s-%i" % (test_type, index))
+        super().__init__(name=f"TestRunnerManager-{index}")
         # This is started in the actual new thread
         self.logger = None
 
@@ -700,16 +700,17 @@ class TestRunnerManager(threading.Thread):
 
         self.test_count += 1
         is_unexpected = expected != status and status not in known_intermittent
+        is_pass_or_expected = status in ["OK", "PASS"] or (not is_unexpected)
 
         if is_unexpected or subtest_unexpected:
             self.unexpected_tests.add(test.id)
 
         # A result is unexpected pass if the test or any subtest run
-        # unexpectedly, and the overall status is OK (for test harness test), or
-        # PASS (for reftest), and all unexpected results for subtests (if any) are
-        # unexpected pass.
+        # unexpectedly, and the overall status is expected or passing (OK for test
+        # harness test, or PASS for reftest), and all unexpected results for
+        # subtests (if any) are unexpected pass.
         is_unexpected_pass = ((is_unexpected or subtest_unexpected) and
-                              status in ["OK", "PASS"] and subtest_all_pass_or_expected)
+                              is_pass_or_expected and subtest_all_pass_or_expected)
         if is_unexpected_pass:
             self.unexpected_pass_tests.add(test.id)
 

@@ -35,9 +35,10 @@ def executor_kwargs(test_type, test_environment, run_info_data, **kwargs):
         executor_kwargs["reftest_screenshot"] = kwargs["reftest_screenshot"]
 
     if test_type == "wdspec":
-        executor_kwargs["binary"] = kwargs.get("binary")
-        executor_kwargs["webdriver_binary"] = kwargs.get("webdriver_binary")
-        executor_kwargs["webdriver_args"] = kwargs.get("webdriver_args")
+        executor_kwargs["binary"] = kwargs["binary"]
+        executor_kwargs["binary_args"] = kwargs["binary_args"].copy()
+        executor_kwargs["webdriver_binary"] = kwargs["webdriver_binary"]
+        executor_kwargs["webdriver_args"] = kwargs["webdriver_args"].copy()
 
     # By default the executor may try to cleanup windows after a test (to best
     # associate any problems with the test causing them). If the user might
@@ -103,7 +104,7 @@ def _ensure_hash_in_reftest_screenshots(extra):
     if not log_data:
         return
     for item in log_data:
-        if type(item) != dict:
+        if not isinstance(item, dict):
             # Skip relation strings.
             continue
         if "hash" not in item:
@@ -609,7 +610,7 @@ class WdspecExecutor(TestExecutor):
 
     def __init__(self, logger, browser, server_config, webdriver_binary,
                  webdriver_args, timeout_multiplier=1, capabilities=None,
-                 debug_info=None, **kwargs):
+                 debug_info=None, binary=None, binary_args=None, **kwargs):
         super().__init__(logger, browser, server_config,
                          timeout_multiplier=timeout_multiplier,
                          debug_info=debug_info)
@@ -617,6 +618,8 @@ class WdspecExecutor(TestExecutor):
         self.webdriver_args = webdriver_args
         self.timeout_multiplier = timeout_multiplier
         self.capabilities = capabilities
+        self.binary = binary
+        self.binary_args = binary_args
 
     def setup(self, runner):
         self.protocol = self.protocol_cls(self, self.browser)
@@ -645,6 +648,10 @@ class WdspecExecutor(TestExecutor):
                           "port": self.browser.port,
                           "capabilities": self.capabilities,
                           "timeout_multiplier": self.timeout_multiplier,
+                          "browser": {
+                              "binary": self.binary,
+                              "args": self.binary_args
+                          },
                           "webdriver": {
                               "binary": self.webdriver_binary,
                               "args": self.webdriver_args
@@ -703,6 +710,7 @@ class CallbackHandler:
     fully custom implementation."""
 
     unimplemented_exc: ClassVar[Tuple[Type[Exception], ...]] = (NotImplementedError,)
+    expected_exc: ClassVar[Tuple[Type[Exception], ...]] = ()
 
     def __init__(self, logger, protocol, test_window):
         self.protocol = protocol
@@ -731,20 +739,22 @@ class CallbackHandler:
     def process_action(self, url, payload):
         action = payload["action"]
         cmd_id = payload["id"]
-        self.logger.debug("Got action: %s" % action)
+        self.logger.debug(f"Got action: {action}")
         try:
             action_handler = self.actions[action]
         except KeyError:
-            raise ValueError("Unknown action %s" % action)
+            raise ValueError(f"Unknown action {action}")
         try:
             with ActionContext(self.logger, self.protocol, payload.get("context")):
                 result = action_handler(payload)
         except self.unimplemented_exc:
             self.logger.warning("Action %s not implemented" % action)
-            self._send_message(cmd_id, "complete", "error", "Action %s not implemented" % action)
+            self._send_message(cmd_id, "complete", "error", f"Action {action} not implemented")
+        except self.expected_exc:
+            self.logger.debug(f"Action {action} failed with an expected exception")
+            self._send_message(cmd_id, "complete", "error", f"Action {action} failed")
         except Exception:
-            self.logger.warning("Action %s failed" % action)
-            self.logger.warning(traceback.format_exc())
+            self.logger.warning(f"Action {action} failed")
             self._send_message(cmd_id, "complete", "error")
             raise
         else:

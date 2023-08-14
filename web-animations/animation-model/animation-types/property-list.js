@@ -1172,6 +1172,16 @@ const gCSSProperties2 = {
       { type: 'discrete', options: [ [ 'auto', 'smooth' ] ] }
     ]
   },
+  'scrollbar-color': {
+    // https://drafts.csswg.org/css-scrollbars/#propdef-scrollbar-color
+    types: [ 'colorPair' ]
+  },
+  'scrollbar-gutter': {
+    // https://drafts.csswg.org/css-overflow/#propdef-scrollbar-gutter
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'stable' ], [ 'auto', 'stable both-edges' ], [ 'stable', 'stable both-edges' ] ] }
+    ]
+  },
   'scrollbar-width': {
     // https://drafts.csswg.org/css-scrollbars/#propdef-scrollbar-width
     types: [
@@ -1272,7 +1282,7 @@ const gCSSProperties2 = {
   'text-autospace': {
     // https://drafts.csswg.org/css-text-4/#text-spacing-property
     types: [
-      { type: 'discrete', options: [ [ 'auto', 'no-autospace' ] ] }
+      { type: 'discrete', options: [ [ 'normal', 'no-autospace' ] ] }
     ]
   },
   'text-decoration-color': {

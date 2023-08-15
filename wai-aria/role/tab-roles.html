@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+    <title>Tab-related Role Verification Tests</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
+    <script src="/resources/testdriver-actions.js"></script>
+    <script src="/wai-aria/scripts/aria-utils.js"></script>
+</head>
+<body>
+
+<p>Tests <a href="https://w3c.github.io/aria/#tab">tab</a> and related roles.</p>
+
+<div role="tablist" data-testname="div role is tablist" data-expectedrole="tablist" class="ex">
+    <div role="tab" data-testname="role is tab (in div tablist)" data-expectedrole="tab" class="ex">x</div>
+</div>
+<div role="tabpanel" data-testname="role is tabpanel (with sibling div tablist)" data-expectedrole="tabpanel" class="ex"></div>
+
+<script>
+    AriaUtils.verifyRolesBySelector(".ex");
+</script>
+
+</body>
+</html>

@@ -108,7 +108,8 @@ components:
 
   browser-servo: {}
 
-  browser-firefox_android: {}
+  browser-firefox_android:
+    privileged: true
 
   tox-python3_7:
     env:
@@ -536,6 +537,7 @@ tasks:
         - wpt-base
         - trigger-pr
         - browser-firefox
+        - browser-firefox_android
       command: ./tools/ci/ci_wptrunner_infrastructure.sh
       install:
         - python3-pip
@@ -547,6 +549,7 @@ tasks:
         browser:
           - firefox
           - chrome
+          - firefox_android
         channel: experimental
         xvfb: true
         hosts: false

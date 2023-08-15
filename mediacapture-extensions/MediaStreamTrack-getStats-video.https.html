@@ -1,0 +1,108 @@
+<!doctype html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+async function getStatsUntil(track, condition) {
+  while (true) {
+    const stats = await track.getStats();
+    if (condition(stats)) {
+      return stats;
+    }
+  }
+}
+
+promise_test(async t => {
+  const stream = await navigator.mediaDevices.getUserMedia({video:true});
+  const [track] = stream.getTracks();
+  t.add_cleanup(() => track.stop());
+
+  const firstStats = await getStatsUntil(track, stats => stats.totalFrames > 0);
+  await getStatsUntil(track,
+                      stats => stats.totalFrames > firstStats.totalFrames);
+}, `totalFrames increases over time`);
+
+promise_test(async t => {
+  const stream = await navigator.mediaDevices.getUserMedia({video:true});
+  const [track] = stream.getTracks();
+  t.add_cleanup(() => track.stop());
+
+  // `deliveredFrames` increments for each deliverable frame, even if the
+  // `track` does not have any sink.
+  const firstStats = await getStatsUntil(
+      track, stats => stats.deliveredFrames > 0);
+  await getStatsUntil(
+      track, stats => stats.deliveredFrames > firstStats.deliveredFrames);
+}, `deliveredFrames increases, even without sinks`);
+
+promise_test(async t => {
+  const stream = await navigator.mediaDevices.getUserMedia({
+          video:{frameRate:{ideal:20}}
+      });
+  const [track] = stream.getTracks();
+  t.add_cleanup(() => track.stop());
+
+  // No frames should be discarded initially.
+  const firstStats = await getStatsUntil(
+      track, stats => stats.deliveredFrames > 0);
+  assert_equals(firstStats.discardedFrames, 0);
+
+  // Assert test prerequisite is met: frames will be discarded if the track is
+  // opened with a higher frame rate than we apply after it is opened.
+  assert_greater_than(track.getSettings().frameRate, 10);
+  await track.applyConstraints({frameRate:{ideal:10}});
+
+  await getStatsUntil(track, stats => stats.discardedFrames > 0);
+}, `discardedFrames increases when frameRate decimation is happening`);
+
+promise_test(async t => {
+  const stream = await navigator.mediaDevices.getUserMedia({
+          video:{frameRate:{ideal:20}}
+      });
+  const [track] = stream.getTracks();
+  t.add_cleanup(() => track.stop());
+
+  // Assert test prerequisite is met: frames will be discarded if the track is
+  // opened with a higher frame rate than we apply after it is opened.
+  assert_greater_than(track.getSettings().frameRate, 10);
+  await track.applyConstraints({frameRate:{ideal:10}});
+
+  // Wait until we have both delivered and discarded frames.
+  const stats = await getStatsUntil(track, stats =>
+      stats.deliveredFrames > 0 && stats.discardedFrames > 0);
+
+  // This test assumes that no frames are dropped, otherwise `totalFrames` can
+  // be greater than the sum of `deliveredFrames` and `discardedFrames`.
+  assert_equals(stats.totalFrames,
+                stats.deliveredFrames + stats.discardedFrames);
+}, `totalFrames is the sum of deliveredFrames and discardedFrames`);
+
+/*promise_test(async t => {
+  const stream = await navigator.mediaDevices.getUserMedia({
+          video:{frameRate:{ideal:20}}
+      });
+  const [track] = stream.getTracks();
+  t.add_cleanup(() => track.stop());
+
+  // Assert test prerequisite is met: frames will be discarded if the track is
+  // opened with a higher frame rate than we apply after it is opened.
+  assert_greater_than(track.getSettings().frameRate, 10);
+  await track.applyConstraints({frameRate:{ideal:10}});
+
+  // Wait for media to flow before disabling the `track`.
+  await getStatsUntil(track, stats => stats.totalFrames > 0);
+  track.enabled = false;
+  const disabledSnapshot = await track.getStats();
+
+  // Wait enough time that frames should have been produced.
+  await new Promise(r => t.step_timeout(r, 1000));
+
+  // Frame metrics should be frozen.
+  const stats = await track.getStats();
+  assert_equals(stats.deliveredFrames, disabledSnapshot.deliveredFrames);
+  assert_equals(stats.discardedFrames, disabledSnapshot.discardedFrames);
+  assert_equals(stats.totalFrames, disabledSnapshot.totalFrames);
+}, `Stats are frozen while disabled`);*/
+</script>

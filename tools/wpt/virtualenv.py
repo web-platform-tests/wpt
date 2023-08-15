@@ -81,10 +81,7 @@ class Virtualenv:
             if IS_WIN:
                 site_packages = os.path.join(base, "Lib", "site-packages")
             else:
-                version = sys.version[:3]
-                # Assume version 3.10+ if detecting version substring is 3.1.
-                if version == '3.1':
-                    version = sys.version[:4]
+                version = f"{sys.version_info.major}.{sys.version_info.minor}"
                 site_packages = os.path.join(base, "lib", f"python{version}", "site-packages")
 
         return site_packages

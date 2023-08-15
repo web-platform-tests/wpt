@@ -110,6 +110,8 @@ components:
 
   browser-firefox_android:
     privileged: true
+    scopes:
+      - "docker-worker:capability:privileged:proj-wpt/ci"
 
   tox-python3_7:
     env:

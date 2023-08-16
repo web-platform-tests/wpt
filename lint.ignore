@@ -83,6 +83,7 @@ CR AT EOL: html/semantics/forms/the-textarea-element/multiline-placeholder-cr.ht
 CR AT EOL: html/semantics/forms/the-textarea-element/multiline-placeholder-crlf.html
 CR AT EOL: html/semantics/forms/the-input-element/multiline-placeholder-cr.html
 CR AT EOL: html/semantics/forms/the-input-element/multiline-placeholder-crlf.html
+CR AT EOL: webnn/relu-tests_gpu.https.html
 CR AT EOL: webvtt/parsing/file-parsing/tests/support/newlines.vtt
 CR AT EOL: css/css-text/ellisize-rtl-text-crash.html
 CR AT EOL: html/syntax/charset/after-head-after-1kb-crlf.html

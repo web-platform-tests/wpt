@@ -139,7 +139,11 @@
 
 
 <!-- TODO write tests that purposefully fail?? -->
-<!-- 1. if the current node has an aria-label attribute whose value is not undefined, return the value of aria-label -->
+<img alt="alt" aria-label="undefined" data-expectedlabel="alt" data-testname="aria-label undefined on img w/ alt" class="ex" />
+<img aria-label="undefined" data-expectedlabel="" data-testname="aria-label undefined on img w/o alt" class="ex" />
+<img alt="" aria-label="undefined" data-expectedlabel="" data-testname="aria-label undefined on img w/ empty alt" class="ex" />
+<img aria-label="undefined" data-expectedlabel="title" data-testname="aria-label undefined on img w/o alt but w/ title" class="ex" />
+<img alt="" aria-label="undefined" data-expectedlabel="title" data-testname="aria-label undefined on img w/ empty alt but w/ title" class="ex" />
 <!-- 2. if the current node has an aria-label attribute whose value is not the empty string, return the value of aria-label -->
 <!-- 3. if the current node has an aria-label attribute whose value, when trimmed of whitespace, is not the empty string, return the value of aria-label -->
 

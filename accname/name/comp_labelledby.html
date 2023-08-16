@@ -30,6 +30,10 @@ Todo: test all remaining cases of https://w3c.github.io/accname/#comp_labelledby
 
 -->
 
+<!-- Test Case #1 -->
+<div aria-labelledby="bar" role="group" data-expectedlabel="Lorem ipsum doughnuts and unicorns." class="ex"></div>
+<div id="bar">Lorem ipsum doughnuts and unicorns.</div>
+
 <script>
 AriaUtils.verifyLabelsBySelector(".ex");
 </script>

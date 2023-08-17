@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+  <title>Tree related Role Verification Tests</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+</head>
+<body>
+
+<p>Tests <a href="https://w3c.github.io/aria/#tree">tree</a> and related roles.</p>
+
+<ul role="tree" data-testname="role is tree" data-expectedrole="tree" class="ex">
+  <li role="treeitem" data-testname="role is treeitem (in tree)" data-expectedrole="treeitem" class="ex">
+    x
+    <ul role="group" data-testname="role is group (in treeitem)" data-expectedrole="group" class="ex">
+      <li role="treeitem" data-testname="role is treeitem (in group, in treeitem)" data-expectedrole="treeitem" class="ex">x</li>
+      <li role="treeitem">x</li>
+    </ul>
+  </li>
+  <li role="treeitem">x</li>
+</ul>
+
+<table role="treegrid" data-testname="role is treegrid" data-expectedrole="treegrid" class="ex">
+  <tbody>
+  <tr role="row" data-testname="role is row (in treegrid)" data-expectedrole="row" class="ex">
+    <td role="gridcell" data-testname="role is gridcell (in row, in treegrid)" data-expectedrole="gridcell" class="ex">x</td>
+    <td role="gridcell">x</td>
+    <td role="gridcell">x</td>
+  </tr>
+  <tr role="row">
+    <td role="gridcell">x</td>
+    <td role="gridcell">x</td>
+    <td role="gridcell">x</td>
+  </tr>
+  </tbody>
+</table>
+
+<nav role="treeitem" data-testname="orphaned treeitem outside the context of tree" data-expectedrole="navigation" class="ex">x</nav>
+
+<script>
+  AriaUtils.verifyRolesBySelector(".ex");
+</script>
+
+</body>
+</html>

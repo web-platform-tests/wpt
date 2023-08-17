@@ -17,13 +17,44 @@ function test_valid_value(property, value, serializedValue) {
         assert_not_equals(readValue, "", "property should be set");
         if (Array.isArray(serializedValue))
             assert_in_array(readValue, serializedValue, "serialization should be sound");
-        else
+        else {
+          if (property == "color")
+            colorValuesAlmostEqual(readValue, serializedValue, 0.0001, 1);
+          else
             assert_equals(readValue, serializedValue, "serialization should be canonical");
+        }
 
         div.style[property] = readValue;
         assert_equals(div.style.getPropertyValue(property), readValue, "serialization should round-trip");
 
     }, "e.style['" + property + "'] = " + stringifiedValue + " should set the property value");
+}
+
+function colorValuesAlmostEqual(color1, color2, float_epsilon, integer_epsilon) {
+  // Legacy color formats use integers in [0, 255] and thus will have wider epsilons
+  const epsilon = getNonNumbers(color1).startsWith("rgb") ? integer_epsilon : float_epsilon;
+  // Colors can be split by spaces, commas or the '(' character.
+  const colorElementDividers = /( |\(|,)/;
+  // Return the string stripped of numbers.
+  function getNonNumbers(color) {
+    return color.replace(/[0-9]/g, '');
+  }
+  // Return an array of all numbers in the color.
+  function getNumbers(color) {
+    const result = [];
+    // const entries = color.split(colorElementDividers);
+    color.split(colorElementDividers).forEach(element => {
+      const numberElement = parseFloat(element);
+      if (!isNaN(numberElement)) {
+        result.push(numberElement);
+      }
+    });
+    return result;
+  }
+
+  assert_array_approx_equals(getNumbers(color1), getNumbers(color2), epsilon, "Numeric parameters are approximately equal.");
+  // Assert that the text of the two colors are equal. i.e. colorSpace, colorFunction and format.
+  assert_equals(getNonNumbers(color1), getNonNumbers(color2), "Color format is correct.");
 }
 
 function test_invalid_value(property, value) {

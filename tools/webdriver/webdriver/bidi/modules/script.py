@@ -125,7 +125,7 @@ class Script(BidiModule):
         this: Optional[Mapping[str, Any]] = None,
         result_ownership: Optional[OwnershipModel] = None,
         serialization_options: Optional[SerializationOptions] = None,
-        user_activation: Any = None
+        user_activation: Optional[bool] = None
     ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "functionDeclaration": function_declaration,
@@ -169,7 +169,7 @@ class Script(BidiModule):
         await_promise: bool,
         result_ownership: Optional[OwnershipModel] = None,
         serialization_options: Optional[SerializationOptions] = None,
-        user_activation: Any = None
+        user_activation: Optional[bool] = None
     ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "expression": expression,

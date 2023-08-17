@@ -1,0 +1,30 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CSS Test: transparent scrollbar-color rendering</title>
+<link rel="author" title="Luke Warlow" href="mailto:luke@warlow.dev">
+<link rel="help" href="https://drafts.csswg.org/css-scrollbars-1/#scrollbar-color">
+<link rel="match" href="transparent-on-container-ref.html">
+<style>
+    :root {
+        background-color: green;
+    }
+    .container {
+        scrollbar-color:transparent transparent;
+        width:300px;
+        height:300px;
+        overflow:scroll;
+    }
+    .content {
+        width:400px;
+        height:400px;
+    }
+    .bg-red {
+        background-color:red;
+    }
+</style>
+<div class="container bg-red">
+    <div class="content"></div>
+</div>
+<div class="container">
+    <div class="content"></div>
+</div>

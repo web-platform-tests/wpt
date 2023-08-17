@@ -155,7 +155,7 @@ async def test_params_include_shadow_tree_invalid_value(
 
 
 @pytest.mark.parametrize("user_activation", ["foo", 42, {}, []])
-async def test_params_user_activation_invalid_type(bidi_session, user_activation, top_context):
+async def test_params_user_activation_invalid_type(bidi_session, top_context, user_activation):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.script.evaluate(
             expression="1 + 2",

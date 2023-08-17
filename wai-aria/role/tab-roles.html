@@ -64,11 +64,11 @@
         <div role="tab" aria-selected="true" tabindex = "0" data-testname="role is tab (within li), tab is selected and in tab order" data-expectedrole="tab" class="ex">x</div>
     </li>
     <li>
-        <div role="tab" aria-selected="false" tabindex = "-1" data-testname="role is tab (within li), tab is not selected and in tab order" data-expectedrole="tab" class="ex">x</div>
+        <div role="tab" aria-selected="false" tabindex = "-1" data-testname="role is tab (within li), tab is not selected and in tab order" data-expectedrole="tab" class="ex">y</div>
     </li>
 </ul>
-<div role="tabpanel" data-testname="role is tabpanel as sibling to ul" data-expectedrole="tabpanel" class="ex">Testing</div>
-<div role="tabpanel" data-testname="role is tabpanel as sibling to ul (duplicate)" data-expectedrole="tabpanel" class="ex">Testing</div>
+<div role="tabpanel" data-testname="role is tabpanel as sibling to ul" data-expectedrole="tabpanel" class="ex">Tab one's stuff</div>
+<div role="tabpanel" data-testname="role is tabpanel as sibling to ul (duplicate)" data-expectedrole="tabpanel" class="ex">Tab two's stuff</div>
 
 <!--<ul> tablist with child <divs> that have explicit role="tab", role="none" on li elements-->
     <ul role="tablist" data-testname="ul role is tablist (child li have role none)" data-expectedrole="tablist" class="ex">
@@ -76,11 +76,11 @@
             <div role="tab" aria-selected="true" tabindex = "0" data-testname="role is tab (within li with role none), tab is selected and in tab order" data-expectedrole="tab" class="ex">x</div>
         </li>
         <li role="none">
-            <div role="tab" aria-selected="false" tabindex = "-1" data-testname="role is tab (within li with role none), tab is not selected and in tab order" data-expectedrole="tab" class="ex">x</div>
+            <div role="tab" aria-selected="false" tabindex = "-1" data-testname="role is tab (within li with role none), tab is not selected and in tab order" data-expectedrole="tab" class="ex">y</div>
         </li>
     </ul>
-    <div role="tabpanel" data-testname="role is tabpanel as sibling to ul with child role none li elements" data-expectedrole="tabpanel" class="ex">Testing</div>
-    <div role="tabpanel" data-testname="role is tabpanel as sibling to ul with child role none li elements (duplicate)" data-expectedrole="tabpanel" class="ex">Testing</div>
+    <div role="tabpanel" data-testname="role is tabpanel as sibling to ul with child role none li elements" data-expectedrole="tabpanel" class="ex">Tab one's stuff</div>
+    <div role="tabpanel" data-testname="role is tabpanel as sibling to ul with child role none li elements (duplicate)" data-expectedrole="tabpanel" class="ex">Tab two's stuff</div>
 
 <script>
     AriaUtils.verifyRolesBySelector(".ex");

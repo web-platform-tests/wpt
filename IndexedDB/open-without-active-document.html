@@ -1,0 +1,31 @@
+<!doctype html>
+<title>indexedDB methods throw after document deactivation.</title>
+<meta charset="utf8">
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/support-promises.js"></script>
+<script>
+'use strict';
+
+promise_test(async testCase => {
+  await deleteAllDatabases(testCase);
+
+  let frame = document.createElement('iframe');
+  frame.src = location;
+  document.body.append(frame);
+  let frameIdb = frame.contentWindow.indexedDB;
+
+  let dbName = databaseName(testCase);
+  let req1 = frameIdb.open(dbName);
+  assert_not_equals(req1, null);
+  frame.remove();
+
+  let req2;
+  assert_throws_dom('FooError',
+    () => { req2 = frameIdb.open(dbName); },
+    'After document is inactive, open() should throw.');
+  assert_equals(req2, null);
+}, 'Foo');
+
+</script>

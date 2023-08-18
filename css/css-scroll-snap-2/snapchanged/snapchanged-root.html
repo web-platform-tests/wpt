@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title> CSS Scroll Snap 2 Test: snapchanged events on the root/document scroller</title>
+  <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#scroll-start">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="snapchanged-testcommon.js"></script>
+</head>
+
+<body>
+  <style type='text/css'>
+    :root {
+      margin: 0;
+      padding: 0;
+      scroll-snap-type: both mandatory;
+    }
+
+    div {
+      position: absolute;
+      margin: 0px;
+    }
+
+    #spacer {
+      width: 200vw;
+      height: 200vh;
+    }
+
+    .snap_point {
+      width: 40vw;
+      height: 40vh;
+      scroll-snap-align: start;
+    }
+
+    #snap_point_1 {
+      left: 0px;
+      top: 0px;
+      background-color: red;
+    }
+
+    #snap_point_2 {
+      top: 40vh;
+      left: 40vw;
+      background-color: orange;
+    }
+
+    #snap_point_3 {
+      left: 80vw;
+      top: 80vh;
+      background-color: blue;
+    }
+  </style>
+  <div id="spacer"></div>
+  <div id="snap_point_1" class="snap_point"></div>
+  <div id="snap_point_2" class="snap_point"></div>
+  <div id="snap_point_3" class="snap_point"></div>
+
+  <script>
+    let scroller = document.scrollingElement;
+
+    function fail() {
+      assert_true(false);
+    }
+
+    promise_test(async (t) => {
+      await test_snapchanged(t, scroller, (scroller, current_offset, target_offset) => {
+        scroller.scrollTo(target_offset.x, target_offset.y);
+      });
+    }, "snapchanged event fires after root snap target changes");
+
+    promise_test(async (t) => {
+      await resetScroller(scroller);
+      assert_equals(scroller.scrollTop, 0,
+        "scroller is initially not scrolled");
+
+      // Set the scroll destination to just a little off the top so we snap
+      // back to the top box.
+      const scroll_top_target = 10;
+      const scroll_left_target = 10;
+      // Since the snap target does not change, snapchanged should not fire.
+      scroller.addEventListener("snapchanged", fail);
+
+      t.add_cleanup(() => {
+        scroller.removeEventListener("snapchanged", fail);
+      });
+      scroller.scrollTo(scroll_left_target, scroll_top_target);
+
+      assert_equals(scroller.scrollTop, 0,
+        "scroller snaps back to the top");
+      assert_equals(scroller.scrollLeft, 0,
+        "scroller snaps back to the left");
+    }, "snapchanged is not fired if root scroller's snap target doesn't " +
+       "change");
+  </script>
+</body>

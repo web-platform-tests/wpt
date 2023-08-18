@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title> CSS Scroll Snap 2 Test: snapchanged events</title>
+  <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#scroll-start">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="snapchanged-testcommon.js"></script>
+</head>
+
+<body>
+  <style>
+    body {
+      margin: 0px;
+    }
+
+    div {
+      position: absolute;
+      margin: 0px;
+    }
+
+    #spacer {
+      width: 2000px;
+      height: 2000px;
+    }
+
+    .scroller {
+      height: 400px;
+      width: 400px;
+      overflow: scroll;
+      scroll-snap-type: both mandatory;
+    }
+
+    .snap_point {
+      width: 300px;
+      height: 300px;
+      scroll-snap-align: start;
+    }
+
+    #snap_point_1 {
+      left: 0px;
+      top: 0px;
+      background-color: red;
+    }
+
+    #snap_point_2 {
+      top: 300px;
+      left: 300px;
+      background-color: orange;
+    }
+
+    #snap_point_3 {
+      left: 600px;
+      top: 600px;
+      background-color: blue;
+    }
+  </style>
+  <div id="scroller" class="scroller">
+    <div id="spacer"></div>
+    <div id="snap_point_1" class="snap_point"></div>
+    <div id="snap_point_2" class="snap_point"></div>
+    <div id="snap_point_3" class="snap_point"></div>
+  </div>
+  <script>
+    let scroller = document.getElementById("scroller");
+
+    function fail() {
+      assert_true(false);
+    }
+
+    promise_test(async (t) => {
+      await test_snapchanged(t, scroller, async (scroller, current_offset, target_offset) => {
+        await new test_driver.Actions().scroll(0, 0,
+                                               target_offset.x - current_offset.x,
+                                               target_offset.y - current_offset.y,
+                                               { origin: scroller }).send();
+      });
+    }, "snapchanged event fires after snap target changes on user scroll");
+
+    promise_test(async (t) => {
+      await resetScroller(scroller);
+      assert_equals(scroller.scrollTop, 0,
+        "scroller is initially not scrolled vertically");
+      assert_equals(scroller.scrollLeft, 0,
+        "scroller is initially not scrolled horizontally");
+
+      // Set the scroll destination to just a little off (0, 0) top so we snap
+      // back to the top box.
+      const scroll_top_target = 10;
+      const scroll_left_target = 10;
+      // Since the snap target does not change, snapchanged should not fire.
+      scroller.addEventListener("snapchanged", fail);
+
+      t.add_cleanup(() => {
+        scroller.removeEventListener("snapchanged", fail);
+      });
+      await new test_driver.Actions().scroll(0, 0, scroll_left_target,
+                                             scroll_top_target,
+                                             { origin: scroller }).send();
+      assert_equals(scroller.scrollTop, 0,
+        "scroller snaps back to the top");
+      assert_equals(scroller.scrollLeft, 0,
+        "scroller snaps back to the left");
+    }, "snapchanged is not fired if snap target doesn't change on user scroll");
+  </script>
+</body>

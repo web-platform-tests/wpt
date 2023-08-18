@@ -19,6 +19,7 @@ function populateStore(store) {
   store.put({id: 2, key: 'k2', value: ['small-2'] });
   store.put({id: 3, key: 'k3', value: largeValue(wrapThreshold, 3) });
   store.put({id: 4, key: 'k4', value: ['small-4'] });
+  store.put({id: 5, key: 'k5', value: ['small-5'] });
 }
 
 // Assigns cursor indexes for operations that require open cursors.
@@ -250,6 +251,42 @@ function checkOperationResult(operation, result, requestId) {
       break;
   }
 }
+
+promise_test(testCase => {
+ return createDatabase(testCase, (database, transaction) => {
+      const store = database.createObjectStore(
+          'test-store', { autoIncrement: true, keyPath: 'id' });
+      store.createIndex('test-index', 'key', { unique: true });
+      populateStore(store);
+  }).then(database => {
+      const transaction = database.transaction(['test-store'], 'readwrite');
+      const store = transaction.objectStore('test-store');
+      let results = [];
+      const index = store.index('test-index');
+      let cursorRequest = index.openCursor(IDBKeyRange.lowerBound(`k0`));
+      return new Promise((resolve, reject) => {
+        cursorRequest.onsuccess = event => {
+          let result = event.target.result;
+          if (result) {
+            results.push(result.key);
+            if (result.key == 'k3') {
+              let getRequest = store.get(1);
+              getRequest.onsuccess = event => {
+                results.push(getRequest.result.key);
+                if (results.length == 6) {
+                  resolve(results);
+                }
+              };
+            }
+            result.continue();
+          } else if (results.length == 6) {
+            resolve(results);
+          }
+        };
+      });}).then(results => {
+      assert_array_equals(results, ['k1', 'k2', 'k3', 'k1', 'k4' ]);
+  });
+}, "FIXME label");
 
 function eventsTest(label, operations) {
   promise_test(testCase => {

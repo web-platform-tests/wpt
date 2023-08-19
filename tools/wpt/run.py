@@ -110,7 +110,7 @@ otherwise install OpenSSL and ensure that it's on your $PATH.""")
 def check_environ(product):
     if product not in ("android_weblayer", "android_webview", "chrome",
                        "chrome_android", "chrome_ios", "content_shell",
-                       "firefox", "firefox_android", "servo", "wktr"):
+                       "firefox", "firefox_android", "ladybird", "servo", "wktr"):
         config_builder = serve.build_config(os.path.join(wpt_root, "config.json"))
         # Override the ports to avoid looking for free ports
         config_builder.ssl = {"type": "none"}
@@ -692,6 +692,15 @@ class WebKit(BrowserSetup):
     def setup_kwargs(self, kwargs):
         pass
 
+class Ladybird(BrowserSetup):
+    name = "ladybird"
+    browser_cls = browser.Ladybird
+
+    def install(self, channel=None):
+        raise NotImplementedError
+
+    def setup_kwargs(self, kwargs):
+        pass
 
 class WebKitTestRunner(BrowserSetup):
     name = "wktr"
@@ -782,6 +791,7 @@ product_setup = {
     "wktr": WebKitTestRunner,
     "webkitgtk_minibrowser": WebKitGTKMiniBrowser,
     "epiphany": Epiphany,
+    "ladybird": Ladybird,
 }
 
 

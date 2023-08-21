@@ -91,5 +91,14 @@ promise_test(async () => {
 
   assert_false(optionalTextarea.matches(":user-valid"), "Reset the form, user-interacted flag is reset");
   assert_false(optionalTextarea.matches(":user-invalid"), "Reset the form, user-interacted flag is reset");
+
+  // Also test form submission without user activation/gesture
+  submitButton.click();
+
+  assert_true(optionalInput.matches(":user-valid"), "Called submitButton.click(), input is validated");
+  assert_false(optionalInput.matches(":user-invalid"), "Called submitButton.click(), input is validated");
+
+  assert_true(optionalTextarea.matches(":user-valid"), "Called submitButton.click(), textarea is validated");
+  assert_false(optionalTextarea.matches(":user-invalid"), "Called submitButton.click(), textarea is validated");
 }, ":user-valid selector properly interacts with submit & reset buttons");
 </script>

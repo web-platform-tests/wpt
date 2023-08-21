@@ -94,6 +94,15 @@ promise_test(async () => {
 
   assert_false(requiredTextarea.matches(":user-valid"), "Reset the form, user-interacted flag is reset");
   assert_false(requiredTextarea.matches(":user-invalid"), "Reset the form, user-interacted flag is reset");
+
+  // Also test form submission without user activation/gesture
+  submitButton.click();
+
+  assert_true(requiredInput.matches(":user-invalid"), "Called submitButton.click(), input is validated");
+  assert_false(requiredInput.matches(":user-valid"), "Called submitButton.click(), input is validated");
+
+  assert_true(requiredTextarea.matches(":user-invalid"), "Called submitButton.click(), textarea is validated");
+  assert_false(requiredTextarea.matches(":user-valid"), "Called submitButton.click(), textarea is validated");
 }, ":user-invalid selector properly interacts with submit & reset buttons");
 
 // historical: https://github.com/w3c/csswg-drafts/issues/1329

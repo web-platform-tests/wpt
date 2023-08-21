@@ -116,6 +116,7 @@ async def test_params_url_patterns_pattern_property_unescaped_character(
 @pytest.mark.parametrize(
     "value",
     [
+        "",
         "http/",
         "http\\*",
         "http\\(",

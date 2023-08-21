@@ -110,6 +110,7 @@ components:
 
   browser-firefox_android:
     privileged: true
+    kvm: true
     scopes:
       - "docker-worker:capability:privileged:proj-wpt/ci"
 

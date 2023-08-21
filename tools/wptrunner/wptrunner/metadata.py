@@ -244,7 +244,7 @@ class RunInfoInterned(InternedData):
 
 
 prop_intern = InternedData(4)
-run_info_intern = InternedData(8)
+run_info_intern = InternedData(16)
 status_intern = InternedData(4)
 
 
@@ -478,16 +478,14 @@ class ExpectedUpdater:
     def suite_start(self, data):
         self.base_run_info = data["run_info"]
         run_info = RunInfo(data["run_info"])
-        if "" not in self.run_info_by_subsuite:
-            self.run_info_by_subsuite[""] = run_info_intern.store(run_info)
+        self.run_info_by_subsuite[""] = run_info_intern.store(run_info)
 
     def add_subsuite(self, data):
         run_info_data = self.base_run_info.copy()
         run_info_data.update(data["run_info"])
         run_info = RunInfo(run_info_data)
         name = data["name"]
-        if name not in self.run_info_by_subsuite:
-            self.run_info_by_subsuite[name] = run_info_intern.store(run_info)
+        self.run_info_by_subsuite[name] = run_info_intern.store(run_info)
 
     def test_start(self, data):
         test_id = intern(ensure_str(data["test"]))
@@ -625,10 +623,11 @@ def create_test_tree(metadata_path, test_manifest):
 class PackedResultList:
     """Class for storing test results.
 
-    Results are stored as an array of 2-byte integers for compactness.
-    The first 4 bits represent the property name, the second 4 bits
+    Results are stored as an array of 4-byte integers for compactness
+    with the first 8 bits reserved. In the remaining 24 bits,
+    the first 4 bits represent the property name, the second 4 bits
     represent the test status (if it's a result with a status code), and
-    the final 8 bits represent the run_info. If the result doesn't have a
+    the final 16 bits represent the run_info. If the result doesn't have a
     simple status code but instead a richer type, we place that richer type
     in a dictionary and set the status part of the result type to 0.
 
@@ -637,14 +636,14 @@ class PackedResultList:
     and corresponding Python objects."""
 
     def __init__(self):
-        self.data = array.array("H")
+        self.data = array.array("L")
 
     __slots__ = ("data", "raw_data")
 
     def append(self, prop, run_info, value):
-        out_val = (prop << 12) + run_info
+        out_val = (prop << 20) + run_info
         if prop == prop_intern.store("status") and isinstance(value, int):
-            out_val += value << 8
+            out_val += value << 16
         else:
             if not hasattr(self, "raw_data"):
                 self.raw_data = {}
@@ -652,15 +651,15 @@ class PackedResultList:
         self.data.append(out_val)
 
     def unpack(self, idx, packed):
-        prop = prop_intern.get((packed & 0xF000) >> 12)
+        prop = prop_intern.get((packed & 0xF00000) >> 20)
 
-        value_idx = (packed & 0x0F00) >> 8
+        value_idx = (packed & 0x0F0000) >> 16
         if value_idx == 0:
             value = self.raw_data[idx]
         else:
             value = status_intern.get(value_idx)
 
-        run_info = run_info_intern.get(packed & 0x00FF)
+        run_info = run_info_intern.get(packed & 0x00FFFF)
 
         return prop, run_info, value
 

@@ -240,19 +240,17 @@ def run_info_browser_version(**kwargs):
 
 def update_properties():
     return ([
-              "os",
-              "debug",
-              "fission",
-              "processor",
-              "swgl",
-              "asan",
-              "tsan",
-              "subsuite",
-              "editorLegacyDirectionMode"
-            ], {
-              "os": ["version"],
-              "processor": ["bits"]
-            })
+        "os",
+        "debug",
+        "fission",
+        "processor",
+        "swgl",
+        "asan",
+        "tsan",
+        "subsuite",
+        "editorLegacyDirectionMode"], {
+        "os": ["version"],
+        "processor": ["bits"]})
 
 
 def log_gecko_crashes(logger, process, test, profile_dir, symbols_path, stackwalk_binary):

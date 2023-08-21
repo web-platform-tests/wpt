@@ -8,7 +8,6 @@ import json
 import os
 from urllib.parse import urlsplit
 from abc import ABCMeta, abstractmethod
-from datetime import datetime
 from queue import Empty
 from collections import defaultdict, deque, namedtuple
 from typing import cast, Any, Dict, List, Optional, Set
@@ -45,15 +44,15 @@ class TestGroups:
         self.tests_by_group = defaultdict(set)
         self.group_by_test = {}
         for group, test_ids in data.items():
+            id_parts = group.split(":", 1)
+            if len(id_parts) == 1:
+                group_name = id_parts[0]
+                subsuite = ""
+            else:
+                subsuite, group_name = id_parts
+                if subsuite not in subsuites:
+                    raise ValueError(f"Unknown subsuite {subsuite} in group data {group}")
             for test_id in test_ids:
-                id_parts = group.split(":", 1)
-                if len(id_parts) == 1:
-                    group_name = id_parts[0]
-                    subsuite = None
-                else:
-                    subsuites, group_name = id_parts
-                    if subsuite not in subsuites:
-                        raise ValueError(f"Unknown subsuite {subsuite} in group data {group}")
                 self.group_by_test[(subsuite, test_id)] = group_name
                 self.tests_by_group[group_name].add(test_id)
 
@@ -65,17 +64,12 @@ def load_subsuites(logger: Any,
     subsuites: Dict[str, Subsuite] = {}
     run_all_subsuites = not include_subsuites
     include_subsuites.add("")
-    now = datetime.now()
 
     def maybe_add_subsuite(name: str, data: Dict[str, Any]) -> None:
         if run_all_subsuites or name in include_subsuites:
-            if data.get("expires"):
-                if datetime.fromisoformat(data["expires"]) < now:
-                    logger.warning(f"Tried to run expired subsuite {name}")
-                    return
             subsuites[name] = Subsuite(name,
+                                       data.get("config", {}),
                                        base_run_info,
-                                       config=data.get("config", {}),
                                        run_info_extras=data.get("run_info", {}),
                                        include=data.get("include"),
                                        tags=set(data["tags"]) if "tags" in data else None)
@@ -110,14 +104,14 @@ def load_subsuites(logger: Any,
 class Subsuite:
     def __init__(self,
                  name: str,
-                 base_run_info: wpttest.RunInfo,
                  config: Dict[str, Any],
-                 run_info_extras: Dict[str, Any],
+                 base_run_info: Optional[wpttest.RunInfo] = None,
+                 run_info_extras: Optional[Dict[str, Any]] = None,
                  include: Optional[List[str]] = None,
                  tags: Optional[Set[str]] = None):
         self.name = name
         self.config = config
-        self.run_info_extras = run_info_extras if run_info_extras is not None else {}
+        self.run_info_extras = run_info_extras or {}
         self.run_info_extras["subsuite"] = name
         self.include = include
         self.tags = tags
@@ -327,7 +321,7 @@ class TestLoader:
                  test_manifests,
                  test_types,
                  base_run_info,
-                 subsuites,
+                 subsuites=None,
                  manifest_filters=None,
                  test_filters=None,
                  chunk_type="none",
@@ -342,7 +336,7 @@ class TestLoader:
 
         self.test_types = test_types
         self.base_run_info = base_run_info
-        self.subsuites = subsuites
+        self.subsuites = subsuites or {}
 
         self.manifest_filters = manifest_filters if manifest_filters is not None else []
         self.test_filters = test_filters if test_filters is not None else []
@@ -379,7 +373,7 @@ class TestLoader:
         if self._test_ids is None:
             self._test_ids = []
             for test_dict in [self.disabled_tests, self.tests]:
-                for subsuite in self.subsuites.keys():
+                for subsuite in self.subsuites:
                     for test_type in self.test_types:
                         self._test_ids += [item.id for item in test_dict[subsuite][test_type]]
         return self._test_ids

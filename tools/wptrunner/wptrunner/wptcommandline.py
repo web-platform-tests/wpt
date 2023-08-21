@@ -143,8 +143,9 @@ scheme host and port.""")
                                       help="Test types to run")
     test_selection_group.add_argument("--subsuite-file", action="store",
                                       help="Path to JSON file containing subsuite configuration")
+    # TODO use an empty string argument for the default subsuite
     test_selection_group.add_argument("--subsuite", action="append", dest="subsuites",
-                                      help="Subsuite name to run (use empty string argument for the default subsuite TODO)")
+                                      help="Subsuite names to run. Runs all subsuites when omitted.")
     test_selection_group.add_argument("--include", action="append",
                                       help="URL prefix to include")
     test_selection_group.add_argument("--include-file", action="store",

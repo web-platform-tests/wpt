@@ -311,7 +311,7 @@ class TestRunnerManager(threading.Thread):
                 self.test_implementations[key] = test_implementation
 
         mp = mpcontext.get_context()
-        
+
         # Flags used to shut down this thread if we get a sigint
         self.parent_stop_flag = stop_flag
         self.child_stop_flag = mp.Event()
@@ -490,7 +490,7 @@ class TestRunnerManager(threading.Thread):
             return RunnerManagerState.stop(True)
         else:
             return RunnerManagerState.initializing(subsuite, test_type, test, test_group, group_metadata, 0)
-                  
+
     def init(self):
         assert isinstance(self.state, RunnerManagerState.initializing)
         if self.state.failure_count > self.max_restarts:
@@ -519,7 +519,7 @@ class TestRunnerManager(threading.Thread):
             return self.init_failed()
 
         self.start_test_runner()
-                  
+
     def start_test_runner(self):
         # Note that we need to be careful to start the browser before the
         # test runner to ensure that any state set when the browser is started
@@ -548,8 +548,7 @@ class TestRunnerManager(threading.Thread):
         mp = mpcontext.get_context()
         self.test_runner_proc = mp.Process(target=start_runner,
                                            args=args,
-                                           name="TestRunner-%s-%i" % (
-                                               self.test_implementation_key, self.manager_number))
+                                           name="TestRunner-%i" % self.manager_number)
         self.test_runner_proc.start()
         self.logger.debug("Test runner started")
         # Now we wait for either an init_succeeded event or an init_failed event

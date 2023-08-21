@@ -129,13 +129,17 @@ class ContentShellBrowser(Browser):
         self._stdin_queue = Queue()
         self._io_stopped = Event()
 
-        self._stdout_reader = self._create_reader_thread(self._proc.stdout,
+        self._stdout_reader = self._create_reader_thread("stdout-reader",
+                                                         self._proc.stdout,
                                                          self._stdout_queue,
                                                          prefix=b"OUT: ")
-        self._stderr_reader = self._create_reader_thread(self._proc.stderr,
+        self._stderr_reader = self._create_reader_thread("stderr-reader",
+                                                         self._proc.stderr,
                                                          self._stderr_queue,
                                                          prefix=b"ERR: ")
-        self._stdin_writer = self._create_writer_thread(self._proc.stdin, self._stdin_queue)
+        self._stdin_writer = self._create_writer_thread("stdin-writer",
+                                                        self._proc.stdin,
+                                                        self._stdin_queue)
 
         # Content shell is likely still in the process of initializing. The actual waiting
         # for the startup to finish is done in the ContentShellProtocol.
@@ -165,11 +169,9 @@ class ContentShellBrowser(Browser):
         self._stdin_queue.put(None)
         self._stdin_writer.join(2)
 
-        threads = [self._stdout_reader, self._stderr_reader, self._stdin_writer]
-        thread_names = ["stdout-reader", "stderr-reader", "stdin-writer"]
-        for name, thread in zip(thread_names, threads):
+        for thread in [self._stdout_reader, self._stderr_reader, self._stdin_writer]:
             if thread.is_alive():
-                self.logger.warning(f"Content shell IO thread {name} did not shut down gracefully.")
+                self.logger.warning(f"Content shell IO thread {thread.name} did not shut down gracefully.")
                 return False
 
         stopped = not self.is_alive()
@@ -202,7 +204,7 @@ class ContentShellBrowser(Browser):
     def check_crash(self, process, test):
         return not self.is_alive()
 
-    def _create_reader_thread(self, stream, queue, prefix=b""):
+    def _create_reader_thread(self, name, stream, queue, prefix=b""):
         """This creates (and starts) a background thread which reads lines from `stream` and
         puts them into `queue` until `stream` reports EOF.
         """
@@ -218,11 +220,14 @@ class ContentShellBrowser(Browser):
             queue.close()
             queue.join_thread()
 
-        result = Thread(target=reader_thread, args=(stream, queue, self._io_stopped), daemon=True)
+        result = Thread(name=name,
+                        target=reader_thread,
+                        args=(stream, queue, self._io_stopped),
+                        daemon=True)
         result.start()
         return result
 
-    def _create_writer_thread(self, stream, queue):
+    def _create_writer_thread(self, name, stream, queue):
         """This creates (and starts) a background thread which gets items from `queue` and
         writes them into `stream` until it encounters a None item in the queue.
         """
@@ -235,6 +240,9 @@ class ContentShellBrowser(Browser):
                 stream.write(line)
                 stream.flush()
 
-        result = Thread(target=writer_thread, args=(stream, queue), daemon=True)
+        result = Thread(name=name,
+                        target=writer_thread,
+                        args=(stream, queue),
+                        daemon=True)
         result.start()
         return result

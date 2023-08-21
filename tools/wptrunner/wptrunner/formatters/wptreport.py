@@ -24,7 +24,6 @@ class WptreportFormatter(BaseFormatter):  # type: ignore
     def __init__(self):
         self.raw_results = {}
         self.results = {}
-        self.subsuites = {}
 
     def suite_start(self, data):
         self.results['run_info'] = data.get('run_info', {})
@@ -45,19 +44,12 @@ class WptreportFormatter(BaseFormatter):  # type: ignore
         return json.dumps(self.results) + "\n"
 
     def find_or_create_test(self, data):
-        subsuite = data.get("subsuite")
+        subsuite = data.get("subsuite", "")
         test_name = data["test"]
-        if subsuite not in self.raw_results:
-            self.raw_results[subsuite] = {}
-
-        subsuite_results = self.raw_results[subsuite]
-        if test_name not in subsuite_results:
-            subsuite_results[test_name] = {
-                "subtests": [],
-                "status": "",
-                "message": None
-            }
-        return subsuite_results[test_name]
+        subsuite_results = self.raw_results.setdefault(subsuite, {})
+        return subsuite_results.setdefault(test_name, {"subtests": [],
+                                                      "status": "",
+                                                      "message": None})
 
     def test_start(self, data):
         test = self.find_or_create_test(data)
@@ -104,7 +96,7 @@ class WptreportFormatter(BaseFormatter):  # type: ignore
                 if isinstance(item, dict)
             }
         test_name = data["test"]
-        subsuite = data.get("subsuite")
+        subsuite = data.get("subsuite", "")
         result = {"test": test_name,
                   "subsuite": subsuite}
         result.update(self.raw_results[subsuite][test_name])
@@ -126,7 +118,7 @@ class WptreportFormatter(BaseFormatter):  # type: ignore
         lsan_leaks.append({"frames": data["frames"],
                            "scope": data["scope"],
                            "allowed_match": data.get("allowed_match"),
-                           "subsuite": data.get("subsuite")})
+                           "subsuite": data.get("subsuite", "")})
 
     def find_or_create_mozleak(self, data):
         if "mozleak" not in self.results:
@@ -142,11 +134,11 @@ class WptreportFormatter(BaseFormatter):  # type: ignore
                                       "name": data["name"],
                                       "allowed": data.get("allowed", False),
                                       "bytes": data["bytes"],
-                                      "subsuite": data.get("subsuite")})
+                                      "subsuite": data.get("subsuite", "")})
 
     def mozleak_total(self, data):
         scope_data = self.find_or_create_mozleak(data)
         scope_data["total"].append({"bytes": data["bytes"],
                                     "threshold": data.get("threshold", 0),
                                     "process": data["process"],
-                                    "subsuite": data.get("subsuite")})
+                                    "subsuite": data.get("subsuite", "")})

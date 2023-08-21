@@ -478,13 +478,16 @@ class ExpectedUpdater:
     def suite_start(self, data):
         self.base_run_info = data["run_info"]
         run_info = RunInfo(data["run_info"])
-        self.run_info_by_subsuite[""] = run_info_intern.store(run_info)
+        if "" not in self.run_info_by_subsuite:
+            self.run_info_by_subsuite[""] = run_info_intern.store(run_info)
 
     def add_subsuite(self, data):
         run_info_data = self.base_run_info.copy()
         run_info_data.update(data["run_info"])
         run_info = RunInfo(run_info_data)
-        self.run_info_by_subsuite[data["name"]] = run_info_intern.store(run_info)
+        name = data["name"]
+        if name not in self.run_info_by_subsuite:
+            self.run_info_by_subsuite[name] = run_info_intern.store(run_info)
 
     def test_start(self, data):
         test_id = intern(ensure_str(data["test"]))

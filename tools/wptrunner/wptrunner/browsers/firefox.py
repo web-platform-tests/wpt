@@ -137,7 +137,7 @@ def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs)
     browser_kwargs["binary_args"].extend(subsuite.config.get("binary_args", []))
     browser_kwargs["extra_prefs"].extend(subsuite.config.get("prefs", []))
     return browser_kwargs
-  
+
 
 def executor_kwargs(logger, test_type, test_environment, run_info_data,
                     **kwargs):
@@ -253,9 +253,9 @@ def update_properties():
               "os": ["version"],
               "processor": ["bits"]
             })
-  
 
-  def log_gecko_crashes(logger, process, test, profile_dir, symbols_path, stackwalk_binary):
+
+def log_gecko_crashes(logger, process, test, profile_dir, symbols_path, stackwalk_binary):
     dump_dir = os.path.join(profile_dir, "minidumps")
 
     try:

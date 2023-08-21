@@ -81,12 +81,7 @@ def test_loader_h2_tests():
     }
     manifest = WPTManifest.from_json("/", manifest_json)
     subsuites = {}
-    subsuites[""] = Subsuite("",
-                             None,
-                             config={},
-                             run_info_extras={},
-                             include=None,
-                             tags=None)
+    subsuites[""] = Subsuite("", config={})
 
     # By default, the loader should include the h2 test.
     loader = TestLoader({manifest: {"metadata_path": ""}}, ["testharness"], None, subsuites)
@@ -247,12 +242,7 @@ def test_loader_filter_tags():
             f.write("tags: [test-include]\n")
 
         subsuites = {}
-        subsuites[""] = Subsuite("",
-                                 None,
-                                 config={},
-                                 run_info_extras={},
-                                 include=None,
-                                 tags=None)
+        subsuites[""] = Subsuite("", config={})
 
         b_path = os.path.join(metadata_path, "b")
         os.makedirs(b_path)

@@ -177,6 +177,7 @@ class BrowserManager:
 
         self.started = False
 
+        self.browser_pid = None
         self.init_timer = None
         self.command_queue = command_queue
 
@@ -271,7 +272,7 @@ class TestRunnerManager(threading.Thread):
                  test_implementations, stop_flag, rerun=1,
                  pause_after_test=False, pause_on_unexpected=False,
                  restart_on_unexpected=True, debug_info=None,
-                 capture_stdio=True, restart_on_new_group=True, recording=None):
+                 capture_stdio=True, restart_on_new_group=True, recording=None, max_restarts=5):
         """Thread that owns a single TestRunner process and any processes required
         by the TestRunner (e.g. the Firefox binary).
 
@@ -296,21 +297,21 @@ class TestRunnerManager(threading.Thread):
 
         self.test_implementations = {}
         for key, test_implementation in test_implementations.items():
-            kwargs = test_implementation.browser_kwargs
-            if kwargs.get("device_serial"):
-                kwargs = kwargs.copy()
+            browser_kwargs = test_implementation.browser_kwargs
+            if browser_kwargs.get("device_serial"):
+                browser_kwargs = browser_kwargs.copy()
                 # Assign Android device to runner according to current manager index
-                kwargs["device_serial"] = kwargs["device_serial"][index]
+                browser_kwargs["device_serial"] = browser_kwargs["device_serial"][index]
                 self.test_implementations[key] = TestImplementation(
                     test_implementation.executor_cls,
                     test_implementation.executor_kwargs,
                     test_implementation.browser_cls,
-                    kwargs)
+                    browser_kwargs)
             else:
                 self.test_implementations[key] = test_implementation
 
         mp = mpcontext.get_context()
-
+        
         # Flags used to shut down this thread if we get a sigint
         self.parent_stop_flag = stop_flag
         self.child_stop_flag = mp.Event()
@@ -330,7 +331,7 @@ class TestRunnerManager(threading.Thread):
 
         self.test_runner_proc = None
 
-        threading.Thread.__init__(self, name="TestRunnerManager-%i" % (index,))
+        super().__init__(name=f"TestRunnerManager-{index}")
         # This is started in the actual new thread
         self.logger = None
 
@@ -343,7 +344,7 @@ class TestRunnerManager(threading.Thread):
 
         self.timer = None
 
-        self.max_restarts = 5
+        self.max_restarts = max_restarts
 
         self.browser = None
 
@@ -489,7 +490,7 @@ class TestRunnerManager(threading.Thread):
             return RunnerManagerState.stop(True)
         else:
             return RunnerManagerState.initializing(subsuite, test_type, test, test_group, group_metadata, 0)
-
+                  
     def init(self):
         assert isinstance(self.state, RunnerManagerState.initializing)
         if self.state.failure_count > self.max_restarts:
@@ -514,18 +515,11 @@ class TestRunnerManager(threading.Thread):
         self.browser.update_settings(self.state.test)
 
         result = self.browser.init(self.state.group_metadata)
-        if result is Stop:
-            return RunnerManagerState.error()
-        elif not result:
-            return RunnerManagerState.initializing(self.state.test_type,
-                                                   self.state.subsuite,
-                                                   self.state.test,
-                                                   self.state.test_group,
-                                                   self.state.group_metadata,
-                                                   self.state.failure_count + 1)
-        else:
-            self.start_test_runner()
+        if not result:
+            return self.init_failed()
 
+        self.start_test_runner()
+                  
     def start_test_runner(self):
         # Note that we need to be careful to start the browser before the
         # test runner to ensure that any state set when the browser is started
@@ -916,7 +910,8 @@ class ManagerGroup:
                  debug_info=None,
                  capture_stdio=True,
                  restart_on_new_group=True,
-                 recording=None):
+                 recording=None,
+                 max_restarts=5):
         self.suite_name = suite_name
         self.test_source = test_source
         self.test_implementations = test_implementations
@@ -929,6 +924,7 @@ class ManagerGroup:
         self.restart_on_new_group = restart_on_new_group
         self.recording = recording
         assert recording is not None
+        self.max_restarts = max_restarts
 
         self.pool = set()
         # Event that is polled by threads so that they can gracefully exit in the face
@@ -962,7 +958,8 @@ class ManagerGroup:
                                         self.debug_info,
                                         self.capture_stdio,
                                         self.restart_on_new_group,
-                                        recording=self.recording)
+                                        recording=self.recording,
+                                        max_restarts=self.max_restarts)
             manager.start()
             self.pool.add(manager)
         self.wait()

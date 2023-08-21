@@ -84,8 +84,8 @@ def get_loader(test_paths, product, **kwargs):
     if test_groups:
         include = testloader.update_include_for_groups(test_groups, include)
 
-    if kwargs["tags"]:
-        test_filters.append(testloader.TagFilter(kwargs["tags"]))
+    if kwargs["tags"] or kwargs["exclude_tags"]:
+        test_filters.append(testloader.TagFilter(kwargs["tags"], kwargs["exclude_tags"]))
 
     if include or kwargs["exclude"] or kwargs["include_manifest"] or kwargs["default_exclude"]:
         manifest_filters.append(testloader.TestFilter(include=include,
@@ -185,14 +185,13 @@ def run_test_iteration(test_status, test_loader, test_source,
     This is called for each repeat run requested."""
     tests_by_type = defaultdict(list)
 
-    test_implementations = {}
-
-    tests_to_run = {}
-
-    for test_type in kwargs["test_types"]:
+    for test_type in test_loader.test_types:
         for subsuite_name, subsuite in test_loader.subsuites.items():
-            tests_by_type[(subsuite_name, test_type)].extend(test_loader.tests[subsuite_name][test_type])
-            tests_by_type[(subsuite_name, test_type)].extend(test_loader.disabled_tests[subsuite_name][test_type])
+            type_tests_active = test_loader.tests[subsuite_name][test_type]
+            type_tests_disabled = test_loader.disabled_tests[subsuite_name][test_type]
+            if type_tests_active or type_tests_disabled:
+                tests_by_type[(subsuite_name, test_type)].extend(type_tests_active)
+                tests_by_type[(subsuite_name, test_type)].extend(type_tests_disabled)
 
     tests_by_group = test_source.cls.tests_by_group(tests_by_type, **kwargs)
 
@@ -201,7 +200,10 @@ def run_test_iteration(test_status, test_loader, test_source,
                     test_loader.subsuites,
                     kwargs["run_by_dir"])
 
-    for test_type in kwargs["test_types"]:
+    test_implementations = {}
+    tests_to_run = defaultdict(list)
+
+    for test_type in test_loader.test_types:
         executor_cls = product.executor_classes.get(test_type)
         if executor_cls is None:
             logger.warning(f"Unsupported test type {test_type} for product {product.name}")
@@ -209,6 +211,8 @@ def run_test_iteration(test_status, test_loader, test_source,
         browser_cls = product.get_browser_cls(test_type)
 
         for subsuite_name, subsuite in test_loader.subsuites.items():
+            if (subsuite_name, test_type) not in tests_by_type:
+                continue
             run_info = subsuite.run_info
             executor_kwargs = product.get_executor_kwargs(logger,
                                                           test_type,
@@ -229,19 +233,24 @@ def run_test_iteration(test_status, test_loader, test_source,
                                                                                   browser_cls,
                                                                                   browser_kwargs)
 
-
             for test in test_loader.disabled_tests[subsuite_name][test_type]:
                 logger.test_start(test.id, subsuite=subsuite_name)
                 logger.test_end(test.id, status="SKIP", subsuite=subsuite_name)
                 test_status.skipped += 1
 
             if test_type == "testharness":
-                tests_to_run[(subsuite_name, test_type)] = []
                 for test in test_loader.tests[subsuite_name][test_type]:
-                    if ((test.testdriver and not executor_cls.supports_testdriver) or
-                            (test.jsshell and not executor_cls.supports_jsshell)):
+                    skip_reason = None
+                    if test.testdriver and not executor_cls.supports_testdriver:
+                        skip_reason = "Executor does not support testdriver.js"
+                    elif test.jsshell and not executor_cls.supports_jsshell:
+                        skip_reason = "Executor does not support jsshell"
+                    if skip_reason:
                         logger.test_start(test.id, subsuite=subsuite_name)
-                        logger.test_end(test.id, status="SKIP", subsuite=subsuite_name)
+                        logger.test_end(test.id,
+                                        status="SKIP",
+                                        subsuite=subsuite_name,
+                                        message=skip_reason)
                         test_status.skipped += 1
                     else:
                         tests_to_run[(subsuite_name, test_type)].append(test)
@@ -263,6 +272,7 @@ def run_test_iteration(test_status, test_loader, test_source,
             tests_by_group = test_source.cls.tests_by_group(tests_to_run, **kwargs)
 
             logger.suite_end()
+
             log_suite_start(tests_by_group,
                             test_loader.base_run_info,
                             test_loader.subsuites,
@@ -310,26 +320,26 @@ def handle_interrupt_signals():
         signal.signal(signal.SIGTERM, termination_handler)
 
 
-def evaluate_runs(test_status, run_test_kwargs):
+def evaluate_runs(test_status, **kwargs):
     """Evaluates the test counts after the given number of repeat runs has finished"""
     if test_status.total_tests == 0:
         if test_status.skipped > 0:
             logger.warning("All requested tests were skipped")
         else:
-            if run_test_kwargs["default_exclude"]:
+            if kwargs["default_exclude"]:
                 logger.info("No tests ran")
                 return True
             else:
                 logger.critical("No tests ran")
                 return False
 
-    if test_status.unexpected and not run_test_kwargs["fail_on_unexpected"]:
+    if test_status.unexpected and not kwargs["fail_on_unexpected"]:
         logger.info(f"Tolerating {test_status.unexpected} unexpected results")
         return True
 
     all_unexpected_passed = (test_status.unexpected and
                              test_status.unexpected == test_status.unexpected_pass)
-    if all_unexpected_passed and not run_test_kwargs["fail_on_unexpected_pass"]:
+    if all_unexpected_passed and not kwargs["fail_on_unexpected_pass"]:
         logger.info(f"Tolerating {test_status.unexpected_pass} unexpected results "
                     "because they all PASS")
         return True
@@ -480,7 +490,7 @@ def run_tests(config, product, test_paths, **kwargs):
                     break
 
     # Return the evaluation of the runs and the number of repeated iterations that were run.
-    return evaluate_runs(test_status, kwargs), test_status
+    return evaluate_runs(test_status, **kwargs), test_status
 
 
 def check_stability(**kwargs):

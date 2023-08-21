@@ -68,7 +68,7 @@ PRIMITIVE_VALUES: list[tuple[str, dict]] = [
     ("null", {"type": "null"}),
     ("'foobar'", {"type": "string", "value": "foobar"}),
     ("'2'", {"type": "string", "value": "2"}),
-    ("Number.NaN", {"type": "number", "value": "NaN"}),
+    ("NaN", {"type": "number", "value": "NaN"}),
     ("-0", {"type": "number", "value": "-0"}),
     ("Infinity", {"type": "number", "value": "Infinity"}),
     ("-Infinity", {"type": "number", "value": "-Infinity"}),
@@ -172,7 +172,16 @@ REMOTE_VALUES: list[tuple[str, dict]] = [
     ("new WeakMap()", {"type": "weakmap", },),
     ("new WeakSet()", {"type": "weakset", },),
     ("new Error('SOME_ERROR_TEXT')", {"type": "error"},),
-    ("([1, 2][Symbol.iterator]())", {
+    ("[1, 2][Symbol.iterator]()", {
+        "type": "iterator",
+    }),
+    ("'mystring'[Symbol.iterator]()", {
+        "type": "iterator",
+    }),
+    ("(new Set([1,2]))[Symbol.iterator]()", {
+        "type": "iterator",
+    }),
+    ("(new Map([[1,2]]))[Symbol.iterator]()", {
         "type": "iterator",
     }),
     ("new Proxy({}, {})", {

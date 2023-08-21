@@ -43,20 +43,24 @@ def check_args(**kwargs):
 
 
 def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs):
-    args = list(kwargs["binary_args"])
-    if subsuite.config.get("binary_args"):
-        args.extend(subsuite.config.get("binary_args"))
-
+    args = []
     args.append("--ignore-certificate-errors-spki-list=%s" %
         ','.join(chrome_spki_certs.IGNORE_CERTIFICATE_ERRORS_SPKI_LIST))
+    # For WebTransport tests.
+    args.append("--webtransport-developer-mode")
 
-    webtranport_h3_port = config.ports.get('webtransport-h3')
-    if webtranport_h3_port is not None:
-        args.append(
-            f"--origin-to-force-quic-on=web-platform.test:{webtranport_h3_port[0]}")
+    if not kwargs["headless"]:
+        args.append("--disable-headless-mode")
 
-    # These flags are specific to content_shell - they activate web test protocol mode.
+    # `--run-web-tests -` are specific to content_shell - they activate web
+    # test protocol mode.
     args.append("--run-web-tests")
+    for arg in kwargs.get("binary_args", []):
+        if arg not in args:
+            args.append(arg)
+    for arg in subsuite.config.get("binary_args", []):
+        if arg not in args:
+            args.append(arg)
     args.append("-")
 
     return {"binary": kwargs["binary"],

@@ -19,6 +19,11 @@ if (window.chrome && chrome.gpuBenchmarking) {
 </script>
 <script>step_timeout(gc, 50);</script>
 <script>
+
+// Bypass this abandoned API in all but the engines that implement it.
+if (typeof getComputedAccessibleNode !== 'undefined') {
+
+  // presumed chromium only
   const frameElem = document.createElement('iframe');
 
   frameElem.srcdoc = '<div></div>';
@@ -34,5 +39,12 @@ if (window.chrome && chrome.gpuBenchmarking) {
     });
   };
   document.body.appendChild(frameElem);
+
+} else {
+  // Pass in other engines that have not implemented the abandoned API
+  document.documentElement.className = '';
+}
+
+
 </script>
 </html>

@@ -23,7 +23,6 @@ if (window.chrome && chrome.gpuBenchmarking) {
 // Bypass this abandoned API in all but the engines that implement it.
 if (typeof getComputedAccessibleNode !== 'undefined') {
 
-  // presumed chromium only
   const frameElem = document.createElement('iframe');
 
   frameElem.srcdoc = '<div></div>';

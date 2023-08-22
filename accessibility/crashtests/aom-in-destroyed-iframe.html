@@ -5,7 +5,6 @@
 // Bypass this abandoned API in all but the engines that implement it.
 if (typeof getComputedAccessibleNode !== 'undefined') {
 
-  // presumed chromium only
   const frameElem = document.createElement('iframe');
 
   frameElem.srcdoc = '<html><head><title>X</title></head><body><div>-</div></body></html>';

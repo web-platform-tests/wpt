@@ -10,7 +10,6 @@
 // Bypass this abandoned API in all but the engines that implement it.
 if (typeof getComputedAccessibleNode !== 'undefined') {
 
-  // presumed chromium only
   async function trigger1() {
     let heading = document.querySelector('h1');
     let computed_accessible_node = await self.getComputedAccessibleNode(heading);

@@ -1,3 +1,7 @@
+from tests.support.asserts import (
+    assert_in_events,
+)
+
 def test_click_option(session, inline):
     session.url = inline("""
       <select>
@@ -221,3 +225,18 @@ def test_option_disabled(session, inline):
 
     option.click()
     assert not option.selected
+
+def test_select_change_events(session, inline, add_event_listeners):
+    session.url = inline("""
+        <select id="select">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3" id="third">3</option>
+            <option value="4">4</option>
+        </select>""")
+    select = session.find.css("select", all=False)
+    add_event_listeners(select, ["change", "input"])
+
+    option = session.find.css("select > option#third", all=False)
+    option.click()
+    assert_in_events(session, ["change", "input"])

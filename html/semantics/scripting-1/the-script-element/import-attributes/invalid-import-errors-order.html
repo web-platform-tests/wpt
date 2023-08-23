@@ -11,9 +11,10 @@
         "Test that the errors order for invalid import declarations is" +
         " specifier, then attribute key, and then type attribute value.");
     window.addEventListener("load", test_load.step_func_done(ev => {
-      assert_equals(log.length, 2);
+      assert_equals(log.length, 3);
       assert_equals(log[0].constructor, SyntaxError);
       assert_equals(log[1].constructor, SyntaxError);
+      assert_equals(log[2].constructor, SyntaxError);
     }));
 
     function unreachable() { log.push("unexpected"); }
@@ -25,4 +26,9 @@
 <script type="module" onerror="unreachable()">
   // unknown attribute is reported before unknown type
   import "./valid" with { unknown: "foo", type: "unknown" };
+</script>
+<script type="module" onerror="unreachable()">
+  // unknown attribute is reported before invalid specifier in subsequent import
+  import "./valid" with { unknown: "foo" };
+  import "INVALID";
 </script>

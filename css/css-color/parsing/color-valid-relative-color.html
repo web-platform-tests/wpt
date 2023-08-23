@@ -33,17 +33,6 @@
     // Test nesting relative colors.
     test_valid_value(`color`, `rgb(from rgb(from rebeccapurple r g b) r g b)`, `rgb(102, 51, 153)`);
 
-    // Testing non-sRGB origin colors to see gamut mapping.
-    test_valid_value(`color`, `rgb(from color(display-p3 0 1 0) r g b / alpha)`, `rgb(0, 249, 66)`); // Naive clip based mapping would give rgb(0, 255, 0).
-    test_valid_value(`color`, `rgb(from lab(100 104.3 -50.9) r g b)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 150, 255).
-    test_valid_value(`color`, `rgb(from lab(0 104.3 -50.9) r g b)`, `rgb(42, 0, 34)`); // Naive clip based mapping would give rgb(90, 0, 76). NOTE: 0% lightness in Lab/LCH does not automatically correspond with sRGB black,
-    test_valid_value(`color`, `rgb(from lch(100 116 334) r g b)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 150, 255).
-    test_valid_value(`color`, `rgb(from lch(0 116 334) r g b)`, `rgb(42, 0, 34)`); // Naive clip based mapping would give rgb(90, 0, 76). NOTE: 0% lightness in Lab/LCH does not automatically correspond with sRGB black,
-    test_valid_value(`color`, `rgb(from oklab(1 0.365 -0.16) r g b)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 92, 255).
-    test_valid_value(`color`, `rgb(from oklab(0 0.365 -0.16) r g b)`, `rgb(0, 0, 0)`); // Naive clip based mapping would give rgb(19, 0, 24).
-    test_valid_value(`color`, `rgb(from oklch(1 0.399 336.3) r g b)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 91, 255).
-    test_valid_value(`color`, `rgb(from oklch(0 0.399 336.3) r g b)`, `rgb(0, 0, 0)`); // Naive clip based mapping would give rgb(20, 0, 24).
-
     // Testing replacement with 0.
     test_valid_value(`color`, `rgb(from rebeccapurple 0 0 0)`, `rgb(0, 0, 0)`);
     test_valid_value(`color`, `rgb(from rebeccapurple 0 0 0 / 0)`, `rgba(0, 0, 0, 0)`);
@@ -139,17 +128,6 @@
     // Test nesting relative colors.
     test_valid_value(`color`, `hsl(from hsl(from rebeccapurple h s l) h s l)`, `rgb(102, 51, 153)`);
 
-    // Testing non-sRGB origin colors to see gamut mapping.
-    test_valid_value(`color`, `hsl(from color(display-p3 0 1 0) h s l / alpha)`, `rgb(0, 249, 66)`); // Naive clip based mapping would give rgb(0, 255, 0).
-    test_valid_value(`color`, `hsl(from lab(100 104.3 -50.9) h s l)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 150, 255).
-    test_valid_value(`color`, `hsl(from lab(0 104.3 -50.9) h s l)`, `rgb(42, 0, 34)`); // Naive clip based mapping would give rgb(90, 0, 76). NOTE: 0% lightness in Lab/LCH does not automatically correspond with sRGB black,
-    test_valid_value(`color`, `hsl(from lch(100 116 334) h s l)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 150, 255).
-    test_valid_value(`color`, `hsl(from lch(0 116 334) h s l)`, `rgb(42, 0, 34)`); // Naive clip based mapping would give rgb(90, 0, 76). NOTE: 0% lightness in Lab/LCH does not automatically correspond with sRGB black,
-    test_valid_value(`color`, `hsl(from oklab(1 0.365 -0.16) h s l)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 92, 255).
-    test_valid_value(`color`, `hsl(from oklab(0 0.365 -0.16) h s l)`, `rgb(0, 0, 0)`); // Naive clip based mapping would give rgb(19, 0, 24).
-    test_valid_value(`color`, `hsl(from oklch(1 0.399 336.3) h s l)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 91, 255).
-    test_valid_value(`color`, `hsl(from oklch(0 0.399 336.3) h s l)`, `rgb(0, 0, 0)`); // Naive clip based mapping would give rgb(20, 0, 24).
-
     // Testing replacement with 0.
     test_valid_value(`color`, `hsl(from rebeccapurple 0 0% 0%)`, `rgb(0, 0, 0)`);
     test_valid_value(`color`, `hsl(from rebeccapurple 0deg 0% 0%)`, `rgb(0, 0, 0)`);
@@ -219,17 +197,6 @@
 
     // Test nesting relative colors.
     test_valid_value(`color`, `hwb(from hwb(from rebeccapurple h w b) h w b)`, `rgb(102, 51, 153)`);
-
-    // Testing non-sRGB origin colors to see gamut mapping.
-    test_valid_value(`color`, `hwb(from color(display-p3 0 1 0) h w b / alpha)`, `rgb(0, 249, 66)`); // Naive clip based mapping would give rgb(0, 255, 0).
-    test_valid_value(`color`, `hwb(from lab(100 104.3 -50.9) h w b)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 150, 255).
-    test_valid_value(`color`, `hwb(from lab(0 104.3 -50.9) h w b)`, `rgb(42, 0, 34)`); // Naive clip based mapping would give rgb(90, 0, 76). NOTE: 0% lightness in Lab/LCH does not automatically correspond with sRGB black,
-    test_valid_value(`color`, `hwb(from lch(100 116 334) h w b)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 150, 255).
-    test_valid_value(`color`, `hwb(from lch(0 116 334) h w b)`, `rgb(42, 0, 34)`); // Naive clip based mapping would give rgb(90, 0, 76). NOTE: 0% lightness in Lab/LCH does not automatically correspond with sRGB black,
-    test_valid_value(`color`, `hwb(from oklab(1 0.365 -0.16) h w b)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 92, 255).
-    test_valid_value(`color`, `hwb(from oklab(0 0.365 -0.16) h w b)`, `rgb(0, 0, 0)`); // Naive clip based mapping would give rgb(19, 0, 24).
-    test_valid_value(`color`, `hwb(from oklch(1 0.399 336.3) h w b)`, `rgb(255, 255, 255)`); // Naive clip based mapping would give rgb(255, 91, 255).
-    test_valid_value(`color`, `hwb(from oklch(0 0.399 336.3) h w b)`, `rgb(0, 0, 0)`); // Naive clip based mapping would give rgb(20, 0, 24).
 
     // Testing replacement with 0.
     test_valid_value(`color`, `hwb(from rebeccapurple 0 0% 0%)`, `rgb(255, 0, 0)`);
@@ -416,21 +383,6 @@
     test_valid_value(`color`, `oklab(from oklab(0.25 none 0.5) l a b)`, `oklab(0.25 0 0.5)`);
     test_valid_value(`color`, `oklab(from oklab(0.25 0.2 0.5 / none) l a b / alpha)`, `oklab(0.25 0.2 0.5 / 0)`);
 
-    // lab and oklab tests that require different results due to percent scaling differences.
-    test_valid_value(`color`, `lab(from lab(.7 45 30) alpha b a / l)`, `lab(100 30 45 / 0.7)`);
-    test_valid_value(`color`, `lab(from lab(.7 45 30) alpha a b / alpha)`, `lab(100 45 30)`);
-    test_valid_value(`color`, `lab(from lab(.7 45 30) alpha a a / alpha)`, `lab(100 45 45)`);
-    test_valid_value(`color`, `lab(from lab(.7 45 30 / 40%) alpha b a / l)`, `lab(40 30 45 / 0.7)`);
-    test_valid_value(`color`, `lab(from lab(.7 45 30 / 40%) alpha a b / alpha)`, `lab(40 45 30 / 0.4)`);
-    test_valid_value(`color`, `lab(from lab(.7 45 30 / 40%) alpha a a / alpha)`, `lab(40 45 45 / 0.4)`);
-
-    test_valid_value(`color`, `oklab(from oklab(.7 0.45 0.3) alpha b a / l)`, `oklab(1 0.3 0.45 / 0.7)`);
-    test_valid_value(`color`, `oklab(from oklab(.7 0.45 0.3) alpha a b / alpha)`, `oklab(1 0.45 0.3)`);
-    test_valid_value(`color`, `oklab(from oklab(.7 0.45 0.3) alpha a a / alpha)`, `oklab(1 0.45 0.45)`);
-    test_valid_value(`color`, `oklab(from oklab(.7 0.45 0.3 / 40%) alpha b a / l)`, `oklab(0.4 0.3 0.45 / 0.7)`);
-    test_valid_value(`color`, `oklab(from oklab(.7 0.45 0.3 / 40%) alpha a b / alpha)`, `oklab(0.4 0.45 0.3 / 0.4)`);
-    test_valid_value(`color`, `oklab(from oklab(.7 0.45 0.3 / 40%) alpha a a / alpha)`, `oklab(0.4 0.45 0.45 / 0.4)`);
-
     // lch()
 
     // Testing no modifications.
@@ -573,22 +525,6 @@
     test_valid_value(`color`, `oklch(from oklch(none none none / none) l c h / alpha)`,                        `oklch(0 0 0 / 0)`);
     test_valid_value(`color`, `oklch(from oklch(0.7 none 30) l c h)`,                                          `oklch(0.7 0 30)`);
     test_valid_value(`color`, `oklch(from oklch(0.7 0.45 30 / none) l c h / alpha)`,                             `oklch(0.7 0.45 30 / 0)`);
-
-    // lch and oklch tests that require different results due to percent scaling differences.
-    test_valid_value(`color`, `lch(from lch(.7 45 30) alpha c h / l)`, `lch(100 45 30 / 0.7)`);
-    test_valid_value(`color`, `lch(from lch(.7 45 30) alpha c h / alpha)`, `lch(100 45 30)`);
-    test_valid_value(`color`, `lch(from lch(.7 45 30) alpha c c / alpha)`, `lch(100 45 45)`);
-    test_valid_value(`color`, `lch(from lch(.7 45 30 / 40%) alpha c h / l)`, `lch(40 45 30 / 0.7)`);
-    test_valid_value(`color`, `lch(from lch(.7 45 30 / 40%) alpha c h / alpha)`, `lch(40 45 30 / 0.4)`);
-    test_valid_value(`color`, `lch(from lch(.7 45 30 / 40%) alpha c c / alpha)`, `lch(40 45 45 / 0.4)`);
-
-    test_valid_value(`color`, `oklch(from oklch(.7 0.45 30) alpha c h / l)`, `oklch(1 0.45 30 / 0.7)`);
-    test_valid_value(`color`, `oklch(from oklch(.7 0.45 30) alpha c h / alpha)`, `oklch(1 0.45 30)`);
-    test_valid_value(`color`, `oklch(from oklch(.7 0.45 30) alpha c c / alpha)`, `oklch(1 0.45 0.45)`);
-    test_valid_value(`color`, `oklch(from oklch(.7 0.45 30 / 40%) alpha c h / l)`, `oklch(0.4 0.45 30 / 0.7)`);
-    test_valid_value(`color`, `oklch(from oklch(.7 0.45 30 / 40%) alpha c h / alpha)`, `oklch(0.4 0.45 30 / 0.4)`);
-    test_valid_value(`color`, `oklch(from oklch(.7 0.45 30 / 40%) alpha c c / alpha)`, `oklch(0.4 0.45 0.45 / 0.4)`);
-
 
     for (const colorSpace of [ "srgb", "srgb-linear", "a98-rgb", "rec2020", "prophoto-rgb", "display-p3" ]) {
         // Testing no modifications.

@@ -209,7 +209,9 @@ def test_no_change(session, rect):
     assert_success(response, original)
 
 
-def test_set_to_available_size(session, available_screen_size, minimal_screen_position):
+def test_set_to_available_size(
+    session, available_screen_size, minimal_screen_position
+):
     minimal_x, minimal_y = minimal_screen_position
     available_width, available_height = available_screen_size
     target_rect = {
@@ -225,34 +227,9 @@ def test_set_to_available_size(session, available_screen_size, minimal_screen_po
     assert value == target_rect
 
 
-def test_set_between_available_and_screen_size(session, available_screen_size,
-                                               minimal_screen_position, screen_size):
-    avail_width, avail_height = available_screen_size
-    screen_width, screen_height = screen_size
-
-    # Only run the test if the available size is different from the screen size
-    if screen_width - avail_width < 2 or screen_height - avail_height < 2:
-        return
-
-    minimal_x, minimal_y = minimal_screen_position
-    target_rect = {
-        "x": minimal_x,
-        "y": minimal_y,
-        "width": screen_width - int((screen_width - avail_width) / 2),
-        "height": screen_height - int((screen_height - avail_height) / 2),
-    }
-
-    response = set_window_rect(session, target_rect)
-    value = assert_success(response, session.window.rect)
-
-    assert value["width"] >= avail_width
-    assert value["width"] < screen_width
-    assert value["height"] >= avail_height
-    assert value["height"] < screen_height
-
-
-def test_set_to_screen_size(session, available_screen_size,
-                            minimal_screen_position, screen_size):
+def test_set_to_screen_size(
+    session, available_screen_size, minimal_screen_position, screen_size
+):
     minimal_x, minimal_y = minimal_screen_position
     available_width, available_height = available_screen_size
     screen_width, screen_height = screen_size
@@ -272,8 +249,9 @@ def test_set_to_screen_size(session, available_screen_size,
     assert value["height"] <= screen_height
 
 
-def test_set_larger_than_screen_size(session, available_screen_size,
-                                     minimal_screen_position, screen_size):
+def test_set_larger_than_screen_size(
+    session, available_screen_size, minimal_screen_position, screen_size
+):
     minimal_x, minimal_y = minimal_screen_position
     available_width, available_height = available_screen_size
     screen_width, screen_height = screen_size

@@ -23,7 +23,7 @@ def test_no_browsing_context(session, closed_frame):
     assert_success(response)
 
 
-def test_response_payload(session, minimal_screen_position):
+def test_response_payload(session):
     assert not is_maximized(session)
 
     response = maximize(session)

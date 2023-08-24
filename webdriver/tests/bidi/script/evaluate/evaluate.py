@@ -1,8 +1,6 @@
 import pytest
 from webdriver.bidi.modules.script import ContextTarget, RealmTarget
-
 from ... import recursive_compare
-
 
 @pytest.mark.asyncio
 async def test_evaluate(bidi_session, top_context):
@@ -98,6 +96,12 @@ async def test_different_target_realm(bidi_session):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("user_activation", [True, False])
 async def test_evaluate_userActivation(bidi_session, top_context, user_activation):
+    # Consume any previously set activation.
+    await bidi_session.script.evaluate(
+        expression="""window.open();""",
+        target=ContextTarget(top_context["context"]),
+        await_promise=False)
+
     result = await bidi_session.script.evaluate(
         expression="navigator.userActivation.isActive && navigator.userActivation.hasBeenActive",
         target=ContextTarget(top_context["context"]),
@@ -112,6 +116,12 @@ async def test_evaluate_userActivation(bidi_session, top_context, user_activatio
 @pytest.mark.asyncio
 @pytest.mark.parametrize("user_activation", [True, False])
 async def test_evaluate_userActivation_copy(bidi_session, top_context, user_activation):
+    # Consume any previously set activation.
+    await bidi_session.script.evaluate(
+        expression="""window.open();""",
+        target=ContextTarget(top_context["context"]),
+        await_promise=False)
+
     result = await bidi_session.script.evaluate(
         expression="document.body.appendChild(document.createTextNode('test')) && document.execCommand('selectAll') && document.execCommand('copy')",
         target=ContextTarget(top_context["context"]),

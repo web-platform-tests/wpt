@@ -1,5 +1,6 @@
 from tests.support.asserts import (
     assert_in_events,
+    assert_events_equal,
 )
 
 def test_click_option(session, inline):
@@ -214,17 +215,27 @@ def test_out_of_view_multiple(session, inline):
     assert last_option.selected
 
 
-def test_option_disabled(session, inline):
+def test_option_disabled(session, inline, add_event_listeners):
     session.url = inline("""
         <select>
           <option disabled>foo
           <option>bar
         </select>""")
-    option = session.find.css("option", all=False)
-    assert not option.selected
+    select = session.find.css("select", all=False)
+    add_event_listeners(select, ["change", "input"])
 
-    option.click()
-    assert not option.selected
+    disabled_option = session.find.css("option", all=False)
+    assert not disabled_option.selected
+
+    disabled_option.click()
+    assert not disabled_option.selected
+    assert_events_equal(session, [])
+
+    enabled_option = session.find.css("option:not([disabled])", all=False)
+    assert enabled_option.selected
+
+    enabled_option.click()
+    assert_events_equal(session, ["input"])
 
 def test_select_change_events(session, inline, add_event_listeners):
     session.url = inline("""

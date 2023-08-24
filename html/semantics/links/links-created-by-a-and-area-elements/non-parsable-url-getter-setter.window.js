@@ -37,14 +37,14 @@
   ["a", "area"].forEach(name => {
     test(() => {
       const link = document.createElement(name);
-      link.href = "http://test:test/" // non-parsable URL
+      link.href = "http://test:test/"; // non-parsable URL
       assert_equals(link[property], get);
     }, `<${name} href="http://test:test/">.${property} getter`);
-    
+
     if (set !== null) {
       test(() => {
         const link = document.createElement(name);
-        link.href = "http://test:test/" // non-parsable URL
+        link.href = "http://test:test/"; // non-parsable URL
         link[property] = set;
         assert_equals(link[property], get);
         assert_equals(link.href, "http://test:test/");

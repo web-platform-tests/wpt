@@ -47,14 +47,14 @@
   ["a", "area"].forEach(name => {
     test(() => {
       const link = document.createElement(name);
-      link.href = "non-special://test:9001/"
+      link.href = "non-special://test:9001/";
       assert_equals(link[property], get);
     }, `<${name} href="non-special://test:9001/">.${property} getter`);
-    
+
     if (set !== null) {
       test(() => {
         const link = document.createElement(name);
-        link.href = "non-special://test:9001/"
+        link.href = "non-special://test:9001/";
         link[property] = set;
         assert_equals(link[property], setget);
       }, `<${name} href="non-special://test:9001/">.${property} setter`);

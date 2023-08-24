@@ -686,9 +686,9 @@ that is passed in.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>logger</strong> – Structured logger</p></li>
-<li><p><strong>command_queue</strong> – subprocess.Queue used to send commands to the
+<li><p><strong>command_queue</strong> – multiprocessing.Queue used to send commands to the
 process</p></li>
-<li><p><strong>result_queue</strong> – subprocess.Queue used to send results to the
+<li><p><strong>result_queue</strong> – multiprocessing.Queue used to send results to the
 parent TestRunnerManager process</p></li>
 <li><p><strong>executor</strong> – TestExecutor object that will actually run a test.</p></li>
 </ul>

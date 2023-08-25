@@ -38,3 +38,8 @@ invalidRedirectStatus.forEach(function(invalidStatus) {
         "Expect RangeError exception");
   }, "Check error returned when giving invalid status to redirect(), status = " + invalidStatus);
 });
+
+test(function() {
+  assert_equals(Response.redirect.name, 'redirect');
+  assert_equals(Response.redirect.length, 1);
+}, "Response.redirect has correct name and length");

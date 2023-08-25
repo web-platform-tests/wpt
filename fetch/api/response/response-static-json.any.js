@@ -94,3 +94,8 @@ for (const [input, expected] of encodingChecks) {
     assert_array_equals(data, expected);
   }, `Check response returned by static json() with input ${input}`);
 }
+
+test(function() {
+  assert_equals(Response.json.name, 'json');
+  assert_equals(Response.json.length, 1);
+}, "Response.json has correct name and length");

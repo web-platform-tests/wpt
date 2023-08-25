@@ -20,3 +20,8 @@ test(function() {
 
   assert_throws_js(TypeError, function () { headers.append('name', 'value'); });
 }, "the 'guard' of the Headers instance should be immutable");
+
+test(function() {
+  assert_equals(Response.error.name, 'error');
+  assert_equals(Response.error.length, 0);
+}, "Response.error has correct name and length");

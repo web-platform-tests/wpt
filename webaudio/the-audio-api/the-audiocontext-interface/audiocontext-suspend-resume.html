@@ -104,8 +104,9 @@
                 .notThrow();
 
             p3.then(() => {
-              should(offlineContext.state, 'After close, offlineContext.state')
-                  .beEqualTo('closed');
+              offlineContext.onstatechange = () => {
+                assert_equals(offlineContext.state, 'closed', 'After close, offlineContext.state');
+              };
 
               // suspend() should be rejected on a closed context.
               should(offlineContext.suspend(), 'offlineContext.suspend()')
@@ -133,8 +134,9 @@
             should(context.resume(), 'context.resume')
                 .beResolved()
                 .then(() => {
-                  should(context.state, 'context.state after resume')
-                      .beEqualTo('running');
+                  context.onstatechange = () => {
+                    assert_equals(context.state, 'running', 'context.state after resume');
+                  };
                 })
                 .then(() => task.done());
           });

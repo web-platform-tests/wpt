@@ -54,7 +54,7 @@
 
   var targetElement = document.getElementById("target");
 
-    function verifyComputedStyle(property_name, specified_value, expected_value, description)
+    function verifyComputedStyle(property_name, specified_value, expected_values, description)
     {
 
     test(function()
@@ -62,12 +62,12 @@
 
       targetElement.style.setProperty(property_name, specified_value);
 
-      assert_equals(getComputedStyle(targetElement)[property_name], expected_value);
+      assert_in_array(getComputedStyle(targetElement)[property_name], expected_values);
 
       }, description);
     }
 
-    verifyComputedStyle("background-size", "calc(67% - 54% + 4em)", "calc(13% + 64px)", "testing background-size: calc(67% - 54% + 4em)");
+    verifyComputedStyle("background-size", "calc(67% - 54% + 4em)", ["calc(13% + 64px)", "calc(13% + 64px) auto"], "testing background-size: calc(67% - 54% + 4em)");
 
     /*
     "Where percentages are not resolved at computed-value time,

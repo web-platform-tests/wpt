@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' http://{{host}}:{{ports[http][0]}}; script-src 'self' 'unsafe-inline';">
+    <title>connect-src-json-import-allowed</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src='../support/logTest.sub.js?logs=["allowed"]'></script>
+    <script src="../support/alertAssert.sub.js?alerts=[]"></script>
+</head>
+
+<body>
+    <script>
+        window.addEventListener('securitypolicyviolation', function(e) {
+            log("blocked");
+        });
+
+        import("./resources/dummy.json", { with: { type: "json" } }).then(
+          () => { log("allowed") },
+          () => { log("error") },
+        )
+    </script>
+    <div id="log"></div>
+</body>
+
+</html>

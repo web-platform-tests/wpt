@@ -43,6 +43,10 @@ def check_args(**kwargs):
 
 
 def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs):
+    ENABLE_THREADED_COMPOSITING_FLAG = '--enable-threaded-compositing'
+    DISABLE_THREADED_COMPOSITING_FLAG = '--disable-threaded-compositing'
+    DISABLE_THREADED_ANIMATION_FLAG = '--disable-threaded-animation'
+
     args = []
     args.append("--ignore-certificate-errors-spki-list=%s" %
         ','.join(chrome_spki_certs.IGNORE_CERTIFICATE_ERRORS_SPKI_LIST))
@@ -58,6 +62,13 @@ def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs)
     for arg in kwargs.get("binary_args", []):
         if arg not in args:
             args.append(arg)
+
+    # Temporary workaround to align with RWT behavior. Unless a vts explicitly
+    # enables threaded compositing, we should use single threaded compositing
+    if ENABLE_THREADED_COMPOSITING_FLAG not in subsuite.config.get("binary_args", []):
+        args.extend([DISABLE_THREADED_COMPOSITING_FLAG,
+                     DISABLE_THREADED_ANIMATION_FLAG])
+
     for arg in subsuite.config.get("binary_args", []):
         if arg not in args:
             args.append(arg)

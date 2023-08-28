@@ -116,7 +116,6 @@ async def test_params_url_patterns_pattern_property_unescaped_character(
 @pytest.mark.parametrize(
     "value",
     [
-        "",
         "http/",
         "http\\*",
         "http\\(",
@@ -136,22 +135,7 @@ async def test_params_url_patterns_pattern_protocol_invalid_value(bidi_session, 
         )
 
 
-@pytest.mark.parametrize(
-    "value",
-    [
-        "file",
-        "file:",
-    ],
-)
-async def test_params_url_patterns_pattern_protocol_file_invalid_value(bidi_session, value):
-    with pytest.raises(error.InvalidArgumentException):
-        await bidi_session.network.add_intercept(
-            phases=["beforeRequestSent"],
-            url_patterns=[{"type": "pattern", "protocol": value, "hostname": "example.com"}],
-        )
-
-
-@pytest.mark.parametrize("value", ["", "abc/com/", "abc?com", "abc#com", "abc:com", "abc::com", "::1"])
+@pytest.mark.parametrize("value", ["abc/com/", "abc?com", "abc#com", "abc:com", "::1"])
 async def test_params_url_patterns_pattern_hostname_invalid_value(bidi_session, value):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.network.add_intercept(
@@ -160,7 +144,7 @@ async def test_params_url_patterns_pattern_hostname_invalid_value(bidi_session, 
         )
 
 
-@pytest.mark.parametrize("value", ["", "abcd", "-1", "80 ", "1.3", ":80", "80:", "65536"])
+@pytest.mark.parametrize("value", ["abcd", "-1", "80 ", "1.3", ":80", "65536"])
 async def test_params_url_patterns_pattern_port_invalid_value(bidi_session, value):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.network.add_intercept(

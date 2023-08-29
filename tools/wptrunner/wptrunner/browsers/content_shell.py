@@ -20,6 +20,10 @@ from ..executors.executorcontentshell import (  # noqa: F401
     ContentShellTestharnessExecutor,
 )
 
+ENABLE_THREADED_COMPOSITING_FLAG = '--enable-threaded-compositing'
+DISABLE_THREADED_COMPOSITING_FLAG = '--disable-threaded-compositing'
+DISABLE_THREADED_ANIMATION_FLAG = '--disable-threaded-animation'
+
 
 __wptrunner__ = {"product": "content_shell",
                  "check_args": "check_args",
@@ -43,10 +47,6 @@ def check_args(**kwargs):
 
 
 def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs):
-    ENABLE_THREADED_COMPOSITING_FLAG = '--enable-threaded-compositing'
-    DISABLE_THREADED_COMPOSITING_FLAG = '--disable-threaded-compositing'
-    DISABLE_THREADED_ANIMATION_FLAG = '--disable-threaded-animation'
-
     args = []
     args.append("--ignore-certificate-errors-spki-list=%s" %
         ','.join(chrome_spki_certs.IGNORE_CERTIFICATE_ERRORS_SPKI_LIST))

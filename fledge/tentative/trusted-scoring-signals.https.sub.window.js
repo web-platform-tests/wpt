@@ -16,9 +16,9 @@
 // given for TRUSTED_SCORING_SIGNALS_URL.
 async function runTrustedScoringSignalsTest(test, uuid, renderURL, scoreAdCheck) {
   const auctionConfigOverrides = {
-      trustedScoringSignalsUrl: TRUSTED_SCORING_SIGNALS_URL,
-      decisionLogicUrl:
-          createDecisionScriptUrl(uuid, {
+      trustedScoringSignalsURL: TRUSTED_SCORING_SIGNALS_URL,
+    decisionLogicURL:
+      createDecisionScriptURL(uuid, {
               scoreAd: `if (!(${scoreAdCheck})) throw "error";` })};
   await runBasicFledgeTestExpectingWinner(
       test,
@@ -49,7 +49,7 @@ async function runTrustedScoringSignalsDataVersionTest(
   await joinInterestGroup(test, uuid, interestGroupOverrides);
 
   const auctionConfigOverrides = {
-    decisionLogicUrl: createDecisionScriptUrl(
+    decisionLogicURL: createDecisionScriptURL(
         uuid,
         { scoreAd:
               `if (!(${check})) return false;`,
@@ -58,7 +58,7 @@ async function runTrustedScoringSignalsDataVersionTest(
                  sendReportTo('${createSellerReportUrl(uuid, '2-error')}')
                sendReportTo('${createSellerReportUrl(uuid, '2')}')`,
         }),
-        trustedScoringSignalsUrl: TRUSTED_SCORING_SIGNALS_URL
+        trustedScoringSignalsURL: TRUSTED_SCORING_SIGNALS_URL
   }
   await runBasicFledgeAuctionAndNavigate(test, uuid, auctionConfigOverrides);
   await waitForObservedRequests(
@@ -79,15 +79,15 @@ function createScoringSignalsRenderUrlWithBody(uuid, responseBody) {
 
 promise_test(async test => {
   const uuid = generateUuid(test);
-  const decisionLogicScriptUrl = createDecisionScriptUrl(
+  const decisionLogicScriptUrl = createDecisionScriptURL(
       uuid,
       { scoreAd: 'if (trustedScoringSignals !== null) throw "error";'});
   await runBasicFledgeTestExpectingWinner(
       test,
       { uuid: uuid,
-        auctionConfigOverrides: { decisionLogicUrl: decisionLogicScriptUrl }
+        auctionConfigOverrides: { decisionLogicURL: decisionLogicScriptUrl }
       });
-}, 'No trustedScoringSignalsUrl.');
+}, 'No trustedScoringSignalsURL.');
 
 promise_test(async test => {
   const uuid = generateUuid(test);
@@ -265,11 +265,11 @@ promise_test(async test => {
   const renderURL2 = createRenderUrl(uuid, /*script=*/null, /*signalsParam=*/'string-value');
   await joinInterestGroup(test, uuid, {ads: [{renderUrl: renderURL1}], name: '1'});
   await joinInterestGroup(test, uuid, {ads: [{renderUrl: renderURL2}], name: '2'});
-  let auctionConfigOverrides = { trustedScoringSignalsUrl: TRUSTED_SCORING_SIGNALS_URL };
+  let auctionConfigOverrides = { trustedScoringSignalsURL: TRUSTED_SCORING_SIGNALS_URL };
 
   // scoreAd() only accepts the first IG's bid, validating its trustedScoringSignals.
-  auctionConfigOverrides.decisionLogicUrl =
-        createDecisionScriptUrl(uuid, {
+  auctionConfigOverrides.decisionLogicURL =
+    createDecisionScriptURL(uuid, {
             scoreAd: `if (browserSignals.renderURL === "${renderURL1}" &&
                           trustedScoringSignals.renderURL["${renderURL1}"] !== 1 ||
                           trustedScoringSignals.renderURL["${renderURL2}"] !== undefined)
@@ -280,8 +280,8 @@ promise_test(async test => {
       `Wrong value type returned from first auction: ${config.constructor.type}`);
 
   // scoreAd() only accepts the second IG's bid, validating its trustedScoringSignals.
-  auctionConfigOverrides.decisionLogicUrl =
-        createDecisionScriptUrl(uuid, {
+  auctionConfigOverrides.decisionLogicURL =
+    createDecisionScriptURL(uuid, {
             scoreAd: `if (browserSignals.renderURL === "${renderURL2}" &&
                           trustedScoringSignals.renderURL["${renderURL1}"] !== undefined ||
                           trustedScoringSignals.renderURL["${renderURL2}"] !== '1')

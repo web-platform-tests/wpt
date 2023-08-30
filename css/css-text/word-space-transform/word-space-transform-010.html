@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Text level 4 Test: word-boundary-expansion and forced line breaks</title>
+<title>CSS Text level 4 Test: word-space-transform and forced line breaks</title>
 <link rel="author" title="Florian Rivoal" href="http://florian.rivoal.net/">
-<link rel="help" href="https://drafts.csswg.org/css-text-4/#word-boundary-expansion">
-<link rel="match" href="reference/word-boundary-010-ref.html">
+<link rel="help" href="https://drafts.csswg.org/css-text-4/#word-space-transform">
+<link rel="match" href="reference/word-space-transform-010-ref.html">
 <meta name="assert" content="must not replace instances of U+200B immediately preceding or following a forced line break (ignoring any intervening inline box boundaries, and associated margin/border/padding)">
 <style>
 div {
@@ -19,7 +19,7 @@ div {
 .border {  border: solid transparent; border-width: 0 1em; }
 .sborder { border: solid transparent; border-width: 0 0.5em; }
 .test {
-  word-boundary-expansion: ideographic-space;
+  word-space-transform: ideographic-space;
 }
 </style>
 

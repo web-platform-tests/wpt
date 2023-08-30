@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Text level 4 Test: word-boundary-expansion space non collapsing</title>
+<title>CSS Text level 4 Test: word-space-transform space collapsing</title>
 <link rel="author" title="Florian Rivoal" href="http://florian.rivoal.net/">
-<link rel="help" href="https://drafts.csswg.org/css-text-4/#word-boundary-expansion">
+<link rel="help" href="https://drafts.csswg.org/css-text-4/#word-space-transform">
 <link rel="help" href="https://www.w3.org/TR/css-text-3/#white-space-phase-1">
-<link rel="match" href="reference/word-boundary-008-ref.html">
-<meta name="assert" content="word-boundary-expnasion happens before phase 1 of white space processing, so inserted spaces can be preserved by white-space:pre">
+<link rel="match" href="reference/word-space-transform-007-ref.html">
+<meta name="assert" content="word-space-transform happens between phase 1 and 2 of white space processing, so inserted spaces don't collapse with adjacent ones">
 <style>
 div {
   font-size: 2em;
-  white-space: pre;
 }
 #test {
-  word-boundary-expansion: space;
+  word-space-transform: space;
 }
 </style>
 

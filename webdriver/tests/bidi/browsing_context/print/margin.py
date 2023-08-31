@@ -120,6 +120,46 @@ async def test_margin_same_as_page_dimension(
 @pytest.mark.parametrize(
     "margin",
     [
+        {"top": 27.94 - 2.54 / 72},
+        {"left": 21.59 - 2.54 / 72},
+        {"right": 21.59 - 2.54 / 72},
+        {"bottom": 27.94 - 2.54 / 72},
+    ],
+    ids=[
+        "top",
+        "left",
+        "right",
+        "bottom",
+    ],
+)
+async def test_minimum_page_size_with_individual_margins(
+    bidi_session,
+    top_context,
+    inline,
+    assert_pdf_content,
+    margin,
+):
+    page = inline("Text")
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"], url=page, wait="complete"
+    )
+
+    value = await bidi_session.browsing_context.print(
+        context=top_context["context"],
+        shrink_to_fit=False,
+        margin=margin
+    )
+
+    # Check that margins don't affect page dimensions and equal in this case defaults.
+    await assert_pdf_dimensions(value, {
+       "width": 21.59 - (0.0 if ("top" in margin or "bottom" in margin) else 2.54 / 72),
+       "height": 27.94 - (0.0 if ("left" in margin or "right" in margin) else 2.54 / 72),
+    })
+
+
+@pytest.mark.parametrize(
+    "margin",
+    [
         {},
         {"top": 0, "left": 0, "right": 0, "bottom": 0},
         {"top": 2, "left": 2, "right": 2, "bottom": 2}
@@ -146,5 +186,5 @@ async def test_margin_does_not_affect_page_size(
         margin=margin
     )
 
-    # Check that margins don't affect page dimencions and equal in this case defaults.
+    # Check that margins don't affect page dimensions and equal in this case defaults.
     await assert_pdf_dimensions(value, {"width": 21.59, "height": 27.94})

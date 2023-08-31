@@ -134,6 +134,20 @@ async def test_params_page_invalid_value(bidi_session, top_context, page):
 
 
 @pytest.mark.parametrize(
+    "margin",
+    [
+        {"height": 0.01},
+        {"width": 0.01},
+    ],
+)
+async def test_params_page_small_value(bidi_session, top_context, page):
+    with pytest.raises(error.UnsupportedOperationException):
+        await bidi_session.browsing_context.print(
+            context=top_context["context"], page=page
+        )
+
+
+@pytest.mark.parametrize(
     "page_ranges",
     [
         False,

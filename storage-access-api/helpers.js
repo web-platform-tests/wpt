@@ -153,7 +153,7 @@ async function CanFrameWriteCookies(frame, keep_after_writing = false) {
 // Tests whether the current frame can read and write cookies via HTTP headers.
 // This deletes, writes, reads, then deletes a cookie named "cookie".
 async function CanAccessCookiesViaHTTP() {
-  await create_cookie(window.location.origin, "cookie", "1", "samesite=None;Secure");
+  await fetch(`${window.location.origin}/storage-access-api/resources/set-cookie-header.py?cookie=1;path=/;SameSite=None;Secure`);
   const http_cookies = await fetch(`${window.location.origin}/storage-access-api/resources/echo-cookie-header.py`)
       .then((resp) => resp.text());
   const can_access = cookieStringHasCookie("cookie", "1", http_cookies);

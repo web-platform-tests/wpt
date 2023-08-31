@@ -24,12 +24,12 @@
     });
 
     assert_false(await FrameHasStorageAccess(frame), "frame initially does not have storage access.");
-    assert_false(await HasUnpartitionedCookie(frame), "frame initially cannot write cookies via document.cookie.");
+    assert_false(await HasUnpartitionedCookie(frame), "frame initially does not have access to cookies.");
 
     assert_true(await RequestStorageAccessInFrame(frame), "requestStorageAccess resolves without requiring a gesture.");
 
     assert_true(await FrameHasStorageAccess(frame), "frame has storage access after request.");
-    assert_true(await HasUnpartitionedCookie(frame), "frame can write cookies via JS after request.");
+    assert_true(await HasUnpartitionedCookie(frame), "frame has access to cookies after request.");
 
     return frame;
   }
@@ -43,7 +43,7 @@
     await FrameInitiatedReload(frame);
 
     assert_true(await FrameHasStorageAccess(frame), "frame has storage access after refresh.");
-    assert_true(await HasUnpartitionedCookie(frame), "frame can write cookies via JS after refresh.");
+    assert_true(await HasUnpartitionedCookie(frame), "frame has access to cookies after refresh.");
   }, "Self-initiated reloads preserve storage access");
 
   promise_test(async (t) => {
@@ -55,7 +55,7 @@
     await FrameInitiatedNavigation(frame, altWwwResponder);
 
     assert_true(await FrameHasStorageAccess(frame), "frame has storage access after refresh.");
-    assert_true(await HasUnpartitionedCookie(frame), "frame can write cookies via JS after refresh.");
+    assert_true(await HasUnpartitionedCookie(frame), "frame has access to cookies after refresh.");
   }, "Self-initiated same-origin navigations preserve storage access");
 
   promise_test(async (t) => {
@@ -70,7 +70,7 @@
     });
 
     assert_false(await FrameHasStorageAccess(frame), "frame does not have storage access after refresh.");
-    assert_false(await HasUnpartitionedCookie(frame), "frame cannot write cookies via JS after refresh.");
+    assert_false(await HasUnpartitionedCookie(frame), "frame has access to cookies after refresh.");
   }, "Non-self-initiated same-origin navigations do not preserve storage access");
 
   promise_test(async (t) => {
@@ -82,6 +82,6 @@
     await FrameInitiatedNavigation(frame, altRootResponder);
 
     assert_false(await FrameHasStorageAccess(frame), "frame does not have storage access after refresh.");
-    assert_false(await HasUnpartitionedCookie(frame), "frame cannot write cookies via JS after refresh.");
+    assert_false(await HasUnpartitionedCookie(frame), "frame has access to cookies after refresh.");
   }, "Self-initiated cross-origin navigations do not preserve storage access");
 })();

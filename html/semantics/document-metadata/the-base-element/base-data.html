@@ -12,14 +12,14 @@ test(() => {
   const link = document.createElement("a");
   link.href = "blah";
   assert_equals(link.href, new URL("blah", document.URL).href);
-});
+}, "First <base> has a data: URL so fallback is used");
 
 test(() => {
   document.querySelector("base").remove();
   const link = document.createElement("a");
   link.href = "blah";
   assert_equals(link.href, new URL("blah", "https://example.com/").href);
-});
+}, "First <base> is removed so second is used");
 
 test(() => {
   const base = document.createElement("base");
@@ -28,5 +28,5 @@ test(() => {
   const link = document.createElement("a");
   link.href = "blah";
   assert_equals(link.href, new URL("blah", document.URL).href);
-});
+}, "Dynamically inserted first <base> has a data: URL so fallback is used");
 </script>

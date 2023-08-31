@@ -33,7 +33,13 @@ function runUAStyleTests(props) {
   }
 
   function fakeClone(el) {
-   const clone = document.createElementNS('urn:not-html', el.localName);
+   let ns = 'urn:not-html';
+   if (el.namespaceURI === 'http://www.w3.org/2000/svg') {
+     ns = 'urn:not-svg';
+   } else if (el.namespaceURI === 'http://www.w3.org/1998/Math/MathML') {
+     ns = 'urn:not-mathml';
+   }
+   const clone = document.createElementNS(ns, el.localName);
    for (const att of el.attributes) {
      clone.setAttributeNS(att.namespaceURI, att.name, att.value);
    }

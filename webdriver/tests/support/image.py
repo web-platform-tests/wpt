@@ -6,6 +6,7 @@ from tests.support.asserts import assert_png
 
 PPI = 96
 inch_in_cm = 2.54
+inch_in_point = 72
 
 
 def cm_to_px(cm: float) -> float:

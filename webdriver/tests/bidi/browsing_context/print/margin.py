@@ -2,6 +2,7 @@
 import pytest
 
 from webdriver.bidi.error import UnsupportedOperationException
+from tests.support.image import inch_in_cm, inch_in_point
 
 pytestmark = pytest.mark.asyncio
 
@@ -27,22 +28,22 @@ def get_content(css=""):
     "margin, reference_css, css",
     [
         (
-            {"top": 2.54},
+            {"top": inch_in_cm},
             "margin-top: 1.54cm;",
             "",
         ),
         (
-            {"left": 2.54},
+            {"left": inch_in_cm},
             "margin-left: 1.54cm;",
             "",
         ),
         (
-            {"right": 2.54},
+            {"right": inch_in_cm},
             "margin-right: 1.54cm;",
             "",
         ),
         (
-            {"bottom": 2.54},
+            {"bottom": inch_in_cm},
             "height: 24.4cm;",
             "height: 26.94cm;",
         ),
@@ -120,10 +121,10 @@ async def test_margin_same_as_page_dimension(
 @pytest.mark.parametrize(
     "margin",
     [
-        {"top": 27.94 - 2.54 / 72},
-        {"left": 21.59 - 2.54 / 72},
-        {"right": 21.59 - 2.54 / 72},
-        {"bottom": 27.94 - 2.54 / 72},
+        {"top": 27.94 - inch_in_cm / inch_in_point},
+        {"left": 21.59 - inch_in_cm / inch_in_point},
+        {"right": 21.59 - inch_in_cm / inch_in_point},
+        {"bottom": 27.94 - inch_in_cm / inch_in_point},
     ],
     ids=[
         "top",
@@ -152,8 +153,8 @@ async def test_minimum_page_size_with_individual_margins(
 
     # Check that margins don't affect page dimensions and equal in this case defaults.
     await assert_pdf_dimensions(value, {
-       "width": 21.59 - (0.0 if ("top" in margin or "bottom" in margin) else 2.54 / 72),
-       "height": 27.94 - (0.0 if ("left" in margin or "right" in margin) else 2.54 / 72),
+       "width": 21.59 - (0.0 if ("top" in margin or "bottom" in margin) else inch_in_cm / inch_in_point),
+       "height": 27.94 - (0.0 if ("left" in margin or "right" in margin) else inch_in_cm / inch_in_point),
     })
 
 

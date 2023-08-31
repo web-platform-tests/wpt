@@ -108,18 +108,13 @@ async def test_margin_same_as_page_dimension(
         context=top_context["context"], url=page, wait="complete"
     )
 
-    try:
-        print_value = await bidi_session.browsing_context.print(
+   # This yields and empty content area: https://github.com/w3c/webdriver-bidi/issues/473
+   with pytest.raises(UnsupportedOperationException):
+        await bidi_session.browsing_context.print(
             context=top_context["context"],
             shrink_to_fit=False,
             margin=margin,
         )
-
-        # Check that content is out of page dimensions.
-        await assert_pdf_content(print_value, [{"type": "string", "value": ""}])
-    except UnsupportedOperationException:
-        # Empty content area: https://github.com/w3c/webdriver-bidi/issues/473
-        pass
 
 
 @pytest.mark.parametrize(

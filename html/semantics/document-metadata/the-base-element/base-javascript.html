@@ -1,0 +1,32 @@
+<!-- Please update base-data.html together with this -->
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>&lt;base> and javascript: URLs</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<base href="javascript:/,test">
+<base href="https://example.com/">
+<div id=log></div>
+<script>
+test(() => {
+  const link = document.createElement("a");
+  link.href = "blah";
+  assert_equals(link.href, new URL("blah", document.URL).href);
+});
+
+test(() => {
+  document.querySelector("base").remove();
+  const link = document.createElement("a");
+  link.href = "blah";
+  assert_equals(link.href, new URL("blah", "https://example.com/").href);
+});
+
+test(() => {
+  const base = document.createElement("base");
+  base.href = "javascript:/,more-test";
+  document.head.prepend(base);
+  const link = document.createElement("a");
+  link.href = "blah";
+  assert_equals(link.href, new URL("blah", document.URL).href);
+});
+</script>

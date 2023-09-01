@@ -34,4 +34,13 @@ test(t => { // https://bugs.chromium.org/p/chromium/issues/detail?id=1414292
 
 }, '`Intl.DateTimeFormat.prototype.format` produces U+0020 instead of U+202F for `en` locale');
 
+test(t => { // https://bugs.chromium.org/p/chromium/issues/detail?id=1418727
+
+  const date = new Date('2022-03-31T23:59:42');
+
+  assert_true(date.toLocaleString('en-CA').includes('2022-03-31'));
+  assert_equals(date.toLocaleString('en-CA', {dateStyle: 'short'}), '2022-03-31');
+
+}, '`Date.prototype.toLocaleString` produces `yyyy-mm-dd` instead of `m/d/yyyy` for `en-CA` locale');
+
 </script>

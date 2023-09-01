@@ -168,7 +168,7 @@ async function HasUnpartitionedCookie(frame) {
   let jsAccess = cookieStringHasCookie("cookie", "unpartitioned", frameDocumentCookie);
   const httpCookie = await FetchSubresourceCookiesFromFrame(frame, "");
   let httpAccess = cookieStringHasCookie("cookie", "unpartitioned", httpCookie);
-  assert_true(jsAccess == httpAccess, "HTTP and Javascript cookies must be in sync");
+  assert_equals(jsAccess, httpAccess, "HTTP and Javascript cookies must be in sync");
   return jsAccess && httpAccess;
 }
 

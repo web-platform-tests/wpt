@@ -138,6 +138,7 @@ async def test_minimum_page_size_with_individual_margins(
     top_context,
     inline,
     assert_pdf_content,
+    assert_pdf_dimensions,
     margin,
 ):
     page = inline("Text")

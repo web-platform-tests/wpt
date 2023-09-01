@@ -1,4 +1,5 @@
 # META: timeout=long
+from math import ceil
 import pytest
 
 from webdriver.bidi.error import UnsupportedOperationException
@@ -109,8 +110,8 @@ async def test_margin_same_as_page_dimension(
         context=top_context["context"], url=page, wait="complete"
     )
 
-   # This yields and empty content area: https://github.com/w3c/webdriver-bidi/issues/473
-   with pytest.raises(UnsupportedOperationException):
+    # This yields and empty content area: https://github.com/w3c/webdriver-bidi/issues/473
+    with pytest.raises(UnsupportedOperationException):
         await bidi_session.browsing_context.print(
             context=top_context["context"],
             shrink_to_fit=False,
@@ -121,10 +122,10 @@ async def test_margin_same_as_page_dimension(
 @pytest.mark.parametrize(
     "margin",
     [
-        {"top": 27.94 - inch_in_cm / inch_in_point},
-        {"left": 21.59 - inch_in_cm / inch_in_point},
-        {"right": 21.59 - inch_in_cm / inch_in_point},
-        {"bottom": 27.94 - inch_in_cm / inch_in_point},
+        {"top": 27.94 - ceil(inch_in_cm / inch_in_point)},
+        {"left": 21.59 - ceil(inch_in_cm / inch_in_point)},
+        {"right": 21.59 - ceil(inch_in_cm / inch_in_point)},
+        {"bottom": 27.94 - ceil(inch_in_cm / inch_in_point)},
     ],
     ids=[
         "top",

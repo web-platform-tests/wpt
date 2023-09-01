@@ -18,8 +18,9 @@ function testWorkerHelper(t, script) {
   });
 }
 
-test(function() {
-  assert_throws_dom("SecurityError", function() { new Worker('unsupported:'); });
+async_test(function(t) {
+  // Parses fine as a URL, fails to fetch according to Fetch
+  testWorkerHelper(t, 'unsupported:');
 }, "unsupported_scheme");
 
 async_test(function() {

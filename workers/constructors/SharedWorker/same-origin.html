@@ -16,8 +16,9 @@ testSharedWorkerHelper = (t, script) => {
   });
 }
 
-test(() => {
-  assert_throws_dom("SecurityError", () => { new SharedWorker('unsupported:', ''); });
+async_test(t => {
+  // Parses fine as a URL, fails to fetch according to Fetch
+  testSharedWorkerHelper(t, 'unsupported:');
 }, "unsupported_scheme");
 
 async_test(t => {

@@ -36,7 +36,7 @@
 
   promise_test(async (t) => {
     await MaybeSetStorageAccess("*", "*", "blocked");
-    await SetUnpartitionedCookie(altWww);
+    await SetFirstPartyCookieAndUnsetStorageAccessPermission(altWww);
 
     const frame = await SetUpResponderFrame(t, altWwwResponder);
 
@@ -48,7 +48,7 @@
 
   promise_test(async (t) => {
     await MaybeSetStorageAccess("*", "*", "blocked");
-    await SetUnpartitionedCookie(altWww);
+    await SetFirstPartyCookieAndUnsetStorageAccessPermission(altWww);
 
     const frame = await SetUpResponderFrame(t, altWwwResponder);
 
@@ -60,7 +60,7 @@
 
   promise_test(async (t) => {
     await MaybeSetStorageAccess("*", "*", "blocked");
-    await SetUnpartitionedCookie(altWww);
+    await SetFirstPartyCookieAndUnsetStorageAccessPermission(altWww);
 
     const frame = await SetUpResponderFrame(t, altWwwResponder);
 
@@ -75,7 +75,7 @@
 
   promise_test(async (t) => {
     await MaybeSetStorageAccess("*", "*", "blocked");
-    await SetUnpartitionedCookie(altWww);
+    await SetFirstPartyCookieAndUnsetStorageAccessPermission(altWww);
 
     const frame = await SetUpResponderFrame(t, altWwwResponder);
 

@@ -152,7 +152,7 @@ async function CanFrameWriteCookies(frame, keep_after_writing = false) {
 
 // Sets a cookie in an unpartitioned context by creating a new frame
 // and requesting storage access in the frame.
-async function SetUnpartitionedCookie(origin) {
+async function SetFirstPartyCookieAndUnsetStorageAccessPermission(origin) {
   let frame = await CreateFrame(`${origin}/storage-access-api/resources/script-with-cookie-header.py?script=embedded_responder.js`);
   await SetPermissionInFrame(frame, [{ name: 'storage-access' }, 'granted']);
   await RequestStorageAccessInFrame(frame);
@@ -160,7 +160,7 @@ async function SetUnpartitionedCookie(origin) {
   await SetPermissionInFrame(frame, [{ name: 'storage-access' }, 'prompt']);
 }
 
-// Tests for the presence of the unpartitioned cookie set by SetUnpartitionedCookie
+// Tests for the presence of the unpartitioned cookie set by SetFirstPartyCookieAndUnsetStorageAccessPermission
 // in both the `document.cookie` variable and same-origin subresource \
 // Request Headers in the given frame
 async function HasUnpartitionedCookie(frame) {
@@ -175,6 +175,8 @@ async function HasUnpartitionedCookie(frame) {
 // Tests whether the current frame can read and write cookies via HTTP headers.
 // This deletes, writes, reads, then deletes a cookie named "cookie".
 async function CanAccessCookiesViaHTTP() {
+  // We avoid reusing SetFirstPartyCookieAndUnsetStorageAccessPermission here, since that bypasses the 
+  // cookie-accessibility settings that we want to check here.
   await fetch(`${window.location.origin}/storage-access-api/resources/set-cookie-header.py?cookie=1;path=/;SameSite=None;Secure`);
   const http_cookies = await fetch(`${window.location.origin}/storage-access-api/resources/echo-cookie-header.py`)
       .then((resp) => resp.text());

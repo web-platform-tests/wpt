@@ -13,7 +13,7 @@
 
   promise_test(async (t) => {
     await MaybeSetStorageAccess("*", "*", "blocked");
-    await SetUnpartitionedCookie(wwwAlt);
+    await SetFirstPartyCookieAndUnsetStorageAccessPermission(wwwAlt);
     const responder_html = `${wwwAlt}${url_suffix}`;
     const [frame1, frame2] = await Promise.all([
       CreateFrame(responder_html),

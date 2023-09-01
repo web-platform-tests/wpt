@@ -134,7 +134,7 @@ async def test_params_page_invalid_value(bidi_session, top_context, page):
 
 
 @pytest.mark.parametrize(
-    "margin",
+    "page",
     [
         {"height": 0.01},
         {"width": 0.01},

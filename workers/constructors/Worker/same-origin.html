@@ -18,6 +18,10 @@ function testWorkerHelper(t, script) {
   });
 }
 
+test(function() {
+  assert_throws_dom("SyntaxError", function() { new Worker('https://test:test'); });
+}, "non-parsable URL");
+
 async_test(function(t) {
   // Parses fine as a URL, fails to fetch according to Fetch
   testWorkerHelper(t, 'unsupported:');

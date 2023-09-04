@@ -175,7 +175,7 @@ async function HasUnpartitionedCookie(frame) {
 // Tests whether the current frame can read and write cookies via HTTP headers.
 // This deletes, writes, reads, then deletes a cookie named "cookie".
 async function CanAccessCookiesViaHTTP() {
-  // We avoid reusing SetFirstPartyCookieAndUnsetStorageAccessPermission here, since that bypasses the 
+  // We avoid reusing SetFirstPartyCookieAndUnsetStorageAccessPermission here, since that bypasses the
   // cookie-accessibility settings that we want to check here.
   await fetch(`${window.location.origin}/storage-access-api/resources/set-cookie-header.py?cookie=1;path=/;SameSite=None;Secure`);
   const http_cookies = await fetch(`${window.location.origin}/storage-access-api/resources/echo-cookie-header.py`)

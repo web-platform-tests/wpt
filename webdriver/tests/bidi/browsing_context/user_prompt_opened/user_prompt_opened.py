@@ -56,6 +56,28 @@ async def test_prompt_type(
     }
 
 
+async def test_prompt_default_value(bidi_session, subscribe_events, inline, new_tab,
+                           wait_for_event, prompt_type):
+    await subscribe_events(events=[USER_PROMPT_OPENED_EVENT])
+    on_entry = wait_for_event(USER_PROMPT_OPENED_EVENT)
+
+    text = "test"
+    default = "default"
+
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"],
+        url=inline(f"<script>window.prompt('{text}', '{default}')</script>"),
+    )
+
+    event = await on_entry
+
+    assert event == {
+        "context": new_tab["context"],
+        "type": prompt_type,
+        "message": text,
+        "defaultValue": default,
+    }
+
 @pytest.mark.parametrize("type_hint", ["tab", "window"])
 async def test_subscribe_to_one_context(
     bidi_session, subscribe_events, inline, wait_for_event, type_hint

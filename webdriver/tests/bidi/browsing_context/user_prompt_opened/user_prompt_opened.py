@@ -56,8 +56,9 @@ async def test_prompt_type(
     }
 
 
-async def test_prompt_default_value(bidi_session, subscribe_events, inline, new_tab,
-                           wait_for_event, prompt_type):
+async def test_prompt_default_value(
+    bidi_session, inline, new_tab, subscribe_events, wait_for_event
+):
     await subscribe_events(events=[USER_PROMPT_OPENED_EVENT])
     on_entry = wait_for_event(USER_PROMPT_OPENED_EVENT)
 

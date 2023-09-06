@@ -451,7 +451,7 @@ class TestLoader:
                 if self.skip_timeout and test.expected() == "TIMEOUT":
                     enabled = False
                 if self.skip_crash and test.expected() == "CRASH":
-                    enabled = False    
+                    enabled = False
                 if self.skip_implementation_status and test.implementation_status() in self.skip_implementation_status:
                     # for backlog, we want to run timeout/crash:
                     if not (test.implementation_status() == "implementing" and test.expected() in ["TIMEOUT", "CRASH"]):

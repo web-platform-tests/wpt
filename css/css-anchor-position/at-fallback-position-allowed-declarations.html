@@ -58,6 +58,19 @@ test_allowed_declaration('margin-block');
 test_allowed_declaration('margin-inline');
 test_allowed_declaration('margin');
 
+// Padding properties are allowed
+test_allowed_declaration('padding-top');
+test_allowed_declaration('padding-bottom');
+test_allowed_declaration('padding-left');
+test_allowed_declaration('padding-right');
+test_allowed_declaration('padding-block-start');
+test_allowed_declaration('padding-block-end');
+test_allowed_declaration('padding-inline-start');
+test_allowed_declaration('padding-inline-end');
+test_allowed_declaration('padding-block');
+test_allowed_declaration('padding-inline');
+test_allowed_declaration('padding');
+
 // Sizing properties are allowed
 test_allowed_declaration('width');
 test_allowed_declaration('height');
@@ -86,7 +99,6 @@ test_disallowed_declaration('--custom');
 // Test some other disallowed properties
 test_disallowed_declaration('font-size');
 test_disallowed_declaration('border-width');
-test_disallowed_declaration('padding');
 test_disallowed_declaration('display');
 test_disallowed_declaration('position');
 test_disallowed_declaration('float');

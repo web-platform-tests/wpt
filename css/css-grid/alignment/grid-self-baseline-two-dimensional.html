@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+<link rel="help" href="https://drafts.csswg.org/css-align-3/#baseline-rules">
+<style>
+.grid {
+    display: grid;
+    background-color: grey;
+}
+
+.inline-grid {
+    display: inline-grid;
+    background-color: grey;
+}
+
+.firstRowFirstColumn {
+    background-color: blue;
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.onlyFirstRowOnlyFirstColumn {
+    background-color: blue;
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+}
+
+.firstRowSecondColumn {
+    background-color: lime;
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.onlyFirstRowOnlySecondColumn {
+    background-color: lime;
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+}
+
+.firstRowThirdColumn {
+    background-color: magenta;
+    grid-column: 3;
+    grid-row: 1;
+}
+
+.firstRowFourthColumn {
+    background-color: green;
+    grid-column: 4;
+    grid-row: 1;
+}
+
+.secondRowFirstColumn {
+    background-color: purple;
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.onlySecondRowOnlyFirstColumn {
+    background-color: purple;
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+}
+
+.secondRowSecondColumn {
+    background-color: orange;
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.onlySecondRowOnlySecondColumn {
+    background-color: orange;
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+}
+
+.endSecondRowEndSecondColumn {
+    background-color: orange;
+    grid-column-end: 3;
+    grid-row-end: 3;
+}
+
+.secondRowThirdColumn {
+    background-color: navy;
+    grid-column: 3;
+    grid-row: 2;
+}
+
+.secondRowFourthColumn {
+    background-color: pink;
+    grid-column: 4;
+    grid-row: 2;
+}
+
+.thirdRowFirstColumn {
+    background-color: olive;
+    grid-column: 1;
+    grid-row: 3;
+}
+
+.thirdRowSecondColumn {
+    background-color: maroon;
+    grid-column: 2;
+    grid-row: 3;
+}
+
+.thirdRowThirdColumn {
+    background-color: yellow;
+    grid-column: 3;
+    grid-row: 3;
+}
+
+.fourthRowFirstColumn {
+    background-color: red;
+    grid-column: 1;
+    grid-row: 4;
+}
+
+.fourthRowSecondColumn {
+    background-color: aqua;
+    grid-column: 2;
+    grid-row: 4;
+}
+
+.firstRowThirdColumn {
+    background-color: magenta;
+    grid-column: 3;
+    grid-row: 1;
+}
+
+.secondRowThirdColumn {
+    background-color: navy;
+    grid-column: 3;
+    grid-row: 2;
+}
+
+.firstRowFourthColumn {
+    background-color: green;
+    grid-column: 4;
+    grid-row: 1;
+}
+
+.secondRowFourthColumn {
+    background-color: pink;
+    grid-column: 4;
+    grid-row: 2;
+}
+
+.firstAutoRowSecondAutoColumn {
+    grid-row: 1 / auto;
+    grid-column: 2 / auto;
+}
+
+.autoLastRowAutoLastColumn {
+    grid-row: auto / -1;
+    grid-column: auto / -1;
+}
+
+.autoSecondRowAutoFirstColumn {
+    grid-row: auto / 2;
+    grid-column: auto / 1;
+}
+
+.firstRowBothColumn {
+    grid-row: 1;
+    grid-column: 1 / -1;
+}
+
+.secondRowBothColumn {
+    grid-row: 2;
+    grid-column: 1 / -1;
+}
+
+.bothRowFirstColumn {
+    grid-row: 1 / -1;
+    grid-column: 1;
+}
+
+.bothRowSecondColumn {
+    grid-row: 1 / -1;
+    grid-column: 2;
+}
+
+.bothRowBothColumn {
+    grid-row: 1 / -1;
+    grid-column: 1 / -1;
+}
+
+/* Auto column / row. */
+.autoRowAutoColumn {
+    background-color: pink;
+    grid-column: auto;
+    grid-row: auto;
+}
+
+.firstRowAutoColumn {
+    background-color: blue;
+    grid-column: auto;
+    grid-row: 1;
+}
+
+.secondRowAutoColumn {
+    background-color: purple;
+    grid-column: auto;
+    grid-row: 2;
+}
+
+.thirdRowAutoColumn {
+    background-color: navy;
+    grid-column: auto;
+    grid-row: 3;
+}
+
+.autoRowFirstColumn {
+    background-color: lime;
+    grid-column: 1;
+    grid-row: auto;
+}
+
+.autoRowSecondColumn {
+    background-color: orange;
+    grid-column: 2;
+    grid-row: auto;
+}
+
+.autoRowThirdColumn {
+    background-color: magenta;
+    grid-column: 3;
+    grid-row: auto;
+}
+
+.autoRowAutoColumnSpanning2 {
+    background-color: maroon;
+    grid-column: span 2;
+    grid-row: auto;
+}
+
+.autoRowSpanning2AutoColumn {
+    background-color: aqua;
+    grid-column: auto;
+    grid-row: span 2;
+}
+
+.autoRowSpanning2AutoColumnSpanning3 {
+    background-color: olive;
+    grid-column: span 3;
+    grid-row: span 2;
+}
+
+.autoRowSpanning3AutoColumnSpanning2 {
+    background-color: indigo;
+    grid-column: span 2;
+    grid-row: span 3;
+}
+
+.autoRowFirstColumnSpanning2 {
+    background-color: maroon;
+    grid-column: 1 / span 2;
+    grid-row: auto;
+}
+
+.autoRowSecondColumnSpanning2 {
+    background-color: olive;
+    grid-column: 2 / span 2;
+    grid-row: auto;
+}
+
+.firstRowSpanning2AutoColumn {
+    background-color: maroon;
+    grid-column: auto;
+    grid-row: 1 / span 2;
+    height: 100%;
+}
+
+.secondRowSpanning2AutoColumn {
+    background-color: olive;
+    grid-column: auto;
+    grid-row: 2 / span 2;
+    height: 100%;
+}
+
+/* Grid element flow. */
+.gridAutoFlowColumnSparse {
+    grid-auto-flow: column;
+}
+
+.gridAutoFlowColumnDense {
+    grid-auto-flow: column dense;
+}
+
+.gridAutoFlowRowSparse {
+    grid-auto-flow: row;
+}
+
+.gridAutoFlowRowDense {
+    grid-auto-flow: row dense;
+}
+
+/* This rule makes sure the container is smaller than any grid items to avoid distributing any extra logical space to them. */
+.constrainedContainer {
+    width: 10px;
+    height: 10px;
+}
+
+.unconstrainedContainer {
+    width: 1000px;
+    height: 1000px;
+}
+
+.sizedToGridArea {
+    font: 10px/1 Ahem;
+    /* Make us fit our grid area. */
+    width: 100%;
+    height: 100%;
+}
+
+.verticalRL {
+    writing-mode: vertical-rl;
+    -webkit-writing-mode: vertical-rl;
+}
+.verticalLR {
+    writing-mode: vertical-lr;
+    -webkit-writing-mode: vertical-lr;
+}
+.horizontalTB {
+    writing-mode: horizontal-tb;
+    -webkit-writing-mode: horizontal-tb;
+}
+.horizontalBT {
+    writing-mode: horizontal-bt;
+    -webkit-writing-mode: horizontal-bt;
+}
+.directionRTL {
+    direction: rtl;
+}
+.directionLTR {
+    direction: ltr;
+}
+
+/* align-self */
+.alignSelfAuto { align-self: auto; }
+.alignSelfStretch { align-self: stretch; }
+.alignSelfStart { align-self: start; }
+.alignSelfEnd { align-self: end; }
+.alignSelfCenter { align-self: center; }
+.alignSelfRight { align-self: right; }
+.alignSelfLeft { align-self: left; }
+
+.alignSelfFlexStart { align-self: flex-start; }
+.alignSelfFlexEnd { align-self: flex-end; }
+
+.alignSelfSelfStart { align-self: self-start; }
+.alignSelfSelfEnd { align-self: self-end; }
+
+.alignSelfCenterSafe { align-self: safe center; }
+.alignSelfCenterUnsafe { align-self: unsafe center; }
+.alignSelfEndSafe { align-self: safe end; }
+.alignSelfEndUnsafe { align-self: unsafe end; }
+
+.alignSelfBaseline { align-self: baseline; }
+
+/* align-items */
+.alignItemsAuto { align-items: auto; }
+.alignItemsStretch { align-items: stretch; }
+.alignItemsStart { align-items: start; }
+.alignItemsCenter { align-items: center; }
+.alignItemsEnd { align-items: end; }
+.alignItemsBaseline { align-items: baseline; }
+
+.alignItemsCenterSafe { align-items: safe center; }
+.alignItemsCenterUnsafe { align-items: unsafe center; }
+.alignItemsEndSafe { align-items: safe end; }
+.alignItemsEndUnsafe { align-items: unsafe end; }
+
+/* align-content */
+.alignContentBaseline { align-content: baseline; }
+.alignContentLastBaseline { align-content: last-baseline; }
+.alignContentStart { align-content: start; }
+.alignContentEnd { align-content: end; }
+.alignContentCenter { align-content: center; }
+.alignContentLeft { align-content: left; }
+.alignContentRight { align-content: right; }
+.alignContentFlexStart { align-content: flex-start; }
+.alignContentFlexEnd { align-content: flex-end; }
+.alignContentSpaceBetween { align-content: space-between; }
+.alignContentSpaceAround { align-content: space-around; }
+.alignContentSpaceEvenly { align-content: space-evenly; }
+.alignContentStretch { align-content: stretch; }
+
+/* justify-self */
+.justifySelfAuto { justify-self: auto; }
+.justifySelfStretch { justify-self: stretch; }
+.justifySelfStart { justify-self: start; }
+.justifySelfCenter { justify-self: center; }
+.justifySelfEnd { justify-self: end; }
+.justifySelfRight { justify-self: right; }
+.justifySelfLeft { justify-self: left; }
+
+.justifySelfFlexStart { justify-self: flex-start; }
+.justifySelfFlexEnd { justify-self: flex-end; }
+
+.justifySelfSelfStart { justify-self: self-start; }
+.justifySelfSelfEnd { justify-self: self-end; }
+
+.justifySelfCenterSafe { justify-self: safe center; }
+.justifySelfCenterUnsafe { justify-self: unsafe center; }
+
+.justifySelfBaseline { justify-self: baseline; }
+
+/* justify-items */
+.justifyItemsAuto { justify-items: auto; }
+.justifyItemsStretch { justify-items: stretch; }
+.justifyItemsStart { justify-items: start; }
+.justifyItemsCenter { justify-items: center; }
+.justifyItemsEnd { justify-items: end; }
+.justifyItemsLeft { justify-items: left; }
+.justifyItemsRight { justify-items: right; }
+
+.justifyItemsCenterSafe { justify-items: safe center; }
+.justifyItemsCenterUnsafe { justify-items: unsafe center; }
+.justifyItemsEndSafe { justify-items: safe end; }
+.justifyItemsEndUnsafe { justify-items: unsafe end; }
+
+.justifyItemsBaseline { justify-items: baseline; }
+
+/* justify-content */
+.justifyContentBaseline { justify-content: baseline; }
+.justifyContentLastBaseline { justify-content: last-baseline; }
+.justifyContentStart { justify-content: start; }
+.justifyContentEnd { justify-content: end; }
+.justifyContentCenter { justify-content: center; }
+.justifyContentLeft { justify-content: left; }
+.justifyContentRight { justify-content: right; }
+.justifyContentFlexStart { justify-content: flex-start; }
+.justifyContentFlexEnd { justify-content: flex-end; }
+.justifyContentSpaceBetween { justify-content: space-between; }
+.justifyContentSpaceAround { justify-content: space-around; }
+.justifyContentSpaceEvenly { justify-content: space-evenly; }
+.justifyContentStretch { justify-content: stretch; }
+
+/* Both align-items and justify-items */
+.itemsNormal {
+    align-items: normal;
+    justify-items: normal;
+}
+
+.itemsStretch {
+    align-items: stretch;
+    justify-items: stretch;
+}
+
+.itemsStart {
+    align-items: start;
+    justify-items: start;
+}
+
+.itemsCenter {
+    align-items: center;
+    justify-items: center;
+}
+
+.itemsEnd {
+    align-items: end;
+    justify-items: end;
+}
+
+.itemsSelfStart {
+    align-items: self-start;
+    justify-items: self-start;
+}
+
+.itemsSelfEnd {
+    align-items: self-end;
+    justify-items: self-end;
+}
+.itemsBaseline {
+    align-items: baseline;
+    justify-items: baseline;
+}
+
+/* Both align-self and justify-self */
+.selfStretch {
+    align-self: stretch;
+    justify-self: stretch;
+}
+.selfStart {
+    align-self: start;
+    justify-self: start;
+}
+.selfEnd {
+    align-self: end;
+    justify-self: end;
+}
+.selfCenter {
+    align-self: center;
+    justify-self: center;
+}
+.selfRight {
+    align-self: right;
+    justify-self: right;
+}
+.selfLeft {
+    align-self: left;
+    justify-self: left;
+}
+.selfSelfStart {
+    align-self: self-start;
+    justify-self: self-start;
+}
+.selfSelfEnd {
+    align-self: self-end;
+    justify-self: self-end;
+}
+.selfBaseline {
+    align-self: baseline;
+    justify-self: baseline;
+}
+
+/* Both align-content and justify-content */
+.contentStart {
+    align-content: start;
+    justify-content: start;
+}
+.contentCenter {
+    align-content: center;
+    justify-content: center;
+}
+.contentEnd {
+    align-content: end;
+    justify-content: end;
+}
+
+.contentCenterSafe {
+    align-content: safe center;
+    justify-content: safe center;
+}
+
+.contentCenterUnsafe {
+    align-content: unsafe center;
+    justify-content: unsafe center;
+}
+
+.contentEndSafe {
+    align-content: safe end;
+    justify-content: safe end;
+}
+
+.contentEndUnsafe {
+    align-content: unsafe end;
+    justify-content: unsafe end;
+}
+
+.contentSpaceBetween {
+    justify-content: space-between;
+    align-content: space-between;
+}
+
+.contentSpaceAround {
+    justify-content: space-around;
+    align-content: space-around;
+}
+
+.contentSpaceEvenly {
+    justify-content: space-evenly;
+    align-content: space-evenly;
+}
+
+.contentStretch {
+    justify-content: stretch;
+    align-content: stretch;
+}
+
+/*
+    Take every possible line break so the box width is the width of largest
+    unbreakable line box.
+*/
+.min-content {
+    /* Webkit, but not actually implemented outside deprecated flexbox */
+    width: min-intrinsic;
+    width: -webkit-min-content;
+    width: -moz-min-content;
+    width: min-content;
+}
+
+.max-content {
+    width: -webkit-max-content;
+    width: -moz-max-content;
+    width: max-content;
+}
+
+/*
+    Identical to auto except for elements with an instrinsic width like an
+    img where this overrides the intrinsic width to get regular block "auto".
+*/
+.fill-available {
+    width: -webkit-fill-available;
+    /* Firefox is missing the fill- prefix because they followed an older spec */
+    width: -moz-available;
+    width: fill-available;
+}
+
+/*
+   Shrink wrap just like floating.
+   max(min-content, min(max-content, fill-available))
+*/
+.fit-content {
+    /* Webkit, but only outside a deprecated flexbox. */
+    width: intrinsic;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+}
+
+.max-width-min-content {
+    max-width: -webkit-min-content;
+    max-width: -moz-min-content;
+    max-width: min-content;
+}
+
+.max-width-max-content {
+    max-width: -webkit-max-content;
+    max-width: -moz-max-content;
+    max-width: max-content;
+}
+
+.max-width-fill-available {
+    max-width: -webkit-fill-available;
+    max-width: -moz-available;
+    max-width: fill-available;
+}
+
+.max-width-fit-content {
+    max-width: intrinsic;
+    max-width: -webkit-fit-content;
+    max-width: -moz-fit-content;
+    max-width: fit-content;
+}
+
+.min-width-min-content {
+    min-width: -webkit-min-content;
+    min-width: -moz-min-content;
+    min-width: min-content;
+}
+
+.min-width-max-content {
+    min-width: -webkit-max-content;
+    min-width: -moz-max-content;
+    min-width: max-content;
+}
+
+.min-width-fill-available {
+    min-width: -webkit-fill-available;
+    min-width: -moz-available;
+    min-width: fill-available;
+}
+
+.min-width-fit-content {
+    min-width: intrinsic;
+    min-width: -webkit-fit-content;
+    min-width: -moz-fit-content;
+    min-width: fit-content;
+}
+
+
+body { margin: 0; }
+.grid {
+   margin: 5px;
+   font-family: Ahem;
+   -webkit-text-orientation: sideways;
+}
+.font12 { font-size:24px; }
+.font16 { font-size:32px; }
+.font24 { font-size:48px; }
+.font32 { font-size:64px; }
+span {
+   border-width: 2px 5px 8px 4px;
+   border-style: solid;
+   padding: 6px 3px 7px 8px;
+   margin: 10px 6px 4px 12px;
+}
+.grid > span { background-color: grey; }
+.extraTopPadding { padding-top: 30px; }
+.extraBottomPadding { padding-bottom: 30px; }
+.extraLeftPadding { padding-left: 30px; }
+.extraRightPadding { padding-right: 30px; }
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+<body onload="checkLayout('.grid')">
+<div id="log"></div>
+
+
+<p>This test checks that baseline is applied correctly on a grid aling both axis and different writing-modes when using symbolic fonts, which will use middle-baseline.</p>
+
+<div style="position: relative">
+    <div class="grid fit-content itemsBaseline">
+        <span class="firstRowFirstColumn horizontalTB font12 extraTopPadding" data-offset-x="17" data-offset-y="18">A</span><span class="firstRowSecondColumn horizontalTB font16" data-offset-x="119" data-offset-y="35">A</span><span class="firstRowThirdColumn horizontalTB font24 extraLeftPadding" data-offset-x="227" data-offset-y="23">A</span><span class="firstRowFourthColumn horizontalTB font32" data-offset-x="335" data-offset-y="10">A</span>
+        <span class="secondRowFirstColumn horizontalTB font16" data-offset-x="17" data-offset-y="136">A</span><span class="secondRowSecondColumn horizontalTB font24 extraLeftPadding" data-offset-x="119" data-offset-y="124">A</span><span class="secondRowThirdColumn horizontalTB font12 extraBottomPadding" data-offset-x="227" data-offset-y="143">A</span><span class="secondRowFourthColumn horizontalTB font32" data-offset-x="335" data-offset-y="111">A</span>
+        <span class="thirdRowFirstColumn horizontalTB font32 extraBottomPadding" data-offset-x="17" data-offset-y="227">A</span><span class="thirdRowSecondColumn horizontalTB font12 extraTopPadding" data-offset-x="119" data-offset-y="235">A</span><span class="thirdRowThirdColumn horizontalTB font24" data-offset-x="227" data-offset-y="240">A</span><span class="thirdRowFourthColumn horizontalTB font16" data-offset-x="335" data-offset-y="252">A</span>
+        <span class="fourthRowFirstColumn horizontalTB font24" data-offset-x="17" data-offset-y="364">A</span><span class="fourthRowSecondColumn horizontalTB font32" data-offset-x="119" data-offset-y="351">A</span><span class="fourthRowThirdColumn horizontalTB font16 extraTopPadding" data-offset-x="227" data-offset-y="352">A</span><span class="fourthRowFourthColumn horizontalTB font12" data-offset-x="335" data-offset-y="383">A</span>
+    </div>
+</div>
+
+<br clear="all">
+
+<div style="position: relative">
+    <div class="grid fit-content itemsBaseline">
+        <span class="firstRowFirstColumn verticalLR font12" data-offset-x="25" data-offset-y="10">A</span><span class="firstRowSecondColumn horizontalTB font16 extraTopPadding" data-offset-x="133" data-offset-y="11">A</span><span class="firstRowThirdColumn verticalLR font24 extraLeftPadding" data-offset-x="235" data-offset-y="10">A</span><span class="firstRowFourthColumn horizontalTB font32" data-offset-x="343" data-offset-y="10">A</span>
+        <span class="secondRowFirstColumn verticalLR font16 extraTopPadding" data-offset-x="24" data-offset-y="111">A</span><span class="secondRowSecondColumn horizontalTB font24" data-offset-x="133" data-offset-y="124">A</span><span class="secondRowThirdColumn verticalLR font12" data-offset-x="262" data-offset-y="111">A</span><span class="secondRowFourthColumn horizontalTB font32" data-offset-x="343" data-offset-y="111">A</span>
+        <span class="thirdRowFirstColumn verticalLR font32" data-offset-x="17" data-offset-y="212">A</span><span class="thirdRowSecondColumn horizontalTB font12" data-offset-x="133" data-offset-y="243">A</span><span class="thirdRowThirdColumn verticalLR font24 extraBottomPadding" data-offset-x="257" data-offset-y="212">A</span><span class="thirdRowFourthColumn horizontalTB font16 extraTopPadding" data-offset-x="343" data-offset-y="212">A</span>
+        <span class="fourthRowFirstColumn verticalLR font24 extraRightPadding" data-offset-x="20" data-offset-y="320">A</span><span class="fourthRowSecondColumn horizontalTB font32 extraBottomPadding" data-offset-x="133" data-offset-y="320">A</span><span class="fourthRowThirdColumn verticalLR font16" data-offset-x="261" data-offset-y="320">A</span><span class="fourthRowFourthColumn horizontalTB font12" data-offset-x="343" data-offset-y="352">A</span>
+    </div>
+</div>
+
+<br clear="all">
+
+<div style="position: relative">
+    <div class="grid fit-content itemsBaseline">
+        <span class="firstRowFirstColumn verticalLR font12 extraLeftPadding" data-offset-x="17" data-offset-y="10">A</span><span class="firstRowSecondColumn horizontalTB font16" data-offset-x="133" data-offset-y="35">A</span><span class="firstRowThirdColumn verticalLR font24 extraRightPadding" data-offset-x="" data-offset-y="10">A</span><span class="firstRowFourthColumn horizontalTB font32" data-offset-x="348" data-offset-y="10">A</span>
+        <span class="secondRowFirstColumn horizontalTB font16" data-offset-x="17" data-offset-y="111">A</span><span class="secondRowSecondColumn verticalLR font24" data-offset-x="136" data-offset-y="111">A</span><span class="secondRowThirdColumn horizontalTB font12" data-offset-x="235" data-offset-y="118">A</span><span class="secondRowFourthColumn verticalLR font32 extraBottomPadding" data-offset-x="348" data-offset-y="111">A</span>
+        <span class="thirdRowFirstColumn verticalLR font32 extraBottomPadding" data-offset-x="31" data-offset-y="235">A</span><span class="thirdRowSecondColumn horizontalTB font12" data-offset-x="133" data-offset-y="242">A</span><span class="thirdRowThirdColumn verticalLR font24 extraTopPadding" data-offset-x="235" data-offset-y="235">A</span><span class="thirdRowFourthColumn horizontalTB font16" data-offset-x="348" data-offset-y="235">A</span>
+        <span class="fourthRowFirstColumn horizontalTB font24" data-offset-x="17" data-offset-y="359">A</span><span class="fourthRowSecondColumn verticalLR font32" data-offset-x="133" data-offset-y="359">A</span><span class="fourthRowThirdColumn horizontalTB font16" data-offset-x="235" data-offset-y="371">A</span><span class="fourthRowFourthColumn verticalLR font12" data-offset-x="356" data-offset-y="359">A</span>
+    </div>
+</div>
+
+<br clear="all">
+
+<div style="position: relative">
+    <div class="grid fit-content itemsBaseline verticalLR">
+        <span class="firstRowFirstColumn horizontalTB font12" data-offset-x="17" data-offset-y="42">A</span><span class="firstRowSecondColumn horizontalTB font16" data-offset-x="17" data-offset-y="176">A</span><span class="firstRowThirdColumn horizontalTB font24 extraRightPadding" data-offset-x="17" data-offset-y="291">A</span><span class="firstRowFourthColumn horizontalTB font32" data-offset-x="17" data-offset-y="376">A</span>
+        <span class="secondRowFirstColumn horizontalTB font16 extraBottomPadding" data-offset-x="130" data-offset-y="35">A</span><span class="secondRowSecondColumn horizontalTB font24" data-offset-x="130" data-offset-y="164">A</span><span class="secondRowThirdColumn horizontalTB font12" data-offset-x="130" data-offset-y="310">A</span><span class="secondRowFourthColumn horizontalTB font32" data-offset-x="130" data-offset-y="376">A</span>
+        <span class="thirdRowFirstColumn horizontalTB font32" data-offset-x="232" data-offset-y="10">A</span><span class="thirdRowSecondColumn horizontalTB font12 extraBottomPadding" data-offset-x="232" data-offset-y="183">A</span><span class="thirdRowThirdColumn horizontalTB font24 extraTopPadding" data-offset-x="232" data-offset-y="267">A</span><span class="thirdRowFourthColumn horizontalTB font16" data-offset-x="232" data-offset-y="401">A</span>
+        <span class="fourthRowFirstColumn horizontalTB font24 extraRightPadding" data-offset-x="334" data-offset-y="23">A</span><span class="fourthRowSecondColumn horizontalTB font32 extraTopPadding" data-offset-x="334" data-offset-y="127">A</span><span class="fourthRowThirdColumn horizontalTB font16" data-offset-x="334" data-offset-y="303">A</span><span class="fourthRowFourthColumn horizontalTB font12" data-offset-x="334" data-offset-y="408">A</span>
+    </div>
+</div>
+
+<br clear="all">
+
+<div style="position: relative">
+    <div class="grid fit-content itemsBaseline verticalLR">
+        <span class="firstRowFirstColumn verticalLR font12" data-offset-x="22" data-offset-y="10">A</span><span class="firstRowSecondColumn horizontalTB font16 extraTopPadding" data-offset-x="17" data-offset-y="135">A</span><span class="firstRowThirdColumn verticalLR font24 extraBottomPadding" data-offset-x="17" data-offset-y="235">A</span><span class="firstRowFourthColumn horizontalTB font32" data-offset-x="17" data-offset-y="343">A</span>
+        <span class="secondRowFirstColumn verticalLR font16" data-offset-x="119" data-offset-y="10">A</span><span class="secondRowSecondColumn horizontalTB font24" data-offset-x="119" data-offset-y="147">A</span><span class="secondRowThirdColumn verticalLR font12" data-offset-x="120" data-offset-y="235">A</span><span class="secondRowFourthColumn horizontalTB font32" data-offset-x="119" data-offset-y="343">A</span>
+        <span class="thirdRowFirstColumn verticalLR font32 extraBottomPadding" data-offset-x="221" data-offset-y="10">A</span><span class="thirdRowSecondColumn horizontalTB font12 extraTopPadding" data-offset-x="221" data-offset-y="142">A</span><span class="thirdRowThirdColumn verticalLR font24" data-offset-x="224" data-offset-y="235">A</span><span class="thirdRowFourthColumn horizontalTB font16 extraTopPadding" data-offset-x="221" data-offset-y="344">A</span>
+        <span class="fourthRowFirstColumn verticalLR font24" data-offset-x="323" data-offset-y="10">A</span><span class="fourthRowSecondColumn horizontalTB font32" data-offset-x="323" data-offset-y="134">A</span><span class="fourthRowThirdColumn verticalLR font16" data-offset-x="327" data-offset-y="235">A</span><span class="fourthRowFourthColumn horizontalTB font12" data-offset-x="323" data-offset-y="375">A</span>
+    </div>
+</div>
+
+<br clear="all">
+
+<div style="position: relative">
+    <div class="grid fit-content itemsBaseline verticalLR">
+        <span class="firstRowFirstColumn verticalLR font12 extraBottomPadding" data-offset-x="22" data-offset-y="10">A</span><span class="firstRowSecondColumn horizontalTB font16 extraTopPadding" data-offset-x="17" data-offset-y="135">A</span><span class="firstRowThirdColumn verticalLR font24" data-offset-x="17" data-offset-y="236">A</span><span class="firstRowFourthColumn horizontalTB font32" data-offset-x="17" data-offset-y="351">A</span>
+        <span class="secondRowFirstColumn horizontalTB font16" data-offset-x="119" data-offset-y="22">A</span><span class="secondRowSecondColumn verticalLR font24" data-offset-x="122" data-offset-y="135">A</span><span class="secondRowThirdColumn horizontalTB font12 extraBottomPadding" data-offset-x="119" data-offset-y="267">A</span><span class="secondRowFourthColumn verticalLR font32" data-offset-x="119" data-offset-y="351">A</span>
+        <span class="thirdRowFirstColumn  verticalLR font32 extraTopPadding" data-offset-x="221" data-offset-y="10">A</span><span class="thirdRowSecondColumn horizontalTB font12" data-offset-x="221" data-offset-y="166">A</span><span class="thirdRowThirdColumn verticalLR font24" data-offset-x="224" data-offset-y="236">A</span><span class="thirdRowFourthColumn horizontalTB font16" data-offset-x="221" data-offset-y="376">A</span>
+        <span class="fourthRowFirstColumn horizontalTB font24" data-offset-x="323" data-offset-y="10">A</span><span class="fourthRowSecondColumn verticalLR font32" data-offset-x="323" data-offset-y="135">A</span><span class="fourthRowThirdColumn horizontalTB font16 extraTopPadding" data-offset-x="323" data-offset-y="236">A</span><span class="fourthRowFourthColumn verticalLR font12" data-offset-x="331" data-offset-y="351">A</span>
+    </div>
+</div>
+
+<br clear="all">
+
+<div style="position: relative">
+    <div class="grid fit-content itemsBaseline verticalRL">
+        <span class="firstRowFirstColumn horizontalTB font12 extraTopPadding" data-offset-x="385" data-offset-y="18">A</span><span class="firstRowSecondColumn horizontalTB font16" data-offset-x="377" data-offset-y="160">A</span><span class="firstRowThirdColumn horizontalTB font24" data-offset-x="361" data-offset-y="275">A</span><span class="firstRowFourthColumn horizontalTB font32 extraBottomPadding" data-offset-x="345" data-offset-y="360">A</span>
+        <span class="secondRowFirstColumn horizontalTB font16" data-offset-x="275" data-offset-y="35">A</span><span class="secondRowSecondColumn horizontalTB font24 extraTopPadding" data-offset-x="259" data-offset-y="124">A</span><span class="secondRowThirdColumn horizontalTB font12" data-offset-x="283" data-offset-y="294">A</span><span class="secondRowFourthColumn horizontalTB font32" data-offset-x="243" data-offset-y="360">A</span>
+        <span class="thirdRowFirstColumn horizontalTB font32 extraLeftPadding" data-offset-x="119" data-offset-y="10">A</span><span class="thirdRowSecondColumn horizontalTB font12 extraBottomPadding" data-offset-x="181" data-offset-y="167">A</span><span class="thirdRowThirdColumn horizontalTB font24 extraTopPadding" data-offset-x="157" data-offset-y="251">A</span><span class="thirdRowFourthColumn horizontalTB font16 extraTopPadding" data-offset-x="173" data-offset-y="361">A</span>
+        <span class="fourthRowFirstColumn horizontalTB font24" data-offset-x="33" data-offset-y="23">A</span><span class="fourthRowSecondColumn horizontalTB font32 extraTopPadding" data-offset-x="17" data-offset-y="111">A</span><span class="fourthRowThirdColumn horizontalTB font16" data-offset-x="49" data-offset-y="287">A</span><span class="fourthRowFourthColumn horizontalTB font12" data-offset-x="57" data-offset-y="392">A</span>
+    </div>
+</div>
+
+<br clear="all">
+
+<div style="position: relative">
+    <div class="grid fit-content itemsBaseline verticalRL">
+        <span class="firstRowFirstColumn verticalLR font12" data-offset-x="371" data-offset-y="10">A</span><span class="firstRowSecondColumn horizontalTB font16" data-offset-x="382" data-offset-y="170">A</span><span class="firstRowThirdColumn verticalLR font24 extraTopPadding" data-offset-x="366" data-offset-y="246">A</span><span class="firstRowFourthColumn horizontalTB font32 extraRightPadding" data-offset-x="323" data-offset-y="355">A</span>
+        <span class="secondRowFirstColumn verticalLR font16" data-offset-x="253" data-offset-y="10">A</span><span class="secondRowSecondColumn horizontalTB font24 extraTopPadding" data-offset-x="237" data-offset-y="134">A</span><span class="secondRowThirdColumn verticalLR font12" data-offset-x="254" data-offset-y="246">A</span><span class="secondRowFourthColumn horizontalTB font32" data-offset-x="221" data-offset-y="355">A</span>
+        <span class="thirdRowFirstColumn verticalLR font32 extraBottomPadding" data-offset-x="119" data-offset-y="10">A</span><span class="thirdRowSecondColumn horizontalTB font12" data-offset-x="159" data-offset-y="177">A</span><span class="thirdRowThirdColumn verticalLR font24" data-offset-x="122" data-offset-y="246">A</span><span class="thirdRowFourthColumn horizontalTB font16" data-offset-x="151" data-offset-y="380">A</span>
+        <span class="fourthRowFirstColumn verticalLR font24 extraTopPadding" data-offset-x="33" data-offset-y="10">A</span><span class="fourthRowSecondColumn horizontalTB font32" data-offset-x="17" data-offset-y="145">A</span><span class="fourthRowThirdColumn verticalLR font16 extraBottomPadding" data-offset-x="37" data-offset-y="246">A</span><span class="fourthRowFourthColumn horizontalTB font12" data-offset-x="57" data-offset-y="387">A</span>
+    </div>
+</div>
+
+<br clear="all">
+
+<div style="position: relative">
+    <div class="grid fit-content itemsBaseline verticalRL">
+        <span class="firstRowFirstColumn verticalLR font12" data-offset-x="344" data-offset-y="10">A</span><span class="firstRowSecondColumn horizontalTB font16 extraBottomPadding" data-offset-x="355" data-offset-y="114">A</span><span class="firstRowThirdColumn verticalLR font24" data-offset-x="339" data-offset-y="215">A</span><span class="firstRowFourthColumn horizontalTB font32" data-offset-x="323" data-offset-y="307">A</span>
+        <span class="secondRowFirstColumn horizontalTB font16 extraBottomPadding" data-offset-x="253" data-offset-y="22">A</span><span class="secondRowSecondColumn verticalLR font24" data-offset-x="224" data-offset-y="114">A</span><span class="secondRowThirdColumn horizontalTB font12" data-offset-x="261" data-offset-y="222">A</span><span class="secondRowFourthColumn verticalLR font32" data-offset-x="221" data-offset-y="307">A</span>
+        <span class="thirdRowFirstColumn  verticalLR font32" data-offset-x="119" data-offset-y="10">A</span><span class="thirdRowSecondColumn horizontalTB font12 extraLeftPadding" data-offset-x="137" data-offset-y="121">A</span><span class="thirdRowThirdColumn verticalLR font24" data-offset-x="122" data-offset-y="215">A</span><span class="thirdRowFourthColumn horizontalTB font16" data-offset-x="151" data-offset-y="332">A</span>
+        <span class="fourthRowFirstColumn horizontalTB font24" data-offset-x="33" data-offset-y="10">A</span><span class="fourthRowSecondColumn verticalLR font32" data-offset-x="17" data-offset-y="114">A</span><span class="fourthRowThirdColumn horizontalTB font16 extraBottomPadding" data-offset-x="49" data-offset-y="215">A</span><span class="fourthRowFourthColumn verticalLR font12" data-offset-x="25" data-offset-y="307">A</span>
+    </div>
+</div>
+
+<br clear="all">
+
+<div style="position: relative">
+    <div class="grid fit-content itemsBaseline">
+        <span class="firstRowFirstColumn horizontalTB font12" data-offset-x="17" data-offset-y="42">A<br>A</span><span class="firstRowSecondColumn horizontalTB font16" data-offset-x="119" data-offset-y="35">A<br>A</span><span class="firstRowThirdColumn horizontalTB font24" data-offset-x="221" data-offset-y="23">A<br>A</span><span class="firstRowFourthColumn horizontalTB font32" data-offset-x="307" data-offset-y="10">A<br>A</span>
+        <span class="secondRowFirstColumn horizontalTB font16" data-offset-x="17" data-offset-y="200">A<br>A</span><span class="secondRowSecondColumn horizontalTB font24" data-offset-x="119" data-offset-y="188">A<br>A</span><span class="secondRowThirdColumn horizontalTB font12" data-offset-x="221" data-offset-y="207">A<br>A</span><span class="secondRowFourthColumn horizontalTB font32" data-offset-x="307" data-offset-y="175">A<br>A</span>
+        <span class="thirdRowFirstColumn horizontalTB font32" data-offset-x="17" data-offset-y="340">A<br>A</span><span class="thirdRowSecondColumn horizontalTB font12" data-offset-x="119" data-offset-y="372">A<br>A</span><span class="thirdRowThirdColumn horizontalTB font24 extraBottomPadding" data-offset-x="221" data-offset-y="353">A<br>A</span><span class="thirdRowFourthColumn horizontalTB font16" data-offset-x="307" data-offset-y="365">A<br>A</span>
+        <span class="fourthRowFirstColumn horizontalTB font24 extraBottomPadding" data-offset-x="17" data-offset-y="522">A<br>A</span><span class="fourthRowSecondColumn horizontalTB font32" data-offset-x="119" data-offset-y="509">A<br>A</span><span class="fourthRowThirdColumn horizontalTB font16" data-offset-x="221" data-offset-y="534">A<br>A</span><span class="fourthRowFourthColumn horizontalTB font12" data-offset-x="307" data-offset-y="541">A<br>A</span>
+    </div>
+</div>
+
+<br clear="all">
+
+<div style="position: relative">
+    <div class="grid fit-content itemsBaseline">
+        <span class="firstRowFirstColumn verticalLR font12 extraLeftPadding" data-offset-x="17" data-offset-y="10">A<br>A</span><span class="firstRowSecondColumn horizontalTB font16 extraBottomPadding" data-offset-x="197" data-offset-y="35">A<br>A</span><span class="firstRowThirdColumn verticalLR font24" data-offset-x="299" data-offset-y="10">A<br>A</span><span class="firstRowFourthColumn horizontalTB font32" data-offset-x="433" data-offset-y="10">A<br>A</span>
+        <span class="secondRowFirstColumn verticalLR font16 extraTopPadding" data-offset-x="38" data-offset-y="175">A<br>A</span><span class="secondRowSecondColumn horizontalTB font24" data-offset-x="197" data-offset-y="188">A<br>A</span><span class="secondRowThirdColumn verticalLR font12 extraTopPadding" data-offset-x="304" data-offset-y="175">A<br>A</span><span class="secondRowFourthColumn horizontalTB font32 extraLeftPadding" data-offset-x="433" data-offset-y="175">A<br>A</span>
+        <span class="thirdRowFirstColumn verticalLR font32" data-offset-x="31" data-offset-y="340">A<br>A</span><span class="thirdRowSecondColumn horizontalTB font12 extraTopPadding" data-offset-x="197" data-offset-y="340">A<br>A</span><span class="thirdRowThirdColumn verticalLR font24" data-offset-x="299" data-offset-y="340">A<br>A</span><span class="thirdRowFourthColumn horizontalTB font16" data-offset-x="433" data-offset-y="357">A<br>A</span>
+        <span class="fourthRowFirstColumn verticalLR font24" data-offset-x="34" data-offset-y="458">A<br>A</span><span class="fourthRowSecondColumn horizontalTB font32" data-offset-x="197" data-offset-y="458">A<br>A</span><span class="fourthRowThirdColumn verticalLR font16 extraBottomPadding" data-offset-x="303" data-offset-y="458">A<br>A</span><span class="fourthRowFourthColumn horizontalTB font12 extraTopPadding" data-offset-x="433" data-offset-y="466">A<br>A</span>
+    </div>
+</div>
+
+<br clear="all">
+
+<div style="position: relative">
+    <div class="grid fit-content itemsBaseline">
+        <span class="firstRowFirstColumn verticalLR font12 extraTopPadding" data-offset-x="25" data-offset-y="10">A<br>A</span><span class="firstRowSecondColumn horizontalTB font16 extraBottomPadding" data-offset-x="183" data-offset-y="35">A<br>A</span><span class="firstRowThirdColumn verticalLR font24" data-offset-x="371" data-offset-y="10">A<br>A</span><span class="firstRowFourthColumn horizontalTB font32" data-offset-x="505" data-offset-y="10">A<br>A</span>
+        <span class="secondRowFirstColumn horizontalTB font16" data-offset-x="17" data-offset-y="192">A<br>A</span><span class="secondRowSecondColumn verticalLR font24" data-offset-x="186" data-offset-y="175">A<br>A</span><span class="secondRowThirdColumn horizontalTB font12 extraTopPadding" data-offset-x="349" data-offset-y="175">A<br>A</span><span class="secondRowFourthColumn verticalLR font32" data-offset-x="505" data-offset-y="175">A<br>A</span>
+        <span class="thirdRowFirstColumn verticalLR font32" data-offset-x="17" data-offset-y="293">A<br>A</span><span class="thirdRowSecondColumn horizontalTB font12 extraTopPadding" data-offset-x="183" data-offset-y="300">A<br>A</span><span class="thirdRowThirdColumn verticalLR font24 extraLeftPadding" data-offset-x="349" data-offset-y="293">A<br>A</span><span class="thirdRowFourthColumn horizontalTB font16 extraTopPadding" data-offset-x="505" data-offset-y="293">A<br>A</span>
+        <span class="fourthRowFirstColumn horizontalTB font24" data-offset-x="17" data-offset-y="418">A<br>A</span><span class="fourthRowSecondColumn verticalLR font32" data-offset-x="183" data-offset-y="418">A<br>A</span><span class="fourthRowThirdColumn horizontalTB font16" data-offset-x="349" data-offset-y="430">A<br>A</span><span class="fourthRowFourthColumn verticalLR font12" data-offset-x="513" data-offset-y="418">A<br>A</span>
+    </div>
+</div>
+
+</body>

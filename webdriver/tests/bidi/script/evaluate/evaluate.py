@@ -84,6 +84,7 @@ async def test_different_target_realm(bidi_session):
         {"realm": first_tab_default_realm, "result": {"type": "number", "value": 3}}, top_context_result
     )
 
+
     new_context_result = await bidi_session.script.evaluate(
         raw_result=True,
         expression="window.foo",

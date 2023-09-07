@@ -173,6 +173,8 @@ class Script(BidiModule):
             "awaitPromise": await_promise,
         }
 
+        
+
         if result_ownership is not None:
             params["resultOwnership"] = result_ownership
         if serialization_options is not None:

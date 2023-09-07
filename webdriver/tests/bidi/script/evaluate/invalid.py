@@ -136,6 +136,7 @@ async def test_params_max_object_depth_invalid_value(bidi_session, top_context):
 
 @pytest.mark.parametrize("include_shadow_tree", [False, 42, {}, []])
 async def test_params_include_shadow_tree_invalid_type(bidi_session, top_context, include_shadow_tree):
+
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.script.evaluate(
             expression="1 + 2",

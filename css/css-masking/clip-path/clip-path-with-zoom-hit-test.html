@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<title>Clip-path zoom is ignored for hit testing</title>
+<link rel="help" href="https://drafts.fxtf.org/css-masking/#the-clip-path">
+<link rel="help" href="https://drafts.fxtf.org/css-masking/#elementdef-clippath">
+<link rel="help" href="https://crbug.com/1480029" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  #clipped {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 200px;
+    background: red;
+    clip-path: url(#clipPathZoom);
+  }
+  #target {
+    margin-left: 8px;
+    margin-top: 8px;
+    width: 100px;
+    height: 100px;
+    background: green;
+  }
+  #clipPathZoom {
+    /* This zoom should be ignored. */
+    zoom: 0.5;
+  }
+</style>
+
+<svg width="200" height="0">
+  <defs>
+    <clipPath id="clipPathZoom" clipPathUnits="objectBoundingBox">
+      <!-- If objectBoundingBox is 200x200, this will clip to 8,8 100x100. -->
+      <rect x="0.04" y="0.04" width="0.5" height="0.5"></rect>
+    </clipPath>
+  </defs>
+</svg>
+
+<div id="clipped">
+  <div id="target"></div>
+</div>
+
+<script>
+  function points_inside_rect(x, y, width, height) {
+    return [
+      [x + 1, y + 1],
+      [x + width - 1, y + 1],
+      [x + 1, y + height - 1],
+      [x + width - 1, y + height - 1]
+    ];
+  }
+
+  function points_outside_rect(x, y, width, height) {
+    return [
+      [x + 1, y - 1],
+      [x + width - 1, y - 1],
+      [x + 1, y + height + 1],
+      [x + width - 1, y - 1],
+      [x - 1, y + 1],
+      [x + width + 1, y + 1],
+      [x - 1, y + height - 1],
+      [x + width + 1, y + height - 1]
+    ];
+  }
+
+  test(function() {
+    for (let point of points_inside_rect(8, 8, 100, 100)) {
+      let result = document.elementFromPoint(point[0], point[1]);
+      assert_equals(result, target, point.join(',') + ' should hit #target');
+    }
+    for (let point of points_outside_rect(8, 8, 100, 100)) {
+      let result = document.elementFromPoint(point[0], point[1]);
+      assert_not_equals(result, target, point.join(',') + ' should not hit #target');
+    }
+  });
+</script>

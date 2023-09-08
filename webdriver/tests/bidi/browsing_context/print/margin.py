@@ -110,7 +110,7 @@ async def test_margin_same_as_page_dimension(
         context=top_context["context"], url=page, wait="complete"
     )
 
-    # This yields and empty content area: https://github.com/w3c/webdriver-bidi/issues/473
+    # This yields an empty content area: https://github.com/w3c/webdriver-bidi/issues/473
     with pytest.raises(UnsupportedOperationException):
         await bidi_session.browsing_context.print(
             context=top_context["context"],

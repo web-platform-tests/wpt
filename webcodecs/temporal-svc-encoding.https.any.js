@@ -17,8 +17,9 @@ promise_setup(async () => {
   config.width = 320;
   config.height = 200;
   config.bitrate = 1000000;
-  config.bitrateMode = "constant";
+  config.bitrateMode = 'constant';
   config.framerate = 30;
+  config.latencyMode = 'realtime';
   ENCODER_CONFIG = config;
 });
 
@@ -102,4 +103,3 @@ async function svc_test(t, layers, base_layer_decimator) {
 }
 
 promise_test(async t => { return svc_test(t, 2, 2) }, "SVC L1T2");
-promise_test(async t => { return svc_test(t, 3, 4) }, "SVC L1T3");

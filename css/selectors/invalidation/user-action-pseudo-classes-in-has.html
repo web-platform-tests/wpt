@@ -38,80 +38,109 @@
 <script>
   const tab_key = '\ue004';
 
-  async_test(function(t) {
-    hoverme.addEventListener("mouseover", t.step_func(event => {
-      assert_equals(getComputedStyle(subject1).color, "rgb(0, 0, 255)",
-                    "subject1 should be blue");
-      assert_equals(getComputedStyle(subject3).color, "rgb(0, 0, 128)",
-                    "subject3 should be navy");
-    }));
-    hoverme.addEventListener("mousedown", t.step_func(event => {
-      assert_equals(getComputedStyle(subject1).color, "rgb(135, 206, 235)",
-                    "subject1 should be skyblue");
-      assert_equals(getComputedStyle(subject3).color, "rgb(173, 216, 230)",
-                    "subject3 should be lightblue");
-    }));
-    hoverme.addEventListener("mouseup", t.step_func(event => {
-      assert_equals(getComputedStyle(subject1).color, "rgb(0, 0, 255)",
-                    "subject1 should be blue again");
-      assert_equals(getComputedStyle(subject3).color, "rgb(0, 0, 128)",
-                    "subject3 should be navy again");
-    }));
-    focusme1.addEventListener("focus", t.step_func(function() {
-      assert_equals(getComputedStyle(subject1).color, "rgb(0, 128, 0)",
-                    "subject1 should be green");
-      assert_equals(getComputedStyle(subject3).color, "rgb(0, 100, 0)",
-                    "subject3 should be darkgreen");
-      test_driver.send_keys(document.body, tab_key);
-    }));
-    focusme2.addEventListener("focus", t.step_func(function() {
-      assert_equals(getComputedStyle(subject1).color, "rgb(154, 205, 50)",
-                    "subject1 should be yellowgreen");
-      assert_equals(getComputedStyle(subject3).color, "rgb(173, 255, 47)",
-                    "subject3 should be greenyellow");
-      test_driver.send_keys(document.body, tab_key);
-    }));
-    focusme3.addEventListener("focus", t.step_func(function() {
-      assert_equals(getComputedStyle(subject1).color, "rgb(144, 238, 144)",
-                    "subject1 should be lightgreen");
-      assert_equals(getComputedStyle(subject3).color, "rgb(238, 130, 238)",
-                    "subject3 should be violet");
+  promise_test(async () => {
+    await new Promise(resolve => {
+      hoverme.addEventListener("mouseover", resolve, { once: true });
+      new test_driver.Actions()
+        .pointerMove(0, 0, {origin: hoverme})
+        .send();
+    });
 
-      focusme3.remove();
-      assert_equals(getComputedStyle(subject1).color, "rgb(0, 0, 0)",
-                    "subject1 should be black");
-      assert_equals(getComputedStyle(subject3).color, "rgb(0, 0, 0)",
-                    "subject3 should be black");
+    assert_equals(getComputedStyle(subject1).color, "rgb(0, 0, 255)",
+                  "subject1 should be blue");
+    assert_equals(getComputedStyle(subject3).color, "rgb(0, 0, 128)",
+                  "subject3 should be navy");
 
+    await new Promise(resolve => {
+      hoverme.addEventListener("mousedown", resolve, { once: true });
+      new test_driver.Actions()
+        .pointerMove(0, 0, {origin: hoverme})
+        .pointerDown()
+        .send();
+    });
+
+    assert_equals(getComputedStyle(subject1).color, "rgb(135, 206, 235)",
+                  "subject1 should be skyblue");
+    assert_equals(getComputedStyle(subject3).color, "rgb(173, 216, 230)",
+                  "subject3 should be lightblue");
+
+    await new Promise(resolve => {
+      hoverme.addEventListener("mouseup", resolve, { once: true });
+      new test_driver.Actions()
+        .pointerMove(0, 0, {origin: hoverme})
+        .pointerDown()
+        .pointerUp()
+        .send();
+    });
+
+    assert_equals(getComputedStyle(subject1).color, "rgb(0, 0, 255)",
+                  "subject1 should be blue again");
+    assert_equals(getComputedStyle(subject3).color, "rgb(0, 0, 128)",
+                  "subject3 should be navy again");
+  }, "Invalidation with :hover, :active in :has()");
+
+
+  promise_test(async () => {
+    await new Promise(async resolve => {
+      focusme1.addEventListener("focus", resolve, { once: true });
+
+      let focusme1Rect = focusme1.getBoundingClientRect();
+      // Move away the mouse from hovered element.
+      await test_driver.click(focusme1);
+      focusme1.focus();
+    });
+
+    assert_equals(getComputedStyle(subject1).color, "rgb(0, 128, 0)",
+                  "subject1 should be green");
+    assert_equals(getComputedStyle(subject3).color, "rgb(0, 100, 0)",
+                  "subject3 should be darkgreen");
+
+    await new Promise(resolve => {
+      focusme2.addEventListener("focus", resolve, { once: true });
       test_driver.send_keys(document.body, tab_key);
-    }));
-    focusme4.addEventListener("focus", t.step_func_done(function() {
-      assert_equals(getComputedStyle(subject2).color, "rgb(0, 128, 0)",
-                    "subject2 should be green");
-      assert_equals(getComputedStyle(subject4).color, "rgb(0, 100, 0)",
-                    "subject4 should be darkgreen");
+    });
 
-      focusme4.remove();
-      assert_equals(getComputedStyle(subject2).color, "rgb(0, 0, 0)",
-                    "subject2 should be black");
-      assert_equals(getComputedStyle(subject4).color, "rgb(0, 0, 0)",
-                    "subject4 should be black");
-    }));
+    assert_equals(getComputedStyle(subject1).color, "rgb(154, 205, 50)",
+                  "subject1 should be yellowgreen");
+    assert_equals(getComputedStyle(subject3).color, "rgb(173, 255, 47)",
+                  "subject3 should be greenyellow");
+
+    await new Promise(resolve => {
+      focusme3.addEventListener("focus", resolve, { once: true });
+      test_driver.send_keys(document.body, tab_key);
+    });
+
+    assert_equals(getComputedStyle(subject1).color, "rgb(144, 238, 144)",
+                  "subject1 should be lightgreen");
+    assert_equals(getComputedStyle(subject3).color, "rgb(238, 130, 238)",
+                  "subject3 should be violet");
+
+    focusme3.remove();
+
+    assert_equals(getComputedStyle(subject1).color, "rgb(0, 0, 0)",
+                  "subject1 should be black");
+    assert_equals(getComputedStyle(subject3).color, "rgb(0, 0, 0)",
+                  "subject3 should be black");
+
+    await new Promise(resolve => {
+      focusme4.addEventListener("focus", resolve, { once: true });
+      test_driver.send_keys(document.body, tab_key);
+    });
+
+    assert_equals(getComputedStyle(subject2).color, "rgb(0, 128, 0)",
+                  "subject2 should be green");
+    assert_equals(getComputedStyle(subject4).color, "rgb(0, 100, 0)",
+                  "subject4 should be darkgreen");
+
+    focusme4.remove();
+    assert_equals(getComputedStyle(subject2).color, "rgb(0, 0, 0)",
+                  "subject2 should be black");
+    assert_equals(getComputedStyle(subject4).color, "rgb(0, 0, 0)",
+                  "subject4 should be black");
   }, "Invalidation with :focus, :focus-within, :focus-visible in :has()");
 
   test(() => {
     assert_equals(getComputedStyle(subject1).color, "rgb(0, 0, 0)");
     assert_equals(getComputedStyle(subject2).color, "rgb(0, 0, 0)");
   }, "ancestor should be black");
-
-  let hovermeRect = hoverme.getBoundingClientRect();
-  let focusme1Rect = focusme1.getBoundingClientRect();
-  new test_driver.Actions()
-      .pointerMove(hovermeRect.x + 1, hovermeRect.y + 1, {origin: "viewport"})
-      .pointerDown()
-      .pointerUp()
-      .pointerMove(focusme1Rect.x + 1, focusme1Rect.y + 1, {origin: "viewport"})
-      .pointerDown()
-      .pointerUp()
-      .send();
 </script>

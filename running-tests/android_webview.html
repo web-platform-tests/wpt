@@ -68,7 +68,7 @@ sure that no other ChromeDriver is used.</p></li>
 </li>
 </ul>
 <p>Configure host remap rules in the <a class="reference external" href="https://cs.chromium.org/chromium/src/android_webview/docs/commandline-flags.md?l=57">webview commandline file</a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">adb</span> <span class="n">shell</span> <span class="s2">&quot;echo &#39;_ --host-resolver-rules=</span><span class="se">\&quot;</span><span class="s2">MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1</span><span class="se">\&quot;</span><span class="s2">&#39; &gt; /data/local/tmp/webview-command-line&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">adb</span> <span class="n">shell</span> <span class="s2">&quot;echo &#39;_ --host-resolver-rules=</span><span class="se">\&quot;</span><span class="s2">MAP nonexistent.*.test ^NOTFOUND, MAP *.test 127.0.0.1</span><span class="se">\&quot;</span><span class="s2">&#39; &gt; /data/local/tmp/webview-command-line&quot;</span>
 </pre></div>
 </div>
 <p>Ensure that <code class="docutils literal notranslate"><span class="pre">adb</span></code> can be found on your system’s PATH.</p>

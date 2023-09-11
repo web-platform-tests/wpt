@@ -124,24 +124,12 @@ async def test_params_page_invalid_type(bidi_session, top_context, page):
     [
         {"height": -1},
         {"width": -1},
-    ],
-)
-async def test_params_page_invalid_value(bidi_session, top_context, page):
-    with pytest.raises(error.InvalidArgumentException):
-        await bidi_session.browsing_context.print(
-            context=top_context["context"], page=page
-        )
-
-
-@pytest.mark.parametrize(
-    "page",
-    [
         {"height": 0.01},
         {"width": 0.01},
     ],
 )
-async def test_params_page_small_value(bidi_session, top_context, page):
-    with pytest.raises(error.UnsupportedOperationException):
+async def test_params_page_invalid_value(bidi_session, top_context, page):
+    with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.print(
             context=top_context["context"], page=page
         )

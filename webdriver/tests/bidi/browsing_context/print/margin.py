@@ -139,7 +139,6 @@ async def test_margin_minimum_page_size(
     bidi_session,
     top_context,
     inline,
-    assert_pdf_content,
     assert_pdf_dimensions,
     margin,
 ):
@@ -154,10 +153,13 @@ async def test_margin_minimum_page_size(
         margin=margin
     )
 
-    # Check that margins don't affect page dimensions and equal in this case defaults.
+    expected_width = 21.59 - (0.0 if ("top" in margin or "bottom" in margin) else inch_in_cm / inch_in_point)
+    expected_height = 27.94 - (0.0 if ("left" in margin or "right" in margin) else inch_in_cm / inch_in_point),
+
+    # Check that margins don't affect page dimensions and equal defaults.
     await assert_pdf_dimensions(value, {
-       "width": 21.59 - (0.0 if ("top" in margin or "bottom" in margin) else inch_in_cm / inch_in_point),
-       "height": 27.94 - (0.0 if ("left" in margin or "right" in margin) else inch_in_cm / inch_in_point),
+       "width": expected_width,
+       "height": expected_height,
     })
 
 

@@ -318,7 +318,8 @@ class Firefox(Browser):
 
     def get_version_and_channel(self, binary):
         version_string = call(binary, "--version").strip()
-        m = re.match(r"Mozilla Firefox (\d+\.\d+(?:\.\d+)?)(a|b)?", version_string)
+        m = re.match(r"(?:Mozilla Firefox|Tor Project Firefox) (\d+\.\d+(?:\.\d+)?(?:esr)?)(a|b|esr)?", version_string)
+
         if not m:
             return None, "nightly"
         version, status = m.groups()
@@ -328,7 +329,10 @@ class Firefox(Browser):
     def get_profile_bundle_url(self, version, channel):
         if channel == "stable":
             repo = "https://hg.mozilla.org/releases/mozilla-release"
-            tag = "FIREFOX_%s_RELEASE" % version.replace(".", "_")
+            if "esr" in version:
+                return "https://hg.mozilla.org/releases/mozilla-esr102/archive/tip.zip/testing/profiles"
+            else:
+                tag = "FIREFOX_%s_RELEASE" % version.replace(".", "_")
         elif channel == "beta":
             repo = "https://hg.mozilla.org/releases/mozilla-beta"
             major_version = version.split(".", 1)[0]
@@ -347,7 +351,7 @@ class Firefox(Browser):
             # but to do better we need the actual build revision, which we
             # can get if we have an application.ini file
             tag = "tip"
-
+        
         return "%s/archive/%s.zip/testing/profiles/" % (repo, tag)
 
     def install_prefs(self, binary, dest=None, channel=None):
@@ -734,7 +738,7 @@ class ChromeChromiumBase(Browser):
         except (subprocess.CalledProcessError, OSError) as e:
             self.logger.warning(f"Failed to call {binary}: {e}")
             return None
-        m = re.match(r"(?:Google Chrome|Chromium) (.*)", version_string)
+        m = re.match(r"(?:Google Chrome|Chromium|Brave Browser) (.*)", version_string)
         if not m:
             self.logger.warning(f"Failed to extract version from: {version_string}")
             return None
@@ -917,7 +921,6 @@ class Chrome(ChromeChromiumBase):
         filename = f"chromedriver_{self._chromedriver_api_platform_string}.zip"
 
         version = self._remove_version_suffix(version)
-
         parts = version.split(".")
         assert len(parts) == 4
         latest_url = ("https://chromedriver.storage.googleapis.com/LATEST_RELEASE_"

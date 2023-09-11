@@ -1,0 +1,24 @@
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body>
+<script>
+promise_test(async (t) => {
+  await test_driver.bless("request wake lock");
+  const lock = await navigator.wakeLock.request();
+  assert_equals(lock.type, "screen", "Must be screen by default");
+  await lock.release();
+}, "'type' parameter in WakeLock.request() defaults to 'screen'");
+
+promise_test(async (t) => {
+  const invalidTypes = ["invalid", null, 123, {}, "", true];
+  for (const invalidType of invalidTypes) {
+    await promise_rejects_js(
+      t,
+      TypeError,
+      navigator.wakeLock.request(invalidType)
+    );
+  }
+}, "'TypeError' is thrown when set an invalid wake lock type");
+</script>

@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  assert_false("WakeLock" in self, "'WakeLock' must not be exposed");
+}, "Wake Lock API is not exposed in an insecure context");
+</script>

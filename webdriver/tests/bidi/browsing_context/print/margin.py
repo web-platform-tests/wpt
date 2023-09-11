@@ -67,7 +67,9 @@ async def test_margin_default(
 ):
     default_content_page = inline(get_content(css))
     await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=default_content_page, wait="complete"
+        context=top_context["context"],
+        url=default_content_page,
+        wait="complete"
     )
     value_with_margin = await bidi_session.browsing_context.print(
         context=top_context["context"],
@@ -102,7 +104,6 @@ async def test_margin_same_as_page_dimension(
     bidi_session,
     top_context,
     inline,
-    assert_pdf_content,
     margin,
 ):
     page = inline("Text")
@@ -134,7 +135,7 @@ async def test_margin_same_as_page_dimension(
         "bottom",
     ],
 )
-async def test_minimum_page_size_with_individual_margins(
+async def test_margin_minimum_page_size(
     bidi_session,
     top_context,
     inline,

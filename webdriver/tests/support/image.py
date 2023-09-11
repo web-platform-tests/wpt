@@ -17,6 +17,10 @@ def px_to_cm(px: float) -> float:
     return px * inch_in_cm / inch_in_pixel
 
 
+def pt_to_cm(pt: float) -> float:
+    return pt * inch_in_cm / inch_in_point
+
+
 def png_dimensions(screenshot) -> Tuple[int, int]:
     image = assert_png(screenshot)
     width, height = struct.unpack(">LL", image[16:24])

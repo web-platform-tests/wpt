@@ -153,8 +153,15 @@ async def test_margin_minimum_page_size(
         margin=margin
     )
 
-    expected_width = 21.59 - (0.0 if ("top" in margin or "bottom" in margin) else inch_in_cm / inch_in_point)
-    expected_height = 27.94 - (0.0 if ("left" in margin or "right" in margin) else inch_in_cm / inch_in_point),
+    if "top" in margin or "bottom" in margin:
+        expected_width = 21.59
+    else:
+        expected_width = 21.59 - (inch_in_cm / inch_in_point)
+
+    if "left" in margin or "right" in margin:
+        expected_height = 27.94
+    else:
+        expected_height = 27.94 - (inch_in_cm / inch_in_point)
 
     # Check that margins don't affect page dimensions and equal defaults.
     await assert_pdf_dimensions(value, {

@@ -188,7 +188,7 @@ async function joinInterestGroup(test, uuid, interestGroupOverrides = {},
     owner: window.location.origin,
     name: DEFAULT_INTEREST_GROUP_NAME,
     biddingLogicURL: createBiddingScriptURL(
-      { reportWin: `sendReportTo('${createBiddingScriptURL(uuid)}');` }),
+      { reportWin: `sendReportTo('${createBidderReportUrl(uuid)}');` }),
     ads: [{renderUrl: createRenderUrl(uuid)}],
     ...interestGroupOverrides
   };

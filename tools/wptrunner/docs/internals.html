@@ -297,6 +297,15 @@ websockets servers</p>
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptrunner.environment.</span></span><span class="sig-name descname"><span class="pre">TestEnvironmentError</span></span><a class="headerlink" href="#wptrunner.environment.TestEnvironmentError" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="wptrunner.environment.TestdriverLoader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptrunner.environment.</span></span><span class="sig-name descname"><span class="pre">TestdriverLoader</span></span><a class="headerlink" href="#wptrunner.environment.TestdriverLoader" title="Permalink to this definition">¶</a></dt>
+<dd><p>A special static handler for serving <cite>/resources/testdriver.js</cite>.</p>
+<p>This handler lazily reads <cite>testdriver{,-extra}.js</cite> so that wptrunner doesn’t
+need to pass the entire file contents to child <cite>wptserve</cite> processes, which
+can slow <cite>wptserve</cite> startup by several seconds (crbug.com/1479850).</p>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="wptrunner.environment.wait_for_service">
 <span class="sig-prename descclassname"><span class="pre">wptrunner.environment.</span></span><span class="sig-name descname"><span class="pre">wait_for_service</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_process</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.environment.wait_for_service" title="Permalink to this definition">¶</a></dt>

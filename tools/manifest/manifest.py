@@ -22,7 +22,7 @@ from .item import (ConformanceCheckerTest,
 from .log import get_logger
 from .sourcefile import SourceFile
 from .typedata import TypeData
-from tools import executive
+from ..executive import default_cpu_count
 
 
 CURRENT_VERSION: int = 8
@@ -205,7 +205,7 @@ class Manifest:
         # 25 items was derived experimentally (2020-01) to be approximately the
         # point at which it is quicker to create a Pool and parallelize update.
         pool = None
-        processes = executive.default_cpu_count()
+        processes = default_cpu_count()
         if parallel and len(to_update) > 25 and processes > 1:
             pool = Pool(processes)
 

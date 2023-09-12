@@ -1,0 +1,47 @@
+<!docTYPE   htmL >
+<html>
+ <head>
+  <title>DOM Serialization in HTML</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+ </head>
+ <body>
+  <div id="log"></div>
+  <!-- Static parsed content -->
+  <div id="self-close-element" style="display:none"><myelement /></div>
+  <div id="open-close-element" style="display:none"><myelement></myelement></div>
+  <div id="text" style="display:none">This is a &lt;test> &amp; special text</div>
+  <div id="cdata-bogus-comment" style="display:none"><![CDATA[This is a <test & special text]]></div>
+  <div id="pi-bogus-comment" style="display:none"><?thingy value with <test & special text?></div>
+  <div id="attr-escaping" style="display:none"><elem foo='ba"r'></elem></div>
+  <div id="attr-escaping2" style="display:none"><elem foo='ba&r'></elem></div>
+  <script>
+  test(function(){
+    assert_equals(document.getElementById("text").innerHTML,
+                  "This is a &lt;test&gt; &amp; special text");
+  }, "Parsed text with '<', '>', and '&' is serialized correctly");
+
+  test(function(){
+    assert_equals(document.getElementById("cdata-bogus-comment").innerHTML,
+                  "<!--[CDATA[This is a <test & special text]]-->");
+  }, "Parsed CDATA as bogus comment in HTML");
+
+  test(function(){
+    assert_equals(document.getElementById("pi-bogus-comment").innerHTML,
+                  "<!--?thingy value with <test & special text?-->");
+  }, "Parsed PI as bogus comment in HTML");
+
+  test(function(){
+    var t = document.getElementById("attr-escaping").firstChild;
+    assert_equals(document.getElementById("attr-escaping").innerHTML,
+                  "<elem foo=\"ba&quot;r\"></elem>");
+  }, "Attribute value with quote character inserted is escaped per spec");
+
+  test(function(){
+    var t = document.getElementById("attr-escaping2").firstChild;
+    assert_equals(document.getElementById("attr-escaping2").innerHTML,
+                  "<elem foo=\"ba&amp;r\"></elem>");
+  }, "Attribute value with & character inserted is escaped per spec");
+  </script>
+ </body>
+</html>

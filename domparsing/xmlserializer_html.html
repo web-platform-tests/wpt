@@ -1,0 +1,27 @@
+<!docTYPE   htmL >
+<html>
+ <head>
+  <title>DOM Serialization in HTML via XMLSerializer</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+ </head>
+ <body>
+  <div id="log"></div>
+  <script>
+  test(function(){
+    assert_equals(new XMLSerializer().serializeToString(document.doctype),
+                  "<!DOCTYPE html>");
+  }, "Parsed DOCTYPE serialized correctly");
+
+  // Basic Test of XMLSerializer
+  test(function() {
+    var doc = document.implementation.createHTMLDocument("test title");
+    doc.body.appendChild(document.createElement("foo:bar"));
+    doc.body.appendChild(document.createTextNode("text test"));
+    var serializedStr = new XMLSerializer().serializeToString(doc);
+    assert_equals(serializedStr, "<!DOCTYPE html><html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>test title</title></head>" +
+									"<body><foo:bar></foo:bar>text test</body></html>");
+  }, "XML Serializer creates an HTML serialization of a document with XML-like tags");
+  </script>
+ </body>
+</html>

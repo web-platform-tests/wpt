@@ -11,6 +11,7 @@ from . import config
 from . import products
 from . import wpttest
 from .formatters import wptreport, wptscreenshot
+from tools import executive
 
 def abs_path(path):
     return os.path.abspath(os.path.expanduser(path))
@@ -61,6 +62,8 @@ scheme host and port.""")
                         help="Split run into groups by directories. With a parameter,"
                         "limit the depth of splits e.g. --run-by-dir=1 to split by top-level"
                         "directory")
+    parser.add_argument("-f", "--fully-parallel", action='store_true',
+                        help='run all tests in parallel')
     parser.add_argument("--processes", action="store", type=int, default=None,
                         help="Number of simultaneous processes to use")
     parser.add_argument("--max-restarts", action="store", type=int, default=5,
@@ -592,6 +595,12 @@ def check_args(kwargs):
             print("--test-groups file %s not found" % kwargs["test_groups_file"])
             sys.exit(1)
 
+    if kwargs["fully_parallel"]:
+        if (kwargs["test_groups_file"] is not None or
+            kwargs["run_by_dir"] is not False):
+            print("Can't pass --test-groups or --run-by-dir together with --fully-parallel")
+            sys.exit(1)
+
     # When running on Android, the number of workers is decided by the number of
     # emulators. Each worker will use one emulator to run the Android browser.
     if kwargs["device_serial"]:
@@ -605,7 +614,7 @@ def check_args(kwargs):
             sys.exit(1)
 
     if kwargs["processes"] is None:
-        kwargs["processes"] = 1
+        kwargs["processes"] = executive.default_cpu_count() if kwargs["fully_parallel"] else 1
 
     if kwargs["debugger"] is not None:
         import mozdebug

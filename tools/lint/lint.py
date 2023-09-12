@@ -22,7 +22,7 @@ except ImportError:
 
 from . import fnmatch
 from . import rules
-from .. import localpaths
+from .. import localpaths, executive
 from ..ci.tc.github_checks_output import get_gh_checks_outputter, GitHubChecksOutputter
 from ..gitignore.gitignore import PathFilter
 from ..wpt import testfiles
@@ -877,12 +877,7 @@ def lint(repo_root: Text,
     last = None
 
     if jobs == 0:
-        jobs = multiprocessing.cpu_count()
-        if sys.platform == 'win32':
-            # Using too many child processes in Python 3 hits either hangs or a
-            # ValueError exception, and, has diminishing returns. Clamp to 56 to
-            # give margin for error.
-            jobs = min(jobs, 56)
+        jobs = executive.default_cpu_count()
 
     with open(os.path.join(repo_root, "lint.ignore")) as f:
         ignorelist, skipped_files = parse_ignorelist(f)

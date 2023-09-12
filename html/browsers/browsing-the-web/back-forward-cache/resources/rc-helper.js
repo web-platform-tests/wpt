@@ -40,7 +40,7 @@ async function assertImplementsBFCacheOptional(remoteContextHelper) {
 async function assertNotRestoredFromBFCache(
     remoteContextHelper, notRestoredReasons) {
   var beforeBFCache = await getBeforeBFCache(remoteContextHelper);
-  assert_equals(beforeBFCache, undefined);
+  assert_equals(beforeBFCache, undefined, 'document unexpectedly BFCached');
 
   // The reason is optional, so skip the remaining test if the
   // `notRestoredReasons` is not set.
@@ -49,7 +49,8 @@ async function assertNotRestoredFromBFCache(
   }
 
   let isFeatureEnabled = await remoteContextHelper.executeScript(() => {
-    return 'notRestoredReasons' in performance.getEntriesByType('navigation')[0];
+    return 'notRestoredReasons' in
+        performance.getEntriesByType('navigation')[0];
   });
 
   // Return if the `notRestoredReasons` API is not available.
@@ -72,14 +73,16 @@ async function assertNotRestoredFromBFCache(
     for (let child of node.children) {
       collectReason(child);
     }
-  }
+  };
   collectReason(result);
 
-  assert_equals(notRestoredReasonsSet.size,
-      expectedNotRestoredReasonsSet.size);
+  assert_equals(
+      notRestoredReasonsSet.size, expectedNotRestoredReasonsSet.size,
+      'Sizes don\'t match');
 
   for (let reason of expectedNotRestoredReasonsSet) {
-    assert_true(notRestoredReasonsSet.has(reason));
+    assert_true(
+        notRestoredReasonsSet.has(reason), `Reason ${reason} is missing`);
   }
 }
 

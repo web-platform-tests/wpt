@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>
+  UA should not hit DCHECK or crash with empty layer and font-variant-alternates
+  rule
+</title>
+<link rel="author" href="mailto:drott@chromium.org" />
+<link rel="help" href="https://crbug.com/1405682" />
+<style>
+  @font-feature-values test {
+  }
+  @layer test_layer {
+  }
+</style>

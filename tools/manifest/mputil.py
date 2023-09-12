@@ -1,7 +1,7 @@
 import multiprocessing
 import sys
 
-def default_cpu_count() -> int:
+def max_parallelism() -> int:
     cpu_count = multiprocessing.cpu_count()
     if sys.platform == 'win32':
         # On Python 3 on Windows, using >= MAXIMUM_WAIT_OBJECTS processes

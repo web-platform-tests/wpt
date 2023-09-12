@@ -20,9 +20,9 @@ from .item import (ConformanceCheckerTest,
                    VisualTest,
                    WebDriverSpecTest)
 from .log import get_logger
+from .mputil import max_parallelism
 from .sourcefile import SourceFile
 from .typedata import TypeData
-from ..executive import default_cpu_count
 
 
 CURRENT_VERSION: int = 8
@@ -205,7 +205,7 @@ class Manifest:
         # 25 items was derived experimentally (2020-01) to be approximately the
         # point at which it is quicker to create a Pool and parallelize update.
         pool = None
-        processes = default_cpu_count()
+        processes = max_parallelism()
         if parallel and len(to_update) > 25 and processes > 1:
             pool = Pool(processes)
 

@@ -22,10 +22,11 @@ except ImportError:
 
 from . import fnmatch
 from . import rules
-from .. import localpaths, executive
+from .. import localpaths
 from ..ci.tc.github_checks_output import get_gh_checks_outputter, GitHubChecksOutputter
 from ..gitignore.gitignore import PathFilter
 from ..wpt import testfiles
+from ..manifest.mputil import max_parallelism
 from ..manifest.vcs import walk
 
 from ..manifest.sourcefile import SourceFile, js_meta_re, python_meta_re, space_chars, get_any_variants
@@ -877,7 +878,7 @@ def lint(repo_root: Text,
     last = None
 
     if jobs == 0:
-        jobs = executive.default_cpu_count()
+        jobs = max_parallelism()
 
     with open(os.path.join(repo_root, "lint.ignore")) as f:
         ignorelist, skipped_files = parse_ignorelist(f)

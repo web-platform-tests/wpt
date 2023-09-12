@@ -2,7 +2,7 @@
 from math import ceil
 import pytest
 
-from webdriver.bidi.error import UnsupportedOperationException
+from webdriver.bidi.error import InvalidArgumentException
 from tests.support.image import inch_in_cm, inch_in_point
 
 pytestmark = pytest.mark.asyncio
@@ -120,7 +120,7 @@ async def test_margin_same_as_page_dimension(
     )
 
     # This yields an empty content area: https://github.com/w3c/webdriver-bidi/issues/473
-    with pytest.raises(UnsupportedOperationException):
+    with pytest.raises(InvalidArgumentException):
         await bidi_session.browsing_context.print(
             context=top_context["context"],
             shrink_to_fit=False,

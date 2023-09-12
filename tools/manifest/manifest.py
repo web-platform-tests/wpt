@@ -1,5 +1,4 @@
 import os
-import sys
 from atomicwrites import atomic_write
 from copy import deepcopy
 from logging import Logger

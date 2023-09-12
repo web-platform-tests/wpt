@@ -7,6 +7,9 @@ from tests.support.image import inch_in_cm, inch_in_point
 
 pytestmark = pytest.mark.asyncio
 
+DEFAULT_PAGE_HEIGHT = 27.94
+DEFAULT_PAGE_WIDTH = 21.59
+
 
 def get_content(css=""):
     return f"""
@@ -86,11 +89,16 @@ async def test_margin_default(
 @pytest.mark.parametrize(
     "margin",
     [
-        {"top": 27.94},
-        {"left": 21.59},
-        {"right": 21.59},
-        {"bottom": 27.94},
-        {"top": 27.94, "left": 21.59, "right": 21.59, "bottom": 27.94},
+        {"top": DEFAULT_PAGE_HEIGHT},
+        {"left": DEFAULT_PAGE_WIDTH},
+        {"right": DEFAULT_PAGE_WIDTH},
+        {"bottom": DEFAULT_PAGE_HEIGHT},
+        {
+            "top": DEFAULT_PAGE_HEIGHT,
+            "left": DEFAULT_PAGE_WIDTH,
+            "right": DEFAULT_PAGE_WIDTH,
+            "bottom": DEFAULT_PAGE_HEIGHT,
+        },
     ],
     ids=[
         "top",
@@ -123,10 +131,10 @@ async def test_margin_same_as_page_dimension(
 @pytest.mark.parametrize(
     "margin",
     [
-        {"top": 27.94 - ceil(inch_in_cm / inch_in_point)},
-        {"left": 21.59 - ceil(inch_in_cm / inch_in_point)},
-        {"right": 21.59 - ceil(inch_in_cm / inch_in_point)},
-        {"bottom": 27.94 - ceil(inch_in_cm / inch_in_point)},
+        {"top": DEFAULT_PAGE_HEIGHT - ceil(inch_in_cm / inch_in_point)},
+        {"left": DEFAULT_PAGE_WIDTH - ceil(inch_in_cm / inch_in_point)},
+        {"right": DEFAULT_PAGE_WIDTH - ceil(inch_in_cm / inch_in_point)},
+        {"bottom": DEFAULT_PAGE_HEIGHT - ceil(inch_in_cm / inch_in_point)},
     ],
     ids=[
         "top",
@@ -154,14 +162,14 @@ async def test_margin_minimum_page_size(
     )
 
     if "top" in margin or "bottom" in margin:
-        expected_width = 21.59
+        expected_width = DEFAULT_PAGE_WIDTH
     else:
-        expected_width = 21.59 - (inch_in_cm / inch_in_point)
+        expected_width = DEFAULT_PAGE_WIDTH - (inch_in_cm / inch_in_point)
 
     if "left" in margin or "right" in margin:
-        expected_height = 27.94
+        expected_height = DEFAULT_PAGE_HEIGHT
     else:
-        expected_height = 27.94 - (inch_in_cm / inch_in_point)
+        expected_height = DEFAULT_PAGE_HEIGHT - (inch_in_cm / inch_in_point)
 
     # Check that margins don't affect page dimensions and equal defaults.
     await assert_pdf_dimensions(value, {
@@ -199,5 +207,9 @@ async def test_margin_does_not_affect_page_size(
         margin=margin
     )
 
-    # Check that margins don't affect page dimensions and equal in this case defaults.
-    await assert_pdf_dimensions(value, {"width": 21.59, "height": 27.94})
+    # Check that margins don't affect page dimensions
+    # and equal in this case defaults.
+    await assert_pdf_dimensions(value, {
+        "width": DEFAULT_PAGE_WIDTH,
+        "height": DEFAULT_PAGE_HEIGHT,
+    })

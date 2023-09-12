@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>WebPreferences Test: reducedMotion attribute tests</title>
+    <link rel="author" title="Luke Warlow" href="mailto:luke@warlow.dev" />
+    <link rel="help" href="https://wicg.github.io/web-preferences-api/" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <script>
+      test(() => {
+        assert_true('preferences' in navigator, 'navigator.preferences defined');
+        assert_true('reducedMotion' in navigator.preferences, 'navigator.preferences.reducedMotion defined');
+      }, "navigator.preferences.reducedMotion supported");
+      test(() => {
+        navigator.preferences.reducedMotion = 'no-preference';
+        assert_true(window.matchMedia('(prefers-reduced-motion: no-preference)').matches, '(prefers-reduced-motion: no-preference) matches');
+        navigator.preferences.reducedMotion = 'reduce';
+        assert_true(window.matchMedia('(prefers-reduced-motion: reduce)').matches, '(prefers-reduced-motion: reduce) matches');
+        navigator.preferences.reducedMotion = null;
+        assert_true(window.matchMedia('(prefers-reduced-motion: no-preference)').matches, '(prefers-reduced-motion: no-preference) matches');
+      }, "navigator.preferences.reducedMotion updates (prefers-reduced-motion)");
+      test(() => {
+        assert_throws_js(TypeError, () => { navigator.preferences.reducedMotion = 'this-is-an-invalid-value'; });
+        assert_equals(null, navigator.preferences.reducedMotion);
+        navigator.preferences.reducedMotion = null;
+      }, "navigator.preferences.reducedMotion set to invalid value throws TypeError");
+    </script>
+  </body>
+</html>

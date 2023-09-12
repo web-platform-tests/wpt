@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>WebPreferences Test: colorScheme attribute tests</title>
+    <link rel="author" title="Luke Warlow" href="mailto:luke@warlow.dev" />
+    <link rel="help" href="https://wicg.github.io/web-preferences-api/" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <script>
+      test(() => {
+        const initialColorSchemeIsLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+        navigator.preferences.colorScheme = 'light';
+        assert_true(window.matchMedia('(prefers-color-scheme: light)').matches, '(prefers-color-scheme: light) matches');
+        navigator.preferences.colorScheme = 'dark';
+        assert_true(window.matchMedia('(prefers-color-scheme: dark)').matches, '(prefers-color-scheme: dark) matches');
+        navigator.preferences.colorScheme = null;
+        assert_equals(initialColorSchemeIsLight, window.matchMedia('(prefers-color-scheme: light)').matches);
+      }, "navigator.preferences.colorScheme updates (prefers-color-scheme)");
+      test(() => {
+        assert_throws_js(TypeError, () => { navigator.preferences.colorScheme = 'this-is-an-invalid-value'; });
+        assert_equals(null, navigator.preferences.colorScheme);
+        navigator.preferences.colorScheme = null;
+      }, "navigator.preferences.colorScheme set to invalid value throws TypeError");
+    </script>
+  </body>
+</html>

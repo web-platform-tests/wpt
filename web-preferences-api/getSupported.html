@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>WebPreferences Test: getSupported method tests</title>
+    <link rel="author" title="Luke Warlow" href="mailto:luke@warlow.dev" />
+    <link rel="help" href="https://wicg.github.io/web-preferences-api/" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <script>
+      test(() => {
+        assert_true('preferences' in navigator, 'navigator.preferences defined');
+        assert_true('getSupported' in navigator.preferences, 'navigator.preferences.getSupported defined');
+      }, "navigator.preferences.getSupported() defined");
+      test(() => {
+        const supported = navigator.preferences.getSupported();
+        const colorScheme = supported.find((x) => x.name === 'colorScheme');
+        assert_not_equals(undefined, colorScheme, 'colorScheme supported');
+        assert_true('colorScheme' in navigator.preferences, 'navigator.preferences.colorScheme defined');
+      }, "getSupported() contains colorScheme");
+      test(() => {
+        const supported = navigator.preferences.getSupported();
+        const colorScheme = supported.find((x) => x.name === 'colorScheme');
+        assert_true(colorScheme.values.includes('light'), 'light supported for colorScheme');
+        assert_true(colorScheme.values.includes('dark'), 'dark supported for colorScheme');
+      }, "getSupported() colorScheme supports light and dark");
+      test(() => {
+        const supported = navigator.preferences.getSupported();
+        const contrast = supported.find((x) => x.name === 'contrast');
+        assert_not_equals(undefined, contrast, 'contrast supported');
+        assert_true('contrast' in navigator.preferences, 'navigator.preferences.contrast defined');
+      }, "getSupported() contains contrast");
+      test(() => {
+        const supported = navigator.preferences.getSupported();
+        const contrast = supported.find((x) => x.name === 'contrast');
+        assert_true(contrast.values.includes('more'), 'more supported for contrast');
+        assert_true(contrast.values.includes('less'), 'less supported for contrast');
+        assert_true(contrast.values.includes('no-preference'), 'no-preference supported for contrast');
+        assert_false(contrast.values.includes('custom'));
+      }, "getSupported() contrast supports more, less, no-preference");
+      test(() => {
+        const supported = navigator.preferences.getSupported();
+        const reducedMotion = supported.find((x) => x.name === 'reducedMotion');
+        assert_not_equals(undefined, reducedMotion, 'reducedMotion supported');
+        assert_true('reducedMotion' in navigator.preferences, 'navigator.preferences.reducedMotion defined');
+      }, "getSupported() contains reducedMotion");
+      test(() => {
+        const supported = navigator.preferences.getSupported();
+        const reducedMotion = supported.find((x) => x.name === 'reducedMotion');
+        assert_true(reducedMotion.values.includes('reduce'), 'reduce supported for reducedMotion');
+        assert_true(reducedMotion.values.includes('no-preference'), 'no-preference supported for reducedMotion');
+      }, "getSupported() reducedMotion supports reduce, no-preference");
+      test(() => {
+        const supported = navigator.preferences.getSupported();
+        const reducedTransparency = supported.find((x) => x.name === 'reducedTransparency');
+        assert_not_equals(undefined, reducedTransparency, 'reducedTransparency supported');
+        assert_true('reducedMotion' in navigator.preferences, 'navigator.preferences.reducedMotion defined');
+      }, "getSupported() contains reducedTransparency");
+      test(() => {
+        const supported = navigator.preferences.getSupported();
+        const reducedTransparency = supported.find((x) => x.name === 'reducedTransparency');
+        assert_true(reducedTransparency.values.includes('reduce'), 'reduce supported for reducedTransparency');
+        assert_true(reducedTransparency.values.includes('no-preference'), 'no-preference supported for reducedTransparency');
+        assert_true('reducedTransparency' in navigator.preferences, 'navigator.preferences.reducedTransparency defined');
+      }, "getSupported() reducedTransparency supports reduce, no-preference");
+      test(() => {
+        const supported = navigator.preferences.getSupported();
+        const reducedData = supported.find((x) => x.name === 'reducedData');
+        assert_not_equals(undefined, reducedData, 'reducedData supported');
+      }, "getSupported() contains reducedData");
+      test(() => {
+        const supported = navigator.preferences.getSupported();
+        const reducedData = supported.find((x) => x.name === 'reducedData');
+        assert_true(reducedData.values.includes('reduce'), 'reduce supported for reducedData');
+        assert_true(reducedData.values.includes('no-preference'), 'no-preference supported for reducedData');
+        assert_true('reducedData' in navigator.preferences, 'navigator.preferences.reducedData defined');
+      }, "getSupported() reducedData supports reduce, no-preference");
+    </script>
+  </body>
+</html>

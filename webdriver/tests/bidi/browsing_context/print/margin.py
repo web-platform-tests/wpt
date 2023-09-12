@@ -21,7 +21,7 @@ def get_content(css=""):
             }}
             div {{
                 background-color: black;
-                height: 27.94cm;
+                height: {DEFAULT_PAGE_HEIGHT}cm;
                 {css}
             }}
         </style>

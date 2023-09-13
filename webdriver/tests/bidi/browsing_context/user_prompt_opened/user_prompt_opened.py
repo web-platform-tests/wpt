@@ -74,7 +74,7 @@ async def test_prompt_default_value(
 
     assert event == {
         "context": new_tab["context"],
-        "type": prompt_type,
+        "type": "prompt",
         "message": text,
         "defaultValue": default,
     }

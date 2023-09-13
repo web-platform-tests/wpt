@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 test(t => {
   const signal = AbortSignal.abort();
   assert_true(signal instanceof AbortSignal, "returned object is an AbortSignal");

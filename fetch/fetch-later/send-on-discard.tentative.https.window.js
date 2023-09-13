@@ -36,7 +36,9 @@ parallelPromiseTest(async t => {
     const controller = new AbortController();
     fetchLater(url, {signal: controller.signal});
     fetchLater(url, {method: 'POST'});
-    controller.abort();
+    // Current implementation does not guarantee the execution of abort() in the
+    // same task. Hence, put in anonymous task.
+    (() => { controller.abort(); })();
   `);
   // Delete the iframe to trigger deferred request sending.
   document.body.removeChild(iframe);

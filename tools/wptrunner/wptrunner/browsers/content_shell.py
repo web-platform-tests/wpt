@@ -11,8 +11,10 @@ from .base import (
     Browser,
     ExecutorBrowser,
     OutputHandler,
+    browser_command,
 )
 from .base import get_timeout_multiplier   # noqa: F401
+from .chrome import debug_args
 from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorcontentshell import (  # noqa: F401
     ContentShellCrashtestExecutor,
@@ -57,6 +59,9 @@ def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs)
     if not kwargs["headless"]:
         args.append("--disable-headless-mode")
 
+    if kwargs["debug_info"]:
+        args.extend(debug_args(kwargs["debug_info"]))
+
     # `--run-web-tests -` are specific to content_shell - they activate web
     # test protocol mode.
     args.append("--run-web-tests")
@@ -76,7 +81,8 @@ def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs)
     args.append("-")
 
     return {"binary": kwargs["binary"],
-            "binary_args": args}
+            "binary_args": args,
+            "debug_info": kwargs["debug_info"]}
 
 
 def executor_kwargs(logger, test_type, test_environment, run_info_data,
@@ -96,7 +102,8 @@ def env_extras(**kwargs):
 
 def env_options():
     return {"server_host": "127.0.0.1",
-            "testharnessreport": "testharnessreport-content-shell.js"}
+            "testharnessreport": "testharnessreport-content-shell.js",
+            "supports_debugger": True}
 
 
 def update_properties():
@@ -119,9 +126,11 @@ class ContentShellBrowser(Browser):
     # https://chromium.googlesource.com/chromium/src/+/b175d48d3ea4ea66eea35c88c11aa80d233f3bee/third_party/blink/tools/blinkpy/web_tests/port/base.py#476
     termination_timeout: float = 3
 
-    def __init__(self, logger, binary="content_shell", binary_args=[], **kwargs):
+    def __init__(self, logger, binary="content_shell", binary_args=None,
+                 debug_info=None, **kwargs):
         super().__init__(logger)
-        self._args = [binary] + binary_args
+        debug_cmd_prefix, browser_cmd = browser_command(binary, binary_args or [], debug_info)
+        self._args = [*debug_cmd_prefix, *browser_cmd]
         self._output_handler = None
         self._proc = None
 

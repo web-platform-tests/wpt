@@ -1,5 +1,6 @@
 # mypy: allow-untyped-defs
 
+import contextlib
 import os
 import subprocess
 from multiprocessing import Queue, Event
@@ -108,9 +109,13 @@ class ContentShellBrowser(Browser):
     Upon startup, the stdout, stderr, and stdin pipes of the underlying content_shell
     process are connected to multiprocessing Queues so that the runner process can
     interact with content_shell through its protocol mode.
+
+    See Also:
+        Protocol Mode: https://chromium.googlesource.com/chromium/src.git/+/HEAD/content/web_test/browser/test_info_extractor.h
     """
-    # Seconds to wait for the process to stop after it was sent `SIGTERM` or
-    # `TerminateProcess()`. The value is inherited from:
+    # Seconds to wait for the process to stop after it was sent a `QUIT`
+    # command, after which `SIGTERM` or `TerminateProcess()` forces termination.
+    # The timeout is ported from:
     # https://chromium.googlesource.com/chromium/src/+/b175d48d3ea4ea66eea35c88c11aa80d233f3bee/third_party/blink/tools/blinkpy/web_tests/port/base.py#476
     termination_timeout: float = 3
 
@@ -160,40 +165,50 @@ class ContentShellBrowser(Browser):
     def stop(self, force=False):
         self.logger.debug("Stopping content shell...")
 
-        clean_shutdown = True
+        clean_shutdown = stopped = True
         if self.is_alive():
-            self._proc.terminate()
-            try:
-                self._proc.wait(timeout=self.termination_timeout)
-            except subprocess.TimeoutExpired:
-                clean_shutdown = False
-                self.logger.warning(
-                    "Content shell failed to stop gracefully (PID: "
-                    f"{self._proc.pid}, timeout: {self.termination_timeout}s)")
-                if force:
-                    self._proc.kill()
+            clean_shutdown = self._terminate_process(force=force)
 
-        # We need to shut down these queues cleanly to avoid broken pipe error spam in the logs.
-        self._stdout_reader.join(2)
-        self._stderr_reader.join(2)
-
+        # Close these queues cleanly to avoid broken pipe error spam in the logs.
         self._stdin_queue.put(None)
-        self._stdin_writer.join(2)
-
         for thread in [self._stdout_reader, self._stderr_reader, self._stdin_writer]:
+            thread.join(2)
             if thread.is_alive():
                 self.logger.warning(f"Content shell IO thread {thread.name} did not shut down gracefully.")
-                return False
+                stopped = False
 
-        stopped = not self.is_alive()
-        if stopped:
-            self.logger.debug("Content shell has been stopped.")
+        if not self.is_alive():
+            self.logger.debug(
+                "Content shell has been stopped "
+                f"(PID: {self._proc.pid}, exit code: {self._proc.returncode})")
         else:
-            self.logger.warning("Content shell failed to stop.")
+            stopped = False
+            self.logger.warning(f"Content shell failed to stop (PID: {self._proc.pid})")
         if stopped and self._output_handler is not None:
             self._output_handler.after_process_stop(clean_shutdown)
             self._output_handler = None
         return stopped
+
+    def _terminate_process(self, force: bool = False) -> bool:
+        self._stdin_queue.put(b"QUIT\n")
+        with contextlib.suppress(subprocess.TimeoutExpired):
+            self._proc.wait(timeout=self.termination_timeout)
+            return True
+        self.logger.warning(
+            "Content shell failed to respond to QUIT command "
+            f"(PID: {self._proc.pid}, timeout: {self.termination_timeout}s)")
+        # Skip `terminate()` on Windows, which is an alias for `kill()`, and
+        # only `kill()` for `force=True`.
+        #
+        # [1]: https://docs.python.org/3/library/subprocess.html#subprocess.Popen.kill
+        if os.name == "posix":
+            self._proc.terminate()
+            with contextlib.suppress(subprocess.TimeoutExpired):
+                self._proc.wait(timeout=1)
+                return False
+        if force:
+            self._proc.kill()
+        return False
 
     def is_alive(self):
         return self._proc is not None and self._proc.poll() is None

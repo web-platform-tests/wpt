@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 test(() => {
   const params = new URLSearchParams("a=1&b=2&a=3");
   assert_equals(params.size, 3);

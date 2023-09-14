@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 if (self.location) {
   test(function() {
     assert_false("searchParams" in self.location,

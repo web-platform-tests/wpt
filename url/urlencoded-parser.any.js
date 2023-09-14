@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 [
   { "input": "test", "output": [["test", ""]] },
   { "input": "\uFEFFtest=\uFEFF", "output": [["\uFEFFtest", "\uFEFF"]] },

@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 test(function() {
     var params = new URLSearchParams();
     assert_equals(params + '', '');

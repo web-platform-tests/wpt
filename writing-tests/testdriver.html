@@ -50,18 +50,16 @@
 <li><p><a class="reference internal" href="#reporting-observer" id="id11">Reporting Observer</a></p></li>
 <li><p><a class="reference internal" href="#storage" id="id12">Storage</a></p></li>
 <li><p><a class="reference internal" href="#accessibility" id="id13">Accessibility</a></p></li>
-<li><p><a class="reference internal" href="#seure-payment-confirmation" id="id14">Seure Payment Confirmation</a></p></li>
+<li><p><a class="reference internal" href="#secure-payment-confirmation" id="id14">Secure Payment Confirmation</a></p></li>
 <li><p><a class="reference internal" href="#federated-credential-management" id="id15">Federated Credential Management</a></p></li>
 <li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id16">Using test_driver in other browsing contexts</a></p></li>
-</ul>
-</li>
 <li><p><a class="reference internal" href="#actions" id="id17">Actions</a></p>
 <ul>
 <li><p><a class="reference internal" href="#id1" id="id18">Markup</a></p></li>
 <li><p><a class="reference internal" href="#id2" id="id19">API</a></p></li>
 <li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id20">Using in other browsing contexts</a></p></li>
-<li><p><a class="reference internal" href="#send-keys" id="id21">send_keys</a></p></li>
-<li><p><a class="reference internal" href="#set-permission" id="id22">set_permission</a></p></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -123,7 +121,9 @@ settling.</p>
 viewport, it will be scrolled into view before the click
 occurs.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">element</span></code> is from a different browsing context, the
-command will be run in that context.</p>
+command will be run in that context. The test must not depend
+on the <code class="docutils literal notranslate"><span class="pre">window.name</span></code> property being unset on the target
+window.</p>
 <p>To send special keys, send the respective key’s codepoint,
 as defined by <a class="reference external" href="https://w3c.github.io/webdriver/#keyboard-actions">WebDriver</a>.  For
 example, the “tab” key is represented as “<code class="docutils literal notranslate"><span class="pre">\uE004</span></code>”.</p>
@@ -305,15 +305,16 @@ See <a class="reference external" href="https://w3c.github.io/webdriver/#get-nam
 <dt class="sig sig-object js" id="test_driver.set_permission">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_permission</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">descriptor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_permission" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the state of a permission</p>
-<p>This function simulates a user setting a permission into a
-particular state.</p>
+<p>This function causes permission requests and queries for the status
+of a certain permission type (e.g. “push”, or “background-fetch”) to
+always return <code class="docutils literal notranslate"><span class="pre">state</span></code>.</p>
 <p>Matches the <a class="reference external" href="https://w3c.github.io/permissions/#set-permission-command">Set Permission</a>
 WebDriver command.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>descriptor</strong> (<em>PermissionDescriptor</em>) – a <a class="reference external" href="https://w3c.github.io/permissions/#dom-permissiondescriptor">PermissionDescriptor</a> dictionary.</p></li>
-<li><p><strong>state</strong> (<em>String</em>) – the state of the permission</p></li>
+<li><p><strong>descriptor</strong> (<em>PermissionDescriptor</em>) – a <a class="reference external" href="https://w3c.github.io/permissions/#dom-permissiondescriptor">PermissionDescriptor</a> or derived object.</p></li>
+<li><p><strong>state</strong> (<em>PermissionState</em>) – a <a class="reference external" href="https://w3c.github.io/permissions/#dom-permissionstate">PermissionState</a> value.</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
@@ -584,8 +585,8 @@ WebDriver command.</p>
 </dd></dl>
 
 </section>
-<section id="seure-payment-confirmation">
-<h3>Seure Payment Confirmation<a class="headerlink" href="#seure-payment-confirmation" title="Permalink to this headline">¶</a></h3>
+<section id="secure-payment-confirmation">
+<h3>Secure Payment Confirmation<a class="headerlink" href="#secure-payment-confirmation" title="Permalink to this headline">¶</a></h3>
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.set_spc_transaction_mode">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_spc_transaction_mode</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_spc_transaction_mode" title="Permalink to this definition">¶</a></dt>
@@ -817,11 +818,10 @@ window. For example, in an auxillary browsing context:</p>
 currently not possible to write tests where such handles can’t be
 obtained e.g. in the case of <code class="docutils literal notranslate"><span class="pre">rel=noopener</span></code>.</p>
 </section>
-</section>
 <section id="actions">
-<h2>Actions<a class="headerlink" href="#actions" title="Permalink to this headline">¶</a></h2>
+<h3>Actions<a class="headerlink" href="#actions" title="Permalink to this headline">¶</a></h3>
 <section id="id1">
-<h3>Markup<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<h4>Markup<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
 <p>To use the <a class="reference external" href="#Actions">Actions</a> API <code class="docutils literal notranslate"><span class="pre">testdriver-actions.js</span></code> must be
 included in the document, in addition to <code class="docutils literal notranslate"><span class="pre">testdriver.js</span></code>:</p>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testdriver-actions.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
@@ -829,7 +829,7 @@ included in the document, in addition to <code class="docutils literal notransla
 </div>
 </section>
 <section id="id2">
-<h3>API<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h4>API<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 <dl class="js class">
 <dt class="sig sig-object js" id="Actions">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="n"><span class="pre">Actions</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">defaultTickDuration=16</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions" title="Permalink to this definition">¶</a></dt>
@@ -1167,7 +1167,7 @@ test_driver.action_sequence</p>
 
 </section>
 <section id="using-in-other-browsing-contexts">
-<h3>Using in other browsing contexts<a class="headerlink" href="#using-in-other-browsing-contexts" title="Permalink to this headline">¶</a></h3>
+<h4>Using in other browsing contexts<a class="headerlink" href="#using-in-other-browsing-contexts" title="Permalink to this headline">¶</a></h4>
 <p>For the actions API, the context can be set using the <code class="docutils literal notranslate"><span class="pre">setContext</span></code>
 method on the builder:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="nx">actions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">Actions</span><span class="p">()</span>
@@ -1182,49 +1182,6 @@ derived from that element, and must match any explicitly set
 context. Using elements in multiple contexts in a single action chain
 is not supported.</p>
 </section>
-<section id="send-keys">
-<h3>send_keys<a class="headerlink" href="#send-keys" title="Permalink to this headline">¶</a></h3>
-<p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.send_keys(element,</span> <span class="pre">keys)</span></code></p>
-<ul class="simple">
-<li><p><em>element</em>: a DOM Element object</p></li>
-<li><p><em>keys</em>: string to send to the element</p></li>
-</ul>
-<p>This function causes the string <em>keys</em> to be sent to the target
-element (an <code class="docutils literal notranslate"><span class="pre">Element</span></code> object), potentially scrolling the document to
-make it possible to send keys. It returns a promise that resolves
-after the keys have been sent, or rejects if the keys cannot be sent
-to the element.</p>
-<p>This works with elements in other frames/windows as long as they are
-same-origin with the test, and the test does not depend on the
-window.name property remaining unset on the target window.</p>
-<p>Note that if the element that the keys need to be sent to does not have
-a unique ID, the document must not have any DOM mutations made
-between the function being called and the promise settling.</p>
-<p>To send special keys, one must send the respective key’s codepoint. Since this uses the WebDriver protocol, you can find a <a class="reference external" href="https://w3c.github.io/webdriver/#keyboard-actions">list for code points to special keys in the spec</a>.
-For example, to send the tab key you would send “\uE004”.</p>
-<p><em>Note: these special-key codepoints are not necessarily what you would expect. For example, <kbd>Esc</kbd> is the invalid Unicode character <code class="docutils literal notranslate"><span class="pre">\uE00C</span></code>, not the <code class="docutils literal notranslate"><span class="pre">\u001B</span></code> Escape character from ASCII.</em></p>
-</section>
-<section id="set-permission">
-<h3>set_permission<a class="headerlink" href="#set-permission" title="Permalink to this headline">¶</a></h3>
-<p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.set_permission(descriptor,</span> <span class="pre">state,</span> <span class="pre">context=null)</span></code></p>
-<ul class="simple">
-<li><p><em>descriptor</em>: a
-<a class="reference external" href="https://w3c.github.io/permissions/#dictdef-permissiondescriptor">PermissionDescriptor</a>
-or derived object</p></li>
-<li><p><em>state</em>: a
-<a class="reference external" href="https://w3c.github.io/permissions/#enumdef-permissionstate">PermissionState</a>
-value</p></li>
-<li><p>context: a WindowProxy for the browsing context in which to perform the call</p></li>
-</ul>
-<p>This function causes permission requests and queries for the status of a
-certain permission type (e.g. “push”, or “background-fetch”) to always
-return <em>state</em>. It returns a promise that resolves after the permission has
-been set to be overridden with <em>state</em>.</p>
-<p>Example:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;background-fetch&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;denied&quot;</span><span class="p">);</span>
-<span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;push&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">userVisibleOnly</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;granted&quot;</span><span class="p">);</span>
-</pre></div>
-</div>
 </section>
 </section>
 </section>

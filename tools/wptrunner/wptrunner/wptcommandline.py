@@ -11,7 +11,7 @@ from . import config
 from . import products
 from . import wpttest
 from .formatters import chromium, wptreport, wptscreenshot
-from manifest import mputil
+from manifest import mputil  # type: ignore
 
 def abs_path(path):
     return os.path.abspath(os.path.expanduser(path))

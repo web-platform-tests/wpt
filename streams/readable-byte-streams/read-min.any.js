@@ -28,6 +28,15 @@ promise_test(async t => {
     pull: t.unreached_func('pull() should not be called'),
   });
   const reader = rs.getReader({ mode: 'byob' });
+  await promise_rejects_js(t, TypeError, reader.read(new Uint8Array(1), { min: -1 }));
+}, 'ReadableStream with byte source: read({ min }) rejects if min is negative');
+
+promise_test(async t => {
+  const rs = new ReadableStream({
+    type: 'bytes',
+    pull: t.unreached_func('pull() should not be called'),
+  });
+  const reader = rs.getReader({ mode: 'byob' });
   await promise_rejects_js(t, RangeError, reader.read(new Uint8Array(1), { min: 2 }));
 }, 'ReadableStream with byte source: read({ min }) rejects if min is larger than view\'s length (Uint8Array)');
 

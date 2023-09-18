@@ -36,26 +36,24 @@
 <nav role="&#13" data-testname="nav with line break (&#13) character as role" data-expectedrole="navigation" class="ex">x</nav>
 <nav role="&#9" data-testname="nav with tab (&#9) as role (should be treated as whitespace)" data-expectedrole="navigation" class="ex">x</nav>
 <nav role="&#8203" data-testname="nav with zero-width space as role (should be treated as whitespace)" data-expectedrole="navigation" class="ex">x</nav>
-<nav role="&#10240" data-testname="nav with braille space (&#10240) as role" data-expectedrole="navigation" class="ex">x</nav>
-<nav role="&#x2800" data-testname="nav with braille space (&#x2800) as role" data-expectedrole="navigation" class="ex">x</nav>
-<nav role="&nbsp" data-testname="nav with non-breaking space (&nbsp) as role" data-expectedrole="navigation" class="ex">x</nav>
-<nav role="&#20" data-testname="nav with standard space (&nbsp) as role" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="&#10240" data-testname="nav with braille space (10240) as role" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="&#x2800" data-testname="nav with braille space (x2800) as role" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="&nbsp" data-testname="nav with non-breaking space (nbsp) as role" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="&#20" data-testname="nav with standard space (nbsp) as role" data-expectedrole="navigation" class="ex">x</nav>
 
 <!-- Whitespace tests with <span> (including line breaks, tabs, zero-width space, braille space, non-breaking space, standard space) -->
 <span role=" " data-testname="span with empty character as role" class="ex-generic">x</span>
 <span role="&#13" data-testname="span with line break (&#13) character as role" class="ex-generic">x</span>
 <span role="&#9" data-testname="span with tab (&#9) as role (should be treated as whitespace)" class="ex-generic">x</span>
 <span role="&#8203" data-testname="span with zero-width space as role (should be treated as whitespace)" class="ex-generic">x</span>
-<span role="&#10240" data-testname="span with braille space (&#10240) as role" class="ex-generic">x</span>
-<span role="&#x2800" data-testname="span with braille space (&#x2800) as role" class="ex-generic">x</span>
-<span role="&nbsp" data-testname="span with non-breaking space (&nbsp) as role" class="ex-generic">x</span>
-<span role="&#20" data-testname="span with standard space (&nbsp) as role" class="ex-generic">x</span>
+<span role="&#10240" data-testname="span with braille space (10240) as role" class="ex-generic">x</span>
+<span role="&#x2800" data-testname="span with braille space (x2800) as role" class="ex-generic">x</span>
+<span role="&nbsp" data-testname="span with non-breaking space (nbsp) as role" class="ex-generic">x</span>
+<span role="&#20" data-testname="span with standard space (nbsp) as role" class="ex-generic">x</span>
 
 <!-- Diacritics with <a> -->
 <a role="&#771" data-testname="link with role set to tilde diacritic" data-expectedrole="link" class="ex">x</a>
 <a role="foo&#771" data-testname="link with role foo that has tilde diacritic" data-expectedrole="link" class="ex">x</a>
-<a role="&#773" data-testname="link with role set to overline diacritic" data-expectedrole="link" class="ex">x</a>
-<a role="foo&#773" data-testname="link with role foo that has overline diacritic" data-expectedrole="link" class="ex">x</a>
 <a role="&#773" data-testname="link with role set to overline diacritic" data-expectedrole="link" class="ex">x</a>
 <a role="foo&#773" data-testname="link with role foo that has overline diacritic" data-expectedrole="link" class="ex">x</a>
 <a role="&#813" data-testname="link with role set to circumflex diacritic below" data-expectedrole="link" class="ex">x</a>
@@ -81,7 +79,7 @@
 <span role="Θ" data-testname="span with role set to theta (Θ)" class="ex-generic">x</span>
 <span role="ژ" data-testname="span with role set to Persian character (ژ)" class="ex-generic">x</span>
 <span role="ژ ♮" data-testname="span with multiple non-latin character roles, Persian character (ژ) and ♮" class="ex-generic">x</span>
-<span role="漢字" data-testname="nav with role set to Japanese kanji" class="ex-generic">x</span>
+<span role="漢字" data-testname="span with role set to Japanese kanji" class="ex-generic">x</span>
 
 <!-- RTL strings (Hebrew & Arabic) with <nav> -->
 <nav role="سلام" data-testname="nav with role set to Arabic text" data-expectedrole="navigation" class="ex">x</nav>
@@ -97,11 +95,11 @@
 
 <!-- Escaped chars, URL-encoded chars with <a> -->
 <a role="&amp" data-testname="link with role set to ampersand character" data-expectedrole="navigation" class="ex">x</a>
-<a role="&lt" data-testname="link with role set to less than angle bracker character" data-expectedrole="navigation" class="ex">x</a>
+<a role="&lt" data-testname="link with role set to less than angle bracket character" data-expectedrole="navigation" class="ex">x</a>
 
 <!-- Escaped chars, URL-encoded chars with <span> -->
 <span role="&amp" data-testname="span with role set to ampersand character" class="ex-generic">x</span>
-<span role="&lt" data-testname="span with role set to less than angle bracker character" class="ex-generic">x</span>
+<span role="&lt" data-testname="span with role set to less than angle bracket character" class="ex-generic">x</span>
 
 <!-- Backslash closing quote and other malformed roles with characters with <nav> -->
 <nav role="region\" data-testname="nav with role set to region followed by backslash" data-expectedrole="navigation" class="ex">x</nav>

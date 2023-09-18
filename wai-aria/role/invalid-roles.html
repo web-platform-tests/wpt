@@ -13,8 +13,23 @@
 
 <p>Tests invalid ARIA roles from <a href="https://w3c.github.io/aria/#document-handling_author-errors_roles">9.1 Roles - handling author errors</a></p>
 
-<nav role="foo" data-testname="invalid role name foo" data-expectedrole="navigation" class="ex">x</nav>
-<nav role="foo bar" data-testname="multiple invalid role names" data-expectedrole="navigation" class="ex">x</nav>
+<!-- Tests fallback for <nav> when 1/2/3 invalid roles are supplied -->
+<nav role="foo" data-testname="nav with invalid role name foo" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="foo bar" data-testname="nav with two invalid role names" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="foo bar baz" data-testname="nav with three invalid role names" data-expectedrole="navigation" class="ex">x</nav>
+
+<!-- Tests fallback for <button> when 1/2/3 invalid roles are supplied -->
+<button role="foo" data-testname="button with invalid role name foo" data-expectedrole="button" class="ex">x</button>
+<button role="foo bar" data-testname="button with two invalid role names" data-expectedrole="button" class="ex">x</button>
+<button role="foo bar baz" data-testname="button with three invalid role names" data-expectedrole="button" class="ex">x</button>
+
+<!-- Tests fallback for semantically neutral elements when 1/2/3 invalid roles are supplied -->
+<span role="foo" data-testname="span with invalid role name foo" class="ex-generic">x</span>
+<span role="foo bar" data-testname="span with two invalid role names" class="ex-generic">x</span>
+<span role="foo bar baz" data-testname="span with three invalid role names" class="ex-generic">x</span>
+<div role="foo" data-testname="div with invalid role name foo" class="ex-generic">x</div>
+<div role="foo bar" data-testname="div with two invalid role names" class="ex-generic">x</div>
+<div role="foo bar baz" data-testname="div with three invalid role names"class="ex-generic">x</div>
 
 <!-- todo: additional invalid roles:
 
@@ -31,6 +46,7 @@
 
 <script>
 AriaUtils.verifyRolesBySelector(".ex");
+AriaUtils.verifyGenericRolesBySelector(".ex-generic");
 </script>
 
 </body>

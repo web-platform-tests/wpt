@@ -65,7 +65,7 @@
 <!-- Diacritics with <div> -->
 <div role="&#771" data-testname="div with role set to tilde diacritic" class="ex-generic">x</div>
 <div role="foo&#771" data-testname="div with role foo that has tilde diacritic" class="ex-generic">x</div>
-<div role="button&#771" data-testname="div with role set to button with tilde diacritic" class="ex-generic">x</a>
+<div role="button&#771" data-testname="div with role set to button with tilde diacritic" class="ex-generic">x</div>
 
 <!-- Zero-width joiners (e.g., ZWJ like emoji variants use) with <button> -->
 <button role="&#8205" data-testname="button with role set to zero-width joiner" data-expectedrole="button" class="ex">x</button>
@@ -79,7 +79,7 @@
 
 <!-- Non-western chars with <span> -->
 <span role="Θ" data-testname="span with role set to theta (Θ)" class="ex-generic">x</span>
-<span role="ژ" data-testname="span with role set to Persian character (ژ)" class="ex-generic">x</nav>
+<span role="ژ" data-testname="span with role set to Persian character (ژ)" class="ex-generic">x</span>
 <span role="ژ ♮" data-testname="span with multiple non-latin character roles, Persian character (ژ) and ♮" class="ex-generic">x</span>
 <span role="漢字" data-testname="nav with role set to Japanese kanji" class="ex-generic">x</span>
 
@@ -96,12 +96,12 @@
 <div role="שלום חבר" data-testname="div with multiple role assignments set to Hebrew text" class="ex-generic">x</div>
 
 <!-- Escaped chars, URL-encoded chars with <a> -->
-<a role="&amp" data-testname="link with role set to ampersand character" data-expectedrole="navigation" class="ex">x</nav>
-<a role="&lt" data-testname="link with role set to less than angle bracker character" data-expectedrole="navigation" class="ex">x</nav>
+<a role="&amp" data-testname="link with role set to ampersand character" data-expectedrole="navigation" class="ex">x</a>
+<a role="&lt" data-testname="link with role set to less than angle bracker character" data-expectedrole="navigation" class="ex">x</a>
 
 <!-- Escaped chars, URL-encoded chars with <span> -->
-<span role="&amp" data-testname="span with role set to ampersand character" class="ex-generic">x</nav>
-<span role="&lt" data-testname="span with role set to less than angle bracker character" class="ex-generic">x</nav>
+<span role="&amp" data-testname="span with role set to ampersand character" class="ex-generic">x</span>
+<span role="&lt" data-testname="span with role set to less than angle bracker character" class="ex-generic">x</span>
 
 <!-- Backslash closing quote and other malformed roles with characters with <nav> -->
 <nav role="region\" data-testname="nav with role set to region followed by backslash" data-expectedrole="navigation" class="ex">x</nav>

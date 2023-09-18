@@ -247,7 +247,7 @@ as resetting global state that need to happen consistently before the
 next test starts.
 
 To test that a promise rejects with a specified exception see [promise
-rejection].
+rejection](https://web-platform-tests.org/writing-tests/testharness-api.html?highlight=step_func_done#promise-rejection).
 
 ### Single Page Tests ###
 

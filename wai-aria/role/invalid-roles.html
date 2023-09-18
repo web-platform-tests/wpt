@@ -73,20 +73,45 @@
 
 <!-- Non-western chars with <nav> -->
 <nav role="Θ" data-testname="nav with role set to theta (Θ)" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="ژ" data-testname="nav with role set to Persian character (ژ)" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="ژ ♮" data-testname="nav with multiple non-latin character roles, Persian character (ژ) and ♮" data-expectedrole="navigation" class="ex">x</nav>
 <nav role="漢字" data-testname="nav with role set to Japanese kanji" data-expectedrole="navigation" class="ex">x</nav>
-<nav role="سلام" data-testname="nav with role set to Arabic text" data-expectedrole="navigation" class="ex">x</nav>
 
 <!-- Non-western chars with <span> -->
-  <span role="Θ" data-testname="span with role set to theta (Θ)" class="ex-generic">x</span>
-  <span role="漢字" data-testname="nav with role set to Japanese kanji" class="ex-generic">x</span>
-  <span role="سلام" data-testname="nav with role set to Arabic text" class="ex-generic">x</span>
+<span role="Θ" data-testname="span with role set to theta (Θ)" class="ex-generic">x</span>
+<span role="ژ" data-testname="span with role set to Persian character (ژ)" class="ex-generic">x</nav>
+<span role="ژ ♮" data-testname="span with multiple non-latin character roles, Persian character (ژ) and ♮" class="ex-generic">x</span>
+<span role="漢字" data-testname="nav with role set to Japanese kanji" class="ex-generic">x</span>
 
-<!-- RTL strings (Hebrew & Arabic) -->
+<!-- RTL strings (Hebrew & Arabic) with <nav> -->
+<nav role="سلام" data-testname="nav with role set to Arabic text" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="سلام حبيب" data-testname="nav with multiple role assignments set to Arabic text" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="שלום" data-testname="nav with role set to Hebrew text" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="שלום חבר" data-testname="nav with multiple role assignments set to Hebrew text" data-expectedrole="navigation" class="ex">x</nav>
 
-<!-- Escaped chars, URL-encoded chars -->
+<!-- RTL strings (Hebrew & Arabic) with <div> -->
+<div role="سلام" data-testname="div with role set to Arabic text" class="ex-generic">x</div>
+<div role="سلام حبيب" data-testname="div with multiple role assignments set to Arabic text" class="ex-generic">x</div>
+<div role="שלום" data-testname="div with role set to Hebrew text" class="ex-generic">x</div>
+<div role="שלום חבר" data-testname="div with multiple role assignments set to Hebrew text" class="ex-generic">x</div>
 
-<!-- Backslash closing quote and other obvious hack attempts -->
+<!-- Escaped chars, URL-encoded chars with <a> -->
+<a role="&amp" data-testname="link with role set to ampersand character" data-expectedrole="navigation" class="ex">x</nav>
+<a role="&lt" data-testname="link with role set to less than angle bracker character" data-expectedrole="navigation" class="ex">x</nav>
 
+<!-- Escaped chars, URL-encoded chars with <span> -->
+<span role="&amp" data-testname="span with role set to ampersand character" class="ex-generic">x</nav>
+<span role="&lt" data-testname="span with role set to less than angle bracker character" class="ex-generic">x</nav>
+
+<!-- Backslash closing quote and other malformed roles with characters with <nav> -->
+<nav role="region\" data-testname="nav with role set to region followed by backslash" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="\region" data-testname="nav with role set to backslash followed by region" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="re/gion" data-testname="nav with role set to region with backslash after e character" data-expectedrole="navigation" class="ex">x</nav>
+
+<!-- Backslash closing quote and other malformed roles with characters with <span> -->
+<span role="region\" data-testname="span with role set to region followed by backslash" class="ex-generic">x</span>
+<span role="\region" data-testname="span with role set to backslash followed by region" class="ex-generic">x</span>
+<span role="re/gion" data-testname="span with role set to region with backslash after e character" class="ex-generic">x</span>
 
 <script>
 AriaUtils.verifyRolesBySelector(".ex");

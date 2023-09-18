@@ -31,18 +31,62 @@
 <div role="foo bar" data-testname="div with two invalid role names" class="ex-generic">x</div>
 <div role="foo bar baz" data-testname="div with three invalid role names"class="ex-generic">x</div>
 
-<!-- todo: additional invalid roles:
+<!-- Whitespace tests with <nav> (including line breaks, tabs, zero-width space, braille space, non-breaking space, standard space) -->
+<nav role=" " data-testname="nav with empty character as role" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="&#13" data-testname="nav with line break (&#13) character as role" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="&#9" data-testname="nav with tab (&#9) as role (should be treated as whitespace)" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="&#8203" data-testname="nav with zero-width space as role (should be treated as whitespace)" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="&#10240" data-testname="nav with braille space (&#10240) as role" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="&#x2800" data-testname="nav with braille space (&#x2800) as role" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="&nbsp" data-testname="nav with non-breaking space (&nbsp) as role" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="&#20" data-testname="nav with standard space (&nbsp) as role" data-expectedrole="navigation" class="ex">x</nav>
 
-- whitespace tests (including line breaks, tabs, zero-width space, braille space)
-- diacritics
-- zero-width joiners (e.g. ZWJ like emoji variants use)
-- non-western chars
-- RTL strings (Hebrew & Arabic)
-- escaped chars, URL-encoded chars
-- backslash closing quote and other obvious hack attempts
-- etc.
+<!-- Whitespace tests with <span> (including line breaks, tabs, zero-width space, braille space, non-breaking space, standard space) -->
+<span role=" " data-testname="span with empty character as role" class="ex-generic">x</span>
+<span role="&#13" data-testname="span with line break (&#13) character as role" class="ex-generic">x</span>
+<span role="&#9" data-testname="span with tab (&#9) as role (should be treated as whitespace)" class="ex-generic">x</span>
+<span role="&#8203" data-testname="span with zero-width space as role (should be treated as whitespace)" class="ex-generic">x</span>
+<span role="&#10240" data-testname="span with braille space (&#10240) as role" class="ex-generic">x</span>
+<span role="&#x2800" data-testname="span with braille space (&#x2800) as role" class="ex-generic">x</span>
+<span role="&nbsp" data-testname="span with non-breaking space (&nbsp) as role" class="ex-generic">x</span>
+<span role="&#20" data-testname="span with standard space (&nbsp) as role" class="ex-generic">x</span>
 
--->
+<!-- Diacritics with <a> -->
+<a role="&#771" data-testname="link with role set to tilde diacritic" data-expectedrole="link" class="ex">x</a>
+<a role="foo&#771" data-testname="link with role foo that has tilde diacritic" data-expectedrole="link" class="ex">x</a>
+<a role="&#773" data-testname="link with role set to overline diacritic" data-expectedrole="link" class="ex">x</a>
+<a role="foo&#773" data-testname="link with role foo that has overline diacritic" data-expectedrole="link" class="ex">x</a>
+<a role="&#773" data-testname="link with role set to overline diacritic" data-expectedrole="link" class="ex">x</a>
+<a role="foo&#773" data-testname="link with role foo that has overline diacritic" data-expectedrole="link" class="ex">x</a>
+<a role="&#813" data-testname="link with role set to circumflex diacritic below" data-expectedrole="link" class="ex">x</a>
+<a role="foo&#813" data-testname="link with role foo that has circumflex diacritic below" data-expectedrole="link" class="ex">x</a>
+<a role="button&#771" data-testname="link with role set to button with tilde diacritic" data-expectedrole="link" class="ex">x</a>
+
+<!-- Diacritics with <div> -->
+<div role="&#771" data-testname="div with role set to tilde diacritic" class="ex-generic">x</div>
+<div role="foo&#771" data-testname="div with role foo that has tilde diacritic" class="ex-generic">x</div>
+<div role="button&#771" data-testname="div with role set to button with tilde diacritic" class="ex-generic">x</a>
+
+<!-- Zero-width joiners (e.g., ZWJ like emoji variants use) with <button> -->
+<button role="&#8205" data-testname="button with role set to zero-width joiner" data-expectedrole="button" class="ex">x</button>
+<button role="foo&#8205" data-testname="button with role set to foo with zero-width joiner" data-expectedrole="button" class="ex">x</button>
+
+<!-- Non-western chars with <nav> -->
+<nav role="Θ" data-testname="nav with role set to theta (Θ)" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="漢字" data-testname="nav with role set to Japanese kanji" data-expectedrole="navigation" class="ex">x</nav>
+<nav role="سلام" data-testname="nav with role set to Arabic text" data-expectedrole="navigation" class="ex">x</nav>
+
+<!-- Non-western chars with <span> -->
+  <span role="Θ" data-testname="span with role set to theta (Θ)" class="ex-generic">x</span>
+  <span role="漢字" data-testname="nav with role set to Japanese kanji" class="ex-generic">x</span>
+  <span role="سلام" data-testname="nav with role set to Arabic text" class="ex-generic">x</span>
+
+<!-- RTL strings (Hebrew & Arabic) -->
+
+<!-- Escaped chars, URL-encoded chars -->
+
+<!-- Backslash closing quote and other obvious hack attempts -->
+
 
 <script>
 AriaUtils.verifyRolesBySelector(".ex");

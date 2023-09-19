@@ -9,15 +9,21 @@
   <body>
     <div id="log"></div>
     <script>
+      // https://fetch.spec.whatwg.org/#statuses
+      var redirect_codes = new Set([301, 302, 303, 307, 308]);
       function redirect(code) {
-        var test = async_test(document.title + " (" + code + ")")
+        var test = async_test(`${document.title}  (${code} does ${redirect_codes.has(code)? "redirect": "not redirect"})`)
         test.step(function() {
           var client = new XMLHttpRequest()
           client.onreadystatechange = function() {
             test.step(function() {
               if(client.readyState == 4) {
-                assert_equals(client.getResponseHeader("x-request-method"), "GET")
-                assert_equals(client.getResponseHeader("x-request-content-type"), "application/x-pony")
+                if (redirect_codes.has(code)) {
+                  assert_equals(client.getResponseHeader("x-request-method"), "GET")
+                  assert_equals(client.getResponseHeader("x-request-content-type"), "application/x-pony")
+                } else {
+                  assert_equals(client.getResponseHeader("x-request-method"), null)
+                }
                 test.done()
               }
             })
@@ -27,10 +33,10 @@
           client.send(null)
         })
       }
-      redirect("301")
-      redirect("302")
-      redirect("303")
-      redirect("307")
+
+      for (var number = 300; number <= 399; number++) {
+        redirect(number);
+      }
     </script>
   </body>
 </html>

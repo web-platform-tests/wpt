@@ -22,6 +22,7 @@ promise_test(async (t) => {
     stream.getTracks().forEach((track) => {
         pc.addTrack(track, stream);
     });
+    await pc.setLocalDescription();
 
     const ws = await connect(pc);
     t.add_cleanup(() => ws.close());

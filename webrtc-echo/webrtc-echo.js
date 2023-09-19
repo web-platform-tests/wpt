@@ -1,4 +1,5 @@
 // Helper function to connect to the echo endpoint
+// Assumes that pc.localDescription is already set and generates an answer.
 async function connect(pc) {
     const {protocol} = window.location;
     const ws = new WebSocket((protocol === 'http:' ? 'ws:' : 'wss:') + '//' + window.location.hostname + ':4404/webrtc');
@@ -27,7 +28,7 @@ async function connect(pc) {
     const dtls = SDPUtils.getDtlsParameters(sections[1], sections[0]);
     const ice = SDPUtils.getIceParameters(sections[1], sections[0]);
     const candidates = SDPUtils.matchPrefix(sections[1], 'a=candidate:')
-        .map(l => l.substr(2));
+        .map(line => line.substr(2));
     ws.send(JSON.stringify({
         ice,
         dtls,
@@ -92,15 +93,15 @@ function RTP(packet) {
         return;
     }
 
-    let headerlen = 12;
+    let headerLength = 12;
     const contributingSources = [];
     if (firstByte & 0x0f) {
-        let offset = headerlen;
-        headerlen += 4 * (firstByte & 0x0f); // 12 + 4 * csrc count
-        if (headerlen > packet.byteLength) {
+        let offset = headerLength;
+        headerLength += 4 * (firstByte & 0x0f); // 12 + 4 * csrc count
+        if (headerLength > packet.byteLength) {
             return;
         }
-        while(offset < headerlen) {
+        while(offset < headerLength) {
             contributingSources.push(view.getUint32(offset));
             offset += 4;
         }
@@ -109,26 +110,26 @@ function RTP(packet) {
     const headerExtensions = [];
     if (firstByte & 0x10) { // header extensions present.
         // https://tools.ietf.org/html/rfc3550#section-5.3.1
-        if (headerlen + 4 > packet.byteLength) {
+        if (headerLength + 4 > packet.byteLength) {
             return;
         }
-        let offset = headerlen;
-        headerlen += 4 + 4 * view.getUint16(headerlen + 2);
-        if (headerlen > packet.byteLength) {
+        let offset = headerLength;
+        headerLength += 4 + 4 * view.getUint16(headerLength + 2);
+        if (headerLength > packet.byteLength) {
             return;
         }
         // https://tools.ietf.org/html/rfc5285#section-4.2
         if (view.getUint16(offset) === 0xbede) {
             offset += 4;
-            while (offset < headerlen) {
-                const id = view.getUint8(offset) >> 4;
-                if (id === 15) {
+            while (offset < headerLength) {
+                const extensionId = view.getUint8(offset) >> 4;
+                if (extensionId === 15) {
                     break;
                 }
                 const length = (view.getUint8(offset) & 0xf) + 1;
-                if (id !== 0) {
+                if (extensionId !== 0) {
                     headerExtensions.push({
-                        id,
+                        id: extensionId,
                         data: new DataView(packet, offset + 1, length),
                     });
                 }
@@ -138,11 +139,11 @@ function RTP(packet) {
             console.warn('TODO: parse two byte extensions');
         }
     }
-    let bodylen = packet.byteLength - headerlen;
+    let bodyLength = packet.byteLength - headerLength;
     if (firstByte & 0x20) { // padding
-        bodylen -= view.getUint8(packet.byteLength - 1);
+        bodyLength -= view.getUint8(packet.byteLength - 1);
     }
-    if (bodylen < 0) {
+    if (bodyLength < 0) {
         return;
     }
     const secondByte = view.getUint8(1);
@@ -150,15 +151,14 @@ function RTP(packet) {
         version: firstByte >> 6,
         padding: (firstByte >> 5) & 1,
         extension: (firstByte >> 4) & 1,
-        //csrcCount: firstByte & 0x0f,
         marker: secondByte >> 7,
         payloadType: secondByte & 0x7f,
         sequenceNumber: view.getUint16(2),
         timestamp: view.getUint32(4),
         synchronizationSource: view.getUint32(8),
-        header: new DataView(packet, 0, headerlen),
+        header: new DataView(packet, 0, headerLength),
         contributingSources,
         headerExtensions,
-        payload: new DataView(packet, headerlen, bodylen),
+        payload: new DataView(packet, headerLength, bodyLength),
     };
 }

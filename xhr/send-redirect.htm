@@ -21,9 +21,11 @@
                 if (redirect_codes.has(code)) {
                   assert_equals(client.getResponseHeader("x-request-method"), "GET");
                   assert_equals(client.getResponseHeader("x-request-content-type"), "application/x-pony");
+                  assert_equals(client.status, 200);
                 } else {
                   assert_equals(client.getResponseHeader("x-request-method"), null);
                   assert_equals(client.getResponseHeader("x-request-content-type"), null);
+                  assert_equals(client.status, code);
                 }
                 test.done();
               }

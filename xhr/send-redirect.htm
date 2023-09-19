@@ -14,27 +14,28 @@
       function redirect(code) {
         var test = async_test(`${document.title} (${code} does ${redirect_codes.has(code)? "redirect": "not redirect"})`);
         test.step(function() {
-          var client = new XMLHttpRequest()
+          var client = new XMLHttpRequest();
           client.onreadystatechange = function() {
             test.step(function() {
               if(client.readyState == 4) {
                 if (redirect_codes.has(code)) {
-                  assert_equals(client.getResponseHeader("x-request-method"), "GET")
-                  assert_equals(client.getResponseHeader("x-request-content-type"), "application/x-pony")
+                  assert_equals(client.getResponseHeader("x-request-method"), "GET");
+                  assert_equals(client.getResponseHeader("x-request-content-type"), "application/x-pony");
                 } else {
-                  assert_equals(client.getResponseHeader("x-request-method"), null)
+                  assert_equals(client.getResponseHeader("x-request-method"), null);
+                  assert_equals(client.getResponseHeader("x-request-content-type"), null);
                 }
-                test.done()
+                test.done();
               }
             })
           }
-          client.open("GET", "resources/redirect.py?location=content.py&code=" + code)
-          client.setRequestHeader("Content-Type", "application/x-pony")
-          client.send(null)
+          client.open("GET", "resources/redirect.py?location=content.py&code=" + code);
+          client.setRequestHeader("Content-Type", "application/x-pony");
+          client.send(null);
         })
       }
 
-      for (var number = 300; number <= 399; number++) {
+      for (var number of [300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 350, 399]) {
         redirect(number);
       }
     </script>

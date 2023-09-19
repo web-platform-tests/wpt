@@ -12,7 +12,7 @@
       // https://fetch.spec.whatwg.org/#statuses
       var redirect_codes = new Set([301, 302, 303, 307, 308]);
       function redirect(code) {
-        var test = async_test(`${document.title}  (${code} does ${redirect_codes.has(code)? "redirect": "not redirect"})`)
+        var test = async_test(`${document.title} (${code} does ${redirect_codes.has(code)? "redirect": "not redirect"})`);
         test.step(function() {
           var client = new XMLHttpRequest()
           client.onreadystatechange = function() {

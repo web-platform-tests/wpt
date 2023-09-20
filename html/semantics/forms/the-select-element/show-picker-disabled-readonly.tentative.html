@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>Test showPicker() disabled/readonly requirement</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body></body>
+<script type=module>
+test(() => {
+  const select = document.createElement("select");
+  select.setAttribute("disabled", "");
+
+  assert_throws_dom('InvalidStateError', () => { select.showPicker(); });
+}, 'select showPicker() throws when disabled');
+
+test(() => {
+  const select = document.createElement("select");
+  select.setAttribute("readonly", "");
+
+  assert_throws_dom('InvalidStateError', () => { select.showPicker(); });
+}, 'select showPicker() throws when readonly');
+</script>

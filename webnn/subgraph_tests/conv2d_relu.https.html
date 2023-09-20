@@ -1,0 +1,57 @@
+
+<!doctype html>
+<meta charset=utf-8>
+<meta name="timeout" content="long">
+<title>test conv2d + relu subgraph</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/libs/numpy.js"></script>
+<script src="../resources/utils.js"></script>
+<script>
+let context;
+let builder;
+
+promise_setup(async () => {
+  context = await navigator.ml.createContext();
+  builder = new MLGraphBuilder(context);
+}, {explicit_timeout: true, test_timeout: 180000});
+
+const tests = loadTests('/webnn/resources/test_data/conv2d_relu/conv2d_relu.json');
+for (let test of tests) {
+    promise_test(async () => {
+        console.time(`run ${test.name} test`);
+        console.time(`load and build for ${test.name} test`)
+        let inputInfo = await readFromNpy('/webnn/resources/test_data/' + test.inputs.input.data, test.inputs.input.type);
+        let input = builder.input(
+            'input', {type: test.inputs.input.type, dimensions: test.inputs.input.shape});
+        let weightsInfo = await readFromNpy('/webnn/resources/test_data/' + test.inputs.filter.data, test.inputs.filter.type);
+        let filter = builder.constant(
+            {type: test.inputs.filter.type, dimensions: test.inputs.filter.shape}, weightsInfo.buffer);
+        let conv2dOptions = {...test.options};
+        let biasInfo = await readFromNpy('/webnn/resources/test_data/' + test.options.bias.data, test.options.bias.type);
+        let bias = builder.constant(
+            {type: test.options.bias.type, dimensions: test.options.bias.shape}, biasInfo.buffer);
+        conv2dOptions.bias = bias;
+        let middleOut = builder.conv2d(input, filter, conv2dOptions);
+        let out = builder.relu(middleOut);
+        console.time(`build for ${test.name} test`);
+        let graph = await builder.build({'output': out});
+        console.timeEnd(`build for ${test.name} test`);
+        console.timeEnd(`load and build for ${test.name} test`);
+
+        let expectedInfo = await readFromNpy('/webnn/resources/test_data/' + test.expected.data, test.expected.type);
+        let outputBuffer = new TypedArrayDict[test.expected.type](sizeOfShape(test.expected.shape));
+        let inputs = {'input': inputInfo.buffer};
+        let outputs = {'output': outputBuffer};
+        console.time(`compute for ${test.name} test`)
+        const results = await context.compute(graph, inputs, outputs);
+        console.timeEnd(`compute for ${test.name} test`)
+        const tolerence = inputInfo.dimensions[3] * weightsInfo.dimensions[1] * weightsInfo.dimensions[2] * 2;
+        console.time(`compare output with baseline ${test.name} test`);
+        assert_array_approx_equals_ulp(results.outputs.output, expectedInfo.buffer, tolerence, test.expected.type, `test ${test.name}`);
+        console.timeEnd(`compare output with baseline ${test.name} test`);
+        console.timeEnd(`run ${test.name} test`);
+    }, test.name);
+}
+
+</script>

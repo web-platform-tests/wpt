@@ -5,6 +5,7 @@ const ExecutionArray = ['sync', 'async'];
 // https://webmachinelearning.github.io/webnn/#enumdef-mloperandtype
 const TypedArrayDict = {
   float32: Float32Array,
+  float16: Uint16Array,
   int32: Int32Array,
   uint32: Uint32Array,
   int8: Int8Array,
@@ -17,10 +18,10 @@ const sizeOfShape = (array) => {
 
 /**
  * Get tests resources from test data JSON file of specified operation name.
- * @param {String} operationName - An operation name
+ * @param {String} nameOrPath - An operation name string or a Json file path string
  * @returns {Object} Tests resources
  */
-const loadTests = (operationName) => {
+const loadTests = (nameOrPath) => {
   const loadJSON = (file) => {
     let xmlhttp = new XMLHttpRequest();
     xmlhttp.open("GET", file, false);
@@ -33,14 +34,22 @@ const loadTests = (operationName) => {
     }
   };
 
-  const capitalLetterMatches = operationName.match(/[A-Z]/g);
-  if (capitalLetterMatches !== null) {
-    // for example: the test data JSON file for leakyRelu is leaky_relu.json and for reduceLogSum is reduce_log_sum.json
-    capitalLetterMatches.forEach(
-      capitalLetter => operationName = operationName.replace(capitalLetter, `_${capitalLetter.toLowerCase()}`)
-    )
+  let jsonPath;
+  if (nameOrPath.endsWith('.json')) {
+    jsonPath = nameOrPath;
+  } else {
+    let operationName = nameOrPath;
+    const capitalLetterMatches = operationName.match(/[A-Z]/g);
+    if (capitalLetterMatches !== null) {
+      // for example: the test data JSON file for leakyRelu is leaky_relu.json and for reduceLogSum is reduce_log_sum.json
+      capitalLetterMatches.forEach(
+        capitalLetter => operationName = operationName.replace(capitalLetter, `_${capitalLetter.toLowerCase()}`)
+      )
+    }
+    jsonPath = `/webnn/resources/test_data/${operationName}.json`
   }
-  const json = loadJSON(`/webnn/resources/test_data/${operationName}.json`);
+
+  const json = loadJSON(jsonPath);
   const resources = JSON.parse(json.replace(/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g, (m, g) => g ? "" : m));
   return resources.tests;
 };
@@ -353,17 +362,26 @@ const getPrecisonTolerance = (operationName, metricType, resources) => {
  * @return {Number} A 64-bit signed integer.
  */
 const getBitwise = (value, dataType) => {
-  const buffer = new ArrayBuffer(8);
-  const int64Array = new BigInt64Array(buffer);
-  int64Array[0] = value < 0 ? ~BigInt(0) : BigInt(0);
-  let typedArray;
-  if (dataType === "float32") {
-    typedArray = new Float32Array(buffer);
+  if (dataType === "float16") {
+    if (Number.isInteger(value)) {
+      // Already use Uint16 to represent Float16
+      return value;
+    } else {
+      return toHalf(value);
+    }
   } else {
-    throw new AssertionError(`Data type ${dataType} is not supported`);
+    const buffer = new ArrayBuffer(8);
+    const int64Array = new BigInt64Array(buffer);
+    int64Array[0] = value < 0 ? ~BigInt(0) : BigInt(0);
+    let typedArray;
+    if (dataType === "float32") {
+      typedArray = new Float32Array(buffer);
+    } else {
+      throw new AssertionError(`Data type ${dataType} is not supported`);
+    }
+    typedArray[0] = value;
+    return int64Array[0];
   }
-  typedArray[0] = value;
-  return int64Array[0];
 };
 
 /**
@@ -382,8 +400,10 @@ const assert_array_approx_equals_ulp = (actual, expected, nulp, dataType, descri
   /*
     * Test if two primitive arrays are equal within acceptable ULP distance
     */
-  assert_true(actual.length === expected.length,
-              `assert_array_approx_equals_ulp: ${description} lengths differ, expected ${expected.length} but got ${actual.length}`);
+  if (actual.length !== expected.length) {
+    assert_true(false, `assert_array_approx_equals_ulp: ${description} lengths differ, expected ${expected.length} but got ${actual.length}`);
+  }
+
   let actualBitwise, expectedBitwise, distance;
   for (let i = 0; i < actual.length; i++) {
     if (actual[i] === expected[i]) {
@@ -394,8 +414,11 @@ const assert_array_approx_equals_ulp = (actual, expected, nulp, dataType, descri
       expectedBitwise = getBitwise(expected[i], dataType);
       distance = actualBitwise - expectedBitwise;
       distance = distance >= 0 ? distance : -distance;
-      assert_true(distance <= nulp,
-                  `assert_array_approx_equals_ulp: ${description} actual ${actual[i]} should be close enough to expected ${expected[i]} by the acceptable ${nulp} ULP distance, but they have ${distance} ULP distance`);
+      if (distance <= nulp) {
+        continue;
+      } else {
+        assert_true(false, `assert_array_approx_equals_ulp: ${description} actual ${actual[i]} should be close enough to expected ${expected[i]} by the acceptable ${nulp} ULP distance, but they have ${distance} ULP distance`);
+      }
     }
   }
 };
@@ -662,4 +685,102 @@ const testWebNNOperation = (operationName, buildFunc) => {
       });
     }
   });
+};
+
+const readFromNpy = async (fileName, precisionType) => {
+  const dataTypeMap = new Map([
+    ['f2', {type: 'float16', array: Uint16Array}],
+    ['f4', {type: 'float32', array: Float32Array}],
+    ['f8', {type: 'float64', array: Float64Array}],
+    ['i1', {type: 'int8', array: Int8Array}],
+    ['i2', {type: 'int16', array: Int16Array}],
+    ['i4', {type: 'int32', array: Int32Array}],
+    ['i8', {type: 'int64', array: BigInt64Array}],
+    ['u1', {type: 'uint8', array: Uint8Array}],
+    ['u2', {type: 'uint16', array: Uint16Array}],
+    ['u4', {type: 'uint32', array: Uint32Array}],
+    ['u8', {type: 'uint64', array: BigUint64Array}],
+  ]);
+  let buffer;
+  console.time(`fetch ${fileName}`);
+  if (typeof fs !== 'undefined') {
+    buffer = fs.readFileSync(fileName);
+  } else {
+    const response = await fetch(fileName);
+    buffer = await response.arrayBuffer();
+  }
+  console.timeEnd(`fetch ${fileName}`);
+  let npArray = new numpy.Array(new Uint8Array(buffer));
+  if (!dataTypeMap.has(npArray.dataType)) {
+    throw new Error(`Data type ${npArray.dataType} is not supported.`);
+  }
+  const dimensions = npArray.shape;
+  const type = dataTypeMap.get(npArray.dataType).type;
+  const TypedArrayConstructor = dataTypeMap.get(npArray.dataType).array;
+  let dataView = new Uint8Array(npArray.data.buffer);
+  let dataView2 = dataView.slice();
+  let typedArray = new TypedArrayConstructor(dataView2.buffer);
+  if (precisionType === 'float16') {
+    const u16Array = new Uint16Array(sizeOfShape(dimensions));
+    for (let i = 0; i< sizeOfShape(dimensions); ++i) {
+      u16Array[i] = toHalf(typedArray[i]);
+    }
+    return {buffer: u16Array, dimensions};
+  } else if (precisionType === 'float32'){
+    return {buffer: Float32Array.from(typedArray), dimensions};
+  } else {
+    throw new Error(`${precisionType} is not supported.`);
+  }
+};
+
+const toHalf = (value) => {
+  let floatView = new Float32Array(1);
+  let int32View = new Int32Array(floatView.buffer);
+
+  /* This method is faster than the OpenEXR implementation (very often
+   * used, eg. in Ogre), with the additional benefit of rounding, inspired
+   * by James Tursa?s half-precision code. */
+
+  floatView[0] = value;
+  let x = int32View[0];
+
+  let bits = (x >> 16) & 0x8000; /* Get the sign */
+  let m = (x >> 12) & 0x07ff; /* Keep one extra bit for rounding */
+  let e = (x >> 23) & 0xff; /* Using int is faster here */
+
+  /* If zero, or denormal, or exponent underflows too much for a denormal
+    * half, return signed zero. */
+  if (e < 103) {
+    return bits;
+  }
+
+  /* If NaN, return NaN. If Inf or exponent overflow, return Inf. */
+  if (e > 142) {
+    bits |= 0x7c00;
+    /* If exponent was 0xff and one mantissa bit was set, it means NaN,
+      * not Inf, so make sure we set one mantissa bit too. */
+    bits |= ((e == 255) ? 0 : 1) && (x & 0x007fffff);
+    return bits;
+  }
+
+  /* If exponent underflows but not too much, return a denormal */
+  if (e < 113) {
+    m |= 0x0800;
+    /* Extra rounding may overflow and set mantissa to 0 and exponent
+      * to 1, which is OK. */
+    bits |= (m >> (114 - e)) + ((m >> (113 - e)) & 1);
+    return bits;
+  }
+
+  bits |= ((e - 112) << 10) | (m >> 1);
+  /* Extra rounding. An overflow will set mantissa to 0 and increment
+    * the exponent, which is OK. */
+  bits += m & 1;
+
+  floatView.buffer.length = 0;
+  floatView = null;
+  int32View.buffer.length = 0;
+  int32View = null;
+
+  return bits;
 };

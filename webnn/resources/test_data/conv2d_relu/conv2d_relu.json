@@ -1,0 +1,486 @@
+{
+  "tests": [
+    // From ResNet50V2 NHWC model:
+    // https://storage.googleapis.com/download.tensorflow.org/models/tflite/resnet_v2_50_2018_03_27.zip
+    {
+      "name": "conv2d + relu subgraph 1x56x56x64_64x1x1x64_64 (float32)",
+      "inputs": {
+        "input": {
+          "shape": [1, 56, 56, 64],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x56x56x64_64x1x1x64_64-input-float32.npy",
+          "type": "float32"
+        },
+        "filter": {
+          "shape": [64, 1, 1, 64],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x56x56x64_64x1x1x64_64-weights-float32.npy",
+          "type": "float32",
+          "constant": true
+        }
+      },
+      "options": {
+        "bias": {
+          "shape": [64],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x56x56x64_64x1x1x64_64-bias-float32.npy",
+          "type": "float32"
+        },
+        "inputLayout": "nhwc",
+        "filterLayout": "ohwi",
+        "autoPad": "same-upper"
+      },
+      "expected": {
+        "name": "output",
+        "shape": [1, 56, 56, 64],
+        "data": "conv2d_relu/resnet50v2_nhwc/1x56x56x64_64x1x1x64_64-output-float32.npy",
+        "type": "float32"
+      }
+    },
+    { // TODO - ulp
+      "name": "conv2d + relu subgraph 1x56x56x64_64x3x3x64_64 (float32)",
+      "inputs": {
+        "input": {
+          "shape": [1, 56, 56, 64],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x56x56x64_64x3x3x64_64-input-float32.npy",
+          "type": "float32"
+        },
+        "filter": {
+          "shape": [64, 3, 3, 64],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x56x56x64_64x3x3x64_64-weights-float32.npy",
+          "type": "float32",
+          "constant": true
+        }
+      },
+      "options": {
+        "bias": {
+          "shape": [64],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x56x56x64_64x3x3x64_64-bias-float32.npy",
+          "type": "float32"
+        },
+        "inputLayout": "nhwc",
+        "filterLayout": "ohwi",
+        "autoPad": "same-upper"
+      },
+      "expected": {
+        "name": "output",
+        "shape": [1, 56, 56, 64],
+        "data": "conv2d_relu/resnet50v2_nhwc/1x56x56x64_64x3x3x64_64-output-float32.npy",
+        "type": "float32"
+      }
+    },
+    {
+      "name": "conv2d + relu subgraph 1x56x56x256_64x1x1x256_64 (float32)",
+      "inputs": {
+        "input": {
+          "shape": [1, 56, 56, 256],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x56x56x256_64x1x1x256_64-input-float32.npy",
+          "type": "float32"
+        },
+        "filter": {
+          "shape": [64, 1, 1, 256],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x56x56x256_64x1x1x256_64-weights-float32.npy",
+          "type": "float32",
+          "constant": true
+        }
+      },
+      "options": {
+        "bias": {
+          "shape": [64],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x56x56x256_64x1x1x256_64-bias-float32.npy",
+          "type": "float32"
+        },
+        "inputLayout": "nhwc",
+        "filterLayout": "ohwi",
+        "autoPad": "same-upper"
+      },
+      "expected": {
+        "name": "output",
+        "shape": [1, 56, 56, 64],
+        "data": "conv2d_relu/resnet50v2_nhwc/1x56x56x256_64x1x1x256_64-output-float32.npy",
+        "type": "float32"
+      }
+    },
+    {
+      "name": "conv2d + relu subgraph 1x58x58x64_64x3x3x64_64 (float32)",
+      "inputs": {
+        "input": {
+          "shape": [1, 58, 58, 64],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x58x58x64_64x3x3x64_64-input-float32.npy",
+          "type": "float32"
+        },
+        "filter": {
+          "shape": [64, 3, 3, 64],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x58x58x64_64x3x3x64_64-weights-float32.npy",
+          "type": "float32",
+          "constant": true
+        }
+      },
+      "options": {
+        "bias": {
+          "shape": [64],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x58x58x64_64x3x3x64_64-bias-float32.npy",
+          "type": "float32"
+        },
+        "inputLayout": "nhwc",
+        "filterLayout": "ohwi",
+        "strides": [2, 2]
+      },
+      "expected": {
+        "name": "output",
+        "shape": [1, 28, 28, 64],
+        "data": "conv2d_relu/resnet50v2_nhwc/1x58x58x64_64x3x3x64_64-output-float32.npy",
+        "type": "float32"
+      }
+    },
+    {
+      "name": "conv2d + relu subgraph 1x28x28x256_128x1x1x256_128 (float32)",
+      "inputs": {
+        "input": {
+          "shape": [1, 28, 28, 256],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x28x28x256_128x1x1x256_128-input-float32.npy",
+          "type": "float32"
+        },
+        "filter": {
+          "shape": [128, 1, 1, 256],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x28x28x256_128x1x1x256_128-weights-float32.npy",
+          "type": "float32",
+          "constant": true
+        }
+      },
+      "options": {
+        "bias": {
+          "shape": [128],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x28x28x256_128x1x1x256_128-bias-float32.npy",
+          "type": "float32"
+        },
+        "inputLayout": "nhwc",
+        "filterLayout": "ohwi",
+        "autoPad": "same-upper"
+      },
+      "expected": {
+        "name": "output",
+        "shape": [1, 28, 28, 128],
+        "data": "conv2d_relu/resnet50v2_nhwc/1x28x28x256_128x1x1x256_128-output-float32.npy",
+        "type": "float32"
+      }
+    },
+    { // TODO - ulp
+      "name": "conv2d + relu subgraph 1x28x28x128_128x3x3x128_128 (float32)",
+      "inputs": {
+        "input": {
+          "shape": [1, 28, 28, 128],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x28x28x128_128x3x3x128_128-input-float32.npy",
+          "type": "float32"
+        },
+        "filter": {
+          "shape": [128, 3, 3, 128],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x28x28x128_128x3x3x128_128-weights-float32.npy",
+          "type": "float32",
+          "constant": true
+        }
+      },
+      "options": {
+        "bias": {
+          "shape": [128],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x28x28x128_128x3x3x128_128-bias-float32.npy",
+          "type": "float32"
+        },
+        "inputLayout": "nhwc",
+        "filterLayout": "ohwi",
+        "autoPad": "same-upper"
+      },
+      "expected": {
+        "name": "output",
+        "shape": [1, 28, 28, 128],
+        "data": "conv2d_relu/resnet50v2_nhwc/1x28x28x128_128x3x3x128_128-output-float32.npy",
+        "type": "float32"
+      }
+    },
+    {
+      "name": "conv2d + relu subgraph 1x28x28x512_128x1x1x512_128 (float32)",
+      "inputs": {
+        "input": {
+          "shape": [1, 28, 28, 512],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x28x28x512_128x1x1x512_128-input-float32.npy",
+          "type": "float32"
+        },
+        "filter": {
+          "shape": [128, 1, 1, 512],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x28x28x512_128x1x1x512_128-weights-float32.npy",
+          "type": "float32",
+          "constant": true
+        }
+      },
+      "options": {
+        "bias": {
+          "shape": [128],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x28x28x512_128x1x1x512_128-bias-float32.npy",
+          "type": "float32"
+        },
+        "inputLayout": "nhwc",
+        "filterLayout": "ohwi",
+        "autoPad": "same-upper"
+      },
+      "expected": {
+        "name": "output",
+        "shape": [1, 28, 28, 128],
+        "data": "conv2d_relu/resnet50v2_nhwc/1x28x28x512_128x1x1x512_128-output-float32.npy",
+        "type": "float32"
+      }
+    },
+    {
+      "name": "conv2d + relu subgraph 1x30x30x128_128x3x3x128_128 (float32)",
+      "inputs": {
+        "input": {
+          "shape": [1, 30, 30, 128],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x30x30x128_128x3x3x128_128-input-float32.npy",
+          "type": "float32"
+        },
+        "filter": {
+          "shape": [128, 3, 3, 128],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x30x30x128_128x3x3x128_128-weights-float32.npy",
+          "type": "float32",
+          "constant": true
+        }
+      },
+      "options": {
+        "bias": {
+          "shape": [128],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x30x30x128_128x3x3x128_128-bias-float32.npy",
+          "type": "float32"
+        },
+        "inputLayout": "nhwc",
+        "filterLayout": "ohwi",
+        "strides": [2, 2]
+      },
+      "expected": {
+        "name": "output",
+        "shape": [1, 14, 14, 128],
+        "data": "conv2d_relu/resnet50v2_nhwc/1x30x30x128_128x3x3x128_128-output-float32.npy",
+        "type": "float32"
+      }
+    },
+    {
+      "name": "conv2d + relu subgraph 1x14x14x512_256x1x1x512_256 (float32)",
+      "inputs": {
+        "input": {
+          "shape": [1, 14, 14, 512],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x14x14x512_256x1x1x512_256-input-float32.npy",
+          "type": "float32"
+        },
+        "filter": {
+          "shape": [256, 1, 1, 512],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x14x14x512_256x1x1x512_256-weights-float32.npy",
+          "type": "float32",
+          "constant": true
+        }
+      },
+      "options": {
+        "bias": {
+          "shape": [256],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x14x14x512_256x1x1x512_256-bias-float32.npy",
+          "type": "float32"
+        },
+        "inputLayout": "nhwc",
+        "filterLayout": "ohwi",
+        "autoPad": "same-upper"
+      },
+      "expected": {
+        "name": "output",
+        "shape": [1, 14, 14, 256],
+        "data": "conv2d_relu/resnet50v2_nhwc/1x14x14x512_256x1x1x512_256-output-float32.npy",
+        "type": "float32"
+      }
+    },
+    {
+      "name": "conv2d + relu subgraph 1x14x14x256_256x3x3x256_256 (float32)",
+      "inputs": {
+        "input": {
+          "shape": [1, 14, 14, 256],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x14x14x256_256x3x3x256_256-input-float32.npy",
+          "type": "float32"
+        },
+        "filter": {
+          "shape": [256, 3, 3, 256],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x14x14x256_256x3x3x256_256-weights-float32.npy",
+          "type": "float32",
+          "constant": true
+        }
+      },
+      "options": {
+        "bias": {
+          "shape": [256],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x14x14x256_256x3x3x256_256-bias-float32.npy",
+          "type": "float32"
+        },
+        "inputLayout": "nhwc",
+        "filterLayout": "ohwi",
+        "autoPad": "same-upper"
+      },
+      "expected": {
+        "name": "output",
+        "shape": [1, 14, 14, 256],
+        "data": "conv2d_relu/resnet50v2_nhwc/1x14x14x256_256x3x3x256_256-output-float32.npy",
+        "type": "float32"
+      }
+    },
+    {
+      "name": "conv2d + relu subgraph 1x14x14x1024_256x1x1x1024_256 (float32)",
+      "inputs": {
+        "input": {
+          "shape": [1, 14, 14, 1024],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x14x14x1024_256x1x1x1024_256-input-float32.npy",
+          "type": "float32"
+        },
+        "filter": {
+          "shape": [256, 1, 1, 1024],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x14x14x1024_256x1x1x1024_256-weights-float32.npy",
+          "type": "float32",
+          "constant": true
+        }
+      },
+      "options": {
+        "bias": {
+          "shape": [256],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x14x14x1024_256x1x1x1024_256-bias-float32.npy",
+          "type": "float32"
+        },
+        "inputLayout": "nhwc",
+        "filterLayout": "ohwi",
+        "autoPad": "same-upper"
+      },
+      "expected": {
+        "name": "output",
+        "shape": [1, 14, 14, 256],
+        "data": "conv2d_relu/resnet50v2_nhwc/1x14x14x1024_256x1x1x1024_256-output-float32.npy",
+        "type": "float32"
+      }
+    },
+    {
+      "name": "conv2d + relu subgraph 1x16x16x256_256x3x3x256_256 (float32)",
+      "inputs": {
+        "input": {
+          "shape": [1, 16, 16, 256],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x16x16x256_256x3x3x256_256-input-float32.npy",
+          "type": "float32"
+        },
+        "filter": {
+          "shape": [256, 3, 3, 256],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x16x16x256_256x3x3x256_256-weights-float32.npy",
+          "type": "float32",
+          "constant": true
+        }
+      },
+      "options": {
+        "bias": {
+          "shape": [256],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x16x16x256_256x3x3x256_256-bias-float32.npy",
+          "type": "float32"
+        },
+        "inputLayout": "nhwc",
+        "filterLayout": "ohwi",
+        "strides": [2, 2]
+      },
+      "expected": {
+        "name": "output",
+        "shape": [1, 7, 7, 256],
+        "data": "conv2d_relu/resnet50v2_nhwc/1x16x16x256_256x3x3x256_256-output-float32.npy",
+        "type": "float32"
+      }
+    },
+    {
+      "name": "conv2d + relu subgraph 1x7x7x1024_512x1x1x1024_512 (float32)",
+      "inputs": {
+        "input": {
+          "shape": [1, 7, 7, 1024],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x7x7x1024_512x1x1x1024_512-input-float32.npy",
+          "type": "float32"
+        },
+        "filter": {
+          "shape": [512, 1, 1, 1024],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x7x7x1024_512x1x1x1024_512-weights-float32.npy",
+          "type": "float32",
+          "constant": true
+        }
+      },
+      "options": {
+        "bias": {
+          "shape": [512],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x7x7x1024_512x1x1x1024_512-bias-float32.npy",
+          "type": "float32"
+        },
+        "inputLayout": "nhwc",
+        "filterLayout": "ohwi",
+        "autoPad": "same-upper"
+      },
+      "expected": {
+        "name": "output",
+        "shape": [1, 7, 7, 512],
+        "data": "conv2d_relu/resnet50v2_nhwc/1x7x7x1024_512x1x1x1024_512-output-float32.npy",
+        "type": "float32"
+      }
+    },
+    {
+      "name": "conv2d + relu subgraph 1x7x7x512_512x3x3x512_512 (float32)",
+      "inputs": {
+        "input": {
+          "shape": [1, 7, 7, 512],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x7x7x512_512x3x3x512_512-input-float32.npy",
+          "type": "float32"
+        },
+        "filter": {
+          "shape": [512, 3, 3, 512],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x7x7x512_512x3x3x512_512-weights-float32.npy",
+          "type": "float32",
+          "constant": true
+        }
+      },
+      "options": {
+        "bias": {
+          "shape": [512],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x7x7x512_512x3x3x512_512-bias-float32.npy",
+          "type": "float32"
+        },
+        "inputLayout": "nhwc",
+        "filterLayout": "ohwi",
+        "autoPad": "same-upper"
+      },
+      "expected": {
+        "name": "output",
+        "shape": [1, 7, 7, 512],
+        "data": "conv2d_relu/resnet50v2_nhwc/1x7x7x512_512x3x3x512_512-output-float32.npy",
+        "type": "float32"
+      }
+    },
+    {
+      "name": "conv2d + relu subgraph 1x7x7x2048_512x1x1x2048_512 (float32)",
+      "inputs": {
+        "input": {
+          "shape": [1, 7, 7, 2048],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x7x7x2048_512x1x1x2048_512-input-float32.npy",
+          "type": "float32"
+        },
+        "filter": {
+          "shape": [512, 1, 1, 2048],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x7x7x2048_512x1x1x2048_512-weights-float32.npy",
+          "type": "float32",
+          "constant": true
+        }
+      },
+      "options": {
+        "bias": {
+          "shape": [512],
+          "data": "conv2d_relu/resnet50v2_nhwc/1x7x7x2048_512x1x1x2048_512-bias-float32.npy",
+          "type": "float32"
+        },
+        "inputLayout": "nhwc",
+        "filterLayout": "ohwi",
+        "autoPad": "same-upper"
+      },
+      "expected": {
+        "name": "output",
+        "shape": [1, 7, 7, 512],
+        "data": "conv2d_relu/resnet50v2_nhwc/1x7x7x2048_512x1x1x2048_512-output-float32.npy",
+        "type": "float32"
+      }
+    }
+  ]
+}

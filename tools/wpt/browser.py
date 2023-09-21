@@ -411,7 +411,7 @@ class Firefox(Browser):
         if version:
             dest = os.path.join(dest, version)
         have_cache = False
-        if os.path.exists(dest) and len(os.listdir(dest)) > 0:
+        if os.path.exists(dest) and os.path.exists(os.path.join(dest, "profiles.json")):
             if channel != "nightly":
                 have_cache = True
             else:
@@ -427,7 +427,7 @@ class Firefox(Browser):
 
             url = self.get_profile_bundle_url(version, channel)
 
-            self.logger.info("Installing test prefs from %s" % url)
+            self.logger.info(f"Downloading test prefs from {url}")
             try:
                 extract_dir = tempfile.mkdtemp()
                 unzip(get(url).raw, dest=extract_dir)
@@ -438,8 +438,9 @@ class Firefox(Browser):
                     shutil.move(path, dest)
             finally:
                 rmtree(extract_dir)
+            self.logger.info(f"Test prefs downloaded to {dest}")
         else:
-            self.logger.info("Using cached test prefs from %s" % dest)
+            self.logger.info(f"Using cached test prefs from {dest}")
 
         return dest
 

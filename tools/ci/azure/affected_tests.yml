@@ -25,3 +25,4 @@ steps:
   inputs:
     artifactName: '${{ parameters.artifactName }}'
   condition: succeededOrFailed()
+- template: sysdiagnose.yml

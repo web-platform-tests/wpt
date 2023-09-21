@@ -1730,7 +1730,9 @@ class EdgeChromium(Browser):
 
         if not browser_version:
             # If we can't get the browser version, we just have to assume the
-            # EdgeDriver is good.
+            # MSEdgeDriver is good.
+            self.logger.warning("Unable to get version for the browser "
+                                f"{browser_binary}, assuming MSEdgeDriver is good.")
             return True
 
         # Check that the EdgeDriver version matches the Edge version.

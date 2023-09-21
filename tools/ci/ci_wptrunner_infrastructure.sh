@@ -6,7 +6,7 @@ WPT_ROOT=$SCRIPT_DIR/../..
 cd $WPT_ROOT
 
 run_infra_test() {
-    TERM=dumb ./wpt run --log-mach - --yes --manifest ~/meta/MANIFEST.json --metadata infrastructure/metadata/ --install-fonts --install-webdriver $2 $1 infrastructure/
+    TERM=dumb ./wpt run --log-mach - --yes --manifest ~/meta/MANIFEST.json --metadata infrastructure/metadata/ --install-fonts --install-webdriver --log-wptreport="/home/test/artifacts/wptreport-$1.json" $2 $1 infrastructure/
 }
 
 main() {

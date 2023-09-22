@@ -1654,7 +1654,7 @@ when the condition is quickly met.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cond</strong> (<em>function</em>) – A function taking no arguments and returning a boolean.</p></li>
+<li><p><strong>cond</strong> (<em>function</em>) – A function taking no arguments and returning a boolean or a Promise.</p></li>
 <li><p><strong>description</strong> (<em>string</em>) – Error message to add to assert in case of failure.</p></li>
 <li><p><strong>timeout</strong> (<em>number</em>) – Timeout in ms. This is multiplied by the global timeout_multiplier</p></li>
 <li><p><strong>interval</strong> (<em>number</em>) – Polling interval in ms</p></li>
@@ -1686,7 +1686,7 @@ speed when the condition is quickly met.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cond</strong> (<em>function</em>) – A function taking no arguments and returning a boolean. The callback is called when this function returns true.</p></li>
+<li><p><strong>cond</strong> (<em>function</em>) – A function taking no arguments and returning a boolean or a Promise. The callback is called when this function returns true, or the returned Promise is resolved with true.</p></li>
 <li><p><strong>func</strong> (<em>function</em>) – A function taking no arguments to call once the condition is met.</p></li>
 <li><p><strong>description</strong> (<em>string</em>) – Error message to add to assert in case of failure.</p></li>
 <li><p><strong>timeout</strong> (<em>number</em>) – Timeout in ms. This is multiplied by the global timeout_multiplier</p></li>
@@ -1708,7 +1708,7 @@ when the condition is quickly met.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cond</strong> (<em>function</em>) – A function taking no arguments and returning a boolean. The callback is called when this function returns true.</p></li>
+<li><p><strong>cond</strong> (<em>function</em>) – A function taking no arguments and returning a boolean or a Promise. The callback is called when this function returns true, or the returned Promise is resolved with true.</p></li>
 <li><p><strong>func</strong> (<em>function</em>) – A function taking no arguments to call once the condition is met.</p></li>
 <li><p><strong>description</strong> (<em>string</em>) – Error message to add to assert in case of failure.</p></li>
 <li><p><strong>timeout</strong> (<em>number</em>) – Timeout in ms. This is multiplied by the global timeout_multiplier</p></li>

@@ -1,5 +1,5 @@
 var counter = 0;
-var interacted;
+var clicked;
 var timestamps = []
 const MAX_CLICKS = 50;
 // Entries for one hard navigation + 50 soft navigations.
@@ -20,18 +20,18 @@ const testSoftNavigation =
       const testName = options.testName;
       const pushUrl = readValue(options.pushUrl, true);
       const eventType = readValue(options.eventType, "click");
-      const interactionType = readValue(options.interactionType, 'click');
       const expectLCP = options.validate != 'no-lcp';
+      const eventPrepWork = options.eventPrepWork;
       promise_test(async t => {
         await waitInitialLCP();
         const preClickLcp = await getLcpEntries();
-        setEvent(t, link, pushState, addContent, pushUrl, eventType);
+        setEvent(t, link, pushState, addContent, pushUrl, eventType, eventPrepWork);
         for (let i = 0; i < clicks; ++i) {
           const firstClick = (i === 0);
           let paint_entries_promise =
               waitOnPaintEntriesPromise(expectLCP && firstClick);
-          interacted = false;
-          interact(link, interactionType);
+          clicked = false;
+          click(link);
 
           await new Promise(resolve => {
             (new PerformanceObserver(() => resolve())).observe({
@@ -62,7 +62,7 @@ const testNavigationApi = (testName, navigateEventHandler, link) => {
     await waitInitialLCP();
     const preClickLcp = await getLcpEntries();
     let paint_entries_promise = waitOnPaintEntriesPromise();
-    interact(link);
+    click(link);
     await new Promise(resolve => {
       (new PerformanceObserver(() => resolve())).observe({
         type: 'soft-navigation'
@@ -81,7 +81,7 @@ const testSoftNavigationNotDetected = options => {
     promise_test(async t => {
       const preClickLcp = await getLcpEntries();
       options.eventTarget.addEventListener(options.eventName, options.eventHandler);
-      interact(options.link);
+      click(options.link);
       await new Promise((resolve, reject) => {
         (new PerformanceObserver(() =>
             reject("Soft navigation should not be triggered"))).observe({
@@ -129,22 +129,20 @@ const runEntryValidations =
   }
 };
 
-const interact =
-    (link, interactionType = 'click') => {
-      if (test_driver) {
-        if (interactionType == 'click') {
-          test_driver.click(link);
-        } else {
-          test_driver.send_keys(link, 'j');
-        }
-        timestamps[counter] = {"syncPostInteraction": performance.now()};
-      }
-    }
+const click = link => {
+  if (test_driver) {
+    test_driver.click(link);
+    timestamps[counter] = {"syncPostClick": performance.now()};
+  }
+}
 
-const setEvent = (t, button, pushState, addContent, pushUrl, eventType) => {
-  const eventObject =
-      (eventType == 'click' || eventType == 'keydown') ? button : window;
+const setEvent = (t, button, pushState, addContent, pushUrl, eventType, prepWork) => {
+  const eventObject = (eventType == "click") ? button : window;
+
   eventObject.addEventListener(eventType, async e => {
+    if (prepWork &&!prepWork(t)) {
+      return;
+    }
     timestamps[counter]["eventStart"] = performance.now();
     // Jump through a task, to ensure task tracking is working properly.
     await new Promise(r => t.step_timeout(r, 0));
@@ -165,7 +163,7 @@ const setEvent = (t, button, pushState, addContent, pushUrl, eventType) => {
     await addContent(url);
     ++counter;
 
-    interacted = true;
+    clicked = true;
   });
 };
 
@@ -185,7 +183,7 @@ const validateSoftNavigationEntry = async (clicks, extraValidations,
     assert_true(entry.name.includes(pushUrl ? URL : document.location.href),
                 "The soft navigation name is properly set");
     const entryTimestamp = entry.startTime;
-    assert_less_than_equal(timestamps[i]["syncPostInteraction"], entryTimestamp);
+    assert_less_than_equal(timestamps[i]["syncPostClick"], entryTimestamp);
     assert_greater_than_equal(
         timestamps[i]['eventStart'], entryTimestamp,
         'Event start timestamp matches');

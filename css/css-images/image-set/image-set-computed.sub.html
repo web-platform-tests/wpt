@@ -16,6 +16,41 @@ function test_computed_value_variants(property, specified, computed) {
   test_computed_value(property, "-webkit-" + specified, computed);
 }
 
+function test_calculated_resolution_units() {
+  test_computed_value_variants(
+    'background-image',
+    "image-set(url('http://{{host}}/example.png') calc(1x * 2))",
+    'image-set(url("http://{{host}}/example.png") 2dppx)'
+  );
+
+  test_computed_value_variants(
+    'background-image',
+    "image-set(url('http://{{host}}/example.png') calc(6dppx / 3))",
+    'image-set(url("http://{{host}}/example.png") 2dppx)'
+  );
+
+  test_computed_value_variants(
+    'background-image',
+    "image-set(url('http://{{host}}/example.png') calc(100dpi - 4dpi))",
+    'image-set(url("http://{{host}}/example.png") 1dppx)'
+  );
+
+  test_computed_value_variants(
+    'background-image',
+    "image-set(url('http://{{host}}/example.png') calc(37dpcm + 0.79532dpcm))",
+    [
+      'image-set(url("http://{{host}}/example.png") 1dppx)',
+      'image-set(url("http://{{host}}/example.png") 1.000001dppx)'
+    ]
+  );
+
+  test_computed_value_variants(
+    'background-image',
+    "image-set(url('http://{{host}}/example.png') calc(-1 * 1x))",
+    'image-set(url("http://{{host}}/example.png") 0dppx)'
+  );
+}
+
 // The resolution unit is expected to be converted to the canonical unit 'dppx'
 // for computed style.
 test_computed_value_variants('background-image', "image-set(url(http://{{host}}/example.png) 1x)", 'image-set(url("http://{{host}}/example.png") 1dppx)');
@@ -29,4 +64,10 @@ test_computed_value_variants('background-image', "image-set(url(http://{{host}}/
 test_computed_value_variants('background-image', "image-set(url(http://{{host}}/example.png) type('image/png'))", 'image-set(url("http://{{host}}/example.png") 1dppx type("image/png"))');
 test_computed_value_variants('background-image', "image-set(url(http://{{host}}/example.png) type('image/png') 1x)", 'image-set(url("http://{{host}}/example.png") 1dppx type("image/png"))');
 test_computed_value_variants('content', "image-set(url('http://{{host}}/example.png') 192dpi, linear-gradient(black, white) 1x)", 'image-set(url("http://{{host}}/example.png") 2dppx, linear-gradient(rgb(0, 0, 0), rgb(255, 255, 255)) 1dppx)');
+
+// Unsupported type should still serialize.
+test_computed_value_variants('background-image', 'image-set(url("http://{{host}}/example.png") type("image/unsupported"))', 'image-set(url("http://{{host}}/example.png") 1dppx type("image/unsupported"))');
+test_computed_value_variants('background-image', 'image-set(url("http://{{host}}/example.png") 2x type("image/unsupported"), url("http://{{host}}/example.png") 1x type("image/unsupported"))', 'image-set(url("http://{{host}}/example.png") 2dppx type("image/unsupported"), url("http://{{host}}/example.png") 1dppx type("image/unsupported"))');
+
+test_calculated_resolution_units();
 </script>

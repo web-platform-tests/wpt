@@ -32,7 +32,7 @@ class Protocol:
     :param Browser browser: The Browser using this protocol"""
     __metaclass__ = ABCMeta
 
-    implements = []  # type: ClassVar[List[Type[ProtocolPart]]]
+    implements: ClassVar[List[Type["ProtocolPart"]]] = []
 
     def __init__(self, executor, browser):
         self.executor = executor
@@ -70,9 +70,10 @@ class Protocol:
             msg = "Post-connection steps failed"
             self.after_connect()
         except Exception:
-            if msg is not None:
-                self.logger.warning(msg)
-            self.logger.warning(traceback.format_exc())
+            message = "Protocol.setup caught an exception:\n"
+            message += f"{msg}\n" if msg is not None else ""
+            message += traceback.format_exc()
+            self.logger.warning(message)
             raise
 
     @abstractmethod
@@ -98,7 +99,7 @@ class ProtocolPart:
     :param Protocol parent: The parent protocol"""
     __metaclass__ = ABCMeta
 
-    name = None  # type: ClassVar[str]
+    name: ClassVar[str]
 
     def __init__(self, parent):
         self.parent = parent
@@ -294,6 +295,27 @@ class ClickProtocolPart(ProtocolPart):
     @abstractmethod
     def element(self, element):
         """Perform a trusted click somewhere on a specific element.
+
+        :param element: A protocol-specific handle to an element."""
+        pass
+
+
+
+class AccessibilityProtocolPart(ProtocolPart):
+    """Protocol part for accessibility introspection"""
+    __metaclass__ = ABCMeta
+
+    name = "accessibility"
+
+    @abstractmethod
+    def get_computed_label(self, element):
+        """Return the computed accessibility label for a specific element.
+
+        :param element: A protocol-specific handle to an element."""
+        pass
+
+    def get_computed_role(self, element):
+        """Return the computed accessibility role for a specific element.
 
         :param element: A protocol-specific handle to an element."""
         pass
@@ -592,6 +614,52 @@ class SPCTransactionsProtocolPart(ProtocolPart):
         """Set the SPC transaction automation mode
 
         :param str mode: The automation mode to set"""
+        pass
+
+
+class FedCMProtocolPart(ProtocolPart):
+    """Protocol part for Federated Credential Management"""
+    __metaclass__ = ABCMeta
+
+    name = "fedcm"
+
+    @abstractmethod
+    def cancel_fedcm_dialog(self):
+        """Cancel the FedCM dialog"""
+        pass
+
+    @abstractmethod
+    def select_fedcm_account(self, account_index):
+        """Select a FedCM account
+
+        :param int account_index: The index of the account to select"""
+        pass
+
+    @abstractmethod
+    def get_fedcm_account_list(self):
+        """Get the FedCM account list"""
+        pass
+
+    @abstractmethod
+    def get_fedcm_dialog_title(self):
+        """Get the FedCM dialog title"""
+        pass
+
+    @abstractmethod
+    def get_fedcm_dialog_type(self):
+        """Get the FedCM dialog type"""
+        pass
+
+    @abstractmethod
+    def set_fedcm_delay_enabled(self, enabled):
+        """Sets the FedCM delay as enabled or disabled
+
+        :param bool enabled: The delay to set"""
+        pass
+
+    @abstractmethod
+    def reset_fedcm_cooldown(self):
+        """Set the FedCM cooldown"""
         pass
 
 

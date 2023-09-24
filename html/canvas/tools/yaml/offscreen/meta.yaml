@@ -38,7 +38,7 @@
         } )
 
     tests.append( {
-        'name': 'initial.reset.2dstate',
+        'name': '2d.canvas.host.initial.reset.2dstate',
         'desc': 'Resetting the canvas state resets 2D state variables',
         'code':
     """canvas.width = 100;
@@ -69,6 +69,7 @@
         ('xor',              '1-aB', '1-aA'),
         ('copy',             '1',    '0'),
         ('lighter',          '1',    '1'),
+        ('clear',            '0',    '0'),
     ]
 
     # The ones that change the output when src = (0,0,0,0):
@@ -148,10 +149,10 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             ctx.drawImage(bitmap, 0, 0);
             @assert pixel 50,25 ==~ %s +/- 5;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
     """ % (dest, op, to_test(expected)),
             } )
@@ -175,14 +176,14 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             ctx2.drawImage(bitmap, 0, 0);
             ctx.fillStyle = 'rgba%s';
             ctx.fillRect(0, 0, 100, 50);
             ctx.globalCompositeOperation = '%s';
             ctx.drawImage(offscreenCanvas2, 0, 0);
             @assert pixel 50,25 ==~ %s +/- 5;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
     """ % (dest, op, to_test(expected)),
             } )
@@ -231,11 +232,11 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             ctx.drawImage(bitmap, 40, 40, 10, 10, 40, 50, 10, 10);
             @assert pixel 15,15 ==~ %s +/- 5;
             @assert pixel 50,25 ==~ %s +/- 5;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
     """ % (dest, op, to_test(expected0), to_test(expected0)),
             } )
@@ -280,11 +281,11 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             ctx.fillStyle = ctx.createPattern(bitmap, 'no-repeat');
             ctx.fillRect(0, 50, 100, 50);
             @assert pixel 50,25 ==~ %s +/- 5;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
     """ % (dest, op, to_test(expected0)),
             } )
@@ -532,7 +533,7 @@
         code = ""
         code, expected = gen(name, string, exp, code)
         tests.append( {
-            "name": "size.attributes.parse.%s" % name,
+            "name": "2d.canvas.host.size.attributes.parse.%s" % name,
             "desc": "Parsing of non-negative integers",
             "code": code,
         } )

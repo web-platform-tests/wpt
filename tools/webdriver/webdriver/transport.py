@@ -74,7 +74,7 @@ class Response:
         cls_name = self.__class__.__name__
         if self.error:
             return f"<{cls_name} status={self.status} error={repr(self.error)}>"
-        return f"<{cls_name: }tatus={self.status} body={json.dumps(self.body)}>"
+        return f"<{cls_name}: status={self.status} body={json.dumps(self.body)}>"
 
     def __str__(self):
         return json.dumps(self.body, indent=2)
@@ -92,7 +92,7 @@ class Response:
             headers = ResponseHeaders(http_response.getheaders())
         except ValueError:
             raise ValueError("Failed to decode response body as JSON:\n" +
-                http_response.read())
+                             http_response.read())
 
         return cls(http_response.status, body, headers)
 
@@ -222,7 +222,7 @@ class HTTPWireProtocol:
                 payload = json.dumps(body, cls=encoder, **codec_kwargs)
             except ValueError:
                 raise ValueError("Failed to encode request body as JSON:\n"
-                    "%s" % json.dumps(body, indent=2))
+                                 "%s" % json.dumps(body, indent=2))
 
         # When the timeout triggers, the TestRunnerManager thread will reuse
         # this connection to check if the WebDriver its alive and we may end

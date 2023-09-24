@@ -1,7 +1,9 @@
 import json
 
 import pytest
+import pytest_asyncio
 
+from webdriver.bidi.error import NoSuchInterceptException
 from webdriver.bidi.modules.script import ContextTarget
 
 RESPONSE_COMPLETED_EVENT = "network.responseCompleted"
@@ -9,27 +11,62 @@ RESPONSE_COMPLETED_EVENT = "network.responseCompleted"
 PAGE_EMPTY_HTML = "/webdriver/tests/bidi/network/support/empty.html"
 
 
+@pytest_asyncio.fixture
+async def add_intercept(bidi_session):
+    """Add a network intercept for the provided phases and url patterns, and
+    ensure the intercept is removed at the end of the test."""
+
+    intercepts = []
+    async def add_intercept(phases, url_patterns):
+        nonlocal intercepts
+        intercept = await bidi_session.network.add_intercept(
+            phases=phases,
+            url_patterns=url_patterns,
+        )
+        intercepts.append(intercept)
+
+        return intercept
+
+    yield add_intercept
+
+    # Remove all added intercepts at the end of the test
+    for intercept in intercepts:
+        try:
+            await bidi_session.network.remove_intercept(intercept=intercept)
+        except (NoSuchInterceptException):
+            # Ignore exceptions in case a specific intercept was already removed
+            # during the test.
+            pass
+
+
 @pytest.fixture
-def fetch(bidi_session, top_context):
+def fetch(bidi_session, top_context, configuration):
     """Perform a fetch from the page of the provided context, default to the
     top context.
     """
-    async def fetch(url, method="GET", headers=None, context=top_context):
+    async def fetch(url, method="GET", headers=None, context=top_context, timeout_in_seconds=3):
         method_arg = f"method: '{method}',"
 
         headers_arg = ""
-        if headers != None:
+        if headers is not None:
             headers_arg = f"headers: {json.dumps(headers)},"
+
+        timeout_in_seconds = timeout_in_seconds * configuration["timeout_multiplier"]
 
         # Wait for fetch() to resolve a response and for response.text() to
         # resolve as well to make sure the request/response is completed when
         # the helper returns.
         await bidi_session.script.evaluate(
             expression=f"""
-                 fetch("{url}", {{
-                   {method_arg}
-                   {headers_arg}
-                 }}).then(response => response.text());""",
+                 {{
+                   const controller = new AbortController();
+                   setTimeout(() => controller.abort(), {timeout_in_seconds * 1000});
+                   fetch("{url}", {{
+                     {method_arg}
+                     {headers_arg}
+                     signal: controller.signal
+                   }}).then(response => response.text());
+                 }}""",
             target=ContextTarget(context["context"]),
             await_promise=True,
         )
@@ -37,7 +74,7 @@ def fetch(bidi_session, top_context):
     return fetch
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def setup_network_test(
     bidi_session, subscribe_events, wait_for_event, top_context, url
 ):

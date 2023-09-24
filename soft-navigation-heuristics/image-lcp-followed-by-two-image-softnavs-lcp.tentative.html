@@ -12,13 +12,16 @@
 <body>
   <main id=main>
     <div>
-      <a id=link><img src="/images/ggrr-256x256.png"></a>
+      <a id=link><img src="/images/lcp-256x256.png"></a>
     </div>
   </main>
   <script>
     const link = document.getElementById("link");
 
     promise_test(async t => {
+      if (!performance.softNavPaintMetricsSupported) {
+        return;
+      }
       validatePaintEntries('first-contentful-paint', 1);
       validatePaintEntries('first-paint', 1);
       const preClickLcp = await getLcpEntries();

@@ -14,8 +14,35 @@ async function waitForScrollendEvent(test, target, timeoutMs = 500) {
   return waitForEvent("scrollend", test, target, timeoutMs);
 }
 
+async function waitForScrollendEventNoTimeout(target) {
+  return new Promise((resolve) => {
+    target.addEventListener("scrollend", resolve);
+  });
+}
+
+async function waitForOverscrollEvent(test, target, timeoutMs = 500) {
+  return waitForEvent("overscroll", test, target, timeoutMs);
+}
+
 async function waitForPointercancelEvent(test, target, timeoutMs = 500) {
   return waitForEvent("pointercancel", test, target, timeoutMs);
+}
+
+// Resets the scroll position to (0,0).  If a scroll is required, then the
+// promise is not resolved until the scrollend event is received.
+async function waitForScrollReset(test, scroller, timeoutMs = 500) {
+  return new Promise(resolve => {
+    if (scroller.scrollTop == 0 &&
+        scroller.scrollLeft == 0) {
+      resolve();
+    } else {
+      const eventTarget =
+        scroller == document.scrollingElement ? document : scroller;
+      scroller.scrollTop = 0;
+      scroller.scrollLeft = 0;
+      waitForScrollendEvent(test, eventTarget, timeoutMs).then(resolve);
+    }
+  });
 }
 
 async function createScrollendPromiseForTarget(test,
@@ -42,8 +69,8 @@ async function verifyScrollStopped(test, target_div) {
   const y = target_div.scrollTop;
   return new Promise(resolve => {
     test.step_timeout(() => {
-      assert_equals(x, target_div.scrollLeft);
-      assert_equals(y, target_div.scrollTop);
+      assert_equals(target_div.scrollLeft, x);
+      assert_equals(target_div.scrollTop, y);
       resolve();
     }, unscaled_pause_time_in_ms);
   });
@@ -234,4 +261,24 @@ function conditionHolds(condition, error_message = 'Condition is not true anymor
     }
     tick(0);
   });
+}
+
+function scrollElementDown(element, scroll_amount) {
+  let x = 0;
+  let y = 0;
+  let delta_x = 0;
+  let delta_y = scroll_amount;
+  let actions = new test_driver.Actions()
+  .scroll(x, y, delta_x, delta_y, {origin: element});
+  return  actions.send();
+}
+
+function scrollElementLeft(element, scroll_amount) {
+  let x = 0;
+  let y = 0;
+  let delta_x = scroll_amount;
+  let delta_y = 0;
+  let actions = new test_driver.Actions()
+  .scroll(x, y, delta_x, delta_y, {origin: element});
+  return  actions.send();
 }

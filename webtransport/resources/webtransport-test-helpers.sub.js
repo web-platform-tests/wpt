@@ -20,6 +20,23 @@ function webtransport_code_to_http_code(n) {
   return first + n + Math.floor(n / 0x1e);
 }
 
+// Read all chunks from |readable_stream| and return as an array of arrays
+async function read_stream(readable_stream) {
+  const reader = readable_stream.getReader();
+
+  let chunks = [];
+  while (true) {
+    const {value: chunk, done} = await reader.read();
+    if (done) {
+      break;
+    }
+    chunks.push(chunk);
+  }
+  reader.releaseLock();
+
+  return chunks;
+}
+
 // Read all chunks from |readable_stream|, decode chunks to a utf-8 string, then
 // return the string.
 async function read_stream_as_string(readable_stream) {
@@ -92,4 +109,25 @@ async function readInto(reader, buffer) {
   }
 
   return buffer;
+}
+
+// Opens a new WebTransport connection.
+async function openWebTransport(remoteContextHelper) {
+  const url = webtransport_url('custom-response.py?:status=200');
+  await remoteContextHelper.executeScript((url) => {
+    window.testWebTransport = new WebTransport(url);
+    return window.testWebTransport.ready;
+  }, [url]);
+}
+
+// Opens a new WebTransport connection and then close it.
+async function openThenCloseWebTransport(remoteContextHelper) {
+  const url = webtransport_url('custom-response.py?:status=200');
+  await remoteContextHelper.executeScript((url) => {
+    window.testWebTransport = new WebTransport(url);
+    return window.testWebTransport.ready.then(async () => {
+      window.testWebTransport.close();
+      await window.testWebTransport.closed;
+    });
+  }, [url]);
 }

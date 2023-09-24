@@ -9,6 +9,7 @@ var validRequestHeaders = [
   ["sec", "OK"],
   ["secb", "OK"],
   ["Set-Cookie2", "OK"],
+  ["User-Agent", "OK"],
 ];
 var invalidRequestHeaders = [
   ["Accept-Charset", "KO"],
@@ -17,7 +18,6 @@ var invalidRequestHeaders = [
   ["Accept-Encoding", "KO"],
   ["Access-Control-Request-Headers", "KO"],
   ["Access-Control-Request-Method", "KO"],
-  ["Access-Control-Request-Private-Network", "KO"],
   ["Connection", "KO"],
   ["Content-Length", "KO"],
   ["Cookie", "KO"],

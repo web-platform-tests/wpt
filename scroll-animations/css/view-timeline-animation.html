@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <title>Animations using view-timeline</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
 <link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#view-timelines-named">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -51,9 +52,9 @@
 <template id=default_view_timeline>
   <style>
     #target {
-      view-timeline: t1;
-      animation: anim 1s linear;
-      animation-timeline: t1;
+      view-timeline: --t1;
+      animation: anim 1s linear forwards;
+      animation-timeline: --t1;
     }
   </style>
   <div id=scroller class=vertical-scroller>
@@ -78,7 +79,7 @@
     assert_equals(getComputedStyle(target).zIndex, '50');
     await scrollTop(scroller, 200); // 100% (exit 100%)
     assert_equals(getComputedStyle(target).zIndex, '100');
-    await scrollTop(scroller, 225);
+    document.getAnimations()[0].effect.updateTiming( { fill: 'none' });
     assert_equals(getComputedStyle(target).zIndex, '-1');
   }, 'Default view-timeline');
 </script>
@@ -86,9 +87,9 @@
 <template id=horizontal_timeline>
   <style>
     #target {
-      view-timeline: t1 horizontal;
-      animation: anim 1s linear;
-      animation-timeline: t1;
+      view-timeline: --t1 x;
+      animation: anim 1s linear forwards;
+      animation-timeline: --t1;
     }
   </style>
   <div id=scroller class=horizontal-scroller>
@@ -113,7 +114,7 @@
     assert_equals(getComputedStyle(target).zIndex, '50');
     await scrollLeft(scroller, 200); // 100% (exit 100%)
     assert_equals(getComputedStyle(target).zIndex, '100');
-    await scrollLeft(scroller, 225);
+    document.getAnimations()[0].effect.updateTiming( { fill: 'none' });
     assert_equals(getComputedStyle(target).zIndex, '-1');
   }, 'Horizontal view-timeline');
 </script>
@@ -121,7 +122,7 @@
 <template id=multiple_timelines>
   <style>
     #timelines {
-      view-timeline: tv vertical, th horizontal;
+      view-timeline: --tv y, --th x;
       background-color: red;
     }
     #scroller {
@@ -131,6 +132,7 @@
       display: grid;
       grid-template-columns: 50px 50px 50px 50px 50px 50px 50px;
       grid-template-row: 50px 50px 50px 50px 50px 50px 50px;
+      timeline-scope: --tv, --th;
     }
     #scroller > div {
       z-index: -1;
@@ -138,12 +140,12 @@
       height: 50px;
     }
     #target_v {
-      animation: anim 1s linear;
-      animation-timeline: tv;
+      animation: anim 1s linear forwards;
+      animation-timeline: --tv;
     }
     #target_h {
-      animation: anim 1s linear;
-      animation-timeline: th;
+      animation: anim 1s linear forwards;
+      animation-timeline: --th;
     }
   </style>
   <div id=scroller>
@@ -195,7 +197,8 @@
     await scrollTop(scroller, 200); // 100% (exit 100%)
     assert_equals(getComputedStyle(target_v).zIndex, '100');
     assert_equals(getComputedStyle(target_h).zIndex, '-1');
-    await scrollTop(scroller, 225);
+    document.getElementById('target_v').getAnimations()[0].
+        effect.updateTiming({ fill: 'none' });
     assert_equals(getComputedStyle(target_v).zIndex, '-1');
     assert_equals(getComputedStyle(target_h).zIndex, '-1');
 
@@ -212,7 +215,8 @@
     await scrollLeft(scroller, 200); // 100% (exit 100%)
     assert_equals(getComputedStyle(target_v).zIndex, '-1');
     assert_equals(getComputedStyle(target_h).zIndex, '100');
-    await scrollLeft(scroller, 225);
+    document.getElementById('target_h').getAnimations()[0].
+        effect.updateTiming({ fill: 'none' });
     assert_equals(getComputedStyle(target_v).zIndex, '-1');
     assert_equals(getComputedStyle(target_h).zIndex, '-1');
   }, 'Multiple view-timelines on the same element');

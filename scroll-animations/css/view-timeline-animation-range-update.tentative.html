@@ -19,15 +19,16 @@
     width: 200px;
     height: 200px;
   }
-  #target {
+  /* Reset specificity to allow animation-range-* from .restrict-range to win. */
+  :where(#target) {
     margin: 800px 0px;
     width: 100px;
     height: 100px;
     z-index: -1;
     background-color: green;
     animation:  anim auto both linear;
-    animation-timeline: t1;
-    view-timeline:  t1 block;
+    animation-timeline: --t1;
+    view-timeline:  --t1 block;
   }
   .restrict-range {
     animation-range-start:  contain 0%;

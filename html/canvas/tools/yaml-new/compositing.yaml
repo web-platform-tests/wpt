@@ -1,7 +1,10 @@
 - name: 2d.composite.globalAlpha.range
   code: |
     ctx.globalAlpha = 0.5;
-    var a = ctx.globalAlpha; // might not be exactly 0.5, if it is rounded/quantised, so remember for future comparisons
+    // This may not set it to exactly 0.5 if it is rounded/quantised, so
+    // remember for future comparisons.
+    var a = ctx.globalAlpha;
+    @assert ctx.globalAlpha === a;
     ctx.globalAlpha = 1.1;
     @assert ctx.globalAlpha === a;
     ctx.globalAlpha = -0.1;
@@ -14,7 +17,9 @@
 - name: 2d.composite.globalAlpha.invalid
   code: |
     ctx.globalAlpha = 0.5;
-    var a = ctx.globalAlpha; // might not be exactly 0.5, if it is rounded/quantised, so remember for future comparisons
+    // This may not set it to exactly 0.5 if it is rounded/quantised, so
+    // remember for future comparisons.
+    var a = ctx.globalAlpha;
     ctx.globalAlpha = Infinity;
     @assert ctx.globalAlpha === a;
     ctx.globalAlpha = -Infinity;
@@ -30,22 +35,10 @@
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
-    ctx.globalAlpha = 0.01; // avoid any potential alpha=0 optimisations
+    // Avoiding any potential alpha = 0 optimisations.
+    ctx.globalAlpha = 0.01;
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
-    @assert pixel 50,25 ==~ 2,253,0,255;
-  expected: green
-
-- name: 2d.composite.globalAlpha.image
-  images:
-  - red.png
-  canvasType:
-    ['HTMLCanvas']
-  code: |
-    ctx.fillStyle = '#0f0';
-    ctx.fillRect(0, 0, 100, 50);
-    ctx.globalAlpha = 0.01; // avoid any potential alpha=0 optimisations
-    ctx.drawImage(document.getElementById('red.png'), 0, 0);
     @assert pixel 50,25 ==~ 2,253,0,255;
   expected: green
 
@@ -61,21 +54,9 @@
 
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
-    ctx.globalAlpha = 0.01; // avoid any potential alpha=0 optimisations
+    // Avoiding any potential alpha = 0 optimisations.
+    ctx.globalAlpha = 0.01;
     ctx.drawImage(canvas2, 0, 0);
-    @assert pixel 50,25 ==~ 2,253,0,255;
-  expected: green
-
-- name: 2d.composite.globalAlpha.imagepattern
-  images:
-  - red.png
-  canvasType: ['HTMLCanvas']
-  code: |
-    ctx.fillStyle = '#0f0';
-    ctx.fillRect(0, 0, 100, 50);
-    ctx.fillStyle = ctx.createPattern(document.getElementById('red.png'), 'no-repeat');
-    ctx.globalAlpha = 0.01; // avoid any potential alpha=0 optimisations
-    ctx.fillRect(0, 0, 100, 50);
     @assert pixel 50,25 ==~ 2,253,0,255;
   expected: green
 
@@ -92,7 +73,8 @@
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
     ctx.fillStyle = ctx.createPattern(canvas2, 'no-repeat');
-    ctx.globalAlpha = 0.01; // avoid any potential alpha=0 optimisations
+    // Avoiding any potential alpha = 0 optimisations.
+    ctx.globalAlpha = 0.01;
     ctx.fillRect(0, 0, 100, 50);
     @assert pixel 50,25 ==~ 2,253,0,255;
   expected: green
@@ -176,29 +158,22 @@
 
 
 - name: 2d.composite.globalAlpha.image
-  canvasType: ['OffscreenCanvas']
+  test_type: promise
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
-    ctx.globalAlpha = 0.01; // avoid any potential alpha=0 optimisations
-    var promise = new Promise(function(resolve, reject) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", '/images/red.png');
-        xhr.responseType = 'blob';
-        xhr.send();
-        xhr.onload = function() {
-            resolve(xhr.response);
-        };
-    });
-    promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
-            ctx.drawImage(bitmap, 0, 0);
-            @assert pixel 50,25 ==~ 2,253,0,255;
-        }, t_fail);
-    }).then(t_pass, t_fail);
+    // Avoiding any potential alpha = 0 optimisations.
+    ctx.globalAlpha = 0.01;
+    const response = await fetch('/images/red.png');
+    const blob = await response.blob();
+    const bitmap = await createImageBitmap(blob);
+
+    ctx.drawImage(bitmap, 0, 0);
+    @assert pixel 50,25 ==~ 2,253,0,255;
+  expected: green
 
 - name: 2d.composite.globalAlpha.canvas
-  canvasType: ['OffscreenCanvas']
+  canvasType: ['OffscreenCanvas', 'Worker']
   code: |
     var offscreenCanvas2 = new OffscreenCanvas(100, 50);
     var ctx2 = offscreenCanvas2.getContext('2d');
@@ -206,35 +181,29 @@
     ctx2.fillRect(0, 0, 100, 50);
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
-    ctx.globalAlpha = 0.01; // avoid any potential alpha=0 optimisations
+    // Avoiding any potential alpha = 0 optimisations.
+    ctx.globalAlpha = 0.01;
     ctx.drawImage(offscreenCanvas2, 0, 0);
     @assert pixel 50,25 ==~ 2,253,0,255;
 
 - name: 2d.composite.globalAlpha.imagepattern
-  canvasType: ['OffscreenCanvas']
+  test_type: promise
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
-    var promise = new Promise(function(resolve, reject) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", '/images/red.png');
-        xhr.responseType = 'blob';
-        xhr.send();
-        xhr.onload = function() {
-            resolve(xhr.response);
-        };
-    });
-    promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
-            ctx.fillStyle = ctx.createPattern(bitmap, 'no-repeat');
-            ctx.globalAlpha = 0.01; // avoid any potential alpha=0 optimisations
-            ctx.fillRect(0, 0, 100, 50);
-            @assert pixel 50,25 ==~ 2,253,0,255;
-        }, t_fail);
-    }).then(t_pass, t_fail);
+    const response = await fetch('/images/red.png');
+    const blob = await response.blob();
+    const bitmap = await createImageBitmap(blob);
+
+    ctx.fillStyle = ctx.createPattern(bitmap, 'no-repeat');
+    // Avoiding any potential alpha = 0 optimisations.
+    ctx.globalAlpha = 0.01;
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 50,25 ==~ 2,253,0,255;
+  expected: green
 
 - name: 2d.composite.globalAlpha.canvaspattern
-  canvasType: ['OffscreenCanvas']
+  canvasType: ['OffscreenCanvas', 'Worker']
   code: |
     var offscreenCanvas2 = new OffscreenCanvas(100, 50);
     var ctx2 = offscreenCanvas2.getContext('2d');
@@ -243,12 +212,13 @@
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
     ctx.fillStyle = ctx.createPattern(offscreenCanvas2, 'no-repeat');
-    ctx.globalAlpha = 0.01; // avoid any potential alpha=0 optimisations
+    // Avoiding any potential alpha = 0 optimisations.
+    ctx.globalAlpha = 0.01;
     ctx.fillRect(0, 0, 100, 50);
     @assert pixel 50,25 ==~ 2,253,0,255;
 
 - name: 2d.composite.globalAlpha.canvascopy
-  canvasType: ['OffscreenCanvas']
+  canvasType: ['OffscreenCanvas', 'Worker']
   code: |
     var offscreenCanvas2 = new OffscreenCanvas(100, 50);
     var ctx2 = offscreenCanvas2.getContext('2d');

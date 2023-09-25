@@ -370,7 +370,7 @@ promise_test(async t => {
 
   await decoder.flush();
   assert_equals(outputs, 5);
-  assert_equals(decoder.decodeQueueSize, 0);
+  assert_equals(decoder.decodeQueueSize, 0, 'decoder.decodeQueueSize1');
 }, 'Verify reset() suppresses outputs');
 
 promise_test(async t => {
@@ -575,12 +575,12 @@ promise_test(async t => {
   const decoder = createVideoDecoder(t, callbacks);
 
   // No decodes yet.
-  assert_equals(decoder.decodeQueueSize, 0);
+  assert_equals(decoder.decodeQueueSize, 0, 'decoder.decodeQueueSize1');
 
   decoder.configure(CONFIG);
 
   // Still no decodes.
-  assert_equals(decoder.decodeQueueSize, 0);
+  assert_equals(decoder.decodeQueueSize, 0, 'decoder.decodeQueueSize2');
 
   let lastDequeueSize = Infinity;
   decoder.ondequeue = () => {
@@ -598,9 +598,9 @@ promise_test(async t => {
 
   await decoder.flush();
   // We can guarantee that all decodes are processed after a flush.
-  assert_equals(decoder.decodeQueueSize, 0);
+  assert_equals(decoder.decodeQueueSize, 0, 'decoder.decodeQueueSize3');
   // Last dequeue event should fire when the queue is empty.
-  assert_equals(lastDequeueSize, 0);
+  assert_equals(lastDequeueSize, 0, 'lastDequeueSize');
 
   // Reset this to Infinity to track the decline of queue size for this next
   // batch of decodes.
@@ -611,5 +611,5 @@ promise_test(async t => {
 
   assert_greater_than_equal(decoder.decodeQueueSize, 0);
   decoder.reset();
-  assert_equals(decoder.decodeQueueSize, 0);
+  assert_equals(decoder.decodeQueueSize, 0, 'decoder.decodeQueueSize');
 }, 'VideoDecoder decodeQueueSize test');

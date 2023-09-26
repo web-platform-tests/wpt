@@ -629,6 +629,11 @@ class FedCMProtocolPart(ProtocolPart):
         pass
 
     @abstractmethod
+    def confirm_idp_signin(self):
+        """Confirm IDP signin"""
+        pass
+
+    @abstractmethod
     def select_fedcm_account(self, account_index):
         """Select a FedCM account
 

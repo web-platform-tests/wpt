@@ -15,6 +15,7 @@ from .base import (
 )
 from .executorwebdriver import (
     WebDriverCrashtestExecutor,
+    WebDriverFedCMProtocolPart,
     WebDriverProtocol,
     WebDriverRefTestExecutor,
     WebDriverRun,
@@ -189,8 +190,21 @@ render('%s').then(result => callback(result))""" % pdf_base64)
             self.webdriver.window_handle = handle
 
 
+class ChromeDriverFedCMProtocolPart(WebDriverFedCMProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+        # Company prefix to apply to vendor-specific WebDriver extension commands.
+        self.fedcm_company_prefix = "goog"
+
+
+    def confirm_idp_signin(self):
+        return self.webdriver.send_session_command("POST",
+                                                   self.fedcm_company_prefix + "/fedcm/confirmidpsignin")
+
+
 class ChromeDriverProtocol(WebDriverProtocol):
     implements = [
+        ChromeDriverFedCMProtocolPart,
         ChromeDriverPrintProtocolPart,
         ChromeDriverTestharnessProtocolPart,
         *(part for part in WebDriverProtocol.implements

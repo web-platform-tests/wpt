@@ -702,7 +702,7 @@
          * Accepts a FedCM "Confirm IDP signin" dialog.
          *
          * Matches the `Confirm IDP Signin
-         * <>`_
+         * <https://fedidcg.github.io/FedCM/#webdriver-confirmidpsignin>`_
          * WebDriver command.
          *
          * @param {WindowProxy} context - Browsing context in which

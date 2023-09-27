@@ -220,6 +220,12 @@ class FakeCentral {
     }
     return peripheral;
   }
+
+  // Simulate the result for scanning request. If this function is never called
+  // the default result is success.
+  async simulateScanRequestResult(success) {
+    await this.fake_central_ptr_.simulateScanRequestResult(success);
+  }
 }
 
 class FakePeripheral {

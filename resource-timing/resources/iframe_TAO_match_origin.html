@@ -8,7 +8,7 @@ function request() {
   var dirName = dirname(location.href);
   var client = new XMLHttpRequest,
   // create a cross-origin request
-    url = dirName.replace('://', '://www.') + 'TAOResponse.py?tao=match_origin';
+    url = dirName.replace('://', '://www.') + '/common/CustomCorsResponse.py?tao=match_origin&headers=%7B%22Timing-Allow-Origin%22%3A%20%22*%22%7D';
     client.open("GET", url, false);
     client.send(null);
 }

@@ -209,7 +209,7 @@ class ChromeDriverProtocol(WebDriverProtocol):
         ChromeDriverTestharnessProtocolPart,
         *(part for part in WebDriverProtocol.implements
           if part.name != ChromeDriverTestharnessProtocolPart.name and
-              part.name != ChromeDriverFedCMProtocolPart.name)
+            part.name != ChromeDriverFedCMProtocolPart.name)
     ]
     reuse_window = False
 

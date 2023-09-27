@@ -299,3 +299,89 @@ async function testLockAccess(t, fileHandle, createLock) {
 
   return access;
 }
+
+// Tests expectations of a page in BFCache holding file system access locks.
+//
+// `lockInfo1` and `lockInfo2` are objects that describe the lock to be created
+// on the page. See `bfcache-test-page.js`'s `createLock`.
+//
+// `lockInfo1` is used for the page that is BFCached. `lockInfo2` is used for
+// the page that is navigated to.
+//
+// `contentiousLocks` is true if the locks described by `lockInfo1` and
+// `lockInfo2` are contentious. false otherwise.
+//
+// `testDesc` is the name of the test that is created.
+function createBFCacheTest(lockInfo1, lockInfo2, contentiousLocks, testDesc) {
+  // In the remote context `rc`, calls the `funcName` export of
+  // `bfcache-test-page.js` with `args`.
+  //
+  // Will import `bfcache-test-page.js` if it hasn't been imported already.
+  function executeFunc(rc, funcName, args) {
+    return rc.executeScript(async (funcName, args) => {
+      if (self.testPageFuncs === undefined) {
+        self.testPageFuncs =
+            (await import('/fs/resources/bfcache-test-page.js'));
+      }
+      return await self.testPageFuncs[funcName](...args);
+    }, [funcName, args]);
+  }
+
+  promise_test(async t => {
+    const fileNames = ['hello.txt', 'world.txt'];
+    const rcHelper = new RemoteContextHelper();
+
+    // Open a window with noopener so that BFCache will work.
+    const rc1 = await rcHelper.addWindow(null, {features: 'noopener'});
+
+    // Create a lock on the page that will be BFCached.
+    const lockId1 =
+        await executeFunc(rc1, 'createLock', [lockInfo1, fileNames[0]]);
+    assert_true(lockId1 !== undefined);
+
+    // Creating a lock should not make it inelligible for the BFCache.
+    await assertBFCacheEligibility(rc1, /*shouldRestoreFromBFCache=*/ true);
+
+    // Navigate to a new page and take a lock on a different file then the
+    // BFCached page.
+    {
+      await prepareForBFCache(rc1)
+      const rc2 = await rc1.navigateToNew();
+
+      const lockId2 =
+          await executeFunc(rc2, 'createLock', [lockInfo2, fileNames[1]]);
+      assert_true(lockId2 !== undefined);
+
+      await executeFunc(rc2, 'releaseLock', [lockId2]);
+
+      await rc2.historyBack();
+
+      // Taking a lock on a different file should not evict the page from the
+      // BFCache.
+      await assertImplementsBFCacheOptional(rc1);
+    }
+
+    // Navigate to a new page and take a lock on the same file as the BFCached
+    // page.
+    {
+      await prepareForBFCache(rc1)
+      const rc2 = await rc1.navigateToNew();
+
+      const lockId2 =
+          await executeFunc(rc2, 'createLock', [lockInfo2, fileNames[0]]);
+      assert_true(lockId2 !== undefined);
+
+      await executeFunc(rc2, 'releaseLock', [lockId2]);
+
+      await rc2.historyBack();
+
+      // The page should be evicted if the locks are contentious.
+      if (contentiousLocks) {
+        await assertNotRestoredFromBFCache(rc1);
+      } else {
+        await assertImplementsBFCacheOptional(rc1);
+        await executeFunc(rc1, 'releaseLock', [lockId1]);
+      }
+    }
+  }, testDesc);
+}

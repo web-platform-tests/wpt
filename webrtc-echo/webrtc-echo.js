@@ -136,7 +136,7 @@ function RTP(packet) {
                 offset += length + 1;
             }
         } else {
-            console.warn('TODO: parse two byte extensions');
+            // TODO: parse two byte extensions.
         }
     }
     let bodyLength = packet.byteLength - headerLength;

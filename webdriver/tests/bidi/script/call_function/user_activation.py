@@ -2,6 +2,7 @@ import pytest
 
 from webdriver.bidi.modules.script import ContextTarget
 
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize("user_activation", [True, False])
 async def test_evaluate_userActivation(bidi_session, top_context, user_activation):

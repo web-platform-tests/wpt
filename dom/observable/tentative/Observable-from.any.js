@@ -115,6 +115,83 @@ promise_test(async () => {
 }, "should convert a rejected promise to an Observable");
 
 promise_test(async () => {
+  const unhandledRejectionHandler = () => {
+    assert_unreached("should not emit an unhandledrejection event");
+  };
+
+  self.addEventListener("unhandledrejection", unhandledRejectionHandler);
+
+  try {
+    const promise = Promise.reject("reason");
+
+    const observable = Observable.from(promise);
+    const results = [];
+
+    observable.subscribe({
+      error: (error) => results.push(error),
+    });
+
+    await promise.catch(() => {});
+
+    assert_array_equals(
+      results,
+      [error],
+      "should convert a rejected promise to an Observable"
+    );
+  } finally {
+    self.removeEventListener("unhandledrejection", unhandledRejectionHandler);
+  }
+}, "should not report converted promise errors to unhandled promise rejections if it is handled in the subscription");
+
+promise_test(async () => {
+  const unhandledRejectionHandler = () => {
+    assert_unreached("should not emit an unhandledrejection event");
+  };
+
+  self.addEventListener("unhandledrejection", unhandledRejectionHandler);
+
+  let errorReported = false;
+
+  self.addEventListener(
+    "error",
+    (e) => {
+      assert_equals(e.message, "Uncaught (in observable) error");
+      assert_equals(e.filename, location.href);
+      assert_greater_than(e.lineno, 0);
+      assert_greater_than(e.colno, 0);
+      assert_equals(e.error, "reason");
+      errorReported = true;
+    },
+    { once: true }
+  );
+
+  try {
+    const promise = Promise.reject("reason");
+    const observable = Observable.from(promise);
+    const results = [];
+
+    observable.subscribe({
+      error: (error) => results.push(error),
+    });
+
+    await promise.catch(() => {});
+
+    assert_array_equals(
+      results,
+      [error],
+      "should convert a rejected promise to an Observable"
+    );
+
+    assert_true(
+      errorReported,
+      "should report the error to the global scope properly"
+    );
+  } finally {
+    self.removeEventListener("unhandledrejection", unhandledRejectionHandler);
+  }
+}, "should not report converted promise errors to unhandled promise rejections if it is NOT handled in the subscription");
+
+promise_test(async () => {
   let asyncIteratorsCreated = 0;
   let asyncIterableDone;
 
@@ -208,3 +285,54 @@ promise_test(async () => {
     "should convert an async iterable to an Observable"
   );
 }, "should convert an async iterable to an Observable");
+
+promise_test(async () => {
+  let finalized = false;
+  const generator = (async function* () {
+    let n = 0;
+    try {
+      n++;
+      while (n < 10) {
+        yield n;
+      }
+    } finally {
+      finalized = true;
+    }
+  })();
+
+  const observable = Observable.from(generator);
+
+  assert_true(observable instanceof Observable, "should return an Observable");
+
+  const results = [];
+  const ac = new AbortController();
+
+  const abortHappened = new Promise((resolve) => {
+    observable.subscribe({
+      next: (value) => {
+        results.push(value);
+        if (value === 5) {
+          // End the subscription after 5 values.
+          ac.abort();
+          resolve();
+        }
+      },
+      error: () => assert_unreached("should not error"),
+      complete: () =>
+        assert_unreached(
+          "should not complete, because we aborted the subscription"
+        ),
+      signal: ac.signal,
+    });
+  });
+
+  await abortHappened;
+
+  assert_array_equals(
+    results,
+    [1, 2, 3, 4, 5],
+    "should convert an async generator to an Observable"
+  );
+
+  assert_true(finalized, "should finalize the async generator");
+}, "should call return an on async generator when it is aborted");

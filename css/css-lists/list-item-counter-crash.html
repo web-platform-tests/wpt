@@ -1,0 +1,11 @@
+<!doctype html>
+<style>
+* { counter-increment: c; }
+</style>
+<script>
+  function error_fn() {
+    test.style.setProperty("text-orientation", "upright");
+  }
+</script>
+<li id="test"></li>
+<image onerror="error_fn()" srcset="error" ></image>

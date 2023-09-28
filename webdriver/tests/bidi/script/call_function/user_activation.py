@@ -25,7 +25,7 @@ async def test_userActivation(bidi_session, top_context, user_activation):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("user_activation", [True, False])
-async def test_evaluate_userActivation_copy(bidi_session, top_context, user_activation):
+async def test_userActivation_copy(bidi_session, top_context, user_activation):
     # Consume any previously set activation.
     await bidi_session.script.evaluate(
         expression="""window.open();""",

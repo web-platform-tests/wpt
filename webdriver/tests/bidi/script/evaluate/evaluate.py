@@ -3,6 +3,7 @@ from webdriver.bidi.modules.script import ContextTarget, RealmTarget
 
 from ... import recursive_compare
 
+
 @pytest.mark.asyncio
 async def test_evaluate(bidi_session, top_context):
     result = await bidi_session.script.evaluate(

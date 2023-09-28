@@ -197,9 +197,9 @@ class ChromeDriverFedCMProtocolPart(WebDriverFedCMProtocolPart):
         self.fedcm_company_prefix = "goog"
 
 
-    def confirm_idp_signin(self):
+    def confirm_idp_login(self):
         return self.webdriver.send_session_command("POST",
-                                                   self.fedcm_company_prefix + "/fedcm/confirmidpsignin")
+                                                   self.fedcm_company_prefix + "/fedcm/confirmidplogin")
 
 
 class ChromeDriverProtocol(WebDriverProtocol):

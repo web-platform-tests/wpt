@@ -699,21 +699,21 @@
         },
 
         /**
-         * Accepts a FedCM "Confirm IDP signin" dialog.
+         * Accepts a FedCM "Confirm IDP login" dialog.
          *
-         * Matches the `Confirm IDP Signin
-         * <https://fedidcg.github.io/FedCM/#webdriver-confirmidpsignin>`_
+         * Matches the `Confirm IDP Login
+         * <https://fedidcg.github.io/FedCM/#webdriver-confirmidplogin>`_
          * WebDriver command.
          *
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} Fulfilled after the IDP signin has started,
+         * @returns {Promise} Fulfilled after the IDP login has started,
          *                    or rejected in case the WebDriver command errors
          */
-        confirm_idp_signin: function(context=null) {
-          return window.test_driver_internal.confirm_idp_signin(context);
+        confirm_idp_login: function(context=null) {
+          return window.test_driver_internal.confirm_idp_login(context);
         },
 
         /**
@@ -954,8 +954,8 @@
             throw new Error("cancel_fedcm_dialog() is not implemented by testdriver-vendor.js");
         },
 
-        async confirm_idp_signin(context=null) {
-            throw new Error("confirm_idp_signin() is not implemented by testdriver-vendor.js");
+        async confirm_idp_login(context=null) {
+            throw new Error("confirm_idp_login() is not implemented by testdriver-vendor.js");
         },
 
         async select_fedcm_account(account_index, context=null) {

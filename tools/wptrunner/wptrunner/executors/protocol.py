@@ -629,8 +629,8 @@ class FedCMProtocolPart(ProtocolPart):
         pass
 
     @abstractmethod
-    def confirm_idp_signin(self):
-        """Confirm IDP signin"""
+    def confirm_idp_login(self):
+        """Confirm IDP login"""
         pass
 
     @abstractmethod

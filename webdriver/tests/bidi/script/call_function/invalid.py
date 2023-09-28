@@ -422,6 +422,7 @@ async def test_params_include_shadow_tree_invalid_value(bidi_session, top_contex
             target=ContextTarget(top_context["context"]),
             await_promise=True)
 
+
 @pytest.mark.parametrize("user_activation", ["foo", 42, {}, []])
 async def test_params_user_activation_invalid_type(bidi_session, top_context, user_activation):
     with pytest.raises(error.InvalidArgumentException):

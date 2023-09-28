@@ -1,5 +1,6 @@
 import pytest
 from webdriver.bidi.modules.script import ContextTarget, RealmTarget
+
 from ... import recursive_compare
 
 @pytest.mark.asyncio

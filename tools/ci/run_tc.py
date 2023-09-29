@@ -140,6 +140,10 @@ def install_certificates():
     run(["sudo", "update-ca-certificates"])
 
 
+def start_dbus():
+    run(["sudo", "service", "dbus", "start"])
+
+
 def install_chrome(channel):
     if channel in ("experimental", "dev"):
         deb_archive = "google-chrome-unstable_current_amd64.deb"
@@ -155,7 +159,6 @@ def install_chrome(channel):
     with open(dest, "wb") as f:
         get_download_to_descriptor(f, deb_url)
 
-    run(["sudo", "service", "dbus", "start"])
     run(["sudo", "apt-get", "-qqy", "update"])
     run(["sudo", "gdebi", "-qn", "/tmp/%s" % deb_archive])
 
@@ -258,6 +261,7 @@ def setup_environment(args):
     if "chrome" in args.browser:
         assert args.channel is not None
         install_chrome(args.channel)
+        start_dbus()
 
     if args.xvfb:
         start_xvfb()

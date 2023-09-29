@@ -229,7 +229,7 @@ test(() => {
     sibscriber.error(error);
   });
 
-  // Not error handler provided.
+  // No error handler provided.
   source.subscribe({
     next: () => assert_unreached("next should not be called"),
     complete: () => assert_unreached("complete should not be called"),
@@ -259,7 +259,7 @@ test(() => {
     throw error;
   });
 
-  // Not error handler provided.
+  // No error handler provided.
   source.subscribe({
     next: () => assert_unreached("next should not be called"),
     complete: () => assert_unreached("complete should not be called"),

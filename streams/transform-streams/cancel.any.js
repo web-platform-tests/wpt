@@ -113,4 +113,3 @@ promise_test(async t => {
   const closePromise = ts.readable.cancel(1);
   await promise_rejects_exactly(t, thrownError, closePromise, 'closePromise should reject with thrownError');
 }, 'writable.abort() and readable.cancel() should reject if a transformer.cancel() calls controller.error()');
-  

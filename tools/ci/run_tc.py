@@ -155,6 +155,7 @@ def install_chrome(channel):
     with open(dest, "wb") as f:
         get_download_to_descriptor(f, deb_url)
 
+    run(["sudo", "service", "dbus", "start"])
     run(["sudo", "apt-get", "-qqy", "update"])
     run(["sudo", "gdebi", "-qn", "/tmp/%s" % deb_archive])
 

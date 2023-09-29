@@ -3,8 +3,7 @@ from base64 import decodebytes
 
 import pytest
 
-from tests.support.asserts import assert_error, assert_success
-from tests.support.pdf import assert_pdf
+from tests.support.asserts import assert_error, assert_pdf, assert_success
 
 from . import do_print
 
@@ -76,7 +75,9 @@ def test_large_html_document(session, inline):
     (["9-"], ["Page 9", "Page 10"]),
     (["-2"], ["Page 1", "Page 2"]),
     (["7"], ["Page 7"]),
+    ([7],["Page 7"]),
     (["-2", "9-", "7"], ["Page 1", "Page 2", "Page 7", "Page 9", "Page 10"]),
+    (["-2", "9-", 7], ["Page 1", "Page 2", "Page 7", "Page 9", "Page 10"]),
     (["-5", "2-"], ["Page 1", "Page 2", "Page 3", "Page 4", "Page 5", "Page 6", "Page 7", "Page 8", "Page 9", "Page 10"]),
     ([], ["Page 1", "Page 2", "Page 3", "Page 4", "Page 5", "Page 6", "Page 7", "Page 8", "Page 9", "Page 10"]),
 ])

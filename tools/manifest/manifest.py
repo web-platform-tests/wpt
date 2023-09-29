@@ -1,10 +1,9 @@
 import os
-import sys
 from atomicwrites import atomic_write
 from copy import deepcopy
 from logging import Logger
-from multiprocessing import Pool, cpu_count
-from typing import (Any, Container, Dict, IO, Iterator, Iterable, Optional, Set, Text, Tuple, Type,
+from multiprocessing import Pool
+from typing import (Any, Callable, Container, Dict, IO, Iterator, Iterable, Optional, Set, Text, Tuple, Type,
                     Union)
 
 from . import jsonlib
@@ -15,14 +14,15 @@ from .item import (ConformanceCheckerTest,
                    ManualTest,
                    PrintRefTest,
                    RefTest,
+                   SpecItem,
                    SupportFile,
                    TestharnessTest,
                    VisualTest,
                    WebDriverSpecTest)
 from .log import get_logger
+from .mputil import max_parallelism
 from .sourcefile import SourceFile
 from .typedata import TypeData
-
 
 
 CURRENT_VERSION: int = 8
@@ -48,12 +48,24 @@ item_classes: Dict[Text, Type[ManifestItem]] = {"testharness": TestharnessTest,
                                                 "wdspec": WebDriverSpecTest,
                                                 "conformancechecker": ConformanceCheckerTest,
                                                 "visual": VisualTest,
+                                                "spec": SpecItem,
                                                 "support": SupportFile}
 
 
-def compute_manifest_items(source_file: SourceFile) -> Tuple[Tuple[Text, ...], Text, Set[ManifestItem], Text]:
+def compute_manifest_items(source_file: SourceFile) -> Optional[Tuple[Tuple[Text, ...], Text, Set[ManifestItem], Text]]:
     rel_path_parts = source_file.rel_path_parts
     new_type, manifest_items = source_file.manifest_items()
+    file_hash = source_file.hash
+    return rel_path_parts, new_type, set(manifest_items), file_hash
+
+
+def compute_manifest_spec_items(source_file: SourceFile) -> Optional[Tuple[Tuple[Text, ...], Text, Set[ManifestItem], Text]]:
+    spec_tuple = source_file.manifest_spec_items()
+    if not spec_tuple:
+        return None
+
+    new_type, manifest_items = spec_tuple
+    rel_path_parts = source_file.rel_path_parts
     file_hash = source_file.hash
     return rel_path_parts, new_type, set(manifest_items), file_hash
 
@@ -127,7 +139,8 @@ class Manifest:
                 if path[:tpath_len] == tpath:
                     yield from tests
 
-    def update(self, tree: Iterable[Tuple[Text, Optional[Text], bool]], parallel: bool = True) -> bool:
+    def update(self, tree: Iterable[Tuple[Text, Optional[Text], bool]], parallel: bool = True,
+               update_func: Callable[..., Any] = compute_manifest_items) -> bool:
         """Update the manifest given an iterable of items that make up the updated manifest.
 
         The iterable must either generate tuples of the form (SourceFile, True) for paths
@@ -189,38 +202,31 @@ class Manifest:
             logger.debug("Computing manifest update for %s items" % len(to_update))
             changed = True
 
-
         # 25 items was derived experimentally (2020-01) to be approximately the
         # point at which it is quicker to create a Pool and parallelize update.
         pool = None
-        if parallel and len(to_update) > 25 and cpu_count() > 1:
-            # On Python 3 on Windows, using >= MAXIMUM_WAIT_OBJECTS processes
-            # causes a crash in the multiprocessing module. Whilst this enum
-            # can technically have any value, it is usually 64. For safety,
-            # restrict manifest regeneration to 48 processes on Windows.
-            #
-            # See https://bugs.python.org/issue26903 and https://bugs.python.org/issue40263
-            processes = cpu_count()
-            if sys.platform == "win32" and processes > 48:
-                processes = 48
+        processes = max_parallelism()
+        if parallel and len(to_update) > 25 and processes > 1:
             pool = Pool(processes)
 
             # chunksize set > 1 when more than 10000 tests, because
             # chunking is a net-gain once we get to very large numbers
             # of items (again, experimentally, 2020-01)
             chunksize = max(1, len(to_update) // 10000)
-            logger.debug("Doing a multiprocessed update. CPU count: %s, "
-                "processes: %s, chunksize: %s" % (cpu_count(), processes, chunksize))
-            results: Iterator[Tuple[Tuple[Text, ...],
+            logger.debug("Doing a multiprocessed update. "
+                "Processes: %s, chunksize: %s" % (processes, chunksize))
+            results: Iterator[Optional[Tuple[Tuple[Text, ...],
                                     Text,
-                                    Set[ManifestItem], Text]] = pool.imap_unordered(
-                                        compute_manifest_items,
+                                    Set[ManifestItem], Text]]] = pool.imap_unordered(
+                                        update_func,
                                         to_update,
                                         chunksize=chunksize)
         else:
-            results = map(compute_manifest_items, to_update)
+            results = map(update_func, to_update)
 
         for result in results:
+            if not result:
+                continue
             rel_path_parts, new_type, manifest_items, file_hash = result
             data[new_type][rel_path_parts] = manifest_items
             data[new_type].hashes[rel_path_parts] = file_hash

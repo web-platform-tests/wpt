@@ -20,8 +20,8 @@ def get_browser_args(product, channel):
     if product == "servo":
         return ["--install-browser", "--processes=12"]
     if product == "chrome" or product == "chromium":
-        # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
-        args = ["--enable-swiftshader"]
+        # Taskcluster machines do not have GPUs, so use software rendering via --disable-gpu.
+        args = ["--disable-gpu"]
         if channel == "nightly":
             args.extend(["--install-browser", "--install-webdriver"])
         return args

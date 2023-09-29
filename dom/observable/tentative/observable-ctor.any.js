@@ -1,7 +1,7 @@
 test(() => {
   assert_true(
     typeof Observable === "function",
-    "Observable concstructor is defined"
+    "Observable constructor is defined"
   );
 }, "Observable constructor");
 

@@ -13,10 +13,17 @@ test(() => {
   assert_implements(self.Subscriber, "The Subscriber interface is not implemented");
   assert_true(
     typeof Subscriber === "function",
-    "Subscruber interface is defined as a function"
+    "Subscriber interface is defined as a function"
   );
 
   assert_throws_js(TypeError, () => { new Subscriber(); });
+
+  new Observable(subscriber => {
+    assert_not_equals(subscriber, undefined, "A Subscriber must be passed into the subscribe callback");
+    assert_implements(subscriber.next, "A Subscriber object must have a next() method");
+    assert_implements(subscriber.complete, "A Subscriber object must have a complete() method");
+    assert_implements(subscriber.error, "A Subscriber object must have an error() method");
+  }).subscribe();
 }, "Subscriber interface is not constructible");
 
 test(() => {

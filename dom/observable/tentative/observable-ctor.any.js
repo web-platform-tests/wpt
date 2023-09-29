@@ -214,7 +214,7 @@ test(() => {
     complete: () => assert_unreached("complete should not be called"),
   });
 
-  assert_true(errorReported, "error should be reported");
+  assert_true(errorReported);
 }, "Errors pushed throw the subscriber that are not handled by the subscription are reported");
 
 test(() => {
@@ -244,7 +244,7 @@ test(() => {
     complete: () => assert_unreached("complete should not be called"),
   });
 
-  assert_true(errorReported, "error should be reported");
+  assert_true(errorReported);
 }, "Errors thrown in the initializer that are not handled by the subscription are reported");
 
 test(() => {
@@ -284,7 +284,7 @@ test(() => {
     "should emit values synchronously, but not error values after complete"
   );
 
-  assert_true(errorReported, "error should be reported");
+  assert_true(errorReported);
 }, "subscription reports errors that are pushed after subscriber is closed by completion");
 
 test(() => {
@@ -324,7 +324,7 @@ test(() => {
     "should emit values synchronously, but not error after complete"
   );
 
-  assert_true(errorReported, "error should be reported");
+  assert_true(errorReported);
 }, "Errors thrown by initializer function after subscriber is closed by completion are reported");
 
 test(() => {
@@ -365,7 +365,7 @@ test(() => {
     "should emit values synchronously, but not nexted values after error"
   );
 
-  assert_true(errorReported, "error should be reported");
+  assert_true(errorReported);
 }, "Errors thrown by initializer function after subscriber is closed by error are reported");
 
 test(() => {
@@ -406,7 +406,7 @@ test(() => {
     "should emit values synchronously, but not nexted values after error"
   );
 
-  assert_true(errorReported, "error should be reported");
+  assert_true(errorReported);
 }, "Errors pushed by initializer function after subscriber is closed by error are reported");
 
 test(() => {
@@ -651,7 +651,7 @@ test(() => {
     assert_unreached("should never be reached");
   }
 
-  assert_true(errorReported, "error should be reported");
+  assert_true(errorReported);
 }, "calling subscribe should never throw an error synchronously, initializer throws error");
 
 test(() => {
@@ -681,5 +681,5 @@ test(() => {
     assert_unreached("should never be reached");
   }
 
-  assert_true(errorReported, "error should be reported");
+  assert_true(errorReported);
 }, "calling subscribe should never throw an error synchronously, subscriber pushes error");

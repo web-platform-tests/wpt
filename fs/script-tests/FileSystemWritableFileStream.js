@@ -34,6 +34,19 @@ directory_test(async (t, root) => {
 }, 'createWritable() fails when parent directory is removed');
 
 directory_test(async (t, root) => {
+  const handle =
+      await createFileWithContents(t, 'file_to_remove.txt', '12345', root);
+  await root.removeEntry('file_to_remove.txt');
+
+  await promise_rejects_dom(
+      t, 'NotFoundError', handle.createWritable({keepExistingData: true}));
+  await promise_rejects_dom(
+      t, 'NotFoundError', handle.createWritable({keepExistingData: false}));
+
+  assert_array_equals(await getSortedDirectoryEntries(root), []);
+}, 'createWritable() fails if the file does not exist');
+
+directory_test(async (t, root) => {
   const handle = await createFileWithContents(
       t, 'atomic_file_is_copied.txt', 'fooks', root);
   const stream = await handle.createWritable({keepExistingData: true});

@@ -644,6 +644,24 @@ WebDriver command.</p>
 </dd></dl>
 
 <dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.confirm_idp_login">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">confirm_idp_login</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.confirm_idp_login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accepts a FedCM “Confirm IDP login” dialog.</p>
+<p>Matches the <a class="reference external" href="https://fedidcg.github.io/FedCM/#webdriver-confirmidplogin">Confirm IDP Login</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the IDP login has started, or rejected in case the WebDriver command errors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.select_fedcm_account">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">select_fedcm_account</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">account_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.select_fedcm_account" title="Permalink to this definition">¶</a></dt>
 <dd><p>Selects an account from the Federated Credential Management dialog</p>

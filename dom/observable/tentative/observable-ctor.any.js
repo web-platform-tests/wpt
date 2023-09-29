@@ -1,9 +1,37 @@
 test(() => {
+  assert_implements(self.Observable, "The Observable interface is not implemented");
+
   assert_true(
     typeof Observable === "function",
     "Observable constructor is defined"
   );
+
+  assert_throws_js(TypeError, () => { new Observable(); });
 }, "Observable constructor");
+
+test(() => {
+  assert_implements(self.Subscriber, "The Subscriber interface is not implemented");
+  assert_true(
+    typeof Subscriber === "function",
+    "Subscruber interface is defined as a function"
+  );
+
+  assert_throws_js(TypeError, () => { new Subscriber(); });
+}, "Subscriber interface is not constructible");
+
+test(() => {
+  let initializerCalled = false;
+  const source = new Observable(() => {
+    initializerCalled = true;
+  });
+
+  assert_false(
+    initializerCalled,
+    "initializer should not be called by construction"
+  );
+  source.subscribe();
+  assert_true(initializerCalled, "initializer should be called by subscribe");
+}, "subscribe can be called with no arguments");
 
 test(() => {
   let initializerCalled = false;
@@ -84,20 +112,6 @@ test(() => {
     "should emit values and the throw error synchronously"
   );
 }, "Observable should error if initializer throws");
-
-test(() => {
-  let initializerCalled = false;
-  const source = new Observable(() => {
-    initializerCalled = true;
-  });
-
-  assert_false(
-    initializerCalled,
-    "initializer should not be called by construction"
-  );
-  source.subscribe();
-  assert_true(initializerCalled, "initializer should be called by subscribe");
-}, "subscribe can be called with no arguments");
 
 test(() => {
   const source = new Observable((subscriber) => {

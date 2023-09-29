@@ -24,7 +24,7 @@ test(() => {
 
   source.subscribe({
     next: (x) => results.push(x),
-    error: () => assert_unreached("should not be called"),
+    error: () => assert_unreached("error should not be called"),
     complete: () => results.push("complete"),
   });
 
@@ -47,9 +47,9 @@ test(() => {
   });
 
   source.subscribe({
-    next: () => assert_unreached("should not be called"),
+    next: () => assert_unreached("next should not be called"),
     error: (e) => results.push(e),
-    complete: () => assert_unreached("should not be called"),
+    complete: () => assert_unreached("complete should not be called"),
   });
 
   assert_array_equals(
@@ -75,7 +75,7 @@ test(() => {
   source.subscribe({
     next: (x) => results.push(x),
     error: (e) => results.push(e),
-    complete: () => assert_unreached("should not be called"),
+    complete: () => assert_unreached("complete should not be called"),
   });
 
   assert_array_equals(
@@ -130,7 +130,7 @@ test(() => {
 
   source.subscribe({
     next: (x) => results.push(x),
-    error: () => assert_unreached("should not be called"),
+    error: () => assert_unreached("error should not be called"),
     complete: () => results.push("complete"),
   });
 
@@ -155,7 +155,7 @@ test(() => {
   source.subscribe({
     next: (x) => results.push(x),
     error: (e) => results.push(e),
-    complete: () => assert_unreached("should not be called"),
+    complete: () => assert_unreached("complete should not be called"),
   });
 
   assert_array_equals(
@@ -181,7 +181,7 @@ test(() => {
   source.subscribe({
     next: (x) => results.push(x),
     error: (error) => results.push(error),
-    complete: () => assert_unreached("should not be called"),
+    complete: () => assert_unreached("complete should not be called"),
   });
 
   assert_array_equals(results, [1, 2, error], "should emit synchronously");
@@ -210,8 +210,8 @@ test(() => {
 
   // Not error handler provided.
   source.subscribe({
-    next: () => assert_unreached("should not be called"),
-    complete: () => assert_unreached("should not be called"),
+    next: () => assert_unreached("next should not be called"),
+    complete: () => assert_unreached("complete should not be called"),
   });
 
   assert_true(errorReported, "error should be reported");
@@ -240,8 +240,8 @@ test(() => {
 
   // Not error handler provided.
   source.subscribe({
-    next: () => assert_unreached("should not be called"),
-    complete: () => assert_unreached("should not be called"),
+    next: () => assert_unreached("next should not be called"),
+    complete: () => assert_unreached("complete should not be called"),
   });
 
   assert_true(errorReported, "error should be reported");
@@ -274,7 +274,7 @@ test(() => {
 
   source.subscribe({
     next: (x) => results.push(x),
-    error: () => assert_unreached("should not be called"),
+    error: () => assert_unreached("error should not be called"),
     complete: () => results.push("complete"),
   });
 
@@ -314,7 +314,7 @@ test(() => {
 
   source.subscribe({
     next: (x) => results.push(x),
-    error: () => assert_unreached("should not be called"),
+    error: () => assert_unreached("error should not be called"),
     complete: () => results.push("complete"),
   });
 
@@ -356,7 +356,7 @@ test(() => {
   source.subscribe({
     next: (x) => results.push(x),
     error: (error) => results.push(error),
-    complete: () => assert_unreached("should not be called"),
+    complete: () => assert_unreached("complete should not be called"),
   });
 
   assert_array_equals(
@@ -397,7 +397,7 @@ test(() => {
   source.subscribe({
     next: (x) => results.push(x),
     error: (error) => results.push(error),
-    complete: () => assert_unreached("should not be called"),
+    complete: () => assert_unreached("complete should not be called"),
   });
 
   assert_array_equals(
@@ -430,7 +430,7 @@ test(() => {
         ac.abort();
       }
     },
-    error: () => assert_unreached("should not be called"),
+    error: () => assert_unreached("error should not be called"),
     complete: () =>
       assert_unreached("should not complete because it was aborted"),
     signal: ac.signal,
@@ -504,7 +504,7 @@ test(() => {
 
   source.subscribe({
     next: (x) => results.push(x),
-    error: () => assert_unreached("should not be called"),
+    error: () => assert_unreached("error should not be called"),
     complete: () => results.push("complete"),
   });
 
@@ -559,7 +559,7 @@ test(() => {
   source.subscribe({
     next: (x) => results.push(x),
     error: (error) => results.push(error),
-    complete: () => assert_unreached("should not be called"),
+    complete: () => assert_unreached("complete should not be called"),
   });
 
   assert_array_equals(
@@ -608,7 +608,7 @@ test(() => {
   source.subscribe({
     next: (x) => results.push(x),
     error: (error) => results.push(error),
-    complete: () => assert_unreached("should not be called"),
+    complete: () => assert_unreached("complete should not be called"),
   });
 
   assert_array_equals(

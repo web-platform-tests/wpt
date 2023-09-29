@@ -11,6 +11,7 @@ RUN apt-get -qqy update \
     bzip2 \
     ca-certificates \
     curl \
+    dbug \
     dbus-x11 \
     earlyoom \
     fluxbox \

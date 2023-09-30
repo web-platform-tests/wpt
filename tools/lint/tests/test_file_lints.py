@@ -233,6 +233,16 @@ def test_no_missing_deps():
             assert errors == []
 
 
+def test_html_invalid_syntax():
+    error_map = check_with_files(b"<!doctype html><div/>")
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind == "web-lax":
+            assert errors == [("HTML INVALID SYNTAX", "Test-file line has a non-void HTML tag with /> syntax", filename, 1)]
+
+
 def test_meta_timeout():
     code = b"""
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -610,8 +620,7 @@ def test_variant_missing():
 # A corresponding "positive" test cannot be written because the manifest
 # SourceFile implementation raises a runtime exception for the condition this
 # linting rule describes
-@pytest.mark.parametrize("content", ["",
-                                     "?foo"
+@pytest.mark.parametrize("content", ["?foo"
                                      "#bar"])
 def test_variant_malformed_negative(content):
     code = """\

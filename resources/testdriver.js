@@ -262,7 +262,9 @@
          * occurs.
          *
          * If ``element`` is from a different browsing context, the
-         * command will be run in that context.
+         * command will be run in that context. The test must not depend
+         * on the ``window.name`` property being unset on the target
+         * window.
          *
          * To send special keys, send the respective key's codepoint,
          * as defined by `WebDriver
@@ -294,12 +296,6 @@
                 element.scrollIntoView({behavior: "instant",
                                         block: "end",
                                         inline: "nearest"});
-            }
-
-            var pointerInteractablePaintTree = getPointerInteractablePaintTree(element);
-            if (pointerInteractablePaintTree.length === 0 ||
-                !element.contains(pointerInteractablePaintTree[0])) {
-                return Promise.reject(new Error("element send_keys intercepted error"));
             }
 
             return window.test_driver_internal.send_keys(element, keys);
@@ -334,9 +330,9 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fulfilled with the previous {@link
-         *                    https://www.w3.org/TR/webdriver/#dfn-windowrect-object|WindowRect}
-         *                      value, after the window is minimized.
+         * @returns {Promise} fulfilled with the previous `WindowRect
+         *                    <https://www.w3.org/TR/webdriver/#dfn-windowrect-object>`_
+         *                    value, after the window is minimized.
          */
         minimize_window: function(context=null) {
             return window.test_driver_internal.minimize_window(context);
@@ -349,8 +345,8 @@
          * <https://www.w3.org/TR/webdriver/#set-window-rect>`_
          * WebDriver command
          *
-         * @param {Object} rect - A {@link
-         *                           https://www.w3.org/TR/webdriver/#dfn-windowrect-object|WindowRect}
+         * @param {Object} rect - A `WindowRect
+         *                        <https://www.w3.org/TR/webdriver/#dfn-windowrect-object>`_
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
          *                                browsing context.
@@ -423,8 +419,9 @@
         /**
          * Sets the state of a permission
          *
-         * This function simulates a user setting a permission into a
-         * particular state.
+         * This function causes permission requests and queries for the status
+         * of a certain permission type (e.g. "push", or "background-fetch") to
+         * always return ``state``.
          *
          * Matches the `Set Permission
          * <https://w3c.github.io/permissions/#set-permission-command>`_
@@ -436,8 +433,10 @@
          *
          * @param {PermissionDescriptor} descriptor - a `PermissionDescriptor
          *                              <https://w3c.github.io/permissions/#dom-permissiondescriptor>`_
-         *                              dictionary.
-         * @param {String} state - the state of the permission
+         *                              or derived object.
+         * @param {PermissionState} state - a `PermissionState
+         *                          <https://w3c.github.io/permissions/#dom-permissionstate>`_
+         *                          value.
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
          *                                browsing context.
@@ -700,6 +699,24 @@
         },
 
         /**
+         * Accepts a FedCM "Confirm IDP login" dialog.
+         *
+         * Matches the `Confirm IDP Login
+         * <https://fedidcg.github.io/FedCM/#webdriver-confirmidplogin>`_
+         * WebDriver command.
+         *
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         *
+         * @returns {Promise} Fulfilled after the IDP login has started,
+         *                    or rejected in case the WebDriver command errors
+         */
+        confirm_idp_login: function(context=null) {
+          return window.test_driver_internal.confirm_idp_login(context);
+        },
+
+        /**
          * Selects an account from the Federated Credential Management dialog
          *
          * Matches the `Select account
@@ -935,6 +952,10 @@
 
         async cancel_fedcm_dialog(context=null) {
             throw new Error("cancel_fedcm_dialog() is not implemented by testdriver-vendor.js");
+        },
+
+        async confirm_idp_login(context=null) {
+            throw new Error("confirm_idp_login() is not implemented by testdriver-vendor.js");
         },
 
         async select_fedcm_account(account_index, context=null) {

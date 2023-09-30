@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="help" src="https://drafts.csswg.org/scroll-animations-1/">
 <script src="/web-animations/testcommon.js"></script>
+<script src="/common/reftest-wait.js"></script>
 <style>
   .scroller {
     height: 200px;
@@ -21,6 +22,9 @@
     background: darkred;
     view-timeline: --view;
   }
+  .anim.contain {
+    background: green;
+  }
   .spacer {
     height: 1000px;
   }
@@ -31,9 +35,18 @@
   .after {
     top: 50px;
   }
+  .contain {
+    top: 250px;
+  }
   .indicator {
     position: fixed;
-    top: 315px;
+    top: 50px;
+  }
+  .contain .indicator {
+    top: 100px;
+  }
+  .contain .indicator:nth-child(2) {
+    left: 200px;
   }
 
   .after .indicator {
@@ -62,16 +75,26 @@
   }
 </style>
 </head>
-<body>
-  <p>Neither of the activity indicators should be active as both of the observed elements are out of view.</p>
+<body onload="run()">
+  <p>None of the activity indicators should be active all of the animations are outside of their active range.</p>
   <div class="scroller">
-    <div class="anim after"><div class="indicator">After phase: <div><div></div></div></div></div>
-    <div class="anim before"><div class="indicator">Before phase: <div><div></div></div></div></div>
+    <div class="anim after"><div class="indicator">After cover phase: <div><div></div></div></div></div>
+    <div class="anim before"><div class="indicator">Before cover phase: <div><div></div></div></div></div>
+    <div class="anim contain">
+      <div class="indicator entry">After entry phase: <div><div></div></div></div>
+      <div class="indicator exit">Before exit phase: <div><div></div></div></div>
+    </div>
     <div class="spacer"></div>
   </div>
 </body>
 <script>
-  let scroller = document.querySelector('.scroller');
-  scroller.scrollTo(0, 200);
+  async function run() {
+    // Ensure we don't take the screenshot while paint-holding.
+    await waitForCompositorReady();
+    let scroller = document.querySelector('.scroller');
+    scroller.scrollTo(0, 200);
+    await waitForNextFrame();
+    takeScreenshot();
+  }
 </script>
 </html>

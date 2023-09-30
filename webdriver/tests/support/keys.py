@@ -17,10 +17,9 @@
 
 """The Keys implementation."""
 
-import sys
-
 from collections import OrderedDict
 from inspect import getmembers
+
 
 class Keys(object):
     """
@@ -442,7 +441,7 @@ ALL_EVENTS = OrderedDict(
         )),
         ("META", OrderedDict(
             [
-                ("code", "OSLeft"),
+                ("code", "MetaLeft"),
                 ("ctrl", False),
                 ("key", "Meta"),
                 ("location", 1),
@@ -750,7 +749,7 @@ ALL_EVENTS = OrderedDict(
         )),
         ("R_META", OrderedDict(
             [
-                ("code", "OSRight"),
+                ("code", "MetaRight"),
                 ("ctrl", False),
                 ("key", "Meta"),
                 ("location", 2),

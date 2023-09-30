@@ -1,5 +1,4 @@
 import asyncio
-import json
 
 import pytest
 
@@ -7,7 +6,6 @@ from webdriver.bidi.modules.script import ContextTarget
 
 from tests.support.sync import AsyncPoll
 
-from ... import any_int
 from .. import assert_response_event, HTTP_STATUS_AND_STATUS_TEXT
 
 PAGE_EMPTY_HTML = "/webdriver/tests/bidi/network/support/empty.html"
@@ -32,7 +30,7 @@ async def test_subscribe_status(bidi_session, top_context, wait_for_event, url, 
     # Track all received network.responseStarted events in the events array
     events = []
 
-    async def on_event(method, data):
+    async def on_event(_, data):
         events.append(data)
 
     remove_listener = bidi_session.add_event_listener(
@@ -73,7 +71,7 @@ async def test_subscribe_status(bidi_session, top_context, wait_for_event, url, 
 
 @pytest.mark.asyncio
 async def test_load_page_twice(
-    bidi_session, top_context, wait_for_event, url, fetch, setup_network_test
+    bidi_session, top_context, wait_for_event, url, setup_network_test
 ):
     html_url = url(PAGE_EMPTY_HTML)
 
@@ -81,7 +79,7 @@ async def test_load_page_twice(
     events = network_events[RESPONSE_STARTED_EVENT]
 
     on_response_started = wait_for_event(RESPONSE_STARTED_EVENT)
-    await bidi_session.browsing_context.navigate(
+    result = await bidi_session.browsing_context.navigate(
         context=top_context["context"],
         url=html_url,
         wait="complete",
@@ -102,6 +100,7 @@ async def test_load_page_twice(
         events[0],
         expected_request=expected_request,
         expected_response=expected_response,
+        navigation=result["navigation"],
         redirect_count=0,
     )
 
@@ -112,7 +111,7 @@ async def test_load_page_twice(
 )
 @pytest.mark.asyncio
 async def test_response_status(
-    bidi_session, wait_for_event, url, fetch, setup_network_test, status, status_text
+    wait_for_event, url, fetch, setup_network_test, status, status_text
 ):
     status_url = url(f"/webdriver/tests/support/http_handlers/status.py?status={status}&nocache={RESPONSE_STARTED_EVENT}")
 
@@ -142,7 +141,7 @@ async def test_response_status(
 
 @pytest.mark.asyncio
 async def test_response_headers(
-    bidi_session, wait_for_event, url, fetch, setup_network_test
+    wait_for_event, url, fetch, setup_network_test
 ):
     headers_url = url(
         "/webdriver/tests/support/http_handlers/headers.py?header=foo:bar&header=baz:biz"
@@ -165,8 +164,8 @@ async def test_response_headers(
         "status": 200,
         "statusText": "OK",
         "headers": (
-            {"name": "foo", "value": "bar"},
-            {"name": "baz", "value": "biz"},
+            {"name": "foo", "value": {"type": "string", "value": "bar"}},
+            {"name": "baz", "value": {"type": "string", "value": "biz"}},
         ),
         "protocol": "http/1.1",
     }
@@ -189,7 +188,7 @@ async def test_response_headers(
 )
 @pytest.mark.asyncio
 async def test_response_mime_type_file(
-    bidi_session, url, wait_for_event, fetch, setup_network_test, page_url, mime_type
+    url, wait_for_event, fetch, setup_network_test, page_url, mime_type
 ):
     network_events = await setup_network_test(events=[RESPONSE_STARTED_EVENT])
     events = network_events[RESPONSE_STARTED_EVENT]
@@ -211,7 +210,7 @@ async def test_response_mime_type_file(
 
 
 @pytest.mark.asyncio
-async def test_redirect(bidi_session, wait_for_event, url, fetch, setup_network_test):
+async def test_redirect(bidi_session, url, fetch, setup_network_test):
     text_url = url(PAGE_EMPTY_TEXT)
     redirect_url = url(f"/webdriver/tests/support/http_handlers/redirect.py?location={text_url}")
 

@@ -48,10 +48,11 @@ from .protocol import (AccessibilityProtocolPart,
 
 
 def do_delayed_imports():
-    global errors, marionette, Addons
+    global errors, marionette, Addons, WebAuthn
 
     from marionette_driver import marionette, errors
     from marionette_driver.addons import Addons
+    from marionette_driver.webauthn import WebAuthn
 
 
 def _switch_to_window(marionette, handle):
@@ -73,10 +74,9 @@ def _switch_to_window(marionette, handle):
 
 
 class MarionetteCallbackHandler(CallbackHandler):
-
     def __init__(self, logger, protocol, test_window):
         MarionetteCallbackHandler.expected_exc = (errors.MarionetteException,)
-        super().__init__(self, logger, protocol, test_window)
+        super().__init__(logger, protocol, test_window)
 
 
 class MarionetteBaseProtocolPart(BaseProtocolPart):
@@ -387,7 +387,7 @@ class MarionetteStorageProtocolPart(StorageProtocolPart):
             let principal = ssm.createContentPrincipal(uri, {});
             let qms = Components.classes["@mozilla.org/dom/quota-manager-service;1"]
                                 .getService(Components.interfaces.nsIQuotaManagerService);
-            qms.clearStoragesForPrincipal(principal, "default", null, true);
+            qms.clearStoragesForOriginPrefix(principal, "default");
             """ % url
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
             self.marionette.execute_script(script)
@@ -591,28 +591,28 @@ class MarionetteGenerateTestReportProtocolPart(GenerateTestReportProtocolPart):
 
 class MarionetteVirtualAuthenticatorProtocolPart(VirtualAuthenticatorProtocolPart):
     def setup(self):
-        self.marionette = self.parent.marionette
+        self.webauthn = WebAuthn(self.parent.marionette)
 
     def add_virtual_authenticator(self, config):
-        raise NotImplementedError("add_virtual_authenticator not yet implemented")
+        return self.webauthn.add_virtual_authenticator(config)
 
     def remove_virtual_authenticator(self, authenticator_id):
-        raise NotImplementedError("remove_virtual_authenticator not yet implemented")
+        self.webauthn.remove_virtual_authenticator(authenticator_id)
 
     def add_credential(self, authenticator_id, credential):
-        raise NotImplementedError("add_credential not yet implemented")
+        self.webauthn.add_credential(authenticator_id, credential)
 
     def get_credentials(self, authenticator_id):
-        raise NotImplementedError("get_credentials not yet implemented")
+        return self.webauthn.get_credentials(authenticator_id)
 
     def remove_credential(self, authenticator_id, credential_id):
-        raise NotImplementedError("remove_credential not yet implemented")
+        self.webauthn.remove_credential(authenticator_id, credential_id)
 
     def remove_all_credentials(self, authenticator_id):
-        raise NotImplementedError("remove_all_credentials not yet implemented")
+        self.webauthn.remove_all_credentials(authenticator_id)
 
     def set_user_verified(self, authenticator_id, uv):
-        raise NotImplementedError("set_user_verified not yet implemented")
+        self.webauthn.set_user_verified(authenticator_id, uv)
 
 
 class MarionetteSetPermissionProtocolPart(SetPermissionProtocolPart):
@@ -626,8 +626,8 @@ class MarionetteSetPermissionProtocolPart(SetPermissionProtocolPart):
         }
         try:
             self.marionette._send_message("WebDriver:SetPermission", body)
-        except errors.UnsupportedOperationException:
-            raise NotImplementedError("set_permission not yet implemented")
+        except errors.UnsupportedOperationException as e:
+            raise NotImplementedError("set_permission not yet implemented") from e
 
 
 class MarionettePrintProtocolPart(PrintProtocolPart):
@@ -972,7 +972,7 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
         if self.debug_test and self.browser.supports_devtools:
             self.protocol.debug.load_devtools()
 
-        handler = CallbackHandler(self.logger, protocol, test_window)
+        handler = MarionetteCallbackHandler(self.logger, protocol, test_window)
         protocol.marionette.navigate(url)
         while True:
             result = protocol.base.execute_script(

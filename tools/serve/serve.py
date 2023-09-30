@@ -423,7 +423,7 @@ class ShadowRealmHandler(HtmlWrapperHandler):
 <script>
 (async function() {
   const r = new ShadowRealm();
-
+  r.evaluate("globalThis.self = globalThis; undefined;");
   await new Promise(r.evaluate(`
     (resolve, reject) => {
       (async () => {
@@ -574,6 +574,7 @@ class RoutesBuilder:
             ("*", "/.well-known/attribution-reporting/report-aggregate-attribution", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/debug/report-aggregate-attribution", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/debug/verbose", handlers.PythonScriptHandler),
+            ("*", "/.well-known/private-aggregation/*", handlers.PythonScriptHandler),
             ("*", "/.well-known/web-identity", handlers.PythonScriptHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
             ("GET", "*", handlers.FileHandler)

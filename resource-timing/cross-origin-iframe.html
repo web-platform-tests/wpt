@@ -24,7 +24,7 @@
   promise_test(async t => {
     const iframe = document.createElement('iframe');
     t.add_cleanup(() => iframe.remove());
-    iframe.src = `${REMOTE_ORIGIN}/resource-timing/resources/TAOResponse.py?tao=wildcard`;
+    iframe.src = `%24%7BREMOTE_ORIGIN%7D%2Fcommon%2FCustomCorsResponse.py%3Ftao%3Dwildcard%26headers%3D%257B%2522Timing-Allow-Origin%2522%253A%2520%2522*%2522%257D`;
     document.body.appendChild(iframe);
     const entry = await observe_entry(iframe.src);
     invariants.assert_tao_pass_no_redirect_http(entry);

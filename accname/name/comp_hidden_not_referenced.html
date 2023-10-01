@@ -17,7 +17,7 @@
 <button
   class="ex"
   data-expectedlabel="visible to all users"
-  data-testname="#1: button containing unreferenced text nodes that are hidden, visible to all users, and hidden from all users"
+  data-testname="button containing unreferenced text nodes that are hidden, visible to all users, and hidden from all users"
 >
   <span aria-hidden="true">hidden,</span>
   <span hidden>hidden from all users,</span>
@@ -27,7 +27,7 @@
 <button
   class="ex"
   data-expectedlabel="hidden but referenced,"
-  data-testname="#2: button labelled by element that is hidden"
+  data-testname="button labelled by element that is hidden"
   aria-labelledby="button-label-2"
 >
   <span aria-hidden="true" id="button-label-2">hidden but referenced,</span>
@@ -38,7 +38,7 @@
 <button
   class="ex"
   data-expectedlabel="hidden from all users but referenced,"
-  data-testname="#3: button labelled by element that is hidden from all users"
+  data-testname="button labelled by element that is hidden from all users"
   aria-labelledby="button-label-3"
 >
   <span aria-hidden="true">hidden,</span>
@@ -49,7 +49,7 @@
 <button
   class="ex"
   data-expectedlabel="un-hidden and referenced indirectly,"
-  data-testname="#4: button labelled by hidden element with un-hidden child"
+  data-testname="button labelled by hidden element with un-hidden child"
   aria-labelledby="button-label-4"
 >
   <span aria-hidden="true">hidden,</span>
@@ -63,7 +63,7 @@
 <button
   class="ex"
   data-expectedlabel="un-hidden and referenced directly,"
-  data-testname="#5: button labelled directly by un-hidden child of hidden parent"
+  data-testname="button labelled directly by un-hidden child of hidden parent"
   aria-labelledby="button-label-5-child"
 >
   <span aria-hidden="true">hidden,</span>
@@ -76,7 +76,7 @@
 
 <a
   class="ex"
-  data-testname="#6: link labelled by multiple hidden and non-hidden elements"
+  data-testname="link labelled by multiple hidden and non-hidden elements"
   data-expectedlabel="visible to all users, hidden but referenced, hidden from all users but referenced"
   href="#"
   aria-labelledby="link-label-1a link-label-1b link-label-1c"
@@ -91,7 +91,7 @@
 
 <h2
   class="ex"
-  data-testname="#7: heading with name from content, containing content that is hidden with nested content that is un-hidden"
+  data-testname="heading with name from content, containing content that is hidden with nested content that is un-hidden"
   data-expectedlabel="visible to all users, un-hidden"
 >
   visible to all users,
@@ -103,7 +103,7 @@
 
 <h2
   class="ex"
-  data-testname="#8: heading with name from content, containing content that is hidden from all users with nested content that is un-hidden for all users"
+  data-testname="heading with name from content, containing content that is hidden from all users with nested content that is un-hidden for all users"
   data-expectedlabel="visible to all users, un-hidden for all users"
 >
   visible to all users,
@@ -115,7 +115,7 @@
 
 <h2
   class="ex"
-  data-testname="#9: heading with name from content, containing content that is hidden from all users with nested content that is un-hidden"
+  data-testname="heading with name from content, containing content that is hidden from all users with nested content that is un-hidden"
   data-expectedlabel="visible to all users,"
 >
   visible to all users,

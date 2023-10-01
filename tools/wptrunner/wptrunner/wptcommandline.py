@@ -61,6 +61,8 @@ scheme host and port.""")
                         help="Split run into groups by directories. With a parameter,"
                         "limit the depth of splits e.g. --run-by-dir=1 to split by top-level"
                         "directory")
+    parser.add_argument("-f", "--fully-parallel", action='store_true',
+                        help='Run every test in a separate group for fully parallelism.')
     parser.add_argument("--processes", action="store", type=int, default=None,
                         help="Number of simultaneous processes to use")
     parser.add_argument("--max-restarts", action="store", type=int, default=5,
@@ -158,6 +160,8 @@ scheme host and port.""")
                                       help="Path to json file containing a mapping {group_name: [test_ids]}")
     test_selection_group.add_argument("--skip-timeout", action="store_true",
                                       help="Skip tests that are expected to time out")
+    test_selection_group.add_argument("--skip-crash", action="store_true",
+                                      help="Skip tests that are expected to crash")
     test_selection_group.add_argument("--skip-implementation-status",
                                       action="append",
                                       choices=["not-implementing", "backlog", "implementing"],
@@ -583,13 +587,18 @@ def check_args(kwargs):
         else:
             kwargs["chunk_type"] = "none"
 
-    if kwargs["test_groups_file"] is not None:
-        if kwargs["run_by_dir"] is not False:
-            print("Can't pass --test-groups and --run-by-dir")
-            sys.exit(1)
-        if not os.path.exists(kwargs["test_groups_file"]):
-            print("--test-groups file %s not found" % kwargs["test_groups_file"])
-            sys.exit(1)
+    if sum([
+        kwargs["test_groups_file"] is not None,
+        kwargs["run_by_dir"] is not False,
+        kwargs["fully_parallel"],
+    ]) > 1:
+        print('Must pass up to one of: --test-groups, --run-by-dir, --fully-parallel')
+        sys.exit(1)
+
+    if (kwargs["test_groups_file"] is not None and
+        not os.path.exists(kwargs["test_groups_file"])):
+        print("--test-groups file %s not found" % kwargs["test_groups_file"])
+        sys.exit(1)
 
     # When running on Android, the number of workers is decided by the number of
     # emulators. Each worker will use one emulator to run the Android browser.
@@ -604,7 +613,8 @@ def check_args(kwargs):
             sys.exit(1)
 
     if kwargs["processes"] is None:
-        kwargs["processes"] = 1
+        from manifest import mputil  # type: ignore
+        kwargs["processes"] = mputil.max_parallelism() if kwargs["fully_parallel"] else 1
 
     if kwargs["debugger"] is not None:
         import mozdebug

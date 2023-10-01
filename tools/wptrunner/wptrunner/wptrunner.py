@@ -66,7 +66,8 @@ def get_loader(test_paths, product, **kwargs):
 
     if kwargs["test_groups_file"] is not None:
         test_groups = testloader.TestGroups(logger,
-                                            kwargs["test_groups_file"])
+                                            kwargs["test_groups_file"],
+                                            subsuites)
     else:
         test_groups = None
 
@@ -114,6 +115,7 @@ def get_loader(test_paths, product, **kwargs):
                                         include_h2=h2_enabled,
                                         include_webtransport_h3=kwargs["enable_webtransport_h3"],
                                         skip_timeout=kwargs["skip_timeout"],
+                                        skip_crash=kwargs["skip_crash"],
                                         skip_implementation_status=kwargs["skip_implementation_status"],
                                         chunker_kwargs=chunker_kwargs)
     return test_source, test_loader
@@ -193,7 +195,7 @@ def run_test_iteration(test_status, test_loader, test_source,
                 tests_by_type[(subsuite_name, test_type)].extend(type_tests_active)
                 tests_by_type[(subsuite_name, test_type)].extend(type_tests_disabled)
 
-    tests_by_group = test_source.cls.tests_by_group(tests_by_type, **kwargs)
+    tests_by_group = test_source.cls.tests_by_group(tests_by_type, **test_source.kwargs)
 
     log_suite_start(tests_by_group,
                     test_loader.base_run_info,
@@ -261,8 +263,8 @@ def run_test_iteration(test_status, test_loader, test_source,
     unexpected_pass_tests = defaultdict(list)
     recording.pause()
     retry_counts = kwargs["retry_unexpected"]
-    for i in range(retry_counts + 1):
-        if i > 0:
+    for retry_index in range(retry_counts + 1):
+        if retry_index > 0:
             if kwargs["fail_on_unexpected_pass"]:
                 for (subtests, test_type), tests in unexpected_pass_tests.items():
                     unexpected_fail_tests[(subtests, test_type)].extend(tests)
@@ -281,6 +283,7 @@ def run_test_iteration(test_status, test_loader, test_source,
         with ManagerGroup("web-platform-tests",
                           test_source,
                           test_implementations,
+                          retry_index,
                           kwargs["rerun"],
                           kwargs["pause_after_test"],
                           kwargs["pause_on_unexpected"],

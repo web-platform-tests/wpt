@@ -46,9 +46,9 @@ class TestRunner:
     that is passed in.
 
     :param logger: Structured logger
-    :param command_queue: subprocess.Queue used to send commands to the
+    :param command_queue: multiprocessing.Queue used to send commands to the
                           process
-    :param result_queue: subprocess.Queue used to send results to the
+    :param result_queue: multiprocessing.Queue used to send results to the
                          parent TestRunnerManager process
     :param executor: TestExecutor object that will actually run a test.
     """
@@ -120,7 +120,9 @@ class TestRunner:
         try:
             return self.executor.run_test(test)
         except Exception:
-            self.logger.error(traceback.format_exc())
+            message = "TestRunner.run_test caught an exception:\n"
+            message += traceback.format_exc()
+            self.logger.error(message)
             raise
 
     def wait(self):
@@ -211,10 +213,9 @@ class BrowserManager:
             self.browser.start(group_metadata=group_metadata, **self.browser_settings)
             self.browser_pid = self.browser.pid
         except Exception:
-            self.logger.warning("Failure during init %s" % traceback.format_exc())
+            self.logger.error(f"Failure during init:\n{traceback.format_exc()}")
             if self.init_timer is not None:
                 self.init_timer.cancel()
-            self.logger.error(traceback.format_exc())
             succeeded = False
         else:
             succeeded = True
@@ -269,7 +270,7 @@ RunnerManagerState = _RunnerManagerState()
 
 class TestRunnerManager(threading.Thread):
     def __init__(self, suite_name, index, test_queue, test_source_cls,
-                 test_implementations, stop_flag, rerun=1,
+                 test_implementations, stop_flag, retry_index=0, rerun=1,
                  pause_after_test=False, pause_on_unexpected=False,
                  restart_on_unexpected=True, debug_info=None,
                  capture_stdio=True, restart_on_new_group=True, recording=None, max_restarts=5):
@@ -316,6 +317,9 @@ class TestRunnerManager(threading.Thread):
         self.parent_stop_flag = stop_flag
         self.child_stop_flag = mp.Event()
 
+        # Keep track of the current retry index. The retries are meant to handle
+        # flakiness, so at retry round we should restart the browser after each test.
+        self.retry_index = retry_index
         self.rerun = rerun
         self.run_count = 0
         self.pause_after_test = pause_after_test
@@ -396,10 +400,28 @@ class TestRunnerManager(threading.Thread):
                 self.state = new_state
                 self.logger.debug(f"new state: {self.state.__class__.__name__}")
         except Exception:
-            self.logger.error(traceback.format_exc())
+            message = "Uncaught exception in TestRunnerManager.run:\n"
+            message += traceback.format_exc()
+            self.logger.critical(message)
             raise
         finally:
             self.logger.debug("TestRunnerManager main loop terminating, starting cleanup")
+
+            skipped_tests = []
+            while True:
+                _, _, test, _, _ = self.get_next_test()
+                if test is None:
+                    break
+                skipped_tests.append(test)
+
+            if skipped_tests:
+                self.logger.critical(
+                    f"Tests left in the queue: {skipped_tests[0].id!r} "
+                    f"and {len(skipped_tests) - 1} others"
+                )
+                for test in skipped_tests[1:]:
+                    self.logger.debug("Test left in the queue: {test[0].id!r}")
+
             force_stop = (not isinstance(self.state, RunnerManagerState.stop) or
                           self.state.force_stop)
             self.stop_runner(force=force_stop)
@@ -614,6 +636,7 @@ class TestRunnerManager(threading.Thread):
             wait_timeout = (self.state.test.timeout * self.executor_kwargs['timeout_multiplier'] +
                             3 * self.executor_cls.extra_timeout)
             self.timer = threading.Timer(wait_timeout, self._timeout)
+            self.timer.name = f"{self.name}-timeout"
 
         self.send_message("run_test", self.state.test)
         if self.timer:
@@ -731,7 +754,7 @@ class TestRunnerManager(threading.Thread):
                              stack=file_result.stack,
                              subsuite=self.state.subsuite)
 
-        restart_before_next = (test.restart_after or
+        restart_before_next = (self.retry_index > 0 or test.restart_after or
                                file_result.status in ("CRASH", "EXTERNAL-TIMEOUT", "INTERNAL-ERROR") or
                                ((subtest_unexpected or is_unexpected) and
                                 self.restart_on_unexpected))
@@ -763,13 +786,17 @@ class TestRunnerManager(threading.Thread):
             subsuite, test_type, test, test_group, group_metadata = self.get_next_test()
             if test is None:
                 return RunnerManagerState.stop(force_stop)
-            if test_type != self.state.test_type:
+            if subsuite != self.state.subsuite:
+                self.logger.info(f"Restarting browser for new subsuite:{subsuite}")
+                restart = True
+            elif test_type != self.state.test_type:
                 self.logger.info(f"Restarting browser for new test type:{test_type}")
                 restart = True
             elif self.restart_on_new_group and test_group is not self.state.test_group:
                 self.logger.info("Restarting browser for new test group")
                 restart = True
         else:
+            subsuite = self.state.subsuite
             test_type = self.state.test_type
             test_group = self.state.test_group
             group_metadata = self.state.group_metadata
@@ -865,6 +892,8 @@ class TestRunnerManager(threading.Thread):
         self.logger.debug("TestRunnerManager cleanup")
         if self.browser:
             self.browser.cleanup()
+        if self.timer:
+            self.timer.cancel()
         while True:
             try:
                 cmd, data = self.command_queue.get_nowait()
@@ -888,20 +917,10 @@ class TestRunnerManager(threading.Thread):
                 break
 
 
-def make_test_queue(tests, test_source):
-    queue, num_of_workers = test_source.cls.make_queue(tests, **test_source.kwargs)
-
-    # There is a race condition that means sometimes we continue
-    # before the tests have been written to the underlying pipe.
-    # Polling the pipe for data here avoids that
-    queue._reader.poll(10)
-    assert not queue.empty()
-    return queue, num_of_workers
-
-
 class ManagerGroup:
     """Main thread object that owns all the TestRunnerManager threads."""
     def __init__(self, suite_name, test_source, test_implementations,
+                 retry_index=0,
                  rerun=1,
                  pause_after_test=False,
                  pause_on_unexpected=False,
@@ -918,6 +937,7 @@ class ManagerGroup:
         self.pause_on_unexpected = pause_on_unexpected
         self.restart_on_unexpected = restart_on_unexpected
         self.debug_info = debug_info
+        self.retry_index = retry_index
         self.rerun = rerun
         self.capture_stdio = capture_stdio
         self.restart_on_new_group = restart_on_new_group
@@ -939,8 +959,8 @@ class ManagerGroup:
 
     def run(self, tests):
         """Start all managers in the group"""
-
-        test_queue, size = make_test_queue(tests, self.test_source)
+        test_queue, size = self.test_source.cls.make_queue(
+            tests, **self.test_source.kwargs)
         self.logger.info("Using %i child processes" % size)
 
         for idx in range(size):
@@ -950,6 +970,7 @@ class ManagerGroup:
                                         self.test_source.cls,
                                         self.test_implementations,
                                         self.stop_flag,
+                                        self.retry_index,
                                         self.rerun,
                                         self.pause_after_test,
                                         self.pause_on_unexpected,

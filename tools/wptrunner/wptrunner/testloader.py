@@ -6,6 +6,7 @@ import hashlib
 import itertools
 import json
 import os
+import queue
 from urllib.parse import urlsplit
 from abc import ABCMeta, abstractmethod
 from queue import Empty
@@ -15,7 +16,6 @@ from typing import cast, Any, Dict, List, Optional, Set
 from . import manifestinclude
 from . import manifestexpected
 from . import manifestupdate
-from . import mpcontext
 from . import wpttest
 from mozlog import structured
 
@@ -149,15 +149,17 @@ def read_include_from_file(file):
 
 
 def update_include_for_groups(test_groups, include):
+    new_include = []
     if include is None:
         # We're just running everything
-        return
-    new_include = []
-    for item in include:
-        if item in test_groups.tests_by_group:
-            new_include.extend(test_groups.tests_by_group[item])
-        else:
-            new_include.append(item)
+        for tests in test_groups.tests_by_group.values():
+            new_include.extend(tests)
+    else:
+        for item in include:
+            if item in test_groups.tests_by_group:
+                new_include.extend(test_groups.tests_by_group[item])
+            else:
+                new_include.append(item)
     return new_include
 
 
@@ -331,6 +333,7 @@ class TestLoader:
                  include_h2=True,
                  include_webtransport_h3=False,
                  skip_timeout=False,
+                 skip_crash=False,
                  skip_implementation_status=None,
                  chunker_kwargs=None):
 
@@ -348,6 +351,7 @@ class TestLoader:
         self.include_h2 = include_h2
         self.include_webtransport_h3 = include_webtransport_h3
         self.skip_timeout = skip_timeout
+        self.skip_crash = skip_crash
         self.skip_implementation_status = skip_implementation_status
 
         self.chunk_type = chunk_type
@@ -448,8 +452,12 @@ class TestLoader:
                     enabled = False
                 if self.skip_timeout and test.expected() == "TIMEOUT":
                     enabled = False
-                if self.skip_implementation_status and test.implementation_status() in self.skip_implementation_status:
+                if self.skip_crash and test.expected() == "CRASH":
                     enabled = False
+                if self.skip_implementation_status and test.implementation_status() in self.skip_implementation_status:
+                    # for backlog, we want to run timeout/crash:
+                    if not (test.implementation_status() == "implementing" and test.expected() in ["TIMEOUT", "CRASH"]):
+                        enabled = False
                 target = tests_enabled if enabled else tests_disabled
                 target[subsuite_name][test_type].append(test)
 
@@ -474,7 +482,9 @@ def get_test_src(**kwargs):
     test_source_kwargs = {"processes": kwargs["processes"],
                           "logger": kwargs["logger"]}
     chunker_kwargs = {}
-    if kwargs["run_by_dir"] is not False:
+    if kwargs["fully_parallel"]:
+        test_source_cls = FullyParallelGroupedSource
+    elif kwargs["run_by_dir"] is not False:
         # A value of None indicates infinite depth
         test_source_cls = PathGroupedSource
         test_source_kwargs["depth"] = kwargs["run_by_dir"]
@@ -502,8 +512,7 @@ class TestSource:
 
     @classmethod
     def make_queue(cls, tests_by_type, **kwargs):
-        mp = mpcontext.get_context()
-        test_queue = mp.Queue()
+        test_queue = queue.SimpleQueue()
         groups = cls.make_groups(tests_by_type, **kwargs)
         processes = cls.process_count(kwargs["processes"], len(groups))
         if processes > 1:
@@ -582,11 +591,11 @@ class SingleTestSource(TestSource):
 
     @classmethod
     def tests_by_group(cls, tests_by_type, **kwargs):
-        rv = {}
+        groups = defaultdict(list)
         for (subsuite, test_type), tests in tests_by_type.items():
             group_name = f"{subsuite}:{cls.group_metadata(None)['scope']}"
-            rv[group_name] = [t.id for t in tests]
-        return rv
+            groups[group_name].extend(test.id for test in tests)
+        return groups
 
 
 class PathGroupedSource(TestSource):
@@ -633,6 +642,17 @@ class PathGroupedSource(TestSource):
         return {"scope": "/%s" % "/".join(state["prev_group_key"][2])}
 
 
+class FullyParallelGroupedSource(PathGroupedSource):
+    # Chuck every test into a different group, so that they can run
+    # fully parallel with each other. Useful to run a lot of tests
+    # clustered in a few directories.
+    @classmethod
+    def new_group(cls, state, subsuite, test_type, test, **kwargs):
+        path = urlsplit(test.url).path.split("/")[1:-1]
+        state["prev_group_key"] = (subsuite, test_type, path)
+        return True
+
+
 class GroupFileTestSource(TestSource):
     @classmethod
     def make_groups(cls, tests_by_type, **kwargs):
@@ -653,7 +673,6 @@ class GroupFileTestSource(TestSource):
 
     @classmethod
     def tests_by_group(cls, tests_by_type, **kwargs):
-        logger = kwargs["logger"]
         test_groups = kwargs["test_groups"]
 
         tests_by_group = defaultdict(list)
@@ -662,7 +681,7 @@ class GroupFileTestSource(TestSource):
                 try:
                     group = test_groups.group_by_test[(subsuite, test.id)]
                 except KeyError:
-                    logger.error("%s is missing from test groups file" % test.id)
+                    print(f"{test.id} is missing from test groups file")
                     raise
                 if subsuite:
                     group_name = f"{subsuite}:{group}"

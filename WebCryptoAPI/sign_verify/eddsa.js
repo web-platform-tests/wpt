@@ -160,7 +160,7 @@ function run_test() {
   });
 
   // Check for successful signing and verification.
-  testVectors.forEach(function(vector) {
+  testVectors.concat(getAdditionalTestVectors()).forEach(function(vector) {
       var promise = importVectorKeys(vector, ["verify"], ["sign"])
       .then(function(vectors) {
           var algorithm = {name: vector.algorithmName};
@@ -174,7 +174,10 @@ function run_test() {
                       return signature;
                   }, function(err) {
                       assert_unreached("verify error for test " + vector.name + ": " + err.message + "'");
-                  });
+                  })
+                  .then((signature) => {
+                    assert_true(equalBuffers(signature, vector.signature), "Unexpected signature.")
+                  })
               }, function(err) {
                   assert_unreached("sign error for test " + vector.name + ": '" + err.message + "'");
               });

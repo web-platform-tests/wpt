@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>[lang] and shadow DOM</title>
+<link rel="author" title="Eric Meyer" href="mailto:emeyer@igalia.com">
+<link rel="author" title="L. David Baron" href="https://dbaron.org/">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/C#the-lang-and-xml:lang-attributes">
+<link rel="help" href="https://github.com/whatwg/html/issues/3699">
+<link rel="help" href="https://github.com/whatwg/html/pull/9796">
+<style type="text/css">
+body {width: 600px;}
+#host {background: silver; margin: 1em; padding: 0.25em;}
+span {border: 1px solid silver;}
+[data-result='en'] {padding: 0.5em; border: 1px solid red;}
+[data-result='en-AU'] {padding: 0.5em; border: 5px solid red;}
+</style>
+</head>
+<body data-result="en">[attr: en]
+
+<p data-result="en">[attr: ] 'lang="en-AU"' on the shadow host, no light tree element, no 'lang' attribute on the slot</p>
+<p data-result="en">[attr: ] Any match for :lang(en) gets a 1px red border; any match for :lang(en-AU) gets a 5px red border
+<div id="host" data-result="en-AU">[attr: en-AU] English</div>
+
+</body>
+</html>

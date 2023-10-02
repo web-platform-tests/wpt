@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+    promise_test(async t => {
+        for (let i = 0; i < 32; ++i) {
+            const timestamp = await new Promise(resolve => requestAnimationFrame(ts => resolve(ts)));
+            assert_approx_equals(timestamp * 100, Math.round(timestamp * 100), 0.1);
+            assert_approx_equals(document.timeline.currentTime * 100, Math.round(document.timeline.currentTime * 100), 0.1);
+        }
+    });
+</script>
+</body>
+</html>

@@ -46,6 +46,10 @@
   <span>visible to all users</span>
 </button>
 
+<!-- TODO: Restore the following test once expectation for `aria-hidden="false"`
+<!--       behavior is documented. See: -->
+<!--       https://github.com/w3c/aria/issues/1256 -->
+<!-- 
 <button
   class="ex"
   data-expectedlabel="un-hidden and referenced indirectly,"
@@ -59,7 +63,12 @@
   <span hidden>hidden from all users,</span>
   <span>visible to all users</span>
 </button>
+-->
 
+<!-- TODO: Restore the following test once expectation for `aria-hidden="false"`
+<!--       behavior is documented. See: -->
+<!--       https://github.com/w3c/aria/issues/1256 -->
+<!-- 
 <button
   class="ex"
   data-expectedlabel="un-hidden and referenced directly,"
@@ -73,6 +82,7 @@
   <span hidden>hidden from all users,</span>
   <span>visible to all users</span>
 </button>
+-->
 
 <a
   class="ex"
@@ -89,6 +99,10 @@
   <span hidden id="link-label-1c">hidden from all users but referenced</span>
 </a>
 
+<!-- TODO: Restore the following test once expectation for `aria-hidden="false"`
+<!--       behavior is documented. See: -->
+<!--       https://github.com/w3c/aria/issues/1256 -->
+<!-- 
 <h2
   class="ex"
   data-testname="heading with name from content, containing rendered content that is aria-hidden=true with nested, rendered content that is aria-hidden=false"
@@ -100,6 +114,7 @@
     <span aria-hidden="false">un-hidden</span>
   </span>
 </h2>
+-->
 
 <h2
   class="ex"
@@ -113,6 +128,10 @@
   </span>
 </h2>
 
+<!-- TODO: Restore the following test once expectation for `aria-hidden="false"`
+<!--       behavior is documented. See: -->
+<!--       https://github.com/w3c/aria/issues/1256 -->
+<!-- 
 <h2
   class="ex"
   data-testname="heading with name from content, containing element with the hidden host language attribute with nested content that is aria-hidden=false"
@@ -124,6 +143,7 @@
     <span aria-hidden="false">un-hidden</span>
   </span>
 </h2>
+ -->
 
 <!-- TODO: New test case?
 <!--       What is the expectation for a details element when it’s given an -->

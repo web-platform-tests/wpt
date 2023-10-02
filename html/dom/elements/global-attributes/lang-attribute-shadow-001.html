@@ -13,14 +13,14 @@ body {width: 600px;}
 #host {background: silver; margin: 1em; padding: 0.25em;}
 span {border: 1px solid silver;}
 html *::before {content: "[attr: " attr(lang) "] ";}
-*:lang('en') {padding: 0.5em; border: 1px solid red;}
-*:lang('en-AU') {padding: 0.5em; border-width: 5px;}
+*:lang(en) {padding: 0.5em; border: 1px solid red;}
+*:lang(en-AU) {padding: 0.5em; border-width: 5px;}
 </style>
 </head>
 <body lang="en">
 
 <p>No 'lang' attribute on the shadow host, no light tree element, 'lang="en-AU"' attribute on the slot</p>
-<p>Any match for :lang('en') gets a 1px red border; any match for :lang('en-AU') gets a 5px red border
+<p>Any match for :lang(en) gets a 1px red border; any match for :lang(en-AU) gets a 5px red border
 <div id="host">English</div>
 
 <script type="text/javascript">

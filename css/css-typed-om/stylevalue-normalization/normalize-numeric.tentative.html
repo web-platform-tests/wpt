@@ -36,7 +36,7 @@ test(t => {
 test(t => {
   test_numeric_normalization(t, 'width',
       'calc(1px + calc(1px) + calc(1px * 2) + 1%)',
-      new CSSMathSum(CSS.px(4), CSS.percent(1)));
+      new CSSMathSum(CSS.percent(1), CSS.px(4)));
 }, 'Normalizing a <calc> returns simplified expression');
 
 test(t => {

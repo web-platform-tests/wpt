@@ -546,9 +546,9 @@ class TestSource:
     def group(self):
         if not self.current_group.group or len(self.current_group.group) == 0:
             try:
-                self.current_group = self.test_queue.get(block=True, timeout=5)
+                self.current_group = self.test_queue.get_nowait()
             except Empty:
-                self.logger.warning("Timed out getting test group from queue")
+                self.logger.warning("No test group in the queue")
                 return TestGroup(None, None, None, None)
         return self.current_group
 

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/test-helpers.sub.js"></script>
+
+<script>
+  const serviceWorkerName = "/resources/fetch-event-worker-timing.tentative.js";
+  //const dedicatedWorkerName = "/resource/fetch-event-worker-timing.tentative.js";
+  // TODO: good name to distinct between sw, dedicated worker.
+
+  const resourceName = '/resources/simple.html'
+
+  // getEntry, getEntryByName, getEntryByType (FRAME / WORKER)
+  async function registerSwAndOpenFrame(t) {
+    return frame;
+  }
+
+  promise_test(async (t) => {
+    const registration = await navigator.serviceWorker.register(
+      serviceWorkerName, { scope: 'resources/' });
+    t.add_cleanup(() => registration.unregister());
+    await wait_for_state(t, registration.installing, 'activated');
+
+    const frame = await with_iframe('resources/simple.html');
+    t.add_cleanup(() => frame.remove());
+
+    let resourceUrl = new URL(resourceName, self.location).href;
+    let allEntry = performance.getEntries();
+    assert_equals(allEntry.length, 3, 'the number of all entries');
+
+    let nameEntry = performance.getEntriesByName("network request from sw start");
+    assert_equals(nameEntry.length, 1, 'the number of indexed name entries')
+
+    let markEntry = performance.getEntriesByType("mark");
+    assert_equals(markEntry.length, 2, 'the number of mark entries');
+
+    let measureEntry = performance.getEntriesByType("measure");
+    assert_equals(measureEntry.length, 1, 'the number of measure entries');
+
+    t.add_cleanup(() => performance.clearResourceTimings());
+  }, 'PerformanceResourceTiming.workerTiming returns XXX in frame fetch');
+
+
+  promise_test(async (t) => {
+    // TODO: chenge for dedicated worker!
+    const registration = await navigator.serviceWorker.register(
+      serviceWorkerName, { scope: 'resources/' });
+    t.add_cleanup(() => registration.unregister());
+    await wait_for_state(t, registration.installing, 'activated');
+
+    const frame = await with_iframe('resources/simple.html');
+    t.add_cleanup(() => frame.remove());
+
+    let resourceUrl = new URL(resourceName, self.location).href;
+    let allEntry = performance.getEntries();
+    assert_equals(allEntry.length, 3, 'the number of all entries');
+
+    let nameEntry = performance.getEntriesByName("network request from sw start");
+    assert_equals(nameEntry.length, 1, 'the number of indexed name entries')
+
+    let markEntry = performance.getEntriesByType("mark");
+    assert_equals(markEntry.length, 2, 'the number of mark entries');
+
+    let measureEntry = performance.getEntriesByType("measure");
+    assert_equals(measureEntry.length, 1, 'the number of measure entries');
+
+    t.add_cleanup(() => performance.clearResourceTimings());
+
+
+  }, 'PerformanceResourceTiming.workerTiming returns XXX in worker fetch');
+
+</script>

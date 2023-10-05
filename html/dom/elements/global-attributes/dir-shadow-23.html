@@ -12,17 +12,18 @@
 body {width: 600px;}
 div {border: 1px solid gray; margin: 1em;}
 </style>
+<script src="dir-shadow-utils.js"></script>
 </head>
 <body>
 
 <p>`dir=auto` on the div (shadow host), text in the shadow tree</p>
 <div id="host" dir="auto"></div>
-<p id="result">The computed `direction` value for the host’s text is: </p>
+<p id="result">The HTML direction / computed CSS `direction` value for the host’s text is: </p>
 
 <script type="text/javascript">
   let root = host.attachShadow({mode:"open"});
   root.innerHTML = `text.`;
-  result.innerHTML += getComputedStyle(host).direction + '.';
+  result.innerHTML += html_direction(host) + " / " + getComputedStyle(host).direction + '.';
 </script>
 
 </body>

@@ -14,17 +14,18 @@ div {border: 1px solid gray; margin: 1em; padding: 0.25em;}
 span {border: 1px solid silver;}
 
 </style>
+<script src="dir-shadow-utils.js"></script>
 </head>
 <body>
 
 <p>text in the light tree, no slotted node</p>
 <div id="host"></div>
-<p id="result">The computed `direction` value for the defaultContent when there is not a slotted node: </p>
+<p id="result">The HTML direction / computed CSS `direction` value for the defaultContent when there is not a slotted node: </p>
 
 <script type="text/javascript">
   let root = host.attachShadow({mode:"open"});
   root.innerHTML = `<slot dir=auto><div>&#1571;&#1582;&#1576;&#1575;&#1585;.</div></slot>`;
-  result.innerHTML += getComputedStyle(root.firstChild.firstChild).direction + " (on the " +  root.firstChild.firstChild.localName + ').';
+  result.innerHTML += html_direction(root.firstChild.firstChild) + " / " + getComputedStyle(root.firstChild.firstChild).direction + " (on the " +  root.firstChild.firstChild.localName + ').';
 </script>
 
 </body>

@@ -12,17 +12,18 @@
 body {width: 600px;}
 div {border: 1px solid gray; margin: 1em; padding: 0.25em;}
 </style>
+<script src="dir-shadow-utils.js"></script>
 </head>
 <body>
 
 <p>`dir=rtl` on the shadow host, span in the shadow tree</p>
 <div id="host" dir="rtl"></div>
-<p id="result">The computed `direction` value for the shadow span is: </p>
+<p id="result">The HTML direction / computed CSS `direction` value for the shadow span is: </p>
 
 <script type="text/javascript">
   let root = host.attachShadow({mode:"open"});
   root.innerHTML = `<style>span {border: 1px solid silver;}</style><span>RTL.</span>`;
-  result.innerHTML += getComputedStyle(root.querySelector('span')).direction + '.';
+  result.innerHTML += html_direction(root.querySelector('span')) + " / " + getComputedStyle(root.querySelector('span')).direction + '.';
 </script>
 
 </body>

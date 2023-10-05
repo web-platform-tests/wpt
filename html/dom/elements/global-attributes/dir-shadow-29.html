@@ -12,6 +12,7 @@
 body {width: 600px;}
 div {border: 1px solid gray; margin: 1em;}
 </style>
+<script src="dir-shadow-utils.js"></script>
 </head>
 <body>
 
@@ -19,12 +20,12 @@ div {border: 1px solid gray; margin: 1em;}
 <div id="host">
 para.
 </div>
-<p id="result">The computed `direction` value for the paragraph is: </p>
+<p id="result">The HTML direction / computed CSS `direction` value for the paragraph is: </p>
 
 <script type="text/javascript">
   let root = host.attachShadow({mode:"open"});
   root.innerHTML = `<style>p {width: 50%; border: 1px dotted;}</style><p dir="auto"><slot></slot></p>`;
-  result.innerHTML += getComputedStyle(root.querySelector('p')).direction + '.';
+  result.innerHTML += html_direction(root.querySelector('p')) + " / " + getComputedStyle(root.querySelector('p')).direction + '.';
 </script>
 
 </body>

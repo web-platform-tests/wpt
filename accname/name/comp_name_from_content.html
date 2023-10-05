@@ -1,7 +1,8 @@
 <!doctype html>
-<html charset="UTF-8">
+<html>
 <head>
   <title>Name Comp: Name From Content</title>
+  <meta charset="utf-8">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/resources/testdriver.js"></script>
@@ -79,10 +80,12 @@
 <a href="#" data-expectedlabel="nospacelabelnospace" data-testname="link name from content no space joiners ::before and ::after" class="ex no-space">label</a><br>
 <br>
 
-<h1>RTL with ::before and ::after</h1>
-<button dir="rtl" lang="ar" data-expectedlabel="من قبل طابع خلف" data-testname="button name from content with ::before and ::after in rtl" class="ex simple-before simple-after">طابع</button><br>
-<h3 dir="rtl" lang="ar" data-expectedlabel="من قبل طابع خلف" data-testname="heading name from content with ::before and ::after in rtl" class="ex simple-before simple-after">طابع</h3>
-<a dir="rtl" lang="ar" href="#" data-expectedlabel="من قبل طابع خلف" data-testname="link name from content with ::before and ::after in rtl" class="ex simple-before simple-after">طابع</a><br>
+<h1>Arabic right-to-left (RTL) with ::before and ::after</h1>
+<div dir="rtl" lang="ar">
+  <button data-expectedlabel="من قبل طابع خلف" data-testname="button name from content with ::before and ::after in rtl" class="ex simple-before simple-after">طابع</button><br>
+  <h3 data-expectedlabel="من قبل طابع خلف" data-testname="heading name from content with ::before and ::after in rtl" class="ex simple-before simple-after">طابع</h3>
+  <a href="#" data-expectedlabel="من قبل طابع خلف" data-testname="link name from content with ::before and ::after in rtl" class="ex simple-before simple-after">طابع</a><br>
+</div>
 <br>
 
 <h1><a href="https://drafts.csswg.org/css-content/#alt">Alternative Text for  CSS content (previously `alt:`)</a> in pseudo-elements</h1>

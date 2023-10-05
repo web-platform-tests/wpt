@@ -11,26 +11,32 @@
   <style type="text/css">
 
     .simple-before::before {
-      content: "before";
+      content: " before "; /* [sic] leading and trailing space on most, unless marked. */ 
       padding:0 0.2em;
     }
     .simple-after::after {
-      content: "after";
+      content: " after ";
       padding:0 0.2em;
     }
+    .simple-before.no-space::before {
+      content: "before"; /* [sic] NO leading and trailing space */
+    }
+    .simple-after.no-space::after {
+      content: "after"; /* [sic] NO leading and trailing space */
+    }
     .simple-before:dir(rtl)::before {
-      content: "من قبل";
+      content: " من قبل ";
     }
     .simple-after:dir(rtl)::after {
-      content: "خلف";
+      content: " خلف ";
     }
     .fallback-before {
-      content: "before";
-      content: "before" / "alt-before"; /* Override the previous line for engines that support the Alternative Text syntax. */
+      content: " before ";
+      content: " before " / " alt-before "; /* Override the previous line for engines that support the Alternative Text syntax. */
     }
     .fallback-after {
-      content: "after";
-      content: "after" / "alt-after"; /* Override the previous line for engines that support the Alternative Text syntax. */
+      content: " after ";
+      content: " after " / " alt-after "; /* Override the previous line for engines that support the Alternative Text syntax. */
     }
 
   </style>
@@ -68,6 +74,12 @@
 <button data-expectedlabel="before label after" data-testname="button name from content with ::before and ::after" class="ex simple-before simple-after">label</button><br>
 <h3 data-expectedlabel="before label after" data-testname="heading name from content with ::before and ::after" class="ex simple-before simple-after">label</h3>
 <a href="#" data-expectedlabel="before label after" data-testname="link name from content with ::before and ::after" class="ex simple-before simple-after">label</a><br>
+<br>
+
+<h1>simple with ::before and ::after (no leading/trailing space)</h1>
+<button data-expectedlabel="beforelabelafter" data-testname="button name from content with ::before and ::after (no leading/trailing space)" class="ex simple-before simple-after no-space">label</button><br>
+<h3 data-expectedlabel="beforelabelafter" data-testname="heading name from content with ::before and ::after (no leading/trailing space)" class="ex simple-before simple-after no-space">label</h3>
+<a href="#" data-expectedlabel="beforelabelafter" data-testname="link name from content with ::before and ::after (no leading/trailing space)" class="ex simple-before simple-after no-space">label</a><br>
 <br>
 
 <h1>RTL with ::before and ::after</h1>

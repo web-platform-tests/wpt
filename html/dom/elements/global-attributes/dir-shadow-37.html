@@ -25,7 +25,7 @@ span {border: 1px solid silver;}
 <script type="text/javascript">
   let root = host.attachShadow({mode:"open"});
   root.innerHTML = `<div dir="auto">اختبر.<slot></slot></div>`;
-  result.innerHTML += html_direction(root.firstChild) + " / " + getComputedStyle(root.firstChild).direction + " (on the " +  root.firstChild.localName + ') and ' + html_direction(host) + " / " + getComputedStyle(host).direction + ' (on the ' + host.textContent + ').';
+  result.innerHTML += html_direction(root.firstChild) + " / " + getComputedStyle(root.firstChild).direction + " (on the " +  root.firstChild.localName + ') and ' + html_direction(host) + " / " + getComputedStyle(host).direction + ' (on the ' + host.id + ').';
 </script>
 
 </body>

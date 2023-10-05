@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html charset="UTF-8">
 <head>
   <title>Name Comp: Name From Content</title>
   <script src="/resources/testharness.js"></script>
@@ -12,9 +12,25 @@
 
     .simple-before::before {
       content: "before";
+      padding:0 0.2em;
     }
     .simple-after::after {
       content: "after";
+      padding:0 0.2em;
+    }
+    .simple-before:dir(rtl)::before {
+      content: "من قبل";
+    }
+    .simple-after:dir(rtl)::after {
+      content: "خلف";
+    }
+    .fallback-before {
+      content: "before";
+      content: "before" / "alt-before"; /* Override the previous line for engines that support the Alternative Text syntax. */
+    }
+    .fallback-after {
+      content: "after";
+      content: "after" / "alt-after"; /* Override the previous line for engines that support the Alternative Text syntax. */
     }
 
   </style>
@@ -27,7 +43,7 @@
 <ul>
   <li>button is a leaf node with sub-level elements presentational.</li>
   <li>heading is block level, and can contain sub-level interactives like links.</li>
-  <li>link (a[href]) is an inline element that can include non-presentational descendants.</li>
+  <li>link (a[href]) is an interactive inline element that can include non-presentational descendants.</li>
 </ul>
 
 <h1>simple</h1>
@@ -54,7 +70,20 @@
 <a href="#" data-expectedlabel="before label after" data-testname="link name from content with ::before and ::after" class="ex simple-before simple-after">label</a><br>
 <br>
 
-<p>Starting this as an incomplete draft PR to raise an few potential issues that might be bugs or might be spec problems.</p>
+<h1>RTL with ::before and ::after</h1>
+<button dir="rtl" lang="ar" data-expectedlabel="من قبل طابع خلف" data-testname="button name from content with ::before and ::after in rtl" class="ex simple-before simple-after">طابع</button><br>
+<h3 dir="rtl" lang="ar" data-expectedlabel="من قبل طابع خلف" data-testname="heading name from content with ::before and ::after in rtl" class="ex simple-before simple-after">طابع</h3>
+<a dir="rtl" lang="ar" href="#" data-expectedlabel="من قبل طابع خلف" data-testname="link name from content with ::before and ::after in rtl" class="ex simple-before simple-after">طابع</a><br>
+<br>
+
+<h1><a href="https://drafts.csswg.org/css-content/#alt">Alternative Text for  CSS content (previously `alt:`)</a> in ::before and ::after (computed label shuld be "alt-before label alt-after")</h1>
+<button data-expectedlabel="alt-before label alt-after" data-testname="button name from fallback content with ::before and ::after" class="ex fallback-before fallback-after">label</button><br>
+<h3 data-expectedlabel="alt-before label alt-after" data-testname="heading name from fallback content with ::before and ::after" class="ex fallback-before fallback-after">label</h3>
+<a href="#" data-expectedlabel="alt-before label alt-after" data-testname="link name from fallback content with ::before and ::after" class="ex fallback-before fallback-after">label</a><br>
+<br>
+
+
+
 
 <!--
 

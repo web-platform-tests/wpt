@@ -11,18 +11,15 @@
   <style type="text/css">
 
     .simple-before::before {
-      content: " before "; /* [sic] leading and trailing space on most, unless marked. */ 
+      content: " before "; /* [sic] leading and trailing space on most content props, unless marked. */ 
       padding:0 0.2em;
     }
     .simple-after::after {
       content: " after ";
       padding:0 0.2em;
     }
-    .simple-before.no-space::before {
-      content: "before"; /* [sic] NO leading and trailing space */
-    }
-    .simple-after.no-space::after {
-      content: "after"; /* [sic] NO leading and trailing space */
+    .no-space::before, .no-space::after {
+      content: "nospace"; /* [sic] NO leading and trailing space */
     }
     .simple-before:dir(rtl)::before {
       content: " من قبل ";
@@ -30,11 +27,11 @@
     .simple-after:dir(rtl)::after {
       content: " خلف ";
     }
-    .fallback-before {
+    .fallback-before::before {
       content: " before ";
       content: " before " / " alt-before "; /* Override the previous line for engines that support the Alternative Text syntax. */
     }
-    .fallback-after {
+    .fallback-after::after {
       content: " after ";
       content: " after " / " alt-after "; /* Override the previous line for engines that support the Alternative Text syntax. */
     }
@@ -76,10 +73,10 @@
 <a href="#" data-expectedlabel="before label after" data-testname="link name from content with ::before and ::after" class="ex simple-before simple-after">label</a><br>
 <br>
 
-<h1>simple with ::before and ::after (no leading/trailing space)</h1>
-<button data-expectedlabel="beforelabelafter" data-testname="button name from content with ::before and ::after (no leading/trailing space)" class="ex simple-before simple-after no-space">label</button><br>
-<h3 data-expectedlabel="beforelabelafter" data-testname="heading name from content with ::before and ::after (no leading/trailing space)" class="ex simple-before simple-after no-space">label</h3>
-<a href="#" data-expectedlabel="beforelabelafter" data-testname="link name from content with ::before and ::after (no leading/trailing space)" class="ex simple-before simple-after no-space">label</a><br>
+<h1>no space joiners ::before and ::after</h1>
+<button data-expectedlabel="nospacelabelnospace" data-testname="button name from content no space joiners ::before and ::after" class="ex no-space">label</button><br>
+<h3 data-expectedlabel="nospacelabelnospace" data-testname="heading name from content no space joiners ::before and ::after" class="ex no-space">label</h3>
+<a href="#" data-expectedlabel="nospacelabelnospace" data-testname="link name from content no space joiners ::before and ::after" class="ex no-space">label</a><br>
 <br>
 
 <h1>RTL with ::before and ::after</h1>
@@ -88,20 +85,18 @@
 <a dir="rtl" lang="ar" href="#" data-expectedlabel="من قبل طابع خلف" data-testname="link name from content with ::before and ::after in rtl" class="ex simple-before simple-after">طابع</a><br>
 <br>
 
-<h1><a href="https://drafts.csswg.org/css-content/#alt">Alternative Text for  CSS content (previously `alt:`)</a> in ::before and ::after (computed label shuld be "alt-before label alt-after")</h1>
+<h1><a href="https://drafts.csswg.org/css-content/#alt">Alternative Text for  CSS content (previously `alt:`)</a> in pseudo-elements</h1>
+<p>rendered text should be "before label after"</p>
+<p>accessibility label should be "alt-before label alt-after"</p>
 <button data-expectedlabel="alt-before label alt-after" data-testname="button name from fallback content with ::before and ::after" class="ex fallback-before fallback-after">label</button><br>
 <h3 data-expectedlabel="alt-before label alt-after" data-testname="heading name from fallback content with ::before and ::after" class="ex fallback-before fallback-after">label</h3>
 <a href="#" data-expectedlabel="alt-before label alt-after" data-testname="link name from fallback content with ::before and ::after" class="ex fallback-before fallback-after">label</a><br>
 <br>
 
 
-
-
 <!--
 
 Todo: test all remaining cases of https://w3c.github.io/accname/#comp_name_from_content
-
-  - pseudo element fallback ("/") for CSS contents property (the newer syntax after alt: was removed due to cascade issues)
 
   - comp_name_from_content_for_each_child
   - comp_name_from_content_for_each_child_set_current

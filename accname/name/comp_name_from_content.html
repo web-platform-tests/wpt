@@ -36,6 +36,14 @@
       content: " after ";
       content: " after " / " alt-after "; /* Override the previous line for engines that support the Alternative Text syntax. */
     }
+    .block > span {
+      display: block;
+      margin: 0 0.1em;
+    }
+    .iblock > span {
+      display: inline-block;
+      margin: 0 0.1em;
+    }
 
   </style>
 </head>
@@ -151,44 +159,26 @@
   </a>
 </h3>
 
-
-<!-- TODO: We should probably skip these 3 for Interop 2023 Investigation (and the Interop 2024 Focus Area) until there is a ARIA WG confirmation of intent or new issue resolution. -->
-
-<style type="text/css">
-  .block > span {
-    display: block;
-    margin: 0 0.1em;
-  }
-  .iblock > span {
-    display: inline-block;
-    margin: 0 0.1em;
-  }
-</style>
-
+<!-- Note: The following test is out of line with the spec, but matching two out of three implementations at the time of writing, and spec changes are expeected. -->
+<!-- See details in https://github.com/w3c/accname/issues/205 -->
+<!-- Final spec resolution will be addressed in AccName Whitespace Project: https://github.com/w3c/accname/projects/1#card-42288231 -->
 <h1>simple w/ for each child (w/o spaces and display:inline)</h1>
-<p>TBD spec issue?: I think the AccName spec #comp_append requires joining even inline elements on a space.</p>
-<p>Rendered content is "ThisIsBroken" but AccName requires it be exposed to Accessibilty as "T hisI sBro ken"…</p>
-<button data-expectedlabel="T hisI sBro ken" data-testname="button name from content for each child (no space, inline)" class="ex"><span>T</span><span>hisI</span><span>sBro</span><span>ken</span></button><br>
-<h3 data-expectedlabel="T hisI sBro ken" data-testname="heading name from content for each child (no space, inline)" class="ex"><span>T</span><span>hisI</span><span>sBro</span><span>ken</span></h3>
-<a href="#" data-expectedlabel="T hisI sBro ken" data-testname="link name from content for each child (no space, inline)" class="ex"><span>T</span><span>hisI</span><span>sBro</span><span>ken</span></a><br>
+<button data-expectedlabel="onetwothree" data-testname="button name from content for each child (no space, inline)" class="ex"><span>one</span><span>two</span><span>three</span></button><br>
+<h3 data-expectedlabel="onetwothree" data-testname="heading name from content for each child (no space, inline)" class="ex"><span>one</span><span>two</span><span>three</span></h3>
+<a href="#" data-expectedlabel="onetwothree" data-testname="link name from content for each child (no space, inline)" class="ex"><span>one</span><span>two</span><span>three</span></a><br>
 <br>
 
 <h1>simple w/ for each child (w/o spaces and display:block)</h1>
-<p>Re: above spec issue, the spec behavior makes sense when rendered as block or inline-block.</p>
 <button data-expectedlabel="one two three" data-testname="button name from content for each child (no space, display:block)" class="ex block"><span>one</span><span>two</span><span>three</span></button><br>
 <h3 data-expectedlabel="one two three" data-testname="heading name from content for each child (no space, display:block)" class="ex block"><span>one</span><span>two</span><span>three</span></h3>
 <a href="#" data-expectedlabel="one two three" data-testname="link name from content for each child (no space, display:block)" class="ex block"><span>one</span><span>two</span><span>three</span></a><br>
 <br>
 
 <h1>simple w/ for each child (w/o spaces and display:inline block)</h1>
-<p>Re: above spec issue, the spec behavior makes sense when rendered as block or inline-block.</p>
 <button data-expectedlabel="one two three" data-testname="button name from content for each child (no space, display:inline-block)" class="ex iblock"><span>one</span><span>two</span><span>three</span></button><br>
 <h3 data-expectedlabel="one two three" data-testname="heading name from content for each child (no space, display:inline-block)" class="ex iblock"><span>one</span><span>two</span><span>three</span></h3>
 <a href="#" data-expectedlabel="one two three" data-testname="link name from content for each child (no space, display:inline-block)" class="ex iblock"><span>one</span><span>two</span><span>three</span></a><br>
 <br>
-
-<!-- TODO: End Skip above 3 for Interop 2023. -->
-
 
 <script>
 AriaUtils.verifyLabelsBySelector(".ex");

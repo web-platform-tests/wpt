@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    HTTPS LOAD
+    <script>
+      // This popup would normally be loaded over http, but instead it should be
+      // served by a service worker which sends a "SERVICE WORKER" message.
+      window.onload = (event) => {
+          window.opener.postMessage('HTTPS LOAD', '*');
+      };
+    </script>
+  </body>
+</html>

@@ -721,3 +721,7 @@ HTML INVALID SYNTAX: domparsing/XMLSerializer-serializeToString.html
 HTML INVALID SYNTAX: html/canvas/element/manual/unclosed-canvas-4.htm
 HTML INVALID SYNTAX: quirks/percentage-height-calculation.html
 HTML INVALID SYNTAX: trusted-types/TrustedTypePolicyFactory-getAttributeType-namespace.tentative.html
+
+# Suppress lint errors for jspi
+ASSERT_THROWS: wasm/jspi/*
+PROMISE_REJECTS: wasm/jspi/*

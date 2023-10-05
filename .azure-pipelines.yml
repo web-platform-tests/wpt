@@ -110,9 +110,9 @@ jobs:
   - template: tools/ci/azure/update_manifest.yml
   - script: |
       set -eux -o pipefail
-      ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_macos_chrome.json --channel dev chrome infrastructure/
+      ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_macos_chrome.json --channel canary chrome infrastructure/
     condition: succeededOrFailed()
-    displayName: 'Run tests (Chrome Dev)'
+    displayName: 'Run tests (Chrome Canary)'
   - script: |
       set -eux -o pipefail
       ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_macos_firefox.json --channel nightly firefox infrastructure/

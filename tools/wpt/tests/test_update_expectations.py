@@ -89,7 +89,7 @@ def test_update(tmp_path, metadata_file):
                                                  "chrome",
                                                  status="ERROR",
                                                  subtest_status="NOTRUN",
-                                                 channel="dev")
+                                                 channel="canary")
 
     metadata_path = str(os.path.join(tmp_path, "metadata"))
     os.makedirs(metadata_path)

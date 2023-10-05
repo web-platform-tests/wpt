@@ -344,7 +344,6 @@ class Firefox(Browser):
 
         if binary is None:
             return which("firefox")
-
         return binary
 
     def find_certutil(self):
@@ -1226,23 +1225,17 @@ class Chrome(ChromeChromiumBase):
     def find_binary(self, venv_path=None, channel=None):
         # Check for binary in venv first.
         path = self._find_binary_in_directory(self._get_browser_binary_dir(venv_path, channel))
+        print('possible path =', path)
         if path is not None:
             return path
 
         if uname[0] == "Linux":
-            name = "google-chrome"
-            if channel == "stable":
-                name += "-stable"
-            elif channel == "beta":
-                name += "-beta"
-            elif channel == "dev":
-                name += "-unstable"
-            # No Canary on Linux.
-            return which(name)
+            return which("chrome")
         if uname[0] == "Darwin":
             suffix = ""
             if channel in ("beta", "dev", "canary"):
                 suffix = " " + channel.capitalize()
+                return "/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
             return f"/Applications/Google Chrome{suffix}.app/Contents/MacOS/Google Chrome{suffix}"
         if uname[0] == "Windows":
             name = "Chrome"
@@ -1259,6 +1252,8 @@ class Chrome(ChromeChromiumBase):
 
     def install(self, dest=None, channel=None, version=None):
         dest = self._get_browser_binary_dir(dest, channel)
+        if os.path.exists(dest):
+            rmtree(dest)
         installer_path = self.download(dest=dest, channel=channel, version=version)
         with open(installer_path, "rb") as f:
             unzip(f, dest)
@@ -1325,6 +1320,7 @@ class Chrome(ChromeChromiumBase):
                                 f"{webdriver_binary}, rejecting it")
             return False
 
+        print('browser_version =', browser_version, 'chromedriver version =', chromedriver_version)
         # TODO(DanielRyanSmith): Determine if this version logic fail case is
         # still necessary and remove it if it isn't.
         if not browser_version:

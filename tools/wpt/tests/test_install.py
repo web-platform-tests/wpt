@@ -40,7 +40,7 @@ def test_install_chromium():
 @pytest.mark.remote_network
 def test_install_chrome():
     venv_path = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir())
-    channel = "dev"
+    channel = "canary"
     dest = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "browsers", channel)
     if sys.platform == "win32":
         chrome_path = os.path.join(dest, "chrome-win32")

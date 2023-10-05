@@ -92,7 +92,7 @@ def get_parser():
                    help="Browsers that will be used in the job")
     p.add_argument("--channel",
                    default=None,
-                   choices=["experimental", "dev", "nightly", "beta", "stable"],
+                   choices=["experimental", "canary", "dev", "nightly", "beta", "stable"],
                    help="Chrome browser channel")
     p.add_argument("--xvfb",
                    action="store_true",
@@ -148,22 +148,14 @@ def start_dbus():
 
 
 def install_chrome(channel):
-    if channel in ("experimental", "dev"):
-        deb_archive = "google-chrome-unstable_current_amd64.deb"
-    elif channel == "beta":
-        deb_archive = "google-chrome-beta_current_amd64.deb"
-    elif channel == "stable":
-        deb_archive = "google-chrome-stable_current_amd64.deb"
+    if channel in ("nightly", "experimental", "canary"):
+        run(["sh", "-c", "./wpt install --channel canary chrome browser"])
+        run(["sh", "-c", "./wpt install --channel canary chrome webdriver"])
+        run(["sudo", "mv", "_venv3/browsers/canary/chrome-linux64/chrome", "/usr/bin"])
     else:
-        raise ValueError("Unrecognized release channel: %s" % channel)
-
-    dest = os.path.join("/tmp", deb_archive)
-    deb_url = "https://dl.google.com/linux/direct/%s" % deb_archive
-    with open(dest, "wb") as f:
-        get_download_to_descriptor(f, deb_url)
-
-    run(["sudo", "apt-get", "-qqy", "update"])
-    run(["sudo", "gdebi", "-qn", "/tmp/%s" % deb_archive])
+        run(["sh", "-c", f"./wpt install --channel {channel} chrome browser"])
+        run(["sh", "-c", f"./wpt install --channel {channel} chrome webdriver"])
+        run(["sudo", "mv", f"_venv3/browsers/{channel}/chrome-linux64/chrome", "/usr/bin"])
 
 
 def start_xvfb():

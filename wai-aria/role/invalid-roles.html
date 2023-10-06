@@ -100,6 +100,8 @@
 <!-- Escaped chars, URL-encoded chars with <span> -->
 <span role="&amp" data-testname="span with role set to ampersand character" class="ex-generic">x</span>
 <span role="&lt" data-testname="span with role set to less than angle bracket character" class="ex-generic">x</span>
+<span role="&" data-testname="span with role set to unescaped ampersand character" class="ex-generic">x</span>
+<span role="<" data-testname="span with role set to unescaped less than angle bracket character" class="ex-generic">x</span>
 
 <!-- Backslash closing quote and other malformed roles with characters with <nav> -->
 <nav role="region\" data-testname="nav with role set to region followed by backslash" data-expectedrole="navigation" class="ex">x</nav>

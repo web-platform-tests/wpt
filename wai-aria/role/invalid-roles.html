@@ -67,8 +67,9 @@
 <div role="button´" data-testname="div with role set to button with unescaped tilde diacritic" class="ex-generic">x</div>
 
 <!-- Zero-width joiners (e.g., ZWJ like emoji variants use) with <button> -->
-<button role="&#8205" data-testname="button with role set to zero-width joiner" data-expectedrole="button" class="ex">x</button>
-<button role="foo&#8205" data-testname="button with role set to foo with zero-width joiner" data-expectedrole="button" class="ex">x</button>
+<!-- [sic] role="‍" should include an invisible ZWJ], and role="link‍" ends with an invisible ZWJ. Use caution when editing. -->
+<button role="‍" data-testname="button with role set to zero-width joiner" data-expectedrole="button" class="ex">x</button>
+<button role="link‍" data-testname="button with role set to foo with zero-width joiner" data-expectedrole="button" class="ex">x</button>
 
 <!-- Non-western chars with <nav> -->
 <nav role="Θ" data-testname="nav with role set to theta (Θ)" data-expectedrole="navigation" class="ex">x</nav>

@@ -46,44 +46,6 @@
   <span>visible to all users</span>
 </button>
 
-<!-- TODO: Restore the following test once expectation for `aria-hidden="false"`
-<!--       behavior is documented. See: -->
-<!--       https://github.com/w3c/aria/issues/1256 -->
-<!--
-<button
-  class="ex"
-  data-expectedlabel="un-hidden and referenced indirectly,"
-  data-testname="button labelled by an element that is aria-hidden=true which contains a nested child that is aria-hidden=false"
-  aria-labelledby="button-label-4"
->
-  <span aria-hidden="true">hidden,</span>
-  <span aria-hidden="true" id="button-label-4">
-    <span aria-hidden="false" id="button-label-4-child">un-hidden and referenced indirectly,</span>
-  </span>
-  <span hidden>hidden from all users,</span>
-  <span>visible to all users</span>
-</button>
--->
-
-<!-- TODO: Restore the following test once expectation for `aria-hidden="false"`
-<!--       behavior is documented. See: -->
-<!--       https://github.com/w3c/aria/issues/1256 -->
-<!--
-<button
-  class="ex"
-  data-expectedlabel="un-hidden and referenced directly,"
-  data-testname="button labelled by an element that is aria-hidden=false which belongs to a parent that is aria-hidden=true"
-  aria-labelledby="button-label-5-child"
->
-  <span aria-hidden="true">hidden,</span>
-  <span aria-hidden="true" id="button-label-5">
-    <span aria-hidden="false" id="button-label-5-child">un-hidden and referenced directly,</span>
-  </span>
-  <span hidden>hidden from all users,</span>
-  <span>visible to all users</span>
-</button>
--->
-
 <a
   class="ex"
   data-testname="link labelled by elements with assorted visibility and a11y tree exposure"
@@ -99,23 +61,6 @@
   <span hidden id="link-label-1c">hidden from all users but referenced</span>
 </a>
 
-<!-- TODO: Restore the following test once expectation for `aria-hidden="false"`
-<!--       behavior is documented. See: -->
-<!--       https://github.com/w3c/aria/issues/1256 -->
-<!--
-<h2
-  class="ex"
-  data-testname="heading with name from content, containing rendered content that is aria-hidden=true with nested, rendered content that is aria-hidden=false"
-  data-expectedlabel="visible to all users, un-hidden"
->
-  visible to all users,
-  <span aria-hidden="true">
-    hidden,
-    <span aria-hidden="false">un-hidden</span>
-  </span>
-</h2>
--->
-
 <h2
   class="ex"
   data-testname="heading with name from content, containing element that is visibility:hidden with nested content that is visibility:visible"
@@ -128,22 +73,11 @@
   </span>
 </h2>
 
-<!-- TODO: Restore the following test once expectation for `aria-hidden="false"`
-<!--       behavior is documented. See: -->
-<!--       https://github.com/w3c/aria/issues/1256 -->
-<!--
-<h2
-  class="ex"
-  data-testname="heading with name from content, containing element with the hidden host language attribute with nested content that is aria-hidden=false"
-  data-expectedlabel="visible to all users,"
->
-  visible to all users,
-  <span hidden>
-    hidden from all users,
-    <span aria-hidden="false">un-hidden</span>
-  </span>
-</h2>
- -->
+<!-- TODO: Test cases once https://github.com/w3c/aria/issues/1256 resolved: -->
+<!--       - button labelled by an element that is aria-hidden=true which contains a nested child that is aria-hidden=false -->
+<!--       - button labelled by an element that is aria-hidden=false which belongs to a parent that is aria-hidden=true -->
+<!--       - heading with name from content, containing rendered content that is aria-hidden=true with nested, rendered content that is aria-hidden=false -->
+<!--       - heading with name from content, containing element with the hidden host language attribute with nested content that is aria-hidden=false -->
 
 <!-- TODO: New test case?
 <!--       What is the expectation for a details element when it’s given an -->

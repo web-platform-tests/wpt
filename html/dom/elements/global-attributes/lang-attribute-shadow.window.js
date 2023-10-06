@@ -57,19 +57,19 @@ const TESTS = [
   },
 ];
 
-let container = document.createElement("div");
+const container = document.createElement("div");
 document.body.append(container);
 container.lang = "en-US";
 
-for (let obj of TESTS) {
+for (const obj of TESTS) {
   test(() => {
     container.innerHTML = obj.light_tree;
     let shadow = container.querySelector("#host").attachShadow({mode: "open"});
     shadow.innerHTML = obj.shadow_tree;
-    for (let element of Array.from(container.querySelectorAll("[data-expected]")).concat(Array.from(shadow.querySelectorAll("[data-expected]")))) {
-      let expected = element.getAttribute("data-expected");
+    for (const element of Array.from(container.querySelectorAll("[data-expected]")).concat(Array.from(shadow.querySelectorAll("[data-expected]")))) {
+      const expected = element.getAttribute("data-expected");
       assert_true(element.matches(`:lang(${expected})`), `element matches expected language ${expected}`);
-      for (let other_lang of ["en-US", "en-AU", "en-GB", "en-NZ", "en-CA"]) {
+      for (const other_lang of ["en-US", "en-AU", "en-GB", "en-NZ", "en-CA"]) {
         if (expected != other_lang) {
           assert_false(element.matches(`:lang(${other_lang})`), `element does not match language ${other_lang}`);
         }

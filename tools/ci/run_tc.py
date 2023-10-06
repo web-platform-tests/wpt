@@ -142,6 +142,9 @@ def install_certificates():
 
 def start_dbus():
     run(["sudo", "service", "dbus", "start"])
+    # Enable dbus autolaunch for Chrome
+    # https://source.chromium.org/chromium/chromium/src/+/main:content/app/content_main.cc;l=220;drc=0bcc023b8cdbc073aa5c48db373810db3f765c87.
+    os.environ["DBUS_SESSION_BUS_ADDRESS"] = "autolaunch:"
 
 
 def install_chrome(channel):
@@ -261,6 +264,7 @@ def setup_environment(args):
     if "chrome" in args.browser:
         assert args.channel is not None
         install_chrome(args.channel)
+        # Chrome is using dbus for various features.
         start_dbus()
 
     if args.xvfb:

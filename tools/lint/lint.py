@@ -979,7 +979,7 @@ file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_me
               check_ahem_system_font]
 
 
-def all_paths_lints() -> List[Callable[[Any, Any], List[Tuple[str, str, str, Optional[int]]]]]:
+def all_paths_lints() -> Any:
     paths = [check_unique_testharness_basenames,
              check_unique_case_insensitive_paths]
     # Don't break users of the lint that don't have git installed.

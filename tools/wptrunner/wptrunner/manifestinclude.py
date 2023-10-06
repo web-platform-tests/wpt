@@ -8,7 +8,7 @@ be included or excluded.
 """
 import glob
 import os
-from urllib.parse import urlparse, urlsplit
+from urllib.parse import urljoin, urlparse, urlsplit
 
 from .wptmanifest.node import DataNode
 from .wptmanifest.backends import conditional
@@ -81,74 +81,52 @@ class IncludeManifest(ManifestItem):
         rv.extend([item for item in reversed(url_parts.path.split("/")) if item])
         return rv
 
-    def _add_rule(self, test_manifests, url, direction):
-        maybe_path = os.path.join(os.path.abspath(os.curdir), url)
-        rest, last = os.path.split(maybe_path)
-        fragment = query = None
-        if "#" in last:
-            last, fragment = last.rsplit("#", 1)
-        if "?" in last:
-            last, query = last.rsplit("?", 1)
 
-        maybe_path = os.path.join(rest, last)
-        paths = glob.glob(maybe_path)
+def resolve_pattern(test_manifests, pattern):
+    maybe_path = os.path.join(os.path.abspath(os.curdir), pattern)
+    rest, last = os.path.split(maybe_path)
+    fragment = query = None
+    if "#" in last:
+        last, fragment = last.rsplit("#", 1)
+    if "?" in last:
+        last, query = last.rsplit("?", 1)
 
-        if paths:
-            urls = []
-            for path in paths:
-                for manifest, data in test_manifests.items():
-                    found = False
-                    rel_path = os.path.relpath(path, data["tests_path"])
-                    iterator = manifest.iterpath if os.path.isfile(path) else manifest.iterdir
-                    for test in iterator(rel_path):
-                        if not hasattr(test, "url"):
+    maybe_path = os.path.join(rest, last)
+    paths = glob.glob(maybe_path)
+
+    urls = []
+    if paths:
+        for path in paths:
+            for manifest, data in test_manifests.items():
+                found = False
+                rel_path = os.path.relpath(path, data["tests_path"])
+                iterator = manifest.iterpath if os.path.isfile(path) else manifest.iterdir
+                for test in iterator(rel_path):
+                    if not hasattr(test, "url"):
+                        continue
+                    url = test.url
+                    if query or fragment:
+                        parsed = urlparse(url)
+                        if ((query and query != parsed.query) or
+                            (fragment and fragment != parsed.fragment)):
                             continue
-                        url = test.url
-                        if query or fragment:
-                            parsed = urlparse(url)
-                            if ((query and query != parsed.query) or
-                                (fragment and fragment != parsed.fragment)):
-                                continue
-                        urls.append(url)
-                        found = True
-                    if found:
-                        break
-        else:
-            urls = [url]
-
-        assert direction in ("include", "exclude")
-
-        for url in urls:
-            components = self._get_components(url)
-
-            node = self
-            while components:
-                component = components.pop()
-                if component not in node.child_map:
-                    new_node = IncludeManifest(DataNode(component))
-                    node.append(new_node)
-                    new_node.set("skip", node.get("skip", {}))
-
-                node = node.child_map[component]
-
-            skip = False if direction == "include" else True
-            node.set("skip", str(skip))
-
-    def add_include(self, test_manifests, url_prefix):
-        """Add a rule indicating that tests under a url path
-        should be included in test runs
-
-        :param url_prefix: The url prefix to include
-        """
-        return self._add_rule(test_manifests, url_prefix, "include")
-
-    def add_exclude(self, test_manifests, url_prefix):
-        """Add a rule indicating that tests under a url path
-        should be excluded from test runs
-
-        :param url_prefix: The url prefix to exclude
-        """
-        return self._add_rule(test_manifests, url_prefix, "exclude")
+                    urls.append(url)
+                    found = True
+                if found:
+                    break
+    else:
+        # Turn this URL prefix into a relative path with system separators, as
+        # `Manifest.iter*` expect.
+        rel_path = os.path.normpath(pattern.replace("/", os.path.sep))
+        if rel_path.startswith(os.path.sep):
+            rel_path = rel_path[len(os.path.sep):]
+        for manifest in test_manifests:
+            urls.extend(item.id for item in manifest.iterdir(rel_path))
+            urls.extend(item.id for item in manifest.iterpath(rel_path))
+        if not urls:
+            urls.append(pattern)
+    # Normalize URL paths to start with `/`.
+    return [urljoin("/", url) for url in urls]
 
 
 def get_manifest(manifest_path):

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import abc
+import functools
 import hashlib
 import itertools
 import json
@@ -270,32 +271,42 @@ class TestFilter:
     """Callable that restricts the set of tests in a given manifest according
     to initial criteria"""
     def __init__(self, test_manifests, include=None, exclude=None, manifest_path=None, explicit=False):
-        if manifest_path is None or include or explicit:
-            self.manifest = manifestinclude.IncludeManifest.create()
-            self.manifest.set_defaults()
-        else:
-            self.manifest = manifestinclude.get_manifest(manifest_path)
-
-        if include or explicit:
-            self.manifest.set("skip", "true")
-
+        self.include_urls = set()
         if include:
-            for item in include:
-                self.manifest.add_include(test_manifests, item)
+            for include_pattern in include:
+                self.include_urls.update(manifestinclude.resolve_pattern(test_manifests, include_pattern))
+        else:
+            if manifest_path:
+                manifest = manifestinclude.get_manifest(manifest_path)
+            else:
+                manifest = manifestinclude.IncludeManifest.create()
+            manifest.set("skip", str(explicit).lower())
+            for test_manifest in test_manifests:
+                for _, _, tests in test_manifest:
+                    for test in tests:
+                        if not hasattr(test, "url"):
+                            continue
+                        if manifest.include(test):
+                            self.include_urls.add(test.id)
 
-        if exclude:
-            for item in exclude:
-                self.manifest.add_exclude(test_manifests, item)
+        for exclude_pattern in (exclude or []):
+            self.include_urls -= set(manifestinclude.resolve_pattern(test_manifests, exclude_pattern))
 
-    def __call__(self, manifest_iter):
-        for test_type, test_path, tests in manifest_iter:
-            include_tests = set()
-            for test in tests:
-                if self.manifest.include(test):
-                    include_tests.add(test)
+    def __call__(self, manifest):
+        tests_by_url = map_tests_by_url(manifest)
+        tests_by_path = defaultdict(set)
+        for include_url in self.include_urls:
+            test = tests_by_url.get(include_url)
+            if test:
+                tests_by_path[test.path].add(test)
+        for test_path, tests in tests_by_path.items():
+            test_type = next(iter(tests)).item_type
+            yield test_type, test_path, tests
 
-            if include_tests:
-                yield test_type, test_path, include_tests
+
+@functools.lru_cache(maxsize=16)
+def map_tests_by_url(manifest):
+    return {test.id: test for _, _, tests in manifest for test in tests}
 
 
 class TagFilter:
@@ -377,7 +388,10 @@ class TestLoader:
         self.manifest_filters = manifest_filters if manifest_filters is not None else []
         self.test_filters = test_filters if test_filters is not None else []
 
-        self.manifests = test_manifests
+        self.manifests = {
+            manifest.itertypes(*test_types): test_paths
+            for manifest, test_paths in test_manifests.items()
+        }
         self.tests = None
         self.disabled_tests = None
         self.include_https = include_https
@@ -446,8 +460,7 @@ class TestLoader:
         manifests_by_url_base = {}
 
         for manifest in sorted(self.manifests.keys(), key=lambda x:x.url_base):
-            manifest_iter = iterfilter(manifest_filters,
-                                       manifest.itertypes(*self.test_types))
+            manifest_iter = iterfilter(manifest_filters, manifest)
             manifest_items.extend(manifest_iter)
             manifests_by_url_base[manifest.url_base] = manifest
 

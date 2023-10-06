@@ -113,14 +113,19 @@ class Manifest:
         self.url_base: Text = url_base
 
     def __iter__(self) -> Iterator[Tuple[Text, Text, Set[ManifestItem]]]:
-        return self.itertypes()
-
-    def itertypes(self, *types: Text) -> Iterator[Tuple[Text, Text, Set[ManifestItem]]]:
-        for item_type in (types or sorted(self._data.keys())):
+        for item_type in sorted(self._data):
             for path in self._data[item_type]:
                 rel_path = os.sep.join(path)
                 tests = self._data[item_type][path]
                 yield item_type, rel_path, tests
+
+    def itertypes(self, *types: Text) -> "Manifest":
+        filtered_manifest = Manifest(self.tests_root, self.url_base)
+        filtered_manifest._data.initialized = False
+        for item_type in (types or self._data):
+            filtered_manifest._data[item_type] = self._data[item_type]
+        filtered_manifest._data.initialized = True
+        return filtered_manifest
 
     def iterpath(self, path: Text) -> Iterable[ManifestItem]:
         tpath = tuple(path.split(os.path.sep))

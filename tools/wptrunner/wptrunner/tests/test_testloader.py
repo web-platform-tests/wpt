@@ -163,7 +163,7 @@ def test_filter_unicode():
         f.write(include_ini.encode('utf-8'))
         f.flush()
 
-        TestFilter(manifest_path=f.name, test_manifests=tests)
+        TestFilter(manifest_path=f.name, test_manifests={tests: {}})
 
 
 def test_filter_resolve_dir(manifest1):

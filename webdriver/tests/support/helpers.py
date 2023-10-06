@@ -18,7 +18,7 @@ def ignore_exceptions(f):
     return inner
 
 
-def cleanup_session(session):
+async def cleanup_session(session):
     """Clean-up the current session for a clean state."""
     @ignore_exceptions
     def _dismiss_user_prompts(session):
@@ -60,24 +60,37 @@ def cleanup_session(session):
             session.window.size = defaults.WINDOW_SIZE
 
     @ignore_exceptions
-    def _restore_windows(session):
+    async def _restore_windows(session):
         """Close superfluous windows opened by the test.
 
         It will not end the session implicitly by closing the last window.
+        If available, uses WebDriver BiDi session. Otherwise, uses the WebDriver Classic.
         """
-        current_window = session.window_handle
 
-        for window in _windows(session, exclude=[current_window]):
-            session.window_handle = window
-            if len(session.handles) > 1:
-                session.window.close()
+        if session.bidi_session:
+            response = await (
+                await session.bidi_session.send_command("browsingContext.getTree", {
+                    "maxDepth": 1
+                }))
+            for context in response["contexts"][1:]:
+                await (
+                    await session.bidi_session.send_command("browsingContext.close", {
+                        "context": context["context"]
+                    }))
+        else:
+            current_window = session.window_handle
 
-        session.window_handle = current_window
+            for window in _windows(session, exclude=[current_window]):
+                session.window_handle = window
+                if len(session.handles) > 1:
+                    session.window.close()
+
+            session.window_handle = current_window
 
     _restore_timeouts(session)
     _ensure_valid_window(session)
     _dismiss_user_prompts(session)
-    _restore_windows(session)
+    await _restore_windows(session)
     _restore_window_state(session)
     _switch_to_top_level_browsing_context(session)
 

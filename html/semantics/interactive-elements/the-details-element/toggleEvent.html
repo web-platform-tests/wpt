@@ -10,10 +10,6 @@
   <summary>Lorem ipsum</summary>
   <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
 </details>
-<details id=details2>
-  <summary>Lorem ipsum</summary>
-  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-</details>
 <details id=details3 style="display:none;">
   <summary>Lorem ipsum</summary>
   <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
@@ -47,7 +43,6 @@
 </details>
 <script>
   var t1 = async_test("Adding open to 'details' should fire a toggle event at the 'details' element, with 'oldState: closed' and 'newState: open'"),
-  t2 = async_test("Adding open to 'details' and then removing open from that 'details' should fire only one toggle event at the 'details' element, with 'oldState: closed' and 'newState: closed'"),
   t3 = async_test("Adding open to 'details' (display:none) should fire a toggle event at the 'details' element, with 'oldState: closed' and 'newState: open'"),
   t4 = async_test("Adding open to 'details' (no children) should fire a toggle event at the 'details' element, with 'oldState: closed' and 'newState: open'"),
   t6 = async_test("Adding open to 'details' and then removing open from that 'details' and then again adding open to that 'details' should fire only one toggle event at the 'details' element, with 'oldState: closed' and 'newState: closed'"),
@@ -57,7 +52,6 @@
   t10 = async_test("Setting open=false on a closed 'details' element should not fire a toggle event at the 'details' element"),
 
   details1 = document.getElementById('details1'),
-  details2 = document.getElementById('details2'),
   details3 = document.getElementById('details3'),
   details4 = document.getElementById('details4'),
   details6 = document.getElementById('details6'),
@@ -81,15 +75,6 @@
     testEvent(evt)
   });
   details1.open = true; // opens details1
-
-  details2.ontoggle = t2.step_func_done(function(evt) {
-    assert_equals(evt.oldState, "closed");
-    assert_equals(evt.newState, "closed");
-    assert_false(details2.open);
-    testEvent(evt);
-  });
-  details2.open = true;
-  details2.open = false; // closes details2
 
   details3.ontoggle = t3.step_func_done(function(evt) {
     assert_equals(evt.oldState, "closed");

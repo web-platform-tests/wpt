@@ -23,7 +23,9 @@
   // Force a flush and restoration of the state stack:
   const canvas2 = new OffscreenCanvas(200, 200);
   const ctx2 = canvas2.getContext('2d');
-  ctx.putImageData(ctx2.getImageData(0, 0, 1, 1), 0, 0);
+  ctx2.fillRect(30, 82, 130, 5);
+  const imageData = ctx2.getImageData(0, 0, 200, 200);
+  ctx.putImageData(imageData, 0, 0);
 
   ctx.fillRect(70, 70, 75, 50);
   ctx.fillStyle = 'orange';

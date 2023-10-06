@@ -505,6 +505,7 @@ def genTestUtils_union(NAME2DIRFILE: str) -> None:
                 # name in different folders (element vs. offscreen).
                 if not variant_name.startswith('_'):
                     test['name'] += '.' + variant_name
+                test['variant_name'] = variant_name
                 test.update(variant_params)
 
             name = test['name']

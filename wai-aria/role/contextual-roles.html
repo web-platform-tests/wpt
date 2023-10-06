@@ -67,6 +67,31 @@ Identified roles with "Required Context" excluding abstract roles (e.g., child -
 
 <!-- Testing orphaned group/listbox semantics -->
 <span role="option" data-testname="orphan span with option role" class="ex-generic">x</span>
+<button role="option" data-testname="orphan button with option role" data-expectedrole="button" class="ex">x</button>
+
+<!-- Testing orphaned tab semantics -->
+<button role="tab" data-testname="orphan button with tab role" data-expectedrole="button" class="ex">x</button>
+<span role="tab" data-testname="orphan span with tab role" class="ex-generic">x</span>
+
+<!-- Testing orphaned tree semantics -->
+<button role="treeitem" data-testname="orphan button with treeitem role" data-expectedrole="button" class="ex">x</button>
+<span role="treeitem" data-testname="orphan span with treeitem role" class="ex-generic">x</span>
+
+<!-- Testing contentinfo role computation when scoped to <main> or not:
+    1. If <footer> is a descendent of <main>, it should become 'generic'
+    2. If <footer> is scoped to <body>, it should be 'contentinfo' as expected
+
+    see: https://w3c.github.io/html-aam/#el-footer-ancestorbody -->
+<main>
+    <footer data-testname="footer scoped to main element" class="ex-generic">x</footer>
+</main>
+
+<main>
+    <div role="contentinfo" data-testname="contentinfo region scoped to main element" class="ex-generic">x</div>
+</main>
+
+<footer data-testname="footer scoped to body element " data-expectedrole="contentinfo" class="ex">x</footer>
+<div role="contentinfo" data-testname="contentinfo region scoped to body element" class="ex-generic">x</div>
 
 <script>
     AriaUtils.verifyRolesBySelector(".ex");

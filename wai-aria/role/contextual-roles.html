@@ -39,27 +39,34 @@ Identified roles with "Required Context" excluding abstract roles (e.g., child -
 - tab -> tablist
 - treeitem -> {group, tree}
 
-Identified roles with "Required Ownership" excluding abstract roles 
-and roles like feed (which allow article without feed context):
-
-- 
-
 -->
+
+<!-- Testing orphaned caption -->
+<p role="caption" data-testname="orphan p with caption role" data-expectedrole="paragraph" class="ex">x</p>
+
+<!-- Testing orphaned table semantics -->
+<span role="cell" data-testname="orphan span with cell role" class="ex-generic">x</span>
+<span role="rowgroup" data-testname="orphan span with rowgroup role" class="ex-generic">x</span>
+<span role="columnheader" data-testname="orphan span with columnheader role" class="ex-generic">x</span>
+<span role="rowheader" data-testname="orphan span with rowheader role" class="ex-generic">x</span>
+<span role="row" data-testname="orphan span with row role" class="ex-generic">x</span>
 
 <!-- Testing orphaned list semantics -->
 <div role="listitem" data-testname="orphan div with listitem role" class="ex-generic">x</div>
 <p role="listitem" data-testname="orphan p with listitem role" data-expectedrole="paragraph" class="ex">x</p>
 
 <!-- Testing orphaned grid semantics -->
-<button role="gridcell" data-testname="orphan button with gridcell role" data-expectedrole="button" class="ex">x</p>
-<span role="gridcell" data-testname="orphan span with gridcell role" class="ex-generic">x</p>
+<button role="gridcell" data-testname="orphan button with gridcell role" data-expectedrole="button" class="ex">x</button>
+<span role="gridcell" data-testname="orphan span with gridcell role" class="ex-generic">x</span>
 
-<!-- Testing orphaned table semantics -->
-<span role="cell" data-testname="orphan span with cell role" class="ex-generic">x</p>
-<span role="rowgroup" data-testname="orphan span with rowgroup role" class="ex-generic">x</p>
-<span role="columnheader" data-testname="orphan span with columnheader role" class="ex-generic">x</p>
-<span role="rowheader" data-testname="orphan span with rowheader role" class="ex-generic">x</p>
-<span role="row" data-testname="orphan span with row role" class="ex-generic">x</p>
+<!-- Testing orphaned menu semantics -->
+<button role="menuitemcheckbox" data-testname="orphan button with menuitemcheckbox role" data-expectedrole="button" class="ex">x</button>
+<button role="menuitemradio" data-testname="orphan button with menuitemradio role" data-expectedrole="button" class="ex">x</button>
+<div role="menuitemcheckbox" data-testname="orphan div with menuitemcheckbox role" class="ex-generic">x</div>
+<div role="menuitemradio" data-testname="orphan div with menuitemradio role" class="ex-generic">x</div>
+
+<!-- Testing orphaned group/listbox semantics -->
+<span role="option" data-testname="orphan span with option role" class="ex-generic">x</span>
 
 <script>
     AriaUtils.verifyRolesBySelector(".ex");

@@ -352,7 +352,8 @@ regexps = [item() for item in  # type: ignore
             rules.SpecialPowersRegexp,
             rules.AssertThrowsRegexp,
             rules.PromiseRejectsRegexp,
-            rules.AssertPreconditionRegexp]]
+            rules.AssertPreconditionRegexp,
+            rules.HTMLInvalidSyntaxRegexp]]
 
 
 def check_regexp_line(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]:
@@ -432,6 +433,18 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
         if timeout_value != "long":
             errors.append(rules.InvalidTimeout.error(path, (timeout_value,)))
 
+    if source_file.content_is_ref_node or source_file.content_is_testharness:
+        for element in source_file.variant_nodes:
+            if "content" not in element.attrib:
+                errors.append(rules.VariantMissing.error(path))
+            else:
+                variant = element.attrib["content"]
+                if (variant == "" or
+                    variant[0] not in ("?", "#") or
+                    len(variant) == 1 or
+                    (variant[0] == "?" and variant[1] == "#")):
+                    errors.append(rules.MalformedVariant.error(path, (path,)))
+
     required_elements: List[Text] = []
 
     testharnessreport_nodes: List[ElementTree.Element] = []
@@ -448,17 +461,6 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
         else:
             if len(testharnessreport_nodes) > 1:
                 errors.append(rules.MultipleTestharnessReport.error(path))
-
-        for element in source_file.variant_nodes:
-            if "content" not in element.attrib:
-                errors.append(rules.VariantMissing.error(path))
-            else:
-                variant = element.attrib["content"]
-                if (variant == "" or
-                    variant[0] not in ("?", "#") or
-                    len(variant) == 1 or
-                    (variant[0] == "?" and variant[1] == "#")):
-                    errors.append(rules.MalformedVariant.error(path, (path,)))
 
         required_elements.extend(key for key, value in {"testharness": True,
                                                         "testharnessreport": len(testharnessreport_nodes) > 0,

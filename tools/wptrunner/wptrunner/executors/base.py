@@ -304,7 +304,8 @@ class TestExecutor:
             result = self.do_test(test)
         except Exception as e:
             exception_string = traceback.format_exc()
-            self.logger.warning(exception_string)
+            message = f"Exception in TextExecutor.run:\n{exception_string}"
+            self.logger.warning(message)
             result = self.result_from_exception(test, e, exception_string)
 
         # log result of parent test
@@ -653,7 +654,8 @@ class WdspecExecutor(TestExecutor):
                           "timeout_multiplier": self.timeout_multiplier,
                           "browser": {
                               "binary": self.binary,
-                              "args": self.binary_args
+                              "args": self.binary_args,
+                              "env": self.browser.env,
                           },
                           "webdriver": {
                               "binary": self.webdriver_binary,
@@ -731,8 +733,8 @@ class CallbackHandler:
         self.logger.debug("Got async callback: %s" % result[1])
         try:
             callback = self.callbacks[command]
-        except KeyError:
-            raise ValueError("Unknown callback type %r" % result[1])
+        except KeyError as e:
+            raise ValueError("Unknown callback type %r" % result[1]) from e
         return callback(url, payload)
 
     def process_complete(self, url, payload):
@@ -745,8 +747,8 @@ class CallbackHandler:
         self.logger.debug(f"Got action: {action}")
         try:
             action_handler = self.actions[action]
-        except KeyError:
-            raise ValueError(f"Unknown action {action}")
+        except KeyError as e:
+            raise ValueError(f"Unknown action {action}") from e
         try:
             with ActionContext(self.logger, self.protocol, payload.get("context")):
                 result = action_handler(payload)

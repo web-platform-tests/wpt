@@ -33,24 +33,20 @@ function createTrackerURL(origin, uuid, dispatch, id = null) {
 // Create tracked bidder/seller URLs. The only difference is the prefix added
 // to the `id` passed to createTrackerURL. The optional `id` field allows
 // multiple bidder/seller report URLs to be distinguishable from each other.
-function createBidderReportURL(uuid, id = '1') {
-  return createTrackerURL(window.location.origin, uuid, `track_get`,
-                          `bidder_report_${id}`);
+function createBidderReportURL(uuid, id = '1', origin = window.location.origin) {
+  return createTrackerURL(origin, uuid, `track_get`, `bidder_report_${id}`);
 }
-function createSellerReportURL(uuid, id = '1') {
-  return createTrackerURL(window.location.origin, uuid, `track_get`,
-                          `seller_report_${id}`);
+function createSellerReportURL(uuid, id = '1', origin = window.location.origin) {
+  return createTrackerURL(origin, uuid, `track_get`, `seller_report_${id}`);
 }
 
 // Much like above ReportURL methods, except designed for beacons, which
 // are expected to be POSTs.
-function createBidderBeaconURL(uuid, id = '1') {
-  return createTrackerURL(window.location.origin, uuid, `track_post`,
-                          `bidder_beacon_${id}`);
+function createBidderBeaconURL(uuid, id = '1', origin = window.location.origin) {
+  return createTrackerURL(origin, uuid, `track_post`, `bidder_beacon_${id}`);
 }
-function createSellerBeaconURL(uuid, id = '1') {
-  return createTrackerURL(window.location.origin, uuid, `track_post`,
-                          `seller_beacon_${id}`);
+function createSellerBeaconURL(uuid, id = '1', origin = window.location.origin) {
+  return createTrackerURL(origin, uuid, `track_post`, `seller_beacon_${id}`);
 }
 
 // Generates a UUID and registers a cleanup method with the test fixture to
@@ -149,7 +145,8 @@ function createBiddingScriptURL(params = {}) {
 //
 // The default reportResult() method is empty.
 function createDecisionScriptURL(uuid, params = {}) {
-  let url = new URL(`${BASE_URL}resources/decision-logic.sub.py`);
+  let origin = params.origin ? params.origin : new URL(BASE_URL).origin;
+  let url = new URL(`${origin}${RESOURCE_PATH}decision-logic.sub.py`);
   url.searchParams.append('uuid', uuid);
   if (params.scoreAd)
     url.searchParams.append('scoreAd', params.scoreAd);
@@ -165,8 +162,10 @@ function createDecisionScriptURL(uuid, params = {}) {
 // by the decision logic script before accepting a bid. "uuid" is expected to
 // be last.  "signalsParams" also has no effect, but is used by
 // trusted-scoring-signals.py to affect the response.
-function createRenderURL(uuid, script, signalsParams) {
-  let url = new URL(`${BASE_URL}resources/fenced-frame.sub.py`);
+function createRenderURL(uuid, script, signalsParams, origin) {
+  if (origin == null)
+    origin = new URL(BASE_URL).origin;
+  let url = new URL(`${origin}${RESOURCE_PATH}fenced-frame.sub.py`);
   if (script)
     url.searchParams.append('script', script);
   if (signalsParams)
@@ -264,6 +263,16 @@ async function runBasicFledgeTestExpectingNoWinner(
   assert_true(result === null, 'Auction unexpectedly had a winner');
 }
 
+// Creates a fenced frame and applies fencedFrameConfig to it. Also adds a cleanup
+// method to destroy the fenced frame at the end of the current test.
+function createAndNavigateFencedFrame(test, fencedFrameConfig) {
+  let fencedFrame = document.createElement('fencedframe');
+  fencedFrame.mode = 'opaque-ads';
+  fencedFrame.config = fencedFrameConfig;
+  document.body.appendChild(fencedFrame);
+  test.add_cleanup(() => { document.body.removeChild(fencedFrame); });
+}
+
 // Calls runBasicFledgeAuction(), expecting the auction to have a winner.
 // Creates a fenced frame that will be destroyed on completion of "test", and
 // navigates it to the URN URL returned by the auction. Does not wait for the
@@ -272,12 +281,7 @@ async function runBasicFledgeAuctionAndNavigate(test, uuid,
                                                 auctionConfigOverrides = {}) {
   let config = await runBasicFledgeTestExpectingWinner(test, uuid,
                                                        auctionConfigOverrides);
-
-  let fencedFrame = document.createElement('fencedframe');
-  fencedFrame.mode = 'opaque-ads';
-  fencedFrame.config = config;
-  document.body.appendChild(fencedFrame);
-  test.add_cleanup(() => { document.body.removeChild(fencedFrame); });
+  createAndNavigateFencedFrame(test, config);
 }
 
 // Joins an interest group and runs an auction, expecting a winner to be

@@ -526,7 +526,6 @@ class TestSource:
             ))
         for item in groups:
             test_queue.put(item)
-        cls.add_sentinal(test_queue, processes)
         return test_queue, processes
 
     @classmethod
@@ -548,15 +547,8 @@ class TestSource:
             try:
                 self.current_group = self.test_queue.get_nowait()
             except Empty:
-                self.logger.warning("No test group in the queue")
                 return TestGroup(None, None, None, None)
         return self.current_group
-
-    @classmethod
-    def add_sentinal(cls, test_queue, num_of_workers):
-        # add one sentinal for each worker
-        for _ in range(num_of_workers):
-            test_queue.put(TestGroup(None, None, None, None))
 
     @classmethod
     def process_count(cls, requested_processes, num_test_groups):

@@ -699,7 +699,6 @@
             }
         } else {
             // In his case, the test might not be stepped at all, and it even if it is, only the first START event counts for each test
-            console.log("START USING CONTEXT", ctx)
             self.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "START", content: {'isSecure': self.isSecureContext, 'wid': "worker", 'name': test_name}, ts: Date.now()}}))
         }
         return test_obj;
@@ -2582,7 +2581,6 @@
                 id = window.__id__
             }
             console.log(`[${Date.now()}] prototype.step START`)
-            console.log("START USING CONTEXT", ctx)
             ctx.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "START", content: {'wid': id, 'name': this.name}, ts: Date.now()}}))
         }
 
@@ -2975,8 +2973,6 @@
             ctx = window
             id = window.__id__
         }
-        console.log("CALLIN CLEANUP")
-        console.log("END USING CONTEXT", ctx)
         ctx.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "END", content: {'wid': id, 'name': this.name, 'status': !this.status}, ts: Date.now()}}))
         var errors = [];
         var bad_value_count = 0;
@@ -4375,7 +4371,6 @@
         } else {
             ctx = window
         }
-        console.log("DOWNLOAD USING CONTEXT", ctx)
         ctx.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "DOWNLOAD", content: "", ts: Date.now()}}))
     };
 

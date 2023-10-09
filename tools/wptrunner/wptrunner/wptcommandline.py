@@ -6,11 +6,19 @@ import sys
 from collections import OrderedDict
 from shutil import which
 from datetime import timedelta
+from typing import cast, Mapping
+
+try:
+    from typing import TypedDict
+except ImportError:
+    # For Python 3.7 we don't have TypedDict do alias it to a generic Mapping
+    TypedDict = Mapping
 
 from . import config
 from . import products
 from . import wpttest
 from .formatters import chromium, wptreport, wptscreenshot
+
 
 def abs_path(path):
     return os.path.abspath(os.path.expanduser(path))
@@ -506,20 +514,30 @@ def set_from_config(kwargs):
     check_paths(kwargs)
 
 
-def get_test_paths(config):
+class TestRoot(TypedDict):
+    tests_path: str
+    metadata_path: str
+    manifest_path: str
+
+
+TestPaths = Mapping[str, TestRoot]
+
+
+def get_test_paths(config: Mapping[str, config.ConfigDict]) -> TestPaths:
     # Set up test_paths
     test_paths = OrderedDict()
 
     for section in config.keys():
         if section.startswith("manifest:"):
-            manifest_opts = config.get(section)
+            manifest_opts = config[section]
             url_base = manifest_opts.get("url_base", "/")
-            test_paths[url_base] = {
+            test_root = {
                 "tests_path": manifest_opts.get_path("tests"),
                 "metadata_path": manifest_opts.get_path("metadata"),
             }
             if "manifest" in manifest_opts:
-                test_paths[url_base]["manifest_path"] = manifest_opts.get_path("manifest")
+                test_root["manifest_path"] = manifest_opts.get_path("manifest")
+            test_paths[url_base] = cast(TestRoot, test_root)
 
     return test_paths
 

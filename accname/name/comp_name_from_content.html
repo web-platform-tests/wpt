@@ -71,6 +71,18 @@
   <li>link (a[href]) is an interactive inline element that can include non-presentational descendants.</li>
 </ul>
 
+<h1>ARIA roles, inline</h1>
+<span tabindex="0" role="button" data-expectedlabel="label" data-testname="aria button name from content, inline" class="ex">label</span><br>
+<span tabindex="0" role="heading" data-expectedlabel="label" data-testname="aria heading name from content, inline" class="ex">label</span><br>
+<span tabindex="0" role="link" data-expectedlabel="label" data-testname="aria link name from content, inline" class="ex">label</span><br>
+<br>
+
+<h1>ARIA roles, block</h1>
+<div tabindex="0" role="button" data-expectedlabel="label" data-testname="aria button name from content, block" class="ex">label</div>
+<div tabindex="0" role="heading" data-expectedlabel="label" data-testname="aria heading name from content, block" class="ex">label</div>
+<div tabindex="0" role="link" data-expectedlabel="label" data-testname="aria link name from content, block" class="ex">label</div>
+<br>
+
 <h1>simple</h1>
 <button data-expectedlabel="label" data-testname="button name from content" class="ex">label</button><br>
 <h3 data-expectedlabel="label" data-testname="heading name from content" class="ex">label</h3>
@@ -135,6 +147,17 @@
 <h3 data-expectedlabel="one two three four" data-testname="heading name from content for each child including nested image" class="ex"><span>one</span> <span>two <img src="#" alt="three"></span> <span>four</span></h3>
 <a href="#" data-expectedlabel="one two three four" data-testname="link name from content for each child including nested image" class="ex"><span>one</span> <span>two <img src="#" alt="three"></span> <span>four</span></a><br>
 <br>
+
+<h1>heading with nested button with nested image</h1>
+<h3 data-expectedlabel="heading button image button heading" data-testname="heading name from content for each child including nested button with nested image" class="ex">
+  heading
+  <button>
+    button
+    <img src="#" alt="image">
+    button
+  </button>
+  heading
+</h3>
 
 <h1>heading with nested link with nested image</h1>
 <h3 data-expectedlabel="heading link image link heading" data-testname="heading name from content for each child including nested link with nested image" class="ex">

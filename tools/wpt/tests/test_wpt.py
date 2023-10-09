@@ -218,8 +218,8 @@ def test_run_failing_test():
     assert os.path.isfile("../../%s" % failing_test)
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--yes", "--no-pause", "--channel", "stable",
-                       "--install-browser", "--log-mach=-", "--log-mach-verbose",
+        wpt.main(argv=["run", "--yes", "--no-pause", "--channel", "dev",
+                       "--log-mach=-", "--log-mach-verbose",
                        # WebTransport server is not needed (web-platform-tests/wpt#41675).
                        "--no-enable-webtransport-h3",
                        # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
@@ -229,8 +229,8 @@ def test_run_failing_test():
 
     with pytest.raises(SystemExit) as excinfo:
         wpt.main(argv=["run", "--yes", "--no-pause", "--no-fail-on-unexpected",
-                       "--install-browser", "--log-mach=-", "--log-mach-verbose",
-                       "--channel", "stable",
+                       "--log-mach=-", "--log-mach-verbose",
+                       "--channel", "dev",
                        # WebTransport server is not needed (web-platform-tests/wpt#41675).
                        "--no-enable-webtransport-h3",
                        # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
@@ -259,8 +259,8 @@ def test_run_verify_unstable(temp_test):
     """)
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--yes", "--verify", "--channel", "stable",
-                       "--install-browser", "--log-mach=-", "--log-mach-verbose",
+        wpt.main(argv=["run", "--yes", "--verify", "--channel", "dev",
+                       "--log-mach=-", "--log-mach-verbose",
                        # WebTransport server is not needed (web-platform-tests/wpt#41675).
                        "--no-enable-webtransport-h3",
                        # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
@@ -271,8 +271,8 @@ def test_run_verify_unstable(temp_test):
     stable_test = temp_test("test(function() {}, 'my test');")
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--yes", "--verify", "--channel", "stable",
-                       "--install-browser", "--log-mach=-", "--log-mach-verbose",
+        wpt.main(argv=["run", "--yes", "--verify", "--channel", "dev",
+                       "--log-mach=-", "--log-mach-verbose",
                        # WebTransport server is not needed (web-platform-tests/wpt#41675).
                        "--no-enable-webtransport-h3",
                        # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.

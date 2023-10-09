@@ -19,11 +19,11 @@
 
     <script>
       const types_applies = [
-        "hidden", "text", "search", "tel", "url", "email", "password", "submit", "reset", "button"
+        "hidden", "text", "search", "tel", "url", "email", "password", "submit"
       ];
       const types_not = [
         "date", "month", "week", "time", "datetime-local", "number", "range", "color", "checkbox",
-        "radio", "file", "image"
+        "radio", "file", "image", "reset", "button"
       ];
       const types = [...types_applies, ...types_not];
       let form = document.querySelector("form");

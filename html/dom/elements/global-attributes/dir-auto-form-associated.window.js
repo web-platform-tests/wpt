@@ -1,5 +1,6 @@
-// Keep this synchronized with
+// Keep this mostly synchronized with
 // html/semantics/forms/attributes-common-to-form-controls/dirname-only-if-applies.html
+// except that won't have "reset" and "button" as those don't submit their value
 [
   "hidden",
   "text",

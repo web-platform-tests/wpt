@@ -1,0 +1,85 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="author" title="Keith Cirkel" href="mailto:keithamus@github.com" />
+<link rel="help" href="https://github.com/keithamus/invoker-buttons-proposal" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="div"></div>
+<button id="button"></button>
+
+<script>
+  test(function () {
+    var button = document.getElementById("button");
+    var div = document.getElementById("div");
+    var event = new InvokeEvent("invoke", {
+      bubbles: true,
+      relatedTarget: button,
+    });
+    div.dispatchEvent(event);
+
+    assert_equals(event.target, div);
+    assert_equals(event.relatedTarget, button);
+  }, "InvokeEvent relatedTarget reflects light-dom nodes");
+
+  test(function () {
+    var host = document.createElement("div");
+    var child = host.appendChild(document.createElement("p"));
+    var shadow = host.attachShadow({ mode: "closed" });
+    var slot = shadow.appendChild(document.createElement("slot"));
+    var childCalled = false;
+    var hostCalled = false;
+    slot.addEventListener(
+      "invoke",
+      () => {
+        childCalled = true;
+        assert_equals(
+          event.target,
+          slot,
+          "target is child inside shadow boundary",
+        );
+        assert_equals(
+          event.relatedTarget,
+          slot,
+          "relatedTarget is child inside shadow boundary",
+        );
+      },
+      { once: true },
+    );
+    host.addEventListener(
+      "invoke",
+      () => {
+        hostCalled = true;
+      },
+      { once: true },
+    );
+    const event = new InvokeEvent("invoke", {
+      bubbles: true,
+      relatedTarget: slot,
+      composed: true,
+    });
+    slot.dispatchEvent(event);
+    assert_true(childCalled, "event dispatch fired inside shadow-tree");
+    assert_false(hostCalled, "event dispatch not fired outside shadow-tree");
+  }, "InvokeEvent does not bubble across shadow boundaries because relatedTarget is set");
+
+  test(function () {
+    var host = document.createElement("div");
+    var shadow = host.attachShadow({ mode: "closed" });
+    var button = shadow.appendChild(document.createElement("button"));
+    var invokee = host.appendChild(document.createElement("div"));
+    button.invokeTargetElement = invokee;
+    var called = false;
+    invokee.addEventListener(
+      "invoke",
+      () => {
+        called = true;
+        assert_equals(event.target, invokee, "target is invokee");
+        assert_equals(event.relatedTarget, host, "relatedTarget is host");
+      },
+      { once: true },
+    );
+    button.click();
+    assert_true(called, "event dispatch fired inside shadow-tree");
+  }, "cross shadow InvokeEvent retargets relatedTarget to host element");
+</script>

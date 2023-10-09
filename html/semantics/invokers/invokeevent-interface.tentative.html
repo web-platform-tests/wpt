@@ -1,0 +1,214 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="author" title="Keith Cirkel" href="mailto:keithamus@github.com" />
+<link rel="help" href="https://github.com/keithamus/invoker-buttons-proposal" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+  test(function () {
+    var event = new InvokeEvent("");
+    assert_true(event instanceof window.InvokeEvent);
+  }, "the event is an instance of InvokeEvent");
+
+  test(function () {
+    var event = new InvokeEvent("");
+    assert_true(event instanceof window.Event);
+  }, "the event inherits from Event");
+
+  test(function () {
+    assert_throws_js(
+      TypeError,
+      function () {
+        new InvokeEvent();
+      },
+      "First argument (type) is required, so was expecting a TypeError.",
+    );
+  }, "Missing type argument");
+
+  test(function () {
+    var event = new InvokeEvent("test");
+    assert_equals(event.type, "test");
+  }, "type argument is string");
+
+  test(function () {
+    var event = new InvokeEvent(null);
+    assert_equals(event.type, "null");
+  }, "type argument is null");
+
+  test(function () {
+    var event = new InvokeEvent(undefined);
+    assert_equals(event.type, "undefined");
+  }, "event type set to undefined");
+
+  test(function () {
+    var event = new InvokeEvent("test");
+    assert_equals(event.action, "auto");
+  }, "action has default value of 'auto'");
+
+  test(function () {
+    var event = new InvokeEvent("test");
+    assert_readonly(event, "action", "readonly attribute value");
+  }, "action is readonly");
+
+  test(function () {
+    var event = new InvokeEvent("test");
+    assert_equals(event.relatedTarget, null);
+  }, "relatedTarget has default value of null");
+
+  test(function () {
+    var event = new InvokeEvent("test");
+    assert_readonly(event, "relatedTarget", "readonly attribute value");
+  }, "relatedTarget is readonly");
+
+  test(function () {
+    var event = new InvokeEvent("test", null);
+    assert_equals(event.action, "auto");
+    assert_equals(event.relatedTarget, null);
+  }, "InvokeEventInit argument is null");
+
+  test(function () {
+    var event = new InvokeEvent("test", undefined);
+    assert_equals(event.action, "auto");
+    assert_equals(event.relatedTarget, null);
+  }, "InvokeEventInit argument is undefined");
+
+  test(function () {
+    var event = new InvokeEvent("test", {});
+    assert_equals(event.action, "auto");
+    assert_equals(event.relatedTarget, null);
+  }, "InvokeEventInit argument is empty dictionary");
+
+  test(function () {
+    var event = new InvokeEvent("test", { action: "sample" });
+    assert_equals(event.action, "sample");
+  }, "action set to 'sample'");
+
+  test(function () {
+    var event = new InvokeEvent("test", { action: undefined });
+    assert_equals(event.action, "auto");
+  }, "action set to undefined");
+
+  test(function () {
+    var event = new InvokeEvent("test", { action: null });
+    assert_equals(event.action, "null");
+  }, "action set to null");
+
+  test(function () {
+    var event = new InvokeEvent("test", { action: false });
+    assert_equals(event.action, "false");
+  }, "action set to false");
+
+  test(function () {
+    var event = new InvokeEvent("test", { action: true });
+    assert_equals(event.action, "true");
+  }, "action set to true");
+
+  test(function () {
+    var event = new InvokeEvent("test", { action: 0.5 });
+    assert_equals(event.action, "0.5");
+  }, "action set to a number");
+
+  test(function () {
+    var event = new InvokeEvent("test", { action: [] });
+    assert_equals(event.action, "");
+  }, "action set to []");
+
+  test(function () {
+    var event = new InvokeEvent("test", { action: [1, 2, 3] });
+    assert_equals(event.action, "1,2,3");
+  }, "action set to [1, 2, 3]");
+
+  test(function () {
+    var event = new InvokeEvent("test", { action: { sample: 0.5 } });
+    assert_equals(event.action, "[object Object]");
+  }, "action set to an object");
+
+  test(function () {
+    var event = new InvokeEvent("test", {
+      action: {
+        valueOf: function () {
+          return "sample";
+        },
+      },
+    });
+    assert_equals(event.action, "[object Object]");
+  }, "action set to an object with a valueOf function");
+
+  test(function () {
+    var eventInit = { action: "sample", relatedTarget: document.body };
+    var event = new InvokeEvent("test", eventInit);
+    assert_equals(event.action, "sample");
+    assert_equals(event.relatedTarget, document.body);
+  }, "InvokeEventInit properties set value");
+
+  test(function () {
+    var eventInit = {
+      action: "open",
+      relatedTarget: document.getElementById("div"),
+    };
+    var event = new InvokeEvent("beforetoggle", eventInit);
+    assert_equals(event.action, "open");
+    assert_equals(event.relatedTarget, document.getElementById("div"));
+  }, "InvokeEventInit properties set value 2");
+
+  test(function () {
+    var eventInit = {
+      action: "closed",
+      relatedTarget: document.getElementById("button"),
+    };
+    var event = new InvokeEvent("toggle", eventInit);
+    assert_equals(event.action, "closed");
+    assert_equals(event.relatedTarget, document.getElementById("button"));
+  }, "InvokeEventInit properties set value 3");
+
+  test(function () {
+    var eventTarget = new XMLHttpRequest();
+    var eventInit = { action: "closed", relatedTarget: eventTarget };
+    var event = new InvokeEvent("toggle", eventInit);
+    assert_equals(event.action, "closed");
+    assert_equals(event.relatedTarget, eventTarget);
+  }, "InvokeEventInit properties set value 4");
+
+  test(function () {
+    var event = new InvokeEvent("test", { relatedTarget: undefined });
+    assert_equals(event.relatedTarget, null);
+  }, "relatedTarget set to undefined");
+
+  test(function () {
+    var event = new InvokeEvent("test", { relatedTarget: null });
+    assert_equals(event.relatedTarget, null);
+  }, "relatedTarget set to null");
+
+  test(function () {
+    assert_throws_js(
+      TypeError,
+      function () {
+        new InvokeEvent("test", { relatedTarget: false });
+      },
+      "relatedTarget is not an object",
+    );
+  }, "relatedTarget set to false");
+
+  test(function () {
+    assert_throws_js(
+      TypeError,
+      function () {
+        var event = new InvokeEvent("test", { relatedTarget: true });
+      },
+      "relatedTarget is not an object",
+    );
+  }, "relatedTarget set to true");
+
+  test(function () {
+    assert_throws_js(
+      TypeError,
+      function () {
+        var event = new InvokeEvent("test", { relatedTarget: {} });
+      },
+      "relatedTarget is not an object",
+    );
+  }, "relatedTarget set to {}");
+</script>
+<div id="div"></div>
+<button id="button"></button>

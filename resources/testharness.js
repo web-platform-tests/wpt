@@ -699,7 +699,8 @@
             }
         } else {
             // In his case, the test might not be stepped at all, and it even if it is, only the first START event counts for each test
-            window.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "START", content: {'isSecure': window.isSecureContext, 'wid': window.__id__, 'name': test_name}, ts: Date.now()}}))
+            console.log("START USING CONTEXT", ctx)
+            self.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "START", content: {'isSecure': self.isSecureContext, 'wid': "worker", 'name': test_name}, ts: Date.now()}}))
         }
         return test_obj;
     }
@@ -709,7 +710,8 @@
      *
      * Promise tests are tests which are represented by a promise
      * object. If the promise is fulfilled the test passes, if it's
-     * rejected the test fails, otherwise the test passes.
+     * rejected the test fails, otherwise the test passestep
+     * u
      *
      * @param {TestFunction} func - Test function. This must return a
      * promise. The test is automatically marked as complete once the
@@ -2570,9 +2572,18 @@
         }
 
         if (this.phase !== this.phases.STARTED) {
+            let ctx = undefined
+            let id = undefined
+            if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope) {
+                ctx = self
+                id = "worker"
+            } else {
+                ctx = window
+                id = window.__id__
+            }
             console.log(`[${Date.now()}] prototype.step START`)
-            window.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "START", content: {'isSecure': window.isSecureContext, 'wid': window.__id__, 'name': this.name}, ts: Date.now()}}))
-            console.log("LOG", window)
+            console.log("START USING CONTEXT", ctx)
+            ctx.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "START", content: {'wid': id, 'name': this.name}, ts: Date.now()}}))
         }
 
         if (settings.debug && this.phase !== this.phases.STARTED) {
@@ -2648,13 +2659,6 @@
 
         return function()
         {
-            // console.log("ARGS", arguments[0])Vjj
-            // console.log("ARGS2", arguments)
-            // console.log("ARGS", func.toString())
-            
-            var msg = {'isSecure': window.isSecureContext ,'orig': document.url, 'frame': frameElement, 'type': `Step`, 'args': [func.toString(), "RESPONSE PLACEHOLDER"]}
-            window.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "EVENT", content: msg, ts: Date.now()}}))
-
             return test_this.step.apply(test_this, [func, this_obj].concat(
                 Array.prototype.slice.call(arguments)));
         };
@@ -2962,7 +2966,18 @@
      */
     Test.prototype.cleanup = function() {
         for(let i = 0; i < 1000000; i++);
-        window.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "END", content: {'isSecure': window.isSecureContext, 'wid': window.__id__, 'name': this.name, 'status': !this.status}, ts: Date.now()}}))
+        let ctx = undefined
+        let id = undefined
+        if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope) {
+            ctx = self
+            id = "worker"
+        } else {
+            ctx = window
+            id = window.__id__
+        }
+        console.log("CALLIN CLEANUP")
+        console.log("END USING CONTEXT", ctx)
+        ctx.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "END", content: {'wid': id, 'name': this.name, 'status': !this.status}, ts: Date.now()}}))
         var errors = [];
         var bad_value_count = 0;
         function on_error(e) {
@@ -4353,7 +4368,15 @@
                .textContent = html;
         }
 
-        window.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "DOWNLOAD", content: "", ts: Date.now()}}))
+
+        let ctx = undefined
+        if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope) {
+            ctx = self
+        } else {
+            ctx = window
+        }
+        console.log("DOWNLOAD USING CONTEXT", ctx)
+        ctx.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "DOWNLOAD", content: "", ts: Date.now()}}))
     };
 
     /*

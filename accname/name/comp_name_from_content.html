@@ -11,29 +11,42 @@
   <script src="/wai-aria/scripts/aria-utils.js"></script>
   <style type="text/css">
 
+     /*
+
+      Since the AccName spec is in flux about whitespace joiners, and the implementations don't match,
+      normalize the whitespace (with extra leading/trailing) space.
+
+      No point in having the same in-flux spec change cause failures the remaining unrelated tests.
+
+      See more here:
+      https://github.com/w3c/accname/issues/205
+      https://github.com/w3c/accname/projects/1#card-42288231
+
+    */
+
     .simple-before::before {
-      content: " before "; /* [sic] leading and trailing space on most content props, unless marked. */
+      content: " before "; /* [sic] leading and trailing space */
       margin:0 0.1em;
     }
     .simple-after::after {
-      content: " after ";
+      content: " after "; /* [sic] leading and trailing space */
       margin:0 0.1em;
     }
     .no-space::before, .no-space::after {
-      content: "nospace"; /* [sic] NO leading and trailing space */
+      content: "nospace"; /* [sic] Unlike the others, NO extra leading/trailing space here. */
     }
     .simple-before:dir(rtl)::before {
-      content: " من قبل ";
+      content: " من قبل "; /* [sic] leading and trailing space */
     }
     .simple-after:dir(rtl)::after {
-      content: " بعد ";
+      content: " بعد "; /* [sic] leading and trailing space */
     }
     .fallback-before::before {
-      content: " before ";
+      content: " before "; /* [sic] leading and trailing space */
       content: " before " / " alt-before "; /* Override the previous line for engines that support the Alternative Text syntax. */
     }
     .fallback-after::after {
-      content: " after ";
+      content: " after "; /* [sic] leading and trailing space */
       content: " after " / " alt-after "; /* Override the previous line for engines that support the Alternative Text syntax. */
     }
     .block > span {
@@ -134,30 +147,62 @@
   heading
 </h3>
 
+<h1>heading with nested link with nested image using aria-label</h1>
+<h3 data-expectedlabel="heading link aria-label heading" data-testname="heading name from content for each child including nested link using aria-label with nested image" class="ex">
+  heading
+  <a href="#" aria-label="link aria-label"><!-- should skip the other link text -->
+    ignored link text
+    <img id="nested_image_label_1" src="#" alt="ignored image alt">
+    ignored link text
+  </a>
+  heading
+</h3>
+
 <h1>heading with nested link with nested image using aria-labelledby</h1>
 <h3 data-expectedlabel="heading image heading" data-testname="heading name from content for each child including nested link using aria-labelledby with nested image" class="ex">
   heading
-  <a href="#" aria-labelledby="nested_image_label_1"><!-- should skip the other link text -->
-    link
-    <img id="nested_image_label_1" src="#" alt="image">
-    link
+  <a href="#" aria-labelledby="nested_image_label1"><!-- should skip the other link text -->
+    ignored link text
+    <img id="nested_image_label1" src="#" alt="image">
+    ignored link text
   </a>
   heading
 </h3>
 
 <h1>heading with two nested links referencing image using aria-labelledby</h1>
 <h3 data-expectedlabel="image link2 link3" data-testname="heading name from content for each child including two nested links using aria-labelledby with nested image" class="ex">
-  <a href="#" aria-labelledby="nested_image_label_2">
+  <a href="#" aria-labelledby="nested_image_label2">
     link1<!-- this text is skipped because of aria-labelledby -->
   </a>
   <a href="#" data-expectedlabel="link2 image link3" data-testname="link name from content for each child including nested image (referenced elsewhere via labelledby)" class="ex">
     link2
-    <img id="nested_image_label_2" src="#" alt="image">
+    <img id="nested_image_label2" src="#" alt="image">
     <!-- image skipped in this link (when computing heading text) because it was already referenced by the first link within this heading label recursion cycle. -->
     <!-- but image not skipped when computing the text of the link itself since it has not been referenced in that context -->
     link3
   </a>
 </h3>
+
+<!-- cross-referencial edge case-->
+<h1>heading with link referencing image using aria-labelledby, that in turn references text element via aria-labelledby</h1>
+<h3 data-expectedlabel="image link" data-testname="heading with link referencing image using aria-labelledby, that in turn references text element via aria-labelledby" class="ex">
+  <a href="#" aria-labelledby="nested_image_label3">
+    <span class="note" id="crossref_link">link</span><!-- this text is skipped the first time around because of aria-labelledby on parent element -->
+  </a>
+  <!-- but it's picked up again in inverse order b/c of cross-referencial aria-labelledby edge case -->
+  <img id="nested_image_label_3" src="#" alt="image" aria-labelledby="crossref_link">
+</h3>
+
+<!-- self-referencial edge case-->
+<h1>heading with link referencing image using aria-labelledby, that in turn references itself and another element via aria-labelledby</h1>
+<h3 data-expectedlabel="image link" data-testname="heading with link referencing image using aria-labelledby, that in turn references itself and another element via aria-labelledby" class="ex">
+  <a href="#" aria-labelledby="nested_image_label4">
+    <span class="note" id="crossref_link2">link</span><!-- this text is skipped the first time around because of aria-labelledby on parent element -->
+  </a>
+  <!-- but it's picked up again (after the self-referencial image alt) in inverse order b/c of cross-referencial aria-labelledby edge case -->
+  <img id="nested_image_label4" src="#" alt="image" aria-labelledby="nested_image_label4 crossref_link2">
+</h3>
+
 
 <!-- Note: The following test is out of line with the spec, but matching two out of three implementations at the time of writing, and spec changes are expeected. -->
 <!-- See details in https://github.com/w3c/accname/issues/205 -->

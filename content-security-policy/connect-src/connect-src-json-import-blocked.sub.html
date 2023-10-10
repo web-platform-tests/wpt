@@ -24,7 +24,7 @@
         });
 
         return Promise.all([
-          promise_rejects_js(t, Error, import("./resources/dummy.json", { with: { type: "json" } })),
+          promise_rejects_js(t, Error, import("/common/dummy.json", { with: { type: "json" } })),
           check_spv,
         ]);
       });

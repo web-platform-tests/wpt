@@ -55,7 +55,27 @@ promise_test(async t => {
   const usageAfterPut = estimate.usage;
   assert_greater_than(
     usageAfterPut, usageAfterCreate,
-    'estimated usage should increase after large value is stored');
+    'estimated usage should increase after blob is stored');
+
+  const txn2 =
+      db.transaction(objectStoreName, 'readwrite', {durability: 'strict'});
+  txn2.objectStore(objectStoreName).put(view, 2);
+  await transactionPromise(txn2);
+  estimate = await navigator.storage.estimate();
+  const usageAfterPut2 = estimate.usage;
+  assert_greater_than(
+      usageAfterPut2, usageAfterPut,
+      'estimated usage should increase after large value is stored (strict transaction)');
+
+  const txn3 =
+      db.transaction(objectStoreName, 'readwrite', {durability: 'relaxed'});
+  txn3.objectStore(objectStoreName).put(view, 3);
+  await transactionPromise(txn3);
+  estimate = await navigator.storage.estimate();
+  const usageAfterPut3 = estimate.usage;
+  assert_greater_than(
+      usageAfterPut3, usageAfterPut2,
+      'estimated usage should increase after large value is stored (relaxed transaction)');
 
   db.close();
-}, 'estimate() shows usage increase after large value is stored');
+}, 'estimate() shows usage increase after IDB operations');

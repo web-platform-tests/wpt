@@ -17,7 +17,7 @@
           "securitypolicyviolation",
           t.unreached_func("No security policy violation should be raised.")
         );
-        return import("./resources/dummy.json", { with: { type: "json" } });
+        return import("/common/dummy.json", { with: { type: "json" } });
       }, "import should be allowed");
     </script>
   </body>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>connect-src-json-import-allowed</title>
+    <title>import-style-allowed</title>
     <meta
       http-equiv="Content-Security-Policy"
-      content="connect-src 'self' http://{{host}}:{{ports[http][0]}}; script-src 'self' 'unsafe-inline';"
+      content="style-src 'unsafe-inline' 'self' 'http://{{domains[www1]}}:{{ports[http][0]}}'; script-src 'self' 'unsafe-inline' 'unsafe-inline'; connect-src 'self';"
     />
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
@@ -17,7 +17,7 @@
           "securitypolicyviolation",
           t.unreached_func("No security policy violation should be raised.")
         );
-        return import("./resources/dummy.json", { with: { type: "json" } });
+        return import("./resources/allowed.css", { with: { type: "css" } });
       }, "import should be allowed");
     </script>
   </body>

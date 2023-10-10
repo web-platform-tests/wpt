@@ -43,10 +43,15 @@ promise_test(function(t) {
         .then(estimate => {
             before = estimate.usage;
             return new Promise((resolve, reject) => {
-                const tx = db.transaction('store', 'readwrite');
-                tx.objectStore('store').put(large_value, 'key');
-                tx.onabort = () => { reject(tx.error); };
-                tx.oncomplete = () => { resolve(); };
+              const tx =
+                  db.transaction('store', 'readwrite', {durability: 'relaxed'});
+              tx.objectStore('store').put(large_value, 'key');
+              tx.onabort = () => {
+                reject(tx.error);
+              };
+              tx.oncomplete = () => {
+                resolve();
+              };
             });
         })
         .then(() => {

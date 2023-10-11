@@ -141,9 +141,9 @@ const AriaUtils = {
 
         // See: https://github.com/w3c/accname/issues/192 and https://github.com/w3c/accname/issues/208
         //
-        // HTML/JS whitespace matches regular space, formfeed (\f), newline (\n), return (\r), tab (\t), vertical tab (\v), 
+        // HTML/JS whitespace matches regular space, formfeed (\f), newline (\n), return (\r), tab (\t), vertical tab (\v),
         // non-breaking space (\xA0), and a few more Unicode whitespace characters: \u00A0, \u2028, and \u2029.
-        const whitespace = /\s+/g; 
+        const whitespace = /\s+/g;
         expectedLabel = expectedLabel.replace(whitespace, ' ').trim();
         computedLabel = computedLabel.replace(whitespace, ' ').trim();
 

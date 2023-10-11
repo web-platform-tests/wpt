@@ -191,6 +191,7 @@ async def test_response_headers(wait_for_event, url, fetch, setup_network_test):
     assert_response_event(
         events[0],
         expected_request=expected_request,
+        expected_response=expected_response,
         redirect_count=0,
     )
 

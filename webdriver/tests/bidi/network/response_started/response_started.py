@@ -2,8 +2,6 @@ import asyncio
 
 import pytest
 
-from webdriver.bidi.modules.script import ContextTarget
-
 from tests.support.sync import AsyncPoll
 
 from .. import assert_response_event, HTTP_STATUS_AND_STATUS_TEXT
@@ -134,6 +132,7 @@ async def test_response_status(
     }
     assert_response_event(
         events[0],
+        expected_request=expected_request,
         expected_response=expected_response,
         redirect_count=0,
     )
@@ -170,6 +169,7 @@ async def test_response_headers(wait_for_event, url, fetch, setup_network_test):
     assert_response_event(
         events[0],
         expected_request=expected_request,
+        expected_response=expected_response,
         redirect_count=0,
     )
 

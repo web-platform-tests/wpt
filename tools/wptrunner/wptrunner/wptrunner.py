@@ -390,7 +390,7 @@ def run_tests(config, product, test_paths, **kwargs):
             env_extras.append(FontInstaller(
                 logger,
                 font_dir=kwargs["font_dir"],
-                ahem=os.path.join(test_paths["/"]["tests_path"], "fonts/Ahem.ttf")
+                ahem=os.path.join(test_paths["/"].tests_path, "fonts/Ahem.ttf")
             ))
 
         recording.set(["startup", "load_tests"])

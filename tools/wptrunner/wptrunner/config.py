@@ -4,17 +4,17 @@ from configparser import ConfigParser
 import os
 import sys
 from collections import OrderedDict
-from typing import Any, Dict, Mapping
+from typing import Dict, Mapping, Optional
 
 here = os.path.dirname(__file__)
 
 
-class ConfigDict(Dict[str, Any]):
-    def __init__(self, base_path: str, *args: Any, **kwargs: Any):
+class ConfigDict(Dict[str, str]):
+    def __init__(self, base_path: str, *args: str, **kwargs: str):
         self.base_path = base_path
         dict.__init__(self, *args, **kwargs)
 
-    def get_path(self, key: str, default:Any = None) -> Any:
+    def get_path(self, key: str, default:Optional[str] = None) -> Optional[str]:
         if key not in self:
             return default
         path = self[key]

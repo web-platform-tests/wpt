@@ -326,19 +326,20 @@ class ManifestLoader:
 
     def load(self):
         rv = {}
-        for url_base, paths in self.test_paths.items():
-            manifest_file = self.load_manifest(url_base=url_base,
-                                               **paths)
-            path_data = {"url_base": url_base}
-            path_data.update(paths)
+        for url_base, test_root in self.test_paths.items():
+            manifest_file = self.load_manifest(url_base, test_root)
+            path_data = {"url_base": url_base,
+                         "tests_path": test_root.tests_path,
+                         "metadata_path": test_root.metadata_path,
+                         "manifest_path": test_root.manifest_path}
             rv[manifest_file] = path_data
         return rv
 
-    def load_manifest(self, tests_path, manifest_path, metadata_path, url_base="/", **kwargs):
-        cache_root = os.path.join(metadata_path, ".cache")
+    def load_manifest(self, url_base, test_root):
+        cache_root = os.path.join(test_root.metadata_path, ".cache")
         if self.manifest_download:
-            download_from_github(manifest_path, tests_path)
-        return manifest.load_and_update(tests_path, manifest_path, url_base,
+            download_from_github(test_root.manifest_path, test_root.tests_path)
+        return manifest.load_and_update(test_root.tests_path, test_root.manifest_path, url_base,
                                         cache_root=cache_root, update=self.force_manifest_update,
                                         types=self.types)
 

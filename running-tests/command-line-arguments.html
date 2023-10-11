@@ -596,20 +596,21 @@ a different set of command-line arguments.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">run</span>
         <span class="p">[</span><span class="o">--</span><span class="n">channel</span> <span class="p">{</span><span class="n">stable</span><span class="p">,</span><span class="n">release</span><span class="p">,</span><span class="n">beta</span><span class="p">,</span><span class="n">dev</span><span class="p">,</span><span class="n">canary</span><span class="p">,</span><span class="n">nightly</span><span class="p">,</span><span class="n">preview</span><span class="p">,</span><span class="n">experimental</span><span class="p">}]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">affected</span> <span class="n">AFFECTED</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">yes</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">browser</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">webdriver</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">manifest</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">manifest</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">multiplier</span> <span class="n">TIMEOUT_MULTIPLIER</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">run</span><span class="o">-</span><span class="n">by</span><span class="o">-</span><span class="nb">dir</span> <span class="p">[</span><span class="n">RUN_BY_DIR</span><span class="p">]]</span>
-        <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">processes</span> <span class="n">PROCESSES</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">restarts</span> <span class="n">MAX_RESTARTS</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">capture</span><span class="o">-</span><span class="n">stdio</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">fail</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">unexpected</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">fail</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">unexpected</span><span class="o">-</span><span class="k">pass</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">restart</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">new</span><span class="o">-</span><span class="n">group</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="nb">list</span><span class="o">-</span><span class="n">test</span><span class="o">-</span><span class="n">groups</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">list</span><span class="o">-</span><span class="n">disabled</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">list</span><span class="o">-</span><span class="n">tests</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">log</span><span class="o">-</span><span class="n">full</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">repeat</span><span class="o">-</span><span class="n">loop</span> <span class="n">VERIFY_REPEAT_LOOP</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">webdriver</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">logcat</span><span class="o">-</span><span class="nb">dir</span> <span class="n">LOGCAT_DIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">manifest</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">manifest</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">multiplier</span> <span class="n">TIMEOUT_MULTIPLIER</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">run</span><span class="o">-</span><span class="n">by</span><span class="o">-</span><span class="nb">dir</span> <span class="p">[</span><span class="n">RUN_BY_DIR</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">processes</span> <span class="n">PROCESSES</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">restarts</span> <span class="n">MAX_RESTARTS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">capture</span><span class="o">-</span><span class="n">stdio</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">fail</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">unexpected</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">fail</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">unexpected</span><span class="o">-</span><span class="k">pass</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">restart</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">new</span><span class="o">-</span><span class="n">group</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">list</span><span class="o">-</span><span class="n">test</span><span class="o">-</span><span class="n">groups</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">list</span><span class="o">-</span><span class="n">disabled</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="nb">list</span><span class="o">-</span><span class="n">tests</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">log</span><span class="o">-</span><span class="n">full</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">repeat</span><span class="o">-</span><span class="n">loop</span> <span class="n">VERIFY_REPEAT_LOOP</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">repeat</span><span class="o">-</span><span class="n">restart</span> <span class="n">VERIFY_REPEAT_RESTART</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">chaos</span><span class="o">-</span><span class="n">mode</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">chaos</span><span class="o">-</span><span class="n">mode</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">VERIFY_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">repeat</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">REPEAT_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">crashtest</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="n">testharness</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">crashtest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="n">reftest</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">subsuite</span><span class="o">-</span><span class="n">file</span> <span class="n">SUBSUITE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">subsuite</span> <span class="n">SUBSUITES</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="n">INCLUDE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">file</span> <span class="n">INCLUDE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="n">EXCLUDE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">manifest</span> <span class="n">INCLUDE_MANIFEST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">groups</span> <span class="n">TEST_GROUPS_FILE</span><span class="p">]</span>
@@ -713,6 +714,9 @@ channel.) This flag overrides –browser-channel.</p>
 <dt><kbd>--install-webdriver</kbd></dt>
 <dd><p>Install WebDriver from the release channel specified by –channel (or the nightly channel by default).</p>
 <p>Default: False</p>
+</dd>
+<dt><kbd>--logcat-dir</kbd></dt>
+<dd><p>Directory to write Android logcat files to</p>
 </dd>
 <dt><kbd>--manifest-update</kbd></dt>
 <dd><p>Regenerate the test manifest.</p>
@@ -830,9 +834,9 @@ channel.) This flag overrides –browser-channel.</p>
 <h4>Test Selection<a class="headerlink" href="#test-selection" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--test-types</kbd></dt>
-<dd><p>Possible choices: print-reftest, wdspec, crashtest, reftest, testharness</p>
+<dd><p>Possible choices: crashtest, wdspec, print-reftest, testharness, reftest</p>
 <p>Test types to run</p>
-<p>Default: {‘print-reftest’, ‘wdspec’, ‘crashtest’, ‘reftest’, ‘testharness’}</p>
+<p>Default: {‘crashtest’, ‘wdspec’, ‘print-reftest’, ‘testharness’, ‘reftest’}</p>
 </dd>
 <dt><kbd>--subsuite-file</kbd></dt>
 <dd><p>Path to JSON file containing subsuite configuration</p>
@@ -1681,15 +1685,27 @@ channel.) This flag overrides –browser-channel.</p>
 <section id="install-android-emulator">
 <h3>install-android-emulator<a class="headerlink" href="#install-android-emulator" title="Permalink to this headline">¶</a></h3>
 <p>Setup the x86 android emulator</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">install</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reinstall</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">install</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">path</span> <span class="n">DEST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reinstall</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prompt</span><span class="p">]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">prompt</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="named-arguments_repeat23">
 <h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat23" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
+<dt><kbd>--path</kbd></dt>
+<dd><p>Root path to use for emulator tooling</p>
+</dd>
 <dt><kbd>--reinstall</kbd></dt>
 <dd><p>Force reinstall even if the emulator already exists</p>
 <p>Default: False</p>
+</dd>
+<dt><kbd>--prompt</kbd></dt>
+<dd><p>Enable confirmation prompts</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--no-prompt</kbd></dt>
+<dd><p>Skip confirmation prompts</p>
+<p>Default: True</p>
 </dd>
 </dl>
 </section>
@@ -1697,15 +1713,30 @@ channel.) This flag overrides –browser-channel.</p>
 <section id="start-android-emulator">
 <h3>start-android-emulator<a class="headerlink" href="#start-android-emulator" title="Permalink to this headline">¶</a></h3>
 <p>Start the x86 android emulator</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">start</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reinstall</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">start</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">path</span> <span class="n">DEST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reinstall</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prompt</span><span class="p">]</span>
+                           <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">prompt</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">device</span><span class="o">-</span><span class="n">serial</span> <span class="n">DEVICE_SERIAL</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="named-arguments_repeat24">
 <h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat24" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
+<dt><kbd>--path</kbd></dt>
+<dd><p>Root path to use for emulator tooling</p>
+</dd>
 <dt><kbd>--reinstall</kbd></dt>
 <dd><p>Force reinstall even if the emulator already exists</p>
 <p>Default: False</p>
+</dd>
+<dt><kbd>--prompt</kbd></dt>
+<dd><p>Enable confirmation prompts</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--no-prompt</kbd></dt>
+<dd><p>Skip confirmation prompts</p>
+<p>Default: True</p>
+</dd>
+<dt><kbd>--device-serial</kbd></dt>
+<dd><p>Device serial number for Android emulator, if not emulator-5554</p>
 </dd>
 </dl>
 </section>

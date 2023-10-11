@@ -41,39 +41,51 @@ Identified roles with "Required Context" excluding abstract roles (e.g., child -
 
 -->
 
-<!-- Testing orphaned caption -->
+<!-- Required Context Roles Testing  -->
+
+<!-- caption -->
 <p role="caption" data-testname="orphan p with caption role" data-expectedrole="paragraph" class="ex">x</p>
 
-<!-- Testing orphaned table semantics -->
+<!-- cell -->
 <span role="cell" data-testname="orphan span with cell role" class="ex-generic">x</span>
-<span role="rowgroup" data-testname="orphan span with rowgroup role" class="ex-generic">x</span>
+
+<!-- columnheader -->
 <span role="columnheader" data-testname="orphan span with columnheader role" class="ex-generic">x</span>
-<span role="rowheader" data-testname="orphan span with rowheader role" class="ex-generic">x</span>
-<span role="row" data-testname="orphan span with row role" class="ex-generic">x</span>
 
-<!-- Testing orphaned list semantics -->
-<div role="listitem" data-testname="orphan div with listitem role" class="ex-generic">x</div>
-<p role="listitem" data-testname="orphan p with listitem role" data-expectedrole="paragraph" class="ex">x</p>
-
-<!-- Testing orphaned grid semantics -->
+<!-- gridcell -->
 <button role="gridcell" data-testname="orphan button with gridcell role" data-expectedrole="button" class="ex">x</button>
 <span role="gridcell" data-testname="orphan span with gridcell role" class="ex-generic">x</span>
 
-<!-- Testing orphaned menu semantics -->
+<!-- listitem -->
+<div role="listitem" data-testname="orphan div with listitem role" class="ex-generic">x</div>
+<p role="listitem" data-testname="orphan p with listitem role" data-expectedrole="paragraph" class="ex">x</p>
+
+<!-- menuitemcheckbox, menuitemradio-->
 <button role="menuitemcheckbox" data-testname="orphan button with menuitemcheckbox role" data-expectedrole="button" class="ex">x</button>
-<button role="menuitemradio" data-testname="orphan button with menuitemradio role" data-expectedrole="button" class="ex">x</button>
 <div role="menuitemcheckbox" data-testname="orphan div with menuitemcheckbox role" class="ex-generic">x</div>
+<button role="menuitemradio" data-testname="orphan button with menuitemradio role" data-expectedrole="button" class="ex">x</button>
 <div role="menuitemradio" data-testname="orphan div with menuitemradio role" class="ex-generic">x</div>
 
 <!-- option -> ./listbox-roles.html -->
 
-<!-- Testing orphaned tab semantics -->
+<!-- row  -->
+<span role="row" data-testname="orphan span with row role" class="ex-generic">x</span>
+
+<!-- rowgroup -->
+<span role="rowgroup" data-testname="orphan span with rowgroup role" class="ex-generic">x</span>
+
+<!-- rowheader  -->
+<span role="rowheader" data-testname="orphan span with rowheader role" class="ex-generic">x</span>
+
+<!-- tab -->
 <button role="tab" data-testname="orphan button with tab role" data-expectedrole="button" class="ex">x</button>
 <span role="tab" data-testname="orphan span with tab role" class="ex-generic">x</span>
 
-<!-- Testing orphaned tree semantics -->
+<!-- treeitem -->
 <button role="treeitem" data-testname="orphan button with treeitem role" data-expectedrole="button" class="ex">x</button>
 <span role="treeitem" data-testname="orphan span with treeitem role" class="ex-generic">x</span>
+
+<!-- Misc Contextual Role Testing  -->
 
 <!-- Testing contentinfo role computation when scoped to <main> or not:
     1. If <footer> is a descendent of <main>, it should become 'generic'

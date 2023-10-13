@@ -13,8 +13,13 @@
 
 <p>Tests the <a href="https://w3c.github.io/accname/#comp_labelledby">#comp_labelledby</a> portions of the AccName <em>Name Computation</em> algorithm.</p>
 
-<div role="group" aria-labelledby="h" class="ex" data-expectedlabel="div group label" data-testname="div group explicitly labelledby heading">
-  <h2 id="h">div group label</h2>
+<div role="group" aria-labelledby="h" class="ex" data-expectedlabel="first heading" data-testname="div group explicitly labelledby heading">
+  <h2 id="h">first heading</h2>
+  <p>text inside div group</p>
+</div>
+
+<div role="group" aria-label="self label" id="g2" aria-labelledby="g2 h2" class="ex" data-expectedlabel="self label + first heading" data-testname="div group explicitly labelledby self and heading">
+  <h2 id="h2">+ first heading</h2>
   <p>text inside div group</p>
 </div>
 

@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Table Role Verification Tests</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
+    <script src="/resources/testdriver-actions.js"></script>
+    <script src="/wai-aria/scripts/aria-utils.js"></script>
+  </head>
+  <body>
+
+  <p>Tests <a href="https://w3c.github.io/aria/#table">table</a> and related roles.</p>
+
+<script>
+AriaUtils.verifyRolesBySelector(".ex");
+AriaUtils.verifyGenericRolesBySelector(".ex-generic");
+</script>
+
+</body>
+</html>

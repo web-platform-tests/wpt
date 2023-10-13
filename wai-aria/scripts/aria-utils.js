@@ -136,7 +136,7 @@ const AriaUtils = {
       let label = el.getAttribute("data-expectedlabel");
       let testName = el.getAttribute("data-testname") || label; // data-testname optional if label is unique per test file
       promise_test(async t => {
-        let expectedLabel = el.getAttribute("data-expectedlabel");
+        const expectedLabel = el.getAttribute("data-expectedlabel");
         let computedLabel = await test_driver.get_computed_label(el);
 
         // See:
@@ -149,7 +149,6 @@ const AriaUtils = {
         // which matches tab (\t), newline (\n), formfeed (\f), return (\r), and regular space (\u0020).
         // but it does NOT match non-breaking space (\xA0,\u00A0) and others matched by \s
         const asciiWhitespace = /\t\n\f\r\u0020+/g;
-        expectedLabel = expectedLabel.replace(asciiWhitespace, '\u0020').trim();
         computedLabel = computedLabel.replace(asciiWhitespace, '\u0020').trim();
 
         assert_equals(computedLabel, expectedLabel, el.outerHTML);

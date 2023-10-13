@@ -139,13 +139,18 @@ const AriaUtils = {
         let expectedLabel = el.getAttribute("data-expectedlabel");
         let computedLabel = await test_driver.get_computed_label(el);
 
-        // See: https://github.com/w3c/accname/issues/192 and https://github.com/w3c/accname/issues/208
+        // See:
+        // - https://github.com/w3c/accname/pull/165
+        // - https://github.com/w3c/accname/issues/192
+        // - https://github.com/w3c/accname/issues/208
         //
-        // HTML/JS whitespace matches regular space, formfeed (\f), newline (\n), return (\r), tab (\t), vertical tab (\v),
-        // non-breaking space (\xA0), and a few more Unicode whitespace characters: \u00A0, \u2028, and \u2029.
-        const whitespace = /\s+/g;
-        expectedLabel = expectedLabel.replace(whitespace, ' ').trim();
-        computedLabel = computedLabel.replace(whitespace, ' ').trim();
+        // AccName reference's HTML's definition of ASCII Whitespace
+        // https://infra.spec.whatwg.org/#ascii-whitespace
+        // which matches tab (\t), newline (\n), formfeed (\f), return (\r), and regular space (\u0020).
+        // but it does NOT match non-breaking space (\xA0,\u00A0) and others matched by the \s 
+        const asciiWhitespace = /\t\n\f\r\u0020+/g;
+        expectedLabel = expectedLabel.replace(asciiWhitespace, '\u0020').trim();
+        computedLabel = computedLabel.replace(asciiWhitespace, '\u0020').trim();
 
         assert_equals(computedLabel, expectedLabel, el.outerHTML);
       }, `${testName}`);

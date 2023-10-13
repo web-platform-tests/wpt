@@ -11,8 +11,8 @@
 </head>
 <body>
 
-<p>Verifies Required Accessibility Parent Roles from <a href="https://w3c.github.io/aria/#scope">5.2.7 Required Accessibility Parent Role</a></p>
-<p>Also verifies Allowed Accessibility Child Roles from <a href="https://w3c.github.io/aria/#mustContain">5.2.6 Allowed Accessibility Child Roles</a></p>
+    <p>Verifies Required Accessibility Parent Roles from <a href="https://w3c.github.io/aria/#scope">5.2.7 Required Accessibility Parent Role</a></p>
+    <p>Also verifies Allowed Accessibility Child Roles from <a href="https://w3c.github.io/aria/#mustContain">5.2.6 Allowed Accessibility Child Roles</a></p>
 
 <!-- Notes for "required context" testing:
 
@@ -44,10 +44,10 @@ Identified roles with "Required Context" excluding abstract roles (e.g., child -
 <!-- Required Context Roles Testing  -->
 
 <!-- caption -->
-<p role="caption" data-testname="orphan p with caption role" data-expectedrole="paragraph" class="ex">x</p>
+    <p role="caption" data-testname="orphan p with caption role" data-expectedrole="paragraph" class="ex">x</p>
 
 <!-- cell -->
-<span role="cell" data-testname="orphan span with cell role" class="ex-generic">x</span>
+    <span role="cell" data-testname="orphan span with cell role" class="ex-generic">x</span>
 
 <!-- columnheader -> ./grid-roles.html -->
 
@@ -76,13 +76,13 @@ Identified roles with "Required Context" excluding abstract roles (e.g., child -
     2. If <footer> is scoped to <body>, it should be 'contentinfo' as expected
 
     see: https://w3c.github.io/html-aam/#el-footer-ancestorbody -->
-<main>
-    <footer data-testname="footer scoped to main element" class="ex-generic">x</footer>
-    <div role="contentinfo" data-testname="contentinfo region scoped to main element" class="ex-generic">x</div>
-</main>
+    <main>
+        <footer data-testname="footer scoped to main element" class="ex-generic">x</footer>
+        <div role="contentinfo" data-testname="contentinfo region scoped to main element" class="ex-generic">x</div>
+    </main>
 
-<footer data-testname="footer scoped to body element " data-expectedrole="contentinfo" class="ex">x</footer>
-<div role="contentinfo" data-testname="contentinfo region scoped to body element" data-expectedrole="contentinfo" class="ex">x</div>
+    <footer data-testname="footer scoped to body element " data-expectedrole="contentinfo" class="ex">x</footer>
+    <div role="contentinfo" data-testname="contentinfo region scoped to body element" data-expectedrole="contentinfo" class="ex">x</div>
 
 <script>
     AriaUtils.verifyRolesBySelector(".ex");

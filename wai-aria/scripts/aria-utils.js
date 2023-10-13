@@ -147,7 +147,7 @@ const AriaUtils = {
         // AccName reference's HTML's definition of ASCII Whitespace
         // https://infra.spec.whatwg.org/#ascii-whitespace
         // which matches tab (\t), newline (\n), formfeed (\f), return (\r), and regular space (\u0020).
-        // but it does NOT match non-breaking space (\xA0,\u00A0) and others matched by the \s 
+        // but it does NOT match non-breaking space (\xA0,\u00A0) and others matched by \s
         const asciiWhitespace = /\t\n\f\r\u0020+/g;
         expectedLabel = expectedLabel.replace(asciiWhitespace, '\u0020').trim();
         computedLabel = computedLabel.replace(asciiWhitespace, '\u0020').trim();

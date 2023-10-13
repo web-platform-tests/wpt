@@ -35,15 +35,14 @@
   <span id="s1">verify</span><span id="s2">spaces</span><span>FAIL IF INCLUDED</span><span id="s3">between</span><span id="s4">foreach</span>
 </nav>
 
-<nav aria-labelledby="r1" class="ex" data-expectedlabel="inception cubed" data-testname="nav with straight recursion">
-  <h2 id="r1" aria-labelledby="r2">1st FAIL IF INCLUDED</h2>
-  <span id="r2" aria-labelledby="r3">2nd FAIL IF INCLUDED</span>
-</nav>
-<span id="r3" aria-label="inception cubed">3rd FAIL IF INCLUDED</span>
-
 <!--
 
-Todo: test all remaining cases of https://w3c.github.io/accname/#comp_labelledby
+  BLOCKED on https://github.com/w3c/accname/issues/209
+
+  Once that's resolved, it may be worthwhile to add a new ./comp_labelledby_recursion.html file,
+  so that the implementation diffs rolling in don't penalize this Interop 2024 test.
+
+  All remaining cases of https://w3c.github.io/accname/#comp_labelledby
   - comp_labelledby_reset
   - comp_labelledby_foreach
   - comp_labelledby_set_current

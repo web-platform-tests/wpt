@@ -16,73 +16,71 @@
 
 <!-- Notes for "required context" testing:
 
-- See Computed Role for more details on role computation when an element lacks required context:
-https://w3c.github.io/core-aam/#roleMappingComputedRole
+    - See Computed Role for more details on role computation when an element lacks required context:
+    https://w3c.github.io/core-aam/#roleMappingComputedRole
 
-- See ARIA spec for full listing of "Required Accessibility Parent Role" for each element:
-https://w3c.github.io/aria/#scope
+    - See ARIA spec for full listing of "Required Accessibility Parent Role" for each element:
+    https://w3c.github.io/aria/#scope
 
-Identified roles with "Required Context" excluding abstract roles (e.g., child -> parent):
+    Identified roles with "Required Context" excluding abstract roles (e.g., child -> parent):
 
-- caption -> {figure, grid, table, treegrid}
-- cell -> row
-- columnheader -> row
-- gridcell -> row
-- listitem -> {list, directory} *Note: directory role is deprecated as of ARIA 1.2
-- menuitem -> {group, menu, menubar}
-- menuitemcheckbox -> {group, menu, menubar}
-- menuitemradio -> {group, menu, menubar}
-- option -> {group, listbox}
-- row -> {grid, rowgroup, table, treegrid}
-- rowgroup -> {grid, table, treegrid}
-- rowheader -> row
-- tab -> tablist
-- treeitem -> {group, tree}
+    - caption -> {figure, grid, table, treegrid}
+    - cell -> row
+    - columnheader -> row
+    - gridcell -> row
+    - listitem -> {list, directory} *Note: directory role is deprecated as of ARIA 1.2
+    - menuitem -> {group, menu, menubar}
+    - menuitemcheckbox -> {group, menu, menubar}
+    - menuitemradio -> {group, menu, menubar}
+    - option -> {group, listbox}
+    - row -> {grid, rowgroup, table, treegrid}
+    - rowgroup -> {grid, table, treegrid}
+    - rowheader -> row
+    - tab -> tablist
+    - treeitem -> {group, tree}
 
--->
+    -->
 
 <!-- Required Context Roles Testing  -->
 
-<!-- caption -->
-    <p role="caption" data-testname="orphan p with caption role" data-expectedrole="paragraph" class="ex">x</p>
+    <!-- caption -> ./table-roles.html -->
 
-<!-- cell -->
-    <span role="cell" data-testname="orphan span with cell role" class="ex-generic">x</span>
+    <!-- cell -> ./table-roles.html -->
 
-<!-- columnheader -> ./grid-roles.html -->
+    <!-- columnheader -> ./grid-roles.html -->
 
-<!-- gridcell -> ./grid-roles.html -->
+    <!-- gridcell -> ./grid-roles.html -->
 
-<!-- listitem -> ./list-roles.html -->
+    <!-- listitem -> ./list-roles.html -->
 
-<!-- menuitem, menuitemcheckbox, menuitemradio -> ./menu-roles.html -->
+    <!-- menuitem, menuitemcheckbox, menuitemradio -> ./menu-roles.html -->
 
-<!-- option -> ./listbox-roles.html -->
+    <!-- option -> ./listbox-roles.html -->
 
-<!-- row -> ./grid-roles.html -->
+    <!-- row -> ./grid-roles.html -->
 
-<!-- rowgroup -> ./grid-roles.html -->
+    <!-- rowgroup -> ./grid-roles.html -->
 
-<!-- rowheader -> ./grid-roles.html -->
+    <!-- rowheader -> ./grid-roles.html -->
 
-<!-- tab -> ./tab-roles.html -->
+    <!-- tab -> ./tab-roles.html -->
 
-<!-- treeitem -> ./tree-roles.html -->
+    <!-- treeitem -> ./tree-roles.html -->
 
 <!-- Misc Contextual Role Testing  -->
 
-<!-- Testing contentinfo role computation when scoped to <main> or not:
-    1. If <footer> is a descendent of <main>, it should become 'generic'
+    <!-- Testing contentinfo role computation when scoped to <main> or not:
+    1. If <footer> is a descendant of <main>, it should become 'generic'
     2. If <footer> is scoped to <body>, it should be 'contentinfo' as expected
 
     see: https://w3c.github.io/html-aam/#el-footer-ancestorbody -->
     <main>
-        <footer data-testname="footer scoped to main element" class="ex-generic">x</footer>
-        <div role="contentinfo" data-testname="contentinfo region scoped to main element" class="ex-generic">x</div>
+        <footer data-testname="footer element scoped to main element is generic" class="ex-generic">x</footer>
+        <div role="contentinfo" data-testname="contentinfo region scoped to main element is generic" class="ex-generic">x</div>
     </main>
 
-    <footer data-testname="footer scoped to body element " data-expectedrole="contentinfo" class="ex">x</footer>
-    <div role="contentinfo" data-testname="contentinfo region scoped to body element" data-expectedrole="contentinfo" class="ex">x</div>
+    <footer data-testname="footer scoped to body element is contentinfo " data-expectedrole="contentinfo" class="ex">x</footer>
+    <div role="contentinfo" data-testname="contentinfo region scoped to body element is contentinfo" data-expectedrole="contentinfo" class="ex">x</div>
 
 <script>
     AriaUtils.verifyRolesBySelector(".ex");

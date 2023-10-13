@@ -17,6 +17,8 @@ def get_browser_args(product, channel):
             return ["--binary=%s" % local_binary]
         print("WARNING: Local firefox binary not found")
         return ["--install-browser", "--install-webdriver"]
+    if product == "firefox_android":
+        return ["--install-browser", "--install-webdriver", "--logcat-dir=/home/test/artifacts/"]
     if product == "servo":
         return ["--install-browser", "--processes=12"]
     if product == "chrome" or product == "chromium":

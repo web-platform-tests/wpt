@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src='/resources/testharness.js'></script>
+    <script src='/resources/testharnessreport.js'></script>
+    <script src='/resources/testdriver.js'></script>
+    <script src='/resources/testdriver-vendor.js'></script>
+    <script src='../../mediacapture-streams/permission-helper.js'></script>
+    <script src='/reporting/resources/report-helper.js'></script>
+  </head>
+  <body>
+    <script>
+  const base_url = `${location.protocol}//${location.host}`;
+  const endpoint = `${base_url}/reporting/resources/report.py`;
+  const specific_id = '489fcd84-08aa-4a39-b414-94a75cff2151';
+  const default_id = 'cead5b86-9386-47b8-8cb2-3d8fe642f393';
+
+  promise_test(async t => {
+    await setMediaPermission("granted", ["camera","microphone"]);
+    await promise_rejects_dom(
+        t, "NotAllowedError", navigator.mediaDevices.getUserMedia({video: true}),
+        "UserMedia camera access should not be allowed in this document.");
+    while(true) {
+      await wait(100);
+      const reports = await pollReports(endpoint, specific_id);
+      if (reports.length) {
+        checkReportExists(reports, 'permissions-policy-violation', location.href);
+        break;
+      }
+    }
+    const reports_sent_to_default = await pollReports(endpoint, default_id);
+    assert_equals(reports_sent_to_default.length, 0, "Default endpoint should not receive report.");
+  }, "Specific reporting endpoint received reports, even when default endpoint is defined.");
+    </script>
+  </body>
+</html>

@@ -1,3 +1,14 @@
+#  TODO(#42482): Merge this file with response_completed.py
+#
+# The status codes in this file are currently problematic in some implementations.
+#
+# The only mechanism currently provided by WPT to disable subtests with
+# expectations is to disable the entire file. As such, this file is a copy of
+# response_completed.py with the problematic status codes extracted.
+#
+# Once it is possible to disable subtests, this file should be merged with
+# response_completed.py.
+
 import pytest
 
 from .. import assert_response_event, HTTP_STATUS_AND_STATUS_TEXT

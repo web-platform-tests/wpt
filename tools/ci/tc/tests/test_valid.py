@@ -79,7 +79,15 @@ def test_sink_task_depends():
 
         assert set(sink_task["dependencies"]) == (
             set(task_id for (task_name, (task_id, _)) in task_id_map.items()
-                if task_name not in {"sink-task", "wpt-chrome-dev-stability"}))
+                if task_name not in {
+                    "sink-task",
+                    "wpt-chrome-dev-results",
+                    "wpt-chrome-dev-results-without-changes",
+                    "wpt-chrome-dev-stability",
+            }
+            )
+        )
+
 
 
 def test_verify_payload():

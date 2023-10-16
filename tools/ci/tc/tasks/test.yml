@@ -322,13 +322,16 @@ tasks:
             channel: nightly
             stability-exclude-users:
               - moz-wptsync-bot
-            required: true
+            stability-required: true
+            results-required: true
         - vars:
             browser: chrome
             channel: dev
             stability-exclude-users:
               - chromium-wpt-export-bot
-            required: false
+            stability-required: false
+            # https://github.com/web-platform-tests/wpt/issues/42545
+            results-required: false
       do:
         - wpt-${vars.browser}-${vars.channel}-stability:
             use:
@@ -353,7 +356,7 @@ tasks:
               --verify-repeat-restart=10
               --github-checks-text-file="/home/test/artifacts/checkrun.md"
             exclude-users: ${vars.stability-exclude-users}
-            required: ${vars.required}
+            required: ${vars.stability-required}
 
         - wpt-${vars.browser}-${vars.channel}-results:
             use:
@@ -375,6 +378,7 @@ tasks:
               --no-fail-on-unexpected
               --log-wptreport=../artifacts/wpt_report.json
               --log-wptscreenshot=../artifacts/wpt_screenshot.txt
+            required: ${vars.results-required}
 
         - wpt-${vars.browser}-${vars.channel}-results-without-changes:
             use:
@@ -398,6 +402,7 @@ tasks:
               --no-fail-on-unexpected
               --log-wptreport=../artifacts/wpt_report.json
               --log-wptscreenshot=../artifacts/wpt_screenshot.txt
+            required: ${vars.results-required}
   - $map:
       for:
         - vars:

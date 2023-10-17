@@ -12,13 +12,14 @@
 
   <body>
     <script>
-      promise_test(async (t) => {
-        window.addEventListener(
-          "securitypolicyviolation",
-          t.unreached_func("No security policy violation should be raised.")
-        );
-        return import("./resources/allowed.css", { with: { type: "css" } });
-      }, "import should be allowed");
+      promise_test(new Promise((resolve, reject) => {
+        window.addEventListener("securitypolicyviolation", (err) => {
+          if (err.blockedURI.endsWith("/resources/allowed.css")) {
+            reject("Should not raise securitypolicyviolation.");
+          }
+        });
+        import("./resources/allowed.css", { with: { type: "css" } }).then(resolve, reject)
+      }), "import should be allowed");
     </script>
   </body>
 </html>

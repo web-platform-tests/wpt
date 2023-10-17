@@ -20,9 +20,9 @@
   body {
       font-size: 16px;
       line-height: 1.25; /* computed value: 20px */
+      width: 520px;
       height: 500px;
       margin: 20px;
-      width: 520px;
   }
 
   div#target {
@@ -45,66 +45,66 @@
       }, description);
     }
 
-    verifyComputedStyle("width", "calc(10% * 8.4 + 2em)", "468px", "testing width: calc(10% * 8.4 + 2em)");
+    verifyComputedStyle("width", "calc(10% * 10 + 2em)", "552px", "testing width: calc(10% * 10 + 2em)");
     /*
       10% of 520px = 52px
-      52px * 8.4 = 436.8 (but we still add 2em in the formula)
       2em = 32px
-      Total = 468.8px (rounded to 468px)
+      52px * 10 + 32px = 520px + 32px = 552px
+      Total = 552px
     */
 
-    verifyComputedStyle("width", "calc(5% * 29.2 + 4rem)", "146px", "testing width: calc(5% * 29.2 + 4rem)");
+    verifyComputedStyle("width", "calc(5% * 10 + 4em)", "324px", "testing width: calc(5% * 10 + 4em)");
     /*
       5% of 520px = 26px
-      26px * 29.2 = 758.2 (but we still add 4rem in the formula)
-      4rem = 120px
-      Total = 878.2px (rounded to 878px)
+      4em = 64px
+      26px * 10 + 64px = 260px + 64px = 324px
+      Total = 324px
     */
 
-    verifyComputedStyle("width", "calc(20.875 * 8lh + 7px)", "167px", "testing width: calc(20.875 * 8lh + 7px)");
+    verifyComputedStyle("width", "calc(20.875 * 8lh + 7px)", "3347px", "testing width: calc(20.875 * 8lh + 7px)");
     /*
       8lh = 160px
-      160px * 20.875 = 3340 (but we still add 7px in the formula)
+      20.875 * 160px + 7px = 3340px + 7px = 3347px
       Total = 3347px
     */
 
-    verifyComputedStyle("height", "calc(10% * 5.8 + 6pt)", "58px", "testing height: calc(10% * 5.8 + 6pt)");
+    verifyComputedStyle("height", "calc(10% * 5.8 + 6pt)", "298px", "testing height: calc(10% * 5.8 + 6pt)");
     /*
       10% of 500px = 50px
-      50px * 5.8 = 290px (but we still add 6pt in the formula)
       6pt = 8px
+      50px * 5.8 + 8px = 290px + 8px = 298px
       Total = 298px
     */
 
-    verifyComputedStyle("width", "calc(2.56 * 4em + 2.6458333cm)", "164px", "testing width: calc(2.56 * 4em + 2.6458333cm)");
+    verifyComputedStyle("width", "calc(2 * 4em + 2.6458333cm)", "228px", "testing width: calc(2 * 4em + 2.6458333cm)");
     /*
       4em = 64px
-      64px * 2.56 = 163.84 (but we still add 2.6458333cm in the formula)
       2.6458333cm = 100px
-      Total = 263.84px (rounded to 264px)
+      2 * 64px + 100px = 128px + 100px = 228px
+      Total = 228px
     */
 
-    verifyComputedStyle("height", "calc(3.6 * 5em + 26.458333mm)", "180px", "testing height: calc(3.6 * 5em + 26.458333mm)");
+    verifyComputedStyle("height", "calc(3.6 * 5em + 26.458333mm)", "388px", "testing height: calc(3.6 * 5em + 26.458333mm)");
     /*
       5em = 80px
-      80px * 3.6 = 288px (but we still add 26.458333mm in the formula)
       26.458333mm = 100px
+      3.6 * 80px + 100px = 288px + 100px = 388px
       Total = 388px
     */
 
-    verifyComputedStyle("width", "calc(3 * 2in + 101.6Q)", "288px", "testing width: calc(3 * 2in + 101.6Q)");
+    verifyComputedStyle("width", "calc(3 * 2in + 101.6Q)", "672px", "testing width: calc(3 * 2in + 101.6Q)");
     /*
       2in = 192px
-      192px * 3 = 576px (but we still add 101.6Q in the formula)
       101.6Q = 96px
+      3 * 192px + 96px = 576px + 96px = 672px
       Total = 672px
     */
 
-    verifyComputedStyle("height", "calc(5 * 1pc + 3pt)", "20px", "testing height: calc(5 * 1pc + 3pt)");
+    verifyComputedStyle("height", "calc(5 * 1pc + 3pt)", "84px", "testing height: calc(5 * 1pc + 3pt)");
     /*
       1pc = 16px
-      16px * 5 = 80px (but we still add 3pt in the formula)
       3pt = 4px
+      5 * 16px + 4px = 80px + 4px = 84px
       Total = 84px
     */
 

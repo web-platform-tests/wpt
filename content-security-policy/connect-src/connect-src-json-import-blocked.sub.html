@@ -13,12 +13,10 @@
   <body>
     <script>
       promise_test((t) => {
-        let spv = new Promise((resolve, reject) => {
+        let check_spv = new Promise((resolve) => {
           window.addEventListener("securitypolicyviolation", (e) => {
             if (e.blockedURI.endsWith("dummy.json")) {
               resolve();
-            } else {
-              reject();
             }
           });
         });

@@ -24,7 +24,7 @@
         async_test((t) => {
           frame.addEventListener("load", t.step_func(() => {
             const body = frame.contentWindow.document.body;
-            const actual = frame.contentWindow.getComputedStyle(box).getPropertyValue("background-color");
+            const actual = frame.contentWindow.getComputedStyle(body).getPropertyValue("background-color");
             assert_equals(actual, "rgb(255, 165, 0)");
             t.done();
           }));

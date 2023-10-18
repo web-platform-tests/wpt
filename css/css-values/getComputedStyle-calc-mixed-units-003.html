@@ -44,7 +44,7 @@
         assert_equals(getComputedStyle(targetElement)[property_name], expected_value);
       }, `testing ${property_name}: ${specified_value}`);
     }
-    
+
     verifyComputedStyle("width", "calc(5px * 10lh / 1px)", "1000px");
     /*
       10lh = 200px

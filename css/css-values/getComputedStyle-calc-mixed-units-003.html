@@ -37,15 +37,15 @@
   function startTesting() {
     var targetElement = document.getElementById("target");
 
-    function verifyComputedStyle(property_name, specified_value, expected_value, description) {
+    function verifyComputedStyle(property_name, specified_value, expected_value) {
       test(function() {
         targetElement.style.setProperty(property_name, "initial");
         targetElement.style.setProperty(property_name, specified_value);
         assert_equals(getComputedStyle(targetElement)[property_name], expected_value);
-      }, description);
+      }, `testing ${property_name}: ${specified_value}`);
     }
 
-    verifyComputedStyle("width", "calc(10% * 10 + 2em)", "552px", "testing width: calc(10% * 10 + 2em)");
+    verifyComputedStyle("width", "calc(10% * 10 + 2em)", "552px");
     /*
       10% of 520px = 52px
       2em = 32px
@@ -53,7 +53,7 @@
       Total = 552px
     */
 
-    verifyComputedStyle("width", "calc(5% * 10 + 4em)", "324px", "testing width: calc(5% * 10 + 4em)");
+    verifyComputedStyle("width", "calc(5% * 10 + 4em)", "324px");
     /*
       5% of 520px = 26px
       4em = 64px
@@ -61,14 +61,14 @@
       Total = 324px
     */
 
-    verifyComputedStyle("width", "calc(20.875 * 8lh + 7px)", "3347px", "testing width: calc(20.875 * 8lh + 7px)");
+    verifyComputedStyle("width", "calc(20.875 * 8lh + 7px)", "3347px");
     /*
       8lh = 160px
       20.875 * 160px + 7px = 3340px + 7px = 3347px
       Total = 3347px
     */
 
-    verifyComputedStyle("height", "calc(10% * 5.8 + 6pt)", "298px", "testing height: calc(10% * 5.8 + 6pt)");
+    verifyComputedStyle("height", "calc(10% * 5.8 + 6pt)", "298px");
     /*
       10% of 500px = 50px
       6pt = 8px
@@ -76,7 +76,7 @@
       Total = 298px
     */
 
-    verifyComputedStyle("width", "calc(2 * 4em + 2.6458333cm)", "228px", "testing width: calc(2 * 4em + 2.6458333cm)");
+    verifyComputedStyle("width", "calc(2 * 4em + 2.6458333cm)", "228px");
     /*
       4em = 64px
       2.6458333cm = 100px
@@ -84,7 +84,7 @@
       Total = 228px
     */
 
-    verifyComputedStyle("height", "calc(3.6 * 5em + 26.458333mm)", "388px", "testing height: calc(3.6 * 5em + 26.458333mm)");
+    verifyComputedStyle("height", "calc(3.6 * 5em + 26.458333mm)", "388px");
     /*
       5em = 80px
       26.458333mm = 100px
@@ -92,7 +92,7 @@
       Total = 388px
     */
 
-    verifyComputedStyle("width", "calc(3 * 2in + 101.6Q)", "672px", "testing width: calc(3 * 2in + 101.6Q)");
+    verifyComputedStyle("width", "calc(3 * 2in + 101.6Q)", "672px");
     /*
       2in = 192px
       101.6Q = 96px
@@ -100,7 +100,7 @@
       Total = 672px
     */
 
-    verifyComputedStyle("height", "calc(5 * 1pc + 3pt)", "84px", "testing height: calc(5 * 1pc + 3pt)");
+    verifyComputedStyle("height", "calc(5 * 1pc + 3pt)", "84px");
     /*
       1pc = 16px
       3pt = 4px

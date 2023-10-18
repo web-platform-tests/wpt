@@ -148,8 +148,8 @@ const AriaUtils = {
         // https://infra.spec.whatwg.org/#ascii-whitespace
         // which matches tab (\t), newline (\n), formfeed (\f), return (\r), and regular space (\u0020).
         // but it does NOT match non-breaking space (\xA0,\u00A0) and others matched by \s
-        const asciiWhitespace = /\t\n\f\r\u0020+/g;
-        computedLabel = computedLabel.replace(asciiWhitespace, '\u0020').trim();
+        const asciiWhitespace = /[\t\n\f\r\u0020]+/g;
+        computedLabel = computedLabel.replace(asciiWhitespace, '\u0020').replace(/^\u0020|\u0020$/g, '');
 
         assert_equals(computedLabel, expectedLabel, el.outerHTML);
       }, `${testName}`);

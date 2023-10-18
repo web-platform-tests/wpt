@@ -23,7 +23,7 @@
           });
 
           return Promise.all([
-            promise_rejects_js(t, Error, import("./resources/blocked.css", { with: { type: "css" } })),
+            promise_rejects_js(t, TypeError, import("./resources/blocked.css", { with: { type: "css" } })),
             check_spv,
           ]);
         });

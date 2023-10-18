@@ -44,70 +44,43 @@
         assert_equals(getComputedStyle(targetElement)[property_name], expected_value);
       }, `testing ${property_name}: ${specified_value}`);
     }
-
-    verifyComputedStyle("width", "calc(10% * 10 + 2em)", "552px");
+    
+    verifyComputedStyle("width", "calc(5px * 10lh / 1px)", "1000px");
     /*
-      10% of 520px = 52px
-      2em = 32px
-      52px * 10 + 32px = 520px + 32px = 552px
-      Total = 552px
+      10lh = 200px
+      5px * 200px / 1px = 1000px^2 / 1px = 1000px
+      Total = 1000px
     */
 
-    verifyComputedStyle("width", "calc(5% * 10 + 4em)", "324px");
+    verifyComputedStyle("width", "calc(20% * 0.5em / 1px)", "832px");
     /*
-      5% of 520px = 26px
-      4em = 64px
-      26px * 10 + 64px = 260px + 64px = 324px
-      Total = 324px
+      20% of 520px = 104px
+      0.5em = 8px
+      104px * 8px / 1px = 832px^2 / 1px = 832px
+      Total = 832px
     */
 
-    verifyComputedStyle("width", "calc(20.875 * 8lh + 7px)", "3347px");
-    /*
-      8lh = 160px
-      20.875 * 160px + 7px = 3340px + 7px = 3347px
-      Total = 3347px
-    */
-
-    verifyComputedStyle("height", "calc(10% * 5.8 + 6pt)", "298px");
-    /*
-      10% of 500px = 50px
-      6pt = 8px
-      50px * 5.8 + 8px = 290px + 8px = 298px
-      Total = 298px
-    */
-
-    verifyComputedStyle("width", "calc(2 * 4em + 2.6458333cm)", "228px");
+    verifyComputedStyle("width", "calc(4px * 4em / 1px)", "256px");
     /*
       4em = 64px
-      2.6458333cm = 100px
-      2 * 64px + 100px = 128px + 100px = 228px
-      Total = 228px
+      4px * 64px / 1px = 256px^2 / 1px = 256px
+      Total = 256px
     */
 
-    verifyComputedStyle("height", "calc(3.6 * 5em + 26.458333mm)", "388px");
+    verifyComputedStyle("width", "calc(400px / 4lh * 1px)", "5px");
     /*
-      5em = 80px
-      26.458333mm = 100px
-      3.6 * 80px + 100px = 288px + 100px = 388px
-      Total = 388px
+      4lh = 80px
+      400px / 80px * 1px = 5 * 1px = 5px
+      Total = 5px
     */
 
-    verifyComputedStyle("width", "calc(3 * 2in + 101.6Q)", "672px");
+    verifyComputedStyle("width", "calc(20% / 0.5em * 1px)", "13px");
     /*
-      2in = 192px
-      101.6Q = 96px
-      3 * 192px + 96px = 576px + 96px = 672px
-      Total = 672px
+      20% of 520px = 104px
+      0.5em = 8px
+      104px / 8px * 1px = 13 * 1px = 13px
+      Total = 13px
     */
-
-    verifyComputedStyle("height", "calc(5 * 1pc + 3pt)", "84px");
-    /*
-      1pc = 16px
-      3pt = 4px
-      5 * 16px + 4px = 80px + 4px = 84px
-      Total = 84px
-    */
-
   }
 
   startTesting();

@@ -52,12 +52,13 @@
 <li><p><a class="reference internal" href="#accessibility" id="id13">Accessibility</a></p></li>
 <li><p><a class="reference internal" href="#secure-payment-confirmation" id="id14">Secure Payment Confirmation</a></p></li>
 <li><p><a class="reference internal" href="#federated-credential-management" id="id15">Federated Credential Management</a></p></li>
-<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id16">Using test_driver in other browsing contexts</a></p></li>
-<li><p><a class="reference internal" href="#actions" id="id17">Actions</a></p>
+<li><p><a class="reference internal" href="#sensors" id="id16">Sensors</a></p></li>
+<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id17">Using test_driver in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#actions" id="id18">Actions</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id1" id="id18">Markup</a></p></li>
-<li><p><a class="reference internal" href="#id2" id="id19">API</a></p></li>
-<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id20">Using in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#id1" id="id19">Markup</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id20">API</a></p></li>
+<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id21">Using in other browsing contexts</a></p></li>
 </ul>
 </li>
 </ul>
@@ -767,6 +768,127 @@ WebDriver command.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the cooldown has been reset, or rejected in case the WebDriver command errors</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="sensors">
+<h3>Sensors<a class="headerlink" href="#sensors" title="Permalink to this headline">¶</a></h3>
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.create_virtual_sensor">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">create_virtual_sensor</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_params={}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.create_virtual_sensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a virtual sensor for use with the Generic Sensors APIs.</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/sensors/#create-virtual-sensor-command">Create Virtual Sensor</a>
+WebDriver command.</p>
+<p>Once created, a virtual sensor is available to all navigables under
+the same top-level traversable (i.e. all frames in the same page,
+regardless of origin).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sensor_type</strong> (<em>String</em>) – A <a class="reference external" href="https://w3c.github.io/sensors/#virtual-sensor-metadata-virtual-sensor-type">virtual sensor type</a> such as “accelerometer”.</p></li>
+<li><p><strong>sensor_params</strong> (<em>Object</em>) – <p>Optional parameters described in <a class="reference external" href="https://w3c.github.io/sensors/#create-virtual-sensor-command">Create Virtual Sensor</a>.</p>
+</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled when virtual sensor is created. Rejected in case the WebDriver command errors out (including if a virtual sensor of the same type already exists).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.update_virtual_sensor">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">update_virtual_sensor</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reading</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.update_virtual_sensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Causes a virtual sensor to report a new reading to any connected
+platform sensor.</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/sensors/#update-virtual-sensor-reading-command">Update Virtual Sensor Reading</a>
+WebDriver command.</p>
+<p>Note: The <code class="docutils literal notranslate"><span class="pre">Promise</span></code> it returns may fulfill before or after a
+“reading” event is fired. When using
+<a class="reference internal" href="testharness-api.html#EventWatcher.wait_for" title="EventWatcher.wait_for"><code class="xref js js-func docutils literal notranslate"><span class="pre">EventWatcher.wait_for()</span></code></a>, it is necessary to take this into
+account:</p>
+<p>Note: New values may also be discarded due to the checks in <a class="reference external" href="https://w3c.github.io/sensors/#update-latest-reading">update
+latest reading</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sensor_type</strong> (<em>String</em>) – A <a class="reference external" href="https://w3c.github.io/sensors/#virtual-sensor-metadata-virtual-sensor-type">virtual sensor type</a> such as “accelerometer”.</p></li>
+<li><p><strong>reading</strong> (<em>Object</em>) – An Object describing a reading in a format dependent on <code class="docutils literal notranslate"><span class="pre">sensor_type</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">{x:</span> <span class="pre">1,</span> <span class="pre">y:</span> <span class="pre">2,</span> <span class="pre">z:</span> <span class="pre">3}</span></code> or <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">illuminance:</span> <span class="pre">42</span> <span class="pre">}</span></code>).</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the reading update reaches the virtual sensor. Rejected in case the WebDriver command errors out (including if a virtual sensor of the given type does not exist).</p>
+</dd>
+</dl>
+<p><strong>Examples:</strong></p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// Avoid races between EventWatcher and update_virtual_sensor().</span>
+<span class="c1">// This assumes you are sure this reading will be processed (see</span>
+<span class="c1">// the example below otherwise).</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">reading</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="nx">z</span><span class="o">:</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="p">};</span>
+<span class="k">await</span><span class="w"> </span><span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span>
+<span class="w">  </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">update_virtual_sensor</span><span class="p">(</span><span class="s1">&#39;gyroscope&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">reading</span><span class="p">),</span>
+<span class="w">  </span><span class="nx">watcher</span><span class="p">.</span><span class="nx">wait_for</span><span class="p">(</span><span class="s1">&#39;reading&#39;</span><span class="p">)</span>
+<span class="p">]);</span>
+</pre></div>
+</div>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// Do not wait forever if you are not sure the reading will be</span>
+<span class="c1">// processed.</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">readingPromise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">watcher</span><span class="p">.</span><span class="nx">wait_for</span><span class="p">(</span><span class="s1">&#39;reading&#39;</span><span class="p">);</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">timeoutPromise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">t</span><span class="p">.</span><span class="nx">step_timeout</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">resolve</span><span class="p">(</span><span class="s1">&#39;TIMEOUT&#39;</span><span class="p">,</span><span class="w"> </span><span class="mf">3000</span><span class="p">))</span>
+<span class="p">});</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">reading</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="nx">z</span><span class="o">:</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="p">};</span>
+<span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">update_virtual_sensor</span><span class="p">(</span><span class="s1">&#39;gyroscope&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;reading&#39;</span><span class="p">);</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">value</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="k">await</span><span class="w"> </span><span class="nb">Promise</span><span class="p">.</span><span class="nx">race</span><span class="p">([</span><span class="nx">timeoutPromise</span><span class="p">,</span><span class="w"> </span><span class="nx">readingPromise</span><span class="p">]);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">value</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">&#39;TIMEOUT&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Do something. The &quot;reading&quot; event was fired.</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.remove_virtual_sensor">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">remove_virtual_sensor</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.remove_virtual_sensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triggers the removal of a virtual sensor if it exists.</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/sensors/#delete-virtual-sensor-command">Delete Virtual Sensor</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sensor_type</strong> (<em>String</em>) – A <a class="reference external" href="https://w3c.github.io/sensors/#virtual-sensor-metadata-virtual-sensor-type">virtual sensor type</a> such as “accelerometer”.</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the virtual sensor has been removed or if a sensor of the given type does not exist. Rejected in case the WebDriver command errors out.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.get_virtual_sensor_information">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_virtual_sensor_information</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_virtual_sensor_information" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns information about a virtual sensor.</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/sensors/#get-virtual-sensor-information-command">Get Virtual Sensor Information</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sensor_type</strong> (<em>String</em>) – A <a class="reference external" href="https://w3c.github.io/sensors/#virtual-sensor-metadata-virtual-sensor-type">virtual sensor type</a> such as “accelerometer”.</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><strong>Promise</strong> – Fulfilled with an Object with the properties described in <a class="reference external" href="https://w3c.github.io/sensors/#get-virtual-sensor-information-command">Get Virtual Sensor Information</a>. Rejected in case the WebDriver command errors out (including if a virtual sensor of the given type does not exist).</p>
+</p>
 </dd>
 </dl>
 </dd></dl>

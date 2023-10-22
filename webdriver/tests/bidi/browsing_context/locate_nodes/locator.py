@@ -1,5 +1,6 @@
 import pytest
 
+
 @pytest.mark.parametrize("type,value", [
     ("css", "div"),
     ("xpath", "//div"),

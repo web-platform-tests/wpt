@@ -166,7 +166,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   return runFullCycleTest(t, {realTimeLatencyMode: true});
-}, 'Encoding and decoding cycle w/ realtime latency mode');
+}, 'Encoding and decoding cycle with realtime latency mode');
 
 promise_test(async t => {
   if (ENCODER_CONFIG.hasEmbeddedColorSpace)

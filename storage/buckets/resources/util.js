@@ -17,15 +17,20 @@ async function prepareForBucketTest(test) {
 function indexedDbOpenRequest(t, idb, dbname, upgrade_func) {
   return new Promise((resolve, reject) => {
     const openRequest = idb.open(dbname);
-    t.add_cleanup(() => {
-      indexedDbDeleteRequest(idb, dbname);
+    t.add_cleanup(async () => {
+      await indexedDbDeleteRequest(idb, dbname);
     });
 
     openRequest.onerror = () => {
       reject(openRequest.error);
     };
     openRequest.onsuccess = () => {
-      resolve(openRequest.result);
+      const db = openRequest.result;
+      t.add_cleanup(() => {
+        db.close();
+      });
+
+      resolve(db);
     };
     openRequest.onupgradeneeded = event => {
       upgrade_func(openRequest.result);

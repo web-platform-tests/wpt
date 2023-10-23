@@ -28,8 +28,7 @@ promise_test(async t => {
     view[i] = Math.floor(Math.random() * 255);
   }
 
-  const testBlob = new Blob([buffer], {type: 'binary/random'});
-  txn.objectStore(objectStoreName).add(testBlob, 1);
+  txn.objectStore(objectStoreName).add(view, 1);
 
   await transactionPromise(txn);
 
@@ -37,7 +36,7 @@ promise_test(async t => {
   const usageAfterPut = estimate.usage;
   assert_greater_than(
     usageAfterPut, usageAfterCreate,
-    'estimated usage should increase after blob is stored');
-}, 'estimate() shows usage increase after blob is stored');
+    'estimated usage should increase after large value is stored');
+}, 'estimate() shows usage increase after large value is stored 3');
 
 

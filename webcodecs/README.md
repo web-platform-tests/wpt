@@ -21,6 +21,12 @@ any people can regenerate or update the file in the future.
 ### four-colors.png
 Generated using MSPaint like a true professional.
 
+### four-colors.jxl
+Lossless encoding (`-d 0`) must be used to ensure colors are perfect.
+```
+cjxl -d 0 four-colors.png -o four-colors.jxl
+```
+
 ### four-colors.avif
 Lossless encoding must be used to ensure colors are perfect.
 ```

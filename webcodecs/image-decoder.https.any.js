@@ -101,6 +101,10 @@ promise_test(t => {
 }, 'Test PNG image decoding.');
 
 promise_test(t => {
+  return testFourColorsDecode('four-colors.jxl', 'image/jxl');
+}, 'Test JPEG XL image decoding.');
+
+promise_test(t => {
   return testFourColorsDecode('four-colors.avif', 'image/avif');
 }, 'Test AVIF image decoding.');
 

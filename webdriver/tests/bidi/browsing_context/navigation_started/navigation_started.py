@@ -28,7 +28,7 @@ async def test_unsubscribe(bidi_session):
     # Track all received browsingContext.navigationStarted events in the events array
     events = []
 
-    async def on_event(_, data):
+    async def on_event(method, data):
         events.append(data)
 
     remove_listener = bidi_session.add_event_listener(
@@ -97,7 +97,7 @@ async def test_iframe(
 ):
     events = []
 
-    async def on_event(_, data):
+    async def on_event(method, data):
         events.append(data)
 
     remove_listener = bidi_session.add_event_listener(
@@ -284,7 +284,7 @@ async def test_document_write(bidi_session, subscribe_events, top_context):
     # Track all received browsingContext.navigationStarted events in the events array
     events = []
 
-    async def on_event(_, data):
+    async def on_event(method, data):
         events.append(data)
 
     remove_listener = bidi_session.add_event_listener(

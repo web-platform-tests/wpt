@@ -13,9 +13,10 @@ convert_and_compress() {
   local color_space=$3
 
   cjxl "$input_image" temp.jxl -d 0
-  djxl temp.jxl "${base_name}_${color_space}.png"
-  cjxl "${base_name}_${color_space}.png" "${base_name}_${color_space}_lossy.jxl" -d 0.1
-  cjxl "${base_name}_${color_space}.png" "${base_name}_${color_space}_lossless.jxl" -d 0
+  djxl temp.jxl "${base_name}_${color_space}_lossless.png"
+  cjxl "${base_name}_${color_space}_lossless.png" "${base_name}_${color_space}_lossy.jxl" -d 0.0001 -e 7
+  djxl "${base_name}_${color_space}_lossy.jxl" "${base_name}_${color_space}_lossy.png"
+  cjxl "${base_name}_${color_space}_lossless.png" "${base_name}_${color_space}_lossless.jxl" -d 0
 }
 
 # Check for required tools
@@ -68,4 +69,4 @@ diff 3x3.jpg 3x3_recoverd.jpg
 djxl 3x3_jpeg_recompression.jxl 3x3_jpeg_recompression.png
 
 # Cleanup temporary file
-rm -f temp.jxl 3x3.jpg 3x3_recoverd.jpg
+rm -f temp.jxl 3x3.png 3x3a.png 3x3.jpg 3x3_recoverd.jpg

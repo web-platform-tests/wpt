@@ -40,21 +40,63 @@ function ns_resolver(x) {
   return rv;
 }
 
-generate_tests(test_xpath_succeeds,[
-  ["Select html element based on attribute", "//div[@id='log']", [document.getElementById("log")]],
-  ["Select html element based on attribute mixed case", "//div[@Id='log']", [document.getElementById("log")]],
-  ["Select both HTML and SVG elements based on attribute", "//*[@id]", [document.getElementById("log")].concat(Array.prototype.slice.call(document.getElementsByTagName("path")))],
-  ["Select HTML element with non-ascii attribute 1", "//*[@nonÄsciiattribute]", [document.getElementById("log")]],
-  ["Select HTML element with non-ascii attribute 2", "//*[@nonäsciiattribute]", []],
-  ["Select HTML element with non-ascii attribute 3", "//*[@nonÄsciiAttribute]", [document.getElementById("log")]],
-  ["Select SVG element based on mixed case attribute", "//svg:path[@Id]", [], ns_resolver],
-  ["Select both HTML and SVG elements based on mixed case attribute", "//*[@Id]", [document.getElementById("log")]],
-  ["Select SVG elements with refX attribute", "//*[@refX]", [document.getElementById("a")]],
-  ["Select SVG elements with refX attribute incorrect case", "//*[@Refx]", []],
-  ["Select SVG elements with refX attribute lowercase", "//*[@refx]", []],
-  ["Select SVG element with non-ascii attribute 1", "//*[@nonÄscii]", [document.getElementById("b")]],
-  ["Select SVG element with non-ascii attribute 2", "//*[@nonäscii]", []],
-  ["xmlns attribute", "//*[@xmlns]", []],
-  ["svg element with XLink attribute", "//*[@xlink:href]", [document.getElementById("b")], ns_resolver]
-])
+test(function() {
+  test_xpath_succeeds("//div[@id='log']", [document.getElementById("log")]);
+}, "Select html element based on attribute");
+
+test(function() {
+  test_xpath_succeeds("//div[@Id='log']", [document.getElementById("log")]);
+}, "Select html element based on attribute mixed case");
+
+test(function() {
+  test_xpath_succeeds("//*[@id]", [document.getElementById("log")].concat(Array.prototype.slice.call(document.getElementsByTagName("path"))));
+}, "Select both HTML and SVG elements based on attribute");
+
+test(function() {
+  test_xpath_succeeds("//*[@nonÄsciiattribute]", [document.getElementById("log")]);
+}, "Select HTML element with non-ascii attribute 1");
+
+test(function() {
+  test_xpath_succeeds("//*[@nonäsciiattribute]", []);
+}, "Select HTML element with non-ascii attribute 2");
+
+test(function() {
+  test_xpath_succeeds("//*[@nonÄsciiAttribute]", [document.getElementById("log")]);
+}, "Select HTML element with non-ascii attribute 3");
+
+test(function() {
+  test_xpath_succeeds("//svg:path[@Id]", [], ns_resolver);
+}, "Select SVG element based on mixed case attribute");
+
+test(function() {
+  test_xpath_succeeds("//*[@Id]", [document.getElementById("log")]);
+}, "Select both HTML and SVG elements based on mixed case attribute");
+
+test(function() {
+  test_xpath_succeeds("//*[@refX]", [document.getElementById("a")]);
+}, "Select SVG elements with refX attribute");
+
+test(function() {
+  test_xpath_succeeds("//*[@Refx]", []);
+}, "Select SVG elements with refX attribute incorrect case");
+
+test(function() {
+  test_xpath_succeeds("//*[@refx]", []);
+}, "Select SVG elements with refX attribute lowercase");
+
+test(function() {
+  test_xpath_succeeds("//*[@nonÄscii]", [document.getElementById("b")]);
+}, "Select SVG element with non-ascii attribute 1");
+
+test(function() {
+  test_xpath_succeeds("//*[@nonäscii]", []);
+}, "Select SVG element with non-ascii attribute 2");
+
+test(function() {
+  test_xpath_succeeds("//*[@xmlns]", []);
+}, "xmlns attribute");
+
+test(function() {
+  test_xpath_succeeds("//*[@xlink:href]", [document.getElementById("b")], ns_resolver);
+}, "svg element with XLink attribute");
 </script>

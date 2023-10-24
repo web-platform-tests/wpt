@@ -41,20 +41,47 @@ function ns_resolver(x) {
   return rv;
 }
 
-generate_tests(test_xpath_succeeds,[
-  ["HTML elements no namespace prefix", "//div", document.getElementsByTagName("div")],
-  ["HTML elements namespace prefix", "//html:div", document.getElementsByTagName("div"), ns_resolver],
-  ["HTML elements mixed use of prefix", "//html:div/span", document.getElementsByTagName("span"), ns_resolver],
-  ["SVG elements no namespace prefix", "//path", []],
-  ["SVG elements namespace prefix", "//svg:path", document.getElementsByTagName("path"), ns_resolver],
-  ["HTML elements mixed case", "//DiV", document.getElementsByTagName("div")],
-  ["SVG elements mixed case selector", "//svg:PatH", [], ns_resolver],
-  ["Non-ascii HTML element", "//dØdd", document.getElementsByTagName("dØdd"), ns_resolver],
-  ["Non-ascii HTML element2", "//dødd", [], ns_resolver],
-  ["Non-ascii HTML element3", "//DØDD", document.getElementsByTagName("dØdd"), ns_resolver]
-])
+test(function() {
+  test_xpath_succeeds("//div", document.getElementsByTagName("div"));
+}, "HTML elements no namespace prefix");
 
-generate_tests(test_xpath_throws, [
-  ["Throw with invalid prefix", "//invalid:path", "NAMESPACE_ERR"],
-])
+test(function() {
+  test_xpath_succeeds("//html:div", document.getElementsByTagName("div"), ns_resolver);
+}, "HTML elements namespace prefix");
+
+test(function() {
+  test_xpath_succeeds("//html:div/span", document.getElementsByTagName("span"), ns_resolver);
+}, "HTML elements mixed use of prefix");
+
+test(function() {
+  test_xpath_succeeds("//path", []);
+}, "SVG elements no namespace prefix");
+
+test(function() {
+  test_xpath_succeeds("//svg:path", document.getElementsByTagName("path"), ns_resolver);
+}, "SVG elements namespace prefix");
+
+test(function() {
+  test_xpath_succeeds("//DiV", document.getElementsByTagName("div"));
+}, "HTML elements mixed case");
+
+test(function() {
+  test_xpath_succeeds("//svg:PatH", [], ns_resolver);
+}, "SVG elements mixed case selector");
+
+test(function() {
+  test_xpath_succeeds("//dØdd", document.getElementsByTagName("dØdd"), ns_resolver);
+}, "Non-ascii HTML element");
+
+test(function() {
+  test_xpath_succeeds("//dødd", [], ns_resolver);
+}, "Non-ascii HTML element2");
+
+test(function() {
+  test_xpath_succeeds("//DØDD", document.getElementsByTagName("dØdd"), ns_resolver);
+}, "Non-ascii HTML element3");
+
+test(function() {
+  test_xpath_throws("//invalid:path", "NAMESPACE_ERR");
+}, "Throw with invalid prefix");
 </script>

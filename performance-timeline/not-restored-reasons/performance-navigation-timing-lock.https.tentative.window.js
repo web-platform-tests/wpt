@@ -1,4 +1,4 @@
-// META: title=RemoteContextHelper navigation using BFCache
+// META: title=Ensure that if WebLock is held upon entering bfcache, it cannot enter bfcache and gets reported.
 // META: script=./test-helper.js
 // META: script=/common/dispatcher/dispatcher.js
 // META: script=/common/get-host-info.sub.js
@@ -7,7 +7,6 @@
 // META: script=/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js
 // META: timeout=long
 
-// Ensure that if WebLock is held upon entering bfcache, it cannot enter bfcache and gets reported.
 promise_test(async t => {
   const rcHelper = new RemoteContextHelper();
   // Open a window with noopener so that BFCache will work.
@@ -29,13 +28,5 @@ promise_test(async t => {
 
   // Check the BFCache result and the reported reasons.
   await assertBFCacheEligibility(rc1, /*shouldRestoreFromBFCache=*/ false);
-  await assertNotRestoredReasonsEquals(
-      rc1,
-      /*blocked=*/ "yes",
-      /*url=*/ rc1_url,
-      /*src=*/ null,
-      /*id=*/ null,
-      /*name=*/ null,
-      /*reasons=*/['lock'],
-      /*children=*/[]);
+  await assertNotRestoredFromBFCache(rc1, ['lock']);
 });

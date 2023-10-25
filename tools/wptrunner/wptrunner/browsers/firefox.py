@@ -3,6 +3,7 @@
 import json
 import os
 import platform
+import re
 import signal
 import subprocess
 import sys
@@ -117,7 +118,7 @@ def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs)
                       "certutil_binary": kwargs["certutil_binary"],
                       "ca_certificate_path": config.ssl_config["ca_cert_path"],
                       "e10s": kwargs["gecko_e10s"],
-                      "enable_fission": run_info_data["fission"],
+                      "disable_fission": kwargs["disable_fission"],
                       "stackfix_dir": kwargs["stackfix_dir"],
                       "binary_args": kwargs["binary_args"].copy(),
                       "timeout_multiplier": get_timeout_multiplier(test_type,
@@ -174,6 +175,7 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     executor_kwargs["ccov"] = run_info_data.get("ccov", False)
     executor_kwargs["browser_version"] = run_info_data.get("browser_version")
     executor_kwargs["debug_test"] = kwargs["debug_test"]
+    executor_kwargs["disable_fission"] = kwargs["disable_fission"]
     return executor_kwargs
 
 
@@ -203,18 +205,13 @@ def run_info_extras(**kwargs):
         pref_value = get_bool_pref_if_exists(pref)
         return pref_value if pref_value is not None else False
 
-    # Default fission to on, unless we get --[no-]enable-fission or
-    # --set-pref fission.autostart=[true|false]
-    enable_fission = [item for item in [kwargs.get("enable_fission"),
-                                        get_bool_pref_if_exists("fission.autostart"),
-                                        True] if item is not None][0]
-
+    # Default fission to on, unless we get --disable-fission
     rv = {"e10s": kwargs["gecko_e10s"],
           "wasm": kwargs.get("wasm", True),
           "verify": kwargs["verify"],
           "headless": kwargs.get("headless", False) or "MOZ_HEADLESS" in os.environ,
-          "fission": enable_fission,
-          "sessionHistoryInParent": (enable_fission or
+          "fission": not kwargs.get("disable_fission"),
+          "sessionHistoryInParent": (not kwargs.get("disable_fission") or
                                      not get_bool_pref("fission.disableSessionHistoryInParent")),
           "swgl": get_bool_pref("gfx.webrender.software")}
 
@@ -608,9 +605,35 @@ class FirefoxOutputHandler(OutputHandler):
                                            command=" ".join(self.command))
 
 
+class GeckodriverOutputHandler(FirefoxOutputHandler):
+    PORT_RE = re.compile(rb".*Listening on [^ :]*:(\d+)")
+
+    def __init__(self, logger, command, symbols_path=None, stackfix_dir=None, asan=False,
+                 leak_report_file=None, init_deadline=None):
+        super().__init__(logger, command, symbols_path=symbols_path, stackfix_dir=stackfix_dir, asan=asan,
+                         leak_report_file=leak_report_file)
+        self.port = None
+        self.init_deadline = None
+
+    def after_process_start(self, pid):
+        super().after_process_start(pid)
+        while self.port is None:
+            time.sleep(0.1)
+            if self.init_deadline is not None and time.time() > self.init_deadline:
+                raise TimeoutError("Failed to get geckodriver port within the timeout")
+
+    def __call__(self, line):
+        if self.port is None:
+            m = self.PORT_RE.match(line)
+            if m is not None:
+                self.port = int(m.groups()[0])
+                self.logger.debug(f"Got geckodriver port {self.port}")
+        super().__call__(line)
+
+
 class ProfileCreator:
     def __init__(self, logger, prefs_root, config, test_type, extra_prefs, e10s,
-                 enable_fission, debug_test, browser_channel, binary, certutil_binary,
+                 disable_fission, debug_test, browser_channel, binary, certutil_binary,
                  ca_certificate_path):
         self.logger = logger
         self.prefs_root = prefs_root
@@ -618,7 +641,7 @@ class ProfileCreator:
         self.test_type = test_type
         self.extra_prefs = extra_prefs
         self.e10s = e10s
-        self.enable_fission = enable_fission
+        self.disable_fission = disable_fission
         self.debug_test = debug_test
         self.browser_channel = browser_channel
         self.ca_certificate_path = ca_certificate_path
@@ -657,20 +680,13 @@ class ProfileCreator:
                     elif name != 'unittest-features':
                         pref_paths.append(os.path.join(self.prefs_root, name, 'user.js'))
         else:
-            # Old preference files used before the creation of profiles.json (remove when no longer supported)
-            legacy_pref_paths = (
-                os.path.join(self.prefs_root, 'prefs_general.js'),   # Used in Firefox 60 and below
-                os.path.join(self.prefs_root, 'common', 'user.js'),  # Used in Firefox 61
-            )
-            for path in legacy_pref_paths:
-                if os.path.isfile(path):
-                    pref_paths.append(path)
+            self.logger.warning(f"Failed to load profiles from {profiles}")
 
         for path in pref_paths:
             if os.path.exists(path):
                 prefs.add(Preferences.read_prefs(path))
             else:
-                self.logger.warning("Failed to find base prefs file in %s" % path)
+                self.logger.warning(f"Failed to find prefs file in {path}")
 
         # Add any custom preferences
         prefs.add(self.extra_prefs, cast=True)
@@ -693,9 +709,8 @@ class ProfileCreator:
         if self.e10s:
             profile.set_preferences({"browser.tabs.remote.autostart": True})
 
-        if self.enable_fission:
-            profile.set_preferences({"fission.autostart": True})
-        else:
+        profile.set_preferences({"fission.autostart": True})
+        if self.disable_fission:
             profile.set_preferences({"fission.autostart": False})
 
         if self.test_type in ("reftest", "print-reftest"):
@@ -707,7 +722,7 @@ class ProfileCreator:
         # Bug 1262954: winxp + e10s, disable hwaccel
         if (self.e10s and platform.system() in ("Windows", "Microsoft") and
             "5.1" in platform.version()):
-            self.profile.set_preferences({"layers.acceleration.disabled": True})
+            profile.set_preferences({"layers.acceleration.disabled": True})
 
         if self.debug_test:
             profile.set_preferences({"devtools.console.stdout.content": True})
@@ -769,7 +784,7 @@ class FirefoxBrowser(Browser):
 
     def __init__(self, logger, binary, prefs_root, test_type, extra_prefs=None, debug_info=None,
                  symbols_path=None, stackwalk_binary=None, certutil_binary=None,
-                 ca_certificate_path=None, e10s=False, enable_fission=True,
+                 ca_certificate_path=None, e10s=False, disable_fission=False,
                  stackfix_dir=None, binary_args=None, timeout_multiplier=None, leak_check=False,
                  asan=False, chaos_mode_flags=None, config=None,
                  browser_channel="nightly", headless=None, preload_browser=False,
@@ -799,7 +814,7 @@ class FirefoxBrowser(Browser):
                                          test_type,
                                          extra_prefs,
                                          e10s,
-                                         enable_fission,
+                                         disable_fission,
                                          debug_test,
                                          browser_channel,
                                          binary,
@@ -872,7 +887,7 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
     def __init__(self, logger, binary, prefs_root, webdriver_binary, webdriver_args,
                  extra_prefs=None, debug_info=None, symbols_path=None, stackwalk_binary=None,
                  certutil_binary=None, ca_certificate_path=None, e10s=False,
-                 enable_fission=False, stackfix_dir=None, leak_check=False,
+                 disable_fission=False, stackfix_dir=None, leak_check=False,
                  asan=False, chaos_mode_flags=None, config=None,
                  browser_channel="nightly", headless=None, debug_test=False, **kwargs):
 
@@ -896,7 +911,7 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
                                          "wdspec",
                                          extra_prefs,
                                          e10s,
-                                         enable_fission,
+                                         disable_fission,
                                          debug_test,
                                          browser_channel,
                                          binary,
@@ -916,12 +931,13 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
         return env
 
     def create_output_handler(self, cmd):
-        return FirefoxOutputHandler(self.logger,
-                                    cmd,
-                                    stackfix_dir=self.stackfix_dir,
-                                    symbols_path=self.symbols_path,
-                                    asan=self.asan,
-                                    leak_report_file=self.leak_report_file)
+        return GeckodriverOutputHandler(self.logger,
+                                        cmd,
+                                        stackfix_dir=self.stackfix_dir,
+                                        symbols_path=self.symbols_path,
+                                        asan=self.asan,
+                                        leak_report_file=self.leak_report_file,
+                                        init_deadline=self.init_deadline)
 
     def start(self, group_metadata, **kwargs):
         self.leak_report_file = setup_leak_report(self.leak_check, self.profile, self.env)
@@ -965,7 +981,12 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
                 time.sleep(1)
             else:
                 self.logger.debug("WebDriver session didn't end")
-        super().stop(force=force)
+        try:
+            super().stop(force=force)
+        finally:
+            if self._output_handler is not None:
+                self._output_handler.port = None
+            self._port = None
 
     def cleanup(self):
         super().cleanup()
@@ -979,10 +1000,19 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
                 "mozleak_allowed": self.leak_check and test.mozleak_allowed,
                 "mozleak_thresholds": self.leak_check and test.mozleak_threshold}
 
+    @property
+    def port(self):
+        # We read the port from geckodriver on startup
+        if self._port is None:
+            if self._output_handler is None or self._output_handler.port is None:
+                raise ValueError("Can't get geckodriver port before it's started")
+            self._port = self._output_handler.port
+        return self._port
+
     def make_command(self):
         return [self.webdriver_binary,
                 "--host", self.host,
-                "--port", str(self.port)] + self.webdriver_args
+                "--port", "0"] + self.webdriver_args
 
     def executor_browser(self):
         cls, args = super().executor_browser()

@@ -157,6 +157,7 @@ SET TIMEOUT: css/selectors/invalidation/dir-pseudo-class-in-has.html
 SET TIMEOUT: css/selectors/invalidation/lang-pseudo-class-in-has-document-element.html
 SET TIMEOUT: css/selectors/invalidation/lang-pseudo-class-in-has-xhtml.xhtml
 SET TIMEOUT: css/selectors/invalidation/lang-pseudo-class-in-has.html
+SET TIMEOUT: custom-elements/scoped-registry/scoped-registry-define-upgrade-criteria.tentative.html
 SET TIMEOUT: encrypted-media/polyfill/chrome-polyfill.js
 SET TIMEOUT: encrypted-media/polyfill/clearkey-polyfill.js
 SET TIMEOUT: encrypted-media/scripts/playback-temporary-events.js
@@ -309,8 +310,6 @@ GENERATE_TESTS: dom/ranges/Range-selectNode.html
 GENERATE_TESTS: dom/ranges/Range-set.html
 GENERATE_TESTS: dom/traversal/TreeWalker.html
 GENERATE_TESTS: domparsing/createContextualFragment.html
-GENERATE_TESTS: domxpath/001.html
-GENERATE_TESTS: domxpath/002.html
 GENERATE_TESTS: mediacapture-image/MediaStreamTrack-applyConstraints-reject.https.html
 GENERATE_TESTS: mediacapture-image/MediaStreamTrack-getCapabilities.https.html
 GENERATE_TESTS: mediacapture-image/MediaStreamTrack-getConstraints.https.html
@@ -329,6 +328,7 @@ GENERATE_TESTS: mediacapture-fromelement/creation.html
 GENERATE_TESTS: mediacapture-fromelement/ended.html
 GENERATE_TESTS: html/canvas/offscreen/manual/filter/offscreencanvas.filter.html
 GENERATE_TESTS: pointerevents/pointerevent_constructor.html
+GENERATE_TESTS: pointerevents/pointerevent_constructor.https.html
 GENERATE_TESTS: pointerevents/extension/pointerevent_constructor.html
 GENERATE_TESTS: selection/collapse.js
 GENERATE_TESTS: shadow-dom/leaktests/html-collection.html

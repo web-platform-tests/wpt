@@ -6,9 +6,10 @@ function dirname(path) {
 
 function request() {
   var dirName = dirname(location.href);
+  const headers = encodeURIComponent(`headers={"Timing-Allow-Origin": "${location.origin},fake"}`)
   var client = new XMLHttpRequest,
   // create a cross-origin request
-    url = dirName.replace('://', '://www.') + 'TAOResponse.py?tao=match_origin';
+    url = dirName.replace('://', '://www.') + `/common/CustomCorsResponse.py?${headers}`;
     client.open("GET", url, false);
     client.send(null);
 }

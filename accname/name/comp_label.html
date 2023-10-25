@@ -16,8 +16,6 @@
 
 <!-- https://www.w3.org/TR/wai-aria/#namefromauthor -->
 
-<div aria-label="label" data-expectedlabel="label" data-testname="label valid on group" role="group" class="ex">x</div>
-
 <!-- Embedded controls tested in ./comp_embedded_control.html -->
 
 <h2>Elements with roles that support aria-label use</h2>
@@ -95,6 +93,8 @@
 <div role="treeitem" aria-label="label" data-expectedlabel="label" data-testname="label valid on div with treeitem role" class="ex">x</div>
 
 <h2>HTML elements that support aria-label</h2>
+<!-- aria-label permitted on "all elements of the base markup" with exceptions: https://w3c.github.io/aria/#aria-label -->
+
 <a href="" aria-label="label" data-expectedlabel="label" data-testname="label valid on link element" class="ex">x</a>
 <article aria-label="label" data-expectedlabel="label" data-testname="label valid on article element" class="ex">x</article>
 <aside aria-label="label" data-expectedlabel="label" data-testname="label valid on aside element" class="ex">x</aside>
@@ -150,7 +150,7 @@
 <img alt="" aria-label="undefined" data-expectedlabel="title" data-testname="aria-label undefined on img w/ empty alt but w/ title" class="ex" />
 
 <h2>Name computation precedence tests</h2>
-  <!-- Name computation: https://w3c.github.io/accname/#computation-steps -->
+<!-- Name computation: https://w3c.github.io/accname/#computation-steps -->
 
 <!-- Step 2A: Hidden Not Referenced supercedes 2D: AriaLabel -->
 <button aria-labelledby="span1" aria-label="foo" data-expectedlabel="label" data-testname="button's hidden referenced name (display:none) supercedes aria-label" class="ex">
@@ -196,8 +196,9 @@ x
 <!-- Step 2I: Tooltip is superceded by aria-label -->
 <button aria-label="label" title="foo" data-expectedlabel="label" data-testname="button with title is superceded by aria-label" class="ex">x</button>
 
-<!-- 2. if the current node has an aria-label attribute whose value is not the empty string, return the value of aria-label -->
-<!-- 3. if the current node has an aria-label attribute whose value, when trimmed of whitespace, is not the empty string, return the value of aria-label -->
+<h2>Empty/whitespace aria-label tests</h2>
+<!-- if the current node has an aria-label attribute whose value is not the empty string, return the value of aria-label -->
+<!-- if the current node has an aria-label attribute whose value, when trimmed of whitespace, is not the empty string, return the value of aria-label -->
 
 <button aria-label="" data-testname="button with empty aria-label does not use aria-label as name" class="exa">my button</button>
 

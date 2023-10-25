@@ -152,7 +152,7 @@
 <h2>Name computation precedence tests</h2>
 <!-- Name computation: https://w3c.github.io/accname/#computation-steps -->
 
-<!-- Step 2A: Hidden Not Referenced supercedes 2D: AriaLabel -->
+<!-- Step 2A: Hidden Not Referenced supercedes 2D: AriaLabel, also see wpt/accname/name/comp_hidden_not_referenced.html -->
 <button aria-labelledby="span1" aria-label="foo" data-expectedlabel="label" data-testname="button's hidden referenced name (display:none) supercedes aria-label" class="ex">
   <span id="span1" style="display:none;">
     <span id="span2" style="display:none;">label</span>
@@ -160,20 +160,27 @@
 x
 </button>
 
-<button aria-labelledby="span1" aria-label="foo" data-expectedlabel="label" data-testname="button's hidden referenced name (visibility:hidden) supercedes aria-label" class="ex">
-  <span id="span1" style="visibility:hidden;">
-    <span id="span2" style="visibility:hidden;">label</span>
+<button aria-labelledby="span3" aria-label="foo" data-expectedlabel="label" data-testname="button's hidden referenced name (visibility:hidden) supercedes aria-label" class="ex">
+  <span id="span3" style="visibility:hidden;">
+    <span id="span4" style="visibility:hidden;">label</span>
   </span>
   x
 </button>
 
-<!-- Step 2B: LabelledBy supercedes 2D: AriaLabel -->
-<a href="#" aria-labelledby="span3" aria-label="foo" data-expectedlabel="label" data-testname="link's aria-labelledby name supercedes aria-label" class="ex">x</a>
-<span id="span3">label</span>
+<button aria-labelledby="span4" aria-label="foo" data-expectedlabel="foo" data-testname="button's hidden referenced name (visibility:hidden) with hidden aria-labelledby traversal falls back to aria-label" class="ex">
+  <span id="span4">
+    <span id="span5" style="visibility:hidden;">label</span>
+  </span>
+  x
+</button>
+
+<!-- Step 2B: LabelledBy supercedes 2D: AriaLabel, also see wpt/accname/name/comp_labelledby.html -->
+<a href="#" aria-labelledby="span6" aria-label="foo" data-expectedlabel="label" data-testname="link's aria-labelledby name supercedes aria-label" class="ex">x</a>
+<span id="span6">label</span>
 
 <!-- Step 2C: Embedded Control labelling supercedes 2D: AriaLabel, see wpt/accname/name/comp_embedded_control.html -->
  
-<!-- Step 2E: Host Language Label is superceded by aria-label -->
+<!-- Step 2E: Host Language Label is superceded by 2D: AriaLabel, also see wpt/accname/name/comp_host_language_label.html -->
 <img alt="alt" aria-label="foo" data-expectedlabel="foo" data-testname="img's aria-label supercedes alt attribute" class="ex" />
 
 <svg aria-label="foo" data-expectedlabel="foo" data-testname="svg's aria-label supercedes title tag" class="ex">
@@ -185,15 +192,15 @@ x
 <label for="input1">label</label>
 <input type="text" id="input1" aria-label="foo" data-expectedlabel="foo" data-testname="input with label for association is superceded by aria-label" class="ex" />
 
-<!-- Step 2F: Name From Content is superceded by aria-label -->
+<!-- Step 2F: Name From Content is superceded by 2D: AriaLabel, also see wpt/accname/name/comp_name_from_content.html -->
 <button aria-label="label" data-expectedlabel="label" data-testname="button name from contents is superceded by aria-label" class="ex">x</button>
 
-<!-- Step 2G: Text Node is superceded by aria-label -->
+<!-- Step 2G: Text Node is superceded by 2D: AriaLabel, also see wpt/accname/name/comp_text_node.html -->
 <h1 aria-label="label" data-expectedlabel="label" data-testname="h1 text is superceded by aria-label" class="ex">x</h1>
 
 <!-- Step 2H: Recursive Name from Content, see wpt/accname/name/comp_name_from_content.html  -->
 
-<!-- Step 2I: Tooltip is superceded by aria-label -->
+<!-- Step 2I: Tooltip is superceded by 2D: AriaLabel, also see wpt/accname/name/comp_tooltip.html -->
 <button aria-label="label" title="foo" data-expectedlabel="label" data-testname="button with title is superceded by aria-label" class="ex">x</button>
 
 <h2>Empty/whitespace aria-label tests</h2>
@@ -209,7 +216,7 @@ Note: PR for computedLabel whitespace trimming in aria-utils.js: https://github.
 <a href="#" aria-label="     label" data-expectedlabel="label" data-testname="link's name with leading whitespace in aria-label is valid" class="ex">x</a>
 <button aria-label="⠀" data-expectedlabel="⠀" data-testname="button with blank braille pattern has name as such (not treated as whitespace per Unicode standard)" class="ex">my button</button>
 <div role="alert" aria-label="
-alert message" data-expectedlabel="alert message" data-testname="div with role alert and carriage return in name is valid" class="ex">x</div>
+alert message" data-expectedlabel="alert message" data-testname="div with role alert and carriage return in aria-label is valid" class="ex">x</div>
 <a href="#" aria-label="  label" data-expectedlabel="label" data-testname="link's name with tab in aria-label is valid" class="ex">x</a>
 <button aria-label="label" data-expectedlabel="label" data-testname="button with leading form feed control character in aria-label is valid" class="ex">my button</button>
 <nav aria-label="label " data-expectedlabel="label " data-testname="nav with trailing nbsp aria-label is valid (nbsp is preserved in name)" class="ex">x</nav>

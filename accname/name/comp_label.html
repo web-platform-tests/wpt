@@ -136,18 +136,65 @@
 <section aria-label="label" data-expectedlabel="label" data-testname="label valid on section element" class="ex">x</section>
 <select aria-label="label" data-expectedlabel="label" data-testname="label valid on select element" class="ex">x</select>
 <select>
-  <option aria-label="label" data-expectedlabel="label" data-testname="label valid on option element" class="ex">x</option>
+  <option aria-label="label" value="foo" data-expectedlabel="label" data-testname="label valid on option element" class="ex">x</option>
 </select>
 <table aria-label="label" data-expectedlabel="label" data-testname="label valid on table element" class="ex">x</table>
 <textarea aria-label="label" data-expectedlabel="label" data-testname="label valid on textarea element" class="ex">x</textarea>
 <ul aria-label="label" data-expectedlabel="label" data-testname="label valid on list (unordered) element" class="ex">x</ul>
 
-<!-- TODO write tests that purposefully fail?? -->
+<h2>Undefined aria-label tests</h2>
 <img alt="alt" aria-label="undefined" data-expectedlabel="alt" data-testname="aria-label undefined on img w/ alt" class="ex" />
 <img aria-label="undefined" data-expectedlabel="" data-testname="aria-label undefined on img w/o alt" class="ex" />
 <img alt="" aria-label="undefined" data-expectedlabel="" data-testname="aria-label undefined on img w/ empty alt" class="ex" />
 <img aria-label="undefined" data-expectedlabel="title" data-testname="aria-label undefined on img w/o alt but w/ title" class="ex" />
 <img alt="" aria-label="undefined" data-expectedlabel="title" data-testname="aria-label undefined on img w/ empty alt but w/ title" class="ex" />
+
+<h2>Name computation precedence tests</h2>
+  <!-- Name computation: https://w3c.github.io/accname/#computation-steps -->
+
+<!-- Step 2A: Hidden Not Referenced supercedes 2D: AriaLabel -->
+<button aria-labelledby="span1" aria-label="foo" data-expectedlabel="label" data-testname="button's hidden referenced name (display:none) supercedes aria-label" class="ex">
+  <span id="span1" style="display:none;">
+    <span id="span2" style="display:none;">label</span>
+  </span>
+x
+</button>
+
+<button aria-labelledby="span1" aria-label="foo" data-expectedlabel="label" data-testname="button's hidden referenced name (visibility:hidden) supercedes aria-label" class="ex">
+  <span id="span1" style="visibility:hidden;">
+    <span id="span2" style="visibility:hidden;">label</span>
+  </span>
+  x
+</button>
+
+<!-- Step 2B: LabelledBy supercedes 2D: AriaLabel -->
+<a href="#" aria-labelledby="span3" aria-label="foo" data-expectedlabel="label" data-testname="link's aria-labelledby name supercedes aria-label" class="ex">x</a>
+<span id="span3">label</span>
+
+<!-- Step 2C: Embedded Control labelling supercedes 2D: AriaLabel, see wpt/accname/name/comp_embedded_control.html -->
+ 
+<!-- Step 2E: Host Language Label is superceded by aria-label -->
+<img alt="alt" aria-label="foo" data-expectedlabel="foo" data-testname="img's aria-label supercedes alt attribute" class="ex" />
+
+<svg aria-label="foo" data-expectedlabel="foo" data-testname="svg's aria-label supercedes title tag" class="ex">
+  <circle cx="5" cy="5" r="4">
+    <title>circle</title>
+  </circle>
+</svg>
+
+<label for="input1">label</label>
+<input type="text" id="input1" aria-label="foo" data-expectedlabel="foo" data-testname="input with label for association is superceded by aria-label" class="ex" />
+
+<!-- Step 2F: Name From Content is superceded by aria-label -->
+<button aria-label="label" data-expectedlabel="label" data-testname="button name from contents is superceded by aria-label" class="ex">x</button>
+
+<!-- Step 2G: Text Node is superceded by aria-label -->
+<h1 aria-label="label" data-expectedlabel="label" data-testname="h1 text is superceded by aria-label" class="ex">x</h1>
+
+<!-- Step 2H: Recursive Name from Content, see wpt/accname/name/comp_name_from_content.html  -->
+
+<!-- Step 2I: Tooltip is superceded by aria-label -->
+<button aria-label="label" title="foo" data-expectedlabel="label" data-testname="button with title is superceded by aria-label" class="ex">x</button>
 
 <!-- 2. if the current node has an aria-label attribute whose value is not the empty string, return the value of aria-label -->
 <!-- 3. if the current node has an aria-label attribute whose value, when trimmed of whitespace, is not the empty string, return the value of aria-label -->

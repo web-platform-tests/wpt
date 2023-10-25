@@ -95,23 +95,19 @@
 <div role="treeitem" aria-label="label" data-expectedlabel="label" data-testname="label valid on div with treeitem role" class="ex">x</div>
 
 <h2>HTML elements that support aria-label</h2>
+<a href="" aria-label="label" data-expectedlabel="label" data-testname="label valid on link element" class="ex">x</a>
 <article aria-label="label" data-expectedlabel="label" data-testname="label valid on article element" class="ex">x</article>
-<dl aria-label="label" data-expectedlabel="label" data-testname="label valid on dl element" class="ex">x</dl>
-<dt aria-label="label" data-expectedlabel="label" data-testname="label valid on dt element" class="ex">x</dt>
-<dd aria-label="label" data-expectedlabel="label" data-testname="label valid on dd element" class="ex">x</dd>
-<header aria-label="label" data-expectedlabel="label" data-testname="label valid on header element" class="ex">x</header>
+<aside aria-label="label" data-expectedlabel="label" data-testname="label valid on aside element" class="ex">x</aside>
 <blockquote aria-label="label" data-expectedlabel="label" data-testname="label valid on blockquote element" class="ex">x</blockquote>
 <button aria-label="label" data-expectedlabel="label" data-testname="label valid on button element" class="ex">x</button>
-<td aria-label="label" data-expectedlabel="label" data-testname="label valid on td element" class="ex">x</td>
-<input type="checkbox" aria-label="label" data-expectedlabel="label" data-testname="label valid on input type checkbox element" class="ex"/>
-<th scope="col" aria-label="label" data-expectedlabel="label" data-testname="label valid on th element with the scope of col" class="ex">x</th>
-<select aria-label="label" data-expectedlabel="label" data-testname="label valid on select element" class="ex">x</select>
-<aside aria-label="label" data-expectedlabel="label" data-testname="label valid on aside element" class="ex">x</aside>
+<dd aria-label="label" data-expectedlabel="label" data-testname="label valid on dd element" class="ex">x</dd>
+<dl aria-label="label" data-expectedlabel="label" data-testname="label valid on dl element" class="ex">x</dl>
+<dt aria-label="label" data-expectedlabel="label" data-testname="label valid on dt element" class="ex">x</dt>
 <footer aria-label="label" data-expectedlabel="label" data-testname="label valid on footer element" class="ex">x</footer>
+<fieldset aria-label="label" data-expectedlabel="label" data-testname="label valid on fieldset element" class="ex">x</fieldset>
 <figure aria-label="label" data-expectedlabel="label" data-testname="label valid on figure element" class="ex">x</figure>
 <form action="" aria-label="label" data-expectedlabel="label" data-testname="label valid on form element" class="ex">x</form>
-<table aria-label="label" data-expectedlabel="label" data-testname="label valid on table element" class="ex">x</table>
-<fieldset aria-label="label" data-expectedlabel="label" data-testname="label valid on fieldset element" class="ex">x</fieldset>
+<header aria-label="label" data-expectedlabel="label" data-testname="label valid on header element" class="ex">x</header>
 <h1 aria-label="label" data-expectedlabel="label" data-testname="label valid on h1 element" class="ex">x</h1>
 <h2 aria-label="label" data-expectedlabel="label" data-testname="label valid on h2 element" class="ex">x</h2>
 <h3 aria-label="label" data-expectedlabel="label" data-testname="label valid on h3 element" class="ex">x</h3>
@@ -119,14 +115,18 @@
 <h5 aria-label="label" data-expectedlabel="label" data-testname="label valid on h5 element" class="ex">x</h5>
 <h6 aria-label="label" data-expectedlabel="label" data-testname="label valid on h6 element" class="ex">x</h6>
 <img alt="" aria-label="label" data-expectedlabel="label" data-testname="label valid on img element" class="ex" />
-<a href="" aria-label="label" data-expectedlabel="label" data-testname="label valid on link element" class="ex">x</a>
-<ul aria-label="label" data-expectedlabel="label" data-testname="label valid on list (unordered) element" class="ex">x</ul>
-<ol aria-label="label" data-expectedlabel="label" data-testname="label valid on list (ordered) element" class="ex">x</ol>
+<input type="checkbox" aria-label="label" data-expectedlabel="label" data-testname="label valid on input type checkbox element" class="ex"/>
 <li aria-label="label" data-expectedlabel="label" data-testname="label valid on listitem element" class="ex">x</li>
 <main aria-label="label" data-expectedlabel="label" data-testname="label valid on main element" class="ex">x</main>
 <math aria-label="label" data-expectedlabel="label" data-testname="label valid on math element" class="ex">x</math>
 <meter aria-label="label" data-expectedlabel="label" data-testname="label valid on meter element" class="ex">x</meter>
 <nav aria-label="label" data-expectedlabel="label" data-testname="label valid on nav element" class="ex">x</nav>
+<ol aria-label="label" data-expectedlabel="label" data-testname="label valid on list (ordered) element" class="ex">x</ol>
+<td aria-label="label" data-expectedlabel="label" data-testname="label valid on td element" class="ex">x</td>
+<th scope="col" aria-label="label" data-expectedlabel="label" data-testname="label valid on th element with the scope of col" class="ex">x</th>
+<select aria-label="label" data-expectedlabel="label" data-testname="label valid on select element" class="ex">x</select>
+<table aria-label="label" data-expectedlabel="label" data-testname="label valid on table element" class="ex">x</table>
+<ul aria-label="label" data-expectedlabel="label" data-testname="label valid on list (unordered) element" class="ex">x</ul>
 
 <!-- <option aria-label="label" data-expectedlabel="label" data-testname="label valid on option element" class="ex">x</option> -->
 <input type="radio" aria-label="label" data-expectedlabel="label" data-testname="label valid on input type radio element" class="ex" />
@@ -152,8 +152,11 @@
 <!-- 2. if the current node has an aria-label attribute whose value is not the empty string, return the value of aria-label -->
 <!-- 3. if the current node has an aria-label attribute whose value, when trimmed of whitespace, is not the empty string, return the value of aria-label -->
 
+<button aria-label="" data-testname="button with empty aria-label does not use aria-label as name" class="exa">my button</button>
+
 <script>
 AriaUtils.verifyLabelsBySelector(".ex");
+AriaUtils.assertAriaLabelIsIgnored(".exa")
 </script>
 </body>
 </html>

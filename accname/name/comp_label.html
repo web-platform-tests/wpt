@@ -197,10 +197,28 @@ x
 <button aria-label="label" title="foo" data-expectedlabel="label" data-testname="button with title is superceded by aria-label" class="ex">x</button>
 
 <h2>Empty/whitespace aria-label tests</h2>
-<!-- if the current node has an aria-label attribute whose value is not the empty string, return the value of aria-label -->
-<!-- if the current node has an aria-label attribute whose value, when trimmed of whitespace, is not the empty string, return the value of aria-label -->
+<!--  
+- AccName computation links to the following definition of "Whitespace": https://infra.spec.whatwg.org/#ascii-whitespace
+- Generally, if the current node has an aria-label attribute whose value is not the empty string (including when trimmed of whitespace), return the value of aria-label. 
+ 
+Note: PR for computedLabel whitespace trimming in aria-utils.js: https://github.com/web-platform-tests/wpt/pull/42407/files#diff-6870d82f11ff11cf7c7b544756cecfdac2046acbfe2fbb0640e6d415fbf99916 
+
+-->
+
+<textarea aria-label="label  " data-expectedlabel="label" data-testname="textarea's name with trailing whitespace in aria-label is valid" class="ex">x</textarea>
+<a href="#" aria-label="     label" data-expectedlabel="label" data-testname="link's name with leading whitespace in aria-label is valid" class="ex">x</a>
+<button aria-label="⠀" data-expectedlabel="⠀" data-testname="button with blank braille pattern has name as such (not treated as whitespace per Unicode standard)" class="exa">my button</button>
+<div role="alert" aria-label="
+alert message" data-expectedlabel="alert message" data-testname="div with role alert and carriage return in name is valid" class="ex">x</div>
+<a href="#" aria-label="  label" data-expectedlabel="label" data-testname="link's name with tab in aria-label is valid" class="ex">x</a>
+<button aria-label="label" data-expectedlabel="label" data-testname="button with leading form feed control character in aria-label is valid" class="exa">my button</button>
+
 
 <button aria-label="" data-testname="button with empty aria-label does not use aria-label as name" class="exa">my button</button>
+<textarea aria-label="  " data-testname="textarea with tab character as aria-label does not use aria-label as name" class="exa">x</textarea>
+<button aria-label="
+" data-testname="button with carriage return as aria-label does not use aria-label as name" class="exa">my button</button>
+<button aria-label="      " data-testname="button with space characters as aria-label does not use aria-label as name" class="exa">my button</button>
 
 <script>
 AriaUtils.verifyLabelsBySelector(".ex");

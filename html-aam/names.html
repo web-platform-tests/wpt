@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+  <title>HTML-AAM Element Accessible Name Tests</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+</head>
+<body>
+
+
+<p>Tests the accName for elements defined in <a href="https://w3c.github.io/html-aam/#accessible-name-and-description-computation">HTML-AAM: Accessible Name Computations By HTML Element</a>. These tests are meant to show whether an element returns a name per the naming mechanism used. See <a href="https://wpt.fyi/results/accname">wpt: accname</a> for expanded accName testing.</p>
+
+
+<!-- element to reference for aria-labelledby tests -->
+<div id=labelledby hidden>labelledby</div>
+
+<address data-testname="address no name" data-expectedname="" class="ex">x</address>
+
+<address data-testname="address aria-label" aria-label="label" data-expectedname="label" class="ex">x</address>
+<address data-testname="address aria-labelledby" aria-labelledby="labelledby" data-expectedname="labelledby" class="ex">x</address>
+<address data-testname="address title" title="title" data-expectedname="title" class="ex">x</address>
+
+<address data-testname="address aria-labelledby vs aria-label vs title" aria-labelledby="labelledby" aria-label="label" title="title" data-expectedname="labelledby" class="ex">x</address>
+<address data-testname="address aria-labelledby vs aria-label" aria-labelledby="labelledby" aria-label="label" data-expectedname="labelledby" class="ex">x</address>
+
+<address data-testname="address aria-labelledby vs title" aria-labelledby="labelledby" title="title" data-expectedname="labelledby" class="ex">x</address>
+<address data-testname="address aria-label vs title" aria-label="label" title="title" data-expectedname="label" class="ex">x</address>
+
+
+
+<search data-testname="search no name" data-expectedname="" class="ex">x</search>
+
+<search data-testname="search aria-label" aria-label="label" data-expectedname="label" class="ex">x</search>
+<search data-testname="search aria-labelledby" aria-labelledby="labelledby" data-expectedname="labelledby" class="ex">x</search>
+<search data-testname="search title" title="title" data-expectedname="title" class="ex">x</search>
+
+<search data-testname="search aria-labelledby vs aria-label vs title" aria-labelledby="labelledby" aria-label="label" title="title" data-expectedname="labelledby" class="ex">x</search>
+<search data-testname="search aria-labelledby vs aria-label" aria-labelledby="labelledby" aria-label="label" data-expectedname="labelledby" class="ex">x</search>
+
+<search data-testname="search aria-labelledby vs title" aria-labelledby="labelledby" title="title" data-expectedname="labelledby" class="ex">x</search>
+<search data-testname="search aria-label vs title" aria-label="label" title="title" data-expectedname="label" class="ex">x</search>
+
+<script>
+AriaUtils.verifyLabelsBySelector(".ex");
+</script>
+
+</body>
+</html>

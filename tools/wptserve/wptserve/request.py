@@ -287,10 +287,7 @@ class Request:
         self.request_path = request_handler.path
         self.url_base = "/"
 
-        # We can hardcore http here instead of using scheme because this only
-        # happens when the server is used as a proxy server, and that never
-        # sends an HTTPS URL (because those use CONNECT)
-        if self.request_path.startswith("http://"):
+        if self.request_path.startswith(scheme + "://"):
             self.url = self.request_path
         else:
             # TODO(#23362): Stop using native strings for URLs.

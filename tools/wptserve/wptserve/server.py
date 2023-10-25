@@ -179,7 +179,7 @@ class WebTestServer(http.server.ThreadingHTTPServer):
         self.router = router
         self.rewriter = rewriter
 
-        self.scheme = "http2" if http2 else "https" if use_ssl else "http"
+        self.scheme = "http2" if http2 else "https" if use_ssl and not encrypt_after_connect else "http"
         self.logger = get_logger()
 
         self.latency = latency
@@ -198,7 +198,6 @@ class WebTestServer(http.server.ThreadingHTTPServer):
             with ConfigBuilder(self.logger,
                                browser_host=server_address[0],
                                ports={"http": [self.server_address[1]]}) as config:
-                self.logger.error(config)
                 assert config["ssl_config"] is None or config.ssl_config["encrypt_after_connect"]
                 Server.config = config
 

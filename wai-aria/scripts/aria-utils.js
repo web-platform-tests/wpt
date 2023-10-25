@@ -157,7 +157,7 @@ const AriaUtils = {
 
       AriaUtils.assertAriaLabelIsIgnored(".ex")
 
-  See Web Platform Test's testharness API documentation for available assert functions:
+  See Web Platform Test's test harness API documentation for available assert functions:
   https://web-platform-tests.org/writing-tests/testharness-api.html#assert-functions
 
   */
@@ -167,7 +167,7 @@ const AriaUtils = {
       throw `Selector passed in assertAriaLabelIsIgnored("${selector}") should match at least one element.`;
     }
     for (const el of els) {
-      let testName = el.getAttribute("data-testname"); // data-testname optional if label is unique per test file
+      let testName = el.getAttribute("data-testname"); 
       promise_test(async t => {
         const elAriaLabel = el.getAttribute("aria-label");
         let computedLabel = await test_driver.get_computed_label(el);

@@ -146,5 +146,34 @@ const AriaUtils = {
   },
 
 
+  /*
+assert_false() wrapper function to verify an element's name computation 
+ignores aria-label (computedLabel != aria-label value)
+
+  Ex: <img alt="foo" aria-label=""    
+        data-testname="img with empty aria-label and alt=foo uses alt as name"
+        class="ex">
+
+      AriaUtils.assertAriaLabelIsIgnored(".ex")
+
+  */
+assertAriaLabelIsIgnored: function(selector) {
+  const els = document.querySelectorAll(selector);
+  if (!els.length) {
+    throw `Selector passed in assertAriaLabelIsIgnored("${selector}") should match at least one element.`;
+  }
+  for (const el of els) {
+    let elAriaLabel = el.getAttribute("aria-label");
+    let testName = el.getAttribute("data-testname"); // data-testname optional if label is unique per test file
+    promise_test(async t => {
+      const elAriaLabel = el.getAttribute("aria-label");
+      let computedLabel = await test_driver.get_computed_label(el);
+      computedLabel = computedLabel.trim()
+      let isComputedLabelEqualToAriaLabel = (computedLabel !== elAriaLabel);
+      assert_not_equals(computedLabel, elAriaLabel, el.outerHTML);
+    }, `${testName}`);
+  }
+},
+
 };
 

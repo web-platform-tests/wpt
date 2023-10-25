@@ -11,7 +11,7 @@ def recursive_compare(expected: Any, actual: Any) -> None:
         expected(actual)
         return
 
-    assert type(expected) == type(actual)
+    assert type(expected) is type(actual)
     if type(expected) is list:
         assert len(expected) == len(actual)
         for index, _ in enumerate(expected):
@@ -48,6 +48,11 @@ def any_int_or_null(actual: Any) -> None:
 
 def any_list(actual: Any) -> None:
     assert isinstance(actual, list)
+
+
+def any_list_or_null(actual: Any) -> None:
+    if actual is not None:
+        any_list(actual)
 
 
 def any_string(actual: Any) -> None:

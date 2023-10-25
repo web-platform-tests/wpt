@@ -89,7 +89,7 @@ CR AT EOL: html/syntax/charset/after-head-after-1kb-crlf.html
 CR AT EOL: html/syntax/charset/after-head-in-1kb-crlf.html
 
 # Intentional use of tabs
-INDENT TABS: html/semantics/embedded-content/the-canvas-element/size.attributes.parse.whitespace.html
+INDENT TABS: html/canvas/element/canvas-host/2d.canvas.host.size.attributes.parse.whitespace.html
 INDENT TABS: webvtt/parsing/file-parsing/tests/support/header-tab.vtt
 INDENT TABS: webvtt/parsing/file-parsing/tests/support/whitespace-chars.vtt
 
@@ -146,6 +146,7 @@ SET TIMEOUT: conformance-checkers/*
 SET TIMEOUT: content-security-policy/*
 SET TIMEOUT: css/compositing/opacity-and-transform-animation-crash.html
 SET TIMEOUT: css/css-contain/contain-body-overflow-002.html
+SET TIMEOUT: css/css-lists/dynamic-counters-crash.html
 SET TIMEOUT: css/css-display/display-contents-shadow-dom-1.html
 SET TIMEOUT: css/CSS2/normal-flow/crashtests/block-in-inline-ax-crash.html
 SET TIMEOUT: css/selectors/selector-placeholder-shown-type-change-001.html
@@ -157,6 +158,7 @@ SET TIMEOUT: css/selectors/invalidation/dir-pseudo-class-in-has.html
 SET TIMEOUT: css/selectors/invalidation/lang-pseudo-class-in-has-document-element.html
 SET TIMEOUT: css/selectors/invalidation/lang-pseudo-class-in-has-xhtml.xhtml
 SET TIMEOUT: css/selectors/invalidation/lang-pseudo-class-in-has.html
+SET TIMEOUT: custom-elements/scoped-registry/scoped-registry-define-upgrade-criteria.tentative.html
 SET TIMEOUT: encrypted-media/polyfill/chrome-polyfill.js
 SET TIMEOUT: encrypted-media/polyfill/clearkey-polyfill.js
 SET TIMEOUT: encrypted-media/scripts/playback-temporary-events.js
@@ -214,6 +216,7 @@ SET TIMEOUT: performance-timeline/resources/navigation-id-detached-frame-page.ht
 SET TIMEOUT: portals/resources/portals-adopt-predecessor-portal.html
 SET TIMEOUT: preload/single-download-preload.html
 SET TIMEOUT: preload/resources/slow-exec.js
+SET TIMEOUT: print/crashtests/reload-crash.html
 SET TIMEOUT: resize-observer/resources/iframe.html
 SET TIMEOUT: resource-timing/resources/nested-contexts.js
 SET TIMEOUT: reporting/resources/first-csp-report.https.sub.html
@@ -328,6 +331,7 @@ GENERATE_TESTS: mediacapture-fromelement/creation.html
 GENERATE_TESTS: mediacapture-fromelement/ended.html
 GENERATE_TESTS: html/canvas/offscreen/manual/filter/offscreencanvas.filter.html
 GENERATE_TESTS: pointerevents/pointerevent_constructor.html
+GENERATE_TESTS: pointerevents/pointerevent_constructor.https.html
 GENERATE_TESTS: pointerevents/extension/pointerevent_constructor.html
 GENERATE_TESTS: selection/collapse.js
 GENERATE_TESTS: shadow-dom/leaktests/html-collection.html
@@ -621,6 +625,7 @@ AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-metrics-override.html
 AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-metrics-override-ref.html
 AHEM SYSTEM FONT: css/css-fonts/line-gap-override.html
 AHEM SYSTEM FONT: css/css-fonts/parsing/font-size-adjust-computed.html
+AHEM SYSTEM FONT: css/css-fonts/size-adjust-unicode-range-system-fallback.html
 AHEM SYSTEM FONT: html/dom/render-blocking/remove-attr-unblocks-rendering.optional.html
 AHEM SYSTEM FONT: html/dom/render-blocking/remove-element-unblocks-rendering.optional.html
 
@@ -705,3 +710,17 @@ SET TIMEOUT: editing/crashtests/outdent-across-svg-boundary.html
 SET TIMEOUT: editing/crashtests/textarea-will-be-blurred-by-focus-event-listener.html
 SET TIMEOUT: mathml/crashtests/mozilla/*
 PARSE-FAILED: mathml/crashtests/mozilla/289180-1.xml
+
+# Invalid HTML syntax /> on non-void elements
+HTML INVALID SYNTAX: acid/*
+HTML INVALID SYNTAX: conformance-checkers/*
+HTML INVALID SYNTAX: css/css-scoping/shadow-cascade-order-001.html
+HTML INVALID SYNTAX: dom/nodes/Document-createElement-namespace.html
+HTML INVALID SYNTAX: dom/nodes/Node-lookupNamespaceURI.html
+HTML INVALID SYNTAX: dom/nodes/Node-normalize.html
+HTML INVALID SYNTAX: domparsing/DOMParser-parseFromString-xml-doctype.html
+HTML INVALID SYNTAX: domparsing/DOMParser-parseFromString-xml-parsererror.html
+HTML INVALID SYNTAX: domparsing/XMLSerializer-serializeToString.html
+HTML INVALID SYNTAX: html/canvas/element/manual/unclosed-canvas-4.htm
+HTML INVALID SYNTAX: quirks/percentage-height-calculation.html
+HTML INVALID SYNTAX: trusted-types/TrustedTypePolicyFactory-getAttributeType-namespace.tentative.html

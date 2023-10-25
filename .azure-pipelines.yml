@@ -100,9 +100,6 @@ jobs:
     inputs:
       versionSpec: '3.11'
   - template: tools/ci/azure/checkout.yml
-  - template: tools/ci/azure/pip_install.yml
-    parameters:
-      packages: virtualenv
   - template: tools/ci/azure/install_fonts.yml
   - template: tools/ci/azure/install_certs.yml
   - template: tools/ci/azure/color_profile.yml
@@ -373,9 +370,6 @@ jobs:
       versionSpec: '3.11'
   - template: tools/ci/azure/system_info.yml
   - template: tools/ci/azure/checkout.yml
-  - template: tools/ci/azure/pip_install.yml
-    parameters:
-      packages: virtualenv
   - template: tools/ci/azure/install_certs.yml
   - template: tools/ci/azure/install_edge.yml
     parameters:
@@ -412,9 +406,6 @@ jobs:
       versionSpec: '3.11'
   - template: tools/ci/azure/system_info.yml
   - template: tools/ci/azure/checkout.yml
-  - template: tools/ci/azure/pip_install.yml
-    parameters:
-      packages: virtualenv
   - template: tools/ci/azure/install_certs.yml
   - template: tools/ci/azure/install_edge.yml
     parameters:
@@ -450,9 +441,6 @@ jobs:
     inputs:
       versionSpec: '3.11'
   - template: tools/ci/azure/checkout.yml
-  - template: tools/ci/azure/pip_install.yml
-    parameters:
-      packages: virtualenv
   - template: tools/ci/azure/install_certs.yml
   - template: tools/ci/azure/install_edge.yml
     parameters:
@@ -488,9 +476,6 @@ jobs:
     inputs:
       versionSpec: '3.11'
   - template: tools/ci/azure/checkout.yml
-  - template: tools/ci/azure/pip_install.yml
-    parameters:
-      packages: virtualenv
   - template: tools/ci/azure/install_certs.yml
   - template: tools/ci/azure/color_profile.yml
   - template: tools/ci/azure/install_safari.yml
@@ -501,7 +486,7 @@ jobs:
   - script: |
       set -eux -o pipefail
       export SYSTEM_VERSION_COMPAT=0
-      ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-mach - --log-mach-level info --channel stable --kill-safari safari
+      ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-mach - --log-mach-level info --channel stable --kill-safari --max-restarts 100 safari
     displayName: 'Run tests'
     retryCountOnTaskFailure: 2
   - task: PublishBuildArtifacts@1
@@ -531,9 +516,6 @@ jobs:
     inputs:
       versionSpec: '3.11'
   - template: tools/ci/azure/checkout.yml
-  - template: tools/ci/azure/pip_install.yml
-    parameters:
-      packages: virtualenv
   - template: tools/ci/azure/install_certs.yml
   - template: tools/ci/azure/color_profile.yml
   - template: tools/ci/azure/install_safari.yml
@@ -542,7 +524,7 @@ jobs:
   - script: |
       set -eux -o pipefail
       export SYSTEM_VERSION_COMPAT=0
-      ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-mach - --log-mach-level info --channel preview --kill-safari safari
+      ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-mach - --log-mach-level info --channel preview --kill-safari --max-restarts 100 safari
     displayName: 'Run tests'
     retryCountOnTaskFailure: 2
   - task: PublishBuildArtifacts@1
@@ -571,9 +553,6 @@ jobs:
     inputs:
       versionSpec: '3.11'
   - template: tools/ci/azure/checkout.yml
-  - template: tools/ci/azure/pip_install.yml
-    parameters:
-      packages: virtualenv
   - template: tools/ci/azure/install_certs.yml
   - template: tools/ci/azure/color_profile.yml
   - template: tools/ci/azure/update_hosts.yml

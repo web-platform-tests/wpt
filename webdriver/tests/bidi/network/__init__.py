@@ -101,6 +101,8 @@ def assert_request_data(request_data, expected_request):
 def assert_base_parameters(
     event,
     context=None,
+    intercepts=None,
+    is_blocked=None,
     navigation=None,
     redirect_count=None,
     expected_request=None,
@@ -108,6 +110,7 @@ def assert_base_parameters(
     recursive_compare(
         {
             "context": any_string_or_null,
+            "isBlocked": any_bool,
             "navigation": any_string_or_null,
             "redirectCount": any_int,
             "request": any_dict,
@@ -118,6 +121,20 @@ def assert_base_parameters(
 
     if context is not None:
         assert event["context"] == context
+
+    if is_blocked is not None:
+        assert event["isBlocked"] == is_blocked
+
+    if event["isBlocked"]:
+        assert isinstance(event["intercepts"], list)
+        assert len(event["intercepts"]) > 0
+        for intercept in event["intercepts"]:
+            assert isinstance(intercept, str)
+    else:
+        assert "intercepts" not in event
+
+    if intercepts is not None:
+        assert event["intercepts"] == intercepts
 
     if navigation is not None:
         assert event["navigation"] == navigation
@@ -133,6 +150,8 @@ def assert_base_parameters(
 def assert_before_request_sent_event(
     event,
     context=None,
+    intercepts=None,
+    is_blocked=None,
     navigation=None,
     redirect_count=None,
     expected_request=None,
@@ -145,6 +164,8 @@ def assert_before_request_sent_event(
     assert_base_parameters(
         event,
         context=context,
+        intercepts=intercepts,
+        is_blocked=is_blocked,
         navigation=navigation,
         redirect_count=redirect_count,
         expected_request=expected_request,
@@ -181,12 +202,19 @@ def assert_response_data(response_data, expected_response):
         # in assert_request_data
         del expected_response["headers"]
 
+    if response_data["status"] in [401, 407]:
+        assert isinstance(response_data["authChallenges"], list)
+    else:
+        assert "authChallenges" not in response_data
+
     recursive_compare(expected_response, response_data)
 
 
 def assert_response_event(
     event,
     context=None,
+    intercepts=None,
+    is_blocked=None,
     navigation=None,
     redirect_count=None,
     expected_request=None,
@@ -201,10 +229,13 @@ def assert_response_event(
     assert_base_parameters(
         event,
         context=context,
+        intercepts=intercepts,
+        is_blocked=is_blocked,
         navigation=navigation,
         redirect_count=redirect_count,
         expected_request=expected_request,
     )
+
 
 # Array of status and status text expected to be available in network events
 HTTP_STATUS_AND_STATUS_TEXT = [

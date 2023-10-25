@@ -35,10 +35,20 @@ invalidConfigs.forEach(entry => {
           entry.comment);
 });
 
+const arrayBuffer = new ArrayBuffer(12583);
+const arrayBufferView = new DataView(arrayBuffer);
+
 const validButUnsupportedConfigs = [
   {
     comment: 'Unrecognized codec',
     config: {codec: 'bogus'},
+  },
+  {
+    comment: 'Unrecognized codec with dataview description',
+    config: {
+      codec: '7󠎢ﷺ۹.9',
+      description: arrayBufferView,
+    },
   },
   {
     comment: 'Audio codec',
@@ -47,6 +57,10 @@ const validButUnsupportedConfigs = [
   {
     comment: 'Ambiguous codec',
     config: {codec: 'vp9'},
+  },
+  {
+    comment: 'Codec with bad casing',
+    config: {codec: 'Vp09.00.10.08'},
   },
   {
     comment: 'Codec with MIME type',
@@ -82,22 +96,24 @@ validButUnsupportedConfigs.forEach(entry => {
 });
 
 validButUnsupportedConfigs.forEach(entry => {
-  promise_test(
-    async t => {
-        const callbacks = {
+  async_test(
+      t => {
+        let codec = new VideoDecoder({
           output: t.unreached_func('unexpected output'),
-        };
-        const error = new Promise(resolve => callbacks.error = e => {
-          resolve(e);
+          error: t.step_func_done(e => {
+            assert_true(e instanceof DOMException);
+            assert_equals(e.name, 'NotSupportedError');
+            assert_equals(codec.state, 'closed', 'state');
+          })
         });
-        let codec = new VideoDecoder(callbacks);
         codec.configure(entry.config);
-        let e = await error;
-        assert_true(e instanceof DOMException);
-        assert_equals(e.name, 'NotSupportedError');
-        assert_equals(codec.state, 'closed', 'state');
-
-        t.done();
+        codec.flush()
+            .then(t.unreached_func('flush succeeded unexpectedly'))
+            .catch(t.step_func(e => {
+              assert_true(e instanceof DOMException);
+              assert_equals(e.name, 'NotSupportedError');
+              assert_equals(codec.state, 'closed', 'state');
+            }));
       },
       'Test that VideoDecoder.configure() doesn\'t support config: ' +
           entry.comment);

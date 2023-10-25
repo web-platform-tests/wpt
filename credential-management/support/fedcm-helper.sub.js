@@ -39,6 +39,12 @@ export function mark_signed_in(origin = manifest_origin) {
   });
 }
 
+export function mark_signed_out(origin = manifest_origin) {
+  return new Promise(resolve => {
+    open_and_wait_for_popup(origin, '/credential-management/support/mark_signedout', resolve);
+  });
+}
+
 // Returns FedCM CredentialRequestOptions for which navigator.credentials.get()
 // succeeds.
 export function request_options_with_mediation_required(manifest_filename) {
@@ -146,6 +152,13 @@ export function select_manifest(test, test_options) {
 export function request_options_with_login_hint(manifest_filename, login_hint) {
   let options = request_options_with_mediation_required(manifest_filename);
   options.identity.providers[0].loginHint = login_hint;
+
+  return options;
+}
+
+export function request_options_with_hosted_domain(manifest_filename, hosted_domain) {
+  let options = request_options_with_mediation_required(manifest_filename);
+  options.identity.providers[0].hostedDomain = hosted_domain;
 
   return options;
 }

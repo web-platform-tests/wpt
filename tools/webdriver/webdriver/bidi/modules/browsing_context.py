@@ -15,16 +15,16 @@ class ElementOptions(Dict[str, Any]):
             self["scrollIntoView"] = scroll_into_view
 
 
-class ViewportOptions(Dict[str, Any]):
+class BoxOptions(Dict[str, Any]):
     def __init__(self, x: float, y: float, width: float, height: float):
-        self["type"] = "viewport"
+        self["type"] = "box"
         self["x"] = x
         self["y"] = y
         self["width"] = width
         self["height"] = height
 
 
-ClipOptions = Union[ElementOptions, ViewportOptions]
+ClipOptions = Union[ElementOptions, BoxOptions]
 
 
 class BrowsingContext(BidiModule):
@@ -97,6 +97,19 @@ class BrowsingContext(BidiModule):
         assert isinstance(result["contexts"], list)
 
         return result["contexts"]
+
+    @command
+    def handle_user_prompt(self,
+                           context: str,
+                           accept: Optional[bool] = None,
+                           user_text: Optional[str] = None) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {"context": context}
+
+        if accept is not None:
+            params["accept"] = accept
+        if user_text is not None:
+            params["userText"] = user_text
+        return params
 
     @command
     def navigate(self,

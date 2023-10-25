@@ -70,9 +70,10 @@ class Protocol:
             msg = "Post-connection steps failed"
             self.after_connect()
         except Exception:
-            if msg is not None:
-                self.logger.warning(msg)
-            self.logger.warning(traceback.format_exc())
+            message = "Protocol.setup caught an exception:\n"
+            message += f"{msg}\n" if msg is not None else ""
+            message += traceback.format_exc()
+            self.logger.warning(message)
             raise
 
     @abstractmethod
@@ -628,6 +629,11 @@ class FedCMProtocolPart(ProtocolPart):
         pass
 
     @abstractmethod
+    def confirm_idp_login(self):
+        """Confirm IDP login"""
+        pass
+
+    @abstractmethod
     def select_fedcm_account(self, account_index):
         """Select a FedCM account
 
@@ -754,3 +760,26 @@ class WdspecProtocol(ConnectionlessProtocol):
         conn.request("HEAD", "/invalid")
         res = conn.getresponse()
         return res.status == 404
+
+
+class VirtualSensorProtocolPart(ProtocolPart):
+    """Protocol part for Sensors"""
+    __metaclass__ = ABCMeta
+
+    name = "virtual_sensor"
+
+    @abstractmethod
+    def create_virtual_sensor(self, sensor_type, sensor_params):
+        pass
+
+    @abstractmethod
+    def update_virtual_sensor(self, sensor_type, reading):
+        pass
+
+    @abstractmethod
+    def remove_virtual_sensor(self, sensor_type):
+        pass
+
+    @abstractmethod
+    def get_virtual_sensor_information(self, sensor_type):
+        pass

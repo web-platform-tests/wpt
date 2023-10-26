@@ -3,6 +3,10 @@ import webdriver.bidi.error as error
 
 pytestmark = pytest.mark.asyncio
 
+
+MAX_INT = 9007199254740991
+
+
 async def navigate_to_page(bidi_session, inline, top_context):
     url = inline("""<div>foo</div>""")
     await bidi_session.browsing_context.navigate(
@@ -60,14 +64,15 @@ async def test_params_max_node_count_invalid_type(bidi_session, inline, top_cont
         )
 
 
-async def test_params_max_node_count_invalid_value(bidi_session, inline, top_context):
+@pytest.mark.parametrize("value", [0, MAX_INT + 1])
+async def test_params_max_node_count_invalid_value(bidi_session, inline, top_context, value):
     await navigate_to_page(bidi_session, inline, top_context)
 
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.locate_nodes(
             context=top_context["context"],
             locator={ "type": "invalid", "value": "div" },
-            max_node_count=0
+            max_node_count=value
         )
 
 

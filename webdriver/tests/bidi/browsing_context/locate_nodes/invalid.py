@@ -3,13 +3,16 @@ import webdriver.bidi.error as error
 
 pytestmark = pytest.mark.asyncio
 
-
-@pytest.mark.parametrize("value", [None, False, 42, {}, []])
-async def test_params_context_invalid_type(bidi_session, inline, top_context, value):
-    url = inline("""<div>foo<span><strong>bar</strong></span><span>BAR</span>baz</div>""")
+async def navigate_to_page(bidi_session, inline, top_context):
+    url = inline("""<div>foo</div>""")
     await bidi_session.browsing_context.navigate(
         context=top_context["context"], url=url, wait="complete"
     )
+
+
+@pytest.mark.parametrize("value", [None, False, 42, {}, []])
+async def test_params_context_invalid_type(bidi_session, inline, top_context, value):
+    await navigate_to_page(bidi_session, inline, top_context)
 
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.locate_nodes(
@@ -18,10 +21,7 @@ async def test_params_context_invalid_type(bidi_session, inline, top_context, va
 
 
 async def test_params_context_invalid_value(bidi_session, inline, top_context):
-    url = inline("""<div>foo<span><strong>bar</strong></span><span>BAR</span>baz</div>""")
-    await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=url, wait="complete"
-    )
+    await navigate_to_page(bidi_session, inline, top_context)
 
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.locate_nodes(
@@ -31,10 +31,7 @@ async def test_params_context_invalid_value(bidi_session, inline, top_context):
 
 @pytest.mark.parametrize("value", [None, False, 42, {}, []])
 async def test_params_locator_invalid_type(bidi_session, inline, top_context, value):
-    url = inline("""<div>foo<span><strong>bar</strong></span><span>BAR</span>baz</div>""")
-    await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=url, wait="complete"
-    )
+    await navigate_to_page(bidi_session, inline, top_context)
 
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.locate_nodes(
@@ -43,10 +40,7 @@ async def test_params_locator_invalid_type(bidi_session, inline, top_context, va
 
 
 async def test_params_locator_invalid_value(bidi_session, inline, top_context):
-    url = inline("""<div>foo<span><strong>bar</strong></span><span>BAR</span>baz</div>""")
-    await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=url, wait="complete"
-    )
+    await navigate_to_page(bidi_session, inline, top_context)
 
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.locate_nodes(
@@ -56,10 +50,7 @@ async def test_params_locator_invalid_value(bidi_session, inline, top_context):
 
 @pytest.mark.parametrize("value", [False, "string", 1.5, {}, []])
 async def test_params_max_node_count_invalid_type(bidi_session, inline, top_context, value):
-    url = inline("""<div>foo<span><strong>bar</strong></span><span>BAR</span>baz</div>""")
-    await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=url, wait="complete"
-    )
+    await navigate_to_page(bidi_session, inline, top_context)
 
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.locate_nodes(
@@ -70,10 +61,7 @@ async def test_params_max_node_count_invalid_type(bidi_session, inline, top_cont
 
 
 async def test_params_max_node_count_invalid_value(bidi_session, inline, top_context):
-    url = inline("""<div>foo<span><strong>bar</strong></span><span>BAR</span>baz</div>""")
-    await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=url, wait="complete"
-    )
+    await navigate_to_page(bidi_session, inline, top_context)
 
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.locate_nodes(
@@ -85,10 +73,7 @@ async def test_params_max_node_count_invalid_value(bidi_session, inline, top_con
 
 @pytest.mark.parametrize("value", [False, "string", 42, {}])
 async def test_params_start_nodes_invalid_type(bidi_session, inline, top_context, value):
-    url = inline("""<div>foo<span><strong>bar</strong></span><span>BAR</span>baz</div>""")
-    await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=url, wait="complete"
-    )
+    await navigate_to_page(bidi_session, inline, top_context)
 
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.locate_nodes(
@@ -99,10 +84,7 @@ async def test_params_start_nodes_invalid_type(bidi_session, inline, top_context
 
 
 async def test_params_start_nodes_empty_list(bidi_session, inline, top_context):
-    url = inline("""<div>foo<span><strong>bar</strong></span><span>BAR</span>baz</div>""")
-    await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=url, wait="complete"
-    )
+    await navigate_to_page(bidi_session, inline, top_context)
 
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.locate_nodes(
@@ -114,10 +96,7 @@ async def test_params_start_nodes_empty_list(bidi_session, inline, top_context):
 
 @pytest.mark.parametrize("value", [False, 42, {}, []])
 async def test_params_ownership_invalid_type(bidi_session, inline, top_context, value):
-    url = inline("""<div>foo<span><strong>bar</strong></span><span>BAR</span>baz</div>""")
-    await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=url, wait="complete"
-    )
+    await navigate_to_page(bidi_session, inline, top_context)
 
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.locate_nodes(
@@ -128,10 +107,7 @@ async def test_params_ownership_invalid_type(bidi_session, inline, top_context, 
 
 
 async def test_params_ownership_invalid_value(bidi_session, inline, top_context):
-    url = inline("""<div>foo<span><strong>bar</strong></span><span>BAR</span>baz</div>""")
-    await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=url, wait="complete"
-    )
+    await navigate_to_page(bidi_session, inline, top_context)
 
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.locate_nodes(
@@ -143,10 +119,7 @@ async def test_params_ownership_invalid_value(bidi_session, inline, top_context)
 
 @pytest.mark.parametrize("value", [False, 42, {}, []])
 async def test_params_sandbox_invalid_type(bidi_session, inline, top_context, value):
-    url = inline("""<div>foo<span><strong>bar</strong></span><span>BAR</span>baz</div>""")
-    await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=url, wait="complete"
-    )
+    await navigate_to_page(bidi_session, inline, top_context)
 
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.locate_nodes(
@@ -158,10 +131,7 @@ async def test_params_sandbox_invalid_type(bidi_session, inline, top_context, va
 
 @pytest.mark.parametrize("value", [False, 42, "foo", []])
 async def test_params_serialization_options_invalid_type(bidi_session, inline, top_context, value):
-    url = inline("""<div>foo<span><strong>bar</strong></span><span>BAR</span>baz</div>""")
-    await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=url, wait="complete"
-    )
+    await navigate_to_page(bidi_session, inline, top_context)
 
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.locate_nodes(

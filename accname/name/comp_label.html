@@ -126,19 +126,31 @@
 <meter aria-label="label" data-expectedlabel="label" data-testname="label valid on meter element" class="ex">x</meter>
 <nav aria-label="label" data-expectedlabel="label" data-testname="label valid on nav element" class="ex">x</nav>
 <ol aria-label="label" data-expectedlabel="label" data-testname="label valid on list (ordered) element" class="ex">x</ol>
-<tbody aria-label="label" data-expectedlabel="label" data-testname="label valid on tbody element" class="ex">x</tbody>
-<td aria-label="label" data-expectedlabel="label" data-testname="label valid on td element" class="ex">x</td>
-<tfoot aria-label="label" data-expectedlabel="label" data-testname="label valid on tfoot element" class="ex">x</tfoot>
-<th scope="col" aria-label="label" data-expectedlabel="label" data-testname="label valid on th element with the scope of col" class="ex">x</th>
-<th scope="row" aria-label="label" data-expectedlabel="label" data-testname="label valid on th (scope row) element" class="ex">x</th>
-<thead aria-label="label" data-expectedlabel="label" data-testname="label valid on thead element" class="ex">x</thead>
-<tr aria-label="label" data-expectedlabel="label" data-testname="label valid on tr element" class="ex">x</tr>
 <section aria-label="label" data-expectedlabel="label" data-testname="label valid on section element" class="ex">x</section>
 <select aria-label="label" data-expectedlabel="label" data-testname="label valid on select element" class="ex">x</select>
 <select>
   <option aria-label="label" value="foo" data-expectedlabel="label" data-testname="label valid on option element" class="ex">x</option>
 </select>
-<table aria-label="label" data-expectedlabel="label" data-testname="label valid on table element" class="ex">x</table>
+<table aria-label="label" data-expectedlabel="label" data-testname="label valid on table element" class="ex">
+  <thead aria-label="label" data-expectedlabel="label" data-testname="label valid on thead element" class="ex">
+    <tr>
+      <th scope="col" aria-label="label" data-expectedlabel="label" data-testname="label valid on th element with the scope of col" class="ex">x</th>
+      <th scope="row" aria-label="label" data-expectedlabel="label" data-testname="label valid on th (scope row) element" class="ex">x</th>
+    </tr>
+  </thead>
+  <tbody aria-label="label" data-expectedlabel="label" data-testname="label valid on tbody element" class="ex">
+    <tr aria-label="label" data-expectedlabel="label" data-testname="label valid on tr element" class="ex">
+      <td aria-label="label" data-expectedlabel="label" data-testname="label valid on td element" class="ex">x</td>
+      <td>x</td>
+    </tr>
+  </tbody>
+    <tfoot aria-label="label" data-expectedlabel="label" data-testname="label valid on tfoot element" class="ex">
+      <tr>
+        <td>x</td>
+        <td>x</td>
+      </tr>
+    </tfoot>
+</table>
 <textarea aria-label="label" data-expectedlabel="label" data-testname="label valid on textarea element" class="ex">x</textarea>
 <ul aria-label="label" data-expectedlabel="label" data-testname="label valid on list (unordered) element" class="ex">x</ul>
 

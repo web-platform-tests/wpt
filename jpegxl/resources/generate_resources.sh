@@ -65,6 +65,10 @@ cjxl 3x3.jpg 3x3_jpeg_recompression.jxl
 # checking that it was actually byte exact
 djxl 3x3_jpeg_recompression.jxl 3x3_recoverd.jpg
 diff 3x3.jpg 3x3_recoverd.jpg
+if [ $? -ne 0 ]; then
+  echo "The recovery of the recompressed jpg failed: 3x3.png and 3x3_recovered.jpg differ"
+  exit 1
+fi
 # generate reference png
 djxl 3x3_jpeg_recompression.jxl 3x3_jpeg_recompression.png
 

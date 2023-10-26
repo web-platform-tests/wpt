@@ -11,7 +11,7 @@
 
         // This uses web-platform.test on a "wrong" port, to avoid issues
         // with TLS certificate domain mismatches.
-        const response2 = await fetch('https://web-platform.test:99/infrastructure/resources/ok.txt');
+        const response2 = await fetch('https://{{host}}:99/infrastructure/resources/ok.txt');
         const text2 = await response2.text();
         assert_equals(text2, 'OK');
     }, 'test that PAC metadata is respected');

@@ -63,8 +63,8 @@ convert 3x3.png -quality 70 3x3.jpg
 # lossless recompression
 cjxl 3x3.jpg 3x3_jpeg_recompression.jxl
 # checking that it was actually byte exact
-djxl 3x3_jpeg_recompression.jxl 3x3_recoverd.jpg
-diff 3x3.jpg 3x3_recoverd.jpg
+djxl 3x3_jpeg_recompression.jxl 3x3_recovered.jpg
+diff 3x3.jpg 3x3_recovered.jpg
 if [ $? -ne 0 ]; then
   echo "The recovery of the recompressed jpg failed: 3x3.png and 3x3_recovered.jpg differ"
   exit 1
@@ -73,4 +73,4 @@ fi
 djxl 3x3_jpeg_recompression.jxl 3x3_jpeg_recompression.png
 
 # Cleanup temporary file
-rm -f temp.jxl 3x3.png 3x3a.png 3x3.jpg 3x3_recoverd.jpg
+rm -f temp.jxl 3x3.png 3x3a.png 3x3.jpg 3x3_recovered.jpg

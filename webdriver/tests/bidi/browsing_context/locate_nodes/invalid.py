@@ -34,7 +34,7 @@ async def test_params_context_invalid_value(bidi_session, inline, top_context):
 
 
 @pytest.mark.parametrize("value", [None, False, 42, {}, []])
-async def test_params_locator_invalid_type(bidi_session, inline, top_context, value):
+async def test_params_locator_type_invalid_type(bidi_session, inline, top_context, value):
     await navigate_to_page(bidi_session, inline, top_context)
 
     with pytest.raises(error.InvalidArgumentException):
@@ -43,12 +43,28 @@ async def test_params_locator_invalid_type(bidi_session, inline, top_context, va
         )
 
 
-async def test_params_locator_invalid_value(bidi_session, inline, top_context):
+@pytest.mark.parametrize("type", ["", "invalid"])
+async def test_params_locator_type_invalid_value(bidi_session, inline, top_context, type):
     await navigate_to_page(bidi_session, inline, top_context)
 
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.locate_nodes(
-            context=top_context["context"], locator={ "type": "invalid", "value": "div" }
+            context=top_context["context"], locator={ "type": type, "value": "div" }
+        )
+
+
+@pytest.mark.parametrize("type,value", [
+    ("css", "a*b"),
+    ("xpath", ""),
+    ("xpath", "invalid-xpath")
+    ("innerText", "")
+])
+async def test_params_locator_value_invalid_value(bidi_session, inline, top_context, type, value):
+    await navigate_to_page(bidi_session, inline, top_context)
+
+    with pytest.raises(error.InvalidSelectorException):
+        await bidi_session.browsing_context.locate_nodes(
+            context=top_context["context"], locator={ "type": type, "value": value }
         )
 
 

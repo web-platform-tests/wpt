@@ -54,7 +54,7 @@ async def test_params_locator_invalid_value(bidi_session, inline, top_context):
         )
 
 
-@pytest.mark.parametrize("value", [False, "string", {}, []])
+@pytest.mark.parametrize("value", [False, "string", 1.5, {}, []])
 async def test_params_max_node_count_invalid_type(bidi_session, inline, top_context, value):
     url = inline("""<div>foo<span><strong>bar</strong></span><span>BAR</span>baz</div>""")
     await bidi_session.browsing_context.navigate(

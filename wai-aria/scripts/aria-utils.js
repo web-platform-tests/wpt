@@ -147,7 +147,7 @@ const AriaUtils = {
 
 
   /*
-  assert_not_equals() wrapper function to verify an element's name computation 
+  verifyAriaLabelIsIgnored() wrapper function to verify an element's name computation 
   ignores aria-label (computedLabel != aria-label value).
 
   Ex: <button aria-label="" data-testname="button with empty aria-label does not use aria-label as name">
@@ -155,16 +155,16 @@ const AriaUtils = {
         buttonText
         </button>
 
-      AriaUtils.assertAriaLabelIsIgnored(".ex")
+      AriaUtils.verifyAriaLabelIsIgnored(".ex")
 
   See Web Platform Test's test harness API documentation for available assert functions:
   https://web-platform-tests.org/writing-tests/testharness-api.html#assert-functions
 
   */
-  assertAriaLabelIsIgnored: function(selector) {
+  verifyAriaLabelIsIgnored: function(selector) {
     const els = document.querySelectorAll(selector);
     if (!els.length) {
-      throw `Selector passed in assertAriaLabelIsIgnored("${selector}") should match at least one element.`;
+      throw `Selector passed in verifyAriaLabelIsIgnored("${selector}") should match at least one element.`;
     }
     for (const el of els) {
       let testName = el.getAttribute("data-testname"); 

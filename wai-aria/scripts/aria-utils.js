@@ -147,7 +147,7 @@ const AriaUtils = {
 
 
   /*
-  verifyAriaLabelIsIgnored() wrapper function to verify an element's name computation 
+  assert_not_equals() wrapper function to verify an element's name computation 
   ignores aria-label (computedLabel != aria-label value).
 
   Ex: <button aria-label="" data-testname="button with empty aria-label does not use aria-label as name">

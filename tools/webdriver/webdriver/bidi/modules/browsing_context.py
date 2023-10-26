@@ -2,7 +2,7 @@ import base64
 from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Union
 
 from ._module import BidiModule, command
-from script import OwnershipModel, SerializationOptions
+from .script import OwnershipModel, SerializationOptions
 
 
 class ElementOptions(Dict[str, Any]):

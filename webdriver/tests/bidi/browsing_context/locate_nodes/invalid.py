@@ -92,29 +92,6 @@ async def test_params_max_node_count_invalid_value(bidi_session, inline, top_con
         )
 
 
-@pytest.mark.parametrize("value", [False, "string", 42, {}])
-async def test_params_start_nodes_invalid_type(bidi_session, inline, top_context, value):
-    await navigate_to_page(bidi_session, inline, top_context)
-
-    with pytest.raises(error.InvalidArgumentException):
-        await bidi_session.browsing_context.locate_nodes(
-            context=top_context["context"],
-            locator={ "type": "css", "value": "div" },
-            start_nodes=value
-        )
-
-
-async def test_params_start_nodes_empty_list(bidi_session, inline, top_context):
-    await navigate_to_page(bidi_session, inline, top_context)
-
-    with pytest.raises(error.InvalidArgumentException):
-        await bidi_session.browsing_context.locate_nodes(
-            context=top_context["context"],
-            locator={ "type": "invalid", "value": "div" },
-            start_nodes=[]
-        )
-
-
 @pytest.mark.parametrize("value", [False, 42, {}, []])
 async def test_params_ownership_invalid_type(bidi_session, inline, top_context, value):
     await navigate_to_page(bidi_session, inline, top_context)
@@ -159,4 +136,27 @@ async def test_params_serialization_options_invalid_type(bidi_session, inline, t
             context=top_context["context"],
             locator={ "type": "css", "value": "div" },
             serialization_options=value
+        )
+
+
+@pytest.mark.parametrize("value", [False, "string", 42, {}])
+async def test_params_start_nodes_invalid_type(bidi_session, inline, top_context, value):
+    await navigate_to_page(bidi_session, inline, top_context)
+
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.browsing_context.locate_nodes(
+            context=top_context["context"],
+            locator={ "type": "css", "value": "div" },
+            start_nodes=value
+        )
+
+
+async def test_params_start_nodes_empty_list(bidi_session, inline, top_context):
+    await navigate_to_page(bidi_session, inline, top_context)
+
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.browsing_context.locate_nodes(
+            context=top_context["context"],
+            locator={ "type": "invalid", "value": "div" },
+            start_nodes=[]
         )

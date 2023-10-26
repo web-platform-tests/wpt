@@ -98,7 +98,7 @@ async def test_params_start_nodes_invalid_type(bidi_session, inline, top_context
         )
 
 
-async def test_params_start_nodes_invalid_value(bidi_session, inline, top_context):
+async def test_params_start_nodes_empty_list(bidi_session, inline, top_context):
     url = inline("""<div>foo<span><strong>bar</strong></span><span>BAR</span>baz</div>""")
     await bidi_session.browsing_context.navigate(
         context=top_context["context"], url=url, wait="complete"

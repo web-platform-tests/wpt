@@ -9,7 +9,7 @@
         const text = await response.text();
         assert_equals(text, 'OK');
 
-        // This uses web-platform.test on a "wrong" port, to avoid issues
+        // This uses the normal host on a "wrong" port, to avoid issues
         // with TLS certificate domain mismatches.
         const response2 = await fetch('https://{{host}}:99/infrastructure/resources/ok.txt');
         const text2 = await response2.text();

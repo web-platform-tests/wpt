@@ -13,7 +13,7 @@ async def test_params_context_invalid_type(bidi_session, inline, top_context, va
 
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.locate_nodes(
-            context=value, locator={ "type": "css", "value": "div" }
+            context=value, locator={"type": "css", "value": "div"}
         )
 
 

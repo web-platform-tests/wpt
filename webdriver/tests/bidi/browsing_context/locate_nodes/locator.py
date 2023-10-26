@@ -1,6 +1,9 @@
 import pytest
 
 
+from ... import any_string, recursive_compare
+
+
 @pytest.mark.parametrize("type,value", [
     ("css", "div"),
     ("xpath", "//div"),
@@ -18,26 +21,183 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
         locator={ "type": type, "value": value }
     )
 
+    expected = [
+        {
+            "type": "node",
+            "sharedId": any_string,
+            "value": {
+                "attributes": {"data-class":"one"},
+                "childNodeCount": 1,
+                "children": [],
+                "localName": "div",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "nodeType": 1,
+            }
+        },
+        {
+            "type": "node",
+            "sharedId": any_string,
+            "value": {
+                "attributes": {"data-class":"two"},
+                "childNodeCount": 1,
+                "children": [],
+                "localName": "div",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "nodeType": 1,
+            }
+        }
+    ]
+
     assert result["context"] == top_context["context"]
-    assert result["nodes"].length == 2
-    result_nodes = result["nodes"]
-    for node_result in result_nodes:
-        assert node_result["type"] == "node"
-        assert node_result["sharedId"] is not None
-        assert node_result["value"] is not None
-        assert node_result["value"]["nodeType"] == 1
-        assert node_result["value"]["localName"] == "div"
+    recursive_compare(expected, result["nodes"])
 
 
 @pytest.mark.parametrize("ignore_case,match_type,max_depth,value,expected", [
-    (True, "full", None, "bar", ["strong", "span"]),
-    (False, "full", None, "BAR", ["span"]),
-    (True, "partial", None, "ba", ["strong", "span"]),
-    (False, "partial", None, "ba", ["span"]),
-    (True, "full", 0, "foobarbarbaz", ["div"]),
-    (False, "full", 0, "foobarBARbaz", ["div"]),
-    (True, "partial", 0, "bar", ["div"]),
-    (False, "partial", 0, "BAR", ["div"])
+    (True, "full", None, "bar", [
+        {
+            "type": "node",
+            "sharedId": any_string,
+            "value": {
+                "attributes": {},
+                "childNodeCount": 1,
+                "children": [],
+                "localName": "strong",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "nodeType": 1,
+            }
+        },
+        {
+            "type": "node",
+            "sharedId": any_string,
+            "value": {
+                "attributes": {},
+                "childNodeCount": 1,
+                "children": [],
+                "localName": "span",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "nodeType": 1,
+            }
+        }]
+    ),
+    (False, "full", None, "BAR", [
+        {
+            "type": "node",
+            "sharedId": any_string,
+            "value": {
+                "attributes": {},
+                "childNodeCount": 1,
+                "children": [],
+                "localName": "span",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "nodeType": 1,
+            }
+        }]
+    ),
+    (True, "partial", None, "ba", [
+        {
+            "type": "node",
+            "sharedId": any_string,
+            "value": {
+                "attributes": {},
+                "childNodeCount": 1,
+                "children": [],
+                "localName": "strong",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "nodeType": 1,
+            }
+        },
+        {
+            "type": "node",
+            "sharedId": any_string,
+            "value": {
+                "attributes": {},
+                "childNodeCount": 1,
+                "children": [],
+                "localName": "span",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "nodeType": 1,
+            }
+        }]
+    ),
+    (False, "partial", None, "ba", [
+        {
+            "type": "node",
+            "sharedId": any_string,
+            "value": {
+                "attributes": {},
+                "childNodeCount": 1,
+                "children": [],
+                "localName": "span",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "nodeType": 1,
+            }
+        }]
+    ),
+    (True, "full", 0, "foobarbarbaz", [
+        {
+            "type": "node",
+            "sharedId": any_string,
+            "value": {
+                "attributes": {},
+                "childNodeCount": 4,
+                "children": [],
+                "localName": "span",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "nodeType": 1,
+            }
+        }]
+    ),
+    (False, "full", 0, "foobarBARbaz", [
+        {
+            "type": "node",
+            "sharedId": any_string,
+            "value": {
+                "attributes": {},
+                "childNodeCount": 4,
+                "children": [],
+                "localName": "span",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "nodeType": 1,
+            }
+        }]
+    ),
+    (True, "partial", 0, "bar", [
+        {
+            "type": "node",
+            "sharedId": any_string,
+            "value": {
+                "attributes": {},
+                "childNodeCount": 4,
+                "children": [],
+                "localName": "span",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "nodeType": 1,
+            }
+        }]
+    ),
+    (False, "partial", 0, "BAR", [
+        {
+            "type": "node",
+            "sharedId": any_string,
+            "value": {
+                "attributes": {},
+                "childNodeCount": 4,
+                "children": [],
+                "localName": "span",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "nodeType": 1,
+            }
+        }]
+    )
+], ids=[
+    "ignore_case_true_full_match_no_max_depth",
+    "ignore_case_false_full_match_no_max_depth",
+    "ignore_case_true_partial_match_no_max_depth",
+    "ignore_case_false_partial_match_no_max_depth",
+    "ignore_case_true_full_match_max_depth_zero",
+    "ignore_case_false_full_match_no_max_depth_zero",
+    "ignore_case_true_partial_match_no_max_depth_zero",
+    "ignore_case_false_partial_match_no_max_depth_zero",
 ])
 @pytest.mark.asyncio
 async def test_find_by_inner_text(bidi_session, inline, top_context, ignore_case, match_type, max_depth, value, expected):
@@ -58,11 +218,4 @@ async def test_find_by_inner_text(bidi_session, inline, top_context, ignore_case
     )
 
     assert result["context"] == top_context["context"]
-    assert result["nodes"].length == expected.length
-    for index in range(0, result.length):
-        node_result = result["nodes"][index]
-        assert node_result["type"] == "node"
-        assert node_result["sharedId"] is not None
-        assert node_result["value"] is not None
-        assert node_result["value"]["nodeType"] == 1
-        assert node_result["value"]["localName"] == expected[index]
+    recursive_compare(expected, result["nodes"])

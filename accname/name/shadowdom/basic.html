@@ -32,6 +32,6 @@
 document.getElementById('host1').attachShadow({ mode: 'open' }).innerHTML = 'foo';
 document.getElementById('host2').attachShadow({ mode: 'open' }).innerHTML = '<div aria-label="bar"></div>';
 
-AriaUtils.verifyLabelsBySelector('.labelled');
+AriaUtils.verifyLabelsBySelector(2, '.labelled');
 
 </script>

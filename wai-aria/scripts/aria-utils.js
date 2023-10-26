@@ -124,13 +124,13 @@ const AriaUtils = {
         data-expectedlabel="foo"
         class="ex">
 
-      AriaUtils.verifyLabelsBySelector(".ex")
+      AriaUtils.verifyLabelsBySelector(1, ".ex")
 
   */
-  verifyLabelsBySelector: function(selector) {
+  verifyLabelsBySelector: function(expectedCount, selector) {
     const els = document.querySelectorAll(selector);
-    if (!els.length) {
-      throw `Selector passed in verifyLabelsBySelector("${selector}") should match at least one element.`;
+    if (els.length !== expectedCount) {
+      throw `verifyLabelsBySelector expected ${expectedCount} elements but received ${els.length}`;
     }
     for (const el of els) {
       let label = el.getAttribute("data-expectedlabel");

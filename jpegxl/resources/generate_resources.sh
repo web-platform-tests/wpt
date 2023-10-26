@@ -1,5 +1,5 @@
 #!/bin/bash
-# This generates the png and jxl image needed.
+# This generates the png and jxl images needed.
 
 # Function to check if a command exists
 command_exists() {
@@ -59,13 +59,13 @@ for color_space in "${color_spaces[@]}"; do
   convert_and_compress 3x3a.png "3x3a" "$color_space"
 done
 
-convert 3x3.png -quality 100 3x3.jpg
+convert 3x3.png -quality 70 3x3.jpg
 # lossless recompression
 cjxl 3x3.jpg 3x3_jpeg_recompression.jxl
 # checking that it was actually byte exact
 djxl 3x3_jpeg_recompression.jxl 3x3_recoverd.jpg
 diff 3x3.jpg 3x3_recoverd.jpg
-# generate golden png
+# generate reference png
 djxl 3x3_jpeg_recompression.jxl 3x3_jpeg_recompression.png
 
 # Cleanup temporary file

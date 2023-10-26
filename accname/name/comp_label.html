@@ -231,7 +231,8 @@ Note: PR for computedLabel whitespace trimming in aria-utils.js: https://github.
 alert message" data-expectedlabel="alert message" data-testname="div with role alert and carriage return in aria-label is valid" class="ex">x</div>
 <a href="#" aria-label="  label" data-expectedlabel="label" data-testname="link's name with tab in aria-label is valid" class="ex">x</a>
 <button aria-label="label" data-expectedlabel="label" data-testname="button with leading form feed control character in aria-label is valid" class="ex">my button</button>
-<nav aria-label="label " data-expectedlabel="label " data-testname="nav with trailing nbsp aria-label is valid (nbsp is preserved in name)" class="ex">x</nav>
+<nav aria-label="label&nbsp;" data-expectedlabel="label " data-testname="nav with trailing nbsp char aria-label is valid (nbsp is preserved in name)" class="ex">x</nav>
+<button aria-label="&nbsp;label" data-expectedlabel="&nbsp;label" data-testname="button with leading nbsp char in aria-label is valid (and uses aria-label)" class="ex">my button</button>
 
 <button aria-label="" data-testname="button with empty aria-label does not use aria-label as name" class="exa">my button</button>
 <textarea aria-label="  " data-testname="textarea with tab character as aria-label does not use aria-label as name" class="exa">x</textarea>

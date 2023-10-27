@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>CSS Highlight API Test: </title>
+<link rel="help" href="https://drafts.csswg.org/css-highlight-api-1/">
+<link rel="match" href="custom-highlight-painting-004-3-ref.html">
+<meta name="assert" value="Highlights should not paint partial glyphs outside of the highlighted region.">
+<style>
+  ::highlight(foo) {
+    color:red;
+    background-color:yellow;
+  }
+  ::highlight(bar) {
+    color:orange;
+  }
+  div {
+      font-size: 7em;
+      font-style: italic;
+  }
+</style>
+<body><div id="test">dddd deed</div>
+<script>
+  let textNode = document.body.firstChild.firstChild;
+
+  let r1 = new Range();
+  r1.setStart(textNode, 0);
+  r1.setEnd(textNode, 6);
+  let h1 = new Highlight(r1);
+  CSS.highlights.set("foo", h1);
+
+  let r2 = new Range();
+  r2.setStart(textNode, 3);
+  r2.setEnd(textNode, 9);
+  let h2 = new Highlight(r2);
+  CSS.highlights.set("bar", h2);
+</script>

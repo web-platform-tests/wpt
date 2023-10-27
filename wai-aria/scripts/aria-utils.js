@@ -147,7 +147,7 @@ const AriaUtils = {
 
 
   /*
-  assert_not_equals() wrapper function to verify an element's name computation 
+  assert_not_equals() wrapper function to verify an element's name computation
   ignores aria-label (computedLabel != aria-label value).
 
   Ex: <button aria-label="" data-testname="button with empty aria-label does not use aria-label as name">
@@ -167,7 +167,7 @@ const AriaUtils = {
       throw `Selector passed in verifyAriaLabelIsIgnored("${selector}") should match at least one element.`;
     }
     for (const el of els) {
-      let testName = el.getAttribute("data-testname"); 
+      let testName = el.getAttribute("data-testname");
       promise_test(async t => {
         const elAriaLabel = el.getAttribute("aria-label");
         let computedLabel = await test_driver.get_computed_label(el);

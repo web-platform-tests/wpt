@@ -191,7 +191,7 @@ x
 <span id="span6">label</span>
 
 <!-- Step 2C: Embedded Control labelling supercedes 2D: AriaLabel, see wpt/accname/name/comp_embedded_control.html -->
- 
+
 <!-- Step 2E: Host Language Label is superceded by 2D: AriaLabel, also see wpt/accname/name/comp_host_language_label.html -->
 <img alt="alt" aria-label="foo" data-expectedlabel="foo" data-testname="img's aria-label supercedes alt attribute" class="ex" />
 
@@ -216,11 +216,11 @@ x
 <button aria-label="label" title="foo" data-expectedlabel="label" data-testname="button with title is superceded by aria-label" class="ex">x</button>
 
 <h2>Empty/whitespace aria-label tests</h2>
-<!--  
+<!--
 - AccName computation links to the following definition of "Whitespace": https://infra.spec.whatwg.org/#ascii-whitespace
-- Generally, if the current node has an aria-label attribute whose value is not the empty string (including when trimmed of whitespace), return the value of aria-label. 
- 
-Note: PR for computedLabel whitespace trimming in aria-utils.js: https://github.com/web-platform-tests/wpt/pull/42407/files#diff-6870d82f11ff11cf7c7b544756cecfdac2046acbfe2fbb0640e6d415fbf99916 
+- Generally, if the current node has an aria-label attribute whose value is not the empty string (including when trimmed of whitespace), return the value of aria-label.
+
+Note: PR for computedLabel whitespace trimming in aria-utils.js: https://github.com/web-platform-tests/wpt/pull/42407/files#diff-6870d82f11ff11cf7c7b544756cecfdac2046acbfe2fbb0640e6d415fbf99916
 
 -->
 

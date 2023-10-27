@@ -43,9 +43,9 @@ async def test_remote_value_promise(bidi_session, top_context, await_promise):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("await_promise", [True, False])
-async def test_window_top_level_browsing_context(bidi_session, top_context,
-                                                 await_promise):
-    function_declaration = f"()=>window"
+async def test_window_context_top_level(bidi_session, top_context,
+                                        await_promise):
+    function_declaration = f"() => window"
     if await_promise:
         function_declaration = "async" + function_declaration
 
@@ -67,6 +67,39 @@ async def test_window_top_level_browsing_context(bidi_session, top_context,
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("await_promise", [True, False])
+async def test_window_context_same_id_after_cross_origin_navigation(
+        bidi_session, top_context, await_promise, test_page_cross_origin):
+    function_declaration = f"() => window"
+    if await_promise:
+        function_declaration = "async" + function_declaration
+
+    result = await bidi_session.script.call_function(
+        function_declaration=function_declaration,
+        await_promise=await_promise,
+        target=ContextTarget(top_context["context"]),
+        serialization_options=SerializationOptions(max_object_depth=1),
+    )
+
+    original_context = result['value']['context']
+
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"],
+        url=test_page_cross_origin,
+        wait="complete")
+    
+    result = await bidi_session.script.call_function(
+        function_declaration=function_declaration,
+        await_promise=await_promise,
+        target=ContextTarget(top_context["context"]),
+        serialization_options=SerializationOptions(max_object_depth=1),
+    )
+
+    cross_origin_context = result['value']['context']
+
+    assert original_context == cross_origin_context
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("await_promise", [True, False])
 async def test_window_iframe_window(bidi_session, top_context,
                                     test_page_same_origin_frame,
                                     await_promise):
@@ -80,7 +113,7 @@ async def test_window_iframe_window(bidi_session, top_context,
     all_contexts = await bidi_session.browsing_context.get_tree()
     iframe_context = all_contexts[0]["children"][0]
 
-    function_declaration = f"()=>window"
+    function_declaration = f"() => window"
     if await_promise:
         function_declaration = "async" + function_declaration
 
@@ -102,7 +135,7 @@ async def test_window_iframe_window(bidi_session, top_context,
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("await_promise", [True, False])
-async def test_window_remove_value_iframe_content_window(
+async def test_window_context_iframe_content_window(
         bidi_session, top_context, test_page_same_origin_frame, await_promise):
 
     await bidi_session.browsing_context.navigate(
@@ -114,7 +147,7 @@ async def test_window_remove_value_iframe_content_window(
     all_contexts = await bidi_session.browsing_context.get_tree()
     iframe_context = all_contexts[0]["children"][0]
 
-    function_declaration = f"()=>document.querySelector('iframe')?.contentWindow"
+    function_declaration = f"() => document.querySelector('iframe').contentWindow"
     if await_promise:
         function_declaration = "async" + function_declaration
 

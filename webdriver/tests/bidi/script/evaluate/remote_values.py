@@ -18,7 +18,7 @@ async def test_remote_values(bidi_session, top_context, expression, expected):
 
 
 @pytest.mark.asyncio
-async def test_window_top_level_browsing_context(bidi_session, top_context):
+async def test_window_context_top_level(bidi_session, top_context):
     result = await bidi_session.script.evaluate(
         expression="window",
         target=ContextTarget(top_context["context"]),
@@ -34,6 +34,35 @@ async def test_window_top_level_browsing_context(bidi_session, top_context):
             }
         }, result)
 
+
+@pytest.mark.asyncio
+async def test_window_context_same_id_after_cross_origin_navigation(
+        bidi_session, top_context, test_page_cross_origin):
+
+    result = await bidi_session.script.evaluate(
+        expression="window",
+        target=ContextTarget(top_context["context"]),
+        await_promise=False,
+        serialization_options=SerializationOptions(max_object_depth=1),
+    )
+
+    original_context = result['value']['context']
+
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"],
+        url=test_page_cross_origin,
+        wait="complete")
+
+    result = await bidi_session.script.evaluate(
+        expression="window",
+        target=ContextTarget(top_context["context"]),
+        await_promise=False,
+        serialization_options=SerializationOptions(max_object_depth=1),
+    )
+
+    cross_origin_context = result['value']['context']
+
+    assert original_context == cross_origin_context
 
 @pytest.mark.asyncio
 async def test_window_iframe_window(
@@ -65,7 +94,7 @@ async def test_window_iframe_window(
 
 
 @pytest.mark.asyncio
-async def test_window_remove_value_iframe_content_window(
+async def test_window_context_iframe_content_window(
         bidi_session, top_context, test_page_same_origin_frame):
 
     await bidi_session.browsing_context.navigate(

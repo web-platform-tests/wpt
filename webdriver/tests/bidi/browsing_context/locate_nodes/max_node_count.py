@@ -13,7 +13,6 @@ from ... import any_string, recursive_compare
             "value": {
                 "attributes": {"data-class":"one"},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "div",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -27,7 +26,6 @@ from ... import any_string, recursive_compare
             "value": {
                 "attributes": {"data-class":"one"},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "div",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -41,7 +39,6 @@ from ... import any_string, recursive_compare
             "value": {
                 "attributes": {"data-class":"one"},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "div",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -55,7 +52,6 @@ from ... import any_string, recursive_compare
             "value": {
                 "attributes": {"data-class":"one"},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "div",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -67,7 +63,6 @@ from ... import any_string, recursive_compare
             "value": {
                 "attributes": {"data-class":"two"},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "div",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -81,7 +76,6 @@ from ... import any_string, recursive_compare
             "value": {
                 "attributes": {"data-class":"one"},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "div",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -93,7 +87,6 @@ from ... import any_string, recursive_compare
             "value": {
                 "attributes": {"data-class":"two"},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "div",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -107,7 +100,6 @@ from ... import any_string, recursive_compare
             "value": {
                 "attributes": {"data-class":"one"},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "div",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -119,7 +111,6 @@ from ... import any_string, recursive_compare
             "value": {
                 "attributes": {"data-class":"two"},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "div",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,

@@ -28,7 +28,6 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
             "value": {
                 "attributes": {"data-class":"one"},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "div",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -40,7 +39,6 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
             "value": {
                 "attributes": {"data-class":"two"},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "div",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -72,7 +70,6 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
             "value": {
                 "attributes": {},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "span",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -86,7 +83,6 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
             "value": {
                 "attributes": {},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "span",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -100,7 +96,6 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
             "value": {
                 "attributes": {},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "strong",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -112,7 +107,6 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
             "value": {
                 "attributes": {},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "span",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -126,7 +120,6 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
             "value": {
                 "attributes": {},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "span",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -140,7 +133,6 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
             "value": {
                 "attributes": {},
                 "childNodeCount": 4,
-                "children": [],
                 "localName": "span",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -154,7 +146,6 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
             "value": {
                 "attributes": {},
                 "childNodeCount": 4,
-                "children": [],
                 "localName": "span",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -168,7 +159,6 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
             "value": {
                 "attributes": {},
                 "childNodeCount": 4,
-                "children": [],
                 "localName": "span",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -182,7 +172,6 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
             "value": {
                 "attributes": {},
                 "childNodeCount": 4,
-                "children": [],
                 "localName": "span",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,

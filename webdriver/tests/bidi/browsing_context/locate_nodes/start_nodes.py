@@ -38,7 +38,6 @@ async def test_locate_with_context_nodes(bidi_session, inline, top_context, type
             "value": {
                 "attributes": {"data-class":"one"},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "div",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -50,7 +49,6 @@ async def test_locate_with_context_nodes(bidi_session, inline, top_context, type
             "value": {
                 "attributes": {"data-class":"two"},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "div",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -98,7 +96,6 @@ async def test_locate_with_multiple_context_nodes(bidi_session, inline, top_cont
             "value": {
                 "attributes": {"data-class":"one"},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "div",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,
@@ -110,7 +107,6 @@ async def test_locate_with_multiple_context_nodes(bidi_session, inline, top_cont
             "value": {
                 "attributes": {"data-class":"one"},
                 "childNodeCount": 1,
-                "children": [],
                 "localName": "div",
                 "namespaceURI": "http://www.w3.org/1999/xhtml",
                 "nodeType": 1,

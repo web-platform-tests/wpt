@@ -59,7 +59,7 @@ async def test_locate_nodes_serialization_options(bidi_session, top_context, get
                     }
                 },
             }
-        }    
+        }
     ]
 
     recursive_compare(expected, result["nodes"])

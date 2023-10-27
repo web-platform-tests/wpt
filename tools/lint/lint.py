@@ -31,6 +31,8 @@ from ..manifest.vcs import walk
 
 from ..manifest.sourcefile import SourceFile, js_meta_re, python_meta_re, space_chars, get_any_variants
 
+from ..webfeatures.file import WEB_FEATURES_FILENAME, load as load_web_feature_file
+from ..webfeatures.schema import SpecialFileEnum
 
 # The Ignorelist is a two level dictionary. The top level is indexed by
 # error names (e.g. 'TRAILING WHITESPACE'). Each of those then has a map of
@@ -662,6 +664,25 @@ def check_ahem_system_font(repo_root: Text, path: Text, f: IO[bytes]) -> List[ru
         errors.append(rules.AhemSystemFont.error(path))
     return errors
 
+def check_web_feature_metadata(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]:
+    if not path.endswith(WEB_FEATURES_FILENAME):
+        return []
+    try:
+        web_feature_file = load_web_feature_file(f)
+    except Exception as e:
+        return [rules.InvalidWebFeatureFile.error(path, (str(e)))]
+    errors = []
+    for feature in web_feature_file.features:
+        if isinstance(feature.files, SpecialFileEnum):
+            continue
+        elif isinstance(feature.files, list):
+            base_dir = os.path.join(repo_root, os.path.dirname(path))
+            for file in feature.files:
+                test_file_path = os.path.join(base_dir, file)
+                if not os.path.isfile(test_file_path):
+                    errors.append(rules.MissingTestInWebFeatureFile.error(path, file))
+
+    return errors
 
 def check_path(repo_root: Text, path: Text) -> List[rules.Error]:
     """
@@ -984,7 +1005,7 @@ def lint(repo_root: Text,
 path_lints = [check_file_type, check_path_length, check_worker_collision, check_ahem_copy,
               check_mojom_js, check_tentative_directories, check_gitignore_file]
 file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata,
-              check_ahem_system_font]
+              check_ahem_system_font, check_web_feature_metadata]
 
 
 def all_paths_lints() -> Any:

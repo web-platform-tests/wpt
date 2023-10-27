@@ -46,7 +46,6 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
         }
     ]
 
-    assert result["context"] == top_context["context"]
     recursive_compare(expected, result["nodes"])
 
 
@@ -206,5 +205,4 @@ async def test_find_by_inner_text(bidi_session, inline, top_context, ignore_case
         }
     )
 
-    assert result["context"] == top_context["context"]
     recursive_compare(expected, result["nodes"])

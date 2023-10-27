@@ -17,7 +17,6 @@ async def test_ownership_of_located_nodes(bidi_session, inline, top_context):
         ownership="root"
     )
 
-    assert result["context"] == top_context["context"]
     assert result["nodes"].length == 1
     result_node = result["nodes"][0]
 

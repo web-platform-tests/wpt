@@ -17,7 +17,6 @@ async def test_locate_nodes_in_sandbox(bidi_session, inline, top_context):
         sandbox="sandbox"
     )
 
-    assert result["context"] == top_context["context"]
     assert result["nodes"].length == 1
     node_id = result["nodes"][0]["sharedId"]
 
@@ -58,7 +57,6 @@ async def test_locate_same_node_in_different_sandboxes_returns_same_id(bidi_sess
         locator={ "type": "css", "value": "div[data-class='one']" },
         sandbox="second_sandbox"
     )
-    assert second_result["context"] == top_context["context"]
     assert second_result["nodes"].length == 1
     assert first_result["nodes"][0]["sharedId"] == second_result["nodes"][0]["sharedId"]
 
@@ -75,7 +73,6 @@ async def test_locate_same_node_in_default_sandbox_returns_same_id_as_sandbox(bi
         locator={ "type": "css", "value": "div[data-class='one']" }
     )
 
-    assert result["context"] == top_context["context"]
     assert result["nodes"].length == 1
     node_id = result["nodes"][0]["sharedId"]
 
@@ -84,6 +81,5 @@ async def test_locate_same_node_in_default_sandbox_returns_same_id_as_sandbox(bi
         locator={ "type": "css", "value": "div[data-class='one']" },
         sandbox="sandbox"
     )
-    assert result_in_sandbox["context"] == top_context["context"]
     assert result_in_sandbox["nodes"].length == 1
     assert result_in_sandbox["nodes"][0]["sharedId"] == node_id

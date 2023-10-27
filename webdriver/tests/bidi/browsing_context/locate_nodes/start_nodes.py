@@ -56,7 +56,6 @@ async def test_locate_with_context_nodes(bidi_session, inline, top_context, type
         }
     ]
 
-    assert result["context"] == top_context["context"]
     recursive_compare(expected, result["nodes"])
 
 
@@ -114,5 +113,4 @@ async def test_locate_with_multiple_context_nodes(bidi_session, inline, top_cont
         }
     ]
 
-    assert result["context"] == top_context["context"]
     recursive_compare(expected, result["nodes"])

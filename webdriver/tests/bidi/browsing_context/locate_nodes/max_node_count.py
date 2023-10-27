@@ -138,5 +138,4 @@ async def test_find_by_css_limit_return_count(bidi_session, inline, top_context,
         max_node_count = max_count
     )
 
-    assert result["context"] == top_context["context"]
     recursive_compare(expected, result["nodes"])

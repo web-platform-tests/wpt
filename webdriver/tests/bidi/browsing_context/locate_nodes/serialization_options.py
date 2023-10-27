@@ -1,13 +1,18 @@
 import pytest
 
 from webdriver.bidi.modules.script import SerializationOptions
+from ... import any_string, recursive_compare
 
 
+@pytest.mark.parametrize("mode", [
+    "open",
+    "closed"
+])
 @pytest.mark.asyncio
-async def test_locate_nodes_serialization_options(bidi_session, top_context, get_test_page):
+async def test_locate_nodes_serialization_options(bidi_session, top_context, get_test_page, mode):
     await bidi_session.browsing_context.navigate(
         context=top_context["context"],
-        url=get_test_page(shadow_root_mode="open"),
+        url=get_test_page(shadow_root_mode=mode),
         wait="complete",
     )
 
@@ -17,15 +22,44 @@ async def test_locate_nodes_serialization_options(bidi_session, top_context, get
         serialization_options=SerializationOptions(include_shadow_tree="all", max_dom_depth=1)
     )
 
-    assert result["value"]["shadowRoot"] is not None
+    expected = [
+        {
+            "type": "node",
+            "sharedId": any_string,
+            "value": {
+                "attributes": {
+                    "id": "custom-element",
+                },
+                "childNodeCount": 0,
+                "localName": "custom-element",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "nodeType": 1,
+                "shadowRoot": {
+                    "type": "node",
+                    "sharedId": any_string,
+                    "value": {
+                        "childNodeCount": 1,
+                        "children": [
+                            {
+                                "type": "node",
+                                "sharedId": any_string,
+                                "value": {
+                                    "attributes": {
+                                        "id": "in-shadow-dom"
+                                    },
+                                    "childNodeCount": 1,
+                                    "localName": "div",
+                                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                                    "nodeType": 1
+                                }
+                            }
+                        ],
+                        "mode": mode,
+                        "nodeType": 11,
+                    }
+                },
+            }
+        }    
+    ]
 
-    shadow_root = result["value"]["shadowRoot"]
-    assert shadow_root["nodeType"] == 11
-    assert shadow_root["mode"] == "open"
-    assert shadow_root["childNodeCount"] == 1
-
-    shadow_child = shadow_root["children"][0]
-    assert shadow_child["nodeType"] == 1
-    assert shadow_child["localName"] == "div"
-    assert shadow_child["childNodeCount"] == 1
-    assert shadow_child["attributes"]["id"] == "in-shadow-dom"
+    recursive_compare(expected, result["nodes"])

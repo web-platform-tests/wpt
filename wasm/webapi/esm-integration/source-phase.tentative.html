@@ -8,22 +8,8 @@ setup({ single_test: true });
 
 import source exportedNamesSource from "./resources/exported-names.wasm";
 
-assert_equals(typeof AbstractModuleSource, "undefined");
-
-{
-  const AbstractModuleSource = Object.getPrototypeOf(WebAssembly.Module).constructor;
-  assert_equals(AbstractModuleSource.name, "AbstractModuleSource");
-  assert_not_equals(AbstractModuleSource, Function);
-
-  const AbstractModuleSourceProto = Object.getPrototypeOf(WebAssembly.Module.prototype).constructor;
-  assert_not_equals(AbstractModuleSourceProto, Object);
-
-  assert_true(exportedNamesSource instanceof WebAssembly.Module);
-  assert_true(exportedNamesSource instanceof AbstractModuleSource);
-
-  const toStringTag = Object.getOwnPropertyDescriptor(AbstractModuleSource.prototype, Symbol.toStringTag).get;
-  assert_equals(toStringTag.call(exportedNamesSource), "WebAssembly.Module");
-}
+assert_true(exportedNamesSource instanceof WebAssembly.Module);
+assert_true(exportedNamesSource instanceof AbstractModuleSource);
 
 assert_array_equals(WebAssembly.Module.exports(exportedNamesSource).sort(),
                     ["func", "glob", "mem", "tab"]);

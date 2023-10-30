@@ -115,18 +115,24 @@ def resolve_pattern(test_manifests, pattern):
                 if found:
                     break
     else:
-        # Turn this URL prefix into a relative path with system separators, as
-        # `Manifest.iter*` expect.
-        rel_path = os.path.normpath(pattern.replace("/", os.path.sep))
-        if rel_path.startswith(os.path.sep):
-            rel_path = rel_path[len(os.path.sep):]
+        # Make the path absolute. Note that we don't remove the fragment/query
+        # so that the `pattern` can pick out an exact variant by not resolving
+        # `Manifest.iter*` to anything.
+        url_path = urljoin("/", pattern)
         for manifest in test_manifests:
-            urls.extend(item.id for item in manifest.iterdir(rel_path))
-            urls.extend(item.id for item in manifest.iterpath(rel_path))
+            if url_path.startswith(manifest.url_base):
+                rel_url_path = url_path[len(manifest.url_base):]
+                if rel_url_path.startswith("/"):
+                    rel_url_path = rel_url_path[len("/"):]
+                # Turn the URL prefix into a relative path with system
+                # separators, as `Manifest.iter*` expect.
+                rel_sys_path = os.path.normpath(rel_url_path.replace("/", os.path.sep))
+                urls.extend(item.id for item in manifest.iterdir(rel_sys_path))
+                urls.extend(item.id for item in manifest.iterpath(rel_sys_path))
         if not urls:
             urls.append(pattern)
     # Normalize URL paths to start with `/`.
-    return [urljoin("/", url) for url in urls]
+    return [urljoin("/", url) for url in sorted(set(urls))]
 
 
 def get_manifest(manifest_path):

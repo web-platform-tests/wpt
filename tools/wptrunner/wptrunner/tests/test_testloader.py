@@ -218,6 +218,41 @@ def test_filter_resolve_glob(manifest1):
     assert {test.id for test in tests} == {"/a/b/bar.html"}
 
 
+def test_filter_resolve_prefix_to_variants(manifest0):
+    test_filter = TestFilter({manifest0: Root("/fake-wpt", "/fake-wpt")},
+                             include=["/a/foo.html"])
+    items = list(test_filter(manifest0))
+    assert len(items) == 1
+    test_type, test_path, tests = items[0]
+    assert test_type == "testharness"
+    assert test_path == os.path.join("a", "foo.html")
+    assert {test.id for test in tests} == {"/a/foo.html?b", "/a/foo.html?c"}
+
+
+def test_filter_resolve_with_non_root_url_base(manifest0, manifest1):
+    manifest1.url_base = '/_fake_root/'
+    manifests = {manifest0: Root("/fake-wpt", "/fake-wpt"),
+                 manifest1: Root("/_fake_root", "/_fake_root")}
+    test_filter = TestFilter(manifests,
+                             include=["a/foo.html?b", "/_fake_root/a/b/"])
+    items = list(test_filter(manifest0))
+    assert len(items) == 1
+    test_type, test_path, tests = items[0]
+    assert test_type == "testharness"
+    assert test_path == os.path.join("a", "foo.html")
+    assert {test.id for test in tests} == {"/a/foo.html?b"}
+    items = sorted(test_filter(manifest1))
+    assert len(items) == 2
+    test_type, test_path, tests = items[0]
+    assert test_type == "testharness"
+    assert test_path == os.path.join("a", "b", "bar.html")
+    assert {test.id for test in tests} == {"/_fake_root/a/b/bar.html"}
+    test_type, test_path, tests = items[1]
+    assert test_type == "testharness"
+    assert test_path == os.path.join("a", "b", "c.html")
+    assert {test.id for test in tests} == {"/_fake_root/a/b/c.html"}
+
+
 def test_filter_match_none(manifest1):
     with tempfile.TemporaryDirectory() as tmp:
         test_filter = TestFilter({manifest1: {"tests_path": tmp}},

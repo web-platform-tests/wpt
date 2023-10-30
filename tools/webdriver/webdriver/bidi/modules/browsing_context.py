@@ -186,9 +186,8 @@ class BrowsingContext(BidiModule):
             "context": context,
             "viewport": viewport,
         }
-        
+
         if device_pixel_ratio is not None:
             params["devicePixelRatio"] = device_pixel_ratio
 
         return params
-        }

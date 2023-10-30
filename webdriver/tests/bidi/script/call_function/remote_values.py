@@ -53,7 +53,6 @@ async def test_window_context_top_level(bidi_session, top_context,
         function_declaration=function_declaration,
         await_promise=await_promise,
         target=ContextTarget(top_context["context"]),
-        serialization_options=SerializationOptions(max_object_depth=1),
     )
 
     recursive_compare(
@@ -63,40 +62,6 @@ async def test_window_context_top_level(bidi_session, top_context,
                 "context": top_context["context"]
             }
         }, result)
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("await_promise", [True, False])
-async def test_window_context_same_id_after_cross_origin_navigation(
-        bidi_session, top_context, await_promise, test_page_cross_origin):
-    function_declaration = f"() => window"
-    if await_promise:
-        function_declaration = "async" + function_declaration
-
-    result = await bidi_session.script.call_function(
-        function_declaration=function_declaration,
-        await_promise=await_promise,
-        target=ContextTarget(top_context["context"]),
-        serialization_options=SerializationOptions(max_object_depth=1),
-    )
-
-    original_context = result['value']['context']
-
-    await bidi_session.browsing_context.navigate(
-        context=top_context["context"],
-        url=test_page_cross_origin,
-        wait="complete")
-    
-    result = await bidi_session.script.call_function(
-        function_declaration=function_declaration,
-        await_promise=await_promise,
-        target=ContextTarget(top_context["context"]),
-        serialization_options=SerializationOptions(max_object_depth=1),
-    )
-
-    cross_origin_context = result['value']['context']
-
-    assert original_context == cross_origin_context
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("await_promise", [True, False])
@@ -121,7 +86,6 @@ async def test_window_iframe_window(bidi_session, top_context,
         function_declaration=function_declaration,
         await_promise=await_promise,
         target=ContextTarget(iframe_context["context"]),
-        serialization_options=SerializationOptions(max_object_depth=1),
     )
 
     recursive_compare(
@@ -147,7 +111,8 @@ async def test_window_context_iframe_content_window(
     all_contexts = await bidi_session.browsing_context.get_tree()
     iframe_context = all_contexts[0]["children"][0]
 
-    function_declaration = f"() => document.querySelector('iframe').contentWindow"
+    # This is equivalent to `document.getElementsByTagName("iframe")[0].contentWindow`
+    function_declaration = f"() => window.frames[0]"
     if await_promise:
         function_declaration = "async" + function_declaration
 
@@ -155,7 +120,6 @@ async def test_window_context_iframe_content_window(
         function_declaration=function_declaration,
         await_promise=await_promise,
         target=ContextTarget(top_context["context"]),
-        serialization_options=SerializationOptions(max_object_depth=1),
     )
 
     recursive_compare(
@@ -165,3 +129,39 @@ async def test_window_context_iframe_content_window(
                 "context": iframe_context["context"]
             }
         }, result)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("await_promise", [True, False])
+@pytest.mark.parametrize("domain", ["", "alt"],
+                         ids=["same_origin", "cross_origin"])
+async def test_window_context_same_id_after_navigation(bidi_session,
+                                                       top_context, inline,
+                                                       await_promise, domain):
+    url = inline(f"{domain}", domain=domain)
+
+    function_declaration = f"() => window"
+    if await_promise:
+        function_declaration = "async" + function_declaration
+
+    result = await bidi_session.script.call_function(
+        function_declaration=function_declaration,
+        await_promise=await_promise,
+        target=ContextTarget(top_context["context"]),
+    )
+
+    original_context_id = result['value']['context']
+
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"], url=url, wait="complete")
+
+    result = await bidi_session.script.call_function(
+        function_declaration=function_declaration,
+        await_promise=await_promise,
+        target=ContextTarget(top_context["context"]),
+    )
+
+    navigated_context_id = result['value']['context']
+
+    assert navigated_context_id == original_context_id
+

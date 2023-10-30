@@ -625,6 +625,22 @@ const testWebNNOperation = (operationName, buildFunc) => {
     operationNameArray = operationName;
   }
 
+  const contextOptionsDict = {};
+  const params = new URLSearchParams(location.search);
+  if (params.has('deviceType')) {
+    const deviceTypes = params.getAll('deviceType');
+    deviceTypes.forEach((deviceType) => {
+      if (deviceType !== 'cpu' && deviceType !== 'gpu') {
+        throw new AssertionError("deviceType should be 'cpu' or 'gpu'");
+      } else {
+        contextOptionsDict[deviceType] = {deviceType};
+      }
+    });
+  } else {
+    // use default cpu device
+    contextOptionsDict['cpu'] = {deviceType: 'cpu'};
+  }
+
   ExecutionArray.forEach(executionType => {
     const isSync = executionType === 'sync';
     if (self.GLOBAL.isWindow() && isSync) {
@@ -632,34 +648,36 @@ const testWebNNOperation = (operationName, buildFunc) => {
     }
     let context;
     let builder;
-    if (isSync) {
-      // test sync
-      operationNameArray.forEach((subOperationName) => {
-        const tests = loadTests(subOperationName);
-        setup(() => {
-          context = navigator.ml.createContextSync();
-          builder = new MLGraphBuilder(context);
+    for (const [deviceType, contextOptions] of Object.entries( contextOptionsDict)) {
+      if (isSync) {
+        // test sync
+        operationNameArray.forEach((subOperationName) => {
+          const tests = loadTests(subOperationName);
+          setup(() => {
+            context = navigator.ml.createContextSync(contextOptions);
+            builder = new MLGraphBuilder(context);
+          });
+          for (const subTest of tests) {
+            test(() => {
+              runSync(subOperationName, context, builder, subTest, buildFunc);
+            }, `${subTest.name} / ${executionType} / ${deviceType}`);
+          }
         });
-        for (const subTest of tests) {
-          test(() => {
-            runSync(subOperationName, context, builder, subTest, buildFunc);
-          }, `${subTest.name} / ${executionType}`);
-        }
-      });
-    } else {
-      // test async
-      operationNameArray.forEach((subOperationName) => {
-        const tests = loadTests(subOperationName);
-        promise_setup(async () => {
-          context = await navigator.ml.createContext();
-          builder = new MLGraphBuilder(context);
+      } else {
+        // test async
+        operationNameArray.forEach((subOperationName) => {
+          const tests = loadTests(subOperationName);
+          promise_setup(async () => {
+            context = await navigator.ml.createContext(contextOptions);
+            builder = new MLGraphBuilder(context);
+          });
+          for (const subTest of tests) {
+            promise_test(async () => {
+              await run(subOperationName, context, builder, subTest, buildFunc);
+            }, `${subTest.name} / ${executionType} / ${deviceType}`);
+          }
         });
-        for (const subTest of tests) {
-          promise_test(async () => {
-            await run(subOperationName, context, builder, subTest, buildFunc);
-          }, `${subTest.name} / ${executionType}`);
-        }
-      });
+      }
     }
   });
 };

@@ -1091,7 +1091,7 @@ class Chrome(ChromeChromiumBase):
             return None
         version_available = self._get_build_version(
             milestones_dict[milestone]["version"])
-            
+
         return self._get_webdriver_url_by_build(version_available)
 
     def _get_download_urls_by_version(self, version):

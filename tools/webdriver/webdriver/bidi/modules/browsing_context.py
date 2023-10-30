@@ -182,8 +182,13 @@ class BrowsingContext(BidiModule):
                      context: str,
                      viewport: Optional[Mapping[str, Any]] = None,
                      device_pixel_ratio: Optional[float] = None) -> Mapping[str, Any]:
-        return {
+        params: MutableMapping[str, Any] = {
             "context": context,
             "viewport": viewport,
-            "devicePixelRatio": device_pixel_ratio
+        }
+        
+        if device_pixel_ratio is not None:
+            params["devicePixelRatio"] = device_pixel_ratio
+
+        return params
         }

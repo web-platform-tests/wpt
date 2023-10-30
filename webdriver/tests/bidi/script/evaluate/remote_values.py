@@ -35,34 +35,6 @@ async def test_window_context_top_level(bidi_session, top_context):
         }, result)
 
 
-@pytest.mark.asyncio
-async def test_window_context_same_id_after_cross_origin_navigation(
-        bidi_session, top_context, test_page_cross_origin):
-
-    result = await bidi_session.script.evaluate(
-        expression="window",
-        target=ContextTarget(top_context["context"]),
-        await_promise=False,
-        serialization_options=SerializationOptions(max_object_depth=1),
-    )
-
-    original_context = result['value']['context']
-
-    await bidi_session.browsing_context.navigate(
-        context=top_context["context"],
-        url=test_page_cross_origin,
-        wait="complete")
-
-    result = await bidi_session.script.evaluate(
-        expression="window",
-        target=ContextTarget(top_context["context"]),
-        await_promise=False,
-        serialization_options=SerializationOptions(max_object_depth=1),
-    )
-
-    cross_origin_context = result['value']['context']
-
-    assert original_context == cross_origin_context
 
 @pytest.mark.asyncio
 async def test_window_iframe_window(
@@ -106,11 +78,11 @@ async def test_window_context_iframe_content_window(
     all_contexts = await bidi_session.browsing_context.get_tree()
     iframe_context = all_contexts[0]["children"][0]
 
+    # This is equivalent to `document.getElementsByTagName("iframe")[0].conten
     result = await bidi_session.script.evaluate(
-        expression="document.querySelector('iframe')?.contentWindow",
+        expression="window.frames[0]",
         target=ContextTarget(top_context["context"]),
         await_promise=False,
-        serialization_options=SerializationOptions(max_object_depth=1),
     )
 
     recursive_compare(
@@ -120,3 +92,34 @@ async def test_window_context_iframe_content_window(
                 "context": iframe_context["context"]
             }
         }, result)
+
+
+@pytest.mark.asyncio
+async def test_window_context_same_id_after_navigation(bidi_session,
+                                                       top_context,
+                                                       test_page_cross_origin):
+
+    result = await bidi_session.script.evaluate(
+        expression="window",
+        target=ContextTarget(top_context["context"]),
+        await_promise=False,
+        serialization_options=SerializationOptions(max_object_depth=1),
+    )
+
+    original_context = result['value']['context']
+
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"],
+        url=test_page_cross_origin,
+        wait="complete")
+
+    result = await bidi_session.script.evaluate(
+        expression="window",
+        target=ContextTarget(top_context["context"]),
+        await_promise=False,
+        serialization_options=SerializationOptions(max_object_depth=1),
+    )
+
+    navigated_context_id = result['value']['context']
+
+    assert navigated_context_id == original_context

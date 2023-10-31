@@ -1011,7 +1011,7 @@ class Chrome(ChromeChromiumBase):
         download_url = self._get_webdriver_url_by_build(formatted_version)
         if download_url is None:
             milestone = version.split('.')[0]
-            self.logger.info(f'No ChromeDriver download found for build {formatted_version}.'
+            self.logger.info(f'No ChromeDriver download found for build {formatted_version}. '
                              f'Finding latest available download for milestone {milestone}')
             download_url = self._get_webdriver_url_by_milestone(milestone)
         return download_url

@@ -113,19 +113,14 @@ class Manifest:
         self.url_base: Text = url_base
 
     def __iter__(self) -> Iterator[Tuple[Text, Text, Set[ManifestItem]]]:
-        for item_type in sorted(self._data):
+        return self.itertypes()
+
+    def itertypes(self, *types: Text) -> Iterator[Tuple[Text, Text, Set[ManifestItem]]]:
+        for item_type in (types or sorted(self._data.keys())):
             for path in self._data[item_type]:
                 rel_path = os.sep.join(path)
                 tests = self._data[item_type][path]
                 yield item_type, rel_path, tests
-
-    def itertypes(self, *types: Text) -> "Manifest":
-        filtered_manifest = Manifest(self.tests_root, self.url_base)
-        filtered_manifest._data.initialized = False
-        for item_type in (types or self._data):
-            filtered_manifest._data[item_type] = self._data[item_type]
-        filtered_manifest._data.initialized = True
-        return filtered_manifest
 
     def iterpath(self, path: Text) -> Iterable[ManifestItem]:
         tpath = tuple(path.split(os.path.sep))
@@ -418,6 +413,13 @@ def load_and_update(tests_root: Text,
         if write_manifest and changed:
             write(manifest, manifest_path)
         tree.dump_caches()
+
+        # The manifest was updated for all test types and persisted. Now, if
+        # requested, drop irrelevant test types like `_load()` does.
+        if types:
+            for test_type in set(manifest._data):
+                if test_type not in types:
+                    del manifest._data[test_type]
 
     return manifest
 

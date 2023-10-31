@@ -77,7 +77,8 @@ def get_loader(test_paths: wptcommandline.TestPaths,
 
     test_manifests = testloader.ManifestLoader(test_paths,
                                                force_manifest_update=kwargs["manifest_update"],
-                                               manifest_download=kwargs["manifest_download"]).load()
+                                               manifest_download=kwargs["manifest_download"],
+                                               types=kwargs["test_types"]).load()
 
     manifest_filters = []
     test_filters = []

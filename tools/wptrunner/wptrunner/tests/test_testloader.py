@@ -219,8 +219,7 @@ def test_filter_resolve_glob(manifest1):
 
 
 def test_filter_resolve_prefix_to_variants(manifest0):
-    test_filter = TestFilter({manifest0: Root("/fake-wpt", "/fake-wpt")},
-                             include=["/a/foo.html"])
+    test_filter = TestFilter({manifest0: {}}, include=["/a/foo.html"])
     items = list(test_filter(manifest0))
     assert len(items) == 1
     test_type, test_path, tests = items[0]
@@ -231,9 +230,7 @@ def test_filter_resolve_prefix_to_variants(manifest0):
 
 def test_filter_resolve_with_non_root_url_base(manifest0, manifest1):
     manifest1.url_base = '/_fake_root/'
-    manifests = {manifest0: Root("/fake-wpt", "/fake-wpt"),
-                 manifest1: Root("/_fake_root", "/_fake_root")}
-    test_filter = TestFilter(manifests,
+    test_filter = TestFilter({manifest0: {}, manifest1: {}},
                              include=["a/foo.html?b", "/_fake_root/a/b/"])
     items = list(test_filter(manifest0))
     assert len(items) == 1

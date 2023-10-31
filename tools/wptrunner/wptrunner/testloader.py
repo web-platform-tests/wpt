@@ -293,10 +293,10 @@ class TestFilter:
             self.include_urls -= set(manifestinclude.resolve_pattern(test_manifests, exclude_pattern))
 
     def __call__(self, manifest):
-        tests_by_url = map_tests_by_url(manifest)
+        test_by_url = map_tests_by_url(manifest)
         tests_by_path = defaultdict(set)
         for include_url in self.include_urls:
-            test = tests_by_url.get(include_url)
+            test = test_by_url.get(include_url)
             if test:
                 tests_by_path[test.path].add(test)
         for test_path, tests in tests_by_path.items():
@@ -388,10 +388,7 @@ class TestLoader:
         self.manifest_filters = manifest_filters if manifest_filters is not None else []
         self.test_filters = test_filters if test_filters is not None else []
 
-        self.manifests = {
-            manifest.itertypes(*test_types): test_paths
-            for manifest, test_paths in test_manifests.items()
-        }
+        self.manifests = test_manifests
         self.tests = None
         self.disabled_tests = None
         self.include_https = include_https
@@ -468,6 +465,11 @@ class TestLoader:
             manifest_items = self.chunker(manifest_items)
 
         for test_type, test_path, tests in manifest_items:
+            # `manifest.load_and_update(...)` should already return a `Manifest`
+            # with irrelevant test types filtered out. Filter again, just in
+            # case.
+            if test_type not in self.test_types:
+                continue
             manifest_file = manifests_by_url_base[next(iter(tests)).url_base]
             metadata_path = self.manifests[manifest_file]["metadata_path"]
 

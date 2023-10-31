@@ -21,6 +21,8 @@ async def test_device_pixel_ratio_only(bidi_session, new_tab, device_pixel_ratio
 async def test_device_pixel_ratio_with_viewport(bidi_session, new_tab, device_pixel_ratio):
     test_viewport = {"width": 250, "height": 300}
 
+    assert await get_viewport_dimensions(bidi_session, new_tab) != test_viewport
+
     await bidi_session.browsing_context.set_viewport(
         context=new_tab["context"],
         viewport=test_viewport,

@@ -3,7 +3,7 @@ from atomicwrites import atomic_write
 from copy import deepcopy
 from logging import Logger
 from multiprocessing import Pool
-from typing import (Any, Callable, Container, Dict, IO, Iterator, Iterable, Optional, Set, Text, Tuple, Type,
+from typing import (Any, Callable, Collection, Dict, IO, Iterator, Iterable, Optional, Set, Text, Tuple, Type,
                     Union)
 
 from . import jsonlib
@@ -273,7 +273,7 @@ class Manifest:
     def from_json(cls,
                   tests_root: Text,
                   obj: Dict[Text, Any],
-                  types: Optional[Container[Text]] = None,
+                  types: Optional[Collection[Text]] = None,
                   callee_owns_obj: bool = False) -> "Manifest":
         """Load a manifest from a JSON object
 
@@ -310,7 +310,7 @@ class Manifest:
         return self
 
 
-def load(tests_root: Text, manifest: Union[IO[bytes], Text], types: Optional[Container[Text]] = None) -> Optional[Manifest]:
+def load(tests_root: Text, manifest: Union[IO[bytes], Text], types: Optional[Collection[Text]] = None) -> Optional[Manifest]:
     logger = get_logger()
 
     logger.warning("Prefer load_and_update instead")
@@ -323,7 +323,7 @@ __load_cache: Dict[Text, Manifest] = {}
 def _load(logger: Logger,
           tests_root: Text,
           manifest: Union[IO[bytes], Text],
-          types: Optional[Container[Text]] = None,
+          types: Optional[Collection[Text]] = None,
           allow_cached: bool = True
           ) -> Optional[Manifest]:
     manifest_path = (manifest if isinstance(manifest, str)
@@ -366,7 +366,7 @@ def load_and_update(tests_root: Text,
                     metadata_path: Optional[Text] = None,
                     cache_root: Optional[Text] = None,
                     working_copy: bool = True,
-                    types: Optional[Container[Text]] = None,
+                    types: Optional[Collection[Text]] = None,
                     write_manifest: bool = True,
                     allow_cached: bool = True,
                     parallel: bool = True
@@ -414,12 +414,16 @@ def load_and_update(tests_root: Text,
             write(manifest, manifest_path)
         tree.dump_caches()
 
-        # The manifest was updated for all test types and persisted. Now, if
-        # requested, drop irrelevant test types like `_load()` does.
+        # The manifest should be updated for all test types and persisted. Now,
+        # if requested, drop irrelevant test types like `_load()` does.
+        # Construct a shallow copy to avoid mutating the version in the cache.
         if types:
-            for test_type in set(manifest._data):
-                if test_type not in types:
-                    del manifest._data[test_type]
+            filtered_manifest = Manifest(tests_root, url_base)
+            filtered_manifest._data.initialized = False
+            for test_type in types:
+                filtered_manifest._data[test_type] = manifest._data[test_type]
+            filtered_manifest._data.initialized = True
+            return filtered_manifest
 
     return manifest
 

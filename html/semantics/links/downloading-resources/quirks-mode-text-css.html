@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>text/css quirk, load, and error events</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+"use strict";
+window.quirksLoaded = new Promise(resolve => {
+  window.resolveQuirksLoaded = resolve;
+});
+
+window.noQuirksLoaded = new Promise(resolve => {
+  window.resolveNoQuirksLoaded = resolve;
+});
+</script>
+
+<iframe id="quirks" src="resources/quirks-mode.html" onload="resolveQuirksLoaded()"></iframe>
+<iframe id="no-quirks" src="resources/no-quirks-mode.html" onload="resolveNoQuirksLoaded()"></iframe>
+
+<script>
+"use strict";
+
+promise_test(async t => {
+  await window.quirksLoaded;
+  const { contentDocument } = document.querySelector("#quirks");
+  assert_equals(contentDocument.compatMode, "BackCompat", "Sanity check: the document must be in quirks mode");
+
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "not-css.txt?1";
+
+  const returnValue = new Promise(resolve => {
+    link.onerror = t.unreached_func("error event must not be fired");
+    link.onload = () => resolve();
+  });
+
+  contentDocument.body.appendChild(link);
+  return returnValue;
+}, "load event for non-text/css in a quirks document");
+
+promise_test(async t => {
+  await window.noQuirksLoaded;
+  const { contentDocument } = document.querySelector("#no-quirks");
+  assert_equals(contentDocument.compatMode, "CSS1Compat", "Sanity check: the document must be in no-quirks mode");
+
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "not-css.txt?2";
+
+  const returnValue = new Promise(resolve => {
+    link.onerror = () => resolve();
+    link.onload = t.unreached_func("load event must not be fired");
+  });
+
+  contentDocument.body.appendChild(link);
+  return returnValue;
+}, "error event for non-text/css in a no-quirks document");
+
+promise_test(async t => {
+  await window.quirksLoaded;
+  await window.noQuirksLoaded;
+  const quirksDocument = document.querySelector("#quirks").contentDocument;
+  const noQuirksDocument = document.querySelector("#no-quirks").contentDocument;
+  assert_equals(quirksDocument.compatMode, "BackCompat", "Sanity check: the document must be in quirks mode");
+  assert_equals(noQuirksDocument.compatMode, "CSS1Compat", "Sanity check: the document must be in no-quirks mode");
+
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "not-css.txt?3";
+
+  const returnValue = new Promise(resolve => {
+    link.onload = t.step_func(() => {
+      link.onload = t.unreached_func("load event must not be fired yet");
+      link.onerror = () => resolve();
+    });
+    link.onerror = t.unreached_func("error event must not be fired yet");
+  });
+
+  quirksDocument.body.appendChild(link);
+  noQuirksDocument.body.appendChild(link);
+  return returnValue;
+}, "load, then error event for moving non-text/css from a quirks to a no-quirks document");
+
+promise_test(async t => {
+  await window.quirksLoaded;
+  await window.noQuirksLoaded;
+  const quirksDocument = document.querySelector("#quirks").contentDocument;
+  const noQuirksDocument = document.querySelector("#no-quirks").contentDocument;
+  assert_equals(quirksDocument.compatMode, "BackCompat", "Sanity check: the document must be in quirks mode");
+  assert_equals(noQuirksDocument.compatMode, "CSS1Compat", "Sanity check: the document must be in no-quirks mode");
+
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "not-css.txt?3";
+
+  const returnValue = new Promise(resolve => {
+    link.onload = t.unreached_func("load event must not be fired yet");
+    link.onerror = t.step_func(() => {
+      link.onload = () => resolve();
+      link.onerror = t.unreached_func("error event must not be fired yet");
+    });
+  });
+
+  noQuirksDocument.body.appendChild(link);
+  quirksDocument.body.appendChild(link);
+  return returnValue;
+}, "error, then load event for moving non-text/css from a no-quirks to a quirks document");
+
+</script>

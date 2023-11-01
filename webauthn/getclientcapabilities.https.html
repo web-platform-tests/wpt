@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>getClientCapabilities</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src=helpers.js></script>
+<body></body>
+<script>
+"use strict";
+
+promise_test(async t => {
+  const capabilities = PublicKeyCredential.getClientCapabilities();
+
+  // The keys should be sorted.
+  let lastKey = null;
+  for (const key in capabilities.keys) {
+    if (lastKey !== null) {
+      assert_true(lastKey < key);
+    }
+    lastKey = key;
+  }
+
+  // The values should all be bools.
+  for (const value in capabilities.values) {
+    assert_equals(typeof value, 'boolean');
+  }
+}, "PublicKeyCredential.getClientCapabilities()");
+</script>

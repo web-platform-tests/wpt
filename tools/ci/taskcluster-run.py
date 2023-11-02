@@ -14,11 +14,18 @@ def get_browser_args(product, channel, artifact_path):
     if product == "firefox":
         local_binary = os.path.expanduser(os.path.join("~", "build", "firefox", "firefox"))
         if os.path.exists(local_binary):
-            return ["--binary=%s" % local_binary]
+            return ["--binary", local_binary]
         print("WARNING: Local firefox binary not found")
         return ["--install-browser", "--install-webdriver"]
     if product == "firefox_android":
-        return ["--install-browser", "--install-webdriver", "--logcat-dir", artifact_path]
+        args = []
+        local_apk = os.path.expanduser(os.path.join("~", "build", "geckoview-test_runner.apk"))
+        if os.path.exists(local_apk):
+            args = ["--binary", local_apk]
+        else:
+            print("WARNING: Local firefox android apk not found")
+            args = ["--install-browser"]
+        return args + ["--install-webdriver", "--logcat-dir", artifact_path]
     if product == "servo":
         return ["--install-browser", "--processes=12"]
     if product == "chrome" or product == "chromium":

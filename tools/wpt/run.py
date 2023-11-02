@@ -404,13 +404,19 @@ class FirefoxAndroid(BrowserSetup):
 
         self._logcat = AndroidLogcat(adb_path, base_path=kwargs["logcat_dir"])
 
+        if kwargs["binary"] is not None:
+            apk_path = kwargs["binary"]
+        else:
+            apk_path = self.browser.find_binary(self.venv.path,
+                                                kwargs["browser_channel"])
+
         for device_serial in kwargs["device_serial"]:
             device = mozdevice.ADBDeviceFactory(adb=adb_path,
                                                 device=device_serial)
             self._logcat.start(device_serial)
-            if self.browser.apk_path:
+            if apk_path is not None:
                 device.uninstall_app(app)
-                device.install_app(self.browser.apk_path)
+                device.install_app(apk_path)
             elif not device.is_app_installed(app):
                 raise WptrunError("app %s not installed on device %s" %
                                   (app, device_serial))

@@ -183,6 +183,7 @@ def test_verify_payload():
       'resources/ tests (Python 3.7)',
       'resources/ tests (Python 3.11)',
       'download-firefox-nightly',
+      'download-firefox_android',
       'infrastructure/ tests',
       'sink-task']),
     # More tests are affected in the actual PR but it shouldn't affect the scheduled tasks
@@ -201,6 +202,7 @@ def test_verify_payload():
       'resources/ tests (Python 3.7)',
       'resources/ tests (Python 3.11)',
       'download-firefox-nightly',
+      'download-firefox_android',
       'infrastructure/ tests',
       'sink-task']),
     ("epochs_daily_push_event.json", False, None,
@@ -269,6 +271,7 @@ def test_verify_payload():
       'wpt-webkitgtk_minibrowser-nightly-testharness-14',
       'wpt-webkitgtk_minibrowser-nightly-testharness-15',
       'wpt-webkitgtk_minibrowser-nightly-testharness-16',
+      'download-firefox_android',
       'wpt-firefox_android-nightly-testharness-1',
       'wpt-firefox_android-nightly-testharness-2',
       'wpt-firefox_android-nightly-testharness-3',

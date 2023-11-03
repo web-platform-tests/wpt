@@ -39,10 +39,10 @@ test(t => {
   input.type = "checkbox";
   input.indeterminate = true;
 
-  assert_true(body.matches(":has(:indeterminate)"));
+  assert_true(document.body.matches(":has(:indeterminate)"));
 
   input.switch = true;
-  assert_false(body.matches(":has(:indeterminate)"));
+  assert_false(document.body.matches(":has(:indeterminate)"));
 }, "Parent of a checkbox that becomes a switch control does not match :has(:indeterminate)");
 
 test(t => {
@@ -52,11 +52,11 @@ test(t => {
   input.switch = true
   input.checked = true;
 
-  assert_true(body.matches(":has(:checked)"));
+  assert_true(document.body.matches(":has(:checked)"));
 
   input.switch = false;
-  assert_true(body.matches(":has(:checked)"));
+  assert_true(document.body.matches(":has(:checked)"));
 
   input.checked = false;
-  assert_false(body.matches(":has(:checked)"));
+  assert_false(document.body.matches(":has(:checked)"));
 }, "Parent of a checkbox that becomes a switch control does not match :has(:indeterminate)");

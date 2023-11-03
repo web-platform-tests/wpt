@@ -59,4 +59,4 @@ test(t => {
 
   input.checked = false;
   assert_false(document.body.matches(":has(:checked)"));
-}, "Parent of a checkbox that becomes a switch control does not match :has(:indeterminate)");
+}, "Parent of a switch control that becomes a checkbox continues to match :has(:checked)");

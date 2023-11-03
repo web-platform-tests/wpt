@@ -4,7 +4,7 @@ test(t => {
   input.type = "checkbox";
   input.switch = true;
   input.indeterminate = true;
-  
+
   assert_false(input.matches(":indeterminate"));
 }, "Switch control does not match :indeterminate");
 

@@ -106,7 +106,11 @@ promise_test(async () => {
   assert_false(ClipboardItem.supports('foo/bar'));
   assert_true(ClipboardItem.supports('web foo/bar'));
   assert_true(ClipboardItem.supports('web text/html'));
+  assert_false(ClipboardItem.supports('weB text/html'));
+  assert_false(ClipboardItem.supports(' web text/html'));
   assert_false(ClipboardItem.supports('image/svg+xml'));
   assert_false(ClipboardItem.supports('not a/real type'));
+  assert_false(ClipboardItem.supports(''));
+  assert_false(ClipboardItem.supports(' '));
 }, "supports(DOMString) returns true for types that are supported, false otherwise");
 </script>

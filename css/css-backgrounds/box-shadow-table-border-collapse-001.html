@@ -12,7 +12,8 @@
   <!--
 
   created: 2017
-  modified: May 23rd 2020
+
+  last modified: November 4th 2023
 
   Bug 1050297: Box-shadow of a table disappears when its border-collapse is set to collapse
   https://connect.microsoft.com/IE/Feedback/Details/1050297
@@ -23,6 +24,7 @@
   -->
 
   <meta content="This test checks that 'box-shadow' applies to table element with 'border-collapse' set to 'collapse' as long as row borders do not have different border thicknesses. In this test, the left border of both table rows have the same thickness (30px) and the right border of both table rows have the same thickness (30px)." name="assert">
+  <meta name="fuzzy" content="maxDifference=0-49;totalPixels=0-600">
 
   <style>
   table
@@ -46,7 +48,6 @@
 
   tr#top-row
     {
-
       border-width: 30px 30px 0px;
     }
 

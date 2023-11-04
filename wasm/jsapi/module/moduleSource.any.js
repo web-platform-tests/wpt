@@ -9,7 +9,7 @@ setup(() => {
 
 test(() => {
   assert_equals(typeof AbstractModuleSource, "undefined");
-  const AbstractModuleSource = Object.getPrototypeOf(WebAssembly.Module).constructor;
+  const AbstractModuleSource = Object.getPrototypeOf(WebAssembly.Module);
   assert_equals(AbstractModuleSource.name, "AbstractModuleSource");
   assert_not_equals(AbstractModuleSource, Function);
 }, "AbstractModuleSource intrinsic");
@@ -31,7 +31,7 @@ test(() => {
   const buffer = builder.toBuffer()
   const module = new WebAssembly.Module(buffer);
 
-  const AbstractModuleSource = Object.getPrototypeOf(WebAssembly.Module).constructor;
+  const AbstractModuleSource = Object.getPrototypeOf(WebAssembly.Module);
   const toStringTag = Object.getOwnPropertyDescriptor(AbstractModuleSource.prototype, Symbol.toStringTag).get;
   assert_equals(toStringTag.call(module), "WebAssembly.Module");
 }, "AbstractModuleSourceProto toStringTag brand check");

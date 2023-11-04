@@ -9,7 +9,7 @@ setup({ single_test: true });
 import source exportedNamesSource from "./resources/exported-names.wasm";
 
 assert_true(exportedNamesSource instanceof WebAssembly.Module);
-const AbstractModuleSource = Object.getPrototypeOf(WebAssembly.Module).constructor;
+const AbstractModuleSource = Object.getPrototypeOf(WebAssembly.Module);
 assert_equals(AbstractModuleSource.name, "AbstractModuleSource");
 assert_true(exportedNamesSource instanceof AbstractModuleSource);
 

@@ -7,13 +7,14 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="https://www.w3.org/TR/css-backgrounds-3/#shadow-layers">
   <link rel="match" href="reference/box-shadow-table-border-collapse-001-ref.html">
+  <meta name="fuzzy" content="maxDifference=0-49;totalPixels=0-600">
   <link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
 
   <!--
 
   created: 2017
 
-  last modified: November 4th 2023
+  last modified: November 6th 2023
 
   Bug 1050297: Box-shadow of a table disappears when its border-collapse is set to collapse
   https://connect.microsoft.com/IE/Feedback/Details/1050297
@@ -24,7 +25,6 @@
   -->
 
   <meta content="This test checks that 'box-shadow' applies to table element with 'border-collapse' set to 'collapse' as long as row borders do not have different border thicknesses. In this test, the left border of both table rows have the same thickness (30px) and the right border of both table rows have the same thickness (30px)." name="assert">
-  <meta name="fuzzy" content="maxDifference=0-49;totalPixels=0-600">
 
   <style>
   table

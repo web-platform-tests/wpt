@@ -68,15 +68,24 @@ async def cleanup_session(session):
         """
 
         if session.bidi_session:
-            response = await (
-                await session.bidi_session.send_command("browsingContext.getTree", {
-                    "maxDepth": 1
-                }))
-            for context in response["contexts"][1:]:
-                await (
-                    await session.bidi_session.send_command("browsingContext.close", {
-                        "context": context["context"]
-                    }))
+            command_result = await session.bidi_session.send_blocking_command("browsingContext.getTree",
+                                                                              {"maxDepth": 1})
+            # List of top-level browsing contexts.
+            top_contexts = [c["context"] for c in command_result["contexts"]]
+
+            # If classic session has a window handle, and if it is still open, keep it open.
+            # Otherwise, keep open the first browsing context.
+            if session.window_handle is not None \
+                    and session.window_handle in top_contexts:
+                current_window = session.window_handle
+            else:
+                current_window = top_contexts[0]
+                session.window_handle = current_window
+
+            for context in command_result["contexts"]:
+                if context["context"] != current_window:
+                    await session.bidi_session.send_blocking_command("browsingContext.close",
+                                                                     {"context": context["context"]})
         else:
             current_window = session.window_handle
 

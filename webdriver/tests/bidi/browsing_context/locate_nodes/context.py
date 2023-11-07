@@ -1,9 +1,8 @@
 import pytest
 import webdriver.bidi.error as error
 
-pytestmark = pytest.mark.asyncio
 
-
+@pytest.mark.asyncio
 async def test_params_context_invalid_value(bidi_session, inline, top_context):
     url = inline("""<div>foo</div>""")
     await bidi_session.browsing_context.navigate(

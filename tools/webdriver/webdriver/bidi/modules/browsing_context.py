@@ -111,7 +111,7 @@ class BrowsingContext(BidiModule):
         if user_text is not None:
             params["userText"] = user_text
         return params
-    
+
     @command
     def locate_nodes(self,
                      context: str,
@@ -133,7 +133,7 @@ class BrowsingContext(BidiModule):
         if start_nodes is not None:
             params["startNodes"] = start_nodes
         return params
-    
+
     @locate_nodes.result
     def _locate_nodes(self, result: Mapping[str, Any]) -> Any:
         assert result["context"] is not None

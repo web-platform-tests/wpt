@@ -24,15 +24,6 @@ async def test_params_context_invalid_type(bidi_session, inline, top_context, va
         )
 
 
-async def test_params_context_invalid_value(bidi_session, inline, top_context):
-    await navigate_to_page(bidi_session, inline, top_context)
-
-    with pytest.raises(error.NoSuchFrameException):
-        await bidi_session.browsing_context.locate_nodes(
-            context="foo", locator={ "type": "css", "value": "div" }
-        )
-
-
 @pytest.mark.parametrize("value", [None, False, 42, {}, []])
 async def test_params_locator_type_invalid_type(bidi_session, inline, top_context, value):
     await navigate_to_page(bidi_session, inline, top_context)

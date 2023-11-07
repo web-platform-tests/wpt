@@ -68,8 +68,8 @@ async def cleanup_session(session):
         """
 
         if session.bidi_session:
-            command_result = await session.bidi_session.send_blocking_command("browsingContext.getTree",
-                                                                              {"maxDepth": 1})
+            command_result_future = await session.bidi_session.send_command("browsingContext.getTree", {"maxDepth": 1})
+            command_result = await command_result_future
             # List of top-level browsing contexts.
             top_contexts = [c["context"] for c in command_result["contexts"]]
 
@@ -84,8 +84,9 @@ async def cleanup_session(session):
 
             for context in command_result["contexts"]:
                 if context["context"] != current_window:
-                    await session.bidi_session.send_blocking_command("browsingContext.close",
-                                                                     {"context": context["context"]})
+                    command_result_future = await session.bidi_session.send_command("browsingContext.close",
+                                                                                    {"context": context["context"]})
+                    await command_result_future
         else:
             current_window = session.window_handle
 

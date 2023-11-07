@@ -17,7 +17,7 @@ async def test_locate_nodes_in_sandbox(bidi_session, inline, top_context):
         sandbox="sandbox"
     )
 
-    assert result["nodes"].length == 1
+    assert len(result["nodes"]) == 1
     node_id = result["nodes"][0]["sharedId"]
 
     # Since the node was found in the sandbox, it should be available
@@ -57,7 +57,7 @@ async def test_locate_same_node_in_different_sandboxes_returns_same_id(bidi_sess
         locator={ "type": "css", "value": "div[data-class='one']" },
         sandbox="second_sandbox"
     )
-    assert second_result["nodes"].length == 1
+    assert len(second_result["nodes"]) == 1
     assert first_result["nodes"][0]["sharedId"] == second_result["nodes"][0]["sharedId"]
 
 
@@ -73,7 +73,7 @@ async def test_locate_same_node_in_default_sandbox_returns_same_id_as_sandbox(bi
         locator={ "type": "css", "value": "div[data-class='one']" }
     )
 
-    assert result["nodes"].length == 1
+    assert len(result["nodes"]) == 1
     node_id = result["nodes"][0]["sharedId"]
 
     result_in_sandbox = await bidi_session.browsing_context.locate_nodes(
@@ -81,5 +81,5 @@ async def test_locate_same_node_in_default_sandbox_returns_same_id_as_sandbox(bi
         locator={ "type": "css", "value": "div[data-class='one']" },
         sandbox="sandbox"
     )
-    assert result_in_sandbox["nodes"].length == 1
+    assert len(result_in_sandbox["nodes"]) == 1
     assert result_in_sandbox["nodes"][0]["sharedId"] == node_id

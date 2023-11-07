@@ -22,8 +22,6 @@ async def test_locate_with_context_nodes(bidi_session, inline, top_context, type
         await_promise=True,
     )
 
-    context_nodes = script_result["result"]
-
     result = await bidi_session.browsing_context.locate_nodes(
         context=top_context["context"],
         locator={ "type": type, "value": value },
@@ -79,7 +77,7 @@ async def test_locate_with_multiple_context_nodes(bidi_session, inline, top_cont
         await_promise=True,
     )
 
-    context_nodes = script_result["result"]
+    context_nodes = script_result["value"]
 
     result = await bidi_session.browsing_context.locate_nodes(
         context=top_context["context"],

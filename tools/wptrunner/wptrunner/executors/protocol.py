@@ -631,7 +631,7 @@ class FedCMProtocolPart(ProtocolPart):
     @abstractmethod
     def click_fedcm_dialog_button(self, dialog_button):
         """Click a button on the FedCM dialog
-        
+
         :param str dialog_button: The dialog button to click"""
         pass
 

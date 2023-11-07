@@ -46,6 +46,19 @@ function runTests(data) {
             baseURL = new URL(entry.pattern[1]);
           }
 
+          const EARLIER_COMPONENTS = {
+            protocol: [],
+            hostname: ["protocol"],
+            port: ["protocol", "hostname"],
+            username: ["protocol", "hostname", "port"],
+            password: ["protocol", "hostname", "port", "username"],
+            pathname: ["protocol", "hostname", "port"],
+            search: ["protocol", "hostname", "port", "pathname"],
+            hash: ["protocol", "hostname", "port", "pathname", "search"],
+          };
+
+          // TODO(jbroman): Update the below comment.
+          //
           // We automatically populate the expected pattern string using
           // the following options in priority order:
           //
@@ -61,6 +74,9 @@ function runTests(data) {
           } else if (typeof entry.pattern[0] === 'object' &&
               entry.pattern[0][component]) {
             expected = entry.pattern[0][component];
+          } else if (typeof entry.pattern[0] === 'object' &&
+              EARLIER_COMPONENTS[component].some(c => c in entry.pattern[0])) {
+            expected = '*';
           } else if (baseURL) {
             let base_value = baseURL[component];
             // Unfortunately some URL() getters include separator chars; e.g.
@@ -69,6 +85,7 @@ function runTests(data) {
               base_value = base_value.substring(0, base_value.length - 1);
             else if (component === 'search' || component === 'hash')
               base_value = base_value.substring(1, base_value.length);
+
             expected = base_value;
           } else {
             expected = '*';

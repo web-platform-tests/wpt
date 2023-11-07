@@ -17,7 +17,7 @@ async def test_locate_with_context_nodes(bidi_session, inline, top_context, type
         context=top_context["context"], url=url, wait="complete"
     )
 
-    script_result = await bidi_session.script.evaluate(
+    context_nodes = await bidi_session.script.evaluate(
         expression="""document.querySelector("p")""",
         target=ContextTarget(top_context["context"]),
         await_promise=True,

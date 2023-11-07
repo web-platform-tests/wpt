@@ -1,6 +1,4 @@
-
 import pytest
-
 
 from ... import any_string, recursive_compare
 

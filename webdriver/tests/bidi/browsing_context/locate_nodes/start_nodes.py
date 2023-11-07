@@ -1,6 +1,5 @@
 import pytest
 
-
 from webdriver.bidi.modules.script import ContextTarget
 from ... import any_string, recursive_compare
 

@@ -50,7 +50,7 @@ async def test_locate_same_node_in_different_sandboxes_returns_same_id(bidi_sess
     )
 
     assert first_result["context"] == top_context["context"]
-    assert first_result["nodes"].length == 1
+    assert len(first_result["nodes"]) == 1
 
     second_result = await bidi_session.browsing_context.locate_nodes(
         context=top_context["context"],

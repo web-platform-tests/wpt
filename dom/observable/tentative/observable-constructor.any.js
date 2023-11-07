@@ -395,3 +395,278 @@ test(() => {
   assert_equals(errorReported.error, error2, "Error object is equivalent");
 }, "Errors pushed by initializer function after subscriber is closed by " +
    "error are reported");
+
+test(() => {
+  const source = new Observable((subscriber) => {
+    let n = 0;
+    while (!subscriber.closed) {
+      subscriber.next(n++);
+      if (n > 3) {
+        assert_unreached("The subscriber should be closed by now");
+      }
+    }
+  });
+
+  const ac = new AbortController();
+  const results = [];
+
+  source.subscribe({
+    next: (x) => {
+      results.push(x);
+      if (x === 2) {
+        ac.abort();
+      }
+    },
+    error: () => assert_unreached("error should not be called"),
+    complete: () =>
+      assert_unreached("should not complete because it was aborted"),
+    signal: ac.signal,
+  });
+
+  assert_array_equals(results, [0, 1, 2], "should emit values synchronously");
+}, "Aborting a subscription should close the subscriber and stop emitting values");
+
+test(() => {
+  let addTeardownCalled = false;
+  const source = new Observable((subscriber) => {
+    subscriber.addTeardown(() => {
+      assert_true(
+        subscriber.closed,
+        "subscriber is closed before teardown is called"
+      );
+      addTeardownCalled = true;
+    });
+  });
+
+  const ac = new AbortController();
+  source.subscribe({
+    signal: ac.signal,
+  });
+
+  assert_false(
+    addTeardownCalled,
+    "addTeardown callback should not be called simply by subscribing"
+  );
+  ac.abort();
+  assert_true(
+    addTeardownCalled,
+    "addTeardown callback should be called when subscription is aborted"
+  );
+}, "addTeardown callback should be called when subscription is aborted");
+
+test(() => {
+  const addTeardownsCalled = [];
+  const results = [];
+
+  const source = new Observable((subscriber) => {
+    subscriber.addTeardown(() => {
+      assert_true(
+        subscriber.closed,
+        "subscriber is closed before teardown is called"
+      );
+      addTeardownsCalled.push("teardown 1");
+    });
+
+    subscriber.addTeardown(() => {
+      addTeardownsCalled.push("teardown 2");
+    });
+
+    assert_array_equals(
+      addTeardownsCalled,
+      [],
+      "addTeardown callbacks should not be called yet"
+    );
+
+    subscriber.next(1);
+    subscriber.next(2);
+    subscriber.next(3);
+    subscriber.complete();
+
+    assert_array_equals(
+      addTeardownsCalled,
+      ["teardown 2", "teardown 1"],
+      "addTeardown callbacks should be called in LIFO order"
+    );
+  });
+
+  source.subscribe({
+    next: (x) => results.push(x),
+    error: () => assert_unreached("error should not be called"),
+    complete: () => results.push("complete"),
+  });
+
+  assert_true(
+    addTeardownCalled,
+    "addTeardown callback should be called when subscription is closed by unsubscribe"
+  );
+
+  assert_array_equals(
+    results,
+    [1, 2, 3, "complete"],
+    "should emit values and complete synchronously"
+  );
+}, "addTeardown callback should be called when subscription is closed by completion");
+
+test(() => {
+  const addTeardownsCalled = [];
+  const error = new Error("error");
+  const results = [];
+
+  const source = new Observable((subscriber) => {
+    subscriber.addTeardown(() => {
+      assert_true(
+        subscriber.closed,
+        "subscriber is closed before teardown is called"
+      );
+      addTeardownsCalled.push("teardown 1");
+    });
+
+    subscriber.addTeardown(() => {
+      addTeardownsCalled.push("teardown 2");
+    });
+
+    assert_array_equals(
+      addTeardownsCalled,
+      [],
+      "addTeardown callbacks should not be called yet"
+    );
+
+    subscriber.next(1);
+    subscriber.next(2);
+    subscriber.next(3);
+    subscriber.error(error);
+
+    assert_array_equals(
+      addTeardownsCalled,
+      ["teardown 2", "teardown 1"],
+      "addTeardown callbacks should be called in LIFO order"
+    );
+  });
+
+  source.subscribe({
+    next: (x) => results.push(x),
+    error: (error) => results.push(error),
+    complete: () => assert_unreached("complete should not be called"),
+  });
+
+  assert_array_equals(
+    addTeardownsCalled,
+    ["teardown 2", "teardown 1"],
+    "addTeardown callbacks should be called in LIFO order"
+  );
+
+  assert_array_equals(
+    results,
+    [1, 2, 3, error],
+    "should emit values and error synchronously"
+  );
+}, "addTeardown callback should be called when subscription is closed by subscriber pushing an error");
+
+test(() => {
+  let addTeardownsCalled = [];
+  const error = new Error("error");
+  const results = [];
+
+  const source = new Observable((subscriber) => {
+    subscriber.addTeardown(() => {
+      assert_true(
+        subscriber.closed,
+        "subscriber is closed before teardown is called"
+      );
+      addTeardownsCalled.push("teardown 1");
+    });
+
+    subscriber.addTeardown(() => {
+      addTeardownsCalled.push("teardown 2");
+    });
+
+    assert_array_equals(
+      addTeardownsCalled,
+      [],
+      "addTeardown callbacks should not be called yet"
+    );
+
+    subscriber.next(1);
+    subscriber.next(2);
+    subscriber.next(3);
+    throw error;
+  });
+
+  source.subscribe({
+    next: (x) => results.push(x),
+    error: (error) => results.push(error),
+    complete: () => assert_unreached("complete should not be called"),
+  });
+
+  assert_array_equals(
+    addTeardownsCalled,
+    ["teardown 2", "teardown 1"],
+    "addTeardown callbacks should be called in LIFO order"
+  );
+
+  assert_array_equals(
+    results,
+    [1, 2, 3, error],
+    "should emit values and error synchronously"
+  );
+}, "addTeardown callbacks should be called in LIFO order when subscription is closed by initializer throwing an error");
+
+test(() => {
+  const error = new Error("error");
+  let errorReported = false;
+
+  self.addEventListener(
+    "error",
+    (e) => {
+      assert_equals(e.message, "Uncaught (in observable) error");
+      assert_equals(e.filename, location.href);
+      assert_greater_than(e.lineno, 0);
+      assert_greater_than(e.colno, 0);
+      assert_equals(e.error, error);
+      errorReported = true;
+    },
+    { once: true }
+  );
+
+  const source = new Observable(() => {
+    throw error;
+  });
+
+  try {
+    source.subscribe();
+  } catch {
+    assert_unreached("should never be reached");
+  }
+
+  assert_true(errorReported);
+}, "calling subscribe should never throw an error synchronously, initializer throws error");
+
+test(() => {
+  const error = new Error("error");
+  let errorReported = false;
+
+  self.addEventListener(
+    "error",
+    (e) => {
+      assert_equals(e.message, "Uncaught (in observable) error");
+      assert_equals(e.filename, location.href);
+      assert_greater_than(e.lineno, 0);
+      assert_greater_than(e.colno, 0);
+      assert_equals(e.error, error);
+      errorReported = true;
+    },
+    { once: true }
+  );
+
+  const source = new Observable((subscriber) => {
+    subscriber.error(error);
+  });
+
+  try {
+    source.subscribe();
+  } catch {
+    assert_unreached("should never be reached");
+  }
+
+  assert_true(errorReported);
+}, "calling subscribe should never throw an error synchronously, subscriber pushes error");

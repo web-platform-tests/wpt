@@ -138,19 +138,7 @@ const AriaUtils = {
       promise_test(async t => {
         const expectedLabel = el.getAttribute("data-expectedlabel");
         let computedLabel = await test_driver.get_computed_label(el);
-
-        // See:
-        // - https://github.com/w3c/accname/pull/165
-        // - https://github.com/w3c/accname/issues/192
-        // - https://github.com/w3c/accname/issues/208
-        //
-        // AccName references HTML's definition of ASCII Whitespace
-        // https://infra.spec.whatwg.org/#ascii-whitespace
-        // which matches tab (\t), newline (\n), formfeed (\f), return (\r), and regular space (\u0020).
-        // but it does NOT match non-breaking space (\xA0,\u00A0) and others matched by \s
-        const asciiWhitespace = /[\t\n\f\r\u0020]+/g;
-        computedLabel = computedLabel.replace(asciiWhitespace, '\u0020').replace(/^\u0020|\u0020$/g, '');
-
+        computedLabel = AriaUtils.trimWhitespace(computedLabel);
         assert_equals(computedLabel, expectedLabel, el.outerHTML);
       }, `${testName}`);
     }
@@ -159,9 +147,10 @@ const AriaUtils = {
 
   /*
   assert_not_equals() wrapper function to verify an element's name computation
-  ignores aria-label (computedLabel != aria-label value).
+  ignores a specified element's attribute.
 
   Ex: <button aria-label="" data-testname="button with empty aria-label does not use aria-label as name">
+        data-ignoredattributeforlabel="aria-label"
         class="ex">
         buttonText
         </button>
@@ -172,21 +161,44 @@ const AriaUtils = {
   https://web-platform-tests.org/writing-tests/testharness-api.html#assert-functions
 
   */
-  verifyAriaLabelIsIgnored: function(selector) {
+  verifyAttributeIsIgnoredforComputedLabel: function(selector) {
     const els = document.querySelectorAll(selector);
     if (!els.length) {
-      throw `Selector passed in verifyAriaLabelIsIgnored("${selector}") should match at least one element.`;
+      throw `Selector passed in verifyAttributeIsIgnoredforComputedLabel("${selector}") should match at least one element.`;
     }
     for (const el of els) {
       let testName = el.getAttribute("data-testname");
+      let attributeToIgnore = el.getAttribute("data-ignoredattributeforlabel");
       promise_test(async t => {
-        const elAriaLabel = el.getAttribute("aria-label");
+        const attributeToIgnoreForLabel = el.getAttribute(attributeToIgnore);
         let computedLabel = await test_driver.get_computed_label(el);
-        computedLabel = computedLabel.trim()
-        assert_not_equals(computedLabel, elAriaLabel, el.outerHTML);
+        computedLabel = this.trimWhitespace(computedLabel);
+        assert_not_equals(computedLabel, attributeToIgnoreForLabel, el.outerHTML);
       }, `${testName}`);
     }
 },
+
+
+  /*
+  Helper function to remove whitespace characters from a string and return the trimmed string.
+
+    See:
+    - https://github.com/w3c/accname/pull/165
+    - https://github.com/w3c/accname/issues/192
+    - https://github.com/w3c/accname/issues/208
+
+    AccName references HTML's definition of ASCII Whitespace
+    https://infra.spec.whatwg.org/#ascii-whitespace
+    which matches tab (\t), newline (\n), formfeed (\f), return (\r), and regular space (\u0020).
+    but it does NOT match non-breaking space (\xA0,\u00A0) and others matched by \s
+
+  */
+  trimWhitespace: function(stringToTrim) {
+    const asciiWhitespace = /[\t\n\f\r\u0020]+/g;
+    let result = stringToTrim.replace(asciiWhitespace, '\u0020').replace(/^\u0020|\u0020$/g, '');
+    return result;
+  },
+
 
 };
 

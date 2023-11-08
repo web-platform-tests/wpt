@@ -182,9 +182,9 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
     "ignore_case_true_partial_match_no_max_depth",
     "ignore_case_false_partial_match_no_max_depth",
     "ignore_case_true_full_match_max_depth_zero",
-    "ignore_case_false_full_match_no_max_depth_zero",
-    "ignore_case_true_partial_match_no_max_depth_zero",
-    "ignore_case_false_partial_match_no_max_depth_zero",
+    "ignore_case_false_full_match_max_depth_zero",
+    "ignore_case_true_partial_match_max_depth_zero",
+    "ignore_case_false_partial_match_max_depth_zero",
 ])
 @pytest.mark.asyncio
 async def test_find_by_inner_text(bidi_session, inline, top_context, ignore_case, match_type, max_depth, value, expected):

@@ -9,7 +9,7 @@ import webdriver
 from urllib.parse import urlunsplit
 
 from tests.support import defaults
-from tests.support.helpers import cleanup_session, deep_update
+from tests.support.helpers import cleanup_bidi_session, cleanup_session, deep_update
 from tests.support.inline import build_inline
 from tests.support.http_request import HTTPRequest
 from tests.support.keys import Keys

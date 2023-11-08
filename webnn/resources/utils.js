@@ -465,7 +465,7 @@ const checkResults = (operationName, namedOutputOperands, outputs, resources) =>
  */
 const createConstantOperand = (builder, resources) => {
   const bufferView = new TypedArrayDict[resources.type](resources.data);
-  return builder.constant({dataType: resources.type, dimensions: resources.shape}, bufferView);
+  return builder.constant({dataType: resources.type, type: resources.type, dimensions: resources.shape}, bufferView);
 };
 
 /**
@@ -478,7 +478,7 @@ const createConstantOperand = (builder, resources) => {
 const createSingleInputOperand = (builder, resources, inputOperandName) => {
   inputOperandName = inputOperandName ? inputOperandName : Object.keys(resources.inputs)[0];
   const inputResources = resources.inputs[inputOperandName];
-  return builder.input(inputOperandName, {dataType: inputResources.type, dimensions: inputResources.shape});
+  return builder.input(inputOperandName, {dataType: inputResources.type, type: inputResources.type, dimensions: inputResources.shape});
 };
 
 /**
@@ -561,7 +561,7 @@ const buildConcat = (operationName, builder, resources) => {
   const namedOutputOperand = {};
   const inputOperands = [];
   for (let input of resources.inputs) {
-    inputOperands.push(builder.input(input.name, {dataType: input.type, dimensions: input.shape}));
+    inputOperands.push(builder.input(input.name, {dataType: input.type, type: input.type, dimensions: input.shape}));
   }
   // invoke builder.concat()
   namedOutputOperand[resources.expected.name] = builder[operationName](inputOperands, resources.axis);

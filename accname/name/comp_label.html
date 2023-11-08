@@ -234,15 +234,15 @@ alert message" data-expectedlabel="alert message" data-testname="div with role a
 <nav aria-label="label&nbsp;" data-expectedlabel="label&nbsp;" data-testname="nav with trailing nbsp char aria-label is valid (nbsp is preserved in name)" class="ex">x</nav>
 <button aria-label="&nbsp;label" data-expectedlabel="&nbsp;label" data-testname="button with leading nbsp char in aria-label is valid (and uses aria-label)" class="ex">my button</button>
 
-<button aria-label="" data-testname="button with empty aria-label does not use aria-label as name" data-ignoredattributeforlabel="aria-label" class="exa">my button</button>
-<textarea aria-label="  " data-testname="textarea with tab character as aria-label does not use aria-label as name" data-ignoredattributeforlabel="aria-label" class="exa">x</textarea>
+<button aria-label="" data-testname="button with empty aria-label does not use aria-label as name" data-ignoredattributeforlabel="aria-label" class="ignore-attribute">my button</button>
+<textarea aria-label="  " data-testname="textarea with tab character as aria-label does not use aria-label as name" data-ignoredattributeforlabel="aria-label" class="ignore-attribute">x</textarea>
 <button aria-label="
-" data-testname="button with carriage return as aria-label does not use aria-label as name" data-ignoredattributeforlabel="" class="exa">my button</button>
-<button aria-label="      " data-testname="button with space characters as aria-label does not use aria-label as name" data-ignoredattributeforlabel="aria-label" class="exa">my button</button>
+" data-testname="button with carriage return as aria-label does not use aria-label as name" data-ignoredattributeforlabel="" class="ignore-attribute">my button</button>
+<button aria-label="      " data-testname="button with space characters as aria-label does not use aria-label as name" data-ignoredattributeforlabel="aria-label" class="ignore-attribute">my button</button>
 
 <script>
 AriaUtils.verifyLabelsBySelector(".ex");
-AriaUtils.verifyAttributeIsIgnoredforComputedLabel(".exa")
+AriaUtils.verifyAttributeIsIgnoredforComputedLabel(".ignore-attribute")
 </script>
 </body>
 </html>

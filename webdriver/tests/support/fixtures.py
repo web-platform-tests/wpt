@@ -185,7 +185,7 @@ async def session(capabilities, configuration):
 
     yield _current_session
 
-    await cleanup_session(_current_session)
+    cleanup_session(_current_session)
 
 
 @pytest_asyncio.fixture(scope="function")
@@ -227,7 +227,7 @@ async def bidi_session(capabilities, configuration):
 
     yield _current_session.bidi_session
 
-    await cleanup_session(_current_session)
+    await cleanup_bidi_session(_current_session)
     await _current_session.bidi_session.end()
 
 

@@ -18,7 +18,7 @@ def ignore_exceptions(f):
     return inner
 
 
-async def cleanup_session(session):
+def cleanup_session(session):
     """Clean-up the current session for a clean state."""
     @ignore_exceptions
     def _dismiss_user_prompts(session):
@@ -60,50 +60,61 @@ async def cleanup_session(session):
             session.window.size = defaults.WINDOW_SIZE
 
     @ignore_exceptions
-    async def _restore_windows(session):
+    def _restore_windows(session):
         """Close superfluous windows opened by the test.
 
         It will not end the session implicitly by closing the last window.
-        If available, uses WebDriver BiDi session. Otherwise, uses the WebDriver Classic.
         """
+        current_window = session.window_handle
 
-        if session.bidi_session:
-            command_result_future = await session.bidi_session.send_command("browsingContext.getTree", {"maxDepth": 1})
-            command_result = await command_result_future
-            # List of top-level browsing contexts.
-            top_contexts = [c["context"] for c in command_result["contexts"]]
+        for window in _windows(session, exclude=[current_window]):
+            session.window_handle = window
+            if len(session.handles) > 1:
+                session.window.close()
 
-            # If classic session has a window handle, and if it is still open, keep it open.
-            # Otherwise, keep open the first browsing context.
-            if session.window_handle is not None \
-                    and session.window_handle in top_contexts:
-                current_window = session.window_handle
-            else:
-                current_window = top_contexts[0]
-                session.window_handle = current_window
-
-            for context in command_result["contexts"]:
-                if context["context"] != current_window:
-                    command_result_future = await session.bidi_session.send_command("browsingContext.close",
-                                                                                    {"context": context["context"]})
-                    await command_result_future
-        else:
-            current_window = session.window_handle
-
-            for window in _windows(session, exclude=[current_window]):
-                session.window_handle = window
-                if len(session.handles) > 1:
-                    session.window.close()
-
-            session.window_handle = current_window
+        session.window_handle = current_window
 
     _restore_timeouts(session)
     _ensure_valid_window(session)
     _dismiss_user_prompts(session)
-    await _restore_windows(session)
+    _restore_windows(session)
     _restore_window_state(session)
     _switch_to_top_level_browsing_context(session)
 
+
+async def cleanup_bidi_session(session):
+    """
+    Clean-up the current BiDi session for a clean state.
+    """
+
+    async def _restore_windows(session):
+        """
+        Close superfluous windows opened by the test.
+
+        If classic `session.window_handle` is set and is open, keep it open. Otherwise, keep open the first browsing
+        context, and set `session.window_handle` to it.
+        """
+        command_result_future = await session.bidi_session.send_command("browsingContext.getTree", {"maxDepth": 1})
+        command_result = await command_result_future
+        # List of top-level browsing contexts.
+        top_contexts = [c["context"] for c in command_result["contexts"]]
+
+        # If classic session has a window handle, and if it is still open, keep it open.
+        # Otherwise, keep open the first browsing context.
+        if session.window_handle is not None \
+                and session.window_handle in top_contexts:
+            current_window = session.window_handle
+        else:
+            current_window = top_contexts[0]
+            session.window_handle = current_window
+
+        for context in command_result["contexts"]:
+            if context["context"] != current_window:
+                command_result_future = await session.bidi_session.send_command("browsingContext.close",
+                                                                                {"context": context["context"]})
+                await command_result_future
+
+    await _restore_windows(session)
 
 @ignore_exceptions
 def _switch_to_top_level_browsing_context(session):

@@ -87,9 +87,9 @@ async def cleanup_bidi_session(session):
     Clean-up the current BiDi session for a clean state.
     """
 
-    async def _restore_windows(session):
+    async def _restore_browsing_contexts(session):
         """
-        Close superfluous windows opened by the test.
+        Close superfluous browsing contexts opened by the test.
 
         If classic `session.window_handle` is set and is open, keep it open. Otherwise, keep open the first browsing
         context, and set `session.window_handle` to it.
@@ -114,7 +114,7 @@ async def cleanup_bidi_session(session):
                                                                                 {"context": context["context"]})
                 await command_result_future
 
-    await _restore_windows(session)
+    await _restore_browsing_contexts(session)
 
 @ignore_exceptions
 def _switch_to_top_level_browsing_context(session):

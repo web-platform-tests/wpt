@@ -1,6 +1,6 @@
 import pytest
 
-from webdriver.bidi.modules.script import ContextTarget
+from webdriver.bidi.modules.script import ContextTarget,OwnershipModel
 
 
 @pytest.mark.asyncio
@@ -82,3 +82,32 @@ async def test_locate_same_node_in_default_sandbox_returns_same_id_as_sandbox(bi
     )
     assert len(result_in_sandbox["nodes"]) == 1
     assert result_in_sandbox["nodes"][0]["sharedId"] == node_id
+
+
+@pytest.mark.asyncio
+async def test_locate_same_node_in_different_sandboxes_with_root_ownership_returns_different_handles(bidi_session, inline, top_context):
+    url = inline("""<div data-class="one">foobarBARbaz</div><div data-class="two">foobarBARbaz</div>""")
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"], url=url, wait="complete"
+    )
+
+    first_result = await bidi_session.browsing_context.locate_nodes(
+        context=top_context["context"],
+        locator={ "type": "css", "value": "div[data-class='one']" },
+        sandbox="first_sandbox",
+        ownership=OwnershipModel.ROOT
+    )
+
+    assert first_result["context"] == top_context["context"]
+    assert len(first_result["nodes"]) == 1
+
+    second_result = await bidi_session.browsing_context.locate_nodes(
+        context=top_context["context"],
+        locator={ "type": "css", "value": "div[data-class='one']" },
+        sandbox="second_sandbox",
+        ownership=OwnershipModel.ROOT
+    )
+
+    assert len(second_result["nodes"]) == 1
+    assert first_result["nodes"][0]["sharedId"] == second_result["nodes"][0]["sharedId"]
+    assert first_result["nodes"][0]["handle"] != second_result["nodes"][0]["handle"]

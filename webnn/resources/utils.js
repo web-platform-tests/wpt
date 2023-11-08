@@ -525,7 +525,7 @@ const buildOperationWithSingleInput = (operationName, builder, resources) => {
  * @param {Object} resources - Resources used for building a graph
  * @returns {MLNamedOperands}
  */
-const buildOperationWithTwoInputs= (operationName, builder, resources) => {
+const buildOperationWithTwoInputs = (operationName, builder, resources) => {
   // For example: MLOperand matmul(MLOperand a, MLOperand b);
   const namedOutputOperand = {};
   const [inputOperandA, inputOperandB] = createMultiInputOperands(builder, resources);
@@ -583,7 +583,7 @@ const buildConvTranspose2d = (operationName, builder, resources) => {
   return namedOutputOperand;
 };
 
-const buildConv2d= (operationName, builder, resources) => {
+const buildConv2d = (operationName, builder, resources) => {
   // MLOperand conv2d(MLOperand input, MLOperand filter, optional MLConv2dOptions options = {});
   const namedOutputOperand = {};
   const [inputOperand, filterOperand] = createMultiInputOperands(builder, resources);
@@ -598,7 +598,7 @@ const buildConv2d= (operationName, builder, resources) => {
   return namedOutputOperand;
 };
 
-const buildGemm= (operationName, builder, resources) => {
+const buildGemm = (operationName, builder, resources) => {
   // MLOperand gemm(MLOperand a, MLOperand b, optional MLGemmOptions options = {});
   const namedOutputOperand = {};
   const [inputOperandA, inputOperandB] = createMultiInputOperands(builder, resources);
@@ -609,7 +609,7 @@ const buildGemm= (operationName, builder, resources) => {
     } else {
       // MLOperand c;
       // Create a single-value operand when c is a scalar
-      gemmOptions.c = builder.constant(gemmOptions.c);
+      gemmOptions.c = builder.constant({dataType: 'float32', type: 'float32', dimensions: [1]}, new Float32Array([gemmOptions.c]));
     }
   }
   namedOutputOperand[resources.expected.name] = builder[operationName](inputOperandA, inputOperandB, gemmOptions);

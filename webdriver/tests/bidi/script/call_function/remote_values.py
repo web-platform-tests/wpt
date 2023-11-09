@@ -63,11 +63,12 @@ async def test_window_context_top_level(bidi_session, top_context,
             }
         }, result)
 
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize("await_promise", [True, False])
-async def test_window_iframe_window(bidi_session, top_context,
-                                    test_page_same_origin_frame,
-                                    await_promise):
+async def test_window_context_iframe_window(bidi_session, top_context,
+                                            test_page_same_origin_frame,
+                                            await_promise):
 
     await bidi_session.browsing_context.navigate(
         context=top_context["context"],
@@ -138,6 +139,11 @@ async def test_window_context_iframe_content_window(
 async def test_window_context_same_id_after_navigation(bidi_session,
                                                        top_context, inline,
                                                        await_promise, domain):
+
+    defaultOrigin = inline(f"{domain}")
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"], url=defaultOrigin, wait="complete")
+
     url = inline(f"{domain}", domain=domain)
 
     function_declaration = f"() => window"
@@ -164,4 +170,3 @@ async def test_window_context_same_id_after_navigation(bidi_session,
     navigated_context_id = result['value']['context']
 
     assert navigated_context_id == original_context_id
-

@@ -35,9 +35,8 @@ async def test_window_context_top_level(bidi_session, top_context):
         }, result)
 
 
-
 @pytest.mark.asyncio
-async def test_window_iframe_window(
+async def test_window_context_iframe_window(
         bidi_session, top_context, test_page_same_origin_frame):
 
     await bidi_session.browsing_context.navigate(
@@ -95,9 +94,18 @@ async def test_window_context_iframe_content_window(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("domain", ["", "alt"],
+                         ids=["same_origin", "cross_origin"])
 async def test_window_context_same_id_after_navigation(bidi_session,
                                                        top_context,
-                                                       test_page_cross_origin):
+                                                       inline,
+                                                       domain):
+
+    defaultOrigin = inline(f"{domain}")
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"], url=defaultOrigin, wait="complete")
+
+    url = inline(f"{domain}", domain=domain)
 
     result = await bidi_session.script.evaluate(
         expression="window",
@@ -110,7 +118,7 @@ async def test_window_context_same_id_after_navigation(bidi_session,
 
     await bidi_session.browsing_context.navigate(
         context=top_context["context"],
-        url=test_page_cross_origin,
+        url=url,
         wait="complete")
 
     result = await bidi_session.script.evaluate(

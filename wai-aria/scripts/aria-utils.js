@@ -155,16 +155,16 @@ const AriaUtils = {
         buttonText
         </button>
 
-      AriaUtils.verifyAriaLabelIsIgnored(".ex")
+      AriaUtils.verifyAttributeIsIgnoredForComputedLabel(".ex")
 
   See Web Platform Test's test harness API documentation for available assert functions:
   https://web-platform-tests.org/writing-tests/testharness-api.html#assert-functions
 
   */
-  verifyAttributeIsIgnoredforComputedLabel: function(selector) {
+  verifyAttributeIsIgnoredForComputedLabel: function(selector) {
     const els = document.querySelectorAll(selector);
     if (!els.length) {
-      throw `Selector passed in verifyAttributeIsIgnoredforComputedLabel("${selector}") should match at least one element.`;
+      throw `Selector passed in verifyAttributeIsIgnoredForComputedLabel("${selector}") should match at least one element.`;
     }
     for (const el of els) {
       let testName = el.getAttribute("data-testname");

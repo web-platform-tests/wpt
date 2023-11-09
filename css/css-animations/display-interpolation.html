@@ -23,39 +23,47 @@ const alwaysNone = [
   {at: 1, expect: 'none'},
   {at: 1.5, expect: 'none'},
 ];
-
-test_interpolation({
-  property: 'display',
-  behavior: 'allow-discrete',
-  from: 'block',
-  to: 'none',
-}, [
+const blockToNone = [
   {at: -1, expect: 'block'},
   {at: 0, expect: 'block'},
   {at: 0.1, expect: 'block'},
   {at: 0.9, expect: 'block'},
   {at: 1, expect: 'none'},
   {at: 1.5, expect: 'none'},
-]);
-
-// This transitions test expect 'block' at every point because transitioning
-// from display:none does not provide an initial style. This is expected and
-// can be worked around by using @initial.
-test_interpolation({
-  property: 'display',
-  behavior: 'allow-discrete',
-  from: 'none',
-  to: 'block',
-  'CSS Transitions with transition: all': alwaysBlock,
-  'CSS Transitions': alwaysBlock
-}, [
+];
+const noneToBlock = [
   {at: -1, expect: 'none'},
   {at: 0, expect: 'none'},
   {at: 0.1, expect: 'block'},
   {at: 0.9, expect: 'block'},
   {at: 1, expect: 'block'},
   {at: 1.5, expect: 'block'},
-]);
+];
+
+test_no_interpolation({
+  property: 'display',
+  from: 'block',
+  to: 'none',
+  'CSS Transitions with transition-behavior:allow-discrete': blockToNone,
+  'CSS Transitions with transition-property:all and transition-behavor:allow-discrete': blockToNone,
+  'CSS Animations': blockToNone,
+  'Web Animations': blockToNone
+});
+
+// This transitions test expect 'block' at every point because transitioning
+// from display:none does not provide an initial style. This is expected and
+// can be worked around by using @initial.
+test_no_interpolation({
+  property: 'display',
+  from: 'none',
+  to: 'block',
+  'CSS Transitions with transition: all': alwaysBlock,
+  'CSS Transitions': alwaysBlock,
+  'CSS Transitions with transition-behavior:allow-discrete': alwaysBlock,
+  'CSS Transitions with transition-property:all and transition-behavor:allow-discrete': alwaysBlock,
+  'CSS Animations': noneToBlock,
+  'Web Animations': noneToBlock
+});
 
 test_no_interpolation({
   property: 'display',
@@ -63,16 +71,14 @@ test_no_interpolation({
   to: 'block'
 });
 
-test_interpolation({
+test_no_interpolation({
   property: 'display',
-  behavior: 'allow-discrete',
   from: 'block',
   to: 'block'
-}, alwaysBlock);
+});
 
-test_interpolation({
+test_no_interpolation({
   property: 'display',
-  behavior: 'allow-discrete',
   from: 'none',
   to: 'none'
 }, alwaysNone);

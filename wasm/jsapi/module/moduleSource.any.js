@@ -33,7 +33,7 @@ test(() => {
 
   const AbstractModuleSource = Object.getPrototypeOf(WebAssembly.Module);
   const toStringTag = Object.getOwnPropertyDescriptor(AbstractModuleSource.prototype, Symbol.toStringTag).get;
-  
+
   assert_equals(toStringTag.call(module), "WebAssembly.Module");
   assert_throws_js(TypeError, () => toStringTag.call({}));
 }, "AbstractModuleSourceProto toStringTag brand check");

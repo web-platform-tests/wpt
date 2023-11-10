@@ -237,12 +237,11 @@ alert message" data-expectedlabel="alert message" data-testname="div with role a
 <button aria-label="" data-testname="button with empty aria-label does not use aria-label as name" data-expectedlabel="my button" class="ex">my button</button>
 <textarea aria-label="  " title="title" data-testname="textarea with tab character as aria-label does not use aria-label as name" data-expectedlabel="title" class="ex">textarea contents</textarea>
 <button aria-label="
-" data-testname="button with carriage return as aria-label does not use aria-label as name" data-ignoredattributeforlabel="aria-label" class="ignore-attribute">my button</button>
-<button aria-label="      " data-testname="button with space characters as aria-label does not use aria-label as name" data-ignoredattributeforlabel="aria-label" class="ignore-attribute">my button</button>
+" data-testname="button with carriage return as aria-label does not use aria-label as name" data-expectedlabel="my button" class="ex">my button</button>
+<button aria-label="      " data-testname="button with space characters as aria-label does not use aria-label as name" data-expectedlabel="my button" class="ex">my button</button>
 
 <script>
 AriaUtils.verifyLabelsBySelector(".ex");
-AriaUtils.verifyAttributeIsIgnoredForComputedLabel(".ignore-attribute")
 </script>
 </body>
 </html>

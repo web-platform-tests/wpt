@@ -1,0 +1,39 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>CSS Selectors: Part selectors</title>
+<link rel="help" href="https://drafts.csswg.org/css-shadow-parts/#part" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<script>
+  test_valid_selector("::part(a)");
+  test_valid_selector("::part(bar)");
+  test_valid_selector("::part(foo bar baz)");
+  test_valid_selector("::part(--0)");
+  test_valid_selector("::part(--16px)");
+  test_valid_selector("::part(foo):hover");
+  test_valid_selector("::part(foo):focus");
+  test_valid_selector("::part(foo):after");
+  test_valid_selector("::part(foo)::after");
+  test_valid_selector("::part(foo)::selection");
+  test_valid_selector("::part(foo)::first-letter");
+  test_valid_selector("::part(foo):not(:hover):not(:focus)");
+  test_valid_selector("::part(foo):not(:hover):not(:focus)::first-letter");
+  test_valid_selector(
+    "::part(foo):is(:hover, :focus):not(:focus-within)::first-letter",
+  );
+  test_valid_selector("::part(foo):lang(en)");
+  test_valid_selector("::part(foo):dir(rtl)");
+
+  test_invalid_selector("::part");
+  test_invalid_selector("::part(");
+  test_invalid_selector("::part(foo");
+  test_invalid_selector("::part(1)");
+  test_invalid_selector("::part(1rem)");
+  test_invalid_selector("::part(foo)::part(bar)");
+  test_invalid_selector("::part(foo)::nth-child(2)");
+  test_invalid_selector("::part(foo)::nth-child(2)");
+  test_invalid_selector("::part(:hover)");
+  test_invalid_selector("::part(::after)");
+  test_invalid_selector("::part(foo:not([hidden]))");
+</script>

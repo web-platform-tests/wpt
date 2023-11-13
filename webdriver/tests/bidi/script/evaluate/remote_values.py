@@ -18,11 +18,12 @@ async def test_remote_values(bidi_session, top_context, expression, expected):
 
 
 @pytest.mark.asyncio
-async def test_window_context_top_level(bidi_session, top_context):
+@pytest.mark.parametrize("await_promise", [True, False])
+async def test_window_context_top_level(bidi_session, top_context, await_promise):
     result = await bidi_session.script.evaluate(
         expression="window",
         target=ContextTarget(top_context["context"]),
-        await_promise=False,
+        await_promise=await_promise,
         serialization_options=SerializationOptions(max_object_depth=1),
     )
 
@@ -36,8 +37,9 @@ async def test_window_context_top_level(bidi_session, top_context):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("await_promise", [True, False])
 async def test_window_context_iframe_window(
-        bidi_session, top_context, test_page_same_origin_frame):
+        bidi_session, top_context, test_page_same_origin_frame, await_promise):
 
     await bidi_session.browsing_context.navigate(
         context=top_context["context"],
@@ -51,7 +53,7 @@ async def test_window_context_iframe_window(
     result = await bidi_session.script.evaluate(
         expression="window",
         target=ContextTarget(iframe_context["context"]),
-        await_promise=False,
+        await_promise=await_promise,
         serialization_options=SerializationOptions(max_object_depth=1),
     )
 
@@ -65,8 +67,9 @@ async def test_window_context_iframe_window(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("await_promise", [True, False])
 async def test_window_context_iframe_content_window(
-        bidi_session, top_context, test_page_same_origin_frame):
+        bidi_session, top_context, test_page_same_origin_frame, await_promise):
 
     await bidi_session.browsing_context.navigate(
         context=top_context["context"],
@@ -81,7 +84,7 @@ async def test_window_context_iframe_content_window(
     result = await bidi_session.script.evaluate(
         expression="window.frames[0]",
         target=ContextTarget(top_context["context"]),
-        await_promise=False,
+        await_promise=await_promise,
     )
 
     recursive_compare(
@@ -96,10 +99,12 @@ async def test_window_context_iframe_content_window(
 @pytest.mark.asyncio
 @pytest.mark.parametrize("domain", ["", "alt"],
                          ids=["same_origin", "cross_origin"])
+@pytest.mark.parametrize("await_promise", [True, False])
 async def test_window_context_same_id_after_navigation(bidi_session,
                                                        top_context,
                                                        inline,
-                                                       domain):
+                                                       domain,
+                                                       await_promise):
 
     defaultOrigin = inline(f"{domain}")
     await bidi_session.browsing_context.navigate(
@@ -110,7 +115,7 @@ async def test_window_context_same_id_after_navigation(bidi_session,
     result = await bidi_session.script.evaluate(
         expression="window",
         target=ContextTarget(top_context["context"]),
-        await_promise=False,
+        await_promise=await_promise,
         serialization_options=SerializationOptions(max_object_depth=1),
     )
 
@@ -124,7 +129,7 @@ async def test_window_context_same_id_after_navigation(bidi_session,
     result = await bidi_session.script.evaluate(
         expression="window",
         target=ContextTarget(top_context["context"]),
-        await_promise=False,
+        await_promise=await_promise,
         serialization_options=SerializationOptions(max_object_depth=1),
     )
 

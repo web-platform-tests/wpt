@@ -16,6 +16,7 @@ async def test_basic_authentication(
     bidi_session,
     new_tab,
     wait_for_event,
+    wait_for_future_safe,
     url,
     setup_network_test,
     add_intercept,
@@ -48,7 +49,7 @@ async def test_basic_authentication(
         wait="none",
     )
 
-    await on_auth_required
+    await wait_for_future_safe(on_auth_required)
     expected_request = {"method": "GET", "url": auth_url}
 
     assert len(before_request_sent_events) == 1

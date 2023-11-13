@@ -109,9 +109,9 @@ async def cleanup_bidi_session(session):
             session.window_handle = current_window
 
         for context in top_contexts:
-            if context["context"] != current_window:
+            if context != current_window:
                 command_result_future = await session.bidi_session.send_command("browsingContext.close",
-                                                                                {"context": context["context"]})
+                                                                                {"context": context})
                 await command_result_future
 
     await _restore_browsing_contexts(session)

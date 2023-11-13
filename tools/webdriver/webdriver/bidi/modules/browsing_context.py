@@ -1,4 +1,5 @@
 import base64
+from enum import Enum
 from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Union
 
 from ._module import BidiModule, command
@@ -6,13 +7,10 @@ from ._module import BidiModule, command
 
 class ElementOptions(Dict[str, Any]):
     def __init__(
-        self, element: Mapping[str, Any], scroll_into_view: Optional[bool] = None
+        self, element: Mapping[str, Any]
     ):
         self["type"] = "element"
         self["element"] = element
-
-        if scroll_into_view is not None:
-            self["scrollIntoView"] = scroll_into_view
 
 
 class BoxOptions(Dict[str, Any]):
@@ -27,6 +25,11 @@ class BoxOptions(Dict[str, Any]):
 ClipOptions = Union[ElementOptions, BoxOptions]
 
 
+class OriginOptions(Enum):
+    DOCUMENT = "document"
+    VIEWPORT = "viewport"
+
+
 class BrowsingContext(BidiModule):
     @command
     def activate(self, context: str) -> Mapping[str, Any]:
@@ -34,12 +37,18 @@ class BrowsingContext(BidiModule):
 
     @command
     def capture_screenshot(
-        self, context: str, clip: Optional[ClipOptions] = None
+        self,
+        context: str,
+        clip: Optional[ClipOptions] = None,
+        origin: Optional[OriginOptions] = None,
     ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {"context": context}
 
         if clip is not None:
             params["clip"] = clip
+
+        if origin is not None:
+            params["origin"] = origin
 
         return params
 

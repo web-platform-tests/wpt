@@ -13,15 +13,6 @@
 
 <p>DPUB-AAM changed expectations for role description and other details since the initial v1.0 implementations, many of which are not yet testable via WPT, but this tests the new <a href="https://w3c.github.io/dpub-aam/#mapping_role_table">DPUB `computedrole` mapping</a> expectations. Additional rationale in <a href="https://github.com/w3c/aria/issues/1887">ARIA #1887</a>.</p>
 
-<!-- START DELETE ME -->
-<h4>Delete this section after the other relevant PRs are merged:</h4>
-<ul>
-  <li><a href="https://github.com/w3c/dpub-aam/pull/33">DPUB-AAM PR #33</a> <a href="https://github.com/w3c/dpub-aam/pull/33/files">File Diff</a></li>
-  <li><a href="https://pr-preview.s3.amazonaws.com/w3c/dpub-aam/pull/33.html">PR Preview (implement from this)</a></li>
-  <li><a href="https://github.com/w3c/aria/issues/2055">More info on this new implement-from-PR process change</a></li>
-</ul>
-<!-- END DELETE ME -->
-
 <script>
 
 AriaUtils.assignAndVerifyRolesByRoleNames([
@@ -30,9 +21,7 @@ AriaUtils.assignAndVerifyRolesByRoleNames([
   "doc-afterword",
   "doc-appendix",
   "doc-backlink",
-  "doc-biblioentry",
-  // Blocked: https://w3c.github.io/dpub-aam/#role-map-biblioentry-implied blocked by https://github.com/w3c/dpub-aria/issues/59
-  // Will need above test in another file, such as a new ./roles-contextual.html
+  // "doc-biblioentry", // deprecated
   "doc-bibliography",
   "doc-biblioref",
   "doc-chapter",
@@ -41,9 +30,7 @@ AriaUtils.assignAndVerifyRolesByRoleNames([
   "doc-cover",
   "doc-credits",
   "doc-dedication",
-  "doc-endnote",
-  // Blocked: https://w3c.github.io/dpub-aam/#role-map-endnote-implied blocked by https://github.com/w3c/dpub-aria/issues/59
-  // Will need above test in another file, such as a new ./roles-contextual.html
+  // "doc-endnote", // deprecated
   "doc-endnotes",
   "doc-epigraph",
   "doc-epilogue",

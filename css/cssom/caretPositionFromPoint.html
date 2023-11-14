@@ -12,6 +12,12 @@
 <div id="textDiv">aaa</div>
 <script>
   test(() => {
+    assert_throws_js(TypeError, () => { document.caretPositionFromPoint(); });
+    assert_throws_js(TypeError, () => { document.caretPositionFromPoint(5); });
+    assert_throws_js(TypeError, () => { document.caretPositionFromPoint("foo", 5); });
+  }, "document.caretPositionFromPoint() throws when called without the correct parameters");
+
+  test(() => {
     const doc = document.implementation.createHTMLDocument("");
     assert_equals(doc.caretPositionFromPoint(0, 0), null);
   }, "document.caretPositionFromPoint() should return null for a document with no viewport");

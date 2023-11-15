@@ -16,6 +16,14 @@
       {
          "element" : "test",
          "test" : {
+            "ATK" : [
+               [
+                  "property",
+                  "states",
+                  "doesNotContain",
+                  "STATE_HAS_POPUP"
+               ]
+            ],
             "IAccessible2" : [
                [
                   "property",
@@ -45,7 +53,7 @@
   </head>
   <body>
   <p>This test examines the ARIA properties for aria-haspopup=false.</p>
-    <div role='group' id='test' aria-haspopup='false'>content</div>
+    <div role='button' id='test' aria-haspopup='false'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

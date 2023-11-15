@@ -6,13 +6,13 @@
 <link rel=assert title="XXX">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="resources/support.js"></script>
 
 <script>
     createdb(async_test()).onupgradeneeded = function(e) {
         var store = e.target.result.createObjectStore("store");
 
-        assert_throws('InvalidAccessError', function() {
+        assert_throws_dom('InvalidAccessError', function() {
             store.createIndex('actors', ['name'], { multiEntry: true })
         });
 

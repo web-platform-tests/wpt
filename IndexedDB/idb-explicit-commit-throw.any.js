@@ -1,12 +1,4 @@
-// META: script=support-promises.js
-
-/**
- * This file contains a test that was separated out from the rest of the idb
- * explict commit tests because it requires the flag 'allow_uncaught_exception',
- * which prevents unintentionally thrown errors from failing tests.
- *
- * @author andreasbutler@google.com
- */
+// META: script=resources/support-promises.js
 
 setup({allow_uncaught_exception:true});
 

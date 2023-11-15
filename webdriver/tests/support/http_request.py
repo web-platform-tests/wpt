@@ -1,26 +1,25 @@
 import contextlib
-import httplib
 import json
 
-from six import text_type
+from http.client import HTTPConnection
 
 
 class HTTPRequest(object):
-    def __init__(self, host, port):
+    def __init__(self, host: str, port: int):
         self.host = host
         self.port = port
 
-    def head(self, path):
+    def head(self, path: str):
         return self._request("HEAD", path)
 
-    def get(self, path):
+    def get(self, path: str):
         return self._request("GET", path)
 
-    def post(self, path, body):
+    def post(self, path: str, body):
         return self._request("POST", path, body)
 
     @contextlib.contextmanager
-    def _request(self, method, path, body=None):
+    def _request(self, method: str, path: str, body=None):
         payload = None
 
         if body is not None:
@@ -30,10 +29,10 @@ class HTTPRequest(object):
                 raise ValueError("Failed to encode request body as JSON: {}".format(
                     json.dumps(body, indent=2)))
 
-            if isinstance(payload, text_type):
+            if isinstance(payload, str):
                 payload = body.encode("utf-8")
 
-        conn = httplib.HTTPConnection(self.host, self.port)
+        conn = HTTPConnection(self.host, self.port)
         try:
             conn.request(method, path, payload)
             yield conn.getresponse()

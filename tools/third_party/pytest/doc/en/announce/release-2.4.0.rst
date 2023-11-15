@@ -7,7 +7,7 @@ from a few supposedly very minor incompatibilities.  See below for
 a full list of details.  A few feature highlights:
 
 - new yield-style fixtures `pytest.yield_fixture
-  <http://pytest.org/latest/yieldfixture.html>`_, allowing to use
+  <http://pytest.org/en/stable/yieldfixture.html>`_, allowing to use
   existing with-style context managers in fixture functions.
 
 - improved pdb support: ``import pdb ; pdb.set_trace()`` now works
@@ -23,14 +23,13 @@ a full list of details.  A few feature highlights:
   called if the corresponding setup method succeeded.
 
 - integrate tab-completion on command line options if you
-  have `argcomplete <http://pypi.python.org/pypi/argcomplete>`_
-  configured.
+  have :pypi:`argcomplete` configured.
 
 - allow boolean expression directly with skipif/xfail
   if a "reason" is also specified.
 
 - a new hook ``pytest_load_initial_conftests`` allows plugins like
-  `pytest-django <https://pypi.org/project/pytest-django/>`_ to
+  :pypi:`pytest-django` to
   influence the environment before conftest files import ``django``.
 
 - reporting: color the last line red or green depending if

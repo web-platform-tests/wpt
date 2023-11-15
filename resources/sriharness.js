@@ -1,17 +1,30 @@
-var SRIScriptTest = function(pass, name, src, integrityValue, crossoriginValue, nonce) {
+// `integrityValue` indicates the 'integrity' attribute value at the time of
+// #prepare-a-script.
+//
+// `integrityValueAfterPrepare` indicates how the 'integrity' attribute value
+// is modified after #prepare-a-script:
+// - `undefined` => not modified.
+// - `null` => 'integrity' attribute is removed.
+// - others => 'integrity' attribute value is set to that value.
+//
+// TODO: Make the arguments a dictionary for readability in the test files.
+var SRIScriptTest = function(pass, name, src, integrityValue, crossoriginValue, nonce, integrityValueAfterPrepare) {
     this.pass = pass;
     this.name = "Script: " + name;
     this.src = src;
     this.integrityValue = integrityValue;
     this.crossoriginValue = crossoriginValue;
     this.nonce = nonce;
+    this.integrityValueAfterPrepare = integrityValueAfterPrepare;
 }
 
 SRIScriptTest.prototype.execute = function() {
     var test = async_test(this.name);
     var e = document.createElement("script");
     e.src = this.src;
-    e.setAttribute("integrity", this.integrityValue);
+    if (this.integrityValue) {
+      e.setAttribute("integrity", this.integrityValue);
+    }
     if(this.crossoriginValue) {
         e.setAttribute("crossorigin", this.crossoriginValue);
     }
@@ -30,6 +43,12 @@ SRIScriptTest.prototype.execute = function() {
        e.addEventListener("error", function() {test.done()});
     }
     document.body.appendChild(e);
+
+    if (this.integrityValueAfterPrepare === null) {
+      e.removeAttribute("integrity");
+    } else if (this.integrityValueAfterPrepare !== undefined) {
+      e.setAttribute("integrity", this.integrityValueAfterPrepare);
+    }
 };
 
 function set_extra_attributes(element, attrs) {
@@ -71,9 +90,12 @@ function buildElementFromDestination(resource_url, destination, attrs) {
   return element;
 }
 
+// When using SRIPreloadTest, also include /preload/resources/preload_helper.js
+// |number_of_requests| is used to ensure that preload requests are actually
+// reused as expected.
 const SRIPreloadTest = (preload_sri_success, subresource_sri_success, name,
-                        destination, resource_url, link_attrs,
-                        subresource_attrs) => {
+                        number_of_requests, destination, resource_url,
+                        link_attrs, subresource_attrs) => {
   const test = async_test(name);
   const link = document.createElement('link');
 
@@ -101,7 +123,10 @@ const SRIPreloadTest = (preload_sri_success, subresource_sri_success, name,
     { assert_unreached("Valid subresource fired error handler.") });
   const invalid_subresource_succeeded = test.step_func(() =>
     { assert_unreached("Invalid subresource load succeeded.") });
-  const subresource_pass = test.step_func(() => { test.done(); });
+  const subresource_pass = test.step_func(() => {
+    verifyNumberOfResourceTimingEntries(resource_url, number_of_requests);
+    test.done();
+  });
   const preload_pass = test.step_func(() => {
     const subresource_element = buildElementFromDestination(
       resource_url,

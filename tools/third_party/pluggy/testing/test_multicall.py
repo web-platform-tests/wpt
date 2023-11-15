@@ -1,21 +1,11 @@
 import pytest
-
-from pluggy import _multicall, _legacymulticall, HookImpl, HookCallError
-from pluggy.callers import _LegacyMultiCall
-from pluggy import HookspecMarker, HookimplMarker
+from pluggy import HookCallError, HookspecMarker, HookimplMarker
+from pluggy._hooks import HookImpl
+from pluggy._callers import _multicall
 
 
 hookspec = HookspecMarker("example")
 hookimpl = HookimplMarker("example")
-
-
-def test_uses_copy_of_methods():
-    out = [lambda: 42]
-    mc = _LegacyMultiCall(out, {})
-    repr(mc)
-    out[:] = []
-    res = mc.execute()
-    return res == 42
 
 
 def MC(methods, kwargs, firstresult=False):
@@ -24,32 +14,7 @@ def MC(methods, kwargs, firstresult=False):
     for method in methods:
         f = HookImpl(None, "<temp>", method, method.example_impl)
         hookfuncs.append(f)
-        if '__multicall__' in f.argnames:
-            caller = _legacymulticall
-    return caller(hookfuncs, kwargs, firstresult=firstresult)
-
-
-def test_call_passing():
-    class P1(object):
-        @hookimpl
-        def m(self, __multicall__, x):
-            assert len(__multicall__.results) == 1
-            assert not __multicall__.hook_impls
-            return 17
-
-    class P2(object):
-        @hookimpl
-        def m(self, __multicall__, x):
-            assert __multicall__.results == []
-            assert __multicall__.hook_impls
-            return 23
-
-    p1 = P1()
-    p2 = P2()
-    reslist = MC([p1.m, p2.m], {"x": 23})
-    assert len(reslist) == 2
-    # ensure reversed order
-    assert reslist == [23, 17]
+    return caller("foo", hookfuncs, kwargs, firstresult)
 
 
 def test_keyword_args():
@@ -57,7 +22,7 @@ def test_keyword_args():
     def f(x):
         return x + 1
 
-    class A(object):
+    class A:
         @hookimpl
         def f(self, x, y):
             return x + y
@@ -70,6 +35,7 @@ def test_keyword_args_with_defaultargs():
     @hookimpl
     def f(x, z=1):
         return x + z
+
     reslist = MC([f], dict(x=23, y=24))
     assert reslist == [24]
 
@@ -78,22 +44,9 @@ def test_tags_call_error():
     @hookimpl
     def f(x):
         return x
+
     with pytest.raises(HookCallError):
         MC([f], {})
-
-
-def test_call_subexecute():
-    @hookimpl
-    def m(__multicall__):
-        subresult = __multicall__.execute()
-        return subresult + 1
-
-    @hookimpl
-    def n():
-        return 1
-
-    res = MC([n, m], {}, firstresult=True)
-    assert res == 2
 
 
 def test_call_none_is_no_result():
@@ -172,7 +125,7 @@ def test_hookwrapper_too_many_yield():
     with pytest.raises(RuntimeError) as ex:
         MC([m1], {})
     assert "m1" in str(ex.value)
-    assert (__file__ + ':') in str(ex.value)
+    assert (__file__ + ":") in str(ex.value)
 
 
 @pytest.mark.parametrize("exc", [ValueError, SystemExit])

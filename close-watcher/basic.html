@@ -1,0 +1,82 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="resources/helpers.js"></script>
+
+<body>
+<script>
+test(t => {
+  let events = [];
+  let watcher = createRecordingCloseWatcher(t, events);
+
+  watcher.requestClose();
+
+  assert_array_equals(events, ["close"]);
+}, "requestClose() with no user activation only fires close");
+
+test(t => {
+  let events = [];
+  let watcher = createRecordingCloseWatcher(t, events);
+
+  watcher.destroy();
+  watcher.requestClose();
+
+  assert_array_equals(events, []);
+}, "destroy() then requestClose() fires no events");
+
+test(t => {
+  let events = [];
+  let watcher = createRecordingCloseWatcher(t, events);
+
+  watcher.close();
+  assert_array_equals(events, ["close"]);
+
+  watcher.requestClose();
+  assert_array_equals(events, ["close"]);
+}, "close() then requestClose() fires only one close event");
+
+test(t => {
+  let events = [];
+  let watcher = createRecordingCloseWatcher(t, events);
+
+  watcher.requestClose();
+  assert_array_equals(events, ["close"]);
+
+  watcher.destroy();
+  assert_array_equals(events, ["close"]);
+}, "requestClose() then destroy() fires only one close event");
+
+test(t => {
+  let events = [];
+  let watcher = createRecordingCloseWatcher(t, events);
+
+  watcher.close();
+  assert_array_equals(events, ["close"]);
+
+  watcher.destroy();
+  assert_array_equals(events, ["close"]);
+}, "close() then destroy() fires only one close event");
+
+promise_test(async t => {
+  let events = [];
+  let watcher = createRecordingCloseWatcher(t, events);
+
+  watcher.destroy();
+  await sendCloseRequest();
+
+  assert_array_equals(events, []);
+}, "destroy() then close request fires no events");
+
+promise_test(async t => {
+  let events = [];
+  let watcher = createRecordingCloseWatcher(t, events);
+
+  await sendCloseRequest();
+  watcher.destroy();
+
+  assert_array_equals(events, ["close"]);
+}, "Close request then destroy() fires only one close event");
+</script>

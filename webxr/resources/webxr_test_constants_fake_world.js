@@ -8,7 +8,11 @@
 // width - X axis, in meters
 // height - Y axis, in meters
 // length - Z axis, in meters
-function createFakeWorld(width, height, length) {
+function createFakeWorld(
+  width, height, length,
+  front_wall_and_floor_type = "plane",
+  side_walls_type = "mesh",
+  ceiling_type = "point") {
   // Vertices:
   const BOTTOM_LEFT_FRONT = { x: -width/2, y: 0, z: -length/2, w: 1};
   const BOTTOM_RIGHT_FRONT = { x: width/2, y: 0, z: -length/2, w: 1};
@@ -25,41 +29,41 @@ function createFakeWorld(width, height, length) {
   // Faces:
   const FRONT_WALL_AND_FLOOR_FACES = [
     // Front wall:
-    [BOTTOM_LEFT_FRONT, BOTTOM_RIGHT_FRONT, TOP_RIGHT_FRONT],
-    [BOTTOM_LEFT_FRONT, TOP_RIGHT_FRONT, TOP_LEFT_FRONT],
+    { vertices: [BOTTOM_LEFT_FRONT, BOTTOM_RIGHT_FRONT, TOP_RIGHT_FRONT] },
+    { vertices: [BOTTOM_LEFT_FRONT, TOP_RIGHT_FRONT, TOP_LEFT_FRONT] },
     // Floor:
-    [BOTTOM_LEFT_FRONT, BOTTOM_RIGHT_FRONT, BOTTOM_RIGHT_BACK],
-    [BOTTOM_LEFT_FRONT, BOTTOM_LEFT_BACK, BOTTOM_RIGHT_BACK],
+    { vertices: [BOTTOM_LEFT_FRONT, BOTTOM_RIGHT_FRONT, BOTTOM_RIGHT_BACK] },
+    { vertices: [BOTTOM_LEFT_FRONT, BOTTOM_LEFT_BACK, BOTTOM_RIGHT_BACK] },
   ];
 
   const CEILING_FACES = [
     // Ceiling:
-    [TOP_LEFT_FRONT, TOP_RIGHT_FRONT, TOP_RIGHT_BACK],
-    [TOP_LEFT_FRONT, TOP_LEFT_BACK, TOP_RIGHT_BACK],
+    { vertices: [TOP_LEFT_FRONT, TOP_RIGHT_FRONT, TOP_RIGHT_BACK] },
+    { vertices: [TOP_LEFT_FRONT, TOP_LEFT_BACK, TOP_RIGHT_BACK] },
   ];
 
   const SIDE_WALLS_FACES = [
     // Left:
-    [BOTTOM_LEFT_FRONT, TOP_LEFT_FRONT, TOP_LEFT_BACK],
-    [BOTTOM_LEFT_FRONT, BOTTOM_LEFT_BACK, TOP_LEFT_BACK],
+    { vertices: [BOTTOM_LEFT_FRONT, TOP_LEFT_FRONT, TOP_LEFT_BACK] },
+    { vertices: [BOTTOM_LEFT_FRONT, BOTTOM_LEFT_BACK, TOP_LEFT_BACK] },
     // Right:
-    [BOTTOM_RIGHT_FRONT, TOP_RIGHT_FRONT, TOP_RIGHT_BACK],
-    [BOTTOM_RIGHT_FRONT, BOTTOM_RIGHT_BACK, TOP_RIGHT_BACK],
+    { vertices: [BOTTOM_RIGHT_FRONT, TOP_RIGHT_FRONT, TOP_RIGHT_BACK] },
+    { vertices: [BOTTOM_RIGHT_FRONT, BOTTOM_RIGHT_BACK, TOP_RIGHT_BACK] },
   ];
 
   // Regions:
   const FRONT_WALL_AND_FLOOR_REGION = {
-    type: "plane",
+    type: front_wall_and_floor_type,
     faces: FRONT_WALL_AND_FLOOR_FACES,
   };
 
   const SIDE_WALLS_REGION = {
-    type: "mesh",
+    type: side_walls_type,
     faces: SIDE_WALLS_FACES,
   };
 
   const CEILING_REGION = {
-    type: "point",
+    type: ceiling_type,
     faces: CEILING_FACES,
   };
 

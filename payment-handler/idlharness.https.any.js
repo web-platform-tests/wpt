@@ -2,6 +2,7 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
 // META: script=/service-workers/service-worker/resources/test-helpers.sub.js
+// META: timeout=long
 
 'use strict';
 
@@ -19,7 +20,6 @@ idl_test(
       idl_array.add_objects({
         ServiceWorkerRegistration: ['registration'],
         PaymentManager: ['paymentManager'],
-        PaymentInstruments: ['instruments'],
       });
     }
     if (isServiceWorker) {
@@ -40,7 +40,6 @@ idl_test(
     }
     if (hasRegistration) {
       self.paymentManager = self.registration.paymentManager;
-      self.instruments = self.paymentManager.instruments;
     }
   }
 );

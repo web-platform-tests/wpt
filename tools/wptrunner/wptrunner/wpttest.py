@@ -1,16 +1,19 @@
+# mypy: allow-untyped-defs
 import os
 import subprocess
-from six.moves.urllib.parse import urljoin
+import sys
+from abc import ABC
 from collections import defaultdict
-from six import string_types
+from typing import Any, ClassVar, Dict, Optional, Type
+from urllib.parse import urljoin
 
 from .wptmanifest.parser import atoms
 
 atom_reset = atoms["Reset"]
-enabled_tests = {"testharness", "reftest", "wdspec", "crashtest"}
+enabled_tests = {"testharness", "reftest", "wdspec", "crashtest", "print-reftest"}
 
 
-class Result(object):
+class Result(ABC):
     def __init__(self,
                  status,
                  message,
@@ -28,10 +31,10 @@ class Result(object):
         self.stack = stack
 
     def __repr__(self):
-        return "<%s.%s %s>" % (self.__module__, self.__class__.__name__, self.status)
+        return f"<{self.__module__}.{self.__class__.__name__} {self.status}>"
 
 
-class SubtestResult(object):
+class SubtestResult(ABC):
     def __init__(self, name, status, message, stack=None, expected=None, known_intermittent=None):
         self.name = name
         if status not in self.statuses:
@@ -43,7 +46,7 @@ class SubtestResult(object):
         self.known_intermittent = known_intermittent if known_intermittent is not None else []
 
     def __repr__(self):
-        return "<%s.%s %s %s>" % (self.__module__, self.__class__.__name__, self.name, self.status)
+        return f"<{self.__module__}.{self.__class__.__name__} {self.name} {self.status}>"
 
 
 class TestharnessResult(Result):
@@ -82,27 +85,29 @@ def get_run_info(metadata_root, product, **kwargs):
     return RunInfo(metadata_root, product, **kwargs)
 
 
-class RunInfo(dict):
-    def __init__(self, metadata_root, product, debug,
+class RunInfo(Dict[str, Any]):
+    def __init__(self, metadata_root, product_name, debug,
                  browser_version=None,
                  browser_channel=None,
                  verify=None,
                  extras=None,
-                 enable_webrender=False):
+                 device_serials=None,
+                 adb_binary=None):
         import mozinfo
         self._update_mozinfo(metadata_root)
         self.update(mozinfo.info)
 
-        from update.tree import GitTree
+        from .update.tree import GitTree
         try:
             # GitTree.__init__ throws if we are not in a git tree.
             rev = GitTree(log_error=False).rev
         except (OSError, subprocess.CalledProcessError):
             rev = None
         if rev:
-            self["revision"] = rev
+            self["revision"] = rev.decode("utf-8")
 
-        self["product"] = product
+        self["python_version"] = sys.version_info.major
+        self["product"] = product_name
         if debug is not None:
             self["debug"] = debug
         elif "debug" not in self:
@@ -118,10 +123,61 @@ class RunInfo(dict):
             self["wasm"] = False
         if extras is not None:
             self.update(extras)
+        if "headless" not in self:
+            self["headless"] = False
 
-        self["headless"] = extras.get("headless", False)
-        self["webrender"] = enable_webrender
+        if adb_binary:
+            self["adb_binary"] = adb_binary
+        if device_serials:
+            # Assume all emulators are identical, so query an arbitrary one.
+            self._update_with_emulator_info(device_serials[0])
+            self.pop("linux_distro", None)
 
+    def _adb_run(self, device_serial, args, **kwargs):
+        adb_binary = self.get("adb_binary", "adb")
+        cmd = [adb_binary, "-s", device_serial, *args]
+        return subprocess.check_output(cmd, **kwargs)
+
+    def _adb_get_property(self, device_serial, prop, **kwargs):
+        args = ["shell", "getprop", prop]
+        value = self._adb_run(device_serial, args, **kwargs)
+        return value.strip()
+
+    def _update_with_emulator_info(self, device_serial):
+        """Override system info taken from the host if using an Android
+        emulator."""
+        try:
+            self._adb_run(device_serial, ["wait-for-device"])
+            emulator_info = {
+                "os": "android",
+                "os_version": self._adb_get_property(
+                    device_serial,
+                    "ro.build.version.release",
+                    encoding="utf-8",
+                ),
+            }
+            emulator_info["version"] = emulator_info["os_version"]
+
+            # Detect CPU info (https://developer.android.com/ndk/guides/abis#sa)
+            abi64, *_ = self._adb_get_property(
+                device_serial,
+                "ro.product.cpu.abilist64",
+                encoding="utf-8",
+            ).split(',')
+            if abi64:
+                emulator_info["processor"] = abi64
+                emulator_info["bits"] = 64
+            else:
+                emulator_info["processor"], *_ = self._adb_get_property(
+                    device_serial,
+                    "ro.product.cpu.abilist32",
+                    encoding="utf-8",
+                ).split(',')
+                emulator_info["bits"] = 32
+
+            self.update(emulator_info)
+        except (OSError, subprocess.CalledProcessError):
+            pass
 
     def _update_mozinfo(self, metadata_root):
         """Add extra build information from a mozinfo.json file in a parent
@@ -134,29 +190,44 @@ class RunInfo(dict):
             if path in dirs:
                 break
             dirs.add(str(path))
-            path = os.path.split(path)[0]
+            path = os.path.dirname(path)
 
         mozinfo.find_and_update_from_json(*dirs)
 
 
-class Test(object):
+def server_protocol(manifest_item):
+    if hasattr(manifest_item, "h2") and manifest_item.h2:
+        return "h2"
+    if hasattr(manifest_item, "https") and manifest_item.https:
+        return "https"
+    return "http"
 
-    result_cls = None
-    subtest_result_cls = None
-    test_type = None
+
+class Test(ABC):
+    result_cls: ClassVar[Type[Result]]
+    subtest_result_cls: ClassVar[Optional[Type[SubtestResult]]] = None
+    test_type: ClassVar[str]
+    pac = None
 
     default_timeout = 10  # seconds
     long_timeout = 60  # seconds
 
-    def __init__(self, tests_root, url, inherit_metadata, test_metadata,
-                 timeout=None, path=None, protocol="http"):
+    def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata,
+                 timeout=None, path=None, protocol="http", subdomain=False, pac=None):
+        self.url_base = url_base
         self.tests_root = tests_root
         self.url = url
         self._inherit_metadata = inherit_metadata
         self._test_metadata = test_metadata
         self.timeout = timeout if timeout is not None else self.default_timeout
         self.path = path
-        self.environment = {"protocol": protocol, "prefs": self.prefs}
+        self.subdomain = subdomain
+        self.environment = {"url_base": url_base,
+                            "protocol": protocol,
+                            "prefs": self.prefs}
+
+        if pac is not None:
+            self.environment["pac"] = urljoin(self.url, pac)
 
     def __eq__(self, other):
         if not isinstance(other, Test):
@@ -175,14 +246,15 @@ class Test(object):
     @classmethod
     def from_manifest(cls, manifest_file, manifest_item, inherit_metadata, test_metadata):
         timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
-        protocol = "https" if hasattr(manifest_item, "https") and manifest_item.https else "http"
-        return cls(manifest_file.tests_root,
+        return cls(manifest_file.url_base,
+                   manifest_file.tests_root,
                    manifest_item.url,
                    inherit_metadata,
                    test_metadata,
                    timeout=timeout,
                    path=os.path.join(manifest_file.tests_root, manifest_item.path),
-                   protocol=protocol)
+                   protocol=server_protocol(manifest_item),
+                   subdomain=manifest_item.subdomain)
 
     @property
     def id(self):
@@ -209,8 +281,7 @@ class Test(object):
                 if subtest_meta is not None:
                     yield subtest_meta
             yield self._get_metadata()
-        for metadata in reversed(self._inherit_metadata):
-            yield metadata
+        yield from reversed(self._inherit_metadata)
 
     def disabled(self, subtest=None):
         for meta in self.itermeta(subtest):
@@ -252,6 +323,13 @@ class Test(object):
         return 0
 
     @property
+    def lsan_disabled(self):
+        for meta in self.itermeta():
+            if meta.lsan_disabled is not None:
+                return meta.lsan_disabled
+        return False
+
+    @property
     def lsan_allowed(self):
         lsan_allowed = set()
         for meta in self.itermeta():
@@ -284,7 +362,7 @@ class Test(object):
         rv = {}
         for meta in self.itermeta(None):
             threshold = meta.leak_threshold
-            for key, value in threshold.iteritems():
+            for key, value in threshold.items():
                 if key not in rv:
                     rv[key] = value
         return rv
@@ -314,6 +392,19 @@ class Test(object):
             prefs.update(meta_prefs)
         return prefs
 
+    def expected_fail_message(self, subtest):
+        if subtest is None:
+            return None
+
+        metadata = self._get_metadata(subtest)
+        if metadata is None:
+            return None
+
+        try:
+            return metadata.get("expected-fail-message")
+        except KeyError:
+            return None
+
     def expected(self, subtest=None):
         if subtest is None:
             default = self.result_cls.default_expected
@@ -326,7 +417,7 @@ class Test(object):
 
         try:
             expected = metadata.get("expected")
-            if isinstance(expected, string_types):
+            if isinstance(expected, str):
                 return expected
             elif isinstance(expected, list):
                 return expected[0]
@@ -334,6 +425,16 @@ class Test(object):
                 return default
         except KeyError:
             return default
+
+    def implementation_status(self):
+        implementation_status = None
+        for meta in self.itermeta():
+            implementation_status = meta.implementation_status
+            if implementation_status:
+                return implementation_status
+
+        # assuming no specific case, we are implementing it
+        return "implementing"
 
     def known_intermittent(self, subtest=None):
         metadata = self._get_metadata(subtest)
@@ -348,19 +449,8 @@ class Test(object):
         except KeyError:
             return []
 
-    def expect_any_subtest_status(self):
-        metadata = self._get_metadata()
-        if metadata is None:
-            return False
-        try:
-            # This key is used by the Blink CI to ignore subtest statuses
-            metadata.get("blink_expect_any_subtest_status")
-            return True
-        except KeyError:
-            return False
-
     def __repr__(self):
-        return "<%s.%s %s>" % (self.__module__, self.__class__.__name__, self.id)
+        return f"<{self.__module__}.{self.__class__.__name__} {self.id}>"
 
 
 class TestharnessTest(Test):
@@ -368,11 +458,11 @@ class TestharnessTest(Test):
     subtest_result_cls = TestharnessSubtestResult
     test_type = "testharness"
 
-    def __init__(self, tests_root, url, inherit_metadata, test_metadata,
+    def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata,
                  timeout=None, path=None, protocol="http", testdriver=False,
-                 jsshell=False, scripts=None):
-        Test.__init__(self, tests_root, url, inherit_metadata, test_metadata, timeout,
-                      path, protocol)
+                 jsshell=False, scripts=None, subdomain=False, pac=None):
+        Test.__init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, timeout,
+                      path, protocol, subdomain, pac)
 
         self.testdriver = testdriver
         self.jsshell = jsshell
@@ -381,30 +471,25 @@ class TestharnessTest(Test):
     @classmethod
     def from_manifest(cls, manifest_file, manifest_item, inherit_metadata, test_metadata):
         timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
-        protocol = "https" if hasattr(manifest_item, "https") and manifest_item.https else "http"
+        pac = manifest_item.pac
         testdriver = manifest_item.testdriver if hasattr(manifest_item, "testdriver") else False
         jsshell = manifest_item.jsshell if hasattr(manifest_item, "jsshell") else False
         script_metadata = manifest_item.script_metadata or []
-        scripts = [v for (k, v) in script_metadata if k == b"script"]
-        return cls(manifest_file.tests_root,
+        scripts = [v for (k, v) in script_metadata
+                   if k == "script"]
+        return cls(manifest_file.url_base,
+                   manifest_file.tests_root,
                    manifest_item.url,
                    inherit_metadata,
                    test_metadata,
                    timeout=timeout,
+                   pac=pac,
                    path=os.path.join(manifest_file.tests_root, manifest_item.path),
-                   protocol=protocol,
+                   protocol=server_protocol(manifest_item),
                    testdriver=testdriver,
                    jsshell=jsshell,
-                   scripts=scripts
-                   )
-
-    @property
-    def id(self):
-        return self.url
-
-
-class ManualTest(Test):
-    test_type = "manual"
+                   scripts=scripts,
+                   subdomain=manifest_item.subdomain)
 
     @property
     def id(self):
@@ -426,19 +511,27 @@ class ReftestTest(Test):
     result_cls = ReftestResult
     test_type = "reftest"
 
-    def __init__(self, tests_root, url, inherit_metadata, test_metadata, references,
-                 timeout=None, path=None, viewport_size=None, dpi=None, fuzzy=None, protocol="http"):
-        Test.__init__(self, tests_root, url, inherit_metadata, test_metadata, timeout,
-                      path, protocol)
+    def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, references,
+                 timeout=None, path=None, viewport_size=None, dpi=None, fuzzy=None,
+                 protocol="http", subdomain=False):
+        Test.__init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, timeout,
+                      path, protocol, subdomain)
 
         for _, ref_type in references:
             if ref_type not in ("==", "!="):
                 raise ValueError
 
         self.references = references
-        self.viewport_size = viewport_size
+        self.viewport_size = self.get_viewport_size(viewport_size)
         self.dpi = dpi
         self._fuzzy = fuzzy or {}
+
+    @classmethod
+    def cls_kwargs(cls, manifest_test):
+        return {"viewport_size": manifest_test.viewport_size,
+                "dpi": manifest_test.dpi,
+                "protocol": server_protocol(manifest_test),
+                "fuzzy": manifest_test.fuzzy}
 
     @classmethod
     def from_manifest(cls,
@@ -451,17 +544,16 @@ class ReftestTest(Test):
 
         url = manifest_test.url
 
-        node = cls(manifest_file.tests_root,
+        node = cls(manifest_file.url_base,
+                   manifest_file.tests_root,
                    manifest_test.url,
                    inherit_metadata,
                    test_metadata,
                    [],
                    timeout=timeout,
                    path=manifest_test.path,
-                   viewport_size=manifest_test.viewport_size,
-                   dpi=manifest_test.dpi,
-                   protocol="https" if hasattr(manifest_test, "https") and manifest_test.https else "http",
-                   fuzzy=manifest_test.fuzzy)
+                   subdomain=manifest_test.subdomain,
+                   **cls.cls_kwargs(manifest_test))
 
         refs_by_type = defaultdict(list)
 
@@ -474,20 +566,23 @@ class ReftestTest(Test):
         # Per the logic documented above, this means that none of the mismatches provided match,
         mismatch_walk = None
         if refs_by_type["!="]:
-            mismatch_walk = ReftestTest(manifest_file.tests_root,
+            mismatch_walk = ReftestTest(manifest_file.url_base,
+                                        manifest_file.tests_root,
                                         refs_by_type["!="][0],
                                         [],
                                         None,
                                         [])
             cmp_ref = mismatch_walk
             for ref_url in refs_by_type["!="][1:]:
-                cmp_self = ReftestTest(manifest_file.tests_root,
+                cmp_self = ReftestTest(manifest_file.url_base,
+                                       manifest_file.tests_root,
                                        url,
                                        [],
                                        None,
                                        [])
                 cmp_ref.references.append((cmp_self, "!="))
-                cmp_ref = ReftestTest(manifest_file.tests_root,
+                cmp_ref = ReftestTest(manifest_file.url_base,
+                                      manifest_file.tests_root,
                                       ref_url,
                                       [],
                                       None,
@@ -503,7 +598,8 @@ class ReftestTest(Test):
             # For each == ref, add a reference to this node whose tail is the mismatch list.
             # Per the logic documented above, this means any one of the matches must pass plus all the mismatches.
             for ref_url in refs_by_type["=="]:
-                ref = ReftestTest(manifest_file.tests_root,
+                ref = ReftestTest(manifest_file.url_base,
+                                  manifest_file.tests_root,
                                   ref_url,
                                   [],
                                   None,
@@ -526,6 +622,9 @@ class ReftestTest(Test):
             metadata["url_count"][(self.environment["protocol"], reference.url)] += 1
             reference.update_metadata(metadata)
         return metadata
+
+    def get_viewport_size(self, override):
+        return override
 
     @property
     def id(self):
@@ -561,6 +660,36 @@ class ReftestTest(Test):
                 values[key] = data
         return values
 
+    @property
+    def page_ranges(self):
+        return {}
+
+
+class PrintReftestTest(ReftestTest):
+    test_type = "print-reftest"
+
+    def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, references,
+                 timeout=None, path=None, viewport_size=None, dpi=None, fuzzy=None,
+                 page_ranges=None, protocol="http", subdomain=False):
+        super().__init__(url_base, tests_root, url, inherit_metadata, test_metadata,
+                         references, timeout, path, viewport_size, dpi,
+                         fuzzy, protocol, subdomain=subdomain)
+        self._page_ranges = page_ranges
+
+    @classmethod
+    def cls_kwargs(cls, manifest_test):
+        rv = super().cls_kwargs(manifest_test)
+        rv["page_ranges"] = manifest_test.page_ranges
+        return rv
+
+    def get_viewport_size(self, override):
+        assert override is None
+        return (5*2.54, 3*2.54)
+
+    @property
+    def page_ranges(self):
+        return self._page_ranges
+
 
 class WdspecTest(Test):
     result_cls = WdspecResult
@@ -577,8 +706,8 @@ class CrashTest(Test):
 
 
 manifest_test_cls = {"reftest": ReftestTest,
+                     "print-reftest": PrintReftestTest,
                      "testharness": TestharnessTest,
-                     "manual": ManualTest,
                      "wdspec": WdspecTest,
                      "crashtest": CrashTest}
 

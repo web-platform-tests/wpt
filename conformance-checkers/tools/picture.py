@@ -92,8 +92,6 @@ errors = {
     "source-src": "<picture><source src=x><img src=x alt></picture>",
     "source-src-srcset": "<picture><source src=x srcset=x><img src=x alt></picture>",
     "source-alt": "<picture><source srcset=x alt><img src=x alt></picture>",
-    "source-width": "<picture><source srcset=x width=100><img src=x alt></picture>",
-    "source-height": "<picture><source srcset=x height=100><img src=x alt></picture>",
     "source-usemap": "<picture><source srcset=x usemap><img src=x alt></picture>",
     "source-ismap": "<picture><source srcset=x ismap><img src=x alt></picture>",
     "source-crossorigin": "<picture><source srcset=x crossorigin><img src=x alt></picture>",
@@ -234,6 +232,9 @@ non_errors = {
     "basic-img-src": "<img src=x alt>",
     "basic-picture-img-src": "<picture><img src=x alt></picture>",
     "basic-picture-source": "<picture><source srcset=x><img src=x alt></picture>",
+    # source with height and width
+    "source-height": "<picture><source srcset=x height=100><img src=x alt></picture>",
+    "source-width": "<picture><source srcset=x width=100><img src=x alt></picture>",
     # inter-element whitespace
     "inter-element-whitespace": "<picture> <!--x--> <source srcset=x> <!--x--> <img src=x alt> <!--x--> </picture>",
     # parents
@@ -350,11 +351,11 @@ for key in errors.keys():
     template_error = template
     template_error += '<title>invalid %s</title>\n' % key
     template_error += errors[key]
-    file = open(os.path.join(ccdir, "html/elements/picture/%s-novalid.html" % key), 'wb')
+    file = open(os.path.join(ccdir, "html/elements/picture/%s-novalid.html" % key), 'w')
     file.write(template_error)
     file.close()
 
-file = open(os.path.join(ccdir, "html/elements/picture/picture-isvalid.html"), 'wb')
+file = open(os.path.join(ccdir, "html/elements/picture/picture-isvalid.html"), 'w')
 file.write(template + '<title>valid picture</title>\n')
 for key in non_errors_in_head.keys():
     file.write('%s <!-- %s -->\n' % (non_errors_in_head[key], key))

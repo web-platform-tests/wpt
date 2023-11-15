@@ -18,7 +18,7 @@ To make writing such tests possible, we are using a number of
 server-side components designed to make it easy to manipulate the
 precise details of the response:
 
-* *wptserve*, a custom Python HTTP server.
+* *wptserve*, a custom Python HTTP server
 
 * *pywebsocket*, an existing websockets server
 
@@ -116,14 +116,42 @@ The server also provides the ability to write [Python
 data and can manipulate the content and timing of the response. Responses are
 also influenced by [the `pipe` query string parameter](server-pipes).
 
-### Writing tests for HTTP/2.0
 
-The server now has a prototype HTTP/2.0 server which gives you access to
-some of the HTTP/2.0 specific functionality. Currently, the server is off
-by default and needs to be run using `./wpt serve --h2` in order to enable it.
+### Tests Requiring HTTP/2.0
+
+To make a test run over an HTTP/2.0 connection, use `.h2.` in the filename.
+By default the HTTP/2.0 server can be accessed using port 9000. At the moment
+accessing tests that use `.h2.` over ports that do not use an HTTP/2.0 server
+also succeeds, so beware of that when creating them.
+
 The HTTP/2.0 server supports handlers that work per-frame; these, along with the
 API are documented in [Writing H2 Tests](h2tests).
 
-> <b>Important:</b> The HTTP/2.0 server requires you to have Python 2.7.10+
-and OpenSSL 1.0.2+. This is because HTTP/2.0 is negotiated using the
-[TLS ALPN](https://tools.ietf.org/html/rfc7301) extension, which is only supported in [OpenSSL 1.0.2](https://www.openssl.org/news/openssl-1.0.2-notes.html) and up.
+
+### Tests Requiring WebTransport over HTTP/3
+
+We do not support loading a test over WebTransport over HTTP/3 yet, but a test
+can establish a WebTransport session to the test server.
+
+The WebTransport over HTTP/3 server is not yet enabled by default, so
+WebTransport tests will fail unless `--enable-webtransport` is specified to
+ `./wpt run`.
+
+### Test Features specified as query params
+
+Alternatively to specifying [Test Features](file-names.html#test-features) in
+the test filename, they can be specified by setting the `wpt_flags` in the
+[test variant](testharness.html#variants). For example, the following variant
+will be loaded over HTTPS:
+```html
+<meta name="variant" content="?wpt_flags=https">
+```
+
+`https`, `h2` and `www` features are supported by `wpt_flags`.
+
+Multiple features can be specified by having multiple `wpt_flags`. For example,
+the following variant will be loaded over HTTPS and run on the www subdomain.
+
+```html
+<meta name="variant" content="wpt_flags=www&wpt_flags=https">
+```

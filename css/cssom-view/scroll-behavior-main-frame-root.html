@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <title>Testing scrollOptions' behavior for Element.scroll* and scroll-behavior on the root of the main frame</title>
 <meta name="timeout" content="long"/>
+<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
 <link rel="author" title="Frédéric Wang" href="mailto:fwang@igalia.com">
 <link rel="help" href="https://drafts.csswg.org/cssom-view/#propdef-scroll-behavior">
 <link rel="help" href="https://drafts.csswg.org/cssom-view/#scrolling-box">
@@ -37,6 +38,11 @@
     elementToReveal.style.top = elementToRevealTop + "px";
 
     add_completion_callback(() => { resetScroll(scrollingElement); });
+
+    promise_test(async () => {
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      await new Promise(resolve => requestAnimationFrame(resolve));
+    }, `Make sure the page content is stable`);
 
     ["scroll", "scrollTo", "scrollBy", "scrollIntoView"].forEach((scrollFunction) => {
       promise_test(() => {

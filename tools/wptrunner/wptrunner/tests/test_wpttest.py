@@ -1,9 +1,16 @@
+# mypy: ignore-errors
+
 from io import BytesIO
-from mock import Mock
+from unittest import mock
 
 from manifest import manifest as wptmanifest
-from manifest.item import TestharnessTest
-from .. import manifestexpected, wpttest
+from manifest.item import TestharnessTest, RefTest
+from manifest.utils import to_os_path
+from . test_update import tree_and_sourcefile_mocks
+from .. import manifestexpected, manifestupdate, wpttest
+
+
+TestharnessTest.__test__ = False
 
 dir_ini_0 = b"""\
 prefs: [a:b]
@@ -66,11 +73,6 @@ test_6 = b"""\
   expected: [OK, FAIL]
 """
 
-test_7 = b"""\
-[7.html]
-  blink_expect_any_subtest_status: yep
-"""
-
 test_fuzzy = b"""\
 [fuzzy.html]
   fuzzy: fuzzy-ref.html:1;200
@@ -82,7 +84,7 @@ testharness_test = b"""<script src="/resources/testharness.js"></script>
 
 
 def make_mock_manifest(*items):
-    rv = Mock(tests_root="/foobar")
+    rv = mock.Mock(tests_root="/foobar")
     tests = []
     rv.__iter__ = lambda self: iter(tests)
     rv.__getitem__ = lambda self, k: tests[k]
@@ -108,11 +110,21 @@ def make_test_object(test_name,
     test_metadata = manifestexpected.static.compile(BytesIO(test_name),
                                                     condition,
                                                     data_cls_getter=manifestexpected.data_cls_getter,
-                                                    test_path=test_path,
-                                                    url_base="/")
+                                                    test_path=test_path)
 
     test = next(iter(tests[index][2])) if iterate else tests[index][2].pop()
-    return wpttest.from_manifest(tests, test, inherit_metadata, test_metadata.get_test(test.id))
+    return wpttest.from_manifest(tests, test, inherit_metadata,
+                                 test_metadata.get_test(manifestupdate.get_test_name(test.id)))
+
+
+def test_run_info():
+    run_info = wpttest.get_run_info("/", "fake-product", debug=False)
+    assert isinstance(run_info["bits"], int)
+    assert isinstance(run_info["os"], str)
+    assert isinstance(run_info["os_version"], str)
+    assert isinstance(run_info["processor"], str)
+    assert isinstance(run_info["product"], str)
+    assert isinstance(run_info["python_version"], int)
 
 
 def test_metadata_inherit():
@@ -192,30 +204,31 @@ def test_known_intermittent():
     assert test_obj.known_intermittent() == ["FAIL"]
 
 
-def test_expect_any_subtest_status():
-    test_obj = make_test_object(test_7, "a/7.html", 7, ("test", "a", 8), None, False)
-    assert test_obj.expected() == "OK"
-    assert test_obj.expect_any_subtest_status() is True
-
-
 def test_metadata_fuzzy():
-    manifest_data = {
-        "items": {"reftest": {"a/fuzzy.html": [["a/fuzzy.html",
-                                                [["/a/fuzzy-ref.html", "=="]],
-                                                {"fuzzy": [[["/a/fuzzy.html", '/a/fuzzy-ref.html', '=='],
-                                                            [[2, 3], [10, 15]]]]}]]}},
-        "paths": {"a/fuzzy.html": ["0"*40, "reftest"]},
-        "version": 7,
-        "url_base": "/"}
-    manifest = wptmanifest.Manifest.from_json(".", manifest_data)
+    item = RefTest(tests_root=".",
+                   path="a/fuzzy.html",
+                   url_base="/",
+                   url="a/fuzzy.html",
+                   references=[["/a/fuzzy-ref.html", "=="]],
+                   fuzzy=[[["/a/fuzzy.html", '/a/fuzzy-ref.html', '=='],
+                           [[2, 3], [10, 15]]]])
+    s = mock.Mock(rel_path="a/fuzzy.html", rel_path_parts=("a", "fuzzy.html"), hash="0"*40)
+    s.manifest_items = mock.Mock(return_value=(item.item_type, [item]))
+
+    manifest = wptmanifest.Manifest("")
+
+    tree, sourcefile_mock = tree_and_sourcefile_mocks([(s, None, True)])
+    with mock.patch("manifest.manifest.SourceFile", side_effect=sourcefile_mock):
+        assert manifest.update(tree) is True
+
     test_metadata = manifestexpected.static.compile(BytesIO(test_fuzzy),
                                                     {},
                                                     data_cls_getter=manifestexpected.data_cls_getter,
-                                                    test_path="a/fuzzy.html",
-                                                    url_base="/")
+                                                    test_path="a/fuzzy.html")
 
-    test = next(manifest.iterpath("a/fuzzy.html"))
-    test_obj = wpttest.from_manifest(manifest, test, [], test_metadata.get_test(test.id))
+    test = next(manifest.iterpath(to_os_path("a/fuzzy.html")))
+    test_obj = wpttest.from_manifest(manifest, test, [],
+                                     test_metadata.get_test(manifestupdate.get_test_name(test.id)))
 
     assert test_obj.fuzzy == {('/a/fuzzy.html', '/a/fuzzy-ref.html', '=='): [[2, 3], [10, 15]]}
     assert test_obj.fuzzy_override == {'/a/fuzzy-ref.html': ((1, 1), (200, 200))}

@@ -1,5 +1,4 @@
-from __future__ import print_function
-
+import collections
 import math
 import sys
 
@@ -57,7 +56,8 @@ def cleanup_session(session):
         This also includes bringing it out of maximized, minimized,
         or fullscreened state.
         """
-        session.window.size = defaults.WINDOW_SIZE
+        if session.capabilities.get("setWindowRect"):
+            session.window.size = defaults.WINDOW_SIZE
 
     @ignore_exceptions
     def _restore_windows(session):
@@ -70,7 +70,7 @@ def cleanup_session(session):
         for window in _windows(session, exclude=[current_window]):
             session.window_handle = window
             if len(session.handles) > 1:
-                session.close()
+                session.window.close()
 
         session.window_handle = current_window
 
@@ -106,10 +106,25 @@ def clear_all_cookies(session):
     session.transport.send("DELETE", "session/%s/cookie" % session.session_id)
 
 
+def deep_update(source, overrides):
+    """
+    Update a nested dictionary or similar mapping.
+    Modify ``source`` in place.
+    """
+    for key, value in overrides.items():
+        if isinstance(value, collections.abc.Mapping) and value:
+            returned = deep_update(source.get(key, {}), value)
+            source[key] = returned
+        else:
+            source[key] = overrides[key]
+    return source
+
+
 def document_dimensions(session):
     return tuple(session.execute_script("""
-        let rect = document.documentElement.getBoundingClientRect();
-        return [rect.width, rect.height];
+        const {devicePixelRatio} = window;
+        const {width, height} = document.documentElement.getBoundingClientRect();
+        return [width * devicePixelRatio, height * devicePixelRatio];
         """))
 
 
@@ -136,10 +151,7 @@ def center_point(element):
 
 
 def document_hidden(session):
-    """Polls for the document to become hidden."""
-    def hidden(session):
-        return session.execute_script("return document.hidden")
-    return Poll(session, timeout=3, raises=None).until(hidden)
+    return session.execute_script("return document.hidden")
 
 
 def document_location(session):
@@ -192,32 +204,55 @@ def is_fullscreen(session):
         """)
 
 
-def document_dimensions(session):
-    return tuple(session.execute_script("""
-        let {devicePixelRatio} = window;
-        let {width, height} = document.documentElement.getBoundingClientRect();
-        return [width * devicePixelRatio, height * devicePixelRatio];
-        """))
+def is_maximized(session):
+    dimensions = session.execute_script("""
+        return {
+            availWidth: screen.availWidth,
+            availHeight: screen.availHeight,
+            windowWidth: window.outerWidth,
+            windowHeight: window.outerHeight,
+        }
+        """)
+
+    return (
+        # The maximized window can still have a border attached which would
+        # cause its dimensions to exceed the whole available screen.
+        dimensions["windowWidth"] >= dimensions["availWidth"] and
+        dimensions["windowHeight"] >= dimensions["availHeight"] and
+        # Only return true if the window is not in fullscreen mode
+        not is_fullscreen(session)
+    )
 
 
-def screen_size(session):
-    """Returns the available width/height size of the screen."""
-    return tuple(session.execute_script("""
-        return [
-            screen.availWidth,
-            screen.availHeight,
-        ];
-        """))
+def filter_dict(source, d):
+    """Filter `source` dict to only contain same keys as `d` dict.
 
-
-def available_screen_size(session):
+    :param source: dictionary to filter.
+    :param d: dictionary whose keys determine the filtering.
     """
-    Returns the effective available screen width/height size,
-    excluding any fixed window manager elements.
-    """
-    return tuple(session.execute_script("""
-        return [
-            screen.availWidth - screen.availLeft,
-            screen.availHeight - screen.availTop,
-        ];
-        """))
+    return {k: source[k] for k in d.keys()}
+
+
+def filter_supported_key_events(all_events, expected):
+    events = [filter_dict(e, expected[0]) for e in all_events]
+    if len(events) > 0 and events[0]["code"] is None:
+        # Remove 'code' entry if browser doesn't support it
+        expected = [filter_dict(e, {"key": "", "type": ""}) for e in expected]
+        events = [filter_dict(e, expected[0]) for e in events]
+
+    return (events, expected)
+
+
+def wait_for_new_handle(session, handles_before):
+    def find_new_handle(session):
+        new_handles = list(set(session.handles) - set(handles_before))
+        if new_handles and len(new_handles) == 1:
+            return new_handles[0]
+        return None
+
+    wait = Poll(
+        session,
+        timeout=5,
+        message="No new window has been opened")
+
+    return wait.until(find_new_handle)

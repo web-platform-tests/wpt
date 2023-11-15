@@ -1,10 +1,12 @@
+# mypy: allow-untyped-defs
+
 import requests
 from mozlog.structured.formatters.base import BaseFormatter
 
 DEFAULT_API = "https://wpt.fyi/api/screenshots/hashes"
 
 
-class WptscreenshotFormatter(BaseFormatter):
+class WptscreenshotFormatter(BaseFormatter):  # type: ignore
     """Formatter that outputs screenshots in the format expected by wpt.fyi."""
 
     def __init__(self, api=None):
@@ -36,7 +38,7 @@ class WptscreenshotFormatter(BaseFormatter):
             return
         output = ""
         for item in data["extra"]["reftest_screenshots"]:
-            if type(item) != dict:
+            if not isinstance(item, dict):
                 # Skip the relation string.
                 continue
             checksum = "sha1:" + item["hash"]

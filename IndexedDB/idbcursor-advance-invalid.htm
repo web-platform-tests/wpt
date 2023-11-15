@@ -9,7 +9,7 @@
 <link rel=assert title="Before this method returns, unless an exception was thrown, it sets the got value flag on the cursor to false.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="resources/support.js"></script>
 
 <script>
 
@@ -25,7 +25,7 @@ indexeddb_test(
   upgrade_func,
   function(t, db) {
     var count = 0;
-    var rq = db.transaction("test").objectStore("test").index("index").openCursor();
+    var rq = db.transaction("test", "readonly", {durability: 'relaxed'}).objectStore("test").index("index").openCursor();
 
     rq.onsuccess = t.step_func(function(e) {
       if (!e.target.result) {
@@ -38,11 +38,11 @@ indexeddb_test(
       cursor.advance(1);
 
       // Second try
-      assert_throws('InvalidStateError',
-                    function() { cursor.advance(1); }, 'second advance');
+      assert_throws_dom('InvalidStateError',
+                        function() { cursor.advance(1); }, 'second advance');
 
-      assert_throws('InvalidStateError',
-                    function() { cursor.advance(3); }, 'third advance');
+      assert_throws_dom('InvalidStateError',
+                        function() { cursor.advance(3); }, 'third advance');
 
       count++;
     });
@@ -54,25 +54,25 @@ indexeddb_test(
 indexeddb_test(
   upgrade_func,
   function(t, db) {
-    var rq = db.transaction("test").objectStore("test").index("index").openCursor();
+    var rq = db.transaction("test", "readonly", {durability: 'relaxed'}).objectStore("test").index("index").openCursor();
 
     rq.onsuccess = t.step_func(function(e) {
       var cursor = e.target.result;
 
-      assert_throws({ name: "TypeError" },
-                    function() { cursor.advance(document); });
+      assert_throws_js(TypeError,
+                       function() { cursor.advance(document); });
 
-      assert_throws({ name: "TypeError" },
-                    function() { cursor.advance({}); });
+      assert_throws_js(TypeError,
+                       function() { cursor.advance({}); });
 
-      assert_throws({ name: "TypeError" },
-                    function() { cursor.advance([]); });
+      assert_throws_js(TypeError,
+                       function() { cursor.advance([]); });
 
-      assert_throws({ name: "TypeError" },
-                    function() { cursor.advance(""); });
+      assert_throws_js(TypeError,
+                       function() { cursor.advance(""); });
 
-      assert_throws({ name: "TypeError" },
-                    function() { cursor.advance("1 2"); });
+      assert_throws_js(TypeError,
+                       function() { cursor.advance("1 2"); });
 
       t.done();
     });
@@ -85,20 +85,20 @@ indexeddb_test(
 indexeddb_test(
   upgrade_func,
   function(t, db) {
-    var rq = db.transaction("test").objectStore("test").index("index").openCursor();
+    var rq = db.transaction("test", "readonly", {durability: 'relaxed'}).objectStore("test").index("index").openCursor();
 
     rq.onsuccess = t.step_func(function(e) {
       var cursor = e.target.result;
 
-      assert_throws({ name: "TypeError" },
-                    function() { cursor.advance(null); });
+      assert_throws_js(TypeError,
+                       function() { cursor.advance(null); });
 
-      assert_throws({ name: "TypeError" },
-                    function() { cursor.advance(undefined); });
+      assert_throws_js(TypeError,
+                       function() { cursor.advance(undefined); });
 
       var myvar = null;
-      assert_throws({ name: "TypeError" },
-                    function() { cursor.advance(myvar); });
+      assert_throws_js(TypeError,
+                       function() { cursor.advance(myvar); });
 
       t.done();
     });
@@ -111,13 +111,13 @@ indexeddb_test(
 indexeddb_test(
   upgrade_func,
   function(t, db) {
-    var rq = db.transaction("test").objectStore("test").index("index").openCursor();
+    var rq = db.transaction("test", "readonly", {durability: 'relaxed'}).objectStore("test").index("index").openCursor();
 
     rq.onsuccess = t.step_func(function(e) {
       var cursor = e.target.result;
 
-      assert_throws({ name: "TypeError" },
-                    function() { cursor.advance(); });
+      assert_throws_js(TypeError,
+                       function() { cursor.advance(); });
 
       t.done();
     });
@@ -129,32 +129,32 @@ indexeddb_test(
 indexeddb_test(
   upgrade_func,
   function(t, db) {
-    var rq = db.transaction("test").objectStore("test").index("index").openCursor();
+    var rq = db.transaction("test", "readonly", {durability: 'relaxed'}).objectStore("test").index("index").openCursor();
 
     rq.onsuccess = t.step_func(function(e) {
       var cursor = e.target.result;
 
-      assert_throws({ name: "TypeError" },
-                    function() { cursor.advance(-1); });
+      assert_throws_js(TypeError,
+                       function() { cursor.advance(-1); });
 
-      assert_throws({ name: "TypeError" },
-                    function() { cursor.advance(NaN); });
+      assert_throws_js(TypeError,
+                       function() { cursor.advance(NaN); });
 
-      assert_throws({ name: "TypeError" },
-                    function() { cursor.advance(0); });
+      assert_throws_js(TypeError,
+                       function() { cursor.advance(0); });
 
-      assert_throws({ name: "TypeError" },
-                    function() { cursor.advance(-0); });
+      assert_throws_js(TypeError,
+                       function() { cursor.advance(-0); });
 
-      assert_throws({ name: "TypeError" },
-                    function() { cursor.advance(Infinity); });
+      assert_throws_js(TypeError,
+                       function() { cursor.advance(Infinity); });
 
-      assert_throws({ name: "TypeError" },
-                    function() { cursor.advance(-Infinity); });
+      assert_throws_js(TypeError,
+                       function() { cursor.advance(-Infinity); });
 
       var myvar = -999999;
-      assert_throws({ name: "TypeError" },
-                    function() { cursor.advance(myvar); });
+      assert_throws_js(TypeError,
+                       function() { cursor.advance(myvar); });
 
       t.done();
     });
@@ -167,7 +167,7 @@ indexeddb_test(
   upgrade_func,
   function(t, db) {
     var count = 0;
-    var rq = db.transaction("test").objectStore("test").index("index").openCursor();
+    var rq = db.transaction("test", "readonly", {durability: 'relaxed'}).objectStore("test").index("index").openCursor();
 
     rq.onsuccess = t.step_func(function(e) {
       var cursor = e.target.result;
@@ -178,8 +178,8 @@ indexeddb_test(
           return;
         }
 
-      assert_throws({ name: "TypeError" },
-                    function() { cursor.advance(0); });
+      assert_throws_js(TypeError,
+                       function() { cursor.advance(0); });
 
       cursor.advance(1);
       count++;

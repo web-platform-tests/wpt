@@ -1,7 +1,8 @@
+# mypy: allow-untyped-defs
+
 from tools.ci import jobs
 
 all_jobs = {
-    "build_css",
     "lint",
     "manifest_upload",
     "resources_unittest",
@@ -104,21 +105,12 @@ def test_wptrunner_unittest():
                          includes=["wptrunner_unittest"]) == {"wptrunner_unittest"}
 
 
-def test_build_css():
-    assert jobs.get_jobs(["css/css-build-testsuites.sh"],
-                         includes=["build_css"]) == {"build_css"}
-    assert jobs.get_jobs(["css/CSS21/test.html"],
-                         includes=["build_css"]) == {"build_css"}
-    assert jobs.get_jobs(["html/css/CSS21/test.html"],
-                         includes=["build_css"]) == set()
-
-
 def test_update_built():
-    assert jobs.get_jobs(["2dcontext/foo.html"],
+    assert jobs.get_jobs(["html/canvas/element/foo.html"],
                          includes=["update_built"]) == {"update_built"}
     assert jobs.get_jobs(["html/foo.html"],
                          includes=["update_built"]) == {"update_built"}
-    assert jobs.get_jobs(["offscreen-canvas/foo.html"],
+    assert jobs.get_jobs(["html/canvas/offscreen/foo.html"],
                          includes=["update_built"]) == {"update_built"}
 
 
@@ -133,4 +125,8 @@ def test_wpt_infrastructure():
     assert jobs.get_jobs(["tools/hammer.html"],
                          includes=["wptrunner_infrastructure"]) == {"wptrunner_infrastructure"}
     assert jobs.get_jobs(["infrastructure/assumptions/ahem.html"],
+                         includes=["wptrunner_infrastructure"]) == {"wptrunner_infrastructure"}
+
+def test_wdspec_support():
+    assert jobs.get_jobs(["webdriver/tests/support/__init__.py"],
                          includes=["wptrunner_infrastructure"]) == {"wptrunner_infrastructure"}

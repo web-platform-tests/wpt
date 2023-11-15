@@ -1,22 +1,23 @@
+# mypy: allow-untyped-defs
+
 import json
 import os
 import socket
 import traceback
 
 from .base import (Protocol,
-                   BaseProtocolPart,
                    RefTestExecutor,
                    RefTestImplementation,
                    TestharnessExecutor,
                    TimedRunner,
                    strip_server)
-from ..testrunner import Stop
-from ..webdriver_server import wait_for_service
+from .protocol import BaseProtocolPart
+from ..environment import wait_for_service
 
 webdriver = None
 ServoCommandExtensions = None
 
-here = os.path.join(os.path.split(__file__)[0])
+here = os.path.dirname(__file__)
 
 
 def do_delayed_imports():
@@ -25,7 +26,7 @@ def do_delayed_imports():
 
     global ServoCommandExtensions
 
-    class ServoCommandExtensions(object):
+    class ServoCommandExtensions:
         def __init__(self, session):
             self.session = session
 
@@ -71,10 +72,13 @@ class ServoBaseProtocolPart(BaseProtocolPart):
         pass
 
     def wait(self):
-        pass
+        return False
 
     def set_window(self, handle):
         pass
+
+    def window_handles(self):
+        return []
 
     def load(self, url):
         pass
@@ -94,7 +98,7 @@ class ServoWebDriverProtocol(Protocol):
 
     def connect(self):
         """Connect to browser via WebDriver."""
-        wait_for_service((self.host, self.port), timeout=self.init_timeout)
+        wait_for_service(self.logger, self.host, self.port, timeout=self.init_timeout)
 
         self.session = webdriver.Session(self.host, self.port, extension=ServoCommandExtensions)
         self.session.start()
@@ -121,14 +125,16 @@ class ServoWebDriverProtocol(Protocol):
     def wait(self):
         while True:
             try:
-                self.session.execute_async_script("")
+                return self.session.execute_async_script("""let callback = arguments[arguments.length - 1];
+addEventListener("__test_restart", e => {e.preventDefault(); callback(true)})""")
             except webdriver.TimeoutException:
                 pass
-            except (socket.timeout, IOError):
+            except (socket.timeout, OSError):
                 break
-            except Exception as e:
-                self.logger.error(traceback.format_exc(e))
+            except Exception:
+                self.logger.error(traceback.format_exc())
                 break
+        return False
 
 
 class ServoWebDriverRun(TimedRunner):
@@ -140,13 +146,13 @@ class ServoWebDriverRun(TimedRunner):
             self.result = True, self.func(self.protocol.session, self.url, self.timeout)
         except webdriver.TimeoutException:
             self.result = False, ("EXTERNAL-TIMEOUT", None)
-        except (socket.timeout, IOError):
+        except (socket.timeout, OSError):
             self.result = False, ("CRASH", None)
         except Exception as e:
             message = getattr(e, "message", "")
             if message:
                 message += "\n"
-            message += traceback.format_exc(e)
+            message += traceback.format_exc()
             self.result = False, ("INTERNAL-ERROR", e)
         finally:
             self.result_flag.set()
@@ -155,10 +161,10 @@ class ServoWebDriverRun(TimedRunner):
 class ServoWebDriverTestharnessExecutor(TestharnessExecutor):
     supports_testdriver = True
 
-    def __init__(self, browser, server_config, timeout_multiplier=1,
+    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  close_after_done=True, capabilities=None, debug_info=None,
                  **kwargs):
-        TestharnessExecutor.__init__(self, browser, server_config, timeout_multiplier=1,
+        TestharnessExecutor.__init__(self, logger, browser, server_config, timeout_multiplier=1,
                                      debug_info=None)
         self.protocol = ServoWebDriverProtocol(self, browser, capabilities=capabilities)
         with open(os.path.join(here, "testharness_servodriver.js")) as f:
@@ -180,9 +186,10 @@ class ServoWebDriverTestharnessExecutor(TestharnessExecutor):
             try:
                 self.protocol.session.timeouts.script = timeout
                 self.timeout = timeout
-            except IOError:
-                self.logger.error("Lost webdriver connection")
-                return Stop
+            except OSError:
+                msg = "Lost WebDriver connection"
+                self.logger.error(msg)
+                return ("INTERNAL-ERROR", msg)
 
         success, data = ServoWebDriverRun(self.logger,
                                           self.do_testharness,
@@ -221,11 +228,12 @@ class TimeoutError(Exception):
 
 
 class ServoWebDriverRefTestExecutor(RefTestExecutor):
-    def __init__(self, browser, server_config, timeout_multiplier=1,
+    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  screenshot_cache=None, capabilities=None, debug_info=None,
                  **kwargs):
         """Selenium WebDriver-based executor for reftests"""
         RefTestExecutor.__init__(self,
+                                 logger,
                                  browser,
                                  server_config,
                                  screenshot_cache=screenshot_cache,
@@ -235,8 +243,8 @@ class ServoWebDriverRefTestExecutor(RefTestExecutor):
                                                capabilities=capabilities)
         self.implementation = RefTestImplementation(self)
         self.timeout = None
-        with open(os.path.join(here, "reftest-wait_webdriver.js")) as f:
-            self.wait_script = f.read()
+        with open(os.path.join(here, "test-wait.js")) as f:
+            self.wait_script = f.read() % {"classname": "reftest-wait"}
 
     def reset(self):
         self.implementation.reset()
@@ -248,7 +256,7 @@ class ServoWebDriverRefTestExecutor(RefTestExecutor):
         try:
             result = self.implementation.run_test(test)
             return self.convert_result(test, result)
-        except IOError:
+        except OSError:
             return test.result_cls("CRASH", None), []
         except TimeoutError:
             return test.result_cls("TIMEOUT", None), []
@@ -256,10 +264,10 @@ class ServoWebDriverRefTestExecutor(RefTestExecutor):
             message = getattr(e, "message", "")
             if message:
                 message += "\n"
-            message += traceback.format_exc(e)
+            message += traceback.format_exc()
             return test.result_cls("INTERNAL-ERROR", message), []
 
-    def screenshot(self, test, viewport_size, dpi):
+    def screenshot(self, test, viewport_size, dpi, page_ranges):
         # https://github.com/web-platform-tests/wpt/issues/7135
         assert viewport_size is None
         assert dpi is None
@@ -271,13 +279,14 @@ class ServoWebDriverRefTestExecutor(RefTestExecutor):
             try:
                 self.protocol.session.timeouts.script = timeout
                 self.timeout = timeout
-            except IOError:
-                self.logger.error("Lost webdriver connection")
-                return Stop
+            except OSError:
+                msg = "Lost webdriver connection"
+                self.logger.error(msg)
+                return ("INTERNAL-ERROR", msg)
 
         return ServoWebDriverRun(self.logger,
                                  self._screenshot,
-                                 self.protocol.session,
+                                 self.protocol,
                                  self.test_url(test),
                                  timeout,
                                  self.extra_timeout).run()

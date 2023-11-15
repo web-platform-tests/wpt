@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import argparse
 import json
 import logging
@@ -7,7 +9,6 @@ import subprocess
 from collections import OrderedDict
 
 import taskcluster
-from six import iteritems, itervalues
 
 from . import taskgraph
 
@@ -47,8 +48,8 @@ def fetch_event_data(queue):
 
 def filter_triggers(event, all_tasks):
     is_pr, branch = get_triggers(event)
-    triggered = {}
-    for name, task in iteritems(all_tasks):
+    triggered = OrderedDict()
+    for name, task in all_tasks.items():
         if "trigger" in task:
             if is_pr and "pull-request" in task["trigger"]:
                 triggered[name] = task
@@ -101,10 +102,35 @@ def get_extra_jobs(event):
     return jobs
 
 
+def filter_excluded_users(tasks, event):
+    # Some users' pull requests are excluded from tasks,
+    # such as pull requests from automated exports.
+    try:
+        submitter = event["pull_request"]["user"]["login"]
+    except KeyError:
+        # Just ignore excluded users if the
+        # username cannot be pulled from the event.
+        logger.debug("Unable to read username from event. Continuing.")
+        return
+
+    excluded_tasks = []
+    # A separate list of items for tasks is needed to iterate over
+    # because removing an item during iteration will raise an error.
+    for name, task in list(tasks.items()):
+        if submitter in task.get("exclude-users", []):
+            excluded_tasks.append(name)
+            tasks.pop(name)  # removing excluded task
+    if excluded_tasks:
+        logger.info(
+            f"Tasks excluded for user {submitter}:\n * " +
+            "\n * ".join(excluded_tasks)
+        )
+
+
 def filter_schedule_if(event, tasks):
-    scheduled = {}
+    scheduled = OrderedDict()
     run_jobs = None
-    for name, task in iteritems(tasks):
+    for name, task in tasks.items():
         if "schedule-if" in task:
             if "run-job" in task["schedule-if"]:
                 if run_jobs is None:
@@ -138,7 +164,7 @@ def get_fetch_rev(event):
                 if not output:
                     logger.error("Failed to get commit for %s" % ref)
                 else:
-                    sha = output.split()[0]
+                    sha = output.decode("utf-8").split()[0]
             rv.append(sha)
         rv = tuple(rv)
     else:
@@ -213,7 +239,7 @@ def get_owner(event):
     return "web-platform-tests@users.noreply.github.com"
 
 
-def create_tc_task(event, task, taskgroup_id, depends_on_ids):
+def create_tc_task(event, task, taskgroup_id, depends_on_ids, env_extra=None):
     command = build_full_command(event, task)
     task_id = taskcluster.slugId()
     task_data = {
@@ -223,6 +249,7 @@ def create_tc_task(event, task, taskgroup_id, depends_on_ids):
         "provisionerId": task["provisionerId"],
         "schedulerId": task["schedulerId"],
         "workerType": task["workerType"],
+        "scopes": task.get("scopes", []),
         "metadata": {
             "name": task["name"],
             "description": task.get("description", ""),
@@ -238,17 +265,37 @@ def create_tc_task(event, task, taskgroup_id, depends_on_ids):
         },
         "extra": {
             "github_event": json.dumps(event)
-        }
+        },
+        "routes": ["checks"]
     }
+    if "extra" in task:
+        task_data["extra"].update(task["extra"])
+    if task.get("privileged"):
+        if "capabilities" not in task_data["payload"]:
+            task_data["payload"]["capabilities"] = {}
+        task_data["payload"]["capabilities"]["privileged"] = True
+    if env_extra:
+        task_data["payload"]["env"].update(env_extra)
     if depends_on_ids:
         task_data["dependencies"] = depends_on_ids
-        task_data["requires"] = "all-completed"
+        task_data["requires"] = task.get("requires", "all-completed")
     return task_id, task_data
+
+
+def get_artifact_data(artifact, task_id_map):
+    task_id, data = task_id_map[artifact["task"]]
+    return {
+        "task": task_id,
+        "glob": artifact["glob"],
+        "dest": artifact["dest"],
+        "extract": artifact.get("extract", False)
+    }
 
 
 def build_task_graph(event, all_tasks, tasks):
     task_id_map = OrderedDict()
     taskgroup_id = os.environ.get("TASK_ID", taskcluster.slugId())
+    sink_task_depends_on = []
 
     def add_task(task_name, task):
         depends_on_ids = []
@@ -258,17 +305,47 @@ def build_task_graph(event, all_tasks, tasks):
                     add_task(depends_name,
                              all_tasks[depends_name])
                 depends_on_ids.append(task_id_map[depends_name][0])
-        task_id, task_data = create_tc_task(event, task, taskgroup_id, depends_on_ids)
+        env_extra = {}
+        if "download-artifacts" in task:
+            env_extra["TASK_ARTIFACTS"] = json.dumps(
+                [get_artifact_data(artifact, task_id_map)
+                 for artifact in task["download-artifacts"]])
+
+        task_id, task_data = create_tc_task(event, task, taskgroup_id, depends_on_ids,
+                                            env_extra=env_extra)
         task_id_map[task_name] = (task_id, task_data)
 
-    for task_name, task in iteritems(tasks):
+        # The string conversion here is because if we use variables they are
+        # converted to a string, so it's easier to use a string always
+        if str(task.get("required", "True")) != "False" and task_name != "sink-task":
+            sink_task_depends_on.append(task_id)
+
+    for task_name, task in tasks.items():
+        if task_name == "sink-task":
+            # sink-task will be created below at the end of the ordered dict,
+            # so that it can depend on all other tasks.
+            continue
         add_task(task_name, task)
+
+    # GitHub branch protection for pull requests needs us to name explicit
+    # required tasks - which doesn't suffice when using a dynamic task graph.
+    # To work around this we declare a sink task that depends on all the other
+    # tasks completing, and checks if they have succeeded. We can then
+    # make the sink task the sole required task for pull requests.
+    sink_task = tasks.get("sink-task")
+    if sink_task:
+        logger.info("Scheduling sink-task")
+        sink_task["command"] += " {}".format(" ".join(sink_task_depends_on))
+        task_id_map["sink-task"] = create_tc_task(
+            event, sink_task, taskgroup_id, sink_task_depends_on)
+    else:
+        logger.info("sink-task is not scheduled")
 
     return task_id_map
 
 
 def create_tasks(queue, task_id_map):
-    for (task_id, task_data) in itervalues(task_id_map):
+    for (task_id, task_data) in task_id_map.values():
         queue.createTask(task_id, task_data)
 
 
@@ -277,7 +354,7 @@ def get_event(queue, event_path):
         try:
             with open(event_path) as f:
                 event_str = f.read()
-        except IOError:
+        except OSError:
             logger.error("Missing event file at path %s" % event_path)
             raise
     elif "TASK_EVENT" in os.environ:
@@ -298,6 +375,7 @@ def decide(event):
 
     triggered_tasks = filter_triggers(event, all_tasks)
     scheduled_tasks = filter_schedule_if(event, triggered_tasks)
+    filter_excluded_users(scheduled_tasks, event)
 
     logger.info("UNSCHEDULED TASKS:\n  %s" % "\n  ".join(sorted(set(all_tasks.keys()) -
                                                             set(scheduled_tasks.keys()))))

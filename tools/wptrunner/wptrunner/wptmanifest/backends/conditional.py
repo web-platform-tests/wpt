@@ -1,11 +1,12 @@
+# mypy: allow-untyped-defs
+
 import operator
-from six import ensure_text, iteritems, iterkeys, text_type
 
 from ..node import NodeVisitor, DataNode, ConditionalNode, KeyValueNode, ListNode, ValueNode, BinaryExpressionNode, VariableNode
 from ..parser import parse
 
 
-class ConditionalValue(object):
+class ConditionalValue:
     def __init__(self, node, condition_func):
         self.node = node
         assert callable(condition_func)
@@ -32,7 +33,7 @@ class ConditionalValue(object):
         if isinstance(self.value_node, ValueNode):
             self.value_node.data = value
         else:
-            assert(isinstance(self.value_node, ListNode))
+            assert isinstance(self.value_node, ListNode)
             while self.value_node.children:
                 self.value_node.children[0].remove()
             assert len(self.value_node.children) == 0
@@ -41,9 +42,6 @@ class ConditionalValue(object):
 
     def __call__(self, run_info):
         return self.condition_func(run_info)
-
-    def set_value(self, value):
-        self.value = ensure_text(value)
 
     def value_as(self, type_func):
         """Get value and convert to a given type.
@@ -213,7 +211,7 @@ class Compiler(NodeVisitor):
                 "!=": operator.ne}[node.data]
 
 
-class ManifestItem(object):
+class ManifestItem:
     def __init__(self, node=None, **kwargs):
         self.node = node
         self.parent = None
@@ -235,8 +233,7 @@ class ManifestItem(object):
     def __iter__(self):
         yield self
         for child in self.children:
-            for node in child:
-                yield node
+            yield from child
 
     @property
     def is_empty(self):
@@ -300,9 +297,9 @@ class ManifestItem(object):
         if isinstance(value, list):
             value_node = ListNode()
             for item in value:
-                value_node.append(ValueNode(text_type(item)))
+                value_node.append(ValueNode(str(item)))
         else:
-            value_node = ValueNode(text_type(value))
+            value_node = ValueNode(str(value))
         if condition is not None:
             if not isinstance(condition, ConditionalNode):
                 conditional_node = ConditionalNode()
@@ -368,18 +365,16 @@ class ManifestItem(object):
     def _flatten(self):
         rv = {}
         for node in [self, self.root]:
-            for name, value in iteritems(node._data):
+            for name, value in node._data.items():
                 if name not in rv:
                     rv[name] = value
         return rv
 
     def iteritems(self):
-        for item in iteritems(self._flatten()):
-            yield item
+        yield from self._flatten().items()
 
     def iterkeys(self):
-        for item in iterkeys(self._flatten()):
-            yield item
+        yield from self._flatten().keys()
 
     def iter_properties(self):
         for item in self._data:

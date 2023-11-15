@@ -24,7 +24,7 @@ const gInvalidTestCases = [
 for (const {property, values, desc} of gInvalidTestCases) {
   test(t => {
     let styleMap = createDeclaredStyleMap(t, '');
-    assert_throws(new TypeError(), () => styleMap.append(property, ...values));
+    assert_throws_js(TypeError, () => styleMap.append(property, ...values));
   }, 'Calling StylePropertyMap.append with ' + desc + ' throws TypeError');
 }
 
@@ -60,5 +60,15 @@ test(t => {
   assert_style_value_array_equals(result,
       [CSS.s(5), CSS.s(10), CSS.s(1), CSS.s(2)]);
 }, 'StylePropertyMap.append is case-insensitive');
+
+test(t => {
+  let styleMap = createDeclaredStyleMap(t, 'transition-duration: var(--a)');
+  assert_throws_js(TypeError, () => styleMap.append('transition-duration', CSS.s(1)));
+}, 'Appending to a list containing a variable reference should throw');
+
+test(t => {
+  let styleMap = createDeclaredStyleMap(t, 'transition: var(--a)');
+  assert_throws_js(TypeError, () => styleMap.append('transition-duration', CSS.s(1)));
+}, 'Appending to a longhand list containing a variable reference should throw');
 
 </script>

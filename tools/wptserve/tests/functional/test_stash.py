@@ -12,16 +12,16 @@ from .base import TestUsingServer
 class TestResponseSetCookie(TestUsingServer):
     def run(self, result=None):
         with StashServer(None, authkey=str(uuid.uuid4())):
-            super(TestResponseSetCookie, self).run(result)
+            super().run(result)
 
     def test_put_take(self):
         @wptserve.handlers.handler
         def handler(request, response):
             if request.method == "POST":
-                request.server.stash.put(request.POST.first("id"), request.POST.first("data"))
+                request.server.stash.put(request.POST.first(b"id"), request.POST.first(b"data"))
                 data = "OK"
             elif request.method == "GET":
-                data = request.server.stash.take(request.GET.first("id"))
+                data = request.server.stash.take(request.GET.first(b"id"))
                 if data is None:
                     return "NOT FOUND"
             return data

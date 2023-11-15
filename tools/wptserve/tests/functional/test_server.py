@@ -1,7 +1,7 @@
 import unittest
 
 import pytest
-from six.moves.urllib.error import HTTPError
+from urllib.error import HTTPError
 
 wptserve = pytest.importorskip("wptserve")
 from .base import TestUsingServer, TestUsingH2Server
@@ -13,6 +13,7 @@ class TestFileHandler(TestUsingServer):
             self.request("/not_existing")
 
         self.assertEqual(cm.exception.code, 404)
+
 
 class TestRewriter(TestUsingServer):
     def test_rewrite(self):
@@ -27,6 +28,7 @@ class TestRewriter(TestUsingServer):
         self.assertEqual(200, resp.getcode())
         self.assertEqual(b"/test/rewritten", resp.read())
 
+
 class TestRequestHandler(TestUsingServer):
     def test_exception(self):
         @wptserve.handlers.handler
@@ -40,12 +42,39 @@ class TestRequestHandler(TestUsingServer):
 
         self.assertEqual(cm.exception.code, 500)
 
+    def test_many_headers(self):
+        headers = {"X-Val%d" % i: str(i) for i in range(256)}
+
+        @wptserve.handlers.handler
+        def handler(request, response):
+            # Additional headers are added by urllib.request.
+            assert len(request.headers) > len(headers)
+            for k, v in headers.items():
+                assert request.headers.get(k) == \
+                    wptserve.utils.isomorphic_encode(v)
+            return "OK"
+
+        route = ("GET", "/test/headers", handler)
+        self.server.router.register(*route)
+        resp = self.request("/test/headers", headers=headers)
+        self.assertEqual(200, resp.getcode())
+
+
+class TestH2Version(TestUsingH2Server):
+    # The purpose of this test is to ensure that all TestUsingH2Server tests
+    # actually end up using HTTP/2, in case there's any protocol negotiation.
+    def test_http_version(self):
+        resp = self.client.get('/')
+
+        assert resp.http_version == 'HTTP/2'
+
+
 class TestFileHandlerH2(TestUsingH2Server):
     def test_not_handled(self):
-        self.conn.request("GET", "/not_existing")
-        resp = self.conn.get_response()
+        resp = self.client.get("/not_existing")
 
-        assert resp.status == 404
+        assert resp.status_code == 404
+
 
 class TestRewriterH2(TestUsingH2Server):
     def test_rewrite(self):
@@ -56,10 +85,10 @@ class TestRewriterH2(TestUsingH2Server):
         route = ("GET", "/test/rewritten", handler)
         self.server.rewriter.register("GET", "/test/original", route[1])
         self.server.router.register(*route)
-        self.conn.request("GET", "/test/original")
-        resp = self.conn.get_response()
-        assert resp.status == 200
-        assert resp.read() == b"/test/rewritten"
+        resp = self.client.get("/test/original")
+        assert resp.status_code == 200
+        assert resp.content == b"/test/rewritten"
+
 
 class TestRequestHandlerH2(TestUsingH2Server):
     def test_exception(self):
@@ -69,10 +98,9 @@ class TestRequestHandlerH2(TestUsingH2Server):
 
         route = ("GET", "/test/raises", handler)
         self.server.router.register(*route)
-        self.conn.request("GET", "/test/raises")
-        resp = self.conn.get_response()
+        resp = self.client.get("/test/raises")
 
-        assert resp.status == 500
+        assert resp.status_code == 500
 
     def test_frame_handler_exception(self):
         class handler_cls:
@@ -81,10 +109,10 @@ class TestRequestHandlerH2(TestUsingH2Server):
 
         route = ("GET", "/test/raises", handler_cls())
         self.server.router.register(*route)
-        self.conn.request("GET", "/test/raises")
-        resp = self.conn.get_response()
+        resp = self.client.get("/test/raises")
 
-        assert resp.status == 500
+        assert resp.status_code == 500
+
 
 if __name__ == "__main__":
     unittest.main()

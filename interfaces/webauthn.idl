@@ -1,13 +1,67 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
-// Source: Web Authentication: An API for accessing Public Key Credentials - Level 2 (https://w3c.github.io/webauthn/)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: Web Authentication: An API for accessing Public Key Credentials - Level (https://w3c.github.io/webauthn/)
 
 [SecureContext, Exposed=Window]
 interface PublicKeyCredential : Credential {
     [SameObject] readonly attribute ArrayBuffer              rawId;
     [SameObject] readonly attribute AuthenticatorResponse    response;
+    readonly attribute DOMString?                            authenticatorAttachment;
     AuthenticationExtensionsClientOutputs getClientExtensionResults();
+    static Promise<boolean> isConditionalMediationAvailable();
+    PublicKeyCredentialJSON toJSON();
+};
+
+typedef DOMString Base64URLString;
+// The structure of this object will be either
+// RegistrationResponseJSON or AuthenticationResponseJSON
+typedef object PublicKeyCredentialJSON;
+
+dictionary RegistrationResponseJSON {
+    required Base64URLString id;
+    required Base64URLString rawId;
+    required AuthenticatorAttestationResponseJSON response;
+    DOMString authenticatorAttachment;
+    required AuthenticationExtensionsClientOutputsJSON clientExtensionResults;
+    required DOMString type;
+};
+
+dictionary AuthenticatorAttestationResponseJSON {
+    required Base64URLString clientDataJSON;
+    required Base64URLString authenticatorData;
+    required sequence<DOMString> transports;
+    // The publicKey field will be missing if pubKeyCredParams was used to
+    // negotiate a public-key algorithm that the user agent doesn’t
+    // understand. (See section “Easily accessing credential data” for a
+    // list of which algorithms user agents must support.) If using such an
+    // algorithm then the public key must be parsed directly from
+    // attestationObject or authenticatorData.
+    Base64URLString publicKey;
+    required long long publicKeyAlgorithm;
+    // This value contains copies of some of the fields above. See
+    // section “Easily accessing credential data”.
+    required Base64URLString attestationObject;
+};
+
+dictionary AuthenticationResponseJSON {
+    required Base64URLString id;
+    required Base64URLString rawId;
+    required AuthenticatorAssertionResponseJSON response;
+    DOMString authenticatorAttachment;
+    required AuthenticationExtensionsClientOutputsJSON clientExtensionResults;
+    required DOMString type;
+};
+
+dictionary AuthenticatorAssertionResponseJSON {
+    required Base64URLString clientDataJSON;
+    required Base64URLString authenticatorData;
+    required Base64URLString signature;
+    Base64URLString userHandle;
+    Base64URLString attestationObject;
+};
+
+dictionary AuthenticationExtensionsClientOutputsJSON {
 };
 
 partial dictionary CredentialCreationOptions {
@@ -22,6 +76,59 @@ partial interface PublicKeyCredential {
     static Promise<boolean> isUserVerifyingPlatformAuthenticatorAvailable();
 };
 
+partial interface PublicKeyCredential {
+    static Promise<boolean> isPasskeyPlatformAuthenticatorAvailable();
+};
+
+partial interface PublicKeyCredential {
+    static PublicKeyCredentialCreationOptions parseCreationOptionsFromJSON(PublicKeyCredentialCreationOptionsJSON options);
+};
+
+dictionary PublicKeyCredentialCreationOptionsJSON {
+    required PublicKeyCredentialRpEntity                    rp;
+    required PublicKeyCredentialUserEntityJSON              user;
+    required Base64URLString                                challenge;
+    required sequence<PublicKeyCredentialParameters>        pubKeyCredParams;
+    unsigned long                                           timeout;
+    sequence<PublicKeyCredentialDescriptorJSON>             excludeCredentials = [];
+    AuthenticatorSelectionCriteria                          authenticatorSelection;
+    sequence<DOMString>                                     hints = [];
+    DOMString                                               attestation = "none";
+    sequence<DOMString>                                     attestationFormats = [];
+    AuthenticationExtensionsClientInputsJSON                extensions;
+};
+
+dictionary PublicKeyCredentialUserEntityJSON {
+    required Base64URLString        id;
+    required DOMString              name;
+    required DOMString              displayName;
+};
+
+dictionary PublicKeyCredentialDescriptorJSON {
+    required Base64URLString        id;
+    required DOMString              type;
+    sequence<DOMString>             transports;
+};
+
+dictionary AuthenticationExtensionsClientInputsJSON {
+};
+
+partial interface PublicKeyCredential {
+    static PublicKeyCredentialRequestOptions parseRequestOptionsFromJSON(PublicKeyCredentialRequestOptionsJSON options);
+};
+
+dictionary PublicKeyCredentialRequestOptionsJSON {
+    required Base64URLString                                challenge;
+    unsigned long                                           timeout;
+    DOMString                                               rpId;
+    sequence<PublicKeyCredentialDescriptorJSON>             allowCredentials = [];
+    DOMString                                               userVerification = "preferred";
+    sequence<DOMString>                                     hints = [];
+    DOMString                                               attestation = "none";
+    sequence<DOMString>                                     attestationFormats = [];
+    AuthenticationExtensionsClientInputsJSON                extensions;
+};
+
 [SecureContext, Exposed=Window]
 interface AuthenticatorResponse {
     [SameObject] readonly attribute ArrayBuffer      clientDataJSON;
@@ -31,6 +138,9 @@ interface AuthenticatorResponse {
 interface AuthenticatorAttestationResponse : AuthenticatorResponse {
     [SameObject] readonly attribute ArrayBuffer      attestationObject;
     sequence<DOMString>                              getTransports();
+    ArrayBuffer                                      getAuthenticatorData();
+    ArrayBuffer?                                     getPublicKey();
+    COSEAlgorithmIdentifier                          getPublicKeyAlgorithm();
 };
 
 [SecureContext, Exposed=Window]
@@ -38,10 +148,11 @@ interface AuthenticatorAssertionResponse : AuthenticatorResponse {
     [SameObject] readonly attribute ArrayBuffer      authenticatorData;
     [SameObject] readonly attribute ArrayBuffer      signature;
     [SameObject] readonly attribute ArrayBuffer?     userHandle;
+    [SameObject] readonly attribute ArrayBuffer?     attestationObject;
 };
 
 dictionary PublicKeyCredentialParameters {
-    required PublicKeyCredentialType      type;
+    required DOMString                    type;
     required COSEAlgorithmIdentifier      alg;
 };
 
@@ -55,7 +166,9 @@ dictionary PublicKeyCredentialCreationOptions {
     unsigned long                                timeout;
     sequence<PublicKeyCredentialDescriptor>      excludeCredentials = [];
     AuthenticatorSelectionCriteria               authenticatorSelection;
-    AttestationConveyancePreference              attestation = "none";
+    sequence<DOMString>                          hints = [];
+    DOMString                                    attestation = "none";
+    sequence<DOMString>                          attestationFormats = [];
     AuthenticationExtensionsClientInputs         extensions;
 };
 
@@ -73,10 +186,10 @@ dictionary PublicKeyCredentialUserEntity : PublicKeyCredentialEntity {
 };
 
 dictionary AuthenticatorSelectionCriteria {
-    AuthenticatorAttachment      authenticatorAttachment;
+    DOMString                    authenticatorAttachment;
+    DOMString                    residentKey;
     boolean                      requireResidentKey = false;
-    ResidentKeyRequirement       residentKey;
-    UserVerificationRequirement  userVerification = "preferred";
+    DOMString                    userVerification = "preferred";
 };
 
 enum AuthenticatorAttachment {
@@ -93,7 +206,8 @@ enum ResidentKeyRequirement {
 enum AttestationConveyancePreference {
     "none",
     "indirect",
-    "direct"
+    "direct",
+    "enterprise"
 };
 
 dictionary PublicKeyCredentialRequestOptions {
@@ -101,7 +215,10 @@ dictionary PublicKeyCredentialRequestOptions {
     unsigned long                        timeout;
     USVString                            rpId;
     sequence<PublicKeyCredentialDescriptor> allowCredentials = [];
-    UserVerificationRequirement          userVerification = "preferred";
+    DOMString                            userVerification = "preferred";
+    sequence<DOMString>                  hints = [];
+    DOMString                            attestation = "none";
+    sequence<DOMString>                  attestationFormats = [];
     AuthenticationExtensionsClientInputs extensions;
 };
 
@@ -111,18 +228,16 @@ dictionary AuthenticationExtensionsClientInputs {
 dictionary AuthenticationExtensionsClientOutputs {
 };
 
-typedef record<DOMString, DOMString> AuthenticationExtensionsAuthenticatorInputs;
-
 dictionary CollectedClientData {
     required DOMString           type;
     required DOMString           challenge;
     required DOMString           origin;
+    DOMString                    topOrigin;
     boolean                      crossOrigin;
-    TokenBinding                 tokenBinding;
 };
 
 dictionary TokenBinding {
-    required TokenBindingStatus status;
+    required DOMString status;
     DOMString id;
 };
 
@@ -133,7 +248,7 @@ enum PublicKeyCredentialType {
 };
 
 dictionary PublicKeyCredentialDescriptor {
-    required PublicKeyCredentialType      type;
+    required DOMString                    type;
     required BufferSource                 id;
     sequence<DOMString>                   transports;
 };
@@ -142,8 +257,9 @@ enum AuthenticatorTransport {
     "usb",
     "nfc",
     "ble",
-    "internal",
-    "lightning"
+    "smart-card",
+    "hybrid",
+    "internal"
 };
 
 typedef long COSEAlgorithmIdentifier;
@@ -152,6 +268,12 @@ enum UserVerificationRequirement {
     "required",
     "preferred",
     "discouraged"
+};
+
+enum PublicKeyCredentialHints {
+    "security-key",
+    "client-device",
+    "hybrid",
 };
 
 partial dictionary AuthenticationExtensionsClientInputs {
@@ -166,63 +288,69 @@ partial dictionary AuthenticationExtensionsClientInputs {
   USVString appidExclude;
 };
 
-partial dictionary AuthenticationExtensionsClientInputs {
-  USVString txAuthSimple;
-};
-
 partial dictionary AuthenticationExtensionsClientOutputs {
-  USVString txAuthSimple;
-};
-
-dictionary txAuthGenericArg {
-    required USVString contentType;    // MIME-Type of the content, e.g., "image/png"
-    required ArrayBuffer content;
+  boolean appidExclude;
 };
 
 partial dictionary AuthenticationExtensionsClientInputs {
-  txAuthGenericArg txAuthGeneric;
+    boolean credProps;
+};
+
+dictionary CredentialPropertiesOutput {
+    boolean rk;
+    USVString authenticatorDisplayName;
 };
 
 partial dictionary AuthenticationExtensionsClientOutputs {
-  ArrayBuffer txAuthGeneric;
+    CredentialPropertiesOutput credProps;
 };
 
-typedef sequence<AAGUID> AuthenticatorSelectionList;
-
-partial dictionary AuthenticationExtensionsClientInputs {
-  AuthenticatorSelectionList authnSel;
+dictionary AuthenticationExtensionsPRFValues {
+    required BufferSource first;
+    BufferSource second;
 };
 
-typedef BufferSource      AAGUID;
-
-partial dictionary AuthenticationExtensionsClientOutputs {
-  boolean authnSel;
-};
-
-partial dictionary AuthenticationExtensionsClientInputs {
-  boolean exts;
-};
-
-typedef sequence<USVString> AuthenticationExtensionsSupported;
-
-partial dictionary AuthenticationExtensionsClientOutputs {
-  AuthenticationExtensionsSupported exts;
+dictionary AuthenticationExtensionsPRFInputs {
+    AuthenticationExtensionsPRFValues eval;
+    record<USVString, AuthenticationExtensionsPRFValues> evalByCredential;
 };
 
 partial dictionary AuthenticationExtensionsClientInputs {
-  boolean uvi;
+    AuthenticationExtensionsPRFInputs prf;
+};
+
+dictionary AuthenticationExtensionsPRFOutputs {
+    boolean enabled;
+    AuthenticationExtensionsPRFValues results;
 };
 
 partial dictionary AuthenticationExtensionsClientOutputs {
-  ArrayBuffer uvi;
+    AuthenticationExtensionsPRFOutputs prf;
 };
 
 partial dictionary AuthenticationExtensionsClientInputs {
-  boolean loc;
+    AuthenticationExtensionsLargeBlobInputs largeBlob;
+};
+
+enum LargeBlobSupport {
+  "required",
+  "preferred",
+};
+
+dictionary AuthenticationExtensionsLargeBlobInputs {
+    DOMString support;
+    boolean read;
+    BufferSource write;
 };
 
 partial dictionary AuthenticationExtensionsClientOutputs {
-  GeolocationCoordinates loc;
+    AuthenticationExtensionsLargeBlobOutputs largeBlob;
+};
+
+dictionary AuthenticationExtensionsLargeBlobOutputs {
+    boolean supported;
+    ArrayBuffer blob;
+    boolean written;
 };
 
 partial dictionary AuthenticationExtensionsClientInputs {
@@ -236,19 +364,19 @@ partial dictionary AuthenticationExtensionsClientOutputs {
   UvmEntries uvm;
 };
 
-dictionary authenticatorBiometricPerfBounds{
-    float FAR;
-    float FRR;
-    };
-
-partial dictionary AuthenticationExtensionsClientInputs {
-    boolean credProps;
+dictionary AuthenticationExtensionsDevicePublicKeyInputs {
+    DOMString attestation = "none";
+    sequence<DOMString> attestationFormats = [];
 };
 
-dictionary CredentialPropertiesOutput {
-    boolean rk;
+partial dictionary AuthenticationExtensionsClientInputs {
+    AuthenticationExtensionsDevicePublicKeyInputs devicePubKey;
+};
+
+dictionary AuthenticationExtensionsDevicePublicKeyOutputs {
+    ArrayBuffer signature;
 };
 
 partial dictionary AuthenticationExtensionsClientOutputs {
-    CredentialPropertiesOutput credProps;
+    AuthenticationExtensionsDevicePublicKeyOutputs devicePubKey;
 };

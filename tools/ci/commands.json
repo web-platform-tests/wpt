@@ -13,6 +13,32 @@
     "help": "Output a hosts file to stdout",
     "virtualenv": false
   },
+  "macos-color-profile": {
+    "path": "macos_color_profile.py",
+    "script": "run",
+    "help": "Change the macOS color profile to sRGB",
+    "virtualenv": true,
+    "requirements": [
+      "requirements_macos_color_profile.txt"
+    ]
+  },
+  "regen-certs": {
+    "path": "regen_certs.py",
+    "script": "run",
+    "parser": "get_parser",
+    "help": "Regenerate the WPT certificates",
+    "virtualenv": false
+  },
+  "update-built": {
+    "path": "update_built.py",
+    "script": "run",
+    "parser": "get_parser",
+    "help": "Update built tests",
+    "virtualenv": true,
+    "requirements": [
+      "requirements_build.txt"
+    ]
+  },
   "tc-download": {
     "path": "tc/download.py",
     "script": "run",
@@ -20,9 +46,8 @@
     "parse_known": true,
     "help": "Download logs from taskcluster",
     "virtualenv": true,
-    "install": [
-      "requests",
-      "pygithub"
+    "requirements": [
+      "requirements_tc.txt"
     ]
   },
   "tc-taskgraph": {
@@ -30,9 +55,8 @@
     "script": "run",
     "help": "Build the taskgraph",
     "virtualenv": true,
-    "install": [
-      "requests",
-      "pyyaml"
+    "requirements": [
+      "requirements_tc.txt"
     ]
   },
   "tc-decision": {
@@ -41,10 +65,18 @@
     "script": "run",
     "help": "Run the decision task",
     "virtualenv": true,
-    "install": [
-        "requests",
-        "pyyaml",
-        "taskcluster"
+    "requirements": [
+      "requirements_tc.txt"
+    ]
+  },
+  "tc-sink-task": {
+    "path": "tc/sink_task.py",
+    "parser": "get_parser",
+    "script": "run",
+    "help": "Run the sink task",
+    "virtualenv": true,
+    "requirements": [
+      "requirements_tc.txt"
     ]
   }
 }

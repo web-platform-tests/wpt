@@ -1,7 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// See https://github.com/web-platform-tests/wpt/issues/12781 for information on
+// the purpose of audit.js, and why testharness.js does not suffice.
 
 /**
  * @fileOverview  WebAudio layout test utility library. Built around W3C's
@@ -17,7 +19,7 @@
 
   // Selected methods from testharness.js.
   let testharnessProperties = [
-    'test', 'async_test', 'promise_test', 'promise_rejects', 'generate_tests',
+    'test', 'async_test', 'promise_test', 'promise_rejects_js', 'generate_tests',
     'setup', 'done', 'assert_true', 'assert_false'
   ];
 
@@ -318,11 +320,16 @@ window.Audit = (function() {
           didThrowCorrectly = true;
           passDetail = '${actual} threw ' + error.name + errorMessage + '.';
         } else if (this._expected === DOMException &&
-                   (this._expectedDescription === undefined ||
-                    this._expectedDescription === error.name)) {
-          // Handles DOMException with the associated name.
-          didThrowCorrectly = true;
-          passDetail = '${actual} threw ${expected}' + errorMessage + '.';
+                   this._expectedDescription !== undefined) {
+          // Handles DOMException with an expected exception name.
+          if (this._expectedDescription === error.name) {
+            didThrowCorrectly = true;
+            passDetail = '${actual} threw ${expected}' + errorMessage + '.';
+          } else {
+            didThrowCorrectly = false;
+            failDetail =
+                '${actual} threw "' + error.name + '" instead of ${expected}.';
+          }
         } else if (this._expected == error.constructor) {
           // Handler other error types.
           didThrowCorrectly = true;
@@ -870,8 +877,6 @@ window.Audit = (function() {
       // it is absolute.
       let absExpected = this._expected ? Math.abs(this._expected) : 1;
       let error = Math.abs(this._actual - this._expected) / absExpected;
-
-      // debugger;
 
       return this._assert(
           error <= this._options.threshold,

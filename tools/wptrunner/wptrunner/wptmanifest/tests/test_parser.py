@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import unittest
 
 from .. import parser
@@ -104,6 +106,45 @@ key:
     def test_atom_1(self):
         with self.assertRaises(parser.ParseError):
             self.parse(b"key: @true")
+
+    def test_list_expr(self):
+        self.compare(
+            b"""
+key:
+  if x == 1: [a]
+  [b]""",
+            ["DataNode", None,
+             [["KeyValueNode", "key",
+               [["ConditionalNode", None,
+                 [["BinaryExpressionNode", None,
+                   [["BinaryOperatorNode", "==", []],
+                    ["VariableNode", "x", []],
+                       ["NumberNode", "1", []]
+                    ]],
+                     ["ListNode", None,
+                      [["ValueNode", "a", []]]],
+                  ]],
+                ["ListNode", None,
+                 [["ValueNode", "b", []]]]]]]])
+
+    def test_list_heading(self):
+        self.compare(
+            b"""
+key:
+  if x == 1: [a]
+[b]""",
+            ["DataNode", None,
+             [["KeyValueNode", "key",
+               [["ConditionalNode", None,
+                 [["BinaryExpressionNode", None,
+                   [["BinaryOperatorNode", "==", []],
+                    ["VariableNode", "x", []],
+                       ["NumberNode", "1", []]
+                    ]],
+                     ["ListNode", None,
+                      [["ValueNode", "a", []]]],
+                  ]]]],
+              ["DataNode", "b", []]]])
 
     def test_if_1(self):
         with self.assertRaises(parser.ParseError):

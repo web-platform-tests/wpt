@@ -1,6 +1,6 @@
 'use strict';
 
-const gCSSProperties = {
+const gCSSProperties1 = {
   'align-content': {
     // https://drafts.csswg.org/css-align/#propdef-align-content
     types: [
@@ -575,6 +575,12 @@ const gCSSProperties = {
       { type: 'discrete', options: [ [ 'full-width', 'proportional-width' ] ] }
     ]
   },
+  'font-variant-emoji': {
+    // https://drafts.csswg.org/css-fonts/#propdef-font-variant-emoji
+    types: [
+      { type: 'discrete', options: [ [ 'text', 'emoji' ] ] }
+    ]
+  },
   'font-variant-ligatures': {
     // https://drafts.csswg.org/css-fonts-3/#propdef-font-variant-ligatures
     types: [
@@ -599,7 +605,7 @@ const gCSSProperties = {
     types: [
       'fontVariationSettings',
       { type: 'discrete',
-        options: [ ['"wght" 1.1, "wdth" 1', '"wdth" 5'],
+        options: [ ['"wdth" 1, "wght" 1.1', '"wdth" 5'],
                    ['"wdth" 5', 'normal']
                  ] },
     ]
@@ -664,7 +670,7 @@ const gCSSProperties = {
   'grid-template-areas': {
     // https://drafts.csswg.org/css-template/#grid-template-areas
     types: [
-      { type: 'discrete', options: [ [ '". . a b" ". .a b"', 'none' ] ] }
+      { type: 'discrete', options: [ [ '". . a b" ". . a b"', 'none' ] ] }
     ]
   },
   'height': {
@@ -701,6 +707,9 @@ const gCSSProperties = {
       { type: 'discrete', options: [ [ '1 2', '3 4' ] ] }
     ]
   },
+};
+
+const gCSSProperties2 = {
   'inline-size': {
     // https://drafts.csswg.org/css-logical-props/#propdef-inline-size
     types: [
@@ -744,8 +753,10 @@ const gCSSProperties = {
     types: [ 'color' ]
   },
   'line-height': {
-    // https://drafts.csswg.org/css21/visudet.html#propdef-line-height
+    // https://drafts.csswg.org/css-inline/#line-height-property
     types: [
+        { type: 'discrete', options: [ [ 'normal', '10px' ],
+                                       [ 'normal', '10', 'normal', '100px' ] ] }
     ]
   },
   'list-style-image': {
@@ -1167,6 +1178,22 @@ const gCSSProperties = {
       { type: 'discrete', options: [ [ 'auto', 'smooth' ] ] }
     ]
   },
+  'scrollbar-color': {
+    // https://drafts.csswg.org/css-scrollbars/#propdef-scrollbar-color
+    types: [ 'colorPair' ]
+  },
+  'scrollbar-gutter': {
+    // https://drafts.csswg.org/css-overflow/#propdef-scrollbar-gutter
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'stable' ], [ 'auto', 'stable both-edges' ], [ 'stable', 'stable both-edges' ] ] }
+    ]
+  },
+  'scrollbar-width': {
+    // https://drafts.csswg.org/css-scrollbars/#propdef-scrollbar-width
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'thin' ], [ 'auto', 'none' ], [ 'thin', 'none' ] ] }
+    ]
+  },
   'shape-outside': {
     // http://dev.w3.org/csswg/css-shapes/#propdef-shape-outside
     types: [
@@ -1258,10 +1285,10 @@ const gCSSProperties = {
       { type: 'discrete', options: [ [ 'middle', 'end' ] ] }
     ]
   },
-  'text-combine-upright': {
-    // https://drafts.csswg.org/css-writing-modes-3/#propdef-text-combine-upright
+  'text-autospace': {
+    // https://drafts.csswg.org/css-text-4/#text-spacing-property
     types: [
-      { type: 'discrete', options: [ [ 'all', 'none' ] ] }
+      { type: 'discrete', options: [ [ 'normal', 'no-autospace' ] ] }
     ]
   },
   'text-decoration-color': {
@@ -1287,13 +1314,19 @@ const gCSSProperties = {
   'text-emphasis-position': {
     // http://dev.w3.org/csswg/css-text-decor-3/#propdef-text-emphasis-position
     types: [
-      { type: 'discrete', options: [ [ 'over right', 'under left' ] ] }
+      { type: 'discrete', options: [ [ 'over', 'under left' ] ] }
     ]
   },
   'text-emphasis-style': {
     // http://dev.w3.org/csswg/css-text-decor-3/#propdef-text-emphasis-style
     types: [
       { type: 'discrete', options: [ [ 'circle', 'open dot' ] ] }
+    ]
+  },
+  'text-group-align': {
+    // https://drafts.csswg.org/css-text-4/#propdef-text-group-align
+    types: [
+      { type: 'discrete', options: [ [ 'none', 'center' ] ] }
     ]
   },
   'text-indent': {
@@ -1322,10 +1355,22 @@ const gCSSProperties = {
       return element;
     }
   },
+  'text-spacing-trim': {
+    // https://svgwg.org/svg2-draft/painting.html#TextRenderingProperty
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'space-all' ] ] }
+    ]
+  },
   'text-transform': {
     // https://drafts.csswg.org/css-text-3/#propdef-text-transform
     types: [
       { type: 'discrete', options: [ [ 'capitalize', 'uppercase' ] ] }
+    ]
+  },
+  'text-wrap': {
+    // https://drafts.csswg.org/css-text-4/#propdef-text-wrap
+    types: [
+      { type: 'discrete', options: [ [ 'wrap', 'nowrap' ] ] }
     ]
   },
   'touch-action': {
@@ -1400,6 +1445,12 @@ const gCSSProperties = {
       { type: 'discrete', options: [ [ 'pre', 'nowrap' ] ] }
     ]
   },
+  'white-space-collapse': {
+    // https://drafts.csswg.org/css-text-4/#propdef-white-space-collapse
+    types: [
+      { type: 'discrete', options: [ [ 'collapse', 'preserve' ] ] }
+    ]
+  },
   'width': {
     // https://drafts.csswg.org/css21/visudet.html#propdef-width
     types: [
@@ -1427,7 +1478,7 @@ function testAnimationSamples(animation, idlName, testSamples) {
   const target = animation.effect.target;
   for (const testSample of testSamples) {
     animation.currentTime = testSample.time;
-    assert_equals(getComputedStyle(target, pseudoType)[idlName],
+    assert_equals(getComputedStyle(target, pseudoType)[idlName].toLowerCase(),
                   testSample.expected,
                   `The value should be ${testSample.expected}` +
                   ` at ${testSample.time}ms`);

@@ -75,7 +75,7 @@ Issues
 ------
 
 * By using ``request.getfuncargvalue()`` we rely on actual fixture function
-  execution to know what fixtures are involved, due to it's dynamic nature
+  execution to know what fixtures are involved, due to its dynamic nature
 * More importantly, ``request.getfuncargvalue()`` cannot be combined with
   parametrized fixtures, such as ``extra_context``
 * This is very inconvenient if you wish to extend an existing test suite by
@@ -120,7 +120,7 @@ all parameters marked as a fixture.
 
 .. note::
 
-    The `pytest-lazy-fixture <https://pypi.org/project/pytest-lazy-fixture/>`_ plugin implements a very
+    The :pypi:`pytest-lazy-fixture` plugin implements a very
     similar solution to the proposal below, make sure to check it out.
 
 .. code-block:: python

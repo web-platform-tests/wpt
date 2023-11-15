@@ -1,26 +1,31 @@
-from six.moves.configparser import SafeConfigParser
+# mypy: allow-untyped-defs
+
+from configparser import ConfigParser
 import os
 import sys
 from collections import OrderedDict
+from typing import Dict, Mapping, Optional
 
-here = os.path.split(__file__)[0]
+here = os.path.dirname(__file__)
 
-class ConfigDict(dict):
-    def __init__(self, base_path, *args, **kwargs):
+
+class ConfigDict(Dict[str, str]):
+    def __init__(self, base_path: str, *args: str, **kwargs: str):
         self.base_path = base_path
         dict.__init__(self, *args, **kwargs)
 
-    def get_path(self, key, default=None):
+    def get_path(self, key: str, default:Optional[str] = None) -> Optional[str]:
         if key not in self:
             return default
         path = self[key]
         os.path.expanduser(path)
         return os.path.abspath(os.path.join(self.base_path, path))
 
-def read(config_path):
+
+def read(config_path: str) -> Mapping[str, ConfigDict]:
     config_path = os.path.abspath(config_path)
-    config_root = os.path.split(config_path)[0]
-    parser = SafeConfigParser()
+    config_root = os.path.dirname(config_path)
+    parser = ConfigParser()
     success = parser.read(config_path)
     assert config_path in success, success
 
@@ -33,6 +38,7 @@ def read(config_path):
             rv[section][key] = parser.get(section, key, raw=False, vars=subns)
 
     return rv
+
 
 def path(argv=None):
     if argv is None:
@@ -55,6 +61,7 @@ def path(argv=None):
             path = os.path.join(here, "..", "wptrunner.default.ini")
 
     return os.path.abspath(path)
+
 
 def load():
     return read(path(sys.argv))

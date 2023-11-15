@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import argparse
 import os
 import logging
@@ -106,4 +108,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main()  # type: ignore

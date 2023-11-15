@@ -1,5 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
+<meta name="timeout" content="long">
 <title>RTCRtpReceiver.prototype.getStats</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -14,7 +15,7 @@
   // https://w3c.github.io/webrtc-stats/archives/20170614/webrtc-stats.html
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
-  //   doSignalingHandshake
+  //   exchangeOfferAnswer
 
   // The following helper function is called from RTCStats-helper.js
   //   validateStatsReport
@@ -39,8 +40,8 @@
     8.5. The stats selection algorithm
       4.  If selector is an RTCRtpReceiver, gather stats for and add the following objects
           to result:
-        - All RTCInboundRTPStreamStats objects corresponding to selector.
-        - All stats objects referenced directly or indirectly by the RTCInboundRTPStreamStats
+        - All RTCInboundRtpStreamStats objects corresponding to selector.
+        - All stats objects referenced directly or indirectly by the RTCInboundRtpStreamStats
           added.
    */
 
@@ -57,7 +58,7 @@
 
     const { receiver } = caller.addTransceiver('audio');
 
-    await doSignalingHandshake(caller, callee);
+    await exchangeOfferAnswer(caller, callee);
     const statsReport = await receiver.getStats();
     validateStatsReport(statsReport);
     assert_stats_report_has_stats(statsReport, ['inbound-rtp']);
@@ -73,11 +74,72 @@
     const [track] = stream.getTracks();
     caller.addTrack(track, stream);
 
-    await doSignalingHandshake(caller, callee);
+    await exchangeOfferAnswer(caller, callee);
     const receiver = callee.getReceivers()[0];
     const statsReport = await receiver.getStats();
     validateStatsReport(statsReport);
     assert_stats_report_has_stats(statsReport, ['inbound-rtp']);
   }, 'receiver.getStats() via addTrack should return stats report containing inbound-rtp stats');
+
+
+  promise_test(async t => {
+    const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
+    const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+    const stream = await getNoiseStream({audio:true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    const [track] = stream.getTracks();
+    caller.addTrack(track, stream);
+
+    await exchangeOfferAnswer(caller, callee);
+    const [receiver] = callee.getReceivers();
+    const [transceiver] = callee.getTransceivers();
+    const statsPromiseFirst = receiver.getStats();
+    transceiver.stop();
+    const statsReportFirst = await statsPromiseFirst;
+    const statsReportSecond = await receiver.getStats();
+    validateStatsReport(statsReportFirst);
+    validateStatsReport(statsReportSecond);
+  }, 'receiver.getStats() should work on a stopped transceiver');
+
+  promise_test(async t => {
+    const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
+    const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+    const stream = await getNoiseStream({audio:true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    const [track] = stream.getTracks();
+    caller.addTrack(track, stream);
+
+    await exchangeOfferAnswer(caller, callee);
+    const [receiver] = callee.getReceivers();
+    const statsPromiseFirst = receiver.getStats();
+    callee.close();
+    const statsReportFirst = await statsPromiseFirst;
+    const statsReportSecond = await receiver.getStats();
+    validateStatsReport(statsReportFirst);
+    validateStatsReport(statsReportSecond);
+  }, 'receiver.getStats() should work with a closed PeerConnection');
+
+  promise_test(async t => {
+    const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
+    const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+    const stream = await getNoiseStream({audio:true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    const [track] = stream.getTracks();
+    caller.addTrack(track, stream);
+
+    exchangeIceCandidates(caller, callee);
+    exchangeIceCandidates(callee, caller);
+    await exchangeOfferAnswer(caller, callee);
+    await waitForIceStateChange(callee, ['connected', 'completed']);
+    const receiver = callee.getReceivers()[0];
+    const statsReport = await receiver.getStats();
+    assert_stats_report_has_stats(statsReport, ['candidate-pair', 'local-candidate', 'remote-candidate']);
+  }, 'receiver.getStats() should return stats report containing ICE candidate stats');
 
 </script>

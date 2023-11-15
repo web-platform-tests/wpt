@@ -1,9 +1,10 @@
-from __future__ import print_function
+# mypy: allow-untyped-defs
+
 import os
-from six.moves.urllib.parse import urljoin, urlsplit
-from collections import namedtuple, defaultdict, deque
+from urllib.parse import urljoin, urlsplit
+from collections import Counter, namedtuple, defaultdict, deque
 from math import ceil
-from six import integer_types, iterkeys, itervalues, iteritems, string_types, text_type
+from typing import Any, Callable, ClassVar, Dict, List, Optional
 
 from .wptmanifest import serialize
 from .wptmanifest.node import (DataNode, ConditionalNode, BinaryExpressionNode,
@@ -59,8 +60,12 @@ def data_cls_getter(output_node, visited_node):
     else:
         raise ValueError
 
+def get_test_name(test_id):
+    # test name is base name of test path + query string + frament
+    return test_id[len(urlsplit(test_id).path.rsplit("/", 1)[0]) + 1:]
 
-class UpdateProperties(object):
+
+class UpdateProperties:
     def __init__(self, manifest, **kwargs):
         self._manifest = manifest
         self._classes = kwargs
@@ -76,7 +81,7 @@ class UpdateProperties(object):
         return name in self._classes
 
     def __iter__(self):
-        for name in iterkeys(self._classes):
+        for name in self._classes.keys():
             yield getattr(self, name)
 
 
@@ -203,7 +208,7 @@ class TestNode(ManifestItem):
         self._from_file = True
         self.new_disabled = False
         self.has_result = False
-        self.modified = False
+        self._modified = False
         self.update_properties = UpdateProperties(
             self,
             expected=ExpectedUpdate,
@@ -217,7 +222,7 @@ class TestNode(ManifestItem):
 
         :param test_type: The type of the test
         :param test_id: The id of the test"""
-        name = test_id[len(urlsplit(test_id).path.rsplit("/", 1)[0]) + 1:]
+        name = get_test_name(test_id)
         node = DataNode(name)
         self = cls(node)
 
@@ -240,6 +245,16 @@ class TestNode(ManifestItem):
     def id(self):
         """The id of the test represented by this TestNode"""
         return urljoin(self.parent.url, self.name)
+
+    @property
+    def modified(self):
+        if self._modified:
+            return self._modified
+        return any(child.modified for child in self.children)
+
+    @modified.setter
+    def modified(self, value):
+        self._modified = value
 
     def disabled(self, run_info):
         """Boolean indicating whether this test is disabled when run in an
@@ -313,18 +328,21 @@ def build_conditional_tree(_, run_info_properties, results):
 
 def build_unconditional_tree(_, run_info_properties, results):
     root = expectedtree.Node(None, None)
-    for run_info, values in iteritems(results):
-        for value, count in iteritems(values):
+    for run_info, values in results.items():
+        for value, count in values.items():
             root.result_values[value] += count
         root.run_info.add(run_info)
     return root
 
 
-class PropertyUpdate(object):
-    property_name = None
-    cls_default_value = None
-    value_type = None
-    property_builder = None
+class PropertyUpdate:
+    property_name: ClassVar[str]
+    cls_default_value: ClassVar[Optional[Any]] = None
+    value_type: ClassVar[Optional[type]] = None
+    # property_builder is a class variable set to either build_conditional_tree
+    # or build_unconditional_tree. TODO: Make this type stricter when those
+    # methods are annotated.
+    property_builder: ClassVar[Callable[..., Any]]
 
     def __init__(self, node):
         self.node = node
@@ -411,7 +429,7 @@ class PropertyUpdate(object):
         for e in errors:
             if disable_intermittent:
                 condition = e.cond.children[0] if e.cond else None
-                msg = disable_intermittent if isinstance(disable_intermittent, string_types+(text_type,)) else "unstable"
+                msg = disable_intermittent if isinstance(disable_intermittent, str) else "unstable"
                 self.node.set("disabled", msg, condition)
                 self.node.new_disabled = True
             else:
@@ -499,7 +517,7 @@ class PropertyUpdate(object):
                           for run_info in node.run_info}
 
         node_by_run_info = {run_info: node
-                            for (run_info, node) in iteritems(run_info_index)
+                            for (run_info, node) in run_info_index.items()
                             if node.result_values}
 
         run_info_by_condition = self.run_info_by_condition(run_info_index,
@@ -512,11 +530,11 @@ class PropertyUpdate(object):
             # using the properties we've specified and not matching any run_info
             top_level_props, dependent_props = self.node.root.run_info_properties
             update_properties = set(top_level_props)
-            for item in itervalues(dependent_props):
+            for item in dependent_props.values():
                 update_properties |= set(item)
             for condition in current_conditions:
-                if ((not condition.variables.issubset(update_properties) and
-                     not run_info_by_condition[condition])):
+                if (not condition.variables.issubset(update_properties) and
+                    not run_info_by_condition[condition]):
                     conditions.append((condition.condition_node,
                                        self.from_ini_value(condition.value)))
 
@@ -542,21 +560,33 @@ class PropertyUpdate(object):
             # current existing node
             nodes = [node_by_run_info[run_info] for run_info in run_infos
                      if run_info in node_by_run_info]
-            # If all the values are the same, update the value
-            if nodes and all(set(node.result_values.keys()) == set(nodes[0].result_values.keys()) for node in nodes):
+
+            updated_value = None
+            current_values = set(condition.value)
+            if all(set(result).issubset(current_values)
+                   for node in nodes
+                   for result in node.result_values.keys()):
+                # If all the values are subsets of the current value, retain the condition as-is
+                updated_value = self.from_ini_value(condition.value)
+            elif nodes and all(set(node.result_values.keys()) ==
+                               set(nodes[0].result_values.keys()) for node in nodes):
+                # If the condition doesn't need to change, update the value
                 current_value = self.from_ini_value(condition.value)
                 try:
-                    new_value = self.updated_value(current_value,
-                                                   nodes[0].result_values)
+                    updated_value = self.updated_value(current_value,
+                                                       nodes[0].result_values)
                 except ConditionError as e:
                     errors.append(e)
                     continue
-                if new_value != current_value:
+                if updated_value != current_value:
                     self.node.modified = True
-                conditions.append((condition.condition_node, new_value))
+
+            if updated_value is not None:
+                # Reuse the existing condition with an updated value
+                conditions.append((condition.condition_node, updated_value))
                 run_info_with_condition |= set(run_infos)
             else:
-                # Don't append this condition
+                # Don't reuse this condition
                 self.node.modified = True
 
         new_conditions, new_errors = self.build_tree_conditions(property_tree,
@@ -587,8 +617,6 @@ class PropertyUpdate(object):
         conditions = []
         errors = []
 
-        value_count = defaultdict(int)
-
         def to_count_value(v):
             if v is None:
                 return v
@@ -614,7 +642,8 @@ class PropertyUpdate(object):
                     except ConditionError:
                         expr = make_expr(prop_set, value)
                         error = ConditionError(expr)
-                    expr = make_expr(prop_set, value)
+                    else:
+                        expr = make_expr(prop_set, value)
                 else:
                     # The root node needs special handling
                     expr = None
@@ -628,18 +657,22 @@ class PropertyUpdate(object):
                         if prev_default:
                             conditions.append((None, prev_default))
                 if error is None:
-                    count_value = to_count_value(value)
-                    value_count[count_value] += len(node.run_info)
-
-                if error is None:
                     conditions.append((expr, value))
                 else:
                     errors.append(error)
 
-            for child in node.children:
+            try:
+                # Attempt to stably order the next group of conditions by their
+                # values, which are typically string/numeric types that have an
+                # order defined.
+                children = sorted(node.children, key=lambda child: child.value)
+            except TypeError:
+                children = node.children
+            for child in children:
                 queue.append((child, parents_and_self))
 
         conditions = conditions[::-1]
+        value_count = Counter(to_count_value(value) for _, value in conditions)
 
         # If we haven't set a default condition, add one and remove all the conditions
         # with the same value
@@ -648,9 +681,9 @@ class PropertyUpdate(object):
             # or the previous default
             cls_default = to_count_value(self.default_value)
             prev_default = to_count_value(prev_default)
-            commonest_value = max(value_count, key=lambda x:(value_count.get(x),
-                                                             x == cls_default,
-                                                             x == prev_default))
+            commonest_value = max(value_count, key=lambda x: (value_count[x],
+                                                              x == cls_default,
+                                                              x == prev_default))
             if isinstance(commonest_value, tuple):
                 commonest_value = list(commonest_value)
             commonest_value = self.from_ini_value(commonest_value)
@@ -695,7 +728,7 @@ class ExpectedUpdate(PropertyUpdate):
             raise ConditionError
 
         counts = {}
-        for status, count in iteritems(new):
+        for status, count in new.items():
             if isinstance(status, tuple):
                 counts[status[0]] = count
                 counts.update({intermittent: 0 for intermittent in status[1:] if intermittent not in counts})
@@ -709,24 +742,32 @@ class ExpectedUpdate(PropertyUpdate):
         # Counts with 0 are considered intermittent.
         statuses = ["OK", "PASS", "FAIL", "ERROR", "TIMEOUT", "CRASH"]
         status_priority = {value: i for i, value in enumerate(statuses)}
-        sorted_new = sorted(iteritems(counts), key=lambda x:(-1 * x[1],
-                                                           status_priority.get(x[0],
-                                                           len(status_priority))))
+        sorted_new = sorted(counts.items(), key=lambda x:(-1 * x[1],
+                                                        status_priority.get(x[0],
+                                                        len(status_priority))))
         expected = []
         for status, count in sorted_new:
             # If we are not removing existing recorded intermittents, with a count of 0,
             # add them in to expected.
             if count > 0 or not self.remove_intermittent:
                 expected.append(status)
+
+        # If the new intermittent is a subset of the existing one, just use the existing one
+        # This prevents frequent flip-flopping of results between e.g. [OK, TIMEOUT] and
+        # [TIMEOUT, OK]
+        if current is not None:
+            if not isinstance(current, list):
+                current_set = {current}
+            else:
+                current_set = set(current)
+            if set(expected).issubset(current_set):
+                return current
+
         if self.update_intermittent:
             if len(expected) == 1:
                 return expected[0]
             return expected
 
-        # If nothing has changed and not self.update_intermittent, preserve existing
-        # intermittent.
-        if set(expected).issubset(set(current)):
-            return current
         # If we are not updating intermittents, return the status with the highest occurence.
         return expected[0]
 
@@ -762,7 +803,7 @@ class MinAssertsUpdate(PropertyUpdate):
 
 
 class AppendOnlyListUpdate(PropertyUpdate):
-    cls_default_value = []
+    cls_default_value: ClassVar[List[str]] = []
     property_builder = build_unconditional_tree
 
     def updated_value(self, current, new):
@@ -774,7 +815,7 @@ class AppendOnlyListUpdate(PropertyUpdate):
         for item in new:
             if item is None:
                 continue
-            elif isinstance(item, text_type):
+            elif isinstance(item, str):
                 rv.add(item)
             else:
                 rv |= item
@@ -815,14 +856,14 @@ class LeakObjectUpdate(AppendOnlyListUpdate):
 
 class LeakThresholdUpdate(PropertyUpdate):
     property_name = "leak-threshold"
-    cls_default_value = {}
+    cls_default_value: ClassVar[Dict[str, int]] = {}
     property_builder = build_unconditional_tree
 
     def from_result_value(self, result):
         return result
 
     def to_ini_value(self, data):
-        return ["%s:%s" % item for item in sorted(iteritems(data))]
+        return ["%s:%s" % item for item in sorted(data.items())]
 
     def from_ini_value(self, data):
         rv = {}
@@ -897,26 +938,28 @@ def make_expr(prop_set, rhs):
 
 
 def make_node(value):
-    if isinstance(value, integer_types+(float,)):
+    if isinstance(value, (int, float,)):
         node = NumberNode(value)
-    elif isinstance(value, text_type):
-        node = StringNode(text_type(value))
+    elif isinstance(value, str):
+        node = StringNode(str(value))
     elif hasattr(value, "__iter__"):
         node = ListNode()
         for item in value:
             node.append(make_node(item))
+    else:
+        raise ValueError(f"Unrecoginsed data type {type(value)}")
     return node
 
 
 def make_value_node(value):
-    if isinstance(value, integer_types+(float,)):
+    if isinstance(value, (int, float,)):
         node = ValueNode(value)
-    elif isinstance(value, text_type):
-        node = ValueNode(text_type(value))
+    elif isinstance(value, str):
+        node = ValueNode(str(value))
     elif hasattr(value, "__iter__"):
         node = ListNode()
         for item in value:
-            node.append(make_node(item))
+            node.append(make_value_node(item))
     else:
         raise ValueError("Don't know how to convert %s into node" % type(value))
     return node
@@ -931,10 +974,10 @@ def get_manifest(metadata_root, test_path, url_base, run_info_properties, update
     :param url_base: Base url for serving the tests in this manifest"""
     manifest_path = expected.expected_path(metadata_root, test_path)
     try:
-        with open(manifest_path) as f:
+        with open(manifest_path, "rb") as f:
             rv = compile(f, test_path, url_base,
                          run_info_properties, update_intermittent, remove_intermittent)
-    except IOError:
+    except OSError:
         return None
     return rv
 

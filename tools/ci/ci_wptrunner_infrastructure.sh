@@ -1,35 +1,19 @@
 #!/bin/bash
 set -ex
 
-SCRIPT_DIR=$(cd $(dirname "$0") && pwd -P)
+REL_DIR_NAME=$(dirname "$0")
+SCRIPT_DIR=$(cd "$REL_DIR_NAME" && pwd -P)
 WPT_ROOT=$SCRIPT_DIR/../..
-cd $WPT_ROOT
+cd "$WPT_ROOT"
 
-add_wpt_hosts() {
-    ./wpt make-hosts-file | sudo tee -a /etc/hosts
-}
-
-test_infrastructure() {
-    local ARGS="";
-    if [ $PRODUCT == "firefox" ]; then
-        ARGS="--install-browser"
-    else
-        ARGS=$1
-    fi
-    TERM=dumb ./wpt run --log-mach - --yes --manifest ~/meta/MANIFEST.json --metadata infrastructure/metadata/ --install-fonts $ARGS $PRODUCT infrastructure/
+run_infra_test() {
+    ./tools/ci/taskcluster-run.py "$1" "$2" -- --metadata=infrastructure/metadata/ --log-wptreport="../artifacts/wptreport-$1.json" --include=infrastructure/
 }
 
 main() {
-    PRODUCTS=( "firefox" "chrome" )
-    ./wpt manifest --rebuild -p ~/meta/MANIFEST.json
-    for PRODUCT in "${PRODUCTS[@]}"; do
-        if [[ "$PRODUCT" == "chrome" ]]; then
-            add_wpt_hosts
-            test_infrastructure "--binary=$(which google-chrome-unstable) --channel dev"
-        else
-            test_infrastructure
-        fi
-    done
+  run_infra_test "chrome" "dev"
+  run_infra_test "firefox" "nightly"
+  run_infra_test "firefox_android" "nightly"
 }
 
 main

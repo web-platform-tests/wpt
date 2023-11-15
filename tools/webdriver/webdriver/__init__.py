@@ -2,12 +2,14 @@
 
 from .client import (
     Cookies,
-    Element,
     Find,
-    Frame,
     Session,
+    ShadowRoot,
     Timeouts,
-    Window)
+    WebElement,
+    WebFrame,
+    WebWindow,
+)
 from .error import (
     ElementNotSelectableException,
     ElementNotVisibleException,
@@ -34,3 +36,5 @@ from .error import (
     UnknownMethodException,
     UnsupportedOperationException,
     WebDriverException)
+from .bidi import (
+    BidiSession)

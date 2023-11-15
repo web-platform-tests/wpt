@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<link rel="help" href="https://drafts.csswg.org/css-shapes-1/#basic-shape-interpolation">
+<link rel="match" href="clip-path-animation-fixed-position-rounding-error-ref.html">
+<!--
+  Test that clip paths on elements with position: fixed draw correctly,
+  even in scenarios that involve partial pixels
+
+  Currently uses fuzzy diff because of crbug.com/1249071
+-->
+<style>
+  .container {
+    background-color: green;
+    animation: clippath 20s steps(2, jump-end) -9.999s;
+    position: fixed;
+    width: 70px;
+    height: 126px;
+  }
+
+  @keyframes clippath {
+    0% {
+      clip-path: inset(0% 0%);
+    }
+
+    100% {
+      clip-path: inset(10% 10%);
+    }
+  }
+</style>
+<script src="/common/reftest-wait.js"></script>
+<script src="../../../../web-animations/resources/timing-utils.js"></script>
+
+<body>
+  <div class="container"></div>
+  <script>
+    waitForAnimationTime(document.getAnimations()[0], 1).then(takeScreenshot);
+  </script>
+</body>
+
+</html>

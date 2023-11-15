@@ -1,1 +1,1 @@
-import './module.json';
+import './module.json' with { type: "json" };

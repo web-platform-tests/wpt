@@ -27,7 +27,7 @@ var browserTests = [
     {"stylewithcss":[false,true,"",false,false,""],"underline":[false,false,"",false,true,""]}],
 ["<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>",
     [["stylewithcss","true"],["underline",""]],
-    "<p><span style=\"text-decoration:underline\">[foo</span></p><p> <span style=\"text-decoration:underline\"><span>bar</span></span> </p><p><span style=\"text-decoration:underline\">baz]</span></p>",
+    "<p><span style=\"text-decoration:underline\">[foo</span></p><p> <span style=\"text-decoration:underline\">bar</span> </p><p><span style=\"text-decoration:underline\">baz</span></p>",
     [true,true],
     {"stylewithcss":[false,false,"",false,true,""],"underline":[false,false,"",false,true,""]}],
 ["<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>",
@@ -235,19 +235,24 @@ var browserTests = [
     "<p><u>foo</u>[bar]<u>baz</u></p>",
     [true,true],
     {"stylewithcss":[false,true,"",false,false,""],"underline":[false,true,"",false,false,""]}],
+// <s> should be replaced with new <span> because it just represents line-though
+// style, and should set its text-decoration to underline (requested style) and
+// line-through (default style of <s>).
 ["foo<s>[bar]</s>baz",
     [["stylewithcss","true"],["underline",""]],
-    "foo<span style=\"text-decoration:underline\"><s>[bar]</s></span>baz",
+    "foo<span style=\"text-decoration:underline line-through\">[bar]</span>baz",
     [true,true],
     {"stylewithcss":[false,false,"",false,true,""],"underline":[false,false,"",false,true,""]}],
 ["foo<s>[bar]</s>baz",
     [["stylewithcss","false"],["underline",""]],
-    "foo<u><s>[bar]</s></u>baz",
+    "foo<s><u>[bar]</u></s>baz",
     [true,true],
     {"stylewithcss":[false,true,"",false,false,""],"underline":[false,false,"",false,true,""]}],
+// Should update text-decoration declaration in the <span> which is a container
+// of the range.
 ["foo<span style=\"text-decoration: line-through\">[bar]</span>baz",
     [["stylewithcss","true"],["underline",""]],
-    "foo<span style=\"text-decoration:underline\"><span style=\"text-decoration:line-through\">[bar]</span></span>baz",
+    "foo<span style=\"text-decoration:underline line-through\">[bar]</span>baz",
     [true,true],
     {"stylewithcss":[false,false,"",false,true,""],"underline":[false,false,"",false,true,""]}],
 ["foo<span style=\"text-decoration: line-through\">[bar]</span>baz",
@@ -315,14 +320,17 @@ var browserTests = [
     "<p style=\"text-decoration:line-through\">foo<u>[bar]</u>baz</p>",
     [true,true],
     {"stylewithcss":[false,true,"",false,false,""],"underline":[false,false,"",false,true,""]}],
+// Should replace <strike> with new <span> because <strike> is just representing
+// line-through style, and set its text-decoration to underline (requested
+// style) and line-though (default style of <strike>).
 ["foo<strike>[bar]</strike>baz",
     [["stylewithcss","true"],["underline",""]],
-    "foo<span style=\"text-decoration:underline\"><strike>[bar]</strike></span>baz",
+    "foo<span style=\"text-decoration:underline line-through\">[bar]</span>baz",
     [true,true],
     {"stylewithcss":[false,false,"",false,true,""],"underline":[false,false,"",false,true,""]}],
 ["foo<strike>[bar]</strike>baz",
     [["stylewithcss","false"],["underline",""]],
-    "foo<u><strike>[bar]</strike></u>baz",
+    "foo<strike><u>[bar]</u></strike>baz",
     [true,true],
     {"stylewithcss":[false,true,"",false,false,""],"underline":[false,false,"",false,true,""]}],
 ["<strike>foo[bar]baz</strike>",
@@ -405,14 +413,17 @@ var browserTests = [
     "<ins>foo[b<i>ar]ba</i>z</ins>",
     [true],
     {"underline":[false,true,"",false,true,""]}],
+// Should set text-decoration of <del> because it has line-through style by
+// default and it is not only representing it, thus, replacing it with <span>
+// changes the meaning.
 ["foo<del>[bar]</del>baz",
     [["stylewithcss","true"],["underline",""]],
-    "foo<span style=\"text-decoration:underline\"><del>[bar]</del></span>baz",
+    "foo<del style=\"text-decoration:underline line-through\">[bar]</del>baz",
     [true,true],
     {"stylewithcss":[false,false,"",false,true,""],"underline":[false,false,"",false,true,""]}],
 ["foo<del>[bar]</del>baz",
     [["stylewithcss","false"],["underline",""]],
-    "foo<u><del>[bar]</del></u>baz",
+    "foo<del><u>[bar]</u></del>baz",
     [true,true],
     {"stylewithcss":[false,true,"",false,false,""],"underline":[false,false,"",false,true,""]}],
 ["<del>foo[bar]baz</del>",
@@ -520,9 +531,13 @@ var browserTests = [
     "foo<u style=\"text-decoration:line-through\">b<u>[a]</u>r</u>baz",
     [true,true],
     {"stylewithcss":[false,true,"",false,false,""],"underline":[false,false,"",false,true,""]}],
+// Should replace <s> with new <span> and set its `text-decoration` to underline
+// (for applying the requested style) and overline (which was specified to the
+// <s>).  Note that line-though was removed by the text-decoration setting.
+// Therefore, it should not appear.
 ["foo<s style=\"text-decoration: overline\">[bar]</s>baz",
     [["stylewithcss","true"],["underline",""]],
-    "foo<span style=\"text-decoration:underline\"><s style=\"text-decoration:overline\">[bar]</s></span>baz",
+    "foo<span style=\"text-decoration:underline overline\">[bar]</span>baz",
     [true,true],
     {"stylewithcss":[false,false,"",false,true,""],"underline":[false,false,"",false,true,""]}],
 ["foo<s style=\"text-decoration: overline\">[bar]</s>baz",
@@ -582,12 +597,12 @@ var browserTests = [
     {"underline":[false,true,"",false,true,""]}],
 ["foo<span class=\"line-through\">[bar]</span>baz",
     [["stylewithcss","true"],["underline",""]],
-    "foo<span style=\"text-decoration:underline\"><span class=\"line-through\">[bar]</span></span>baz",
+    "foo<span class=\"line-through\" style=\"text-decoration:underline\">[bar]</span>baz",
     [true,true],
     {"stylewithcss":[false,false,"",false,true,""],"underline":[false,false,"",false,true,""]}],
 ["foo<span class=\"line-through\">[bar]</span>baz",
     [["stylewithcss","false"],["underline",""]],
-    "foo<u><span class=\"line-through\">[bar]</span></u>baz",
+    "foo<span class=\"line-through\"><u>[bar]</u></span>baz",
     [true,true],
     {"stylewithcss":[false,true,"",false,false,""],"underline":[false,false,"",false,true,""]}],
 ["foo<span class=\"line-through\">b[a]r</span>baz",
@@ -704,5 +719,45 @@ var browserTests = [
     [["stylewithcss","false"],["underline",""]],
     "<u>fo</u>[o<ins>b]ar</ins>",
     [true,true],
-    {"stylewithcss":[false,true,"",false,false,""],"underline":[false,true,"",true,false,""]}]
+    {"stylewithcss":[false,true,"",false,false,""],"underline":[false,true,"",true,false,""]}],
+
+// Tests to remove only underline from existing text-decoration
+["abc<span style=\"text-decoration:line-through overline underline\">[def]</span>ghi",
+    [["stylewithcss","true"],["underline",""]],
+    ["abc<span style=\"text-decoration:overline line-through\">[def]</span>ghi",
+     "abc<span style=\"text-decoration-line:overline line-through\">[def]</span>ghi"],
+    [true,true],
+    {}],
+
+// blink, text-decoration-color and text-decoration-style values should be
+// dropped.  This rule is odd because executing "underline" command causes
+// the data loss, but for now, the compatibility between browsers is more
+// important.  Once you want/need to change the behavior of a browser, you
+// should file a spec issue first.
+// And these tests allows the difference between text-decoration vs.
+// text-decoration-line because these tests want to check the data loss.
+["abc<span style=\"text-decoration:blink line-through overline\">[def]</span>ghi",
+    [["stylewithcss","true"],["underline",""]],
+    ["abc<span style=\"text-decoration:underline overline line-through\">[def]</span>ghi",
+     "abc<span style=\"text-decoration-line:underline overline line-through\">[def]</span>ghi"],
+    [true,true],
+    {}],
+["abc<span style=\"text-decoration:line-through blue dotted\">[def]</span>ghi",
+    [["stylewithcss","true"],["underline",""]],
+    ["abc<span style=\"text-decoration:underline line-through\">[def]</span>ghi",
+     "abc<span style=\"text-decoration-line:underline line-through\">[def]</span>ghi"],
+    [true,true],
+    {}],
+["abc<span style=\"text-decoration:blink line-through underline overline\">[def]</span>ghi",
+    [["stylewithcss","true"],["underline",""]],
+    ["abc<span style=\"text-decoration:overline line-through\">[def]</span>ghi",
+     "abc<span style=\"text-decoration-line:overline line-through\">[def]</span>ghi"],
+    [true,true],
+    {}],
+["abc<span style=\"text-decoration:underline line-through blue dotted\">[def]</span>ghi",
+    [["stylewithcss","true"],["underline",""]],
+    ["abc<span style=\"text-decoration:line-through\">[def]</span>ghi",
+     "abc<span style=\"text-decoration-line:line-through\">[def]</span>ghi"],
+    [true,true],
+    {}],
 ]

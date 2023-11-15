@@ -1,2 +1,0 @@
-Set-Cookie: a=b; Path=/; Domain=.{{host}}
-Set-Cookie: a=c; Path=/; Domain={{host}}

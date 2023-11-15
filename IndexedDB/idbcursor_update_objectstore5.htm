@@ -4,7 +4,7 @@
 <link rel="author" title="Intel" href="http://www.intel.com">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="resources/support.js"></script>
 <div id="log"></div>
 <script>
 
@@ -29,7 +29,7 @@
 
             db.deleteObjectStore("test");
             cursor.value += "_updated";
-            assert_throws("InvalidStateError", function() {
+            assert_throws_dom("InvalidStateError", function() {
                 cursor.update(cursor.value);
             }, "If the cursor's source or effective object store has been deleted, the implementation MUST throw a DOMException of type InvalidStateError");
 

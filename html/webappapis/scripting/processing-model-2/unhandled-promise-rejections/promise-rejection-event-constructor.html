@@ -9,6 +9,12 @@
 test(function() {
   var p = new Promise(function(resolve, reject) {});
 
+  assert_throws_js(TypeError,
+                   function() {
+                     PromiseRejectionEvent('', { promise: p });
+                   },
+                   "Calling PromiseRejectionEvent constructor without 'new' must throw");
+
   // No custom options are passed (besides required promise).
   assert_equals(new PromiseRejectionEvent('eventType', { promise: p }).bubbles, false);
   assert_equals(new PromiseRejectionEvent('eventType', { promise: p }).cancelable, false);
@@ -16,11 +22,11 @@ test(function() {
   assert_equals(new PromiseRejectionEvent('eventType', { promise: p }).reason, undefined);
 
   // No promise is passed.
-  assert_throws(new TypeError(),
-                function() {
-                  new PromiseRejectionEvent('eventType', { bubbles: false });
-                },
-                'Cannot construct PromiseRejectionEventInit without promise');
+  assert_throws_js(TypeError,
+                   function() {
+                     new PromiseRejectionEvent('eventType', { bubbles: false });
+                   },
+                   'Cannot construct PromiseRejectionEventInit without promise');
 
   // bubbles is passed.
   assert_equals(new PromiseRejectionEvent('eventType', { bubbles: false, promise: p }).bubbles, false);

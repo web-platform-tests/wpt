@@ -8,6 +8,10 @@
   self.uniqueName = (testCase, prefix) => {
     return `${self.location.pathname}-${prefix}-${testCase.name}-${++res_num}`;
   };
+  self.uniqueNameByQuery = () => {
+    const prefix = new URL(location.href).searchParams.get('prefix');
+    return `${prefix}-${++res_num}`;
+  }
 
   // Inject an iframe showing the given url into the page, and resolve
   // the returned promise when the frame is loaded.
@@ -55,6 +59,33 @@
       };
       worker.addEventListener('message', listener);
     });
+  };
+
+  /**
+   * Request a lock and hold it until the subtest ends.
+   * @param {*} t test runner object
+   * @param {string} name lock name
+   * @param {LockOptions=} options lock options
+   * @returns
+   */
+  self.requestLockAndHold = (t, name, options = {}) => {
+    let [promise, resolve] = self.makePromiseAndResolveFunc();
+    const released = navigator.locks.request(name, options, () => promise);
+    // Add a cleanup function that releases the lock by resolving the promise,
+    // and then waits until the lock is really released, to avoid contaminating
+    // following tests with temporarily held locks.
+    t.add_cleanup(() => {
+      resolve();
+      // Cleanup shouldn't fail if the request is aborted.
+      return released.catch(() => undefined);
+    });
+    return released;
+  };
+
+  self.makePromiseAndResolveFunc = () => {
+    let resolve;
+    const promise = new Promise(r => { resolve = r; });
+    return [promise, resolve];
   };
 
 })();

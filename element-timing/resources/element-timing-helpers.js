@@ -6,9 +6,11 @@ function checkElementInternal(entry, expectedUrl, expectedIdentifier, expectedID
   assert_equals(entry.identifier, expectedIdentifier, 'identifier does not match');
   if (beforeRender != 0) {
     // In this case, renderTime is not 0.
+    assert_greater_than(entry.renderTime, 0, 'renderTime should be nonzero');
     assert_equals(entry.startTime, entry.renderTime, 'startTime should equal renderTime');
   } else {
     // In this case, renderTime is 0, so compare to loadTime.
+    assert_equals(entry.renderTime, 0, 'renderTime should be zero');
     assert_equals(entry.startTime, entry.loadTime, 'startTime should equal loadTime');
   }
   assert_equals(entry.duration, 0, 'duration should be 0');
@@ -29,9 +31,9 @@ function checkElement(entry, expectedUrl, expectedIdentifier, expectedID, before
     expectedElement) {
   checkElementInternal(entry, expectedUrl, expectedIdentifier, expectedID, beforeRender,
       expectedElement);
-  assert_equals(entry.name, 'image-paint');
+  assert_equals(entry.name, 'image-paint', 'The entry name should be image-paint.');
   const rt_entries = performance.getEntriesByName(expectedUrl, 'resource');
-  assert_equals(rt_entries.length, 1);
+  assert_equals(rt_entries.length, 1, 'There should be only 1 resource entry.');
   assert_greater_than_equal(entry.loadTime, rt_entries[0].responseEnd,
     'Image loadTime is after the resource responseEnd');
 }
@@ -42,7 +44,7 @@ function checkElementWithoutResourceTiming(entry, expectedUrl, expectedIdentifie
       expectedElement);
   assert_equals(entry.name, 'image-paint');
   // No associated resource from ResourceTiming, so not much to compare loadTime with.
-  assert_greater_than(entry.loadTime, 0);
+  assert_greater_than(entry.loadTime, 0, 'The entry loadTime should be greater than 0.');
 }
 
 // Checks that the rect matches the desired values [left right top bottom].
@@ -59,14 +61,14 @@ function checkRect(entry, expected, description="") {
 
 // Checks that the intrinsic size matches the desired values.
 function checkNaturalSize(entry, width, height) {
-  assert_equals(entry.naturalWidth, width);
-  assert_equals(entry.naturalHeight, height);
+  assert_equals(entry.naturalWidth, width, 'The entry naturalWidth is not as expected.');
+  assert_equals(entry.naturalHeight, height, 'The entry naturalHeight is not as expected.');
 }
 
 function checkTextElement(entry, expectedIdentifier, expectedID, beforeRender,
     expectedElement) {
   checkElementInternal(entry, '', expectedIdentifier, expectedID, beforeRender,
       expectedElement);
-  assert_equals(entry.name, 'text-paint');
-  assert_equals(entry.loadTime, 0);
+  assert_equals(entry.name, 'text-paint', 'The entry name should be text-paint.');
+  assert_equals(entry.loadTime, 0, 'The entry loadTime should be 0.');
 }

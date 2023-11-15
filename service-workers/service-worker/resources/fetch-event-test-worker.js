@@ -129,10 +129,9 @@ function handleIntegrity(event) {
 }
 
 function handleRequestBody(event) {
-  event.respondWith(event.request.text()
-    .then(text => {
-        return new Response(text);
-      }));
+  event.respondWith(event.request.text().then(text => {
+    return new Response(text);
+  }));
 }
 
 function handleKeepalive(event) {
@@ -153,6 +152,29 @@ function handleIsHistoryNavigation(event) {
     `method = ${request.method}, ` +
     `isHistoryNavigation = ${request.isHistoryNavigation}`;
   event.respondWith(new Response(body));
+}
+
+function handleUseAndIgnore(event) {
+  const request = event.request;
+  request.text();
+  return;
+}
+
+function handleCloneAndIgnore(event) {
+  const request = event.request;
+  request.clone().text();
+  return;
+}
+
+var handle_status_count = 0;
+function handleStatus(event) {
+  handle_status_count++;
+  event.respondWith(async function() {
+    const res = await fetch(event.request);
+    const text = await res.text();
+    return new Response(`${text}. Request was sent ${handle_status_count} times.`,
+      {"status": new URL(event.request.url).searchParams.get("status")});
+  }());
 }
 
 self.addEventListener('fetch', function(event) {
@@ -180,6 +202,9 @@ self.addEventListener('fetch', function(event) {
       { pattern: '?keepalive', fn: handleKeepalive },
       { pattern: '?isReloadNavigation', fn: handleIsReloadNavigation },
       { pattern: '?isHistoryNavigation', fn: handleIsHistoryNavigation },
+      { pattern: '?use-and-ignore', fn: handleUseAndIgnore },
+      { pattern: '?clone-and-ignore', fn: handleCloneAndIgnore },
+      { pattern: '?status', fn: handleStatus },
     ];
 
     var handler = null;

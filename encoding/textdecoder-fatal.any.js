@@ -1,3 +1,4 @@
+// META: global=window,dedicatedworker,shadowrealm
 // META: title=Encoding API: Fatal flag
 
 var bad = [
@@ -51,7 +52,7 @@ var bad = [
 
 bad.forEach(function(t) {
     test(function() {
-        assert_throws(new TypeError(), function() {
+        assert_throws_js(TypeError, function() {
             new TextDecoder(t.encoding, {fatal: true}).decode(new Uint8Array(t.input))
         });
     }, 'Fatal flag: ' + t.encoding + ' - ' + t.name);
@@ -71,9 +72,9 @@ test(() => {
   assert_equals(decoder.decode(new DataView(bytes.buffer, 0, 3)),
                 '♥',
                 'decode() should decode full sequence');
-  assert_throws(new TypeError,
-                () => decoder.decode(new DataView(bytes.buffer, 0, 2)),
-                'decode() should throw on incomplete sequence');
+  assert_throws_js(TypeError,
+                   () => decoder.decode(new DataView(bytes.buffer, 0, 2)),
+                   'decode() should throw on incomplete sequence');
   assert_equals(decoder.decode(new DataView(bytes.buffer, 0, 3)),
                 '♥',
                 'decode() should not throw on subsequent call');

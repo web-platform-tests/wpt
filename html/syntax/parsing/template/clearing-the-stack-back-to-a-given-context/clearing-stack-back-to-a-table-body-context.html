@@ -13,7 +13,7 @@
 <div id="log"></div>
 <script type="text/javascript">
 
-function doTest(doc, tagToTest, templateInnerHTML, id, tagName, bodiesNum, footerIsNull,
+function doTest(doc, tagToTest, templateInnerHTML, id, tagName, bodiesNum = null, footerIsNull,
         footerId, headerIsNull, headerId) {
 
     doc.body.innerHTML = '' +
@@ -51,7 +51,7 @@ function doTest(doc, tagToTest, templateInnerHTML, id, tagName, bodiesNum, foote
 
     assert_equals(table.caption, null, 'Table should have no caption');
 
-    if (bodiesNum) {
+    if (bodiesNum !== null) {
         assert_equals(table.tBodies.length, bodiesNum, 'Table should have '
                 + bodiesNum + ' body');
     }
@@ -112,13 +112,13 @@ var parameters = [
      doc, 'thead', '<col id="col3" width="150"/>', 'col3', 'COL'],
 
     ['Clearing stack back to a table body context. Test <colgroup> in <tbody>',
-     doc, 'tbody', '<colgroup id="colgroup1" width="150"/>', 'colgroup1', 'COLGROUP'],
+     doc, 'tbody', '<colgroup id="colgroup1" width="150"></colgroup>', 'colgroup1', 'COLGROUP'],
 
     ['Clearing stack back to a table body context. Test <colgroup> in <tfoot>',
-     doc, 'tfoot', '<colgroup id="colgroup2" width="150"/>', 'colgroup2', 'COLGROUP'],
+     doc, 'tfoot', '<colgroup id="colgroup2" width="150"></colgroup>', 'colgroup2', 'COLGROUP'],
 
     ['Clearing stack back to a table body context. Test <colgroup> in <thead>',
-     doc, 'thead', '<colgroup id="colgroup3" width="150"/>', 'colgroup3', 'COLGROUP'],
+     doc, 'thead', '<colgroup id="colgroup3" width="150"></colgroup>', 'colgroup3', 'COLGROUP'],
 
     ['Clearing stack back to a table body context. Test <tbody> in <tbody>',
      doc, 'tbody', '<tbody id="tbody1"></tbody>', 'tbody1', 'TBODY', 1],
@@ -175,7 +175,8 @@ var parameters = [
      doc, 'tbody', '</tfoot>', null, null]
 ];
 
-generate_tests(doTest, parameters, 'Clearing stack back to a table body context.');
+// Clearing stack back to a table body context.
+generate_tests(doTest, parameters);
 
 </script>
 </body>

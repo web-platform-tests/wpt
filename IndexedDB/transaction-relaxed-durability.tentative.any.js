@@ -1,4 +1,4 @@
-// META: script=support-promises.js
+// META: script=resources/support-promises.js
 // META: timeout=long
 
 /**
@@ -46,7 +46,7 @@ promise_test(async testCase => {
     createBooksStore(testCase, db);
   });
 
-  assert_throws(new TypeError(), function() {
+  assert_throws_js(TypeError, function() {
       db.transaction(['books'], 'readwrite', { durability: 'invalid' });
   });
   db.close();

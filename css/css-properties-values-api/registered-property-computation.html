@@ -7,6 +7,7 @@
 <style>
 #divWithFontSizeSet, #parentDiv {
     font-size: 10px;
+    line-height: 20px;
 }
 </style>
 
@@ -107,6 +108,8 @@ test_computed_value('<length>', '25.4mm', '96px');
 test_computed_value('<length>', '6pc', '96px');
 test_computed_value('<length>', '72pt', '96px');
 
+test_computed_value('<length>', '10lh', '200px');
+
 test_computed_value('<length-percentage>', '17em', '170px');
 test_computed_value('<length-percentage>', '18%', '18%');
 test_computed_value('<length-percentage>', 'calc(19em - 2%)', 'calc(-2% + 190px)');
@@ -138,6 +141,12 @@ test_computed_value('<integer>', 'calc(2.6 + 3.1)', '6');
 
 test_computed_value('<integer>+', '15 calc(2.4) calc(2.6)', '15 2 3');
 
+test_computed_value('<number>', '15', '15');
+test_computed_value('<number>', 'calc(15 + 15)', '30');
+test_computed_value('<number>', 'calc(24 / 10)', '2.4');
+
+test_computed_value('<number>+', '15 calc(15 + 15) calc(24 / 10)', '15 30 2.4');
+
 test_computed_value('<color>', '#ff0000', 'rgb(255, 0, 0)');
 test_computed_value('<color>', '#000f00', 'rgb(0, 15, 0)');
 test_computed_value('<color>', '#00000a', 'rgb(0, 0, 10)');
@@ -166,5 +175,7 @@ test_computed_value('*', '50dpi', '50dpi');
 test_computed_value('<resolution>', '1dppx', '1dppx');
 test_computed_value('<resolution>', '96dpi', '1dppx');
 test_computed_value('<resolution>', 'calc(1dppx + 96dpi)', '2dppx');
+
+test_computed_value('*', 'url(why)', 'url(why)');
 
 </script>

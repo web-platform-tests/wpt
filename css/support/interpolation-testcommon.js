@@ -7,6 +7,7 @@
     nextID: 0,
   };
   var expectNoInterpolation = {};
+  var expectNotAnimatable = {};
   var neutralKeyframe = {};
   function isNeutralKeyframe(keyframe) {
     return keyframe === neutralKeyframe;
@@ -25,6 +26,9 @@
     setup: function() {},
     nonInterpolationExpectations: function(from, to) {
       return expectFlip(from, to, 0.5);
+    },
+    notAnimatableExpectations: function(from, to, underlying) {
+      return expectFlip(underlying, underlying, -Infinity);
     },
     interpolate: function(property, from, to, at, target) {
       var id = cssAnimationsData.nextID++;
@@ -54,13 +58,19 @@
     nonInterpolationExpectations: function(from, to) {
       return expectFlip(from, to, -Infinity);
     },
-    interpolate: function(property, from, to, at, target) {
+    notAnimatableExpectations: function(from, to, underlying) {
+      return expectFlip(from, to, -Infinity);
+    },
+    interpolate: function(property, from, to, at, target, behavior) {
       // Force a style recalc on target to set the 'from' value.
       getComputedStyle(target).getPropertyValue(property);
       target.style.transitionDuration = '100s';
       target.style.transitionDelay = '-50s';
       target.style.transitionTimingFunction = createEasing(at);
       target.style.transitionProperty = property;
+      if (behavior) {
+        target.style.transitionBehavior = behavior;
+      }
       target.style.setProperty(property, isNeutralKeyframe(to) ? '' : to);
     },
   };
@@ -77,13 +87,72 @@
     nonInterpolationExpectations: function(from, to) {
       return expectFlip(from, to, -Infinity);
     },
-    interpolate: function(property, from, to, at, target) {
+    notAnimatableExpectations: function(from, to, underlying) {
+      return expectFlip(from, to, -Infinity);
+    },
+    interpolate: function(property, from, to, at, target, behavior) {
       // Force a style recalc on target to set the 'from' value.
       getComputedStyle(target).getPropertyValue(property);
       target.style.transitionDuration = '100s';
       target.style.transitionDelay = '-50s';
       target.style.transitionTimingFunction = createEasing(at);
       target.style.transitionProperty = 'all';
+      if (behavior) {
+        target.style.transitionBehavior = behavior;
+      }
+      target.style.setProperty(property, isNeutralKeyframe(to) ? '' : to);
+    },
+  };
+
+  var cssTransitionsInterpolationAllowDiscrete = {
+    name: 'CSS Transitions with transition-behavior:allow-discrete',
+    isSupported: function() {return true;},
+    supportsProperty: function() {return true;},
+    supportsValue: function() {return true;},
+    setup: function(property, from, target) {
+      target.style.setProperty(property, isNeutralKeyframe(from) ? '' : from);
+    },
+    nonInterpolationExpectations: function(from, to) {
+      return expectFlip(from, to, 0.5);
+    },
+    notAnimatableExpectations: function(from, to, underlying) {
+      return expectFlip(from, to, -Infinity);
+    },
+    interpolate: function(property, from, to, at, target, behavior) {
+      // Force a style recalc on target to set the 'from' value.
+      getComputedStyle(target).getPropertyValue(property);
+      target.style.transitionDuration = '100s';
+      target.style.transitionDelay = '-50s';
+      target.style.transitionTimingFunction = createEasing(at);
+      target.style.transitionProperty = property;
+      target.style.transitionBehavior = 'allow-discrete';
+      target.style.setProperty(property, isNeutralKeyframe(to) ? '' : to);
+    },
+  };
+
+  var cssTransitionAllInterpolationAllowDiscrete = {
+    name: 'CSS Transitions with transition-property:all and transition-behavor:allow-discrete',
+    isSupported: function() {return true;},
+    // The 'all' value doesn't cover custom properties.
+    supportsProperty: function(property) {return property.indexOf('--') !== 0;},
+    supportsValue: function() {return true;},
+    setup: function(property, from, target) {
+      target.style.setProperty(property, isNeutralKeyframe(from) ? '' : from);
+    },
+    nonInterpolationExpectations: function(from, to) {
+      return expectFlip(from, to, 0.5);
+    },
+    notAnimatableExpectations: function(from, to, underlying) {
+      return expectFlip(from, to, -Infinity);
+    },
+    interpolate: function(property, from, to, at, target, behavior) {
+      // Force a style recalc on target to set the 'from' value.
+      getComputedStyle(target).getPropertyValue(property);
+      target.style.transitionDuration = '100s';
+      target.style.transitionDelay = '-50s';
+      target.style.transitionTimingFunction = createEasing(at);
+      target.style.transitionProperty = 'all';
+      target.style.transitionBehavior = 'allow-discrete';
       target.style.setProperty(property, isNeutralKeyframe(to) ? '' : to);
     },
   };
@@ -96,6 +165,9 @@
     setup: function() {},
     nonInterpolationExpectations: function(from, to) {
       return expectFlip(from, to, 0.5);
+    },
+    notAnimatableExpectations: function(from, to, underlying) {
+      return expectFlip(underlying, underlying, -Infinity);
     },
     interpolate: function(property, from, to, at, target) {
       this.interpolateComposite(property, from, 'replace', to, 'replace', at, target);
@@ -243,6 +315,7 @@
     var from = interpolationTest.options.from;
     var to = interpolationTest.options.to;
     var comparisonFunction = interpolationTest.options.comparisonFunction;
+    var behavior = interpolationTest.options.behavior;
 
     if ((interpolationTest.options.method && interpolationTest.options.method != interpolationMethod.name)
       || !interpolationMethod.supportsProperty(property)
@@ -255,8 +328,14 @@
     var testContainer = createElement(interpolationMethodContainer, 'div');
     createElement(testContainer);
     var expectations = interpolationTest.expectations;
+    var applyUnderlying = false;
     if (expectations === expectNoInterpolation) {
       expectations = interpolationMethod.nonInterpolationExpectations(from, to);
+    } else if (expectations === expectNotAnimatable) {
+      expectations = interpolationMethod.notAnimatableExpectations(from, to, interpolationTest.options.underlying);
+      applyUnderlying = true;
+    } else if (interpolationTest.options[interpolationMethod.name]) {
+      expectations = interpolationTest.options[interpolationMethod.name];
     }
 
     // Setup a standard equality function if an override is not provided.
@@ -269,34 +348,49 @@
     return expectations.map(function(expectation) {
       var actualTargetContainer = createTargetContainer(testContainer, 'actual');
       var expectedTargetContainer = createTargetContainer(testContainer, 'expected');
-      var expectedStr = expectation.option || expectation.expect;
-      if (!isNeutralKeyframe(expectedStr)) {
-        expectedTargetContainer.target.style.setProperty(property, expectedStr);
+      var expectedProperties = expectation.option || expectation.expect;
+      if (typeof expectedProperties !== "object") {
+        expectedProperties = {[property]: expectedProperties};
       }
       var target = actualTargetContainer.target;
+      if (applyUnderlying) {
+        let underlying = interpolationTest.options.underlying;
+        assert_true(typeof underlying !== 'undefined', '\'underlying\' value must be provided');
+        assert_true(CSS.supports(property, underlying), '\'underlying\' value must be supported');
+        target.style.setProperty(property, underlying);
+      }
       interpolationMethod.setup(property, from, target);
       target.interpolate = function() {
-        interpolationMethod.interpolate(property, from, to, expectation.at, target);
+        interpolationMethod.interpolate(property, from, to, expectation.at, target, behavior);
       };
       target.measure = function() {
-        var expectedValue = getComputedStyle(expectedTargetContainer.target).getPropertyValue(property);
-        test(function() {
-          assert_true(interpolationMethod.isSupported(), `${interpolationMethod.name} should be supported`);
+        for (var [expectedProp, expectedStr] of Object.entries(expectedProperties)) {
+          if (!isNeutralKeyframe(expectedStr)) {
+            expectedTargetContainer.target.style.setProperty(expectedProp, expectedStr);
+          }
+          var expectedValue = getComputedStyle(expectedTargetContainer.target).getPropertyValue(expectedProp);
+          let testName = `${testText} at (${expectation.at}) should be [${sanitizeUrls(expectedStr)}]`;
+          if (property !== expectedProp) {
+            testName += ` for <${expectedProp}>`;
+          }
+          test(function() {
+            assert_true(interpolationMethod.isSupported(), `${interpolationMethod.name} should be supported`);
 
-          if (from && from !== neutralKeyframe) {
-            assert_true(CSS.supports(property, from), '\'from\' value should be supported');
-          }
-          if (to && to !== neutralKeyframe) {
-            assert_true(CSS.supports(property, to), '\'to\' value should be supported');
-          }
-          if (typeof underlying !== 'undefined') {
-            assert_true(CSS.supports(property, underlying), '\'underlying\' value should be supported');
-          }
+            if (from && from !== neutralKeyframe) {
+              assert_true(CSS.supports(property, from), '\'from\' value should be supported');
+            }
+            if (to && to !== neutralKeyframe) {
+              assert_true(CSS.supports(property, to), '\'to\' value should be supported');
+            }
+            if (typeof underlying !== 'undefined') {
+              assert_true(CSS.supports(property, underlying), '\'underlying\' value should be supported');
+            }
 
-          comparisonFunction(
-              getComputedStyle(target).getPropertyValue(property),
-              expectedValue);
-        }, `${testText} at (${expectation.at}) should be [${sanitizeUrls(expectedStr)}]`);
+            comparisonFunction(
+                getComputedStyle(target).getPropertyValue(expectedProp),
+                expectedValue);
+          }, testName);
+        }
       };
       return target;
     });
@@ -375,7 +469,10 @@
     for (var interpolationMethod of interpolationMethods) {
       var interpolationMethodContainer = createElement(container);
       for (var interpolationTest of interpolationTests) {
-        [].push.apply(targets, createInterpolationTestTargets(interpolationMethod, interpolationMethodContainer, interpolationTest));
+        if(!interpolationTest.options.target_names ||
+           interpolationTest.options.target_names.includes(interpolationMethod.name)) {
+            [].push.apply(targets, createInterpolationTestTargets(interpolationMethod, interpolationMethodContainer, interpolationTest));
+          }
       }
     }
     var compositionContainer = createElement(container);
@@ -388,13 +485,22 @@
   function test_no_interpolation(options) {
     test_interpolation(options, expectNoInterpolation);
   }
-  function create_tests() {
+  function test_not_animatable(options) {
+    test_interpolation(options, expectNotAnimatable);
+  }
+  function create_tests(addAllowDiscreteTests) {
     var interpolationMethods = [
       cssTransitionsInterpolation,
       cssTransitionAllInterpolation,
       cssAnimationsInterpolation,
       webAnimationsInterpolation,
     ];
+    if (addAllowDiscreteTests) {
+      interpolationMethods = [
+        cssTransitionsInterpolationAllowDiscrete,
+        cssTransitionAllInterpolationAllowDiscrete,
+      ].concat(interpolationMethods);
+    }
     var container = createElement(document.body);
     var targets = createTestTargets(interpolationMethods, interpolationTests, compositionTests, container);
     // Separate interpolation and measurement into different phases to avoid O(n^2) of the number of targets.
@@ -409,7 +515,7 @@
 
   function test_interpolation(options, expectations) {
     interpolationTests.push({options, expectations});
-    create_tests();
+    create_tests(expectations === expectNoInterpolation || expectations === expectNotAnimatable);
     interpolationTests = [];
   }
   function test_composition(options, expectations) {
@@ -419,6 +525,9 @@
   }
   window.test_interpolation = test_interpolation;
   window.test_no_interpolation = test_no_interpolation;
+  window.test_not_animatable = test_not_animatable;
   window.test_composition = test_composition;
   window.neutralKeyframe = neutralKeyframe;
+  window.roundNumbers = roundNumbers;
+  window.normalizeValue = normalizeValue;
 })();

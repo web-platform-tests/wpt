@@ -5,6 +5,7 @@ dist/
 *.pyc
 __pycache__
 .coverage
+coverage.xml
 .tox/
 .hypothesis/
 .cache/

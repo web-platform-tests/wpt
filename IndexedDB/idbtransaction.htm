@@ -3,11 +3,13 @@
 <link rel="author" href="mailto:odinho@opera.com" title="Odin Hørthe Omdal">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support.js"></script>
+<script src="resources/support.js"></script>
 
 <script>
 async_test(function(t) {
-  var open_rq = indexedDB.open("idbtransaction-" + document.location + t.name);
+  var dbname = "idbtransaction-" + document.location + t.name;
+  indexedDB.deleteDatabase(dbname);
+  var open_rq = indexedDB.open(dbname);
 
   open_rq.onblocked = t.unreached_func('open_rq.onblocked');
   open_rq.onerror = t.unreached_func('open_rq.onerror');
@@ -31,7 +33,9 @@ async_test(function(t) {
 }, document.title + " - request gotten by the handler");
 
 async_test(function(t) {
-  var open_rq = indexedDB.open("idbtransaction-" + document.location + t.name);
+  var dbname = "idbtransaction-" + document.location + t.name;
+  indexedDB.deleteDatabase(dbname);
+  var open_rq = indexedDB.open(dbname);
 
   assert_equals(open_rq.transaction, null, "IDBOpenDBRequest.transaction");
   assert_equals(open_rq.source, null, "IDBOpenDBRequest.source");

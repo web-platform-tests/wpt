@@ -1,95 +1,82 @@
 import re
 import os
 import itertools
-from six import itervalues, iteritems
 from collections import defaultdict
+from typing import (Any, Dict, Iterable, List, MutableMapping, Optional, Pattern, Tuple, TypeVar,
+                    Union, cast)
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any
-    from typing import Dict
-    from typing import Iterable
-    from typing import List
-    from typing import MutableMapping
-    from typing import Optional
-    from typing import Pattern
-    from typing import Tuple
-    from typing import TypeVar
-    from typing import Union
-    from typing import cast
 
-    T = TypeVar('T')
-
+T = TypeVar('T')
 
 end_space = re.compile(r"([^\\]\s)*$")
 
 
-def fnmatch_translate(pat):
-    # type: (str) -> Tuple[bool, Pattern[str]]
+def fnmatch_translate(pat: bytes) -> Tuple[bool, Pattern[bytes]]:
     parts = []
-    seq = None
+    seq: Optional[int] = None
     i = 0
-    any_char = "[^/]"
-    if pat[0] == "/":
-        parts.append("^")
+    any_char = b"[^/]"
+    if pat[0:1] == b"/":
+        parts.append(b"^")
         pat = pat[1:]
     else:
         # By default match the entire path up to a /
         # but if / doesn't appear in the pattern we will mark is as
         # a name pattern and just produce a pattern that matches against
         # the filename
-        parts.append("^(?:.*/)?")
+        parts.append(b"^(?:.*/)?")
 
     name_pattern = True
-    if pat[-1] == "/":
+    if pat[-1:] == b"/":
         # If the last character is / match this directory or any subdirectory
         pat = pat[:-1]
-        suffix = "(?:/|$)"
+        suffix = b"(?:/|$)"
     else:
-        suffix = "$"
+        suffix = b"$"
     while i < len(pat):
-        c = pat[i]
-        if c == "\\":
+        c = pat[i:i+1]
+        if c == b"\\":
             if i < len(pat) - 1:
                 i += 1
-                c = pat[i]
+                c = pat[i:i+1]
                 parts.append(re.escape(c))
             else:
                 raise ValueError
         elif seq is not None:
             # TODO: this doesn't really handle invalid sequences in the right way
-            if c == "]":
+            if c == b"]":
                 seq = None
-                if parts[-1] == "[":
+                if parts[-1] == b"[":
                     parts = parts[:-1]
-                elif parts[-1] == "^" and parts[-2] == "[":
-                    parts = parts[:-2]
+                elif parts[-1] == b"^" and parts[-2] == b"[":
+                    raise ValueError
                 else:
                     parts.append(c)
-            elif c == "-":
+            elif c == b"-":
                 parts.append(c)
+            elif c == b"[":
+                raise ValueError
             else:
-                parts += re.escape(c)
-        elif c == "[":
-            parts.append("[")
-            if i < len(pat) - 1 and pat[i+1] in ("!", "^"):
-                parts.append("^")
+                parts.append(re.escape(c))
+        elif c == b"[":
+            parts.append(b"[")
+            if i < len(pat) - 1 and pat[i+1:i+2] in (b"!", b"^"):
+                parts.append(b"^")
                 i += 1
             seq = i
-        elif c == "*":
-            if i < len(pat) - 1 and pat[i+1] == "*":
-                if i > 0 and pat[i-1] != "/":
+        elif c == b"*":
+            if i < len(pat) - 1 and pat[i+1:i+2] == b"*":
+                if i > 0 and pat[i-1:i] != b"/":
                     raise ValueError
-                parts.append(".*")
+                parts.append(b".*")
                 i += 1
-                if i < len(pat) - 1 and pat[i+1] != "/":
+                if i < len(pat) - 1 and pat[i+1:i+2] != b"/":
                     raise ValueError
             else:
-                parts.append(any_char + "*")
-        elif c == "?":
+                parts.append(any_char + b"*")
+        elif c == b"?":
             parts.append(any_char)
-        elif c == "/" and not seq:
+        elif c == b"/" and not seq:
             name_pattern = False
             parts.append(c)
         else:
@@ -97,31 +84,30 @@ def fnmatch_translate(pat):
         i += 1
 
     if name_pattern:
-        parts[0] = "^"
+        parts[0] = b"^"
 
     if seq is not None:
         raise ValueError
     parts.append(suffix)
     try:
-        return name_pattern, re.compile("".join(parts))
+        return name_pattern, re.compile(b"".join(parts))
     except Exception:
         raise ValueError
 
 # Regexp matching rules that have to be converted to patterns
-pattern_re = re.compile(r".*[\*\[\?]")
+pattern_re = re.compile(br".*[\*\[\?]")
 
 
-def parse_line(line):
-    # type: (str) -> Optional[Tuple[bool, bool, bool, Union[Tuple[str, ...], Tuple[bool, Pattern[str]]]]]
+def parse_line(line: bytes) -> Optional[Tuple[bool, bool, bool, Union[Tuple[bytes, ...], Tuple[bool, Pattern[bytes]]]]]:
     line = line.rstrip()
-    if not line or line[0] == "#":
+    if not line or line[0:1] == b"#":
         return None
 
-    invert = line[0] == "!"
+    invert = line[0:1] == b"!"
     if invert:
         line = line[1:]
 
-    dir_only = line[-1] == "/"
+    dir_only = line[-1:] == b"/"
 
     if dir_only:
         line = line[:-1]
@@ -129,7 +115,7 @@ def parse_line(line):
     # Could make a special case for **/foo, but we don't have any patterns like that
     if not invert and not pattern_re.match(line):
         literal = True
-        pattern = tuple(line.rsplit("/", 1))  # type: Union[Tuple[str, ...], Tuple[bool, Pattern[str]]]
+        pattern: Union[Tuple[bytes, ...], Tuple[bool, Pattern[bytes]]] = tuple(line.rsplit(b"/", 1))
     else:
         pattern = fnmatch_translate(line)
         literal = False
@@ -137,11 +123,10 @@ def parse_line(line):
     return invert, dir_only, literal, pattern
 
 
-class PathFilter(object):
-    def __init__(self, root, extras=None, cache=None):
-        # type: (str, Optional[List[str]], Optional[MutableMapping[str, bool]]) -> None
+class PathFilter:
+    def __init__(self, root: bytes, extras: Optional[List[bytes]] = None, cache: Optional[MutableMapping[bytes, bool]] = None) -> None:
         if root:
-            ignore_path = os.path.join(root, ".gitignore")  # type: Optional[str]
+            ignore_path: Optional[bytes] = os.path.join(root, b".gitignore")
         else:
             ignore_path = None
         if not ignore_path and not extras:
@@ -149,32 +134,33 @@ class PathFilter(object):
             return
         self.trivial = False
 
-        self.literals_file = defaultdict(dict)  # type: Dict[Optional[str], Dict[str, List[Tuple[bool, Pattern[str]]]]]
-        self.literals_dir = defaultdict(dict)  # type: Dict[Optional[str], Dict[str, List[Tuple[bool, Pattern[str]]]]]
-        self.patterns_file = []  # type: List[Tuple[Tuple[bool, Pattern[str]], List[Tuple[bool, Pattern[str]]]]]
-        self.patterns_dir = []  # type: List[Tuple[Tuple[bool, Pattern[str]], List[Tuple[bool, Pattern[str]]]]]
-        self.cache = cache or {}  # type: MutableMapping[str, bool]
+        self.literals_file: Dict[Optional[bytes], Dict[bytes, List[Tuple[bool, Pattern[bytes]]]]] = defaultdict(dict)
+        self.literals_dir: Dict[Optional[bytes], Dict[bytes, List[Tuple[bool, Pattern[bytes]]]]] = defaultdict(dict)
+        self.patterns_file: List[Tuple[Tuple[bool, Pattern[bytes]], List[Tuple[bool, Pattern[bytes]]]]] = []
+        self.patterns_dir: List[Tuple[Tuple[bool, Pattern[bytes]], List[Tuple[bool, Pattern[bytes]]]]] = []
+
+        if cache is None:
+            cache = {}
+        self.cache: MutableMapping[bytes, bool] = cache
 
         if extras is None:
             extras = []
 
         if ignore_path and os.path.exists(ignore_path):
-            args = ignore_path, extras  # type: Tuple[Optional[str], List[str]]
+            args: Tuple[Optional[bytes], List[bytes]] = (ignore_path, extras)
         else:
             args = None, extras
         self._read_ignore(*args)
 
-    def _read_ignore(self, ignore_path, extras):
-        # type: (Optional[str], List[str]) -> None
+    def _read_ignore(self, ignore_path: Optional[bytes], extras: List[bytes]) -> None:
         if ignore_path is not None:
-            with open(ignore_path) as f:
+            with open(ignore_path, "rb") as f:
                 for line in f:
                     self._read_line(line)
         for line in extras:
             self._read_line(line)
 
-    def _read_line(self, line):
-        # type: (str) -> None
+    def _read_line(self, line: bytes) -> None:
         parsed = parse_line(line)
         if not parsed:
             return
@@ -185,66 +171,63 @@ class PathFilter(object):
             # that we can match patterns out of order and check if they were later
             # overriden by an exclude rule
             assert not literal
-            if MYPY:
-                rule = cast(Tuple[bool, Pattern[str]], rule)
+            rule = cast(Tuple[bool, Pattern[bytes]], rule)
             if not dir_only:
-                rules_iter = itertools.chain(
-                    itertools.chain(*(iteritems(item) for item in itervalues(self.literals_dir))),
-                    itertools.chain(*(iteritems(item) for item in itervalues(self.literals_file))),
+                rules_iter: Iterable[Tuple[Any, List[Tuple[bool, Pattern[bytes]]]]] = itertools.chain(
+                    itertools.chain(*(item.items() for item in self.literals_dir.values())),
+                    itertools.chain(*(item.items() for item in self.literals_file.values())),
                     self.patterns_dir,
-                    self.patterns_file)  # type: Iterable[Tuple[Any, List[Tuple[bool, Pattern[str]]]]]
+                    self.patterns_file)
             else:
                 rules_iter = itertools.chain(
-                    itertools.chain(*(iteritems(item) for item in itervalues(self.literals_dir))),
+                    itertools.chain(*(item.items() for item in self.literals_dir.values())),
                     self.patterns_dir)
 
             for rules in rules_iter:
                 rules[1].append(rule)
         else:
             if literal:
-                if MYPY:
-                    rule = cast(Tuple[str, ...], rule)
+                rule = cast(Tuple[bytes, ...], rule)
                 if len(rule) == 1:
-                    dir_name, pattern = None, rule[0]  # type: Tuple[Optional[str], str]
+                    dir_name, pattern = None, rule[0]  # type: Tuple[Optional[bytes], bytes]
                 else:
                     dir_name, pattern = rule
                 self.literals_dir[dir_name][pattern] = []
                 if not dir_only:
                     self.literals_file[dir_name][pattern] = []
             else:
-                if MYPY:
-                    rule = cast(Tuple[bool, Pattern[str]], rule)
+                rule = cast(Tuple[bool, Pattern[bytes]], rule)
                 self.patterns_dir.append((rule, []))
                 if not dir_only:
                     self.patterns_file.append((rule, []))
 
     def filter(self,
-               iterator  # type: Iterable[Tuple[str, List[Tuple[str, T]], List[Tuple[str, T]]]]
-               ):
-        # type: (...) -> Iterable[Tuple[str, List[Tuple[str, T]], List[Tuple[str, T]]]]
-        empty = {}  # type: Dict[Any, Any]
+               iterator: Iterable[Tuple[bytes, List[Tuple[bytes, T]], List[Tuple[bytes, T]]]]
+               ) -> Iterable[Tuple[bytes, List[Tuple[bytes, T]], List[Tuple[bytes, T]]]]:
+        empty: Dict[Any, Any] = {}
         for dirpath, dirnames, filenames in iterator:
             orig_dirpath = dirpath
-            if os.path.sep != "/":
-                dirpath = dirpath.replace(os.path.sep, "/")
+            path_sep = os.path.sep.encode()
+            if path_sep != b"/":
+                dirpath = dirpath.replace(path_sep, b"/")
 
-            keep_dirs = []  # type: List[Tuple[str, T]]
-            keep_files = []  # type: List[Tuple[str, T]]
+            keep_dirs: List[Tuple[bytes, T]] = []
+            keep_files: List[Tuple[bytes, T]] = []
 
             for iter_items, literals, patterns, target, suffix in [
-                    (dirnames, self.literals_dir, self.patterns_dir, keep_dirs, "/"),
-                    (filenames, self.literals_file, self.patterns_file, keep_files, "")]:
+                    (dirnames, self.literals_dir, self.patterns_dir, keep_dirs, b"/"),
+                    (filenames, self.literals_file, self.patterns_file, keep_files, b"")]:
                 for item in iter_items:
                     name = item[0]
                     if dirpath:
-                        path = "%s/%s" % (dirpath, name) + suffix
+                        path = b"%s/%s" % (dirpath, name) + suffix
                     else:
                         path = name + suffix
                     if path in self.cache:
                         if not self.cache[path]:
                             target.append(item)
                         continue
-                    for rule_dir in [None, dirpath]:
+                    for rule_dir in [None, dirpath if dirpath != b"." else b""]:
                         if name in literals.get(rule_dir, empty):
                             exclude = literals[rule_dir][name]
                             if not any(rule.match(name if name_only else path)
@@ -269,19 +252,17 @@ class PathFilter(object):
                             target.append(item)
 
             dirnames[:] = keep_dirs
-            assert ".git" not in dirnames
+            assert not any(b".git" == name for name, _ in dirnames)
             yield orig_dirpath, dirnames, keep_files
 
     def __call__(self,
-                 iterator  # type: Iterable[Tuple[str, List[Tuple[str, T]], List[Tuple[str, T]]]]
-                 ):
-        # type: (...) -> Iterable[Tuple[str, List[Tuple[str, T]], List[Tuple[str, T]]]]
+                 iterator: Iterable[Tuple[bytes, List[Tuple[bytes, T]], List[Tuple[bytes, T]]]]
+                 ) -> Iterable[Tuple[bytes, List[Tuple[bytes, T]], List[Tuple[bytes, T]]]]:
         if self.trivial:
             return iterator
 
         return self.filter(iterator)
 
 
-def has_ignore(dirpath):
-    # type: (str) -> bool
-    return os.path.exists(os.path.join(dirpath, ".gitignore"))
+def has_ignore(dirpath: bytes) -> bool:
+    return os.path.exists(os.path.join(dirpath, b".gitignore"))

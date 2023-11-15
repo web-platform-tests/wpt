@@ -1,24 +1,27 @@
-from __future__ import print_function
+# mypy: allow-untyped-defs
+
 import argparse
 import os
 import sys
 from collections import OrderedDict
-from distutils.spawn import find_executable
+from shutil import which
 from datetime import timedelta
-from six import iterkeys, itervalues, iteritems
+from typing import Mapping, Optional
 
 from . import config
+from . import products
 from . import wpttest
 from .formatters import chromium, wptreport, wptscreenshot
+
 
 def abs_path(path):
     return os.path.abspath(os.path.expanduser(path))
 
 
 def url_or_path(path):
-    import urlparse
+    from urllib.parse import urlparse
 
-    parsed = urlparse.urlparse(path)
+    parsed = urlparse(path)
     if len(parsed.scheme) > 2:
         return path
     else:
@@ -37,11 +40,8 @@ def require_arg(kwargs, name, value_func=None):
 def create_parser(product_choices=None):
     from mozlog import commandline
 
-    from . import products
-
     if product_choices is None:
-        config_data = config.load()
-        product_choices = products.products_enabled(config_data)
+        product_choices = products.product_list
 
     parser = argparse.ArgumentParser(description="""Runner for web-platform-tests tests.""",
                                      usage="""%(prog)s [OPTION]... [TEST]...
@@ -63,8 +63,12 @@ scheme host and port.""")
                         help="Split run into groups by directories. With a parameter,"
                         "limit the depth of splits e.g. --run-by-dir=1 to split by top-level"
                         "directory")
+    parser.add_argument("-f", "--fully-parallel", action='store_true',
+                        help='Run every test in a separate group for fully parallelism.')
     parser.add_argument("--processes", action="store", type=int, default=None,
                         help="Number of simultaneous processes to use")
+    parser.add_argument("--max-restarts", action="store", type=int, default=5,
+                        help="Maximum number of browser restart retries")
 
     parser.add_argument("--no-capture-stdio", action="store_true", default=False,
                         help="Don't capture stdio and write to logging")
@@ -72,6 +76,14 @@ scheme host and port.""")
                         default=True,
                         dest="fail_on_unexpected",
                         help="Exit with status code 0 when test expectations are violated")
+    parser.add_argument("--no-fail-on-unexpected-pass", action="store_false",
+                        default=True,
+                        dest="fail_on_unexpected_pass",
+                        help="Exit with status code 0 when all unexpected results are PASS")
+    parser.add_argument("--no-restart-on-new-group", action="store_false",
+                        default=True,
+                        dest="restart_on_new_group",
+                        help="Don't restart test runner when start a new test group")
 
     mode_group = parser.add_argument_group("Mode")
     mode_group.add_argument("--list-test-groups", action="store_true",
@@ -114,6 +126,10 @@ scheme host and port.""")
                             default=None,
                             help="The maximum number of minutes for the job to run",
                             type=lambda x: timedelta(minutes=float(x)))
+    mode_group.add_argument("--repeat-max-time", action="store",
+                            default=100,
+                            help="The maximum number of minutes for the test suite to attempt repeat runs",
+                            type=int)
     output_results_group = mode_group.add_mutually_exclusive_group()
     output_results_group.add_argument("--verify-no-output-results", action="store_false",
                                       dest="verify_output_results",
@@ -129,16 +145,42 @@ scheme host and port.""")
                                       nargs="*", default=wpttest.enabled_tests,
                                       choices=wpttest.enabled_tests,
                                       help="Test types to run")
+    test_selection_group.add_argument("--subsuite-file", action="store",
+                                      help="Path to JSON file containing subsuite configuration")
+    # TODO use an empty string argument for the default subsuite
+    test_selection_group.add_argument("--subsuite", action="append", dest="subsuites",
+                                      help="Subsuite names to run. Runs all subsuites when omitted.")
     test_selection_group.add_argument("--include", action="append",
                                       help="URL prefix to include")
+    test_selection_group.add_argument("--include-file", action="store",
+                                      help="A file listing URL prefix for tests")
     test_selection_group.add_argument("--exclude", action="append",
                                       help="URL prefix to exclude")
     test_selection_group.add_argument("--include-manifest", type=abs_path,
                                       help="Path to manifest listing tests to include")
+    test_selection_group.add_argument("--test-groups", dest="test_groups_file", type=abs_path,
+                                      help="Path to json file containing a mapping {group_name: [test_ids]}")
     test_selection_group.add_argument("--skip-timeout", action="store_true",
                                       help="Skip tests that are expected to time out")
+    test_selection_group.add_argument("--skip-crash", action="store_true",
+                                      help="Skip tests that are expected to crash")
+    test_selection_group.add_argument("--skip-implementation-status",
+                                      action="append",
+                                      choices=["not-implementing", "backlog", "implementing"],
+                                      help="Skip tests that have the given implementation status")
+    # TODO(bashi): Remove this when WebTransport over HTTP/3 server is enabled by default.
+    test_selection_group.add_argument("--enable-webtransport-h3",
+                                      action="store_true",
+                                      dest="enable_webtransport_h3",
+                                      default=None,
+                                      help="Enable tests that require WebTransport over HTTP/3 server (default: false)")
+    test_selection_group.add_argument("--no-enable-webtransport-h3", action="store_false", dest="enable_webtransport_h3",
+                                      help="Do not enable WebTransport tests on experimental channels")
     test_selection_group.add_argument("--tag", action="append", dest="tags",
                                       help="Labels applied to tests to include in the run. "
+                                           "Labels starting dir: are equivalent to top-level directories.")
+    test_selection_group.add_argument("--exclude-tag", action="append", dest="exclude_tags",
+                                      help="Labels applied to tests to exclude in the run. Takes precedence over `--tag`. "
                                            "Labels starting dir: are equivalent to top-level directories.")
     test_selection_group.add_argument("--default-exclude", action="store_true",
                                       default=False,
@@ -156,10 +198,16 @@ scheme host and port.""")
                                  help="Number of times to run the tests, restarting between each run")
     debugging_group.add_argument("--repeat-until-unexpected", action="store_true", default=None,
                                  help="Run tests in a loop until one returns an unexpected result")
+    debugging_group.add_argument('--retry-unexpected', type=int, default=0,
+                                 help=('Maximum number of times to retry unexpected tests. '
+                                       'A test is retried until it gets one of the expected status, '
+                                       'or until it exhausts the maximum number of retries.'))
     debugging_group.add_argument('--pause-after-test', action="store_true", default=None,
                                  help="Halt the test runner after each test (this happens by default if only a single test is run)")
     debugging_group.add_argument('--no-pause-after-test', dest="pause_after_test", action="store_false",
                                  help="Don't halt the test runner irrespective of the number of tests run")
+    debugging_group.add_argument('--debug-test', dest="debug_test", action="store_true",
+                                 help="Run tests with additional debugging features enabled")
 
     debugging_group.add_argument('--pause-on-unexpected', action="store_true",
                                  help="Halt the test runner when an unexpected result is encountered")
@@ -171,9 +219,18 @@ scheme host and port.""")
                                  help="Path or url to symbols file used to analyse crash minidumps.")
     debugging_group.add_argument("--stackwalk-binary", action="store", type=abs_path,
                                  help="Path to stackwalker program used to analyse minidumps.")
-
     debugging_group.add_argument("--pdb", action="store_true",
                                  help="Drop into pdb on python exception")
+
+    android_group = parser.add_argument_group("Android specific arguments")
+    android_group.add_argument("--adb-binary", action="store",
+                        help="Path to adb binary to use")
+    android_group.add_argument("--package-name", action="store",
+                        help="Android package name to run tests against")
+    android_group.add_argument("--keep-app-data-directory", action="store_true",
+                        help="Don't delete the app data directory")
+    android_group.add_argument("--device-serial", action="append", default=[],
+                        help="Running Android instances to connect to, if not emulator-5554")
 
     config_group = parser.add_argument_group("Configuration")
     config_group.add_argument("--binary", action="store",
@@ -186,10 +243,6 @@ scheme host and port.""")
     config_group.add_argument('--webdriver-arg',
                               default=[], action="append", dest="webdriver_args",
                               help="Extra argument for the WebDriver binary")
-    config_group.add_argument("--package-name", action="store",
-                              help="Android package name to run tests against")
-    config_group.add_argument("--device-serial", action="store",
-                              help="Running Android instance to connect to, if not emulator-5554")
     config_group.add_argument("--metadata", action="store", type=abs_path, dest="metadata_root",
                               help="Path to root directory containing test metadata"),
     config_group.add_argument("--tests", action="store", type=abs_path, dest="tests_root",
@@ -210,13 +263,24 @@ scheme host and port.""")
                               help="Path to config file")
     config_group.add_argument("--install-fonts", action="store_true",
                               default=None,
-                              help="Allow the wptrunner to install fonts on your system")
+                              help="Install additional system fonts on your system")
+    config_group.add_argument("--no-install-fonts", dest="install_fonts", action="store_false",
+                              help="Do not install additional system fonts on your system")
     config_group.add_argument("--font-dir", action="store", type=abs_path, dest="font_dir",
                               help="Path to local font installation directory", default=None)
+    config_group.add_argument("--inject-script", action="store", dest="inject_script", default=None,
+                              help="Path to script file to inject, useful for testing polyfills.")
     config_group.add_argument("--headless", action="store_true",
                               help="Run browser in headless mode", default=None)
     config_group.add_argument("--no-headless", action="store_false", dest="headless",
                               help="Don't run browser in headless mode")
+    config_group.add_argument("--instrument-to-file", action="store",
+                              help="Path to write instrumentation logs to")
+    config_group.add_argument("--suppress-handler-traceback", action="store_true", default=None,
+                              help="Don't write the stacktrace for exceptions in server handlers")
+    config_group.add_argument("--no-suppress-handler-traceback", action="store_false",
+                              dest="supress_handler_traceback",
+                              help="Write the stacktrace for exceptions in server handlers")
 
     build_type = parser.add_mutually_exclusive_group()
     build_type.add_argument("--debug-build", dest="debug", action="store_true",
@@ -226,43 +290,47 @@ scheme host and port.""")
                             default=None,
                             help="Build is a release (overrides any mozinfo file)")
 
-
     chunking_group = parser.add_argument_group("Test Chunking")
     chunking_group.add_argument("--total-chunks", action="store", type=int, default=1,
                                 help="Total number of chunks to use")
     chunking_group.add_argument("--this-chunk", action="store", type=int, default=1,
                                 help="Chunk number to run")
-    chunking_group.add_argument("--chunk-type", action="store", choices=["none", "hash", "dir_hash"],
+    chunking_group.add_argument("--chunk-type", action="store",
+                                choices=["none", "hash", "id_hash", "dir_hash"],
                                 default=None, help="Chunking type to use")
 
     ssl_group = parser.add_argument_group("SSL/TLS")
     ssl_group.add_argument("--ssl-type", action="store", default=None,
-                        choices=["openssl", "pregenerated", "none"],
-                        help="Type of ssl support to enable (running without ssl may lead to spurious errors)")
+                           choices=["openssl", "pregenerated", "none"],
+                           help="Type of ssl support to enable (running without ssl may lead to spurious errors)")
 
     ssl_group.add_argument("--openssl-binary", action="store",
-                        help="Path to openssl binary", default="openssl")
+                           help="Path to openssl binary", default="openssl")
     ssl_group.add_argument("--certutil-binary", action="store",
-                        help="Path to certutil binary for use with Firefox + ssl")
+                           help="Path to certutil binary for use with Firefox + ssl")
 
     ssl_group.add_argument("--ca-cert-path", action="store", type=abs_path,
-                        help="Path to ca certificate when using pregenerated ssl certificates")
+                           help="Path to ca certificate when using pregenerated ssl certificates")
     ssl_group.add_argument("--host-key-path", action="store", type=abs_path,
-                        help="Path to host private key when using pregenerated ssl certificates")
+                           help="Path to host private key when using pregenerated ssl certificates")
     ssl_group.add_argument("--host-cert-path", action="store", type=abs_path,
-                        help="Path to host certificate when using pregenerated ssl certificates")
+                           help="Path to host certificate when using pregenerated ssl certificates")
 
     gecko_group = parser.add_argument_group("Gecko-specific")
     gecko_group.add_argument("--prefs-root", dest="prefs_root", action="store", type=abs_path,
                              help="Path to the folder containing browser prefs")
+    gecko_group.add_argument("--preload-browser", dest="preload_browser", action="store_true",
+                             default=None, help="Preload a gecko instance for faster restarts")
+    gecko_group.add_argument("--no-preload-browser", dest="preload_browser", action="store_false",
+                             default=None, help="Don't preload a gecko instance for faster restarts")
     gecko_group.add_argument("--disable-e10s", dest="gecko_e10s", action="store_false", default=True,
                              help="Run tests without electrolysis preferences")
-    gecko_group.add_argument("--enable-webrender", dest="enable_webrender", action="store_true", default=None,
-                             help="Enable the WebRender compositor in Gecko (defaults to disabled).")
-    gecko_group.add_argument("--no-enable-webrender", dest="enable_webrender", action="store_false",
-                             help="Disable the WebRender compositor in Gecko.")
+    gecko_group.add_argument("--disable-fission", dest="disable_fission", action="store_true", default=False,
+                             help="Disable fission in Gecko.")
     gecko_group.add_argument("--stackfix-dir", dest="stackfix_dir", action="store",
                              help="Path to directory containing assertion stack fixing scripts")
+    gecko_group.add_argument("--specialpowers-path", action="store",
+                             help="Path to specialPowers extension xpi file")
     gecko_group.add_argument("--setpref", dest="extra_prefs", action='append',
                              default=[], metavar="PREF=VALUE",
                              help="Defines an extra user preference (overrides those in prefs_root)")
@@ -271,8 +339,6 @@ scheme host and port.""")
                              "silently ignored for opt, mobile)")
     gecko_group.add_argument("--no-leak-check", dest="leak_check", action="store_false", default=None,
                              help="Disable leak checking")
-    gecko_group.add_argument("--stylo-threads", action="store", type=int, default=1,
-                             help="Number of parallel threads to use for stylo")
     gecko_group.add_argument("--reftest-internal", dest="reftest_internal", action="store_true",
                              default=None, help="Enable reftest runner implemented inside Marionette")
     gecko_group.add_argument("--reftest-external", dest="reftest_internal", action="store_false",
@@ -281,15 +347,47 @@ scheme host and port.""")
                              choices=["always", "fail", "unexpected"], default=None,
                              help="With --reftest-internal, when to take a screenshot")
     gecko_group.add_argument("--chaos", dest="chaos_mode_flags", action="store",
-                             nargs="?", const=0xFFFFFFFF, type=int,
+                             nargs="?", const=0xFFFFFFFF, type=lambda x: int(x, 16),
                              help="Enable chaos mode with the specified feature flag "
                              "(see http://searchfox.org/mozilla-central/source/mfbt/ChaosMode.h for "
                              "details). If no value is supplied, all features are activated")
+
+    gecko_view_group = parser.add_argument_group("GeckoView-specific")
+    gecko_view_group.add_argument("--setenv", dest="env", action="append", default=[],
+                                  help="Set target environment variable, like FOO=BAR")
 
     servo_group = parser.add_argument_group("Servo-specific")
     servo_group.add_argument("--user-stylesheet",
                              default=[], action="append", dest="user_stylesheets",
                              help="Inject a user CSS stylesheet into every test.")
+
+    chrome_group = parser.add_argument_group("Chrome-specific")
+    chrome_group.add_argument("--enable-mojojs", action="store_true", default=False,
+                             help="Enable MojoJS for testing. Note that this flag is usally "
+                             "enabled automatically by `wpt run`, if it succeeds in downloading "
+                             "the right version of mojojs.zip or if --mojojs-path is specified.")
+    chrome_group.add_argument("--mojojs-path",
+                             help="Path to mojojs gen/ directory. If it is not specified, `wpt run` "
+                             "will download and extract mojojs.zip into _venv2/mojojs/gen.")
+    chrome_group.add_argument("--enable-swiftshader", action="store_true", default=False,
+                             help="Enable SwiftShader for CPU-based 3D graphics. This can be used "
+                             "in environments with no hardware GPU available.")
+    chrome_group.add_argument("--enable-experimental", action="store_true", dest="enable_experimental",
+                              help="Enable --enable-experimental-web-platform-features flag", default=None)
+    chrome_group.add_argument("--no-enable-experimental", action="store_false", dest="enable_experimental",
+                              help="Do not enable --enable-experimental-web-platform-features flag "
+                              "on experimental channels")
+    chrome_group.add_argument(
+        "--enable-sanitizer",
+        action="store_true",
+        dest="sanitizer_enabled",
+        help="Only alert on sanitizer-related errors and crashes.")
+    chrome_group.add_argument(
+        "--reuse-window",
+        action="store_true",
+        help=("Reuse a window across `testharness.js` tests where possible, "
+              "which can speed up testing. Also useful for ensuring that the "
+              "renderer process has a stable PID for a debugger to attach to."))
 
     sauce_group = parser.add_argument_group("Sauce Labs-specific")
     sauce_group.add_argument("--sauce-browser", dest="sauce_browser",
@@ -322,9 +420,18 @@ scheme host and port.""")
                              help="Command-line argument to forward to the "
                                   "Sauce Connect binary (repeatable)")
 
+    taskcluster_group = parser.add_argument_group("Taskcluster-specific")
+    taskcluster_group.add_argument("--github-checks-text-file",
+                                   type=str,
+                                   help="Path to GitHub checks output file")
+
     webkit_group = parser.add_argument_group("WebKit-specific")
     webkit_group.add_argument("--webkit-port", dest="webkit_port",
-                             help="WebKit port")
+                              help="WebKit port")
+
+    safari_group = parser.add_argument_group("Safari-specific")
+    safari_group.add_argument("--kill-safari", dest="kill_safari", action="store_true", default=False,
+                              help="Kill Safari when stopping the browser")
 
     parser.add_argument("test_list", nargs="*",
                         help="List of URLs for tests to run, or paths including tests to run. "
@@ -356,6 +463,8 @@ def set_from_config(kwargs):
 
     kwargs["config"] = config.read(kwargs["config_path"])
 
+    kwargs["product"] = products.Product(kwargs["config"], kwargs["product"])
+
     keys = {"paths": [("prefs", "prefs_root", True),
                       ("run_info", "run_info", True)],
             "web-platform-tests": [("remote_url", "remote_url", False),
@@ -367,7 +476,7 @@ def set_from_config(kwargs):
                     ("host_cert_path", "host_cert_path", True),
                     ("host_key_path", "host_key_path", True)]}
 
-    for section, values in iteritems(keys):
+    for section, values in keys.items():
         for config_value, kw_value, is_path in values:
             if kw_value in kwargs and kwargs[kw_value] is None:
                 if not is_path:
@@ -376,69 +485,82 @@ def set_from_config(kwargs):
                     new_value = kwargs["config"].get(section, config.ConfigDict({})).get_path(config_value)
                 kwargs[kw_value] = new_value
 
-    kwargs["test_paths"] = get_test_paths(kwargs["config"])
-
-    if kwargs["tests_root"]:
-        if "/" not in kwargs["test_paths"]:
-            kwargs["test_paths"]["/"] = {}
-        kwargs["test_paths"]["/"]["tests_path"] = kwargs["tests_root"]
-
-    if kwargs["metadata_root"]:
-        if "/" not in kwargs["test_paths"]:
-            kwargs["test_paths"]["/"] = {}
-        kwargs["test_paths"]["/"]["metadata_path"] = kwargs["metadata_root"]
-
-    if kwargs.get("manifest_path"):
-        if "/" not in kwargs["test_paths"]:
-            kwargs["test_paths"]["/"] = {}
-        kwargs["test_paths"]["/"]["manifest_path"] = kwargs["manifest_path"]
+    test_paths = get_test_paths(kwargs["config"],
+                                kwargs["tests_root"],
+                                kwargs["metadata_root"],
+                                kwargs["manifest_path"])
+    check_paths(test_paths)
+    kwargs["test_paths"] = test_paths
 
     kwargs["suite_name"] = kwargs["config"].get("web-platform-tests", {}).get("name", "web-platform-tests")
 
 
-    check_paths(kwargs)
+
+class TestRoot:
+    def __init__(self, tests_path: str, metadata_path: str, manifest_path: Optional[str] = None):
+        self.tests_path = tests_path
+        self.metadata_path = metadata_path
+        if manifest_path is None:
+            manifest_path = os.path.join(metadata_path, "MANIFEST.json")
+
+        self.manifest_path = manifest_path
 
 
-def get_test_paths(config):
+TestPaths = Mapping[str, TestRoot]
+
+
+def get_test_paths(config: Mapping[str, config.ConfigDict],
+                   tests_path_override: Optional[str] = None,
+                   metadata_path_override: Optional[str] = None,
+                   manifest_path_override: Optional[str] = None) -> TestPaths:
     # Set up test_paths
     test_paths = OrderedDict()
 
-    for section in iterkeys(config):
+    for section in config.keys():
         if section.startswith("manifest:"):
-            manifest_opts = config.get(section)
+            manifest_opts = config[section]
             url_base = manifest_opts.get("url_base", "/")
-            test_paths[url_base] = {
-                "tests_path": manifest_opts.get_path("tests"),
-                "metadata_path": manifest_opts.get_path("metadata"),
-            }
-            if "manifest" in manifest_opts:
-                test_paths[url_base]["manifest_path"] = manifest_opts.get_path("manifest")
+            tests_path = manifest_opts.get_path("tests")
+            if tests_path is None:
+                raise ValueError(f"Missing `tests` key in configuration with url_base {url_base}")
+            metadata_path = manifest_opts.get_path("metadata")
+            if metadata_path is None:
+                raise ValueError(f"Missing `metadata` key in configuration with url_base {url_base}")
+            manifest_path = manifest_opts.get_path("manifest")
+
+            if url_base == "/":
+                if tests_path_override is not None:
+                    tests_path = tests_path_override
+                if metadata_path_override is not None:
+                    metadata_path = metadata_path_override
+                if manifest_path_override is not None:
+                    manifest_path = manifest_path_override
+
+            test_paths[url_base] = TestRoot(tests_path, metadata_path, manifest_path)
+
+    if "/" not in test_paths:
+        if tests_path_override is None or metadata_path_override is None:
+            raise ValueError("No ini file configures the root url, "
+                             "so --tests and --metadata arguments are mandatory")
+        test_paths["/"] = TestRoot(tests_path_override,
+                                   metadata_path_override,
+                                   manifest_path_override)
 
     return test_paths
 
 
-def exe_path(name):
+def exe_path(name: Optional[str]) -> Optional[str]:
     if name is None:
-        return
-
-    path = find_executable(name)
-    if path and os.access(path, os.X_OK):
-        return path
-    else:
         return None
 
+    return which(name)
 
-def check_paths(kwargs):
-    for test_paths in itervalues(kwargs["test_paths"]):
-        if not ("tests_path" in test_paths and
-                "metadata_path" in test_paths):
-            print("Fatal: must specify both a test path and metadata path")
-            sys.exit(1)
-        if "manifest_path" not in test_paths:
-            test_paths["manifest_path"] = os.path.join(test_paths["metadata_path"],
-                                                       "MANIFEST.json")
-        for key, path in iteritems(test_paths):
+
+def check_paths(test_paths: TestPaths) -> None:
+    for test_root in test_paths.values():
+        for key in ["tests_path", "metadata_path", "manifest_path"]:
             name = key.split("_", 1)[0]
+            path = getattr(test_root, key)
 
             if name == "manifest":
                 # For the manifest we can create it later, so just check the path
@@ -446,24 +568,21 @@ def check_paths(kwargs):
                 path = os.path.dirname(path)
 
             if not os.path.exists(path):
-                print("Fatal: %s path %s does not exist" % (name, path))
+                print(f"Fatal: {name} path {path} does not exist")
                 sys.exit(1)
 
             if not os.path.isdir(path):
-                print("Fatal: %s path %s is not a directory" % (name, path))
+                print(f"Fatal: {name} path {path} is not a directory")
                 sys.exit(1)
 
 
 def check_args(kwargs):
     set_from_config(kwargs)
 
-    if kwargs["product"] is None:
-        kwargs["product"] = "firefox"
-
     if kwargs["manifest_update"] is None:
         kwargs["manifest_update"] = True
 
-    if "sauce" in kwargs["product"]:
+    if "sauce" in kwargs["product"].name:
         kwargs["pause_after_test"] = False
 
     if kwargs["test_list"]:
@@ -484,8 +603,34 @@ def check_args(kwargs):
         else:
             kwargs["chunk_type"] = "none"
 
+    if sum([
+        kwargs["test_groups_file"] is not None,
+        kwargs["run_by_dir"] is not False,
+        kwargs["fully_parallel"],
+    ]) > 1:
+        print('Must pass up to one of: --test-groups, --run-by-dir, --fully-parallel')
+        sys.exit(1)
+
+    if (kwargs["test_groups_file"] is not None and
+        not os.path.exists(kwargs["test_groups_file"])):
+        print("--test-groups file %s not found" % kwargs["test_groups_file"])
+        sys.exit(1)
+
+    # When running on Android, the number of workers is decided by the number of
+    # emulators. Each worker will use one emulator to run the Android browser.
+    if kwargs["device_serial"]:
+        if kwargs["processes"] is None:
+            kwargs["processes"] = len(kwargs["device_serial"])
+        elif len(kwargs["device_serial"]) != kwargs["processes"]:
+            print("--processes does not match number of devices")
+            sys.exit(1)
+        elif len(set(kwargs["device_serial"])) != len(kwargs["device_serial"]):
+            print("Got duplicate --device-serial value")
+            sys.exit(1)
+
     if kwargs["processes"] is None:
-        kwargs["processes"] = 1
+        from manifest import mputil  # type: ignore
+        kwargs["processes"] = mputil.max_parallelism() if kwargs["fully_parallel"] else 1
 
     if kwargs["debugger"] is not None:
         import mozdebug
@@ -526,7 +671,7 @@ def check_args(kwargs):
             sys.exit(1)
         kwargs["openssl_binary"] = path
 
-    if kwargs["ssl_type"] != "none" and kwargs["product"] == "firefox" and kwargs["certutil_binary"]:
+    if kwargs["ssl_type"] != "none" and kwargs["product"].name == "firefox" and kwargs["certutil_binary"]:
         path = exe_path(kwargs["certutil_binary"])
         if path is None:
             print("certutil-binary argument missing or not a valid executable", file=sys.stderr)
@@ -534,9 +679,6 @@ def check_args(kwargs):
         kwargs["certutil_binary"] = path
 
     if kwargs['extra_prefs']:
-        # If a single pref is passed in as a string, make it a list
-        if type(kwargs['extra_prefs']) in (str, unicode):
-            kwargs['extra_prefs'] = [kwargs['extra_prefs']]
         missing = any('=' not in prefarg for prefarg in kwargs['extra_prefs'])
         if missing:
             print("Preferences via --setpref must be in key=value format", file=sys.stderr)
@@ -548,43 +690,59 @@ def check_args(kwargs):
         kwargs["reftest_internal"] = True
 
     if kwargs["reftest_screenshot"] is None:
-        kwargs["reftest_screenshot"] = "unexpected"
+        kwargs["reftest_screenshot"] = "unexpected" if not kwargs["debug_test"] else "always"
 
-    if kwargs["enable_webrender"] is None:
-        kwargs["enable_webrender"] = False
+    if kwargs["preload_browser"] is None:
+        # Default to preloading a gecko instance if we're only running a single process
+        kwargs["preload_browser"] = kwargs["processes"] == 1
+
+    if kwargs["tags"] and kwargs["exclude_tags"]:
+        contradictory = set(kwargs["tags"]) & set(kwargs["exclude_tags"])
+        if contradictory:
+            print("contradictory tags found; exclusion will take precedence:", contradictory)
 
     return kwargs
 
 
-def check_args_update(kwargs):
+def check_args_metadata_update(kwargs):
     set_from_config(kwargs)
-
-    if kwargs["product"] is None:
-        kwargs["product"] = "firefox"
-    if kwargs["patch"] is None:
-        kwargs["patch"] = kwargs["sync"]
 
     for item in kwargs["run_log"]:
         if os.path.isdir(item):
             print("Log file %s is a directory" % item, file=sys.stderr)
             sys.exit(1)
 
+    if kwargs["properties_file"] is None and not kwargs["no_properties_file"]:
+        default_file = os.path.join(kwargs["test_paths"]["/"].metadata_path,
+                                    "update_properties.json")
+        if os.path.exists(default_file):
+            kwargs["properties_file"] = default_file
+
     return kwargs
 
 
-def create_parser_update(product_choices=None):
+def check_args_update(kwargs):
+    kwargs = check_args_metadata_update(kwargs)
+
+    if kwargs["patch"] is None:
+        kwargs["patch"] = kwargs["sync"]
+
+    return kwargs
+
+
+def create_parser_metadata_update(product_choices=None):
     from mozlog.structured import commandline
 
     from . import products
 
     if product_choices is None:
-        config_data = config.load()
-        product_choices = products.products_enabled(config_data)
+        product_choices = products.product_list
 
     parser = argparse.ArgumentParser("web-platform-tests-update",
                                      description="Update script for web-platform-tests tests.")
+    # This will be removed once all consumers are updated to the properties-file based system
     parser.add_argument("--product", action="store", choices=product_choices,
-                        default=None, help="Browser for which metadata is being updated")
+                        default="firefox", help=argparse.SUPPRESS)
     parser.add_argument("--config", action="store", type=abs_path, help="Path to config file")
     parser.add_argument("--metadata", action="store", type=abs_path, dest="metadata_root",
                         help="Path to the folder containing test metadata"),
@@ -592,6 +750,34 @@ def create_parser_update(product_choices=None):
                         help="Path to web-platform-tests"),
     parser.add_argument("--manifest", action="store", type=abs_path, dest="manifest_path",
                         help="Path to test manifest (default is ${metadata_root}/MANIFEST.json)")
+    parser.add_argument("--full", action="store_true", default=False,
+                        help="For all tests that are updated, remove any existing conditions and missing subtests")
+    parser.add_argument("--disable-intermittent", nargs="?", action="store", const="unstable", default=None,
+        help=("Reason for disabling tests. When updating test results, disable tests that have "
+              "inconsistent results across many runs with the given reason."))
+    parser.add_argument("--update-intermittent", action="store_true", default=False,
+                        help="Update test metadata with expected intermittent statuses.")
+    parser.add_argument("--remove-intermittent", action="store_true", default=False,
+                        help="Remove obsolete intermittent statuses from expected statuses.")
+    parser.add_argument("--no-remove-obsolete", action="store_false", dest="remove_obsolete", default=True,
+                        help="Don't remove metadata files that no longer correspond to a test file")
+    parser.add_argument("--properties-file",
+                        help="""Path to a JSON file containing run_info properties to use in update. This must be of the form
+                        {"properties": [<name>], "dependents": {<property name>: [<name>]}}""")
+    parser.add_argument("--no-properties-file", action="store_true",
+                        help="Don't use the default properties file at "
+                        "${metadata_root}/update_properties.json, even if it exists.")
+    parser.add_argument("--extra-property", action="append", default=[],
+                        help="Extra property from run_info.json to use in metadata update.")
+    # TODO: Should make this required iff run=logfile
+    parser.add_argument("run_log", nargs="*", type=abs_path,
+                        help="Log file from run of tests")
+    commandline.add_logging_group(parser)
+    return parser
+
+
+def create_parser_update(product_choices=None):
+    parser = create_parser_metadata_update(product_choices)
     parser.add_argument("--sync-path", action="store", type=abs_path,
                         help="Path to store git checkout of web-platform-tests during update"),
     parser.add_argument("--remote_url", action="store",
@@ -605,17 +791,6 @@ def create_parser_update(product_choices=None):
                         help="Don't create a VCS commit containing the changes.")
     parser.add_argument("--sync", dest="sync", action="store_true", default=False,
                         help="Sync the tests with the latest from upstream (implies --patch)")
-    parser.add_argument("--full", action="store_true", default=False,
-                        help=("For all tests that are updated, remove any existing conditions and missing subtests"))
-    parser.add_argument("--disable-intermittent", nargs="?", action="store", const="unstable", default=None,
-        help=("Reason for disabling tests. When updating test results, disable tests that have "
-              "inconsistent results across many runs with the given reason."))
-    parser.add_argument("--update-intermittent", action="store_true", default=False,
-                        help=("Update test metadata with expected intermittent statuses."))
-    parser.add_argument("--remove-intermittent", action="store_true", default=False,
-                        help=("Remove obsolete intermittent statuses from expected statuses."))
-    parser.add_argument("--no-remove-obsolete", action="store_false", dest="remove_obsolete", default=True,
-                        help=("Don't remove metadata files that no longer correspond to a test file"))
     parser.add_argument("--no-store-state", action="store_false", dest="store_state",
                         help="Store state so that steps can be resumed after failure")
     parser.add_argument("--continue", action="store_true",
@@ -626,12 +801,6 @@ def create_parser_update(product_choices=None):
                         help="List of glob-style paths to exclude when syncing tests")
     parser.add_argument("--include", action="store", nargs="*",
                         help="List of glob-style paths to include which would otherwise be excluded when syncing tests")
-    parser.add_argument("--extra-property", action="append", default=[],
-                        help="Extra property from run_info.json to use in metadata update")
-    # Should make this required iff run=logfile
-    parser.add_argument("run_log", nargs="*", type=abs_path,
-                        help="Log file from run of tests")
-    commandline.add_logging_group(parser)
     return parser
 
 

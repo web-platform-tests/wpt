@@ -5,37 +5,25 @@ import re
 import subprocess
 import sys
 
-import six
 from collections import OrderedDict
-from six import iteritems
 
 try:
     from ..manifest import manifest
+    from ..manifest.utils import git as get_git_cmd
 except ValueError:
     # if we're not within the tools package, the above is an import from above
     # the top-level which raises ValueError, so reimport it with an absolute
     # reference
     #
     # note we need both because depending on caller we may/may not have the
-    # paths set up correctly to handle both and MYPY has no knowledge of our
+    # paths set up correctly to handle both and mypy has no knowledge of our
     # sys.path magic
     from manifest import manifest  # type: ignore
+    from manifest.utils import git as get_git_cmd  # type: ignore
 
-MYPY = False
-if MYPY:
-    # MYPY is set to True when run under Mypy.
-    from typing import Any
-    from typing import Callable
-    from typing import Dict
-    from typing import Iterable
-    from typing import List
-    from typing import Optional
-    from typing import Pattern
-    from typing import Sequence
-    from typing import Set
-    from typing import Text
-    from typing import Tuple
-    from typing import Union
+from typing import Any, Dict, Iterable, List, Optional, Pattern, Sequence, Set, Text, Tuple
+
+DEFAULT_IGNORE_RULES = ("resources/testharness*", "resources/testdriver*")
 
 here = os.path.dirname(__file__)
 wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
@@ -43,30 +31,15 @@ wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 logger = logging.getLogger()
 
 
-def get_git_cmd(repo_path):
-    # type: (bytes) -> Callable[..., Text]
-    """Create a function for invoking git commands as a subprocess."""
-    def git(cmd, *args):
-        # type: (Text, *Union[bytes, Text]) -> Text
-        full_cmd = [u"git", cmd] + list(item.decode("utf8") if isinstance(item, bytes) else item for item in args)  # type: List[Text]
-        try:
-            logger.debug(" ".join(full_cmd))
-            return subprocess.check_output(full_cmd, cwd=repo_path).decode("utf8").strip()
-        except subprocess.CalledProcessError as e:
-            logger.critical("Git command exited with status %i" % e.returncode)
-            logger.critical(e.output)
-            sys.exit(1)
-    return git
-
-
-def display_branch_point():
-    # type: () -> None
+def display_branch_point() -> None:
     print(branch_point())
 
 
-def branch_point():
-    # type: () -> Optional[Text]
+def branch_point() -> Optional[Text]:
     git = get_git_cmd(wpt_root)
+    if git is None:
+        raise Exception("git not found")
+
     if (os.environ.get("GITHUB_PULL_REQUEST", "false") == "false" and
         os.environ.get("GITHUB_BRANCH") == "master"):
         # For builds on the master branch just return the HEAD commit
@@ -75,7 +48,7 @@ def branch_point():
         # This is a PR, so the base branch is in GITHUB_BRANCH
         base_branch = os.environ.get("GITHUB_BRANCH")
         assert base_branch, "GITHUB_BRANCH environment variable is defined"
-        branch_point = git("merge-base", "HEAD", base_branch)  # type: Optional[Text]
+        branch_point: Optional[Text] = git("merge-base", "HEAD", base_branch)
     else:
         # Otherwise we aren't on a PR, so we try to find commits that are only in the
         # current branch c.f.
@@ -86,11 +59,22 @@ def branch_point():
 
         # get everything in refs/heads and refs/remotes that doesn't include HEAD
         not_heads = [item for item in git("rev-parse", "--not", "--branches", "--remotes").split("\n")
-                     if item != "^%s" % head]
+                     if item and item != "^%s" % head]
 
         # get all commits on HEAD but not reachable from anything in not_heads
-        commits = git("rev-list", "--topo-order", "--parents", "HEAD", *not_heads)
-        commit_parents = OrderedDict()  # type: Dict[Text, List[Text]]
+        cmd = ["git", "rev-list", "--topo-order", "--parents", "--stdin", "HEAD"]
+        proc = subprocess.Popen(cmd,
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE,
+                                cwd=wpt_root)
+        commits_bytes, _ = proc.communicate(b"\n".join(item.encode("ascii") for item in not_heads))
+        if proc.returncode != 0:
+            raise subprocess.CalledProcessError(proc.returncode,
+                                                cmd,
+                                                commits_bytes)
+
+        commit_parents: Dict[Text, List[Text]] = OrderedDict()
+        commits = commits_bytes.decode("ascii")
         if commits:
             for line in commits.split("\n"):
                 line_commits = line.split(" ")
@@ -99,7 +83,7 @@ def branch_point():
         branch_point = None
 
         # if there are any commits, take the first parent that is not in commits
-        for commit, parents in iteritems(commit_parents):
+        for commit, parents in commit_parents.items():
             for parent in parents:
                 if parent not in commit_parents:
                     branch_point = parent
@@ -123,18 +107,19 @@ def branch_point():
         merge_base = git("merge-base", "HEAD", "origin/master")
         if (branch_point is None or
             (branch_point != merge_base and
-             not git("log", "--oneline", "%s..%s" % (merge_base, branch_point)).strip())):
+             not git("log", "--oneline", f"{merge_base}..{branch_point}").strip())):
             logger.debug("Using merge-base as the branch point")
             branch_point = merge_base
         else:
             logger.debug("Using first commit on another branch as the branch point")
 
     logger.debug("Branch point from master: %s" % branch_point)
+    if branch_point:
+        branch_point = branch_point.strip()
     return branch_point
 
 
-def compile_ignore_rule(rule):
-    # type: (str) -> Pattern[str]
+def compile_ignore_rule(rule: Text) -> Pattern[Text]:
     rule = rule.replace(os.path.sep, "/")
     parts = rule.split("/")
     re_parts = []
@@ -148,11 +133,22 @@ def compile_ignore_rule(rule):
     return re.compile("^%s$" % "/".join(re_parts))
 
 
-def repo_files_changed(revish, include_uncommitted=False, include_new=False):
-    # type: (str, bool, bool) -> Set[Text]
+def repo_files_changed(revish: Text, include_uncommitted: bool = False, include_new: bool = False) -> Set[Text]:
     git = get_git_cmd(wpt_root)
-    files_list = git("diff", "--name-only", "-z", revish).split("\0")
-    assert not files_list[-1]
+    if git is None:
+        raise Exception("git not found")
+
+    if "..." in revish:
+        raise Exception(f"... not supported when finding files changed (revish: {revish!r}")
+
+    if ".." in revish:
+        # ".." isn't treated as a range for git-diff; what we want is
+        # everything reachable from B but not A, and git diff A...B
+        # gives us that (via the merge-base)
+        revish = revish.replace("..", "...")
+
+    files_list = git("diff", "--no-renames", "--name-only", "-z", revish).split("\0")
+    assert not files_list[-1], f"final item should be empty, got: {files_list[-1]!r}"
     files = set(files_list[:-1])
 
     if include_uncommitted:
@@ -160,7 +156,7 @@ def repo_files_changed(revish, include_uncommitted=False, include_new=False):
         assert not entries[-1]
         entries = entries[:-1]
         for item in entries:
-            status, path = item.split()
+            status, path = item.split(" ", 1)
             if status == "??" and not include_new:
                 continue
             else:
@@ -174,11 +170,10 @@ def repo_files_changed(revish, include_uncommitted=False, include_new=False):
     return files
 
 
-def exclude_ignored(files, ignore_rules):
-    # type: (Iterable[Text], Optional[Sequence[str]]) -> Tuple[List[Text], List[Text]]
+def exclude_ignored(files: Iterable[Text], ignore_rules: Optional[Sequence[Text]]) -> Tuple[List[Text], List[Text]]:
     if ignore_rules is None:
-        ignore_rules = []
-    compiled_ignore_rules = [compile_ignore_rule(item) for item in ignore_rules]
+        ignore_rules = DEFAULT_IGNORE_RULES
+    compiled_ignore_rules = [compile_ignore_rule(item) for item in set(ignore_rules)]
 
     changed = []
     ignored = []
@@ -195,12 +190,11 @@ def exclude_ignored(files, ignore_rules):
     return changed, ignored
 
 
-def files_changed(revish,  # type: str
-                  ignore_rules=None,  # type: Optional[Sequence[str]]
-                  include_uncommitted=False,  # type: bool
-                  include_new=False  # type: bool
-                  ):
-    # type: (...) -> Tuple[List[Text], List[Text]]
+def files_changed(revish: Text,
+                  ignore_rules: Optional[Sequence[Text]] = None,
+                  include_uncommitted: bool = False,
+                  include_new: bool = False
+                  ) -> Tuple[List[Text], List[Text]]:
     """Find files changed in certain revisions.
 
     The function passes `revish` directly to `git diff`, so `revish` can have a
@@ -216,27 +210,24 @@ def files_changed(revish,  # type: str
     return exclude_ignored(files, ignore_rules)
 
 
-def _in_repo_root(full_path):
-    # type: (Union[bytes, Text]) -> bool
+def _in_repo_root(full_path: Text) -> bool:
     rel_path = os.path.relpath(full_path, wpt_root)
     path_components = rel_path.split(os.sep)
     return len(path_components) < 2
 
 
-def load_manifest(manifest_path=None, manifest_update=True):
-    # type: (Optional[str], bool) -> manifest.Manifest
+def load_manifest(manifest_path: Optional[Text] = None, manifest_update: bool = True) -> manifest.Manifest:
     if manifest_path is None:
         manifest_path = os.path.join(wpt_root, "MANIFEST.json")
     return manifest.load_and_update(wpt_root, manifest_path, "/",
                                     update=manifest_update)
 
 
-def affected_testfiles(files_changed,  # type: Iterable[Text]
-                       skip_dirs=None,  # type: Optional[Set[str]]
-                       manifest_path=None,  # type: Optional[str]
-                       manifest_update=True  # type: bool
-                       ):
-    # type: (...) -> Tuple[Set[Text], Set[str]]
+def affected_testfiles(files_changed: Iterable[Text],
+                       skip_dirs: Optional[Set[Text]] = None,
+                       manifest_path: Optional[Text] = None,
+                       manifest_update: bool = True
+                       ) -> Tuple[Set[Text], Set[Text]]:
     """Determine and return list of test files that reference changed files."""
     if skip_dirs is None:
         skip_dirs = {"conformance-checkers", "docs", "tools"}
@@ -247,7 +238,7 @@ def affected_testfiles(files_changed,  # type: Iterable[Text]
     nontests_changed = set(files_changed)
     wpt_manifest = load_manifest(manifest_path, manifest_update)
 
-    test_types = ["testharness", "reftest", "wdspec"]
+    test_types = ["crashtest", "print-reftest", "reftest", "testharness", "wdspec"]
     support_files = {os.path.join(wpt_root, path)
                      for _, path, _ in wpt_manifest.itertypes("support")}
     wdspec_test_files = {os.path.join(wpt_root, path)
@@ -265,7 +256,7 @@ def affected_testfiles(files_changed,  # type: Iterable[Text]
     tests_changed = {item for item in files_changed if item in test_files}
 
     nontest_changed_paths = set()
-    rewrites = {"/resources/webidl2/lib/webidl2.js": "/resources/WebIDLParser.js"}  # type: Dict[Text, Text]
+    rewrites: Dict[Text, Text] = {"/resources/webidl2/lib/webidl2.js": "/resources/WebIDLParser.js"}
     for full_path in nontests_changed:
         rel_path = os.path.relpath(full_path, wpt_root)
         path_components = rel_path.split(os.sep)
@@ -278,11 +269,10 @@ def affected_testfiles(files_changed,  # type: Iterable[Text]
             full_path = os.path.join(wpt_root, repo_path[1:].replace("/", os.path.sep))
         nontest_changed_paths.add((full_path, repo_path))
 
-    interface_name = lambda x: os.path.splitext(os.path.basename(x))[0]
-    interfaces_changed_names = map(interface_name, interfaces_changed)
+    interfaces_changed_names = [os.path.splitext(os.path.basename(interface))[0]
+                                for interface in interfaces_changed]
 
-    def affected_by_wdspec(test):
-        # type: (str) -> bool
+    def affected_by_wdspec(test: Text) -> bool:
         affected = False
         if test in wdspec_test_files:
             for support_full_path, _ in nontest_changed_paths:
@@ -297,8 +287,7 @@ def affected_testfiles(files_changed,  # type: Iterable[Text]
                     break
         return affected
 
-    def affected_by_interfaces(file_contents):
-        # type: (Union[bytes, Text]) -> bool
+    def affected_by_interfaces(file_contents: Text) -> bool:
         if len(interfaces_changed_names) > 0:
             if 'idlharness.js' in file_contents:
                 for interface in interfaces_changed_names:
@@ -323,10 +312,10 @@ def affected_testfiles(files_changed,  # type: Iterable[Text]
                 continue
 
             with open(test_full_path, "rb") as fh:
-                raw_file_contents = fh.read()  # type: bytes
-                if raw_file_contents.startswith("\xfe\xff"):
-                    file_contents = raw_file_contents.decode("utf-16be", "replace")  # type: Text
-                elif raw_file_contents.startswith("\xff\xfe"):
+                raw_file_contents: bytes = fh.read()
+                if raw_file_contents.startswith(b"\xfe\xff"):
+                    file_contents: Text = raw_file_contents.decode("utf-16be", "replace")
+                elif raw_file_contents.startswith(b"\xff\xfe"):
                     file_contents = raw_file_contents.decode("utf-16le", "replace")
                 else:
                     file_contents = raw_file_contents.decode("utf8", "replace")
@@ -339,19 +328,17 @@ def affected_testfiles(files_changed,  # type: Iterable[Text]
     return tests_changed, affected_testfiles
 
 
-def get_parser():
-    # type: () -> argparse.ArgumentParser
+def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("revish", default=None, help="Commits to consider. Defaults to the "
                         "commits on the current branch", nargs="?")
-    # TODO: Consolidate with `./wpt run --affected`:
-    # https://github.com/web-platform-tests/wpt/issues/14560
-    parser.add_argument("--ignore-rules", nargs="*", type=set,  # type: ignore
-                        default={"resources/testharness*"},
-                        help="Rules for paths to exclude from lists of changes. Rules are paths "
-                        "relative to the test root, with * before a separator or the end matching "
-                        "anything other than a path separator and ** in that position matching "
-                        "anything")
+    parser.add_argument("--ignore-rule", action="append",
+                        help="Override the rules for paths to exclude from lists of changes. "
+                        "Rules are paths relative to the test root, with * before a separator "
+                        "or the end matching anything other than a path separator and ** in that "
+                        "position matching anything. This flag can be used multiple times for "
+                        "multiple rules. Specifying this flag overrides the default: " +
+                        ", ".join(DEFAULT_IGNORE_RULES))
     parser.add_argument("--modified", action="store_true",
                         help="Include files under version control that have been "
                         "modified or staged")
@@ -364,8 +351,7 @@ def get_parser():
     return parser
 
 
-def get_parser_affected():
-    # type: () -> argparse.ArgumentParser
+def get_parser_affected() -> argparse.ArgumentParser:
     parser = get_parser()
     parser.add_argument("--metadata",
                         dest="metadata_root",
@@ -375,34 +361,31 @@ def get_parser_affected():
     return parser
 
 
-def get_revish(**kwargs):
-    # type: (**Any) -> bytes
+def get_revish(**kwargs: Any) -> Text:
     revish = kwargs.get("revish")
     if revish is None:
         revish = "%s..HEAD" % branch_point()
-    if isinstance(revish, six.text_type):
-        revish = revish.encode("utf8")
-    assert isinstance(revish, six.binary_type)
-    return revish
+    return revish.strip()
 
 
-def run_changed_files(**kwargs):
-    # type: (**Any) -> None
+def run_changed_files(**kwargs: Any) -> None:
     revish = get_revish(**kwargs)
-    changed, _ = files_changed(revish, kwargs["ignore_rules"],
+    changed, _ = files_changed(revish,
+                               kwargs["ignore_rule"],
                                include_uncommitted=kwargs["modified"],
                                include_new=kwargs["new"])
 
     separator = "\0" if kwargs["null"] else "\n"
 
     for item in sorted(changed):
-        sys.stdout.write(os.path.relpath(item.encode("utf8"), wpt_root) + separator)
+        line = os.path.relpath(item, wpt_root) + separator
+        sys.stdout.write(line)
 
 
-def run_tests_affected(**kwargs):
-    # type: (**Any) -> None
+def run_tests_affected(**kwargs: Any) -> None:
     revish = get_revish(**kwargs)
-    changed, _ = files_changed(revish, kwargs["ignore_rules"],
+    changed, _ = files_changed(revish,
+                               kwargs["ignore_rule"],
                                include_uncommitted=kwargs["modified"],
                                include_new=kwargs["new"])
     manifest_path = os.path.join(kwargs["metadata_root"], "MANIFEST.json")

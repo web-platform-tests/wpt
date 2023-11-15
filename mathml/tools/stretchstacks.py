@@ -1,12 +1,13 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 from utils import mathfont
 import fontforge
 
-arrowCodePoint = 0x2192 # horizontal stretch operator
+arrowCodePoint = 0x2192  # horizontal stretch operator
 
 v = 3 * mathfont.em
-f = mathfont.create("stretchstack-bottomshiftdown%d" % v)
+f = mathfont.create("stretchstack-bottomshiftdown%d" % v,
+                    "Copyright (c) 2016 MathML Association")
 mathfont.createSquareGlyph(f, arrowCodePoint)
 f.math.LowerLimitBaselineDropMin = 0
 f.math.LowerLimitGapMin = 0
@@ -23,7 +24,8 @@ f.math.UpperLimitGapMin = 0
 mathfont.save(f)
 
 v = 11 * mathfont.em
-f = mathfont.create("stretchstack-gapbelowmin%d" % v)
+f = mathfont.create("stretchstack-gapbelowmin%d" % v,
+                    "Copyright (c) 2016 MathML Association")
 mathfont.createSquareGlyph(f, arrowCodePoint)
 f.math.LowerLimitBaselineDropMin = 0
 f.math.LowerLimitGapMin = 0
@@ -40,7 +42,8 @@ f.math.UpperLimitGapMin = 0
 mathfont.save(f)
 
 v = 5 * mathfont.em
-f = mathfont.create("stretchstack-topshiftup%d" % v)
+f = mathfont.create("stretchstack-topshiftup%d" % v,
+                    "Copyright (c) 2016 MathML Association")
 mathfont.createSquareGlyph(f, arrowCodePoint)
 f.math.LowerLimitBaselineDropMin = 0
 f.math.LowerLimitGapMin = 0
@@ -57,7 +60,8 @@ f.math.UpperLimitGapMin = 0
 mathfont.save(f)
 
 v = 7 * mathfont.em
-f = mathfont.create("stretchstack-gapabovemin%d" % v)
+f = mathfont.create("stretchstack-gapabovemin%d" % v,
+                    "Copyright (c) 2016 MathML Association")
 mathfont.createSquareGlyph(f, arrowCodePoint)
 f.math.LowerLimitBaselineDropMin = 0
 f.math.LowerLimitGapMin = 0

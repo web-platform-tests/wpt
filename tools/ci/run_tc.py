@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# mypy: allow-untyped-defs
 
 """Wrapper script for running jobs in Taskcluster
 
@@ -36,19 +37,17 @@ the serialization of a GitHub event payload.
 """
 
 import argparse
+import fnmatch
 import json
 import os
 import subprocess
 import sys
+import tarfile
 import tempfile
-from socket import error as SocketError  # NOQA: N812
-import errno
-try:
-    from urllib2 import urlopen
-except ImportError:
-    # Python 3 case
-    from urllib.request import urlopen
+import zipfile
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from tools.wpt.utils import get_download_to_descriptor
 
 root = os.path.abspath(
     os.path.join(os.path.dirname(__file__),
@@ -60,6 +59,8 @@ def run(cmd, return_stdout=False, **kwargs):
     print(" ".join(cmd))
     if return_stdout:
         f = subprocess.check_output
+        if "encoding" not in kwargs:
+            kwargs["encoding"] = "utf-8"
     else:
         f = subprocess.check_call
     return f(cmd, **kwargs)
@@ -96,12 +97,15 @@ def get_parser():
     p.add_argument("--xvfb",
                    action="store_true",
                    help="Start xvfb")
-    p.add_argument("--checkout",
-                   help="Revision to checkout before starting job")
     p.add_argument("--install-certificates", action="store_true", default=None,
                    help="Install web-platform.test certificates to UA store")
     p.add_argument("--no-install-certificates", action="store_false", default=None,
                    help="Don't install web-platform.test certificates to UA store")
+    p.add_argument("--no-setup-repository", action="store_false", dest="setup_repository",
+                   help="Don't run any repository setup steps, instead use the existing worktree. "
+                        "This is useful for local testing.")
+    p.add_argument("--checkout",
+                   help="Revision to checkout before starting job")
     p.add_argument("--ref",
                    help="Git ref for the commit that should be run")
     p.add_argument("--head-rev",
@@ -136,8 +140,15 @@ def install_certificates():
     run(["sudo", "update-ca-certificates"])
 
 
+def start_dbus():
+    run(["sudo", "service", "dbus", "start"])
+    # Enable dbus autolaunch for Chrome
+    # https://source.chromium.org/chromium/chromium/src/+/main:content/app/content_main.cc;l=220;drc=0bcc023b8cdbc073aa5c48db373810db3f765c87.
+    os.environ["DBUS_SESSION_BUS_ADDRESS"] = "autolaunch:"
+
+
 def install_chrome(channel):
-    if channel in ("experimental", "dev", "nightly"):
+    if channel in ("experimental", "dev"):
         deb_archive = "google-chrome-unstable_current_amd64.deb"
     elif channel == "beta":
         deb_archive = "google-chrome-beta_current_amd64.deb"
@@ -147,76 +158,13 @@ def install_chrome(channel):
         raise ValueError("Unrecognized release channel: %s" % channel)
 
     dest = os.path.join("/tmp", deb_archive)
-    resp = urlopen("https://dl.google.com/linux/direct/%s" % deb_archive)
-    with open(dest, "w") as f:
-        f.write(resp.read())
+    deb_url = "https://dl.google.com/linux/direct/%s" % deb_archive
+    with open(dest, "wb") as f:
+        get_download_to_descriptor(f, deb_url)
 
     run(["sudo", "apt-get", "-qqy", "update"])
     run(["sudo", "gdebi", "-qn", "/tmp/%s" % deb_archive])
 
-def install_webkitgtk_from_apt_repository(channel):
-    # Configure webkitgtk.org/debian repository for $channel and pin it with maximum priority
-    run(["sudo", "apt-key", "adv", "--fetch-keys", "https://webkitgtk.org/debian/apt.key"])
-    with open("/tmp/webkitgtk.list", "w") as f:
-        f.write("deb [arch=amd64] https://webkitgtk.org/apt bionic-wpt-webkit-updates %s\n" % channel)
-    run(["sudo", "mv", "/tmp/webkitgtk.list", "/etc/apt/sources.list.d/"])
-    with open("/tmp/99webkitgtk", "w") as f:
-        f.write("Package: *\nPin: origin webkitgtk.org\nPin-Priority: 1999\n")
-    run(["sudo", "mv", "/tmp/99webkitgtk", "/etc/apt/preferences.d/"])
-    # Install webkit2gtk from the webkitgtk.org/apt repository for $channel
-    run(["sudo", "apt-get", "-qqy", "update"])
-    run(["sudo", "apt-get", "-qqy", "upgrade"])
-    run(["sudo", "apt-get", "-qqy", "-t", "bionic-wpt-webkit-updates", "install", "webkit2gtk-driver"])
-
-
-# Download an URL in chunks and saves it to a file descriptor (truncating it)
-# It doesn't close the descriptor, but flushes it on success.
-# It retries the download in case of ECONNRESET up to max_retries.
-def download_url_to_descriptor(fd, url, max_retries=3):
-    download_succeed = False
-    if max_retries < 0:
-        max_retries = 0
-    for current_retry in range(max_retries+1):
-        try:
-            resp = urlopen(url)
-            # We may come here in a retry, ensure to truncate fd before start writing.
-            fd.seek(0)
-            fd.truncate(0)
-            while True:
-                chunk = resp.read(16*1024)
-                if not chunk:
-                    break  # Download finished
-                fd.write(chunk)
-            fd.flush()
-            download_succeed = True
-            break  # Sucess
-        except SocketError as e:
-            if e.errno != errno.ECONNRESET:
-                raise  # Unknown error
-            if current_retry < max_retries:
-                print("ERROR: Connection reset by peer. Retrying ...")
-                continue  # Retry
-    return download_succeed
-
-
-def install_webkitgtk_from_tarball_bundle(channel):
-    with tempfile.NamedTemporaryFile(suffix=".tar.xz") as temp_tarball:
-        download_url = "https://webkitgtk.org/built-products/nightly/webkitgtk-nightly-build-last.tar.xz"
-        if not download_url_to_descriptor(temp_tarball, download_url):
-            raise RuntimeError("Can't download %s. Aborting" % download_url)
-        run(["sudo", "tar", "xfa", temp_tarball.name, "-C", "/"])
-    # Install dependencies
-    run(["sudo", "apt-get", "-qqy", "update"])
-    run(["sudo", "/opt/webkitgtk/nightly/install-dependencies"])
-
-
-def install_webkitgtk(channel):
-    if channel in ("experimental", "dev", "nightly"):
-        install_webkitgtk_from_tarball_bundle(channel)
-    elif channel in ("beta", "stable"):
-        install_webkitgtk_from_apt_repository(channel)
-    else:
-        raise ValueError("Unrecognized release channel: %s" % channel)
 
 def start_xvfb():
     start(["sudo", "Xvfb", os.environ["DISPLAY"], "-screen", "0",
@@ -246,7 +194,67 @@ def set_variables(event):
         os.environ["GITHUB_BRANCH"] = branch
 
 
+def task_url(task_id):
+    root_url = os.environ['TASKCLUSTER_ROOT_URL']
+    if root_url == 'https://taskcluster.net':
+        queue_base = "https://queue.taskcluster.net/v1/task"
+    else:
+        queue_base = root_url + "/api/queue/v1/task"
+
+    return "%s/%s" % (queue_base, task_id)
+
+
+def download_artifacts(artifacts):
+    artifact_list_by_task = {}
+    for artifact in artifacts:
+        base_url = task_url(artifact["task"])
+        if artifact["task"] not in artifact_list_by_task:
+            with tempfile.TemporaryFile() as f:
+                get_download_to_descriptor(f, base_url + "/artifacts")
+                f.seek(0)
+                artifacts_data = json.load(f)
+            artifact_list_by_task[artifact["task"]] = artifacts_data
+
+        artifacts_data = artifact_list_by_task[artifact["task"]]
+        print("DEBUG: Got artifacts %s" % artifacts_data)
+        found = False
+        for candidate in artifacts_data["artifacts"]:
+            print("DEBUG: candidate: %s glob: %s" % (candidate["name"], artifact["glob"]))
+            if fnmatch.fnmatch(candidate["name"], artifact["glob"]):
+                found = True
+                print("INFO: Fetching aritfact %s from task %s" % (candidate["name"], artifact["task"]))
+                file_name = candidate["name"].rsplit("/", 1)[1]
+                url = base_url + "/artifacts/" + candidate["name"]
+                dest_path = os.path.expanduser(os.path.join("~", artifact["dest"], file_name))
+                dest_dir = os.path.dirname(dest_path)
+                if not os.path.exists(dest_dir):
+                    os.makedirs(dest_dir)
+                with open(dest_path, "wb") as f:
+                    get_download_to_descriptor(f, url)
+
+                if artifact.get("extract"):
+                    unpack(dest_path)
+        if not found:
+            print("WARNING: No artifact found matching %s in task %s" % (artifact["glob"], artifact["task"]))
+
+
+def unpack(path):
+    dest = os.path.dirname(path)
+    if tarfile.is_tarfile(path):
+        run(["tar", "-xf", path], cwd=os.path.dirname(path))
+    elif zipfile.is_zipfile(path):
+        with zipfile.ZipFile(path) as archive:
+            archive.extractall(dest)
+    else:
+        print("ERROR: Don't know how to extract %s" % path)
+        raise Exception
+
+
 def setup_environment(args):
+    if "TASK_ARTIFACTS" in os.environ:
+        artifacts = json.loads(os.environ["TASK_ARTIFACTS"])
+        download_artifacts(artifacts)
+
     if args.hosts_file:
         make_hosts_file()
 
@@ -256,9 +264,8 @@ def setup_environment(args):
     if "chrome" in args.browser:
         assert args.channel is not None
         install_chrome(args.channel)
-    elif "webkitgtk_minibrowser" in args.browser:
-        assert args.channel is not None
-        install_webkitgtk(args.channel)
+        # Chrome is using dbus for various features.
+        start_dbus()
 
     if args.xvfb:
         start_xvfb()
@@ -364,16 +371,10 @@ def fetch_event_data():
         # For example under local testing
         return None
 
-    root_url = os.environ['TASKCLUSTER_ROOT_URL']
-    if root_url == 'https://taskcluster.net':
-        queue_base = "https://queue.taskcluster.net/v1/task"
-    else:
-        queue_base = root_url + "/api/queue/v1/task"
-
-
-    resp = urlopen("%s/%s" % (queue_base, task_id))
-
-    task_data = json.load(resp)
+    with tempfile.TemporaryFile() as f:
+        get_download_to_descriptor(f, task_url(task_id))
+        f.seek(0)
+        task_data = json.load(f)
     event_data = task_data.get("extra", {}).get("github_event")
     if event_data is not None:
         return json.loads(event_data)
@@ -407,7 +408,8 @@ def main():
     if event:
         set_variables(event)
 
-    setup_repository(args)
+    if args.setup_repository:
+        setup_repository(args)
 
     # Hack for backwards compatibility
     if args.script in ["run-all", "lint", "update_built", "tools_unittest",
@@ -428,4 +430,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main()  # type: ignore

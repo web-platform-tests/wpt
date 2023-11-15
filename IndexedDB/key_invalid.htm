@@ -9,7 +9,7 @@
 <!-- some additions by Baptiste Fontaine (batifon@yahoo.fr) -->
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=support.js></script>
+<script src=resources/support.js></script>
 
 <script>
     var db        = createdb_for_multiple_tests(),
@@ -32,13 +32,13 @@
         // set the current test, and run it
         db.setTest(t).onupgradeneeded = function(e) {
             objStore = objStore || e.target.result.createObjectStore("store");
-            assert_throws('DataError', function() {
+            assert_throws_dom('DataError', function() {
                 objStore.add("value", key);
             });
 
             if (is_cloneable(key)) {
                 objStore2 = objStore2 || e.target.result.createObjectStore("store2", { keyPath: ["x", "keypath"] });
-                assert_throws('DataError', function() {
+                assert_throws_dom('DataError', function() {
                     objStore2.add({ x: "value", keypath: key });
                 });
             }

@@ -1,10 +1,10 @@
-from __future__ import unicode_literals
+# mypy: allow-untyped-defs
 
 from ..lint import check_file_contents
 from .base import check_errors
+import io
 import os
 import pytest
-import six
 
 INTERESTING_FILE_NAMES = {
     "python": [
@@ -26,7 +26,7 @@ INTERESTING_FILE_NAMES = {
 
 def check_with_files(input_bytes):
     return {
-        filename: (check_file_contents("", filename, six.BytesIO(input_bytes)), kind)
+        filename: (check_file_contents("", filename, io.BytesIO(input_bytes)), kind)
         for (filename, kind) in
         (
             (os.path.join("html", filename), kind)
@@ -233,6 +233,16 @@ def test_no_missing_deps():
             assert errors == []
 
 
+def test_html_invalid_syntax():
+    error_map = check_with_files(b"<!doctype html><div/>")
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind == "web-lax":
+            assert errors == [("HTML INVALID SYNTAX", "Test-file line has a non-void HTML tag with /> syntax", filename, 1)]
+
+
 def test_meta_timeout():
     code = b"""
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -330,6 +340,33 @@ def test_multiple_testharnessreport():
         if kind in ["web-lax", "web-strict"]:
             assert errors == [
                 ("MULTIPLE-TESTHARNESSREPORT", "More than one `<script src='/resources/testharnessreport.js'>`", filename, None),
+            ]
+        elif kind == "python":
+            assert errors == [
+                ("PARSE-FAILED", "Unable to parse file", filename, 2),
+            ]
+
+
+def test_early_testdriver_vendor():
+    code = b"""
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind in ["web-lax", "web-strict"]:
+            assert errors == [
+                ("EARLY-TESTDRIVER-VENDOR",
+                    "Test file has an instance of "
+                    "`<script src='/resources/testdriver-vendor.js'>` "
+                    "prior to `<script src='/resources/testdriver.js'>`",
+                    filename,
+                    None),
             ]
         elif kind == "python":
             assert errors == [
@@ -515,16 +552,16 @@ def test_testdriver_vendor_path():
         check_errors(errors)
 
         if kind == "python":
-            expected = set([("PARSE-FAILED", "Unable to parse file", filename, 1)])
+            expected = {("PARSE-FAILED", "Unable to parse file", filename, 1)}
         elif kind in ["web-lax", "web-strict"]:
-            expected = set([
+            expected = {
                 ("MISSING-TESTDRIVER-VENDOR", "Missing `<script src='/resources/testdriver-vendor.js'>`", filename, None),
                 ("TESTDRIVER-VENDOR-PATH", "testdriver-vendor.js script seen with incorrect path", filename, None),
                 ("TESTDRIVER-VENDOR-PATH", "testdriver-vendor.js script seen with incorrect path", filename, None),
                 ("TESTDRIVER-VENDOR-PATH", "testdriver-vendor.js script seen with incorrect path", filename, None),
                 ("TESTDRIVER-VENDOR-PATH", "testdriver-vendor.js script seen with incorrect path", filename, None),
                 ("TESTDRIVER-VENDOR-PATH", "testdriver-vendor.js script seen with incorrect path", filename, None)
-            ])
+            }
         else:
             expected = set()
 
@@ -583,9 +620,8 @@ def test_variant_missing():
 # A corresponding "positive" test cannot be written because the manifest
 # SourceFile implementation raises a runtime exception for the condition this
 # linting rule describes
-@pytest.mark.parametrize("content", ["",
-                                     "?"
-                                     "#"])
+@pytest.mark.parametrize("content", ["?foo"
+                                     "#bar"])
 def test_variant_malformed_negative(content):
     code = """\
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -631,26 +667,6 @@ def test_late_timeout():
                     filename,
                     None)
             ]
-
-
-@pytest.mark.skipif(six.PY3, reason="Cannot parse print statements from python 3")
-def test_print_statement():
-    error_map = check_with_files(b"def foo():\n  print 'statement'\n  print\n")
-
-    for (filename, (errors, kind)) in error_map.items():
-        check_errors(errors)
-
-        if kind == "python":
-            assert errors == [
-                ("PRINT STATEMENT", "A server-side python support file contains a `print` statement", filename, 2),
-                ("PRINT STATEMENT", "A server-side python support file contains a `print` statement", filename, 3),
-            ]
-        elif kind == "web-strict":
-            assert errors == [
-                ("PARSE-FAILED", "Unable to parse file", filename, None),
-            ]
-        else:
-            assert errors == []
 
 
 def test_print_function():
@@ -731,7 +747,7 @@ def fifth():
 def test_open_mode():
     for method in ["open", "file"]:
         code = open_mode_code.format(method).encode("utf-8")
-        errors = check_file_contents("", "test.py", six.BytesIO(code))
+        errors = check_file_contents("", "test.py", io.BytesIO(code))
         check_errors(errors)
 
         message = ("File opened without providing an explicit mode (note: " +
@@ -743,27 +759,6 @@ def test_open_mode():
         ]
 
 
-@pytest.mark.parametrize(
-    "filename,expect_error",
-    [
-        ("foo/bar.html", False),
-        ("css/bar.html", True),
-    ])
-def test_css_support_file(filename, expect_error):
-    errors = check_file_contents("", filename, six.BytesIO(b""))
-    check_errors(errors)
-
-    if expect_error:
-        assert errors == [
-            ('SUPPORT-WRONG-DIR',
-             'Support file not in support directory',
-             filename,
-             None),
-        ]
-    else:
-        assert errors == []
-
-
 def test_css_missing_file_in_css():
     code = b"""\
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -771,7 +766,7 @@ def test_css_missing_file_in_css():
 <script src="/resources/testharnessreport.js"></script>
 </html>
 """
-    errors = check_file_contents("", "css/foo/bar.html", six.BytesIO(code))
+    errors = check_file_contents("", "css/foo/bar.html", io.BytesIO(code))
     check_errors(errors)
 
     assert errors == [
@@ -783,7 +778,7 @@ def test_css_missing_file_in_css():
 
 
 def test_css_missing_file_manual():
-    errors = check_file_contents("", "css/foo/bar-manual.html", six.BytesIO(b""))
+    errors = check_file_contents("", "css/foo/bar-manual.html", io.BytesIO(b""))
     check_errors(errors)
 
     assert errors == [
@@ -792,6 +787,20 @@ def test_css_missing_file_manual():
          "css/foo/bar-manual.html",
          None),
     ]
+
+
+def test_css_missing_file_tentative():
+    code = b"""\
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</html>
+"""
+
+    # The tentative flag covers tests that make assertions 'not yet required by
+    # any specification', so they need not have a specification link.
+    errors = check_file_contents("", "css/foo/bar.tentative.html", io.BytesIO(code))
+    assert not errors
 
 
 @pytest.mark.parametrize("filename", [
@@ -804,7 +813,7 @@ def test_css_missing_file_manual():
     (b"""// META: timeout=long\n""", None),
     (b"""//  META: timeout=long\n""", None),
     (b"""// META: script=foo.js\n""", None),
-    (b"""// META: variant=\n""", None),
+    (b"""// META: variant=\n""", (1, "MALFORMED-VARIANT")),
     (b"""// META: variant=?wss\n""", None),
     (b"""# META:\n""", None),
     (b"""\n// META: timeout=long\n""", (2, "STRAY-METADATA")),
@@ -818,7 +827,7 @@ def test_css_missing_file_manual():
     (b"""// META: timeout=bar\n""", (1, "UNKNOWN-TIMEOUT-METADATA")),
 ])
 def test_script_metadata(filename, input, error):
-    errors = check_file_contents("", filename, six.BytesIO(input))
+    errors = check_file_contents("", filename, io.BytesIO(input))
     check_errors(errors)
 
     if error is not None:
@@ -829,6 +838,9 @@ def test_script_metadata(filename, input, error):
             "BROKEN-METADATA": "Metadata comment is not formatted correctly",
             "UNKNOWN-TIMEOUT-METADATA": "Unexpected value for timeout metadata",
             "UNKNOWN-METADATA": "Unexpected kind of metadata",
+            "MALFORMED-VARIANT": (
+                f"{filename} `META: variant=...` value must be a non empty "
+                "string and start with '?' or '#'"),
         }
         assert errors == [
             (kind,
@@ -842,24 +854,24 @@ def test_script_metadata(filename, input, error):
 
 @pytest.mark.parametrize("globals,error", [
     (b"", None),
-    (b"default", None),
-    (b"!default", None),
+    (b"default", "UNKNOWN-GLOBAL-METADATA"),
+    (b"!default", "UNKNOWN-GLOBAL-METADATA"),
     (b"window", None),
-    (b"!window", None),
-    (b"!dedicatedworker", None),
-    (b"window, !window", "BROKEN-GLOBAL-METADATA"),
-    (b"!serviceworker", "BROKEN-GLOBAL-METADATA"),
-    (b"serviceworker, !serviceworker", "BROKEN-GLOBAL-METADATA"),
-    (b"worker, !dedicatedworker", None),
-    (b"worker, !serviceworker", None),
-    (b"!worker", None),
+    (b"!window", "UNKNOWN-GLOBAL-METADATA"),
+    (b"!dedicatedworker", "UNKNOWN-GLOBAL-METADATA"),
+    (b"window, !window", "UNKNOWN-GLOBAL-METADATA"),
+    (b"!serviceworker", "UNKNOWN-GLOBAL-METADATA"),
+    (b"serviceworker, !serviceworker", "UNKNOWN-GLOBAL-METADATA"),
+    (b"worker, !dedicatedworker", "UNKNOWN-GLOBAL-METADATA"),
+    (b"worker, !serviceworker", "UNKNOWN-GLOBAL-METADATA"),
+    (b"!worker", "UNKNOWN-GLOBAL-METADATA"),
     (b"foo", "UNKNOWN-GLOBAL-METADATA"),
     (b"!foo", "UNKNOWN-GLOBAL-METADATA"),
 ])
 def test_script_globals_metadata(globals, error):
     filename = "foo.any.js"
     input = b"""// META: global=%s\n""" % globals
-    errors = check_file_contents("", filename, six.BytesIO(input))
+    errors = check_file_contents("", filename, io.BytesIO(input))
     check_errors(errors)
 
     if error is not None:
@@ -890,7 +902,7 @@ def test_script_globals_metadata(globals, error):
 ])
 def test_python_metadata(input, error):
     filename = "test.py"
-    errors = check_file_contents("", filename, six.BytesIO(input))
+    errors = check_file_contents("", filename, io.BytesIO(input))
     check_errors(errors)
 
     if error is not None:

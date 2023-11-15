@@ -17,7 +17,7 @@ const IframeLoad = {
 
 function getOrigin() {
   var url = new URL("http://{{host}}:{{ports[http][0]}}/");
-  return url.toString();
+  return url.origin;
 }
 
 function getCrossOrigin() {
@@ -102,14 +102,16 @@ function assert_required_csp(t, url, csp, expected) {
   document.body.appendChild(i);
 }
 
-function assert_iframe_with_csp(t, url, csp, shouldBlock, urlId, blockedURI) {
-  var i = document.createElement('iframe');
+function assert_iframe_with_csp(t, url, csp, shouldBlock, urlId, blockedURI,
+                                checkImageLoaded) {
+  const i = document.createElement('iframe');
   url.searchParams.append("id", urlId);
   i.src = url.toString();
   if (csp != null)
     i.csp = csp;
 
   var loaded = {};
+  var onLoadReceived = {};
   window.addEventListener("message", function (e) {
     if (e.source != i.contentWindow)
         return;
@@ -129,7 +131,7 @@ function assert_iframe_with_csp(t, url, csp, shouldBlock, urlId, blockedURI) {
       setTimeout(t.step_func_done(function () {
         assert_equals(loaded[urlId], undefined);
       }), 500);
-      assert_throws("SecurityError", () => {
+      assert_throws_dom("SecurityError", () => {
         var x = i.contentWindow.location.href;
       });
     });
@@ -138,22 +140,30 @@ function assert_iframe_with_csp(t, url, csp, shouldBlock, urlId, blockedURI) {
     window.addEventListener('message', t.step_func(e => {
       if (e.source != i.contentWindow)
         return;
+      if (!e.data.securitypolicyviolation)
+        return;
       assert_equals(e.data["blockedURI"], blockedURI);
       t.done();
     }));
   } else {
-    // Assert iframe loads.  Wait for both the load event and the postMessage.
+    // Assert iframe loads.  Wait for the load event, the postMessage from the
+    // script and the img load event.
+    let img_loaded = !checkImageLoaded;
     window.addEventListener('message', t.step_func(e => {
       if (e.source != i.contentWindow)
         return;
-      assert_true(loaded[urlId]);
-      if (i.onloadReceived)
+      if (e.data === "img loaded")
+        img_loaded = true;
+
+      if (loaded[urlId] && onLoadReceived[urlId] && img_loaded) {
         t.done();
+      }
     }));
     i.onload = t.step_func(function () {
-      if (loaded[urlId])
+      onLoadReceived[urlId] = true;
+      if (loaded[urlId] && onLoadReceived[urlId] && img_loaded) {
         t.done();
-      i.onloadReceived = true;
+      }
     });
   }
   document.body.appendChild(i);

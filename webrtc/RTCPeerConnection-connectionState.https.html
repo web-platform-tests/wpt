@@ -276,8 +276,8 @@
   async function exchangeOfferAnswerUnbundled(caller, callee) {
     const offer = await caller.createOffer();
     const sdp = offer.sdp.replace('BUNDLE', 'SOMETHING')
-	  .replace(/rtp-hdrext:sdes/g, 'rtp-hdrext:something')
-	  .replace(/a=ssrc:/g, 'a=notssrc');
+          .replace(/rtp-hdrext:sdes/g, 'rtp-hdrext:something')
+          .replace(/a=ssrc:/g, 'a=notssrc');
     await caller.setLocalDescription(offer);
     await callee.setRemoteDescription({type: 'offer', sdp});
 
@@ -302,7 +302,7 @@
     const onConnectionStateChange = t.step_func(() => {
       const {connectionState, iceConnectionState} = pc1;
       if (connectionState === 'connecting') {
-	had_intermediary_connecting = true;
+        had_intermediary_connecting = true;
       }
     });
 

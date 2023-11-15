@@ -670,7 +670,7 @@ def check_web_feature_metadata(repo_root: Text, path: Text, f: IO[bytes]) -> Lis
     try:
         web_feature_file = load_web_feature_file(f)
     except Exception as e:
-        return [rules.InvalidWebFeatureFile.error(path, (str(e)))]
+        return [rules.InvalidWebFeaturesFile.error(path, (str(e)))]
     errors = []
     for feature in web_feature_file.features:
         if isinstance(feature.files, SpecialFileEnum):
@@ -680,7 +680,7 @@ def check_web_feature_metadata(repo_root: Text, path: Text, f: IO[bytes]) -> Lis
             for file in feature.files:
                 test_file_path = os.path.join(base_dir, file)
                 if not os.path.isfile(test_file_path):
-                    errors.append(rules.MissingTestInWebFeatureFile.error(path, file))
+                    errors.append(rules.MissingTestInWebFeaturesFile.error(path, file))
 
     return errors
 

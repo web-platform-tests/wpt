@@ -305,7 +305,6 @@ class SourceFile:
                 self.filename.startswith(".") or
                 self.filename.endswith(".headers") or
                 self.filename.endswith(".ini") or
-                self.filename == "WEB_FEATURES.yml" or
                 self.in_non_test_dir())
 
     @property

@@ -86,13 +86,13 @@ class AhemSystemFont(Rule):
     name = "AHEM SYSTEM FONT"
     description = "Don't use Ahem as a system font, use /fonts/ahem.css"
 
-class InvalidWebFeatureFile(Rule):
+class InvalidWebFeaturesFile(Rule):
     name = "INVALID WEB_FEATURES FILE"
     description = collapse("""
         The WEB_FEATURES.yml file contains an invalid structure: '%s'
     """)
 
-class MissingTestInWebFeatureFile(Rule):
+class MissingTestInWebFeaturesFile(Rule):
     name = "MISSING WEB_FEATURES FILE"
     description = collapse("""
         The WEB_FEATURES.yml file references a test that does not exist: '%s'

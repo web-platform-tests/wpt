@@ -99,7 +99,7 @@ async def cleanup_bidi_session(session):
         # List of top-level browsing contexts.
         top_contexts = [c["context"] for c in command_result["contexts"]]
 
-        # If classic session has a window handle, and if it is still open, keep it open.
+        # If classic session has a window handle, and if it is a top level and it is still open, keep it open.
         # Otherwise, keep open the first browsing context.
         if session.window_handle is not None \
                 and session.window_handle in top_contexts:

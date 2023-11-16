@@ -199,7 +199,7 @@ class BrowsingContext(BidiModule):
         if viewport is not UNDEFINED:
             params["viewport"] = viewport
 
-        if device_pixel_ratio != UNDEFINED:
+        if device_pixel_ratio is not UNDEFINED:
             params["devicePixelRatio"] = device_pixel_ratio
 
         return params

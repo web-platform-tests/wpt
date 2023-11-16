@@ -5,6 +5,7 @@
 <link rel="help" href="https://github.com/whatwg/dom/issues/831">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/helpers.js"></script>
 
 <div id="host" style="display:none">
   <template shadowrootmode="open">
@@ -56,7 +57,7 @@ test(() => {
 
 test(() => {
   const div = document.createElement('div');
-  div.setHTMLUnsafe(`
+  setInnerHTML(div,`
     <div id="host">
       <template shadowrootmode="open">
         <slot id="s1" name="slot1"></slot>
@@ -77,7 +78,7 @@ test(() => {
 
 test(() => {
   const div = document.createElement('div');
-  div.setHTMLUnsafe(`
+  setInnerHTML(div,`
     <div id="host">
       <template shadowrootmode="invalid">
       </template>
@@ -93,7 +94,7 @@ test(() => {
 
 test(() => {
   const div = document.createElement('div');
-  div.setHTMLUnsafe(`
+  setInnerHTML(div,`
     <div id="host">
       <template shadowrootmode="closed">
       </template>
@@ -106,7 +107,7 @@ test(() => {
 
 test(() => {
   const div = document.createElement('div');
-  div.setHTMLUnsafe(`
+  setInnerHTML(div,`
     <div id="host">
       <template shadowrootmode="open">
         <slot id="s1" name="slot1"></slot>
@@ -122,7 +123,7 @@ test(() => {
 
 test(() => {
   const div = document.createElement('div');
-  div.setHTMLUnsafe(`
+  setInnerHTML(div,`
     <div id="host">
       <template shadowrootmode="open" shadowrootdelegatesfocus>
       </template>
@@ -131,7 +132,7 @@ test(() => {
   var host = div.querySelector('#host');
   assert_true(!!host.shadowRoot,"No shadow root found");
   assert_true(host.shadowRoot.delegatesFocus,"delegatesFocus should be true");
-  div.setHTMLUnsafe(`
+  setInnerHTML(div,`
     <div id="host">
       <template shadowrootmode="open">
       </template>

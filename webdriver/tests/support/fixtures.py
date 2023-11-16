@@ -227,8 +227,12 @@ async def bidi_session(capabilities, configuration):
 
     yield _current_session.bidi_session
 
+    # Clean up what is possible via BiDi.
     await cleanup_bidi_session(_current_session)
     await _current_session.bidi_session.end()
+
+    # Clean up everything else via Classic.
+    cleanup_session(_current_session)
 
 
 @pytest.fixture(scope="function")

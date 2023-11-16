@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+  <title>SVG-AAM Generic Role Verification Tests</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+</head>
+<body>
+
+
+<p>Tests ONLY the default <code>generic</code> mappings defined in <a href="https://w3c.github.io/svg-aam/#include_elements">SVG-AAM: 5.1.2 Including Elements in the Accessibility Tree</a>.<p>
+
+<h2>Simple Elements</h2>
+<!-- Note: adding an inoccuous label, tabindex, or some other accessible marker may cause the computedrole result to change. -->
+<svg>
+  <!-- Some elements are skipped: unrendered elements return unpredicable (and undefined/unspecific) return values for `computedrole` between different engines. -->
+  <circle data-testname="el-circle" class="ex-generic"></circle>
+  <ellipse data-testname="el-ellipse" class="ex-generic"></ellipse>
+  <foreignObject data-testname="el-" class="ex-generic"></foreignObject>
+  <g data-testname="el-g" class="ex-generic"></g>
+  <image data-testname="el-image" class="ex-generic"></image><!-- [sic] spec says unlabeled, unrendered images are generic -->
+  <line data-testname="el-line" class="ex-generic"></line>
+  <!-- mesh skipped -->
+  <path data-testname="el-path" class="ex-generic"></path>
+  <polygon data-testname="el-polygon" class="ex-generic"></polygon>
+  <polyline data-testname="el-polyline" class="ex-generic"></polyline>
+  <rect data-testname="el-rect" class="ex-generic"></rect>
+  <!-- textPath skipped -->
+  <!-- tspan skipped -->
+  <!-- use skipped -->
+</svg>
+
+<script>
+AriaUtils.verifyGenericRolesBySelector(".ex-generic");
+</script>
+
+</body>
+</html>

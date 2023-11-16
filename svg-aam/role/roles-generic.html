@@ -17,12 +17,16 @@
 <h2>Simple Elements</h2>
 <!-- Note: adding an inoccuous label, tabindex, or some other accessible marker may cause the computedrole result to change. -->
 <svg>
-  <!-- Some elements are skipped: unrendered elements return unpredicable (and undefined/unspecific) return values for `computedrole` between different engines. -->
+  <!-- Some elements skipped: never-rendered elements can return unpredicable/undefined/unspecified values for computedrole. -->
   <circle data-testname="el-circle" class="ex-generic"></circle>
   <ellipse data-testname="el-ellipse" class="ex-generic"></ellipse>
   <foreignObject data-testname="el-" class="ex-generic"></foreignObject>
   <g data-testname="el-g" class="ex-generic"></g>
-  <image data-testname="el-image" class="ex-generic"></image><!-- [sic] spec says unlabeled, unrendered images are generic -->
+  
+  <!-- [sic] included here b/c the spec says unlabeled, unrendered images are generic, but the spec is wrong. -->
+  <!-- Once https://github.com/w3c/svg-aam/issues/32 is resolved, this test can be moved to another file. -->
+  <image data-testname="el-image" data-expectedrole="image" class="ex"></image>
+
   <line data-testname="el-line" class="ex-generic"></line>
   <!-- mesh skipped -->
   <path data-testname="el-path" class="ex-generic"></path>
@@ -36,6 +40,7 @@
 
 <script>
 AriaUtils.verifyGenericRolesBySelector(".ex-generic");
+AriaUtils.verifyRolesBySelector(".ex");
 </script>
 
 </body>

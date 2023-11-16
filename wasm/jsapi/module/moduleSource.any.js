@@ -15,7 +15,7 @@ test(() => {
 }, "AbstractModuleSource intrinsic");
 
 test(() => {
-  const AbstractModuleSourceProto = Object.getPrototypeOf(WebAssembly.Module.prototype).constructor;
+  const AbstractModuleSourceProto = Object.getPrototypeOf(WebAssembly.Module.prototype);
   assert_not_equals(AbstractModuleSourceProto, Object);
 }, "AbstractModuleSourceProto intrinsic");
 

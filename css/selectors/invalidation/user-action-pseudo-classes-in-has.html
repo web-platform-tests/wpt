@@ -65,6 +65,7 @@
 
     await new test_driver
       .Actions()
+      .pointerMove(hovermeRect.x + 1, hovermeRect.y + 1, {origin: "viewport"})
       .pointerUp()
       .send();
     assert_equals(getComputedStyle(subject1).color, "rgb(0, 0, 255)",

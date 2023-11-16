@@ -17,7 +17,8 @@
 <h2>Simple Elements With aria-label to Ensure Tree Inclusion</h2>
 <svg>
   <!-- Some elements skipped: never-rendered elements can return unpredicable/undefined/unspecified values for computedrole. -->
-  <a href="#" data-testname="el-a[href]" data-expectedrole="link" aria-label="label" class="ex"></a>
+  <a href="#" data-testname="el-a[href]" data-expectedrole="link" aria-label="label" class="ex">x</a>
+  <a xlink:href="#" data-testname="el-a[xlink:href]" data-expectedrole="link" aria-label="label" class="ex">x</a>
   <!-- skipped: animate -->
   <!-- skipped: animateMotion -->
   <!-- skipped: animateTransform -->

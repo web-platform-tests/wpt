@@ -23,8 +23,9 @@
             img.addEventListener('error', resolve);
             document.body.appendChild(img);
         });
+
+        window.opener.postMessage('DONE', '*');
     });
 </script>
 </body>
 </html>
-

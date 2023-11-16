@@ -19,8 +19,7 @@ def retrieve_from_stash(request, key, timeout, default_value, min_count=None, re
   or before at least min_count reports are received, default_value will be
   returned instead."""
   t0 = time.time()
-  while time.time() - t0 < timeout:
-    time.sleep(0.5)
+  while True:
     with request.server.stash.lock:
       value = request.server.stash.take(key=key)
       if value is not None:
@@ -30,6 +29,9 @@ def retrieve_from_stash(request, key, timeout, default_value, min_count=None, re
           request.server.stash.put(key=key, value=value)
         if have_sufficient_reports:
           return json.dumps(value)
+    if time.time() - t0 + 0.5 > timeout:
+      break
+    time.sleep(0.5)
 
   return default_value
 
@@ -76,7 +78,7 @@ def main(request, response):
     try:
       timeout = float(request.GET.first(b"timeout"))
     except:
-      timeout = 0.5
+      timeout = 0
     try:
       min_count = int(request.GET.first(b"min_count"))
     except:

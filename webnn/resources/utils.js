@@ -17,7 +17,7 @@ const TypedArrayDict = {
 const getTypedArrayData = (type, data) => {
   let outData;
   if (type === 'float16') {
-    // workaround to convert Float16 to Unit16
+    // workaround to convert Float16 to Uint16
     outData = new TypedArrayDict[type](data.length);
     for (let i = 0; i < data.length; i++) {
       outData[i] = toHalf(data[i]);
@@ -694,7 +694,7 @@ const toHalf = (value) => {
 
   /* This method is faster than the OpenEXR implementation (very often
    * used, eg. in Ogre), with the additional benefit of rounding, inspired
-   * by James Tursa?s half-precision code. */
+   * by James Tursa's half-precision code. */
 
   floatView[0] = value;
   let x = int32View[0];

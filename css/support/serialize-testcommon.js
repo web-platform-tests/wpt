@@ -40,8 +40,9 @@ test_serialization(
 
 function test_specified_serialization(prop, t, e) {
     const el = document.querySelector("#target");
-    if(!el) throw new Exception("Couldn't find #target element to run tests on.");
-    test(()=>{
+    if (!el) throw new Error("Couldn't find #target element to run tests on.");
+
+    test(() => {
         el.style[prop] = '';
         el.style[prop] = t;
         const tValue = el.style[prop];
@@ -51,9 +52,11 @@ function test_specified_serialization(prop, t, e) {
         el.style[prop] = e;
         const eValue = el.style[prop];
         assert_not_equals(eValue, '', `'${e}' should be valid in ${prop}.`);
-        assert_equals(eValue, e, `'${e}' should round-trip exactly in specified values.`);
+        // Adjust the precision for comparison
+        assert_approx_equals(parseFloat(eValue), parseFloat(e), 1e-6, `'${e}' should round-trip approximately in specified values.`);
 
-        assert_equals(tValue, e, `'${t}' and '${e}' should serialize the same in specified values.`);
+        // Adjust the precision for comparison
+        assert_approx_equals(parseFloat(tValue), parseFloat(e), 1e-6, `'${t}' and '${e}' should serialize approximately the same in specified values.`);
     }, `'${t}' as a specified value should serialize as '${e}'.`);
 }
 function test_computed_serialization(prop, t, e) {

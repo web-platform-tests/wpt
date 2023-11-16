@@ -868,7 +868,7 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(**kwargs: Any) -> int:
+def main(*args: Any, **kwargs: Any) -> int:
 
     assert logger is not None
     if kwargs.get("json") and kwargs.get("markdown"):

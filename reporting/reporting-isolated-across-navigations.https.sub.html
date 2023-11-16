@@ -14,8 +14,10 @@ promise_test(async t => {
   // those from the second, or sent to its endpoint.
   const csp1_uuid = "112868aa-4b59-57c7-a388-db909ef24295";
   const csp2_uuid = "612bf2ee-b9b8-5f8d-a239-0981c6ff057e";
-  const reports1 = await pollReports('/reporting/resources/report.py', csp1_uuid);
-  const reports2 = await pollReports('/reporting/resources/report.py', csp2_uuid);
+  const reports1 = await pollReports('/reporting/resources/report.py',
+                                     csp1_uuid, {min_count: 2, timeout: 5});
+  const reports2 = await pollReports('/reporting/resources/report.py',
+                                     csp2_uuid, {timeout: 5});
 
   const url_prefix = "https://{{location[host]}}/reporting/resources/";
 

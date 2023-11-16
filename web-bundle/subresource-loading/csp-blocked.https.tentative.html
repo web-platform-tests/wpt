@@ -11,6 +11,7 @@
       urn:
       https://web-platform.test:8444/resources/testharness.js
       https://web-platform.test:8444/resources/testharnessreport.js
+      https://web-platform.test:8444/reporting/resources/report-helper.js
       'unsafe-inline';
     img-src
       https://web-platform.test:8444/web-bundle/resources/wbn/subresource.wbn;
@@ -19,6 +20,7 @@
 />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/reporting/resources/report-helper.js"></script>
 <body>
   <script type="webbundle">
     {
@@ -108,10 +110,9 @@
     }
 
     promise_test(async () => {
-      const retrieve_report_url =
-        "/reporting/resources/report.py?op=retrieve_report&timeout=3&reportID=" +
-        getReportID();
-      const reports = await (await fetch(retrieve_report_url)).json();
+      const reports = await pollReports(
+        "/reporting/resources/report.py", getReportID(),
+        {min_count: 2, timeout: 3});
       sortReportsByEffectiveDirective(reports);
 
       assert_equals(reports.length, 2, "Report count.");

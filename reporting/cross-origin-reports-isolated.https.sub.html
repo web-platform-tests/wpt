@@ -33,7 +33,7 @@
       });
 
       // Wait for 2 reports to be received.
-      const reports = await pollReports(endpoint, id, 2);
+      const reports = await pollReports(endpoint, id, 2, {timeout: 5});
       assert_equals(reports.length, 2);
 
       // Validate that reports were sent in separate requests.

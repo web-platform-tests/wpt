@@ -2,8 +2,15 @@ function wait(ms) {
   return new Promise(resolve => step_timeout(resolve, ms));
 }
 
-async function pollReports(endpoint, id, min_count) {
-  const res = await fetch(`${endpoint}?reportID=${id}${min_count ? `&min_count=${min_count}` : ''}`, { cache: 'no-store' });
+async function pollReports(endpoint, id, {min_count, timeout, retain_reports}) {
+  let params = {};
+  if (id) params.reportID = id;
+  if (min_count) params.min_count = min_count;
+  if (timeout) params.timeout = timeout;
+  if (retain_reports) params.retain = 1;
+  params = new URLSearchParams(params);
+  const res = await fetch(`${endpoint}?${params.toString()}`,
+                          { cache: 'no-store' });
   const reports = [];
   if (res.status === 200) {
     for (const report of await res.json()) {

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 
-<head>
+2<head>
   <title>Test that Reporting-Endpoints header endpoint with same name override previous value</title>
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
@@ -26,12 +26,11 @@
     const first_group1_id = 'b523d7f5-28f0-4be6-9460-e163ee9b4ab8';
     const second_group1_id = '03e4474d-768c-42f2-8e17-39aa95b309e3';
     promise_test(async t => {
-      await wait(3000);
       // Verify that no reports are sent to old header endpoint.
-      let reports = await pollReports(endpoint, first_group1_id);
+      let reports = await pollReports(endpoint, first_group1_id, {timeout: 5});
       assert_equals(reports.length, 0);
       // Verify that reports are sent to the new header endpoint.
-      reports = await pollReports(endpoint, second_group1_id);
+      reports = await pollReports(endpoint, second_group1_id, {timeout: 5});
       checkReportExists(reports, 'document-policy-violation', location.href);
     }, "Only the second reporting endpoint received reports.");
   </script>

@@ -43,7 +43,7 @@
     }, "Generate Test Report");
 
     promise_test(async t => {
-      const reports = await pollReports(endpoint, id);
+      const reports = await pollReports(endpoint, id, {timeout: 5});
       checkReportIsValid(reports, 'test', location.href);
     }, "Reporting-Endpoints target received the test report.");
 </script>

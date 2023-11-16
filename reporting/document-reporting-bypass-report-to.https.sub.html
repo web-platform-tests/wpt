@@ -26,12 +26,12 @@
       const report_to_id = 'caddb022-90ea-48e8-a675-4cebaf7e8388';
     const reporting_endpoints_id = '6c2131d0-1e9b-4ee8-a196-952f2ae4ae97';
     promise_test(async t => {
-      await wait(3000);
       // Verify no reports sent to Report-To endpoint
-      let reports = await pollReports(endpoint, report_to_id);
+      let reports = await pollReports(endpoint, report_to_id, {timeout: 3});
       assert_equals(reports.length, 0);
       // Verify report is received on Reporting-Endpoints endpoint
-      reports = await pollReports(endpoint, reporting_endpoints_id);
+      reports = await pollReports(endpoint, reporting_endpoints_id,
+                                  {min_count: 1, timeout: 3});
       checkReportExists(reports, 'document-policy-violation', location.href);
     }, "Only the Reporting-Endpoints configured endpoint received reports.");
   </script>

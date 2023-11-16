@@ -1,5 +1,6 @@
 importScripts("{{location[server]}}/resources/testharness.js");
 importScripts("{{location[server]}}/content-security-policy/support/testharness-helper.js");
+importScripts("{{location[server]}}/reporting/resources/report-helper.js");
 
 let base_same_origin_url =
       "{{location[server]}}/content-security-policy/support/resource.py";
@@ -113,15 +114,10 @@ let expected_blocked_urls = self.XMLHttpRequest
     : [ fetch_cross_origin_url, redirect_url, websocket_url ];
 
 promise_test(async t => {
-  let report_url = `{{location[server]}}/reporting/resources/report.py` +
-      `?op=retrieve_report&reportID={{GET[id]}}` +
-      `&min_count=${expected_blocked_urls.length}`;
-
-  let response = await fetch(report_url);
-  assert_equals(response.status, 200, "Fetching reports failed");
-
-  let response_json = await response.json();
-  let reports = response_json.map(x => x["csp-report"]);
+  let response = await pollReports(
+      `{{location[server]}}/reporting/resources/report.py`, "{{GET[id]}}",
+      {min_count: expected_blocked_urls.length, timeout: 5});
+  let reports = response.map(x => x["csp-report"]);
 
   assert_array_equals(
       reports.map(x => x["blocked-uri"]).sort(),

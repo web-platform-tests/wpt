@@ -12,7 +12,7 @@
 <body>
 
 
-<p>Tests ONLY the default <code>generic</code> mappings defined in <a href="https://w3c.github.io/svg-aam/#include_elements">SVG-AAM: 5.1.2 Including Elements in the Accessibility Tree</a>.<p>
+<p>Tests ONLY the default <code>generic</code> mappings defined in <a href="https://w3c.github.io/svg-aam/#include_elements">SVG-AAM: 5.1.2 Including Elements in the Accessibility Tree</a>.</p>
 
 <h2>Simple Elements</h2>
 <!-- Note: adding an inoccuous label, tabindex, or some other accessible marker may cause the computedrole result to change. -->
@@ -22,7 +22,7 @@
   <ellipse data-testname="el-ellipse" class="ex-generic"></ellipse>
   <foreignObject data-testname="el-foreignObject" class="ex-generic"></foreignObject>
   <g data-testname="el-g" class="ex-generic"></g>
-  
+
   <!-- [sic] included here b/c the spec says unlabeled, unrendered images are generic, but the spec is wrong. -->
   <!-- Once https://github.com/w3c/svg-aam/issues/32 is resolved, this test can be moved to another file. -->
   <image data-testname="el-image" data-expectedrole="image" class="ex"></image>

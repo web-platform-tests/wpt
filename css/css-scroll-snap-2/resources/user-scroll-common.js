@@ -64,3 +64,7 @@ async function test_no_snap_event(test, scroller, delta, event_type) {
 async function test_no_snapchanged(t, scroller, delta) {
   await test_no_snap_event(t, scroller, delta, "snapchanged");
 }
+
+async function test_no_snapchanging(t, scroller, delta) {
+  await test_no_snap_event(t, scroller, delta, "snapchanging");
+}

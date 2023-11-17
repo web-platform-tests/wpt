@@ -44,8 +44,10 @@ pressure_test(async (t, mockPressureService) => {
     // at least bigger or equal to the minimum penalty time specified.
     if ((changes[i + 1][0].time - changes[i][0].time) >= minPenaltyTimeInMs) {
       gotPenalty = true;
+      console.log("got Penalty: " + (changes[i + 1][0].time - changes[i][0].time));
       break;
     }
+    console.log("sample: " + i);
   }
   assert_true(gotPenalty);
 }, 'Rate obfuscation mitigation should have been triggered, when changes is higher than minimum changes before penalty');

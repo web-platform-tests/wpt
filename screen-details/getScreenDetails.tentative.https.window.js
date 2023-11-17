@@ -33,7 +33,7 @@ promise_test(async t => {
   let iframeGetScreens;
   let constructor;
   await new Promise(resolve => {
-    iframe.contentWindow.onunload = () => {
+    iframe.contentWindow.onpagehide = () => {
       // Grab these before the contentWindow is removed.
       iframeGetScreens = iframe.contentWindow.getScreenDetails;
       constructor = iframe.contentWindow.DOMException;

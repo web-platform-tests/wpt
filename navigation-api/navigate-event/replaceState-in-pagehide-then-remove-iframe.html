@@ -5,12 +5,12 @@
 <script>
 async_test(t => {
   window.onload = t.step_func(() => {
-    i.contentWindow.onunload = t.step_func(() => {
+    i.contentWindow.onpagehide = t.step_func(() => {
       i.contentWindow.history.replaceState(null, "", "#");
       i.remove();
       t.step_timeout(t.step_func_done(), 0);
     });
     i.contentWindow.location = "/common/blank.html?1";
   });
-}, "reacting to the navigate event doesn't crash when replaceState is called in onunload");
+}, "reacting to the navigate event doesn't crash when replaceState is called in onpagehide");
 </script>

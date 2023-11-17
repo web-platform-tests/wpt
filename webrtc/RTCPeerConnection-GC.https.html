@@ -21,7 +21,7 @@ promise_test(async t => {
   ctx.fillStyle = "blue";
   const drawCanvas = () => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    setTimeout(drawCanvas, 50);
+    t.step_timeout(drawCanvas, 50);
   };
 
   drawCanvas();
@@ -47,7 +47,7 @@ promise_test(async t => {
       }
       await Promise.race([
         resizeEvent,
-        new Promise(r => setTimeout(r, 50)),
+        new Promise(r => t.step_timeout(r, 50)),
       ]);
     }
   };

@@ -6,7 +6,7 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <body>
-	<x-shadow id="withoutFocus"></x-shadow>
+    <x-shadow id="withoutFocus"></x-shadow>
     <x-shadow id="withFocus"></x-shadow>
 </body>
 
@@ -17,13 +17,13 @@
  * build shadow-root with delegates focus, a focusable element, and an (ideally) selectable text
  */
 function buildShadowRootWithSelectableText( element, shouldDelegateFocus ) {
-	element.attachShadow({ mode: 'open', delegatesFocus: shouldDelegateFocus });
-	const span = document.createElement('span');
-	span.textContent = 'Example Text to Select ';
-	const button = document.createElement('button');
-	button.textContent = 'Button';
-	element.shadowRoot.append(span);
-	element.shadowRoot.append(button);
+    element.attachShadow({ mode: 'open', delegatesFocus: shouldDelegateFocus });
+    const span = document.createElement('span');
+    span.textContent = 'Example Text to Select ';
+    const button = document.createElement('button');
+    button.textContent = 'Button';
+    element.shadowRoot.append(span);
+    element.shadowRoot.append(button);
 }
 
 /**
@@ -40,10 +40,10 @@ function selectText(element, start, end) {
 }
 
 promise_test(async () => {
-	const xShadow = document.getElementById('withoutFocus');
+    const xShadow = document.getElementById('withoutFocus');
     buildShadowRootWithSelectableText(xShadow, false);
     await selectText(xShadow, -40, 45)
-	const s = getSelection();
+    const s = getSelection();
     assert_equals(s.toString(), "Text to Select", "toString");
 }, 'shadow root has selectable text when focus is not delegated');
 
@@ -51,7 +51,7 @@ promise_test(async () => {
     const xShadow = document.getElementById('withFocus');
     buildShadowRootWithSelectableText(xShadow, true);
     await selectText(xShadow, -40, 45)
-	const s = getSelection();
+    const s = getSelection();
     assert_equals(s.toString(), "Text to Select", "toString");
 }, 'shadow root has selectable text when focus is delegated');
 

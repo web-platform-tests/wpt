@@ -1,19 +1,7 @@
 <!DOCTYPE html>
-<html class="reftest-wait">
 <meta charset="utf-8">
 <title>PNG Third Edition: animated PNG, plays</title>
-<link rel="author" title="Philip Taylor" href="mailto:excors@gmail.com">
 <link rel="author" title="Chris Lilley" href="mailto:chris@w3.org">
-<link rel="help" href="https://www.w3.org/TR/png-3/#apng-frame-based-animation">
-<link rel="help" href="https://www.w3.org/TR/png-3/#fcTL-chunk">
-<link rel="match" href="apng-blue-rectangle-one-ref.html">
-<meta name="assert" content="num_plays indicates the number of times that this animation should play. If nonzero, the animation should come to rest on the final frame at the end of the last play.">
-<script>
-    const el = document.querySelector(".reftest-wait");
-    setTimeout(() => {
-        el.classList.remove('reftest-wait');
-        }, 3000);
-</script>
 <style>
     .test {
         width: 128px;
@@ -30,5 +18,5 @@
 </style>
 <body>
     <p>Test passes if this flashes yellow for one second, then stays blue forever</p>
-    <div class="test"><img src="support/031.png" alt=""></div>
+    <div class="test"><img src="support/blue.png" alt=""></div>
 </body>

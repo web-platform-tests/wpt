@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <title>CSS Animation using progress based timeline</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
 <link rel="help" src="https://drafts.csswg.org/css-animations-2/#animation-timeline">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -20,18 +21,18 @@
   }
 
   #scroller1 {
-    scroll-timeline: top_timeline;
+    scroll-timeline: --top_timeline;
   }
 
   #element {
     animation-name: top;
     animation-duration: 10s;
     animation-timing-function: linear;
-    animation-timeline: top_timeline;
+    animation-timeline: --top_timeline;
     position: absolute;
   }
   /* Ensure stable expectations if feature is not supported */
-  @supports not (animation-timeline:foo) {
+  @supports not (animation-timeline:--foo) {
     #element { animation-play-state: paused; }
   }
 </style>

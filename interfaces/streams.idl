@@ -7,6 +7,8 @@
 interface ReadableStream {
   constructor(optional object underlyingSource, optional QueuingStrategy strategy = {});
 
+  static ReadableStream from(any asyncIterable);
+
   readonly attribute boolean locked;
 
   Promise<undefined> cancel(optional any reason);
@@ -172,6 +174,7 @@ dictionary Transformer {
   TransformerStartCallback start;
   TransformerTransformCallback transform;
   TransformerFlushCallback flush;
+  TransformerCancelCallback cancel;
   any readableType;
   any writableType;
 };
@@ -179,6 +182,7 @@ dictionary Transformer {
 callback TransformerStartCallback = any (TransformStreamDefaultController controller);
 callback TransformerFlushCallback = Promise<undefined> (TransformStreamDefaultController controller);
 callback TransformerTransformCallback = Promise<undefined> (any chunk, TransformStreamDefaultController controller);
+callback TransformerCancelCallback = Promise<undefined> (any reason);
 
 [Exposed=*]
 interface TransformStreamDefaultController {

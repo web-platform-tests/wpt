@@ -7,9 +7,10 @@
 // <script src="resources/utils.js"></script>
 // <script src="/common/get-host-info.sub.js"></script>
 
-async function runDefaultEnabledFeaturesTest(t, should_load, fenced_origin, allow="") {
+async function runDefaultEnabledFeaturesTest(t, should_load, fenced_origin,
+    generator_api="fledge", allow="") {
   const fencedframe = await attachFencedFrameContext({
-      generator_api: "fledge",
+      generator_api: generator_api,
       attributes: [["allow", allow]],
       origin: fenced_origin});
 
@@ -23,14 +24,30 @@ async function runDefaultEnabledFeaturesTest(t, should_load, fenced_origin, allo
     return;
   }
 
-  await fencedframe.execute(() => {
+  await fencedframe.execute((generator_api) => {
     assert_true(
         document.featurePolicy.allowsFeature('attribution-reporting'),
         "Attribution reporting should be allowed if the fenced " +
-        "frame loaded.");
-    assert_true(
-          document.featurePolicy.allowsFeature('shared-storage'),
-          "Shared storage should be allowed if the fenced " +
-          "frame loaded.");
-  });
+        "frame loaded using FLEDGE or shared storage.");
+
+    if (generator_api == "fledge") {
+      assert_true(
+            document.featurePolicy.allowsFeature('shared-storage'),
+            "Shared Storage should be allowed if the fenced " +
+            "frame loaded using FLEDGE.");
+      assert_true(
+            document.featurePolicy.allowsFeature('private-aggregation'),
+            "Private Aggregation should be allowed if the fenced " +
+            "frame loaded using FLEDGE.");
+    } else {
+      assert_true(
+            document.featurePolicy.allowsFeature('shared-storage'),
+            "Shared Storage should be allowed if the fenced " +
+            "frame loaded using Shared Storage.");
+      assert_false(
+            document.featurePolicy.allowsFeature('private-aggregation'),
+            "Private Aggregation should be disabled if the fenced " +
+            "frame loaded using Shared Storage.");
+    }
+  }, [generator_api]);
 }

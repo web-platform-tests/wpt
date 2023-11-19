@@ -2,7 +2,7 @@
 <html>
 <meta charset="utf-8">
 <title>Timeline offset in Animation Keyframes</title>
-<link rel="help" href="https://w3c.github.io/csswg-drafts/scroll-animations-1/#named-range-keyframes">
+<link rel="help" href="https://drafts.csswg.org/scroll-animations-1/#named-range-keyframes">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/web-animations/testcommon.js"></script>
@@ -17,9 +17,9 @@
     background-color:  rgba(0, 0, 255);
     height: 200px;
     width: 200px;
-    view-timeline-name: foo;
+    view-timeline-name: --foo;
     animation: linear 1s both fade-in-out-animation;
-    animation-timeline: foo;
+    animation-timeline: --foo;
   }
 
   #container {
@@ -48,6 +48,8 @@
 
   function runTests() {
     promise_test(async t => {
+      await waitForNextFrame();
+
       // scrollTop=200 to 400 is the entry range
       container.scrollTop = 200;
       await waitForNextFrame();
@@ -87,9 +89,12 @@
       container.scrollTop = 400;
       await waitForNextFrame();
       assert_equals(getComputedStyle(subject).opacity, '1',
-                    'Effect at entry 100% (post resize)');
+                    'Effect at entry 100%');
 
+      // Reducing the viewport by 100px, shifts the keyframe offsets.
+      // The entry range shifts from [200px, 400px] to [300px, 500px].
       container.style.height = '300px';
+
       await waitForNextFrame();
       assert_equals(getComputedStyle(subject).opacity, '0.5',
                     'Effect at entry 50% (post resize)');

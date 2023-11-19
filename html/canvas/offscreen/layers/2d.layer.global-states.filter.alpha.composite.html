@@ -8,8 +8,8 @@
   <p class="fallback">FAIL (fallback content)</p>
 </canvas>
 <script>
-  const offscreen_canvas = new OffscreenCanvas(200, 200);
-  const ctx = offscreen_canvas.getContext('2d');
+  const canvas = new OffscreenCanvas(200, 200);
+  const ctx = canvas.getContext('2d');
 
   ctx.fillStyle = 'rgba(0, 0, 255, 1)';
 
@@ -20,14 +20,14 @@
   ctx.globalAlpha = 0.6;
   ctx.globalCompositeOperation = 'source-in';
 
-  ctx.beginLayer([
-      {filter: 'colorMatrix', values: [0.393, 0.769, 0.189, 0, 0,
-                                       0.349, 0.686, 0.168, 0, 0,
-                                       0.272, 0.534, 0.131, 0, 0,
-                                       0, 0, 0, 1, 0]},
-      {filter: 'componentTransfer',
+  ctx.beginLayer({filter: [
+      {name: 'colorMatrix', values: [0.393, 0.769, 0.189, 0, 0,
+                                     0.349, 0.686, 0.168, 0, 0,
+                                     0.272, 0.534, 0.131, 0, 0,
+                                     0, 0, 0, 1, 0]},
+      {name: 'componentTransfer',
           funcA: {type: "table", tableValues: [0, 0.7]}},
-      {filter: 'dropShadow', dx: 5, dy: 5, floodColor: '#81e'}]);
+      {name: 'dropShadow', dx: 5, dy: 5, floodColor: '#81e'}]});
 
   ctx.fillStyle = 'rgba(200, 0, 0, 1)';
   ctx.fillRect(50, 50, 75, 50);
@@ -36,6 +36,6 @@
 
   ctx.endLayer();
 
-  const canvas = document.getElementById("canvas");
-  canvas.getContext('2d').drawImage(offscreen_canvas, 0, 0);
+  const outputCanvas = document.getElementById("canvas");
+  outputCanvas.getContext('2d').drawImage(canvas, 0, 0);
 </script>

@@ -1,15 +1,55 @@
 import base64
-from typing import Any, List, Mapping, MutableMapping, Optional
+from enum import Enum
+from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Union
 
 from ._module import BidiModule, command
+from ..undefined import UNDEFINED, Undefined
+
+
+class ElementOptions(Dict[str, Any]):
+    def __init__(
+        self, element: Mapping[str, Any]
+    ):
+        self["type"] = "element"
+        self["element"] = element
+
+
+class BoxOptions(Dict[str, Any]):
+    def __init__(self, x: float, y: float, width: float, height: float):
+        self["type"] = "box"
+        self["x"] = x
+        self["y"] = y
+        self["width"] = width
+        self["height"] = height
+
+
+ClipOptions = Union[ElementOptions, BoxOptions]
+
+
+class OriginOptions(Enum):
+    DOCUMENT = "document"
+    VIEWPORT = "viewport"
 
 
 class BrowsingContext(BidiModule):
     @command
-    def capture_screenshot(self, context: str) -> Mapping[str, Any]:
-        params: MutableMapping[str, Any] = {
-            "context": context
-        }
+    def activate(self, context: str) -> Mapping[str, Any]:
+        return {"context": context}
+
+    @command
+    def capture_screenshot(
+        self,
+        context: str,
+        clip: Optional[ClipOptions] = None,
+        origin: Optional[OriginOptions] = None,
+    ) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {"context": context}
+
+        if clip is not None:
+            params["clip"] = clip
+
+        if origin is not None:
+            params["origin"] = origin
 
         return params
 
@@ -28,11 +68,17 @@ class BrowsingContext(BidiModule):
         return params
 
     @command
-    def create(self, type_hint: str, reference_context: Optional[str] = None) -> Mapping[str, Any]:
+    def create(self,
+               type_hint: str,
+               reference_context: Optional[str] = None,
+               background: Optional[bool] = None) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {"type": type_hint}
 
         if reference_context is not None:
             params["referenceContext"] = reference_context
+
+        if background is not None:
+            params["background"] = background
 
         return params
 
@@ -63,9 +109,23 @@ class BrowsingContext(BidiModule):
         return result["contexts"]
 
     @command
-    def navigate(
-        self, context: str, url: str, wait: Optional[str] = None
-    ) -> Mapping[str, Any]:
+    def handle_user_prompt(self,
+                           context: str,
+                           accept: Optional[bool] = None,
+                           user_text: Optional[str] = None) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {"context": context}
+
+        if accept is not None:
+            params["accept"] = accept
+        if user_text is not None:
+            params["userText"] = user_text
+        return params
+
+    @command
+    def navigate(self,
+                 context: str,
+                 url: str,
+                 wait: Optional[str] = None) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {"context": context, "url": url}
         if wait is not None:
             params["wait"] = wait
@@ -82,20 +142,28 @@ class BrowsingContext(BidiModule):
         return result
 
     @command
-    def print(
-        self,
-        context: str,
-        background: Optional[bool] = None,
-        margin: Optional[Mapping[str, Any]] = None,
-        orientation: Optional[str] = None,
-        page: Optional[Mapping[str, Any]] = None,
-        page_ranges: Optional[List[str]] = None,
-        scale: Optional[float] = None,
-        shrink_to_fit: Optional[bool] = None
-    ) -> Mapping[str, Any]:
-        params: MutableMapping[str, Any] = {
-            "context": context
-        }
+    def reload(self,
+               context: str,
+               ignore_cache: Optional[bool] = None,
+               wait: Optional[str] = None) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {"context": context}
+        if ignore_cache is not None:
+            params["ignoreCache"] = ignore_cache
+        if wait is not None:
+            params["wait"] = wait
+        return params
+
+    @command
+    def print(self,
+              context: str,
+              background: Optional[bool] = None,
+              margin: Optional[Mapping[str, Any]] = None,
+              orientation: Optional[str] = None,
+              page: Optional[Mapping[str, Any]] = None,
+              page_ranges: Optional[List[str]] = None,
+              scale: Optional[float] = None,
+              shrink_to_fit: Optional[bool] = None) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {"context": context}
 
         if background is not None:
             params["background"] = background
@@ -118,3 +186,20 @@ class BrowsingContext(BidiModule):
     def _print(self, result: Mapping[str, Any]) -> Any:
         assert result["data"] is not None
         return result["data"]
+
+    @command
+    def set_viewport(self,
+                     context: str,
+                     viewport: Union[Optional[Mapping[str, Any]], Undefined] = UNDEFINED,
+                     device_pixel_ratio: Union[Optional[float], Undefined] = UNDEFINED) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {
+            "context": context,
+        }
+
+        if viewport is not UNDEFINED:
+            params["viewport"] = viewport
+
+        if device_pixel_ratio is not UNDEFINED:
+            params["devicePixelRatio"] = device_pixel_ratio
+
+        return params

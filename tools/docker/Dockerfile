@@ -26,11 +26,12 @@ RUN apt-get -qqy update \
     libunwind8 \
     libxcb-shape0-dev \
     locales \
-    openjdk-8-jre-headless \
+    openjdk-17-jre-headless \
     pulseaudio \
     python3 \
     python3-dev \
     python3-pip \
+    python3-venv \
     software-properties-common \
     qemu-kvm \
     tzdata \
@@ -64,7 +65,6 @@ RUN apt-get -qqy install \
 RUN apt-get -y autoremove
 
 RUN pip install --upgrade pip
-RUN pip install virtualenv
 
 ENV TZ "UTC"
 RUN echo "${TZ}" > /etc/timezone \
@@ -80,6 +80,7 @@ RUN useradd test \
          --shell /bin/bash  \
          --create-home \
   && usermod -a -G sudo test \
+  && usermod -a -G kvm test \
   && usermod -a -G libvirt test \
   && usermod -a -G libvirt-qemu test \
   && echo 'ALL ALL = (ALL) NOPASSWD: ALL' >> /etc/sudoers \

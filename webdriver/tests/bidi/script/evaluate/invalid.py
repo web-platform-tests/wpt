@@ -135,7 +135,7 @@ async def test_params_max_object_depth_invalid_value(bidi_session, top_context):
 
 
 @pytest.mark.parametrize("include_shadow_tree", [False, 42, {}, []])
-async def test_params_max_object_depth_invalid_type(bidi_session, top_context, include_shadow_tree):
+async def test_params_include_shadow_tree_invalid_type(bidi_session, top_context, include_shadow_tree):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.script.evaluate(
             expression="1 + 2",
@@ -144,10 +144,21 @@ async def test_params_max_object_depth_invalid_type(bidi_session, top_context, i
             await_promise=True)
 
 
-async def test_params_max_object_depth_invalid_value(bidi_session, top_context):
+async def test_params_include_shadow_tree_invalid_value(
+        bidi_session, top_context):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.script.evaluate(
             expression="1 + 2",
             serialization_options=SerializationOptions(include_shadow_tree="foo"),
+            target=ContextTarget(top_context["context"]),
+            await_promise=True)
+
+
+@pytest.mark.parametrize("user_activation", ["foo", 42, {}, []])
+async def test_params_user_activation_invalid_type(bidi_session, top_context, user_activation):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.script.evaluate(
+            expression="1 + 2",
+            user_activation=user_activation,
             target=ContextTarget(top_context["context"]),
             await_promise=True)

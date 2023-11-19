@@ -1,21 +1,18 @@
-import asyncio
-
 import pytest
-
 
 # The basic use case of subscribing globally for a single event
 # is covered by tests for each event in the dedicated folders.
 
 
 @pytest.mark.asyncio
-async def test_subscribe_to_module(bidi_session, subscribe_events, wait_for_event):
+async def test_subscribe_to_module(bidi_session, subscribe_events, wait_for_event, wait_for_future_safe):
     # Subscribe to all browsing context events
     await subscribe_events(events=["browsingContext"])
 
     # Track all received browsing context events in the events array
     events = []
 
-    async def on_event(method, data):
+    async def on_event(method, _):
         events.append(method)
 
     remove_listener_contextCreated = bidi_session.add_event_listener(
@@ -31,7 +28,7 @@ async def test_subscribe_to_module(bidi_session, subscribe_events, wait_for_even
     # Wait for the last event
     on_entry_added = wait_for_event("browsingContext.load")
     await bidi_session.browsing_context.create(type_hint="tab")
-    await on_entry_added
+    await wait_for_future_safe(on_entry_added)
 
     assert len(events) == 3
 
@@ -42,7 +39,7 @@ async def test_subscribe_to_module(bidi_session, subscribe_events, wait_for_even
 
 @pytest.mark.asyncio
 async def test_subscribe_to_one_event_and_then_to_module(
-    bidi_session, subscribe_events, wait_for_event
+    bidi_session, subscribe_events, wait_for_event, wait_for_future_safe
 ):
     # Subscribe to one event
     await subscribe_events(events=["browsingContext.contextCreated"])
@@ -59,7 +56,7 @@ async def test_subscribe_to_one_event_and_then_to_module(
 
     on_entry_added = wait_for_event("browsingContext.contextCreated")
     await bidi_session.browsing_context.create(type_hint="tab")
-    await on_entry_added
+    await wait_for_future_safe(on_entry_added)
 
     assert len(events) == 1
     assert "browsingContext.contextCreated" in events
@@ -80,7 +77,7 @@ async def test_subscribe_to_one_event_and_then_to_module(
     # Wait for the last event
     on_entry_added = wait_for_event("browsingContext.load")
     await bidi_session.browsing_context.create(type_hint="tab")
-    await on_entry_added
+    await wait_for_future_safe(on_entry_added)
 
     # Make sure we didn't receive duplicates
     assert len(events) == 3
@@ -92,7 +89,7 @@ async def test_subscribe_to_one_event_and_then_to_module(
 
 @pytest.mark.asyncio
 async def test_subscribe_to_module_and_then_to_one_event_again(
-    bidi_session, subscribe_events, wait_for_event
+    bidi_session, subscribe_events, wait_for_event, wait_for_future_safe
 ):
     # Subscribe to all browsing context events
     await subscribe_events(events=["browsingContext"])
@@ -116,7 +113,7 @@ async def test_subscribe_to_module_and_then_to_one_event_again(
     # Wait for the last event
     on_entry_added = wait_for_event("browsingContext.load")
     await bidi_session.browsing_context.create(type_hint="tab")
-    await on_entry_added
+    await wait_for_future_safe(on_entry_added)
 
     assert len(events) == 3
 
@@ -129,7 +126,7 @@ async def test_subscribe_to_module_and_then_to_one_event_again(
     # Wait for the last event
     on_entry_added = wait_for_event("browsingContext.load")
     await bidi_session.browsing_context.create(type_hint="tab")
-    await on_entry_added
+    await wait_for_future_safe(on_entry_added)
 
     # Make sure we didn't receive duplicates
     assert len(events) == 3

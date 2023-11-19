@@ -3,11 +3,41 @@ import json
 import pytest
 import pytest_asyncio
 
+from webdriver.bidi.error import NoSuchInterceptException
 from webdriver.bidi.modules.script import ContextTarget
 
 RESPONSE_COMPLETED_EVENT = "network.responseCompleted"
 
 PAGE_EMPTY_HTML = "/webdriver/tests/bidi/network/support/empty.html"
+
+
+@pytest_asyncio.fixture
+async def add_intercept(bidi_session):
+    """Add a network intercept for the provided phases and url patterns, and
+    ensure the intercept is removed at the end of the test."""
+
+    intercepts = []
+
+    async def add_intercept(phases, url_patterns):
+        nonlocal intercepts
+        intercept = await bidi_session.network.add_intercept(
+            phases=phases,
+            url_patterns=url_patterns,
+        )
+        intercepts.append(intercept)
+
+        return intercept
+
+    yield add_intercept
+
+    # Remove all added intercepts at the end of the test
+    for intercept in intercepts:
+        try:
+            await bidi_session.network.remove_intercept(intercept=intercept)
+        except (NoSuchInterceptException):
+            # Ignore exceptions in case a specific intercept was already removed
+            # during the test.
+            pass
 
 
 @pytest.fixture
@@ -19,7 +49,7 @@ def fetch(bidi_session, top_context, configuration):
         method_arg = f"method: '{method}',"
 
         headers_arg = ""
-        if headers != None:
+        if headers is not None:
             headers_arg = f"headers: {json.dumps(headers)},"
 
         timeout_in_seconds = timeout_in_seconds * configuration["timeout_multiplier"]
@@ -47,7 +77,7 @@ def fetch(bidi_session, top_context, configuration):
 
 @pytest_asyncio.fixture
 async def setup_network_test(
-    bidi_session, subscribe_events, wait_for_event, top_context, url
+    bidi_session, subscribe_events, wait_for_event, wait_for_future_safe, top_context, url
 ):
     """Navigate the current top level context to the provided url and subscribe
     to network.beforeRequestSent.
@@ -73,7 +103,7 @@ async def setup_network_test(
             url=test_url,
             wait="complete",
         )
-        await on_response_completed
+        await wait_for_future_safe(on_response_completed)
         await bidi_session.session.unsubscribe(
             events=[RESPONSE_COMPLETED_EVENT], contexts=[top_context["context"]]
         )

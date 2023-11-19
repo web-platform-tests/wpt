@@ -122,8 +122,9 @@ def deep_update(source, overrides):
 
 def document_dimensions(session):
     return tuple(session.execute_script("""
-        let rect = document.documentElement.getBoundingClientRect();
-        return [rect.width, rect.height];
+        const {devicePixelRatio} = window;
+        const {width, height} = document.documentElement.getBoundingClientRect();
+        return [width * devicePixelRatio, height * devicePixelRatio];
         """))
 
 
@@ -150,10 +151,7 @@ def center_point(element):
 
 
 def document_hidden(session):
-    """Polls for the document to become hidden."""
-    def hidden(session):
-        return session.execute_script("return document.hidden")
-    return Poll(session, timeout=3, raises=None).until(hidden)
+    return session.execute_script("return document.hidden")
 
 
 def document_location(session):
@@ -206,35 +204,25 @@ def is_fullscreen(session):
         """)
 
 
-def document_dimensions(session):
-    return tuple(session.execute_script("""
-        let {devicePixelRatio} = window;
-        let {width, height} = document.documentElement.getBoundingClientRect();
-        return [width * devicePixelRatio, height * devicePixelRatio];
-        """))
+def is_maximized(session):
+    dimensions = session.execute_script("""
+        return {
+            availWidth: screen.availWidth,
+            availHeight: screen.availHeight,
+            windowWidth: window.outerWidth,
+            windowHeight: window.outerHeight,
+        }
+        """)
 
+    return (
+        # The maximized window can still have a border attached which would
+        # cause its dimensions to exceed the whole available screen.
+        dimensions["windowWidth"] >= dimensions["availWidth"] and
+        dimensions["windowHeight"] >= dimensions["availHeight"] and
+        # Only return true if the window is not in fullscreen mode
+        not is_fullscreen(session)
+    )
 
-def screen_size(session):
-    """Returns the available width/height size of the screen."""
-    return tuple(session.execute_script("""
-        return [
-            screen.availWidth,
-            screen.availHeight,
-        ];
-        """))
-
-
-def available_screen_size(session):
-    """
-    Returns the effective available screen width/height size,
-    excluding any fixed window manager elements.
-    """
-    return tuple(session.execute_script("""
-        return [
-            screen.availWidth - screen.availLeft,
-            screen.availHeight - screen.availTop,
-        ];
-        """))
 
 def filter_dict(source, d):
     """Filter `source` dict to only contain same keys as `d` dict.
@@ -268,4 +256,3 @@ def wait_for_new_handle(session, handles_before):
         message="No new window has been opened")
 
     return wait.until(find_new_handle)
-

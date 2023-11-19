@@ -1,9 +1,11 @@
 const STORE_URL = '/fenced-frame/resources/key-value-store.py';
 const BEACON_URL = '/fenced-frame/resources/automatic-beacon-store.py';
 const REMOTE_EXECUTOR_URL = '/fenced-frame/resources/remote-context-executor.https.html';
-const FLEDGE_BIDDING_URL = '/fenced-frame/resources/fledge-bidding-logic.js';
-const FLEDGE_BIDDING_WITH_SIZE_URL = '/fenced-frame/resources/fledge-bidding-logic-with-size.js';
-const FLEDGE_DECISION_URL = '/fenced-frame/resources/fledge-decision-logic.js';
+
+// If your test needs to modify FLEDGE bidding or decision logic, you should
+// update the generated JS in the corresponding handler below.
+const FLEDGE_BIDDING_URL = '/fenced-frame/resources/fledge-bidding-logic.py';
+const FLEDGE_DECISION_URL = '/fenced-frame/resources/fledge-decision-logic.py';
 
 // Creates a URL that includes a list of stash key UUIDs that are being used
 // in the test. This allows us to generate UUIDs on the fly and let anything
@@ -34,10 +36,14 @@ async function runSelectRawURL(href, resolve_to_config = false) {
     // gracefully fail rather than bring the whole test down.
   }
   return await sharedStorage.selectURL(
-      'test-url-selection-operation', [{url: href}], {
+      'test-url-selection-operation', [{url: href,
+          reportingMetadata: {
+            'reserved.top_navigation_start': BEACON_URL,
+            'reserved.top_navigation_commit': BEACON_URL,
+          }}], {
         data: {'mockResult': 0},
         resolveToConfig: resolve_to_config,
-        keepAlive: true
+        keepAlive: true,
       });
 }
 
@@ -68,41 +74,45 @@ async function runSelectURL(href, keylist = [], resolve_to_config = false) {
   return await runSelectRawURL(full_url, resolve_to_config);
 }
 
-async function generateURNFromFledgeRawURL(href,
-  nested_urls,
-  resolve_to_config = false,
-  ad_with_size = false,
-  requested_size = null) {
+async function generateURNFromFledgeRawURL(
+    href, nested_urls, resolve_to_config = false, ad_with_size = false,
+    requested_size = null, automatic_beacon = false) {
   const bidding_token = token();
   const seller_token = token();
 
   const ad_components_list = nested_urls.map((url) => {
     return ad_with_size ?
-      { renderUrl: url, sizeGroup: "group1" } :
-      { renderUrl: url }
+      { renderURL: url, sizeGroup: "group1" } :
+      { renderURL: url }
   });
 
-  const interestGroup = ad_with_size ?
-    {
-      name: 'testAd1',
-      owner: location.origin,
-      biddingLogicUrl: new URL(FLEDGE_BIDDING_WITH_SIZE_URL, location.origin),
-      ads: [{ renderUrl: href, sizeGroup: "group1", bid: 1 }],
-      userBiddingSignals: { biddingToken: bidding_token },
-      trustedBiddingSignalsKeys: ['key1'],
-      adComponents: ad_components_list,
-      adSizes: { "size1": { width: "100px", height: "50px" } },
-      sizeGroups: { "group1": ["size1"] }
-    } :
-    {
-      name: 'testAd1',
-      owner: location.origin,
-      biddingLogicUrl: new URL(FLEDGE_BIDDING_URL, location.origin),
-      ads: [{ renderUrl: href, bid: 1 }],
-      userBiddingSignals: { biddingToken: bidding_token },
-      trustedBiddingSignalsKeys: ['key1'],
-      adComponents: ad_components_list,
-    };
+  let interestGroup =
+      {
+        name: 'testAd1',
+        owner: location.origin,
+        biddingLogicURL: new URL(FLEDGE_BIDDING_URL, location.origin),
+        ads: [{renderURL: href, bid: 1}],
+        userBiddingSignals: {biddingToken: bidding_token},
+        trustedBiddingSignalsKeys: ['key1'],
+        adComponents: ad_components_list,
+      };
+
+  let biddingURLParams =
+      new URLSearchParams(interestGroup.biddingLogicURL.search);
+  if (requested_size)
+    biddingURLParams.set(
+        'requested-size', requested_size[0] + '-' + requested_size[1]);
+  if (ad_with_size)
+    biddingURLParams.set('ad-with-size', 1);
+  if (automatic_beacon)
+    biddingURLParams.set('automatic-beacon', 1);
+  interestGroup.biddingLogicURL.search = biddingURLParams;
+
+  if (ad_with_size) {
+    interestGroup.ads[0].sizeGroup = 'group1';
+    interestGroup.adSizes = {'size1': {width: '100px', height: '50px'}};
+    interestGroup.sizeGroups = {'group1': ['size1']};
+  }
 
   // Pick an arbitrarily high duration to guarantee that we never leave the
   // ad interest group while the test runs.
@@ -111,13 +121,21 @@ async function generateURNFromFledgeRawURL(href,
   let auctionConfig = {
     seller: location.origin,
     interestGroupBuyers: [location.origin],
-    decisionLogicUrl: new URL(FLEDGE_DECISION_URL, location.origin),
+    decisionLogicURL: new URL(FLEDGE_DECISION_URL, location.origin),
     auctionSignals: {biddingToken: bidding_token, sellerToken: seller_token},
     resolveToConfig: resolve_to_config
   };
+
   if (requested_size) {
+    let decisionURLParams =
+      new URLSearchParams(auctionConfig.decisionLogicURL.search);
+    decisionURLParams.set(
+        'requested-size', requested_size[0] + '-' + requested_size[1]);
+    auctionConfig.decisionLogicURL.search = decisionURLParams;
+
     auctionConfig['requestedSize'] = {width: requested_size[0], height: requested_size[1]};
   }
+
   return navigator.runAdAuction(auctionConfig);
 }
 
@@ -138,9 +156,16 @@ async function generateURNFromFledgeRawURL(href,
 //                                                frame config.
 // @param {boolean} [ad_with_size = false] - Determines whether the auction is
 //                                           run with ad sizes specified.
-async function generateURNFromFledge(href, keylist, nested_urls=[], resolve_to_config = false, ad_with_size = false, requested_size = null) {
+// @param {boolean} [automatic_beacon = false] - If true, FLEDGE logic will
+//                                               register an automatic beacon
+//                                               after completion.
+async function generateURNFromFledge(
+    href, keylist, nested_urls = [], resolve_to_config = false,
+    ad_with_size = false, requested_size = null, automatic_beacon = false) {
   const full_url = generateURL(href, keylist);
-  return generateURNFromFledgeRawURL(full_url, nested_urls, resolve_to_config, ad_with_size, requested_size);
+  return generateURNFromFledgeRawURL(
+      full_url, nested_urls, resolve_to_config, ad_with_size, requested_size,
+      automatic_beacon);
 }
 
 // Extracts a list of UUIDs from the from the current page's URL.
@@ -245,23 +270,36 @@ function attachContext(object_constructor, html, headers, origin) {
 // function.
 // 1. crbug.com/1372536: resize-lock-input.https.html
 // 2. crbug.com/1394559: unfenced-top.https.html
-async function attachOpaqueContext(generator_api, resolve_to_config, ad_with_size, requested_size, object_constructor, html, headers, origin) {
+async function attachOpaqueContext(
+    generator_api, resolve_to_config, ad_with_size, requested_size,
+    automatic_beacon, object_constructor, html, headers, origin) {
   const [uuid, url] = generateRemoteContextURL(headers, origin);
-  const id = await (generator_api == 'fledge' ? generateURNFromFledge(url, [], [], resolve_to_config, ad_with_size, requested_size) : runSelectURL(url, [], resolve_to_config));
+  const id = await (
+      generator_api == 'fledge' ?
+          generateURNFromFledge(
+              url, [], [], resolve_to_config, ad_with_size, requested_size,
+              automatic_beacon) :
+          runSelectURL(url, [], resolve_to_config));
   const object = object_constructor(id);
   return buildRemoteContextForObject(object, uuid, html);
 }
 
-function attachPotentiallyOpaqueContext(generator_api, resolve_to_config, ad_with_size, requested_size, frame_constructor, html, headers, origin) {
+function attachPotentiallyOpaqueContext(
+    generator_api, resolve_to_config, ad_with_size, requested_size,
+    automatic_beacon, frame_constructor, html, headers, origin) {
   generator_api = generator_api.toLowerCase();
   if (generator_api == 'fledge' || generator_api == 'sharedstorage') {
-    return attachOpaqueContext(generator_api, resolve_to_config, ad_with_size, requested_size, frame_constructor, html, headers, origin);
+    return attachOpaqueContext(
+        generator_api, resolve_to_config, ad_with_size, requested_size,
+        automatic_beacon, frame_constructor, html, headers, origin);
   } else {
     return attachContext(frame_constructor, html, headers, origin);
   }
 }
 
-function attachFrameContext(element_name, generator_api, resolve_to_config, ad_with_size, requested_size, html, headers, attributes, origin) {
+function attachFrameContext(
+    element_name, generator_api, resolve_to_config, ad_with_size,
+    requested_size, automatic_beacon, html, headers, attributes, origin) {
   frame_constructor = (id) => {
     frame = document.createElement(element_name);
     attributes.forEach(attribute => {
@@ -278,10 +316,21 @@ function attachFrameContext(element_name, generator_api, resolve_to_config, ad_w
     document.body.append(frame);
     return frame;
   };
-  return attachPotentiallyOpaqueContext(generator_api, resolve_to_config, ad_with_size, requested_size, frame_constructor, html, headers, origin);
+  return attachPotentiallyOpaqueContext(
+      generator_api, resolve_to_config, ad_with_size, requested_size,
+      automatic_beacon, frame_constructor, html, headers, origin);
 }
 
-function replaceFrameContext(frame_proxy, {generator_api="", resolve_to_config=false, ad_with_size=false, requested_size=null, html="", headers=[], origin=""}={}) {
+function replaceFrameContext(frame_proxy, {
+  generator_api = '',
+  resolve_to_config = false,
+  ad_with_size = false,
+  requested_size = null,
+  automatic_beacon = false,
+  html = '',
+  headers = [],
+  origin = ''
+} = {}) {
   frame_constructor = (id) => {
     if (frame_proxy.element.nodeName == "IFRAME") {
       frame_proxy.element.src = id;
@@ -293,7 +342,9 @@ function replaceFrameContext(frame_proxy, {generator_api="", resolve_to_config=f
     }
     return frame_proxy.element;
   };
-  return attachPotentiallyOpaqueContext(generator_api, resolve_to_config, ad_with_size, requested_size, frame_constructor, html, headers, origin);
+  return attachPotentiallyOpaqueContext(
+      generator_api, resolve_to_config, ad_with_size, requested_size,
+      automatic_beacon, frame_constructor, html, headers, origin);
 }
 
 // Attach a fenced frame that waits for scripts to execute.
@@ -307,21 +358,49 @@ function replaceFrameContext(frame_proxy, {generator_api="", resolve_to_config=f
 // - ad_with_size: whether an ad auction is run with size specified for the ads
 //    and ad components. (currently only works for FLEDGE)
 // - requested_size: A 2-element list with the width and height for
-//    requestedSize in the FLEDGE auction config.
+//    requestedSize in the FLEDGE auction config. This is different from
+//    ad_with_size, which refers to size information provided alongside the ads
+//    themselves.
+// - automatic_beacon: If true and generator_api = "fledge", an automatic beacon
+//    will be registered for a top-level navigation after the FLEDGE auction
+//    completes.
 // - html: extra HTML source code to inject into the loaded frame
 // - headers: an array of header pairs [[key, value], ...]
-// - attributes: an array of attribute pairs to set on the frame [[key, value], ...]
+// - attributes: an array of attribute pairs to set on the frame [[key, value],
+// ...]
 // - origin: origin of the url, default to location.origin if not set
 // Returns a proxy that acts like the frame HTML element, but with an extra
 // function `execute`. See `attachFrameContext` or the README for more details.
-function attachFencedFrameContext({generator_api="", resolve_to_config=false, ad_with_size=false, requested_size=null, html = "", headers=[], attributes=[], origin=""}={}) {
-  return attachFrameContext('fencedframe', generator_api, resolve_to_config, ad_with_size, requested_size, html, headers, attributes, origin);
+function attachFencedFrameContext({
+  generator_api = '',
+  resolve_to_config = false,
+  ad_with_size = false,
+  requested_size = null,
+  automatic_beacon = false,
+  html = '',
+  headers = [],
+  attributes = [],
+  origin = ''
+} = {}) {
+  return attachFrameContext(
+      'fencedframe', generator_api, resolve_to_config, ad_with_size,
+      requested_size, automatic_beacon, html, headers, attributes, origin);
 }
 
 // Attach an iframe that waits for scripts to execute.
 // See `attachFencedFrameContext` for more details.
-function attachIFrameContext({generator_api="", html="", headers=[], attributes=[], origin=""}={}) {
-  return attachFrameContext('iframe', generator_api, resolve_to_config=false, ad_with_size=false, requested_size=null, html, headers, attributes, origin);
+function attachIFrameContext({
+  generator_api = '',
+  automatic_beacon = false,
+  html = '',
+  headers = [],
+  attributes = [],
+  origin = ''
+} = {}) {
+  return attachFrameContext(
+      'iframe', generator_api, resolve_to_config = false, ad_with_size = false,
+      requested_size = null, automatic_beacon, html, headers, attributes,
+      origin);
 }
 
 // Open a window that waits for scripts to execute.
@@ -386,8 +465,8 @@ async function readValueFromServer(key) {
   // Resolve the key if it is a Promise.
   key = await key;
 
-  const serverUrl = `${STORE_URL}?key=${key}`;
-  const response = await fetch(serverUrl);
+  const serverURL = `${STORE_URL}?key=${key}`;
+  const response = await fetch(serverURL);
   if (!response.ok)
     throw new Error('An error happened in the server');
   const value = await response.text();
@@ -419,11 +498,13 @@ async function nextValueFromServer(key) {
 }
 
 // Reads the data from the latest automatic beacon sent to the server.
-async function readAutomaticBeaconDataFromServer() {
-  const serverUrl = `${BEACON_URL}`;
-  const response = await fetch(serverUrl);
+async function readAutomaticBeaconDataFromServer(expected_body) {
+  let serverURL = `${BEACON_URL}`;
+  const response = await fetch(serverURL + "?" + new URLSearchParams({
+    expected_body: expected_body,
+  }));
   if (!response.ok)
-    throw new Error('An error happened in the server');
+    throw new Error('An error happened in the server ' + response.status);
   const value = await response.text();
 
   // The value is not stored in the server.
@@ -435,10 +516,11 @@ async function readAutomaticBeaconDataFromServer() {
 
 // Convenience wrapper around the above getter that will wait until a value is
 // available on the server.
-async function nextAutomaticBeacon() {
+async function nextAutomaticBeacon(expected_body) {
   while (true) {
     // Fetches the test result from the server.
-    const { status, value } = await readAutomaticBeaconDataFromServer();
+    const { status, value } =
+        await readAutomaticBeaconDataFromServer(expected_body);
     if (!status) {
       // The test result has not been stored yet. Retry after a while.
       await new Promise(resolve => setTimeout(resolve, 20));
@@ -454,8 +536,8 @@ async function writeValueToServer(key, value, origin = '') {
   // Resolve the key if it is a Promise.
   key = await key;
 
-  const serverUrl = `${origin}${STORE_URL}?key=${key}&value=${value}`;
-  await fetch(serverUrl, {"mode": "no-cors"});
+  const serverURL = `${origin}${STORE_URL}?key=${key}&value=${value}`;
+  await fetch(serverURL, {"mode": "no-cors"});
 }
 
 // Simulates a user gesture.

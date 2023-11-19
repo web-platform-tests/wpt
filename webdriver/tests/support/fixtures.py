@@ -31,7 +31,7 @@ def pytest_configure(config):
     )
 
 
-def pytest_sessionfinish(session, exitstatus):
+def pytest_sessionfinish():
     # Cleanup at the end of a test run
     global _current_session
 
@@ -106,6 +106,43 @@ async def reset_current_session_if_necessary(caps):
             else:
                 _current_session.end()
             _current_session = None
+
+
+@pytest.fixture()
+def screen_size(session):
+    """Return the size (width/height) of the screen."""
+    return tuple(session.execute_script("""
+        return [
+            screen.width,
+            screen.height,
+        ];
+        """))
+
+
+@pytest.fixture()
+def available_screen_size(session):
+    """Return the effective available screen size (width/height).
+
+    This is size which excludes any fixed window manager elements like menu
+    bars, and the dock on MacOS.
+    """
+    return tuple(session.execute_script("""
+        return [
+            screen.availWidth,
+            screen.availHeight,
+        ];
+        """))
+
+
+@pytest.fixture()
+def minimal_screen_position(session):
+    """Return the minimal position (x/y) a window can be positioned at."""
+    return tuple(session.execute_script("""
+        return [
+            screen.availLeft,
+            screen.availTop,
+        ];
+        """))
 
 
 @pytest_asyncio.fixture(scope="function")
@@ -201,7 +238,7 @@ def current_session():
 
 @pytest.fixture
 def url(server_config):
-    def url(path, protocol="http", domain="", subdomain="", query="", fragment=""):
+    def url(path, protocol="https", domain="", subdomain="", query="", fragment=""):
         domain = server_config["domains"][domain][subdomain]
         port = server_config["ports"][protocol][0]
         host = "{0}:{1}".format(domain, port)
@@ -330,7 +367,7 @@ def get_test_page(iframe, inline):
             <input id="hidden" type="hidden"/>
             <input id="text" type="text"/>
 
-            {iframe(frame_doc)}
+            {iframe(frame_doc, **kwargs)}
 
             <img />
             <svg></svg>
@@ -421,16 +458,16 @@ def test_page_with_pdf_js(inline):
 <canvas></canvas>
 <script>
 async function getText() {
-  pages = [];
-  let loadingTask = pdfjsLib.getDocument({data: atob("%s")});
-  let pdf = await loadingTask.promise;
-  for (let pageNumber=1; pageNumber<=pdf.numPages; pageNumber++) {
-    let page = await pdf.getPage(pageNumber);
-    textContent = await page.getTextContent()
-    text = textContent.items.map(x => x.str).join("");
+  const pages = [];
+  const loadingTask = pdfjsLib.getDocument({data: atob("%s")});
+  const pdf = await loadingTask.promise;
+  for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+    const page = await pdf.getPage(pageNumber);
+    const textContent = await page.getTextContent();
+    const text = textContent.items.map(x => x.str).join("");
     pages.push(text);
   }
-  return pages
+  return pages;
 }
 </script>
 """ % encoded_pdf_data)

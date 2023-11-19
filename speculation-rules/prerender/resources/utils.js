@@ -1,7 +1,10 @@
 const STORE_URL = '/speculation-rules/prerender/resources/key-value-store.py';
 
 // Starts prerendering for `url`.
-function startPrerendering(url) {
+//
+// `rule_extras` provides additional parameters for the speculation rule used
+// to trigger prerendering.
+function startPrerendering(url, rule_extras = {}) {
   // Adds <script type="speculationrules"> and specifies a prerender candidate
   // for the given URL.
   // TODO(https://crbug.com/1174978): <script type="speculationrules"> may not
@@ -9,7 +12,8 @@ function startPrerendering(url) {
   // WebDriver API to force prerendering.
   const script = document.createElement('script');
   script.type = 'speculationrules';
-  script.text = `{"prerender": [{"source": "list", "urls": ["${url}"] }] }`;
+  script.text = JSON.stringify(
+      {prerender: [{source: 'list', urls: [url], ...rule_extras}]});
   document.head.appendChild(script);
 }
 
@@ -340,14 +344,9 @@ function test_prerender_defer(fn, label) {
  * @param {RemoteContextConfig|object} extraConfig
  * @returns {Promise<RemoteContextWrapper>}
  */
-async function addPrerenderRC(referrerRemoteContext, extraConfig) {
-  let savedURL;
-  const prerenderedRC = await referrerRemoteContext.helper.createContext({
+function addPrerenderRC(referrerRemoteContext, extraConfig) {
+  return referrerRemoteContext.helper.createContext({
     executorCreator(url) {
-      // Save the URL which the remote context helper framework assembled for
-      // us, so that we can attach it to the returned `RemoteContextWrapper`.
-      savedURL = url;
-
       return referrerRemoteContext.executeScript(url => {
         const script = document.createElement("script");
         script.type = "speculationrules";
@@ -363,9 +362,6 @@ async function addPrerenderRC(referrerRemoteContext, extraConfig) {
       }, [url]);
     }, extraConfig
   });
-
-  prerenderedRC.url = savedURL;
-  return prerenderedRC;
 }
 
 /**

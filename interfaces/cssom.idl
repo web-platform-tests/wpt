@@ -97,7 +97,7 @@ interface CSSRule {
 };
 
 [Exposed=Window]
-interface CSSStyleRule : CSSRule {
+interface CSSStyleRule : CSSGroupingRule {
   attribute CSSOMString selectorText;
   [SameObject, PutForwards=cssText] readonly attribute CSSStyleDeclaration style;
 };

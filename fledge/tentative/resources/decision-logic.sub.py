@@ -24,11 +24,11 @@ def main(request, response):
         response.headers.set(b"Content-Type", b"application/javascript")
 
     if error == b"bad-allow-fledge":
-        response.headers.set(b"X-Allow-FLEDGE", b"sometimes")
+        response.headers.set(b"Ad-Auction-Allowed", b"sometimes")
     elif error == b"fledge-not-allowed":
-        response.headers.set(b"X-Allow-FLEDGE", b"false")
+        response.headers.set(b"Ad-Auction-Allowed", b"false")
     elif error != b"no-allow-fledge":
-        response.headers.set(b"X-Allow-FLEDGE", b"true")
+        response.headers.set(b"Ad-Auction-Allowed", b"true")
 
     body = b''
     if error == b"no-body":
@@ -36,12 +36,14 @@ def main(request, response):
     if error != b"no-scoreAd":
         body += b"""
             function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
-                            browserSignals) {
+                            browserSignals, directFromSellerSignals) {
               // Don't bid on interest group with the wrong uuid. This is to prevent
               // left over interest groups from other tests from affecting auction
               // results.
-              if (!browserSignals.renderUrl.endsWith('{{GET[uuid]}}'))
+              if (!browserSignals.renderUrl.endsWith('uuid={{GET[uuid]}}') &&
+                  !browserSignals.renderUrl.includes('uuid={{GET[uuid]}}&')) {
                 return 0;
+              }
 
               {{GET[scoreAd]}};
               return {desirability: 2 * bid, allowComponentAuction: true};

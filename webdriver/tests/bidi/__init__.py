@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Any, Callable, Dict
 
 from webdriver.bidi.modules.script import ContextTarget
 
@@ -11,7 +11,7 @@ def recursive_compare(expected: Any, actual: Any) -> None:
         expected(actual)
         return
 
-    assert type(expected) == type(actual)
+    assert type(expected) is type(actual)
     if type(expected) is list:
         assert len(expected) == len(actual)
         for index, _ in enumerate(expected):
@@ -50,6 +50,11 @@ def any_list(actual: Any) -> None:
     assert isinstance(actual, list)
 
 
+def any_list_or_null(actual: Any) -> None:
+    if actual is not None:
+        any_list(actual)
+
+
 def any_string(actual: Any) -> None:
     assert isinstance(actual, str)
 
@@ -67,11 +72,7 @@ def int_interval(start: int, end: int) -> Callable[[Any], None]:
     return _
 
 
-def positive_int(actual: Any) -> None:
-    assert isinstance(actual, int) and actual > 0
-
-
-async def create_console_api_message(bidi_session, context, text):
+async def create_console_api_message(bidi_session, context: str, text: str):
     await bidi_session.script.call_function(
         function_declaration="""(text) => console.log(text)""",
         arguments=[{"type": "string", "value": text}],
@@ -81,23 +82,31 @@ async def create_console_api_message(bidi_session, context, text):
     return text
 
 
-async def get_device_pixel_ratio(bidi_session, context):
-    """Get the DPR of the context.
-
-    :param bidi_session: BiDiSession
-    :param context: Browsing context ID
-    :returns: (int) devicePixelRatio.
-    """
+async def get_device_pixel_ratio(bidi_session, context: str) -> float:
     result = await bidi_session.script.call_function(
         function_declaration="""() => {
-        return Math.floor(window.devicePixelRatio);
+        return window.devicePixelRatio;
     }""",
         target=ContextTarget(context["context"]),
         await_promise=False)
     return result["value"]
 
 
-async def get_viewport_dimensions(bidi_session, context):
+async def get_element_dimensions(bidi_session, context, element):
+    result = await bidi_session.script.call_function(
+        arguments=[element],
+        function_declaration="""(element) => {
+            const rect = element.getBoundingClientRect();
+            return { height: rect.height, width: rect.width }
+        }""",
+        target=ContextTarget(context["context"]),
+        await_promise=False,
+    )
+
+    return remote_mapping_to_dict(result["value"])
+
+
+async def get_viewport_dimensions(bidi_session, context: str):
     expression = """
         ({
           height: window.innerHeight || document.documentElement.clientHeight,
@@ -113,7 +122,7 @@ async def get_viewport_dimensions(bidi_session, context):
     return remote_mapping_to_dict(result["value"])
 
 
-def remote_mapping_to_dict(js_object):
+def remote_mapping_to_dict(js_object) -> Dict:
     obj = {}
     for key, value in js_object:
         obj[key] = value["value"]

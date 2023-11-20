@@ -112,6 +112,13 @@ components:
     privileged: true
     scopes:
       - "docker-worker:capability:privileged"
+    depends-on:
+      - download-firefox_android
+    download-artifacts:
+      - task: download-firefox_android
+        glob: public/results/geckoview-test_runner.apk
+        dest: build/
+        extract: true
 
   tox-python3_7:
     env:
@@ -405,6 +412,11 @@ tasks:
           use:
             - wpt-base
           command: "./wpt install --download-only --destination /home/test/artifacts/ --channel=${vars.channel}  --rename=firefox-${vars.channel} firefox browser"
+
+  - download-firefox_android:
+      use:
+        - wpt-base
+      command: "./wpt install --download-only --destination /home/test/artifacts/ firefox_android browser"
 
   - lint:
       use:

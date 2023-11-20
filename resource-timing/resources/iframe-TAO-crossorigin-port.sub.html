@@ -2,7 +2,10 @@
 <html>
 <body>
 <script>
-    const url = '{{location[scheme]}}://{{host}}:{{ports[http][1]}}/resource-timing/resources/TAOResponse.py?tao=origin_port_{{ports[http][1]}}';
+    const port = ports[http][1];
+    const headers = encodeURIComponent(`headers={"Timing-Allow-Origin": "${host}:${port}:${port}"}`)
+
+    const url = `${location[scheme]}://${host}:${port}/common/CustomCorsResponse.py?${headers}}`;
     const observe = (list, observer) => {
         const entry = list.getEntries()[0];
         const sum = entry.redirectStart +

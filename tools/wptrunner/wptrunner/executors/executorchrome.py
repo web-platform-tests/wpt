@@ -22,7 +22,7 @@ from .executorwebdriver import (
     WebDriverTestharnessExecutor,
     WebDriverTestharnessProtocolPart,
 )
-from .protocol import PrintProtocolPart
+from .protocol import GetAccessibilityTreeProtocolPart, PrintProtocolPart
 
 here = os.path.dirname(__file__)
 
@@ -189,6 +189,17 @@ render('%s').then(result => callback(result))""" % pdf_base64)
         finally:
             self.webdriver.window_handle = handle
 
+class ChromeDriverGetAccessibilityTreeProtocolPart(GetAccessibilityTreeProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def get_accessibility_tree(self):
+        body = {
+            "cmd": "Accessibility.getFullAXTree",
+            "params": {
+            }
+        }
+        return self.webdriver.send_session_command("POST", "goog/cdp/execute", body=body)
 
 class ChromeDriverFedCMProtocolPart(WebDriverFedCMProtocolPart):
     def setup(self):
@@ -207,6 +218,7 @@ class ChromeDriverProtocol(WebDriverProtocol):
         ChromeDriverFedCMProtocolPart,
         ChromeDriverPrintProtocolPart,
         ChromeDriverTestharnessProtocolPart,
+        ChromeDriverGetAccessibilityTreeProtocolPart,
         *(part for part in WebDriverProtocol.implements
           if part.name != ChromeDriverTestharnessProtocolPart.name and
             part.name != ChromeDriverFedCMProtocolPart.name)

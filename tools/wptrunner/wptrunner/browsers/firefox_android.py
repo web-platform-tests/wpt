@@ -87,8 +87,8 @@ def env_extras(**kwargs):
     return []
 
 
-def run_info_extras(**kwargs):
-    rv = fx_run_info_extras(**kwargs)
+def run_info_extras(logger, **kwargs):
+    rv = fx_run_info_extras(logger, **kwargs)
     package = kwargs["package_name"]
     rv.update({"e10s": True if package is not None and "geckoview" in package else False,
                "headless": False})

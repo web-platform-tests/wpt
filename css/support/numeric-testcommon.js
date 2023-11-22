@@ -45,14 +45,14 @@ to test that a given value is ±∞, ±0, or NaN:
 
 
 
-function test_math_used(testString, expectedString, {approx, msg, msgExtra, type, prop, extraStyle={}}={}) {
+function test_math_used(testString, expectedString, {approx, msg, msgExtra, type, prop, prefix, suffix, extraStyle={}}={}) {
     if(type === undefined) type = "length";
     if(!prop) {
         switch(type) {
-            case "number":     prop = "scale"; break;
+            case "number":     prop = "transform"; prefix="scale("; suffix=")"; break;
             case "integer":    prop = "z-index"; extraStyle.position="absolute"; break;
             case "length":     prop = "margin-left"; break;
-            case "angle":      prop = "rotate"; break;
+            case "angle":      prop = "transform"; prefix="rotate("; suffix=")"; break;
             case "time":       prop = "transition-delay"; break;
             case "resolution": prop = "image-resolution"; break;
             case "flex":       prop = "grid-template-rows"; break;
@@ -60,17 +60,17 @@ function test_math_used(testString, expectedString, {approx, msg, msgExtra, type
         }
 
     }
-    _test_math({stage:'used', testString, expectedString, type, approx, msg, msgExtra, prop, extraStyle});
+    _test_math({stage:'used', testString, expectedString, type, approx, msg, msgExtra, prop, prefix, suffix, extraStyle});
 }
 
-function test_math_computed(testString, expectedString, {approx, msg, msgExtra, type, prop, extraStyle={}}={}) {
+function test_math_computed(testString, expectedString, {approx, msg, msgExtra, type, prop, prefix, suffix, extraStyle={}}={}) {
     if(type === undefined) type = "length";
     if(!prop) {
         switch(type) {
-            case "number":     prop = "scale"; break;
+            case "number":     prop = "transform"; prefix="scale("; suffix=")"; break;
             case "integer":    prop = "z-index"; extraStyle.position="absolute"; break;
             case "length":     prop = "flex-basis"; break;
-            case "angle":      prop = "rotate"; break;
+            case "angle":      prop = "transform"; prefix="rotate("; suffix=")"; break;
             case "time":       prop = "transition-delay"; break;
             case "resolution": prop = "image-resolution"; break;
             case "flex":       prop = "grid-template-rows"; break;
@@ -78,18 +78,18 @@ function test_math_computed(testString, expectedString, {approx, msg, msgExtra, 
         }
 
     }
-    _test_math({stage:'computed', testString, expectedString, type, approx, msg, msgExtra, prop, extraStyle});
+    _test_math({stage:'computed', testString, expectedString, type, approx, msg, msgExtra, prop, prefix, suffix, extraStyle});
 }
 
-function test_math_specified(testString, expectedString, {approx, msg, msgExtra, type, prop, extraStyle={}}={}) {
+function test_math_specified(testString, expectedString, {approx, msg, msgExtra, type, prop, prefix, suffix, extraStyle={}}={}) {
     if(type === undefined) type = "length";
     const stage = "specified";
     if(!prop) {
         switch(type) {
-            case "number":     prop = "scale"; break;
+            case "number":     prop = "transform"; prefix="scale("; suffix=")"; break;
             case "integer":    prop = "z-index"; extraStyle.position="absolute"; break;
             case "length":     prop = "flex-basis"; break;
-            case "angle":      prop = "rotate"; break;
+            case "angle":      prop = "transform"; prefix="rotate("; suffix=")"; break;
             case "time":       prop = "transition-delay"; break;
             case "resolution": prop = "image-resolution"; break;
             case "flex":       prop = "grid-template-rows"; break;
@@ -111,6 +111,14 @@ function test_math_specified(testString, expectedString, {approx, msg, msgExtra,
     }
     let t = testString;
     let e = expectedString;
+    if(prefix) {
+        t = prefix + t;
+        e = prefix + e;
+    }
+    if(suffix) {
+        t += suffix;
+        e += suffix;
+    }
     test(()=>{
         testEl.style[prop] = '';
         testEl.style[prop] = t;
@@ -122,6 +130,10 @@ function test_math_specified(testString, expectedString, {approx, msg, msgExtra,
         assert_not_equals(expectedValue, '', `${expectedString} isn't valid in '${prop}'; got the default value instead.`)
         if (approx) {
             let extractValue = function(value) {
+                let escapeRegex = (string) => {
+                    return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
+                };
+                value = value.replace(new RegExp("^" + escapeRegex(prefix)), "").replace(new RegExp(escapeRegex(suffix) + "$"), "");
                 if (value.startsWith("calc(")) {
                     value = value.slice("calc(".length, -1);
                 }
@@ -159,7 +171,7 @@ function test_nan(testString) {
 }
 
 
-function _test_math({stage, testEl, testString, expectedString, type, approx, msg, msgExtra, prop, extraStyle}={}) {
+function _test_math({stage, testEl, testString, expectedString, type, approx, msg, msgExtra, prop, prefix, suffix, extraStyle}={}) {
     // Find the test element
     if(!testEl) testEl = document.getElementById('target');
     if(testEl == null) throw "Couldn't find #target element to run tests on.";
@@ -174,6 +186,14 @@ function _test_math({stage, testEl, testString, expectedString, type, approx, ms
     }
     let t = testString;
     let e = expectedString;
+    if(prefix) {
+        t = prefix + t;
+        e = prefix + e;
+    }
+    if(suffix) {
+        t += suffix;
+        e += suffix;
+    }
     test(()=>{
         testEl.style[prop] = '';
         const defaultValue = getComputedStyle(testEl)[prop];
@@ -186,6 +206,10 @@ function _test_math({stage, testEl, testString, expectedString, type, approx, ms
         assert_not_equals(expectedValue, defaultValue, `${expectedString} isn't valid in '${prop}'; got the default value instead.`)
         if (approx) {
             let extractValue = function(value) {
+                let escapeRegex = (string) => {
+                    return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
+                };
+                value = value.replace(new RegExp("^" + escapeRegex(prefix)), "").replace(new RegExp(escapeRegex(suffix) + "$"), "");
                 return parseFloat(value);
             };
             let parsedUsed = extractValue(usedValue);

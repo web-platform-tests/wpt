@@ -11,12 +11,12 @@ async def test_format_type(bidi_session, top_context, inline):
         wait="complete")
 
     png_screenshot = await bidi_session.browsing_context.capture_screenshot(
-        context=top_context["context"]
+        context=top_context["context"],
         format=FormatOptions(type="image/png"))
     jpeg_screenshot = await bidi_session.browsing_context.capture_screenshot(
         context=top_context["context"],
         format=FormatOptions(type="image/jpeg"))
-    
+
     assert png_screenshot != jpeg_screenshot
 
 

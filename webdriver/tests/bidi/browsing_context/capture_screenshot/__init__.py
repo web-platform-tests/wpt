@@ -2,7 +2,7 @@ from math import floor
 from ... import (
     get_device_pixel_ratio,
     get_document_dimensions,
-    get_element_dimensions,    
+    get_element_dimensions,
     get_viewport_dimensions,
     remote_mapping_to_dict,
 )

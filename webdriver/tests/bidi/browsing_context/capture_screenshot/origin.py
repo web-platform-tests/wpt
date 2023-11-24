@@ -2,7 +2,7 @@ import pytest
 
 from tests.support.image import png_dimensions
 
-from . import get_physical_viewport_dimensions, get_physical_document_dimensions
+from . import get_physical_document_dimensions, get_physical_viewport_dimensions
 
 
 @pytest.mark.asyncio

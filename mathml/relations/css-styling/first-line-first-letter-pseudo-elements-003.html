@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>MathML and ::first-line/::first-letter pseudo-elements</title>
+<link rel="help" href="https://w3c.github.io/mathml-core/#legacy-mathml-style-attributes">
+<link rel="match" href="first-line-first-letter-pseudo-elements-003-ref.html"/>
+<meta name="assert" content="display math elements do not contribute a first formatted line/letter to ancestors.">
+<style>
+  .redfirstline::first-line { background: red; }
+  .redfirstletter::first-letter { background: red; }
+</style>
+<p>PASS if there is no red.</p>
+<ol>
+  <li>
+    <div class="redfirstline">
+      <div style="display: inline math">Hello,<br/>World!</div>
+    </div>
+  </li>
+  <li>
+    <div class="redfirstletter">
+      <div style="display: inline math">Hello, World!</div>
+    </div>
+  </li>
+  <li>
+    <div class="redfirstline">
+      <div style="display: block math">Hello,<br/>World!</div>
+    </div>
+  </li>
+  <li>
+    <div class="redfirstletter">
+      <div style="display: block math">Hello, World!</div>
+    </div>
+  </li>
+</ol>

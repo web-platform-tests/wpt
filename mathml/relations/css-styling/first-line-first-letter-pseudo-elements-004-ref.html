@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>MathML and ::first-line/::first-letter pseudo-elements (reference)</title>
+<style>
+  .green { background: lightgreen; }
+</style>
+<ol>
+  <li>PASS if first line is green:
+    <math>
+      <mtext><span><span class="green">Hello,</span><br/>World!</span></mtext>
+    </math>
+  </li>
+  <li>PASS if first letter is green:
+    <math>
+      <mtext><span><span class="green">H</span>ello, World!</span></mtext>
+    </math>
+  </li>
+</ol>

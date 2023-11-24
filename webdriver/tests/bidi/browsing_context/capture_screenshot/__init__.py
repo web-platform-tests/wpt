@@ -1,10 +1,10 @@
 from math import floor
 from ... import (
     get_device_pixel_ratio,
-    get_element_dimensions,
+    get_document_dimensions,
+    get_element_dimensions,    
     get_viewport_dimensions,
     remote_mapping_to_dict,
-    get_document_dimensions,
 )
 
 from webdriver.bidi.modules.script import ContextTarget

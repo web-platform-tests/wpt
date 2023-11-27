@@ -25,10 +25,10 @@
 <aside data-testname="el-aside" data-expectedrole="complementary" class="ex">x</aside>
 <main>
   <aside data-testname="el-aside-in-main" data-expectedrole="complementary" class="ex">x</aside>
-  <section>
-    <aside data-testname="el-aside-in-section-in-main" class="ex-generic">x</aside>
-    <aside data-testname="el-aside-in-section-in-main-with-name" data-expectedrole="complementary" aria-label="x" class="ex">x</aside>
-  </section>
+  <article>
+    <aside data-testname="el-aside-in-article-in-main" class="ex-generic">x</aside>
+    <aside data-testname="el-aside-in-article-in-main-with-name" data-expectedrole="complementary" aria-label="x" class="ex">x</aside>
+  </article>
 </main>
 <article>
   <aside data-testname="el-aside-in-article" class="ex-generic">x</aside>
@@ -43,7 +43,11 @@
   <aside data-testname="el-aside-in-nav-with-name" data-expectedrole="complementary" aria-label="x" class="ex">x</aside>
   <aside data-testname="el-aside-in-nav-with-role" data-expectedrole="complementary" class="ex" role="complementary">x</aside>
 </nav>
-<section>
+<!-- Spec says that the conditional aside mapping happens when nested in a sectioning content element.
+  However, this doesn't make sense if the parent <section> isn't a landmark in the first place.
+  Let's force the section to always be a landmark for now, but we should probably expand on this test
+  case pending discussions in https://github.com/w3c/html-aam/pull/484 -->
+<section aria-label="x">
   <aside data-testname="el-aside-in-section" class="ex-generic">x</aside>
   <aside data-testname="el-aside-in-section-with-name" data-expectedrole="complementary" aria-label="x" class="ex">x</aside>
 </section>

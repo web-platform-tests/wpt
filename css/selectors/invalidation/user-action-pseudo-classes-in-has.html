@@ -43,76 +43,51 @@
     assert_equals(getComputedStyle(subject1).color, "rgb(0, 0, 0)", "subject1 initially black");
     assert_equals(getComputedStyle(subject2).color, "rgb(0, 0, 0)", "subject3 initially black");
 
-    await new Promise(resolve => {
-      hoverme.addEventListener("mouseover", () => {
-        resolve();
-      }, {once: true});
-      new test_driver
+    await new test_driver
         .Actions()
         .pointerMove(0, 0, {origin: hoverme})
         .send();
-    });
     assert_equals(getComputedStyle(subject1).color, "rgb(0, 0, 255)",
                   "subject1 should be blue");
     assert_equals(getComputedStyle(subject3).color, "rgb(0, 0, 128)",
                   "subject3 should be navy");
 
-    await new Promise(resolve => {
-      unhoverme.addEventListener("mouseover", () => {
-        resolve();
-      }, {once: true});
-      new test_driver
+    await new test_driver
         .Actions()
         .pointerMove(0, 0, {origin: unhoverme})
         .send();
-    });
     assert_equals(getComputedStyle(subject1).color, "rgb(0, 0, 0)",
                   "subject1 should be back to black");
     assert_equals(getComputedStyle(subject3).color, "rgb(0, 0, 0)",
                   "subject3 should be back to black");
 
 
-    await new Promise(resolve => {
-      hoverme.addEventListener("mousedown", () => {
-        resolve();
-      }, {once: true});
-      new test_driver
+    await new test_driver
         .Actions()
         .pointerMove(0, 0, {origin: hoverme})
         .pointerDown()
         .send();
-    });
     assert_equals(getComputedStyle(subject1).color, "rgb(135, 206, 235)",
                   "subject1 should be skyblue");
     assert_equals(getComputedStyle(subject3).color, "rgb(173, 216, 230)",
                   "subject3 should be lightblue");
 
-    await new Promise(resolve => {
-      unhoverme.addEventListener("mouseover", () => {
-        resolve();
-      }, {once: true});
-      new test_driver
+    await new test_driver
         .Actions()
         .pointerUp()
         .pointerMove(0, 0, {origin: unhoverme})
         .send();
-    });
     assert_equals(getComputedStyle(subject1).color, "rgb(0, 0, 0)",
                   "subject1 should be back to black");
     assert_equals(getComputedStyle(subject3).color, "rgb(0, 0, 0)",
                   "subject3 should be back to black");
 
-    await new Promise(resolve => {
-      focusme1.addEventListener("mouseup", () => {
-        resolve();
-      }, {once: true});
-      new test_driver
+    await new test_driver
         .Actions()
         .pointerMove(0, 0, {origin: focusme1})
         .pointerDown()
         .pointerUp()
         .send();
-    });
     assert_equals(getComputedStyle(subject1).color, "rgb(0, 128, 0)",
                   "subject1 should be green");
     assert_equals(getComputedStyle(subject3).color, "rgb(0, 100, 0)",

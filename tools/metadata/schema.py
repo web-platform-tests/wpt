@@ -1,4 +1,4 @@
-from typing import Any, Callable, Sequence, Set, TypeVar
+from typing import Any, Callable, Sequence, Set, TypeVar, Union
 
 T = TypeVar("T")
 
@@ -46,7 +46,13 @@ class SchemaValue():
 
 
     @staticmethod
-    def from_union(fs: Sequence[Callable[[Any], None | str] | Callable[[Any], str] | Callable[[Any], Sequence[str]]], x: Any) -> Any:
+    def from_union(fs:
+        Sequence[Union[
+            Callable[[Any], Union[None, str]],
+            Callable[[Any], Sequence[str]],
+            Callable[[Any], str],
+        ]],
+            x: Any) -> Any:
         for f in fs:
             try:
                 return f(x)

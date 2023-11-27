@@ -3,10 +3,11 @@
 from ..load import load_into_object
 from dataclasses import dataclass
 from io import StringIO
+from typing import Sequence
 
 @dataclass
 class SampleClass():
-    key: list[str]
+    key: Sequence[str]
 
 def sample_dict_to_object_loader(input):
     print(input)

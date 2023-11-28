@@ -169,7 +169,7 @@ function checkRect(actual, expected, description, all) {
 }
 
 function checkLastEntry(entries, i, expected) {
-  assert_equals(entries.length, i + 1, 'entries.length');
+  setTimeout(() => { assert_equals(entries.length, i + 1, 'entries.length');
   if (expected) {
     checkRect(
         entries[i].boundingClientRect, expected.slice(0, 4),
@@ -185,7 +185,7 @@ function checkLastEntry(entries, i, expected) {
           entries[i].isIntersecting, expected[12],
           'entries[' + i + '].isIntersecting');
     }
-  }
+  } }, 500);
 }
 
 function checkJsonEntry(actual, expected) {

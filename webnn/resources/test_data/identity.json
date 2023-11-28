@@ -1,7 +1,7 @@
 {
   "tests": [
     {
-      "name": "copy float32 0D scalar",
+      "name": "identity float32 0D scalar",
       "inputs": {
         "input": {
           "shape": [],
@@ -21,7 +21,7 @@
       }
     },
     {
-      "name": "copy float32 1D tensor",
+      "name": "identity float32 1D tensor",
       "inputs": {
         "input": {
           "shape":[24],
@@ -87,7 +87,7 @@
       }
     },
     {
-      "name": "copy float32 2D tensor",
+      "name": "identity float32 2D tensor",
       "inputs": {
         "input": {
           "shape":[4, 6],
@@ -153,7 +153,7 @@
       }
     },
     {
-      "name": "copy float32 3D tensor",
+      "name": "identity float32 3D tensor",
       "inputs": {
         "input": {
           "shape":[2, 3, 4],
@@ -219,7 +219,7 @@
       }
     },
     {
-      "name": "copy float32 4D tensor",
+      "name": "identity float32 4D tensor",
       "inputs": {
         "input": {
           "shape":[2, 2, 2, 3],
@@ -285,7 +285,7 @@
       }
     },
     {
-      "name": "copy float32 5D tensor",
+      "name": "identity float32 5D tensor",
       "inputs": {
         "input": {
           "shape":[2, 1, 4, 1, 3],

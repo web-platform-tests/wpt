@@ -168,6 +168,17 @@
         local_channel.close();
         break;
       }
+      case "SharedWorker": {
+        const local_shared_worker = new SharedWorker("/storage-access-api/resources/shared-worker-relay.js", id);
+        local_shared_worker.port.start();
+        local_shared_worker.port.postMessage("Same-origin local access");
+        const handle = await document.requestStorageAccess({SharedWorker: true});
+        handle.SharedWorker("/storage-access-api/resources/shared-worker-count.js", id).port.start();
+        const handle_shared_worker = handle.SharedWorker("/storage-access-api/resources/shared-worker-relay.js", id);
+        handle_shared_worker.port.start();
+        handle_shared_worker.port.postMessage("Same-origin handle access");
+        break;
+      }
       default: {
         message = "Unexpected type " + type;
         break;

@@ -300,7 +300,7 @@ const PrecisionMetrics = {
   greaterOrEqual: {ULP: {uint8: 0}},
   lesser: {ULP: {uint8: 0}},
   lesserOrEqual: {ULP: {uint8: 0}},
-  not: {ULP: {uint8: 0}},
+  logicalNot: {ULP: {uint8: 0}},
   // End Element-wise logical operations
   // Begin Element-wise unary operations
   abs: {ULP: {float32: 0, float16: 0}},

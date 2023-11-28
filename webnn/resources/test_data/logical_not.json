@@ -1,7 +1,7 @@
 {
   "tests": [
     {
-      "name": "not uint8 0D scalar",
+      "name": "logicalNot uint8 0D scalar",
       "inputs": {
         "x": {
           "shape": [],
@@ -21,7 +21,7 @@
       }
     },
     {
-      "name": "not uint8 1D tensor",
+      "name": "logicalNot uint8 1D tensor",
       "inputs": {
         "x": {
           "shape": [24],
@@ -87,7 +87,7 @@
       }
     },
     {
-      "name": "not uint8 2D tensor",
+      "name": "logicalNot uint8 2D tensor",
       "inputs": {
         "x": {
           "shape": [4, 6],
@@ -153,7 +153,7 @@
       }
     },
     {
-      "name": "not uint8 3D tensor",
+      "name": "logicalNot uint8 3D tensor",
       "inputs": {
         "x": {
           "shape": [2, 3, 4],
@@ -219,7 +219,7 @@
       }
     },
     {
-      "name": "not uint8 4D tensor",
+      "name": "logicalNot uint8 4D tensor",
       "inputs": {
         "x": {
           "shape": [2, 2, 2, 3],
@@ -285,7 +285,7 @@
       }
     },
     {
-      "name": "not uint8 5D tensor",
+      "name": "logicalNot uint8 5D tensor",
       "inputs": {
         "x": {
           "shape": [2, 1, 4, 1, 3],

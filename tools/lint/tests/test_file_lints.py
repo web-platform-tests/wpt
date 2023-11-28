@@ -776,6 +776,30 @@ def test_css_missing_file_in_css():
          None),
     ]
 
+def test_valid_meta_file():
+    code = b"""\
+spec: url
+suggested_reviewers:
+  - username
+"""
+    errors = check_file_contents("", "css/META.yml", io.BytesIO(code))
+    check_errors(errors)
+
+    assert errors == []
+
+def test_invalid_meta_file():
+    code = b"""\
+- test
+"""
+    errors = check_file_contents("", "css/META.yml", io.BytesIO(code))
+    check_errors(errors)
+
+    assert errors == [
+        ('INVALID-META-FILE',
+         'The META.yml file contains an invalid structure',
+         "css/META.yml",
+         None),
+    ]
 
 def test_css_missing_file_manual():
     errors = check_file_contents("", "css/foo/bar-manual.html", io.BytesIO(b""))

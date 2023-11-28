@@ -61,7 +61,6 @@
     assert_equals(getComputedStyle(subject3).color, "rgb(0, 0, 0)",
                   "subject3 should be back to black");
 
-
     await new test_driver
         .Actions()
         .pointerMove(0, 0, {origin: hoverme})
@@ -72,15 +71,26 @@
     assert_equals(getComputedStyle(subject3).color, "rgb(173, 216, 230)",
                   "subject3 should be lightblue");
 
+    // Clean up `pointerDown` from above. We want to test invalidation from
+    // `:hover:active` to `:hover`, but there's no guarantee that pointer
+    // state will stay the same between actions.
     await new test_driver
         .Actions()
         .pointerUp()
         .pointerMove(0, 0, {origin: unhoverme})
         .send();
-    assert_equals(getComputedStyle(subject1).color, "rgb(0, 0, 0)",
-                  "subject1 should be back to black");
-    assert_equals(getComputedStyle(subject3).color, "rgb(0, 0, 0)",
-                  "subject3 should be back to black");
+
+    // Perform the entire activation chain again, then perform `pointerUp`.
+    await new test_driver
+        .Actions()
+        .pointerMove(0, 0, {origin: hoverme})
+        .pointerDown()
+        .pointerUp()
+        .send();
+    assert_equals(getComputedStyle(subject1).color, "rgb(0, 0, 255)",
+                  "subject1 should be blue");
+    assert_equals(getComputedStyle(subject3).color, "rgb(0, 0, 128)",
+                  "subject3 should be navy");
 
     await new test_driver
         .Actions()

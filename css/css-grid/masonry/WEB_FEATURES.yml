@@ -1,4 +1,3 @@
-apply_mode: IGNORE_PARENT
 features:
 - name: masonry
   files: "**"

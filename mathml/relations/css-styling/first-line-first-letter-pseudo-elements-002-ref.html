@@ -1,26 +1,29 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>MathML and ::first-line/::first-letter pseudo-elements (reference)</title>
-<p>PASS if there is no red.</p>
+<style>
+  .green { color: lime; }
+</style>
+<p>PASS if the first line or letter is green.</p>
 <ol>
   <li>
-    <div style="display: inline math" class="redfirstline">
-      Hello,<br/>World!
+    <div style="display: inline math" class="firstline">
+      <span class="green">Hello,</span><br/>World!
     </div>
   </li>
   <li>
-    <div style="display: inline math" class="redfirstletter">
-      Hello, World!
+    <div style="display: inline math" class="firstletter">
+      <span class="green">H</span>ello, World!
     </div>
   </li>
   <li>
-    <div style="display: block math" class="redfirstline">
-      Hello,<br/>World!
+    <div style="display: block math" class="firstline">
+      <span class="green">Hello,</span><br/>World!
     </div>
   </li>
   <li>
-    <div style="display: block math" class="redfirstletter">
-      Hello, World!
+    <div style="display: block math" class="firstletter">
+      <span class="green">H</span>ello, World!
     </div>
   </li>
 </ol>

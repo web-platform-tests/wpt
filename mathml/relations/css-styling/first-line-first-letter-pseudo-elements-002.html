@@ -3,30 +3,30 @@
 <title>MathML and ::first-line/::first-letter pseudo-elements</title>
 <link rel="help" href="https://w3c.github.io/mathml-core/#legacy-mathml-style-attributes">
 <link rel="match" href="first-line-first-letter-pseudo-elements-002-ref.html"/>
-<meta name="assert" content="::first-line and ::first-letter do not apply to display math elements.">
+<meta name="assert" content="::first-line and ::first-letter do apply to non-MathML specified display math elements, because their computed values are block/inline flow .">
 <style>
-  .redfirstline::first-line { background: red; }
-  .redfirstletter::first-letter { background: red; }
+  .firstline::first-line { background: lime; }
+  .firstletter::first-letter { background: lime; }
 </style>
-<p>PASS if there is no red.</p>
+<p>PASS if the first line or letter is green.</p>
 <ol>
   <li>
-    <div style="display: inline math" class="redfirstline">
+    <div style="display: inline math" class="firstline">
       Hello,<br/>World!
     </div>
   </li>
   <li>
-    <div style="display: inline math" class="redfirstletter">
+    <div style="display: inline math" class="firstletter">
       Hello, World!
     </div>
   </li>
   <li>
-    <div style="display: block math" class="redfirstline">
+    <div style="display: block math" class="firstline">
       Hello,<br/>World!
     </div>
   </li>
   <li>
-    <div style="display: block math" class="redfirstletter">
+    <div style="display: block math" class="firstletter">
       Hello, World!
     </div>
   </li>

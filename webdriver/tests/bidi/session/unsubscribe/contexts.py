@@ -9,7 +9,7 @@ from ... import create_console_api_message, recursive_compare
 
 @pytest.mark.asyncio
 async def test_unsubscribe_from_one_context(
-    bidi_session, top_context, new_tab, wait_for_event
+    bidi_session, top_context, new_tab, wait_for_event, wait_for_future_safe
 ):
     # Subscribe for log events to multiple contexts
     await bidi_session.session.subscribe(
@@ -23,7 +23,7 @@ async def test_unsubscribe_from_one_context(
     # Track all received log.entryAdded events in the events array
     events = []
 
-    async def on_event(_, data):
+    async def on_event(method, data):
         events.append(data)
 
     remove_listener = bidi_session.add_event_listener("log.entryAdded", on_event)
@@ -35,7 +35,7 @@ async def test_unsubscribe_from_one_context(
     # Trigger another console event in the still observed context
     on_entry_added = wait_for_event("log.entryAdded")
     expected_text = await create_console_api_message(bidi_session, new_tab, "text2")
-    await on_entry_added
+    await wait_for_future_safe(on_entry_added)
 
     assert len(events) == 1
     recursive_compare(
@@ -77,7 +77,7 @@ async def test_unsubscribe_from_top_context_with_iframes(
     # Track all received log.entryAdded events in the events array
     events = []
 
-    async def on_event(_, data):
+    async def on_event(method, data):
         events.append(data)
 
     remove_listener = bidi_session.add_event_listener("log.entryAdded", on_event)
@@ -117,7 +117,7 @@ async def test_unsubscribe_from_child_context(
     # Track all received log.entryAdded events in the events array
     events = []
 
-    async def on_event(_, data):
+    async def on_event(method, data):
         events.append(data)
 
     remove_listener = bidi_session.add_event_listener("log.entryAdded", on_event)
@@ -152,7 +152,7 @@ async def test_unsubscribe_from_one_context_after_navigation(
     # Track all received log.entryAdded events in the events array
     events = []
 
-    async def on_event(_, data):
+    async def on_event(method, data):
         events.append(data)
 
     remove_listener = bidi_session.add_event_listener("log.entryAdded", on_event)

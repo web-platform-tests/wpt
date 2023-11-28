@@ -1,5 +1,3 @@
-import asyncio
-
 import pytest
 from tests.support.sync import AsyncPoll
 
@@ -15,6 +13,10 @@ pytestmark = pytest.mark.asyncio
 
 NAVIGATION_STARTED_EVENT = "browsingContext.navigationStarted"
 PAGE_EMPTY = "/webdriver/tests/bidi/browsing_context/support/empty.html"
+PAGE_REDIRECT_HTTP_EQUIV = (
+    "/webdriver/tests/bidi/network/support/redirect_http_equiv.html"
+)
+PAGE_REDIRECTED_HTML = "/webdriver/tests/bidi/network/support/redirected.html"
 
 
 async def test_unsubscribe(bidi_session):
@@ -41,7 +43,7 @@ async def test_unsubscribe(bidi_session):
 
 
 async def test_subscribe(
-    bidi_session, subscribe_events, inline, new_tab, wait_for_event
+    bidi_session, subscribe_events, inline, new_tab, wait_for_event, wait_for_future_safe
 ):
     await subscribe_events(events=[NAVIGATION_STARTED_EVENT])
 
@@ -50,7 +52,7 @@ async def test_subscribe(
     result = await bidi_session.browsing_context.navigate(
         context=new_tab["context"], url=url
     )
-    event = await on_entry
+    event = await wait_for_future_safe(on_entry)
 
     assert_navigation_info(
         event,
@@ -63,7 +65,7 @@ async def test_subscribe(
 
 
 async def test_timestamp(
-    bidi_session, current_time, subscribe_events, inline, new_tab, wait_for_event
+    bidi_session, current_time, subscribe_events, inline, new_tab, wait_for_event, wait_for_future_safe
 ):
     await subscribe_events(events=[NAVIGATION_STARTED_EVENT])
 
@@ -74,7 +76,7 @@ async def test_timestamp(
     result = await bidi_session.browsing_context.navigate(
         context=new_tab["context"], url=url
     )
-    event = await on_entry
+    event = await wait_for_future_safe(on_entry)
 
     time_end = await current_time()
 
@@ -210,12 +212,12 @@ async def test_nested_iframes(
 
 
 @pytest.mark.parametrize("type_hint", ["tab", "window"])
-async def test_new_context(bidi_session, subscribe_events, wait_for_event, type_hint):
+async def test_new_context(bidi_session, subscribe_events, wait_for_event, wait_for_future_safe, type_hint):
     await subscribe_events(events=[NAVIGATION_STARTED_EVENT])
 
     on_entry = wait_for_event(NAVIGATION_STARTED_EVENT)
     top_level_context = await bidi_session.browsing_context.create(type_hint="tab")
-    navigation_info = await on_entry
+    navigation_info = await wait_for_future_safe(on_entry)
     assert_navigation_info(
         navigation_info,
         {
@@ -249,7 +251,7 @@ async def test_same_document_navigation(bidi_session, new_tab, url, subscribe_ev
     remove_listener()
 
 
-async def test_window_open(bidi_session, subscribe_events, wait_for_event, top_context):
+async def test_window_open(bidi_session, subscribe_events, wait_for_event, wait_for_future_safe, top_context):
     await subscribe_events(events=[NAVIGATION_STARTED_EVENT])
 
     on_entry = wait_for_event(NAVIGATION_STARTED_EVENT)
@@ -260,7 +262,7 @@ async def test_window_open(bidi_session, subscribe_events, wait_for_event, top_c
         await_promise=False,
     )
 
-    navigation_info = await on_entry
+    navigation_info = await wait_for_future_safe(on_entry)
     assert_navigation_info(
         navigation_info,
         {
@@ -301,7 +303,7 @@ async def test_document_write(bidi_session, subscribe_events, top_context):
 
 
 async def test_page_with_base_tag(
-    bidi_session, subscribe_events, inline, new_tab, wait_for_event
+    bidi_session, subscribe_events, inline, new_tab, wait_for_event, wait_for_future_safe
 ):
     await subscribe_events(events=[NAVIGATION_STARTED_EVENT])
 
@@ -310,7 +312,7 @@ async def test_page_with_base_tag(
     result = await bidi_session.browsing_context.navigate(
         context=new_tab["context"], url=url
     )
-    event = await on_entry
+    event = await wait_for_future_safe(on_entry)
 
     assert_navigation_info(
         event,
@@ -330,7 +332,7 @@ async def test_page_with_base_tag(
     ],
 )
 async def test_invalid_navigation(
-    bidi_session, new_tab, subscribe_events, wait_for_event, url
+    bidi_session, new_tab, subscribe_events, wait_for_event, wait_for_future_safe, url
 ):
     await subscribe_events(events=[NAVIGATION_STARTED_EVENT])
 
@@ -341,7 +343,7 @@ async def test_invalid_navigation(
             context=new_tab["context"], url=url, wait="complete"
         )
 
-    navigation_info = await on_entry
+    navigation_info = await wait_for_future_safe(on_entry)
     assert_navigation_info(
         navigation_info,
         {
@@ -352,3 +354,110 @@ async def test_invalid_navigation(
     assert navigation_info["navigation"] is not None
 
     await bidi_session.session.unsubscribe(events=[NAVIGATION_STARTED_EVENT])
+
+
+async def test_redirect_http_equiv(
+    bidi_session, subscribe_events, top_context, url
+):
+    await subscribe_events(events=[NAVIGATION_STARTED_EVENT])
+
+    # Track all received browsingContext.navigationStarted events in the events array
+    events = []
+
+    async def on_event(method, data):
+        events.append(data)
+
+    remove_listener = bidi_session.add_event_listener(
+        NAVIGATION_STARTED_EVENT, on_event
+    )
+
+    # PAGE_REDIRECT_HTTP_EQUIV should redirect to PAGE_REDIRECTED_HTML immediately
+    http_equiv_url = url(PAGE_REDIRECT_HTTP_EQUIV)
+    redirected_url = url(PAGE_REDIRECTED_HTML)
+
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"],
+        url=http_equiv_url,
+        wait="complete",
+    )
+
+    # Wait until we receive two events, one for the initial navigation and one
+    # for the http-equiv "redirect".
+    wait = AsyncPoll(bidi_session, timeout=2)
+    await wait.until(lambda _: len(events) >= 2)
+
+    assert len(events) == 2
+    assert_navigation_info(
+        events[0],
+        {
+            "context": top_context["context"],
+            "url": http_equiv_url,
+        },
+    )
+    assert_navigation_info(
+        events[1],
+        {
+            "context": top_context["context"],
+            "url": redirected_url,
+        },
+    )
+
+    remove_listener()
+
+
+async def test_redirect_navigation(
+    bidi_session, subscribe_events, top_context, url
+):
+    await subscribe_events(events=[NAVIGATION_STARTED_EVENT])
+
+    # Track all received browsingContext.navigationStarted events in the events array
+    events = []
+
+    async def on_event(method, data):
+        events.append(data)
+
+    remove_listener = bidi_session.add_event_listener(
+        NAVIGATION_STARTED_EVENT, on_event
+    )
+
+    html_url = url(PAGE_EMPTY)
+    redirect_url = url(
+        f"/webdriver/tests/support/http_handlers/redirect.py?location={html_url}"
+    )
+
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"],
+        url=redirect_url,
+        wait="complete",
+    )
+
+    assert len(events) == 1
+    assert_navigation_info(
+        events[0],
+        {
+            "context": top_context["context"],
+            "url": redirect_url,
+        },
+    )
+
+    remove_listener()
+
+
+async def test_navigate_history_pushstate(
+    bidi_session, inline, new_tab, subscribe_events, wait_for_event, wait_for_future_safe
+):
+    await subscribe_events([NAVIGATION_STARTED_EVENT])
+
+    on_entry = wait_for_event(NAVIGATION_STARTED_EVENT)
+    url = inline("""
+        <script>
+            window.addEventListener('DOMContentLoaded', () => {
+                history.pushState({}, '', '#1');
+            });
+        </script>""")
+    result = await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=url, wait="complete"
+    )
+    event = await wait_for_future_safe(on_entry)
+
+    assert event["navigation"] == result["navigation"]

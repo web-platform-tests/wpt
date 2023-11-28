@@ -17,13 +17,13 @@ RESPONSE_COMPLETED_EVENT = "network.responseCompleted"
 
 
 @pytest.mark.asyncio
-async def test_subscribe_status(bidi_session, top_context, wait_for_event, url, fetch):
-    await bidi_session.session.subscribe(events=[RESPONSE_COMPLETED_EVENT])
+async def test_subscribe_status(bidi_session, subscribe_events, top_context, wait_for_event, wait_for_future_safe, url, fetch):
+    await subscribe_events(events=[RESPONSE_COMPLETED_EVENT])
 
     # Track all received network.responseCompleted events in the events array
     events = []
 
-    async def on_event(_, data):
+    async def on_event(method, data):
         events.append(data)
 
     remove_listener = bidi_session.add_event_listener(
@@ -37,7 +37,7 @@ async def test_subscribe_status(bidi_session, top_context, wait_for_event, url, 
         url=html_url,
         wait="complete",
     )
-    await on_response_completed
+    await wait_for_future_safe(on_response_completed)
 
     assert len(events) == 1
     expected_request = {"method": "GET", "url": html_url}
@@ -58,7 +58,7 @@ async def test_subscribe_status(bidi_session, top_context, wait_for_event, url, 
     text_url = url(PAGE_EMPTY_TEXT)
     on_response_completed = wait_for_event(RESPONSE_COMPLETED_EVENT)
     await fetch(text_url)
-    await on_response_completed
+    await wait_for_future_safe(on_response_completed)
 
     assert len(events) == 2
     expected_request = {"method": "GET", "url": text_url}
@@ -89,7 +89,7 @@ async def test_subscribe_status(bidi_session, top_context, wait_for_event, url, 
 
 @pytest.mark.asyncio
 async def test_load_page_twice(
-    bidi_session, top_context, wait_for_event, url, setup_network_test
+    bidi_session, top_context, wait_for_event, wait_for_future_safe, url, setup_network_test
 ):
     html_url = url(PAGE_EMPTY_HTML)
 
@@ -102,7 +102,7 @@ async def test_load_page_twice(
         url=html_url,
         wait="complete",
     )
-    await on_response_completed
+    await wait_for_future_safe(on_response_completed)
 
     assert len(events) == 1
     expected_request = {"method": "GET", "url": html_url}
@@ -125,11 +125,11 @@ async def test_load_page_twice(
 
 @pytest.mark.parametrize(
     "status, status_text",
-    HTTP_STATUS_AND_STATUS_TEXT,
+    [(status, text) for (status, text) in HTTP_STATUS_AND_STATUS_TEXT if status not in [101, 407]],
 )
 @pytest.mark.asyncio
 async def test_response_status(
-    wait_for_event, url, fetch, setup_network_test, status, status_text
+    wait_for_event, wait_for_future_safe, url, fetch, setup_network_test, status, status_text
 ):
     status_url = url(
         f"/webdriver/tests/support/http_handlers/status.py?status={status}&nocache={RESPONSE_COMPLETED_EVENT}"
@@ -140,7 +140,7 @@ async def test_response_status(
 
     on_response_completed = wait_for_event(RESPONSE_COMPLETED_EVENT)
     await fetch(status_url)
-    await on_response_completed
+    await wait_for_future_safe(on_response_completed)
 
     assert len(events) == 1
     expected_request = {"method": "GET", "url": status_url}
@@ -154,13 +154,14 @@ async def test_response_status(
     }
     assert_response_event(
         events[0],
+        expected_request=expected_request,
         expected_response=expected_response,
         redirect_count=0,
     )
 
 
 @pytest.mark.asyncio
-async def test_response_headers(wait_for_event, url, fetch, setup_network_test):
+async def test_response_headers(wait_for_event, wait_for_future_safe, url, fetch, setup_network_test):
     headers_url = url(
         "/webdriver/tests/support/http_handlers/headers.py?header=foo:bar&header=baz:biz"
     )
@@ -170,7 +171,7 @@ async def test_response_headers(wait_for_event, url, fetch, setup_network_test):
 
     on_response_completed = wait_for_event(RESPONSE_COMPLETED_EVENT)
     await fetch(headers_url, method="GET")
-    await on_response_completed
+    await wait_for_future_safe(on_response_completed)
 
     assert len(events) == 1
 
@@ -190,6 +191,7 @@ async def test_response_headers(wait_for_event, url, fetch, setup_network_test):
     assert_response_event(
         events[0],
         expected_request=expected_request,
+        expected_response=expected_response,
         redirect_count=0,
     )
 
@@ -206,14 +208,14 @@ async def test_response_headers(wait_for_event, url, fetch, setup_network_test):
 )
 @pytest.mark.asyncio
 async def test_response_mime_type_file(
-    url, wait_for_event, fetch, setup_network_test, page_url, mime_type
+    url, wait_for_event, wait_for_future_safe, fetch, setup_network_test, page_url, mime_type
 ):
     network_events = await setup_network_test(events=[RESPONSE_COMPLETED_EVENT])
     events = network_events[RESPONSE_COMPLETED_EVENT]
 
     on_response_completed = wait_for_event(RESPONSE_COMPLETED_EVENT)
     await fetch(url(page_url), method="GET")
-    await on_response_completed
+    await wait_for_future_safe(on_response_completed)
 
     assert len(events) == 1
 

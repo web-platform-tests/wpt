@@ -68,6 +68,9 @@ promise_setup(async () => {
 
 async function runFullCycleTest(t, options) {
   let encoder_config = { ...ENCODER_CONFIG };
+  if (options.realTimeLatencyMode) {
+    encoder_config.latencyMode = 'realtime';
+  }
   let encoder_color_space = {};
   const w = encoder_config.width;
   const h = encoder_config.height;
@@ -79,6 +82,8 @@ async function runFullCycleTest(t, options) {
   await checkEncoderSupport(t, encoder_config);
   let decoder = new VideoDecoder({
     output(frame) {
+      t.add_cleanup(() => { frame.close() });
+
       assert_equals(frame.visibleRect.width, w, "visibleRect.width");
       assert_equals(frame.visibleRect.height, h, "visibleRect.height");
       assert_equals(frame.timestamp, next_ts++, "decode timestamp");
@@ -102,7 +107,6 @@ async function runFullCycleTest(t, options) {
       frames_decoded++;
       assert_true(validateBlackDots(frame, frame.timestamp),
         "frame doesn't match. ts: " + frame.timestamp);
-      frame.close();
     },
     error(e) {
       assert_unreached(e.message);
@@ -153,13 +157,21 @@ async function runFullCycleTest(t, options) {
   await decoder.flush();
   encoder.close();
   decoder.close();
-  assert_equals(frames_encoded, frames_to_encode, "frames_encoded");
-  assert_equals(frames_decoded, frames_to_encode, "frames_decoded");
+  if (options.realTimeLatencyMode) {
+    assert_greater_than(frames_encoded, 0, "frames_encoded");
+  } else {
+    assert_equals(frames_encoded, frames_to_encode, "frames_encoded");
+  }
+  assert_equals(frames_decoded, frames_encoded, "frames_decoded");
 }
 
 promise_test(async t => {
   return runFullCycleTest(t, {});
 }, 'Encoding and decoding cycle');
+
+promise_test(async t => {
+  return runFullCycleTest(t, {realTimeLatencyMode: true});
+}, 'Encoding and decoding cycle with realtime latency mode');
 
 promise_test(async t => {
   if (ENCODER_CONFIG.hasEmbeddedColorSpace)

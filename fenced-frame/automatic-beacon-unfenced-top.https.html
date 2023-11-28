@@ -8,6 +8,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
 
 <body>
 <script>
@@ -24,14 +25,15 @@
 async function init() {
   const actions = new test_driver.Actions();
   const fencedframe = await attachFencedFrameContext(
-    {generator_api: 'fledge', automatic_beacon: true});
+    {generator_api: 'fledge', automatic_beacon: true,
+     origin: get_host_info().HTTPS_REMOTE_ORIGIN});
   const new_url = new URL("resources/automatic-beacon-unfenced-page.html",
       location.href);
 
   await fencedframe.execute((new_url) => {
     const beacon_data = "This is the beacon data!";
     let beacon_event = {
-      eventType: "reserved.top_navigation",
+      eventType: "reserved.top_navigation_commit",
       eventData: beacon_data,
       destination: ["buyer"],
     }

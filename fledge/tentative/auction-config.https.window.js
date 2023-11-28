@@ -7,7 +7,8 @@
 // META: variant=?6-10
 // META: variant=?11-15
 // META: variant=?16-20
-// META: variant=?21-last
+// META: variant=?21-25
+// META: variant=?26-last
 
 "use strict;"
 
@@ -93,9 +94,8 @@ const EXPECT_EXCEPTION = exceptionType => auctionResult => {
 
 const EXPECT_PROMISE_ERROR = auctionResult => {
   assert_not_equals(auctionResult, null, "got null instead of expected error");
-  // TODO(morlovich): I suspect this will end up being spec'd differently.
-  assert_true(typeof auctionResult === "string",
-              "did not get expected error: " + auctionResult);
+  assert_true(auctionResult instanceof TypeError,
+              "did not get expected error type: " + auctionResult);
 }
 
 makeTest({
@@ -275,4 +275,32 @@ makeTest({
       },
     ],
   },
+});
+
+makeTest({
+  name: 'perBuyerCurrencies with invalid currency',
+  expect: EXPECT_PROMISE_ERROR,
+  expectPromiseError: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides: {perBuyerCurrencies: {'*': 'Dollars'}}
+});
+
+makeTest({
+  name: 'perBuyerCurrencies with invalid currency map key',
+  expect: EXPECT_PROMISE_ERROR,
+  expectPromiseError: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides: {perBuyerCurrencies: {'example': 'USD'}}
+});
+
+makeTest({
+  name: 'perBuyerCurrencies with non-https currency map key',
+  expect: EXPECT_PROMISE_ERROR,
+  expectPromiseError: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides: {perBuyerCurrencies: {'http://example.org/': 'USD'}}
+});
+
+makeTest({
+  name: 'perBuyerCurrencies not convertible to dictionary',
+  expect: EXPECT_PROMISE_ERROR,
+  expectPromiseError: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides: {perBuyerCurrencies: 123}
 });

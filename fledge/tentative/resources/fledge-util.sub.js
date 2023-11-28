@@ -16,7 +16,7 @@ const TRUSTED_BIDDING_SIGNALS_URL =
 const TRUSTED_SCORING_SIGNALS_URL =
     `${BASE_URL}resources/trusted-scoring-signals.py`;
 
-// Other origins that should all be distint from the main frame origin
+// Other origins that should all be distinct from the main frame origin
 // that the tests start with.
 const OTHER_ORIGIN1 = 'https://{{hosts[alt][]}}:{{ports[https][0]}}';
 const OTHER_ORIGIN2 = 'https://{{hosts[alt][]}}:{{ports[https][1]}}';
@@ -31,18 +31,27 @@ const OTHER_ORIGIN7 = 'https://{{hosts[alt][www]}}:{{ports[https][1]}}';
 // `dispatch` affects what the tracker script does.
 // `id` can be used to uniquely identify tracked requests. It has no effect
 //     on behavior of the script; it only serves to make the URL unique.
+// `id` will always be the last query parameter.
 function createTrackerURL(origin, uuid, dispatch, id = null) {
   let url = new URL(`${origin}${BASE_PATH}resources/request-tracker.py`);
-  url.searchParams.append('uuid', uuid);
-  url.searchParams.append('dispatch', dispatch);
+  let search = `uuid=${uuid}&dispatch=${dispatch}`;
   if (id)
-    url.searchParams.append('id', id);
+    search += `&id=${id}`;
+  url.search = search;
   return url.toString();
+}
+
+// Create a URL that when fetches clears tracked URLs. Note that the origin
+// doesn't matter - it will clean up all tracked URLs with the provided uuid,
+// regardless of origin they were fetched from.
+function createCleanupURL(uuid) {
+  return createTrackerURL(window.location.origin, uuid, 'clean_up');
 }
 
 // Create tracked bidder/seller URLs. The only difference is the prefix added
 // to the `id` passed to createTrackerURL. The optional `id` field allows
 // multiple bidder/seller report URLs to be distinguishable from each other.
+// `id` will always be the last query parameter.
 function createBidderReportURL(uuid, id = '1', origin = window.location.origin) {
   return createTrackerURL(origin, uuid, `track_get`, `bidder_report_${id}`);
 }
@@ -59,21 +68,50 @@ function createSellerBeaconURL(uuid, id = '1', origin = window.location.origin) 
   return createTrackerURL(origin, uuid, `track_post`, `seller_beacon_${id}`);
 }
 
+function createDirectFromSellerSignalsURL(origin = window.location.origin) {
+  let url = new URL(`${origin}${BASE_PATH}resources/direct-from-seller-signals.py`);
+  return url.toString();
+}
+
 // Generates a UUID and registers a cleanup method with the test fixture to
 // request a URL from the request tracking script that clears all data
 // associated with the generated uuid when requested.
 function generateUuid(test) {
   let uuid = token();
   test.add_cleanup(async () => {
-    let cleanupURL = createTrackerURL(window.location.origin, uuid, 'clean_up');
-    let response = await fetch(cleanupURL, {credentials: 'omit', mode: 'cors'});
+    let response = await fetch(createCleanupURL(uuid),
+                               {credentials: 'omit', mode: 'cors'});
     assert_equals(await response.text(), 'cleanup complete',
                   `Sever state cleanup failed`);
   });
   return uuid;
 }
 
-// Repeatedly requests "request_list" URL until exactly the entries in
+// Helper to fetch "tracked_data" URL to fetch all data recorded by the
+// tracker URL associated with "uuid". Throws on error, including if
+// the retrieved object's errors field is non-empty.
+async function fetchTrackedData(uuid) {
+  let trackedRequestsURL = createTrackerURL(window.location.origin, uuid,
+                                            'tracked_data');
+  let response = await fetch(trackedRequestsURL,
+                             {credentials: 'omit', mode: 'cors'});
+  let trackedData = await response.json();
+
+  // Fail on fetch error.
+  if (trackedData.error) {
+    throw trackedRequestsURL + ' fetch failed:' + JSON.stringify(trackedData);
+  }
+
+  // Fail on errors reported by the tracker script.
+  if (trackedData.errors.length > 0) {
+    throw 'Errors reported by request-tracker.py:' +
+        JSON.stringify(trackedData.errors);
+  }
+
+  return trackedData;
+}
+
+// Repeatedly requests "tracked_data" URL until exactly the entries in
 // "expectedRequests" have been observed by the request tracker script (in
 // any order, since report URLs are not guaranteed to be sent in any order).
 //
@@ -83,36 +121,21 @@ function generateUuid(test) {
 // If any other strings are received from the tracking script, or the tracker
 // script reports an error, fails the test.
 async function waitForObservedRequests(uuid, expectedRequests) {
-  let trackedRequestsURL = createTrackerURL(window.location.origin, uuid,
-                                            'request_list');
-  // Sort array for easier comparison, since order doesn't matter.
-  expectedRequests.sort();
+  // Sort array for easier comparison, as observed request order does not
+  // matter, and replace UUID to print consistent errors on failure.
+  expectedRequests = expectedRequests.sort().map((url) => url.replace(uuid, '<uuid>'));
+
   while (true) {
-    let response = await fetch(trackedRequestsURL,
-                               {credentials: 'omit', mode: 'cors'});
-    let trackerData = await response.json();
+    let trackedData = await fetchTrackedData(uuid);
 
-    // Fail on fetch error.
-    if (trackerData.error) {
-      throw trackedRequestsURL + ' fetch failed:' +
-          JSON.stringify(trackerData);
-    }
-
-    // Fail on errors reported by the tracker script.
-    if (trackerData.errors.length > 0) {
-      throw 'Errors reported by request-tracker.py:' +
-          JSON.stringify(trackerData.errors);
-    }
+    // Clean up "trackedRequests" in same manner as "expectedRequests".
+    let trackedRequests = trackedData.trackedRequests.sort().map(
+                              (url) => url.replace(uuid, '<uuid>'));
 
     // If expected number of requests have been observed, compare with list of
     // all expected requests and exit.
-    let trackedRequests = trackerData.trackedRequests;
     if (trackedRequests.length == expectedRequests.length) {
-      // Hide the uuid content in order to have a static expected file.
-      assert_array_equals(trackedRequests.sort().map((url) =>
-                            url.replace(uuid, '<uuid>')),
-                            expectedRequests.map((url) =>
-                            url.replace(uuid, '<uuid>')));
+      assert_array_equals(trackedRequests, expectedRequests);
       break;
     }
 
@@ -120,9 +143,7 @@ async function waitForObservedRequests(uuid, expectedRequests) {
     // compare what's been received so far, to have a greater chance to fail
     // rather than hang on error.
     for (const trackedRequest of trackedRequests) {
-      assert_in_array(trackedRequest.replace(uuid, '<uuid>'),
-                      expectedRequests.sort().map((url) =>
-                      url.replace(uuid, '<uuid>')));
+      assert_in_array(trackedRequest, expectedRequests);
     }
   }
 }
@@ -144,7 +165,17 @@ function createBiddingScriptURL(params = {}) {
     url.searchParams.append('error', params.error);
   if (params.bid)
     url.searchParams.append('bid', params.bid);
+  if (params.bidCurrency)
+    url.searchParams.append('bidCurrency', params.bidCurrency);
+  if (params.allowComponentAuction !== undefined)
+    url.searchParams.append('allowComponentAuction', JSON.stringify(params.allowComponentAuction))
   return url.toString();
+}
+
+// TODO: Make this return a valid WASM URL.
+function createBiddingWasmHelperURL(params = {}) {
+  let origin = params.origin ? params.origin : new URL(BASE_URL).origin;
+  return `${origin}${RESOURCE_PATH}bidding-wasmlogic.wasm`;
 }
 
 // Creates a decision script with the provided code in the method bodies. The
@@ -254,14 +285,27 @@ async function runBasicFledgeAuction(test, uuid, auctionConfigOverrides = {}) {
   return await navigator.runAdAuction(auctionConfig);
 }
 
+// Checks that await'ed return value of runAdAuction() denotes a successful
+// auction with a winner.
+function expectSuccess(config) {
+  assert_true(config !== null, `Auction unexpectedly had no winner`);
+  assert_true(
+      config instanceof FencedFrameConfig,
+      `Wrong value type returned from auction: ${config.constructor.type}`);
+}
+
+// Checks that await'ed return value of runAdAuction() denotes an auction
+// without a winner (but no fatal error).
+function expectNoWinner(result) {
+  assert_true(result === null, 'Auction unexpectedly had a winner');
+}
+
 // Wrapper around runBasicFledgeAuction() that runs an auction with the specified
 // arguments, expecting the auction to have a winner. Returns the FencedFrameConfig
 // from the auction.
 async function runBasicFledgeTestExpectingWinner(test, uuid, auctionConfigOverrides = {}) {
   let config = await runBasicFledgeAuction(test, uuid, auctionConfigOverrides);
-  assert_true(config !== null, `Auction unexpectedly had no winner`);
-  assert_true(config instanceof FencedFrameConfig,
-      `Wrong value type returned from auction: ${config.constructor.type}`);
+  expectSuccess(config);
   return config;
 }
 
@@ -270,7 +314,7 @@ async function runBasicFledgeTestExpectingWinner(test, uuid, auctionConfigOverri
 async function runBasicFledgeTestExpectingNoWinner(
     test, uuid, auctionConfigOverrides = {}) {
   let result = await runBasicFledgeAuction(test, uuid, auctionConfigOverrides);
-  assert_true(result === null, 'Auction unexpectedly had a winner');
+  expectNoWinner(result);
 }
 
 // Creates a fenced frame and applies fencedFrameConfig to it. Also adds a cleanup
@@ -323,8 +367,11 @@ async function joinGroupAndRunBasicFledgeTestExpectingNoWinner(test, testConfig 
 // `codeToInsert` is a JS object that contains the following fields to control
 // the code generated for the auction worklet:
 // scoreAd - function body for scoreAd() seller worklet function
+// reportResultSuccessCondition - Success condition to trigger reportResult()
 // reportResult - function body for reportResult() seller worklet function
 // generateBid - function body for generateBid() buyer worklet function
+// reportWinSuccessCondition - Success condition to trigger reportWin()
+// decisionScriptURLOrigin - Origin of decision script URL
 // reportWin - function body for reportWin() buyer worklet function
 //
 // Additionally the following fields can be added to check for errors during the
@@ -338,16 +385,20 @@ async function joinGroupAndRunBasicFledgeTestExpectingNoWinner(test, testConfig 
 // `renderURLOverride` allows the ad URL of the joined InterestGroup to
 // to be set by the caller.
 //
+// `auctionConfigOverrides` may be used to override fields in the auction
+// configuration.
+//
 // Requesting error report URLs causes waitForObservedRequests() to throw
 // rather than hang.
 async function runReportTest(test, uuid, codeToInsert, expectedReportURLs,
-                             renderURLOverride) {
+    renderURLOverride, auctionConfigOverrides) {
   let scoreAd = codeToInsert.scoreAd;
   let reportResultSuccessCondition = codeToInsert.reportResultSuccessCondition;
   let reportResult = codeToInsert.reportResult;
   let generateBid = codeToInsert.generateBid;
   let reportWinSuccessCondition = codeToInsert.reportWinSuccessCondition;
   let reportWin = codeToInsert.reportWin;
+  let decisionScriptURLOrigin = codeToInsert.decisionScriptURLOrigin;
 
   if (reportResultSuccessCondition) {
     reportResult = `if (!(${reportResultSuccessCondition})) {
@@ -367,9 +418,13 @@ async function runReportTest(test, uuid, codeToInsert, expectedReportURLs,
   else
     decisionScriptURLParams.error = 'no-reportResult';
 
+  if (decisionScriptURLOrigin !== undefined) {
+    decisionScriptURLParams.origin = decisionScriptURLOrigin;
+  }
+
   if (reportWinSuccessCondition) {
     reportWin = `if (!(${reportWinSuccessCondition})) {
-                   sendReportTo('${createSellerReportURL(uuid, 'error')}');
+                   sendReportTo('${createBidderReportURL(uuid, 'error')}');
                    return false;
                  }
                  ${reportWin}`;
@@ -391,9 +446,16 @@ async function runReportTest(test, uuid, codeToInsert, expectedReportURLs,
     interestGroupOverrides.ads = [{ renderURL: renderURLOverride }]
 
   await joinInterestGroup(test, uuid, interestGroupOverrides);
-  await runBasicFledgeAuctionAndNavigate(
-      test, uuid,
-      { decisionLogicURL: createDecisionScriptURL(uuid, decisionScriptURLParams) });
+
+  if (auctionConfigOverrides === undefined) {
+    auctionConfigOverrides =
+        { decisionLogicURL: createDecisionScriptURL(uuid, decisionScriptURLParams) };
+  } else if (auctionConfigOverrides.decisionLogicURL === undefined) {
+    auctionConfigOverrides.decisionLogicURL =
+        createDecisionScriptURL(uuid, decisionScriptURLParams);
+  }
+
+  await runBasicFledgeAuctionAndNavigate(test, uuid, auctionConfigOverrides);
   await waitForObservedRequests(uuid, expectedReportURLs);
 }
 
@@ -479,8 +541,13 @@ async function createFrame(test, origin, is_iframe = true, permissions = null) {
 
 // Wrapper around createFrame() that creates an iframe and optionally sets
 // permissions.
-async function createIframe(test, origin, permissions) {
-  return createFrame(test, origin, /*is_iframe=*/ true, permissions);
+async function createIframe(test, origin, permissions = null) {
+  return await createFrame(test, origin, /*is_iframe=*/true, permissions);
+}
+
+// Wrapper around createFrame() that creates a top-level window.
+async function createTopLevelWindow(test, origin) {
+  return await createFrame(test, origin, /*is_iframe=*/false);
 }
 
 // Joins a cross-origin interest group. Currently does this by joining the
@@ -494,4 +561,79 @@ async function joinCrossOriginInterestGroup(test, uuid, origin, interestGroupOve
   let iframe = await createIframe(test, origin, 'join-ad-interest-group');
   await runInFrame(test, iframe,
                    `await joinInterestGroup(test_instance, "${uuid}", ${interestGroup})`);
+}
+
+// Joins an interest group in a top-level window, which has the same origin
+// as the joined interest group.
+async function joinInterestGroupInTopLevelWindow(
+    test, uuid, origin, interestGroupOverrides = {}) {
+  let interestGroup = JSON.stringify(
+      createInterestGroupForOrigin(uuid, origin, interestGroupOverrides));
+
+  let topLeveWindow = await createTopLevelWindow(test, origin);
+  await runInFrame(test, topLeveWindow,
+                   `await joinInterestGroup(test_instance, "${uuid}", ${interestGroup})`);
+}
+
+// Fetch directFromSellerSignals from seller and check header
+// 'Ad-Auction-Signals' is hidden from documents.
+async function fetchDirectFromSellerSignals(headers_content, origin) {
+  const response = await fetch(
+      createDirectFromSellerSignalsURL(origin),
+      { adAuctionHeaders: true, headers: headers_content });
+
+  if (!('Negative-Test-Option' in headers_content)) {
+    assert_equals(
+        response.status,
+        200,
+        'Failed to fetch directFromSellerSignals: ' + await response.text());
+  }
+  assert_false(
+      response.headers.has('Ad-Auction-Signals'),
+      'Header "Ad-Auction-Signals" should be hidden from documents.');
+}
+
+// Generate directFromSellerSignals evaluation code for different worklets and
+// pass to `runReportTest()` as `codeToInsert`.
+function directFromSellerSignalsValidatorCode(uuid, expectedSellerSignals,
+    expectedAuctionSignals, expectedPerBuyerSignals) {
+  expectedSellerSignals = JSON.stringify(expectedSellerSignals);
+  expectedAuctionSignals = JSON.stringify(expectedAuctionSignals);
+  expectedPerBuyerSignals = JSON.stringify(expectedPerBuyerSignals);
+
+  return {
+    // Seller worklets
+    scoreAd:
+      `if (directFromSellerSignals === null ||
+           directFromSellerSignals.sellerSignals !== ${expectedSellerSignals} ||
+           directFromSellerSignals.auctionSignals !== ${expectedAuctionSignals} ||
+           Object.keys(directFromSellerSignals).length != 2) {
+              throw 'Failed to get expected directFromSellerSignals in scoreAd(): ' +
+                JSON.stringify(directFromSellerSignals);
+          }`,
+    reportResultSuccessCondition:
+      `directFromSellerSignals !== null &&
+           directFromSellerSignals.sellerSignals === ${expectedSellerSignals} &&
+           directFromSellerSignals.auctionSignals === ${expectedAuctionSignals} &&
+           Object.keys(directFromSellerSignals).length == 2`,
+    reportResult:
+      `sendReportTo("${createSellerReportURL(uuid)}");`,
+
+    // Bidder worklets
+    generateBid:
+      `if (directFromSellerSignals === null ||
+           directFromSellerSignals.perBuyerSignals !== ${expectedPerBuyerSignals} ||
+           directFromSellerSignals.auctionSignals !== ${expectedAuctionSignals} ||
+           Object.keys(directFromSellerSignals).length != 2) {
+              throw 'Failed to get expected directFromSellerSignals in generateBid(): ' +
+                JSON.stringify(directFromSellerSignals);
+        }`,
+    reportWinSuccessCondition:
+      `directFromSellerSignals !== null &&
+           directFromSellerSignals.perBuyerSignals === ${expectedPerBuyerSignals} &&
+           directFromSellerSignals.auctionSignals === ${expectedAuctionSignals} &&
+           Object.keys(directFromSellerSignals).length == 2`,
+    reportWin:
+      `sendReportTo("${createBidderReportURL(uuid)}");`,
+  };
 }

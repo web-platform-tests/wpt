@@ -308,18 +308,128 @@
     @assert ctx.shadowOffsetY === 20;
     @assert ctx.shadowBlur === 30;
 
+- name: 2d.layer.clip-outside
+  desc: Check clipping set outside the layer
+  size: [100, 100]
+  code: |
+    ctx.beginPath();
+    ctx.rect(15, 15, 70, 70);
+    ctx.clip();
+
+    ctx.beginLayer({filter: {name: "gaussianBlur", stdDeviation: 12}});
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(10, 10, 80, 80);
+    ctx.endLayer();
+  reference: |
+    const canvas2 = new OffscreenCanvas(200, 200);
+    const ctx2 = canvas2.getContext('2d');
+
+    ctx2.beginLayer({filter: {name: "gaussianBlur", stdDeviation: 12}});
+    ctx2.fillStyle = 'blue';
+    ctx2.fillRect(10, 10, 80, 80);
+    ctx2.endLayer();
+
+    ctx.beginPath();
+    ctx.rect(15, 15, 70, 70);
+    ctx.clip();
+
+    ctx.drawImage(canvas2, 0, 0);
+
+- name: 2d.layer.clip-inside
+  desc: Check clipping set inside the layer
+  size: [100, 100]
+  code: |
+    ctx.beginLayer({filter: {name: "gaussianBlur", stdDeviation: 12}});
+
+    ctx.beginPath();
+    ctx.rect(15, 15, 70, 70);
+    ctx.clip();
+
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(10, 10, 80, 80);
+    ctx.endLayer();
+  reference: |
+    const canvas2 = new OffscreenCanvas(200, 200);
+    const ctx2 = canvas2.getContext('2d');
+
+    ctx2.beginPath();
+    ctx2.rect(15, 15, 70, 70);
+    ctx2.clip();
+
+    ctx2.fillStyle = 'blue';
+    ctx2.fillRect(10, 10, 80, 80);
+
+    ctx.beginLayer({filter: {name: "gaussianBlur", stdDeviation: 12}});
+    ctx.drawImage(canvas2, 0, 0);
+    ctx.endLayer();
+
+- name: 2d.layer.clip-inside-and-outside
+  desc: Check clipping set inside and outside the layer
+  size: [100, 100]
+  code: |
+    ctx.beginPath();
+    ctx.rect(15, 15, 70, 70);
+    ctx.clip();
+
+    ctx.beginLayer({filter: {name: "gaussianBlur", stdDeviation: 12}});
+
+    ctx.beginPath();
+    ctx.rect(15, 15, 70, 70);
+    ctx.clip();
+
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(10, 10, 80, 80);
+    ctx.endLayer();
+  reference: |
+    const canvas2 = new OffscreenCanvas(200, 200);
+    const ctx2 = canvas2.getContext('2d');
+
+    ctx2.beginPath();
+    ctx2.rect(15, 15, 70, 70);
+    ctx2.clip();
+
+    ctx2.fillStyle = 'blue';
+    ctx2.fillRect(10, 10, 80, 80);
+
+    const canvas3 = new OffscreenCanvas(200, 200);
+    const ctx3 = canvas3.getContext('2d');
+
+    ctx3.beginLayer({filter: {name: "gaussianBlur", stdDeviation: 12}});
+    ctx3.drawImage(canvas2, 0, 0);
+    ctx3.endLayer();
+
+    ctx.beginPath();
+    ctx.rect(15, 15, 70, 70);
+    ctx.clip();
+    ctx.drawImage(canvas3, 0, 0);
+
 - name: 2d.layer.unclosed
   desc: Check that layers are rendered even if not closed.
   size: [200, 200]
   code: |
-    ctx.fillStyle = 'purple';
-    ctx.fillRect(60, 60, 75, 50);
-    ctx.globalAlpha = 0.5;
+    {% set ns = namespace(ctx='ctx') %}
+    {% if canvas_type == 'worker' %}
+    // `transferToImageBitmap` is used to transfer the test result to the
+    // worker's parent, but `transferToImageBitmap` can't be called on canvas
+    // with unclosed layers. We can however draw to a separate offscreen canvas
+    // and write it to the main canvas using `drawImage`.
+    const canvas2 = new OffscreenCanvas({{ size[0] }}, {{ size[1] }});
+    const ctx2 = canvas2.getContext('2d');
+    {% set ns.ctx = 'ctx2' %}
+    {% endif %}
 
-    ctx.beginLayer({filter: {name: 'dropShadow', dx: -2, dy: 2}});
-    ctx.fillRect(40, 40, 75, 50);
-    ctx.fillStyle = 'grey';
-    ctx.fillRect(50, 50, 75, 50);
+    {{ ns.ctx }}.fillStyle = 'purple';
+    {{ ns.ctx }}.fillRect(60, 60, 75, 50);
+    {{ ns.ctx }}.globalAlpha = 0.5;
+
+    {{ ns.ctx }}.beginLayer({filter: {name: 'dropShadow', dx: -2, dy: 2}});
+    {{ ns.ctx }}.fillRect(40, 40, 75, 50);
+    {{ ns.ctx }}.fillStyle = 'grey';
+    {{ ns.ctx }}.fillRect(50, 50, 75, 50);
+
+    {% if canvas_type == 'worker' %}
+    ctx.drawImage(canvas2, 0, 0);
+    {% endif %}
   reference: |
     ctx.fillStyle = 'purple';
     ctx.fillRect(60, 60, 75, 50);
@@ -336,20 +446,35 @@
   desc: Check that layers are rendered even if not closed.
   size: [200, 200]
   code: |
-    ctx.fillStyle = 'rgba(0, 0, 255, 1)';
-    ctx.fillRect(60, 60, 75, 50);
-    ctx.globalAlpha = 0.5;
+    {% set ns = namespace(ctx='ctx') %}
+    {% if canvas_type == 'worker' %}
+    // `transferToImageBitmap` is used to transfer the test result to the
+    // worker's parent, but `transferToImageBitmap` can't be called on canvas
+    // with unclosed layers. We can however draw to a separate offscreen canvas
+    // and write it to the main canvas using `drawImage`.
+    const canvas2 = new OffscreenCanvas({{ size[0] }}, {{ size[1] }});
+    const ctx2 = canvas2.getContext('2d');
+    {% set ns.ctx = 'ctx2' %}
+    {% endif %}
 
-    ctx.beginLayer();
-    ctx.fillStyle = 'rgba(225, 0, 0, 1)';
-    ctx.fillRect(50, 50, 75, 50);
+    {{ ns.ctx }}.fillStyle = 'rgba(0, 0, 255, 1)';
+    {{ ns.ctx }}.fillRect(60, 60, 75, 50);
+    {{ ns.ctx }}.globalAlpha = 0.5;
 
-    ctx.beginLayer();
-    ctx.fillStyle = 'rgba(0, 255, 0, 1)';
-    ctx.fillRect(70, 70, 75, 50);
+    {{ ns.ctx }}.beginLayer();
+    {{ ns.ctx }}.fillStyle = 'rgba(225, 0, 0, 1)';
+    {{ ns.ctx }}.fillRect(50, 50, 75, 50);
 
-    ctx.endLayer();
-    // Missing ctx.endLayer() here.
+    {{ ns.ctx }}.beginLayer();
+    {{ ns.ctx }}.fillStyle = 'rgba(0, 255, 0, 1)';
+    {{ ns.ctx }}.fillRect(70, 70, 75, 50);
+
+    {{ ns.ctx }}.endLayer();
+    // Missing {{ ns.ctx }}.endLayer() here.
+
+    {% if canvas_type == 'worker' %}
+    ctx.drawImage(canvas2, 0, 0);
+    {% endif %}
   reference: |
     const canvas1 = document.createElement('canvas');
     const ctx1 = canvas1.getContext('2d');
@@ -429,11 +554,6 @@
       test_type: "promise"
       flush_canvas: |-
         await new Promise(resolve => requestAnimationFrame(resolve));
-    putImageData:
-      flush_canvas: |-
-        const canvas2 = new OffscreenCanvas({{ size[0] }}, {{ size[1] }});
-        const ctx2 = canvas2.getContext('2d');
-        ctx.putImageData(ctx2.getImageData(0, 0, 1, 1), 0, 0);
     toBlob:
       test_type: "promise"
       canvasType: ['HTMLCanvas']
@@ -443,44 +563,32 @@
       canvasType: ['HTMLCanvas']
       flush_canvas: canvas.toDataURL();
 
+- name: 2d.layer.putImageData
+  desc: Check that calling putImageData in a layer throws an exception.
+  code: |
+    const canvas2 = new OffscreenCanvas({{ size[0] }}, {{ size[1] }});
+    const ctx2 = canvas2.getContext('2d')
+    const data = ctx2.getImageData(0, 0, 1, 1);
+    // `putImageData` shouldn't throw on it's own.
+    ctx.putImageData(data, 0, 0);
+    // Make sure the exception isn't caused by calling the function twice.
+    ctx.putImageData(data, 0, 0);
+    // Calling again inside a layer should throw.
+    ctx.beginLayer();
+    assert_throws_dom("InvalidStateError", () => ctx.putImageData(data, 0, 0));
 
-- name: 2d.layer.render-opportunities.transferToImageBitmap
-  desc: Checks that transferToImageBitmap flushes and rebuilds the state stack.
-  size: [200, 200]
+- name: 2d.layer.transferToImageBitmap
+  desc: Check that calling transferToImageBitmap in a layer throws an exception.
   canvasType: ['OffscreenCanvas', 'Worker']
   code: |
-    ctx.fillStyle = 'purple';
-    ctx.fillRect(60, 60, 75, 50);
-    ctx.globalAlpha = 0.5;
-
-    ctx.beginLayer({filter: {name: 'dropShadow', dx: -2, dy: 2}});
-    ctx.fillRect(40, 40, 75, 50);
-    ctx.fillStyle = 'grey';
-    ctx.fillRect(50, 50, 75, 50);
-
-    // Force a flush and restoration of the state stack.
-    // `transferToImageBitmap` clears the frame but preserves render states.
+    // `transferToImageBitmap` shouldn't throw on it's own.
     canvas.transferToImageBitmap();
-
-    ctx.fillRect(70, 70, 75, 50);
-    ctx.fillStyle = 'orange';
-    ctx.fillRect(80, 80, 75, 50);
-    ctx.endLayer();
-
-    ctx.fillRect(80, 40, 75, 50);
-  reference: |
-    ctx.fillStyle = 'purple';
-    ctx.globalAlpha = 0.5;
-
-    ctx.beginLayer({filter: {name: 'dropShadow', dx: -2, dy: 2}});
-    ctx.fillStyle = 'grey';
-    ctx.fillRect(70, 70, 75, 50);
-    ctx.fillStyle = 'orange';
-    ctx.fillRect(80, 80, 75, 50);
-    ctx.endLayer();
-
-    ctx.fillRect(80, 40, 75, 50);
-
+    // Make sure the exception isn't caused by calling the function twice.
+    canvas.transferToImageBitmap();
+    // Calling again inside a layer should throw.
+    ctx.beginLayer();
+    assert_throws_dom("InvalidStateError",
+                      () => canvas.transferToImageBitmap());
 
 - name: 2d.layer.several-complex
   desc: >-
@@ -787,3 +895,55 @@
         const clipRegion = new Path2D();
         clipRegion.rect(20, 20, 160, 160);
         ctx.clip(clipRegion);
+
+- name: 2d.layer.opaque-canvas
+  desc: Checks that layer blending works inside opaque canvas
+  size: [300, 300]
+  code: |
+    {% if canvas_type == 'htmlcanvas' %}
+    const canvas2 = document.createElement('canvas');
+    canvas2.width = 200;
+    canvas2.height = 200;
+    {% else %}
+    const canvas2 = new OffscreenCanvas(200, 200);
+    {% endif %}
+    const ctx2 = canvas2.getContext('2d', {alpha: false});
+
+    ctx2.fillStyle = 'purple';
+    ctx2.fillRect(10, 10, 100, 100);
+
+    ctx2.beginLayer({filter: {name: 'dropShadow', dx: -10, dy: 10,
+                              stdDeviation: 0,
+                              floodColor: 'rgba(200, 100, 50, 0.5)'}});
+    ctx2.fillStyle = 'green';
+    ctx2.fillRect(50, 50, 100, 100);
+    ctx2.globalAlpha = 0.8;
+    ctx2.fillStyle = 'yellow';
+    ctx2.fillRect(75, 25, 100, 100);
+    ctx2.endLayer();
+
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(0, 0, 300, 300);
+    ctx.drawImage(canvas2, 0, 0);
+  reference: |
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(0, 0, 300, 300);
+
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, 200, 200);
+
+    ctx.fillStyle = 'purple';
+    ctx.fillRect(10, 10, 100, 100);
+
+    const canvas2 = new OffscreenCanvas(200, 200);
+    const ctx2 = canvas2.getContext('2d');
+    ctx2.fillStyle = 'green';
+    ctx2.fillRect(50, 50, 100, 100);
+    ctx2.globalAlpha = 0.8;
+    ctx2.fillStyle = 'yellow';
+    ctx2.fillRect(75, 25, 100, 100);
+
+    ctx.shadowColor = 'rgba(200, 100, 50, 0.5)';
+    ctx.shadowOffsetX = -10;
+    ctx.shadowOffsetY = 10;
+    ctx.drawImage(canvas2, 0, 0);

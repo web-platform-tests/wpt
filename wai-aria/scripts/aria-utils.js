@@ -105,12 +105,12 @@ const AriaUtils = {
       AriaUtils.verifyGenericRolesBySelector(".ex-generic");
 
    This helper function is equivalant to AriaUtils.verifyRoleOrVariantRolesBySelector(".ex-generic", ["generic", "", "none"]);
-   See various issues and discussions linked from https://github.com/web-platform-tests/interop-2023-accessibility-testing/issues/48
+   See various issues and discussions linked from https://github.com/web-platform-tests/interop-accessibility/issues/48
 
   */
   verifyGenericRolesBySelector: function(selector) {
     // ARIA WG determined implementation variants "none" (Chromium), and the empty string "" (WebKit), are sufficiently equivalent to "generic" for WPT test verification of HTML-AAM.
-    // See various discussions linked from https://github.com/web-platform-tests/interop-2023-accessibility-testing/issues/48
+    // See various discussions linked from https://github.com/web-platform-tests/interop-accessibility/issues/48
     this.verifyRoleOrVariantRolesBySelector(selector, ["generic", "", "none"]);
   },
 
@@ -138,8 +138,19 @@ const AriaUtils = {
       promise_test(async t => {
         const expectedLabel = el.getAttribute("data-expectedlabel");
         let computedLabel = await test_driver.get_computed_label(el);
-        // Todo: Remove whitespace normalization after https://github.com/w3c/accname/issues/192 is addressed. Change prior line back to `const`, too.
-        computedLabel = computedLabel.trim()
+
+        // See:
+        // - https://github.com/w3c/accname/pull/165
+        // - https://github.com/w3c/accname/issues/192
+        // - https://github.com/w3c/accname/issues/208
+        //
+        // AccName references HTML's definition of ASCII Whitespace
+        // https://infra.spec.whatwg.org/#ascii-whitespace
+        // which matches tab (\t), newline (\n), formfeed (\f), return (\r), and regular space (\u0020).
+        // but it does NOT match non-breaking space (\xA0,\u00A0) and others matched by \s
+        const asciiWhitespace = /[\t\n\f\r\u0020]+/g;
+        computedLabel = computedLabel.replace(asciiWhitespace, '\u0020').replace(/^\u0020|\u0020$/g, '');
+
         assert_equals(computedLabel, expectedLabel, el.outerHTML);
       }, `${testName}`);
     }

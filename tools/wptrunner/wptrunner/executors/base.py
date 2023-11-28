@@ -64,6 +64,16 @@ def strip_server(url):
     return urlunsplit(url_parts)
 
 
+def server_url(server_config, protocol, subdomain=False):
+    scheme = "https" if protocol == "h2" else protocol
+    host = server_config["browser_host"]
+    if subdomain:
+        # The only supported subdomain filename flag is "www".
+        host = "{subdomain}.{host}".format(subdomain="www", host=host)
+    return "{scheme}://{host}:{port}".format(scheme=scheme, host=host,
+        port=server_config["ports"][protocol][0])
+
+
 class TestharnessResultConverter:
     harness_codes = {0: "OK",
                      1: "ERROR",
@@ -317,13 +327,7 @@ class TestExecutor:
         self.runner.send_message("test_ended", test, result)
 
     def server_url(self, protocol, subdomain=False):
-        scheme = "https" if protocol == "h2" else protocol
-        host = self.server_config["browser_host"]
-        if subdomain:
-            # The only supported subdomain filename flag is "www".
-            host = "{subdomain}.{host}".format(subdomain="www", host=host)
-        return "{scheme}://{host}:{port}".format(scheme=scheme, host=host,
-            port=self.server_config["ports"][protocol][0])
+        return server_url(self.server_config, protocol, subdomain)
 
     def test_url(self, test):
         return urljoin(self.server_url(test.environment["protocol"],
@@ -751,7 +755,16 @@ class CallbackHandler:
             raise ValueError(f"Unknown action {action}") from e
         try:
             with ActionContext(self.logger, self.protocol, payload.get("context")):
-                result = action_handler(payload)
+                try:
+                    result = action_handler(payload)
+                except AttributeError as e:
+                    # If we fail to get an attribute from the protocol presumably that's a
+                    # ProtocolPart we don't implement
+                    # AttributeError got an obj property in Python 3.10, for older versions we
+                    # fall back to looking at the error message.
+                    if ((hasattr(e, "obj") and getattr(e, "obj") == self.protocol) or
+                        "'{self.protocol.__class__.__name__}' has no attribute" in str(e)):
+                        raise NotImplementedError from e
         except self.unimplemented_exc:
             self.logger.warning("Action %s not implemented" % action)
             self._send_message(cmd_id, "complete", "error", f"Action {action} not implemented")

@@ -13,7 +13,7 @@ def main(request, response):
   "accounts_endpoint": "accounts.py",
   "client_metadata_endpoint": "client_metadata.py",
   "id_assertion_endpoint": "token.py",
-  "revocation_endpoint": "revoke.py",
-  "login_url": "signin.html"
+  "disconnect_endpoint": "disconnect.py",
+  "login_url": "login.html"
 }
 """

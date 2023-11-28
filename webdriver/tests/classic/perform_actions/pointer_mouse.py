@@ -112,8 +112,8 @@ def test_middle_click(session, test_actions_page, mouse_chain):
     assert len(events) == 3
 
     expected = [
-      {"type": "mousedown", "button": 1, "buttons": 4},
-      {"type": "mouseup", "button": 1, "buttons": 0},
+        {"type": "mousedown", "button": 1, "buttons": 4},
+        {"type": "mouseup", "button": 1, "buttons": 0},
     ]
     filtered_events = [filter_dict(e, expected[0]) for e in events]
     mousedown_mouseup_events = [
@@ -186,6 +186,24 @@ def test_click_navigation(session, url, inline):
     session.url = start
     click(session.find.css("#link", all=False))
     Poll(session, message=error_message).until(lambda s: s.url == destination)
+
+
+@pytest.mark.parametrize("x, y, event_count", [
+    (0, 0, 0),
+    (1, 0, 1),
+    (0, 1, 1),
+], ids=["default value", "x", "y"])
+def test_move_to_position_in_viewport(
+    session, test_actions_page, mouse_chain, x, y, event_count
+):
+    mouse_chain.pointer_move(x, y).perform()
+    events = get_events(session)
+    assert len(events) == event_count
+
+    # Move again to check that no further mouse move event is emitted.
+    mouse_chain.pointer_move(x, y).perform()
+    events = get_events(session)
+    assert len(events) == event_count
 
 
 @pytest.mark.parametrize("drag_duration", [0, 300, 800])

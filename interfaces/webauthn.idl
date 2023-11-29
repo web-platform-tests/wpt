@@ -364,19 +364,20 @@ partial dictionary AuthenticationExtensionsClientOutputs {
   UvmEntries uvm;
 };
 
-dictionary AuthenticationExtensionsDevicePublicKeyInputs {
+dictionary AuthenticationExtensionsSupplementalPubKeysInputs {
+    sequence<DOMString> scopes = [];
     DOMString attestation = "none";
     sequence<DOMString> attestationFormats = [];
 };
 
 partial dictionary AuthenticationExtensionsClientInputs {
-    AuthenticationExtensionsDevicePublicKeyInputs devicePubKey;
+    AuthenticationExtensionsSupplementalPubKeysInputs supplementalPubKeys;
 };
 
-dictionary AuthenticationExtensionsDevicePublicKeyOutputs {
-    ArrayBuffer signature;
+dictionary AuthenticationExtensionsSupplementalPubKeysOutputs {
+    sequence<ArrayBuffer> signatures;
 };
 
 partial dictionary AuthenticationExtensionsClientOutputs {
-    AuthenticationExtensionsDevicePublicKeyOutputs devicePubKey;
+    AuthenticationExtensionsSupplementalPubKeysOutputs supplementalPubKeys;
 };

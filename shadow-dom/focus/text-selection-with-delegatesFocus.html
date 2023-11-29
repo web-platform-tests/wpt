@@ -22,8 +22,7 @@ function buildShadowRootWithSelectableText( element, shouldDelegateFocus ) {
     span.textContent = 'Example Text to Select ';
     const button = document.createElement('button');
     button.textContent = 'Button';
-    element.shadowRoot.append(span);
-    element.shadowRoot.append(button);
+    element.shadowRoot.append(span, button);
 }
 
 /**
@@ -42,16 +41,27 @@ function selectText(element, start, end) {
 promise_test(async () => {
     const xShadow = document.getElementById('withoutFocus');
     buildShadowRootWithSelectableText(xShadow, false);
-    await selectText(xShadow, -40, 45)
+
+    // starting selection from the center of the element, and going right.
+    // The important part here is that we start the selection in the center
+    //   (where mouse-down events may be delegated)
+    await selectText(xShadow, 0, 50)
     const s = getSelection();
+
+    // because browsers may handle rendering differently, we can get different amounts of
+    //   text selected, even when using the same start-end values. We opt in this case to
+    //   verify just if any text is selected, since all we care about is if some text is
+    //   selected.
     assert_greater_than(s.toString().length, 0);
 }, 'shadow root has selectable text when focus is not delegated');
 
 promise_test(async () => {
     const xShadow = document.getElementById('withFocus');
     buildShadowRootWithSelectableText(xShadow, true);
-    await selectText(xShadow, -40, 45)
+
+    await selectText(xShadow, 0, 50)
     const s = getSelection();
+
     assert_greater_than(s.toString().length, 0);
 }, 'shadow root has selectable text when focus is delegated');
 

@@ -22,9 +22,9 @@ def validate_dict(obj: Any, required_keys: Set[str] = set(), optional_keys: Set[
     extra_keys = set(obj.keys()) - required_keys - optional_keys
     missing_required_keys = required_keys - set(obj.keys())
     if extra_keys:
-        raise ValueError(f"Object contains invalid keys: {extra_keys}")
+        raise ValueError(f"Object contains invalid keys: {sorted(extra_keys)}")
     if missing_required_keys:
-        raise ValueError(f"Object missing required keys: {missing_required_keys}")
+        raise ValueError(f"Object missing required keys: {sorted(missing_required_keys)}")
 
 
 class SchemaValue():

@@ -3,24 +3,25 @@
 from ..schema import SchemaValue, validate_dict
 
 import pytest
+import re
 
 @pytest.mark.parametrize(
     "input,kwargs,expected_result,expected_exception_type,exception_message",
     [
         ({}, {}, None, None, None),
         ("2", {}, None, ValueError, "Object is not a dictionary. Input: 2"),
-        ({"extra": 3}, {}, None, ValueError, "Object contains invalid keys: {'extra'}"),
+        ({"extra": 3}, {}, None, ValueError, "Object contains invalid keys: ['extra']"),
         ({"required": 1}, {"required_keys": {"required"}}, None, None, None),
         ({"optional": 2}, {"optional_keys": {"optional"}}, None, None, None),
         ({"extra": 3, "optional": 2}, {"optional_keys": {"optional"}}, None,
-            ValueError, "Object contains invalid keys: {'extra'}"),
+            ValueError, "Object contains invalid keys: ['extra']"),
         ({"required": 1, "optional": 2}, {"required_keys": {"required"}, "optional_keys": {"optional"}}, None, None, None),
         ({"optional": 2}, {"required_keys": {"required"}, "optional_keys": {"optional"}}, None,
-            ValueError, "Object missing required keys: {'required'}"),
+            ValueError, "Object missing required keys: ['required']"),
     ])
 def test_validate_dict(input, kwargs, expected_result, expected_exception_type, exception_message):
     if expected_exception_type:
-        with pytest.raises(expected_exception_type, match=exception_message):
+        with pytest.raises(expected_exception_type, match=re.escape(exception_message)):
             validate_dict(input, **kwargs)
     else:
         expected_result == validate_dict(input, **kwargs)

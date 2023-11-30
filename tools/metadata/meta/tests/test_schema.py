@@ -46,7 +46,7 @@ import re
             },
             None,
             ValueError,
-            re.escape("Input value ['reviewer_1', 3] does not fit one of the expected values for the union")
+            "Input value ['reviewer_1', 3] does not fit one of the expected values for the union"
         ),
         (
             {
@@ -56,12 +56,12 @@ import re
             },
             None,
             ValueError,
-            "Object contains invalid keys: {'extra'}"
+            "Object contains invalid keys: ['extra']"
         ),
     ])
 def test_from_dict(input, expected_result, expected_exception_type, exception_message):
     if expected_exception_type:
-        with pytest.raises(expected_exception_type, match=exception_message):
+        with pytest.raises(expected_exception_type, match=re.escape(exception_message)):
             MetaFile.from_dict(input)
     else:
         assert expected_result == MetaFile.from_dict(input)

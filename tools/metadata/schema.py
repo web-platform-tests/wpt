@@ -48,9 +48,8 @@ class SchemaValue():
     @staticmethod
     def from_union(fs:
         Sequence[Union[
-            Callable[[Any], Union[None, str]],
-            Callable[[Any], Sequence[str]],
-            Callable[[Any], str],
+            Callable[[Any], Sequence[T]],
+            Callable[[Any], T],
         ]],
             x: Any) -> Any:
         for f in fs:

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#snap-events">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/dom/events/scrolling/scroll_support.js"></script>
+  <script src="/css/css-scroll-snap-2/resources/common.js"></script>
+  <script src="/css/css-scroll-snap-2/resources/user-scroll-common.js"></script>
+</head>
+
+<body>
+  <style>
+    #scroller {
+      height: 400px;
+      width: 400px;
+      position: relative;
+      overflow: scroll;
+      scroll-snap-type: y mandatory;
+      border: solid 1px black;
+    }
+
+    .box {
+      position: absolute;
+      left: 150px;
+      height: 350px;
+      width: 100px;
+      border: solid 1px white;
+    }
+
+    .snap {
+      scroll-snap-align: start;
+    }
+
+    .blue {
+      background-color: blue;
+    }
+
+    .green {
+      background-color: green;
+    }
+
+    .yellow {
+      background-color: yellow;
+    }
+
+    .pink {
+      background-color: pink;
+    }
+
+    .purple {
+      background-color: purple;
+    }
+
+    #snap_area_1 {
+      top: 0px;
+    }
+
+    #snap_area_2 {
+      top: 352px;
+    }
+
+    #snap_area_3 {
+      top: calc(2 * 352px);
+    }
+
+    #snap_area_4 {
+      top: calc(3 * 352px);
+    }
+
+    #snap_area_5 {
+      top: calc(4 * 352px);
+    }
+
+    .large_space {
+      height: 400vh;
+      width: 400vw;
+      position: absolute;
+    }
+  </style>
+  <div id="scroller">
+    <div class="large_space"></div>
+    <div id="snap_area_1" class="blue snap box"></div>
+    <div id="snap_area_2" class="green snap box"></div>
+    <div id="snap_area_3" class="yellow snap box"></div>
+    <div id="snap_area_4" class="pink snap box"></div>
+    <div id="snap_area_5" class="purple snap box"></div>
+  </div>
+  <script>
+    let scroller =  document.getElementById("scroller");
+    let snap_area_1 =  document.getElementById("snap_area_1");
+    promise_test(async (t) => {
+      await waitForCompositorCommit();
+      const evts_promise = waitForEventsUntil(scroller, "snapchanging",
+          waitForScrollendEventNoTimeout(scroller));
+
+      // Swipe by just less than half the height of snap_area_1.
+      await touchFlingInTarget(snap_area_1.offsetHeight / 2 - 1, scroller,
+          "down"/*upward swipe*/);
+      let evts = await evts_promise;
+
+      if (evts.length == 1) {
+        // If there was a single target, it should not be snap_area_1.
+        assert_equals(evts[0].snapTargets.length, 1);
+        assert_not_equals(evts[0].snapTargets[0], snap_area_1.id);
+      } else if (evts.length == 2) {
+        // If there were 2 snapchanging events seen, they must each have had
+        // just one target. The first's target must have been
+        // snap_area_2 and the second's any of snap_area_{3,4,5}
+        assert_equals(evts[0].snapTargets.length, 1);
+        assert_equal(evts[0].snapTargets[0], snap_area_2.id);
+
+        assert_equals(evts[1].snapTargets.length, 1);
+        assert_not_equals(evts[1].snapTargets[0], snap_area_1);
+        assert_not_equals(evts[1].snapTargets[0], snap_area_2);
+      } else {
+        assert_unreached(`at least 1 but no greater than 2 snapchanging ` +
+                         `events evts have fired, ${evts.length} seen @ scrollTop=${scroller.scrollTop}`);
+      }
+    }, "snapchanging fires on flings, reflecting final fling target.");
+  </script>
+</body>
+
+</html>

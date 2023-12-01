@@ -666,7 +666,7 @@ def check_ahem_system_font(repo_root: Text, path: Text, f: IO[bytes]) -> List[ru
 
 
 def check_meta_file(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]:
-    if not path.endswith(META_YML_FILENAME):
+    if os.path.basename(path) != META_YML_FILENAME:
         return []
     try:
         MetaFile(load_data_to_dict(f))

@@ -1,13 +1,11 @@
-from typing import Any, Callable, Dict, IO, TypeVar
+from typing import Any, Dict, IO
 from ..meta.schema import SchemaValue
 
 import yaml
 
-T = TypeVar("T")
-
-def load_dict_to_obj(obj_loader: Callable[[Dict[str, Any]], T], f: IO[bytes]) -> T:
+def load_data_to_dict(f: IO[bytes]) -> Dict[str, Any]:
     try:
         raw_data = yaml.safe_load(f)
-        return SchemaValue.from_dict(obj_loader, raw_data)
+        return SchemaValue.from_dict(raw_data)
     except Exception as e:
         raise e

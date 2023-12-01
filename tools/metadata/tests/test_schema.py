@@ -45,9 +45,9 @@ class FromDictTestDataClass:
 def test_from_dict(input, expected_result, expected_exception_type, exception_message):
     if expected_exception_type:
         with pytest.raises(expected_exception_type, match=exception_message):
-            SchemaValue.from_dict(FromDictTestDataClass, input)
+            FromDictTestDataClass(SchemaValue.from_dict(input))
     else:
-        assert expected_result == asdict(SchemaValue.from_dict(FromDictTestDataClass, input))
+        assert expected_result == asdict(FromDictTestDataClass(SchemaValue.from_dict(input)))
 
 
 @pytest.mark.parametrize(

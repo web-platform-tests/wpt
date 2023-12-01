@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, Sequence, Set, TypeVar, Union
+from typing import Any, Callable, cast, Dict, Sequence, Set, Type, TypeVar, Union
 
 T = TypeVar("T")
 
@@ -32,14 +32,14 @@ class SchemaValue():
     Set of helpers to convert raw input into an expected value for a given schema
     """
     @staticmethod
-    def from_dict(f: Callable[[Dict[str, Any]], T], x: Any) -> T:
+    def from_dict(x: Any) -> Dict[str, Any]:
         if not isinstance(x, dict):
             raise ValueError(f"Input value {x} is not a dict")
         keys = x.keys()
         for key in keys:
             if not isinstance(key, str):
                 raise ValueError(f"Input value {x} contains key {key} that is not a string")
-        return f(x)
+        return cast(Dict[str, Any], x)
 
 
     @staticmethod

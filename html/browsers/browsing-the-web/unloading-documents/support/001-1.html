@@ -5,7 +5,7 @@
    localStorage.test6564729 += '4';
    var d = document;
    var e = document.open(); // has no effect (ignore-opens-during-unload > 0)
-   localStorage.test6564729 += (e == d) ? '5' : 'A [' + e + '] ';
+   localStorage.test6564729 += (e === d) ? '5' : 'A [' + e + '] ';
    document.write('FAIL - document.write executed and blocked navigation!'); // has no effect (ignore-opens-during-unload > 0)
    localStorage.test6564729 += document.body.textContent.match('FAIL') ? 'B' : '6';
    document.close(); // has no effect (no script-created parser)

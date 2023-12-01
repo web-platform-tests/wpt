@@ -791,6 +791,7 @@ def test_invalid_meta_file():
     code = b"""\
 - test
 """
+    # Check when the value is named correctly. It should find the error.
     errors = check_file_contents("", "css/META.yml", io.BytesIO(code))
     check_errors(errors)
 
@@ -800,6 +801,13 @@ def test_invalid_meta_file():
          "css/META.yml",
          None),
     ]
+
+    # Check when the value is named incorrectly. It should not find the error.
+    errors = check_file_contents("", "css/OTHER_META.yml", io.BytesIO(code))
+    check_errors(errors)
+
+    assert errors == []
+
 
 def test_css_missing_file_manual():
     errors = check_file_contents("", "css/foo/bar-manual.html", io.BytesIO(b""))

@@ -1,1 +1,1 @@
-Feature-Policy: clipboard-read 'self'
+Permissions-Policy: clipboard-read=(self)

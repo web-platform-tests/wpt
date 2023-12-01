@@ -1,6 +1,7 @@
 # mypy: allow-untyped-defs
 
 from ..schema import SchemaValue, validate_dict
+from dataclasses import dataclass, asdict
 
 import pytest
 import re
@@ -25,6 +26,28 @@ def test_validate_dict(input, kwargs, expected_result, expected_exception_type, 
             validate_dict(input, **kwargs)
     else:
         expected_result == validate_dict(input, **kwargs)
+
+
+@dataclass
+class FromDictTestDataClass:
+    key: str
+
+    def __init__(self, input):
+        self.key = input.get("key")
+
+@pytest.mark.parametrize(
+    "input,expected_result,expected_exception_type,exception_message",
+    [
+        ({"key": "value"}, {"key": "value"}, None, None),
+        ({1: "value"}, None, ValueError, "Input value {1: 'value'} contains key 1 that is not a string"),
+        (3, None, ValueError, "Input value 3 is not a dict")
+    ])
+def test_from_dict(input, expected_result, expected_exception_type, exception_message):
+    if expected_exception_type:
+        with pytest.raises(expected_exception_type, match=exception_message):
+            SchemaValue.from_dict(FromDictTestDataClass, input)
+    else:
+        assert expected_result == asdict(SchemaValue.from_dict(FromDictTestDataClass, input))
 
 
 @pytest.mark.parametrize(

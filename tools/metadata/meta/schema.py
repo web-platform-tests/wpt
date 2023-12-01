@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, List, Any
+from typing import Dict, Optional, List, Any
 
 from ..schema import SchemaValue, validate_dict
 
@@ -24,8 +24,7 @@ class MetaFile():
     _optional_keys = {"spec", "suggested_reviewers"}
 
     @staticmethod
-    def from_dict(obj: Any) -> Any:
-        assert isinstance(obj, dict)
+    def from_dict(obj: Dict[str, Any]) -> 'MetaFile':
         validate_dict(obj, optional_keys=MetaFile._optional_keys)
         spec = SchemaValue.from_union([SchemaValue.from_str, SchemaValue.from_none], obj.get("spec"))
         suggested_reviewers = SchemaValue.from_union(

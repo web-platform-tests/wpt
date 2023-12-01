@@ -1,5 +1,6 @@
 # mypy: allow-untyped-defs
 
+from dataclasses import asdict
 from ..schema import MetaFile
 
 import pytest
@@ -13,7 +14,10 @@ import re
                 "spec": "spec-value",
                 "suggested_reviewers": ["reviewer_1", "reviewer_2"]
             },
-            MetaFile(spec="spec-value", suggested_reviewers=["reviewer_1", "reviewer_2"]),
+            {
+                "spec": "spec-value",
+                "suggested_reviewers": ["reviewer_1", "reviewer_2"]
+            },
             None,
             None
         ),
@@ -21,7 +25,10 @@ import re
             {
                 "spec": "spec-value",
             },
-            MetaFile(spec="spec-value"),
+            {
+                "spec": "spec-value",
+                "suggested_reviewers": None,
+            },
             None,
             None
         ),
@@ -29,13 +36,16 @@ import re
             {
                 "suggested_reviewers": ["reviewer_1", "reviewer_2"]
             },
-            MetaFile(suggested_reviewers=["reviewer_1", "reviewer_2"]),
+            {
+                "spec": None,
+                "suggested_reviewers": ["reviewer_1", "reviewer_2"],
+            },
             None,
             None
         ),
         (
             {},
-            MetaFile(),
+            {"spec": None, "suggested_reviewers": None},
             None,
             None
         ),
@@ -59,9 +69,9 @@ import re
             "Object contains invalid keys: ['extra']"
         ),
     ])
-def test_from_dict(input, expected_result, expected_exception_type, exception_message):
+def test_meta_file(input, expected_result, expected_exception_type, exception_message):
     if expected_exception_type:
         with pytest.raises(expected_exception_type, match=re.escape(exception_message)):
-            MetaFile.from_dict(input)
+            MetaFile(input)
     else:
-        assert expected_result == MetaFile.from_dict(input)
+        assert expected_result == asdict(MetaFile(input))

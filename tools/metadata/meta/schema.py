@@ -23,11 +23,9 @@ class MetaFile():
 
     _optional_keys: ClassVar[Set[str]] = {"spec", "suggested_reviewers"}
 
-    @staticmethod
-    def from_dict(obj: Dict[str, Any]) -> 'MetaFile':
+    def __init__(self, obj: Dict[str, Any]):
         validate_dict(obj, optional_keys=MetaFile._optional_keys)
-        spec = SchemaValue.from_union([SchemaValue.from_str, SchemaValue.from_none], obj.get("spec"))
-        suggested_reviewers = SchemaValue.from_union(
+        self.spec = SchemaValue.from_union([SchemaValue.from_str, SchemaValue.from_none], obj.get("spec"))
+        self.suggested_reviewers = SchemaValue.from_union(
             [lambda x: SchemaValue.from_list(SchemaValue.from_str, x), SchemaValue.from_none],
             obj.get("suggested_reviewers"))
-        return MetaFile(spec, suggested_reviewers)

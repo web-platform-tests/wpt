@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Optional, List, Any
+from typing import Any, ClassVar, Dict, List, Optional, Set
 
 from ..schema import SchemaValue, validate_dict
 
@@ -21,7 +21,7 @@ class MetaFile():
     """
     suggested_reviewers: Optional[List[str]] = None
 
-    _optional_keys = {"spec", "suggested_reviewers"}
+    _optional_keys: ClassVar[Set[str]] = {"spec", "suggested_reviewers"}
 
     @staticmethod
     def from_dict(obj: Dict[str, Any]) -> 'MetaFile':

@@ -47,8 +47,10 @@ directory named <code class="docutils literal notranslate"><span class="pre">pri
 <li><p><code class="docutils literal notranslate"><span class="pre">css/css-foo/bar-print-001.html</span></code> is <strong>not</strong> a print reftest</p></li>
 </ul>
 <p>Like ordinary reftests, the reference is specified using a <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=match&gt;</span></code> element.</p>
-<p>The default page size for print reftests is 12.7 cm by 7.62 cm (5
-inches by 3 inches).</p>
+<p>The default page size
+(<a class="reference external" href="https://drafts.csswg.org/css-page-3/#page-model">page box</a>) for
+print reftests is 12.7 cm by 7.62 cm (5 inches by 3 inches) with a
+default margin of 12.7 mm (0.5 inches) on all sides.</p>
 <p>All the features of ordinary reftests also work with print reftests
 including <a class="reference external" href="reftests.html#fuzzy-matching">fuzzy matching</a>. Any fuzzy
 specifier applies to each image comparison performed i.e. separately

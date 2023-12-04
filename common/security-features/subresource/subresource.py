@@ -129,6 +129,7 @@ def preprocess_stash_action(request, response):
         stash.take(key=key, path=path)
         stash.put(key=key, value=value, path=path)
         response_data = json.dumps({u"status": u"success", u"result": isomorphic_decode(key)})
+        return False
     elif action == b"purge":
         value = stash.take(key=key, path=path)
         return False

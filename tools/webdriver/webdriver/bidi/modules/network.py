@@ -58,8 +58,83 @@ class Network(BidiModule):
         return result["intercept"]
 
     @command
+    def continue_with_auth(
+        self,
+        request: str,
+        action: str,
+        credentials: Optional[Dict[str, str]] = None
+    ) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {
+            "request": request,
+            "action": action,
+        }
+
+        if action == "provideCredentials" and credentials is not None:
+            if "type" in credentials:
+                params["type"] = credentials["type"]
+            if "username" in credentials:
+                params["username"] = credentials["username"]
+            if "password" in credentials:
+                params["password"] = credentials["password"]
+
+        return params
+
+    @command
+    def continue_request(self,
+                         request: str,
+                         method: Optional[str] = None,
+                         url: Optional[str] = None) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {
+            "request": request,
+        }
+
+        if method is not None:
+            params["method"] = method
+
+        if url is not None:
+            params["url"] = url
+
+        return params
+
+    @command
+    def continue_response(
+            self,
+            request: str,
+            reason_phrase: Optional[str] = None,
+            status_code: Optional[int] = None) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {
+            "request": request,
+        }
+
+        if reason_phrase is not None:
+            params["reasonPhrase"] = reason_phrase
+
+        if status_code is not None:
+            params["statusCode"] = status_code
+
+        return params
+
+    @command
     def fail_request(self, request: str) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {"request": request}
+        return params
+
+    @command
+    def provide_response(
+            self,
+            request: str,
+            reason_phrase: Optional[str] = None,
+            status_code: Optional[int] = None) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {
+            "request": request,
+        }
+
+        if reason_phrase is not None:
+            params["reasonPhrase"] = reason_phrase
+
+        if status_code is not None:
+            params["statusCode"] = status_code
+
         return params
 
     @command

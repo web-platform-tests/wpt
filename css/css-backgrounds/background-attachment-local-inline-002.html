@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+ <html class="reftest-wait">
+
+  <meta charset="UTF-8">
+
+  <title>CSS Backgrounds Test: 'background-attachment: local' applied on an inline element</title>
+
+  <!--
+
+  Created: November 25th 2023
+
+  Last modified: December 5th 2023
+
+  -->
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-backgrounds-3/#background-attachment">
+  <link rel="help" href="https://www.w3.org/TR/cssom-view-1/#dom-window-scroll">
+  <link rel="match" href="reference/background-attachment-fixed-inline-002-ref.html">
+  <link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+
+  <meta name="assert" content="This test checks the interaction between an inline with a 'background-attachment: local' background-image and the expected behavior of the scroll() method which applies to the viewport window.">
+
+  <style>
+  html
+    {
+      height: 600px;
+      width: 600px;
+    }
+
+  body
+    {
+      font-size: 200px;
+      line-height: 3;
+      margin: 0px;
+    }
+
+  span#test-failed
+    {
+       background-color: red;
+       color: yellow;
+    }
+
+  span#test-passed
+    {
+      background-attachment: local;
+      background-image: linear-gradient(green 50%, lime 50%);
+      color: transparent;
+      font-family: Ahem;
+      vertical-align: top;
+    }
+  </style>
+
+  <body onload="window.scroll(0, 600); document.documentElement.classList.remove('reftest-wait');">
+
+  <div><span id="test-failed">FAIL</span></div>
+
+  <div><span id="test-passed">PAS</span></div>

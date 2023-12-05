@@ -105,6 +105,13 @@ promise_test(async t => {
   }, 'cleanup global state');
 }, 'initialize global state');
 
+function randomString(len) {
+  let s = '';
+  while (len--)
+    s += Math.floor((Math.random() * 36)).toString(36);
+  return s;
+}
+
 async function worker_redirect_test(worker_request_url,
                               worker_expected_url,
                               expected_main_resource_message,
@@ -126,7 +133,7 @@ async function worker_redirect_test(worker_request_url,
           w = new frame.contentWindow.Worker(worker_request_url, {type});
           port = w;
         } else {
-          w = new frame.contentWindow.SharedWorker(worker_request_url, {type});
+          w = new frame.contentWindow.SharedWorker(worker_request_url, {type: type, name: randomString(10)});
           port = w.port;
           w.port.start();
         }

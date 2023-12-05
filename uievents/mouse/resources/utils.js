@@ -11,6 +11,28 @@ function getEvent(event_type, target) {
   });
 }
 
+// Returns a |Promise| that gets resolved with the event object when |target|
+// receives an event of type |event_type|. The |Promise| is rejected if the
+// receiving an event of type |fallback_type|.
+function getEventWithFallback(event_type, fallback_type, target) {
+  return new Promise((resolve, reject) => {
+    const event_listener = (event) => {
+      cleanup();
+      resolve(event);
+    }
+    const fallback_listener = (event) => {
+      cleanup();
+      reject(event);
+    }
+    const cleanup = () => {
+      target.removeEventListener(event_type, event_listener);
+      target.removeEventListener(fallback_type, fallback_listener);
+    };
+    target.addEventListener(event_type, event_listener);
+    target.addEventListener(fallback_type, fallback_listener);
+  });
+}
+
 // Returns a |Promise| that gets resolved with |event.data| when |window|
 // receives from |source| a "message" event whose |event.data.type| matches the string
 // |message_data_type|.

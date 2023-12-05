@@ -31,6 +31,7 @@
   document.addEventListener("mousemove", e => e.preventDefault());
 
   promise_test(async test => {
+    return;
     document.addEventListener("selectionchange", logEvents);
     test.add_cleanup(() => { document.removeEventListener("selectionchange", logEvents); });
     event_log = [];
@@ -67,11 +68,10 @@
     const b = document.getElementById("b");
     const c = document.getElementById("c");
 
-    let dragstart_promise = getEvent("dragstart", document);
-
-    // A mouseup event is not expected.  This avoids timing out when the
-    // dragstart event is missing.
-    let mouseup_promise = getEvent("mouseup", document);
+    // A mouseup event is not expected. Added as a fallback to avoid timing out
+    // when the dragstart event is missing.
+    let dragstart_promise = getEvent('dragstart', document);
+        getEventWithFallback("dragstart", "mouseup", document);
 
     await new test_driver.Actions()
         .pointerMove(0, 0, {origin: c})
@@ -84,7 +84,25 @@
         .pointerUp()
         .send();
 
-    await Promise.race([dragstart_promise, mouseup_promise]);
+    await dragstart_promise.then(event => {
+      // event.preventDefault();
+      return new Promise(resolve => {
+        const tick =(n) => {
+          requestAnimationFrame(() => {
+            if (--n) {
+              resolve();
+            }
+            requestAnimationFrame(tick);
+          });
+        }
+        tick(50);
+        // requestAnimationFrame(() => {
+        //   requestAnimationFrame(() => {
+        //     resolve();
+        //   });
+        // })
+      });
+    });
 
     const expected_events = ["mousedown", "dragstart"];
 

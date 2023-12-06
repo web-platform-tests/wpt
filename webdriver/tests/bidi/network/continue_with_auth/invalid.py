@@ -1,9 +1,9 @@
 import pytest
 import webdriver.bidi.error as error
 
-pytestmark = pytest.mark.asyncio
-
 from .. import PAGE_EMPTY_TEXT, RESPONSE_COMPLETED_EVENT
+
+pytestmark = pytest.mark.asyncio
 
 
 @pytest.mark.parametrize("value", ["beforeRequestSent", "responseStarted"])

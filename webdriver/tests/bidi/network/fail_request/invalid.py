@@ -1,9 +1,9 @@
 import pytest
 import webdriver.bidi.error as error
 
-pytestmark = pytest.mark.asyncio
-
 from .. import PAGE_EMPTY_TEXT, RESPONSE_COMPLETED_EVENT
+
+pytestmark = pytest.mark.asyncio
 
 
 async def test_params_request_invalid_phase(setup_blocked_request, bidi_session):

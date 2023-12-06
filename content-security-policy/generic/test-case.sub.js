@@ -76,16 +76,19 @@ function TestCase(scenarios, sanityChecker) {
 
     }, scenario.test_description);
 
-    promise_test(async _ => {
-        const violationEvents = await violationEventPromise;
-        if (scenario.expectation === 'allowed') {
-          assert_array_equals(violationEvents, [],
-              'no violation events should be fired');
-        } else {
-          assert_equals(violationEvents.length, 1,
-              'One violation event should be fired');
-        }
-      }, scenario.test_description + ": securitypolicyviolation");
+    // TODO(jbroman): this should probably be plumbed in from elsewhere
+    if (!location.pathname.includes('/speculationrules.')) {
+      promise_test(async _ => {
+          const violationEvents = await violationEventPromise;
+          if (scenario.expectation === 'allowed') {
+            assert_array_equals(violationEvents, [],
+                'no violation events should be fired');
+          } else {
+            assert_equals(violationEvents.length, 1,
+                'One violation event should be fired');
+          }
+        }, scenario.test_description + ": securitypolicyviolation");
+    }
   }  // runTest
 
   function runTests() {

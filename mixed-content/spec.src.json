@@ -94,6 +94,7 @@
             "sharedworker-import",
             "sharedworker-import-data",
             "sharedworker-module",
+            "speculationrules",
             "websocket",
             "worker-classic",
             "worker-import",
@@ -136,6 +137,7 @@
             "sharedworker-import",
             "sharedworker-import-data",
             "sharedworker-module",
+            "speculationrules",
             "websocket",
             "worker-classic",
             "worker-import",
@@ -178,6 +180,7 @@
             "sharedworker-import",
             "sharedworker-import-data",
             "sharedworker-module",
+            "speculationrules",
             "websocket",
             "worker-classic",
             "worker-import",
@@ -213,7 +216,7 @@
             "same-ws"
           ],
           "expectation": "blocked"
-        }
+        },
       ]
     },
     {
@@ -349,6 +352,19 @@
       "subresource": "*",
       "expectation": "*"
     },
+    {
+      // <meta http-equiv=Content-Security-Policy> is too late to be meaningful
+      // for the Speculation-Rules header.
+      "expansion": "*",
+      "source_scheme": "*",
+      "source_context_list": "*",
+      "delivery_type": "meta",
+      "delivery_value": "opt-in",
+      "redirection": "*",
+      "subresource": "speculationrules",
+      "origin": "*",
+      "expectation": "*"
+    }
   ],
   "source_context_schema": {
     "supported_delivery_type": {
@@ -403,6 +419,7 @@
       "sharedworker-import": [],
       "sharedworker-import-data": [],
       "sharedworker-module": [],
+      "speculationrules": [],
       "video-tag": [],
       "websocket": [],
       "worker-classic": [],

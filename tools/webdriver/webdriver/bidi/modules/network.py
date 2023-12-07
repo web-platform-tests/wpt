@@ -70,12 +70,13 @@ class Network(BidiModule):
         }
 
         if action == "provideCredentials" and credentials is not None:
+            params["credentials"] = {}
             if "type" in credentials:
-                params["type"] = credentials["type"]
+                params["credentials"]["type"] = credentials["type"]
             if "username" in credentials:
-                params["username"] = credentials["username"]
+                params["credentials"]["username"] = credentials["username"]
             if "password" in credentials:
-                params["password"] = credentials["password"]
+                params["credentials"]["password"] = credentials["password"]
 
         return params
 

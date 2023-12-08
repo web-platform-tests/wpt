@@ -432,6 +432,9 @@ class ShadowRealmHandler(HtmlWrapperHandler):
   }`)((resource) => function (resolve, reject) {
     fetch(resource).then(res => res.text(), String).then(resolve, reject);
   });
+  r.evaluate(`s => {
+    globalThis.location = { search: s };
+  }`)(location.search);
   await new Promise(r.evaluate(`
     (resolve, reject) => {
       (async () => {

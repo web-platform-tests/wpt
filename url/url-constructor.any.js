@@ -1,3 +1,4 @@
+// META: global=window,dedicatedworker,shadowrealm
 // META: script=/common/subset-tests-by-key.js
 // META: timeout=long
 // META: variant=?include=file
@@ -50,4 +51,4 @@ function runURLTests(urlTests) {
   }
 }
 
-promise_test(() => fetch("resources/urltestdata.json").then(res => res.json()).then(runURLTests), "Loading data…");
+promise_test(() => fetch_json("resources/urltestdata.json").then(runURLTests), "Loading data…");

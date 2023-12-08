@@ -1,4 +1,5 @@
-promise_test(() => fetch("resources/urltestdata.json").then(res => res.json()).then(runURLTests), "Loading data…");
+// META: global=window,dedicatedworker,shadowrealm
+promise_test(() => fetch_json("resources/urltestdata.json").then(runURLTests), "Loading data…");
 
 function runURLTests(urlTests) {
   for (const expected of urlTests) {

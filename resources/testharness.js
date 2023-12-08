@@ -4777,6 +4777,15 @@
         return "Untitled";
     }
 
+    /** Fetches a JSON resource and parses it */
+    async function fetch_json(resource) {
+        const response = await fetch(resource);
+        return await response.json();
+    }
+    if (!global_scope.GLOBAL || !global_scope.GLOBAL.isShadowRealm()) {
+        expose(fetch_json, 'fetch_json');
+    }
+
     /**
      * Setup globals
      */

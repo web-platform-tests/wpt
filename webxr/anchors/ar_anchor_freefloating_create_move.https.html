@@ -36,23 +36,25 @@ const anchorCreateAndMove = function(session, fakeDeviceController, t) {
 
   const watcherDone = new Event("watcherdone");
   const eventWatcher = new EventWatcher(t, session, ["watcherdone"]);
-  const eventPromise = eventWatcher.wait_for(["watcherdone"]);
+  try {
+    const localRefSpace = await session.requestReferenceSpace('local');
 
-  session.requestReferenceSpace('local').then((localRefSpace) => {
     debug("requesting animation frame");
 
-    session.requestAnimationFrame((time, frame) => {
+    const time_1 = await new Promise((resolve) => {
+      session.requestAnimationFrame((time, frame) => {
+        resolve(time);
+      });
+    });
+
       debug("rAF 1");
-
+    
       let createdAnchor = null;
-      frame.createAnchor(new XRRigidTransform(), localRefSpace)
-        .then((anchor) => {
-          createdAnchor = anchor;
-        });
+      await session.requestAnimationFrame(async (time_2, frame_2) => {
+      debug("rAF 2");
 
-      session.requestAnimationFrame((time_2, frame_2) => {
-        debug("rAF 2");
 
+        createdAnchor = await frame_2.createAnchor(new XRRigidTransform(), localRefSpace);
         const pre_move_pose = frame_2.getPose(createdAnchor.anchorSpace, localRefSpace);
 
         t.step(() => {
@@ -65,7 +67,7 @@ const anchorCreateAndMove = function(session, fakeDeviceController, t) {
 
         anchorController.setAnchorOrigin(VALID_POSE_TRANSFORM);
 
-        session.requestAnimationFrame((time_3, frame_3) => {
+        await session.requestAnimationFrame(async (time_3, frame_3) => {
           debug("rAF 3");
 
           const post_move_pose = frame_3.getPose(createdAnchor.anchorSpace, localRefSpace);
@@ -81,6 +83,9 @@ const anchorCreateAndMove = function(session, fakeDeviceController, t) {
           session.dispatchEvent(watcherDone);
         });
       });
+    catch(error){
+    console.error("Error during anchorCreateandMove:", error);
+  }
     });
   }); // session.requestReferenceSpace(...).then({...});
 

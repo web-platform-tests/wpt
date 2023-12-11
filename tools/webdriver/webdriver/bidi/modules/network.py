@@ -95,6 +95,8 @@ class Network(BidiModule):
         if url is not None:
             params["url"] = url
 
+        # TODO: Add support for missing parameters: body, cookies, headers
+
         return params
 
     @command
@@ -112,6 +114,8 @@ class Network(BidiModule):
 
         if status_code is not None:
             params["statusCode"] = status_code
+
+        # TODO: Add support for missing parameters: body, credentials, headers
 
         return params
 
@@ -135,6 +139,8 @@ class Network(BidiModule):
 
         if status_code is not None:
             params["statusCode"] = status_code
+
+        # TODO: Add support for missing parameters: body, cookies, headers
 
         return params
 

@@ -93,3 +93,49 @@ async def test_params_action_provideCredentials_invalid_credentials(
         await bidi_session.network.continue_with_auth(
             request=request, action="provideCredentials", credentials=value
         )
+
+
+@pytest.mark.parametrize("value", [None, False, 42, {}, []])
+async def test_params_action_provideCredentials_credentials_type_invalid_type(
+    setup_blocked_request, bidi_session, value
+):
+    request = await setup_blocked_request("authRequired")
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.network.continue_with_auth(
+            request=request, action="provideCredentials", credentials={"type": value,}
+        )
+
+
+@pytest.mark.parametrize("value", ["", "foo"])
+async def test_params_action_provideCredentials_credentials_type_invalid_value(
+    setup_blocked_request, bidi_session, value
+):
+    request = await setup_blocked_request("authRequired")
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.network.continue_with_auth(
+            request=request, action="provideCredentials", credentials={"type": value,}
+        )
+
+
+@pytest.mark.parametrize("value", [None, False, 42, {}, []])
+async def test_params_action_provideCredentials_credentials_username_invalid_type(
+    setup_blocked_request, bidi_session, value
+):
+    request = await setup_blocked_request("authRequired")
+    credentials = {"type": "password", "username": value, "password": "foo"}
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.network.continue_with_auth(
+            request=request, action="provideCredentials", credentials=credentials
+        )
+
+
+@pytest.mark.parametrize("value", [None, False, 42, {}, []])
+async def test_params_action_provideCredentials_credentials_password_invalid_type(
+    setup_blocked_request, bidi_session, value
+):
+    request = await setup_blocked_request("authRequired")
+    credentials = {"type": "password", "username": "foo", "password": value}
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.network.continue_with_auth(
+            request=request, action="provideCredentials", credentials=credentials
+        )

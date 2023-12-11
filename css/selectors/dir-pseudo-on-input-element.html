@@ -129,29 +129,31 @@ for (const type of ['password', 'text', 'search', 'url', 'email', 'submit', 'res
     }, `input element whose type attribute is in the ${type} state`);
 }
 
-test(() => {
-    const input = document.createElement('input');
-    input.type = 'text';
-    // bidirectional character type R
-    input.value = '\u05EA';
-    input.setAttribute('dir', 'auto');
+for (const type of ['date', 'time', 'number', 'range', 'color', 'checkbox', 'radio', 'image']) {
+    test(() => {
+        const input = document.createElement('input');
+        input.type = 'text';
+        // bidirectional character type R
+        input.value = '\u05EA';
+        input.setAttribute('dir', 'auto');
 
-    const container = document.createElement('div');
-    container.appendChild(input);
+        const container = document.createElement('div');
+        container.appendChild(input);
 
-    assert_false(input.matches(':dir(ltr)'));
-    assert_true(input.matches(':dir(rtl)'));
+        assert_false(input.matches(':dir(ltr)'));
+        assert_true(input.matches(':dir(rtl)'));
 
-    // Changing to a different type that does't use value causes the bidi rule to no longer apply.
-    input.type = 'radio';
-    assert_true(input.matches(':dir(ltr)'));
-    assert_false(input.matches(':dir(rtl)'));
+        // Changing to a different type that does't use value causes the bidi rule to no longer apply.
+        input.type = type;
+        assert_true(input.matches(':dir(ltr)'));
+        assert_false(input.matches(':dir(rtl)'));
 
-    // And restoring type=text brings back that behavior.
-    input.type = 'text';
-    assert_false(input.matches(':dir(ltr)'));
-    assert_true(input.matches(':dir(rtl)'));
-}, 'dynamic changes to type of input elements affect whether value is used for dir=auto');
+        // And restoring type=text brings back that behavior.
+        input.type = 'text';
+        assert_false(input.matches(':dir(ltr)'));
+        assert_true(input.matches(':dir(rtl)'));
+    }, `dynamic changes to type attribute between '${type}' and 'text' affect whether value is used for <input dir=auto>`);
+}
 
 for (const type of ['date', 'time', 'number', 'range', 'color', 'checkbox', 'radio', 'image']) {
     test(() => {

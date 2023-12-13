@@ -9,3 +9,5 @@ function testConstants(objects, constants, msg) {
     }, "Constants for " + msg + " on " + desc + ".")
   })
 }
+// Expose function even when file imported as a module
+self.testConstants = testConstants;

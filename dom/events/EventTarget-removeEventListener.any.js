@@ -7,3 +7,4 @@ test(function() {
   assert_equals(globalThis.removeEventListener("x", null, true), undefined);
   assert_equals(globalThis.removeEventListener("x", null), undefined);
 }, "removing a null event listener should succeed");
+// TODO: determine whether ShadowRealmGlobalScope is an event target

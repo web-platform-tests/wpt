@@ -3,6 +3,11 @@ from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Union
 from ._module import BidiModule, command
 
 
+class AuthCredentials(Dict[str, Any]):
+    def __init__(self, username: str, password: str):
+        dict.__init__(self, type="password", username=username, password=password)
+
+
 class URLPatternPattern(Dict[str, Any]):
     def __init__(
         self,
@@ -62,7 +67,7 @@ class Network(BidiModule):
         self,
         request: str,
         action: str,
-        credentials: Optional[Dict[str, str]] = None
+        credentials: Optional[AuthCredentials] = None
     ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "request": request,
@@ -70,13 +75,7 @@ class Network(BidiModule):
         }
 
         if action == "provideCredentials" and credentials is not None:
-            params["credentials"] = {}
-            if "type" in credentials:
-                params["credentials"]["type"] = credentials["type"]
-            if "username" in credentials:
-                params["credentials"]["username"] = credentials["username"]
-            if "password" in credentials:
-                params["credentials"]["password"] = credentials["password"]
+            params["credentials"] = credentials
 
         return params
 

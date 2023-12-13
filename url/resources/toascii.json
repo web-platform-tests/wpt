@@ -103,6 +103,22 @@
     "output": null
   },
   {
+    "input": "\u064A.",
+    "output": "xn--mhb."
+  },
+  {
+    "input": "1.\u064A",
+    "output": "1.xn--mhb"
+  },
+  {
+    "input": "\u064A.1",
+    "output": null
+  },
+  {
+    "input": "xn--mhb.1",
+    "output": null
+  },
+  {
     "input": "xn--a-yoc",
     "output": null
   },

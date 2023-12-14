@@ -18,14 +18,8 @@
     await setMediaPermission("granted", ["camera","microphone"]);
     // This should not throw, as the enforcing policy does not block it.
     await navigator.mediaDevices.getUserMedia({video: true});
-    while(true) {
-      await wait(100);
-      const reports = await pollReports(endpoint, id);
-      if (reports.length) {
-        checkReportExists(reports, 'permissions-policy-violation', location.href);
-        break;
-      }
-    }
+    const reports = await pollReports(endpoint, id, {timeout: 5});
+    checkReportExists(reports, 'permissions-policy-violation', location.href);
   }, "Reporting-Endpoints defined endpoint received reports in report-only mode.");
     </script>
   </body>

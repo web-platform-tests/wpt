@@ -27,8 +27,7 @@
   const endpoint = `${base_url}/reporting/resources/report.py`;
   const id = '8106c1d6-55f7-4c82-a8e1-fabc59f890f8';
   promise_test(async t => {
-    await wait(3000);
-    const reports = await pollReports(endpoint, id);
+    const reports = await pollReports(endpoint, id, {timeout: 3});
     checkReportExists(reports, 'deprecation', location.href);
   }, "Reporting-Endpoints defined endpoint received reports.");
 </script>

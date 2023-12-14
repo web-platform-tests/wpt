@@ -18,9 +18,9 @@
     promise_test(async t => {
       const w = window.open(`resources/generate-report.https.sub.html?pipe=header(Reporting-Endpoints,default="/reporting/resources/report.py?reportID=${report_id}")`, "report1");
       const w2 = window.open(`resources/generate-csp-report.https.sub.html?pipe=header(Reporting-Endpoints,default="/reporting/resources/report.py?reportID=${report_id}")`, "report2");
-      await wait(3000);
       // Verify that each iframe generated and sent one report.
-      const reports = await pollReports(endpoint, report_id);
+      const reports = await pollReports(endpoint, report_id,
+                                        {min_count: 2, timeout: 5});
       assert_equals(reports.length, 2, "Number of reports");
       checkReportExists(reports, 'deprecation', w.location.href);
       checkReportExists(reports, 'csp-violation', w2.location.href);

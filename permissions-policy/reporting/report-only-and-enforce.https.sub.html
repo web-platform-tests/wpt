@@ -20,15 +20,10 @@
     await promise_rejects_dom(
         t, "NotAllowedError", navigator.mediaDevices.getUserMedia({video: true}),
         "UserMedia camera access should not be allowed in this document.");
-    while(true) {
-      await wait(100);
-      const reports = await pollReports(endpoint, enforcing_id);
-      if (reports.length) {
-        checkReportExists(reports, 'permissions-policy-violation', location.href);
-        break;
-      }
-    }
-    const report_only_reports = await pollReports(endpoint, report_only_id);
+    const reports = await pollReports(endpoint, enforcing_id, {timeout: 5});
+    checkReportExists(reports, 'permissions-policy-violation', location.href);
+    const report_only_reports = await pollReports(endpoint, report_only_id,
+                                                  {timeout: 1});
     assert_equals(report_only_reports.length, 0, "Report-only endpoint should not receive report.");
   }, "Enforcing policy receives reports when both enforcing and report-only policies are set.");
     </script>

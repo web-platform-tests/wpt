@@ -1,5 +1,6 @@
 importScripts("{{location[server]}}/resources/testharness.js");
 importScripts("{{location[server]}}/content-security-policy/support/testharness-helper.js");
+importScripts("{{location[server]}}/reporting/resources/report-helper.js");
 
 let importscripts_url ="https://{{hosts[][www]}}:{{ports[https][1]}}" +
     "/content-security-policy/support/var-a.js";
@@ -23,8 +24,8 @@ promise_test(t => {
                    _ => new Function("1 + 1"),
                    "`new Function()` should throw 'EvalError'.");
   return Promise.all([
-    waitUntilCSPEventForEval(t, 19),
-    waitUntilCSPEventForEval(t, 23),
+    waitUntilCSPEventForEval(t, 20),
+    waitUntilCSPEventForEval(t, 24),
   ]);
 }, "`eval()` blocked in " + self.location.protocol +
              " with {{GET[test-name]}}");
@@ -34,19 +35,15 @@ promise_test(t => {
   let result = setTimeout("(self.setTimeoutTest.unreached_func(" +
                           "'setTimeout([string]) should not execute.'))()", 1);
   assert_equals(result, 0);
-  return waitUntilCSPEventForEval(t, 34);
+  return waitUntilCSPEventForEval(t, 35);
 }, "`setTimeout([string])` blocked in " + self.location.protocol +
              " with {{GET[test-name]}}");
 
 promise_test(async t => {
-  let report_url = "{{location[server]}}/reporting/resources/report.py" +
-      "?op=retrieve_report&reportID={{GET[id]}}&min_count=4";
-
-  let response = await fetch(report_url);
-  assert_equals(response.status, 200, "Fetching reports failed");
-
-  let response_json = await response.json();
-  let reports = response_json.map(x => x["csp-report"]);
+  let response = await pollReports(
+      `{{location[server]}}/reporting/resources/report.py`, "{{GET[id]}}",
+      {min_count: 4, timeout: 5});
+  let reports = response.map(x => x["csp-report"]);
 
   assert_array_equals(
       reports.map(x => x["blocked-uri"]).sort(),

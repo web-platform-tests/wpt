@@ -255,12 +255,15 @@ async function reportExists(expected, retain_reports) {
     timeout + "&reportID=" + reportID;
   if (retain_reports)
     reportLocation += "&retain=1";
-  const response = await fetch(reportLocation);
-  const json = await response.json();
-  for (const report of json) {
-    if (_isSubsetOf(expected, report)) {
-      return true;
+  for (let i = 0; i < 4; i++) {
+    const response = await fetch(reportLocation);
+    const json = await response.json();
+    for (const report of json) {
+      if (_isSubsetOf(expected, report)) {
+        return true;
+      }
     }
+    await new Promise(resolve => step_timeout(resolve, 500));
   }
   return false;
 }
@@ -271,23 +274,21 @@ async function reportExists(expected, retain_reports) {
  */
 
 async function reportsExist(expected_reports, retain_reports) {
-  const timeout = 10;
-  let reportLocation =
-    "/reporting/resources/report.py?op=retrieve_report&timeout=" +
-    timeout + "&reportID=" + reportID;
-  if (retain_reports)
-    reportLocation += "&retain";
-  // There must be the report of pass.png, so adding 1.
-  const min_count = expected_reports.length + 1;
-  reportLocation += "&min_count=" + min_count;
-  const response = await fetch(reportLocation);
-  const json = await response.json();
+  let all_exist = true;
   for (const expected of expected_reports) {
-    const found = json.some((report) => {
-      return _isSubsetOf(expected, report);
-    });
-    if (!found)
-      return false;
+    if (!await reportExists(expected, true)) {
+      all_exist = false;
+      break;
+    }
   }
-  return true;
+  if (!retain_reports) {
+    await fetch("/reporting/resources/report.py", {
+      method: "POST",
+      body: JSON.stringify({
+        op: "DELETE",
+        reportIDs: [reportID]
+      })
+    });
+  }
+  return all_exist;
 }

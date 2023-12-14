@@ -26,12 +26,12 @@
 
     let camera_reports=[], microphone_reports=[];
     while(true) {
-      await wait(100);
       if (!camera_reports.length) {
-        camera_reports = await pollReports(endpoint, camera_id);
+        camera_reports = await pollReports(endpoint, camera_id, {timeout: 3});
       }
       if (!microphone_reports.length) {
-        microphone_reports = await pollReports(endpoint, microphone_id);
+        microphone_reports = await pollReports(endpoint, microphone_id,
+                                               {timeout: 3});
       }
       if (camera_reports.length && microphone_reports.length) {
         checkReportExists(camera_reports, 'permissions-policy-violation', location.href);

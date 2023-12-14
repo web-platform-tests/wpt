@@ -1004,6 +1004,19 @@
          */
         get_virtual_sensor_information: function(sensor_type, context=null) {
             return window.test_driver_internal.get_virtual_sensor_information(sensor_type, context);
+        },
+
+        /**
+         * Executes a command, as if issued by the user agent.
+         *
+         * Mirrors the deprecated document.execCommand.
+         *
+         * @param {String} command - A string which describes the command, such as "cut", "copy", or "paste".
+         *
+         * @returns {Promise} fulfilled after the command is executed, or rejected in error cases.
+         */
+        execute_command: function(command) {
+           return window.test_driver_internal.execute_command(command);
         }
     };
 
@@ -1180,6 +1193,10 @@
 
         async get_virtual_sensor_information(sensor_type, context=null) {
             throw new Error("get_virtual_sensor_information() is not implemented by testdriver-vendor.js");
+        },
+
+        async execute_command(command) {
+            throw new Error("execute_command() is not implemented by testdriver-vendor.js");
         }
     };
 })();

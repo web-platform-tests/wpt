@@ -117,8 +117,8 @@
         let content_visibility = container.getElementsByClassName("content_visibility")[0];
         let beforeBox = content_visibility.previousElementSibling.getBoundingClientRect();
         let afterBox = content_visibility.nextElementSibling.getBoundingClientRect();
-	// If size containment applies, the container adds no space between
-	// the before/after boxes.
+        // If size containment applies, the container adds no space between
+        // the before/after boxes.
         return afterBox.left - beforeBox.right < 25;
     }
 

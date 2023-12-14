@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>content-visibility and layout containment</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain/#content-visibility">
+<link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1765615">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<meta name="assert" content="content-visibility: auto and elements skipping their content change the used value of the contain property to turn on layout containment.">
+<style>
+  /* Change to style containment can cause drastic changes such as rebuilding
+     counters or quotes, so always enabled here to prevent any side effect. */
+  .content_visibility {
+      contain: style;
+  }
+
+  #spacer_for_far_to_viewport {
+      height: 300vh;
+  }
+
+  #top_spacer {
+      height: 100px;
+      background: lightgray;
+  }
+
+  .absolute_pos {
+      position: absolute;
+      top: 42px;
+  }
+
+  #visible {
+      content-visibility: visible;
+  }
+  #hidden {
+      content-visibility: hidden;
+  }
+  #auto_far {
+      content-visibility: auto;
+  }
+  #auto_close {
+      content-visibility: auto;
+  }
+  #visible_to_hidden {
+      content-visibility: visible;
+  }
+  #hidden_to_visible {
+      content-visibility: hidden;
+  }
+  #visible_to_auto {
+      content-visibility: visible;
+  }
+  #auto_to_visible {
+      content-visibility: auto;
+  }
+</style>
+<body>
+  <div id="log"></div>
+
+  <div id="top_spacer"></div>
+
+  <div id="visible">
+    <div class="absolute_pos"></div>
+  </div>
+
+  <div id="hidden">
+    <div class="absolute_pos"></div>
+  </div>
+
+  <div id="auto_close">
+    <div class="absolute_pos"></div>
+  </div>
+
+  <div id="visible_to_hidden">
+    <div class="absolute_pos"></div>
+  </div>
+
+  <div id="hidden_to_visible">
+    <div class="absolute_pos"></div>
+  </div>
+
+  <div id="visible_to_auto">
+    <div class="absolute_pos"></div>
+  </div>
+
+  <div id="auto_to_visible">
+    <div class="absolute_pos"></div>
+  </div>
+
+  <div id="spacer_for_far_to_viewport"></div>
+
+  <div id="auto_far">
+    <div class="absolute_pos"></div>
+  </div>
+
+  <script>
+    function layoutContainmentApplied(id) {
+        let container = document.getElementById(id);
+        // If layout containment applies, absolute_pos will be positionned
+        // relative to that container.
+        let abs_box = container.getElementsByClassName("absolute_pos")[0]
+            .getBoundingClientRect();
+        return abs_box.top > 100;
+    }
+
+    function setContentVisibility(id, value) {
+        let container = document.getElementById(id);
+        container.style.contentVisibility = value;
+    }
+
+    function tick() {
+        return new Promise(resolve => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(resolve);
+            });
+        });
+    }
+
+    promise_test(async () => {
+        assert_true(!layoutContainmentApplied("visible"));
+    }, "layout containment does not apply to content-visibility: visible");
+
+    promise_test(async () => {
+        assert_true(layoutContainmentApplied("hidden"));
+    }, "layout containment applies to content-visibility: hidden");
+
+    promise_test(async () => {
+        await tick();
+        assert_true(layoutContainmentApplied("auto_far"));
+    }, "layout containment applies to content-visibility: auto (far from viewport)");
+
+    promise_test(async () => {
+        await tick();
+        assert_true(layoutContainmentApplied("auto_close"));
+    }, "layout containment applies to content-visibility: auto (close from viewport)");
+
+    promise_test(async () => {
+        setContentVisibility("visible_to_hidden", "hidden");
+        assert_true(layoutContainmentApplied("visible_to_hidden"));
+    }, "layout containment updated when switching content-visibility from visible to hidden");
+
+    promise_test(async () => {
+        setContentVisibility("hidden_to_visible", "visible");
+        assert_true(!layoutContainmentApplied("hidden_to_visible"));
+    }, "layout containment updated when switching content-visibility from hidden to visible");
+
+    promise_test(async () => {
+        setContentVisibility("visible_to_auto", "auto");
+        await tick();
+        assert_true(layoutContainmentApplied("visible_to_auto"));
+    }, "layout containment updated when switching content-visibility from visible to auto");
+
+    promise_test(async () => {
+        setContentVisibility("auto_to_visible", "visible");
+        assert_true(!layoutContainmentApplied("auto_to_visible"));
+    }, "layout containment updated when switching content-visibility from auto to visible");
+  </script>
+</body>

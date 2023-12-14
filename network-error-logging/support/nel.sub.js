@@ -249,7 +249,7 @@ function _isSubsetOf(obj1, obj2) {
 
 async function reportExists(expected, retain_reports) {
   var timeout =
-    document.querySelector("meta[name=timeout][content=long]") ? 50 : 1;
+    document.querySelector("meta[name=timeout][content=long]") ? 50 : 2;
   var reportLocation =
     "/reporting/resources/report.py?op=retrieve_report&timeout=" +
     timeout + "&reportID=" + reportID;

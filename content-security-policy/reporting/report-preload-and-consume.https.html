@@ -13,14 +13,19 @@
 
     promise_test(async t => {
         const uid = token();
+        const popup_done = new Promise(resolve => {
+            window.addEventListener('message', e => {
+                if (e.data === 'DONE') resolve();
+            });
+        });
         const win = window.open(`./support/preload-csp-report.https.sub.html?uid=${uid}`);
         t.add_cleanup(() => win.close());
-        return t.step_wait(async () => {
-            const reports = await pollReports(endpoint, uid);
-            const failures = reports.filter(
-              r => r['csp-report']['blocked-uri'].endsWith('fail.png'));
-            return failures.length === 2;
-        }, "Should receive 2 CSP reports.", 5000, 500);
+        await popup_done;
+        const reports = await pollReports(
+          endpoint, uid, min_count=2, timeout=10);
+        const failures = reports.filter(
+          r => r['csp-report']['blocked-uri'].endsWith('fail.png'));
+        assert_equals(failures.length, 2);
     }, "Reporting endpoints received credentials.");
   </script>
 </body>

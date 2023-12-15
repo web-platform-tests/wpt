@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Dynamic change to paint containment</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain/#contain-property">
+<link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1765615">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<meta name="assert" content="Verify absolutely/fixed-positioned descendants are handled when updating paint containment .">
+<style>
+  #top_spacer {
+      height: 100px;
+      background: lightgray;
+  }
+
+  .absolute_pos {
+      position: absolute;
+      top: 42px;
+  }
+  .fixed_pos {
+      position: fixed;
+      top: 42px;
+  }
+
+  #none {
+      contain: none;
+  }
+  #paint {
+      contain: paint;
+  }
+  #none_to_paint {
+      content-visibility: none;
+  }
+  #paint_to_none {
+      content-visibility: paint;
+  }
+</style>
+<body>
+  <div id="log"></div>
+
+  <div id="top_spacer"></div>
+
+  <div id="none">
+    <div class="absolute_pos"></div>
+    <div class="fixed_pos"></div>
+  </div>
+
+  <div id="paint">
+    <div class="absolute_pos"></div>
+    <div class="fixed_pos"></div>
+  </div>
+
+  <div id="none_to_paint">
+    <div class="absolute_pos"></div>
+    <div class="fixed_pos"></div>
+  </div>
+
+  <div id="paint_to_none">
+    <div class="absolute_pos"></div>
+    <div class="fixed_pos"></div>
+  </div>
+
+  <script>
+    function verifyPaintContainment(id, applied) {
+        let container = document.getElementById(id);
+        let containerTop = container.getBoundingClientRect().top;
+
+        let abs_top = container.getElementsByClassName("absolute_pos")[0]
+            .getBoundingClientRect().top;
+        assert_equals(abs_top > containerTop, applied, "absolute positioning containing block");
+
+        let fixed_top = container.getElementsByClassName("fixed_pos")[0]
+            .getBoundingClientRect().top;
+        assert_equals(fixed_top > containerTop, applied, "fixed positioning containing block");
+    }
+
+    function setContain(id, value) {
+        let container = document.getElementById(id);
+        container.style.contain = value;
+    }
+
+    promise_test(async () => {
+        verifyPaintContainment("none", /* applied=*/false);
+    }, "handling of absolutely/fixed positioned descendants of contain: none");
+
+    promise_test(async () => {
+        verifyPaintContainment("paint", /* applied=*/true);
+    }, "handling of absolutely/fixed positioned descendants of contain: paint");
+
+    promise_test(async () => {
+        setContain("none_to_paint", "paint");
+        verifyPaintContainment("none_to_paint", /* applied=*/true)
+    }, "handling of absolutely/fixed positioned descendants when switching contain from none to paint");
+
+    promise_test(async () => {
+        setContain("paint_to_none", "none");
+        verifyPaintContainment("paint_to_none", /* applied=*/false);
+    }, "handling of absolutely/fixed positioned descendants when switching contain from paint to none");
+  </script>
+</body>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Dynamic change to layout containment</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain/#contain-property">
+<link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1765615">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<meta name="assert" content="Verify absolutely/fixed-positioned descendants are handled when updating layout containment .">
+<style>
+  #top_spacer {
+      height: 100px;
+      background: lightgray;
+  }
+
+  .absolute_pos {
+      position: absolute;
+      top: 42px;
+  }
+  .fixed_pos {
+      position: fixed;
+      top: 42px;
+  }
+
+  #none {
+      contain: none;
+  }
+  #layout {
+      contain: layout;
+  }
+  #none_to_layout {
+      content-visibility: none;
+  }
+  #layout_to_none {
+      content-visibility: layout;
+  }
+</style>
+<body>
+  <div id="log"></div>
+
+  <div id="top_spacer"></div>
+
+  <div id="none">
+    <div class="absolute_pos"></div>
+    <div class="fixed_pos"></div>
+  </div>
+
+  <div id="layout">
+    <div class="absolute_pos"></div>
+    <div class="fixed_pos"></div>
+  </div>
+
+  <div id="none_to_layout">
+    <div class="absolute_pos"></div>
+    <div class="fixed_pos"></div>
+  </div>
+
+  <div id="layout_to_none">
+    <div class="absolute_pos"></div>
+    <div class="fixed_pos"></div>
+  </div>
+
+  <script>
+    function verifyLayoutContainment(id, applied) {
+        let container = document.getElementById(id);
+        let containerTop = container.getBoundingClientRect().top;
+
+        let abs_top = container.getElementsByClassName("absolute_pos")[0]
+            .getBoundingClientRect().top;
+        assert_equals(abs_top > containerTop, applied, "absolute positioning containing block");
+
+        let fixed_top = container.getElementsByClassName("fixed_pos")[0]
+            .getBoundingClientRect().top;
+        assert_equals(fixed_top > containerTop, applied, "fixed positioning containing block");
+    }
+
+    function setContain(id, value) {
+        let container = document.getElementById(id);
+        container.style.contain = value;
+    }
+
+    promise_test(async () => {
+        verifyLayoutContainment("none", /* applied=*/false);
+    }, "handling of absolutely/fixed positioned descendants of contain: none");
+
+    promise_test(async () => {
+        verifyLayoutContainment("layout", /* applied=*/true);
+    }, "handling of absolutely/fixed positioned descendants of contain: layout");
+
+    promise_test(async () => {
+        setContain("none_to_layout", "layout");
+        verifyLayoutContainment("none_to_layout", /* applied=*/true)
+    }, "handling of absolutely/fixed positioned descendants when switching contain from none to layout");
+
+    promise_test(async () => {
+        setContain("layout_to_none", "none");
+        verifyLayoutContainment("layout_to_none", /* applied=*/false);
+    }, "handling of absolutely/fixed positioned descendants when switching contain from layout to none");
+  </script>
+</body>

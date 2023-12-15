@@ -225,7 +225,7 @@
   </div>
 
   <script>
-    function verifyStyleContainment(id, scoped) {
+    function verifyStyleContainment(id, applied) {
         // To verify style containment, we check whether the properties in the
         // wrapper affect the string length of generated content.
         function haveSameStringLength(box1, box2) {
@@ -240,12 +240,12 @@
         let quote_box =
             Array.from(container.getElementsByClassName("print_quotes"))
             .map(e => e.parentNode.getBoundingClientRect());
-        assert_equals(haveSameStringLength(counter_box[0], counter_box[1]), scoped, "increment-counter");
-        assert_equals(haveSameStringLength(counter_box[2], counter_box[3]), scoped, "set-counter");
-        assert_equals(haveSameStringLength(quote_box[0], quote_box[1]), scoped, "open-quote");
-        assert_equals(haveSameStringLength(quote_box[2], quote_box[3]), scoped, "close-quote");
-        assert_equals(haveSameStringLength(quote_box[4], quote_box[5]), scoped, "no-open-quote");
-        assert_equals(haveSameStringLength(quote_box[6], quote_box[7]), scoped, "no-close-quote");
+        assert_equals(haveSameStringLength(counter_box[0], counter_box[1]), applied, "increment-counter");
+        assert_equals(haveSameStringLength(counter_box[2], counter_box[3]), applied, "set-counter");
+        assert_equals(haveSameStringLength(quote_box[0], quote_box[1]), applied, "open-quote");
+        assert_equals(haveSameStringLength(quote_box[2], quote_box[3]), applied, "close-quote");
+        assert_equals(haveSameStringLength(quote_box[4], quote_box[5]), applied, "no-open-quote");
+        assert_equals(haveSameStringLength(quote_box[6], quote_box[7]), applied, "no-close-quote");
     }
 
     function setContain(id, value) {
@@ -256,24 +256,24 @@
 
     promise_test(async () => {
         await document.fonts.ready;
-        verifyStyleContainment("none", /*scoped=*/ false);
+        verifyStyleContainment("none", /*applied=*/ false);
     }, "counter/quote-related properties not scoped to subtree with contain: none");
 
     promise_test(async () => {
         await document.fonts.ready;
-        verifyStyleContainment("style", /*scoped=*/ true);
+        verifyStyleContainment("style", /*applied=*/ true);
     }, "counter/quote-related properties scoped to subtree with contain: style");
 
     promise_test(async () => {
         await document.fonts.ready;
         setContain("none_to_style", "style");
-        verifyStyleContainment("none_to_style", /*scoped=*/ true);
+        verifyStyleContainment("none_to_style", /*applied=*/ true);
     }, "counter/quote-related properties scoped when switching contain from none to style");
 
     promise_test(async () => {
         await document.fonts.ready;
         setContain("style_to_none", "none");
-        verifyStyleContainment("style_to_none", /*scoped=*/ false);
+        verifyStyleContainment("style_to_none", /*applied=*/ false);
     }, "counter/quote-related properties not scoped when switching contain from style to none");
   </script>
 </body>

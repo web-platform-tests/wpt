@@ -65,70 +65,66 @@
   <div id="log"></div>
 
   <div id="visible">
-    <div class="box"></div><div class="content_visibility"><div class="box"></div></div><div class="box"></div>
+    <div class="content_visibility"><div class="box"></div></div>
   </div>
 
   <div id="hidden">
-    <div class="box"></div><div class="content_visibility"><div class="box"></div></div><div class="box"></div>
+    <div class="content_visibility"><div class="box"></div></div>
   </div>
 
   <div id="auto_close">
-    <div class="box"></div><div class="content_visibility"><div class="box"></div></div><div class="box"></div>
+    <div class="content_visibility"><div class="box"></div></div>
   </div>
 
   <div id="visible_to_hidden">
-    <div class="box"></div><div class="content_visibility"><div class="box"></div></div><div class="box"></div>
+    <div class="content_visibility"><div class="box"></div></div>
   </div>
 
   <div id="hidden_to_visible">
-    <div class="box"></div><div class="content_visibility"><div class="box"></div></div><div class="box"></div>
+    <div class="content_visibility"><div class="box"></div></div>
   </div>
 
   <div id="hidden_to_auto">
-    <div class="box"></div><div class="content_visibility"><div class="box"></div></div><div class="box"></div>
+    <div class="content_visibility"><div class="box"></div></div>
   </div>
 
   <div id="auto_to_hidden">
-    <div class="box"></div><div class="content_visibility"><div class="box"></div></div><div class="box"></div>
+    <div class="content_visibility"><div class="box"></div></div>
   </div>
 
   <div id="hidden_to_auto_close">
-    <div class="box"></div><div class="content_visibility"><div class="box"></div></div><div class="box"></div>
+    <div class="content_visibility"><div class="box"></div></div>
   </div>
 
   <div id="auto_close_to_hidden">
-    <div class="box"></div><div class="content_visibility"><div class="box"></div></div><div class="box"></div>
+    <div class="content_visibility"><div class="box"></div></div>
   </div>
 
   <div id="spacer_for_far_to_viewport"></div>
 
   <div id="auto_far">
-    <div class="box"></div><div class="content_visibility"><div class="box"></div></div><div class="box"></div>
+    <div class="content_visibility"><div class="box"></div></div>
   </div>
 
   <div id="visible_to_auto_far">
-    <div class="box"></div><div class="content_visibility"><div class="box"></div></div><div class="box"></div>
+    <div class="content_visibility"><div class="box"></div></div>
   </div>
 
   <div id="auto_far_to_visible">
-    <div class="box"></div><div class="content_visibility"><div class="box"></div></div><div class="box"></div>
+    <div class="content_visibility"><div class="box"></div></div>
   </div>
 
 
   <div id="auto_dynamic_relevancy">
     <div tabindex="1"></div>
-    <div class="box"></div><div tabindex="2" class="content_visibility"><div class="box"></div></div><div class="box"></div>
+    <div class="content_visibility" tabindex="2"><div class="box"></div></div>
   </div>
 
   <script>
     function sizeContainmentApplied(id) {
         let container = document.getElementById(id);
         let content_visibility = container.getElementsByClassName("content_visibility")[0];
-        let beforeBox = content_visibility.previousElementSibling.getBoundingClientRect();
-        let afterBox = content_visibility.nextElementSibling.getBoundingClientRect();
-        // If size containment applies, the container adds no space between
-        // the before/after boxes.
-        return afterBox.left - beforeBox.right < 25;
+	return content_visibility.getBoundingClientRect().width == 0;
     }
 
     function setContentVisibility(id, value) {

@@ -411,7 +411,14 @@ class FirefoxAndroid(BrowserSetup):
             self._logcat.start(device_serial)
             if self.browser.apk_path:
                 device.uninstall_app(app)
-                device.install_app(self.browser.apk_path, timeout=600)
+                # device.install_app(self.browser.apk_path, timeout=600)
+                # Temporarily replace mozdevice function with custom code
+                # that passes in the `--no-incremental` option
+                cmd = ["install", "--no-incremental", self.browser.apk_path]
+                data = device.command_output(cmd, timeout=600)
+                if data.find("Success") == -1:
+                    raise mozdevice.ADBError("install failed for %s. Got: %s" % (self.browser.apk_path,
+                                                                                 data))
             elif not device.is_app_installed(app):
                 raise WptrunError("app %s not installed on device %s" %
                                   (app, device_serial))

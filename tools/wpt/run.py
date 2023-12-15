@@ -5,7 +5,7 @@ import os
 import platform
 import subprocess
 import sys
-from shutil import which
+from shutil import copyfile, which
 from typing import ClassVar, Tuple, Type
 
 wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -387,14 +387,6 @@ class FirefoxAndroid(BrowserSetup):
                 logger.info("Unable to find or install geckodriver, skipping wdspec tests")
                 kwargs["test_types"].remove("wdspec")
 
-        for device_serial in kwargs["device_serial"]:
-            if device_serial.startswith("emulator-"):
-                # We're running on an emulator so ensure that's set up
-                android.start(logger,
-                              reinstall=False,
-                              device_serial=device_serial,
-                              prompt=kwargs["prompt"])
-
         if kwargs["adb_binary"] is None:
             if "ADB_PATH" not in os.environ:
                 adb_path = os.path.join(android.get_paths(None)["sdk"],
@@ -404,6 +396,14 @@ class FirefoxAndroid(BrowserSetup):
             kwargs["adb_binary"] = os.environ["ADB_PATH"]
 
         self._logcat = AndroidLogcat(kwargs["adb_binary"], base_path=kwargs["logcat_dir"])
+
+        for device_serial in kwargs["device_serial"]:
+            if device_serial.startswith("emulator-"):
+                # We're running on an emulator so ensure that's set up
+                android.start(logger,
+                              reinstall=False,
+                              device_serial=device_serial,
+                              prompt=kwargs["prompt"])
 
         for device_serial in kwargs["device_serial"]:
             device = mozdevice.ADBDeviceFactory(adb=kwargs["adb_binary"],
@@ -424,7 +424,16 @@ class FirefoxAndroid(BrowserSetup):
                                   (app, device_serial))
 
     def teardown(self):
+        from . import android
+
         if hasattr(self, "_logcat"):
+            emulator_log = os.path.join(android.get_paths(None)["sdk"],
+                                        ".android",
+                                        "emulator.log")
+            if os.path.exists(emulator_log):
+                dest_path = os.path.join(self._logcat.base_path, "emulator.log")
+                copyfile(emulator_log, dest_path)
+
             self._logcat.stop()
 
 

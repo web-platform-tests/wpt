@@ -390,12 +390,18 @@ test((t) => {
             z-index: 2;
           }
         }
+        /* The nested case can be though of the following when expanded: */
+        .c:is(:scope.x *) {
+          z-index: 3;
+        }
       }
     </style>
     <div class="b">
     </div>
     <div class="a x">
       <div class="b">
+      </div>
+      <div class="c">
       </div>
     </div>
 </div>
@@ -407,7 +413,9 @@ test((t) => {
 
   let b_outside = document.querySelector('.b');
   let b_inside = document.querySelector('.a .b');
+  let c = document.querySelector('.c');
   assert_equals(getComputedStyle(b_outside).zIndex, 'auto');
   assert_equals(getComputedStyle(b_inside).zIndex, '1');
+  assert_equals(getComputedStyle(c).zIndex, '3');
 }, 'Nested :scope inside an :is');
 </script>

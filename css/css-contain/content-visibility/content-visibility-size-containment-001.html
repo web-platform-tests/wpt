@@ -57,6 +57,9 @@
   #auto_close_to_hidden > .content_visibility {
       content-visibility: auto;
   }
+  #auto_dynamic_relevancy > .content_visibility {
+      content-visibility: auto;
+  }
 </style>
 <body>
   <div id="log"></div>
@@ -111,6 +114,12 @@
     <div class="box"></div><div class="content_visibility"><div class="box"></div></div><div class="box"></div>
   </div>
 
+
+  <div id="auto_dynamic_relevancy">
+    <div tabindex="1"></div>
+    <div class="box"></div><div tabindex="2" class="content_visibility"><div class="box"></div></div><div class="box"></div>
+  </div>
+
   <script>
     function sizeContainmentApplied(id) {
         let container = document.getElementById(id);
@@ -137,7 +146,7 @@
     }
 
     promise_test(async () => {
-        assert_true(!sizeContainmentApplied("visible"));
+        assert_false(sizeContainmentApplied("visible"));
     }, "size containment does not apply to content-visibility: visible");
 
     promise_test(async () => {
@@ -151,7 +160,7 @@
 
     promise_test(async () => {
         await tick();
-        assert_true(!sizeContainmentApplied("auto_close"));
+        assert_false(sizeContainmentApplied("auto_close"));
     }, "size containment does not apply to content-visibility: auto (close from viewport)");
 
     promise_test(async () => {
@@ -161,12 +170,12 @@
 
     promise_test(async () => {
         setContentVisibility("hidden_to_visible", "visible");
-        assert_true(!sizeContainmentApplied("hidden_to_visible"));
+        assert_false(sizeContainmentApplied("hidden_to_visible"));
     }, "size containment updated when switching content-visibility from hidden to visible");
 
     promise_test(async () => {
         setContentVisibility("auto_far_to_visible", "visible");
-        assert_true(!sizeContainmentApplied("auto_far_to_visible"));
+        assert_false(sizeContainmentApplied("auto_far_to_visible"));
     }, "size containment updated when switching content-visibility from auto (far from viewport) to visible");
 
     promise_test(async () => {
@@ -183,8 +192,80 @@
     promise_test(async () => {
         setContentVisibility("hidden_to_auto_close", "auto");
         await tick();
-        assert_true(!sizeContainmentApplied("hidden_to_auto_close"));
+        assert_false(sizeContainmentApplied("hidden_to_auto_close"));
     }, "size containment updated when switching content-visibility from hidden to auto (close from viewport)");
+
+
+    let contentVisibilityAuto =
+        document.getElementById("auto_dynamic_relevancy").
+        getElementsByClassName("content_visibility")[0];
+
+    function clearRelevancyReasons() {
+        // Scrolling auto_dynamic_relevancy far from the viewport, unfocus it
+        // and unselect it. Also temporarily set its content-visibility to
+        // 'hidden' before scrolling to give more chance for browsers to
+        // re-apply size containment, especially if they fail the corresponding
+        // tests "going back to initial state" below.
+        setContentVisibility("auto_dynamic_relevancy", "hidden");
+        window.scrollTo(0, 0);
+        document.getElementById("auto_dynamic_relevancy")
+            .firstElementChild.focus({preventScroll: true});
+        window.getSelection().empty();
+        setContentVisibility("auto_dynamic_relevancy", "auto");
+    }
+
+    promise_test(async (t) => {
+        t.add_cleanup(clearRelevancyReasons);
+
+        await tick();
+        assert_true(sizeContainmentApplied("auto_dynamic_relevancy"),
+                    "size containment applied when initially far to the viewport");
+
+        contentVisibilityAuto.scrollIntoView();
+        await tick();
+        assert_false(sizeContainmentApplied("auto_dynamic_relevancy"),
+                    "size containment applied when changing from far to close to the viewport");
+
+        window.scrollTo(0, 0);
+        assert_true(sizeContainmentApplied("auto_dynamic_relevancy"),
+                    "size containment applied when changing back from close to far to the viewport");
+    }, "size containment updated when changing proximity to the viewport");
+
+    promise_test(async (t) => {
+        t.add_cleanup(clearRelevancyReasons);
+
+        await tick();
+        assert_true(sizeContainmentApplied("auto_dynamic_relevancy"),
+                    "size containment applied when initially unfocused");
+
+        contentVisibilityAuto.focus({preventScroll: true});
+        await tick();
+        assert_false(sizeContainmentApplied("auto_dynamic_relevancy"),
+                    "size containment applied after focusing");
+
+        document.getElementById("auto_dynamic_relevancy")
+            .firstElementChild.focus({preventScroll: true});
+        assert_true(sizeContainmentApplied("auto_dynamic_relevancy"),
+                    "size containment applied after unfocusing back");
+    }, "size containment updated when after being focused/unfocused");
+
+    promise_test(async (t) => {
+        t.add_cleanup(clearRelevancyReasons);
+
+        await tick();
+        assert_true(sizeContainmentApplied("auto_dynamic_relevancy"),
+                    "size containment applied when initially unselected");
+
+        window.getSelection().selectAllChildren(contentVisibilityAuto);
+        await tick();
+        assert_false(sizeContainmentApplied("auto_dynamic_relevancy"),
+                    "size containment applied when after selecting");
+
+        window.getSelection().empty();
+        await tick();
+        assert_true(sizeContainmentApplied("auto_dynamic_relevancy"),
+                    "size containment applied when unselecting back");
+    }, "size containment updated when after being selected/unselected");
 
   </script>
 </body>

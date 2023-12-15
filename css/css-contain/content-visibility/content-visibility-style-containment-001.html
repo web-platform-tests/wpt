@@ -154,7 +154,7 @@
 
     promise_test(async () => {
         await document.fonts.ready;
-        assert_true(!styleContainmentApplied("visible"));
+        assert_false(styleContainmentApplied("visible"));
     }, "style containment does not apply to content-visibility: visible");
 
     promise_test(async () => {
@@ -183,7 +183,7 @@
     promise_test(async () => {
         await document.fonts.ready;
         setContentVisibility("hidden_to_visible", "visible");
-        assert_true(!styleContainmentApplied("hidden_to_visible"));
+        assert_false(styleContainmentApplied("hidden_to_visible"));
     }, "style containment updated when switching content-visibility from hidden to visible");
 
     promise_test(async () => {
@@ -196,7 +196,7 @@
     promise_test(async () => {
         await document.fonts.ready;
         setContentVisibility("auto_to_visible", "visible");
-        assert_true(!styleContainmentApplied("auto_to_visible"));
+        assert_false(styleContainmentApplied("auto_to_visible"));
     }, "style containment updated when switching content-visibility from auto to visible");
   </script>
 </body>

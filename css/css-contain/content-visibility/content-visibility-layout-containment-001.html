@@ -115,7 +115,7 @@
     }
 
     promise_test(async () => {
-        assert_true(!layoutContainmentApplied("visible"));
+        assert_false(layoutContainmentApplied("visible"));
     }, "layout containment does not apply to content-visibility: visible");
 
     promise_test(async () => {
@@ -139,7 +139,7 @@
 
     promise_test(async () => {
         setContentVisibility("hidden_to_visible", "visible");
-        assert_true(!layoutContainmentApplied("hidden_to_visible"));
+        assert_false(layoutContainmentApplied("hidden_to_visible"));
     }, "layout containment updated when switching content-visibility from hidden to visible");
 
     promise_test(async () => {
@@ -150,7 +150,7 @@
 
     promise_test(async () => {
         setContentVisibility("auto_to_visible", "visible");
-        assert_true(!layoutContainmentApplied("auto_to_visible"));
+        assert_false(layoutContainmentApplied("auto_to_visible"));
     }, "layout containment updated when switching content-visibility from auto to visible");
   </script>
 </body>

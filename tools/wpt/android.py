@@ -3,8 +3,10 @@
 import argparse
 import os
 import platform
+import signal
 import shutil
 import subprocess
+import threading
 
 import requests
 from .wpt import venv_dir
@@ -261,6 +263,12 @@ def install(logger, dest=None, reinstall=False, prompt=True):
     return emulator
 
 
+def cancel_start(thread_id):
+    def cancel_func():
+        raise signal.pthread_kill(thread_id, signal.SIGINT)
+    return cancel_func
+
+
 def start(logger, dest=None, reinstall=False, prompt=True, device_serial=None):
     paths = get_paths(dest)
 
@@ -274,7 +282,10 @@ def start(logger, dest=None, reinstall=False, prompt=True, device_serial=None):
             raise OSError
 
         emulator.start()
+        timer = threading.Timer(300, cancel_start(threading.get_ident()))
+        timer.start()
         emulator.wait_for_start()
+        timer.cancel()
     return emulator
 
 

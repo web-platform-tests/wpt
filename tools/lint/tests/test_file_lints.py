@@ -791,7 +791,7 @@ def test_invalid_meta_file():
     code = b"""\
 - test
 """
-    # Check when the value is named correctly. It should find the error.
+    # Check when the file is named correctly. It should find the error.
     errors = check_file_contents("", "css/META.yml", io.BytesIO(code))
     check_errors(errors)
 

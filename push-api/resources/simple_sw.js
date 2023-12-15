@@ -1,1 +1,3 @@
-// Service worker that does nothing
+self. onpush = ( ) => {
+  // does nothing...
+};  

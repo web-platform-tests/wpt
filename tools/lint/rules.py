@@ -341,7 +341,7 @@ class TentativeDirectoryName(Rule):
 
 class InvalidMetaFile(Rule):
     name = "INVALID-META-FILE"
-    description = "The META.yml file contains an invalid structure"
+    description = "The META.yml is not a YAML file with the expected structure"
 
 
 class Regexp(metaclass=abc.ABCMeta):

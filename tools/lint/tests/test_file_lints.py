@@ -797,7 +797,7 @@ def test_invalid_meta_file():
 
     assert errors == [
         ('INVALID-META-FILE',
-         'The META.yml file contains an invalid structure',
+         'The META.yml is not a YAML file with the expected structure',
          "css/META.yml",
          None),
     ]

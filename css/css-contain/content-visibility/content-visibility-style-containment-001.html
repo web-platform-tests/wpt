@@ -155,48 +155,48 @@
     promise_test(async () => {
         await document.fonts.ready;
         assert_false(styleContainmentApplied("visible"));
-    }, "style containment does not apply to content-visibility: visible");
+    }, "content-visibility: visible");
 
     promise_test(async () => {
         await document.fonts.ready;
         assert_true(styleContainmentApplied("hidden"));
-    }, "style containment applies to content-visibility: hidden");
+    }, "content-visibility: hidden");
 
     promise_test(async () => {
         await document.fonts.ready;
         await tick();
         assert_true(styleContainmentApplied("auto_far"));
-    }, "style containment applies to content-visibility: auto (far from viewport)");
+    }, "content-visibility: auto (far from viewport)");
 
     promise_test(async () => {
         await document.fonts.ready;
         await tick();
         assert_true(styleContainmentApplied("auto_close"));
-    }, "style containment applies to content-visibility: auto (close from viewport)");
+    }, "content-visibility: auto (close from viewport)");
 
     promise_test(async () => {
         await document.fonts.ready;
         setContentVisibility("visible_to_hidden", "hidden");
         assert_true(styleContainmentApplied("visible_to_hidden"));
-    }, "style containment updated when switching content-visibility from visible to hidden");
+    }, "switching content-visibility from visible to hidden");
 
     promise_test(async () => {
         await document.fonts.ready;
         setContentVisibility("hidden_to_visible", "visible");
         assert_false(styleContainmentApplied("hidden_to_visible"));
-    }, "style containment updated when switching content-visibility from hidden to visible");
+    }, "switching content-visibility from hidden to visible");
 
     promise_test(async () => {
         await document.fonts.ready;
         setContentVisibility("visible_to_auto", "auto");
         await tick();
         assert_true(styleContainmentApplied("visible_to_auto"));
-    }, "style containment updated when switching content-visibility from visible to auto");
+    }, "switching content-visibility from visible to auto");
 
     promise_test(async () => {
         await document.fonts.ready;
         setContentVisibility("auto_to_visible", "visible");
         assert_false(styleContainmentApplied("auto_to_visible"));
-    }, "style containment updated when switching content-visibility from auto to visible");
+    }, "switching content-visibility from auto to visible");
   </script>
 </body>

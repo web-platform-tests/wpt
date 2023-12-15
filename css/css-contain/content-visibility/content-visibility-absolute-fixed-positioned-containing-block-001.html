@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>content-visibility and layout containment</title>
+<title>content-visibility and layout/paint containment (absolute/fixed positioned descendants)</title>
 <link rel="help" href="https://drafts.csswg.org/css-contain/#content-visibility">
 <link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1765615">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<meta name="assert" content="content-visibility: auto and elements skipping their content change the used value of the contain property to turn on layout containment.">
+<meta name="assert" content="content-visibility: auto and elements skipping their content change the used value of the contain property to turn on layout/paint containment, affecting absolute/fixed positioned descendants.">
 <style>
   /* Change to style containment can cause drastic changes such as rebuilding
      counters or quotes, so always enabled here to prevent any side effect. */
@@ -24,6 +24,10 @@
 
   .absolute_pos {
       position: absolute;
+      top: 42px;
+  }
+  .fixed_pos {
+      position: fixed;
       top: 42px;
   }
 
@@ -59,29 +63,36 @@
 
   <div id="visible" class="content_visibility">
     <div class="absolute_pos"></div>
+    <div class="fixed_pos"></div>
   </div>
 
   <div id="hidden" class="content_visibility">
     <div class="absolute_pos"></div>
+    <div class="fixed_pos"></div>
   </div>
 
   <div id="auto_close" class="content_visibility">
     <div class="absolute_pos"></div>
+    <div class="fixed_pos"></div>
   </div>
 
   <div id="visible_to_hidden" class="content_visibility">
     <div class="absolute_pos"></div>
+    <div class="fixed_pos"></div>
   </div>
 
   <div id="hidden_to_visible" class="content_visibility">
     <div class="absolute_pos"></div>
+    <div class="fixed_pos"></div>
   </div>
 
   <div id="visible_to_auto" class="content_visibility">
     <div class="absolute_pos"></div>
+    <div class="fixed_pos"></div>
   </div>
 
   <div id="auto_to_visible" class="content_visibility">
+    <div class="fixed_pos"></div>
     <div class="absolute_pos"></div>
   </div>
 
@@ -89,16 +100,25 @@
 
   <div id="auto_far" class="content_visibility">
     <div class="absolute_pos"></div>
+    <div class="fixed_pos"></div>
   </div>
 
   <script>
-    function layoutContainmentApplied(id) {
-        let container = document.getElementById(id);
-        // If layout containment applies, absolute_pos will be positionned
-        // relative to that container.
-        let abs_box = container.getElementsByClassName("absolute_pos")[0]
-            .getBoundingClientRect();
-        return abs_box.top > 100;
+    function verifyContainmentFromAbsoluteFixedPositioning(id, applied) {
+	// content-visibility: auto and elements skipping their content change
+	// apply paint/layout containment, making them an absolute/fixed
+	// positioning container blocks.
+
+	let container = document.getElementById(id);
+        let containerTop = container.getBoundingClientRect().top;
+
+        let abs_top = container.getElementsByClassName("absolute_pos")[0]
+            .getBoundingClientRect().top;
+        assert_equals(abs_top > containerTop, applied, "absolute positioning containing block");
+
+        let fixed_top = container.getElementsByClassName("fixed_pos")[0]
+            .getBoundingClientRect().top;
+        assert_equals(fixed_top > containerTop, applied, "fixed positioning containing block");
     }
 
     function setContentVisibility(id, value) {
@@ -115,42 +135,50 @@
     }
 
     promise_test(async () => {
-        assert_false(layoutContainmentApplied("visible"));
-    }, "layout containment does not apply to content-visibility: visible");
+	verifyContainmentFromAbsoluteFixedPositioning("visible",
+						      /*applied=*/false);
+    }, "content-visibility: visible");
 
     promise_test(async () => {
-        assert_true(layoutContainmentApplied("hidden"));
-    }, "layout containment applies to content-visibility: hidden");
-
-    promise_test(async () => {
-        await tick();
-        assert_true(layoutContainmentApplied("auto_far"));
-    }, "layout containment applies to content-visibility: auto (far from viewport)");
+	verifyContainmentFromAbsoluteFixedPositioning("hidden",
+						      /*applied=*/true);
+    }, "content-visibility: hidden");
 
     promise_test(async () => {
         await tick();
-        assert_true(layoutContainmentApplied("auto_close"));
-    }, "layout containment applies to content-visibility: auto (close from viewport)");
+	verifyContainmentFromAbsoluteFixedPositioning("auto_far",
+						      /*applied=*/true);
+    }, "content-visibility: auto (far from viewport)");
+
+    promise_test(async () => {
+        await tick();
+	verifyContainmentFromAbsoluteFixedPositioning("auto_close",
+						      /*applied=*/true);
+    }, "content-visibility: auto (close from viewport)");
 
     promise_test(async () => {
         setContentVisibility("visible_to_hidden", "hidden");
-        assert_true(layoutContainmentApplied("visible_to_hidden"));
-    }, "layout containment updated when switching content-visibility from visible to hidden");
+	verifyContainmentFromAbsoluteFixedPositioning("visible_to_hidden",
+						      /*applied=*/true);
+    }, "switching content-visibility from visible to hidden");
 
     promise_test(async () => {
         setContentVisibility("hidden_to_visible", "visible");
-        assert_false(layoutContainmentApplied("hidden_to_visible"));
-    }, "layout containment updated when switching content-visibility from hidden to visible");
+	verifyContainmentFromAbsoluteFixedPositioning("hidden_to_visible",
+						      /*applied=*/false);
+    }, "switching content-visibility from hidden to visible");
 
     promise_test(async () => {
         setContentVisibility("visible_to_auto", "auto");
         await tick();
-        assert_true(layoutContainmentApplied("visible_to_auto"));
-    }, "layout containment updated when switching content-visibility from visible to auto");
+	verifyContainmentFromAbsoluteFixedPositioning("visible_to_auto",
+						      /*applied=*/true);
+    }, "switching content-visibility from visible to auto");
 
     promise_test(async () => {
         setContentVisibility("auto_to_visible", "visible");
-        assert_false(layoutContainmentApplied("auto_to_visible"));
-    }, "layout containment updated when switching content-visibility from auto to visible");
+	verifyContainmentFromAbsoluteFixedPositioning("auto_to_visible",
+						      /*applied=*/false);
+    }, "switching content-visibility from auto to visible");
   </script>
 </body>

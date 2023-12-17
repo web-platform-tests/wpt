@@ -4,13 +4,13 @@
 
   <meta charset="UTF-8">
 
-  <title>CSS Backgrounds Test: 'background-attachment: fixed' applied on a block element</title>
+  <title>CSS Backgrounds and Borders Test: 'background-attachment: fixed' applied on a block element</title>
 
   <!--
 
   Created: November 25th 2023
 
-  Last modified: December 5th 2023
+  Last modified: December 17th 2023
 
   -->
 
@@ -23,36 +23,30 @@
   <meta name="assert" content="This test checks the interaction between a block element with a 'background-attachment: fixed' background-image and the expected behavior of the scroll() method which applies to the viewport window.">
 
   <style>
-  html
-    {
-      height: 600px;
-      width: 600px;
-    }
-
   body
     {
-      font-size: 200px;
-      line-height: 3;
+      color: transparent;
+      font-family: Ahem;
+      font-size: 50vh;
+      height: 50vh;
+      line-height: 2;
       margin: 0px;
-    }
-
-  div#test-failed
-    {
-       background-color: red;
-       color: yellow;
     }
 
   div#test-passed
     {
       background-attachment: fixed;
-      background-image: linear-gradient(green 50%, lime 50%);
-      color: transparent;
-      font-family: Ahem;
+      background-image: linear-gradient(to bottom, blue 25%, orange 25% 50%, lime 50% 75%, purple 75% 100%);
     }
   </style>
 
-  <body onload="window.scroll(0, 600); document.documentElement.classList.remove('reftest-wait');">
+  <body onload="window.scroll(0, document.body.offsetHeight); document.documentElement.classList.remove('reftest-wait');">
 
-  <div id="test-failed">FAIL</div>
+  <div>F</div>
 
-  <div id="test-passed">PAS</div>
+  <!--
+  Having more than 1 character may trigger
+  unneedlessly an horizontal scrollbar
+  -->
+
+  <div id="test-passed">P</div>

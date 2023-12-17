@@ -7,39 +7,34 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
 
   <style>
-  html
-    {
-      height: 600px;
-      width: 600px;
-    }
-
   body
     {
+      height: 50vh;
       margin: 0px;
     }
 
-  div
+  div#filler-before
     {
-      height: 100px;
+      height: 125vh;
     }
 
-  div#green
+  div#purple
     {
-      background-color: green;
-    }
+      background-color: purple;
+      height: 25vh;
+      width: 50vh;
+     }
 
-  div#lime
+  div#filler-after
     {
-      background-color: lime;
+      height: 50vh;
     }
   </style>
 
-  <body onload="window.scroll(0, 600);">
+  <body onload="window.scroll(0, document.body.offsetHeight);">
 
-  <div style="height: 800px;"></div>
+  <div id="filler-before"></div>
 
-  <div id="green"></div>
+  <div id="purple"></div>
 
-  <div id="lime"></div>
-
-  <div style="height: 200px;"></div>
+  <div id="filler-after"></div>

@@ -891,7 +891,7 @@
       }
     },
     {
-      "name": "argMin float32 0D scalar options.axes=[] none effect by both keepDimensions and selectLastIndex being true",
+      "name": "argMin float32 0D scalar options.axes=[] no effect by both keepDimensions and selectLastIndex being true",
       "inputs": {
         "input": {
           "shape": [],

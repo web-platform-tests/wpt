@@ -5,6 +5,7 @@
 <link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1765615">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/common/rendering-utils.js"></script>
 <meta name="assert" content="elements skipping their content change the used value of the contain property to turn on size containment.">
 <style>
   /* Selectors for content-visibility */
@@ -135,14 +136,6 @@
         content_visibility.style.contentVisibility = value;
     }
 
-    function tick() {
-        return new Promise(resolve => {
-            requestAnimationFrame(() => {
-                requestAnimationFrame(resolve);
-            });
-        });
-    }
-
     promise_test(async () => {
         assert_false(sizeContainmentApplied("visible"));
     }, "content-visibility: visible");
@@ -152,12 +145,12 @@
     }, "content-visibility: hidden");
 
     promise_test(async () => {
-        await tick();
+        await waitForAtLeastOneFrame();
         assert_true(sizeContainmentApplied("auto_far"));
     }, "content-visibility: auto (far from viewport)");
 
     promise_test(async () => {
-        await tick();
+        await waitForAtLeastOneFrame();
         assert_false(sizeContainmentApplied("auto_close"));
     }, "content-visibility: auto (close from viewport)");
 
@@ -178,7 +171,7 @@
 
     promise_test(async () => {
         setContentVisibility("visible_to_auto_far", "auto");
-        await tick();
+        await waitForAtLeastOneFrame();
         assert_true(sizeContainmentApplied("visible_to_auto_far"));
     }, "switching content-visibility from visible to auto (far from viewport)");
 
@@ -189,7 +182,7 @@
 
     promise_test(async () => {
         setContentVisibility("hidden_to_auto_close", "auto");
-        await tick();
+        await waitForAtLeastOneFrame();
         assert_false(sizeContainmentApplied("hidden_to_auto_close"));
     }, "switching content-visibility from hidden to auto (close from viewport)");
 
@@ -215,12 +208,12 @@
     promise_test(async (t) => {
         t.add_cleanup(clearRelevancyReasons);
 
-        await tick();
+        await waitForAtLeastOneFrame();
         assert_true(sizeContainmentApplied("auto_dynamic_relevancy"),
                     "size containment applied when initially far to the viewport");
 
         contentVisibilityAuto.scrollIntoView();
-        await tick();
+        await waitForAtLeastOneFrame();
         assert_false(sizeContainmentApplied("auto_dynamic_relevancy"),
                     "size containment applied when changing from far to close to the viewport");
 
@@ -232,12 +225,12 @@
     promise_test(async (t) => {
         t.add_cleanup(clearRelevancyReasons);
 
-        await tick();
+        await waitForAtLeastOneFrame();
         assert_true(sizeContainmentApplied("auto_dynamic_relevancy"),
                     "size containment applied when initially unfocused");
 
         contentVisibilityAuto.focus({preventScroll: true});
-        await tick();
+        await waitForAtLeastOneFrame();
         assert_false(sizeContainmentApplied("auto_dynamic_relevancy"),
                     "size containment applied after focusing");
 
@@ -250,17 +243,17 @@
     promise_test(async (t) => {
         t.add_cleanup(clearRelevancyReasons);
 
-        await tick();
+        await waitForAtLeastOneFrame();
         assert_true(sizeContainmentApplied("auto_dynamic_relevancy"),
                     "size containment applied when initially unselected");
 
         window.getSelection().selectAllChildren(contentVisibilityAuto);
-        await tick();
+        await waitForAtLeastOneFrame();
         assert_false(sizeContainmentApplied("auto_dynamic_relevancy"),
                     "size containment applied when after selecting");
 
         window.getSelection().empty();
-        await tick();
+        await waitForAtLeastOneFrame();
         assert_true(sizeContainmentApplied("auto_dynamic_relevancy"),
                     "size containment applied when unselecting back");
     }, "content-visibility: auto, after being selected/unselected");

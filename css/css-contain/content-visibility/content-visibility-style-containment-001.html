@@ -6,6 +6,7 @@
 <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/common/rendering-utils.js"></script>
 <meta name="assert" content="content-visibility: auto and elements skipping their content change the used value of the contain property to turn on style containment.">
 <style>
   /* Selectors for content-visibility */
@@ -156,14 +157,6 @@
         content_visibility.style.contentVisibility = value;
     }
 
-    function tick() {
-        return new Promise(resolve => {
-            requestAnimationFrame(() => {
-                requestAnimationFrame(resolve);
-            });
-        });
-    }
-
     promise_test(async () => {
         await document.fonts.ready;
         assert_false(styleContainmentApplied("visible"));
@@ -176,13 +169,13 @@
 
     promise_test(async () => {
         await document.fonts.ready;
-        await tick();
+        await waitForAtLeastOneFrame();
         assert_true(styleContainmentApplied("auto_far"));
     }, "content-visibility: auto (far from viewport)");
 
     promise_test(async () => {
         await document.fonts.ready;
-        await tick();
+        await waitForAtLeastOneFrame();
         assert_true(styleContainmentApplied("auto_close"));
     }, "content-visibility: auto (close from viewport)");
 
@@ -201,7 +194,7 @@
     promise_test(async () => {
         await document.fonts.ready;
         setContentVisibility("visible_to_auto", "auto");
-        await tick();
+        await waitForAtLeastOneFrame();
         assert_true(styleContainmentApplied("visible_to_auto"));
     }, "switching content-visibility from visible to auto");
 

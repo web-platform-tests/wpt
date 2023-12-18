@@ -5,6 +5,7 @@
 <link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1765615">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/common/rendering-utils.js"></script>
 <meta name="assert" content="content-visibility: auto and elements skipping their content change the used value of the contain property to turn on layout/paint containment, affecting absolute/fixed positioned descendants.">
 <style>
   /* Selectors for content-visibility */
@@ -126,14 +127,6 @@
         container.style.contentVisibility = value;
     }
 
-    function tick() {
-        return new Promise(resolve => {
-            requestAnimationFrame(() => {
-                requestAnimationFrame(resolve);
-            });
-        });
-    }
-
     promise_test(async () => {
         verifyContainmentFromAbsoluteFixedPositioning("visible",
                                                       /*applied=*/false);
@@ -145,13 +138,13 @@
     }, "content-visibility: hidden");
 
     promise_test(async () => {
-        await tick();
+        await waitForAtLeastOneFrame();
         verifyContainmentFromAbsoluteFixedPositioning("auto_far",
                                                       /*applied=*/true);
     }, "content-visibility: auto (far from viewport)");
 
     promise_test(async () => {
-        await tick();
+        await waitForAtLeastOneFrame();
         verifyContainmentFromAbsoluteFixedPositioning("auto_close",
                                                       /*applied=*/true);
     }, "content-visibility: auto (close from viewport)");
@@ -170,7 +163,7 @@
 
     promise_test(async () => {
         setContentVisibility("visible_to_auto", "auto");
-        await tick();
+        await waitForAtLeastOneFrame();
         verifyContainmentFromAbsoluteFixedPositioning("visible_to_auto",
                                                       /*applied=*/true);
     }, "switching content-visibility from visible to auto");

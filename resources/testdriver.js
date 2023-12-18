@@ -1278,7 +1278,7 @@
         },
 
         async consume_user_activation () {
-            throw new Error("Consume_user_activation() is not implemented by testdriver-vendor.js");
+            throw new Error("consume_user_activation() is not implemented by testdriver-vendor.js");
         },
     };
 })();

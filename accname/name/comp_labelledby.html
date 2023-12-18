@@ -56,7 +56,7 @@
 <h2>Tests for name precedence with <code>aria-labeledby</code> (non-standard spelling)</h2>
 <!-- Name computation: https://w3c.github.io/accname/#computation-steps -->
 
-<!-- Step 2A: Hidden Not Referenced supercedes 2B: AriaLabel -->
+<!-- Step 2A: Hidden Not Referenced supercedes 2B: AriaLabeledby -->
 <button aria-labeledby="span1" aria-label="foo" data-expectedlabel="label" data-testname="button's hidden referenced name (display:none) with aria-labeledby (non-standard spelling) supercedes aria-label" class="ex">
   <span id="span1" style="display:none;">
     <span id="span2" style="display:none;">label</span>
@@ -99,7 +99,7 @@ x
 <!-- Step 2F: Name From Content is superceded by 2B: AriaLabeledby -->
 <button aria-labeledby="n2" data-expectedlabel="second label" data-testname="button name from contents is superceded by aria-labeledby (non-standard spelling)" class="ex">x</button>
 
-<!-- Step 2G: Text Node is superceded by 2D: AriaLabel, also see wpt/accname/name/comp_text_node.html -->
+<!-- Step 2G: Text Node is superceded by 2B: AriaLabeledby, also see wpt/accname/name/comp_text_node.html -->
 <h1 aria-labeledby="n2" data-expectedlabel="second label" data-testname="h1 text is superceded by aria-labeledby (non-standard spelling)" class="ex">x</h1>
 
 <!-- Step 2H: Recursive Name from Content, see wpt/accname/name/comp_name_from_content.html  -->
@@ -116,7 +116,7 @@ x
   </a>
 </h3>
 
-<!-- Step 2I: Tooltip is superceded by 2D: AriaLabel, also see wpt/accname/name/comp_tooltip.html -->
+<!-- Step 2I: Tooltip is superceded by 2B: AriaLabeledby, also see wpt/accname/name/comp_tooltip.html -->
 <button aria-labeledby="n2" title="foo" data-expectedlabel="second label" data-testname="button with title is superceded by aria-labeledby (non-standard spelling)" class="ex">x</button>
 
 

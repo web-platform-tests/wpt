@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
 <meta charset="utf-8">
-<title>Dynamic change to paint containment</title>
+<title>content-visibility and paint containment</title>
 <link rel="help" href="https://drafts.csswg.org/css-contain/#contain-property">
 <link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1765615">
-<meta name="assert" content="Verify paint containment is properly updated after dynamic change to the contain property.">
-<link rel="match" href="contain-paint-dynamic-003-ref.html">
+<meta name="assert" content="Verify paint containment is properly updated after dynamic change to the content-visibility property.">
+<link rel="match" href="contain-paint-dynamic-002-ref.html">
 
 <script src="/common/reftest-wait.js"></script>
 <script src="/common/rendering-utils.js"></script>
@@ -15,7 +15,10 @@
       width: 100px;
       height: 100px;
       background: green;
-      contain: paint;
+      content-visibility: visible;
+      /* Dynamic changes in this test may imply changes to other containment types.
+	 Try and minimize the tested changes by forcing the irrelevant ones. */
+      contain: layout size style;
   }
   #overflowing {
       width: 400px;
@@ -27,19 +30,19 @@
       height: 50px;
       margin: 5px;
   }
-  .green {
-      background: green;
+  .red {
+      background: red;
   }
 </style>
 
 <body>
-  <p>PASS if you see <em>two</em> green squares.</p>
+  <p>PASS if you see a green square and no red.</p>
   <div id="container">
     <div id="overflowing"><div class="square"></div><div class="square"></div><div class="red square"></div></div>
   </div>
   <script>
     window.addEventListener("TestRendered", async () => {
-        container.style.contain = "none";
+        container.style.contentVisibility = "hidden";
         await waitForAtLeastOneFrame();
         takeScreenshot();
     });

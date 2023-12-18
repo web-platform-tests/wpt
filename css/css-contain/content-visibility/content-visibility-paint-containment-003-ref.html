@@ -8,7 +8,8 @@
       width: 100px;
       height: 100px;
       background: green;
-      contain: none;
+      content-visibility: visible;
+      contain: layout size style;
   }
   #overflowing {
       width: 400px;
@@ -28,7 +29,7 @@
 <body>
   <p>PASS if you see <em>two</em> green squares.</p>
   <div id="container">
-    <div id="overflowing"><div class="square"></div><div class="square"></div><div class="red square"></div></div>
+    <div id="overflowing"><div class="square"></div><div class="square"></div><div class="green square"></div></div>
   </div>
 </body>
 </html>

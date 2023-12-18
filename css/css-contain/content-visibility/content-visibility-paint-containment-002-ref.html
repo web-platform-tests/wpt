@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html>
 <meta charset="utf-8">
-<title>Dynamic change to paint containment (reference)</title>
+<title>content-visibility and paint containment (reference)</title>
 
 <style>
   #container {
       width: 100px;
       height: 100px;
       background: green;
-      contain: none;
+      content-visibility: hidden;
+      contain: layout size style;
   }
   #overflowing {
       width: 400px;
@@ -20,13 +21,13 @@
       height: 50px;
       margin: 5px;
   }
-  .green {
-      background: green;
+  .red {
+      background: red;
   }
 </style>
 
 <body>
-  <p>PASS if you see <em>two</em> green squares.</p>
+  <p>PASS if you see a green square and no red.</p>
   <div id="container">
     <div id="overflowing"><div class="square"></div><div class="square"></div><div class="red square"></div></div>
   </div>

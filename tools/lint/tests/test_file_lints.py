@@ -847,6 +847,22 @@ features:
         ]
     ),
     (
+        ["bar1.txt", "bar2.txt", "bar3.txt"],
+        b"""\
+features:
+- name: feature1
+  files:
+  - file*.txt
+  - bar*.txt
+""",
+        [
+            ("MISSING-WEB-FEATURES-FILE",
+             "The WEB_FEATURES.yml file references a test that does not exist: 'file*.txt'",
+             "css/WEB_FEATURES.yml",
+             None),
+        ]
+    ),
+    (
         ["file1.txt", "file2.txt", "file3.txt"],
         b"""\
 features:

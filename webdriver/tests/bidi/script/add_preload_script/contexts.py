@@ -5,7 +5,7 @@ from webdriver.bidi.modules.script import ContextTarget
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("domain", ["", "alt"], ids=["same_origin", "cross_origin"])
-async def test_add_preload_script_in_frame_with_top_context_specified(
+async def test_iframe(
     bidi_session, add_preload_script, new_tab,
         inline, iframe, domain):
 
@@ -22,7 +22,7 @@ async def test_add_preload_script_in_frame_with_top_context_specified(
         wait="complete",
     )
 
-    # Check that preload script applied the changes to the window
+    # Check that preload script applied the changes to the context
     result = await bidi_session.script.evaluate(
         expression="window.bar",
         target=ContextTarget(new_tab["context"]),
@@ -68,7 +68,7 @@ async def test_page_script_context_isolation(bidi_session, add_preload_script,
         wait="complete",
     )
 
-    # Check that preload script applied the changes to the window
+    # Check that preload script applied the changes to the context
     result = await bidi_session.script.evaluate(
         expression="window.baz",
         target=ContextTarget(top_context["context"]),
@@ -76,10 +76,38 @@ async def test_page_script_context_isolation(bidi_session, add_preload_script,
     )
     assert result == {"type": "number", "value": 42}
 
-    # Check that preload script did *not* apply the changes to the other window
+    # Check that preload script did *not* apply the changes to the other context
     result = await bidi_session.script.evaluate(
         expression="window.baz",
         target=ContextTarget(new_context["context"]),
         await_promise=True,
     )
     assert result == {type: "undefined"}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("domain", ["", "alt"], ids=["same_origin", "cross_origin"])
+async def test_identical_contexts(
+        bidi_session, add_preload_script, new_tab,
+        inline, iframe, domain):
+
+    iframe_content = f"<div>{domain}</div>"
+    url = inline(f"{iframe(iframe_content, domain=domain)}")
+
+    await add_preload_script(
+        function_declaration="() => { window.foo = window.foo ? window.foo + 1 : 1; }",
+        contexts=[new_tab["context"], new_tab["context"]])
+
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"],
+        url=url,
+        wait="complete",
+    )
+
+    # Check that preload script applied the changes to the context only once
+    result = await bidi_session.script.evaluate(
+        expression="window.foo",
+        target=ContextTarget(new_tab["context"]),
+        await_promise=True,
+    )
+    assert result == {"type": "number", "value": "1"}

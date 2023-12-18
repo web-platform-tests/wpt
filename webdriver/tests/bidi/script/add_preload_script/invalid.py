@@ -204,6 +204,15 @@ async def test_params_contexts_empty_list(bidi_session):
         ),
 
 
+@pytest.mark.parametrize("value", [None, False, 42, {}, []])
+async def test_params_contexts_context_invalid_type(bidi_session, value):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.script.add_preload_script(
+            function_declaration="() => {}",
+            contexts=[value]
+        ),
+
+
 @pytest.mark.parametrize("value", ["", "somestring"])
 async def test_params_contexts_context_invalid_value(bidi_session, value):
     with pytest.raises(error.InvalidArgumentException):

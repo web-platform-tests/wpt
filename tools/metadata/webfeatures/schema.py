@@ -42,7 +42,7 @@ class FeatureFile(str):
 @dataclass
 class FeatureEntry:
     files: Union[Sequence[FeatureFile], SpecialFileEnum]
-    """The web feature key"""
+    """The web-features key"""
     name: str
 
     _required_keys = {"files", "name"}

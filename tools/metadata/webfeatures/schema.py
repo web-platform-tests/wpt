@@ -79,7 +79,7 @@ class WebFeaturesFile:
         Converts the provided dictionary to an instance of WebFeaturesFile
         :param obj: The object that will be converted to a WebFeaturesFile.
         :return: An instance of WebFeaturesFile
-        :raises ValueError: If there unexpected keys or missing required keys.
+        :raises ValueError: If there are unexpected keys or missing required keys.
         """
         validate_dict(obj, WebFeaturesFile._required_keys)
         self.features = SchemaValue.from_list(

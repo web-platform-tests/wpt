@@ -42,7 +42,6 @@ the global scope.
 ```
 
 ### User Activation ###
-
 ```eval_rst
 .. js:autofunction:: test_driver.consume_user_activation
 ```

@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>content-visibility and layout/paint containment (absolute/fixed positioned descendants)</title>
+<title>content-visibility and layout/paint containment</title>
 <link rel="help" href="https://drafts.csswg.org/css-contain/#content-visibility">
 <link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1765615">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <meta name="assert" content="content-visibility: auto and elements skipping their content change the used value of the contain property to turn on layout/paint containment, affecting absolute/fixed positioned descendants.">
 <style>
-  /* Change to style containment can cause drastic changes such as rebuilding
-     counters or quotes, so always enabled here to prevent any side effect. */
+  /* Dynamic changes in this test may imply changes to other containment types.
+     Try and minimize the tested changes by forcing the irrelevant ones. */
   .content_visibility {
-      contain: style;
+      contain: size style;
   }
 
   #spacer_for_far_to_viewport {
@@ -105,11 +105,11 @@
 
   <script>
     function verifyContainmentFromAbsoluteFixedPositioning(id, applied) {
-	// content-visibility: auto and elements skipping their content change
-	// apply paint/layout containment, making them an absolute/fixed
-	// positioning container blocks.
+        // content-visibility: auto and elements skipping their content change
+        // apply paint/layout containment, making them an absolute/fixed
+        // positioning container blocks.
 
-	let container = document.getElementById(id);
+        let container = document.getElementById(id);
         let containerTop = container.getBoundingClientRect().top;
 
         let abs_top = container.getElementsByClassName("absolute_pos")[0]
@@ -135,50 +135,50 @@
     }
 
     promise_test(async () => {
-	verifyContainmentFromAbsoluteFixedPositioning("visible",
-						      /*applied=*/false);
+        verifyContainmentFromAbsoluteFixedPositioning("visible",
+                                                      /*applied=*/false);
     }, "content-visibility: visible");
 
     promise_test(async () => {
-	verifyContainmentFromAbsoluteFixedPositioning("hidden",
-						      /*applied=*/true);
+        verifyContainmentFromAbsoluteFixedPositioning("hidden",
+                                                      /*applied=*/true);
     }, "content-visibility: hidden");
 
     promise_test(async () => {
         await tick();
-	verifyContainmentFromAbsoluteFixedPositioning("auto_far",
-						      /*applied=*/true);
+        verifyContainmentFromAbsoluteFixedPositioning("auto_far",
+                                                      /*applied=*/true);
     }, "content-visibility: auto (far from viewport)");
 
     promise_test(async () => {
         await tick();
-	verifyContainmentFromAbsoluteFixedPositioning("auto_close",
-						      /*applied=*/true);
+        verifyContainmentFromAbsoluteFixedPositioning("auto_close",
+                                                      /*applied=*/true);
     }, "content-visibility: auto (close from viewport)");
 
     promise_test(async () => {
         setContentVisibility("visible_to_hidden", "hidden");
-	verifyContainmentFromAbsoluteFixedPositioning("visible_to_hidden",
-						      /*applied=*/true);
+        verifyContainmentFromAbsoluteFixedPositioning("visible_to_hidden",
+                                                      /*applied=*/true);
     }, "switching content-visibility from visible to hidden");
 
     promise_test(async () => {
         setContentVisibility("hidden_to_visible", "visible");
-	verifyContainmentFromAbsoluteFixedPositioning("hidden_to_visible",
-						      /*applied=*/false);
+        verifyContainmentFromAbsoluteFixedPositioning("hidden_to_visible",
+                                                      /*applied=*/false);
     }, "switching content-visibility from hidden to visible");
 
     promise_test(async () => {
         setContentVisibility("visible_to_auto", "auto");
         await tick();
-	verifyContainmentFromAbsoluteFixedPositioning("visible_to_auto",
-						      /*applied=*/true);
+        verifyContainmentFromAbsoluteFixedPositioning("visible_to_auto",
+                                                      /*applied=*/true);
     }, "switching content-visibility from visible to auto");
 
     promise_test(async () => {
         setContentVisibility("auto_to_visible", "visible");
-	verifyContainmentFromAbsoluteFixedPositioning("auto_to_visible",
-						      /*applied=*/false);
+        verifyContainmentFromAbsoluteFixedPositioning("auto_to_visible",
+                                                      /*applied=*/false);
     }, "switching content-visibility from auto to visible");
   </script>
 </body>

@@ -8,6 +8,12 @@
 <script src="/resources/testharnessreport.js"></script>
 <meta name="assert" content="content-visibility: auto and elements skipping their content change the used value of the contain property to turn on style containment.">
 <style>
+  /* Dynamic changes in this test may imply changes to other containment types.
+     Try and minimize the tested changes by forcing the irrelevant ones. */
+  .content_visibility {
+      contain: layout paint size;
+  }
+
   #spacer_for_far_to_viewport {
       height: 300vh;
   }

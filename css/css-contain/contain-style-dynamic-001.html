@@ -6,7 +6,7 @@
 <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<meta name="assert" content="Verify that counters and quotes are properly updated after dynamic change to style containment">
+<meta name="assert" content="Verify style containment is properly updated after dynamic change to the contain property.">
 <style>
   /* Selectors for testing counters */
   .set_counter_to_9 {
@@ -48,16 +48,16 @@
   }
 
   /* Selectors for contain */
-  #none > .wrapper {
+  #none .wrapper {
       contain: none;
   }
-  #style > .wrapper {
+  #style .wrapper {
       contain: style;
   }
-  #none_to_style > .wrapper {
+  #none_to_style .wrapper {
       contain: none;
   }
-  #style_to_none > .wrapper {
+  #style_to_none .wrapper {
       contain: style;
   }
 </style>
@@ -226,14 +226,15 @@
 
   <script>
     function verifyStyleContainment(id, applied) {
-        // To verify style containment, we check whether the properties in the
-        // wrapper affect the string length of generated content.
+        let container = document.getElementById(id);
+
+        // To verify style containment for counters and quotes, we check whether
+        // the properties in the wrapper affect the string length of generated
+        // content.
         function haveSameStringLength(box1, box2) {
             const ahemFontSizePx = 25;
             return Math.abs(box2.width - box1.width) < ahemFontSizePx / 2;
         }
-
-        let container = document.getElementById(id);
         let counter_box =
             Array.from(container.getElementsByClassName("print_counter"))
             .map(e => e.parentNode.getBoundingClientRect());
@@ -257,23 +258,23 @@
     promise_test(async () => {
         await document.fonts.ready;
         verifyStyleContainment("none", /*applied=*/ false);
-    }, "counter/quote-related properties not scoped to subtree with contain: none");
+    }, "contain: none");
 
     promise_test(async () => {
         await document.fonts.ready;
         verifyStyleContainment("style", /*applied=*/ true);
-    }, "counter/quote-related properties scoped to subtree with contain: style");
+    }, "contain: style");
 
     promise_test(async () => {
         await document.fonts.ready;
         setContain("none_to_style", "style");
         verifyStyleContainment("none_to_style", /*applied=*/ true);
-    }, "counter/quote-related properties scoped when switching contain from none to style");
+    }, "switching contain from none to style");
 
     promise_test(async () => {
         await document.fonts.ready;
         setContain("style_to_none", "none");
         verifyStyleContainment("style_to_none", /*applied=*/ false);
-    }, "counter/quote-related properties not scoped when switching contain from style to none");
+    }, "switching contain from style to none");
   </script>
 </body>

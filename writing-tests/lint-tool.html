@@ -118,6 +118,8 @@ cross-platform “Unix” line endings instead of, e.g., DOS line endings).</p>
 <dt><code class="docutils literal notranslate"><span class="pre">INVALID-TIMEOUT</span></code></dt><dd><p>Test file with <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name='timeout'...&gt;</span></code> element that has a <code class="docutils literal notranslate"><span class="pre">content</span></code> attribute whose value is not <code class="docutils literal notranslate"><span class="pre">long</span></code>: %s</p>
 <strong>To fix:</strong><p>replace the value of the <code class="docutils literal notranslate"><span class="pre">content</span></code> attribute with <code class="docutils literal notranslate"><span class="pre">long</span></code></p>
 </dd>
+<dt><code class="docutils literal notranslate"><span class="pre">INVALID-WEB-FEATURES-FILE</span></code></dt><dd><p>The WEB_FEATURES.yml file contains an invalid structure</p>
+</dd>
 <dt><code class="docutils literal notranslate"><span class="pre">LATE-TIMEOUT</span></code></dt><dd><p>Test file with <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name='timeout'...&gt;</span></code> element after <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code> element</p>
 <strong>To fix:</strong><p>move the <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name=&quot;timeout&quot;...&gt;</span></code> element to precede the <code class="docutils literal notranslate"><span class="pre">script</span></code>
 element.</p>
@@ -144,6 +146,8 @@ with the <code class="docutils literal notranslate"><span class="pre">.html</spa
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">MISSING-TESTHARNESSREPORT</span></code></dt><dd><p>Missing <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code></p>
 <strong>To fix:</strong><p>ensure each test file contains <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code></p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">MISSING-WEB-FEATURES-FILE</span></code></dt><dd><p>The WEB_FEATURES.yml file references a test that does not exist: ‘%s’</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">MOJOM-JS</span></code></dt><dd><p>Don’t check *.mojom.js files into WPT</p>
 <strong>To fix:</strong><p>Check if the file is already included in mojojs.zip:

@@ -15,7 +15,7 @@
   }
   .content_visibility {
       /* Dynamic changes in this test may imply changes to other containment types.
-	 Try and minimize the tested changes by forcing the irrelevant ones. */
+         Try and minimize the tested changes by forcing the irrelevant ones. */
       contain: paint size style;
   }
   #visible .content_visibility {
@@ -121,7 +121,7 @@
         let content_visibility = container.getElementsByClassName("content_visibility")[0];
 
         // To verify layout containment, we test baseline suppression.
-	// See contain-layout-dynamic-001.html for more details.
+        // See contain-layout-dynamic-001.html for more details.
         let item1 = content_visibility;
         let item2 = item1.previousElementSibling;
         return Math.abs(item1.getBoundingClientRect().top - item2.getBoundingClientRect().top) <= 1;

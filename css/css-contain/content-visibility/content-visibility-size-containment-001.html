@@ -14,7 +14,7 @@
   }
   .content_visibility {
       /* Dynamic changes in this test may imply changes to other containment types.
-	 Try and minimize the tested changes by forcing the irrelevant ones. */
+         Try and minimize the tested changes by forcing the irrelevant ones. */
       contain: layout paint style;
   }
   #visible .content_visibility {
@@ -124,10 +124,10 @@
   <script>
     function sizeContainmentApplied(id) {
         // To verify size containment, we test the width is zero.
-	// See contain-size-dynamic-001.html for more details.
+        // See contain-size-dynamic-001.html for more details.
         let container = document.getElementById(id);
         let content_visibility = container.getElementsByClassName("content_visibility")[0];
-	return content_visibility.getBoundingClientRect().width == 0;
+        return content_visibility.getBoundingClientRect().width == 0;
     }
 
     function setContentVisibility(id, value) {

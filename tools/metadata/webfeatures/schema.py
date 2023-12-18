@@ -52,7 +52,7 @@ class FeatureEntry:
         Converts the provided dictionary to an instance of FeatureEntry
         :param obj: The object that will be converted to a FeatureEntry.
         :return: An instance of FeatureEntry
-        :raises ValueError: If there unexpected keys or missing required keys.
+        :raises ValueError: If there are unexpected keys or missing required keys.
         """
         validate_dict(obj, FeatureEntry._required_keys)
         self.files = SchemaValue.from_union([

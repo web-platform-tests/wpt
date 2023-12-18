@@ -7,16 +7,50 @@
 <script src="/resources/testharnessreport.js"></script>
 <meta name="assert" content="elements skipping their content change the used value of the contain property to turn on size containment.">
 <style>
-  /* Dynamic changes in this test may imply changes to other containment types.
-     Try and minimize the tested changes by forcing the irrelevant ones. */
-  .content_visibility {
-      contain: layout paint style;
-  }
-
+  /* Selectors for content-visibility */
   #spacer_for_far_to_viewport {
       height: 300vh;
   }
+  .content_visibility {
+      /* Dynamic changes in this test may imply changes to other containment types.
+	 Try and minimize the tested changes by forcing the irrelevant ones. */
+      contain: layout paint style;
+  }
+  #visible .content_visibility {
+      content-visibility: visible;
+  }
+  #hidden .content_visibility {
+      content-visibility: hidden;
+  }
+  #auto_far .content_visibility {
+      content-visibility: auto;
+  }
+  #auto_close .content_visibility {
+      content-visibility: auto;
+  }
+  #visible_to_hidden .content_visibility {
+      content-visibility: visible;
+  }
+  #hidden_to_visible .content_visibility {
+      content-visibility: hidden;
+  }
+  #visible_to_auto_far .content_visibility {
+      content-visibility: visible;
+  }
+  #auto_far_to_visible .content_visibility {
+      content-visibility: auto;
+  }
+  #hidden_to_auto_close .content_visibility {
+      content-visibility: hidden;
+  }
+  #auto_close_to_hidden .content_visibility {
+      content-visibility: auto;
+  }
+  #auto_dynamic_relevancy .content_visibility {
+      content-visibility: auto;
+  }
 
+  /* Selectors for testing sizing as empty */
   .content_visibility {
       display: inline-block;
   }
@@ -25,40 +59,6 @@
       width: 50px;
       height: 5px;
       background: black;
-  }
-
-  #visible > .content_visibility {
-      content-visibility: visible;
-  }
-  #hidden > .content_visibility {
-      content-visibility: hidden;
-  }
-  #auto_far > .content_visibility {
-      content-visibility: auto;
-  }
-  #auto_close > .content_visibility {
-      content-visibility: auto;
-  }
-  #visible_to_hidden > .content_visibility {
-      content-visibility: visible;
-  }
-  #hidden_to_visible > .content_visibility {
-      content-visibility: hidden;
-  }
-  #visible_to_auto_far > .content_visibility {
-      content-visibility: visible;
-  }
-  #auto_far_to_visible > .content_visibility {
-      content-visibility: auto;
-  }
-  #hidden_to_auto_close > .content_visibility {
-      content-visibility: hidden;
-  }
-  #auto_close_to_hidden > .content_visibility {
-      content-visibility: auto;
-  }
-  #auto_dynamic_relevancy > .content_visibility {
-      content-visibility: auto;
   }
 </style>
 <body>
@@ -122,6 +122,8 @@
 
   <script>
     function sizeContainmentApplied(id) {
+        // To verify size containment, we test the width is zero.
+	// See contain-size-dynamic-001.html for more details.
         let container = document.getElementById(id);
         let content_visibility = container.getElementsByClassName("content_visibility")[0];
 	return content_visibility.getBoundingClientRect().width == 0;

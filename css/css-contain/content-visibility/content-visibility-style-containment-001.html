@@ -8,16 +8,41 @@
 <script src="/resources/testharnessreport.js"></script>
 <meta name="assert" content="content-visibility: auto and elements skipping their content change the used value of the contain property to turn on style containment.">
 <style>
-  /* Dynamic changes in this test may imply changes to other containment types.
-     Try and minimize the tested changes by forcing the irrelevant ones. */
-  .content_visibility {
-      contain: layout paint size;
-  }
-
+  /* Selectors for content-visibility */
   #spacer_for_far_to_viewport {
       height: 300vh;
   }
+  .content_visibility {
+      /* Dynamic changes in this test may imply changes to other containment types.
+         Try and minimize the tested changes by forcing the irrelevant ones. */
+      contain: layout paint size;
+  }
+  #visible .content_visibility {
+      content-visibility: visible;
+  }
+  #hidden .content_visibility {
+      content-visibility: hidden;
+  }
+  #auto_far .content_visibility {
+      content-visibility: auto;
+  }
+  #auto_close .content_visibility {
+      content-visibility: auto;
+  }
+  #visible_to_hidden .content_visibility {
+      content-visibility: visible;
+  }
+  #hidden_to_visible .content_visibility {
+      content-visibility: hidden;
+  }
+  #visible_to_auto .content_visibility {
+      content-visibility: visible;
+  }
+  #auto_to_visible .content_visibility {
+      content-visibility: auto;
+  }
 
+  /* Selectors for testing counters */
   .set_counter_to_9 {
       counter-set: testcounter 9;
   }
@@ -29,30 +54,6 @@
       content: counters(testcounter, ".");
   }
 
-  #visible > .content_visibility {
-      content-visibility: visible;
-  }
-  #hidden > .content_visibility {
-      content-visibility: hidden;
-  }
-  #auto_far > .content_visibility {
-      content-visibility: auto;
-  }
-  #auto_close > .content_visibility {
-      content-visibility: auto;
-  }
-  #visible_to_hidden > .content_visibility {
-      content-visibility: visible;
-  }
-  #hidden_to_visible > .content_visibility {
-      content-visibility: hidden;
-  }
-  #visible_to_auto > .content_visibility {
-      content-visibility: visible;
-  }
-  #auto_to_visible > .content_visibility {
-      content-visibility: auto;
-  }
 </style>
 <body>
   <div id="log"></div>
@@ -134,14 +135,19 @@
   <script>
     function styleContainmentApplied(id) {
         let container = document.getElementById(id);
+
         let printed_counters = container.getElementsByClassName("print_counter");
+
+        // To verify style containment, we test the string length of generated
+	// content for counters.
+	// See contain-style-dynamic-001.html for more details.
+        function haveSameStringLength(box1, box2) {
+            const ahemFontSizePx = 25;
+            return Math.abs(box2.width - box1.width) < ahemFontSizePx / 2;
+        }
         let beforeBox = printed_counters[0].parentNode.getBoundingClientRect();
         let afterBox = printed_counters[1].parentNode.getBoundingClientRect();
-        // - beforeBox always has the counter set to '9'.
-        // - afterBox has the counter set to '9' or '10' depending on whether
-        //   style containment applies to the content_visibility div, which
-        //   we can thus determine by comparing the widths.
-        return afterBox.width < beforeBox.width * 1.5;
+        return haveSameStringLength(beforeBox, afterBox);
     }
 
     function setContentVisibility(id, value) {

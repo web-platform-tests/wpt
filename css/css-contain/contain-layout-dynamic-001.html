@@ -8,6 +8,20 @@
 <script src="/resources/testharnessreport.js"></script>
 <meta name="assert" content="Verify layout containment is properly updated after dynamic change to the contain property.">
 <style>
+  /* Selectors for contain */
+  #none .wrapper {
+      contain: none;
+  }
+  #layout .wrapper {
+      contain: layout;
+  }
+  #none_to_layout .wrapper {
+      content-visibility: none;
+  }
+  #layout_to_none .wrapper {
+      content-visibility: layout;
+  }
+
   /* Selectors for testing absolute/fixed positioned elements */
   #top_spacer {
       height: 100px;
@@ -31,20 +45,6 @@
       background: black;
       width: 50px;
       height: 100px;
-  }
-
-  /* Selectors for contain */
-  #none .wrapper {
-      contain: none;
-  }
-  #layout .wrapper {
-      contain: layout;
-  }
-  #none_to_layout .wrapper {
-      content-visibility: none;
-  }
-  #layout_to_none .wrapper {
-      content-visibility: layout;
   }
 </style>
 <body>

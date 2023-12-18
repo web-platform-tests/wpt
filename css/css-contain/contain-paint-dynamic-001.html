@@ -8,20 +8,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <meta name="assert" content="Verify paint containment is properly updated after dynamic change to the contain property.">
 <style>
-  /* Selectors for testing absolute/fixed positioned elements */
-  #top_spacer {
-      height: 100px;
-      background: lightgray;
-  }
-  .absolute_pos {
-      position: absolute;
-      top: 42px;
-  }
-  .fixed_pos {
-      position: fixed;
-      top: 42px;
-  }
-
   /* Selectors for contain */
   #none .wrapper {
       contain: none;
@@ -34,6 +20,20 @@
   }
   #paint_to_none .wrapper {
       content-visibility: paint;
+  }
+
+  /* Selectors for testing absolute/fixed positioned elements */
+  #top_spacer {
+      height: 100px;
+      background: lightgray;
+  }
+  .absolute_pos {
+      position: absolute;
+      top: 42px;
+  }
+  .fixed_pos {
+      position: fixed;
+      top: 42px;
   }
 </style>
 <body>

@@ -8,6 +8,20 @@
 <script src="/resources/testharnessreport.js"></script>
 <meta name="assert" content="Verify style containment is properly updated after dynamic change to the contain property.">
 <style>
+  /* Selectors for contain */
+  #none .wrapper {
+      contain: none;
+  }
+  #style .wrapper {
+      contain: style;
+  }
+  #none_to_style .wrapper {
+      contain: none;
+  }
+  #style_to_none .wrapper {
+      contain: style;
+  }
+
   /* Selectors for testing counters */
   .set_counter_to_9 {
       counter-set: testcounter 9;
@@ -45,20 +59,6 @@
   }
   span.print_quotes::after {
       content: no-close-quote;
-  }
-
-  /* Selectors for contain */
-  #none .wrapper {
-      contain: none;
-  }
-  #style .wrapper {
-      contain: style;
-  }
-  #none_to_style .wrapper {
-      contain: none;
-  }
-  #style_to_none .wrapper {
-      contain: style;
   }
 </style>
 <body>

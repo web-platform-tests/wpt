@@ -77,15 +77,27 @@
         - <table> structure such as accessibility row or column count
     -->
 
-    <!-- Generic example: <footer data-testname="footer element scoped to main element is generic" class="ex-generic">x</footer> -->
-    <!-- Role example: <div role="contentinfo" data-testname="contentinfo region scoped to body element is contentinfo" data-expectedrole="contentinfo" class="ex">x</div> -->
+    <!-- Buttons -->
+    <button style="display: contents" data-expectedrole="button" data-testname="button with display:contents has button role" class="ex">x</button>
+    <button role="button" style="display: contents" data-expectedrole="button" data-testname="button with explicit button role and display:contents has button role" class="ex">x</button>
+    <div role="button" style="display: contents" data-expectedrole="button" data-testname="div with button role and display:contents has button role" class="ex">x</div>
+    <div role="button" tabindex="0" style="display: contents" data-expectedrole="button" data-testname="div with button role, tabindex=0 and display:contents has button role" class="ex">x</div>
 
-    <!-- HTML elements testing  -->
-    <h2>HTML elements testing for <code>display: contents</code></h2>
+    <!-- Generics -->
+    <div style="display: contents" data-testname="div with display: contents has generic role" class="ex-generic">x</div>
+    <span style="display: contents" data-testname="span with display: contents has generic role" class="ex-generic">x</span>
 
-    <!-- Explicit ARIA role assignment testing  -->
-    <h2>Explicit ARIA role assignment testing for <code>display: contents</code></h2>
 
+    <!-- Headings -->
+    <h3 style="display: contents" data-expectedrole="heading" data-testname="h3 with display:contents has heading role" class="ex">x</h3>
+    <div role="heading" aria-level="3" style="display: contents" data-expectedrole="heading" data-testname="div with heading role, aria-level=3 and display:contents has heading role" class="ex">x</div>
+    <span role="heading" aria-level="1" style="display: contents" data-expectedrole="heading" data-testname="span with heading role, aria-level=1 and display:contents has heading role" class="ex">x</span>
+
+    <!-- Links -->
+    <a href="#" style="display: contents" data-expectedrole="link" data-testname="anchor with display:contents has link role" class="ex">x</a>
+    <a href="#" role="link" style="display: contents" data-expectedrole="link" data-testname="anchor with explicit link role and display:contents has link role" class="ex">x</a>
+    <div role="link" style="display: contents" data-expectedrole="link" data-testname="div with link role and display:contents has link role" class="ex">x</div>
+    <div role="link" tabindex="0" style="display: contents" data-expectedrole="link" data-testname="div with link role, tabindex=0 and display:contents has link role" class="ex">x</div>
 
     <script>
         AriaUtils.verifyRolesBySelector(".ex");

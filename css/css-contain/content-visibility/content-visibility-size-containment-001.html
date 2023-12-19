@@ -13,9 +13,11 @@
       height: 300vh;
   }
   .content_visibility {
-      /* Dynamic changes in this test may imply changes to other containment types.
-         Try and minimize the tested changes by forcing the irrelevant ones. */
-      contain: layout size style;
+      /* Dynamic modification of content-visibility may change whether style
+         containment is applied, which in turn may cause drastic invalidations
+         (e.g. rebuilding counters). Make the test more robust by forcing
+         style containment to always apply. */
+      contain: style;
   }
   #visible .content_visibility {
       content-visibility: visible;

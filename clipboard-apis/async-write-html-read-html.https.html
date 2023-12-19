@@ -33,7 +33,7 @@ async function readWriteTest(textInput) {
   await waitForUserActivation();
   await navigator.clipboard.write([clipboardItem]);
   await waitForUserActivation();
-  const clipboardItems = await navigator.clipboard.read({type: 'text/html'});
+  const clipboardItems = await navigator.clipboard.read();
 
   const html = clipboardItems[0];
   assert_equals(html.types.length, 1);

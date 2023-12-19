@@ -80,11 +80,11 @@
     promise_test(async () => {
         setContain("none_to_size", "size");
         verifySizeContainment("none_to_size", /*applied=*/true);
-    }, "switching content-visibility from none to size");
+    }, "switching contain from none to size");
 
     promise_test(async () => {
         setContain("size_to_none", "none");
         verifySizeContainment("size_to_none", /*applied=*/false);
-    }, "switching content-visibility from size to none");
+    }, "switching contain from size to none");
   </script>
 </body>

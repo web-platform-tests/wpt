@@ -83,18 +83,34 @@
     <div role="button" style="display: contents;" data-expectedrole="button" data-testname="div with button role and display:contents has button role" class="ex">x</div>
     <div role="button" tabindex="0" style="display: contents;" data-expectedrole="button" data-testname="div with button role, tabindex=0 and display:contents has button role" class="ex">x</div>
 
-    <!-- Generics -->
-    <div style="display: contents;" data-testname="div with display: contents has generic role" class="ex-generic">x</div>
-    <span style="display: contents;" data-testname="span with display: contents has generic role" class="ex-generic">x</span>
+    <!-- Display: Flex -->
+    <table style="display: flex; flex-flow: column nowrap;">
+        <thead>
+          <tr style="display: contents;" data-expectedrole="row" data-testname="tr with display:contents, within table with display:flex, has row role" class="ex">
+            <th data-expectedrole="rowheader" data-testname="th as child of tr with display:contents, within table with display:flex, has rowheader role" class="ex">x</th>
+            <th>x</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="display: contents;">
+            <td data-expectedrole="cell" data-testname="td as child of tr with display:contents, within table with display:flex, has cell role" class="ex">x</td>
+            <td>x</td>
+          </tr>
+        </tbody>
+      </table>
 
-    <!-- Grid (display:grid) -->
+    <!-- Display: Grid -->
     <div style="display: grid; grid-template-columns: 1fr 100px; grid-gap: 1em;">
         <h2>x</h2>
         <ul style="display: contents" data-expectedrole="list" data-testname="ul with display:contents, as child of div with display:grid, has list role" class="ex">
             <li>x</li>
-            <li data-expectedrole="listitem" data-testname="listitem within ul with display:contents, as child of div with display:grid, has listitem role" class="ex">y</li>
+            <li data-expectedrole="listitem" data-testname="listitem within ul with display:contents, as child of div with display:grid, has listitem role" class="ex">x</li>
         </ul>
     </div>
+
+    <!-- Generics -->
+    <div style="display: contents;" data-testname="div with display: contents has generic role" class="ex-generic">x</div>
+    <span style="display: contents;" data-testname="span with display: contents has generic role" class="ex-generic">x</span>
 
     <!-- Headings -->
     <h3 style="display: contents;" data-expectedrole="heading" data-testname="h3 with display:contents has heading role" class="ex">x</h3>

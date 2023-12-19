@@ -153,6 +153,11 @@
         <li data-expectedrole="listitem" data-testname="li, as child of ul with display:contents, has listitem role" class="ex">y</li>
     </ul>
 
+    <ul>
+        <li>x</li>
+        <li style="display: contents;" data-expectedrole="listitem" data-testname="li with display:contents, as child of ul, has listitem role" class="ex">y</li>
+    </ul>
+
     <ol style="display: contents;" data-expectedrole="list" data-testname="ol with display:contents has list role (child li has display:contents)" class="ex">
         <li style="display: contents;" data-expectedrole="listitem" data-testname="li as child of ol, both with display:contents, has listitem role" class="ex">x</li>
         <li>y</li>
@@ -161,6 +166,11 @@
     <ol style="display: contents;" data-expectedrole="list" data-testname="ol with display:contents has list role" class="ex">
         <li>x</li>
         <li data-expectedrole="listitem" data-testname="li, as child of ol with display:contents, has listitem role" class="ex">y</li>
+    </ol>
+
+    <ol>
+        <li>x</li>
+        <li style="display: contents;" data-expectedrole="listitem" data-testname="li with display:contents, as child of ol, has listitem role" class="ex">y</li>
     </ol>
 
     <div role="list" style="display: contents;" data-expectedrole="list" data-testname="div with list role and display:contents has list role" class="ex">
@@ -173,20 +183,22 @@
         <div role="listitem" style="display: contents;" data-expectedrole="listitem" data-testname="div with listitem role (as child of div with list role), both with display:contents, has listitem role" class="ex">y</div>
     </div>
 
-      <!-- Lists: description lists -->
-      <dl>
+    <!-- Lists: description lists -->
+    <dl>
         <dt style="display: contents;" data-expectedrole="term" data-testname="dt with display:contents, as child of dl, has term role" class="ex">q</dt>
         <dd style="display: contents;" data-expectedrole="definition" data-testname="dd with display:contents, as child of dl, has definition role" class="ex">r</dd>
         <dt>x</dt>
         <dd>y</dd>
-      </dl>
+    </dl>
 
-      <dl style="display: contents;">
+    <dl style="display: contents;">
         <dt style="display: contents;" data-expectedrole="term" data-testname="dt with display:contents, as child of dl with display:contents, has term role" class="ex">q</dt>
         <dd style="display: contents;" data-expectedrole="definition" data-testname="dd with display:contents, as child of dl with display:contents, has definition role" class="ex">r</dd>
         <dt>x</dt>
         <dd>y</dd>
-      </dl>
+    </dl>
+
+    <!-- Tables -->
 
     <script>
         AriaUtils.verifyRolesBySelector(".ex");

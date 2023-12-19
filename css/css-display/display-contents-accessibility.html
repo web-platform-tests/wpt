@@ -61,10 +61,10 @@
         - HTML elements retain their semantic role (such as <h#>, <th>, <td>, <button>, <svg>)
         - HTML elements and their accessible name calculation is unaffected (https://w3c.github.io/accname/#computation-steps)
 
-    The following is not currently testable:
-        - Focusability of controls (tracked globally in mozilla/standards-positions repo: https://github.com/mozilla/standards-positions/issues/772)
+    The following is not currently WPT testable:
+        - Focusability of controls (https://github.com/mozilla/standards-positions/issues/772)
 
-        - Reading order such table cells
+        - Reading order such as table cells
 
         - Expected keyboard operability such as links remaining operable with Enter/Return
 
@@ -86,6 +86,15 @@
     <!-- Generics -->
     <div style="display: contents;" data-testname="div with display: contents has generic role" class="ex-generic">x</div>
     <span style="display: contents;" data-testname="span with display: contents has generic role" class="ex-generic">x</span>
+
+    <!-- Grid (display:grid) -->
+    <div style="display: grid; grid-template-columns: 1fr 100px; grid-gap: 1em;">
+        <h2>x</h2>
+        <ul style="display: contents" data-expectedrole="list" data-testname="ul with display:contents, as child of div with display:grid, has list role" class="ex">
+            <li>x</li>
+            <li data-expectedrole="listitem" data-testname="listitem within ul with display:contents, as child of div with display:grid, has listitem role" class="ex">y</li>
+        </ul>
+    </div>
 
     <!-- Headings -->
     <h3 style="display: contents;" data-expectedrole="heading" data-testname="h3 with display:contents has heading role" class="ex">x</h3>

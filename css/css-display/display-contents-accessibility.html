@@ -79,7 +79,16 @@
 
     <h2>Accname</h2>
 
+    <button aria-labelledby="b2" style="display: contents;" data-expectedlabel="hidden label" data-testname="button with display:contents is labelled by referenced hidden span" class="ex-label">
+        <span aria-hidden="true" id="b2">hidden label</span>
+        <span hidden>hidden from all users</span>
+        <span>visible to all users</span>
+    </button>
 
+    <span id="a1">label</span>
+    <a href="#" aria-labelledby="a1" style="display: contents;" data-expectedlabel="label" data-testname="link with display:contents is labelled via aria-labelledby" class="ex-label">x</a>
+
+    <div role="group" aria-label="label" style="display: contents;" data-expectedlabel="label" data-testname="div with role group with display:contents is labelled via aria-label" class="ex-label"></div>
 
     <h2>Accessibility roles</h2>
     <!-- Buttons -->
@@ -285,6 +294,7 @@
 
     <script>
         AriaUtils.verifyRolesBySelector(".ex");
+        AriaUtils.verifyLabelsBySelector(".ex-label");
         AriaUtils.verifyGenericRolesBySelector(".ex-generic");
     </script>
 

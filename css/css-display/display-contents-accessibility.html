@@ -207,7 +207,7 @@
     <table style="display: contents;" data-expectedrole="table" data-testname="table with display:contents has table role" class="ex">
         <thead>
           <tr style="display: contents;" data-expectedrole="row" data-testname="tr in table with display:contents has row role" class="ex">
-            <th scope="col" style="display: contents;" data-expectedrole="columnheader" data-testname="td within tr both with display:contents, in table with display:contents, has columnheader role" class="ex">x</th>
+            <th style="display: contents;" data-expectedrole="columnheader" data-testname="td within tr both with display:contents, in table with display:contents, has columnheader role" class="ex">x</th>
             <th>x</th>
           </tr>
         </thead>
@@ -234,20 +234,49 @@
         </div>
     </div>
 
-    <table role="grid" style="display: contents;" data-expectedrole="grid" data-testname="div with role grid and display:content has grid role">
+    <table role="grid" style="display: contents;" data-expectedrole="grid" data-testname="div with role grid and display:contents has grid role">
         <thead>
-          <tr>
-            <th>x</th>
+          <tr style="display: contents;" data-expectedrole="row" data-testname="tr within div with role grid, both with display:contents, has row role">
+            <th style="display: contents;" data-expectedrole="columnheader" data-testname="th within div with role grid, both with display:contents, has columnheader role">x</th>
             <th>x</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td style="display: contents;" data-expectedrole="cell" data-testname="td within tr, in table with role grid, has cell role" class="ex">x</td>
+            <td style="display: contents;" data-expectedrole="cell" data-testname="td within table with role grid, both with display:contents, has cell role" class="ex">x</td>
             <td>x</td>
           </tr>
         </tbody>
       </table>
+
+      <div role="grid" style="display: contents;" data-expectedrole="grid" data-testname="div with role grid with display:contents has grid role" class="ex">
+        <div role="rowgroup" style="display: contents;" data-expectedrole="rowgroup" data-testname="div with role rowgroup in div with role grid, both with display:contents, has rowgroup role" class="ex">
+            <div role="row">
+                <div role="columnheader" style="display: contents;" data-expectedrole="columnheader" data-testname="div with role columnheader with display:contents, in div with role rowgroup within div with grid role both with display:contents, has rowgroup role">x</div>
+                <div role="columnheader">x</div>
+            </div>
+        </div>
+        <div role="rowgroup">
+            <div role="row">
+                <div role="gridcell"></div>
+                <div role="gridcell" style="display: contents;" data-expectedrole="gridcell" data-testname="div with gridcell role and display:contents, within div with role row contained in a div with role grid both with display:contents, has gridcell role" class="ex"></div>
+            </div>
+        </div>
+    </div>
+
+      <table role="treegrid" style="display: contents;" data-expectedrole="treegrid" data-testname="table with role treegrid and display:contents has treegrid role" class="ex"></table>
+      <div role="treegrid" style="display: contents;" data-expectedrole="treegrid" data-testname="div with role treegrid and display:contents has treegrid role" class="ex"></table>
+
+    <ul role="tree" style="display: contents;" data-expectedrole="tree" data-testname="ul with role tree and display:contents has tree role" class="ex">
+        <li role="treeitem" aria-expanded="true" style="display: contents;" data-expectedrole="treeitem" data-testname="li with role treeitem and display:contents, within ul with role tree and display:contents, has treeitem role" class="ex">
+            <span>x</span>
+            <ul role="group">
+                <li role="treeitem" aria-expanded="false" style="display: contents;" data-expectedrole="treeitem" data-testname="li with role treeitem and display:contents, within ul with role=group (within ul with role tree and display:contents), has treeitem role" class="ex">
+                  <span>x</span>
+                </li>
+            </ul>
+        </li>
+    </ul>
 
     <script>
         AriaUtils.verifyRolesBySelector(".ex");

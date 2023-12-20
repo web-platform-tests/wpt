@@ -1,3 +1,4 @@
 features:
 - name: async-clipboard
-  files: async-*
+  files:
+  - async-*

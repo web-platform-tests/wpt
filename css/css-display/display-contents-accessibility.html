@@ -94,10 +94,10 @@
 
     <!-- <img> renders "display:contents" the same as "display:none", see: https://www.w3.org/TR/css-display-3/#unbox-html-->
     <label for="label-for-button">label</label>
-    <button id="label-for-button" style="display: contents;" data-expectedlabel="label" data-testname="button with display:contents is labelled via label for id association" class="ex-label"></button>
+    <button id="label-for-button" style="display: contents;" data-expectedlabel="label" data-testname="button with display:contents is labelled via label for/id association" class="ex-label"></button>
     <!-- SVG and display: contents behavior: https://github.com/w3c/svgwg/issues/305-->
     <svg viewbox="0 0 100 50">
-        <g style="display:contents;" fill="silver" stroke="blue" data-expectedlabel="group label" data-testname="g element with display:contents as child of svg is labelled via title element" class="ex-label">
+        <g style="display:contents;" fill="silver" stroke="blue" data-expectedlabel="group label" data-testname="g element with display:contents, as child of svg, is labelled via title element" class="ex-label">
           <title>group label</title>
           <circle cx="20" cy="20" r="10" />
           <circle cx="20" cy="20" r="10" />
@@ -165,12 +165,12 @@
     <div role="main" style="display: contents;" data-expectedrole="main" data-testname="div with role main and display:contents has main role" class="ex">x</div>
     <div role="contentinfo" style="display: contents;" data-expectedrole="contentinfo" data-testname="div with role contentinfo and display:contents has contentinfo role" class="ex">x</div>
     <div role="region" aria-label="label" style="display: contents;" data-expectedrole="region" data-testname="div with role region, aria-label and display:contents has region role" class="ex">x</div>
-    <div role="form" aria-label="label" style="display: contents;" data-expectedrole="form" data-testname="div with role form and display:contents has form role" class="ex">x</div>
+    <div role="form" aria-label="label" style="display: contents;" data-expectedrole="form" data-testname="div with role form, aria-label and display:contents has form role" class="ex">x</div>
     <div role="search" style="display: contents;" data-expectedrole="search" data-testname="div with role search and display:contents has search role" class="ex">x</div>
 
     <!-- Links -->
-    <a href="#" style="display: contents;" data-expectedrole="link" data-testname="anchor with display:contents has link role" class="ex">x</a>
-    <a href="#" role="link" style="display: contents;" data-expectedrole="link" data-testname="anchor with explicit link role and display:contents has link role" class="ex">x</a>
+    <a href="#" style="display: contents;" data-expectedrole="link" data-testname="link with display:contents has link role" class="ex">x</a>
+    <a href="#" role="link" style="display: contents;" data-expectedrole="link" data-testname="link with explicit link role and display:contents has link role" class="ex">x</a>
     <div role="link" style="display: contents;" data-expectedrole="link" data-testname="div with link role and display:contents has link role" class="ex">x</div>
     <div role="link" tabindex="0" style="display: contents;" data-expectedrole="link" data-testname="div with link role, tabindex=0 and display:contents has link role" class="ex">x</div>
 
@@ -254,7 +254,7 @@
     <div role="table" style="display: contents;" data-expectedrole="table" data-testname="div with role table with display:contents has table role" class="ex">
         <div role="rowgroup" style="display: contents;" data-expectedrole="rowgroup" data-testname="div with role rowgroup in div with role table, both with display:contents, has rowgroup role" class="ex">
             <div role="row">
-                <div role="columnheader" style="display: contents;" data-expectedrole="columnheader" data-testname="div with role columnheader with display:contents, in div with role rowgroup within div with table role both with display:contents, has rowgroup role">x</div>
+                <div role="columnheader" style="display: contents;" data-expectedrole="columnheader" data-testname="div with role columnheader with display:contents, in div with role rowgroup within div with table role both with display:contents, has columnheader role">x</div>
                 <div role="columnheader">x</div>
             </div>
         </div>
@@ -266,10 +266,10 @@
         </div>
     </div>
 
-    <table role="grid" style="display: contents;" data-expectedrole="grid" data-testname="div with role grid and display:contents has grid role">
+    <table role="grid" style="display: contents;" data-expectedrole="grid" data-testname="table with role grid and display:contents has grid role">
         <thead>
-          <tr style="display: contents;" data-expectedrole="row" data-testname="tr within div with role grid, both with display:contents, has row role">
-            <th style="display: contents;" data-expectedrole="columnheader" data-testname="th within div with role grid, both with display:contents, has columnheader role">x</th>
+          <tr style="display: contents;" data-expectedrole="row" data-testname="tr within table with role grid, both with display:contents, has row role">
+            <th style="display: contents;" data-expectedrole="columnheader" data-testname="th within table with role grid, both with display:contents, has columnheader role">x</th>
             <th>x</th>
           </tr>
         </thead>
@@ -296,8 +296,8 @@
         </div>
     </div>
 
-      <table role="treegrid" style="display: contents;" data-expectedrole="treegrid" data-testname="table with role treegrid and display:contents has treegrid role" class="ex"></table>
-      <div role="treegrid" style="display: contents;" data-expectedrole="treegrid" data-testname="div with role treegrid and display:contents has treegrid role" class="ex"></div>
+    <table role="treegrid" style="display: contents;" data-expectedrole="treegrid" data-testname="table with role treegrid and display:contents has treegrid role" class="ex"></table>
+    <div role="treegrid" style="display: contents;" data-expectedrole="treegrid" data-testname="div with role treegrid and display:contents has treegrid role" class="ex"></div>
 
     <ul role="tree" style="display: contents;" data-expectedrole="tree" data-testname="ul with role tree and display:contents has tree role" class="ex">
         <li role="treeitem" aria-expanded="true" style="display: contents;" data-expectedrole="treeitem" data-testname="li with role treeitem and display:contents, within ul with role tree and display:contents, has treeitem role" class="ex">

@@ -17,4 +17,4 @@ testWebNNOperation(
   ],
   buildOperationWithTwoInputs, 'gpu'
 );
-testWebNNOperation('logicalNot', buildOperationWithSingleInput, 'gpu');
+testWebNNOperation('not', buildOperationWithSingleInput, 'gpu');

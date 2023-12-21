@@ -448,7 +448,7 @@ class WebDriverUserActivationPart(UserActivationProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
-    def consume_user_activation():
+    def consume_user_activation(self):
         return self.webdriver.send_session_command("POST", "consume-user-activation")
 
 class WebDriverProtocol(Protocol):

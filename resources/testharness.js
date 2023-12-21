@@ -1428,6 +1428,25 @@
 
     function expose_assert(f, name) {
         function assert_wrapper(...args) {
+            console.log("ASSERT", name , tests?.current_test?.name, args, f)
+            // calculate the ID
+            let id = undefined
+            if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope) {
+                ctx = self
+                id = "worker"
+            } else {
+                ctx = window
+                id = window.__id__
+            }
+            let content = { 'isSecure': self.isSecureContext,
+                    'wid': id,
+                    'type': "Assert",
+                    'name': name,
+                    'test': tests?.current_test?.name,
+                    'args': args,
+                };
+            ctx.dispatchEvent(new CustomEvent('extension_log', {detail: {type: "ASSERT", content: content, ts: Date.now()}}))
+
             let status = Test.statuses.TIMEOUT;
             let stack = null;
             try {

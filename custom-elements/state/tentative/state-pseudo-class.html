@@ -112,7 +112,7 @@ test(() => {
   let inner = outer.innerElement;
   let innerStates = inner.i.states;
 
-  innerStates.add(':state(innerFoo)');
+  innerStates.add('innerFoo');
   assert_equals(getComputedStyle(inner).opacity, '0.5',
       '::part() followed by :state(innerFoo)');
   innerStates.delete('innerFoo');

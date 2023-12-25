@@ -58,6 +58,9 @@
 #pseudo-invalid::marker {
   color: rgb(0, 128, 0);
 }
+#pseudo-invalid::view-transition {
+  color: rgb(0, 128, 0);
+}
 #pseudo-invalid {
   color: rgb(255, 0, 0)
 }
@@ -164,19 +167,24 @@ test(function() {
     getComputedStyle(div, ":totallynotapseudo").length == 0,
     "Should return an empty style for unknown pseudo-elements starting with colon");
 }, "Unknown pseudo-elements");
-test(function() {
-  let li = document.querySelector('li');
-  assert_true(
-    getComputedStyle(li, ':marker').length == 0,
-    "Should return an empty style for :marker");
-  assert_true(
-    getComputedStyle(li, 'marker').length != 0,
-    "Should return the element style for marker");
-  assert_equals(
-    getComputedStyle(li, 'marker').color, "rgb(255, 0, 0)",
-    "Should return the element style for marker (ex: color is rgb(255, 0, 0), not rgb(0, 128, 0)");
-  assert_equals(
-  getComputedStyle(li, '::marker').color, "rgb(0, 128, 0)",
-  "Should return the element style for marker (ex: color is rgb(0, 128, 0)");
-}, "Unknown pseudo-element with a known string (ex: marker)");
+
+// If you add a pseudo-element identifier here, don't forget to add the corresponding style rule in
+// <style> above.
+["marker", "view-transition"].forEach(pseudoIdentifier => {
+  test(function() {
+    const li = document.querySelector('li');
+    assert_true(
+      getComputedStyle(li, `:${pseudoIdentifier}`).length == 0,
+      `Should return an empty style for :${pseudoIdentifier}`);
+    assert_true(
+      getComputedStyle(li, pseudoIdentifier).length != 0,
+      `Should return the element style for ${pseudoIdentifier}`);
+    assert_equals(
+      getComputedStyle(li, pseudoIdentifier).color, "rgb(255, 0, 0)",
+      `Should return the element style for ${pseudoIdentifier}`);
+    assert_equals(
+    getComputedStyle(li, `::${pseudoIdentifier}`).color, "rgb(0, 128, 0)",
+    `Should return the ::${pseudoIdentifier} style`);
+  }, `Unknown pseudo-element with a known identifier: ${pseudoIdentifier}`);
+});
 </script>

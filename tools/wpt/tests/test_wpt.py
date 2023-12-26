@@ -109,7 +109,7 @@ def test_list_tests(manifest_dir):
     conditions."""
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--metadata", manifest_dir, "--list-tests",
+        wpt.main(argv=["run", "--install-browser", "--metadata", manifest_dir, "--list-tests",
                        "--channel", "canary", "--yes",
                        # WebTransport server is not needed (web-platform-tests/wpt#41675).
                        "--no-enable-webtransport-h3",

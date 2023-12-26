@@ -147,17 +147,6 @@ def start_dbus():
     os.environ["DBUS_SESSION_BUS_ADDRESS"] = "autolaunch:"
 
 
-def install_chrome(channel):
-    if channel in ("nightly", "experimental", "canary"):
-        run(["sh", "-c", "./wpt install --channel canary chrome browser"])
-        run(["sh", "-c", "./wpt install --channel canary chrome webdriver"])
-        run(["sudo", "mv", "_venv3/browsers/canary/chrome-linux64/chrome", "/usr/bin"])
-    else:
-        run(["sh", "-c", f"./wpt install --channel {channel} chrome browser"])
-        run(["sh", "-c", f"./wpt install --channel {channel} chrome webdriver"])
-        run(["sudo", "mv", f"_venv3/browsers/{channel}/chrome-linux64/chrome", "/usr/bin"])
-
-
 def start_xvfb():
     start(["sudo", "Xvfb", os.environ["DISPLAY"], "-screen", "0",
            "%sx%sx%s" % (os.environ["SCREEN_WIDTH"],
@@ -254,8 +243,6 @@ def setup_environment(args):
         install_certificates()
 
     if "chrome" in args.browser:
-        assert args.channel is not None
-        install_chrome(args.channel)
         # Chrome is using dbus for various features.
         start_dbus()
 

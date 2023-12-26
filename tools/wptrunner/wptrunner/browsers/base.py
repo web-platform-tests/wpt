@@ -253,7 +253,6 @@ class OutputHandler:
         # or we'll just re-buffer the existing output.
         self.state = OutputHandlerState.AFTER_HANDLER_START
         for item in self.line_buffer:
-            print(item)
             self(item)
         self.line_buffer = None
 

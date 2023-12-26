@@ -1,6 +1,4 @@
 steps:
-# The conflicting google-chrome and chromedriver casks are first uninstalled.
-# The raw google-chrome-dev cask URL is used to bypass caching.
 - script: |
     set -eux -o pipefail
     ./wpt install --channel canary -d . chrome browser

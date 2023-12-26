@@ -344,6 +344,7 @@ class Firefox(Browser):
 
         if binary is None:
             return which("firefox")
+
         return binary
 
     def find_certutil(self):
@@ -1225,7 +1226,6 @@ class Chrome(ChromeChromiumBase):
     def find_binary(self, venv_path=None, channel=None):
         # Check for binary in venv first.
         path = self._find_binary_in_directory(self._get_browser_binary_dir(venv_path, channel))
-        print('possible path =', path)
         if path is not None:
             return path
 
@@ -1320,7 +1320,6 @@ class Chrome(ChromeChromiumBase):
                                 f"{webdriver_binary}, rejecting it")
             return False
 
-        print('browser_version =', browser_version, 'chromedriver version =', chromedriver_version)
         # TODO(DanielRyanSmith): Determine if this version logic fail case is
         # still necessary and remove it if it isn't.
         if not browser_version:

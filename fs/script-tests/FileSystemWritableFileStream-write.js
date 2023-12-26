@@ -104,6 +104,19 @@ directory_test(async (t, root) => {
 }, 'write() called with a string and a valid offset');
 
 directory_test(async (t, root) => {
+  const handle = await createEmptyFile(t, 'write_string_with_offset_after_seek', root);
+  const stream = await handle.createWritable();
+
+  await stream.write('1234567890');
+  await stream.write({type: 'seek', position: 0});
+  await stream.write({type: 'write', position: 4, data: 'abc'});
+  await stream.close();
+
+  assert_equals(await getFileContents(handle), '1234abc890');
+  assert_equals(await getFileSize(handle), 10);
+}, 'write() called with a string and a valid offset after seek');
+
+directory_test(async (t, root) => {
 const handle = await createEmptyFile(t, 'blob_with_offset', root);
 const stream = await handle.createWritable();
 
@@ -332,3 +345,20 @@ directory_test(async (t, root) => {
   assert_equals(await getFileContents(handle), '');
   assert_equals(await getFileSize(handle), 0);
 }, 'write() with an invalid blob to an empty file should reject');
+
+directory_test(async (t, root) => {
+  const handle = await createFileWithContents(t, 'file.txt', 'contents', root);
+  const stream = await handle.createWritable({mode: 'exclusive'});
+
+  await stream.write('12345');
+  await promise_rejects_js(
+      t, TypeError, stream.write({type: 'write', data: null}),
+      'write with null data');
+
+  // The file contents should not have been changed.
+  assert_equals(await getFileContents(handle), 'contents');
+
+  // The file's lock was released.
+  const newStream = await handle.createWritable({mode: 'exclusive'});
+  await newStream.close();
+}, 'an errored writable stream releases its lock');

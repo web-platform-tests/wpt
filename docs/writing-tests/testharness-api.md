@@ -247,7 +247,7 @@ as resetting global state that need to happen consistently before the
 next test starts.
 
 To test that a promise rejects with a specified exception see [promise
-rejection].
+rejection](#promise-rejection).
 
 ### Single Page Tests ###
 
@@ -515,6 +515,24 @@ All callbacks will be invoked synchronously; tests that require more
 complex cleanup behavior should manage execution order explicitly. If
 any of the eventual values are rejected, the test runner will report
 an error.
+
+### AbortSignal support ###
+
+[`Test.get_signal`](#Test.get_signal) gives an AbortSignal that is aborted when
+the test finishes. This can be useful when dealing with AbortSignal-supported
+APIs.
+
+```js
+promise_test(t => {
+  // Throws when the user agent does not support AbortSignal
+  const signal = t.get_signal();
+  const event = await new Promise(resolve => {
+    document.body.addEventListener(resolve, { once: true, signal });
+    document.body.click();
+  });
+  assert_equals(event.type, "click");
+}, "");
+```
 
 ## Timers in Tests ##
 

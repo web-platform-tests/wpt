@@ -15,6 +15,7 @@ body {
 <script>
   const viewportWidth = document.documentElement.clientWidth;
   const viewportHeight = document.documentElement.clientHeight;
+  setup({"hide_test_state": true});
   async_test(function (t) {
     assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint is not implemented");
     const beforeLoad = performance.now();
@@ -28,7 +29,7 @@ body {
     ).observe({type: 'largest-contentful-paint', buffered: true});
     // Add an image, setting width and height equal to viewport.
     img = document.createElement('img');
-    img.src = '/images/green-100x50.png';
+    img.src = '/images/lcp-100x50.png';
     img.id = 'image_id';
     img.width = viewportWidth * 2;
     img.height = viewportHeight * 2;

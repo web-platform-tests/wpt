@@ -1,5 +1,21 @@
-const image_delay = 1000;
+const image_delay = 2000;
 const delay_pipe_value = image_delay / 1000;
+
+const await_with_timeout = async (delay, message, promise, cleanup = ()=>{}) => {
+  let timeout_id;
+  const timeout = new Promise((_, reject) => {
+    timeout_id = step_timeout(() =>
+      reject(new DOMException(message, "TimeoutError")), delay)
+  });
+  let result = null;
+  try {
+    result = await Promise.race([promise, timeout]);
+    clearTimeout(timeout_id);
+  } finally {
+    cleanup();
+  }
+  return result;
+};
 
 // Receives an image LargestContentfulPaint |entry| and checks |entry|'s attribute values.
 // The |timeLowerBound| parameter is a lower bound on the loadTime value of the entry.
@@ -8,6 +24,8 @@ const delay_pipe_value = image_delay / 1000;
 //     When not present, the renderTime should not be 0 (image passes the checks).
 // * 'sizeLowerBound': the |expectedSize| is only a lower bound on the size attribute value.
 //     When not present, |expectedSize| must be exactly equal to the size attribute value.
+// * 'approximateSize': the |expectedSize| is only approximate to the size attribute value.
+//     This option is mutually exclusive to 'sizeLowerBound'.
 function checkImage(entry, expectedUrl, expectedID, expectedSize, timeLowerBound, options = []) {
   assert_equals(entry.name, '', "Entry name should be the empty string");
   assert_equals(entry.entryType, 'largest-contentful-paint',
@@ -38,9 +56,12 @@ function checkImage(entry, expectedUrl, expectedID, expectedSize, timeLowerBound
   }
   if (options.includes('sizeLowerBound')) {
     assert_greater_than(entry.size, expectedSize);
-  } else {
+  } else if (options.includes('approximateSize')) {
+    assert_approx_equals(entry.size, expectedSize, 1);
+  } else{
     assert_equals(entry.size, expectedSize);
   }
+
   if (options.includes('animated')) {
     assert_greater_than(entry.loadTime, entry.firstAnimatedFrameTime,
       'firstAnimatedFrameTime should be smaller than loadTime');
@@ -64,7 +85,7 @@ const load_and_observe = url => {
           resolve(entryList.getEntries()[0]);
         }
       }
-    })).observe({type: 'largest-contentful-paint', buffered: true});
+    })).observe({ type: 'largest-contentful-paint', buffered: true });
     const img = new Image();
     img.id = 'image_id';
     img.src = url;
@@ -80,7 +101,7 @@ const load_video_and_observe = url => {
           resolve(entryList.getEntries()[0]);
         }
       }
-    })).observe({type: 'largest-contentful-paint', buffered: true});
+    })).observe({ type: 'largest-contentful-paint', buffered: true });
     const video = document.createElement("video");
     video.id = 'video_id';
     video.src = url;
@@ -90,3 +111,63 @@ const load_video_and_observe = url => {
     document.body.appendChild(video);
   });
 };
+
+const getLCPStartTime = (identifier) => {
+  return new Promise(resolve => {
+    new PerformanceObserver((entryList, observer) => {
+      entryList.getEntries().forEach(e => {
+        if (e.url.includes(identifier)) {
+          resolve(e);
+          observer.disconnect();
+        }
+      });
+    }).observe({ type: 'largest-contentful-paint', buffered: true });
+  });
+}
+
+const getFCPStartTime = () => {
+  return performance.getEntriesByName('first-contentful-paint')[0];
+}
+
+const add_text = (text) => {
+  const paragraph = document.createElement('p');
+  paragraph.innerHTML = text;
+  document.body.appendChild(paragraph);
+}
+
+const loadImage = (url, shouldBeIgnoredForLCP = false) => {
+  return new Promise(function (resolve, reject) {
+    let image = document.createElement('img');
+    image.addEventListener('load', () => { resolve(image); });
+    image.addEventListener('error', reject);
+    image.src = url;
+    if (shouldBeIgnoredForLCP)
+      image.style.opacity = 0;
+    document.body.appendChild(image);
+  });
+}
+
+const checkLCPEntryForNonTaoImages = (times = {}) => {
+  const lcp = times['lcp'];
+  const fcp = times['fcp'];
+  const lcp_url_components = lcp.url.split('/');
+
+  if (lcp.loadTime <= fcp.startTime) {
+    assert_approx_equals(lcp.startTime, fcp.startTime, 0.001,
+      'LCP start time should be the same as FCP for ' +
+      lcp_url_components[lcp_url_components.length - 1]) +
+      ' when LCP load time is less than FCP.';
+  } else {
+    assert_approx_equals(lcp.startTime, lcp.loadTime, 0.001,
+      'LCP start time should be the same as LCP load time for ' +
+      lcp_url_components[lcp_url_components.length - 1]) +
+      ' when LCP load time is no less than FCP.';
+  }
+
+  assert_equals(lcp.renderTime, 0,
+    'The LCP render time of Non-Tao image should always be 0.');
+}
+
+const raf = () => {
+  return new Promise(resolve => requestAnimationFrame(resolve));
+}

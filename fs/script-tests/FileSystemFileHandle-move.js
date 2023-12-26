@@ -51,24 +51,14 @@ directory_test(async (t, root) => {
 }, 'move(name) can be called multiple times');
 
 directory_test(async (t, root) => {
-  const dir = await root.getDirectoryHandle('dir', {create: true});
-  const handle = await createFileWithContents(t, 'file-before', 'foo', dir);
-  await promise_rejects_js(t, TypeError, handle.move('Lorem.'));
-
-  assert_array_equals(await getSortedDirectoryEntries(root), ['dir/']);
-  assert_array_equals(await getSortedDirectoryEntries(dir), ['file-before']);
-  assert_equals(await getFileContents(handle), 'foo');
-  assert_equals(await getFileSize(handle), 3);
-}, 'move(name) with a name with a trailing period should fail');
-
-directory_test(async (t, root) => {
   const handle = await createFileWithContents(t, 'file-before', 'foo', root);
   await promise_rejects_js(t, TypeError, handle.move('test/test'));
+  await promise_rejects_js(t, TypeError, handle.move('test\\test'));
 
   assert_array_equals(await getSortedDirectoryEntries(root), ['file-before']);
   assert_equals(await getFileContents(handle), 'foo');
   assert_equals(await getFileSize(handle), 3);
-}, 'move(name) with a name with invalid characters should fail');
+}, 'move(name) with a name with path separators should fail');
 
 directory_test(async (t, root) => {
   const handle = await createFileWithContents(t, 'file-before', 'abc', root);
@@ -94,14 +84,21 @@ directory_test(async (t, root) => {
   await promise_rejects_dom(
       t, 'NoModificationAllowedError', handle.move('file-after'));
 
-  // Can't move handle to overwrite an existing file.
   await stream.close();
-  await promise_rejects_dom(
-      t, 'InvalidModificationError', handle.move('file-after'));
   assert_array_equals(
       await getSortedDirectoryEntries(root), ['file-after', 'file-before']);
 }, 'move(name) while the destination file has an open writable fails');
 
+directory_test(async (t, root) => {
+  const handle = await createFileWithContents(t, 'file-before', 'abc', root);
+  const handle_dest =
+      await createFileWithContents(t, 'file-after', '123', root);
+
+  await handle.move('file-after');
+  assert_array_equals(await getSortedDirectoryEntries(root), ['file-after']);
+  assert_equals(await getFileContents(handle), 'abc');
+  assert_equals(await getFileContents(handle_dest), 'abc');
+}, 'move(name) can overwrite an existing file');
 
 directory_test(async (t, root) => {
   const handle = await createFileWithContents(t, 'file-before', 'foo', root);
@@ -290,12 +287,22 @@ directory_test(async (t, root) => {
   // Assert the file is still in the source directory.
   assert_array_equals(await getSortedDirectoryEntries(dir_src), ['file']);
 
-  // Can't move handle to overwrite an existing file.
   await stream.close();
-  await promise_rejects_dom(
-      t, 'InvalidModificationError', file.move(dir_dest));
-  assert_array_equals(await getSortedDirectoryEntries(dir_src), ['file']);
+  assert_array_equals(await getSortedDirectoryEntries(dir_dest), ['file']);
 }, 'move(dir) while the destination file has an open writable fails');
+
+directory_test(async (t, root) => {
+  const dir_src = await root.getDirectoryHandle('dir-src', {create: true});
+  const dir_dest = await root.getDirectoryHandle('dir-dest', {create: true});
+  const file = await createFileWithContents(t, 'file', 'abc', dir_src);
+  const file_dest = await createFileWithContents(t, 'file', '123', dir_dest);
+
+  await file.move(dir_dest);
+  assert_array_equals(await getSortedDirectoryEntries(dir_src), []);
+  assert_array_equals(await getSortedDirectoryEntries(dir_dest), ['file']);
+  assert_equals(await getFileContents(file), 'abc');
+  assert_equals(await getFileContents(file_dest), 'abc');
+}, 'move(dir) can overwrite an existing file');
 
 directory_test(async (t, root) => {
   const dir_src = await root.getDirectoryHandle('dir-src', {create: true});
@@ -314,12 +321,39 @@ directory_test(async (t, root) => {
   // Assert the file is still in the source directory.
   assert_array_equals(await getSortedDirectoryEntries(dir_src), ['file-src']);
 
-  // Can't move handle to overwrite an existing file.
   await stream.close();
-  await promise_rejects_dom(
-      t, 'InvalidModificationError', file.move(dir_dest, 'file-dest'));
-  // Assert the file is still in the source directory.
-  assert_array_equals(await getSortedDirectoryEntries(dir_src), ['file-src']);
-  assert_equals(await getFileContents(file), 'abc');
-  assert_equals(await getFileSize(file), 3);
+  assert_array_equals(await getSortedDirectoryEntries(dir_dest), ['file-dest']);
 }, 'move(dir, name) while the destination file has an open writable fails');
+
+directory_test(async (t, root) => {
+  const dir_src = await root.getDirectoryHandle('dir-src', {create: true});
+  const dir_dest = await root.getDirectoryHandle('dir-dest', {create: true});
+  const file = await createFileWithContents(t, 'file-src', 'abc', dir_src);
+  const file_dest =
+      await createFileWithContents(t, 'file-dest', '123', dir_dest);
+
+  await file.move(dir_dest, 'file-dest');
+
+  // Assert the file has been moved to the destination directory and renamed.
+  assert_array_equals(await getSortedDirectoryEntries(dir_src), []);
+  assert_array_equals(await getSortedDirectoryEntries(dir_dest), ['file-dest']);
+  assert_equals(await getFileContents(file), 'abc');
+  assert_equals(await getFileContents(file_dest), 'abc');
+}, 'move(dir, name) can overwrite an existing file');
+
+directory_test(async (t, root) => {
+  const handle =
+      await createFileWithContents(t, 'file-to-move', '12345', root);
+  const handle2 = handle;
+
+  await handle.move('file-was-moved');
+
+  assert_equals(await getFileContents(handle), '12345');
+  assert_equals(await getFileSize(handle), 5);
+  assert_equals(await getFileContents(handle2), '12345');
+  assert_equals(await getFileSize(handle2), 5);
+
+  assert_array_equals(
+      await getSortedDirectoryEntries(root),
+      ['file-was-moved']);
+}, 'FileSystemFileHandles are references, not paths');

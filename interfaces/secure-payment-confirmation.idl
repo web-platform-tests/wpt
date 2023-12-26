@@ -13,6 +13,11 @@ dictionary SecurePaymentConfirmationRequest {
     USVString payeeOrigin;
     AuthenticationExtensionsClientInputs extensions;
     sequence<USVString> locale;
+    boolean showOptOut;
+};
+
+partial interface PaymentRequest {
+    static Promise<boolean> isSecurePaymentConfirmationAvailable();
 };
 
 partial dictionary AuthenticationExtensionsClientInputs {
@@ -48,10 +53,4 @@ dictionary PaymentCredentialInstrument {
     required USVString displayName;
     required USVString icon;
     boolean iconMustBeShown = true;
-};
-
-enum TransactionAutomationMode {
-  "none",
-  "autoaccept",
-  "autoreject"
 };

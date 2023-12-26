@@ -7,15 +7,18 @@ This file cannot be upstreamed to WPT until:
   expects that they are not loaded during prerendering.
 -->
 <title>Load a cross-origin document in a prerendered iframe</title>
+<meta name="variant" content="?target_hint=_self">
+<meta name="variant" content="?target_hint=_blank">
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
-<script src="/speculation-rules/prerender/resources/utils.js"></script>
+<script src="../resources/utils.js"></script>
+<script src="resources/utils.js"></script>
+
 <body>
 <script>
-
 setup(() => assertSpeculationRulesIsSupported());
 
 promise_test(async t => {
@@ -29,7 +32,7 @@ promise_test(async t => {
       once: true
     });
   });
-  const url = `resources/cross-origin-iframe.html?uid=${uid}`;
+  const url = `resources/cross-origin-iframe.html?uid=${uid}&target_hint=${getTargetHint()}`;
   window.open(url, '_blank', 'noopener');
 
   const result = await gotMessage;
@@ -58,6 +61,4 @@ promise_test(async t => {
   // Send a close signal to PrerenderEventCollector on the prerendered page.
   new PrerenderChannel('close', uid).postMessage('');
 }, `cross-origin iframes should not load until activation`);
-
 </script>
-</body>

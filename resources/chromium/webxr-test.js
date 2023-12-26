@@ -1,4 +1,5 @@
 import * as vrMojom from '/gen/device/vr/public/mojom/vr_service.mojom.m.js';
+import * as xrSessionMojom from '/gen/device/vr/public/mojom/xr_session.mojom.m.js';
 import {GamepadHand, GamepadMapping} from '/gen/device/gamepad/public/mojom/gamepad.mojom.m.js';
 
 // This polyfill library implements the WebXR Test API as specified here:
@@ -195,7 +196,7 @@ class MockVRService {
 
       // If there were no successful results, returns a null session.
       return {
-        result: {failureReason: vrMojom.RequestSessionError.NO_RUNTIME_FOUND}
+        result: {failureReason: xrSessionMojom.RequestSessionError.NO_RUNTIME_FOUND}
       };
     });
   }
@@ -322,24 +323,25 @@ class MockRuntime {
   // Mapping from string feature names to the corresponding mojo types.
   // This is exposed as a member for extensibility.
   static _featureToMojoMap = {
-    'viewer': vrMojom.XRSessionFeature.REF_SPACE_VIEWER,
-    'local': vrMojom.XRSessionFeature.REF_SPACE_LOCAL,
-    'local-floor': vrMojom.XRSessionFeature.REF_SPACE_LOCAL_FLOOR,
-    'bounded-floor': vrMojom.XRSessionFeature.REF_SPACE_BOUNDED_FLOOR,
-    'unbounded': vrMojom.XRSessionFeature.REF_SPACE_UNBOUNDED,
-    'hit-test': vrMojom.XRSessionFeature.HIT_TEST,
-    'dom-overlay': vrMojom.XRSessionFeature.DOM_OVERLAY,
-    'light-estimation': vrMojom.XRSessionFeature.LIGHT_ESTIMATION,
-    'anchors': vrMojom.XRSessionFeature.ANCHORS,
-    'depth-sensing': vrMojom.XRSessionFeature.DEPTH,
-    'secondary-views': vrMojom.XRSessionFeature.SECONDARY_VIEWS,
-    'camera-access': vrMojom.XRSessionFeature.CAMERA_ACCESS,
+    'viewer': xrSessionMojom.XRSessionFeature.REF_SPACE_VIEWER,
+    'local': xrSessionMojom.XRSessionFeature.REF_SPACE_LOCAL,
+    'local-floor': xrSessionMojom.XRSessionFeature.REF_SPACE_LOCAL_FLOOR,
+    'bounded-floor': xrSessionMojom.XRSessionFeature.REF_SPACE_BOUNDED_FLOOR,
+    'unbounded': xrSessionMojom.XRSessionFeature.REF_SPACE_UNBOUNDED,
+    'hit-test': xrSessionMojom.XRSessionFeature.HIT_TEST,
+    'dom-overlay': xrSessionMojom.XRSessionFeature.DOM_OVERLAY,
+    'light-estimation': xrSessionMojom.XRSessionFeature.LIGHT_ESTIMATION,
+    'anchors': xrSessionMojom.XRSessionFeature.ANCHORS,
+    'depth-sensing': xrSessionMojom.XRSessionFeature.DEPTH,
+    'secondary-views': xrSessionMojom.XRSessionFeature.SECONDARY_VIEWS,
+    'camera-access': xrSessionMojom.XRSessionFeature.CAMERA_ACCESS,
+    'layers': xrSessionMojom.XRSessionFeature.LAYERS,
   };
 
   static _sessionModeToMojoMap = {
-    "inline": vrMojom.XRSessionMode.kInline,
-    "immersive-vr": vrMojom.XRSessionMode.kImmersiveVr,
-    "immersive-ar": vrMojom.XRSessionMode.kImmersiveAr,
+    "inline": xrSessionMojom.XRSessionMode.kInline,
+    "immersive-vr": xrSessionMojom.XRSessionMode.kImmersiveVr,
+    "immersive-ar": xrSessionMojom.XRSessionMode.kImmersiveAr,
   };
 
   static _environmentBlendModeToMojoMap = {
@@ -699,10 +701,10 @@ class MockRuntime {
     if (blendMode in MockRuntime._environmentBlendModeToMojoMap) {
       return MockRuntime._environmentBlendModeToMojoMap[blendMode];
     } else {
-      if (this.supportedModes_.includes(vrMojom.XRSessionMode.kImmersiveAr)) {
+      if (this.supportedModes_.includes(xrSessionMojom.XRSessionMode.kImmersiveAr)) {
         return vrMojom.XREnvironmentBlendMode.kAdditive;
       } else if (this.supportedModes_.includes(
-            vrMojom.XRSessionMode.kImmersiveVr)) {
+        xrSessionMojom.XRSessionMode.kImmersiveVr)) {
         return vrMojom.XREnvironmentBlendMode.kOpaque;
       }
     }
@@ -851,7 +853,7 @@ class MockRuntime {
       if (feature in MockRuntime._featureToMojoMap) {
         return MockRuntime._featureToMojoMap[feature];
       } else {
-        return vrMojom.XRSessionFeature.INVALID;
+        return xrSessionMojom.XRSessionFeature.INVALID;
       }
     }
 
@@ -859,7 +861,7 @@ class MockRuntime {
 
     for (let i = 0; i < supportedFeatures.length; i++) {
       const feature = convertFeatureToMojom(supportedFeatures[i]);
-      if (feature !== vrMojom.XRSessionFeature.INVALID) {
+      if (feature !== xrSessionMojom.XRSessionFeature.INVALID) {
         this.supportedFeatures_.push(feature);
       }
     }
@@ -916,7 +918,7 @@ class MockRuntime {
           this.primaryViews_[i].mojoFromView =
             this._getMojoFromViewerWithOffset(this.primaryViews_[i].viewOffset);
         }
-        if (this.enabledFeatures_.includes(vrMojom.XRSessionFeature.SECONDARY_VIEWS)) {
+        if (this.enabledFeatures_.includes(xrSessionMojom.XRSessionFeature.SECONDARY_VIEWS)) {
           for (let i = 0; i < this.secondaryViews_.length; i++) {
             this.secondaryViews_[i].mojoFromView =
               this._getMojoFromViewerWithOffset(this.secondaryViews_[i].viewOffset);
@@ -959,7 +961,7 @@ class MockRuntime {
         resolve({frameData});
       };
 
-      if(this.sessionOptions_.mode == vrMojom.XRSessionMode.kInline) {
+      if(this.sessionOptions_.mode == xrSessionMojom.XRSessionMode.kInline) {
         // Inline sessions should not have a delay introduced since it causes them
         // to miss a vsync blink-side and delays propagation of changes that happened
         // within a rAFcb by one frame (e.g. setViewerOrigin() calls would take 2 frames
@@ -983,11 +985,9 @@ class MockRuntime {
         environmentProviderRequest.handle);
   }
 
-  setInputSourceButtonListener(listener) { listener.$.close(); }
-
   // XREnvironmentIntegrationProvider implementation:
   subscribeToHitTest(nativeOriginInformation, entityTypes, ray) {
-    if (!this.supportedModes_.includes(vrMojom.XRSessionMode.kImmersiveAr)) {
+    if (!this.supportedModes_.includes(xrSessionMojom.XRSessionMode.kImmersiveAr)) {
       // Reject outside of AR.
       return Promise.resolve({
         result : vrMojom.SubscribeToHitTestResult.FAILURE_GENERIC,
@@ -1028,7 +1028,7 @@ class MockRuntime {
   }
 
   subscribeToHitTestForTransientInput(profileName, entityTypes, ray){
-    if (!this.supportedModes_.includes(vrMojom.XRSessionMode.kImmersiveAr)) {
+    if (!this.supportedModes_.includes(xrSessionMojom.XRSessionMode.kImmersiveAr)) {
       // Reject outside of AR.
       return Promise.resolve({
         result : vrMojom.SubscribeToHitTestResult.FAILURE_GENERIC,
@@ -1210,14 +1210,16 @@ class MockRuntime {
             clientReceiver: clientReceiver,
             enabledFeatures: enabled_features,
             deviceConfig: {
-              usesInputEventing: false,
               defaultFramebufferScale: this.defaultFramebufferScale_,
               supportsViewportScaling: true,
-              depthConfiguration:
-                enabled_features.includes(vrMojom.XRSessionFeature.DEPTH) ? {
-                  depthUsage: vrMojom.XRDepthUsage.kCPUOptimized,
-                  depthDataFormat: vrMojom.XRDepthDataFormat.kLuminanceAlpha,
-                } : null,
+              depthConfiguration: enabled_features.includes(
+                                      xrSessionMojom.XRSessionFeature.DEPTH) ?
+                  {
+                    depthUsage: xrSessionMojom.XRDepthUsage.kCPUOptimized,
+                    depthDataFormat:
+                        xrSessionMojom.XRDepthDataFormat.kLuminanceAlpha,
+                  } :
+                  null,
               views: this._getDefaultViews(),
             },
             enviromentBlendMode: this.enviromentBlendMode_,
@@ -1233,10 +1235,12 @@ class MockRuntime {
   _runtimeSupportsSession(options) {
     let result = this.supportedModes_.includes(options.mode);
 
-    if (options.requiredFeatures.includes(vrMojom.XRSessionFeature.DEPTH)
-    || options.optionalFeatures.includes(vrMojom.XRSessionFeature.DEPTH)) {
-      result &= options.depthOptions.usagePreferences.includes(vrMojom.XRDepthUsage.kCPUOptimized);
-      result &= options.depthOptions.dataFormatPreferences.includes(vrMojom.XRDepthDataFormat.kLuminanceAlpha);
+    if (options.requiredFeatures.includes(xrSessionMojom.XRSessionFeature.DEPTH)
+    || options.optionalFeatures.includes(xrSessionMojom.XRSessionFeature.DEPTH)) {
+      result &= options.depthOptions.usagePreferences.includes(
+          xrSessionMojom.XRDepthUsage.kCPUOptimized);
+      result &= options.depthOptions.dataFormatPreferences.includes(
+          xrSessionMojom.XRDepthDataFormat.kLuminanceAlpha);
     }
 
     return Promise.resolve({
@@ -1272,7 +1276,7 @@ class MockRuntime {
 
   // Modifies passed in frameData to add anchor information.
   _calculateAnchorInformation(frameData) {
-    if (!this.supportedModes_.includes(vrMojom.XRSessionMode.kImmersiveAr)) {
+    if (!this.supportedModes_.includes(xrSessionMojom.XRSessionMode.kImmersiveAr)) {
       return;
     }
 
@@ -1300,11 +1304,11 @@ class MockRuntime {
 
   // Modifies passed in frameData to add anchor information.
   _calculateDepthInformation(frameData) {
-    if (!this.supportedModes_.includes(vrMojom.XRSessionMode.kImmersiveAr)) {
+    if (!this.supportedModes_.includes(xrSessionMojom.XRSessionMode.kImmersiveAr)) {
       return;
     }
 
-    if (!this.enabledFeatures_.includes(vrMojom.XRSessionFeature.DEPTH)) {
+    if (!this.enabledFeatures_.includes(xrSessionMojom.XRSessionFeature.DEPTH)) {
       return;
     }
 
@@ -1348,7 +1352,7 @@ class MockRuntime {
 
   // Modifies passed in frameData to add hit test results.
   _calculateHitTestResults(frameData) {
-    if (!this.supportedModes_.includes(vrMojom.XRSessionMode.kImmersiveAr)) {
+    if (!this.supportedModes_.includes(xrSessionMojom.XRSessionMode.kImmersiveAr)) {
       return;
     }
 
@@ -1964,6 +1968,7 @@ class MockXRInputSource {
       timestamp: 0n,
       axes: [],
       buttons: [],
+      touchEvents: [],
       mapping: GamepadMapping.GamepadMappingStandard,
       displayId: 0,
     };

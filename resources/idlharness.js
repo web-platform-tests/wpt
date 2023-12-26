@@ -2357,12 +2357,13 @@ IdlInterface.prototype.do_member_operation_asserts = function(memberHolderObject
     assert_equals(typeof memberHolderObject[member.name], "function",
                   "property must be a function");
 
-    const ctors = this.members.filter(function(m) {
-        return m.type == "operation" && m.name == member.name;
+    const operationOverloads = this.members.filter(function(m) {
+        return m.type == "operation" && m.name == member.name &&
+            (m.special === "static") === (member.special === "static");
     });
     assert_equals(
         memberHolderObject[member.name].length,
-        minOverloadLength(ctors),
+        minOverloadLength(operationOverloads),
         "property has wrong .length");
     assert_equals(
         memberHolderObject[member.name].name,
@@ -2668,6 +2669,7 @@ IdlInterface.prototype.test_member_stringifier = function(member)
 
 IdlInterface.prototype.test_members = function()
 {
+    var unexposed_members = new Set();
     for (var i = 0; i < this.members.length; i++)
     {
         var member = this.members[i];
@@ -2676,15 +2678,18 @@ IdlInterface.prototype.test_members = function()
         }
 
         if (!exposed_in(exposure_set(member, this.exposureSet))) {
-            subsetTestByKey(this.name, test, function() {
-                // It's not exposed, so we shouldn't find it anywhere.
-                assert_false(member.name in this.get_interface_object(),
-                             "The interface object must not have a property " +
-                             format_value(member.name));
-                assert_false(member.name in this.get_interface_object().prototype,
-                             "The prototype object must not have a property " +
-                             format_value(member.name));
-            }.bind(this), this.name + " interface: member " + member.name);
+            if (!unexposed_members.has(member.name)) {
+                unexposed_members.add(member.name);
+                subsetTestByKey(this.name, test, function() {
+                    // It's not exposed, so we shouldn't find it anywhere.
+                    assert_false(member.name in this.get_interface_object(),
+                                "The interface object must not have a property " +
+                                format_value(member.name));
+                    assert_false(member.name in this.get_interface_object().prototype,
+                                "The prototype object must not have a property " +
+                                format_value(member.name));
+                }.bind(this), this.name + " interface: member " + member.name);
+            }
             continue;
         }
 
@@ -2855,17 +2860,23 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
         return;
     }
 
+    var unexposed_properties = new Set();
     for (var i = 0; i < this.members.length; i++)
     {
         var member = this.members[i];
         if (member.untested) {
             continue;
         }
-        if (!exposed_in(exposure_set(member, this.exposureSet))) {
-            subsetTestByKey(this.name, test, function() {
-                assert_equals(exception, null, "Unexpected exception when evaluating object");
-                assert_false(member.name in obj);
-            }.bind(this), this.name + " interface: " + desc + ' must not have property "' + member.name + '"');
+        if (!exposed_in(exposure_set(member, this.exposureSet)))
+        {
+            if (!unexposed_properties.has(member.name))
+            {
+                unexposed_properties.add(member.name);
+                subsetTestByKey(this.name, test, function() {
+                    assert_equals(exception, null, "Unexpected exception when evaluating object");
+                    assert_false(member.name in obj);
+                }.bind(this), this.name + " interface: " + desc + ' must not have property "' + member.name + '"');
+            }
             continue;
         }
         if (member.type == "attribute" && member.isUnforgeable)

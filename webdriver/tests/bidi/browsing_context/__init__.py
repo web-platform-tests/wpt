@@ -1,3 +1,15 @@
+from typing import Any, Mapping
+
+from webdriver.bidi.modules.script import ContextTarget
+
+from .. import (
+    any_int,
+    any_string,
+    any_string_or_null,
+    recursive_compare,
+)
+
+
 def assert_browsing_context(
     info, context, children=None, is_root=True, parent=None, url=None
 ):
@@ -34,15 +46,45 @@ def assert_browsing_context(
     assert info["url"] == url
 
 
-def assert_navigation_info(event, context, url):
-    assert "context" in event
-    assert isinstance(event["context"], str)
-    assert event["context"] == context
+def assert_navigation_info(event, expected_navigation_info):
+    recursive_compare(
+        {
+            "context": any_string,
+            "navigation": any_string_or_null,
+            "timestamp": any_int,
+            "url": any_string,
+        },
+        event,
+    )
 
-    assert "url" in event
-    assert isinstance(event["url"], str)
-    assert event["url"] == url
+    if "context" in expected_navigation_info:
+        assert event["context"] == expected_navigation_info["context"]
 
-    assert "navigation" in event
-    if event["navigation"] is not None:
-        assert isinstance(event["navigation"], str)
+    if "navigation" in expected_navigation_info:
+        assert event["navigation"] == expected_navigation_info["navigation"]
+
+    if "timestamp" in expected_navigation_info:
+        expected_navigation_info["timestamp"](event["timestamp"])
+
+    if "url" in expected_navigation_info:
+        assert event["url"] == expected_navigation_info["url"]
+
+
+async def get_document_focus(bidi_session, context: Mapping[str, Any]) -> str:
+    result = await bidi_session.script.call_function(
+        function_declaration="""() => {
+        return document.hasFocus();
+    }""",
+        target=ContextTarget(context["context"]),
+        await_promise=False)
+    return result["value"]
+
+
+async def get_visibility_state(bidi_session, context: Mapping[str, Any]) -> str:
+    result = await bidi_session.script.call_function(
+        function_declaration="""() => {
+        return document.visibilityState;
+    }""",
+        target=ContextTarget(context["context"]),
+        await_promise=False)
+    return result["value"]

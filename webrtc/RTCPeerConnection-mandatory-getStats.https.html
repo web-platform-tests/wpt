@@ -23,18 +23,18 @@ const mandatory = {
     "packetsReceived",
     "packetsLost",
     "jitter",
-    "framesDropped"
   ],
   RTCInboundRtpStreamStats: [
     "trackIdentifier",
     "remoteId",
     "framesDecoded",
+    "framesDropped",
     "nackCount",
     "framesReceived",
     "bytesReceived",
     "totalAudioEnergy",
     "totalSamplesDuration",
-    "packetsDiscarded"
+    "packetsDiscarded",
   ],
   RTCRemoteInboundRtpStreamStats: [
     "localId",
@@ -109,6 +109,7 @@ const mandatory = {
     "bytesSent",
     "bytesReceived",
     "totalRoundTripTime",
+    "responsesReceived",
     "currentRoundTripTime"
   ],
   RTCIceCandidateStats: [

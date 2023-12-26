@@ -1024,5 +1024,52 @@ var browserTests = [
     [["stylewithcss","false"],["bold",""]],
     "<span style=\"font-weight:100\">fo<b>[o</b></span><span style=\"font-weight:200\"><b>b]</b>ar</span>",
     [true,true],
-    {"stylewithcss":[false,true,"",false,false,""],"bold":[false,false,"",false,true,""]}]
+    {"stylewithcss":[false,true,"",false,false,""],"bold":[false,false,"",false,true,""]}],
+
+// Don't delete non-editable node.
+["abc<b>[d<span contenteditable=\"false\"><b>e</b></span>f]</b>ghi",
+    [["stylewithcss","false"],["bold",""]],
+    "abcd<span contenteditable=\"false\"><b>e</b></span>fghi",
+    [true,true],
+    {}],
+// but delete editable node in non-editable node.
+["abc<b>[d<span contenteditable=\"false\"><span contenteditable><b>e</b></span></span>f]</b>ghi",
+    [["stylewithcss","false"],["bold",""]],
+    "abcd<span contenteditable=\"false\"><span contenteditable=\"\">e</span></span>fghi",
+    [true,true],
+    {}],
+
+// Check where the new style (<b>) will be applied.  Basically, it should be
+// applied to minimized range as far as possible, but should not shrink the
+// range into the nodes entirely selected.
+["abc<i>[def]</i>ghi",
+    [["stylewithcss","false"],["bold",""]],
+    "abc<i><b>def</b></i>ghi",
+    [true,true],
+    {}],
+["abc[<i>def</i>]ghi",
+    [["stylewithcss","false"],["bold",""]],
+    "abc<b><i>def</i></b>ghi",
+    [true,true],
+    {}],
+["abc<i>{def}</i>ghi",
+    [["stylewithcss","false"],["bold",""]],
+    "abc<i><b>def</b></i>ghi",
+    [true,true],
+    {}],
+["abc{<i>def</i>}ghi",
+    [["stylewithcss","false"],["bold",""]],
+    "abc<b><i>def</i></b>ghi",
+    [true,true],
+    {}],
+["abc<i>[def</i>]ghi",
+    [["stylewithcss","false"],["bold",""]],
+    "abc<i><b>def</b></i>ghi",
+    [true,true],
+    {}],
+["abc[<i>def]</i>ghi",
+    [["stylewithcss","false"],["bold",""]],
+    "abc<i><b>def</b></i>ghi",
+    [true,true],
+    {}],
 ]

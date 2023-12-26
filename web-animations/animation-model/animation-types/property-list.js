@@ -575,6 +575,12 @@ const gCSSProperties1 = {
       { type: 'discrete', options: [ [ 'full-width', 'proportional-width' ] ] }
     ]
   },
+  'font-variant-emoji': {
+    // https://drafts.csswg.org/css-fonts/#propdef-font-variant-emoji
+    types: [
+      { type: 'discrete', options: [ [ 'text', 'emoji' ] ] }
+    ]
+  },
   'font-variant-ligatures': {
     // https://drafts.csswg.org/css-fonts-3/#propdef-font-variant-ligatures
     types: [
@@ -664,7 +670,7 @@ const gCSSProperties1 = {
   'grid-template-areas': {
     // https://drafts.csswg.org/css-template/#grid-template-areas
     types: [
-      { type: 'discrete', options: [ [ '". . a b" ". .a b"', 'none' ] ] }
+      { type: 'discrete', options: [ [ '". . a b" ". . a b"', 'none' ] ] }
     ]
   },
   'height': {
@@ -747,8 +753,10 @@ const gCSSProperties2 = {
     types: [ 'color' ]
   },
   'line-height': {
-    // https://drafts.csswg.org/css21/visudet.html#propdef-line-height
+    // https://drafts.csswg.org/css-inline/#line-height-property
     types: [
+        { type: 'discrete', options: [ [ 'normal', '10px' ],
+                                       [ 'normal', '10', 'normal', '100px' ] ] }
     ]
   },
   'list-style-image': {
@@ -1170,6 +1178,22 @@ const gCSSProperties2 = {
       { type: 'discrete', options: [ [ 'auto', 'smooth' ] ] }
     ]
   },
+  'scrollbar-color': {
+    // https://drafts.csswg.org/css-scrollbars/#propdef-scrollbar-color
+    types: [ 'colorPair' ]
+  },
+  'scrollbar-gutter': {
+    // https://drafts.csswg.org/css-overflow/#propdef-scrollbar-gutter
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'stable' ], [ 'auto', 'stable both-edges' ], [ 'stable', 'stable both-edges' ] ] }
+    ]
+  },
+  'scrollbar-width': {
+    // https://drafts.csswg.org/css-scrollbars/#propdef-scrollbar-width
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'thin' ], [ 'auto', 'none' ], [ 'thin', 'none' ] ] }
+    ]
+  },
   'shape-outside': {
     // http://dev.w3.org/csswg/css-shapes/#propdef-shape-outside
     types: [
@@ -1261,6 +1285,12 @@ const gCSSProperties2 = {
       { type: 'discrete', options: [ [ 'middle', 'end' ] ] }
     ]
   },
+  'text-autospace': {
+    // https://drafts.csswg.org/css-text-4/#text-spacing-property
+    types: [
+      { type: 'discrete', options: [ [ 'normal', 'no-autospace' ] ] }
+    ]
+  },
   'text-decoration-color': {
     // https://drafts.csswg.org/css-text-decor-3/#propdef-text-decoration-color
     types: [ 'color' ]
@@ -1293,6 +1323,12 @@ const gCSSProperties2 = {
       { type: 'discrete', options: [ [ 'circle', 'open dot' ] ] }
     ]
   },
+  'text-group-align': {
+    // https://drafts.csswg.org/css-text-4/#propdef-text-group-align
+    types: [
+      { type: 'discrete', options: [ [ 'none', 'center' ] ] }
+    ]
+  },
   'text-indent': {
     // https://drafts.csswg.org/css-text-3/#propdef-text-indent
     types: [
@@ -1319,10 +1355,22 @@ const gCSSProperties2 = {
       return element;
     }
   },
+  'text-spacing-trim': {
+    // https://svgwg.org/svg2-draft/painting.html#TextRenderingProperty
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'space-all' ] ] }
+    ]
+  },
   'text-transform': {
     // https://drafts.csswg.org/css-text-3/#propdef-text-transform
     types: [
       { type: 'discrete', options: [ [ 'capitalize', 'uppercase' ] ] }
+    ]
+  },
+  'text-wrap': {
+    // https://drafts.csswg.org/css-text-4/#propdef-text-wrap
+    types: [
+      { type: 'discrete', options: [ [ 'wrap', 'nowrap' ] ] }
     ]
   },
   'touch-action': {
@@ -1387,6 +1435,12 @@ const gCSSProperties2 = {
     types: [
     ]
   },
+  'view-transition-name': {
+    // https://drafts.csswg.org/css-view-transitions/#propdef-view-transition-name
+    types: [
+      { type: 'discrete', options: [ [ 'none', 'header' ] ] },
+    ]
+  },
   'visibility': {
     // https://drafts.csswg.org/css2/visufx.html#propdef-visibility
     types: [ 'visibility' ]
@@ -1395,6 +1449,12 @@ const gCSSProperties2 = {
     // https://drafts.csswg.org/css-text-4/#propdef-white-space
     types: [
       { type: 'discrete', options: [ [ 'pre', 'nowrap' ] ] }
+    ]
+  },
+  'white-space-collapse': {
+    // https://drafts.csswg.org/css-text-4/#propdef-white-space-collapse
+    types: [
+      { type: 'discrete', options: [ [ 'collapse', 'preserve' ] ] }
     ]
   },
   'width': {

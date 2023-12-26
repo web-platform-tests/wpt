@@ -2,8 +2,9 @@
 <html class="reftest-wait">
 <meta charset="utf-8">
 <link rel=author href="mailto:xiaochengh@chromium.org">
-<link rel=help href="https://open-ui.org/components/popup.research.explainer">
-<link rel=match href="popover-anchor-scroll-display-ref.tentative.html">
+<link rel=help href="https://open-ui.org/components/popover.research.explainer">
+<link rel=help href="https://html.spec.whatwg.org/multipage/popover.html">
+<link rel=match href="popover-anchor-scroll-display-ref.html">
 
 <div class=spacer style="height: 200px"></div>
 
@@ -14,6 +15,16 @@
   <div class=anchor id=anchor1></div>
   <div id=popover1 popover=manual anchor=anchor1></div>
 </div>
+
+<!-- Example using a default anchor that is not the implicit anchor -->
+<div class=ex>
+  <div class=anchor id=anchor2></div>
+  <div id=popover2 popover=manual anchor=fake-anchor></div>
+</div>
+
+<!-- A position:fixed fake anchor. Any popover anchored to it won't move when
+     the document is scrolled. -->
+<div id=fake-anchor></div>
 
 <div class=spacer style="height: 200vh"></div>
 
@@ -37,6 +48,18 @@
     left: anchor(right);
     top: anchor(top);
   }
+  #fake-anchor {
+    position: fixed;
+    anchor-name: --fake-anchor;
+  }
+  #anchor2 {
+    anchor-name: --anchor2;
+  }
+  #popover2 {
+    anchor-default: --anchor2;
+    left: anchor(right);
+    top: anchor(top);
+  }
 </style>
 
 <script>
@@ -45,7 +68,8 @@ function raf() {
 }
 
 async function runTest() {
-  popover1.showPopover();
+  document.querySelectorAll('[popover]').forEach(
+      popover => popover.showPopover());
 
   // Render a frame at the intial scroll position.
   await raf();

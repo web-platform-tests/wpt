@@ -1,4 +1,4 @@
-import { RequestTokenStatus, LogoutRpsStatus, FederatedAuthRequest, FederatedAuthRequestReceiver } from '/gen/third_party/blink/public/mojom/webid/federated_auth_request.mojom.m.js';
+import { RequestTokenStatus, LogoutRpsStatus, DisconnectStatus, FederatedAuthRequest, FederatedAuthRequestReceiver } from '/gen/third_party/blink/public/mojom/webid/federated_auth_request.mojom.m.js';
 
 function toMojoTokenStatus(status) {
   return RequestTokenStatus["k" + status];
@@ -17,6 +17,7 @@ export class MockFederatedAuthRequest {
     this.selected_identity_provider_config_url_ = null;
     this.status_ = RequestTokenStatus.kError;
     this.logoutRpsStatus_ = LogoutRpsStatus.kError;
+    this.disconnectStatus_ = DisconnectStatus.kError;
     this.returnPending_ = false;
     this.pendingPromiseResolve_ = null;
   }
@@ -52,6 +53,15 @@ export class MockFederatedAuthRequest {
     this.logoutRpsStatus_ = validated;
   }
 
+  // Causes the subsequent `FederatedCredential.disconnect` to reject with this
+  // status.
+  disconnectReturn(status) {
+    let validated = DisconnectStatus[status];
+    if (validated === undefined)
+      throw new Error("Invalid status: " + status);
+    this.disconnectStatus_ = validated;
+  }
+
   // Implements
   //   RequestToken(array<IdentityProviderGetParameters> idp_get_params) =>
   //                    (RequestTokenStatus status,
@@ -80,13 +90,44 @@ export class MockFederatedAuthRequest {
     this.pendingPromiseResolve_ = null;
   }
 
+  // Implements
+  //   RequestUserInfo(IdentityProviderGetParameters idp_get_param) =>
+  //                    (RequestUserInfoStatus status, array<IdentityUserInfo>? user_info);
+  async requestUserInfo(idp_get_param) {
+    return Promise.resolve({
+      status: "",
+      user_info: ""
+    });
+  }
+
   async logoutRps(logout_endpoints) {
     return Promise.resolve({
       status: this.logoutRpsStatus_
     });
   }
 
+  async disconnect(provider, client_id, account_id) {
+    return Promise.resolve({
+      status: this.disconnectStatus_
+    });
+  }
+
   async setIdpSigninStatus(origin, status) {
+  }
+
+  async registerIdP(configURL) {
+  }
+
+  async unregisterIdP(configURL) {
+  }
+
+  async resolveTokenRequest(token) {
+  }
+
+  async closeModalDialogView() {
+  }
+
+  async preventSilentAccess() {
   }
 
   async reset() {
@@ -94,6 +135,7 @@ export class MockFederatedAuthRequest {
     this.selected_identity_provider_config_url_ = null;
     this.status_ = RequestTokenStatus.kError;
     this.logoutRpsStatus_ = LogoutRpsStatus.kError;
+    this.disconnectStatus_ = DisconnectStatus.kError;
     this.receiver_.$.close();
     this.interceptor_.stop();
 

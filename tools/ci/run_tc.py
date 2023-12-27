@@ -146,6 +146,20 @@ def start_dbus():
     # https://source.chromium.org/chromium/chromium/src/+/main:content/app/content_main.cc;l=220;drc=0bcc023b8cdbc073aa5c48db373810db3f765c87.
     os.environ["DBUS_SESSION_BUS_ADDRESS"] = "autolaunch:"
 
+def install_chrome(channel):
+    # Interpret experimental channels as Canary.
+    if channel in ("experimental", "nightly", "canary"):
+        channel = "canary"
+    run(["sh", "-c", "./wpt install --channel canary chrome browser"])
+
+    # Chrome for Testing needs additional files in the download directory to run all features.
+    file_names = os.listdir(os.path.join(os.getcwd(),
+                                         f"_venv3/browsers/{channel}/chrome-linux64"))
+    for file_name in file_names:
+        path = os.path.join(os.getcwd(),
+                            f"_venv3/browsers/{channel}/chrome-linux64",
+                            file_name)
+        run(["sudo", "mv", path, "/usr/bin"])
 
 def start_xvfb():
     start(["sudo", "Xvfb", os.environ["DISPLAY"], "-screen", "0",
@@ -243,6 +257,8 @@ def setup_environment(args):
         install_certificates()
 
     if "chrome" in args.browser:
+        assert args.channel is not None
+        install_chrome(args.channel)
         # Chrome is using dbus for various features.
         start_dbus()
 

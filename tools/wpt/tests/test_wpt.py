@@ -109,7 +109,7 @@ def test_list_tests(manifest_dir):
     conditions."""
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--install-browser", "--metadata", manifest_dir, "--list-tests",
+        wpt.main(argv=["run", "--metadata", manifest_dir, "--list-tests",
                        "--channel", "canary", "--yes",
                        # WebTransport server is not needed (web-platform-tests/wpt#41675).
                        "--no-enable-webtransport-h3",
@@ -185,7 +185,7 @@ def test_run_zero_tests():
         pytest.skip("port 8000 already in use")
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--install-browser", "--yes", "--no-pause", "--channel", "canary",
+        wpt.main(argv=["run", "--yes", "--no-pause", "--channel", "canary",
                        # WebTransport server is not needed (web-platform-tests/wpt#41675).
                        "--no-enable-webtransport-h3",
                        # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
@@ -194,7 +194,7 @@ def test_run_zero_tests():
     assert excinfo.value.code != 0
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--install-browser", "--yes", "--no-pause", "--no-fail-on-unexpected",
+        wpt.main(argv=["run", "--yes", "--no-pause", "--no-fail-on-unexpected",
                        "--channel", "canary",
                        # WebTransport server is not needed (web-platform-tests/wpt#41675).
                        "--no-enable-webtransport-h3",
@@ -218,7 +218,7 @@ def test_run_failing_test():
     assert os.path.isfile("../../%s" % failing_test)
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--install-browser", "--yes", "--no-pause", "--channel", "canary",
+        wpt.main(argv=["run", "--yes", "--no-pause", "--channel", "canary",
                        # WebTransport server is not needed (web-platform-tests/wpt#41675).
                        "--no-enable-webtransport-h3",
                        # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
@@ -227,7 +227,7 @@ def test_run_failing_test():
     assert excinfo.value.code != 0
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--install-browser", "--yes", "--no-pause", "--no-fail-on-unexpected",
+        wpt.main(argv=["run", "--yes", "--no-pause", "--no-fail-on-unexpected",
                        "--channel", "canary",
                        # WebTransport server is not needed (web-platform-tests/wpt#41675).
                        "--no-enable-webtransport-h3",
@@ -257,7 +257,7 @@ def test_run_verify_unstable(temp_test):
     """)
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--install-browser", "--yes", "--verify", "--channel", "canary",
+        wpt.main(argv=["run", "--yes", "--verify", "--channel", "canary",
                        # WebTransport server is not needed (web-platform-tests/wpt#41675).
                        "--no-enable-webtransport-h3",
                        # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
@@ -268,7 +268,7 @@ def test_run_verify_unstable(temp_test):
     stable_test = temp_test("test(function() {}, 'my test');")
 
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--install-browser", "--yes", "--verify", "--channel", "canary",
+        wpt.main(argv=["run", "--yes", "--verify", "--channel", "canary",
                        # WebTransport server is not needed (web-platform-tests/wpt#41675).
                        "--no-enable-webtransport-h3",
                        # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.

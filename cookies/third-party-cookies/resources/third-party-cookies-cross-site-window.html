@@ -54,14 +54,6 @@ function testPopupHeuristic() {
     origin);
   const popup = window.open(popupUrl);
   fetch_tests_from_window(popup);
-
-  // Third-party cookies are now allowed.
-  // assertThirdPartyHttpCookies({
-  //   desc: "3P fetch with heuristic",
-  //   origin,
-  //   cookieNames,
-  //   expectsCookie: true,
-  // });
 }
 
 </script>

@@ -112,7 +112,6 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     chrome_options["args"].append("--enable-features=GenericSensorExtraClasses")
     # Test with third-party cookies deprecated.
     chrome_options["args"].append("--test-third-party-cookie-phaseout")
-    chrome_options["args"].append("--enable-features=TpcdHeuristicsGrants/TpcdReadHeuristicsGrants/true/TpcdWritePopupCurrentInteractionHeuristicsGrants/30d/TpcdWritePopupPastInteractionHeuristicsGrants/30d")
 
     # Classify `http-private`, `http-public` and https variants in the
     # appropriate IP address spaces.

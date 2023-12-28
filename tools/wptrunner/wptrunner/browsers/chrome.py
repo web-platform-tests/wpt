@@ -110,6 +110,8 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     # The GenericSensorExtraClasses flag enables the browser-side
     # implementation of sensors such as Ambient Light Sensor.
     chrome_options["args"].append("--enable-features=GenericSensorExtraClasses")
+    # Test with third-party cookies deprecated.
+    chrome_options["args"].append("--test-third-party-cookie-phaseout")
 
     # Classify `http-private`, `http-public` and https variants in the
     # appropriate IP address spaces.

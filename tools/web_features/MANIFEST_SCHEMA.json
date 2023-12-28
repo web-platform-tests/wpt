@@ -1,0 +1,51 @@
+{
+    "$schema":"http://json-schema.org/draft-06/schema#",
+    "$ref":"#/definitions/File",
+    "definitions":{
+       "File":{
+          "type":"object",
+          "additionalProperties":false,
+          "properties":{
+             "version":{
+                "type":"integer",
+                "description":"Schema version of the file.",
+                "enum":[
+                   1
+                ]
+             },
+             "data":{
+                "type":"object",
+                "description":"High level container for the data. Object key is the web feature.",
+                "additionalProperties":{
+                   "type":"array",
+                   "items":{
+                      "$ref":"#/definitions/ManifestItem"
+                   }
+                }
+             },
+             "config":{
+                "$ref":"#/definitions/Config"
+             }
+          },
+          "required":[
+             "data",
+             "version"
+          ],
+          "title":"File"
+       },
+       "ManifestItem":{
+          "type":"object",
+          "additionalProperties":false,
+          "properties":{
+             "url":{
+                "type":"string",
+                "description": "The url field in tools.manifest.item.URLManifestItem"
+             }
+          },
+          "required":[
+             "url"
+          ],
+          "title":"Manifest item info"
+       }
+    }
+ }

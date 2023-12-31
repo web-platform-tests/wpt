@@ -433,6 +433,8 @@ tasks:
         - vars:
             channel: canary
         - vars:
+            channel: dev
+        - vars:
             channel: beta
         - vars:
             channel: stable

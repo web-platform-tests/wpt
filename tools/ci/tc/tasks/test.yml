@@ -201,6 +201,12 @@ tasks:
                 - trigger-push
             - vars:
                 browser: chrome
+                channel: dev
+              use:
+                - trigger-master
+                - trigger-push
+            - vars:
+                browser: chrome
                 channel: beta
               use:
                 - trigger-weekly
@@ -290,6 +296,12 @@ tasks:
             - vars:
                 browser: chrome
                 channel: canary
+              use:
+                - trigger-master
+                - trigger-push
+            - vars:
+                browser: chrome
+                channel: dev
               use:
                 - trigger-master
                 - trigger-push

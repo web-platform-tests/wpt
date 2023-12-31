@@ -102,14 +102,7 @@ components:
 
   browser-webkitgtk_minibrowser: {}
 
-  browser-chrome:
-    depends-on:
-      - download-chrome-${vars.channel}
-    download-artifacts:
-      - task: download-chrome-${vars.channel}
-        glob: public/results/chrome-${vars.channel}.*
-        dest: build/
-        extract: true
+  browser-chrome: {}
 
   browser-chromium: {}
 
@@ -426,23 +419,6 @@ tasks:
           use:
             - wpt-base
           command: "./wpt install --download-only --destination /home/test/artifacts/ --channel=${vars.channel}  --rename=firefox-${vars.channel} firefox browser"
-  - $map:
-      for:
-        - vars:
-            channel: nightly
-        - vars:
-            channel: canary
-        - vars:
-            channel: dev
-        - vars:
-            channel: beta
-        - vars:
-            channel: stable
-      do:
-        download-chrome-${vars.channel}:
-          use:
-            - wpt-base
-          command: "./wpt install --channel=${vars.channel} chrome browser"
 
   - lint:
       use:
@@ -582,7 +558,6 @@ tasks:
         - trigger-pr
         - browser-firefox
         - browser-firefox_android
-        - browser-chrome
       command: ./tools/ci/ci_wptrunner_infrastructure.sh
       install:
         - python3-pip

@@ -67,7 +67,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [24],
         "data": [
           -40.10139083862305,
@@ -163,7 +163,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [24],
         "data": [
           -40.10139083862305,
@@ -259,7 +259,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [4, 6],
         "data": [
           -40.10139083862305,
@@ -355,7 +355,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [2, 3, 4],
         "data": [
           -40.10139083862305,
@@ -451,7 +451,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [2, 2, 2, 3],
         "data": [
           -40.10139083862305,
@@ -547,7 +547,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [2, 2, 1, 2, 3],
         "data": [
           -40.10139083862305,
@@ -620,7 +620,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [2, 2, 2, 3],
         "data": [
           -36.06953048706055,
@@ -698,7 +698,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [2, 2, 2, 3],
         "data": [
           -36.06953048706055,
@@ -774,7 +774,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [2, 2, 2, 3],
         "data": [
           -36.06953048706055,
@@ -847,7 +847,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [2, 2, 2, 3],
         "data": [
           -36.06953048706055,

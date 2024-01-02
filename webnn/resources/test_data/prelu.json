@@ -67,7 +67,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [24],
         "data": [
           -23.817113876342773,
@@ -164,7 +164,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [24],
         "data": [
           -23.817113876342773,
@@ -261,7 +261,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [4, 6],
         "data": [
           -23.817113876342773,
@@ -358,7 +358,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [2, 3, 4],
         "data": [
           -23.817113876342773,
@@ -455,7 +455,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [2, 2, 2, 3],
         "data": [
           -23.817113876342773,
@@ -552,7 +552,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [2, 2, 1, 2, 3],
         "data": [
           -23.817113876342773,
@@ -628,7 +628,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [2, 2, 2, 3],
         "data": [
           -12.934283256530762,
@@ -702,7 +702,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [2, 2, 2, 3],
         "data": [
           -12.775040626525879,
@@ -781,7 +781,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [2, 2, 2, 3],
         "data": [
           -12.425349235534668,
@@ -857,7 +857,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [2, 2, 2, 3],
         "data": [
           -12.934283256530762,
@@ -931,7 +931,7 @@
         }
       },
       "expected": {
-        "name": "ouput",
+        "name": "output",
         "shape": [2, 2, 2, 3],
         "data": [
           -12.775040626525879,

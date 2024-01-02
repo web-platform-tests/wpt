@@ -5,7 +5,7 @@ from webdriver.bidi.modules.script import ContextTarget
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("domain", ["", "alt"], ids=["same_origin", "cross_origin"])
-async def test_iframe(
+async def test_top_context_with_iframes(
     bidi_session, add_preload_script, new_tab,
         inline, iframe, domain):
 
@@ -86,13 +86,11 @@ async def test_page_script_context_isolation(bidi_session, add_preload_script,
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("domain", ["", "alt"], ids=["same_origin", "cross_origin"])
 async def test_identical_contexts(
         bidi_session, add_preload_script, new_tab,
-        inline, iframe, domain):
+        inline):
 
-    iframe_content = f"<div>{domain}</div>"
-    url = inline(f"{iframe(iframe_content, domain=domain)}")
+    url = inline(f"<div>test</div>")
 
     await add_preload_script(
         function_declaration="() => { window.foo = window.foo ? window.foo + 1 : 1; }",

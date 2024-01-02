@@ -110,7 +110,7 @@ test(() => {
   ["before", "after"].forEach(pseudo => {
     assert_equals(getComputedStyle(div, pseudo).width, "100px");
   });
-}, "Resolution of width is correct when pseudo-element argument is invalid (no colon)");
+}, "Resolution of width is correct when pseudo-element argument is ignored (due to no colon)");
 
 test(() => {
   const div = document.getElementById('test');

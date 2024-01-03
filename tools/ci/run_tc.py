@@ -150,11 +150,11 @@ def install_chrome(channel):
     # Interpret experimental channels as Canary.
     if channel in ("experimental", "nightly", "canary"):
         channel = "canary"
-    run(["sh", "-c", "./wpt install --channel canary chrome browser"])
+    run(["sh", "-c", f"./wpt install --channel {channel} chrome browser"])
 
-    # Chrome for Testing needs additional files in the download directory to run all features.
     file_names = os.listdir(os.path.join(os.getcwd(),
                                          f"_venv3/browsers/{channel}/chrome-linux64"))
+    # Move all files from the Chrome for Testing download to the same directory.
     for file_name in file_names:
         path = os.path.join(os.getcwd(),
                             f"_venv3/browsers/{channel}/chrome-linux64",

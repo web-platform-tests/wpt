@@ -8,8 +8,13 @@
     height:100px;
     width:100px;
   }
-  @supports selector(input::-webkit-autofill) {
+  /* This matches in user agents supporting ::-webkit-slider-thumb. */
+  @supports selector(input::-webkit-slider-thumb) {
     div { background-color:green; }
+  }
+  /* This should never match. */
+  @supports selector(input::-webkit-asdf) {
+    div { background-color:red; }
   }
 </style>
 <p>Test passes if there is a <strong>filled green square</strong> and <strong>no red</strong>.</p>

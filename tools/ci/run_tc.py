@@ -92,7 +92,7 @@ def get_parser():
                    help="Browsers that will be used in the job")
     p.add_argument("--channel",
                    default=None,
-                   choices=["experimental", "dev", "nightly", "beta", "stable"],
+                   choices=["experimental", "canary", "dev", "nightly", "beta", "stable"],
                    help="Chrome browser channel")
     p.add_argument("--xvfb",
                    action="store_true",

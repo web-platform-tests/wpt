@@ -45,6 +45,15 @@
 <section data-testname="el-section" aria-label="x" data-expectedrole="region" class="ex">x</section>
 <section data-testname="el-section-no-name" class="ex-generic">x</section>
 
+<!-- el-summary -->
+<summary data-testname="el-summary-orphan" aria-label="x" class="ex-generic">x</summary>
+<details>
+  <ol>
+    <li>x</li>
+    <li>x</li>
+  </ol>
+  <summary data-testname="el-summary-not-first-child-of-details" aria-label="x" class="ex-generic">x</summary>
+</details>
 
 <script>
 AriaUtils.verifyRolesBySelector(".ex");

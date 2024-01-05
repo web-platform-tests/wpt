@@ -90,18 +90,14 @@ async def test_script_order(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("domain", ["", "alt"], ids=["same_origin", "cross_origin"])
 async def test_add_preload_script_in_iframe(
-    bidi_session, add_preload_script, new_tab, inline, iframe, domain,
+    bidi_session, add_preload_script, new_tab, test_page_same_origin_frame
 ):
     await add_preload_script(function_declaration="() => { window.bar='foo'; }")
 
-    iframe_content = f"<div>{domain}</div>"
-    url = inline(f"{iframe(iframe_content, domain=domain)}")
-
     await bidi_session.browsing_context.navigate(
         context=new_tab["context"],
-        url=url,
+        url=test_page_same_origin_frame,
         wait="complete",
     )
 

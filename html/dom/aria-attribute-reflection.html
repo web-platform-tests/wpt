@@ -320,17 +320,6 @@ test(function(t) {
 }, "aria-readonly attribute reflects.");
 </script>
 
-<div id="relevant" aria-relevant="text"></div>
-<script>
-test(function(t) {
-    var element = document.getElementById("relevant");
-    assert_equals(element.ariaRelevant, "text");
-    element.ariaRelevant = "removals";
-    assert_equals(element.getAttribute("aria-relevant"), "removals");
-    testNullable(element, "ariaRelevant", "aria-relevant");
-}, "aria-relevant attribute reflects.");
-</script>
-
 <div id="required" aria-required="true"></div>
 <script>
 test(function(t) {

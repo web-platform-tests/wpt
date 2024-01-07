@@ -1,0 +1,195 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Parity tests for invalidly nested heading elements</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+</head>
+
+<body>
+
+  <h1>Parity tests for invalidly nested heading elements</h1>
+
+  <h2>Accessible names</h2>
+  <hr>
+
+  <h1
+    class="ex-label"
+    data-testname="Invalid parent h1 has empty accname"
+    data-expectedlabel=""
+  >
+    <h2
+      class="ex-label"
+      data-testname="Invalid child h2 has accname matching inner text"
+      data-expectedlabel="Malformed h2"
+    >Malformed h2</h2>
+  </h1>
+  <h4
+    class="ex-label"
+    data-testname="Invalid parent h4 has empty accname"
+    data-expectedlabel=""
+  >
+    <h3
+      class="ex-label"
+      data-testname="Invalid child h3 has accname matching inner text"
+      data-expectedlabel="Malformed h3"
+    >Malformed h3</h3>
+  </h4>
+  <div
+    role="heading"
+    aria-level="1"
+    class="ex-label"
+    data-testname="Invalid parent aria-level=1 has empty accname"
+    data-expectedlabel=""
+  >
+    <div
+      role="heading"
+      aria-level="2"
+      class="ex-label"
+      data-testname="Invalid child aria-level=2 has accname matching inner text"
+      data-expectedlabel="Malformed aria-level=2"
+    >Malformed aria-level=2</div>
+  </div>
+  <div
+    role="heading"
+    aria-level="4"
+    class="ex-label"
+    data-testname="Invalid parent aria-level=4 has empty accname"
+    data-expectedlabel=""
+  >
+    <div
+      role="heading"
+      aria-level="3"
+      class="ex-label"
+      data-testname="Invalid child aria-level=3 accname matching inner text"
+      data-expectedlabel="Malformed aria-level=3"
+    >Malformed aria-level=3</div>
+  </div>
+
+  <h2>Roles</h2>
+  <hr>
+
+  <h1
+    class="ex-role"
+    data-testname="invalid parent h1 still conveys heading role"
+    data-expectedrole="heading"
+  >
+    <h2
+      class="ex-role"
+      data-testname="invalid child h2 still conveys heading role"
+      data-expectedrole="heading"
+    >Malformed h2</h2>
+  </h1>
+  <h4
+    class="ex-role"
+    data-testname="invalid parent h4 still conveys heading role"
+    data-expectedrole="heading"
+  >
+    <h3
+      class="ex-role"
+      data-testname="invalid child h3 still conveys heading role"
+      data-expectedrole="heading"
+    >Malformed h3</h3>
+  </h4>
+  <div
+    role="heading"
+    aria-level="1"
+    class="ex-role"
+    data-testname="invalid parent aria-level=1 still conveys heading role"
+    data-expectedrole="heading"
+  >
+    <div
+      role="heading"
+      aria-level="2"
+      class="ex-role"
+      data-testname="invalid child aria-level=2 still conveys heading role"
+      data-expectedrole="heading"
+    >Malformed aria-level=2</div>
+  </div>
+  <div
+    role="heading"
+    aria-level="4"
+    class="ex-role"
+    data-testname="invalid parent aria-level=4 still conveys heading role"
+    data-expectedrole="heading"
+  >
+    <div
+      role="heading"
+      aria-level="3"
+      class="ex-role"
+      data-testname="invalid child aria-level=3 still conveys heading role"
+      data-expectedrole="heading"
+    >Malformed aria-level=3</div>
+  </div>
+
+  <h2>Levels</h2>
+  <hr>
+
+  <h1
+    class="ex-level"
+    data-testname="invalid parent h1 still conveys level 1"
+    data-expectedlevel="1"
+  >
+    <h2
+      class="ex-level"
+      data-testname="invalid child h2 still conveys level 2"
+      data-expectedlevel="2"
+    >Malformed h2</h2>
+  </h1>
+  <h4
+    class="ex-level"
+    data-testname="invalid parent h4 still conveys level 4"
+    data-expectedlevel="4"
+  >
+    <h3
+      class="ex-level"
+      data-testname="invalid child h3 still conveys level 3"
+      data-expectedlevel="3"
+    >Malformed h3</h3>
+  </h4>
+  <!-- TODO: how to test determined level for native HTML elements? -->
+  <div
+    role="heading"
+    aria-level="1"
+    class="ex-level"
+    data-testname="invalid parent aria-level=1 still conveys level 1"
+    data-expectedlevel="1"
+  >
+    <div
+      role="heading"
+      aria-level="2"
+      class="ex-level"
+      data-testname="invalid child aria-level=2 still conveys level 2"
+      data-expectedlevel="2"
+    >Malformed aria-level=2</div>
+  </div>
+  <div
+    role="heading"
+    aria-level="4"
+    class="ex-level"
+    data-testname="invalid parent aria-level=4 still conveys level 4"
+    data-expectedlevel="4"
+  >
+    <div
+      role="heading"
+      aria-level="3"
+      class="ex-level"
+      data-testname="invalid child aria-level=3 still conveys level 3"
+      data-expectedlevel="3"
+    >Malformed aria-level=3</div>
+  </div>
+
+  <script>
+    AriaUtils.verifyLabelsBySelector(".ex-label");
+    AriaUtils.verifyRolesBySelector(".ex-role");
+    AriaUtils.verifyLevelsBySelector(".ex-level");
+  </script>
+</body>
+
+</html>

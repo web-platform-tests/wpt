@@ -9,7 +9,7 @@ const AriaUtils = {
   Ex: AriaUtils.assignAndVerifyRolesByRoleNames(["group", "main", "button"])
 
   */
-  assignAndVerifyRolesByRoleNames: function(roleNames) {
+  assignAndVerifyRolesByRoleNames: function (roleNames) {
     if (!Array.isArray(roleNames) || !roleNames.length) {
       throw `Param roleNames of assignAndVerifyRolesByRoleNames("${roleNames}") should be an array containing at least one role string.`;
     }
@@ -38,7 +38,7 @@ const AriaUtils = {
       AriaUtils.verifyRolesBySelector(".ex")
 
   */
-  verifyRolesBySelector: function(selector) {
+  verifyRolesBySelector: function (selector) {
     const els = document.querySelectorAll(selector);
     if (!els.length) {
       throw `Selector passed in verifyRolesBySelector("${selector}") should match at least one element.`;
@@ -71,7 +71,7 @@ const AriaUtils = {
   It should only be used in specific cases (like "generic") determined by ARIA WG or other spec maintainers to be acceptable for the purposes of testing.
 
   */
-  verifyRoleOrVariantRolesBySelector: function(selector, roles) {
+  verifyRoleOrVariantRolesBySelector: function (selector, roles) {
     const els = document.querySelectorAll(selector);
     if (!els.length) {
       throw `Selector "${selector}" should match at least one element.`;
@@ -84,7 +84,7 @@ const AriaUtils = {
       promise_test(async t => {
         const expectedRoles = roles;
         const computedRole = await test_driver.get_computed_role(el);
-        for (role of roles){
+        for (role of roles) {
           if (computedRole === role) {
             return assert_equals(computedRole, role, `Computed Role: "${computedRole}" matches one of the acceptable role strings in ["${roles.join('", "')}"]: ${el.outerHTML}`);
           }
@@ -108,7 +108,7 @@ const AriaUtils = {
    See various issues and discussions linked from https://github.com/web-platform-tests/interop-accessibility/issues/48
 
   */
-  verifyGenericRolesBySelector: function(selector) {
+  verifyGenericRolesBySelector: function (selector) {
     // ARIA WG determined implementation variants "none" (Chromium), and the empty string "" (WebKit), are sufficiently equivalent to "generic" for WPT test verification of HTML-AAM.
     // See various discussions linked from https://github.com/web-platform-tests/interop-accessibility/issues/48
     this.verifyRoleOrVariantRolesBySelector(selector, ["generic", "", "none"]);
@@ -127,7 +127,7 @@ const AriaUtils = {
       AriaUtils.verifyLabelsBySelector(".ex")
 
   */
-  verifyLabelsBySelector: function(selector) {
+  verifyLabelsBySelector: function (selector) {
     const els = document.querySelectorAll(selector);
     if (!els.length) {
       throw `Selector passed in verifyLabelsBySelector("${selector}") should match at least one element.`;
@@ -156,6 +156,21 @@ const AriaUtils = {
     }
   },
 
-
+  verifyLevelsBySelector: function (selector) {
+    const els = document.querySelectorAll(selector);
+    if (!els.length) {
+      throw `Selector passed in verifyLevelsBySelector("${selector}") should match at least one element.`;
+    }
+    for (const el of els) {
+      let testName = el.getAttribute("data-testname");
+      promise_test(async t => {
+        const expectedLevel = el.getAttribute("data-expectedlevel");
+        // TODO: Yuck. This is surely wrong.
+        // Look for ariaLevel first, otherwise grab only the digit(s) from
+        // the nodeName (e.g., `H2` --> 2).
+        const ariaLevel = el.ariaLevel || el.nodeName.replace(/\D/g, '')
+        assert_equals(ariaLevel, expectedLevel, el.outerHTML);
+      }, `${testName}`);
+    }
+  },
 };
-

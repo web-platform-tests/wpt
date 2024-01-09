@@ -71,6 +71,26 @@
       data-expectedlabel="Malformed aria-level=3"
     >Malformed aria-level=3</div>
   </div>
+  <h1
+    class="ex-label"
+    data-testname="Invalid parent h1 accname does not append deeper text"
+    data-expectedlabel="Chocolate"
+  >Chocolate
+    <h2
+    >Peanut butter</h2>
+  </h1>
+  <div
+    role="heading"
+    aria-level="1"
+    class="ex-label"
+    data-testname="Invalid parent aria-level=1 does not append deeper text"
+    data-expectedlabel="Chocolate"
+  >Chocolate
+    <div
+      role="heading"
+      aria-level="2"
+    >Peanut butter</div>
+  </div>
 
   <h2>Roles</h2>
   <hr>
@@ -185,10 +205,41 @@
     >Malformed aria-level=3</div>
   </div>
 
+  <h2>No heading ancestors</h2>
+  <hr>
+
+  <h1>One
+    <h2>Two
+      <h3
+        class="ex-no-heading-ancestor"
+        data-testname="nested h3 has no heading ancestor in DOM"
+      >Three</h3>
+    </h2>
+  </h1>
+
+  <div
+    role="heading"
+    aria-level="1"
+  >One
+    <div
+      role="heading"
+      aria-level="2"
+    >Two
+      <div
+        role="heading"
+        aria-level="3"
+        class="ex-no-heading-ancestor"
+        data-testname="nested aria-level=3 has no heading ancestor in DOM"
+      >Three</div>
+    </div>
+  </div>
+
+
   <script>
     AriaUtils.verifyLabelsBySelector(".ex-label");
     AriaUtils.verifyRolesBySelector(".ex-role");
     AriaUtils.verifyLevelsBySelector(".ex-level");
+    AriaUtils.verifyNoHeadingAncestor(".ex-no-heading-ancestor");
   </script>
 </body>
 

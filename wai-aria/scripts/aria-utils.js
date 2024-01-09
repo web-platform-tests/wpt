@@ -173,4 +173,18 @@ const AriaUtils = {
       }, `${testName}`);
     }
   },
+
+  verifyNoHeadingAncestor: function (selector) {
+    const els = document.querySelectorAll(selector);
+    if (!els.length) {
+      throw `Selector passed in verifyNoHeadingAncestor("${selector}") should match at least one element.`;
+    }
+    for (const el of els) {
+      let testName = el.getAttribute("data-testname");
+      promise_test(async t => {
+        const elClosestHeading = el.parentNode.closest(':is(h1,h2,h3,h4,h5,h6,[role="heading"]');
+        assert_equals(elClosestHeading, null, el.outerHTML);
+      }, `${testName}`);
+    }
+  },
 };

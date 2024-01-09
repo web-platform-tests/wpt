@@ -60,9 +60,11 @@ def cleanup_session(session):
             # Only restore if needed to workaround a bug for Chrome:
             # https://bugs.chromium.org/p/chromedriver/issues/detail?id=4642#c4
             if (
+                session.capabilities.get("browserName") != "chrome" or
                 session.window.size != defaults.WINDOW_SIZE
                 or document_hidden(session)
                 or is_fullscreen(session)
+                or is_maximized(session)
             ):
                 session.window.size = defaults.WINDOW_SIZE
 

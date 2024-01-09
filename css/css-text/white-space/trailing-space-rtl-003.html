@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>Hanging spaces in a fully-LTR line within an RTL context</title>
+<link rel="match" href="reference/trailing-space-rtl-003-ref.html">
+<link rel="help" href="https://drafts.csswg.org/css-text-3/#white-space-phase-2">
+<link rel="author" title="Andreu Botella" href="mailto:abotella@igalia.com">
+<style>
+@font-face {
+  font-family: "Noto Sans";
+  src: url("/fonts/noto/noto-sans-v8-latin-regular.woff");
+}
+@font-face {
+  font-family: "Noto Naskh Arabic";
+  src: url("/fonts/noto/NotoNaskhArabic-regular.woff2");
+}
+.test {
+  font: 14pt "Noto Naskh Arabic", "Noto Sans";
+  background: yellow;
+  width: 330px;
+
+  white-space: pre-wrap;
+  text-align: left;
+}
+</style>
+<body>
+<div class="test" dir="rtl">A fully LTR line in an RTL paragraph       اختبار</div>
+</body>

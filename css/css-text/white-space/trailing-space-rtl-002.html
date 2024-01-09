@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>Hanging spaces in a fully-RTL line within an LTR context</title>
+<link rel="match" href="reference/trailing-space-rtl-002-ref.html">
+<link rel="help" href="https://drafts.csswg.org/css-text-3/#white-space-phase-2">
+<link rel="author" title="Andreu Botella" href="mailto:abotella@igalia.com">
+<style>
+@font-face {
+  font-family: "Noto Naskh Arabic";
+  src: url("/fonts/noto/NotoNaskhArabic-regular.woff2");
+}
+.test {
+  font: 14pt "Noto Naskh Arabic";
+  background: yellow;
+  width: 350px;
+
+  white-space: pre-wrap;
+  text-align: right;
+}
+</style>
+<body>
+<div class="test" dir="ltr">بعض النص باللغة العربية، هذا كل ما في الأمر    12345</div>
+</body>

@@ -1,0 +1,53 @@
+<!doctype html>
+<title>img set .src IDL attribute to same value (loaded, not cacheable) in iframe, about:blank</title>
+<script>
+var rtt = 250;
+if (window.performance && performance.timing && performance.timing.fetchStart) {
+  rtt = new Date() - performance.timing.fetchStart;
+}
+</script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/common.js"></script>
+<div id=log></div>
+<script>
+var url_settings = {
+  cached: "no",
+  animated: "no",
+  delay: "no",
+  broken: "no",
+};
+var expected_requests = '2';
+
+async_test(function() {
+  var img = new Image();
+  var url = make_url(url_settings);
+  var url_put = url + 'put';
+  var url_take = url + 'take';
+  img.onload = this.step_func(function() {
+    check_props(img, 'loaded', 'B');
+    img.onload = this.unreached_func("got second load event");
+    var iframe = document.createElement('iframe');
+    document.body.appendChild(iframe);
+    // setTimeout shouldn't be necessary but Gecko failed to fire load on img
+    // without it and Blink doesn't fire load on iframe here so...
+    setTimeout(this.step_func(function() {
+      var doc = iframe.contentDocument;
+      var img2 = doc.createElement('img');
+      img2.onload = this.step_func(function() {
+        check_props(img2, 'loaded', 'D');
+        this.step(check_requests(url_take, expected_requests));
+        img2.onload = this.unreached_func("got second load event in iframe");
+      });
+      img2.onerror = this.unreached_func("got error event in iframe")
+      doc.body.appendChild(img2);
+      img2.src = url_put;
+      check_props(img2, 'before dimensions', 'C');
+    }), 0);
+  });
+  img.onerror = this.unreached_func("got error event");
+  img.src = url_put;
+  check_props(img, 'before dimensions', 'A');
+});
+</script>

@@ -1,0 +1,51 @@
+<!doctype html>
+<title>img set .src IDL attribute to slow resource (after dimensions) then cached resource</title>
+<script>
+var rtt = 250;
+if (window.performance && performance.timing && performance.timing.fetchStart) {
+  rtt = new Date() - performance.timing.fetchStart;
+}
+</script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/common.js"></script>
+<div id=log></div>
+<script>
+var url_settings_slow = {
+  cached: "yes",
+  animated: "no",
+  delay: "after-dimensions",
+  broken: "no",
+};
+
+var url_settings_fast = {
+  cached: "yes",
+  animated: "no",
+  delay: "no",
+  broken: "no",
+};
+
+var expected_requests_fast = '1';
+
+async_test(function() {
+  var img_cache = new Image();
+  var url_slow = make_url(url_settings_slow) + 'put';
+  var url_fast = make_url(url_settings_fast) + 'put';
+  img_cache.onload = this.step_func(function() {
+    img_cache.onload = this.unreached_func("got second load event on img_cache");
+    var img = new Image();
+    img.src = url_slow;
+    setTimeout(this.step_func(function(){
+      img.src = url_fast;
+    }), 250 + rtt);
+    img.onload = this.step_func(function() {
+      img.onload = this.unreached_func("got second load event on img");
+      this.step(check_requests(url_fast.replace('put', 'take'), expected_requests_fast));
+    });
+    img.onerror = this.unreached_func("got error event on img");
+  });
+  img_cache.onerror = this.unreached_func("got error event on img_cache");
+  img_cache.src = url_fast;
+});
+</script>

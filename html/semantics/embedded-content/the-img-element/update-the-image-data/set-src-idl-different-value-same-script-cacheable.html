@@ -1,0 +1,44 @@
+<!doctype html>
+<title>img set .src IDL attribute to different value (same script, cacheable)</title>
+<script>
+var rtt = 250;
+if (window.performance && performance.timing && performance.timing.fetchStart) {
+  rtt = new Date() - performance.timing.fetchStart;
+}
+</script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/common.js"></script>
+<div id=log></div>
+<script>
+var url_settings = {
+  cached: "yes",
+  animated: "no",
+  delay: "no",
+  broken: "no",
+};
+var expected_requests = '1';
+
+async_test(function() {
+  var img = new Image();
+  var url = make_url(url_settings);
+  var url_put = url + 'put';
+  var url_take = url + 'take';
+  img.onload = this.step_func(function() {
+    check_props(img, 'loaded', 'D');
+    this.step(check_requests(url_take, expected_requests));
+    img.onload = this.unreached_func("got second load event");
+  });
+  img.onerror = this.unreached_func("got error event");
+  img.src = url_put;
+  check_props(img, 'before dimensions', 'A');
+  var start = new Date();
+  while (new Date() - start < (250 + rtt)) {
+    // sync wait (250 + rtt)ms
+  }
+  check_props(img, 'before dimensions', 'B');
+  img.src = url_put + '&';
+  check_props(img, 'before dimensions', 'C');
+});
+</script>

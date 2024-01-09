@@ -1,0 +1,42 @@
+<!doctype html>
+<title>img set .src IDL attribute to same value (broken fail sniffing, not cacheable)</title>
+<script>
+var rtt = 250;
+if (window.performance && performance.timing && performance.timing.fetchStart) {
+  rtt = new Date() - performance.timing.fetchStart;
+}
+</script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/common.js"></script>
+<div id=log></div>
+<script>
+var url_settings = {
+  cached: "no",
+  animated: "no",
+  delay: "no",
+  broken: "fail-sniffing",
+};
+var expected_requests = '2';
+
+async_test(function() {
+  var img = new Image();
+  var url = make_url(url_settings);
+  var url_put = url + 'put';
+  var url_take = url + 'take';
+  img.onerror = this.step_func(function() {
+    check_props(img, 'error', 'B');
+    img.onerror = this.step_func(function() {
+      check_props(img, 'error', 'D');
+      this.step(check_requests(url_take, expected_requests));
+      img.onerror = this.unreached_func("got third error event");
+    });
+    img.src = url_put;
+    check_props(img, 'before dimensions', 'C');
+  });
+  img.onload = this.unreached_func("got load event");
+  img.src = url_put;
+  check_props(img, 'before dimensions', 'A');
+});
+</script>

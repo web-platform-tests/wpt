@@ -56,7 +56,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 .highlight .nv { color: #000000 } /* Name.Variable */
 .highlight .ow { color: #004461; font-weight: bold } /* Operator.Word */
 .highlight .pm { color: #000000; font-weight: bold } /* Punctuation.Marker */
-.highlight .w { color: #f8f8f8; text-decoration: underline } /* Text.Whitespace */
+.highlight .w { color: #f8f8f8 } /* Text.Whitespace */
 .highlight .mb { color: #990000 } /* Literal.Number.Bin */
 .highlight .mf { color: #990000 } /* Literal.Number.Float */
 .highlight .mh { color: #990000 } /* Literal.Number.Hex */

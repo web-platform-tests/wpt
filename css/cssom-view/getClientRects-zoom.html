@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<title>getClientRects for elements with css zoom</title>
+<link rel="author" title="Yotam Hacohen" href="mailto:yotha@chromium.org">
+<link rel="author" title="Google" href="http://www.google.com/">
+<link rel="help" href="https://drafts.csswg.org/css-viewport/">"
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+  <head>
+    <style>
+      div {
+        width: 64px;
+        height: 64px;
+        background-color: blue
+      }
+      div.a {
+        zoom: 4.0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="no_zoom"></div>
+    <div class="a" id="with_zoom"></div>
+    <script>
+      setup(() => {
+        window.noZoom = document.getElementById("no_zoom");
+        window.withZoom = document.getElementById("with_zoom");
+      });
+      test(function() {
+        assert_true(!!noZoom, "no zoom target exists");
+        assert_true(!!withZoom, "zoom target exists");
+      });
+      test(function() {
+        let noZoomRect = noZoom.getClientRects()[0];
+        assert_equals(noZoomRect.left, 8, 'left');
+        assert_equals(noZoomRect.top, 8, 'top');
+        assert_equals(noZoomRect.width, 64, 'width');
+        assert_equals(noZoomRect.height, 64, 'height');
+      });
+      test(function() {
+        let ZoomRect = withZoom.getClientRects()[0];
+        assert_equals(ZoomRect.left, 8, 'left');
+        assert_equals(ZoomRect.top, 72, 'top');
+        assert_equals(ZoomRect.width, 256, 'width');
+        assert_equals(ZoomRect.height, 256, 'height');
+      });
+    </script>
+  </body>

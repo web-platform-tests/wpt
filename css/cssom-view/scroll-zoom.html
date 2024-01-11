@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<title>scroll properties for elements with css zoom</title>
+<link rel="author" title="Yotam Hacohen" href="mailto:yotha@chromium.org">
+<link rel="author" title="Google" href="http://www.google.com/">
+<link rel="help" href="https://drafts.csswg.org/cssom-view/#dom-element-scroll">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+  <head>
+    <style>
+      .container {
+        height: 100px;
+        width: 100px;
+        overflow: scroll;
+      }
+      .content {
+        height: 250px;
+        width: 250px;
+        background-image: linear-gradient(red, yellow);
+      }
+      #x4_zoom_container {
+        zoom: 4;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" id="no_zoom_container">
+      <div class="content"></div>
+    </div>
+    <div class="container" id="x4_zoom_container">
+      <div class="content"></div>
+    </div>
+    <script>
+        setup(() => {
+          window.noZoom = document.getElementById("no_zoom_container");
+          window.withZoom = document.getElementById("x4_zoom_container");
+        });
+        test(function() {
+          assert_true(!!noZoom, "no zoom target exists");
+          assert_true(!!withZoom, "zoom target exists");
+        });
+        test(function() {
+            // We remove zoom effects for scroll height and scroll width so values
+            // should be same for elements with and without zoom
+          assert_equals(noZoom.scrollHeight, withZoom.scrollHeight, 'scrollHeight');
+          assert_equals(noZoom.scrollWidth, withZoom.scrollWidth, 'scrollWidth');
+        });
+      </script>
+  </body>

@@ -91,5 +91,9 @@ test(() => {
   assert_equals(zoomed_inner.offsetTop, 0, 'zoomed_inner.offsetTop');
   assert_equals(zoomed_inner.offsetLeft, 1, 'zoomed_inner.offsetLeft');
 
+  // check that offset is equal between elements when one of the has css zoom
+  assert_equals(unzoomed_one.offsetWidth, zoomed_one.offsetWidth, "offsetWidth");
+  assert_equals(unzoomed_one.offsetHeight, zoomed_one.offsetHeight, "offsetHeight");
+
 }, 'Verifies that offsetTop and offsetLeft find the right OffsetParent and return values excluding the target zoom');
 </script>

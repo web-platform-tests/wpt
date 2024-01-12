@@ -1,6 +1,5 @@
 import pytest
 from webdriver.bidi.modules.network import NetworkStringValue
-from webdriver.bidi.modules.script import ContextTarget
 from webdriver.bidi.modules.storage import PartialCookie, BrowsingContextPartitionDescriptor
 
 pytestmark = pytest.mark.asyncio
@@ -42,7 +41,7 @@ async def test_set_cookie_protocol(bidi_session, top_context, inline, origin, do
     assert actual_cookies == {
         'cookies': [
             {
-                'domain': 'web-platform.test',
+                'domain': domain_value(),
                 'httpOnly': False,
                 'name': 'foo',
                 'path': '/',

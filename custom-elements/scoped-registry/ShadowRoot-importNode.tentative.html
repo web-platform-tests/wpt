@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<title>Tests ShadowRoot.importNode APIs work with scoped custom element registries</title>
+<meta name="author" title="Di Zhang" href="mailto:dizhangg@chromium.org">
+<link rel="help" href="https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries">
+<link rel="help" href="https://developer.mozilla.org/en-US/docs/Web/API/Document/importNode">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+<script>
+class TestAutonomous extends HTMLElement {};
+class TestAutonomous2 extends HTMLElement {};
+class TestCustomizedBuiltIn extends HTMLParagraphElement {};
+class TestCustomizedBuiltIn2 extends HTMLParagraphElement {};
+
+function attachShadowForTest(t, registry) {
+  const host = document.createElement('div');
+  const shadow = host.attachShadow({mode: 'open', registry});
+  document.body.appendChild(host);
+  t.add_cleanup(() => host.remove());
+  return shadow;
+}
+
+test(t => {
+  const registry = new CustomElementRegistry();
+  registry.define('test-element', TestAutonomous);
+  const shadow = attachShadowForTest(t, registry);
+
+  const original = shadow.createElement('test-element');
+  assert_true(original instanceof TestAutonomous, 1);
+
+  const registry2 = new CustomElementRegistry();
+  registry2.define('test-element', TestAutonomous2);
+  const shadow2 = attachShadowForTest(t, registry2);
+
+  const imported = shadow2.importNode(original);
+  assert_true(imported instanceof TestAutonomous2, 2);
+}, 'autonomous: ShadowRoot.importNode() should import custom elements successfully');
+
+test(t => {
+  const registry = new CustomElementRegistry();
+  const shadow = attachShadowForTest(t, registry);
+
+  const original = shadow.createElement('test-element');
+  assert_equals(original, undefined);
+  assert_equals(original.constructor, HTMLElement);
+
+  const registry2 = new CustomElementRegistry();
+  registry2.define('test-element', TestAutonomous);
+  const shadow2 = attachShadowForTest(t, registry2);
+
+  const imported = shadow2.importNode(original);
+  assert_true(imported instanceof TestAutonomous);
+}, 'autonomous: ShadowRoot.importNode() should import "undefined" custom elements successfully');
+
+test(t => {
+  const registry = new CustomElementRegistry();
+  registry.define('test-element', TestCustomizedBuiltIn, { extends: 'p' });
+  const shadow = attachShadowForTest(t, registry);
+
+  const original = shadow.createElement('p', { is: 'test-element' });
+  assert_true(original instanceof TestCustomizedBuiltIn);
+
+  const registry2 = new CustomElementRegistry();
+  registry2.define('test-element', TestCustomizedBuiltIn2, { extends: 'p' });
+  const shadow2 = attachShadowForTest(t, registry2);
+
+  const imported = shadow2.importNode(original);
+  assert_true(imported instanceof TestCustomizedBuiltIn2);
+}, 'built-in: ShadowRoot.importNode() should import custom elements successfully');
+
+test(t => {
+  const registry = new CustomElementRegistry();
+  const shadow = attachShadowForTest(t, registry);
+
+  const original = shadow.createElement('p', { is: 'test-element' });
+  assert_equals(original, undefined);
+  assert_equals(original.constructor, HTMLParagraphElement);
+
+  const registry2 = new CustomElementRegistry();
+  registry2.define('test-element', TestCustomizedBuiltIn, { extends: 'p' });
+  const shadow2 = attachShadowForTest(t, registry2);
+
+  const imported = shadow2.importNode(original);
+  assert_true(imported instanceof TestCustomizedBuiltIn);
+}, 'built-in: ShadowRoot.importNode() should import "undefined" custom elements successfully');
+
+</script>
+</body>

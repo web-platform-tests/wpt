@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict
+from typing import Any, Callable, Dict, Mapping
 
 from webdriver.bidi.modules.script import ContextTarget
 
@@ -11,7 +11,7 @@ def recursive_compare(expected: Any, actual: Any) -> None:
         expected(actual)
         return
 
-    assert type(expected) == type(actual)
+    assert type(expected) is type(actual)
     if type(expected) is list:
         assert len(expected) == len(actual)
         for index, _ in enumerate(expected):
@@ -20,8 +20,9 @@ def recursive_compare(expected: Any, actual: Any) -> None:
 
     if type(expected) is dict:
         # Actual dict can have more keys as part of the forwards-compat design.
-        assert expected.keys() <= actual.keys(), \
-            f"Key set should be present: {set(expected.keys()) - set(actual.keys())}"
+        assert (
+            expected.keys() <= actual.keys()
+        ), f"Key set should be present: {set(expected.keys()) - set(actual.keys())}"
         for key in expected.keys():
             recursive_compare(expected[key], actual[key])
         return
@@ -50,6 +51,11 @@ def any_list(actual: Any) -> None:
     assert isinstance(actual, list)
 
 
+def any_list_or_null(actual: Any) -> None:
+    if actual is not None:
+        any_list(actual)
+
+
 def any_string(actual: Any) -> None:
     assert isinstance(actual, str)
 
@@ -65,6 +71,28 @@ def int_interval(start: int, end: int) -> Callable[[Any], None]:
         assert start <= actual <= end
 
     return _
+
+
+def assert_handle(obj: Mapping[str, Any], should_contain_handle: bool) -> None:
+    if should_contain_handle:
+        assert "handle" in obj, f"Result should contain `handle`. Actual: {obj}"
+        assert isinstance(obj["handle"], str), f"`handle` should be a string, but was {type(obj['handle'])}"
+
+        # Recursively check that handle is not found in any of the nested values.
+        if "value" in obj:
+            value = obj["value"]
+            if type(value) is list:
+                for v in value:
+                    if type(v) is dict:
+                        assert_handle(v, False)
+
+            if type(value) is dict:
+                for v in value.values():
+                    if type(v) is dict:
+                        assert_handle(v, False)
+
+    else:
+        assert "handle" not in obj, f"Result should not contain `handle`. Actual: {obj}"
 
 
 async def create_console_api_message(bidi_session, context: str, text: str):
@@ -83,8 +111,23 @@ async def get_device_pixel_ratio(bidi_session, context: str) -> float:
         return window.devicePixelRatio;
     }""",
         target=ContextTarget(context["context"]),
-        await_promise=False)
+        await_promise=False,
+    )
     return result["value"]
+
+
+async def get_element_dimensions(bidi_session, context, element):
+    result = await bidi_session.script.call_function(
+        arguments=[element],
+        function_declaration="""(element) => {
+            const rect = element.getBoundingClientRect();
+            return { height: rect.height, width: rect.width }
+        }""",
+        target=ContextTarget(context["context"]),
+        await_promise=False,
+    )
+
+    return remote_mapping_to_dict(result["value"])
 
 
 async def get_viewport_dimensions(bidi_session, context: str):
@@ -92,6 +135,22 @@ async def get_viewport_dimensions(bidi_session, context: str):
         ({
           height: window.innerHeight || document.documentElement.clientHeight,
           width: window.innerWidth || document.documentElement.clientWidth,
+        });
+    """
+    result = await bidi_session.script.evaluate(
+        expression=expression,
+        target=ContextTarget(context["context"]),
+        await_promise=False,
+    )
+
+    return remote_mapping_to_dict(result["value"])
+
+
+async def get_document_dimensions(bidi_session, context: str):
+    expression = """
+        ({
+          height: document.documentElement.scrollHeight,
+          width: document.documentElement.scrollWidth,
         });
     """
     result = await bidi_session.script.evaluate(

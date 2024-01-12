@@ -12,12 +12,15 @@ import json
 class CrashError(BaseException):
     pass
 
+class LeakError(BaseException):
+    pass
 
-def _read_line(io_queue, deadline=None, encoding=None, errors="strict", raise_crash=True):
+def _read_line(io_queue, deadline=None, encoding=None, errors="strict", raise_crash_leak=True):
     """Reads a single line from the io queue. The read must succeed before `deadline` or
     a TimeoutError is raised. The line is returned as a bytestring or optionally with the
-    specified `encoding`. If `raise_crash` is set, a CrashError is raised if the line
-    happens to be a crash message.
+    specified `encoding`. If `raise_crash_leak` is set, a CrashError is raised if the line
+    happens to be a crash message, or a LeakError is raised if the line happens to be a
+    leak message.
     """
     current_time = time()
 
@@ -26,10 +29,12 @@ def _read_line(io_queue, deadline=None, encoding=None, errors="strict", raise_cr
 
     try:
         line = io_queue.get(True, deadline - current_time if deadline else None)
-        if raise_crash and line.startswith(b"#CRASHED"):
+        if raise_crash_leak and line.startswith(b"#CRASHED"):
             raise CrashError()
-    except Empty:
-        raise TimeoutError()
+        if raise_crash_leak and line.startswith(b"#LEAK"):
+            raise LeakError()
+    except Empty as e:
+        raise TimeoutError() from e
 
     return line.decode(encoding, errors) if encoding else line
 
@@ -114,7 +119,7 @@ class ContentShellTestPart(ProtocolPart):
         result = bytearray()
 
         while True:
-            line = _read_line(self.stdout_queue, deadline, raise_crash=False)
+            line = _read_line(self.stdout_queue, deadline, raise_crash_leak=False)
             excess = len(line) + len(result) - content_length
 
             if excess > 0:
@@ -150,8 +155,33 @@ class ContentShellErrorsPart(ProtocolPart):
         return result
 
 
+class ContentShellBasePart(ProtocolPart):
+    """This protocol part provides functionality common to all executors.
+
+    In particular, this protocol part implements `wait()`, which, when
+    `--pause-after-test` is enabled, test runners block on until the next test
+    should run.
+    """
+    name = "base"
+
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.io_stopped = parent.browser.io_stopped
+
+    def wait(self):
+        # This worker is unpaused when the browser window is closed, which this
+        # `multiprocessing.Event` signals.
+        self.io_stopped.wait()
+        # Never rerun the test.
+        return False
+
+
 class ContentShellProtocol(Protocol):
-    implements = [ContentShellTestPart, ContentShellErrorsPart]
+    implements = [
+        ContentShellBasePart,
+        ContentShellTestPart,
+        ContentShellErrorsPart,
+    ]
     init_timeout = 10  # Timeout (seconds) to wait for #READY message.
 
     def connect(self):
@@ -186,7 +216,18 @@ def _convert_exception(test, exception, errors):
         return (test.result_cls("EXTERNAL-TIMEOUT", errors), [])
     if isinstance(exception, CrashError):
         return (test.result_cls("CRASH", errors), [])
+    if isinstance(exception, LeakError):
+        # TODO: the internal error is to force a restart, but it doesn't correctly
+        # describe what the issue is. Need to find a way to return a "FAIL",
+        # and restart the content_shell after the test run.
+        return (test.result_cls("INTERNAL-ERROR", errors), [])
     raise exception
+
+
+def timeout_for_test(executor, test):
+    if executor.debug_info and executor.debug_info.interactive:
+        return None
+    return test.timeout * executor.timeout_multiplier
 
 
 class ContentShellCrashtestExecutor(CrashtestExecutor):
@@ -197,7 +238,8 @@ class ContentShellCrashtestExecutor(CrashtestExecutor):
 
     def do_test(self, test):
         try:
-            _ = self.protocol.content_shell_test.do_test(self.test_url(test), test.timeout * self.timeout_multiplier)
+            _ = self.protocol.content_shell_test.do_test(self.test_url(test),
+                                                         timeout_for_test(self, test))
             self.protocol.content_shell_errors.read_errors()
             return self.convert_result(test, {"status": "PASS", "message": None})
         except BaseException as exception:
@@ -240,12 +282,11 @@ class ContentShellRefTestExecutor(RefTestExecutor, _SanitizerMixin):  # type: ig
             # source tree (i.e., without looking at a reference). This is not
             # possible in `wpt`, so pass an empty hash here to force a dump.
             command += "''print"
-        _, image = self.protocol.content_shell_test.do_test(
-            command, test.timeout * self.timeout_multiplier)
 
+        _, image = self.protocol.content_shell_test.do_test(command,
+                                                            timeout_for_test(self, test))
         if not image:
             return False, ("ERROR", self.protocol.content_shell_errors.read_errors())
-
         return True, b64encode(image).decode()
 
 
@@ -254,6 +295,12 @@ class ContentShellPrintRefTestExecutor(ContentShellRefTestExecutor):
 
 
 class ContentShellTestharnessExecutor(TestharnessExecutor, _SanitizerMixin):  # type: ignore
+    # Chromium's `testdriver-vendor.js` partially implements testdriver support
+    # with internal APIs [1].
+    #
+    # [1]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#Relying-on-Blink_Specific-Testing-APIs
+    supports_testdriver = True
+
     def __init__(self, logger, browser, server_config, timeout_multiplier=1, debug_info=None,
             **kwargs):
         super().__init__(logger, browser, server_config, timeout_multiplier, debug_info, **kwargs)
@@ -262,8 +309,7 @@ class ContentShellTestharnessExecutor(TestharnessExecutor, _SanitizerMixin):  # 
     def do_test(self, test):
         try:
             text, _ = self.protocol.content_shell_test.do_test(self.test_url(test),
-                    test.timeout * self.timeout_multiplier)
-
+                                                               timeout_for_test(self, test))
             errors = self.protocol.content_shell_errors.read_errors()
             if not text:
                 return (test.result_cls("ERROR", errors), [])

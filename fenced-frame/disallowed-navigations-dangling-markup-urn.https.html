@@ -7,7 +7,7 @@
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
 <script src="resources/utils.js"></script>
-<script src="/fetch/local-network-access/resources/support.sub.js"></script>
+<script src="/fetch/private-network-access/resources/support.sub.js"></script>
 <script src="resources/dangling-markup-helper.js"></script>
 
 <body>
@@ -20,7 +20,7 @@ for (const substring of kDanglingMarkupSubstrings) {
     const key = token();
 
     // Copied from from `generateURNFromFlege()`, since we have to modify the
-    // final URL that goes into `interestGroup.ads[0].renderUrl` for
+    // final URL that goes into `interestGroup.ads[0].renderURL` for
     // `navigator.joinAdInterestGroup()`.
     const bidding_token = token();
     const seller_token = token();
@@ -32,8 +32,8 @@ for (const substring of kDanglingMarkupSubstrings) {
     const interestGroup = {
       name: 'testAd1',
       owner: location.origin,
-      biddingLogicUrl: new URL(FLEDGE_BIDDING_URL, location.origin),
-      ads: [{renderUrl: url_string, bid: 1}],
+      biddingLogicURL: new URL(FLEDGE_BIDDING_URL, location.origin),
+      ads: [{renderURL: url_string, bid: 1}],
       userBiddingSignals: {biddingToken: bidding_token},
       trustedBiddingSignalsKeys: ['key1'],
       adComponents: [],
@@ -46,7 +46,7 @@ for (const substring of kDanglingMarkupSubstrings) {
     const auctionConfig = {
       seller: location.origin,
       interestGroupBuyers: [location.origin],
-      decisionLogicUrl: new URL(FLEDGE_DECISION_URL, location.origin),
+      decisionLogicURL: new URL(FLEDGE_DECISION_URL, location.origin),
       auctionSignals: {biddingToken: bidding_token, sellerToken: seller_token},
     };
 

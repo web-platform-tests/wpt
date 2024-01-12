@@ -46,7 +46,7 @@ class Virtualenv:
 
     def create(self):
         if os.path.exists(self.path):
-            shutil.rmtree(self.path)
+            shutil.rmtree(self.path, ignore_errors=True)
             self._working_set = None
         call(*self.virtualenv, self.path)
 
@@ -81,7 +81,8 @@ class Virtualenv:
             if IS_WIN:
                 site_packages = os.path.join(base, "Lib", "site-packages")
             else:
-                site_packages = os.path.join(base, "lib", f"python{sys.version[:3]}", "site-packages")
+                version = f"{sys.version_info.major}.{sys.version_info.minor}"
+                site_packages = os.path.join(base, "lib", f"python{version}", "site-packages")
 
         return site_packages
 

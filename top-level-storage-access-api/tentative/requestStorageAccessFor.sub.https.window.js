@@ -78,7 +78,7 @@ promise_test(
           'granted');
 
       const frame = await CreateFrame(
-        '/storage-access-api/resources/script-with-cookie-header.py?script=embedded_responder.js');
+        altOrigin + '/storage-access-api/resources/script-with-cookie-header.py?script=embedded_responder.js');
 
       await RunCallbackWithGesture(() => document.requestStorageAccessFor(altOrigin));
       assert_true(await RequestStorageAccessInFrame(frame));
@@ -93,9 +93,9 @@ promise_test(
     '[top-level-context] document.requestStorageAccessFor() should be resolved when called properly with a user gesture and the same origin');
 
 promise_test(
-    async t => {
-      await RunCallbackWithGesture(
-        () => promise_rejects_dom(t, 'NotAllowedError', document.requestStorageAccessFor('bogus-url'),
+   async t =>{
+    await RunCallbackWithGesture(
+      () => promise_rejects_js(t, TypeError, document.requestStorageAccessFor('bogus-url'),
           'document.requestStorageAccessFor() call with bogus URL'));
     },
     '[top-level-context] document.requestStorageAccessFor() should be rejected when called with an invalid origin');

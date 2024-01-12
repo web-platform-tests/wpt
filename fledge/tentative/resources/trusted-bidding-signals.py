@@ -1,7 +1,8 @@
 import json
 from urllib.parse import unquote_plus
+from fledge.tentative.resources.fledge_http_server_util import headersToAscii
 
-# Script to generate trusted bidding signals. The responses depends on the
+# Script to generate trusted bidding signals. The response depends on the
 # keys and interestGroupNames - some result in entire response failures, others
 # affect only their own value. Keys are preferentially used over
 # interestGroupName, since keys are composible, but some tests need to cover
@@ -31,6 +32,8 @@ def main(request, response):
         if pair[0] == "interestGroupNames" and interestGroupNames == None:
             interestGroupNames = list(map(unquote_plus, pair[1].split(",")))
             continue
+        if pair[0] == "slotSize" or pair[0] == "allSlotsRequestedSizes":
+            continue
         return fail(response, "Unexpected query parameter: " + param)
 
     # "interestGroupNames" and "hostname" are mandatory.
@@ -50,7 +53,7 @@ def main(request, response):
     body = None
 
     contentType = "application/json"
-    xAllowFledge = "true"
+    adAuctionAllowed = "true"
     dataVersion = None
     if keys:
         for key in keys:
@@ -74,14 +77,12 @@ def main(request, response):
                 contentType = None
             elif key == "wrong-content-type":
                 contentType = 'text/plain'
-            elif key == "wrongContentType":
-                contentType = 'text/plain'
-            elif key == "bad-allow-fledge":
-                xAllowFledge = "sometimes"
-            elif key == "fledge-not-allowed":
-                xAllowFledge = "false"
-            elif key == "no-allow-fledge":
-                xAllowFledge = None
+            elif key == "bad-ad-auction-allowed":
+                adAuctionAllowed = "sometimes"
+            elif key == "ad-auction-not-allowed":
+                adAuctionAllowed = "false"
+            elif key == "no-ad-auction-allow":
+                adAuctionAllowed = None
             elif key == "no-value":
                 continue
             elif key == "wrong-value":
@@ -101,6 +102,12 @@ def main(request, response):
                 value = json.dumps(interestGroupNames)
             elif key == "hostname":
                 value = request.GET.first(b"hostname", b"not-found").decode("ASCII")
+            elif key == "headers":
+                value = headersToAscii(request.headers)
+            elif key == "slotSize":
+                value = request.GET.first(b"slotSize", b"not-found").decode("ASCII")
+            elif key == "allSlotsRequestedSizes":
+                value = request.GET.first(b"allSlotsRequestedSizes", b"not-found").decode("ASCII")
             responseBody["keys"][key] = value
 
     if "data-version" in interestGroupNames:
@@ -108,11 +115,11 @@ def main(request, response):
 
     if contentType:
         response.headers.set("Content-Type", contentType)
-    if xAllowFledge:
-        response.headers.set("X-Allow-FLEDGE", xAllowFledge)
+    if adAuctionAllowed:
+        response.headers.set("Ad-Auction-Allowed", adAuctionAllowed)
     if dataVersion:
         response.headers.set("Data-Version", dataVersion)
-    response.headers.set("X-fledge-bidding-signals-format-version", "2")
+    response.headers.set("Ad-Auction-Bidding-Signals-Format-Version", "2")
 
     if body != None:
         return body

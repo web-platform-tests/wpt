@@ -11,8 +11,8 @@ pytestmark = pytest.mark.asyncio
     ["", "sandbox_1"],
     ids=["default realm", "sandbox"],
 )
-async def test_realm(bidi_session, top_context, wait_for_event, sandbox_name):
-    await bidi_session.session.subscribe(events=["log.entryAdded"])
+async def test_realm(bidi_session, subscribe_events, top_context, wait_for_event, wait_for_future_safe, sandbox_name):
+    await subscribe_events(events=["log.entryAdded"])
 
     on_entry_added = wait_for_event("log.entryAdded")
     expected_text = "foo"
@@ -22,7 +22,7 @@ async def test_realm(bidi_session, top_context, wait_for_event, sandbox_name):
         await_promise=False,
         target=ContextTarget(top_context["context"], sandbox=sandbox_name),
     )
-    event_data = await on_entry_added
+    event_data = await wait_for_future_safe(on_entry_added)
 
     assert_console_entry(
         event_data,

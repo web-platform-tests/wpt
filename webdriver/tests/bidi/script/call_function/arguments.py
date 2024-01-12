@@ -10,12 +10,10 @@ async def test_default_arguments(bidi_session, top_context):
     result = await bidi_session.script.call_function(
         function_declaration="(...args) => args",
         await_promise=False,
-        target=ContextTarget(top_context["context"]))
+        target=ContextTarget(top_context["context"]),
+    )
 
-    recursive_compare({
-        "type": "array",
-        "value": []
-    }, result)
+    recursive_compare({"type": "array", "value": []}, result)
 
 
 @pytest.mark.asyncio
@@ -23,7 +21,11 @@ async def test_default_arguments(bidi_session, top_context):
 async def test_primitive_value(bidi_session, top_context, argument, expected):
     result = await bidi_session.script.call_function(
         function_declaration=f"""(arg) => {{
-            if (arg !== {expected}) {{
+            if (typeof {expected} === "number" && isNaN({expected})) {{
+                if (!isNaN(arg)) {{
+                    throw new Error(`Argument should be {expected}, but was ` + arg);
+                }}
+            }} else if (arg !== {expected}) {{
                 throw new Error(`Argument should be {expected}, but was ` + arg);
             }}
             return arg;
@@ -37,65 +39,47 @@ async def test_primitive_value(bidi_session, top_context, argument, expected):
 
 
 @pytest.mark.asyncio
-async def test_primitive_value_NaN(bidi_session, top_context):
-    nan_remote_value = {"type": "number", "value": "NaN"}
-    result = await bidi_session.script.call_function(
-        function_declaration="""(arg) => {
-            if (!isNaN(arg)) {
-                throw new Error("Argument should be 'NaN', but was " + arg);
-            }
-            return arg;
-        }""",
-        arguments=[nan_remote_value],
-        await_promise=False,
-        target=ContextTarget(top_context["context"]),
-    )
-
-    recursive_compare(nan_remote_value, result)
-
-
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "argument, expected_type",
     [
-        ({
-             "type": "array",
-             "value": [
-                 {"type": "string", "value": "foobar"},
-             ],
-         },
-         "Array"
-         ),
-        ({"type": "date", "value": "2022-05-31T13:47:29.000Z"},
-         "Date"
-         ),
-        ({
-             "type": "map",
-             "value": [
-                 ["foobar", {"type": "string", "value": "foobar"}],
-             ],
-         },
-         "Map"
-         ),
-        ({
-             "type": "object",
-             "value": [
-                 ["foobar", {"type": "string", "value": "foobar"}],
-             ],
-         },
-         "Object"
-         ),
-        ({"type": "regexp", "value": {"pattern": "foo", "flags": "g"}},
-         "RegExp"
-         ),
-        ({
-             "type": "set",
-             "value": [
-                 {"type": "string", "value": "foobar"},
-             ],
-         },
-         "Set"
-         )
+        (
+            {
+                "type": "array",
+                "value": [
+                    {"type": "string", "value": "foobar"},
+                ],
+            },
+            "Array",
+        ),
+        ({"type": "date", "value": "2022-05-31T13:47:29.000Z"}, "Date"),
+        (
+            {
+                "type": "map",
+                "value": [
+                    ["foobar", {"type": "string", "value": "foobar"}],
+                ],
+            },
+            "Map",
+        ),
+        (
+            {
+                "type": "object",
+                "value": [
+                    ["foobar", {"type": "string", "value": "foobar"}],
+                ],
+            },
+            "Object",
+        ),
+        ({"type": "regexp", "value": {"pattern": "foo", "flags": "g"}}, "RegExp"),
+        (
+            {
+                "type": "set",
+                "value": [
+                    {"type": "string", "value": "foobar"},
+                ],
+            },
+            "Set",
+        ),
     ],
 )
 async def test_local_value(bidi_session, top_context, argument, expected_type):

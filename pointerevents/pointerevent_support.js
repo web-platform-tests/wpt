@@ -93,6 +93,12 @@ function check_PointerEvent(event, testNamePrefix) {
     let expected = (event.type != 'pointerenter' && event.type != 'pointerleave');
     assert_equals(event.bubbles, expected);
   }, pointerTestName + ".bubbles value is valid");
+  test(function () {
+    let cancelable_events = [
+      'pointerdown', 'pointermove', 'pointerup', 'pointerover', 'pointerout'
+    ];
+    assert_equals(event.cancelable, cancelable_events.includes(event.type));
+  }, pointerTestName + ".cancelable value is valid");
 
   // Check the pressure value.
   // https://w3c.github.io/pointerevents/#dom-pointerevent-pressure
@@ -395,6 +401,10 @@ function moveToDocument(pointerType) {
   var pointerId = pointerType + "Pointer1";
   return new test_driver.Actions()
     .addPointer(pointerId, pointerType)
+    // WebDriver initializes the pointer position (0, 0), therefore, we need
+    // to move different position first.  Otherwise, moving to (0, 0) may be
+    // ignored.
+    .pointerMove(1, 1)
     .pointerMove(0, 0)
     .send();
 }

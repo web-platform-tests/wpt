@@ -1,26 +1,8 @@
 from __future__ import annotations
 from typing import Any, Callable, Mapping
+from webdriver.bidi.modules.script import ContextTarget
+
 from .. import any_int, any_string, recursive_compare
-
-
-def assert_handle(obj: Mapping[str, Any], should_contain_handle: bool) -> None:
-    if should_contain_handle:
-        assert "handle" in obj, f"Result should contain `handle`. Actual: {obj}"
-        assert isinstance(obj["handle"], str), f"`handle` should be a string, but was {type(obj['handle'])}"
-
-        # Recursively check that handle is not found in any of the nested values.
-        if "value" in obj:
-            value = obj["value"]
-            if type(value) is list:
-                for v in value:
-                    assert_handle(v, False)
-
-            if type(value) is dict:
-                for v in value.values():
-                    assert_handle(v, False)
-
-    else:
-        assert "handle" not in obj, f"Result should not contain `handle`. Actual: {obj}"
 
 
 def specific_error_response(expected_error: Mapping[str, Any]) -> Callable[[Any], None]:
@@ -68,7 +50,7 @@ PRIMITIVE_VALUES: list[tuple[str, dict]] = [
     ("null", {"type": "null"}),
     ("'foobar'", {"type": "string", "value": "foobar"}),
     ("'2'", {"type": "string", "value": "2"}),
-    ("Number.NaN", {"type": "number", "value": "NaN"}),
+    ("NaN", {"type": "number", "value": "NaN"}),
     ("-0", {"type": "number", "value": "-0"}),
     ("Infinity", {"type": "number", "value": "Infinity"}),
     ("-Infinity", {"type": "number", "value": "-Infinity"}),
@@ -172,13 +154,25 @@ REMOTE_VALUES: list[tuple[str, dict]] = [
     ("new WeakMap()", {"type": "weakmap", },),
     ("new WeakSet()", {"type": "weakset", },),
     ("new Error('SOME_ERROR_TEXT')", {"type": "error"},),
-    ("([1, 2][Symbol.iterator]())", {
+    ("[1, 2][Symbol.iterator]()", {
+        "type": "iterator",
+    }),
+    ("'mystring'[Symbol.iterator]()", {
+        "type": "iterator",
+    }),
+    ("(new Set([1,2]))[Symbol.iterator]()", {
+        "type": "iterator",
+    }),
+    ("(new Map([[1,2]]))[Symbol.iterator]()", {
         "type": "iterator",
     }),
     ("new Proxy({}, {})", {
         "type": "proxy",
     }),
     ("(function*() { yield 'a'; })()", {
+        "type": "generator",
+    }),
+    ("(async function*() { yield await Promise.resolve(1); })()", {
         "type": "generator",
     }),
     ("Promise.resolve()", {"type": "promise", },),
@@ -199,6 +193,34 @@ REMOTE_VALUES: list[tuple[str, dict]] = [
             }
         },
     ),
-    ("window", {"type": "window", },),
+    (
+        "window", {
+            "type": "window",
+            "value": {
+                "context": any_string,
+            }
+        },
+    ),
     ("new URL('https://example.com')", {"type": "object", },),
 ]
+
+
+async def create_sandbox(bidi_session, context, sandbox_name="Test", method="evaluate"):
+    if method == "evaluate":
+        result = await bidi_session.script.evaluate(
+            raw_result=True,
+            expression="1 + 2",
+            await_promise=False,
+            target=ContextTarget(context, sandbox=sandbox_name),
+        )
+    elif method == "call_function":
+        result = await bidi_session.script.call_function(
+            raw_result=True,
+            function_declaration="() => 1 + 2",
+            await_promise=False,
+            target=ContextTarget(context, sandbox=sandbox_name),
+        )
+    else:
+        raise Exception(f"Unsupported method to create a sandbox: {method}")
+
+    return result["realm"]

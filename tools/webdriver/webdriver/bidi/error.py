@@ -35,12 +35,20 @@ class InvalidArgumentException(BidiException):
     error_code = "invalid argument"
 
 
+class InvalidSelectorException(BidiException):
+    error_code = "invalid selector"
+
+
 class InvalidSessionIDError(BidiException):
     error_code = "invalid session id"
 
 
 class MoveTargetOutOfBoundsException(BidiException):
     error_code = "move target out of bounds"
+
+
+class NoSuchAlertException(BidiException):
+    error_code = "no such alert"
 
 
 class NoSuchElementException(BidiException):
@@ -51,16 +59,32 @@ class NoSuchFrameException(BidiException):
     error_code = "no such frame"
 
 
+class NoSuchInterceptException(BidiException):
+    error_code = "no such intercept"
+
+
 class NoSuchHandleException(BidiException):
     error_code = "no such handle"
+
+
+class NoSuchHistoryEntryException(BidiException):
+    error_code = "no such history entry"
 
 
 class NoSuchNodeException(BidiException):
     error_code = "no such node"
 
 
+class NoSuchRequestException(BidiException):
+    error_code = "no such request"
+
+
 class NoSuchScriptException(BidiException):
     error_code = "no such script"
+
+
+class UnableToCaptureScreenException(BidiException):
+    error_code = "unable to capture screen"
 
 
 class UnknownCommandException(BidiException):
@@ -69,6 +93,10 @@ class UnknownCommandException(BidiException):
 
 class UnknownErrorException(BidiException):
     error_code = "unknown error"
+
+
+class UnsupportedOperationException(BidiException):
+    error_code = "unsupported operation"
 
 
 def from_error_details(error: str, message: str, stacktrace: Optional[str]) -> BidiException:
@@ -90,5 +118,5 @@ def get(error_code: str) -> Type[BidiException]:
 
 _errors: DefaultDict[str, Type[BidiException]] = collections.defaultdict()
 for item in list(locals().values()):
-    if type(item) == type and item != BidiException and issubclass(item, BidiException):
+    if isinstance(item, type) and item != BidiException and issubclass(item, BidiException):
         _errors[item.error_code] = item

@@ -2,7 +2,7 @@ from typing import Any, Dict, Mapping,  Optional, Union
 
 from ._module import BidiModule, command
 
-from webdriver.bidi.modules.network import BytesValue
+from webdriver.bidi.modules.network import NetworkBytesValue
 
 
 class BrowsingContextPartitionDescriptor(Dict[str, Any]):
@@ -23,7 +23,7 @@ class PartialCookie(Dict[str, Any]):
     def __init__(
             self,
             name: str,
-            value: BytesValue,
+            value: NetworkBytesValue,
             domain: str,
             path: Optional[str] = None,
             http_only: Optional[bool] = None,

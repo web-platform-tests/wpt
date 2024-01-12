@@ -14,7 +14,7 @@ pytestmark = pytest.mark.asyncio
     ],
 )
 async def test_set_cookie_protocol(bidi_session, top_context, inline, origin, domain_value, protocol):
-    # Navigate to a secure context.
+    # Navigate to a page with a required protocol.
     await bidi_session.browsing_context.navigate(
         context=top_context["context"], url=(inline("<div>foo</div>", protocol=protocol)), wait="complete"
     )
@@ -34,4 +34,4 @@ async def test_set_cookie_protocol(bidi_session, top_context, inline, origin, do
         },
     }
 
-    # TODO: Assert the cookie is set after `Storage.getCookies` is implemented.
+    # TODO: Assert the cookie is actually set after `Storage.getCookies` is implemented.

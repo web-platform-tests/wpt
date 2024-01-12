@@ -8,7 +8,7 @@ class AuthCredentials(Dict[str, Any]):
         dict.__init__(self, type="password", username=username, password=password)
 
 
-class Base64Value(Dict[str, Any]):
+class NetworkBase64Value(Dict[str, Any]):
     def __init__(self, value: str):
         dict.__init__(self, type="base64", value=value)
 
@@ -18,7 +18,7 @@ class NetworkStringValue(Dict[str, Any]):
         dict.__init__(self, type="string", value=value)
 
 
-BytesValue = Union[NetworkStringValue, Base64Value]
+NetworkBytesValue = Union[NetworkStringValue, NetworkBase64Value]
 
 
 

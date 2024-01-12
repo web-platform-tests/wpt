@@ -3,6 +3,19 @@ from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Union
 from ._module import BidiModule, command
 
 
+class StringValue(Dict[str, Any]):
+    def __init__(self, value: str):
+        dict.__init__(self, type="string", value=value)
+
+
+class Base64Value(Dict[str, Any]):
+    def __init__(self, value: str):
+        dict.__init__(self, type="base64", value=value)
+
+
+BytesValue = Union[StringValue, Base64Value]
+
+
 class AuthCredentials(Dict[str, Any]):
     def __init__(self, username: str, password: str):
         dict.__init__(self, type="password", username=username, password=password)

@@ -20,12 +20,28 @@ class StorageKeyPartitionDescriptor(Dict[str, Any]):
 
 
 class PartialCookie(Dict[str, Any]):
-    def __init__(self, name: str,
-                 value: BytesValue,
-                 domain: str, secure: Optional[bool] = None):
+    def __init__(
+            self,
+            name: str,
+            value: BytesValue,
+            domain: str,
+            path: Optional[str] = None,
+            http_only: Optional[bool] = None,
+            secure: Optional[bool] = None,
+            same_site: Optional[str] = None,
+            expiry: Optional[int] = None,
+    ):
         dict.__init__(self, name=name, value=value, domain=domain)
+        if path is not None:
+            self["path"] = path
+        if http_only is not None:
+            self["httpOnly"] = http_only
         if secure is not None:
             self["secure"] = secure
+        if same_site is not None:
+            self["sameSite"] = same_site
+        if expiry is not None:
+            self["expiry"] = expiry
 
 
 PartitionDescriptor = Union[StorageKeyPartitionDescriptor, BrowsingContextPartitionDescriptor]

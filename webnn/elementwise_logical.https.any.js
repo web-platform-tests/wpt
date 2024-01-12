@@ -17,4 +17,4 @@ testWebNNOperation(
   ],
   buildOperationWithTwoInputs
 );
-testWebNNOperation('logicalNot', buildOperationWithSingleInput);
+testWebNNOperation('not', buildOperationWithSingleInput);

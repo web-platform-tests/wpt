@@ -37,6 +37,14 @@
   <section id="running-tests-from-the-local-system">
 <h1>Running Tests from the Local System<a class="headerlink" href="#running-tests-from-the-local-system" title="Permalink to this headline">¶</a></h1>
 <p>The tests are designed to be run from your local computer.</p>
+</section>
+<section id="install-wpt">
+<h1>Install WPT<a class="headerlink" href="#install-wpt" title="Permalink to this headline">¶</a></h1>
+<p>If you haven’t already, clone the web-platform-tests repository:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/web-platform-tests/wpt.git
+<span class="nb">cd</span><span class="w"> </span>wpt
+</pre></div>
+</div>
 <section id="system-setup">
 <h2>System Setup<a class="headerlink" href="#system-setup" title="Permalink to this headline">¶</a></h2>
 <p>Running the tests requires <code class="docutils literal notranslate"><span class="pre">python</span></code> and <code class="docutils literal notranslate"><span class="pre">pip</span></code> as well as updating the
@@ -193,7 +201,9 @@ a single process (the default), so there may be more noise in the test results.<
 <section id="output-formats">
 <h3>Output formats<a class="headerlink" href="#output-formats" title="Permalink to this headline">¶</a></h3>
 <p>By default, <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">run</span></code> outputs test results and a summary in a human readable
-format. For debugging, <code class="docutils literal notranslate"><span class="pre">--log-mach</span></code> can give more verbose output. For example:</p>
+format. For debugging, <code class="docutils literal notranslate"><span class="pre">--log-mach</span></code> can give more verbose output. (In particular,
+it will show the console output from the browser and driver;
+by default, those are not shown) For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">mach</span><span class="o">=-</span> <span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">mach</span><span class="o">-</span><span class="n">level</span><span class="o">=</span><span class="n">info</span> <span class="n">firefox</span> <span class="n">dom</span><span class="o">/</span>
 </pre></div>
 </div>
@@ -246,6 +256,7 @@ details.</p>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Running Tests</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="from-web.html">Running Tests from the Web</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Running Tests from the Local System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-wpt">Install WPT</a></li>
 <li class="toctree-l2"><a class="reference internal" href="from-ci.html">Running Tests on CI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="custom-runner.html">Writing Your Own Runner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tools/certs/README.html">WPT Test Certificates</a></li>

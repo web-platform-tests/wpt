@@ -1,6 +1,7 @@
 import pytest
-from webdriver.bidi.modules.storage import PartialCookie, BrowsingContextPartitionDescriptor
 from webdriver.bidi.modules.network import NetworkStringValue
+from webdriver.bidi.modules.script import ContextTarget
+from webdriver.bidi.modules.storage import PartialCookie, BrowsingContextPartitionDescriptor
 
 pytestmark = pytest.mark.asyncio
 
@@ -32,3 +33,5 @@ async def test_set_cookie_protocol(bidi_session, top_context, inline, origin, do
             'sourceOrigin': origin(protocol)
         },
     }
+
+    # TODO: Assert the cookie is set after `Storage.getCookies` is implemented.

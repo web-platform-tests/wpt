@@ -1,20 +1,27 @@
 import pytest
 from webdriver.bidi.modules.storage import PartialCookie, BrowsingContextPartitionDescriptor
-from webdriver.bidi.modules.network import StringValue
+from webdriver.bidi.modules.network import NetworkStringValue
 
 pytestmark = pytest.mark.asyncio
 
 
-async def test_set_cookie_secure_context(bidi_session, top_context, inline, origin, domain_value, server_config):
+@pytest.mark.parametrize(
+    "protocol",
+    [
+        "http",
+        "https",
+    ],
+)
+async def test_set_cookie_protocol(bidi_session, top_context, inline, origin, domain_value, protocol):
     # Navigate to a secure context.
     await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=(inline("<div>foo</div>")), wait="complete"
+        context=top_context["context"], url=(inline("<div>foo</div>", protocol=protocol)), wait="complete"
     )
 
     set_cookie_result = await bidi_session.storage.set_cookie(
         cookie=PartialCookie(
             name='foo',
-            value=StringValue('bar'),
+            value=NetworkStringValue('bar'),
             domain=domain_value(),
             secure=True
         ),
@@ -22,6 +29,6 @@ async def test_set_cookie_secure_context(bidi_session, top_context, inline, orig
 
     assert set_cookie_result == {
         'partitionKey': {
-            'sourceOrigin': origin()
+            'sourceOrigin': origin(protocol)
         },
     }

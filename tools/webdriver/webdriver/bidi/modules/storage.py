@@ -1,4 +1,4 @@
-from typing import Any, Dict, Mapping,  Optional, Union
+from typing import Any, Dict, Mapping, Optional, Union
 
 from ._module import BidiModule, command
 
@@ -48,6 +48,15 @@ PartitionDescriptor = Union[StorageKeyPartitionDescriptor, BrowsingContextPartit
 
 
 class Storage(BidiModule):
+
+    # TODO: extend with `filter`.
+    @command
+    def get_cookies(self, partition: Optional[PartitionDescriptor] = None) -> Mapping[str, Any]:
+        params = {}
+        if partition is not None:
+            params["partition"] = partition
+        return params
+
     @command
     def set_cookie(self, cookie: PartialCookie, partition: Optional[PartitionDescriptor] = None) -> \
             Mapping[str, Any]:

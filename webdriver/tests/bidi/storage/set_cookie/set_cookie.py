@@ -19,6 +19,9 @@ async def test_set_cookie_protocol(bidi_session, top_context, inline, origin, do
         context=top_context["context"], url=(inline("<div>foo</div>", protocol=protocol)), wait="complete"
     )
 
+    source_origin = origin(protocol)
+    partition = BrowsingContextPartitionDescriptor(top_context["context"])
+
     set_cookie_result = await bidi_session.storage.set_cookie(
         cookie=PartialCookie(
             name='foo',
@@ -26,12 +29,33 @@ async def test_set_cookie_protocol(bidi_session, top_context, inline, origin, do
             domain=domain_value(),
             secure=True
         ),
-        partition=BrowsingContextPartitionDescriptor(top_context["context"]))
+        partition=partition)
 
     assert set_cookie_result == {
         'partitionKey': {
-            'sourceOrigin': origin(protocol)
+            'sourceOrigin': source_origin
         },
     }
 
-    # TODO: Assert the cookie is actually set after `Storage.getCookies` is implemented.
+    # Assert the cookie is actually set.
+    actual_cookies = await bidi_session.storage.get_cookies(partition=partition)
+    assert actual_cookies == {
+        'cookies': [
+            {
+                'domain': 'web-platform.test',
+                'httpOnly': False,
+                'name': 'foo',
+                'path': '/',
+                'sameSite': 'none',
+                'secure': True,
+                'size': 6,
+                'value': {
+                    'type': 'string',
+                    'value': 'bar',
+                },
+            },
+        ],
+        'partitionKey': {
+            'sourceOrigin': source_origin,
+        },
+    }

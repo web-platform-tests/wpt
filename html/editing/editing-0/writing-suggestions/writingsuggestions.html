@@ -37,11 +37,11 @@ test(function() {
                    document.createElement('test-custom-element') ];
 
   elements.forEach(function(element) {
-    element.writingsuggestions = 'on';
-    assert_equals(element.writingsuggestions, 'on');
-    assert_equals(element.getAttribute('writingsuggestions'), 'on');
+    element.writingsuggestions = 'true';
+    assert_equals(element.writingsuggestions, 'true');
+    assert_equals(element.getAttribute('writingsuggestions'), 'true');
   });
-}, 'Test setting the `writingsuggestions` attribute to `on` directly on the target element.');
+}, 'Test setting the `writingsuggestions` attribute to `true` directly on the target element.');
 
 test(function() {
   const elements = [ document.createElement('input'),
@@ -52,8 +52,8 @@ test(function() {
 
   elements.forEach(function(element) {
     element.writingsuggestions = '';
-    assert_equals(element.writingsuggestions, 'on');
-    assert_equals(element.getAttribute('writingsuggestions'), '');
+    assert_equals(element.writingsuggestions, 'true');
+    assert_equals(element.getAttribute('writingsuggestions'), 'true');
   });
 }, 'Test setting the `writingsuggestions` attribute to the empty string directly on the target element.');
 
@@ -66,8 +66,8 @@ test(function() {
 
   elements.forEach(function(element) {
     element.writingsuggestions = 'foo';
-    // `element.writingsuggestions` should be set to the default value, which may vary across browsers.
-    assert_equals(element.getAttribute('writingsuggestions'), 'off');
+    assert_equals(element.writingsuggestions, 'true');
+    assert_equals(element.getAttribute('writingsuggestions'), 'true');
   });
 }, 'Test setting the `writingsuggestions` attribute to an invalid value directly on the target element.');
 
@@ -79,8 +79,8 @@ test(function() {
                    document.createElement('test-custom-element') ];
 
   elements.forEach(function(element) {
-    // `element.writingsuggestions` should be set to the default value, which may vary across browsers.
-    assert_equals(element.getAttribute('writingsuggestions'), null);
+    assert_equals(element.writingsuggestions, 'true');
+    assert_equals(element.getAttribute('writingsuggestions'), 'true');
   });
 }, 'Test the writing suggestions state when the `writingsuggestions` attribute is missing.');
 
@@ -91,24 +91,24 @@ test(function() {
                      new DOMParser().parseFromString('<span writingsuggestions></span>', 'text/html').body.firstElementChild ];
 
   elements.forEach(function(element) {
-    // `element.writingsuggestions` should be set to the default value, which may vary across browsers.
-    assert_equals(element.getAttribute('writingsuggestions'), '');
+    assert_equals(element.writingsuggestions, 'true');
+    assert_equals(element.getAttribute('writingsuggestions'), 'true');
   });
 }, 'Test setting the `writingsuggestions` attribute with a missing value directly on the target element.');
 
 test(function() {
-  const elements = [ new DOMParser().parseFromString('<html><body writingsuggestions="on"><input /></body></html>', 'text/html').body.firstElementChild,
-                     new DOMParser().parseFromString('<html><body writingsuggestions="on"><textarea></textarea></body></html>', 'text/html').body.firstElementChild,
-                     new DOMParser().parseFromString('<html><body writingsuggestions="on"><div></div></body></html>', 'text/html').body.firstElementChild,
-                     new DOMParser().parseFromString('<html><body writingsuggestions="on"><span></span></body></html>', 'text/html').body.firstElementChild ];
+  const elements = [ new DOMParser().parseFromString('<html><body writingsuggestions="true"><input /></body></html>', 'text/html').body.firstElementChild,
+                     new DOMParser().parseFromString('<html><body writingsuggestions="true"><textarea></textarea></body></html>', 'text/html').body.firstElementChild,
+                     new DOMParser().parseFromString('<html><body writingsuggestions="true"><div></div></body></html>', 'text/html').body.firstElementChild,
+                     new DOMParser().parseFromString('<html><body writingsuggestions="true"><span></span></body></html>', 'text/html').body.firstElementChild ];
 
   elements.forEach(function(element) {
-    assert_equals(element.parentElement.writingsuggestions, 'on');
-    assert_equals(element.parentElement.getAttribute('writingsuggestions'), 'on');
-    assert_equals(element.writingsuggestions, 'on');
-    assert_equals(element.getAttribute('writingsuggestions'), null);
+    assert_equals(element.parentElement.writingsuggestions, 'true');
+    assert_equals(element.parentElement.getAttribute('writingsuggestions'), 'true');
+    assert_equals(element.writingsuggestions, 'true');
+    assert_equals(element.getAttribute('writingsuggestions'), 'true');
   });
-}, 'Test setting the `writingsuggestions` attribute to `on` on a parent element.');
+}, 'Test setting the `writingsuggestions` attribute to "true" on a parent element.');
 
 test(function() {
   const elements = [ new DOMParser().parseFromString('<html><body writingsuggestions=""><input /></body></html>', 'text/html').body.firstElementChild,
@@ -117,261 +117,261 @@ test(function() {
                      new DOMParser().parseFromString('<html><body writingsuggestions=""><span></span></body></html>', 'text/html').body.firstElementChild ];
 
   elements.forEach(function(element) {
-    assert_equals(element.parentElement.writingsuggestions, 'on');
-    assert_equals(element.parentElement.getAttribute('writingsuggestions'), '');
-    assert_equals(element.writingsuggestions, 'on');
-    assert_equals(element.getAttribute('writingsuggestions'), null);
+    assert_equals(element.parentElement.writingsuggestions, 'true');
+    assert_equals(element.parentElement.getAttribute('writingsuggestions'), 'true');
+    assert_equals(element.writingsuggestions, 'true');
+    assert_equals(element.getAttribute('writingsuggestions'), 'true');
   });
 }, 'Test setting the `writingsuggestions` attribute to an empty string on a parent element.');
 
 test(function() {
-  const elements = [ new DOMParser().parseFromString('<html><body writingsuggestions="off"><input /></body></html>', 'text/html').body.firstElementChild,
-                     new DOMParser().parseFromString('<html><body writingsuggestions="off"><textarea></textarea></body></html>', 'text/html').body.firstElementChild,
-                     new DOMParser().parseFromString('<html><body writingsuggestions="off"><div></div></body></html>', 'text/html').body.firstElementChild,
-                     new DOMParser().parseFromString('<html><body writingsuggestions="off"><span></span></body></html>', 'text/html').body.firstElementChild ];
+  const elements = [ new DOMParser().parseFromString('<html><body writingsuggestions="false"><input /></body></html>', 'text/html').body.firstElementChild,
+                     new DOMParser().parseFromString('<html><body writingsuggestions="false"><textarea></textarea></body></html>', 'text/html').body.firstElementChild,
+                     new DOMParser().parseFromString('<html><body writingsuggestions="false"><div></div></body></html>', 'text/html').body.firstElementChild,
+                     new DOMParser().parseFromString('<html><body writingsuggestions="false"><span></span></body></html>', 'text/html').body.firstElementChild ];
 
   elements.forEach(function(element) {
-    assert_equals(element.parentElement.writingsuggestions, 'off');
-    assert_equals(element.parentElement.getAttribute('writingsuggestions'), 'off');
-    assert_equals(element.writingsuggestions, 'off');
-    assert_equals(element.getAttribute('writingsuggestions'), null);
+    assert_equals(element.parentElement.writingsuggestions, 'false');
+    assert_equals(element.parentElement.getAttribute('writingsuggestions'), 'false');
+    assert_equals(element.writingsuggestions, 'false');
+    assert_equals(element.getAttribute('writingsuggestions'), 'false');
   });
-}, 'Test setting the `writingsuggestions` attribute to `off` on a parent element.');
+}, 'Test setting the `writingsuggestions` attribute to "false" on a parent element.');
 
 test(function() {
-  const elements = [ new DOMParser().parseFromString('<html><body writingsuggestions="on"><input writingsuggestions="off" /></body></html>', 'text/html').body.firstElementChild,
-                     new DOMParser().parseFromString('<html><body writingsuggestions="on"><textarea writingsuggestions="off"></textarea></body></html>', 'text/html').body.firstElementChild,
-                     new DOMParser().parseFromString('<html><body writingsuggestions="on"><div writingsuggestions="off"></div></body></html>', 'text/html').body.firstElementChild,
-                     new DOMParser().parseFromString('<html><body writingsuggestions="on"><span writingsuggestions="off"></span></body></html>', 'text/html').body.firstElementChild ];
+  const elements = [ new DOMParser().parseFromString('<html><body writingsuggestions="true"><input writingsuggestions="false" /></body></html>', 'text/html').body.firstElementChild,
+                     new DOMParser().parseFromString('<html><body writingsuggestions="true"><textarea writingsuggestions="false"></textarea></body></html>', 'text/html').body.firstElementChild,
+                     new DOMParser().parseFromString('<html><body writingsuggestions="true"><div writingsuggestions="false"></div></body></html>', 'text/html').body.firstElementChild,
+                     new DOMParser().parseFromString('<html><body writingsuggestions="true"><span writingsuggestions="false"></span></body></html>', 'text/html').body.firstElementChild ];
 
   elements.forEach(function(element) {
-    assert_equals(element.parentElement.writingsuggestions, 'on');
-    assert_equals(element.parentElement.getAttribute('writingsuggestions'), 'on');
-    assert_equals(element.writingsuggestions, 'off');
-    assert_equals(element.getAttribute('writingsuggestions'), 'off');
+    assert_equals(element.parentElement.writingsuggestions, 'true');
+    assert_equals(element.parentElement.getAttribute('writingsuggestions'), 'true');
+    assert_equals(element.writingsuggestions, 'false');
+    assert_equals(element.getAttribute('writingsuggestions'), 'false');
   });
-}, 'Test overriding the parent element\'s `writingsuggestions` attribute from "on" to "off".');
+}, 'Test overriding the parent element\'s `writingsuggestions` attribute from "true" to "false".');
 
 test(function() {
-  const elements = [ new DOMParser().parseFromString('<html><body writingsuggestions=""><input writingsuggestions="off" /></body></html>', 'text/html').body.firstElementChild,
-                     new DOMParser().parseFromString('<html><body writingsuggestions=""><textarea writingsuggestions="off"></textarea></body></html>', 'text/html').body.firstElementChild,
-                     new DOMParser().parseFromString('<html><body writingsuggestions=""><div writingsuggestions="off"></div></body></html>', 'text/html').body.firstElementChild,
-                     new DOMParser().parseFromString('<html><body writingsuggestions=""><span writingsuggestions="off"></span></body></html>', 'text/html').body.firstElementChild ];
+  const elements = [ new DOMParser().parseFromString('<html><body writingsuggestions=""><input writingsuggestions="false" /></body></html>', 'text/html').body.firstElementChild,
+                     new DOMParser().parseFromString('<html><body writingsuggestions=""><textarea writingsuggestions="false"></textarea></body></html>', 'text/html').body.firstElementChild,
+                     new DOMParser().parseFromString('<html><body writingsuggestions=""><div writingsuggestions="false"></div></body></html>', 'text/html').body.firstElementChild,
+                     new DOMParser().parseFromString('<html><body writingsuggestions=""><span writingsuggestions="false"></span></body></html>', 'text/html').body.firstElementChild ];
 
   elements.forEach(function(element) {
-    assert_equals(element.parentElement.writingsuggestions, 'on');
-    assert_equals(element.parentElement.getAttribute('writingsuggestions'), '');
-    assert_equals(element.writingsuggestions, 'off');
-    assert_equals(element.getAttribute('writingsuggestions'), 'off');
+    assert_equals(element.parentElement.writingsuggestions, 'true');
+    assert_equals(element.parentElement.getAttribute('writingsuggestions'), 'true');
+    assert_equals(element.writingsuggestions, 'false');
+    assert_equals(element.getAttribute('writingsuggestions'), 'false');
   });
-}, 'Test overriding the parent element\'s `writingsuggestions` attribute from the empty string to "off".');
+}, 'Test overriding the parent element\'s `writingsuggestions` attribute from the empty string to "false".');
 
 test(function() {
-  const elements = [ new DOMParser().parseFromString('<html><body writingsuggestions="off"><input writingsuggestions="on" /></body></html>', 'text/html').body.firstElementChild,
-                     new DOMParser().parseFromString('<html><body writingsuggestions="off"><textarea writingsuggestions="on"></textarea></body></html>', 'text/html').body.firstElementChild,
-                     new DOMParser().parseFromString('<html><body writingsuggestions="off"><div writingsuggestions="on"></div></body></html>', 'text/html').body.firstElementChild,
-                     new DOMParser().parseFromString('<html><body writingsuggestions="off"><span writingsuggestions="on"></span></body></html>', 'text/html').body.firstElementChild ];
+  const elements = [ new DOMParser().parseFromString('<html><body writingsuggestions="false"><input writingsuggestions="true" /></body></html>', 'text/html').body.firstElementChild,
+                     new DOMParser().parseFromString('<html><body writingsuggestions="false"><textarea writingsuggestions="true"></textarea></body></html>', 'text/html').body.firstElementChild,
+                     new DOMParser().parseFromString('<html><body writingsuggestions="false"><div writingsuggestions="true"></div></body></html>', 'text/html').body.firstElementChild,
+                     new DOMParser().parseFromString('<html><body writingsuggestions="false"><span writingsuggestions="true"></span></body></html>', 'text/html').body.firstElementChild ];
 
   elements.forEach(function(element) {
-    assert_equals(element.parentElement.writingsuggestions, 'off');
-    assert_equals(element.parentElement.getAttribute('writingsuggestions'), 'off');
-    assert_equals(element.writingsuggestions, 'on');
-    assert_equals(element.getAttribute('writingsuggestions'), 'on');
+    assert_equals(element.parentElement.writingsuggestions, 'false');
+    assert_equals(element.parentElement.getAttribute('writingsuggestions'), 'false');
+    assert_equals(element.writingsuggestions, 'true');
+    assert_equals(element.getAttribute('writingsuggestions'), 'true');
   });
-}, 'Test overriding the parent element\'s `writingsuggestions` attribute from "off" to "on".');
+}, 'Test overriding the parent element\'s `writingsuggestions` attribute from "false" to "true".');
 
 test(function() {
-  const elements = [ new DOMParser().parseFromString('<html><body writingsuggestions="off"><input writingsuggestions="" /></body></html>', 'text/html').body.firstElementChild,
-                     new DOMParser().parseFromString('<html><body writingsuggestions="off"><textarea writingsuggestions=""></textarea></body></html>', 'text/html').body.firstElementChild,
-                     new DOMParser().parseFromString('<html><body writingsuggestions="off"><div writingsuggestions=""></div></body></html>', 'text/html').body.firstElementChild,
-                     new DOMParser().parseFromString('<html><body writingsuggestions="off"><span writingsuggestions=""></span></body></html>', 'text/html').body.firstElementChild ];
+  const elements = [ new DOMParser().parseFromString('<html><body writingsuggestions="false"><input writingsuggestions="" /></body></html>', 'text/html').body.firstElementChild,
+                     new DOMParser().parseFromString('<html><body writingsuggestions="false"><textarea writingsuggestions=""></textarea></body></html>', 'text/html').body.firstElementChild,
+                     new DOMParser().parseFromString('<html><body writingsuggestions="false"><div writingsuggestions=""></div></body></html>', 'text/html').body.firstElementChild,
+                     new DOMParser().parseFromString('<html><body writingsuggestions="false"><span writingsuggestions=""></span></body></html>', 'text/html').body.firstElementChild ];
 
   elements.forEach(function(element) {
-    assert_equals(element.parentElement.writingsuggestions, 'off');
-    assert_equals(element.parentElement.getAttribute('writingsuggestions'), 'off');
-    assert_equals(element.writingsuggestions, 'on');
-    assert_equals(element.getAttribute('writingsuggestions'), '');
+    assert_equals(element.parentElement.writingsuggestions, 'false');
+    assert_equals(element.parentElement.getAttribute('writingsuggestions'), 'false');
+    assert_equals(element.writingsuggestions, 'true');
+    assert_equals(element.getAttribute('writingsuggestions'), 'true');
   });
-}, 'Test overriding the parent element\'s `writingsuggestions` attribute from "off" to the empty string.');
+}, 'Test overriding the parent element\'s `writingsuggestions` attribute from "false" to the empty string.');
 
 test(function() {
-  const doc = new DOMParser().parseFromString('<html writingsuggestions="off"><body><input /><textarea></textarea><div></div><span></span></body></html>', 'text/html');
-  assert_equals(doc.documentElement.writingsuggestions, 'off');
-  assert_equals(doc.body.writingsuggestions, 'off');
-  assert_equals(doc.querySelector('input').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('textarea').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('div').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('span').writingsuggestions, 'off');
+  const doc = new DOMParser().parseFromString('<html writingsuggestions="false"><body><input /><textarea></textarea><div></div><span></span></body></html>', 'text/html');
+  assert_equals(doc.documentElement.writingsuggestions, 'false');
+  assert_equals(doc.body.writingsuggestions, 'false');
+  assert_equals(doc.querySelector('input').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('textarea').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('div').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('span').writingsuggestions, 'false');
 }, 'Test turning off writing suggestions for an entire document.');
 
 test(function() {
-  const doc = new DOMParser().parseFromString('<html writingsuggestions="off"><body><input writingsuggestions="on" /><textarea></textarea><div></div><span></span></body></html>', 'text/html');
-  assert_equals(doc.documentElement.writingsuggestions, 'off');
-  assert_equals(doc.body.writingsuggestions, 'off');
-  assert_equals(doc.querySelector('input').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('textarea').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('div').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('span').writingsuggestions, 'off');
-}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on an input element from "off" to "on".');
+  const doc = new DOMParser().parseFromString('<html writingsuggestions="false"><body><input writingsuggestions="true" /><textarea></textarea><div></div><span></span></body></html>', 'text/html');
+  assert_equals(doc.documentElement.writingsuggestions, 'false');
+  assert_equals(doc.body.writingsuggestions, 'false');
+  assert_equals(doc.querySelector('input').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('textarea').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('div').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('span').writingsuggestions, 'false');
+}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on an input element from "false" to "true".');
 
 test(function() {
-  const doc = new DOMParser().parseFromString('<html writingsuggestions="off"><body><input /><textarea writingsuggestions="on"></textarea><div></div><span></span></body></html>', 'text/html');
-  assert_equals(doc.documentElement.writingsuggestions, 'off');
-  assert_equals(doc.body.writingsuggestions, 'off');
-  assert_equals(doc.querySelector('input').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('textarea').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('div').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('span').writingsuggestions, 'off');
-}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a textarea element from "off" to "on".');
+  const doc = new DOMParser().parseFromString('<html writingsuggestions="false"><body><input /><textarea writingsuggestions="true"></textarea><div></div><span></span></body></html>', 'text/html');
+  assert_equals(doc.documentElement.writingsuggestions, 'false');
+  assert_equals(doc.body.writingsuggestions, 'false');
+  assert_equals(doc.querySelector('input').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('textarea').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('div').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('span').writingsuggestions, 'false');
+}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a textarea element from "false" to "true".');
 
 test(function() {
-  const doc = new DOMParser().parseFromString('<html writingsuggestions="off"><body><input /><textarea></textarea><div writingsuggestions="on"></div><span></span></body></html>', 'text/html');
-  assert_equals(doc.documentElement.writingsuggestions, 'off');
-  assert_equals(doc.body.writingsuggestions, 'off');
-  assert_equals(doc.querySelector('input').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('textarea').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('div').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('span').writingsuggestions, 'off');
-}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a div element from "off" to "on".');
+  const doc = new DOMParser().parseFromString('<html writingsuggestions="false"><body><input /><textarea></textarea><div writingsuggestions="true"></div><span></span></body></html>', 'text/html');
+  assert_equals(doc.documentElement.writingsuggestions, 'false');
+  assert_equals(doc.body.writingsuggestions, 'false');
+  assert_equals(doc.querySelector('input').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('textarea').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('div').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('span').writingsuggestions, 'false');
+}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a div element from "false" to "true".');
 
 test(function() {
-  const doc = new DOMParser().parseFromString('<html writingsuggestions="off"><body><input /><textarea></textarea><div></div><span writingsuggestions="on"></span></body></html>', 'text/html');
-  assert_equals(doc.documentElement.writingsuggestions, 'off');
-  assert_equals(doc.body.writingsuggestions, 'off');
-  assert_equals(doc.querySelector('input').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('textarea').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('div').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('span').writingsuggestions, 'on');
-}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a span element from "off" to "on".');
+  const doc = new DOMParser().parseFromString('<html writingsuggestions="false"><body><input /><textarea></textarea><div></div><span writingsuggestions="true"></span></body></html>', 'text/html');
+  assert_equals(doc.documentElement.writingsuggestions, 'false');
+  assert_equals(doc.body.writingsuggestions, 'false');
+  assert_equals(doc.querySelector('input').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('textarea').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('div').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('span').writingsuggestions, 'true');
+}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a span element from "false" to "true".');
 
 test(function() {
-  const doc = new DOMParser().parseFromString('<html writingsuggestions="off"><body><input writingsuggestions=""><textarea></textarea><div></div><span></span></body></html>', 'text/html');
-  assert_equals(doc.documentElement.writingsuggestions, 'off');
-  assert_equals(doc.body.writingsuggestions, 'off');
-  assert_equals(doc.querySelector('input').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('textarea').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('div').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('span').writingsuggestions, 'off');
-}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on an input element from "off" to the empty string.');
+  const doc = new DOMParser().parseFromString('<html writingsuggestions="false"><body><input writingsuggestions=""><textarea></textarea><div></div><span></span></body></html>', 'text/html');
+  assert_equals(doc.documentElement.writingsuggestions, 'false');
+  assert_equals(doc.body.writingsuggestions, 'false');
+  assert_equals(doc.querySelector('input').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('textarea').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('div').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('span').writingsuggestions, 'false');
+}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on an input element from "false" to the empty string.');
 
 test(function() {
-  const doc = new DOMParser().parseFromString('<html writingsuggestions="off"><body><input><textarea writingsuggestions=""></textarea><div></div><span></span></body></html>', 'text/html');
-  assert_equals(doc.documentElement.writingsuggestions, 'off');
-  assert_equals(doc.body.writingsuggestions, 'off');
-  assert_equals(doc.querySelector('input').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('textarea').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('div').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('span').writingsuggestions, 'off');
-}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a textarea element from "off" to the empty string.');
+  const doc = new DOMParser().parseFromString('<html writingsuggestions="false"><body><input><textarea writingsuggestions=""></textarea><div></div><span></span></body></html>', 'text/html');
+  assert_equals(doc.documentElement.writingsuggestions, 'false');
+  assert_equals(doc.body.writingsuggestions, 'false');
+  assert_equals(doc.querySelector('input').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('textarea').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('div').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('span').writingsuggestions, 'false');
+}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a textarea element from "false" to the empty string.');
 
 test(function() {
-  const doc = new DOMParser().parseFromString('<html writingsuggestions="off"><body><input><textarea></textarea><div writingsuggestions=""></div><span></span></body></html>', 'text/html');
-  assert_equals(doc.documentElement.writingsuggestions, 'off');
-  assert_equals(doc.body.writingsuggestions, 'off');
-  assert_equals(doc.querySelector('input').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('textarea').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('div').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('span').writingsuggestions, 'off');
-}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a div element from "off" to the empty string.');
+  const doc = new DOMParser().parseFromString('<html writingsuggestions="false"><body><input><textarea></textarea><div writingsuggestions=""></div><span></span></body></html>', 'text/html');
+  assert_equals(doc.documentElement.writingsuggestions, 'false');
+  assert_equals(doc.body.writingsuggestions, 'false');
+  assert_equals(doc.querySelector('input').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('textarea').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('div').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('span').writingsuggestions, 'false');
+}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a div element from "false" to the empty string.');
 
 test(function() {
-  const doc = new DOMParser().parseFromString('<html writingsuggestions="off"><body><input><textarea></textarea><div></div><span writingsuggestions=""></span></body></html>', 'text/html');
-  assert_equals(doc.documentElement.writingsuggestions, 'off');
-  assert_equals(doc.body.writingsuggestions, 'off');
-  assert_equals(doc.querySelector('input').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('textarea').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('div').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('span').writingsuggestions, 'on');
-}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a span element from "off" to the empty string.');
+  const doc = new DOMParser().parseFromString('<html writingsuggestions="false"><body><input><textarea></textarea><div></div><span writingsuggestions=""></span></body></html>', 'text/html');
+  assert_equals(doc.documentElement.writingsuggestions, 'false');
+  assert_equals(doc.body.writingsuggestions, 'false');
+  assert_equals(doc.querySelector('input').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('textarea').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('div').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('span').writingsuggestions, 'true');
+}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a span element from "false" to the empty string.');
 
 test(function() {
-  const doc = new DOMParser().parseFromString('<html writingsuggestions="on"><body><input writingsuggestions="off"><textarea></textarea><div></div><span></span></body></html>', 'text/html');
-  assert_equals(doc.documentElement.writingsuggestions, 'on');
-  assert_equals(doc.body.writingsuggestions, 'on');
-  assert_equals(doc.querySelector('input').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('textarea').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('div').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('span').writingsuggestions, 'on');
-}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on an input element from "on" to "off".');
+  const doc = new DOMParser().parseFromString('<html writingsuggestions="true"><body><input writingsuggestions="false"><textarea></textarea><div></div><span></span></body></html>', 'text/html');
+  assert_equals(doc.documentElement.writingsuggestions, 'true');
+  assert_equals(doc.body.writingsuggestions, 'true');
+  assert_equals(doc.querySelector('input').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('textarea').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('div').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('span').writingsuggestions, 'true');
+}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on an input element from "true" to "false".');
 
 test(function() {
-  const doc = new DOMParser().parseFromString('<html writingsuggestions="on"><body><input><textarea writingsuggestions="off"></textarea><div></div><span></span></body></html>', 'text/html');
-  assert_equals(doc.documentElement.writingsuggestions, 'on');
-  assert_equals(doc.body.writingsuggestions, 'on');
-  assert_equals(doc.querySelector('input').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('textarea').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('div').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('span').writingsuggestions, 'on');
-}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a textarea element from "on" to "off".');
+  const doc = new DOMParser().parseFromString('<html writingsuggestions="true"><body><input><textarea writingsuggestions="false"></textarea><div></div><span></span></body></html>', 'text/html');
+  assert_equals(doc.documentElement.writingsuggestions, 'true');
+  assert_equals(doc.body.writingsuggestions, 'true');
+  assert_equals(doc.querySelector('input').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('textarea').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('div').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('span').writingsuggestions, 'true');
+}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a textarea element from "true" to "false".');
 
 test(function() {
-  const doc = new DOMParser().parseFromString('<html writingsuggestions="on"><body><input><textarea></textarea><div writingsuggestions="off"></div><span></span></body></html>', 'text/html');
-  assert_equals(doc.documentElement.writingsuggestions, 'on');
-  assert_equals(doc.body.writingsuggestions, 'on');
-  assert_equals(doc.querySelector('input').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('textarea').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('div').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('span').writingsuggestions, 'on');
-}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a div element from "on" to "off".');
+  const doc = new DOMParser().parseFromString('<html writingsuggestions="true"><body><input><textarea></textarea><div writingsuggestions="false"></div><span></span></body></html>', 'text/html');
+  assert_equals(doc.documentElement.writingsuggestions, 'true');
+  assert_equals(doc.body.writingsuggestions, 'true');
+  assert_equals(doc.querySelector('input').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('textarea').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('div').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('span').writingsuggestions, 'true');
+}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a div element from "true" to "false".');
 
 test(function() {
-  const doc = new DOMParser().parseFromString('<html writingsuggestions="on"><body><input><textarea></textarea><div></div><span writingsuggestions="off"></span></body></html>', 'text/html');
-  assert_equals(doc.documentElement.writingsuggestions, 'on');
-  assert_equals(doc.body.writingsuggestions, 'on');
-  assert_equals(doc.querySelector('input').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('textarea').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('div').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('span').writingsuggestions, 'off');
-}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a span element from "on" to "off".');
+  const doc = new DOMParser().parseFromString('<html writingsuggestions="true"><body><input><textarea></textarea><div></div><span writingsuggestions="false"></span></body></html>', 'text/html');
+  assert_equals(doc.documentElement.writingsuggestions, 'true');
+  assert_equals(doc.body.writingsuggestions, 'true');
+  assert_equals(doc.querySelector('input').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('textarea').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('div').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('span').writingsuggestions, 'false');
+}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a span element from "true" to "false".');
 
 test(function() {
-  const doc = new DOMParser().parseFromString('<html writingsuggestions=""><body><input writingsuggestions="off"><textarea></textarea><div></div><span></span></body></html>', 'text/html');
-  assert_equals(doc.documentElement.writingsuggestions, 'on');
-  assert_equals(doc.body.writingsuggestions, 'on');
-  assert_equals(doc.querySelector('input').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('textarea').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('div').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('span').writingsuggestions, 'on');
-}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on an input element from the empty string to "off".');
+  const doc = new DOMParser().parseFromString('<html writingsuggestions=""><body><input writingsuggestions="false"><textarea></textarea><div></div><span></span></body></html>', 'text/html');
+  assert_equals(doc.documentElement.writingsuggestions, 'true');
+  assert_equals(doc.body.writingsuggestions, 'true');
+  assert_equals(doc.querySelector('input').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('textarea').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('div').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('span').writingsuggestions, 'true');
+}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on an input element from the empty string to "false".');
 
 test(function() {
-  const doc = new DOMParser().parseFromString('<html writingsuggestions=""><body><input><textarea writingsuggestions="off"></textarea><div></div><span></span></body></html>', 'text/html');
-  assert_equals(doc.documentElement.writingsuggestions, 'on');
-  assert_equals(doc.body.writingsuggestions, 'on');
-  assert_equals(doc.querySelector('input').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('textarea').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('div').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('span').writingsuggestions, 'on');
-}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a textarea element from the empty string to "off".');
+  const doc = new DOMParser().parseFromString('<html writingsuggestions=""><body><input><textarea writingsuggestions="false"></textarea><div></div><span></span></body></html>', 'text/html');
+  assert_equals(doc.documentElement.writingsuggestions, 'true');
+  assert_equals(doc.body.writingsuggestions, 'true');
+  assert_equals(doc.querySelector('input').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('textarea').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('div').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('span').writingsuggestions, 'true');
+}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a textarea element from the empty string to "false".');
 
 test(function() {
-  const doc = new DOMParser().parseFromString('<html writingsuggestions=""><body><input><textarea></textarea><div writingsuggestions="off"></div><span></span></body></html>', 'text/html');
-  assert_equals(doc.documentElement.writingsuggestions, 'on');
-  assert_equals(doc.body.writingsuggestions, 'on');
-  assert_equals(doc.querySelector('input').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('textarea').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('div').writingsuggestions, 'off');
-  assert_equals(doc.querySelector('span').writingsuggestions, 'on');
-}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a div element from the empty string to "off".');
+  const doc = new DOMParser().parseFromString('<html writingsuggestions=""><body><input><textarea></textarea><div writingsuggestions="false"></div><span></span></body></html>', 'text/html');
+  assert_equals(doc.documentElement.writingsuggestions, 'true');
+  assert_equals(doc.body.writingsuggestions, 'true');
+  assert_equals(doc.querySelector('input').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('textarea').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('div').writingsuggestions, 'false');
+  assert_equals(doc.querySelector('span').writingsuggestions, 'true');
+}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a div element from the empty string to "false".');
 
 test(function() {
-  const doc = new DOMParser().parseFromString('<html writingsuggestions=""><body><input><textarea></textarea><div></div><span writingsuggestions="off"></span></body></html>', 'text/html');
-  assert_equals(doc.documentElement.writingsuggestions, 'on');
-  assert_equals(doc.body.writingsuggestions, 'on');
-  assert_equals(doc.querySelector('input').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('textarea').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('div').writingsuggestions, 'on');
-  assert_equals(doc.querySelector('span').writingsuggestions, 'off');
-}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a span element from the empty string to "off".');
+  const doc = new DOMParser().parseFromString('<html writingsuggestions=""><body><input><textarea></textarea><div></div><span writingsuggestions="false"></span></body></html>', 'text/html');
+  assert_equals(doc.documentElement.writingsuggestions, 'true');
+  assert_equals(doc.body.writingsuggestions, 'true');
+  assert_equals(doc.querySelector('input').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('textarea').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('div').writingsuggestions, 'true');
+  assert_equals(doc.querySelector('span').writingsuggestions, 'false');
+}, 'Test overriding a non-parent ancestor element\'s `writingsuggestions` attribute on a span element from the empty string to "false".');
 
 test(function() {
-  const doc = new DOMParser().parseFromString('<html writingsuggestions="on"><body><div contenteditable="true"><span>Writing suggestions allowed.</span> <span writingsuggestions="off">Writing suggestions not allowed.</span></div></body></html>', 'text/html');
+  const doc = new DOMParser().parseFromString('<html writingsuggestions="true"><body><div contenteditable="true"><span>Writing suggestions allowed.</span> <span writingsuggestions="false">Writing suggestions not allowed.</span></div></body></html>', 'text/html');
   const div = doc.querySelector('div');
   const span1 = doc.querySelector('span');
   const span2 = doc.querySelector('span:last-child');
-  assert_equals(div.writingsuggestions, 'on');
-  assert_equals(span1.writingsuggestions, 'on');
-  assert_equals(span2.writingsuggestions, 'off');
+  assert_equals(div.writingsuggestions, 'true');
+  assert_equals(span1.writingsuggestions, 'true');
+  assert_equals(span2.writingsuggestions, 'false');
 }, 'Test that for continuous text on the screen, writing suggestions may be allowed in one part but not another.');
 
 </script>

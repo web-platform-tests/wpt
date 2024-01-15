@@ -36,4 +36,4 @@ async def test_storage_key_partition_source_origin(bidi_session, top_context, in
     await assert_cookie_is_set(bidi_session, name=COOKIE_NAME, str_value=COOKIE_VALUE,
                                domain=domain_value(), partition=partition)
 
-# TODO: test `StorageKeyPartitionDescriptor.userContext` parameter.
+# TODO: test `test_storage_key_partition_user_context`.

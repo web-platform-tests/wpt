@@ -4,12 +4,15 @@ from webdriver.bidi.modules.storage import PartialCookie, BrowsingContextPartiti
 
 pytestmark = pytest.mark.asyncio
 
+PROTOCOL_HTTPS = "https"
+PROTOCOL_HTTP = "http"
+
 
 @pytest.mark.parametrize(
     "protocol",
     [
-        "http",
-        "https",
+        PROTOCOL_HTTP,
+        PROTOCOL_HTTPS,
     ],
 )
 async def test_set_cookie_protocol(bidi_session, top_context, inline, origin, domain_value, protocol):

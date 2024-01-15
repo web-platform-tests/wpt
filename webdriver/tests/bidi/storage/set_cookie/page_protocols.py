@@ -1,7 +1,7 @@
 import pytest
 from webdriver.bidi.modules.network import NetworkStringValue
 from webdriver.bidi.modules.storage import PartialCookie, BrowsingContextPartitionDescriptor
-from .. import assert_cookie_is_set, PROTOCOL_HTTP, PROTOCOL_HTTPS
+from .. import assert_cookie_is_set
 
 pytestmark = pytest.mark.asyncio
 
@@ -12,14 +12,14 @@ COOKIE_VALUE = 'SOME_COOKIE_VALUE'
 @pytest.mark.parametrize(
     "protocol",
     [
-        PROTOCOL_HTTP,
-        PROTOCOL_HTTPS,
-    ],
+        "http",
+        "https",
+    ]
 )
-async def test_set_cookie_protocol(bidi_session, top_context, inline, origin, domain_value, protocol):
+async def test_page_protocols(bidi_session, top_context, get_test_page, origin, domain_value, protocol):
     # Navigate to a page with a required protocol.
     await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=(inline("<div>foo</div>", protocol=protocol)), wait="complete"
+        context=top_context["context"], url=get_test_page(protocol=protocol), wait="complete"
     )
 
     source_origin = origin(protocol)
@@ -42,4 +42,4 @@ async def test_set_cookie_protocol(bidi_session, top_context, inline, origin, do
 
     # Assert the cookie is actually set.
     await assert_cookie_is_set(bidi_session, name=COOKIE_NAME, str_value=COOKIE_VALUE,
-                               domain=domain_value(), partition=partition)
+                               domain=domain_value(), origin=source_origin)

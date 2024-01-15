@@ -1,15 +1,13 @@
-from webdriver.bidi.modules.storage import PartitionDescriptor
+from webdriver.bidi.modules.storage import StorageKeyPartitionDescriptor
 from .. import any_int, recursive_compare
 
-PROTOCOL_HTTPS = "https"
-PROTOCOL_HTTP = "http"
 
-
-async def assert_cookie_is_set(bidi_session, name: str, str_value: str, domain: str, partition: PartitionDescriptor):
+async def assert_cookie_is_set(bidi_session, name: str, str_value: str, domain: str, origin: str):
     """
     Asserts the cookie is set.
     """
-    all_cookies = await bidi_session.storage.get_cookies(partition=partition)
+    all_cookies = await bidi_session.storage.get_cookies(partition=StorageKeyPartitionDescriptor(
+        source_origin=origin))
 
     assert 'cookies' in all_cookies
     cookie = next(c for c in all_cookies['cookies'] if c['name'] == name)

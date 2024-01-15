@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Introduction to GitHub &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="WebTransport in web-platform-tests" href="../tools/webtransport/README.html" />
@@ -35,7 +33,7 @@
           <div class="body" role="main">
             
   <section id="introduction-to-github">
-<h1>Introduction to GitHub<a class="headerlink" href="#introduction-to-github" title="Permalink to this headline">¶</a></h1>
+<h1>Introduction to GitHub<a class="headerlink" href="#introduction-to-github" title="Link to this heading">¶</a></h1>
 <p>All the basics that you need to know are documented on this page, but for the
 full GitHub documentation, visit <a class="reference external" href="https://help.github.com/">help.github.com</a>.</p>
 <p>If you are already an experienced Git/GitHub user, all you need to know is that
@@ -43,7 +41,7 @@ we use the <a class="reference external" href="https://guides.github.com/introdu
 submissions.</p>
 <p>If you are a first-time GitHub user, read on for more details of the workflow.</p>
 <section id="setup">
-<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<h2>Setup<a class="headerlink" href="#setup" title="Link to this heading">¶</a></h2>
 <ol>
 <li><p>Create a GitHub account if you do not already have one on
 <a class="reference external" href="https://github.com/">github.com</a>.</p></li>
@@ -70,7 +68,7 @@ See <a class="reference external" href="https://help.github.com/articles/caching
 </ol>
 </section>
 <section id="fork-the-test-repository">
-<h2>Fork the test repository<a class="headerlink" href="#fork-the-test-repository" title="Permalink to this headline">¶</a></h2>
+<h2>Fork the test repository<a class="headerlink" href="#fork-the-test-repository" title="Link to this heading">¶</a></h2>
 <p>Now that you have Git set up, you will need to “fork” the test repository. Your
 fork will be a completely independent version of the repository, hosted on
 GitHub.com. This will enable you to <a class="reference external" href="#submit">submit</a> your tests using a pull
@@ -86,10 +84,10 @@ You will now be at
 </ol>
 </section>
 <section id="clone">
-<h2>Clone<a class="headerlink" href="#clone" title="Permalink to this headline">¶</a></h2>
+<h2>Clone<a class="headerlink" href="#clone" title="Link to this heading">¶</a></h2>
 <p>If your <a class="reference external" href="#fork">fork</a> was successful, the next step is to clone (download a copy of the files).</p>
 <section id="clone-the-test-repository">
-<h3>Clone the test repository<a class="headerlink" href="#clone-the-test-repository" title="Permalink to this headline">¶</a></h3>
+<h3>Clone the test repository<a class="headerlink" href="#clone-the-test-repository" title="Link to this heading">¶</a></h3>
 <p>Open a command prompt in the directory where you want to keep the tests. Then
 execute the following command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/username/wpt.git
@@ -103,7 +101,7 @@ contributions there.</p>
 </section>
 </section>
 <section id="configure-remote-upstream">
-<h2>Configure Remote / Upstream<a class="headerlink" href="#configure-remote-upstream" title="Permalink to this headline">¶</a></h2>
+<h2>Configure Remote / Upstream<a class="headerlink" href="#configure-remote-upstream" title="Link to this heading">¶</a></h2>
 <p>Your forked repository is completely independent of the canonical repository,
 which is commonly referred to as the “upstream” repository. Synchronizing your
 forked repository with the upstream repository will keep your forked local copy
@@ -142,14 +140,14 @@ otherwise accumulate in your local repository.</p>
 <p>For additional information, please see the <a class="reference external" href="https://help.github.com/articles/fork-a-repo">GitHub docs</a>.</p>
 </section>
 <section id="configure-your-environment">
-<h2>Configure your environment<a class="headerlink" href="#configure-your-environment" title="Permalink to this headline">¶</a></h2>
+<h2>Configure your environment<a class="headerlink" href="#configure-your-environment" title="Link to this heading">¶</a></h2>
 <p>If all you intend to do is to load <a class="reference internal" href="manual.html"><span class="doc">manual tests</span></a> or <a class="reference internal" href="reftests.html"><span class="doc">reftests</span></a> from your local file system,
 the above setup should be sufficient.
 But many tests (and in particular, all <a class="reference internal" href="testharness.html"><span class="doc">testharness.js tests</span></a>) require a local web server.</p>
 <p>See <a class="reference internal" href="../running-tests/from-local-system.html"><span class="doc">Local Setup</span></a> for more information.</p>
 </section>
 <section id="branch">
-<h2>Branch<a class="headerlink" href="#branch" title="Permalink to this headline">¶</a></h2>
+<h2>Branch<a class="headerlink" href="#branch" title="Link to this heading">¶</a></h2>
 <p>Now that you have everything locally, create a branch for your tests.</p>
 <p><em>Note: If you have already been through these steps and created a branch
 and now want to create another branch, you should always do so from the
@@ -170,7 +168,7 @@ switch this to be your active working branch.</p>
 <a class="reference external" href="#commit">commit</a> them or <a class="reference external" href="#submit">submit</a> them for review.</p>
 </section>
 <section id="commit">
-<h2>Commit<a class="headerlink" href="#commit" title="Permalink to this headline">¶</a></h2>
+<h2>Commit<a class="headerlink" href="#commit" title="Link to this heading">¶</a></h2>
 <p>Before you submit your tests for review and contribution to the main test
 repository, you’ll need to first commit them locally, where you now have your
 own personal version control system with git. In fact, as you are writing your
@@ -209,7 +207,7 @@ set of changes:</p>
 </ol>
 </section>
 <section id="verify">
-<h2>Verify<a class="headerlink" href="#verify" title="Permalink to this headline">¶</a></h2>
+<h2>Verify<a class="headerlink" href="#verify" title="Link to this heading">¶</a></h2>
 <p>The Web Platform Test project has an automated tool
 to verify that coding conventions have been followed,
 and to catch a number of common mistakes.</p>
@@ -224,7 +222,7 @@ of the repository is located.</p></li>
 <p>For more details, see the <a class="reference internal" href="lint-tool.html"><span class="doc">documentation about the lint tool</span></a>.</p>
 </section>
 <section id="submit">
-<h2>Submit<a class="headerlink" href="#submit" title="Permalink to this headline">¶</a></h2>
+<h2>Submit<a class="headerlink" href="#submit" title="Link to this heading">¶</a></h2>
 <p>If you’re here now looking for more instructions, that means you’ve written
 some awesome tests and are ready to submit them. Congratulations and welcome
 back!</p>
@@ -273,7 +271,7 @@ accepted, delete your branch (see ‘<a class="reference external" href="#cleanu
 about what to expect when contributing code to WPT.</p>
 </section>
 <section id="refine">
-<h2>Refine<a class="headerlink" href="#refine" title="Permalink to this headline">¶</a></h2>
+<h2>Refine<a class="headerlink" href="#refine" title="Link to this heading">¶</a></h2>
 <p>Once you submit your pull request, a reviewer will check your proposed changes
 for correctness and style. They may ask you to modify your code. When you are
 ready to make the changes, follow these steps:</p>
@@ -300,7 +298,7 @@ review is to work together to create the best possible set of tests for the web
 platform.</p>
 </section>
 <section id="cleanup">
-<h2>Cleanup<a class="headerlink" href="#cleanup" title="Permalink to this headline">¶</a></h2>
+<h2>Cleanup<a class="headerlink" href="#cleanup" title="Link to this heading">¶</a></h2>
 <p>Once your pull request has been accepted, you will be notified in the GitHub
 user interface, and you may get an email. At this point, your changes have been merged
 into the main test repository. You do not need to take any further action
@@ -314,7 +312,7 @@ the GitHub user interface by navigating to the pull request and clicking the
 </div>
 </section>
 <section id="further-reading">
-<h2>Further Reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
+<h2>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">¶</a></h2>
 <p>Git is a very powerful tool, and there are many ways to achieve subtly
 different results. Recognizing when (and understanding how) to use other
 approaches is beyond the scope of this tutorial. <a class="reference external" href="https://git-scm.com/book">The Pro Git Book</a>
@@ -373,7 +371,7 @@ is a free digital resource that can help you learn more.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -390,7 +388,7 @@ is a free digital resource that can help you learn more.</p>
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

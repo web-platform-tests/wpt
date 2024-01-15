@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Reftests &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Writing a reftest" href="reftest-tutorial.html" />
@@ -35,7 +33,7 @@
           <div class="body" role="main">
             
   <section id="reftests">
-<h1>Reftests<a class="headerlink" href="#reftests" title="Permalink to this headline">¶</a></h1>
+<h1>Reftests<a class="headerlink" href="#reftests" title="Link to this heading">¶</a></h1>
 <p>Reftests are one of the primary tools for testing things relating to
 rendering; they are made up of the test and one or more other pages
 (”references”) with assertions as to whether they render identically
@@ -43,7 +41,7 @@ or not. This page describes their aspects exhaustively; <a class="reference inte
 on writing a reftest</span></a> offers a more limited but
 grounded guide to the process.</p>
 <section id="how-to-run-reftests">
-<h2>How to Run Reftests<a class="headerlink" href="#how-to-run-reftests" title="Permalink to this headline">¶</a></h2>
+<h2>How to Run Reftests<a class="headerlink" href="#how-to-run-reftests" title="Link to this heading">¶</a></h2>
 <p>Reftests can be run manually simply by opening the test and the
 reference file in multiple windows or tabs and flipping between the
 two. In automation the comparison is done in an automated fashion,
@@ -51,7 +49,7 @@ which can lead to differences hard for the human eye to notice to
 cause the test to fail.</p>
 </section>
 <section id="components-of-a-reftest">
-<h2>Components of a Reftest<a class="headerlink" href="#components-of-a-reftest" title="Permalink to this headline">¶</a></h2>
+<h2>Components of a Reftest<a class="headerlink" href="#components-of-a-reftest" title="Link to this heading">¶</a></h2>
 <p>In the simplest case, a reftest consists of a pair of files called the
 <em>test</em> and the <em>reference</em>.</p>
 <p>The <em>test</em> file is the one that makes use of the technology being
@@ -68,7 +66,7 @@ reference be rendered correctly even in UAs with relatively poor
 support for CSS and no support for the technology under test.</p>
 </section>
 <section id="writing-a-good-reftest">
-<h2>Writing a Good Reftest<a class="headerlink" href="#writing-a-good-reftest" title="Permalink to this headline">¶</a></h2>
+<h2>Writing a Good Reftest<a class="headerlink" href="#writing-a-good-reftest" title="Link to this heading">¶</a></h2>
 <p>In general the files used in a reftest should follow
 the <a class="reference internal" href="general-guidelines.html"><span class="doc">general guidelines</span></a> and
 the <a class="reference internal" href="rendering.html"><span class="doc">rendering test guidelines</span></a>. They should also be
@@ -87,7 +85,7 @@ single test, it is recommended to use the test name with a suffix of
 as a reference.</p>
 </section>
 <section id="multiple-references">
-<h2>Multiple References<a class="headerlink" href="#multiple-references" title="Permalink to this headline">¶</a></h2>
+<h2>Multiple References<a class="headerlink" href="#multiple-references" title="Link to this heading">¶</a></h2>
 <p>Sometimes, a test’s pass condition cannot be captured in a single
 reference.</p>
 <p>If a test has multiple links, then the test passes if:</p>
@@ -101,7 +99,7 @@ itself!). If this seems like an unreasonable restriction, please file
 a bug and let us know!</p>
 </section>
 <section id="controlling-when-comparison-occurs">
-<h2>Controlling When Comparison Occurs<a class="headerlink" href="#controlling-when-comparison-occurs" title="Permalink to this headline">¶</a></h2>
+<h2>Controlling When Comparison Occurs<a class="headerlink" href="#controlling-when-comparison-occurs" title="Link to this heading">¶</a></h2>
 <p>By default, reftest screenshots are taken after the following
 conditions are met:</p>
 <ul class="simple">
@@ -129,7 +127,7 @@ modifications to the test document that are not batched into the
 initial layout/paint.</p>
 </section>
 <section id="fuzzy-matching">
-<h2>Fuzzy Matching<a class="headerlink" href="#fuzzy-matching" title="Permalink to this headline">¶</a></h2>
+<h2>Fuzzy Matching<a class="headerlink" href="#fuzzy-matching" title="Link to this heading">¶</a></h2>
 <p>In some situations a test may have subtle differences in rendering
 compared to the reference due to, e.g., anti-aliasing. To allow for
 these small differences, we allow tests to specify a fuzziness
@@ -180,7 +178,7 @@ prefixing the <code class="docutils literal notranslate"><span class="pre">conte
 fuzziness value, but any unprefixed value will automatically be
 applied to any ref that doesn’t have a more specific value.</p>
 <section id="debugging-fuzzy-reftests">
-<h3>Debugging fuzzy reftests<a class="headerlink" href="#debugging-fuzzy-reftests" title="Permalink to this headline">¶</a></h3>
+<h3>Debugging fuzzy reftests<a class="headerlink" href="#debugging-fuzzy-reftests" title="Link to this heading">¶</a></h3>
 <p>When debugging a fuzzy reftest via <code class="docutils literal notranslate"><span class="pre">wpt</span> <span class="pre">run</span></code>, it can be useful to know what the
 allowed and detected differences were. Many of the output logger options will
 provide this information. For example, by passing <code class="docutils literal notranslate"><span class="pre">--log-mach=-</span></code> for a run of a
@@ -195,7 +193,7 @@ hypothetical failing test, one might get:</p>
 </section>
 </section>
 <section id="limitations">
-<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h2>
+<h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading">¶</a></h2>
 <p>In some cases, a test cannot be a reftest. For example, there is no
 way to create a reference for underlining, since the position and
 thickness of the underline depends on the UA, the font, and/or the
@@ -257,7 +255,7 @@ a block element, by constructing a reference using underlines on a
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -274,7 +272,7 @@ a block element, by constructing a reference using underlines on a
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

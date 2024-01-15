@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Server &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Router" href="router.html" />
@@ -35,7 +33,7 @@
           <div class="body" role="main">
             
   <section id="server">
-<h1>Server<a class="headerlink" href="#server" title="Permalink to this headline">¶</a></h1>
+<h1>Server<a class="headerlink" href="#server" title="Link to this heading">¶</a></h1>
 <p>Basic server classes and router.</p>
 <p>The following example creates a server that serves static files from
 the <cite>files</cite> subdirectory of the current directory and causes it to
@@ -48,30 +46,30 @@ run on port 8080 until it is killed:</p>
 </pre></div>
 </div>
 <section id="module-wptserve.server">
-<span id="interface"></span><h2><a class="reference internal" href="#module-wptserve.server" title="wptserve.server"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Interface</span></code></a><a class="headerlink" href="#module-wptserve.server" title="Permalink to this headline">¶</a></h2>
+<span id="interface"></span><h2><a class="reference internal" href="#module-wptserve.server" title="wptserve.server"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Interface</span></code></a><a class="headerlink" href="#module-wptserve.server" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.server.BaseWebTestRequestHandler">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.server.</span></span><span class="sig-name descname"><span class="pre">BaseWebTestRequestHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.BaseWebTestRequestHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.server.</span></span><span class="sig-name descname"><span class="pre">BaseWebTestRequestHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.BaseWebTestRequestHandler" title="Link to this definition">¶</a></dt>
 <dd><p>RequestHandler for WebTestHttpd</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.server.H2ConnectionGuard">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.server.</span></span><span class="sig-name descname"><span class="pre">H2ConnectionGuard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.H2ConnectionGuard" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.server.</span></span><span class="sig-name descname"><span class="pre">H2ConnectionGuard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.H2ConnectionGuard" title="Link to this definition">¶</a></dt>
 <dd><p>H2Connection objects are not threadsafe, so this keeps thread safety</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.server.H2Headers">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.server.</span></span><span class="sig-name descname"><span class="pre">H2Headers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.H2Headers" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.server.</span></span><span class="sig-name descname"><span class="pre">H2Headers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.H2Headers" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.server.Http1WebTestRequestHandler">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.server.</span></span><span class="sig-name descname"><span class="pre">Http1WebTestRequestHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.Http1WebTestRequestHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.server.</span></span><span class="sig-name descname"><span class="pre">Http1WebTestRequestHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.Http1WebTestRequestHandler" title="Link to this definition">¶</a></dt>
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="wptserve.server.Http1WebTestRequestHandler.handle_one_request">
-<span class="sig-name descname"><span class="pre">handle_one_request</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.Http1WebTestRequestHandler.handle_one_request" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">handle_one_request</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.Http1WebTestRequestHandler.handle_one_request" title="Link to this definition">¶</a></dt>
 <dd><p>Handle a single HTTP request.</p>
 <p>You normally don’t need to override this method; see the class
 __doc__ string for information on how to handle specific HTTP
@@ -82,10 +80,10 @@ commands such as GET and POST.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.server.Http2WebTestRequestHandler">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.server.</span></span><span class="sig-name descname"><span class="pre">Http2WebTestRequestHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.Http2WebTestRequestHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.server.</span></span><span class="sig-name descname"><span class="pre">Http2WebTestRequestHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.Http2WebTestRequestHandler" title="Link to this definition">¶</a></dt>
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="wptserve.server.Http2WebTestRequestHandler.handle_one_request">
-<span class="sig-name descname"><span class="pre">handle_one_request</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.Http2WebTestRequestHandler.handle_one_request" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">handle_one_request</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.Http2WebTestRequestHandler.handle_one_request" title="Link to this definition">¶</a></dt>
 <dd><p>This is the main HTTP/2.0 Handler.</p>
 <p>When a browser opens a connection to the server
 on the HTTP/2.0 port, the server enters this which will initiate the h2 connection
@@ -97,7 +95,7 @@ time, a UUID is created for each so that it is easier to tell them apart in the 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="wptserve.server.Http2WebTestRequestHandler.start_stream_thread">
-<span class="sig-name descname"><span class="pre">start_stream_thread</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.Http2WebTestRequestHandler.start_stream_thread" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">start_stream_thread</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.Http2WebTestRequestHandler.start_stream_thread" title="Link to this definition">¶</a></dt>
 <dd><p>This starts a new thread to handle frames for a specific stream.
 :param frame: The first frame on the stream
 :param queue: A queue object that the thread will use to check for new frames
@@ -108,9 +106,9 @@ time, a UUID is created for each so that it is easier to tell them apart in the 
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.server.WebTestHttpd">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.server.</span></span><span class="sig-name descname"><span class="pre">WebTestHttpd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host='127.0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port=8000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_cls=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler_cls=&lt;class</span> <span class="pre">'wptserve.server.Http1WebTestRequestHandler'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_ssl=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_file=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">certificate=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encrypt_after_connect=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">router_cls=&lt;class</span> <span class="pre">'wptserve.router.Router'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc_root='.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ws_doc_root=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">routes=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rewriter_cls=&lt;class</span> <span class="pre">'wptserve.server.RequestRewriter'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bind_address=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rewrites=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latency=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">http2=False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestHttpd" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.server.</span></span><span class="sig-name descname"><span class="pre">WebTestHttpd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host='127.0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port=8000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_cls=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler_cls=&lt;class</span> <span class="pre">'wptserve.server.Http1WebTestRequestHandler'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_ssl=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_file=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">certificate=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encrypt_after_connect=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">router_cls=&lt;class</span> <span class="pre">'wptserve.router.Router'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc_root='.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ws_doc_root=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">routes=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rewriter_cls=&lt;class</span> <span class="pre">'wptserve.server.RequestRewriter'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bind_address=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rewrites=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latency=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">http2=False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestHttpd" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>host</strong> – Host from which to serve (default: 127.0.0.1)</p></li>
 <li><p><strong>port</strong> – Port from which to serve (default: 8000)</p></li>
@@ -142,46 +140,46 @@ callable that returns a delay in ms</p></li>
 and returns a handler function.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.server.WebTestHttpd.host">
-<span class="sig-name descname"><span class="pre">host</span></span><a class="headerlink" href="#wptserve.server.WebTestHttpd.host" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">host</span></span><a class="headerlink" href="#wptserve.server.WebTestHttpd.host" title="Link to this definition">¶</a></dt>
 <dd><p>The host name or ip address of the server</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.server.WebTestHttpd.port">
-<span class="sig-name descname"><span class="pre">port</span></span><a class="headerlink" href="#wptserve.server.WebTestHttpd.port" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">port</span></span><a class="headerlink" href="#wptserve.server.WebTestHttpd.port" title="Link to this definition">¶</a></dt>
 <dd><p>The port on which the server is running</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.server.WebTestHttpd.router">
-<span class="sig-name descname"><span class="pre">router</span></span><a class="headerlink" href="#wptserve.server.WebTestHttpd.router" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">router</span></span><a class="headerlink" href="#wptserve.server.WebTestHttpd.router" title="Link to this definition">¶</a></dt>
 <dd><p>The Router object used to associate requests with resources for this server</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.server.WebTestHttpd.rewriter">
-<span class="sig-name descname"><span class="pre">rewriter</span></span><a class="headerlink" href="#wptserve.server.WebTestHttpd.rewriter" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">rewriter</span></span><a class="headerlink" href="#wptserve.server.WebTestHttpd.rewriter" title="Link to this definition">¶</a></dt>
 <dd><p>The Rewriter object used for URL rewriting</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.server.WebTestHttpd.use_ssl">
-<span class="sig-name descname"><span class="pre">use_ssl</span></span><a class="headerlink" href="#wptserve.server.WebTestHttpd.use_ssl" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">use_ssl</span></span><a class="headerlink" href="#wptserve.server.WebTestHttpd.use_ssl" title="Link to this definition">¶</a></dt>
 <dd><p>Boolean indicating whether the server is using ssl</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.server.WebTestHttpd.started">
-<span class="sig-name descname"><span class="pre">started</span></span><a class="headerlink" href="#wptserve.server.WebTestHttpd.started" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">started</span></span><a class="headerlink" href="#wptserve.server.WebTestHttpd.started" title="Link to this definition">¶</a></dt>
 <dd><p>Boolean indicating whether the server is running</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="wptserve.server.WebTestHttpd.start">
-<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestHttpd.start" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestHttpd.start" title="Link to this definition">¶</a></dt>
 <dd><p>Start the server.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>block</strong> – True to run the server on the current thread, blocking,
 False to run on a separate thread.</p>
 </dd>
@@ -190,7 +188,7 @@ False to run on a separate thread.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="wptserve.server.WebTestHttpd.stop">
-<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestHttpd.stop" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestHttpd.stop" title="Link to this definition">¶</a></dt>
 <dd><p>Stops the server.</p>
 <p>If the server is not running, this method has no effect.</p>
 </dd></dl>
@@ -199,10 +197,10 @@ False to run on a separate thread.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.server.WebTestServer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.server.</span></span><span class="sig-name descname"><span class="pre">WebTestServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_handler_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">router</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rewriter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bind_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ws_doc_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_ssl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">certificate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encrypt_after_connect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">http2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestServer" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.server.</span></span><span class="sig-name descname"><span class="pre">WebTestServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_handler_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">router</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rewriter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bind_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ws_doc_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_ssl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">certificate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encrypt_after_connect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">http2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestServer" title="Link to this definition">¶</a></dt>
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="wptserve.server.WebTestServer.handle_error">
-<span class="sig-name descname"><span class="pre">handle_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_address</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestServer.handle_error" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">handle_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_address</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestServer.handle_error" title="Link to this definition">¶</a></dt>
 <dd><p>Handle an error gracefully.  May be overridden.</p>
 <p>The default is to print a traceback and continue.</p>
 </dd></dl>
@@ -266,7 +264,7 @@ False to run on a separate thread.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -283,7 +281,7 @@ False to run on a separate thread.</p>
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

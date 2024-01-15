@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Server Features &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Python Handlers" href="python-handlers/index.html" />
@@ -35,7 +33,7 @@
           <div class="body" role="main">
             
   <section id="server-features">
-<h1>Server Features<a class="headerlink" href="#server-features" title="Permalink to this headline">¶</a></h1>
+<h1>Server Features<a class="headerlink" href="#server-features" title="Link to this heading">¶</a></h1>
 <p>For many tests, writing one or more static HTML files is
 sufficient. However there are a large class of tests for which this
 approach is insufficient, including:</p>
@@ -58,7 +56,7 @@ files in the test suite. For more sophisticated requirements, several
 mechanisms are available to take control of the response. These are
 outlined below.</p>
 <section id="tests-involving-multiple-origins">
-<h2>Tests Involving Multiple Origins<a class="headerlink" href="#tests-involving-multiple-origins" title="Permalink to this headline">¶</a></h2>
+<h2>Tests Involving Multiple Origins<a class="headerlink" href="#tests-involving-multiple-origins" title="Link to this heading">¶</a></h2>
 <p>Our test servers are guaranteed to be accessible through two domains
 and five subdomains under each. The ‘main’ domain is unnamed; the
 other is called ‘alt’. These subdomains are: <code class="docutils literal notranslate"><span class="pre">www</span></code>, <code class="docutils literal notranslate"><span class="pre">www1</span></code>, <code class="docutils literal notranslate"><span class="pre">www2</span></code>,
@@ -96,7 +94,7 @@ For example, <code class="docutils literal notranslate"><span class="pre">{{loca
 current request, matching <code class="docutils literal notranslate"><span class="pre">location.host</span></code>.</p>
 </section>
 <section id="tests-requiring-special-headers">
-<h2>Tests Requiring Special Headers<a class="headerlink" href="#tests-requiring-special-headers" title="Permalink to this headline">¶</a></h2>
+<h2>Tests Requiring Special Headers<a class="headerlink" href="#tests-requiring-special-headers" title="Link to this heading">¶</a></h2>
 <p>For tests requiring that a certain HTTP header is set to some static
 value, a file with the same path as the test file except for an an
 additional <code class="docutils literal notranslate"><span class="pre">.headers</span></code> suffix may be created. For example for
@@ -116,7 +114,7 @@ directory and not subdirectories.</p>
 the file e.g. <code class="docutils literal notranslate"><span class="pre">test.html.sub.headers</span></code>.</p>
 </section>
 <section id="tests-requiring-full-control-over-the-http-response">
-<h2>Tests Requiring Full Control Over The HTTP Response<a class="headerlink" href="#tests-requiring-full-control-over-the-http-response" title="Permalink to this headline">¶</a></h2>
+<h2>Tests Requiring Full Control Over The HTTP Response<a class="headerlink" href="#tests-requiring-full-control-over-the-http-response" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="python-handlers/index.html">Python Handlers</a></li>
@@ -135,7 +133,7 @@ data and can manipulate the content and timing of the response. Responses are
 also influenced by <a class="reference internal" href="server-pipes.html"><span class="doc">the pipe query string parameter</span></a>.</p>
 </section>
 <section id="tests-requiring-http-2-0">
-<h2>Tests Requiring HTTP/2.0<a class="headerlink" href="#tests-requiring-http-2-0" title="Permalink to this headline">¶</a></h2>
+<h2>Tests Requiring HTTP/2.0<a class="headerlink" href="#tests-requiring-http-2-0" title="Link to this heading">¶</a></h2>
 <p>To make a test run over an HTTP/2.0 connection, use <code class="docutils literal notranslate"><span class="pre">.h2.</span></code> in the filename.
 By default the HTTP/2.0 server can be accessed using port 9000. At the moment
 accessing tests that use <code class="docutils literal notranslate"><span class="pre">.h2.</span></code> over ports that do not use an HTTP/2.0 server
@@ -144,7 +142,7 @@ also succeeds, so beware of that when creating them.</p>
 API are documented in <a class="reference internal" href="h2tests.html"><span class="doc">Writing H2 Tests</span></a>.</p>
 </section>
 <section id="tests-requiring-webtransport-over-http-3">
-<h2>Tests Requiring WebTransport over HTTP/3<a class="headerlink" href="#tests-requiring-webtransport-over-http-3" title="Permalink to this headline">¶</a></h2>
+<h2>Tests Requiring WebTransport over HTTP/3<a class="headerlink" href="#tests-requiring-webtransport-over-http-3" title="Link to this heading">¶</a></h2>
 <p>We do not support loading a test over WebTransport over HTTP/3 yet, but a test
 can establish a WebTransport session to the test server.</p>
 <p>The WebTransport over HTTP/3 server is not yet enabled by default, so
@@ -152,7 +150,7 @@ WebTransport tests will fail unless <code class="docutils literal notranslate"><
 <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">run</span></code>.</p>
 </section>
 <section id="test-features-specified-as-query-params">
-<h2>Test Features specified as query params<a class="headerlink" href="#test-features-specified-as-query-params" title="Permalink to this headline">¶</a></h2>
+<h2>Test Features specified as query params<a class="headerlink" href="#test-features-specified-as-query-params" title="Link to this heading">¶</a></h2>
 <p>Alternatively to specifying <a class="reference external" href="file-names.html#test-features">Test Features</a> in
 the test filename, they can be specified by setting the <code class="docutils literal notranslate"><span class="pre">wpt_flags</span></code> in the
 <a class="reference external" href="testharness.html#variants">test variant</a>. For example, the following variant
@@ -220,7 +218,7 @@ the following variant will be loaded over HTTPS and run on the www subdomain.</p
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -237,7 +235,7 @@ the following variant will be loaded over HTTPS and run on the www subdomain.</p
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>wptserve Pipes &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Submitting Tests" href="submission-process.html" />
@@ -35,14 +33,14 @@
           <div class="body" role="main">
             
   <section id="wptserve-pipes">
-<h1>wptserve Pipes<a class="headerlink" href="#wptserve-pipes" title="Permalink to this headline">¶</a></h1>
+<h1>wptserve Pipes<a class="headerlink" href="#wptserve-pipes" title="Link to this heading">¶</a></h1>
 <p>Pipes are designed to allow simple manipulation of the way that
 static files are sent without requiring any custom code. They are also
 useful for cross-origin tests because they can be used to activate a
 substitution mechanism which can fill in details of ports and server
 names in the setup on which the tests are being run.</p>
 <section id="enabling">
-<h2>Enabling<a class="headerlink" href="#enabling" title="Permalink to this headline">¶</a></h2>
+<h2>Enabling<a class="headerlink" href="#enabling" title="Link to this heading">¶</a></h2>
 <p>Pipes are functions that may be used when serving files to alter parts
 of the response. These are invoked by adding a pipe= query parameter
 taking a | separated list of pipe functions and parameters. The pipe
@@ -62,9 +60,9 @@ server will close the connection to indicate the end of the response,
 preventing the use of HTTP 1.1 keepalive.</p>
 </section>
 <section id="built-in-pipes">
-<h2>Built-In Pipes<a class="headerlink" href="#built-in-pipes" title="Permalink to this headline">¶</a></h2>
+<h2>Built-In Pipes<a class="headerlink" href="#built-in-pipes" title="Link to this heading">¶</a></h2>
 <section id="sub">
-<h3><code class="docutils literal notranslate"><span class="pre">sub</span></code><a class="headerlink" href="#sub" title="Permalink to this headline">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">sub</span></code><a class="headerlink" href="#sub" title="Link to this heading">¶</a></h3>
 <p>Used to substitute variables from the server environment, or from the
 request into the response. A typical use case is for testing
 cross-domain since the exact domain name and ports of the servers are
@@ -102,14 +100,14 @@ write:</p>
 <p>This pipe can also be enabled by using a filename <code class="docutils literal notranslate"><span class="pre">*.sub.ext</span></code>, e.g. the file above could be called <code class="docutils literal notranslate"><span class="pre">xhr.sub.js</span></code>.</p>
 </section>
 <section id="status">
-<h3><code class="docutils literal notranslate"><span class="pre">status</span></code><a class="headerlink" href="#status" title="Permalink to this headline">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">status</span></code><a class="headerlink" href="#status" title="Link to this heading">¶</a></h3>
 <p>Used to set the HTTP status of the response, for example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>example.js?pipe=status(410)
 </pre></div>
 </div>
 </section>
 <section id="headers">
-<h3><code class="docutils literal notranslate"><span class="pre">headers</span></code><a class="headerlink" href="#headers" title="Permalink to this headline">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">headers</span></code><a class="headerlink" href="#headers" title="Link to this heading">¶</a></h3>
 <p>Used to add or replace http headers in the response. Takes two or
 three arguments; the header name, the header value and whether to
 append the header rather than replace an existing header (default:
@@ -133,7 +131,7 @@ value, those characters  must be escaped with a backslash (<code class="docutils
 require that the backslash character itself be escaped.)</p>
 </section>
 <section id="slice">
-<h3><code class="docutils literal notranslate"><span class="pre">slice</span></code><a class="headerlink" href="#slice" title="Permalink to this headline">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">slice</span></code><a class="headerlink" href="#slice" title="Link to this heading">¶</a></h3>
 <p>Used to send only part of a response body. Takes the start and,
 optionally, end bytes as arguments, although either can be null to
 indicate the start or end of the file, respectively. So for example:</p>
@@ -152,7 +150,7 @@ example.txt including byte 10 but excluding byte 20.</p>
 <p>Would send the first 20 bytes of example.txt.</p>
 </section>
 <section id="trickle">
-<h3><code class="docutils literal notranslate"><span class="pre">trickle</span></code><a class="headerlink" href="#trickle" title="Permalink to this headline">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">trickle</span></code><a class="headerlink" href="#trickle" title="Link to this heading">¶</a></h3>
 <p>Note: Using this function will force a connection close.</p>
 <p>Used to send the body of a response in chunks with delays. Takes a
 single argument that is a microsyntax consisting of colon-separated
@@ -237,7 +235,7 @@ delay until the whole content has been sent.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -254,7 +252,7 @@ delay until the whole content has been sent.</p>
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

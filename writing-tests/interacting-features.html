@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Testing interactions between features &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
    
@@ -33,27 +31,27 @@
           <div class="body" role="main">
             
   <section id="testing-interactions-between-features">
-<h1>Testing interactions between features<a class="headerlink" href="#testing-interactions-between-features" title="Permalink to this headline">¶</a></h1>
+<h1>Testing interactions between features<a class="headerlink" href="#testing-interactions-between-features" title="Link to this heading">¶</a></h1>
 <p>Web platform features do not exist in isolation. Often, testing the interaction between two features is necessary in tests.
 To support this, many directories contain libraries which are intended to be used from other directories.</p>
 <p>These are not WPT server features, but are canonical usage of one feature intended for other features to test against.
 This allows the tests for a feature to be decoupled as much as possible from the specifics of another feature which it should integrate with.</p>
 <section id="web-platform-feature-testing-support-libraries">
-<h2>Web Platform Feature Testing Support Libraries<a class="headerlink" href="#web-platform-feature-testing-support-libraries" title="Permalink to this headline">¶</a></h2>
+<h2>Web Platform Feature Testing Support Libraries<a class="headerlink" href="#web-platform-feature-testing-support-libraries" title="Link to this heading">¶</a></h2>
 <section id="common">
-<h3>Common<a class="headerlink" href="#common" title="Permalink to this headline">¶</a></h3>
+<h3>Common<a class="headerlink" href="#common" title="Link to this heading">¶</a></h3>
 <p>There are several useful utilities in the <code class="docutils literal notranslate"><span class="pre">/common/</span></code> directory</p>
 </section>
 <section id="cookies">
-<h3>Cookies<a class="headerlink" href="#cookies" title="Permalink to this headline">¶</a></h3>
+<h3>Cookies<a class="headerlink" href="#cookies" title="Link to this heading">¶</a></h3>
 <p>Features which need to test their interaction with cookies can use the scripts in <code class="docutils literal notranslate"><span class="pre">cookies/resources</span></code> to control which cookies are set on a given request.</p>
 </section>
 <section id="permissions-policy">
-<h3>Permissions Policy<a class="headerlink" href="#permissions-policy" title="Permalink to this headline">¶</a></h3>
+<h3>Permissions Policy<a class="headerlink" href="#permissions-policy" title="Link to this heading">¶</a></h3>
 <p>Features which integrate with Permissions Policy can make use of the <code class="docutils literal notranslate"><span class="pre">permissions-policy.js</span></code> support library to generate a set of tests for that integration.</p>
 </section>
 <section id="reporting">
-<h3>Reporting<a class="headerlink" href="#reporting" title="Permalink to this headline">¶</a></h3>
+<h3>Reporting<a class="headerlink" href="#reporting" title="Link to this heading">¶</a></h3>
 <p>Testing integration with the Reporting API can be done with the help of the common report collector. This service will collect reports sent from tests and provides an API to retrieve them. See documentation at <code class="docutils literal notranslate"><span class="pre">reporting/resources/README.md</span></code>.</p>
 </section>
 </section>
@@ -101,7 +99,7 @@ This allows the tests for a feature to be decoupled as much as possible from the
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -118,7 +116,7 @@ This allows the tests for a feature to be decoupled as much as possible from the
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>testdriver.js Automation &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Testdriver extension tutorial" href="testdriver-extension-tutorial.html" />
@@ -35,8 +33,8 @@
           <div class="body" role="main">
             
   <section id="testdriver-js-automation">
-<h1>testdriver.js Automation<a class="headerlink" href="#testdriver-js-automation" title="Permalink to this headline">¶</a></h1>
-<div class="contents local topic" id="table-of-contents">
+<h1>testdriver.js Automation<a class="headerlink" href="#testdriver-js-automation" title="Link to this heading">¶</a></h1>
+<nav class="contents local" id="table-of-contents">
 <p class="topic-title">Table of Contents</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#markup" id="id3">Markup</a></p></li>
@@ -65,7 +63,7 @@
 </ul>
 </li>
 </ul>
-</div>
+</nav>
 <p>testdriver.js provides a means to automate tests that cannot be
 written purely using web platform APIs. Outside of automation
 contexts, it allows human operators to provide expected input
@@ -73,7 +71,7 @@ manually (for operations which may be described in simple terms).</p>
 <p>It is currently supported only for <a class="reference internal" href="testharness.html"><span class="doc">testharness.js</span></a>
 tests.</p>
 <section id="markup">
-<h2>Markup<a class="headerlink" href="#markup" title="Permalink to this headline">¶</a></h2>
+<h2>Markup<a class="headerlink" href="#markup" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">testdriver.js</span></code> and <code class="docutils literal notranslate"><span class="pre">testdriver-vendor.js</span></code> must both be included
 in any document that uses testdriver (and in the top-level test
 document when using testdriver from a different context):</p>
@@ -83,14 +81,14 @@ document when using testdriver from a different context):</p>
 </div>
 </section>
 <section id="api">
-<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<h2>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h2>
 <p>testdriver.js exposes its API through the <code class="docutils literal notranslate"><span class="pre">test_driver</span></code> variable in
 the global scope.</p>
 <section id="user-interaction">
-<h3>User Interaction<a class="headerlink" href="#user-interaction" title="Permalink to this headline">¶</a></h3>
+<h3>User Interaction<a class="headerlink" href="#user-interaction" title="Link to this heading">¶</a></h3>
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.click">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">click</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.click" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">click</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.click" title="Link to this definition">¶</a></dt>
 <dd><p>Triggers a user-initiated click</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">element</span></code> isn’t inside the
 viewport, it will be scrolled into view before the click
@@ -104,12 +102,12 @@ unique ID, the document must not have any DOM mutations
 made between the function being called and the promise
 settling.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>element</strong> (<em>Element</em>) – element to be clicked</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled after click occurs, or rejected in the cases the WebDriver command errors</p>
 </dd>
 </dl>
@@ -117,7 +115,7 @@ settling.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.send_keys">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">send_keys</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.send_keys" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">send_keys</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.send_keys" title="Link to this definition">¶</a></dt>
 <dd><p>Send keys to an element.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">element</span></code> isn’t inside the
 viewport, it will be scrolled into view before the click
@@ -141,13 +139,13 @@ unique ID, the document must not have any DOM mutations
 made between the function being called and the promise
 settling.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>element</strong> (<em>Element</em>) – element to send keys to</p></li>
 <li><p><strong>keys</strong> (<em>String</em>) – keys to send to the element</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled after keys are sent, or rejected in the cases the WebDriver command errors</p>
 </dd>
 </dl>
@@ -155,7 +153,7 @@ settling.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.action_sequence">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">action_sequence</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.action_sequence" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">action_sequence</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.action_sequence" title="Link to this definition">¶</a></dt>
 <dd><p>Send a sequence of actions</p>
 <p>This function sends a sequence of actions to perform.</p>
 <p>Matches the behaviour of the <a class="reference external" href="https://w3c.github.io/webdriver/#actions">Actions</a> feature in
@@ -164,13 +162,13 @@ WebDriver.</p>
 <code class="xref js js-class docutils literal notranslate"><span class="pre">test_driver.Actions()</span></code> builder rather than
 invoking this API directly.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>actions</strong> (<em>Array</em>) – an array of actions. The format is the same as the actions property of the <a class="reference external" href="https://w3c.github.io/webdriver/#perform-actions">Perform Actions</a> WebDriver command. Each element is an object representing an input source and each input source itself has an actions property detailing the behaviour of that source at each timestep (or tick). Authors are not expected to construct the actions sequence by hand, but to use the builder api provided in testdriver-actions.js</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled after the actions are performed, or rejected in the cases the WebDriver command errors</p>
 </dd>
 </dl>
@@ -178,19 +176,19 @@ invoking this API directly.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.bless">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">bless</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">intent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bless" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">bless</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">intent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bless" title="Link to this definition">¶</a></dt>
 <dd><p>Trigger user interaction in order to grant additional privileges to
 a provided function.</p>
 <p>See <a class="reference external" href="https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation">Tracking user activation</a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>intent</strong> (<em>String</em>) – a description of the action which must be triggered by user interaction</p></li>
 <li><p><strong>action</strong> (<em>function</em>) – code requiring escalated privileges</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled following user interaction and execution of the provided <cite>action</cite> function; rejected if interaction fails or the provided function throws an error</p>
 </dd>
 </dl>
@@ -206,20 +204,20 @@ a provided function.</p>
 
 </section>
 <section id="window-state">
-<h3>Window State<a class="headerlink" href="#window-state" title="Permalink to this headline">¶</a></h3>
+<h3>Window State<a class="headerlink" href="#window-state" title="Link to this heading">¶</a></h3>
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.minimize_window">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">minimize_window</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.minimize_window" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">minimize_window</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.minimize_window" title="Link to this definition">¶</a></dt>
 <dd><p>Minimizes the browser window.</p>
 <p>Matches the the behaviour of the <a class="reference external" href="https://www.w3.org/TR/webdriver/#minimize-window">Minimize</a>
 WebDriver command</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled with the previous <a class="reference external" href="https://www.w3.org/TR/webdriver/#dfn-windowrect-object">WindowRect</a> value, after the window is minimized.</p>
 </dd>
 </dl>
@@ -227,18 +225,18 @@ WebDriver command</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.set_window_rect">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_window_rect</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_window_rect" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_window_rect</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_window_rect" title="Link to this definition">¶</a></dt>
 <dd><p>Restore the window from minimized/maximized state to a given rect.</p>
 <p>Matches the behaviour of the <a class="reference external" href="https://www.w3.org/TR/webdriver/#set-window-rect">Set Window Rect</a>
 WebDriver command</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>rect</strong> (<em>Object</em>) – A <a class="reference external" href="https://www.w3.org/TR/webdriver/#dfn-windowrect-object">WindowRect</a></p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled after the window is restored to the given rect.</p>
 </dd>
 </dl>
@@ -246,20 +244,20 @@ WebDriver command</p>
 
 </section>
 <section id="cookies">
-<h3>Cookies<a class="headerlink" href="#cookies" title="Permalink to this headline">¶</a></h3>
+<h3>Cookies<a class="headerlink" href="#cookies" title="Link to this heading">¶</a></h3>
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.delete_all_cookies">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">delete_all_cookies</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.delete_all_cookies" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">delete_all_cookies</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.delete_all_cookies" title="Link to this definition">¶</a></dt>
 <dd><p>Deletes all cookies.</p>
 <p>Matches the behaviour of the <a class="reference external" href="https://w3c.github.io/webdriver/#delete-all-cookies">Delete All Cookies</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled after cookies are deleted, or rejected in the cases the WebDriver command errors</p>
 </dd>
 </dl>
@@ -267,16 +265,16 @@ WebDriver command.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.get_all_cookies">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_all_cookies</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_all_cookies" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_all_cookies</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_all_cookies" title="Link to this definition">¶</a></dt>
 <dd><p>Get details for all cookies in the current context.
 See <a class="reference external" href="https://w3c.github.io/webdriver/#get-all-cookies">https://w3c.github.io/webdriver/#get-all-cookies</a></p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Returns an array of cookies objects as defined in the spec: <a class="reference external" href="https://w3c.github.io/webdriver/#cookies">https://w3c.github.io/webdriver/#cookies</a></p>
 </dd>
 </dl>
@@ -284,17 +282,17 @@ See <a class="reference external" href="https://w3c.github.io/webdriver/#get-all
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.get_named_cookie">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_named_cookie</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_named_cookie" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_named_cookie</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_named_cookie" title="Link to this definition">¶</a></dt>
 <dd><p>Get details for a cookie in the current context by name if it exists.
 See <a class="reference external" href="https://w3c.github.io/webdriver/#get-named-cookie">https://w3c.github.io/webdriver/#get-named-cookie</a></p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>String</em>) – The name of the cookie to get.</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Returns the matching cookie as defined in the spec: <a class="reference external" href="https://w3c.github.io/webdriver/#cookies">https://w3c.github.io/webdriver/#cookies</a> Rejected if no such cookie exists.</p>
 </dd>
 </dl>
@@ -302,10 +300,10 @@ See <a class="reference external" href="https://w3c.github.io/webdriver/#get-nam
 
 </section>
 <section id="permissions">
-<h3>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h3>
+<h3>Permissions<a class="headerlink" href="#permissions" title="Link to this heading">¶</a></h3>
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.set_permission">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_permission</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">descriptor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_permission" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_permission</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">descriptor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_permission" title="Link to this definition">¶</a></dt>
 <dd><p>Sets the state of a permission</p>
 <p>This function causes permission requests and queries for the status
 of a certain permission type (e.g. “push”, or “background-fetch”) to
@@ -313,14 +311,14 @@ always return <code class="docutils literal notranslate"><span class="pre">state
 <p>Matches the <a class="reference external" href="https://w3c.github.io/permissions/#set-permission-command">Set Permission</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>descriptor</strong> (<em>PermissionDescriptor</em>) – a <a class="reference external" href="https://w3c.github.io/permissions/#dom-permissiondescriptor">PermissionDescriptor</a> or derived object.</p></li>
 <li><p><strong>state</strong> (<em>PermissionState</em>) – a <a class="reference external" href="https://w3c.github.io/permissions/#dom-permissionstate">PermissionState</a> value.</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled after the permission is set, or rejected if setting the permission fails</p>
 </dd>
 </dl>
@@ -333,23 +331,23 @@ WebDriver command.</p>
 
 </section>
 <section id="authentication">
-<h3>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h3>
+<h3>Authentication<a class="headerlink" href="#authentication" title="Link to this heading">¶</a></h3>
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.add_virtual_authenticator">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">add_virtual_authenticator</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.add_virtual_authenticator" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">add_virtual_authenticator</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.add_virtual_authenticator" title="Link to this definition">¶</a></dt>
 <dd><p>Creates a virtual authenticator</p>
 <p>This function creates a virtual authenticator for use with
 the U2F and WebAuthn APIs.</p>
 <p>Matches the <a class="reference external" href="https://w3c.github.io/webauthn/#sctn-automation-add-virtual-authenticator">Add Virtual Authenticator</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>config</strong> (<em>Object</em>) – an <a class="reference external" href="https://w3c.github.io/webauthn/#authenticator-configuration">Authenticator Configuration</a> object</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled after the authenticator is added, or rejected in the cases the WebDriver command errors. Returns the ID of the authenticator</p>
 </dd>
 </dl>
@@ -357,20 +355,20 @@ WebDriver command.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.remove_virtual_authenticator">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">remove_virtual_authenticator</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">authenticator_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.remove_virtual_authenticator" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">remove_virtual_authenticator</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">authenticator_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.remove_virtual_authenticator" title="Link to this definition">¶</a></dt>
 <dd><p>Removes a virtual authenticator</p>
 <p>This function removes a virtual authenticator that has been
 created by <a class="reference internal" href="#test_driver.add_virtual_authenticator" title="test_driver.add_virtual_authenticator"><code class="xref js js-func docutils literal notranslate"><span class="pre">add_virtual_authenticator()</span></code></a>.</p>
 <p>Matches the <a class="reference external" href="https://w3c.github.io/webauthn/#sctn-automation-remove-virtual-authenticator">Remove Virtual Authenticator</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>authenticator_id</strong> (<em>String</em>) – the ID of the authenticator to be removed.</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled after the authenticator is removed, or rejected in the cases the WebDriver command errors</p>
 </dd>
 </dl>
@@ -378,19 +376,19 @@ WebDriver command.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.add_credential">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">add_credential</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">authenticator_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.add_credential" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">add_credential</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">authenticator_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.add_credential" title="Link to this definition">¶</a></dt>
 <dd><p>Adds a credential to a virtual authenticator</p>
 <p>Matches the <a class="reference external" href="https://w3c.github.io/webauthn/#sctn-automation-add-credential">Add Credential</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>authenticator_id</strong> (<em>String</em>) – the ID of the authenticator</p></li>
 <li><p><strong>credential</strong> (<em>Object</em>) – A <a class="reference external" href="https://w3c.github.io/webauthn/#credential-parameters">Credential Parameters</a> object</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled after the credential is added, or rejected in the cases the WebDriver command errors</p>
 </dd>
 </dl>
@@ -398,7 +396,7 @@ WebDriver command.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.get_credentials">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_credentials</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">authenticator_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_credentials" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_credentials</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">authenticator_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_credentials" title="Link to this definition">¶</a></dt>
 <dd><p>Gets all the credentials stored in an authenticator</p>
 <p>This function retrieves all the credentials (added via the U2F API,
 WebAuthn, or the add_credential function) stored in a virtual
@@ -406,13 +404,13 @@ authenticator</p>
 <p>Matches the <a class="reference external" href="https://w3c.github.io/webauthn/#sctn-automation-get-credentials">Get Credentials</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>authenticator_id</strong> (<em>String</em>) – the ID of the authenticator</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled after the credentials are returned, or rejected in the cases the WebDriver command errors. Returns an array of <a class="reference external" href="https://w3c.github.io/webauthn/#credential-parameters">Credential Parameters</a></p>
 </dd>
 </dl>
@@ -420,19 +418,19 @@ WebDriver command.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.remove_credential">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">remove_credential</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">authenticator_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.remove_credential" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">remove_credential</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">authenticator_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.remove_credential" title="Link to this definition">¶</a></dt>
 <dd><p>Remove a credential stored in an authenticator</p>
 <p>Matches the <a class="reference external" href="https://w3c.github.io/webauthn/#sctn-automation-remove-credential">Remove Credential</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>authenticator_id</strong> (<em>String</em>) – the ID of the authenticator</p></li>
 <li><p><strong>credential_id</strong> (<em>String</em>) – the ID of the credential</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled after the credential is removed, or rejected in the cases the WebDriver command errors.</p>
 </dd>
 </dl>
@@ -440,18 +438,18 @@ WebDriver command.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.remove_all_credentials">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">remove_all_credentials</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">authenticator_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.remove_all_credentials" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">remove_all_credentials</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">authenticator_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.remove_all_credentials" title="Link to this definition">¶</a></dt>
 <dd><p>Removes all the credentials stored in a virtual authenticator</p>
 <p>Matches the <a class="reference external" href="https://w3c.github.io/webauthn/#sctn-automation-remove-all-credentials">Remove All Credentials</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>authenticator_id</strong> (<em>String</em>) – the ID of the authenticator</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled after the credentials are removed, or rejected in the cases the WebDriver command errors.</p>
 </dd>
 </dl>
@@ -459,14 +457,14 @@ WebDriver command.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.set_user_verified">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_user_verified</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">authenticator_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_user_verified" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_user_verified</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">authenticator_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_user_verified" title="Link to this definition">¶</a></dt>
 <dd><p>Sets the User Verified flag on an authenticator</p>
 <p>Sets whether requests requiring user verification will succeed or
 fail on a given virtual authenticator</p>
 <p>Matches the <a class="reference external" href="https://w3c.github.io/webauthn/#sctn-automation-set-user-verified">Set User Verified</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>authenticator_id</strong> (<em>String</em>) – the ID of the authenticator</p></li>
 <li><p><strong>uv</strong> (<em>boolean</em>) – the User Verified flag</p></li>
@@ -478,20 +476,20 @@ WebDriver command.</p>
 
 </section>
 <section id="page-lifecycle">
-<h3>Page Lifecycle<a class="headerlink" href="#page-lifecycle" title="Permalink to this headline">¶</a></h3>
+<h3>Page Lifecycle<a class="headerlink" href="#page-lifecycle" title="Link to this heading">¶</a></h3>
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.freeze">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">freeze</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.freeze" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">freeze</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.freeze" title="Link to this definition">¶</a></dt>
 <dd><p>Freeze the current page</p>
 <p>The freeze function transitions the page from the HIDDEN state to
 the FROZEN state as described in <a class="reference external" href="https://github.com/WICG/page-lifecycle/blob/master/README.md">Lifecycle API for Web Pages</a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled after the freeze request is sent, or rejected in case the WebDriver command errors</p>
 </dd>
 </dl>
@@ -499,22 +497,22 @@ the FROZEN state as described in <a class="reference external" href="https://git
 
 </section>
 <section id="reporting-observer">
-<h3>Reporting Observer<a class="headerlink" href="#reporting-observer" title="Permalink to this headline">¶</a></h3>
+<h3>Reporting Observer<a class="headerlink" href="#reporting-observer" title="Link to this heading">¶</a></h3>
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.generate_test_report">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">generate_test_report</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.generate_test_report" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">generate_test_report</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.generate_test_report" title="Link to this definition">¶</a></dt>
 <dd><p>Generates a test report on the current page</p>
 <p>The generate_test_report function generates a report (to be
 observed by ReportingObserver) for testing purposes.</p>
 <p>Matches the <a class="reference external" href="https://w3c.github.io/reporting/#generate-test-report-command">Generate Test Report</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled after the report is generated, or rejected if the report generation fails</p>
 </dd>
 </dl>
@@ -522,16 +520,16 @@ WebDriver command.</p>
 
 </section>
 <section id="storage">
-<h3>Storage<a class="headerlink" href="#storage" title="Permalink to this headline">¶</a></h3>
+<h3>Storage<a class="headerlink" href="#storage" title="Link to this heading">¶</a></h3>
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.set_storage_access">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_storage_access</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_storage_access" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_storage_access</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_storage_access" title="Link to this definition">¶</a></dt>
 <dd><p>Sets the storage access rule for an origin when embedded
 in a third-party context.</p>
 <p>Matches the <a class="reference external" href="https://privacycg.github.io/storage-access/#set-storage-access-command">Set Storage Access</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>origin</strong> (<em>String</em>) – A third-party origin to block or allow. May be “*” to indicate all origins.</p></li>
 <li><p><strong>embedding_origin</strong> (<em>String</em>) – an embedding (first-party) origin on which {origin}’s access should be blocked or allowed. May be “*” to indicate all origins.</p></li>
@@ -539,7 +537,7 @@ WebDriver command.</p>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the storage access rule has been set, or rejected if setting the rule fails.</p>
 </dd>
 </dl>
@@ -547,21 +545,21 @@ WebDriver command.</p>
 
 </section>
 <section id="accessibility">
-<h3>Accessibility<a class="headerlink" href="#accessibility" title="Permalink to this headline">¶</a></h3>
+<h3>Accessibility<a class="headerlink" href="#accessibility" title="Link to this heading">¶</a></h3>
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.get_computed_label">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_computed_label</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_computed_label" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_computed_label</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_computed_label" title="Link to this definition">¶</a></dt>
 <dd><p>Get Computed Label for an element.</p>
 <p>This matches the behaviour of the
 <a class="reference external" href="https://w3c.github.io/webdriver/#dfn-get-computed-label">Get Computed Label</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>element</strong> (<em>Element</em>) – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled after the computed label is returned, or rejected in the cases the WebDriver command errors</p>
 </dd>
 </dl>
@@ -569,18 +567,18 @@ WebDriver command.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.get_computed_role">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_computed_role</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_computed_role" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_computed_role</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_computed_role" title="Link to this definition">¶</a></dt>
 <dd><p>Get Computed Role for an element.</p>
 <p>This matches the behaviour of the
 <a class="reference external" href="https://w3c.github.io/webdriver/#dfn-get-computed-role">Get Computed Label</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>element</strong> (<em>Element</em>) – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled after the computed role is returned, or rejected in the cases the WebDriver command errors</p>
 </dd>
 </dl>
@@ -588,10 +586,10 @@ WebDriver command.</p>
 
 </section>
 <section id="secure-payment-confirmation">
-<h3>Secure Payment Confirmation<a class="headerlink" href="#secure-payment-confirmation" title="Permalink to this headline">¶</a></h3>
+<h3>Secure Payment Confirmation<a class="headerlink" href="#secure-payment-confirmation" title="Link to this heading">¶</a></h3>
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.set_spc_transaction_mode">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_spc_transaction_mode</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_spc_transaction_mode" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_spc_transaction_mode</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_spc_transaction_mode" title="Link to this definition">¶</a></dt>
 <dd><p>Sets the current transaction automation mode for Secure Payment
 Confirmation.</p>
 <p>This function places <a class="reference external" href="https://w3c.github.io/secure-payment-confirmation">Secure Payment
@@ -601,13 +599,13 @@ without user interaction with the transaction UX prompt.</p>
 <p>Matches the <a class="reference external" href="https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode">Set SPC Transaction Mode</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mode</strong> (<em>String</em>) – The <a class="reference external" href="https://w3c.github.io/secure-payment-confirmation/#enumdef-transactionautomationmode">transaction mode</a> to set. Must be one of “<code class="docutils literal notranslate"><span class="pre">none</span></code>”, “<code class="docutils literal notranslate"><span class="pre">autoAccept</span></code>”, or “<code class="docutils literal notranslate"><span class="pre">autoReject</span></code>”.</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the transaction mode has been set, or rejected if setting the mode fails.</p>
 </dd>
 </dl>
@@ -626,20 +624,20 @@ WebDriver command.</p>
 
 </section>
 <section id="federated-credential-management">
-<h3>Federated Credential Management<a class="headerlink" href="#federated-credential-management" title="Permalink to this headline">¶</a></h3>
+<h3>Federated Credential Management<a class="headerlink" href="#federated-credential-management" title="Link to this heading">¶</a></h3>
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.cancel_fedcm_dialog">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">cancel_fedcm_dialog</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.cancel_fedcm_dialog" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">cancel_fedcm_dialog</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.cancel_fedcm_dialog" title="Link to this definition">¶</a></dt>
 <dd><p>Cancels the Federated Credential Management dialog</p>
 <p>Matches the <a class="reference external" href="https://fedidcg.github.io/FedCM/#webdriver-canceldialog">Cancel dialog</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the dialog is canceled, or rejected in case the WebDriver command errors</p>
 </dd>
 </dl>
@@ -647,18 +645,18 @@ WebDriver command.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.click_fedcm_dialog_button">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">click_fedcm_dialog_button</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dialog_button</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.click_fedcm_dialog_button" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">click_fedcm_dialog_button</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dialog_button</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.click_fedcm_dialog_button" title="Link to this definition">¶</a></dt>
 <dd><p>Clicks a button on the Federated Credential Management dialog</p>
 <p>Matches the <a class="reference external" href="https://fedidcg.github.io/FedCM/#webdriver-clickdialogbutton">Click dialog button</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dialog_button</strong> (<em>String</em>) – String enum representing the dialog button to click.</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the button is clicked, or rejected in case the WebDriver command errors</p>
 </dd>
 </dl>
@@ -666,18 +664,18 @@ WebDriver command.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.select_fedcm_account">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">select_fedcm_account</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">account_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.select_fedcm_account" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">select_fedcm_account</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">account_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.select_fedcm_account" title="Link to this definition">¶</a></dt>
 <dd><p>Selects an account from the Federated Credential Management dialog</p>
 <p>Matches the <a class="reference external" href="https://fedidcg.github.io/FedCM/#webdriver-selectaccount">Select account</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>account_index</strong> (<em>number</em>) – Index of the account to select.</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the account is selected, or rejected in case the WebDriver command errors</p>
 </dd>
 </dl>
@@ -685,17 +683,17 @@ WebDriver command.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.get_fedcm_account_list">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_fedcm_account_list</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_fedcm_account_list" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_fedcm_account_list</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_fedcm_account_list" title="Link to this definition">¶</a></dt>
 <dd><p>Gets the account list from the Federated Credential Management dialog</p>
 <p>Matches the <a class="reference external" href="https://fedidcg.github.io/FedCM/#webdriver-accountlist">Account list</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – fulfilled after the account list is returned, or rejected in case the WebDriver command errors</p>
 </dd>
 </dl>
@@ -703,17 +701,17 @@ WebDriver command.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.get_fedcm_dialog_title">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_fedcm_dialog_title</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_fedcm_dialog_title" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_fedcm_dialog_title</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_fedcm_dialog_title" title="Link to this definition">¶</a></dt>
 <dd><p>Gets the title of the Federated Credential Management dialog</p>
 <p>Matches the <a class="reference external" href="https://fedidcg.github.io/FedCM/#webdriver-gettitle">Get title</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the title is returned, or rejected in case the WebDriver command errors</p>
 </dd>
 </dl>
@@ -721,17 +719,17 @@ WebDriver command.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.get_fedcm_dialog_type">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_fedcm_dialog_type</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_fedcm_dialog_type" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_fedcm_dialog_type</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_fedcm_dialog_type" title="Link to this definition">¶</a></dt>
 <dd><p>Gets the type of the Federated Credential Management dialog</p>
 <p>Matches the <a class="reference external" href="https://fedidcg.github.io/FedCM/#webdriver-getdialogtype">Get dialog type</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the dialog type is returned, or rejected in case the WebDriver command errors</p>
 </dd>
 </dl>
@@ -739,18 +737,18 @@ WebDriver command.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.set_fedcm_delay_enabled">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_fedcm_delay_enabled</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enabled</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_fedcm_delay_enabled" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_fedcm_delay_enabled</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enabled</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_fedcm_delay_enabled" title="Link to this definition">¶</a></dt>
 <dd><p>Sets whether promise rejection delay is enabled for the Federated Credential Management dialog</p>
 <p>Matches the <a class="reference external" href="https://fedidcg.github.io/FedCM/#webdriver-setdelayenabled">Set delay enabled</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>enabled</strong> (<em>boolean</em>) – Whether to delay FedCM promise rejection.</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the delay has been enabled or disabled, or rejected in case the WebDriver command errors</p>
 </dd>
 </dl>
@@ -758,17 +756,17 @@ WebDriver command.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.reset_fedcm_cooldown">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">reset_fedcm_cooldown</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.reset_fedcm_cooldown" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">reset_fedcm_cooldown</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.reset_fedcm_cooldown" title="Link to this definition">¶</a></dt>
 <dd><p>Resets the Federated Credential Management dialog’s cooldown</p>
 <p>Matches the <a class="reference external" href="https://fedidcg.github.io/FedCM/#webdriver-resetcooldown">Reset cooldown</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the cooldown has been reset, or rejected in case the WebDriver command errors</p>
 </dd>
 </dl>
@@ -776,10 +774,10 @@ WebDriver command.</p>
 
 </section>
 <section id="sensors">
-<h3>Sensors<a class="headerlink" href="#sensors" title="Permalink to this headline">¶</a></h3>
+<h3>Sensors<a class="headerlink" href="#sensors" title="Link to this heading">¶</a></h3>
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.create_virtual_sensor">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">create_virtual_sensor</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_params={}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.create_virtual_sensor" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">create_virtual_sensor</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_params={}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.create_virtual_sensor" title="Link to this definition">¶</a></dt>
 <dd><p>Creates a virtual sensor for use with the Generic Sensors APIs.</p>
 <p>Matches the <a class="reference external" href="https://w3c.github.io/sensors/#create-virtual-sensor-command">Create Virtual Sensor</a>
 WebDriver command.</p>
@@ -787,7 +785,7 @@ WebDriver command.</p>
 the same top-level traversable (i.e. all frames in the same page,
 regardless of origin).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sensor_type</strong> (<em>String</em>) – A <a class="reference external" href="https://w3c.github.io/sensors/#virtual-sensor-metadata-virtual-sensor-type">virtual sensor type</a> such as “accelerometer”.</p></li>
 <li><p><strong>sensor_params</strong> (<em>Object</em>) – <p>Optional parameters described in <a class="reference external" href="https://w3c.github.io/sensors/#create-virtual-sensor-command">Create Virtual Sensor</a>.</p>
@@ -795,7 +793,7 @@ regardless of origin).</p>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Fulfilled when virtual sensor is created. Rejected in case the WebDriver command errors out (including if a virtual sensor of the same type already exists).</p>
 </dd>
 </dl>
@@ -803,7 +801,7 @@ regardless of origin).</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.update_virtual_sensor">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">update_virtual_sensor</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reading</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.update_virtual_sensor" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">update_virtual_sensor</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reading</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.update_virtual_sensor" title="Link to this definition">¶</a></dt>
 <dd><p>Causes a virtual sensor to report a new reading to any connected
 platform sensor.</p>
 <p>Matches the <a class="reference external" href="https://w3c.github.io/sensors/#update-virtual-sensor-reading-command">Update Virtual Sensor Reading</a>
@@ -815,14 +813,14 @@ account:</p>
 <p>Note: New values may also be discarded due to the checks in <a class="reference external" href="https://w3c.github.io/sensors/#update-latest-reading">update
 latest reading</a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sensor_type</strong> (<em>String</em>) – A <a class="reference external" href="https://w3c.github.io/sensors/#virtual-sensor-metadata-virtual-sensor-type">virtual sensor type</a> such as “accelerometer”.</p></li>
 <li><p><strong>reading</strong> (<em>Object</em>) – An Object describing a reading in a format dependent on <code class="docutils literal notranslate"><span class="pre">sensor_type</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">{x:</span> <span class="pre">1,</span> <span class="pre">y:</span> <span class="pre">2,</span> <span class="pre">z:</span> <span class="pre">3}</span></code> or <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">illuminance:</span> <span class="pre">42</span> <span class="pre">}</span></code>).</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the reading update reaches the virtual sensor. Rejected in case the WebDriver command errors out (including if a virtual sensor of the given type does not exist).</p>
 </dd>
 </dl>
@@ -858,18 +856,18 @@ latest reading</a>.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.remove_virtual_sensor">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">remove_virtual_sensor</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.remove_virtual_sensor" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">remove_virtual_sensor</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.remove_virtual_sensor" title="Link to this definition">¶</a></dt>
 <dd><p>Triggers the removal of a virtual sensor if it exists.</p>
 <p>Matches the <a class="reference external" href="https://w3c.github.io/sensors/#delete-virtual-sensor-command">Delete Virtual Sensor</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sensor_type</strong> (<em>String</em>) – A <a class="reference external" href="https://w3c.github.io/sensors/#virtual-sensor-metadata-virtual-sensor-type">virtual sensor type</a> such as “accelerometer”.</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the virtual sensor has been removed or if a sensor of the given type does not exist. Rejected in case the WebDriver command errors out.</p>
 </dd>
 </dl>
@@ -877,18 +875,18 @@ WebDriver command.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.get_virtual_sensor_information">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_virtual_sensor_information</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_virtual_sensor_information" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_virtual_sensor_information</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_virtual_sensor_information" title="Link to this definition">¶</a></dt>
 <dd><p>Returns information about a virtual sensor.</p>
 <p>Matches the <a class="reference external" href="https://w3c.github.io/sensors/#get-virtual-sensor-information-command">Get Virtual Sensor Information</a>
 WebDriver command.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sensor_type</strong> (<em>String</em>) – A <a class="reference external" href="https://w3c.github.io/sensors/#virtual-sensor-metadata-virtual-sensor-type">virtual sensor type</a> such as “accelerometer”.</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p><strong>Promise</strong> – Fulfilled with an Object with the properties described in <a class="reference external" href="https://w3c.github.io/sensors/#get-virtual-sensor-information-command">Get Virtual Sensor Information</a>. Rejected in case the WebDriver command errors out (including if a virtual sensor of the given type does not exist).</p>
 </p>
 </dd>
@@ -897,7 +895,7 @@ WebDriver command.</p>
 
 </section>
 <section id="using-test-driver-in-other-browsing-contexts">
-<h3>Using test_driver in other browsing contexts<a class="headerlink" href="#using-test-driver-in-other-browsing-contexts" title="Permalink to this headline">¶</a></h3>
+<h3>Using test_driver in other browsing contexts<a class="headerlink" href="#using-test-driver-in-other-browsing-contexts" title="Link to this heading">¶</a></h3>
 <p>Testdriver can be used in browsing contexts (i.e. windows or frames)
 from which it’s possible to get a reference to the top-level test
 context. There are two basic approaches depending on whether the
@@ -917,10 +915,10 @@ context argument, which takes a WindowProxy object.</p>
 </div>
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.set_test_context">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_test_context</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_test_context" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_test_context</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_test_context" title="Link to this definition">¶</a></dt>
 <dd><p>Set the context in which testharness.js is loaded</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – the window containing testharness.js</p></li>
 </ul>
@@ -930,10 +928,10 @@ context argument, which takes a WindowProxy object.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.message_test">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">message_test</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.message_test" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">message_test</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.message_test" title="Link to this definition">¶</a></dt>
 <dd><p>postMessage to the context containing testharness.js</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>msg</strong> (<em>Object</em>) – the data to POST</p></li>
 </ul>
@@ -961,9 +959,9 @@ currently not possible to write tests where such handles can’t be
 obtained e.g. in the case of <code class="docutils literal notranslate"><span class="pre">rel=noopener</span></code>.</p>
 </section>
 <section id="actions">
-<h3>Actions<a class="headerlink" href="#actions" title="Permalink to this headline">¶</a></h3>
+<h3>Actions<a class="headerlink" href="#actions" title="Link to this heading">¶</a></h3>
 <section id="id1">
-<h4>Markup<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<h4>Markup<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h4>
 <p>To use the <a class="reference external" href="#Actions">Actions</a> API <code class="docutils literal notranslate"><span class="pre">testdriver-actions.js</span></code> must be
 included in the document, in addition to <code class="docutils literal notranslate"><span class="pre">testdriver.js</span></code>:</p>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testdriver-actions.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
@@ -971,10 +969,10 @@ included in the document, in addition to <code class="docutils literal notransla
 </div>
 </section>
 <section id="id2">
-<h4>API<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<h4>API<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h4>
 <dl class="js class">
 <dt class="sig sig-object js" id="Actions">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="n"><span class="pre">Actions</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">defaultTickDuration=16</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="n"><span class="pre">Actions</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">defaultTickDuration=16</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions" title="Link to this definition">¶</a></dt>
 <dd><p>Builder for creating a sequence of actions</p>
 <p>The actions are dispatched once
 <code class="xref js js-func docutils literal notranslate"><span class="pre">test_driver.Actions.send()</span></code> is called. This returns a
@@ -986,7 +984,7 @@ be constructed by chaining method calls.</p>
 <p>Internally <code class="xref js js-func docutils literal notranslate"><span class="pre">test_driver.Actions.send()</span></code> invokes
 <a class="reference internal" href="#test_driver.action_sequence" title="test_driver.action_sequence"><code class="xref js js-func docutils literal notranslate"><span class="pre">test_driver.action_sequence()</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>defaultTickDuration</strong> (<em>number</em>) – The default duration of a tick. Be default this is set ot 16ms, which is one frame time based on 60Hz display.</p></li>
 </ul>
@@ -1008,16 +1006,16 @@ be constructed by chaining method calls.</p>
 </div>
 <dl class="js function">
 <dt class="sig sig-object js" id="Actions.addKeyboard">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">addKeyboard</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.addKeyboard" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">addKeyboard</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.addKeyboard" title="Link to this definition">¶</a></dt>
 <dd><p>Add a new key input source with the given name</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>String</em>) – Name of the key source</p></li>
 <li><p><strong>set</strong> (<em>Bool</em>) – Set source as the default key source</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Actions</strong> –</p>
 </dd>
 </dl>
@@ -1025,17 +1023,17 @@ be constructed by chaining method calls.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Actions.addPointer">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">addPointer</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pointerType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.addPointer" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">addPointer</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pointerType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.addPointer" title="Link to this definition">¶</a></dt>
 <dd><p>Add a new pointer input source with the given name</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>type</strong> (<em>String</em>) – Name of the pointer source</p></li>
 <li><p><strong>pointerType</strong> (<em>String</em>) – Type of pointing device</p></li>
 <li><p><strong>set</strong> (<em>Bool</em>) – Set source as the default pointer source</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Actions</strong> –</p>
 </dd>
 </dl>
@@ -1043,15 +1041,15 @@ be constructed by chaining method calls.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Actions.addTick">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">addTick</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">duration</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.addTick" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">addTick</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">duration</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.addTick" title="Link to this definition">¶</a></dt>
 <dd><p>Insert a new actions tick</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>duration</strong> (<em>Number</em>) – Minimum length of the tick in ms.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Actions</strong> –</p>
 </dd>
 </dl>
@@ -1059,16 +1057,16 @@ be constructed by chaining method calls.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Actions.addWheel">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">addWheel</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.addWheel" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">addWheel</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.addWheel" title="Link to this definition">¶</a></dt>
 <dd><p>Add a new wheel input source with the given name</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>type</strong> (<em>String</em>) – Name of the wheel source</p></li>
 <li><p><strong>set</strong> (<em>Bool</em>) – Set source as the default wheel source</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Actions</strong> –</p>
 </dd>
 </dl>
@@ -1076,18 +1074,18 @@ be constructed by chaining method calls.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Actions.getSource">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">getSource</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.getSource" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">getSource</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.getSource" title="Link to this definition">¶</a></dt>
 <dd><p>Get the action source with a particular source type and name.
 If no name is passed, a new source with the given type is
 created.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>type</strong> (<em>String</em>) – Source type (‘none’, ‘key’, ‘pointer’, or ‘wheel’)</p></li>
 <li><p><strong>name</strong> (<em>String</em>) – Name of the source</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Source</strong> – Source object for that source.</p>
 </dd>
 </dl>
@@ -1095,16 +1093,16 @@ created.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Actions.keyDown">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">keyDown</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sourceName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.keyDown" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">keyDown</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sourceName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.keyDown" title="Link to this definition">¶</a></dt>
 <dd><p>Create a keyDown event for the current default key source</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> (<em>String</em>) – Key to press</p></li>
 <li><p><strong>sourceName</strong> (<em>String</em>) – Named key source to use or null for the default key source</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Actions</strong> –</p>
 </dd>
 </dl>
@@ -1112,16 +1110,16 @@ created.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Actions.keyUp">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">keyUp</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sourceName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.keyUp" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">keyUp</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sourceName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.keyUp" title="Link to this definition">¶</a></dt>
 <dd><p>Create a keyDown event for the current default key source</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> (<em>String</em>) – Key to release</p></li>
 <li><p><strong>sourceName</strong> (<em>String</em>) – Named key source to use or null for the default key source</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Actions</strong> –</p>
 </dd>
 </dl>
@@ -1129,17 +1127,17 @@ created.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Actions.pause">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">pause</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sourceType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sourceName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.pause" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">pause</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sourceType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sourceName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.pause" title="Link to this definition">¶</a></dt>
 <dd><p>Add a pause to the current tick</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>duration</strong> (<em>Number</em>) – Minimum length of the tick in ms.</p></li>
 <li><p><strong>sourceType</strong> (<em>String</em>) – source type</p></li>
 <li><p><strong>sourceName</strong> (<em>String</em>) – Named key, pointer or wheel source to use or null for the default key, pointer or wheel source</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Actions</strong> –</p>
 </dd>
 </dl>
@@ -1147,16 +1145,16 @@ created.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Actions.pointerDown">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">pointerDown</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">button</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sourceName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.pointerDown" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">pointerDown</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">button</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sourceName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.pointerDown" title="Link to this definition">¶</a></dt>
 <dd><p>Create a pointerDown event for the current default pointer source</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>button</strong> (<em>String</em>) – Button to press</p></li>
 <li><p><strong>sourceName</strong> (<em>String</em>) – Named pointer source to use or null for the default pointer source</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Actions</strong> –</p>
 </dd>
 </dl>
@@ -1164,10 +1162,10 @@ created.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Actions.pointerMove">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">pointerMove</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sourceName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.pointerMove" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">pointerMove</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sourceName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.pointerMove" title="Link to this definition">¶</a></dt>
 <dd><p>Create a move event for the current default pointer source</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>Number</em>) – Destination x coordinate</p></li>
 <li><p><strong>y</strong> (<em>Number</em>) – Destination y coordinate</p></li>
@@ -1176,7 +1174,7 @@ created.</p>
 <li><p><strong>sourceName</strong> (<em>String</em>) – Named pointer source to use or null for the default pointer source</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Actions</strong> –</p>
 </dd>
 </dl>
@@ -1184,16 +1182,16 @@ created.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Actions.pointerUp">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">pointerUp</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">button</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sourceName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.pointerUp" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">pointerUp</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">button</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sourceName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.pointerUp" title="Link to this definition">¶</a></dt>
 <dd><p>Create a pointerUp event for the current default pointer source</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>button</strong> (<em>String</em>) – Button to release</p></li>
 <li><p><strong>sourceName</strong> (<em>String</em>) – Named pointer source to use or null for the default pointer source</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Actions</strong> –</p>
 </dd>
 </dl>
@@ -1201,10 +1199,10 @@ created.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Actions.scroll">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">scroll</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltaX</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltaY</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sourceName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.scroll" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">scroll</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltaX</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltaY</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sourceName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.scroll" title="Link to this definition">¶</a></dt>
 <dd><p>Create a scroll event for the current default wheel source</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>Number</em>) – mouse cursor x coordinate</p></li>
 <li><p><strong>y</strong> (<em>Number</em>) – mouse cursor y coordinate</p></li>
@@ -1215,7 +1213,7 @@ created.</p>
 <li><p><strong>sourceName</strong> (<em>String</em>) – Named wheel source to use or null for the default wheel source</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Actions</strong> –</p>
 </dd>
 </dl>
@@ -1223,10 +1221,10 @@ created.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Actions.send">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">send</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Actions.send" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">send</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Actions.send" title="Link to this definition">¶</a></dt>
 <dd><p>Generate and send the action sequence</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>Promise</strong> – fulfilled after the sequence is executed, rejected if any actions fail.</p>
 </dd>
 </dl>
@@ -1234,11 +1232,11 @@ created.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Actions.serialize">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">serialize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Actions.serialize" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">serialize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Actions.serialize" title="Link to this definition">¶</a></dt>
 <dd><p>Generate the action sequence suitable for passing to
 test_driver.action_sequence</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>Array</strong> – Array of WebDriver-compatible actions sequences</p>
 </dd>
 </dl>
@@ -1246,10 +1244,10 @@ test_driver.action_sequence</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Actions.setContext">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">setContext</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.setContext" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">setContext</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.setContext" title="Link to this definition">¶</a></dt>
 <dd><p>Set the context for the actions</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Context in which to run the action sequence</p></li>
 </ul>
@@ -1259,15 +1257,15 @@ test_driver.action_sequence</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Actions.setKeyboard">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">setKeyboard</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.setKeyboard" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">setKeyboard</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.setKeyboard" title="Link to this definition">¶</a></dt>
 <dd><p>Set the current default key source</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>String</em>) – Name of the key source</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Actions</strong> –</p>
 </dd>
 </dl>
@@ -1275,15 +1273,15 @@ test_driver.action_sequence</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Actions.setPointer">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">setPointer</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.setPointer" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">setPointer</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.setPointer" title="Link to this definition">¶</a></dt>
 <dd><p>Set the current default pointer source</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>String</em>) – Name of the pointer source</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Actions</strong> –</p>
 </dd>
 </dl>
@@ -1291,15 +1289,15 @@ test_driver.action_sequence</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Actions.setWheel">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">setWheel</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.setWheel" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Actions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">setWheel</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.setWheel" title="Link to this definition">¶</a></dt>
 <dd><p>Set the current default wheel source</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>String</em>) – Name of the wheel source</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Actions</strong> –</p>
 </dd>
 </dl>
@@ -1309,7 +1307,7 @@ test_driver.action_sequence</p>
 
 </section>
 <section id="using-in-other-browsing-contexts">
-<h4>Using in other browsing contexts<a class="headerlink" href="#using-in-other-browsing-contexts" title="Permalink to this headline">¶</a></h4>
+<h4>Using in other browsing contexts<a class="headerlink" href="#using-in-other-browsing-contexts" title="Link to this heading">¶</a></h4>
 <p>For the actions API, the context can be set using the <code class="docutils literal notranslate"><span class="pre">setContext</span></code>
 method on the builder:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="nx">actions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">Actions</span><span class="p">()</span>
@@ -1381,7 +1379,7 @@ is not supported.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -1398,7 +1396,7 @@ is not supported.</p>
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

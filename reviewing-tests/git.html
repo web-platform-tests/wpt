@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Working with Pull Requests as a reviewer &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Reverting Changes" href="reverting.html" />
@@ -35,7 +33,7 @@
           <div class="body" role="main">
             
   <section id="working-with-pull-requests-as-a-reviewer">
-<h1>Working with Pull Requests as a reviewer<a class="headerlink" href="#working-with-pull-requests-as-a-reviewer" title="Permalink to this headline">¶</a></h1>
+<h1>Working with Pull Requests as a reviewer<a class="headerlink" href="#working-with-pull-requests-as-a-reviewer" title="Link to this heading">¶</a></h1>
 <p>In order to do a thorough review,
 it is sometimes desirable to have a local copy of the tests one wishes to review.</p>
 <p>Reviewing tests also often results in wanting a few things to be changed.
@@ -45,7 +43,7 @@ or the changes are so trivial (e.g. fixing a typo)
 that bothering the original author seems like a waste of time.</p>
 <p>Here is how to do all that.</p>
 <section id="trivial-cases">
-<h2>Trivial cases<a class="headerlink" href="#trivial-cases" title="Permalink to this headline">¶</a></h2>
+<h2>Trivial cases<a class="headerlink" href="#trivial-cases" title="Link to this heading">¶</a></h2>
 <p>If it is possible to review the tests without a local copy,
 but the reviewer still wants to make some simple tweaks to the tests before merging,
 it is possible to do so via the Github web UI.</p>
@@ -65,7 +63,7 @@ and your only option would be to commit to a new branch, creating a new PR.</em>
 </ol>
 </section>
 <section id="the-normal-way">
-<h2>The Normal Way<a class="headerlink" href="#the-normal-way" title="Permalink to this headline">¶</a></h2>
+<h2>The Normal Way<a class="headerlink" href="#the-normal-way" title="Link to this heading">¶</a></h2>
 <p>This is how to import the Pull Request’s branch into your existing local
 checkout of the repository. If you don’t have one, go <a class="reference external" href="../writing-tests/github-intro.html#fork-the-test-repository">fork</a>,
 <a class="reference external" href="../writing-tests/github-intro.html#clone">clone</a>, and <a class="reference external" href="../writing-tests/github-intro.html#configure-remote-upstream">configure</a> it.</p>
@@ -168,7 +166,7 @@ you may also discard your connection to their repo:
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -185,7 +183,7 @@ you may also discard your connection to their repo:
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

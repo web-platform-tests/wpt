@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>WebTransport in web-platform-tests &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=12dfc556" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Reviewing Tests" href="../../reviewing-tests/index.html" />
@@ -35,14 +33,14 @@
           <div class="body" role="main">
             
   <section id="webtransport-in-web-platform-tests">
-<h1>WebTransport in web-platform-tests<a class="headerlink" href="#webtransport-in-web-platform-tests" title="Permalink to this headline">¶</a></h1>
+<h1>WebTransport in web-platform-tests<a class="headerlink" href="#webtransport-in-web-platform-tests" title="Link to this heading">¶</a></h1>
 <p>This document describes <a class="reference external" href="https://datatracker.ietf.org/wg/webtrans/documents/">WebTransport</a> support in web-platform-tests.</p>
 <section id="webtransport-over-http-3">
-<h2>WebTransport over HTTP/3<a class="headerlink" href="#webtransport-over-http-3" title="Permalink to this headline">¶</a></h2>
+<h2>WebTransport over HTTP/3<a class="headerlink" href="#webtransport-over-http-3" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">tools/webtransport</span></code> provides a simple
 <a class="reference external" href="https://datatracker.ietf.org/doc/draft-ietf-webtrans-http3/">WebTransport over HTTP/3</a> server for testing. The server interprets the underlying protocols (WebTransport, HTTP/3 and QUIC) and manages webtransport sessions. When the server receives a request (extended CONNECT method) from a client the server looks up a corresponding webtransport handler based on the <code class="docutils literal notranslate"><span class="pre">:path</span></code> header value, then delegates actual tasks to the handler. Handlers are typically located under <code class="docutils literal notranslate"><span class="pre">webtransport/handlers</span></code>.</p>
 <section id="handlers">
-<h3>Handlers<a class="headerlink" href="#handlers" title="Permalink to this headline">¶</a></h3>
+<h3>Handlers<a class="headerlink" href="#handlers" title="Link to this heading">¶</a></h3>
 <p>A WebTransport handler is a python script which contains callback functions. Callback functions are called every time a WebTransport event happens. Definitions of all callback can be found the <a class="reference external" href="#APIs">APIs section</a>.</p>
 <p>The following is an example handler which echos back received data.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">stream_data_received</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">stream_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">stream_ended</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
@@ -58,9 +56,9 @@
 <p><code class="docutils literal notranslate"><span class="pre">session</span></code> is a <code class="docutils literal notranslate"><span class="pre">WebTransportSession</span></code> object that represents a WebTransport over HTTP/3 session. It provides APIs to handle the session.</p>
 </section>
 <section id="handler-apis">
-<h3>Handler APIs<a class="headerlink" href="#handler-apis" title="Permalink to this headline">¶</a></h3>
+<h3>Handler APIs<a class="headerlink" href="#handler-apis" title="Link to this heading">¶</a></h3>
 <section id="connection-received-request-headers-response-headers">
-<h4><code class="docutils literal notranslate"><span class="pre">connection_received(request_headers,</span> <span class="pre">response_headers)</span></code><a class="headerlink" href="#connection-received-request-headers-response-headers" title="Permalink to this headline">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">connection_received(request_headers,</span> <span class="pre">response_headers)</span></code><a class="headerlink" href="#connection-received-request-headers-response-headers" title="Link to this heading">¶</a></h4>
 <p>Called whenever an extended CONNECT method is received.</p>
 <ul class="simple">
 <li><p><b>Parameters</b></p>
@@ -73,7 +71,7 @@
 </section>
 <hr class="docutils" />
 <section id="session-established-session">
-<h4><code class="docutils literal notranslate"><span class="pre">session_established(session)</span></code><a class="headerlink" href="#session-established-session" title="Permalink to this headline">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">session_established(session)</span></code><a class="headerlink" href="#session-established-session" title="Link to this heading">¶</a></h4>
 <p>Called whenever a WebTransport session is established.</p>
 <ul class="simple">
 <li><p><b>Parameters</b></p>
@@ -85,7 +83,7 @@
 </section>
 <hr class="docutils" />
 <section id="stream-data-received-session-stream-id-data-stream-ended">
-<h4><code class="docutils literal notranslate"><span class="pre">stream_data_received(session,</span> <span class="pre">stream_id,</span> <span class="pre">data,</span> <span class="pre">stream_ended)</span></code><a class="headerlink" href="#stream-data-received-session-stream-id-data-stream-ended" title="Permalink to this headline">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">stream_data_received(session,</span> <span class="pre">stream_id,</span> <span class="pre">data,</span> <span class="pre">stream_ended)</span></code><a class="headerlink" href="#stream-data-received-session-stream-id-data-stream-ended" title="Link to this heading">¶</a></h4>
 <p>Called whenever data is received on a WebTransport stream.</p>
 <ul class="simple">
 <li><p><b>Parameters</b></p>
@@ -100,7 +98,7 @@
 </section>
 <hr class="docutils" />
 <section id="datagram-received-session-data">
-<h4><code class="docutils literal notranslate"><span class="pre">datagram_received(session,</span> <span class="pre">data)</span></code><a class="headerlink" href="#datagram-received-session-data" title="Permalink to this headline">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">datagram_received(session,</span> <span class="pre">data)</span></code><a class="headerlink" href="#datagram-received-session-data" title="Link to this heading">¶</a></h4>
 <p>Called whenever a datagram is received on a WebTransport session.</p>
 <ul class="simple">
 <li><p><b>Parameters</b></p>
@@ -113,7 +111,7 @@
 </section>
 <hr class="docutils" />
 <section id="stream-reset-session-stream-id-error-code">
-<h4><code class="docutils literal notranslate"><span class="pre">stream_reset(session,</span> <span class="pre">stream_id,</span> <span class="pre">error_code)</span></code><a class="headerlink" href="#stream-reset-session-stream-id-error-code" title="Permalink to this headline">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">stream_reset(session,</span> <span class="pre">stream_id,</span> <span class="pre">error_code)</span></code><a class="headerlink" href="#stream-reset-session-stream-id-error-code" title="Link to this heading">¶</a></h4>
 <p>Called whenever a datagram is reset with RESET_STREAM.</p>
 <ul class="simple">
 <li><p><b>Parameters</b></p>
@@ -180,7 +178,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -197,7 +195,7 @@
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

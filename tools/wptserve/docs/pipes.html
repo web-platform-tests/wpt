@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Pipes &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="pywebsocket3: A Standalone WebSocket Server for testing purposes" href="../../../admin/pywebsocket3.html" />
@@ -35,12 +33,12 @@
           <div class="body" role="main">
             
   <section id="pipes">
-<h1>Pipes<a class="headerlink" href="#pipes" title="Permalink to this headline">¶</a></h1>
+<h1>Pipes<a class="headerlink" href="#pipes" title="Link to this heading">¶</a></h1>
 <section id="module-wptserve.pipes">
-<span id="interface"></span><h2><a class="reference internal" href="#module-wptserve.pipes" title="wptserve.pipes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Interface</span></code></a><a class="headerlink" href="#module-wptserve.pipes" title="Permalink to this headline">¶</a></h2>
+<span id="interface"></span><h2><a class="reference internal" href="#module-wptserve.pipes" title="wptserve.pipes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Interface</span></code></a><a class="headerlink" href="#module-wptserve.pipes" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="wptserve.pipes.gzip">
-<span class="sig-prename descclassname"><span class="pre">wptserve.pipes.</span></span><span class="sig-name descname"><span class="pre">gzip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.gzip" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">wptserve.pipes.</span></span><span class="sig-name descname"><span class="pre">gzip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.gzip" title="Link to this definition">¶</a></dt>
 <dd><p>This pipe gzip-encodes response data.</p>
 <p>It sets (or overwrites) these HTTP headers:
 Content-Encoding is set to gzip
@@ -49,13 +47,13 @@ Content-Length is set to the length of the compressed content</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="wptserve.pipes.header">
-<span class="sig-prename descclassname"><span class="pre">wptserve.pipes.</span></span><span class="sig-name descname"><span class="pre">header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">append</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.header" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">wptserve.pipes.</span></span><span class="sig-name descname"><span class="pre">header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">append</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.header" title="Link to this definition">¶</a></dt>
 <dd><p>Set a HTTP header.</p>
 <p>Replaces any existing HTTP header of the same name unless
 append is set, in which case the header is appended without
 replacement.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> – Name of the header to set.</p></li>
 <li><p><strong>value</strong> – Value to use for the header.</p></li>
@@ -67,10 +65,10 @@ replacement.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="wptserve.pipes.slice">
-<span class="sig-prename descclassname"><span class="pre">wptserve.pipes.</span></span><span class="sig-name descname"><span class="pre">slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.slice" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">wptserve.pipes.</span></span><span class="sig-name descname"><span class="pre">slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.slice" title="Link to this definition">¶</a></dt>
 <dd><p>Send a byte range of the response body</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>start</strong> – The starting offset. Follows python semantics including
 negative numbers.</p></li>
@@ -84,10 +82,10 @@ the file.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="wptserve.pipes.status">
-<span class="sig-prename descclassname"><span class="pre">wptserve.pipes.</span></span><span class="sig-name descname"><span class="pre">status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.status" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">wptserve.pipes.</span></span><span class="sig-name descname"><span class="pre">status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.status" title="Link to this definition">¶</a></dt>
 <dd><p>Alter the status code.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>code</strong> – Status code to use for the response.</p>
 </dd>
 </dl>
@@ -95,10 +93,10 @@ the file.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="wptserve.pipes.sub">
-<span class="sig-prename descclassname"><span class="pre">wptserve.pipes.</span></span><span class="sig-name descname"><span class="pre">sub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">escape_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'html'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.sub" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">wptserve.pipes.</span></span><span class="sig-name descname"><span class="pre">sub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">escape_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'html'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.sub" title="Link to this definition">¶</a></dt>
 <dd><p>Substitute environment information about the server and request into the script.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>escape_type</strong> – String detailing the type of escaping to use. Known values are
 “html” and “none”, with “html” the default for historic reasons.</p>
 </dd>
@@ -160,10 +158,10 @@ by name e.g.:</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="wptserve.pipes.trickle">
-<span class="sig-prename descclassname"><span class="pre">wptserve.pipes.</span></span><span class="sig-name descname"><span class="pre">trickle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delays</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.trickle" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">wptserve.pipes.</span></span><span class="sig-name descname"><span class="pre">trickle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delays</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.trickle" title="Link to this definition">¶</a></dt>
 <dd><p>Send the response in parts, with time delays.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>delays</strong> – <p>A string of delays and amounts, in bytes, of the
 response to send. Each component is separated by
 a colon. Amounts in bytes are plain integers, whilst
@@ -241,7 +239,7 @@ until the response has been fully sent.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -258,7 +256,7 @@ until the response has been fully sent.</p>
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

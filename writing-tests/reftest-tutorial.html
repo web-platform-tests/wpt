@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Writing a reftest &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Print Reftests" href="print-reftests.html" />
@@ -35,7 +33,7 @@
           <div class="body" role="main">
             
   <section id="writing-a-reftest">
-<h1>Writing a reftest<a class="headerlink" href="#writing-a-reftest" title="Permalink to this headline">¶</a></h1>
+<h1>Writing a reftest<a class="headerlink" href="#writing-a-reftest" title="Link to this heading">¶</a></h1>
 <!--
 Note to maintainers:
 
@@ -58,7 +56,7 @@ and GitHub</span></a>.</p>
 visual effect. <a class="reference internal" href="reftests.html"><span class="doc">The reftests reference page</span></a> describes them in the
 abstract, but for the purposes of this guide, we’ll only consider the features
 we need to test the <code class="docutils literal notranslate"><span class="pre">&lt;bdo&gt;</span></code> element.</p>
-<div class="contents local topic" id="contents">
+<nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#setting-up-your-workspace" id="id1">Setting up your workspace</a></p></li>
 <li><p><a class="reference internal" href="#writing-the-test-file" id="id2">Writing the test file</a></p></li>
@@ -67,9 +65,9 @@ we need to test the <code class="docutils literal notranslate"><span class="pre"
 <li><p><a class="reference internal" href="#submitting-the-test" id="id5">Submitting the test</a></p></li>
 <li><p><a class="reference internal" href="#more-practice" id="id6">More practice</a></p></li>
 </ul>
-</div>
+</nav>
 <section id="setting-up-your-workspace">
-<h2><a class="toc-backref" href="#id1">Setting up your workspace</a><a class="headerlink" href="#setting-up-your-workspace" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Setting up your workspace</a><a class="headerlink" href="#setting-up-your-workspace" title="Link to this heading">¶</a></h2>
 <p>To make sure you have the latest code, first type the following into a terminal
 located in the root of the WPT git repository:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git fetch git@github.com:web-platform-tests/wpt.git
@@ -84,7 +82,7 @@ just downloaded:</p>
 <p>Now you’re ready to create your patch.</p>
 </section>
 <section id="writing-the-test-file">
-<h2><a class="toc-backref" href="#id2">Writing the test file</a><a class="headerlink" href="#writing-the-test-file" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Writing the test file</a><a class="headerlink" href="#writing-the-test-file" title="Link to this heading">¶</a></h2>
 <p>First, we’ll create a file that demonstrates the “feature under test.” That is:
 we’ll write an HTML document that displays some text using a <code class="docutils literal notranslate"><span class="pre">&lt;bdo&gt;</span></code> element.</p>
 <p>WPT has thousands of tests, so it can be daunting to decide where to put a new
@@ -171,7 +169,7 @@ prefer making tests automatic whenever possible. Remember that we set out to
 write a “reference test.” Now it’s time to write the reference file.</p>
 </section>
 <section id="writing-a-match-reference">
-<h2><a class="toc-backref" href="#id3">Writing a “match” reference</a><a class="headerlink" href="#writing-a-match-reference" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Writing a “match” reference</a><a class="headerlink" href="#writing-a-match-reference" title="Link to this heading">¶</a></h2>
 <p>The “match” reference file describes what the test file is supposed to look
 like. Critically, it <em>must not</em> use the technology that we are testing. The
 reference file is what allows the test to be run by a computer–the computer
@@ -217,7 +215,7 @@ summary:</p>
 the associated reference file.</p>
 </section>
 <section id="verifying-our-work">
-<h2><a class="toc-backref" href="#id4">Verifying our work</a><a class="headerlink" href="#verifying-our-work" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Verifying our work</a><a class="headerlink" href="#verifying-our-work" title="Link to this heading">¶</a></h2>
 <p>We’re done writing the test, but we should make sure it fits in with the rest
 of WPT before we submit it. This involves using some of the project’s tools, so
 this is the point you’ll need to <a class="reference internal" href="../running-tests/from-local-system.html"><span class="doc">configure your system to run
@@ -254,7 +252,7 @@ might crash. That’s often a sign of a browser bug, so you should consider
 maintainers</a>!</p>
 </section>
 <section id="submitting-the-test">
-<h2><a class="toc-backref" href="#id5">Submitting the test</a><a class="headerlink" href="#submitting-the-test" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Submitting the test</a><a class="headerlink" href="#submitting-the-test" title="Link to this heading">¶</a></h2>
 <p>First, let’s stage the new files for committing:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git add html/semantics/text-level-semantics/the-bdo-element/rtl.html
 $ git add html/semantics/text-level-semantics/the-bdo-element/rtl-ref.html
@@ -281,7 +279,7 @@ the repository, we would create a pull request on GitHub. <a class="reference in
 GitHub</span></a> has all the details on how to do that.</p>
 </section>
 <section id="more-practice">
-<h2><a class="toc-backref" href="#id6">More practice</a><a class="headerlink" href="#more-practice" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">More practice</a><a class="headerlink" href="#more-practice" title="Link to this heading">¶</a></h2>
 <p>Here are some ways you can keep experimenting with WPT using this test:</p>
 <ul class="simple">
 <li><p>Improve coverage by adding more tests for related behaviors (e.g. nested
@@ -343,7 +341,7 @@ look like using <a class="reference internal" href="reftests.html"><span class="
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -360,7 +358,7 @@ look like using <a class="reference internal" href="reftests.html"><span class="
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

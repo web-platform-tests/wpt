@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Test Metadata &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="commands.json" href="commands.html" />
@@ -35,9 +33,9 @@
           <div class="body" role="main">
             
   <section id="test-metadata">
-<h1>Test Metadata<a class="headerlink" href="#test-metadata" title="Permalink to this headline">¶</a></h1>
+<h1>Test Metadata<a class="headerlink" href="#test-metadata" title="Link to this heading">¶</a></h1>
 <section id="directory-layout">
-<h2>Directory Layout<a class="headerlink" href="#directory-layout" title="Permalink to this headline">¶</a></h2>
+<h2>Directory Layout<a class="headerlink" href="#directory-layout" title="Link to this heading">¶</a></h2>
 <p>Metadata files must be stored under the <code class="docutils literal notranslate"><span class="pre">metadata</span></code> directory passed
 to the test runner. The directory layout follows that of
 web-platform-tests with each test source path having a corresponding
@@ -64,7 +62,7 @@ as the source path under the <code class="docutils literal notranslate"><span cl
 (i.e. <code class="docutils literal notranslate"><span class="pre">PASS</span></code> or <code class="docutils literal notranslate"><span class="pre">OK</span></code>), and which don’t have any other associated
 metadata, don’t require a corresponding metadata file.</p>
 <section id="directory-metadata">
-<h3>Directory Metadata<a class="headerlink" href="#directory-metadata" title="Permalink to this headline">¶</a></h3>
+<h3>Directory Metadata<a class="headerlink" href="#directory-metadata" title="Link to this heading">¶</a></h3>
 <p>In addition to per-test metadata, default metadata can be applied to
 all the tests in a given source location, using a <code class="docutils literal notranslate"><span class="pre">__dir__.ini</span></code>
 metadata file. For example to apply metadata to all tests under
@@ -73,7 +71,7 @@ metadata file. For example to apply metadata to all tests under
 </section>
 </section>
 <section id="metadata-format">
-<h2>Metadata Format<a class="headerlink" href="#metadata-format" title="Permalink to this headline">¶</a></h2>
+<h2>Metadata Format<a class="headerlink" href="#metadata-format" title="Link to this heading">¶</a></h2>
 <p>The format of the metadata files is based on the ini format. Files are
 divided into sections, each (apart from the root section) having a
 heading enclosed in square braces. Within each section are key-value
@@ -100,7 +98,7 @@ indicating nesting depth.</p></li>
 </pre></div>
 </div>
 <section id="conditional-values">
-<h3>Conditional Values<a class="headerlink" href="#conditional-values" title="Permalink to this headline">¶</a></h3>
+<h3>Conditional Values<a class="headerlink" href="#conditional-values" title="Link to this heading">¶</a></h3>
 <p>In order to support values that depend on some external data, the
 right hand side of a key/value pair can take a set of conditionals
 rather than a plain value. These values are placed on a new line
@@ -135,7 +133,7 @@ supplied when the metadata is used.</p>
 </section>
 </section>
 <section id="web-platform-tests-metadata">
-<h2>Web-Platform-Tests Metadata<a class="headerlink" href="#web-platform-tests-metadata" title="Permalink to this headline">¶</a></h2>
+<h2>Web-Platform-Tests Metadata<a class="headerlink" href="#web-platform-tests-metadata" title="Link to this heading">¶</a></h2>
 <p>When used for expectation data, metadata files have the following format:</p>
 <blockquote>
 <div><ul>
@@ -150,7 +148,7 @@ subtest. This may be omitted if there’s no non-default metadata for
 the subtest.</p></li>
 <li><p>The following known keys:</p>
 <dl class="field-list simple">
-<dt class="field-odd">expected</dt>
+<dt class="field-odd">expected<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The expectation value or values of each (sub)test. In
 the case this value is a list, the first value represents the
 typical expected test outcome, and subsequent values indicate
@@ -158,17 +156,17 @@ known intermittent outcomes e.g. <code class="docutils literal notranslate"><spa
 would indicate a test that usually passes but has a known-flaky
 <code class="docutils literal notranslate"><span class="pre">ERROR</span></code> outcome.</p>
 </dd>
-<dt class="field-even">disabled</dt>
+<dt class="field-even">disabled<span class="colon">:</span></dt>
 <dd class="field-even"><p>Any values apart from the special value <code class="docutils literal notranslate"><span class="pre">&#64;False</span></code>
 indicates that the (sub)test is disabled and should either not be
 run (for tests) or that its results should be ignored (subtests).</p>
 </dd>
-<dt class="field-odd">restart-after</dt>
+<dt class="field-odd">restart-after<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Any value apart from the special value <code class="docutils literal notranslate"><span class="pre">&#64;False</span></code>
 indicates that the runner should restart the browser after running
 this test (e.g. to clear out unwanted state).</p>
 </dd>
-<dt class="field-even">fuzzy</dt>
+<dt class="field-even">fuzzy<span class="colon">:</span></dt>
 <dd class="field-even"><p>Used for reftests. This is interpreted as a list containing
 entries like <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name=fuzzy&gt;</span></code> content value, which consists of
 an optional reference identifier followed by a colon, then a range
@@ -181,14 +179,14 @@ takes the form lhs URL, comparison, rhs URL, in which case the
 fuzziness only applies for any comparison involving that specific
 pair of URLs. Some illustrative examples are given below.</p>
 </dd>
-<dt class="field-odd">implementation-status</dt>
+<dt class="field-odd">implementation-status<span class="colon">:</span></dt>
 <dd class="field-odd"><p>One of the values <code class="docutils literal notranslate"><span class="pre">implementing</span></code>,
 <code class="docutils literal notranslate"><span class="pre">not-implementing</span></code> or <code class="docutils literal notranslate"><span class="pre">default</span></code>. This is used in conjunction
 with the <code class="docutils literal notranslate"><span class="pre">--skip-implementation-status</span></code> command line argument to
 <code class="docutils literal notranslate"><span class="pre">wptrunner</span></code> to ignore certain features where running the test is
 low value.</p>
 </dd>
-<dt class="field-even">tags</dt>
+<dt class="field-even">tags<span class="colon">:</span></dt>
 <dd class="field-even"><p>A list of labels associated with a given test that can be
 used in conjunction with the <code class="docutils literal notranslate"><span class="pre">--tag</span></code> command line argument to
 <code class="docutils literal notranslate"><span class="pre">wptrunner</span></code> for test selection.</p>
@@ -203,22 +201,22 @@ specific implementations. For example Gecko-based browsers support
 <li><p>Variables taken from the <code class="docutils literal notranslate"><span class="pre">RunInfo</span></code> data which describe the
 configuration of the test run. Common properties include:</p>
 <dl class="field-list simple">
-<dt class="field-odd">product</dt>
+<dt class="field-odd">product<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A string giving the name of the browser under test</p>
 </dd>
-<dt class="field-even">browser_channel</dt>
+<dt class="field-even">browser_channel<span class="colon">:</span></dt>
 <dd class="field-even"><p>A string giving the release channel of the browser under test</p>
 </dd>
-<dt class="field-odd">debug</dt>
+<dt class="field-odd">debug<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A Boolean indicating whether the build is a debug build</p>
 </dd>
-<dt class="field-even">os</dt>
+<dt class="field-even">os<span class="colon">:</span></dt>
 <dd class="field-even"><p>A string  the operating system</p>
 </dd>
-<dt class="field-odd">version</dt>
+<dt class="field-odd">version<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A string indicating the particular version of that operating system</p>
 </dd>
-<dt class="field-even">processor</dt>
+<dt class="field-even">processor<span class="colon">:</span></dt>
 <dd class="field-even"><p>A string indicating the processor architecture.</p>
 </dd>
 </dl>
@@ -278,7 +276,7 @@ the test URL) these limits would instead be 10 to 15 and 0 to 20,
 respectively.</p>
 </section>
 <section id="generating-expectation-files">
-<h2>Generating Expectation Files<a class="headerlink" href="#generating-expectation-files" title="Permalink to this headline">¶</a></h2>
+<h2>Generating Expectation Files<a class="headerlink" href="#generating-expectation-files" title="Link to this heading">¶</a></h2>
 <p>wpt provides the tool <code class="docutils literal notranslate"><span class="pre">wpt</span> <span class="pre">update-expectations</span></code> command to generate
 expectation files from the results of a set of test runs. The basic
 syntax for this is:</p>
@@ -321,7 +319,7 @@ specified log files are removed from the list.</p>
 </dd>
 </dl>
 <section id="property-configuration">
-<h3>Property Configuration<a class="headerlink" href="#property-configuration" title="Permalink to this headline">¶</a></h3>
+<h3>Property Configuration<a class="headerlink" href="#property-configuration" title="Link to this heading">¶</a></h3>
 <p>In cases where the expectation depends on the run configuration <code class="docutils literal notranslate"><span class="pre">wpt</span>
 <span class="pre">update-expectations</span></code> is able to generate conditional values. Because
 the relevant variables depend on the range of configurations that need
@@ -332,14 +330,14 @@ argument to <code class="docutils literal notranslate"><span class="pre">wpt</sp
 defaults from <code class="docutils literal notranslate"><span class="pre">&lt;metadata</span> <span class="pre">root&gt;/update_properties.json</span></code> are used, if
 present.</p>
 <section id="properties-file-format">
-<h4>Properties File Format<a class="headerlink" href="#properties-file-format" title="Permalink to this headline">¶</a></h4>
+<h4>Properties File Format<a class="headerlink" href="#properties-file-format" title="Link to this heading">¶</a></h4>
 <p>The file is JSON formatted with two top-level keys:</p>
 <dl class="field-list simple">
-<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">properties</span></code></dt>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">properties</span></code><span class="colon">:</span></dt>
 <dd class="field-odd"><p>A list of property names to consider for conditionals
 e.g <code class="docutils literal notranslate"><span class="pre">[&quot;product&quot;,</span> <span class="pre">&quot;os&quot;]</span></code>.</p>
 </dd>
-<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">dependents</span></code></dt>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">dependents</span></code><span class="colon">:</span></dt>
 <dd class="field-even"><p>An optional dictionary containing properties that
 should only be used as “tie-breakers” when differentiating based on a
 specific top-level property has failed. This is useful when the
@@ -367,7 +365,7 @@ separate the observed results.</p>
 </section>
 </section>
 <section id="examples">
-<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<h3>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h3>
 <p>Update all the expectations from a set of cross-platform test runs:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">update</span><span class="o">-</span><span class="n">expectations</span> <span class="o">--</span><span class="n">full</span> <span class="n">osx</span><span class="o">.</span><span class="n">log</span> <span class="n">linux</span><span class="o">.</span><span class="n">log</span> <span class="n">windows</span><span class="o">.</span><span class="n">log</span>
 </pre></div>
@@ -380,10 +378,10 @@ platform-independent:</p>
 </section>
 </section>
 <section id="why-a-custom-format">
-<h2>Why a Custom Format?<a class="headerlink" href="#why-a-custom-format" title="Permalink to this headline">¶</a></h2>
+<h2>Why a Custom Format?<a class="headerlink" href="#why-a-custom-format" title="Link to this heading">¶</a></h2>
 </section>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
 <p>Given the use of the metadata files in CI systems, it was desirable to
 have something with the following properties:</p>
 <blockquote>
@@ -467,7 +465,7 @@ format offered the best tradeoffs given the requirements.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -484,7 +482,7 @@ format offered the best tradeoffs given the requirements.</p>
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

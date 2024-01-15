@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Lint Tool &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="The Ahem Font" href="ahem.html" />
@@ -35,7 +33,7 @@
           <div class="body" role="main">
             
   <section id="lint-tool">
-<h1>Lint Tool<a class="headerlink" href="#lint-tool" title="Permalink to this headline">¶</a></h1>
+<h1>Lint Tool<a class="headerlink" href="#lint-tool" title="Link to this heading">¶</a></h1>
 <p>We have a lint tool for catching common mistakes in test files. You can run
 it manually by running the <code class="docutils literal notranslate"><span class="pre">wpt</span> <span class="pre">lint</span></code> command from the root of your local
 web-platform-tests working directory like this:</p>
@@ -47,7 +45,7 @@ and reviewers will not merge branches with tests that have lint errors, so
 you must either <a class="reference external" href="#fixing-lint-errors">fix all lint errors</a>, or you must
 <a class="reference external" href="#updating-the-ignored-files">add an exception</a> to suppress the errors.</p>
 <section id="fixing-lint-errors">
-<h2>Fixing lint errors<a class="headerlink" href="#fixing-lint-errors" title="Permalink to this headline">¶</a></h2>
+<h2>Fixing lint errors<a class="headerlink" href="#fixing-lint-errors" title="Link to this heading">¶</a></h2>
 <p>You must fix any errors the lint tool reports, unless an error is for something
 essential to a certain test or that for some other exceptional reason shouldn’t
 prevent the test from being merged; in those cases you can <a class="reference external" href="#updating-the-ignored-files">add an
@@ -236,7 +234,7 @@ to replace web-platform.test with <code class="docutils literal notranslate"><sp
 </dl>
 </section>
 <section id="updating-the-ignored-files">
-<h2>Updating the ignored files<a class="headerlink" href="#updating-the-ignored-files" title="Permalink to this headline">¶</a></h2>
+<h2>Updating the ignored files<a class="headerlink" href="#updating-the-ignored-files" title="Link to this heading">¶</a></h2>
 <p>Normally you must <a class="reference external" href="#fixing-lint-errors">fix all lint errors</a>. But in the
 unusual case of error reports for things essential to certain tests or that
 for other exceptional reasons shouldn’t prevent a merge of a test, you can
@@ -324,7 +322,7 @@ file <code class="docutils literal notranslate"><span class="pre">example/file.h
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -341,7 +339,7 @@ file <code class="docutils literal notranslate"><span class="pre">example/file.h
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

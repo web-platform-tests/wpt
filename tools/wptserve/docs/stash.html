@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Stash &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="wptserve Pipes" href="../../../writing-tests/server-pipes.html" />
@@ -35,7 +33,7 @@
           <div class="body" role="main">
             
   <section id="stash">
-<h1>Stash<a class="headerlink" href="#stash" title="Permalink to this headline">¶</a></h1>
+<h1>Stash<a class="headerlink" href="#stash" title="Link to this heading">¶</a></h1>
 <p>Object for storing cross-request state. This is unusual in that keys
 must be UUIDs, in order to prevent different clients setting the same
 key, and values are write-once, read-once to minimize the chances of
@@ -59,15 +57,15 @@ part of the stash corresponding to its own path.</p>
 </pre></div>
 </div>
 <section id="module-wptserve.stash">
-<span id="interface"></span><h2><a class="reference internal" href="#module-wptserve.stash" title="wptserve.stash"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Interface</span></code></a><a class="headerlink" href="#module-wptserve.stash" title="Permalink to this headline">¶</a></h2>
+<span id="interface"></span><h2><a class="reference internal" href="#module-wptserve.stash" title="wptserve.stash"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Interface</span></code></a><a class="headerlink" href="#module-wptserve.stash" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.stash.QueueProxy">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.stash.</span></span><span class="sig-name descname"><span class="pre">QueueProxy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serializer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">authkey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exposed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manager_owned</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.QueueProxy" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.stash.</span></span><span class="sig-name descname"><span class="pre">QueueProxy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serializer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">authkey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exposed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manager_owned</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.QueueProxy" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.stash.Stash">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.stash.</span></span><span class="sig-name descname"><span class="pre">Stash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">authkey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.Stash" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.stash.</span></span><span class="sig-name descname"><span class="pre">Stash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">authkey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.Stash" title="Link to this definition">¶</a></dt>
 <dd><p>Key-value store for persisting data across HTTP/S and WS/S requests.</p>
 <p>This data store is specifically designed for persisting data across server
 requests. The synchronization is achieved by using the BaseManager from
@@ -88,10 +86,10 @@ between different resources or different requests for the same
 resource.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="wptserve.stash.Stash.put">
-<span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.Stash.put" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.Stash.put" title="Link to this definition">¶</a></dt>
 <dd><p>Place a value in the shared stash.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> – A UUID to use as the data’s key.</p></li>
 <li><p><strong>value</strong> – The data to store. This can be any python object.</p></li>
@@ -104,10 +102,10 @@ the current request path)</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="wptserve.stash.Stash.take">
-<span class="sig-name descname"><span class="pre">take</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.Stash.take" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">take</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.Stash.take" title="Link to this definition">¶</a></dt>
 <dd><p>Remove a value from the shared stash and return it.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> – A UUID to use as the data’s key.</p></li>
 <li><p><strong>path</strong> – The path that has access to read the data (by default
@@ -121,12 +119,12 @@ the current request path)</p></li>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="wptserve.stash.StashError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.stash.</span></span><span class="sig-name descname"><span class="pre">StashError</span></span><a class="headerlink" href="#wptserve.stash.StashError" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.stash.</span></span><span class="sig-name descname"><span class="pre">StashError</span></span><a class="headerlink" href="#wptserve.stash.StashError" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.stash.StashManager">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.stash.</span></span><span class="sig-name descname"><span class="pre">StashManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">authkey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serializer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pickle'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shutdown_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.StashManager" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.stash.</span></span><span class="sig-name descname"><span class="pre">StashManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">authkey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serializer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pickle'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shutdown_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.StashManager" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </section>
@@ -187,7 +185,7 @@ the current request path)</p></li>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -204,7 +202,7 @@ the current request path)</p></li>
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

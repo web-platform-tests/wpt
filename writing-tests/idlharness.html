@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>IDL Tests (idlharness.js) &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="testharness.js tutorial" href="testharness-tutorial.html" />
@@ -35,21 +33,21 @@
           <div class="body" role="main">
             
   <section id="idl-tests-idlharness-js">
-<h1>IDL Tests (idlharness.js)<a class="headerlink" href="#idl-tests-idlharness-js" title="Permalink to this headline">¶</a></h1>
+<h1>IDL Tests (idlharness.js)<a class="headerlink" href="#idl-tests-idlharness-js" title="Link to this heading">¶</a></h1>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">idlharness.js</span></code> generates tests for Web IDL fragments, using the
 <a class="reference internal" href="testharness.html"><span class="doc">JavaScript Tests (testharness.js)</span></a> infrastructure. You typically want to use
 <code class="docutils literal notranslate"><span class="pre">.any.js</span></code> or <code class="docutils literal notranslate"><span class="pre">.window.js</span></code> for this to avoid having to write unnessary boilerplate.</p>
 </section>
 <section id="adding-idl-fragments">
-<h2>Adding IDL fragments<a class="headerlink" href="#adding-idl-fragments" title="Permalink to this headline">¶</a></h2>
+<h2>Adding IDL fragments<a class="headerlink" href="#adding-idl-fragments" title="Link to this heading">¶</a></h2>
 <p>Web IDL is automatically scraped from specifications and added to the <code class="docutils literal notranslate"><span class="pre">/interfaces/</span></code> directory. See
 the <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/interfaces/README.md">README</a> there for
 details.</p>
 </section>
 <section id="testing-idl-fragments">
-<h2>Testing IDL fragments<a class="headerlink" href="#testing-idl-fragments" title="Permalink to this headline">¶</a></h2>
+<h2>Testing IDL fragments<a class="headerlink" href="#testing-idl-fragments" title="Link to this heading">¶</a></h2>
 <p>For example, the Fetch API’s IDL is tested in
 <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/fetch/api/idlharness.any.js"><code class="docutils literal notranslate"><span class="pre">/fetch/api/idlharness.any.js</span></code></a>:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// META: global=window,worker</span>
@@ -86,12 +84,12 @@ These are needed to make the <code class="docutils literal notranslate"><span cl
 </ul>
 </section>
 <section id="methods-of-idlarray">
-<h2>Methods of <code class="docutils literal notranslate"><span class="pre">IdlArray</span></code><a class="headerlink" href="#methods-of-idlarray" title="Permalink to this headline">¶</a></h2>
+<h2>Methods of <code class="docutils literal notranslate"><span class="pre">IdlArray</span></code><a class="headerlink" href="#methods-of-idlarray" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">IdlArray</span></code> objects can be obtained through the <em>setup_func</em> argument of <code class="docutils literal notranslate"><span class="pre">idl_test</span></code>. Anything not
 documented in this section should be considered an implementation detail, and outside callers should
 not use it.</p>
 <section id="add-objects-dict">
-<h3><code class="docutils literal notranslate"><span class="pre">add_objects(dict)</span></code><a class="headerlink" href="#add-objects-dict" title="Permalink to this headline">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">add_objects(dict)</span></code><a class="headerlink" href="#add-objects-dict" title="Link to this heading">¶</a></h3>
 <p><em>dict</em> should be an object whose keys are the names of interfaces or exceptions, and whose values
 are arrays of strings.  When an interface or exception is tested, every string registered for it
 with <code class="docutils literal notranslate"><span class="pre">add_objects()</span></code> will be evaluated, and tests will be run on the result to verify that it
@@ -109,7 +107,7 @@ instead of throwing, this might have side effects, possibly even preventing the 
 running correctly.</p>
 </section>
 <section id="prevent-multiple-testing-name">
-<h3><code class="docutils literal notranslate"><span class="pre">prevent_multiple_testing(name)</span></code><a class="headerlink" href="#prevent-multiple-testing-name" title="Permalink to this headline">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">prevent_multiple_testing(name)</span></code><a class="headerlink" href="#prevent-multiple-testing-name" title="Link to this heading">¶</a></h3>
 <p>This is a niche method for use in case you’re testing many objects that implement the same
 interfaces, and don’t want to retest the same interfaces every single time. For instance, HTML
 defines many interfaces that all inherit from <code class="docutils literal notranslate"><span class="pre">HTMLElement</span></code>, so the HTML test suite has something
@@ -187,7 +185,7 @@ objects.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -204,7 +202,7 @@ objects.</p>
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

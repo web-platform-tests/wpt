@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>JavaScript Tests (testharness.js) &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="testharness.js API" href="testharness-api.html" />
@@ -35,7 +33,7 @@
           <div class="body" role="main">
             
   <section id="javascript-tests-testharness-js">
-<h1>JavaScript Tests (testharness.js)<a class="headerlink" href="#javascript-tests-testharness-js" title="Permalink to this headline">¶</a></h1>
+<h1>JavaScript Tests (testharness.js)<a class="headerlink" href="#javascript-tests-testharness-js" title="Link to this heading">¶</a></h1>
 <p>JavaScript tests are the correct type of test to write in any
 situation where you are not specifically interested in the rendering
 of a page, and where human interaction isn’t required; these tests are
@@ -59,9 +57,9 @@ that are commonly used with JavaScript tests.</p></li>
 </ul>
 <p>See also the <a class="reference internal" href="general-guidelines.html"><span class="doc">general guidelines</span></a> for all test types.</p>
 <section id="window-tests">
-<h2>Window tests<a class="headerlink" href="#window-tests" title="Permalink to this headline">¶</a></h2>
+<h2>Window tests<a class="headerlink" href="#window-tests" title="Link to this heading">¶</a></h2>
 <section id="without-html-boilerplate-window-js">
-<h3>Without HTML boilerplate (<code class="docutils literal notranslate"><span class="pre">.window.js</span></code>)<a class="headerlink" href="#without-html-boilerplate-window-js" title="Permalink to this headline">¶</a></h3>
+<h3>Without HTML boilerplate (<code class="docutils literal notranslate"><span class="pre">.window.js</span></code>)<a class="headerlink" href="#without-html-boilerplate-window-js" title="Link to this heading">¶</a></h3>
 <p>Create a JavaScript file whose filename ends in <code class="docutils literal notranslate"><span class="pre">.window.js</span></code> to have the necessary HTML boilerplate
 generated for you at <code class="docutils literal notranslate"><span class="pre">.window.html</span></code>. I.e., for <code class="docutils literal notranslate"><span class="pre">test.window.js</span></code> the server will ensure
 <code class="docutils literal notranslate"><span class="pre">test.window.html</span></code> is available.</p>
@@ -83,7 +81,7 @@ generated for you at <code class="docutils literal notranslate"><span class="pre
 <a class="reference external" href="testharness-api.html#promise-tests">promise tests (<code class="docutils literal notranslate"><span class="pre">promise_test()</span></code>)</a> for more involved setups.</p>
 </section>
 <section id="with-html-boilerplate">
-<h3>With HTML boilerplate<a class="headerlink" href="#with-html-boilerplate" title="Permalink to this headline">¶</a></h3>
+<h3>With HTML boilerplate<a class="headerlink" href="#with-html-boilerplate" title="Link to this heading">¶</a></h3>
 <p>You need to be a bit more explicit and include the <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> framework directly as well as an
 additional file used by implementations:</p>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!doctype html&gt;</span>
@@ -116,7 +114,7 @@ additional file used by implementations:</p>
 </section>
 </section>
 <section id="dedicated-worker-tests-worker-js">
-<h2>Dedicated worker tests (<code class="docutils literal notranslate"><span class="pre">.worker.js</span></code>)<a class="headerlink" href="#dedicated-worker-tests-worker-js" title="Permalink to this headline">¶</a></h2>
+<h2>Dedicated worker tests (<code class="docutils literal notranslate"><span class="pre">.worker.js</span></code>)<a class="headerlink" href="#dedicated-worker-tests-worker-js" title="Link to this heading">¶</a></h2>
 <p>Create a JavaScript file that imports <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> and whose filename ends in <code class="docutils literal notranslate"><span class="pre">.worker.js</span></code> to
 have the necessary HTML boilerplate generated for you at <code class="docutils literal notranslate"><span class="pre">.worker.html</span></code>.</p>
 <p>For example, one could write a test for the <code class="docutils literal notranslate"><span class="pre">FileReaderSync</span></code> API by
@@ -135,7 +133,7 @@ creating a <code class="docutils literal notranslate"><span class="pre">FileAPI/
 <a class="reference external" href="https://github.com/web-platform-tests/wpt/issues/11529">issue #11529</a>.)</p>
 </section>
 <section id="tests-for-other-or-multiple-globals-any-js">
-<h2>Tests for other or multiple globals (<code class="docutils literal notranslate"><span class="pre">.any.js</span></code>)<a class="headerlink" href="#tests-for-other-or-multiple-globals-any-js" title="Permalink to this headline">¶</a></h2>
+<h2>Tests for other or multiple globals (<code class="docutils literal notranslate"><span class="pre">.any.js</span></code>)<a class="headerlink" href="#tests-for-other-or-multiple-globals-any-js" title="Link to this heading">¶</a></h2>
 <p>Tests for features that exist in multiple global scopes can be written in a way
 that they are automatically run in several scopes. In this case, the test is a
 JavaScript file with extension <code class="docutils literal notranslate"><span class="pre">.any.js</span></code>, which can use all the usual APIs.</p>
@@ -196,13 +194,13 @@ tests</a>, it is
 automatically invoked for tests defined using the “multi-global” pattern.</p>
 </section>
 <section id="other-features-of-window-js-worker-js-and-any-js">
-<h2>Other features of <code class="docutils literal notranslate"><span class="pre">.window.js</span></code>, <code class="docutils literal notranslate"><span class="pre">.worker.js</span></code> and <code class="docutils literal notranslate"><span class="pre">.any.js</span></code><a class="headerlink" href="#other-features-of-window-js-worker-js-and-any-js" title="Permalink to this headline">¶</a></h2>
+<h2>Other features of <code class="docutils literal notranslate"><span class="pre">.window.js</span></code>, <code class="docutils literal notranslate"><span class="pre">.worker.js</span></code> and <code class="docutils literal notranslate"><span class="pre">.any.js</span></code><a class="headerlink" href="#other-features-of-window-js-worker-js-and-any-js" title="Link to this heading">¶</a></h2>
 <section id="specifying-a-test-title">
-<h3>Specifying a test title<a class="headerlink" href="#specifying-a-test-title" title="Permalink to this headline">¶</a></h3>
+<h3>Specifying a test title<a class="headerlink" href="#specifying-a-test-title" title="Link to this heading">¶</a></h3>
 <p>Use <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">META:</span> <span class="pre">title=This</span> <span class="pre">is</span> <span class="pre">the</span> <span class="pre">title</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">test</span></code> at the beginning of the resource.</p>
 </section>
 <section id="including-other-javascript-files">
-<h3>Including other JavaScript files<a class="headerlink" href="#including-other-javascript-files" title="Permalink to this headline">¶</a></h3>
+<h3>Including other JavaScript files<a class="headerlink" href="#including-other-javascript-files" title="Link to this heading">¶</a></h3>
 <p>Use <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">META:</span> <span class="pre">script=link/to/resource.js</span></code> at the beginning of the resource. For example,</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">META</span><span class="p">:</span> <span class="n">script</span><span class="o">=/</span><span class="n">common</span><span class="o">/</span><span class="n">utils</span><span class="o">.</span><span class="n">js</span>
 <span class="o">//</span> <span class="n">META</span><span class="p">:</span> <span class="n">script</span><span class="o">=</span><span class="n">resources</span><span class="o">/</span><span class="n">utils</span><span class="o">.</span><span class="n">js</span>
@@ -214,11 +212,11 @@ worker environments, the script will be imported using <code class="docutils lit
 environments, the script will be imported using a static <code class="docutils literal notranslate"><span class="pre">import</span></code>.</p>
 </section>
 <section id="specifying-a-timeout-of-long">
-<h3>Specifying a timeout of long<a class="headerlink" href="#specifying-a-timeout-of-long" title="Permalink to this headline">¶</a></h3>
+<h3>Specifying a timeout of long<a class="headerlink" href="#specifying-a-timeout-of-long" title="Link to this heading">¶</a></h3>
 <p>Use <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">META:</span> <span class="pre">timeout=long</span></code> at the beginning of the resource.</p>
 </section>
 <section id="specifying-test-variants">
-<h3>Specifying test <a class="reference external" href="#variants">variants</a><a class="headerlink" href="#specifying-test-variants" title="Permalink to this headline">¶</a></h3>
+<h3>Specifying test <a class="reference external" href="#variants">variants</a><a class="headerlink" href="#specifying-test-variants" title="Link to this heading">¶</a></h3>
 <p>Use <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">META:</span> <span class="pre">variant=url-suffix</span></code> at the beginning of the resource. For example,</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// META: variant=?default
 // META: variant=?wss
@@ -227,7 +225,7 @@ environments, the script will be imported using a static <code class="docutils l
 </section>
 </section>
 <section id="variants">
-<h2>Variants<a class="headerlink" href="#variants" title="Permalink to this headline">¶</a></h2>
+<h2>Variants<a class="headerlink" href="#variants" title="Link to this heading">¶</a></h2>
 <p>A test file can have multiple variants by including <code class="docutils literal notranslate"><span class="pre">meta</span></code> elements,
 for example:</p>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;?default&quot;</span><span class="p">&gt;</span>
@@ -277,7 +275,7 @@ expression).</p>
 </div>
 </section>
 <section id="table-of-contents">
-<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h2>
+<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="testharness-api.html">testharness.js API</a></li>
@@ -340,7 +338,7 @@ expression).</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -357,7 +355,7 @@ expression).</p>
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

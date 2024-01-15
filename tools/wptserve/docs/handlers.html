@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Handlers &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Pipes" href="pipes.html" />
@@ -35,7 +33,7 @@
           <div class="body" role="main">
             
   <section id="handlers">
-<h1>Handlers<a class="headerlink" href="#handlers" title="Permalink to this headline">¶</a></h1>
+<h1>Handlers<a class="headerlink" href="#handlers" title="Link to this heading">¶</a></h1>
 <p>Handlers are functions that have the general signature:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">handler</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
 </pre></div>
@@ -49,7 +47,7 @@ server will not attempt additional writes, i.e. the choice to write
 directly in the handler or not is all-or-nothing.</p>
 <p>A number of general-purpose handler functions are provided by default:</p>
 <section id="python-handlers">
-<span id="handlers-python"></span><h2>Python Handlers<a class="headerlink" href="#python-handlers" title="Permalink to this headline">¶</a></h2>
+<span id="handlers-python"></span><h2>Python Handlers<a class="headerlink" href="#python-handlers" title="Link to this heading">¶</a></h2>
 <p>Python handlers are functions which provide a higher-level API over
 manually updating the response object, by causing the return value of
 the function to provide (part of) the response. There are four
@@ -82,7 +80,7 @@ to use the provided <cite>wptserve.handlers.handler</cite> decorator:</p>
 </div>
 </section>
 <section id="json-handlers">
-<h2>JSON Handlers<a class="headerlink" href="#json-handlers" title="Permalink to this headline">¶</a></h2>
+<h2>JSON Handlers<a class="headerlink" href="#json-handlers" title="Link to this heading">¶</a></h2>
 <p>This is a specialisation of the python handler type specifically
 designed to facilitate providing JSON responses. The API is largely
 the same as for a normal python handler, but the <cite>content</cite> part of the
@@ -98,7 +96,7 @@ decorator:</p>
 </div>
 </section>
 <section id="python-file-handlers">
-<h2>Python File Handlers<a class="headerlink" href="#python-file-handlers" title="Permalink to this headline">¶</a></h2>
+<h2>Python File Handlers<a class="headerlink" href="#python-file-handlers" title="Link to this heading">¶</a></h2>
 <p>Python file handlers are Python files which the server executes in response to
 requests made to the corresponding URL. This is hooked up to a route like
 <code class="docutils literal notranslate"><span class="pre">(&quot;*&quot;,</span> <span class="pre">&quot;*.py&quot;,</span> <span class="pre">python_file_handler)</span></code>, meaning that any .py file will be
@@ -112,13 +110,13 @@ handlers, particularly when running the server in a web-exposed setting).</p>
 <a class="reference internal" href="#handlers-python"><span class="std std-ref">Python Handlers</span></a> above.</p>
 </section>
 <section id="asis-handlers">
-<h2>asis Handlers<a class="headerlink" href="#asis-handlers" title="Permalink to this headline">¶</a></h2>
+<h2>asis Handlers<a class="headerlink" href="#asis-handlers" title="Link to this heading">¶</a></h2>
 <p>These are used to serve files as literal byte streams including the
 HTTP status line, headers and body. In the default configuration this
 handler is invoked for all files with a .asis extension.</p>
 </section>
 <section id="file-handlers">
-<h2>File Handlers<a class="headerlink" href="#file-handlers" title="Permalink to this headline">¶</a></h2>
+<h2>File Handlers<a class="headerlink" href="#file-handlers" title="Link to this heading">¶</a></h2>
 <p>File handlers are used to serve static files. By default the content
 type of these files is set by examining the file extension. However
 this can be overridden, or additional headers supplied, by providing a
@@ -188,7 +186,7 @@ subdirectories), using a file called <cite>__dir__.headers</cite>.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -205,7 +203,7 @@ subdirectories), using a file called <cite>__dir__.headers</cite>.</p>
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

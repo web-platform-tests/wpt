@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Making a Testing Plan &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="JavaScript Tests (testharness.js)" href="testharness.html" />
@@ -35,7 +33,7 @@
           <div class="body" role="main">
             
   <section id="making-a-testing-plan">
-<h1>Making a Testing Plan<a class="headerlink" href="#making-a-testing-plan" title="Permalink to this headline">¶</a></h1>
+<h1>Making a Testing Plan<a class="headerlink" href="#making-a-testing-plan" title="Link to this heading">¶</a></h1>
 <p>When contributing to a project as large and open-ended as WPT, it’s easy to get
 lost in the details. It can be helpful to start by making a rough list of tests
 you intend to write. That plan will let you anticipate how much work will be
@@ -70,23 +68,19 @@ to <a class="reference external" href="https://rwaldron.github.io/webrtc-pc/">an
 test</a>, the appropriate fidelity depends
 on your needs, so you can be as precise as you feel is helpful.</p>
 <section id="understanding-the-testing-surface">
-<h2>Understanding the “testing surface”<a class="headerlink" href="#understanding-the-testing-surface" title="Permalink to this headline">¶</a></h2>
+<h2>Understanding the “testing surface”<a class="headerlink" href="#understanding-the-testing-surface" title="Link to this heading">¶</a></h2>
 <p>Web platform specifications are instructions about how a feature should work.
 They’re critical for implementers to “build the right thing,” but they are also
 important for anyone writing tests. We can use the same instructions to infer
 what kinds of tests would be likely to detect mistakes. Here are a few common
 patterns in specification text and the kind of tests they suggest.</p>
 <section id="input-sources">
-<h3>Input sources<a class="headerlink" href="#input-sources" title="Permalink to this headline">¶</a></h3>
+<h3>Input sources<a class="headerlink" href="#input-sources" title="Link to this heading">¶</a></h3>
 <p>Algorithms may accept input from many sources. Modifying the input is the most
 direct way we can influence the browser’s behavior and verify that it matches
 the specifications. That’s why it’s helpful to be able to recognize different
 sources of input.</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 18%" />
-<col style="width: 82%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Type of feature</p></th>
 <th class="head"><p>Potential input sources</p></th>
@@ -132,7 +126,7 @@ Choosing those values can be a challenge unto itself–see <a class="reference e
 Breadth</a> for advice.</p>
 </section>
 <section id="browser-state">
-<h3>Browser state<a class="headerlink" href="#browser-state" title="Permalink to this headline">¶</a></h3>
+<h3>Browser state<a class="headerlink" href="#browser-state" title="Link to this heading">¶</a></h3>
 <p>The state of the browser may also influence algorithm behavior. Examples
 include the current document, the dimensions of the viewport, and the entries
 in the browsing history. Just like with direct input, a thorough set of tests
@@ -153,7 +147,7 @@ current global object” is also a form of input. The test suite should include
 tests which execute with different types of global objects.</p>
 </section>
 <section id="branches">
-<h3>Branches<a class="headerlink" href="#branches" title="Permalink to this headline">¶</a></h3>
+<h3>Branches<a class="headerlink" href="#branches" title="Link to this heading">¶</a></h3>
 <p>When an algorithm branches based on some condition, that’s an indication of an
 interesting behavior that might be missed. Your testing plan should have at
 least one test that verifies the behavior when the branch is taken and at least
@@ -173,7 +167,7 @@ provided key, and the other test would verify that an item we previously stored
 was correctly retrieved when we called the method with its name.</p>
 </section>
 <section id="sequence">
-<h3>Sequence<a class="headerlink" href="#sequence" title="Permalink to this headline">¶</a></h3>
+<h3>Sequence<a class="headerlink" href="#sequence" title="Link to this heading">¶</a></h3>
 <p>Even without branching, the interplay between sequential algorithm steps can
 suggest interesting test cases. If two steps have observable side-effects, then
 it can be useful to verify they happen in the correct order.</p>
@@ -238,7 +232,7 @@ the other patterns listed above. They won’t always be as clear as the “drag�
 example!</p>
 </section>
 <section id="optional-behavior">
-<h3>Optional behavior<a class="headerlink" href="#optional-behavior" title="Permalink to this headline">¶</a></h3>
+<h3>Optional behavior<a class="headerlink" href="#optional-behavior" title="Link to this heading">¶</a></h3>
 <p>Specifications occasionally allow browsers discretion in how they implement
 certain features. These are described using <a class="reference external" href="https://tools.ietf.org/html/rfc2119">RFC
 2119</a> terms like “MAY” and “OPTIONAL”.
@@ -268,11 +262,11 @@ result when the document’s type changes.</p>
 </section>
 </section>
 <section id="exercising-restraint">
-<h2>Exercising Restraint<a class="headerlink" href="#exercising-restraint" title="Permalink to this headline">¶</a></h2>
+<h2>Exercising Restraint<a class="headerlink" href="#exercising-restraint" title="Link to this heading">¶</a></h2>
 <p>When writing conformance tests, choosing what <em>not</em> to test is sometimes just
 as hard as finding what needs testing.</p>
 <section id="don-t-dive-too-deep">
-<h3>Don’t dive too deep<a class="headerlink" href="#don-t-dive-too-deep" title="Permalink to this headline">¶</a></h3>
+<h3>Don’t dive too deep<a class="headerlink" href="#don-t-dive-too-deep" title="Link to this heading">¶</a></h3>
 <p>Algorithms are composed of many other algorithms which themselves are defined
 in terms of still more algorithms. It can be intimidating to consider
 exhaustively testing one of those “nested” algorithms, especially when they are
@@ -317,7 +311,7 @@ for selector parsing exist and where they are located. That’s why it’s best 
 confer with the people who are maintaining the tests.</p>
 </section>
 <section id="avoid-excessive-breadth">
-<h3>Avoid excessive breadth<a class="headerlink" href="#avoid-excessive-breadth" title="Permalink to this headline">¶</a></h3>
+<h3>Avoid excessive breadth<a class="headerlink" href="#avoid-excessive-breadth" title="Link to this heading">¶</a></h3>
 <p>When the set of input values is finite, it can be tempting to test them all
 exhaustively. When the set is very large, test authors can reduce repetition by
 defining tests programmatically in loops.</p>
@@ -364,7 +358,7 @@ to test a “3xx” value and a “4xx” value.</p>
 </section>
 </section>
 <section id="assessing-coverage">
-<h2>Assessing coverage<a class="headerlink" href="#assessing-coverage" title="Permalink to this headline">¶</a></h2>
+<h2>Assessing coverage<a class="headerlink" href="#assessing-coverage" title="Link to this heading">¶</a></h2>
 <p>It’s very likely that WPT already has some tests for the feature (or at least
 the specification) that you’re interesting in testing. In that case, you’ll
 have to learn what’s already been done before starting to write new tests.
@@ -374,7 +368,7 @@ effort, and it will also help you integrate your work more logically.</p>
 keep these guidelines in mind. Sooner or later, someone else will want to
 extend your work, so you ought to give them a good starting point!</p>
 <section id="file-names">
-<h3>File names<a class="headerlink" href="#file-names" title="Permalink to this headline">¶</a></h3>
+<h3>File names<a class="headerlink" href="#file-names" title="Link to this heading">¶</a></h3>
 <p>The names of existing files and folders in the repository can help you find
 tests that are relevant to your work. <a class="reference internal" href="../test-suite-design.html"><span class="doc">This page on the design of
 WPT</span></a> goes into detail about how files are generally laid
@@ -447,7 +441,7 @@ already covered. If not, then we know where to <a class="reference external" hre
 test</a>!</p>
 </section>
 <section id="failures-on-wpt-fyi">
-<h3>Failures on wpt.fyi<a class="headerlink" href="#failures-on-wpt-fyi" title="Permalink to this headline">¶</a></h3>
+<h3>Failures on wpt.fyi<a class="headerlink" href="#failures-on-wpt-fyi" title="Link to this heading">¶</a></h3>
 <p>There are many behaviors that are difficult to describe in a succinct file
 name. That’s commonly the case with low-level rendering details of CSS
 specifications. Test authors may resort to generic number-based naming schemes
@@ -487,7 +481,7 @@ to know for sure is to review their contents. However, this is a much more
 manageable set to work with!</p>
 </section>
 <section id="querying-file-contents">
-<h3>Querying file contents<a class="headerlink" href="#querying-file-contents" title="Permalink to this headline">¶</a></h3>
+<h3>Querying file contents<a class="headerlink" href="#querying-file-contents" title="Link to this heading">¶</a></h3>
 <p>Some web platform features are enabled with a predictable pattern. For example,
 HTML attributes follow a fairly consistent format. If you’re interested in
 testing a feature like this, you may be able to learn where your tests belong
@@ -505,11 +499,6 @@ use <a class="reference external" href="https://git-scm.com">git</a> to perform 
 <p>The following table lists some common search criteria and examples of how they
 can be expressed using regular expressions:</p>
 <div class="table-container"><table class="docutils align-default">
-<colgroup>
-<col style="width: 39%" />
-<col style="width: 21%" />
-<col style="width: 39%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Criteria</p></th>
 <th class="head"><p>Example match</p></th>
@@ -571,7 +560,7 @@ this list is far more approachable!</p>
 </section>
 </section>
 <section id="writing-the-tests">
-<h2>Writing the Tests<a class="headerlink" href="#writing-the-tests" title="Permalink to this headline">¶</a></h2>
+<h2>Writing the Tests<a class="headerlink" href="#writing-the-tests" title="Link to this heading">¶</a></h2>
 <p>With a complete testing plan in hand, you now have a good idea of the scope of
 your work. It’s finally time to write the tests! There’s a lot to say about how
 this is done technically. To learn more, check out <a class="reference internal" href="reftest-tutorial.html"><span class="doc">the WPT “reftest”
@@ -631,7 +620,7 @@ tutorial</span></a>.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -648,7 +637,7 @@ tutorial</span></a>.</p>
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

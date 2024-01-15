@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Request &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Response" href="response.html" />
@@ -35,24 +33,24 @@
           <div class="body" role="main">
             
   <section id="request">
-<h1>Request<a class="headerlink" href="#request" title="Permalink to this headline">¶</a></h1>
+<h1>Request<a class="headerlink" href="#request" title="Link to this heading">¶</a></h1>
 <p>Request object.</p>
 <section id="module-wptserve.request">
-<span id="interface"></span><h2><a class="reference internal" href="#module-wptserve.request" title="wptserve.request"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Interface</span></code></a><a class="headerlink" href="#module-wptserve.request" title="Permalink to this headline">¶</a></h2>
+<span id="interface"></span><h2><a class="reference internal" href="#module-wptserve.request" title="wptserve.request"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Interface</span></code></a><a class="headerlink" href="#module-wptserve.request" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.request.Authentication">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.request.</span></span><span class="sig-name descname"><span class="pre">Authentication</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.Authentication" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.request.</span></span><span class="sig-name descname"><span class="pre">Authentication</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.Authentication" title="Link to this definition">¶</a></dt>
 <dd><p>Object for dealing with HTTP Authentication</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Authentication.username">
-<span class="sig-name descname"><span class="pre">username</span></span><a class="headerlink" href="#wptserve.request.Authentication.username" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">username</span></span><a class="headerlink" href="#wptserve.request.Authentication.username" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The username supplied in the HTTP Authorization
 header, or None</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Authentication.password">
-<span class="sig-name descname"><span class="pre">password</span></span><a class="headerlink" href="#wptserve.request.Authentication.password" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">password</span></span><a class="headerlink" href="#wptserve.request.Authentication.password" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The password supplied in the HTTP Authorization
@@ -65,12 +63,12 @@ choice if callers need to decode them as most browsers use it.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.request.BinaryCookieParser">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.request.</span></span><span class="sig-name descname"><span class="pre">BinaryCookieParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.request.</span></span><span class="sig-name descname"><span class="pre">BinaryCookieParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser" title="Link to this definition">¶</a></dt>
 <dd><p>A subclass of BaseCookie that returns values in binary strings</p>
 <p>This is not intended to store the cookies; use Cookies instead.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="wptserve.request.BinaryCookieParser.load">
-<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rawdata</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser.load" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rawdata</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser.load" title="Link to this definition">¶</a></dt>
 <dd><p>Load cookies from a binary string.</p>
 <p>This overrides and calls BaseCookie.load. Unlike BaseCookie.load, it
 does not accept dictionaries.</p>
@@ -78,14 +76,14 @@ does not accept dictionaries.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="wptserve.request.BinaryCookieParser.value_decode">
-<span class="sig-name descname"><span class="pre">value_decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser.value_decode" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">value_decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser.value_decode" title="Link to this definition">¶</a></dt>
 <dd><p>Decode value from network to (real_value, coded_value).</p>
 <p>Override BaseCookie.value_decode.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="wptserve.request.BinaryCookieParser.value_encode">
-<span class="sig-name descname"><span class="pre">value_encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser.value_encode" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">value_encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser.value_encode" title="Link to this definition">¶</a></dt>
 <dd><p>real_value, coded_value = value_encode(VALUE)
 Called prior to setting a cookie’s value from the dictionary
 representation.  The VALUE is the value being assigned.
@@ -96,62 +94,62 @@ Override this function to modify the behavior of cookies.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.request.CookieValue">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.request.</span></span><span class="sig-name descname"><span class="pre">CookieValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">morsel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.CookieValue" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.request.</span></span><span class="sig-name descname"><span class="pre">CookieValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">morsel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.CookieValue" title="Link to this definition">¶</a></dt>
 <dd><p>Representation of cookies.</p>
 <p>Note that cookies are considered read-only and the string value
 of the cookie will not change if you update the field values.
 However this is not enforced.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.CookieValue.key">
-<span class="sig-name descname"><span class="pre">key</span></span><a class="headerlink" href="#wptserve.request.CookieValue.key" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">key</span></span><a class="headerlink" href="#wptserve.request.CookieValue.key" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The name of the cookie.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.CookieValue.value">
-<span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#wptserve.request.CookieValue.value" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#wptserve.request.CookieValue.value" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The value of the cookie</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.CookieValue.expires">
-<span class="sig-name descname"><span class="pre">expires</span></span><a class="headerlink" href="#wptserve.request.CookieValue.expires" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">expires</span></span><a class="headerlink" href="#wptserve.request.CookieValue.expires" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The expiry date of the cookie</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.CookieValue.path">
-<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#wptserve.request.CookieValue.path" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#wptserve.request.CookieValue.path" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The path of the cookie</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.CookieValue.comment">
-<span class="sig-name descname"><span class="pre">comment</span></span><a class="headerlink" href="#wptserve.request.CookieValue.comment" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">comment</span></span><a class="headerlink" href="#wptserve.request.CookieValue.comment" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The comment of the cookie.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.CookieValue.domain">
-<span class="sig-name descname"><span class="pre">domain</span></span><a class="headerlink" href="#wptserve.request.CookieValue.domain" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">domain</span></span><a class="headerlink" href="#wptserve.request.CookieValue.domain" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The domain with which the cookie is associated</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.CookieValue.max_age">
-<span class="sig-name descname"><span class="pre">max_age</span></span><a class="headerlink" href="#wptserve.request.CookieValue.max_age" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">max_age</span></span><a class="headerlink" href="#wptserve.request.CookieValue.max_age" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The max-age value of the cookie.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.CookieValue.secure">
-<span class="sig-name descname"><span class="pre">secure</span></span><a class="headerlink" href="#wptserve.request.CookieValue.secure" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">secure</span></span><a class="headerlink" href="#wptserve.request.CookieValue.secure" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Whether the cookie is marked as secure</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.CookieValue.httponly">
-<span class="sig-name descname"><span class="pre">httponly</span></span><a class="headerlink" href="#wptserve.request.CookieValue.httponly" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">httponly</span></span><a class="headerlink" href="#wptserve.request.CookieValue.httponly" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Whether the cookie is marked as httponly</p>
@@ -159,26 +157,26 @@ However this is not enforced.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.request.Cookies">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.request.</span></span><span class="sig-name descname"><span class="pre">Cookies</span></span><a class="headerlink" href="#wptserve.request.Cookies" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.request.</span></span><span class="sig-name descname"><span class="pre">Cookies</span></span><a class="headerlink" href="#wptserve.request.Cookies" title="Link to this definition">¶</a></dt>
 <dd><p>MultiDict specialised for Cookie values</p>
 <p>Keys are binary strings and values are CookieValue objects.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.request.H2Request">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.request.</span></span><span class="sig-name descname"><span class="pre">H2Request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_handler</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.H2Request" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.request.</span></span><span class="sig-name descname"><span class="pre">H2Request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_handler</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.H2Request" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.request.MultiDict">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.request.</span></span><span class="sig-name descname"><span class="pre">MultiDict</span></span><a class="headerlink" href="#wptserve.request.MultiDict" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.request.</span></span><span class="sig-name descname"><span class="pre">MultiDict</span></span><a class="headerlink" href="#wptserve.request.MultiDict" title="Link to this definition">¶</a></dt>
 <dd><p>Dictionary type that holds multiple values for each key</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="wptserve.request.MultiDict.first">
-<span class="sig-name descname"><span class="pre">first</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default=&lt;object</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.first" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">first</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default=&lt;object</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.first" title="Link to this definition">¶</a></dt>
 <dd><p>Get the first value with a given key</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> – The key to lookup</p></li>
 <li><p><strong>default</strong> – The default to return if key is
@@ -191,17 +189,17 @@ specified)</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="wptserve.request.MultiDict.from_field_storage">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_field_storage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.from_field_storage" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_field_storage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.from_field_storage" title="Link to this definition">¶</a></dt>
 <dd><p>Construct a MultiDict from a cgi.FieldStorage</p>
 <p>Note that all keys and values are binary strings.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="wptserve.request.MultiDict.get">
-<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.get" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.get" title="Link to this definition">¶</a></dt>
 <dd><p>Get the first value with a given key</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> – The key to lookup</p></li>
 <li><p><strong>default</strong> – The default to return if key is
@@ -213,10 +211,10 @@ not found (None by default)</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="wptserve.request.MultiDict.get_list">
-<span class="sig-name descname"><span class="pre">get_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.get_list" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.get_list" title="Link to this definition">¶</a></dt>
 <dd><p>Get all values with a given key as a list</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>key</strong> – The key to lookup</p>
 </dd>
 </dl>
@@ -224,10 +222,10 @@ not found (None by default)</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="wptserve.request.MultiDict.last">
-<span class="sig-name descname"><span class="pre">last</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default=&lt;object</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.last" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">last</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default=&lt;object</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.last" title="Link to this definition">¶</a></dt>
 <dd><p>Get the last value with a given key</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> – The key to lookup</p></li>
 <li><p><strong>default</strong> – The default to return if key is
@@ -242,72 +240,72 @@ specified)</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.request.Request">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.request.</span></span><span class="sig-name descname"><span class="pre">Request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_handler</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.Request" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.request.</span></span><span class="sig-name descname"><span class="pre">Request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_handler</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.Request" title="Link to this definition">¶</a></dt>
 <dd><p>Object representing a HTTP request.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Request.doc_root">
-<span class="sig-name descname"><span class="pre">doc_root</span></span><a class="headerlink" href="#wptserve.request.Request.doc_root" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">doc_root</span></span><a class="headerlink" href="#wptserve.request.Request.doc_root" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The local directory to use as a base when resolving paths</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Request.route_match">
-<span class="sig-name descname"><span class="pre">route_match</span></span><a class="headerlink" href="#wptserve.request.Request.route_match" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">route_match</span></span><a class="headerlink" href="#wptserve.request.Request.route_match" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Regexp match object from matching the request path to the route
 selected for the request.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Request.client_address">
-<span class="sig-name descname"><span class="pre">client_address</span></span><a class="headerlink" href="#wptserve.request.Request.client_address" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">client_address</span></span><a class="headerlink" href="#wptserve.request.Request.client_address" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Contains a tuple of the form (host, port) representing the client’s address.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Request.protocol_version">
-<span class="sig-name descname"><span class="pre">protocol_version</span></span><a class="headerlink" href="#wptserve.request.Request.protocol_version" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">protocol_version</span></span><a class="headerlink" href="#wptserve.request.Request.protocol_version" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>HTTP version specified in the request.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Request.method">
-<span class="sig-name descname"><span class="pre">method</span></span><a class="headerlink" href="#wptserve.request.Request.method" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">method</span></span><a class="headerlink" href="#wptserve.request.Request.method" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>HTTP method in the request.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Request.request_path">
-<span class="sig-name descname"><span class="pre">request_path</span></span><a class="headerlink" href="#wptserve.request.Request.request_path" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">request_path</span></span><a class="headerlink" href="#wptserve.request.Request.request_path" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Request path as it appears in the HTTP request.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Request.url_base">
-<span class="sig-name descname"><span class="pre">url_base</span></span><a class="headerlink" href="#wptserve.request.Request.url_base" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">url_base</span></span><a class="headerlink" href="#wptserve.request.Request.url_base" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The prefix part of the path; typically / unless the handler has a url_base set</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Request.url">
-<span class="sig-name descname"><span class="pre">url</span></span><a class="headerlink" href="#wptserve.request.Request.url" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">url</span></span><a class="headerlink" href="#wptserve.request.Request.url" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Absolute URL for the request.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Request.url_parts">
-<span class="sig-name descname"><span class="pre">url_parts</span></span><a class="headerlink" href="#wptserve.request.Request.url_parts" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">url_parts</span></span><a class="headerlink" href="#wptserve.request.Request.url_parts" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Parts of the requested URL as obtained by urlparse.urlsplit(path)</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Request.request_line">
-<span class="sig-name descname"><span class="pre">request_line</span></span><a class="headerlink" href="#wptserve.request.Request.request_line" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">request_line</span></span><a class="headerlink" href="#wptserve.request.Request.request_line" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Raw request line</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Request.headers">
-<span class="sig-name descname"><span class="pre">headers</span></span><a class="headerlink" href="#wptserve.request.Request.headers" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">headers</span></span><a class="headerlink" href="#wptserve.request.Request.headers" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>RequestHeaders object providing a dictionary-like representation of
@@ -320,19 +318,19 @@ the request headers.</p>
 <p>Dictionary of non-normalized request headers.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Request.body">
-<span class="sig-name descname"><span class="pre">body</span></span><a class="headerlink" href="#wptserve.request.Request.body" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">body</span></span><a class="headerlink" href="#wptserve.request.Request.body" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Request body as a string</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Request.raw_input">
-<span class="sig-name descname"><span class="pre">raw_input</span></span><a class="headerlink" href="#wptserve.request.Request.raw_input" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">raw_input</span></span><a class="headerlink" href="#wptserve.request.Request.raw_input" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>File-like object representing the body of the request.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Request.GET">
-<span class="sig-name descname"><span class="pre">GET</span></span><a class="headerlink" href="#wptserve.request.Request.GET" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">GET</span></span><a class="headerlink" href="#wptserve.request.Request.GET" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>MultiDict representing the parameters supplied with the request.
@@ -341,7 +339,7 @@ chosen to be familiar to users of other systems such as PHP.
 Both keys and values are binary strings.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Request.POST">
-<span class="sig-name descname"><span class="pre">POST</span></span><a class="headerlink" href="#wptserve.request.Request.POST" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">POST</span></span><a class="headerlink" href="#wptserve.request.Request.POST" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>MultiDict representing the request body parameters. Most parameters
@@ -349,21 +347,21 @@ are present as string values, but file uploads have file-like
 values. All string values (including keys) have binary type.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Request.cookies">
-<span class="sig-name descname"><span class="pre">cookies</span></span><a class="headerlink" href="#wptserve.request.Request.cookies" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">cookies</span></span><a class="headerlink" href="#wptserve.request.Request.cookies" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>A Cookies object representing cookies sent with the request with a
 dictionary-like interface.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Request.auth">
-<span class="sig-name descname"><span class="pre">auth</span></span><a class="headerlink" href="#wptserve.request.Request.auth" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">auth</span></span><a class="headerlink" href="#wptserve.request.Request.auth" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>An instance of Authentication with username and password properties
 representing any credentials supplied using HTTP authentication.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Request.server">
-<span class="sig-name descname"><span class="pre">server</span></span><a class="headerlink" href="#wptserve.request.Request.server" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">server</span></span><a class="headerlink" href="#wptserve.request.Request.server" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Server object containing information about the server environment.</p>
@@ -371,19 +369,19 @@ representing any credentials supplied using HTTP authentication.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.request.RequestHeaders">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.request.</span></span><span class="sig-name descname"><span class="pre">RequestHeaders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.RequestHeaders" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.request.</span></span><span class="sig-name descname"><span class="pre">RequestHeaders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.RequestHeaders" title="Link to this definition">¶</a></dt>
 <dd><p>Read-only dictionary-like API for accessing request headers.</p>
 <p>Unlike BaseHTTPRequestHandler.headers, this class always returns all
 headers with the same name (separated by commas). And it ensures all keys
 (i.e. names of headers) and values have binary type.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="wptserve.request.RequestHeaders.get">
-<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.RequestHeaders.get" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.RequestHeaders.get" title="Link to this definition">¶</a></dt>
 <dd><p>Get a string representing all headers with a particular value,
 with multiple headers separated by a comma. If no header is found
 return a default value</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> – The header name to look up (case-insensitive)</p></li>
 <li><p><strong>default</strong> – The value to return in the case of no match</p></li>
@@ -394,7 +392,7 @@ return a default value</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="wptserve.request.RequestHeaders.get_list">
-<span class="sig-name descname"><span class="pre">get_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default=&lt;object</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.RequestHeaders.get_list" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default=&lt;object</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.RequestHeaders.get_list" title="Link to this definition">¶</a></dt>
 <dd><p>Get all the header values for a particular field name as
 a list</p>
 </dd></dl>
@@ -403,18 +401,18 @@ a list</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wptserve.request.Server">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.request.</span></span><span class="sig-name descname"><span class="pre">Server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.Server" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.request.</span></span><span class="sig-name descname"><span class="pre">Server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.Server" title="Link to this definition">¶</a></dt>
 <dd><p>Data about the server environment</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Server.config">
-<span class="sig-name descname"><span class="pre">config</span></span><a class="headerlink" href="#wptserve.request.Server.config" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">config</span></span><a class="headerlink" href="#wptserve.request.Server.config" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Environment configuration information with information about the
 various servers running, their hostnames and ports.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wptserve.request.Server.stash">
-<span class="sig-name descname"><span class="pre">stash</span></span><a class="headerlink" href="#wptserve.request.Server.stash" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">stash</span></span><a class="headerlink" href="#wptserve.request.Server.stash" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Stash object holding state stored on the server between requests.</p>
@@ -478,7 +476,7 @@ various servers running, their hostnames and ports.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -495,7 +493,7 @@ various servers running, their hostnames and ports.</p>
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

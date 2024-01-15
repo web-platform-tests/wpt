@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>wdspec tests &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Manual Tests" href="manual.html" />
@@ -35,7 +33,7 @@
           <div class="body" role="main">
             
   <section id="wdspec-tests">
-<h1>wdspec tests<a class="headerlink" href="#wdspec-tests" title="Permalink to this headline">¶</a></h1>
+<h1>wdspec tests<a class="headerlink" href="#wdspec-tests" title="Link to this heading">¶</a></h1>
 <p>The term “wdspec” describes a type of test in WPT which verifies some aspect of
 <a class="reference external" href="https://w3c.github.io/webdriver/">the WebDriver protocol</a>. These tests are
 written in <a class="reference external" href="https://www.python.org/">the Python programming language</a> and
@@ -49,7 +47,7 @@ command</a> are located in then
 them any number of “sub-tests.” Sub-tests are defined as Python functions whose
 name begins with <code class="docutils literal notranslate"><span class="pre">test_</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">test_stale_element</span></code>.</p>
 <section id="the-webdriver-client-library">
-<h2>The <code class="docutils literal notranslate"><span class="pre">webdriver</span></code> client library<a class="headerlink" href="#the-webdriver-client-library" title="Permalink to this headline">¶</a></h2>
+<h2>The <code class="docutils literal notranslate"><span class="pre">webdriver</span></code> client library<a class="headerlink" href="#the-webdriver-client-library" title="Link to this heading">¶</a></h2>
 <p>web-platform-tests maintains a WebDriver client library called <code class="docutils literal notranslate"><span class="pre">webdriver</span></code>
 located in the <code class="docutils literal notranslate"><span class="pre">tools/webdriver/</span></code> directory. Like other client libraries, it
 makes it easier to write code which interfaces with a browser using the
@@ -82,7 +80,7 @@ command</a>:</p>
 </div>
 </section>
 <section id="utility-functions">
-<h2>Utility functions<a class="headerlink" href="#utility-functions" title="Permalink to this headline">¶</a></h2>
+<h2>Utility functions<a class="headerlink" href="#utility-functions" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">wedbdriver</span></code> library is minimal by design. It mimics the structure of the
 WebDriver specification. Many conformance tests perform similar operations
 (e.g. calculating the center point of an element or creating a document), but
@@ -148,7 +146,7 @@ topic</a>.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -165,7 +163,7 @@ topic</a>.</p>
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

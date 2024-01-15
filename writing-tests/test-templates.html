@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Test Templates &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Introduction to GitHub" href="github-intro.html" />
@@ -35,16 +33,16 @@
           <div class="body" role="main">
             
   <section id="test-templates">
-<h1>Test Templates<a class="headerlink" href="#test-templates" title="Permalink to this headline">¶</a></h1>
+<h1>Test Templates<a class="headerlink" href="#test-templates" title="Link to this heading">¶</a></h1>
 <p>This page contains templates for creating tests. The template syntax
 is compatible with several popular editors including TextMate, Sublime
 Text, and emacs’ YASnippet mode.</p>
 <p>Templates for filenames are also given. In this case <code class="docutils literal notranslate"><span class="pre">{}</span></code> is used to
 delimit text to be replaced and <code class="docutils literal notranslate"><span class="pre">#</span></code> represents a digit.</p>
 <section id="reftests">
-<h2>Reftests<a class="headerlink" href="#reftests" title="Permalink to this headline">¶</a></h2>
+<h2>Reftests<a class="headerlink" href="#reftests" title="Link to this heading">¶</a></h2>
 <section id="html-test">
-<h3>HTML test<a class="headerlink" href="#html-test" title="Permalink to this headline">¶</a></h3>
+<h3>HTML test<a class="headerlink" href="#html-test" title="Link to this heading">¶</a></h3>
 <!--
   Syntax highlighting cannot be enabled for the following template because it
   contains invalid CSS.
@@ -63,7 +61,7 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 <p>Filename: <code class="docutils literal notranslate"><span class="pre">{test-topic}-###.html</span></code></p>
 </section>
 <section id="html-reference">
-<h3>HTML reference<a class="headerlink" href="#html-reference" title="Permalink to this headline">¶</a></h3>
+<h3>HTML reference<a class="headerlink" href="#html-reference" title="Link to this heading">¶</a></h3>
 <!--
   Syntax highlighting cannot be enabled for the following template because it
   contains invalid CSS.
@@ -81,7 +79,7 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 <p>Filename: <code class="docutils literal notranslate"><span class="pre">{description}.html</span></code> or <code class="docutils literal notranslate"><span class="pre">{test-topic}-###-ref.html</span></code></p>
 </section>
 <section id="svg-test">
-<h3>SVG test<a class="headerlink" href="#svg-test" title="Permalink to this headline">¶</a></h3>
+<h3>SVG test<a class="headerlink" href="#svg-test" title="Link to this heading">¶</a></h3>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;svg</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/2000/svg&quot;</span><span class="w"> </span><span class="na">xmlns:h=</span><span class="s">&quot;http://www.w3.org/1999/xhtml&quot;</span><span class="nt">&gt;</span>
 <span class="w">  </span><span class="nt">&lt;title&gt;</span>${1:Test<span class="w"> </span>title}<span class="nt">&lt;/title&gt;</span>
 <span class="w">  </span><span class="nt">&lt;metadata&gt;</span>
@@ -95,7 +93,7 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 <p>Filename: <code class="docutils literal notranslate"><span class="pre">{test-topic}-###.svg</span></code></p>
 </section>
 <section id="svg-reference">
-<h3>SVG reference<a class="headerlink" href="#svg-reference" title="Permalink to this headline">¶</a></h3>
+<h3>SVG reference<a class="headerlink" href="#svg-reference" title="Link to this heading">¶</a></h3>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;svg</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/2000/svg&quot;</span><span class="nt">&gt;</span>
 <span class="w">  </span><span class="nt">&lt;title&gt;</span>${1:Reference<span class="w"> </span>title}<span class="nt">&lt;/title&gt;</span>
 <span class="w">  </span>${2:Reference<span class="w"> </span>content}
@@ -106,9 +104,9 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 </section>
 </section>
 <section id="testharness-js-tests">
-<h2>testharness.js tests<a class="headerlink" href="#testharness-js-tests" title="Permalink to this headline">¶</a></h2>
+<h2>testharness.js tests<a class="headerlink" href="#testharness-js-tests" title="Link to this heading">¶</a></h2>
 <section id="html">
-<h3>HTML<a class="headerlink" href="#html" title="Permalink to this headline">¶</a></h3>
+<h3>HTML<a class="headerlink" href="#html" title="Link to this heading">¶</a></h3>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
 <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>${1:Test title}<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
@@ -122,7 +120,7 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 <p>Filename: <code class="docutils literal notranslate"><span class="pre">{test-topic}-###.html</span></code></p>
 </section>
 <section id="html-with-testdriver-automation">
-<h3>HTML with <a class="reference internal" href="testdriver.html"><span class="doc">testdriver automation</span></a><a class="headerlink" href="#html-with-testdriver-automation" title="Permalink to this headline">¶</a></h3>
+<h3>HTML with <a class="reference internal" href="testdriver.html"><span class="doc">testdriver automation</span></a><a class="headerlink" href="#html-with-testdriver-automation" title="Link to this heading">¶</a></h3>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
 <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>${1:Test title}<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
@@ -139,7 +137,7 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 <p>Filename: <code class="docutils literal notranslate"><span class="pre">{test-topic}-###.html</span></code></p>
 </section>
 <section id="svg">
-<h3>SVG<a class="headerlink" href="#svg" title="Permalink to this headline">¶</a></h3>
+<h3>SVG<a class="headerlink" href="#svg" title="Link to this heading">¶</a></h3>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;svg</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/2000/svg&quot;</span><span class="w"> </span><span class="na">xmlns:h=</span><span class="s">&quot;http://www.w3.org/1999/xhtml&quot;</span><span class="nt">&gt;</span>
 <span class="w">  </span><span class="nt">&lt;title&gt;</span>${1:Test<span class="w"> </span>title}<span class="nt">&lt;/title&gt;</span>
 <span class="w">  </span><span class="nt">&lt;metadata&gt;</span>
@@ -156,9 +154,9 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 <p>Filename: <code class="docutils literal notranslate"><span class="pre">{test-topic}-###.svg</span></code></p>
 </section>
 <section id="manual-test">
-<h3>Manual Test<a class="headerlink" href="#manual-test" title="Permalink to this headline">¶</a></h3>
+<h3>Manual Test<a class="headerlink" href="#manual-test" title="Link to this heading">¶</a></h3>
 <section id="id1">
-<h4>HTML<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<h4>HTML<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h4>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
 <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>${1:Test title}<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
@@ -173,7 +171,7 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 <p>Filename: <code class="docutils literal notranslate"><span class="pre">{test-topic}-###-manual.html</span></code></p>
 </section>
 <section id="id2">
-<h4>SVG<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<h4>SVG<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h4>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;svg</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/2000/svg&quot;</span><span class="w"> </span><span class="na">xmlns:h=</span><span class="s">&quot;http://www.w3.org/1999/xhtml&quot;</span><span class="nt">&gt;</span>
 <span class="w">  </span><span class="nt">&lt;title&gt;</span>${1:Test<span class="w"> </span>title}<span class="nt">&lt;/title&gt;</span>
 <span class="w">  </span><span class="nt">&lt;metadata&gt;</span>
@@ -245,7 +243,7 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -262,7 +260,7 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

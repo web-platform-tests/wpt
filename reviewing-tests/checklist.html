@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Review Checklist &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Email Filters" href="email.html" />
@@ -35,7 +33,7 @@
           <div class="body" role="main">
             
   <section id="review-checklist">
-<h1>Review Checklist<a class="headerlink" href="#review-checklist" title="Permalink to this headline">¶</a></h1>
+<h1>Review Checklist<a class="headerlink" href="#review-checklist" title="Link to this heading">¶</a></h1>
 <p>The following checklist is provided as a guideline to assist in reviewing
 tests; in case of any contradiction with requirements stated elsewhere in the
 documentation it should be ignored
@@ -43,7 +41,7 @@ documentation it should be ignored
 <p>As noted on the <a class="reference internal" href="index.html"><span class="doc">reviewing tests</span></a> page, nits need not block PRs
 from landing.</p>
 <section id="all-tests">
-<h2>All tests<a class="headerlink" href="#all-tests" title="Permalink to this headline">¶</a></h2>
+<h2>All tests<a class="headerlink" href="#all-tests" title="Link to this heading">¶</a></h2>
 <p><label><input type="checkbox">
 The CI jobs on the pull request have passed.
 </label></p>
@@ -94,7 +92,7 @@ interaction, it is a manual test.
 </label></p>
 </section>
 <section id="reftests-only">
-<h2>Reftests Only<a class="headerlink" href="#reftests-only" title="Permalink to this headline">¶</a></h2>
+<h2>Reftests Only<a class="headerlink" href="#reftests-only" title="Link to this heading">¶</a></h2>
 <p><label><input type="checkbox">
 The reference file is accurate and will render pixel-perfect
 identically to the test on all platforms.
@@ -118,7 +116,7 @@ several minutes thinking or asking questions.
 </label></p>
 </section>
 <section id="script-tests-only">
-<h2>Script Tests Only<a class="headerlink" href="#script-tests-only" title="Permalink to this headline">¶</a></h2>
+<h2>Script Tests Only<a class="headerlink" href="#script-tests-only" title="Link to this heading">¶</a></h2>
 <p><label><input type="checkbox">
 The number of tests in each file and the test names are consistent
 across runs and browsers. It is best to avoid the pattern where there is
@@ -143,7 +141,7 @@ The test uses <code class="docutils literal notranslate"><span class="pre">idlha
 </label></p>
 </section>
 <section id="visual-tests-only">
-<h2>Visual Tests Only<a class="headerlink" href="#visual-tests-only" title="Permalink to this headline">¶</a></h2>
+<h2>Visual Tests Only<a class="headerlink" href="#visual-tests-only" title="Link to this heading">¶</a></h2>
 <p><label><input type="checkbox">
 The test has a self-describing statement.
 </label></p>
@@ -218,7 +216,7 @@ The test renders to a fixed, static page with no animation.
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -235,7 +233,7 @@ The test renders to a fixed, static page with no animation.
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

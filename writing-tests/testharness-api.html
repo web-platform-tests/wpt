@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>testharness.js API &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="testdriver.js Automation" href="testdriver.html" />
@@ -35,8 +33,8 @@
           <div class="body" role="main">
             
   <section id="testharness-js-api">
-<h1>testharness.js API<a class="headerlink" href="#testharness-js-api" title="Permalink to this headline">¶</a></h1>
-<div class="contents local topic" id="table-of-contents">
+<h1>testharness.js API<a class="headerlink" href="#testharness-js-api" title="Link to this heading">¶</a></h1>
+<nav class="contents local" id="table-of-contents">
 <p class="topic-title">Table of Contents</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#markup" id="id1">Markup</a></p>
@@ -96,13 +94,13 @@
 </li>
 <li><p><a class="reference internal" href="#deprecated-apis" id="id29">Deprecated APIs</a></p></li>
 </ul>
-</div>
+</nav>
 <p>testharness.js provides a framework for writing testcases. It is intended to
 provide a convenient API for making common assertions, and to work both
 for testing synchronous and asynchronous DOM features in a way that
 promotes clear, robust, tests.</p>
 <section id="markup">
-<h2>Markup<a class="headerlink" href="#markup" title="Permalink to this headline">¶</a></h2>
+<h2>Markup<a class="headerlink" href="#markup" title="Link to this heading">¶</a></h2>
 <p>The test harness script can be used from HTML or SVG documents and workers.</p>
 <p>From an HTML or SVG document, start by importing both <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> and
 <code class="docutils literal notranslate"><span class="pre">testharnessreport.js</span></code> scripts into the document:</p>
@@ -123,7 +121,7 @@ using testharness.js is a single “test” and each js-defined
 to create tests after the load event, see <a class="reference external" href="#determining-when-all-tests-are-complete">determining when all tests
 are complete</a>.</p>
 <section id="harness-timeout">
-<h3>Harness Timeout<a class="headerlink" href="#harness-timeout" title="Permalink to this headline">¶</a></h3>
+<h3>Harness Timeout<a class="headerlink" href="#harness-timeout" title="Link to this heading">¶</a></h3>
 <p>Execution of tests on a page is subject to a global timeout. By
 default this is 10s, but a test runner may set a timeout multiplier
 which alters the value according to the requirements of the test
@@ -150,15 +148,15 @@ other way.</p>
 </section>
 </section>
 <section id="defining-tests">
-<h2>Defining Tests<a class="headerlink" href="#defining-tests" title="Permalink to this headline">¶</a></h2>
+<h2>Defining Tests<a class="headerlink" href="#defining-tests" title="Link to this heading">¶</a></h2>
 <section id="synchronous-tests">
-<h3>Synchronous Tests<a class="headerlink" href="#synchronous-tests" title="Permalink to this headline">¶</a></h3>
+<h3>Synchronous Tests<a class="headerlink" href="#synchronous-tests" title="Link to this heading">¶</a></h3>
 <dl class="js function">
 <dt class="sig sig-object js" id="test">
-<span class="sig-name descname"><span class="n"><span class="pre">test</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">test</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test" title="Link to this definition">¶</a></dt>
 <dd><p>Create a synchronous test</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>func</strong> (<em>TestFunction</em>) – Test function. This is executed immediately. If it returns without error, the test status is set to <code class="docutils literal notranslate"><span class="pre">PASS</span></code>. If it throws an <a class="reference internal" href="#AssertionError" title="AssertionError"><code class="xref js js-class docutils literal notranslate"><span class="pre">AssertionError()</span></code></a>, or any other exception, the test status is set to <code class="docutils literal notranslate"><span class="pre">FAIL</span></code> (typically from an <cite>assert</cite> function).</p></li>
 <li><p><strong>name</strong> (<em>String</em>) – Test name. This must be unique in a given file and must be invariant between runs.</p></li>
@@ -176,23 +174,23 @@ method (which is defined to always return true) would be:</p>
 </div>
 </section>
 <section id="asynchronous-tests">
-<h3>Asynchronous Tests<a class="headerlink" href="#asynchronous-tests" title="Permalink to this headline">¶</a></h3>
+<h3>Asynchronous Tests<a class="headerlink" href="#asynchronous-tests" title="Link to this heading">¶</a></h3>
 <p>Testing asynchronous features is somewhat more complex since the
 result of a test may depend on one or more events or other
 callbacks. The API provided for testing these features is intended to
 be rather low-level but applicable to many situations.</p>
 <dl class="js function">
 <dt class="sig sig-object js" id="async_test">
-<span class="sig-name descname"><span class="n"><span class="pre">async_test</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">funcOrName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#async_test" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">async_test</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">funcOrName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#async_test" title="Link to this definition">¶</a></dt>
 <dd><p>Create an asynchronous test</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>funcOrName</strong> (<em>TestFunction|string</em>) – Initial step function to call immediately with the test name as an argument (if any), or name of the test.</p></li>
 <li><p><strong>name</strong> (<em>String</em>) – Test name (if a test function was provided). This must be unique in a given file and must be invariant between runs.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Test</strong> – An object representing the ongoing test.</p>
 </dd>
 </dl>
@@ -259,16 +257,16 @@ multiple tests in the same global can be running concurrently and must
 take care not to interfere with each other.</p>
 </section>
 <section id="promise-tests">
-<h3>Promise Tests<a class="headerlink" href="#promise-tests" title="Permalink to this headline">¶</a></h3>
+<h3>Promise Tests<a class="headerlink" href="#promise-tests" title="Link to this heading">¶</a></h3>
 <dl class="js function">
 <dt class="sig sig-object js" id="promise_test">
-<span class="sig-name descname"><span class="n"><span class="pre">promise_test</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#promise_test" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">promise_test</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#promise_test" title="Link to this definition">¶</a></dt>
 <dd><p>Create a promise test.</p>
 <p>Promise tests are tests which are represented by a promise
 object. If the promise is fulfilled the test passes, if it’s
 rejected the test fails, otherwise the test passes.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>func</strong> (<em>TestFunction</em>) – Test function. This must return a promise. The test is automatically marked as complete once the promise settles.</p></li>
 <li><p><strong>name</strong> (<em>String</em>) – Test name. This must be unique in a given file and must be invariant between runs.</p></li>
@@ -336,7 +334,7 @@ next test starts.</p>
 rejection</a>.</p>
 </section>
 <section id="single-page-tests">
-<h3>Single Page Tests<a class="headerlink" href="#single-page-tests" title="Permalink to this headline">¶</a></h3>
+<h3>Single Page Tests<a class="headerlink" href="#single-page-tests" title="Link to this heading">¶</a></h3>
 <p>Sometimes, particularly when dealing with asynchronous behaviour,
 having exactly one test per page is desirable, and the overhead of
 wrapping everything in functions for isolation becomes
@@ -360,7 +358,7 @@ tests”.</p>
 </section>
 </section>
 <section id="making-assertions">
-<h2>Making assertions<a class="headerlink" href="#making-assertions" title="Permalink to this headline">¶</a></h2>
+<h2>Making assertions<a class="headerlink" href="#making-assertions" title="Link to this heading">¶</a></h2>
 <p>Functions for making assertions start <code class="docutils literal notranslate"><span class="pre">assert_</span></code>. The full list of
 asserts available is documented in the <a class="reference external" href="#assert-functions">asserts</a>
 section. The general signature is:</p>
@@ -382,7 +380,7 @@ tests.</p>
 assert functions must only be called in the context of a
 <a class="reference external" href="#Test"><code class="docutils literal notranslate"><span class="pre">Test</span></code></a>.</p>
 <section id="optional-features">
-<h3>Optional Features<a class="headerlink" href="#optional-features" title="Permalink to this headline">¶</a></h3>
+<h3>Optional Features<a class="headerlink" href="#optional-features" title="Link to this heading">¶</a></h3>
 <p>If a test depends on a specification or specification feature that is
 OPTIONAL (in the <a class="reference external" href="https://tools.ietf.org/html/rfc2119">RFC 2119
 sense</a>),
@@ -421,9 +419,9 @@ preferable if the entire test is optional.</p>
 </section>
 </section>
 <section id="testing-across-globals">
-<h2>Testing Across Globals<a class="headerlink" href="#testing-across-globals" title="Permalink to this headline">¶</a></h2>
+<h2>Testing Across Globals<a class="headerlink" href="#testing-across-globals" title="Link to this heading">¶</a></h2>
 <section id="consolidating-tests-from-other-documents">
-<h3>Consolidating tests from other documents<a class="headerlink" href="#consolidating-tests-from-other-documents" title="Permalink to this headline">¶</a></h3>
+<h3>Consolidating tests from other documents<a class="headerlink" href="#consolidating-tests-from-other-documents" title="Link to this heading">¶</a></h3>
 <p><strong>Note:</strong> By default any markup file referencing <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> will
 be detected as a test. To avoid this, it must be put in a <code class="docutils literal notranslate"><span class="pre">support</span></code>
 directory.</p>
@@ -469,7 +467,7 @@ failures for the suite in the current context.</p>
 </div>
 </section>
 <section id="web-workers">
-<h3>Web Workers<a class="headerlink" href="#web-workers" title="Permalink to this headline">¶</a></h3>
+<h3>Web Workers<a class="headerlink" href="#web-workers" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> script can be used from within <a class="reference external" href="https://html.spec.whatwg.org/multipage/workers.html">dedicated workers, shared
 workers</a> and <a class="reference external" href="https://w3c.github.io/ServiceWorker/">service
 workers</a>.</p>
@@ -537,7 +535,7 @@ workers and want to ensure they run in series:</p>
 </section>
 </section>
 <section id="cleanup">
-<h2>Cleanup<a class="headerlink" href="#cleanup" title="Permalink to this headline">¶</a></h2>
+<h2>Cleanup<a class="headerlink" href="#cleanup" title="Link to this heading">¶</a></h2>
 <p>Occasionally tests may create state that will persist beyond the test
 itself.  In order to ensure that tests are independent, such state
 should be cleaned up once the test has a result. This can be achieved
@@ -562,7 +560,7 @@ complex cleanup behavior should manage execution order explicitly. If
 any of the eventual values are rejected, the test runner will report
 an error.</p>
 <section id="abortsignal-support">
-<h3>AbortSignal support<a class="headerlink" href="#abortsignal-support" title="Permalink to this headline">¶</a></h3>
+<h3>AbortSignal support<a class="headerlink" href="#abortsignal-support" title="Link to this heading">¶</a></h3>
 <p><a class="reference external" href="#Test.get_signal"><code class="docutils literal notranslate"><span class="pre">Test.get_signal</span></code></a> gives an AbortSignal that is aborted when
 the test finishes. This can be useful when dealing with AbortSignal-supported
 APIs.</p>
@@ -580,7 +578,7 @@ APIs.</p>
 </section>
 </section>
 <section id="timers-in-tests">
-<h2>Timers in Tests<a class="headerlink" href="#timers-in-tests" title="Permalink to this headline">¶</a></h2>
+<h2>Timers in Tests<a class="headerlink" href="#timers-in-tests" title="Link to this heading">¶</a></h2>
 <p>In general the use of timers (i.e. <code class="docutils literal notranslate"><span class="pre">setTimeout</span></code>) in tests is
 discouraged because this is an observed source of instability on test
 running in CI. In particular if a test should fail when
@@ -602,10 +600,10 @@ produce stable results in all test environments.</p>
 <a class="reference external" href="#step_timeout">step_timeout</a> is also available as a global function.</p>
 <dl class="js function">
 <dt class="sig sig-object js" id="step_timeout">
-<span class="sig-name descname"><span class="n"><span class="pre">step_timeout</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#step_timeout" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">step_timeout</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#step_timeout" title="Link to this definition">¶</a></dt>
 <dd><p>Global version of <a class="reference internal" href="#Test.step_timeout" title="Test.step_timeout"><code class="xref js js-func docutils literal notranslate"><span class="pre">Test.step_timeout()</span></code></a> for use in single page tests.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>func</strong> (<em>function</em>) – Function to run after the timeout</p></li>
 <li><p><strong>timeout</strong> (<em>number</em>) – Time in ms to wait before running the test step. The actual wait time is <code class="docutils literal notranslate"><span class="pre">timeout</span></code> x <code class="docutils literal notranslate"><span class="pre">timeout_multiplier</span></code>.</p></li>
@@ -616,16 +614,16 @@ produce stable results in all test environments.</p>
 
 </section>
 <section id="harness-configuration">
-<h2>Harness Configuration<a class="headerlink" href="#harness-configuration" title="Permalink to this headline">¶</a></h2>
+<h2>Harness Configuration<a class="headerlink" href="#harness-configuration" title="Link to this heading">¶</a></h2>
 <section id="setup">
-<h3>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h3>
+<h3>Setup<a class="headerlink" href="#setup" title="Link to this heading">¶</a></h3>
 <!-- sphinx-js doesn't support documenting types so we have to copy in
      the SettingsObject documentation by hand --><dl class="js function">
 <dt class="sig sig-object js" id="setup">
-<span class="sig-name descname"><span class="n"><span class="pre">setup</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">funcOrProperties</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maybeProperties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#setup" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">setup</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">funcOrProperties</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maybeProperties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#setup" title="Link to this definition">¶</a></dt>
 <dd><p>Configure the harness</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>funcOrProperties</strong> (<em>function|SettingsObject</em>) – Either a setup function to run, or a set of properties. If this is a function that function is run synchronously. Any exception in the function will set the overall harness status to <cite>ERROR</cite>.</p></li>
 <li><p><strong>maybeProperties</strong> (<em>SettingsObject</em>) – An object containing the settings to use, if the first argument is a function.</p></li>
@@ -636,11 +634,11 @@ produce stable results in all test environments.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="promise_setup">
-<span class="sig-name descname"><span class="n"><span class="pre">promise_setup</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#promise_setup" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">promise_setup</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#promise_setup" title="Link to this definition">¶</a></dt>
 <dd><p>Configure the harness, waiting for a promise to resolve
 before running any <cite>promise_test</cite> tests.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>func</strong> (<em>function</em>) – Function returning a promise that’s run synchronously. Promise tests are not run until after this function has resolved.</p></li>
 <li><p><strong>properties</strong> (<em>SettingsObject</em>) – An object containing the harness settings to use.</p></li>
@@ -650,9 +648,9 @@ before running any <cite>promise_test</cite> tests.</p>
 </dd></dl>
 
 <dl class="field-list simple">
-<dt class="field-odd">SettingsObject</dt>
+<dt class="field-odd">SettingsObject<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="field-list simple">
-<dt class="field-odd">Properties</dt>
+<dt class="field-odd">Properties<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>single_test</strong> (<em>bool</em>) - Use the single-page-test mode. In this
 mode the Document represents a single <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a>. Asserts may be
@@ -692,7 +690,7 @@ asserts. This should typically only be set by a test runner.</p></li>
 </dl>
 </section>
 <section id="output">
-<h3>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h3>
+<h3>Output<a class="headerlink" href="#output" title="Link to this heading">¶</a></h3>
 <p>If the file containing the tests is a HTML file, a table containing
 the test results will be added to the document after all tests have
 run. By default this will be added to a <code class="docutils literal notranslate"><span class="pre">div</span></code> element with <code class="docutils literal notranslate"><span class="pre">id=log</span></code> if
@@ -705,7 +703,7 @@ invalidate the test. In this case the test should set the
 <a class="reference external" href="#setup"><code class="docutils literal notranslate"><span class="pre">hide_test_state</span></code></a> setting to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
 </section>
 <section id="determining-when-all-tests-are-complete">
-<h3>Determining when all tests are complete<a class="headerlink" href="#determining-when-all-tests-are-complete" title="Permalink to this headline">¶</a></h3>
+<h3>Determining when all tests are complete<a class="headerlink" href="#determining-when-all-tests-are-complete" title="Link to this heading">¶</a></h3>
 <p>By default, tests running in a <code class="docutils literal notranslate"><span class="pre">WindowGlobalScope</span></code>, which are not
 configured as a <a class="reference external" href="#single-page-tests">single page test</a> the test
 harness will assume there are no more results to come when:</p>
@@ -717,7 +715,7 @@ harness will assume there are no more results to come when:</p>
 set in the <a class="reference external" href="#setup">setup</a>, the <a class="reference external" href="#done"><code class="docutils literal notranslate"><span class="pre">done</span></code></a> function must be used.</p>
 <dl class="js function">
 <dt class="sig sig-object js" id="done">
-<span class="sig-name descname"><span class="n"><span class="pre">done</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#done" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">done</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#done" title="Link to this definition">¶</a></dt>
 <dd><p>Mark test loading as complete.</p>
 <p>Typically this function is called implicitly on page load; it’s
 only necessary for users to call this when either the
@@ -729,7 +727,7 @@ For other tests, this marks test loading as complete, but doesn’t affect ongoi
 
 <dl class="js function">
 <dt class="sig sig-object js" id="timeout">
-<span class="sig-name descname"><span class="n"><span class="pre">timeout</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeout" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">timeout</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeout" title="Link to this definition">¶</a></dt>
 <dd><p>Timeout the tests.</p>
 <p>This only has an effect when <code class="docutils literal notranslate"><span class="pre">explicit_timeout</span></code> has been set
 in <a class="reference internal" href="#setup" title="setup"><code class="xref js js-func docutils literal notranslate"><span class="pre">setup()</span></code></a>. In other cases any call is a no-op.</p>
@@ -747,9 +745,9 @@ worker</a>.</p>
 </section>
 </section>
 <section id="reporting-api">
-<h2>Reporting API<a class="headerlink" href="#reporting-api" title="Permalink to this headline">¶</a></h2>
+<h2>Reporting API<a class="headerlink" href="#reporting-api" title="Link to this heading">¶</a></h2>
 <section id="callbacks">
-<h3>Callbacks<a class="headerlink" href="#callbacks" title="Permalink to this headline">¶</a></h3>
+<h3>Callbacks<a class="headerlink" href="#callbacks" title="Link to this heading">¶</a></h3>
 <p>The framework provides callbacks corresponding to 4 events:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">start</span></code> - triggered when the first Test is created</p></li>
@@ -759,10 +757,10 @@ worker</a>.</p>
 </ul>
 <dl class="js function">
 <dt class="sig sig-object js" id="add_start_callback">
-<span class="sig-name descname"><span class="n"><span class="pre">add_start_callback</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#add_start_callback" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">add_start_callback</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#add_start_callback" title="Link to this definition">¶</a></dt>
 <dd><p>Add a callback that’s triggered when the first <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> is created.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>callback</strong> (<em>function</em>) – Callback function. This is called without arguments.</p></li>
 </ul>
@@ -772,10 +770,10 @@ worker</a>.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="add_test_state_callback">
-<span class="sig-name descname"><span class="n"><span class="pre">add_test_state_callback</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#add_test_state_callback" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">add_test_state_callback</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#add_test_state_callback" title="Link to this definition">¶</a></dt>
 <dd><p>Add a callback that’s triggered when a test state changes.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>callback</strong> (<em>function</em>) – Callback function, called with the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> as the only argument.</p></li>
 </ul>
@@ -785,10 +783,10 @@ worker</a>.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="add_result_callback">
-<span class="sig-name descname"><span class="n"><span class="pre">add_result_callback</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#add_result_callback" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">add_result_callback</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#add_result_callback" title="Link to this definition">¶</a></dt>
 <dd><p>Add a callback that’s triggered when a test result is received.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>callback</strong> (<em>function</em>) – Callback function, called with the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> as the only argument.</p></li>
 </ul>
@@ -798,10 +796,10 @@ worker</a>.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="add_completion_callback">
-<span class="sig-name descname"><span class="n"><span class="pre">add_completion_callback</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#add_completion_callback" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">add_completion_callback</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#add_completion_callback" title="Link to this definition">¶</a></dt>
 <dd><p>Add a callback that’s triggered when all tests are complete.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>callback</strong> (<em>function</em>) – Callback function, called with an array of <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> objects, a <a class="reference internal" href="#TestsStatus" title="TestsStatus"><code class="xref js js-class docutils literal notranslate"><span class="pre">TestsStatus()</span></code></a> object and an array of <a class="reference internal" href="#AssertRecord" title="AssertRecord"><code class="xref js js-class docutils literal notranslate"><span class="pre">AssertRecord()</span></code></a> objects. If the debug setting is <code class="docutils literal notranslate"><span class="pre">false</span></code> the final argument will be an empty array. For performance reasons asserts are only tracked when the debug setting is <code class="docutils literal notranslate"><span class="pre">true</span></code>. In other cases the array of asserts will be empty.</p></li>
 </ul>
@@ -811,32 +809,32 @@ worker</a>.</p>
 
 <dl class="js class">
 <dt class="sig sig-object js" id="TestsStatus">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="n"><span class="pre">TestsStatus</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestsStatus" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="n"><span class="pre">TestsStatus</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestsStatus" title="Link to this definition">¶</a></dt>
 <dd><p>Status of the overall harness</p>
 <dl class="js attribute">
 <dt class="sig sig-object js" id="TestsStatus.message">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">TestsStatus</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">message</span></span></span><a class="headerlink" href="#TestsStatus.message" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">TestsStatus</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">message</span></span></span><a class="headerlink" href="#TestsStatus.message" title="Link to this definition">¶</a></dt>
 <dd><p>Message in case of failure</p>
 </dd></dl>
 
 <dl class="js attribute">
 <dt class="sig sig-object js" id="TestsStatus.stack">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">TestsStatus</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">stack</span></span></span><a class="headerlink" href="#TestsStatus.stack" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">TestsStatus</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">stack</span></span></span><a class="headerlink" href="#TestsStatus.stack" title="Link to this definition">¶</a></dt>
 <dd><p>Stack trace in case of an exception.</p>
 </dd></dl>
 
 <dl class="js attribute">
 <dt class="sig sig-object js" id="TestsStatus.status">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">TestsStatus</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">status</span></span></span><a class="headerlink" href="#TestsStatus.status" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">TestsStatus</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">status</span></span></span><a class="headerlink" href="#TestsStatus.status" title="Link to this definition">¶</a></dt>
 <dd><p>The status code</p>
 </dd></dl>
 
 <dl class="js attribute">
 <dt class="sig sig-object js" id="TestsStatus.statuses">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">TestsStatus</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">statuses</span></span></span><a class="headerlink" href="#TestsStatus.statuses" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">TestsStatus</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">statuses</span></span></span><a class="headerlink" href="#TestsStatus.statuses" title="Link to this definition">¶</a></dt>
 <dd><p>Enum of possible harness statuses.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Values</dt>
+<dt class="field-odd">Values<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">OK</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ERROR</span></code></p></li>
@@ -851,10 +849,10 @@ worker</a>.</p>
 
 <dl class="js class">
 <dt class="sig sig-object js" id="AssertRecord">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="n"><span class="pre">AssertRecord</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assert_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AssertRecord" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="n"><span class="pre">AssertRecord</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assert_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AssertRecord" title="Link to this definition">¶</a></dt>
 <dd><p>Record of an assert that ran.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>test</strong> (<a class="reference internal" href="#Test" title="Test"><em>Test</em></a>) – The test which ran the assert.</p></li>
 <li><p><strong>assert_name</strong> (<em>string</em>) – The function name of the assert.</p></li>
@@ -864,25 +862,25 @@ worker</a>.</p>
 </dl>
 <dl class="js attribute">
 <dt class="sig sig-object js" id="AssertRecord.args">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">AssertRecord</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">args</span></span></span><a class="headerlink" href="#AssertRecord.args" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">AssertRecord</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">args</span></span></span><a class="headerlink" href="#AssertRecord.args" title="Link to this definition">¶</a></dt>
 <dd><p>Stringification of the arguments that were passed to the assert function</p>
 </dd></dl>
 
 <dl class="js attribute">
 <dt class="sig sig-object js" id="AssertRecord.assert_name">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">AssertRecord</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">assert_name</span></span></span><a class="headerlink" href="#AssertRecord.assert_name" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">AssertRecord</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">assert_name</span></span></span><a class="headerlink" href="#AssertRecord.assert_name" title="Link to this definition">¶</a></dt>
 <dd><p>Name of the assert that ran</p>
 </dd></dl>
 
 <dl class="js attribute">
 <dt class="sig sig-object js" id="AssertRecord.status">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">AssertRecord</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">status</span></span></span><a class="headerlink" href="#AssertRecord.status" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">AssertRecord</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">status</span></span></span><a class="headerlink" href="#AssertRecord.status" title="Link to this definition">¶</a></dt>
 <dd><p>Status of the assert</p>
 </dd></dl>
 
 <dl class="js attribute">
 <dt class="sig sig-object js" id="AssertRecord.test">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">AssertRecord</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">test</span></span></span><a class="headerlink" href="#AssertRecord.test" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">AssertRecord</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">test</span></span></span><a class="headerlink" href="#AssertRecord.test" title="Link to this definition">¶</a></dt>
 <dd><p>Test that ran the assert</p>
 </dd></dl>
 
@@ -890,7 +888,7 @@ worker</a>.</p>
 
 </section>
 <section id="external-api">
-<h3>External API<a class="headerlink" href="#external-api" title="Permalink to this headline">¶</a></h3>
+<h3>External API<a class="headerlink" href="#external-api" title="Link to this heading">¶</a></h3>
 <p>In order to collect the results of multiple pages containing tests, the test
 harness will, when loaded in a nested browsing context, attempt to call
 certain functions in each ancestor and opener browsing context:</p>
@@ -919,13 +917,13 @@ object. These objects are structured as follows:</p>
 </section>
 </section>
 <section id="assert-functions">
-<h2>Assert Functions<a class="headerlink" href="#assert-functions" title="Permalink to this headline">¶</a></h2>
+<h2>Assert Functions<a class="headerlink" href="#assert-functions" title="Link to this heading">¶</a></h2>
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_true">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_true</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_true" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_true</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_true" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is strictly true</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>actual</strong> (<em>Any</em>) – Value that is asserted to be true</p></li>
 <li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested</p></li>
@@ -936,10 +934,10 @@ object. These objects are structured as follows:</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_false">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_false</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_false" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_false</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_false" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is strictly false</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>actual</strong> (<em>Any</em>) – Value that is asserted to be false</p></li>
 <li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested</p></li>
@@ -950,13 +948,13 @@ object. These objects are structured as follows:</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_equals">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_equals</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_equals" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_equals</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_equals" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is the same value as <code class="docutils literal notranslate"><span class="pre">expected</span></code>.</p>
 <p>For objects this compares by object identity; for primitives
 this distinguishes between 0 and -0, and has correct handling
 of NaN.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>actual</strong> (<em>Any</em>) – Test value.</p></li>
 <li><p><strong>expected</strong> (<em>Any</em>) – Expected value.</p></li>
@@ -968,11 +966,11 @@ of NaN.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_not_equals">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_not_equals</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_not_equals" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_not_equals</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_not_equals" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is not the same value as <code class="docutils literal notranslate"><span class="pre">expected</span></code>.</p>
 <p>Comparison is as for <a class="reference internal" href="#assert_equals" title="assert_equals"><code class="xref js js-func docutils literal notranslate"><span class="pre">assert_equals()</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>actual</strong> (<em>Any</em>) – Test value.</p></li>
 <li><p><strong>expected</strong> (<em>Any</em>) – The value <code class="docutils literal notranslate"><span class="pre">actual</span></code> is expected to be different to.</p></li>
@@ -984,11 +982,11 @@ of NaN.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_in_array">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_in_array</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_in_array" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_in_array</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_in_array" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">expected</span></code> is an array and <code class="docutils literal notranslate"><span class="pre">actual</span></code> is one of the members.
 This is implemented using <code class="docutils literal notranslate"><span class="pre">indexOf</span></code>, so doesn’t handle NaN or ±0 correctly.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>actual</strong> (<em>Any</em>) – Test value.</p></li>
 <li><p><strong>expected</strong> (<em>Array</em>) – An array that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is expected to be a member of.</p></li>
@@ -1000,11 +998,11 @@ This is implemented using <code class="docutils literal notranslate"><span class
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_array_equals">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_array_equals</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_array_equals" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_array_equals</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_array_equals" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">actual</span></code> and <code class="docutils literal notranslate"><span class="pre">expected</span></code> are both arrays, and that the array properties of
 <code class="docutils literal notranslate"><span class="pre">actual</span></code> and <code class="docutils literal notranslate"><span class="pre">expected</span></code> are all the same value (as for <a class="reference internal" href="#assert_equals" title="assert_equals"><code class="xref js js-func docutils literal notranslate"><span class="pre">assert_equals()</span></code></a>).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>actual</strong> (<em>Array</em>) – Test array.</p></li>
 <li><p><strong>expected</strong> (<em>Array</em>) – Array that is expected to contain the same values as <code class="docutils literal notranslate"><span class="pre">actual</span></code>.</p></li>
@@ -1016,10 +1014,10 @@ This is implemented using <code class="docutils literal notranslate"><span class
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_approx_equals">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_approx_equals</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_approx_equals" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_approx_equals</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_approx_equals" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is within ± <code class="docutils literal notranslate"><span class="pre">epsilon</span></code> of <code class="docutils literal notranslate"><span class="pre">expected</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
 <li><p><strong>expected</strong> (<em>number</em>) – Value number is expected to be close to.</p></li>
@@ -1032,11 +1030,11 @@ This is implemented using <code class="docutils literal notranslate"><span class
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_array_approx_equals">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_array_approx_equals</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_array_approx_equals" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_array_approx_equals</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_array_approx_equals" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that each array property in <code class="docutils literal notranslate"><span class="pre">actual</span></code> is a number within
 ± <cite>epsilon</cite> of the corresponding property in <cite>expected</cite>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>actual</strong> (<em>Array</em>) – Array of test values.</p></li>
 <li><p><strong>expected</strong> (<em>Array</em>) – Array of values expected to be close to the values in <code class="docutils literal notranslate"><span class="pre">actual</span></code>.</p></li>
@@ -1049,10 +1047,10 @@ This is implemented using <code class="docutils literal notranslate"><span class
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_less_than">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_less_than</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_less_than" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_less_than</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_less_than" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is a number less than <code class="docutils literal notranslate"><span class="pre">expected</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
 <li><p><strong>expected</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than.</p></li>
@@ -1064,10 +1062,10 @@ This is implemented using <code class="docutils literal notranslate"><span class
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_greater_than">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_greater_than</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_greater_than" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_greater_than</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_greater_than" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is a number greater than <code class="docutils literal notranslate"><span class="pre">expected</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
 <li><p><strong>expected</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than.</p></li>
@@ -1079,11 +1077,11 @@ This is implemented using <code class="docutils literal notranslate"><span class
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_between_exclusive">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_between_exclusive</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_between_exclusive" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_between_exclusive</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_between_exclusive" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is a number greater than <code class="docutils literal notranslate"><span class="pre">lower</span></code> and less
 than <code class="docutils literal notranslate"><span class="pre">upper</span></code> but not equal to either.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
 <li><p><strong>lower</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than.</p></li>
@@ -1096,10 +1094,10 @@ than <code class="docutils literal notranslate"><span class="pre">upper</span></
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_less_than_equal">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_less_than_equal</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_less_than_equal" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_less_than_equal</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_less_than_equal" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is a number less than or equal to <code class="docutils literal notranslate"><span class="pre">expected</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
 <li><p><strong>expected</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than or equal to.</p></li>
@@ -1111,10 +1109,10 @@ than <code class="docutils literal notranslate"><span class="pre">upper</span></
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_greater_than_equal">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_greater_than_equal</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_greater_than_equal" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_greater_than_equal</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_greater_than_equal" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is a number greater than or equal to <code class="docutils literal notranslate"><span class="pre">expected</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
 <li><p><strong>expected</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than or equal to.</p></li>
@@ -1126,11 +1124,11 @@ than <code class="docutils literal notranslate"><span class="pre">upper</span></
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_between_inclusive">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_between_inclusive</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_between_inclusive" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_between_inclusive</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_between_inclusive" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is a number greater than or equal to <code class="docutils literal notranslate"><span class="pre">lower</span></code> and less
 than or equal to <code class="docutils literal notranslate"><span class="pre">upper</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>actual</strong> (<em>number</em>) – Test value.</p></li>
 <li><p><strong>lower</strong> (<em>number</em>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than or equal to.</p></li>
@@ -1143,10 +1141,10 @@ than or equal to <code class="docutils literal notranslate"><span class="pre">up
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_regexp_match">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_regexp_match</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_regexp_match" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_regexp_match</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_regexp_match" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">actual</span></code> matches the RegExp <code class="docutils literal notranslate"><span class="pre">expected</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>actual</strong> (<em>String</em>) – Test string.</p></li>
 <li><p><strong>expected</strong> (<em>RegExp</em>) – RegExp <code class="docutils literal notranslate"><span class="pre">actual</span></code> must match.</p></li>
@@ -1158,11 +1156,11 @@ than or equal to <code class="docutils literal notranslate"><span class="pre">up
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_class_string">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_class_string</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_class_string" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_class_string</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_class_string" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that the class string of <code class="docutils literal notranslate"><span class="pre">object</span></code> as returned in
 <code class="docutils literal notranslate"><span class="pre">Object.prototype.toString</span></code> is equal to <code class="docutils literal notranslate"><span class="pre">class_name</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>object</strong> (<em>Object</em>) – Object to stringify.</p></li>
 <li><p><strong>class_string</strong> (<em>string</em>) – Expected class string for <code class="docutils literal notranslate"><span class="pre">object</span></code>.</p></li>
@@ -1174,10 +1172,10 @@ than or equal to <code class="docutils literal notranslate"><span class="pre">up
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_own_property">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_own_property</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_own_property" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_own_property</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_own_property" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">object</span></code> has an own property with name <code class="docutils literal notranslate"><span class="pre">property_name</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>object</strong> (<em>Object</em>) – Object that should have the given property.</p></li>
 <li><p><strong>property_name</strong> (<em>string</em>) – Expected property name.</p></li>
@@ -1189,10 +1187,10 @@ than or equal to <code class="docutils literal notranslate"><span class="pre">up
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_not_own_property">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_not_own_property</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_not_own_property" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_not_own_property</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_not_own_property" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">object</span></code> does not have an own property with name <code class="docutils literal notranslate"><span class="pre">property_name</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>object</strong> (<em>Object</em>) – Object that should not have the given property.</p></li>
 <li><p><strong>property_name</strong> (<em>string</em>) – Property name to test.</p></li>
@@ -1204,11 +1202,11 @@ than or equal to <code class="docutils literal notranslate"><span class="pre">up
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_inherits">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_inherits</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_inherits" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_inherits</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_inherits" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">object</span></code> does not have an own property with name
 <code class="docutils literal notranslate"><span class="pre">property_name</span></code>, but inherits one through the prototype chain.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>object</strong> (<em>Object</em>) – Object that should have the given property in its prototype chain.</p></li>
 <li><p><strong>property_name</strong> (<em>string</em>) – Expected property name.</p></li>
@@ -1220,10 +1218,10 @@ than or equal to <code class="docutils literal notranslate"><span class="pre">up
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_idl_attribute">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_idl_attribute</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_idl_attribute" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_idl_attribute</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_idl_attribute" title="Link to this definition">¶</a></dt>
 <dd><p>Alias for <code class="xref js js-func docutils literal notranslate"><span class="pre">insert_inherits()</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>object</strong> (<em>Object</em>) – Object that should have the given property in its prototype chain.</p></li>
 <li><p><strong>property_name</strong> (<em>string</em>) – Expected property name.</p></li>
@@ -1235,13 +1233,13 @@ than or equal to <code class="docutils literal notranslate"><span class="pre">up
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_readonly">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_readonly</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_readonly" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_readonly</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_readonly" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">object</span></code> has a property named <code class="docutils literal notranslate"><span class="pre">property_name</span></code> and that the property is readonly.</p>
 <p>Note: The implementation tries to update the named property, so
 any side effects of updating will be triggered. Users are
 encouraged to instead inspect the property descriptor of <code class="docutils literal notranslate"><span class="pre">property_name</span></code> on <code class="docutils literal notranslate"><span class="pre">object</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>object</strong> (<em>Object</em>) – Object that should have the given property in its prototype chain.</p></li>
 <li><p><strong>property_name</strong> (<em>string</em>) – Expected property name.</p></li>
@@ -1253,7 +1251,7 @@ encouraged to instead inspect the property descriptor of <code class="docutils l
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_throws_dom">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_throws_dom</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descriptionOrFunc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_throws_dom" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_throws_dom</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descriptionOrFunc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_throws_dom" title="Link to this definition">¶</a></dt>
 <dd><p>Assert a DOMException with the expected type is thrown.</p>
 <p>There are two ways of calling assert_throws_dom:</p>
 <p>1) If the DOMException is expected to come from the current global, the
@@ -1264,7 +1262,7 @@ second argument should be the DOMException constructor from that global,
 the third argument the function expected to throw, and the fourth, optional,
 argument the assertion description.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>type</strong> (<em>number|string</em>) – The expected exception name or code.  See the <a class="reference external" href="https://webidl.spec.whatwg.org/#dfn-error-names-table">table of names and codes</a>. If a number is passed it should be one of the numeric code values in that table (e.g. 3, 4, etc).  If a string is passed it can either be an exception name (e.g. “HierarchyRequestError”, “WrongDocumentError”) or the name of the corresponding error code (e.g. “<code class="docutils literal notranslate"><span class="pre">HIERARCHY_REQUEST_ERR</span></code>”, “<code class="docutils literal notranslate"><span class="pre">WRONG_DOCUMENT_ERR</span></code>”).</p></li>
 <li><p><strong>descriptionOrFunc</strong> (<em>function</em>) – The function expected to throw (if the exception comes from another global), or the optional description of the condition being tested (if the exception comes from the current global).</p></li>
@@ -1276,10 +1274,10 @@ argument the assertion description.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_throws_js">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_throws_js</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constructor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_throws_js" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_throws_js</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constructor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_throws_js" title="Link to this definition">¶</a></dt>
 <dd><p>Assert a JS Error with the expected constructor is thrown.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>constructor</strong> (<em>object</em>) – The expected exception constructor.</p></li>
 <li><p><strong>func</strong> (<em>function</em>) – Function which should throw.</p></li>
@@ -1291,10 +1289,10 @@ argument the assertion description.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_throws_exactly">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_throws_exactly</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exception</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_throws_exactly" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_throws_exactly</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exception</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_throws_exactly" title="Link to this definition">¶</a></dt>
 <dd><p>Assert the provided value is thrown.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>exception</strong> (<em>value</em>) – The expected exception.</p></li>
 <li><p><strong>func</strong> (<em>function</em>) – Function which should throw.</p></li>
@@ -1306,7 +1304,7 @@ argument the assertion description.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_implements">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_implements</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_implements" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_implements</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_implements" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that a feature is implemented, based on a ‘truthy’ condition.</p>
 <p>This function should be used to early-exit from tests in which there is
 no point continuing without support for a non-optional spec or spec
@@ -1315,7 +1313,7 @@ feature. For example:</p>
 <div><p>assert_implements(window.Foo, ‘Foo is not supported’);</p>
 </div></blockquote>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>condition</strong> (<em>object</em>) – The truthy value to test</p></li>
 <li><p><strong>description</strong> (<em>string</em>) – Error description for the case that the condition is not truthy.</p></li>
@@ -1326,7 +1324,7 @@ feature. For example:</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_implements_optional">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_implements_optional</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_implements_optional" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_implements_optional</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_implements_optional" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that an optional feature is implemented, based on a ‘truthy’ condition.</p>
 <p>This function should be used to early-exit from tests in which there is
 no point continuing without support for an explicitly optional spec or
@@ -1338,7 +1336,7 @@ spec feature. For example:</p>
 </dl>
 </div></blockquote>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>condition</strong> (<em>object</em>) – The truthy value to test</p></li>
 <li><p><strong>description</strong> (<em>string</em>) – Error description for the case that the condition is not truthy.</p></li>
@@ -1349,11 +1347,11 @@ spec feature. For example:</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_unreached">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_unreached</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_unreached" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_unreached</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_unreached" title="Link to this definition">¶</a></dt>
 <dd><p>Asserts if called. Used to ensure that a specific codepath is
 not taken e.g. that an error event isn’t fired.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>
@@ -1363,7 +1361,7 @@ not taken e.g. that an error event isn’t fired.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_any">
-<span class="sig-name descname"><span class="n"><span class="pre">assert_any</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assert_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_any" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">assert_any</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assert_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_any" title="Link to this definition">¶</a></dt>
 <dd><p>Asserts that <code class="docutils literal notranslate"><span class="pre">actual</span></code> matches at least one value of <code class="docutils literal notranslate"><span class="pre">expected</span></code>
 according to a comparison defined by <code class="docutils literal notranslate"><span class="pre">assert_func</span></code>.</p>
 <p>Note that tests with multiple allowed pass conditions are bad
@@ -1371,7 +1369,7 @@ practice unless the spec specifically allows multiple
 behaviours. Test authors should not use this method simply to
 hide UA bugs.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>assert_func</strong> (<em>AssertFunc</em>) – Function to compare actual and expected. It must throw when the comparison fails and return when the comparison passes.</p></li>
 <li><p><strong>actual</strong> (<em>Any</em>) – Test value.</p></li>
@@ -1385,10 +1383,10 @@ hide UA bugs.</p>
 <p>Assertions fail by throwing an <code class="docutils literal notranslate"><span class="pre">AssertionError</span></code>:</p>
 <dl class="js class">
 <dt class="sig sig-object js" id="AssertionError">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="n"><span class="pre">AssertionError</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AssertionError" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="n"><span class="pre">AssertionError</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AssertionError" title="Link to this definition">¶</a></dt>
 <dd><p>Exception type that represents a failing assert.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>message</strong> (<em>string</em>) – Error message.</p></li>
 </ul>
@@ -1397,10 +1395,10 @@ hide UA bugs.</p>
 </dd></dl>
 
 <section id="promise-rejection">
-<h3>Promise Rejection<a class="headerlink" href="#promise-rejection" title="Permalink to this headline">¶</a></h3>
+<h3>Promise Rejection<a class="headerlink" href="#promise-rejection" title="Link to this heading">¶</a></h3>
 <dl class="js function">
 <dt class="sig sig-object js" id="promise_rejects_dom">
-<span class="sig-name descname"><span class="n"><span class="pre">promise_rejects_dom</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">promiseOrConstructor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descriptionOrPromise</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#promise_rejects_dom" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">promise_rejects_dom</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">promiseOrConstructor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descriptionOrPromise</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#promise_rejects_dom" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that a Promise is rejected with the right DOMException.</p>
 <p>For the remaining arguments, there are two ways of calling
 promise_rejects_dom:</p>
@@ -1412,7 +1410,7 @@ third argument should be the DOMException constructor from that global,
 the fourth argument the promise expected to reject, and the fifth,
 optional, argument the assertion description.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>test</strong> (<a class="reference internal" href="#Test" title="Test"><em>Test</em></a>) – the <cite>Test</cite> to use for the assertion.</p></li>
 <li><p><strong>type</strong> (<em>number|string</em>) – See documentation for <a class="reference external" href="#assert_throws_dom">assert_throws_dom</a>.</p></li>
@@ -1426,10 +1424,10 @@ optional, argument the assertion description.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="promise_rejects_js">
-<span class="sig-name descname"><span class="n"><span class="pre">promise_rejects_js</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constructor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">promise</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#promise_rejects_js" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">promise_rejects_js</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constructor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">promise</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#promise_rejects_js" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that a Promise is rejected with the right ECMAScript exception.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>test</strong> (<a class="reference internal" href="#Test" title="Test"><em>Test</em></a>) – the <cite>Test</cite> to use for the assertion.</p></li>
 <li><p><strong>constructor</strong> (<em>function</em>) – The expected exception constructor.</p></li>
@@ -1442,10 +1440,10 @@ optional, argument the assertion description.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="promise_rejects_exactly">
-<span class="sig-name descname"><span class="n"><span class="pre">promise_rejects_exactly</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exception</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">promise</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#promise_rejects_exactly" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">promise_rejects_exactly</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exception</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">promise</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#promise_rejects_exactly" title="Link to this definition">¶</a></dt>
 <dd><p>Assert that a Promise is rejected with the provided value.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>test</strong> (<a class="reference internal" href="#Test" title="Test"><em>Test</em></a>) – the <cite>Test</cite> to use for the assertion.</p></li>
 <li><p><strong>exception</strong> (<em>Any</em>) – The expected value of the rejected promise.</p></li>
@@ -1472,14 +1470,14 @@ with a TypeError:</p>
 </section>
 </section>
 <section id="test-objects">
-<h2>Test Objects<a class="headerlink" href="#test-objects" title="Permalink to this headline">¶</a></h2>
+<h2>Test Objects<a class="headerlink" href="#test-objects" title="Link to this heading">¶</a></h2>
 <dl class="js class">
 <dt class="sig sig-object js" id="Test">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="n"><span class="pre">Test</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="n"><span class="pre">Test</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test" title="Link to this definition">¶</a></dt>
 <dd><p>A single subtest. A Test is not constructed directly but via the
 <a class="reference internal" href="#test" title="test"><code class="xref js js-func docutils literal notranslate"><span class="pre">test()</span></code></a>, <a class="reference internal" href="#async_test" title="async_test"><code class="xref js js-func docutils literal notranslate"><span class="pre">async_test()</span></code></a> or <a class="reference internal" href="#promise_test" title="promise_test"><code class="xref js js-func docutils literal notranslate"><span class="pre">promise_test()</span></code></a> functions.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>string</em>) – This must be unique in a given file and must be invariant between runs.</p></li>
 </ul>
@@ -1487,34 +1485,34 @@ with a TypeError:</p>
 </dl>
 <dl class="js attribute">
 <dt class="sig sig-object js" id="Test.message">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">message</span></span></span><a class="headerlink" href="#Test.message" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">message</span></span></span><a class="headerlink" href="#Test.message" title="Link to this definition">¶</a></dt>
 <dd><p>A message indicating the reason for test failure.</p>
 </dd></dl>
 
 <dl class="js attribute">
 <dt class="sig sig-object js" id="Test.name">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><a class="headerlink" href="#Test.name" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><a class="headerlink" href="#Test.name" title="Link to this definition">¶</a></dt>
 <dd><p>The test name.</p>
 </dd></dl>
 
 <dl class="js attribute">
 <dt class="sig sig-object js" id="Test.stack">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">stack</span></span></span><a class="headerlink" href="#Test.stack" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">stack</span></span></span><a class="headerlink" href="#Test.stack" title="Link to this definition">¶</a></dt>
 <dd><p>Stack trace in case of failure.</p>
 </dd></dl>
 
 <dl class="js attribute">
 <dt class="sig sig-object js" id="Test.status">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">status</span></span></span><a class="headerlink" href="#Test.status" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">status</span></span></span><a class="headerlink" href="#Test.status" title="Link to this definition">¶</a></dt>
 <dd><p>The test status code.</p>
 </dd></dl>
 
 <dl class="js attribute">
 <dt class="sig sig-object js" id="Test.statuses">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">statuses</span></span></span><a class="headerlink" href="#Test.statuses" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">statuses</span></span></span><a class="headerlink" href="#Test.statuses" title="Link to this definition">¶</a></dt>
 <dd><p>Enum of possible test statuses.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Values</dt>
+<dt class="field-odd">Values<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">FAIL</span></code></p></li>
@@ -1528,14 +1526,14 @@ with a TypeError:</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Test.add_cleanup">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">add_cleanup</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test.add_cleanup" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">add_cleanup</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test.add_cleanup" title="Link to this definition">¶</a></dt>
 <dd><p>Schedule a function to be run after the test result is known, regardless
 of passing or failing state.</p>
 <p>The behavior of this function will not
 influence the result of the test, but if an exception is thrown, the
 test harness will report an error.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>callback</strong> (<em>function</em>) – The cleanup function to run. This is called with no arguments.</p></li>
 </ul>
@@ -1545,7 +1543,7 @@ test harness will report an error.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Test.done">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">done</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Test.done" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">done</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Test.done" title="Link to this definition">¶</a></dt>
 <dd><p>Mark the test as complete.</p>
 <p>This sets the test status to <code class="docutils literal notranslate"><span class="pre">PASS</span></code> if no other status was
 already recorded. Any subsequent attempts to run additional
@@ -1556,23 +1554,23 @@ be run.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Test.force_timeout">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">force_timeout</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Test.force_timeout" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">force_timeout</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Test.force_timeout" title="Link to this definition">¶</a></dt>
 <dd><p>Manually set the test status to <code class="docutils literal notranslate"><span class="pre">TIMEOUT</span></code>.</p>
 <p>Alias for <a class="reference external" href="#Test.timeout">Test.timeout</a>.</p>
 </dd></dl>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Test.get_signal">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_signal</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Test.get_signal" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_signal</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Test.get_signal" title="Link to this definition">¶</a></dt>
 <dd><p>Gives an AbortSignal that will be aborted when the test finishes.</p>
 </dd></dl>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Test.step">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">step</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">this_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test.step" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">step</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">this_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test.step" title="Link to this definition">¶</a></dt>
 <dd><p>Run a single step of an ongoing test.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>func</strong> (<em>string</em>) – Callback function to run as a step. If this throws an <a class="reference internal" href="#AssertionError" title="AssertionError"><code class="xref js js-func docutils literal notranslate"><span class="pre">AssertionError()</span></code></a>, or any other exception, the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> status is set to <code class="docutils literal notranslate"><span class="pre">FAIL</span></code>.</p></li>
 <li><p><strong>this_obj</strong> (<em>Object</em>) – The object to use as the this value when calling <code class="docutils literal notranslate"><span class="pre">func</span></code>. Defaults to the  <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> object.</p></li>
@@ -1583,12 +1581,12 @@ be run.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Test.step_func">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">step_func</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">this_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test.step_func" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">step_func</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">this_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test.step_func" title="Link to this definition">¶</a></dt>
 <dd><p>Wrap a function so that it runs as a step of the current test.</p>
 <p>This allows creating a callback function that will run as a
 test step.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>func</strong> (<em>string</em>) – Function to run as a step. If this throws an <a class="reference internal" href="#AssertionError" title="AssertionError"><code class="xref js js-func docutils literal notranslate"><span class="pre">AssertionError()</span></code></a>, or any other exception, the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> status is set to <code class="docutils literal notranslate"><span class="pre">FAIL</span></code>.</p></li>
 <li><p><strong>this_obj</strong> (<em>Object</em>) – The object to use as the this value when calling <code class="docutils literal notranslate"><span class="pre">func</span></code>. Defaults to the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> object.</p></li>
@@ -1608,12 +1606,12 @@ test step.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Test.step_func_done">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">step_func_done</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">this_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test.step_func_done" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">step_func_done</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">this_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test.step_func_done" title="Link to this definition">¶</a></dt>
 <dd><p>Wrap a function so that it runs as a step of the current test,
 and automatically marks the test as complete if the function
 returns without error.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>func</strong> (<em>string</em>) – Function to run as a step. If this throws an <a class="reference internal" href="#AssertionError" title="AssertionError"><code class="xref js js-func docutils literal notranslate"><span class="pre">AssertionError()</span></code></a>, or any other exception, the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> status is set to <code class="docutils literal notranslate"><span class="pre">FAIL</span></code>. If it returns without error the status is set to <code class="docutils literal notranslate"><span class="pre">PASS</span></code>.</p></li>
 <li><p><strong>this_obj</strong> (<em>Object</em>) – The object to use as the this value when calling <cite>func</cite>. Defaults to the <a class="reference internal" href="#Test" title="Test"><code class="xref js js-class docutils literal notranslate"><span class="pre">Test()</span></code></a> object.</p></li>
@@ -1624,7 +1622,7 @@ returns without error.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Test.step_timeout">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">step_timeout</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test.step_timeout" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">step_timeout</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test.step_timeout" title="Link to this definition">¶</a></dt>
 <dd><p>Run a function as a step of the test after a given timeout.</p>
 <p>This multiplies the timeout by the global timeout multiplier to
 account for the expected execution speed of the current test
@@ -1634,7 +1632,7 @@ timeout multiplier of 2 will wait for 4000ms before calling <code class="docutil
 <a class="reference internal" href="#Test.step_wait_func" title="Test.step_wait_func"><code class="xref js js-func docutils literal notranslate"><span class="pre">step_wait_func()</span></code></a> in preference to this function where possible,
 as they provide better test performance.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>func</strong> (<em>function</em>) – Function to run as a test step.</p></li>
 <li><p><strong>timeout</strong> (<em>number</em>) – Time in ms to wait before running the test step. The actual wait time is <code class="docutils literal notranslate"><span class="pre">timeout</span></code> x <code class="docutils literal notranslate"><span class="pre">timeout_multiplier</span></code>.</p></li>
@@ -1645,7 +1643,7 @@ as they provide better test performance.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Test.step_wait">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">step_wait</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cond</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test.step_wait" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">step_wait</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cond</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test.step_wait" title="Link to this definition">¶</a></dt>
 <dd><p>Poll for a function to return true, and resolve a promise
 once it does, or assert if a timeout is reached. This is
 preferred over a simple step_timeout whenever possible
@@ -1653,7 +1651,7 @@ since it allows the timeout to be longer to reduce
 intermittents without compromising test execution speed
 when the condition is quickly met.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cond</strong> (<em>function</em>) – A function taking no arguments and returning a boolean or a Promise.</p></li>
 <li><p><strong>description</strong> (<em>string</em>) – Error message to add to assert in case of failure.</p></li>
@@ -1661,7 +1659,7 @@ when the condition is quickly met.</p>
 <li><p><strong>interval</strong> (<em>number</em>) – Polling interval in ms</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Promise resolved once cond is met.</p>
 </dd>
 </dl>
@@ -1677,7 +1675,7 @@ when the condition is quickly met.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Test.step_wait_func">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">step_wait_func</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cond</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test.step_wait_func" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">step_wait_func</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cond</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test.step_wait_func" title="Link to this definition">¶</a></dt>
 <dd><p>Poll for a function to return true, and call a callback
 function once it does, or assert if a timeout is
 reached. This is preferred over a simple step_timeout
@@ -1685,7 +1683,7 @@ whenever possible since it allows the timeout to be longer
 to reduce intermittents without compromising test execution
 speed when the condition is quickly met.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cond</strong> (<em>function</em>) – A function taking no arguments and returning a boolean or a Promise. The callback is called when this function returns true, or the returned Promise is resolved with true.</p></li>
 <li><p><strong>func</strong> (<em>function</em>) – A function taking no arguments to call once the condition is met.</p></li>
@@ -1699,7 +1697,7 @@ speed when the condition is quickly met.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Test.step_wait_func_done">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">step_wait_func_done</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cond</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test.step_wait_func_done" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">step_wait_func_done</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cond</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test.step_wait_func_done" title="Link to this definition">¶</a></dt>
 <dd><p>Poll for a function to return true, and invoke a callback
 followed by this.done() once it does, or assert if a timeout
 is reached. This is preferred over a simple step_timeout
@@ -1707,7 +1705,7 @@ whenever possible since it allows the timeout to be longer
 to reduce intermittents without compromising test execution speed
 when the condition is quickly met.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cond</strong> (<em>function</em>) – A function taking no arguments and returning a boolean or a Promise. The callback is called when this function returns true, or the returned Promise is resolved with true.</p></li>
 <li><p><strong>func</strong> (<em>function</em>) – A function taking no arguments to call once the condition is met.</p></li>
@@ -1735,17 +1733,17 @@ when the condition is quickly met.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Test.timeout">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">timeout</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Test.timeout" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">timeout</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Test.timeout" title="Link to this definition">¶</a></dt>
 <dd><p>Manually set the test status to <code class="docutils literal notranslate"><span class="pre">TIMEOUT</span></code>.</p>
 </dd></dl>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="Test.unreached_func">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">unreached_func</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test.unreached_func" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Test</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">unreached_func</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Test.unreached_func" title="Link to this definition">¶</a></dt>
 <dd><p>Return a function that automatically sets the current test to
 <code class="docutils literal notranslate"><span class="pre">FAIL</span></code> if it’s called.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>description</strong> (<em>string</em>) – Error message to add to assert in case of failure.</p></li>
 </ul>
@@ -1757,12 +1755,12 @@ when the condition is quickly met.</p>
 
 </section>
 <section id="helpers">
-<h2>Helpers<a class="headerlink" href="#helpers" title="Permalink to this headline">¶</a></h2>
+<h2>Helpers<a class="headerlink" href="#helpers" title="Link to this heading">¶</a></h2>
 <section id="waiting-for-events">
-<h3>Waiting for events<a class="headerlink" href="#waiting-for-events" title="Permalink to this headline">¶</a></h3>
+<h3>Waiting for events<a class="headerlink" href="#waiting-for-events" title="Link to this heading">¶</a></h3>
 <dl class="js class">
 <dt class="sig sig-object js" id="EventWatcher">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="n"><span class="pre">EventWatcher</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">watchedNode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eventTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeoutPromise</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EventWatcher" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="n"><span class="pre">EventWatcher</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">watchedNode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eventTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeoutPromise</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EventWatcher" title="Link to this definition">¶</a></dt>
 <dd><p>Allow DOM events to be handled using Promises.</p>
 <p>This can make it a lot easier to test a very specific series of events,
 including ensuring that unexpected events are not fired at any point.</p>
@@ -1771,7 +1769,7 @@ created Promise waiting to be fulfilled, or if the event is of a different type
 to the type currently expected. This ensures that only the events that are
 expected occur, in the correct order, and with the correct timing.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>test</strong> (<a class="reference internal" href="#Test" title="Test"><em>Test</em></a>) – The <cite>Test</cite> to use for the assertion.</p></li>
 <li><p><strong>watchedNode</strong> (<em>EventTarget</em>) – The target expected to receive the events.</p></li>
@@ -1782,11 +1780,11 @@ expected occur, in the correct order, and with the correct timing.</p>
 </dl>
 <dl class="js function">
 <dt class="sig sig-object js" id="EventWatcher.wait_for">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">EventWatcher</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">wait_for</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EventWatcher.wait_for" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">EventWatcher</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">wait_for</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EventWatcher.wait_for" title="Link to this definition">¶</a></dt>
 <dd><p>Returns a Promise that will resolve after the specified event or
 series of events has occurred.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>options</strong> (<em>Object</em>) – An optional options object. If the ‘record’ property on this object has the value ‘all’, when the Promise returned by this function is resolved,  <em>all</em> Event objects that were waited for will be returned as an array.</p></li>
 </ul>
@@ -1807,7 +1805,7 @@ series of events has occurred.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="EventWatcher.stop_watching">
-<span class="sig-prename descclassname"><span class="n"><span class="pre">EventWatcher</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">stop_watching</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#EventWatcher.stop_watching" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="n"><span class="pre">EventWatcher</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">stop_watching</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#EventWatcher.stop_watching" title="Link to this definition">¶</a></dt>
 <dd><p>Stop listening for events</p>
 </dd></dl>
 
@@ -1837,10 +1835,10 @@ series of events has occurred.</p>
 </div>
 </section>
 <section id="utility-functions">
-<h3>Utility Functions<a class="headerlink" href="#utility-functions" title="Permalink to this headline">¶</a></h3>
+<h3>Utility Functions<a class="headerlink" href="#utility-functions" title="Link to this heading">¶</a></h3>
 <dl class="js function">
 <dt class="sig sig-object js" id="format_value">
-<span class="sig-name descname"><span class="n"><span class="pre">format_value</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#format_value" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">format_value</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#format_value" title="Link to this definition">¶</a></dt>
 <dd><p>Convert a value to a nice, human-readable string</p>
 <p>When many JavaScript Object values are coerced to a String, the
 resulting value will be <code class="docutils literal notranslate"><span class="pre">&quot;[object</span> <span class="pre">Object]&quot;</span></code>. This obscures
@@ -1852,12 +1850,12 @@ the more important DOM Node types. It also translates String
 values containing control characters to include human-readable
 representations.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>val</strong> (<em>Any</em>) – The value to convert to a string.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>string</strong> – - A string representation of <code class="docutils literal notranslate"><span class="pre">val</span></code>, optimised for human readability.</p>
 </dd>
 </dl>
@@ -1879,10 +1877,10 @@ representations.</p>
 </section>
 </section>
 <section id="deprecated-apis">
-<h2>Deprecated APIs<a class="headerlink" href="#deprecated-apis" title="Permalink to this headline">¶</a></h2>
+<h2>Deprecated APIs<a class="headerlink" href="#deprecated-apis" title="Link to this heading">¶</a></h2>
 <dl class="js function">
 <dt class="sig sig-object js" id="generate_tests">
-<span class="sig-name descname"><span class="n"><span class="pre">generate_tests</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#generate_tests" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">generate_tests</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#generate_tests" title="Link to this definition">¶</a></dt>
 <dd><div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Deprecated: generate a list of tests from a function and list of arguments</p>
@@ -1892,7 +1890,7 @@ and as a result any test throwing an exception will result in no tests being
 run. In almost all cases, you should simply call test within the loop you would
 use to generate the parameter list array.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>func</strong> (<em>function</em>) – The function that will be called for each generated tests.</p></li>
 <li><p><strong>args</strong> (<em>Array.&lt;Array.&lt;Any&gt;&gt;</em>) – An array of arrays. Each nested array has the structure <cite>[testName, …testArgs]</cite>. For each of these nested arrays array, a test is generated with name <cite>testName</cite> and test function equivalent to <cite>func(..testArgs)</cite>.</p></li>
@@ -1903,14 +1901,14 @@ use to generate the parameter list array.</p>
 
 <dl class="js function">
 <dt class="sig sig-object js" id="on_event">
-<span class="sig-name descname"><span class="n"><span class="pre">on_event</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#on_event" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">on_event</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#on_event" title="Link to this definition">¶</a></dt>
 <dd><div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Deprecated: Register a function as a DOM event listener to the</p>
 </div>
 <p>given object for the event bubbling phase.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>object</strong> (<em>EventTarget</em>) – Event target</p></li>
 <li><p><strong>event</strong> (<em>string</em>) – Event name</p></li>
@@ -1976,7 +1974,7 @@ use to generate the parameter list array.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -1993,7 +1991,7 @@ use to generate the parameter list array.</p>
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

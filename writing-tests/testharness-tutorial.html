@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>testharness.js tutorial &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Rendering Test Guidelines" href="rendering.html" />
@@ -35,7 +33,7 @@
           <div class="body" role="main">
             
   <section id="testharness-js-tutorial">
-<h1>testharness.js tutorial<a class="headerlink" href="#testharness-js-tutorial" title="Permalink to this headline">¶</a></h1>
+<h1>testharness.js tutorial<a class="headerlink" href="#testharness-js-tutorial" title="Link to this heading">¶</a></h1>
 <!--
 Note to maintainers:
 
@@ -56,7 +54,7 @@ web platform’s JavaScript APIs. <a class="reference internal" href="testharnes
 page</span></a> describes the framework in the abstract, but for the
 purposes of this guide, we’ll only consider the features we need to test the
 behavior of <code class="docutils literal notranslate"><span class="pre">fetch</span></code>.</p>
-<div class="contents local topic" id="table-of-contents">
+<nav class="contents local" id="table-of-contents">
 <p class="topic-title">Table of Contents</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#setting-up-your-workspace" id="id1">Setting up your workspace</a></p></li>
@@ -67,9 +65,9 @@ behavior of <code class="docutils literal notranslate"><span class="pre">fetch</
 <li><p><a class="reference internal" href="#submitting-the-test" id="id6">Submitting the test</a></p></li>
 <li><p><a class="reference internal" href="#more-practice" id="id7">More practice</a></p></li>
 </ul>
-</div>
+</nav>
 <section id="setting-up-your-workspace">
-<h2>Setting up your workspace<a class="headerlink" href="#setting-up-your-workspace" title="Permalink to this headline">¶</a></h2>
+<h2>Setting up your workspace<a class="headerlink" href="#setting-up-your-workspace" title="Link to this heading">¶</a></h2>
 <p>To make sure you have the latest code, first type the following into a terminal
 located in the root of the WPT git repository:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git fetch git@github.com:web-platform-tests/wpt.git
@@ -87,7 +85,7 @@ WPT</span></a> before you continue.</p>
 <p>With that out of the way, you’re ready to create your patch.</p>
 </section>
 <section id="writing-a-subtest">
-<h2>Writing a subtest<a class="headerlink" href="#writing-a-subtest" title="Permalink to this headline">¶</a></h2>
+<h2>Writing a subtest<a class="headerlink" href="#writing-a-subtest" title="Link to this heading">¶</a></h2>
 <!--
 Goals of this section:
 
@@ -183,7 +181,7 @@ You should see something like this:</p>
 <p><img alt="../_images/testharness-tutorial-test-screenshot-1.png" src="../_images/testharness-tutorial-test-screenshot-1.png" /></p>
 </section>
 <section id="refining-the-subtest">
-<h2>Refining the subtest<a class="headerlink" href="#refining-the-subtest" title="Permalink to this headline">¶</a></h2>
+<h2>Refining the subtest<a class="headerlink" href="#refining-the-subtest" title="Link to this heading">¶</a></h2>
 <!--
 Goals of this section:
 
@@ -243,7 +241,7 @@ subtest, we should give this one a more specific name:</p>
 </div>
 </section>
 <section id="writing-a-second-subtest">
-<h2>Writing a second subtest<a class="headerlink" href="#writing-a-second-subtest" title="Permalink to this headline">¶</a></h2>
+<h2>Writing a second subtest<a class="headerlink" href="#writing-a-second-subtest" title="Link to this heading">¶</a></h2>
 <!--
 Goals of this section:
 
@@ -319,7 +317,7 @@ reported as passing with their distinct names.</p>
 <p><img alt="../_images/testharness-tutorial-test-screenshot-2.png" src="../_images/testharness-tutorial-test-screenshot-2.png" /></p>
 </section>
 <section id="verifying-our-work">
-<h2>Verifying our work<a class="headerlink" href="#verifying-our-work" title="Permalink to this headline">¶</a></h2>
+<h2>Verifying our work<a class="headerlink" href="#verifying-our-work" title="Link to this heading">¶</a></h2>
 <p>We’re done writing the test, but we should make sure it fits in with the rest
 of WPT before we submit it.</p>
 <p><a class="reference internal" href="lint-tool.html"><span class="doc">The lint tool</span></a> can detect some of the common mistakes people make
@@ -355,7 +353,7 @@ might crash. That’s often a sign of a browser bug, so you should consider
 maintainers</a>!</p>
 </section>
 <section id="submitting-the-test">
-<h2>Submitting the test<a class="headerlink" href="#submitting-the-test" title="Permalink to this headline">¶</a></h2>
+<h2>Submitting the test<a class="headerlink" href="#submitting-the-test" title="Link to this heading">¶</a></h2>
 <p>First, let’s stage the new files for committing:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git add fetch/api/basic/set-cookie.asis
 $ git add fetch/api/basic/set-cookie.html
@@ -382,7 +380,7 @@ the repository, we would create a pull request on GitHub. <a class="reference in
 GitHub</span></a> has all the details on how to do that.</p>
 </section>
 <section id="more-practice">
-<h2>More practice<a class="headerlink" href="#more-practice" title="Permalink to this headline">¶</a></h2>
+<h2>More practice<a class="headerlink" href="#more-practice" title="Link to this heading">¶</a></h2>
 <p>Here are some ways you can keep experimenting with WPT using this test:</p>
 <ul class="simple">
 <li><p>Improve the test’s readability by defining helper functions like
@@ -447,7 +445,7 @@ HTTP response sets multiple cookies)</p></li>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -464,7 +462,7 @@ HTTP response sets multiple cookies)</p></li>
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

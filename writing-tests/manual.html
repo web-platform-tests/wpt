@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Manual Tests &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="File Name Flags" href="file-names.html" />
@@ -35,11 +33,11 @@
           <div class="body" role="main">
             
   <section id="manual-tests">
-<h1>Manual Tests<a class="headerlink" href="#manual-tests" title="Permalink to this headline">¶</a></h1>
+<h1>Manual Tests<a class="headerlink" href="#manual-tests" title="Link to this heading">¶</a></h1>
 <p>Some testing scenarios are intrinsically difficult to automate and
 require a human to run the test and check the pass condition.</p>
 <section id="when-to-write-manual-tests">
-<h2>When to Write Manual Tests<a class="headerlink" href="#when-to-write-manual-tests" title="Permalink to this headline">¶</a></h2>
+<h2>When to Write Manual Tests<a class="headerlink" href="#when-to-write-manual-tests" title="Link to this heading">¶</a></h2>
 <p>Whenever possible it’s best to write a fully automated test. For a
 browser vendor it’s possible to run an automated test hundreds of
 times a day, but manual tests are likely to be run at most a handful
@@ -63,7 +61,7 @@ various sensor APIs respond in the expected way).</p></li>
 </ul>
 </section>
 <section id="requirements-for-a-manual-test">
-<h2>Requirements for a Manual Test<a class="headerlink" href="#requirements-for-a-manual-test" title="Permalink to this headline">¶</a></h2>
+<h2>Requirements for a Manual Test<a class="headerlink" href="#requirements-for-a-manual-test" title="Link to this heading">¶</a></h2>
 <p>Manual tests are distinguished by their filename; all manual tests
 have filenames of the form <code class="docutils literal notranslate"><span class="pre">name-manual.ext</span></code> (i.e., a <code class="docutils literal notranslate"><span class="pre">-manual</span></code> suffix
 after the main filename but before the extension).</p>
@@ -84,7 +82,7 @@ avoided (though, as always, can be provided in
 HTML/CSS/JS/etc. comments).</p>
 </section>
 <section id="using-testharness-js-for-manual-tests">
-<h2>Using testharness.js for Manual Tests<a class="headerlink" href="#using-testharness-js-for-manual-tests" title="Permalink to this headline">¶</a></h2>
+<h2>Using testharness.js for Manual Tests<a class="headerlink" href="#using-testharness-js-for-manual-tests" title="Link to this heading">¶</a></h2>
 <p>A convenient way to present the results of a test that can have the
 result determined by script after some manual setup steps is to use
 testharness.js to determine and present the result. In this case one
@@ -156,7 +154,7 @@ passes, otherwise it fails<span class="p">&lt;/</span><span class="nt">p</span><
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -173,7 +171,7 @@ passes, otherwise it fails<span class="p">&lt;/</span><span class="nt">p</span><
       &#169;2019, wpt contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

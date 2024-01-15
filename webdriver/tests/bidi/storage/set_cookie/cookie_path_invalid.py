@@ -13,6 +13,7 @@ COOKIE_VALUE = 'SOME_COOKIE_VALUE'
 @pytest.mark.parametrize(
     "path",
     [
+        ""
         "no_leading_forward_slash"
     ]
 )

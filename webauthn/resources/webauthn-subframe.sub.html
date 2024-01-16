@@ -8,8 +8,8 @@
 <script>
     "use strict";
 
-    function reportResult(outcome, errorMessage) {
-        window.top.postMessage({"type": "result", "result": outcome, "errorMessage": errorMessage}, "*");
+    function reportResult(outcome, errorObj) {
+        window.top.postMessage({"type": "result", "result": outcome, "error": errorObj}, "*");
     }
 
     async function createCredentialAndReportResult(addUserActivation) {
@@ -21,7 +21,7 @@
             await createCredential();
             reportResult("success");
         } catch (e) {
-            reportResult("failure", e.message);
+            reportResult("failure", e);
         }
     }
 

@@ -1,7 +1,8 @@
+from typing import Union
 from webdriver.bidi.modules.network import NetworkBytesValue, NetworkStringValue
 from webdriver.bidi.modules.storage import PartialCookie, StorageKeyPartitionDescriptor
 from .. import any_int, recursive_compare
-from webdriver.bidi.undefined import Maybe, UNDEFINED
+from webdriver.bidi.undefined import Undefined, UNDEFINED
 
 COOKIE_NAME = 'SOME_COOKIE_NAME'
 COOKIE_VALUE = NetworkStringValue('SOME_COOKIE_VALUE')
@@ -35,11 +36,11 @@ async def assert_cookie_is_set(bidi_session, domain: str, origin: str, name: str
 def create_cookie(domain: str,
                   name: str = COOKIE_NAME,
                   value: NetworkBytesValue = COOKIE_VALUE,
-                  secure: Maybe[bool] = True,
-                  path: Maybe[str] = UNDEFINED,
-                  http_only: Maybe[bool] = UNDEFINED,
-                  same_site: Maybe[str] = UNDEFINED,
-                  expiry: Maybe[int] = UNDEFINED,
+                  secure: Union[Undefined, bool] = True,
+                  path: Union[Undefined, str] = UNDEFINED,
+                  http_only: Union[Undefined, bool] = UNDEFINED,
+                  same_site: Union[Undefined, str] = UNDEFINED,
+                  expiry: Union[Undefined, int] = UNDEFINED,
                   ) -> PartialCookie:
     """
     Creates a cookie with the given or default options.

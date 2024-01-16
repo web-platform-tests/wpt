@@ -1,7 +1,7 @@
 from typing import Any, Dict, Mapping, MutableMapping, Union
 from ._module import BidiModule, command
 from webdriver.bidi.modules.network import NetworkBytesValue
-from ..undefined import UNDEFINED, Undefined, Maybe
+from ..undefined import UNDEFINED, Undefined
 
 
 class BrowsingContextPartitionDescriptor(Dict[str, Any]):
@@ -10,8 +10,8 @@ class BrowsingContextPartitionDescriptor(Dict[str, Any]):
 
 
 class StorageKeyPartitionDescriptor(Dict[str, Any]):
-    def __init__(self, user_context: Maybe[str] = UNDEFINED,
-                 source_origin: Maybe[str] = UNDEFINED):
+    def __init__(self, user_context: Union[Undefined, str] = UNDEFINED,
+                 source_origin: Union[Undefined, str] = UNDEFINED):
         dict.__init__(self, type="storageKey")
         if user_context is not UNDEFINED:
             self["userContext"] = user_context
@@ -25,11 +25,11 @@ class PartialCookie(Dict[str, Any]):
             name: str,
             value: NetworkBytesValue,
             domain: str,
-            path: Maybe[str] = UNDEFINED,
-            http_only: Maybe[bool] = UNDEFINED,
-            secure: Maybe[bool] = UNDEFINED,
-            same_site: Maybe[str] = UNDEFINED,
-            expiry: Maybe[int] = UNDEFINED,
+            path: Union[Undefined, str] = UNDEFINED,
+            http_only: Union[Undefined, bool] = UNDEFINED,
+            secure: Union[Undefined, bool] = UNDEFINED,
+            same_site: Union[Undefined, str] = UNDEFINED,
+            expiry: Union[Undefined, int] = UNDEFINED,
     ):
         dict.__init__(self, name=name, value=value, domain=domain)
         if path is not UNDEFINED:
@@ -51,12 +51,15 @@ class Storage(BidiModule):
 
     # TODO: extend with `filter`.
     @command
-    def get_cookies(self, partition: Maybe[PartitionDescriptor] = UNDEFINED) -> Mapping[str, Any]:
+    def get_cookies(self, partition: Union[Undefined, PartitionDescriptor] = UNDEFINED) -> Mapping[str, Any]:
         return {"partition": partition}
 
     @command
-    def set_cookie(self, cookie: PartialCookie, partition: Maybe[PartitionDescriptor] = UNDEFINED) -> \
-            Mapping[str, Any]:
+    def set_cookie(
+            self,
+            cookie: PartialCookie,
+            partition: Union[Undefined, PartitionDescriptor] = UNDEFINED
+    ) -> Mapping[str, Any]:
         return {
             'cookie': cookie,
             "partition": partition

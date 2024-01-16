@@ -1,4 +1,4 @@
-from typing import TypeVar, Dict, Union
+from typing import TypeVar, Union
 
 
 class Undefined:

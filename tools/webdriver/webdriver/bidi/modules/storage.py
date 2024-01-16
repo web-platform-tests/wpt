@@ -52,17 +52,12 @@ class Storage(BidiModule):
     # TODO: extend with `filter`.
     @command
     def get_cookies(self, partition: Maybe[PartitionDescriptor] = UNDEFINED) -> Mapping[str, Any]:
-        params = {}
-        if partition is not UNDEFINED:
-            params["partition"] = partition
-        return params
+        return {"partition": partition}
 
     @command
     def set_cookie(self, cookie: PartialCookie, partition: Maybe[PartitionDescriptor] = UNDEFINED) -> \
             Mapping[str, Any]:
-        params: MutableMapping[str, Any] = {
+        return {
             'cookie': cookie,
+            "partition": partition
         }
-        if partition is not UNDEFINED:
-            params["partition"] = partition
-        return params

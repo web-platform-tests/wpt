@@ -5,6 +5,7 @@ from webdriver.bidi.modules.input import Actions
 
 pytestmark = pytest.mark.asyncio
 
+CONTEXT_DESTROYED_EVENT = "browsingContext.contextDestroyed"
 USER_PROMPT_OPENED_EVENT = "browsingContext.userPromptOpened"
 
 
@@ -41,7 +42,17 @@ async def test_prompt_unload_triggering_dialog(bidi_session, inline, subscribe_e
     new_context = await bidi_session.browsing_context.create(type_hint="tab")
 
     # Set up event listener to make sure the event is not automatically handle
-    await subscribe_events([USER_PROMPT_OPENED_EVENT])
+    await subscribe_events([USER_PROMPT_OPENED_EVENT, CONTEXT_DESTROYED_EVENT])
+    user_prompt_opened = wait_for_event(USER_PROMPT_OPENED_EVENT)
+
+    # Track all received browsingContext.contextDestroyed events in the events array
+    events = []
+
+    async def on_event(_, data):
+        if data["type"] == CONTEXT_DESTROYED_EVENT:
+            events.append(data)
+    remove_listener = bidi_session.add_event_listener(
+        CONTEXT_DESTROYED_EVENT, on_event)
 
     await bidi_session.browsing_context.navigate(context=new_context["context"], url=url, wait="complete")
 
@@ -58,7 +69,6 @@ async def test_prompt_unload_triggering_dialog(bidi_session, inline, subscribe_e
         actions=actions, context=new_context["context"]
     )
 
-    user_prompt_opened = wait_for_event(USER_PROMPT_OPENED_EVENT)
     close_task = asyncio.create_task(
         bidi_session.browsing_context.close(
             context=new_context["context"], prompt_unload=True)
@@ -66,15 +76,12 @@ async def test_prompt_unload_triggering_dialog(bidi_session, inline, subscribe_e
 
     await user_prompt_opened
 
-    all_contexts = await bidi_session.browsing_context.get_tree()
-    assert len(all_contexts) == 2
+    # Events that come after the handling are OK
+    remove_listener()
+    assert events == []
 
     await bidi_session.browsing_context.handle_user_prompt(
         context=new_context["context"],
     )
 
     await close_task
-
-    all_contexts = await bidi_session.browsing_context.get_tree()
-
-    assert len(all_contexts) == 1

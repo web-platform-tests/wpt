@@ -28,7 +28,9 @@
     window.addEventListener("message", e => {
         if (e.data.type == "create-credential") {
             createCredentialAndReportResult(e.data.addUserActivation);
+            return;
         }
+        throw new Error(`Unrecognized message, e.data.type: ${e.data.type}`);
     });
 
     test_driver.set_test_context(window.top);

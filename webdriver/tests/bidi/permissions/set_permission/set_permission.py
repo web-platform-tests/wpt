@@ -96,7 +96,7 @@ async def test_set_permission_new_context(bidi_session, new_tab, url):
 
 
 @pytest.mark.parametrize("origin", ['UNKNOWN', ''])
-async def test_params_origin_invalid_value(bidi_session, new_tab, origin):
+async def test_set_permission_origin_unknown(bidi_session, new_tab, origin):
     await bidi_session.permissions.set_permission(
         descriptor={"name": "geolocation"},
         state="granted",

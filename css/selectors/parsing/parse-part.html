@@ -31,4 +31,7 @@
   test_invalid_selector(":part('foo')");
   test_invalid_selector(":part([foo])");
   test_invalid_selector('::part(foo) + ::part(bar)');
+  test_invalid_selector(":part(foo):is(ul)");
+  test_invalid_selector(":part(foo):is(nav ul)");
+  test_invalid_selector(":part(foo):has(li)");
 </script>

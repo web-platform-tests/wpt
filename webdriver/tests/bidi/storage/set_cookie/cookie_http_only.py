@@ -29,6 +29,5 @@ async def test_cookie_http_only(bidi_session, top_context, test_page, origin, do
     await assert_cookie_is_set(
         bidi_session,
         domain=domain_value(),
-        origin=origin(),
         http_only=expected_http_only,
     )

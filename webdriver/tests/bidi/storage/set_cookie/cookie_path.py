@@ -14,7 +14,7 @@ pytestmark = pytest.mark.asyncio
         UNDEFINED
     ]
 )
-async def test_cookie_path(bidi_session, top_context, test_page, origin, domain_value, path):
+async def test_cookie_path(bidi_session, top_context, test_page, domain_value, path):
     # Navigate to a secure context.
     await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
 
@@ -26,4 +26,4 @@ async def test_cookie_path(bidi_session, top_context, test_page, origin, domain_
 
     # `path` defaults to "/".
     expected_path = path if path is not UNDEFINED else "/"
-    await assert_cookie_is_set(bidi_session, path=expected_path, domain=domain_value(), origin=origin())
+    await assert_cookie_is_set(bidi_session, path=expected_path, domain=domain_value())

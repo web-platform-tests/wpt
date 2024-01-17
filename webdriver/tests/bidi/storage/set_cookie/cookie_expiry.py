@@ -20,7 +20,7 @@ async def test_cookie_expiry_undefined(bidi_session, top_context, test_page, ori
         'partitionKey': {},
     }
 
-    await assert_cookie_is_set(bidi_session, expiry=UNDEFINED, domain=domain_value(), origin=origin())
+    await assert_cookie_is_set(bidi_session, expiry=UNDEFINED, domain=domain_value())
 
 
 async def test_cookie_expiry_future(bidi_session, top_context, test_page, origin, domain_value):
@@ -39,7 +39,7 @@ async def test_cookie_expiry_future(bidi_session, top_context, test_page, origin
         'partitionKey': {},
     }
 
-    await assert_cookie_is_set(bidi_session, expiry=tomorrow_timestamp, domain=domain_value(), origin=origin())
+    await assert_cookie_is_set(bidi_session, expiry=tomorrow_timestamp, domain=domain_value())
 
 
 async def test_cookie_expiry_past(bidi_session, top_context, test_page, origin, domain_value):

@@ -13,7 +13,7 @@ pytestmark = pytest.mark.asyncio
         UNDEFINED
     ]
 )
-async def test_cookie_secure(bidi_session, top_context, test_page, origin, domain_value, secure):
+async def test_cookie_secure(bidi_session, top_context, test_page, domain_value, secure):
     await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
 
     set_cookie_result = await bidi_session.storage.set_cookie(
@@ -25,4 +25,4 @@ async def test_cookie_secure(bidi_session, top_context, test_page, origin, domai
 
     # `secure` defaults to `false`.
     expected_secure = secure if secure is not UNDEFINED else False
-    await assert_cookie_is_set(bidi_session, domain=domain_value(), origin=origin(), secure=expected_secure)
+    await assert_cookie_is_set(bidi_session, domain=domain_value(), secure=expected_secure)

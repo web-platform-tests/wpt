@@ -16,4 +16,4 @@ async def test_cookie_name(bidi_session, top_context, test_page, origin, domain_
     await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
 
     await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value(), name=name))
-    await assert_cookie_is_set(bidi_session, name=name, domain=domain_value(), origin=origin())
+    await assert_cookie_is_set(bidi_session, name=name, domain=domain_value())

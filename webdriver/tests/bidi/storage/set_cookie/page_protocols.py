@@ -11,7 +11,7 @@ pytestmark = pytest.mark.asyncio
         "https",
     ]
 )
-async def test_page_protocols(bidi_session, top_context, get_test_page, origin, domain_value, protocol):
+async def test_page_protocols(bidi_session, top_context, get_test_page, domain_value, protocol):
     # Navigate to a page with a required protocol.
     await bidi_session.browsing_context.navigate(
         context=top_context["context"], url=get_test_page(protocol=protocol), wait="complete"
@@ -24,4 +24,4 @@ async def test_page_protocols(bidi_session, top_context, get_test_page, origin, 
     }
 
     # Assert the cookie is actually set.
-    await assert_cookie_is_set(bidi_session, domain=domain_value(), origin=origin())
+    await assert_cookie_is_set(bidi_session, domain=domain_value())

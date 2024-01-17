@@ -22,7 +22,7 @@ async def test_partition_context(bidi_session, top_context, test_page, origin, d
         },
     }
 
-    await assert_cookie_is_set(bidi_session, domain=domain_value(), origin=source_origin)
+    await assert_cookie_is_set(bidi_session, domain=domain_value(), partition=partition)
 
 
 async def test_partition_storage_key_source_origin(bidi_session, top_context, test_page, origin, domain_value):
@@ -42,6 +42,6 @@ async def test_partition_storage_key_source_origin(bidi_session, top_context, te
         },
     }
 
-    await assert_cookie_is_set(bidi_session, domain=domain_value(), origin=source_origin)
+    await assert_cookie_is_set(bidi_session, domain=domain_value(), partition=partition)
 
 # TODO: test `test_partition_storage_key_user_context`.

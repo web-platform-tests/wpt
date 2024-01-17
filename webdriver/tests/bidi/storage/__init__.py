@@ -1,6 +1,6 @@
 from typing import Union
 from webdriver.bidi.modules.network import NetworkBytesValue, NetworkStringValue
-from webdriver.bidi.modules.storage import PartialCookie, StorageKeyPartitionDescriptor
+from webdriver.bidi.modules.storage import PartialCookie, PartitionDescriptor
 from .. import any_int, recursive_compare
 from webdriver.bidi.undefined import Undefined, UNDEFINED
 
@@ -20,7 +20,6 @@ async def assert_cookie_is_not_set(bidi_session, name: str = COOKIE_NAME):
 async def assert_cookie_is_set(
         bidi_session,
         domain: str,
-        origin: str,
         name: str = COOKIE_NAME,
         value: str = COOKIE_VALUE,
         path: str = "/",
@@ -28,11 +27,12 @@ async def assert_cookie_is_set(
         secure: bool = True,
         same_site: str = 'none',
         expiry: Union[Undefined, int] = UNDEFINED,
+        partition: Union[Undefined, PartitionDescriptor] = UNDEFINED,
 ):
     """
     Asserts the cookie is set.
     """
-    all_cookies = await bidi_session.storage.get_cookies(partition=StorageKeyPartitionDescriptor(source_origin=origin))
+    all_cookies = await bidi_session.storage.get_cookies(partition=partition)
     assert 'cookies' in all_cookies
     actual_cookie = next(c for c in all_cookies['cookies'] if c['name'] == name)
     recursive_compare({

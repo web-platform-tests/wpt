@@ -1,6 +1,7 @@
 import pytest
 from .. import assert_cookie_is_set, create_cookie
 from webdriver.bidi.modules.network import NetworkStringValue
+from webdriver.bidi.undefined import UNDEFINED
 
 pytestmark = pytest.mark.asyncio
 

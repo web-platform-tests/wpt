@@ -8,8 +8,16 @@ COOKIE_NAME = 'SOME_COOKIE_NAME'
 COOKIE_VALUE = NetworkStringValue('SOME_COOKIE_VALUE')
 
 
-async def assert_cookie_is_set(bidi_session, domain: str, origin: str, name: str = COOKIE_NAME,
-                               value: str = COOKIE_VALUE, path: str = "/"):
+async def assert_cookie_is_set(
+        bidi_session,
+        domain: str,
+        origin: str,
+        name: str = COOKIE_NAME,
+        value: str = COOKIE_VALUE,
+        path: str = "/",
+        http_only: bool = False,
+        secure: bool = True,
+):
     """
     Asserts the cookie is set.
     """
@@ -18,19 +26,19 @@ async def assert_cookie_is_set(bidi_session, domain: str, origin: str, name: str
         source_origin=origin))
 
     assert 'cookies' in all_cookies
-    cookie = next(c for c in all_cookies['cookies'] if c['name'] == name)
+    actual_cookie = next(c for c in all_cookies['cookies'] if c['name'] == name)
 
     recursive_compare({
         'domain': domain,
-        'httpOnly': False,
+        'httpOnly': http_only,
         'name': name,
         'path': path,
         'sameSite': 'none',
-        'secure': True,
+        'secure': secure,
         # Varies depending on the cookie name and value.
         'size': any_int,
         'value': value,
-    }, cookie)
+    }, actual_cookie)
 
 
 def create_cookie(domain: str,

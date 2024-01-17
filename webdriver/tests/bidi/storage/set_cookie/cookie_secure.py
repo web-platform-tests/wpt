@@ -1,5 +1,6 @@
 import pytest
 from .. import assert_cookie_is_set, create_cookie
+from webdriver.bidi.undefined import UNDEFINED
 
 pytestmark = pytest.mark.asyncio
 
@@ -9,6 +10,7 @@ pytestmark = pytest.mark.asyncio
     [
         True,
         False,
+        UNDEFINED
     ]
 )
 async def test_cookie_secure(bidi_session, top_context, test_page, origin, domain_value, secure):
@@ -21,4 +23,6 @@ async def test_cookie_secure(bidi_session, top_context, test_page, origin, domai
         'partitionKey': {},
     }
 
-    await assert_cookie_is_set(bidi_session, domain=domain_value(), origin=origin(), secure=secure)
+    # `secure` defaults to `false`.
+    expected_secure = secure if secure is not UNDEFINED else False
+    await assert_cookie_is_set(bidi_session, domain=domain_value(), origin=origin(), secure=expected_secure)

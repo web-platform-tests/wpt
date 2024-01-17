@@ -1,5 +1,6 @@
 import pytest
 from .. import assert_cookie_is_set, create_cookie
+from webdriver.bidi.undefined import UNDEFINED
 
 pytestmark = pytest.mark.asyncio
 
@@ -10,6 +11,7 @@ pytestmark = pytest.mark.asyncio
         "/",
         "/some_path",
         "/some/nested/path",
+        UNDEFINED
     ]
 )
 async def test_cookie_path(bidi_session, top_context, test_page, origin, domain_value, path):
@@ -22,4 +24,6 @@ async def test_cookie_path(bidi_session, top_context, test_page, origin, domain_
         'partitionKey': {},
     }
 
-    await assert_cookie_is_set(bidi_session, path=path, domain=domain_value(), origin=origin())
+    # `path` defaults to "/".
+    expected_path = path if path is not UNDEFINED else "/"
+    await assert_cookie_is_set(bidi_session, path=expected_path, domain=domain_value(), origin=origin())

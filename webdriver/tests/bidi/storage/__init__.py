@@ -8,6 +8,15 @@ COOKIE_NAME = 'SOME_COOKIE_NAME'
 COOKIE_VALUE = NetworkStringValue('SOME_COOKIE_VALUE')
 
 
+async def assert_cookie_is_not_set(bidi_session, name: str = COOKIE_NAME):
+    """
+    Asserts the cookie is not set.
+    """
+    all_cookies = await bidi_session.storage.get_cookies()
+    assert 'cookies' in all_cookies
+    assert not any(c for c in all_cookies['cookies'] if c['name'] == name)
+
+
 async def assert_cookie_is_set(
         bidi_session,
         domain: str,
@@ -23,13 +32,9 @@ async def assert_cookie_is_set(
     """
     Asserts the cookie is set.
     """
-
-    all_cookies = await bidi_session.storage.get_cookies(partition=StorageKeyPartitionDescriptor(
-        source_origin=origin))
-
+    all_cookies = await bidi_session.storage.get_cookies(partition=StorageKeyPartitionDescriptor(source_origin=origin))
     assert 'cookies' in all_cookies
     actual_cookie = next(c for c in all_cookies['cookies'] if c['name'] == name)
-
     recursive_compare({
         'domain': domain,
         'httpOnly': http_only,
@@ -44,15 +49,16 @@ async def assert_cookie_is_set(
     }, actual_cookie)
 
 
-def create_cookie(domain: str,
-                  name: str = COOKIE_NAME,
-                  value: NetworkBytesValue = COOKIE_VALUE,
-                  secure: Union[Undefined, bool] = True,
-                  path: Union[Undefined, str] = UNDEFINED,
-                  http_only: Union[Undefined, bool] = UNDEFINED,
-                  same_site: Union[Undefined, str] = UNDEFINED,
-                  expiry: Union[Undefined, int] = UNDEFINED,
-                  ) -> PartialCookie:
+def create_cookie(
+        domain: str,
+        name: str = COOKIE_NAME,
+        value: NetworkBytesValue = COOKIE_VALUE,
+        secure: Union[Undefined, bool] = True,
+        path: Union[Undefined, str] = UNDEFINED,
+        http_only: Union[Undefined, bool] = UNDEFINED,
+        same_site: Union[Undefined, str] = UNDEFINED,
+        expiry: Union[Undefined, int] = UNDEFINED,
+) -> PartialCookie:
     """
     Creates a cookie with the given or default options.
     """

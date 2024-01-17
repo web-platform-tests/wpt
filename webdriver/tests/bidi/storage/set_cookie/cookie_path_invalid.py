@@ -12,7 +12,7 @@ pytestmark = pytest.mark.asyncio
         "no_leading_forward_slash"
     ]
 )
-async def test_path_invalid_values(bidi_session, top_context, test_page, origin, domain_value, path):
+async def test_path_invalid_values(bidi_session, top_context, test_page,  domain_value, path):
     # Navigate to a secure context.
     await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
 

@@ -18,6 +18,7 @@ async def assert_cookie_is_set(
         http_only: bool = False,
         secure: bool = True,
         same_site: str = 'none',
+        expiry: Union[Undefined, int] = UNDEFINED,
 ):
     """
     Asserts the cookie is set.
@@ -39,6 +40,7 @@ async def assert_cookie_is_set(
         # Varies depending on the cookie name and value.
         'size': any_int,
         'value': value,
+        'expiry': expiry,
     }, actual_cookie)
 
 

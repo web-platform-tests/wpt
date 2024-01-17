@@ -1,5 +1,6 @@
 from typing import Any, Callable, Dict, List, Mapping
 from webdriver.bidi.modules.script import ContextTarget
+from webdriver.bidi.undefined import Undefined, UNDEFINED
 
 
 # Compares 2 objects recursively.
@@ -18,10 +19,11 @@ def recursive_compare(expected: Any, actual: Any) -> None:
 
     if isinstance(actual, Dict) and isinstance(expected, Dict):
         # Actual Mapping can have more keys as part of the forwards-compat design.
-        assert (
-            expected.keys() <= actual.keys()
-        ), f"Key set should be present: {set(expected.keys()) - set(actual.keys())}"
-        for key in expected.keys():
+        # Expected Mapping can have UNDEFINED values, which means the key should not be present in the actual value.
+        expected_keys = set(filter(lambda k: expected[k] is not UNDEFINED, expected.keys()))
+        assert (expected_keys <= actual.keys()), \
+            f"Key set should be present: {expected_keys - set(actual.keys())}"
+        for key in expected_keys:
             recursive_compare(expected[key], actual[key])
         return
 

@@ -210,6 +210,8 @@ automatically invoked for tests defined using the “multi-global” pattern.</p
 <p>In window environments, the script will be included using a classic <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tag. In classic
 worker environments, the script will be imported using <code class="docutils literal notranslate"><span class="pre">importScripts()</span></code>. In module worker
 environments, the script will be imported using a static <code class="docutils literal notranslate"><span class="pre">import</span></code>.</p>
+<p>wptserve generates markup with <code class="docutils literal notranslate"><span class="pre">/resources/testharness.js</span></code> and <code class="docutils literal notranslate"><span class="pre">/resources/testharnessreport.js</span></code>
+included automatically, so there’s no need to include those scripts from the <code class="docutils literal notranslate"><span class="pre">.js</span></code> test file.</p>
 </section>
 <section id="specifying-a-timeout-of-long">
 <h3>Specifying a timeout of long<a class="headerlink" href="#specifying-a-timeout-of-long" title="Link to this heading">¶</a></h3>

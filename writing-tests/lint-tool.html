@@ -160,9 +160,14 @@ to mojojs.zip.</p>
 <dt><code class="docutils literal notranslate"><span class="pre">MULTIPLE-TESTDRIVER-VENDOR</span></code></dt><dd><p>More than one <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testdriver-vendor.js'&gt;</span></code></p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">MULTIPLE-TESTHARNESS</span></code></dt><dd><p>More than one <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharness.js'&gt;</span></code></p>
-<strong>To fix:</strong><p>ensure each test has only one <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code> instance</p>
+<strong>To fix:</strong><p>Ensure each test has only one <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharness.js'&gt;</span></code> instance.
+For <code class="docutils literal notranslate"><span class="pre">.js</span></code> tests, remove <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">META:</span> <span class="pre">script=/resources/testharness.js</span></code>,
+which wptserve already adds to the boilerplate markup.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">MULTIPLE-TESTHARNESSREPORT</span></code></dt><dd><p>More than one <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code></p>
+<strong>To fix:</strong><p>Ensure each test has only one <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code> instance.
+For <code class="docutils literal notranslate"><span class="pre">.js</span></code> tests, remove <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">META:</span> <span class="pre">script=/resources/testharnessreport.js</span></code>,
+which wptserve already adds to the boilerplate markup.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">MULTIPLE-TIMEOUT</span></code></dt><dd><p>More than one meta name=’timeout’</p>
 <strong>To fix:</strong><p>ensure each test file has only one instance of a <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name=&quot;timeout&quot;...&gt;</span></code> element</p>

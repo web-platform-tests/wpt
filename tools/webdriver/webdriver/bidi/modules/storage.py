@@ -1,4 +1,4 @@
-from typing import Any, Dict, Mapping, MutableMapping, Union
+from typing import Any, Dict, Mapping, Union
 from ._module import BidiModule, command
 from webdriver.bidi.modules.network import NetworkBytesValue
 from ..undefined import UNDEFINED, Undefined

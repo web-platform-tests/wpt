@@ -1,7 +1,6 @@
 import pytest
-from webdriver.bidi.modules.network import NetworkStringValue
-from webdriver.bidi.modules.storage import PartialCookie, BrowsingContextPartitionDescriptor
-from .. import assert_cookie_is_set, create_cookie
+from .. import create_cookie
+from webdriver.bidi.modules.storage import BrowsingContextPartitionDescriptor
 import webdriver.bidi.error as error
 
 pytestmark = pytest.mark.asyncio

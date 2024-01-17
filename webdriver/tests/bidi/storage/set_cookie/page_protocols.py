@@ -1,5 +1,5 @@
 import pytest
-from webdriver.bidi.modules.storage import PartialCookie, BrowsingContextPartitionDescriptor
+from webdriver.bidi.modules.storage import BrowsingContextPartitionDescriptor
 from .. import assert_cookie_is_set, create_cookie
 
 pytestmark = pytest.mark.asyncio

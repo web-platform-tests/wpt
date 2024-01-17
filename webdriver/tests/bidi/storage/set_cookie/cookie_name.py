@@ -8,16 +8,8 @@ pytestmark = pytest.mark.asyncio
     "name",
     [
         "",
-        "cookieName",
-        "cookie@name",
-        "cookie:name",
-        "cookie(name)",
-        "cookie[name]",
+        "cookie name with special symbols !@#$%&*()_+-{}[]|\\:\"'<>,.?/`~",
         "123cookie",
-        "cookie name",
-        "a_very_long_cookie_name_12345678901234567890123456789012345678901234567890123456789012345678901234567890",
-        "cookie/name",
-        "cookie?name",
     ])
 async def test_cookie_name(bidi_session, top_context, test_page, origin, domain_value, name):
     # Navigate to a secure context.

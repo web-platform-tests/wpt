@@ -17,6 +17,7 @@ async def assert_cookie_is_set(
         path: str = "/",
         http_only: bool = False,
         secure: bool = True,
+        same_site: str = 'none',
 ):
     """
     Asserts the cookie is set.
@@ -33,7 +34,7 @@ async def assert_cookie_is_set(
         'httpOnly': http_only,
         'name': name,
         'path': path,
-        'sameSite': 'none',
+        'sameSite': same_site,
         'secure': secure,
         # Varies depending on the cookie name and value.
         'size': any_int,

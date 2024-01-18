@@ -3,8 +3,13 @@
 // META: script=/resource-timing/resources/sizes-helper.js
 
 const baseUrl =
-  new URL('/resource-timing/resources/TAOResponse.py?tao=wildcard', location.href).href;
-const expectedSize = 4;
+    new URL(
+        `/common/CustomCorsResponse.py?headers=${
+            encodeURIComponent(
+                '{"Timing-Allow-Origin":"*","Access-Control-Allow-Origin":"*"}')}`,
+        location.href)
+        .href;
+const expectedSize = 35;
 
 const hostInfo = get_host_info();
 performance.clearResourceTimings();
@@ -18,20 +23,21 @@ const accumulateEntry = () => {
   });
 };
 
-const checkResourceSizes = () => {
-  const entries = performance.getEntriesByType('resource');
-  for (let entry of entries) {
-    checkSizeFields(entry, expectedSize, expectedSize + headerSize);
-  }
-}
+const checkResourceSizes =
+    () => {
+      const entries = performance.getEntriesByType('resource');
+      for (let entry of entries) {
+        checkSizeFields(entry, expectedSize, expectedSize + headerSize);
+      }
+    }
 
-const redirectUrl = (redirectSourceOrigin, allowOrigin, targetUrl) => {
-  return redirectSourceOrigin +
-    '/resource-timing/resources/redirect-cors.py?allow_origin=' +
-    encodeURIComponent(allowOrigin) +
-    '&timing_allow_origin=*' +
-    '&location=' + encodeURIComponent(targetUrl);
-}
+const redirectUrl =
+    (redirectSourceOrigin, allowOrigin, targetUrl) => {
+      return redirectSourceOrigin +
+          '/resource-timing/resources/redirect-cors.py?allow_origin=*' +
+          '&timing_allow_origin=*' +
+          '&location=' + encodeURIComponent(targetUrl);
+    }
 
 promise_test(() => {
   // Use a different URL every time so that the cache behaviour does not

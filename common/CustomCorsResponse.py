@@ -20,6 +20,11 @@ def main(request, response):
   for k, v in headers.items():
     response.headers.set(k, v)
 
+  img = request.GET.first(b'img') if b'img' in request.GET else None
+  if img:
+    response.headers.set(b"Content-Type", b"image/png")
+    with open(request.doc_root + "/resource-timing/resources/blue.png", "rb") as f:
+      response.content = f.read()
   # Note that, in order to have out-of-the-box support for tests that don't call
   #   setup({'allow_uncaught_exception': true})
   # we return a no-op JS payload. This approach will avoid syntax errors in

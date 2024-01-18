@@ -1,4 +1,4 @@
-from typing import Any, Dict, Mapping, Optional, Union
+from typing import Any, Dict, Mapping, MutableMapping, Optional, Union
 from ._module import BidiModule, command
 from webdriver.bidi.modules.network import NetworkBytesValue
 
@@ -51,7 +51,7 @@ class Storage(BidiModule):
     # TODO: extend with `filter`.
     @command
     def get_cookies(self, partition: Optional[PartitionDescriptor] = None) -> Mapping[str, Any]:
-        params = {}
+        params: MutableMapping[str, Any] = {}
         if partition is not None:
             params["partition"] = partition
         return params
@@ -62,7 +62,7 @@ class Storage(BidiModule):
             cookie: PartialCookie,
             partition: Optional[PartitionDescriptor] = None
     ) -> Mapping[str, Any]:
-        params = {
+        params: MutableMapping[str, Any] = {
             "cookie": cookie
         }
         if partition is not None:

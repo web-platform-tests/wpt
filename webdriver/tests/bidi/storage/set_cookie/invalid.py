@@ -8,28 +8,19 @@ pytestmark = pytest.mark.asyncio
 
 
 @pytest.mark.parametrize("domain", [None, False, 42, {}, []])
-async def test_cookie_domain_invalid_type(bidi_session, top_context, test_page, server_config, domain):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_cookie_domain_invalid_type(bidi_session, test_page, server_config, domain):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain))
 
 
 @pytest.mark.parametrize("expiry", [None, False, "SOME_STRING_VALUE", {}, []])
-async def test_cookie_expiry_invalid_type(bidi_session, top_context, test_page, domain_value, expiry):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_cookie_expiry_invalid_type(bidi_session, test_page, domain_value, expiry):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value(), expiry=expiry))
 
 
 @pytest.mark.parametrize("http_only", [None, 42, "SOME_STRING_VALUE", {}, []])
-async def test_cookie_http_only_invalid_type(bidi_session, top_context, test_page, domain_value, http_only):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_cookie_http_only_invalid_type(bidi_session, test_page, domain_value, http_only):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value(), http_only=http_only))
 
@@ -45,19 +36,13 @@ async def test_cookie_http_only_invalid_type(bidi_session, top_context, test_pag
         "cookie\x0Fname",
         "cookie;name",
     ])
-async def test_cookie_name_invalid_value(bidi_session, top_context, test_page, domain_value, name):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_cookie_name_invalid_value(bidi_session, test_page, domain_value, name):
     with pytest.raises(error.UnableToSetCookieException):
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value(), name=name))
 
 
 @pytest.mark.parametrize("name", [None, False, 42, {}, []])
-async def test_cookie_name_invalid_type(bidi_session, top_context, test_page, domain_value, name):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_cookie_name_invalid_type(bidi_session, test_page, domain_value, name):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value(), name=name))
 
@@ -69,48 +54,33 @@ async def test_cookie_name_invalid_type(bidi_session, top_context, test_page, do
         "no_leading_forward_slash"
     ]
 )
-async def test_cookie_path_invalid_value(bidi_session, top_context, test_page, domain_value, path):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_cookie_path_invalid_value(bidi_session, test_page, domain_value, path):
     with pytest.raises(error.UnableToSetCookieException):
         await bidi_session.storage.set_cookie(
             cookie=create_cookie(domain=domain_value(), path=path))
 
 
 @pytest.mark.parametrize("path", [None, False, 42, {}, []])
-async def test_cookie_path_invalid_type(bidi_session, top_context, test_page, domain_value, path):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_cookie_path_invalid_type(bidi_session, test_page, domain_value, path):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.storage.set_cookie(
             cookie=create_cookie(domain=domain_value(), path=path))
 
 
 @pytest.mark.parametrize("same_site", ["", "INVALID_SAME_SITE_STATE"])
-async def test_cookie_same_site_invalid_value(bidi_session, top_context, test_page, domain_value, same_site):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_cookie_same_site_invalid_value(bidi_session, test_page, domain_value, same_site):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value(), same_site=same_site))
 
 
 @pytest.mark.parametrize("same_site", [None, 42, False, {}, []])
-async def test_cookie_same_site_invalid_type(bidi_session, top_context, test_page, domain_value, same_site):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_cookie_same_site_invalid_type(bidi_session, test_page, domain_value, same_site):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value(), same_site=same_site))
 
 
 @pytest.mark.parametrize("secure", [None, 42, "SOME_STRING_VALUE", {}, []])
-async def test_cookie_secure_invalid_type(bidi_session, top_context, test_page, domain_value, secure):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_cookie_secure_invalid_type(bidi_session, test_page, domain_value, secure):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value(), secure=secure))
 
@@ -122,10 +92,7 @@ async def test_cookie_secure_invalid_type(bidi_session, top_context, test_page, 
         "value\nwith\nnewline",
         "value;with;semicolon",
     ])
-async def test_cookie_value_string_invalid_value(bidi_session, top_context, test_page, domain_value, str_value):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_cookie_value_string_invalid_value(bidi_session, test_page, domain_value, str_value):
     value = NetworkStringValue(str_value)
 
     with pytest.raises(error.UnableToSetCookieException):
@@ -133,10 +100,7 @@ async def test_cookie_value_string_invalid_value(bidi_session, top_context, test
 
 
 @pytest.mark.parametrize("str_value", [None, False, 42, {}, []])
-async def test_cookie_value_string_invalid_type(bidi_session, top_context, test_page, domain_value, str_value):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_cookie_value_string_invalid_type(bidi_session, test_page, domain_value, str_value):
     value = NetworkStringValue(str_value)
 
     with pytest.raises(error.InvalidArgumentException):
@@ -144,30 +108,20 @@ async def test_cookie_value_string_invalid_type(bidi_session, top_context, test_
 
 
 @pytest.mark.parametrize("partition", [None, 42, False, "SOME_STRING_VALUE", {}, {"type": "SOME_INVALID_TYPE"}, []])
-async def test_partition_invalid_type(bidi_session, top_context, test_page, domain_value, partition):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_partition_invalid_type(bidi_session, test_page, domain_value, partition):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value()), partition=partition)
 
 
 @pytest.mark.parametrize("browsing_context", [None, 42, False, {}, []])
-async def test_partition_context_invalid_type(bidi_session, top_context, test_page, origin, domain_value,
-                                              browsing_context):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_partition_context_invalid_type(bidi_session, test_page, origin, domain_value, browsing_context):
     partition = BrowsingContextPartitionDescriptor(browsing_context)
 
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value()), partition=partition)
 
 
-async def test_partition_context_unknown(bidi_session, top_context, test_page, origin, domain_value):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_partition_context_unknown(bidi_session, test_page, origin, domain_value):
     partition = BrowsingContextPartitionDescriptor("UNKNOWN_CONTEXT")
 
     with pytest.raises(error.NoSuchFrameException):
@@ -175,11 +129,8 @@ async def test_partition_context_unknown(bidi_session, top_context, test_page, o
 
 
 @pytest.mark.parametrize("source_origin", [None, 42, False, {}, []])
-async def test_partition_storage_key_source_origin_invalid_type(bidi_session, top_context, test_page, origin,
-                                                                domain_value, source_origin):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_partition_storage_key_source_origin_invalid_type(bidi_session, test_page, origin, domain_value,
+                                                                source_origin):
     partition = StorageKeyPartitionDescriptor(source_origin=source_origin)
 
     with pytest.raises(error.InvalidArgumentException):
@@ -187,11 +138,8 @@ async def test_partition_storage_key_source_origin_invalid_type(bidi_session, to
 
 
 @pytest.mark.parametrize("user_context", [None, 42, False, {}, []])
-async def test_partition_storage_key_user_context_invalid_type(bidi_session, top_context, test_page, origin,
-                                                               domain_value, user_context):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_partition_storage_key_user_context_invalid_type(bidi_session, test_page, origin, domain_value,
+                                                               user_context):
     partition = StorageKeyPartitionDescriptor(user_context=user_context)
 
     with pytest.raises(error.InvalidArgumentException):

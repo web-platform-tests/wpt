@@ -153,6 +153,7 @@ async def test_partition_storage_key_user_context_invalid_type(bidi_session, tes
 
 # TODO: test `test_cookie_domain_invalid_value`.
 # TODO: test `test_partition_storage_key_user_context_unknown`.
+# TODO: test `test_partition_storage_key_user_context_invalid_type`.
 # TODO: test `test_cookie_value_missing`.
 # TODO: test `test_cookie_value_base64_invalid_type`.
 # TODO: test `test_cookie_value_base64_invalid_value`.

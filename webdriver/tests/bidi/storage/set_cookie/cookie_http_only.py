@@ -12,10 +12,7 @@ pytestmark = pytest.mark.asyncio
         False,
         UNDEFINED
     ])
-async def test_cookie_http_only(bidi_session, top_context, test_page, domain_value, http_only):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_cookie_http_only(bidi_session, test_page, domain_value, http_only):
     set_cookie_result = await bidi_session.storage.set_cookie(
         cookie=create_cookie(domain=domain_value(), http_only=http_only))
 

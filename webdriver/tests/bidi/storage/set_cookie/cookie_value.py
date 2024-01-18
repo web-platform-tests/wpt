@@ -11,10 +11,7 @@ pytestmark = pytest.mark.asyncio
         "simple_value",
         "special_symbols =!@#$%^&*()_+-{}[]|\\:\"'<>,.?/`~"
     ])
-async def test_cookie_value_string(bidi_session, top_context, test_page, domain_value, str_value):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_cookie_value_string(bidi_session, test_page, domain_value, str_value):
     value = NetworkStringValue(str_value)
 
     await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value(), value=value))

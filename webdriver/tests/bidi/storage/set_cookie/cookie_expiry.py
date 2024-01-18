@@ -7,10 +7,7 @@ import time
 pytestmark = pytest.mark.asyncio
 
 
-async def test_cookie_expiry_undefined(bidi_session, top_context, test_page, domain_value):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_cookie_expiry_undefined(bidi_session, test_page, domain_value):
     set_cookie_result = await bidi_session.storage.set_cookie(
         cookie=create_cookie(
             domain=domain_value(),
@@ -23,10 +20,7 @@ async def test_cookie_expiry_undefined(bidi_session, top_context, test_page, dom
     await assert_cookie_is_set(bidi_session, expiry=UNDEFINED, domain=domain_value())
 
 
-async def test_cookie_expiry_future(bidi_session, top_context, test_page, domain_value):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_cookie_expiry_future(bidi_session, test_page, domain_value):
     tomorrow = datetime.now() + timedelta(1)
     tomorrow_timestamp = time.mktime(tomorrow.timetuple())
 
@@ -42,10 +36,7 @@ async def test_cookie_expiry_future(bidi_session, top_context, test_page, domain
     await assert_cookie_is_set(bidi_session, expiry=tomorrow_timestamp, domain=domain_value())
 
 
-async def test_cookie_expiry_past(bidi_session, top_context, test_page, domain_value):
-    # Navigate to a secure context.
-    await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
+async def test_cookie_expiry_past(bidi_session, test_page, domain_value):
     yesterday = datetime.now() - timedelta(1)
     yesterday_timestamp = time.mktime(yesterday.timetuple())
 

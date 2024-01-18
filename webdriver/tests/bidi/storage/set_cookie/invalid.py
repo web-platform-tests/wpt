@@ -13,13 +13,13 @@ async def test_cookie_domain_invalid_type(bidi_session, test_page, domain):
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain))
 
 
-@pytest.mark.parametrize("expiry", [None, False, "SOME_STRING_VALUE", {}, []])
+@pytest.mark.parametrize("expiry", [False, "SOME_STRING_VALUE", {}, []])
 async def test_cookie_expiry_invalid_type(bidi_session, test_page, domain_value, expiry):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value(), expiry=expiry))
 
 
-@pytest.mark.parametrize("http_only", [None, 42, "SOME_STRING_VALUE", {}, []])
+@pytest.mark.parametrize("http_only", [42, "SOME_STRING_VALUE", {}, []])
 async def test_cookie_http_only_invalid_type(bidi_session, test_page, domain_value, http_only):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value(), http_only=http_only))
@@ -60,7 +60,7 @@ async def test_cookie_path_invalid_value(bidi_session, test_page, domain_value, 
             cookie=create_cookie(domain=domain_value(), path=path))
 
 
-@pytest.mark.parametrize("path", [None, False, 42, {}, []])
+@pytest.mark.parametrize("path", [False, 42, {}, []])
 async def test_cookie_path_invalid_type(bidi_session, test_page, domain_value, path):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.storage.set_cookie(
@@ -73,13 +73,13 @@ async def test_cookie_same_site_invalid_value(bidi_session, test_page, domain_va
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value(), same_site=same_site))
 
 
-@pytest.mark.parametrize("same_site", [None, 42, False, {}, []])
+@pytest.mark.parametrize("same_site", [42, False, {}, []])
 async def test_cookie_same_site_invalid_type(bidi_session, test_page, domain_value, same_site):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value(), same_site=same_site))
 
 
-@pytest.mark.parametrize("secure", [None, 42, "SOME_STRING_VALUE", {}, []])
+@pytest.mark.parametrize("secure", [42, "SOME_STRING_VALUE", {}, []])
 async def test_cookie_secure_invalid_type(bidi_session, test_page, domain_value, secure):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value(), secure=secure))
@@ -113,7 +113,7 @@ async def test_cookie_value_string_invalid_type(bidi_session, test_page, domain_
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value(), value=value))
 
 
-@pytest.mark.parametrize("partition", [None, 42, False, "SOME_STRING_VALUE", {}, {"type": "SOME_INVALID_TYPE"}, []])
+@pytest.mark.parametrize("partition", [42, False, "SOME_STRING_VALUE", {}, {"type": "SOME_INVALID_TYPE"}, []])
 async def test_partition_invalid_type(bidi_session, test_page, domain_value, partition):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value()), partition=partition)
@@ -134,7 +134,7 @@ async def test_partition_context_unknown(bidi_session, test_page, origin, domain
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value()), partition=partition)
 
 
-@pytest.mark.parametrize("source_origin", [None, 42, False, {}, []])
+@pytest.mark.parametrize("source_origin", [42, False, {}, []])
 async def test_partition_storage_key_source_origin_invalid_type(bidi_session, test_page, origin, domain_value,
                                                                 source_origin):
     partition = StorageKeyPartitionDescriptor(source_origin=source_origin)
@@ -143,7 +143,7 @@ async def test_partition_storage_key_source_origin_invalid_type(bidi_session, te
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value()), partition=partition)
 
 
-@pytest.mark.parametrize("user_context", [None, 42, False, {}, []])
+@pytest.mark.parametrize("user_context", [42, False, {}, []])
 async def test_partition_storage_key_user_context_invalid_type(bidi_session, test_page, origin, domain_value,
                                                                user_context):
     partition = StorageKeyPartitionDescriptor(user_context=user_context)

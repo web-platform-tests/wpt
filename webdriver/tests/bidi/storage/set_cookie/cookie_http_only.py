@@ -1,6 +1,5 @@
 import pytest
 from .. import assert_cookie_is_set, create_cookie
-from webdriver.bidi.undefined import UNDEFINED
 
 pytestmark = pytest.mark.asyncio
 
@@ -10,7 +9,7 @@ pytestmark = pytest.mark.asyncio
     [
         True,
         False,
-        UNDEFINED
+        None
     ])
 async def test_cookie_http_only(bidi_session, test_page, domain_value, http_only):
     set_cookie_result = await bidi_session.storage.set_cookie(
@@ -21,7 +20,7 @@ async def test_cookie_http_only(bidi_session, test_page, domain_value, http_only
     }
 
     # `httpOnly` defaults to `false`.
-    expected_http_only = http_only if http_only is not UNDEFINED else False
+    expected_http_only = http_only if http_only is not None else False
 
     await assert_cookie_is_set(
         bidi_session,

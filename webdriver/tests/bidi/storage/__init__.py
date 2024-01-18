@@ -1,8 +1,7 @@
-from typing import Union
+from typing import Optional
 from webdriver.bidi.modules.network import NetworkBytesValue, NetworkStringValue
 from webdriver.bidi.modules.storage import PartialCookie, PartitionDescriptor
 from .. import any_int, recursive_compare
-from webdriver.bidi.undefined import Undefined, UNDEFINED
 
 COOKIE_NAME = 'SOME_COOKIE_NAME'
 COOKIE_VALUE = NetworkStringValue('SOME_COOKIE_VALUE')
@@ -26,8 +25,8 @@ async def assert_cookie_is_set(
         http_only: bool = False,
         secure: bool = True,
         same_site: str = 'none',
-        expiry: Union[Undefined, int] = UNDEFINED,
-        partition: Union[Undefined, PartitionDescriptor] = UNDEFINED,
+        expiry: Optional[int] = None,
+        partition: Optional[PartitionDescriptor] = None,
 ):
     """
     Asserts the cookie is set.
@@ -35,7 +34,7 @@ async def assert_cookie_is_set(
     all_cookies = await bidi_session.storage.get_cookies(partition=partition)
     assert 'cookies' in all_cookies
     actual_cookie = next(c for c in all_cookies['cookies'] if c['name'] == name)
-    recursive_compare({
+    expected_cookie = {
         'domain': domain,
         'httpOnly': http_only,
         'name': name,
@@ -45,19 +44,22 @@ async def assert_cookie_is_set(
         # Varies depending on the cookie name and value.
         'size': any_int,
         'value': value,
-        'expiry': expiry,
-    }, actual_cookie)
+    }
+    if expiry is not None:
+        expected_cookie['expiry'] = expiry
+
+    recursive_compare(expected_cookie, actual_cookie)
 
 
 def create_cookie(
         domain: str,
         name: str = COOKIE_NAME,
         value: NetworkBytesValue = COOKIE_VALUE,
-        secure: Union[Undefined, bool] = True,
-        path: Union[Undefined, str] = UNDEFINED,
-        http_only: Union[Undefined, bool] = UNDEFINED,
-        same_site: Union[Undefined, str] = UNDEFINED,
-        expiry: Union[Undefined, int] = UNDEFINED,
+        secure: Optional[bool] = True,
+        path: Optional[str] = None,
+        http_only: Optional[bool] = None,
+        same_site: Optional[str] = None,
+        expiry: Optional[int] = None,
 ) -> PartialCookie:
     """
     Creates a cookie with the given or default options.

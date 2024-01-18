@@ -1,23 +1,22 @@
 import pytest
 from .. import assert_cookie_is_not_set, assert_cookie_is_set, create_cookie
-from webdriver.bidi.undefined import UNDEFINED
 from datetime import datetime, timedelta
 import time
 
 pytestmark = pytest.mark.asyncio
 
 
-async def test_cookie_expiry_undefined(bidi_session, test_page, domain_value):
+async def test_cookie_expiry_unset(bidi_session, test_page, domain_value):
     set_cookie_result = await bidi_session.storage.set_cookie(
         cookie=create_cookie(
             domain=domain_value(),
-            expiry=UNDEFINED))
+            expiry=None))
 
     assert set_cookie_result == {
         'partitionKey': {},
     }
 
-    await assert_cookie_is_set(bidi_session, expiry=UNDEFINED, domain=domain_value())
+    await assert_cookie_is_set(bidi_session, expiry=None, domain=domain_value())
 
 
 async def test_cookie_expiry_future(bidi_session, test_page, domain_value):

@@ -8,7 +8,7 @@ pytestmark = pytest.mark.asyncio
 
 
 @pytest.mark.parametrize("domain", [None, False, 42, {}, []])
-async def test_cookie_domain_invalid_type(bidi_session, test_page, server_config, domain):
+async def test_cookie_domain_invalid_type(bidi_session, test_page, domain):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain))
 

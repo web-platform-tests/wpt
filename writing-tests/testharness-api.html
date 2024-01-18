@@ -89,10 +89,11 @@
 <li><p><a class="reference internal" href="#helpers" id="id26">Helpers</a></p>
 <ul>
 <li><p><a class="reference internal" href="#waiting-for-events" id="id27">Waiting for events</a></p></li>
-<li><p><a class="reference internal" href="#utility-functions" id="id28">Utility Functions</a></p></li>
+<li><p><a class="reference internal" href="#loading-test-data-from-json-files" id="id28">Loading test data from JSON files</a></p></li>
+<li><p><a class="reference internal" href="#utility-functions" id="id29">Utility Functions</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#deprecated-apis" id="id29">Deprecated APIs</a></p></li>
+<li><p><a class="reference internal" href="#deprecated-apis" id="id30">Deprecated APIs</a></p></li>
 </ul>
 </nav>
 <p>testharness.js provides a framework for writing testcases. It is intended to
@@ -1831,6 +1832,28 @@ series of events has occurred.</p>
 <span class="w">  </span><span class="nx">assertExpectedStateAtEndOfAnimation</span><span class="p">();</span>
 <span class="w">  </span><span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span>
 <span class="p">}));</span>
+</pre></div>
+</div>
+</section>
+<section id="loading-test-data-from-json-files">
+<h3>Loading test data from JSON files<a class="headerlink" href="#loading-test-data-from-json-files" title="Link to this heading">¶</a></h3>
+<dl class="js function">
+<dt class="sig sig-object js" id="fetch_json">
+<span class="sig-name descname"><span class="n"><span class="pre">fetch_json</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fetch_json" title="Link to this definition">¶</a></dt>
+<dd><p>Fetches a JSON resource and parses it</p>
+</dd></dl>
+
+<p>Loading test data from a JSON file would normally be accomplished by
+something like this:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;resources/my_data.json&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">()).</span><span class="nx">then</span><span class="p">(</span><span class="nx">runTests</span><span class="p">));</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">runTests</span><span class="p">(</span><span class="nx">myData</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">/// ...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>However, <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> is not exposed inside ShadowRealm scopes, so if the
+test is to be run inside a ShadowRealm, use <code class="docutils literal notranslate"><span class="pre">fetch_json()</span></code> instead:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">fetch_json</span><span class="p">(</span><span class="s1">&#39;resources/my_data.json&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">runTests</span><span class="p">));</span>
 </pre></div>
 </div>
 </section>

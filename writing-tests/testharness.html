@@ -182,10 +182,11 @@ implied)</p></li>
 <a class="reference external" href="https://github.com/tc39/proposal-shadowrealm">ShadowRealm</a> context hosted in
 an ordinary Window context; to be run at <code><var>x</var>.any.shadowrealm.html</code></p></li>
 </ul>
-<p>To check if your test is run from a window or worker you can use the following two methods that will
+<p>To check what scope your test is run from, you can use the following methods that will
 be made available by the framework:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">GLOBAL</span><span class="o">.</span><span class="n">isWindow</span><span class="p">()</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">GLOBAL</span><span class="o">.</span><span class="n">isWorker</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">GLOBAL</span><span class="o">.</span><span class="n">isShadowRealm</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Although <a class="reference external" href="testharness-api.html#determining-when-all-tests-are-complete">the global <code class="docutils literal notranslate"><span class="pre">done()</span></code> function must be explicitly invoked for most

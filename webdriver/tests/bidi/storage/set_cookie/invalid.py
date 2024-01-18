@@ -85,6 +85,12 @@ async def test_cookie_secure_invalid_type(bidi_session, test_page, domain_value,
         await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value(), secure=secure))
 
 
+@pytest.mark.parametrize("value", [None, False, 42, "SOME_STRING_VALUE", {}, {"type": "SOME_INVALID_TYPE"}, []])
+async def test_cookie_value_invalid_type(bidi_session, test_page, domain_value, value):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value(), value=value))
+
+
 @pytest.mark.parametrize(
     "str_value",
     [

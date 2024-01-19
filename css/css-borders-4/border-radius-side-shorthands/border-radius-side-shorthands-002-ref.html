@@ -1,54 +1,53 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>CSS Reftest Reference</title>
-        <link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com" />
-        <style>
-            div
-            {
-                width: 200px;
-                height: 200px;
-            }
-            #reference1
-            {
-                border: 10px solid red;
-                border-top-left-radius: 40px;
-                border-top-right-radius: 40px;
-                border-bottom-right-radius: 40px;
-                border-bottom-left-radius: 40px;
-            }
-            #reference2
-            {
-                border: 10px solid red;
-                border-top-left-radius: 2em 0.5em;
-                border-top-right-radius: 1em 3em;
-                border-bottom-right-radius: 4em 0.5em;
-                border-bottom-left-radius: 1em 3em;
-            }
-            #reference3
-            {
-                border: 10px solid red;
-                border-top-left-radius: 40px;
-                border-top-right-radius: 40px;
-                border-bottom-right-radius: 40px;
-                border-bottom-left-radius: 40px;
-            }
-            #reference4
-            {
-                border: 10px solid red;
-                border-top-left-radius: 2em 0.5em;
-                border-top-right-radius: 1em 3em;
-                border-bottom-right-radius: 4em 0.5em;
-                border-bottom-left-radius: 1em 3em;
-            }
-        </style>
-    </head>
-    <body>
-        <p>Test passes if there are four black boxes with rounded corners and red is not visible on the page.</p>
-        <div id="reference1"></div>
-        <div id="reference2"></div>
-        <div id="reference3"></div>
-        <div id="reference4"></div>
-    </body>
+<head>
+  <meta charset="utf-8">
+  <title>CSS Reftest Reference</title>
+  <link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com">
+  <style>
+    div {
+      width: 200px;
+      height: 200px;
+    }
+
+    #reference1 {
+      border: 10px solid red;
+      border-top-left-radius: 40px;
+      border-top-right-radius: 40px;
+      border-bottom-right-radius: 40px;
+      border-bottom-left-radius: 40px;
+    }
+
+    #reference2 {
+      border: 10px solid red;
+      border-top-left-radius: 2em 0.5em;
+      border-top-right-radius: 1em 3em;
+      border-bottom-right-radius: 4em 0.5em;
+      border-bottom-left-radius: 1em 3em;
+    }
+
+    #reference3 {
+      border: 10px solid red;
+      border-top-left-radius: 40px;
+      border-top-right-radius: 40px;
+      border-bottom-right-radius: 40px;
+      border-bottom-left-radius: 40px;
+    }
+
+    #reference4 {
+      border: 10px solid red;
+      border-top-left-radius: 2em 0.5em;
+      border-top-right-radius: 1em 3em;
+      border-bottom-right-radius: 4em 0.5em;
+      border-bottom-left-radius: 1em 3em;
+    }
+  </style>
+</head>
+<body>
+  <p>Test passes if there are four black boxes with rounded corners and red is not visible on the page.</p>
+  <div id="reference1"></div>
+  <div id="reference2"></div>
+  <div id="reference3"></div>
+  <div id="reference4"></div>
+</body>
 </html>

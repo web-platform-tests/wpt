@@ -1,59 +1,59 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>CSS Borders 4 Test: Computed values of 'corners'</title>
-        <link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com" />
-        <link rel="help" href="https://drafts.csswg.org/css-borders-4/#corners-shorthand" />
-        <meta name="assert" content="Computed value of 'corners' is correct" />
-		<script src="/resources/testharness.js"></script>
-		<script src="/resources/testharnessreport.js"></script>
-		<script src="/css/support/parsing-testcommon.js"></script>
-		<style>
-		#target {
-			font-size: 20px;
-		}
-		</style>
-	</head>
-	<body>
-		<div id="target"></div>
-		<script>
-		test_computed_value("corners", "round");
-		test_computed_value("corners", "angle");
-		test_computed_value("corners", "round angle");
-		test_computed_value("corners", "round angle round");
-		test_computed_value("corners", "round angle round angle");
-		test_computed_value("corners", "4px");
-		test_computed_value("corners", "2%");
-		test_computed_value("corners", "4px 2%");
-		test_computed_value("corners", "4px 2% 1em", "4px 2% 20px");
-		test_computed_value("corners", "4px 2% 1em 4%", "4px 2% 20px 4%");
-		test_computed_value("corners", "4px / 2px");
-		test_computed_value("corners", "2% / 2px");
-		test_computed_value("corners", "4px 2% / 2px");
-		test_computed_value("corners", "4px 2% 1em / 2px", "4px 2% 20px / 2px");
-		test_computed_value("corners", "4px 2% 1em 4% / 2px", "4px 2% 20px 4% / 2px");
-		test_computed_value("corners", "4px / 2px 4%");
-		test_computed_value("corners", "4px / 2px 4% 1em", "4px / 2px 4% 20px");
-		test_computed_value("corners", "4px / 2px 4% 1em 2%", "4px / 2px 4% 20px 2%");
-		test_computed_value("corners", "4px 2% / 2px 4%");
-		test_computed_value("corners", "4px 2% 1em / 2px 4% 1em", "4px 2% 20px / 2px 4% 20px");
-		test_computed_value("corners", "4px 2% 1em 4% / 2px 4% 1em 2%", "4px 2% 20px 4% / 2px 4% 20px 2%");
-		test_computed_value("corners", "4px round");
-		test_computed_value("corners", "4px angle");
-		test_computed_value("corners", "4px round angle");
-		test_computed_value("corners", "4px round angle round");
-		test_computed_value("corners", "4px round angle round angle");
-		test_computed_value("corners", "4px 2% round");
-		test_computed_value("corners", "4px 2% / 2px round");
-		test_computed_value("corners", "4px / 2px 4% round");
-		test_computed_value("corners", "4px / 2px 4% round angle");
-		test_computed_value("corners", "round 4px");
-		test_computed_value("corners", "round 4px 2%");
-		test_computed_value("corners", "round 4px 2% / 2px");
-		test_computed_value("corners", "round 4px / 2px 4%");
-		test_computed_value("corners", "round angle 4px / 2px 4%");
-		test_computed_value("corners", "round angle round angle 4px 2% 1em 4% / 2px 4% 1em 2%", "round angle round angle 4px 2% 20px 4% / 2px 4% 20px 2%");
-		</script>
-	</body>
+<head>
+  <meta charset="utf-8">
+  <title>CSS Borders 4 Test: Computed values of 'corners'</title>
+  <link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com">
+  <link rel="help" href="https://drafts.csswg.org/css-borders-4/#corners-shorthand">
+  <meta name="assert" content="Computed value of 'corners' is correct">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/css/support/parsing-testcommon.js"></script>
+  <style>
+    #target {
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="target"></div>
+  <script>
+    test_computed_value("corners", "round");
+    test_computed_value("corners", "angle");
+    test_computed_value("corners", "round angle");
+    test_computed_value("corners", "round angle round");
+    test_computed_value("corners", "round angle round angle");
+    test_computed_value("corners", "4px");
+    test_computed_value("corners", "2%");
+    test_computed_value("corners", "4px 2%");
+    test_computed_value("corners", "4px 2% 1em", "4px 2% 20px");
+    test_computed_value("corners", "4px 2% 1em 4%", "4px 2% 20px 4%");
+    test_computed_value("corners", "4px / 2px");
+    test_computed_value("corners", "2% / 2px");
+    test_computed_value("corners", "4px 2% / 2px");
+    test_computed_value("corners", "4px 2% 1em / 2px", "4px 2% 20px / 2px");
+    test_computed_value("corners", "4px 2% 1em 4% / 2px", "4px 2% 20px 4% / 2px");
+    test_computed_value("corners", "4px / 2px 4%");
+    test_computed_value("corners", "4px / 2px 4% 1em", "4px / 2px 4% 20px");
+    test_computed_value("corners", "4px / 2px 4% 1em 2%", "4px / 2px 4% 20px 2%");
+    test_computed_value("corners", "4px 2% / 2px 4%");
+    test_computed_value("corners", "4px 2% 1em / 2px 4% 1em", "4px 2% 20px / 2px 4% 20px");
+    test_computed_value("corners", "4px 2% 1em 4% / 2px 4% 1em 2%", "4px 2% 20px 4% / 2px 4% 20px 2%");
+    test_computed_value("corners", "4px round");
+    test_computed_value("corners", "4px angle");
+    test_computed_value("corners", "4px round angle");
+    test_computed_value("corners", "4px round angle round");
+    test_computed_value("corners", "4px round angle round angle");
+    test_computed_value("corners", "4px 2% round");
+    test_computed_value("corners", "4px 2% / 2px round");
+    test_computed_value("corners", "4px / 2px 4% round");
+    test_computed_value("corners", "4px / 2px 4% round angle");
+    test_computed_value("corners", "round 4px");
+    test_computed_value("corners", "round 4px 2%");
+    test_computed_value("corners", "round 4px 2% / 2px");
+    test_computed_value("corners", "round 4px / 2px 4%");
+    test_computed_value("corners", "round angle 4px / 2px 4%");
+    test_computed_value("corners", "round angle round angle 4px 2% 1em 4% / 2px 4% 1em 2%", "round angle round angle 4px 2% 20px 4% / 2px 4% 20px 2%");
+  </script>
+</body>
 </html>

@@ -1,53 +1,53 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>CSS Test: Logical 'border-radius-*' shorthands set the two radii of one side.</title>
-        <link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com" />
-        <link rel="help" href="https://drafts.csswg.org/css-borders-4/#corner-sizing" />
-        <link rel="match" href="border-radius-side-shorthands-001-ref.html" />
-        <meta name="assert" content="Logical 'border-radius-*' shorthands set the corresponding 'border-[*]-radius' longhands." />
-        <style>
-            div
-            {
-                width: 200px;
-                height: 200px;
-            }
-            #test1
-            {
-                margin-top: -220px;
-                border: 10px solid black;
-                border-radius-block-start: 40px;
-                border-radius-block-end: 40px;
-            }
-            #test2
-            {
-                margin-top: -220px;
-                border: 10px solid black;
-                border-radius-block-start: 2em 0.5em / 1em 3em;
-                border-radius-block-end: 4em 0.5em / 1em 3em;
-            }
-            #test3
-            {
-                margin-top: -220px;
-                border: 10px solid black;
-                border-radius-inline-start: 40px;
-                border-radius-inline-end: 40px;
-            }
-            #test4
-            {
-                margin-top: -220px;
-                border: 10px solid black;
-                border-radius-inline-start: 2em 0.5em / 1em 3em;
-                border-radius-inline-end: 1 3em / 4em 0.5em;
-            }
-        </style>
-    </head>
-    <body>
-        <p>Test passes if there are four black boxes with rounded corners and red is not visible on the page.</p>
-        <div id="test1"></div>
-        <div id="test2"></div>
-        <div id="test3"></div>
-        <div id="test4"></div>
-    </body>
+<head>
+  <meta charset="utf-8">
+  <title>CSS Test: Logical 'border-radius-*' shorthands set the two radii of one side.</title>
+  <link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com">
+  <link rel="help" href="https://drafts.csswg.org/css-borders-4/#corner-sizing">
+  <link rel="match" href="border-radius-side-shorthands-001-ref.html">
+  <meta name="assert"
+    content="Logical 'border-radius-*' shorthands set the corresponding 'border-[*]-radius' longhands.">
+  <style>
+    div {
+      width: 200px;
+      height: 200px;
+    }
+
+    #test1 {
+      margin-top: -220px;
+      border: 10px solid black;
+      border-radius-block-start: 40px;
+      border-radius-block-end: 40px;
+    }
+
+    #test2 {
+      margin-top: -220px;
+      border: 10px solid black;
+      border-radius-block-start: 2em 0.5em / 1em 3em;
+      border-radius-block-end: 4em 0.5em / 1em 3em;
+    }
+
+    #test3 {
+      margin-top: -220px;
+      border: 10px solid black;
+      border-radius-inline-start: 40px;
+      border-radius-inline-end: 40px;
+    }
+
+    #test4 {
+      margin-top: -220px;
+      border: 10px solid black;
+      border-radius-inline-start: 2em 0.5em / 1em 3em;
+      border-radius-inline-end: 1 3em / 4em 0.5em;
+    }
+  </style>
+</head>
+<body>
+  <p>Test passes if there are four black boxes with rounded corners and red is not visible on the page.</p>
+  <div id="test1"></div>
+  <div id="test2"></div>
+  <div id="test3"></div>
+  <div id="test4"></div>
+</body>
 </html>

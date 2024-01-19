@@ -9,19 +9,6 @@ from ..manifest.sourcefile import SourceFile
 from ..metadata.webfeatures.schema import FeatureEntry, FeatureFile, WebFeaturesFile
 
 
-class TestInfoForWebFeature:
-    """
-    Collection of extracted test information that relates to a given web feature
-    """
-    def __init__(self, manifest_item: URLManifestItem) -> None:
-        self.url = manifest_item.url
-
-    def to_dict(self) -> Dict[str, str]:
-        return {
-            "url": self.url
-        }
-
-
 class WebFeaturesMap:
     """
     Stores a mapping of web-features to their associated test paths.
@@ -31,7 +18,7 @@ class WebFeaturesMap:
         """
         Initializes the WebFeaturesMap with an OrderedDict to maintain feature order.
         """
-        self._feature_tests_map_: OrderedDict[str, Set[TestInfoForWebFeature]] = OrderedDict()
+        self._feature_tests_map_: OrderedDict[str, Set[str]] = OrderedDict()
 
 
     def add(self, feature: str, manifest_items: List[ManifestItem]) -> None:
@@ -44,21 +31,18 @@ class WebFeaturesMap:
         """
         tests = self._feature_tests_map_.get(feature, set())
         self._feature_tests_map_[feature] = tests.union([
-            TestInfoForWebFeature(manifest_item) for manifest_item in manifest_items if isinstance(manifest_item, URLManifestItem)])
+            manifest_item.url for manifest_item in manifest_items if isinstance(manifest_item, URLManifestItem)])
 
 
-    def to_dict(self) -> Dict[str, List[Dict[str, str]]]:
+    def to_dict(self) -> Dict[str, List[str]]:
         """
         Returns:
             The plain dictionary representation of the map.
         """
-        rv: Dict[str, List[Dict[str, str]]] = {}
+        rv: Dict[str, List[str]] = {}
         for feature, manifest_items in self._feature_tests_map_.items():
-            test_info: List[Dict[str, str]] = []
-            for manifest_item in manifest_items:
-                test_info.append(manifest_item.to_dict())
-            # Sort by the "path" field because not all manifest items have a "url".
-            rv[feature] = sorted(test_info, key=lambda x: x["url"])
+            # Sort the list to keep output stable
+            rv[feature] = sorted(manifest_items)
         return rv
 
 

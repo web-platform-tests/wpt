@@ -43,18 +43,10 @@ def test_process_recursive_feature():
 
     assert result.to_dict() == {
         "grid": [
-            {
-                "url": "/root/blob-range.any.html"
-            },
-            {
-                "url": "/root/blob-range.any.worker.html"
-            },
-            {
-                "url": "/root/foo-range.any.html"
-            },
-            {
-                "url": "/root/foo-range.any.worker.html"
-            }
+            "/root/blob-range.any.html",
+            "/root/blob-range.any.worker.html",
+            "/root/foo-range.any.html",
+            "/root/foo-range.any.worker.html",
         ],
     }
     assert inherited_features == ["grid"]
@@ -74,12 +66,8 @@ def test_process_non_recursive_feature():
 
     assert result.to_dict() == {
         "feature1": [
-            {
-                "url": "/root/blob-range.any.html",
-            },
-            {
-                "url": "/root/blob-range.any.worker.html"
-            },
+            "/root/blob-range.any.html",
+            "/root/blob-range.any.worker.html",
         ]
     }
 
@@ -97,38 +85,18 @@ def test_process_inherited_features():
 
     assert result.to_dict() == {
         "avif": [
-            {
-                "url": "/root/bar-range.any.html"
-            },
-            {
-                "url": "/root/bar-range.any.worker.html"
-            },
-            {
-                "url": "/root/blob-range.any.html"
-            },
-            {
-                "url": "/root/blob-range.any.worker.html"
-            },
-            {
-                "url": "/root/foo-range.any.html"
-            },
-            {
-                "url": "/root/foo-range.any.worker.html"
-            }
+            "/root/bar-range.any.html",
+            "/root/bar-range.any.worker.html",
+            "/root/blob-range.any.html",
+            "/root/blob-range.any.worker.html",
+            "/root/foo-range.any.html",
+            "/root/foo-range.any.worker.html",
         ],
         "grid": [
-            {
-                "url": "/root/blob-range.any.html"
-            },
-            {
-                "url": "/root/blob-range.any.worker.html"
-            },
-            {
-                "url": "/root/foo-range.any.html"
-            },
-            {
-                "url": "/root/foo-range.any.worker.html"
-            }
+            "/root/blob-range.any.html",
+            "/root/blob-range.any.worker.html",
+            "/root/foo-range.any.html",
+            "/root/foo-range.any.worker.html",
         ],
     }
     assert inherited_features == ["avif", "grid"]

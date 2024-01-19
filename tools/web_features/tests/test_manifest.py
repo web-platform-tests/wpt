@@ -203,7 +203,7 @@ def test_valid_schema():
         mock_file.assert_called_once_with("test_file.json", "w")
         mock_file.return_value.write.assert_called_once_with(
             ('{"version": 1,'
-            ' "data": {"grid": [{"url": "/grid_test1.js"}, {"url": "/grid_test2.js"}], "avif": [{"url": "/avif_test1.js"}]}}'))
+            ' "data": {"grid": ["/grid_test1.js", "/grid_test2.js"], "avif": ["/avif_test1.js"]}}'))
         args = mock_file.return_value.write.call_args
         file_dict = json.loads(args[0][0])
         # Should not throw an exception
@@ -256,5 +256,5 @@ def test_main(
     file = args[0][1]
     assert path == expected_path
     assert file.to_dict() == {
-        'avif': [{'url': '/avif_test1.js'}],
-        'grid': [{'url': '/grid_test1.js'}, {'url': '/grid_test2.js'}]}
+        'avif': ['/avif_test1.js'],
+        'grid': ['/grid_test1.js', '/grid_test2.js']}

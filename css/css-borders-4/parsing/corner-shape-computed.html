@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>CSS Borders 4 Test: Computed values of 'corner-shape'</title>
-        <link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com" />
-        <link rel="help" href="https://drafts.csswg.org/css-borders-4/#corner-shaping" />
-        <meta name="assert" content="Computed value of 'corner-shape' is correct" />
-		<script src="/resources/testharness.js"></script>
-		<script src="/resources/testharnessreport.js"></script>
-		<script src="/css/support/parsing-testcommon.js"></script>
-	</head>
-	<body>
-		<div id="target"></div>
-		<script>
-		test_computed_value("corner-shape", "round");
-		test_computed_value("corner-shape", "angle");
-		test_computed_value("corner-shape", "round angle");
-		test_computed_value("corner-shape", "round angle round");
-		test_computed_value("corner-shape", "round angle round angle");
-		</script>
-	</body>
+<head>
+  <meta charset="utf-8">
+  <title>CSS Borders 4 Test: Computed values of 'corner-shape'</title>
+  <link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com">
+  <link rel="help" href="https://drafts.csswg.org/css-borders-4/#corner-shaping">
+  <meta name="assert" content="Computed value of 'corner-shape' is correct">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/css/support/parsing-testcommon.js"></script>
+</head>
+<body>
+  <div id="target"></div>
+  <script>
+    test_computed_value("corner-shape", "round");
+    test_computed_value("corner-shape", "angle");
+    test_computed_value("corner-shape", "round angle");
+    test_computed_value("corner-shape", "round angle round");
+    test_computed_value("corner-shape", "round angle round angle");
+  </script>
+</body>
 </html>

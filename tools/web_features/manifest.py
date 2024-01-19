@@ -27,7 +27,7 @@ Refer to RFC 163 (https://github.com/web-platform-tests/rfcs/pull/163) for more
 file details.
 
 This command processes all WEB_FEATURES.yml files, extracts the list of test
-paths  from the test files, and writes them to a manifest file. The manifest
+paths from the test files, and writes them to a manifest file. The manifest
 file maps web-feature identifiers to their corresponding test paths.
 
 The file written is a JSON file. An example file looks like:

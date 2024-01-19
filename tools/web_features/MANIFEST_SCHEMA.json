@@ -15,7 +15,7 @@
              },
              "data":{
                 "type":"object",
-                "description":"High level container for the data. Object key is the web feature.",
+                "description":"High level container for the data. Object key is the web-features identifier.",
                 "additionalProperties":{
                    "type":"array",
                    "items":{

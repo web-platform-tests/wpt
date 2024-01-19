@@ -39,7 +39,7 @@ class WebFeaturesMap:
         Adds a web feature and its associated test paths to the map.
 
         Args:
-            feature: The name of the web feature.
+            feature: The web-features identifier.
             manifest_items: The ManifestItem objects representing the test paths.
         """
         tests = self._feature_tests_map_.get(feature, set())

@@ -32,6 +32,19 @@ file maps web-feature identifiers to their corresponding test paths.
 
 The file written is a JSON file. An example file looks like:
 
+{
+    "version": 1,
+    "data": {
+        "async-clipboard": [
+            "/clipboard-apis/async-custom-formats-write-fail.tentative.https.html",
+            "/clipboard-apis/async-custom-formats-write-read-web-prefix.tentative.https.html"
+        ],
+        "idle-detection": [
+            "/idle-detection/basics.tentative.https.window.html",
+            "/idle-detection/idle-detection-allowed-by-permissions-policy-attribute-redirect-on-load.https.sub.html"
+        ]
+    }
+}
 
 
 The JSON Schema for the file format can be found at MANIFEST_SCHEMA.json

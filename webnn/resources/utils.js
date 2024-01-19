@@ -329,7 +329,7 @@ const PrecisionMetrics = {
   expand: {ULP: {float32: 0, float16: 0}},
   gather: {ULP: {float32: 0, float16: 0}},
   gemm: {ULP: {float32: getGemmPrecisionTolerance, float16: getGemmPrecisionTolerance}},
-  instanceNormalization: {ATOL: {float32: 1/1024, float16: 1/512}},
+  instanceNormalization: {ULP: {float32: 840, float16: 8400}},
   hardSigmoid: {ULP: {float32: 2, float16: 2}},
   hardSwish: {ULP: {float32: 4, float16: 4}},
   layerNormalization: {ATOL: {float32: 1/1024, float16: 1/512}},

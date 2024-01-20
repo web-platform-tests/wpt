@@ -1707,7 +1707,7 @@ class EdgeChromium(Browser):
             unzip(get(url).raw, os.path.join(dest, "mojojs"))
             with open(last_url_file, "wt") as f:
                 f.write(url)
-            return
+            return extracted
         except Exception as e:
             self.logger.error(f"Cannot enable MojoJS: {e}")
             return None

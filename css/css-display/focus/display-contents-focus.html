@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-  <title>Testing accessibility of display: contents</title>
+  <title>Testing focus for display: contents</title>
   <link rel="help" href="https://drafts.csswg.org/css-display-4/#box-generation">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
@@ -21,10 +21,11 @@
     <h1>Testing focusability of display: contents</h1>
 
     <button style="display: contents;" class="ex-focusable" data-testname="button with display: contents is focusable">x</button>
-    <div role="button" tabindex="0" style="display: contents;" class="ex-focusable" data-testname="div with role button and display: contents is focusable"></div>
+    <div role="button" tabindex="0" style="display: contents;" class="ex-focusable" data-testname="div with role button, tabindex=0 and display: contents is focusable"></div>
+    <div role="button" tabindex="-1" style="display: contents;" class="ex-focusable" data-testname="div with role button, tabindex=-1 and display: contents is focusable"></div>
 
     <a href="#" style="display: contents;" class="ex-focusable" data-testname="link with display: contents is focusable">x</a>
-    <span role="link" tabindex="0" style="display: contents;" class="ex-focusable" data-testname="span with role link and display: contents is focusable"></span>
+    <span role="link" tabindex="0" style="display: contents;" class="ex-focusable" data-testname="span with role link, tabindex=0 and display: contents is focusable"></span>
 
     <script>
         verifyElementsAreKeyboardFocusable();

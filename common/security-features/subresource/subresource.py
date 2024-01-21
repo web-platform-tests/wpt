@@ -139,6 +139,14 @@ def preprocess_stash_action(request, response):
         else:
             status = u"blocked"
         response_data = json.dumps({u"status": status, u"result": value})
+    elif action == b"peek":
+        value = stash.take(key=key, path=path)
+        stash.put(key=key, value=value, path=path)
+        if value is None:
+            status = u"allowed"
+        else:
+            status = u"blocked"
+        response_data = json.dumps({u"status": status, u"result": value})
     else:
         return False
 

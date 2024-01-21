@@ -827,6 +827,64 @@ function requestViaWebSocket(url) {
 }
 
 /**
+ * Requests speculation rules via the header in a new window.
+ * @param {string} url The URL of the resource to request.
+ * @return {Promise} The promise for success/error events.
+ */
+async function requestViaSpeculationRulesHeader(url) {
+  let windowURL = `/common/blank.html?pipe=header(Speculation-Rules,"${encodeURIComponent(url)}")`;
+
+  // Parse out which test is currently running so we can replicate it to the
+  // popup window. Ideally this would be plumbed through, but it's somewhat
+  // awkward to do so.
+  // See, handle_deliveries in common/security-features/tools/generate.py.
+  const match = /\/([a-z-.]+\/gen\/[a-z-.]+\/[a-z-.]+)\/[^\/]+$/.exec(location.pathname);
+  switch (match ? match[1] : '') {
+    case 'content-security-policy/gen/top.http-rp/script-src-self':
+      windowURL += `|header(Content-Security-Policy,script-src 'self' 'unsafe-inline')`;
+      break;
+    case 'content-security-policy/gen/top.http-rp/script-src-wildcard':
+      windowURL += `|header(Content-Security-Policy,script-src * 'unsafe-inline')`;
+      break;
+    case 'mixed-content/gen/top.meta/unset':
+      break;
+    case 'mixed-content/gen/top.http-rp/opt-in':
+      windowURL += '|header(Content-Security-Policy,block-all-mixed-content)';
+      break;
+    default:
+      throw new Error('requestViaSpeculationRulesHeader needs to replicate security feature state');
+  }
+
+  let w = window.open(windowURL);
+  try {
+    // Wait for the window to load first.
+    await new Promise(resolve => w.addEventListener('load', () => resolve()));
+
+    // This is similar to t.step_wait, but t is not available here.
+    let continuePolling = true;
+    let status = 'blocked';
+    const params = new URLSearchParams(new URL(url).search);
+    const pollURL = `/common/security-features/subresource/xhr.py?action=peek&path=${encodeURIComponent(params.get('path'))}&key=${encodeURIComponent(params.get('key'))}`;
+    step_timeout(() => continuePolling = false, 3000);
+    do {
+      // This sort of polling logic might be more generally useful to other
+      // kinds of request that don't necessarily always receive a "done" event
+      // of some kind. But at the moment that would be a more radical refactor.
+      await new Promise(resolve => step_timeout(resolve, 200));
+      let json = await fetch(pollURL).then(r => r.json());
+      status = json.status;
+    } while (status !== 'allowed' && continuePolling);
+
+    if (status === 'blocked') {
+      throw new Error('request was blocked');
+    }
+    return status;
+  } finally {
+    w.close();
+  }
+}
+
+/**
   @typedef SubresourceType
   @type {string}
 
@@ -941,6 +999,11 @@ const subresourceMap = {
   "websocket": {
     path: "/stash_responder",
     invoker: requestViaWebSocket,
+  },
+
+  "speculationrules": {
+    path: "/common/security-features/subresource/speculationrules.py",
+    invoker: requestViaSpeculationRulesHeader,
   },
 };
 for (const workletType of ['animation', 'audio', 'layout', 'paint']) {

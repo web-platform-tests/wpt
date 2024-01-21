@@ -126,6 +126,8 @@ def validate(spec_json, details):
         "worklet-layout-import", "worklet-paint-import",
         "worklet-animation-import-data", "worklet-audio-import-data",
         "worklet-layout-import-data", "worklet-paint-import-data"
+    ] + [
+        "speculationrules"
     ]
 
     # Validate each single spec.

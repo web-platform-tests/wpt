@@ -177,21 +177,21 @@ const AriaUtils = {
       AriaUtils.verifyRoleAndLabelBySelector(".ex")
 
   */
-      verifyRoleAndLabelBySelector: function(selector) {
-        let labelTestNamePrefix = "(Label) ";
-        let roleTestNamePrefix = "(Role) ";
+  verifyRoleAndLabelBySelector: function(selector) {
+    let labelTestNamePrefix = "(Label) ";
+    let roleTestNamePrefix = "(Role) ";
 
-        const els = document.querySelectorAll(selector);
-        if (!els.length) {
-          throw `Selector passed in verifyRoleAndLabelBySelector("${selector}") should match at least one element.`;
-        }
-        for (const el of els) {
-          el.classList.add("ex-label");
-          el.classList.add("ex-role");
-        }
+    const els = document.querySelectorAll(selector);
+    if (!els.length) {
+      throw `Selector passed in verifyRoleAndLabelBySelector("${selector}") should match at least one element.`;
+    }
+    for (const el of els) {
+      el.classList.add("ex-label");
+      el.classList.add("ex-role");
+    }
 
-        this.verifyLabelsBySelector(".ex-label", labelTestNamePrefix);
-        this.verifyRolesBySelector(".ex-role", roleTestNamePrefix);
-        },
+    this.verifyLabelsBySelector(".ex-label", labelTestNamePrefix);
+    this.verifyRolesBySelector(".ex-role", roleTestNamePrefix);
+  },
 };
 

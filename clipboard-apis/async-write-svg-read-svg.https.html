@@ -34,7 +34,7 @@ async function readWriteTest(textInput) {
   await navigator.clipboard.write([clipboardItem]);
   await waitForUserActivation();
   const clipboardItems =
-      await navigator.clipboard.read({type: 'image/svg+xml'});
+      await navigator.clipboard.read();
 
   const svg = clipboardItems[0];
   assert_equals(svg.types.length, 1);

@@ -191,7 +191,6 @@ const AriaUtils = {
 
         this.verifyLabelsBySelector(".ex-label", labelTestNamePrefix);
         this.verifyRolesBySelector(".ex-role", roleTestNamePrefix);
-
         },
 };
 

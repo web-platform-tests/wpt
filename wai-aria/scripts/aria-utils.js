@@ -165,7 +165,7 @@ const AriaUtils = {
 
   /*
   Tests computed LABEL and ROLE of all elements matching selector using existing
-    verifyLabelsBySelector() and verifyRolesBySelector() functions; modifies the test name
+    verifyLabelsBySelector(), verifyRolesBySelector() functions and passes a test name prefix
     to ensure uniqueness.
 
   Ex: <div aria-label="foo" role="button"

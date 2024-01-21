@@ -38,7 +38,7 @@ const AriaUtils = {
       AriaUtils.verifyRolesBySelector(".ex")
 
   */
-  verifyRolesBySelector: function(selector) {
+  verifyRolesBySelector: function(selector, roleTestNamePrefix) {
     const els = document.querySelectorAll(selector);
     if (!els.length) {
       throw `Selector passed in verifyRolesBySelector("${selector}") should match at least one element.`;
@@ -46,6 +46,9 @@ const AriaUtils = {
     for (const el of els) {
       let role = el.getAttribute("data-expectedrole");
       let testName = el.getAttribute("data-testname") || role; // data-testname optional if role is unique per test file
+      if (typeof roleTestNamePrefix !== undefined) {
+        testName = roleTestNamePrefix + testName;
+      }
       promise_test(async t => {
         const expectedRole = el.getAttribute("data-expectedrole");
         const computedRole = await test_driver.get_computed_role(el);
@@ -127,7 +130,7 @@ const AriaUtils = {
       AriaUtils.verifyLabelsBySelector(".ex")
 
   */
-  verifyLabelsBySelector: function(selector) {
+  verifyLabelsBySelector: function(selector, labelTestNamePrefix) {
     const els = document.querySelectorAll(selector);
     if (!els.length) {
       throw `Selector passed in verifyLabelsBySelector("${selector}") should match at least one element.`;
@@ -135,6 +138,9 @@ const AriaUtils = {
     for (const el of els) {
       let label = el.getAttribute("data-expectedlabel");
       let testName = el.getAttribute("data-testname") || label; // data-testname optional if label is unique per test file
+      if (typeof labelTestNamePrefix !== undefined) {
+        testName = labelTestNamePrefix + testName;
+      }
       promise_test(async t => {
         const expectedLabel = el.getAttribute("data-expectedlabel");
         let computedLabel = await test_driver.get_computed_label(el);
@@ -156,6 +162,36 @@ const AriaUtils = {
     }
   },
 
+  /*
+  Tests computed LABEL and ROLE of all elements matching selector using existing
+    verifyLabelsBySelector() and verifyRolesBySelector() functions; modifies the test name
+    to ensure uniqueness.
 
+  Ex: <div aria-label="foo" role="button"
+        data-testname="div with role=button is labelled via aria-label"
+        data-expectedlabel="foo"
+        data-expectedrole="button"
+        class="ex">
+
+      AriaUtils.verifyRoleAndLabelBySelector(".ex")
+
+  */
+      verifyRoleAndLabelBySelector: function(selector, testName) {
+        let labelTestNamePrefix = "(Label) ";
+        let roleTestNamePrefix = "(Role) ";
+
+        const els = document.querySelectorAll(selector);
+        if (!els.length) {
+          throw `Selector passed in verifyRoleAndLabelBySelector("${selector}") should match at least one element.`;
+        }
+        for (const el of els) {
+          el.classList.add("ex-label");
+          el.classList.add("ex-role");
+        }
+
+        this.verifyLabelsBySelector(".ex-label", labelTestNamePrefix);
+        this.verifyRolesBySelector(".ex-role", roleTestNamePrefix);
+
+        },
 };
 

@@ -46,7 +46,7 @@ const AriaUtils = {
     for (const el of els) {
       let role = el.getAttribute("data-expectedrole");
       let testName = el.getAttribute("data-testname") || role; // data-testname optional if role is unique per test file
-      if (typeof roleTestNamePrefix !== undefined) {
+      if (typeof roleTestNamePrefix !== "undefined") {
         testName = roleTestNamePrefix + testName;
       }
       promise_test(async t => {
@@ -138,7 +138,7 @@ const AriaUtils = {
     for (const el of els) {
       let label = el.getAttribute("data-expectedlabel");
       let testName = el.getAttribute("data-testname") || label; // data-testname optional if label is unique per test file
-      if (typeof labelTestNamePrefix !== undefined) {
+      if (typeof labelTestNamePrefix !== "undefined") {
         testName = labelTestNamePrefix + testName;
       }
       promise_test(async t => {
@@ -162,6 +162,7 @@ const AriaUtils = {
     }
   },
 
+
   /*
   Tests computed LABEL and ROLE of all elements matching selector using existing
     verifyLabelsBySelector() and verifyRolesBySelector() functions; modifies the test name
@@ -176,7 +177,7 @@ const AriaUtils = {
       AriaUtils.verifyRoleAndLabelBySelector(".ex")
 
   */
-      verifyRoleAndLabelBySelector: function(selector, testName) {
+      verifyRoleAndLabelBySelector: function(selector) {
         let labelTestNamePrefix = "(Label) ";
         let roleTestNamePrefix = "(Role) ";
 

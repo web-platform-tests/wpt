@@ -26,7 +26,7 @@ virtualAuthenticatorPromiseTest(async t => {
     },
   });
 
-  const createExtensions = cred.getClientExtensionResults();
+  const createExtensions = cred.getClientExtensionResults(CLI);
   assert_own_property(createExtensions, "credBlob");
   assert_equals(createExtensions.credBlob, false, "extension supported at create time");
 }, {

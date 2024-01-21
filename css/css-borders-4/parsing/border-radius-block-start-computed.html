@@ -1,24 +1,20 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>CSS Borders 4 Test: Computed values of 'border-radius-block-start'</title>
-  <link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com">
-  <link rel="help" href="https://drafts.csswg.org/css-borders-4/#corner-sizing">
-  <meta name="assert" content="Computed value of 'border-radius-block-start' is correct">
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
-  <script src="/css/support/parsing-testcommon.js"></script>
-</head>
-<body>
-  <div id="target"></div>
-  <script>
-    test_computed_value("border-radius-block-start", "10px");
-    test_computed_value("border-radius-block-start", "10px 10px", "10px");
-    test_computed_value("border-radius-block-start", "5px 10px");
-    test_computed_value("border-radius-block-start", "10px / 5px 10px");
-    test_computed_value("border-radius-block-start", "5px 10px / 10px");
-    test_computed_value("border-radius-block-start", "10px 10px / 5px 5px", "10px / 5px");
-  </script>
-</body>
-</html>
+<meta charset="utf-8">
+<title>CSS Borders and Box Decorations 4 Test: Computed values of 'border-radius-block-start'</title>
+<link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-borders-4/#corner-sizing">
+<meta name="assert" content="Computed value of 'border-radius-block-start' is correct">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+
+<div id="target"></div>
+
+<script>
+test_computed_value("border-radius-block-start", "10px");
+test_computed_value("border-radius-block-start", "10px 10px", "10px");
+test_computed_value("border-radius-block-start", "5px 10px");
+test_computed_value("border-radius-block-start", "10px / 5px 10px");
+test_computed_value("border-radius-block-start", "5px 10px / 10px");
+test_computed_value("border-radius-block-start", "10px 10px / 5px 5px", "10px / 5px");
+</script>

@@ -79,37 +79,37 @@
             <td>x</td>
           </tr>
         </tbody>
-      </table>
+    </table>
 
-      <table role="table" style="display: flex; flex-flow: column nowrap;" data-expectedrole="table">
-        <thead>
-          <tr style="display: contents;" data-expectedrole="row" data-testname="tr with display: contents, within table with role=table with display: flex, has row role" class="ex-role">
-            <th data-expectedrole="columnheader" data-expectedlabel="x" data-testname="th as child of tr with display: contents, within table with role=table with display: flex, has columnheader role" class="ex-role-and-label">x</th>
-            <th>x</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="display: contents;">
-            <td data-expectedrole="cell" data-expectedlabel="x" data-testname="td as child of tr with display: contents, within table with role=table with display: flex, has cell role" class="ex-role-and-label">x</td>
-            <td>x</td>
-          </tr>
-        </tbody>
-      </table>
+    <table role="table" style="display: flex; flex-flow: column nowrap;" data-expectedrole="table">
+      <thead>
+        <tr style="display: contents;" data-expectedrole="row" data-testname="tr with display: contents, within table with role=table with display: flex, has row role" class="ex-role">
+          <th data-expectedrole="columnheader" data-expectedlabel="x" data-testname="th as child of tr with display: contents, within table with role=table with display: flex, has columnheader role" class="ex-role-and-label">x</th>
+          <th>x</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="display: contents;">
+          <td data-expectedrole="cell" data-expectedlabel="x" data-testname="td as child of tr with display: contents, within table with role=table with display: flex, has cell role" class="ex-role-and-label">x</td>
+          <td>x</td>
+        </tr>
+      </tbody>
+    </table>
 
-      <table role="grid" style="display: flex; flex-flow: column nowrap;" data-expectedrole="grid">
-        <thead>
-          <tr style="display: contents;" data-expectedrole="row" data-testname="tr with display: contents, within table with role=grid with display: flex, has row role" class="ex-role">
-            <th data-expectedrole="columnheader" data-expectedlabel="x" data-testname="th as child of tr with display: contents, within table with role=grid with display: flex, has columnheader role" class="ex-role-and-label">x</th>
-            <th>x</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="display: contents;">
-            <td data-expectedrole="gridcell" data-expectedlabel="x" data-testname="td as child of tr with display: contents, within table with role=grid with display: flex, has gridcell role" class="ex-role-and-label">x</td>
-            <td>x</td>
-          </tr>
-        </tbody>
-      </table>
+    <table role="grid" style="display: flex; flex-flow: column nowrap;" data-expectedrole="grid">
+      <thead>
+        <tr style="display: contents;" data-expectedrole="row" data-testname="tr with display: contents, within table with role=grid with display: flex, has row role" class="ex-role">
+          <th data-expectedrole="columnheader" data-expectedlabel="x" data-testname="th as child of tr with display: contents, within table with role=grid with display: flex, has columnheader role" class="ex-role-and-label">x</th>
+          <th>x</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="display: contents;">
+          <td data-expectedrole="gridcell" data-expectedlabel="x" data-testname="td as child of tr with display: contents, within table with role=grid with display: flex, has gridcell role" class="ex-role-and-label">x</td>
+          <td>x</td>
+        </tr>
+      </tbody>
+    </table>
 
     <!-- Display: Grid -->
     <div style="display: grid; grid-template-columns: 1fr 100px; grid-gap: 1em;">
@@ -155,57 +155,32 @@
     <div role="link" tabindex="0" style="display: contents;" data-expectedrole="link" data-expectedlabel="x" data-testname="div with link role, tabindex=0 and display: contents has link role" class="ex-role-and-label">x</div>
 
     <!-- Lists -->
-    <ul style="display: contents;" data-expectedrole="list" data-testname="ul with display: contents has list role (child li has display: contents)" class="ex-role">
-        <li style="display: contents;" data-expectedrole="listitem" data-expectedlabel="x" data-testname="li as child of ul, both with display: contents, has listitem role" class="ex-role-and-label">x</li>
-        <li>y</li>
-    </ul>
-
     <ul role="list" style="display: contents;" data-expectedrole="list" data-testname="ul with role list and display: contents (child li has display: contents) has list role" class="ex-role">
       <li style="display: contents;" data-expectedrole="listitem" data-expectedlabel="x" data-testname="li as child of ul with role list, both with display: contents, has listitem role" class="ex-role-and-label">x</li>
       <li>y</li>
-  </ul>
-
-    <ul style="display: contents;" data-expectedrole="list" data-testname="ul with display: contents has list role" class="ex-role">
-        <li>x</li>
-        <li data-expectedrole="listitem" data-expectedlabel="y" data-testname="li, as child of ul with display: contents, has listitem role" class="ex-role-and-label">y</li>
     </ul>
 
     <ul role="list" style="display: contents;" data-expectedrole="list" data-testname="ul with role list and display: contents has list role" class="ex-role">
       <li>x</li>
       <li data-expectedrole="listitem" data-expectedlabel="y" data-testname="li, as child of ul with role list and display: contents, has listitem role" class="ex-role-and-label">y</li>
-  </ul>
-
-    <ul>
-        <li>x</li>
-        <li style="display: contents;" data-expectedrole="listitem" data-expectedlabel="y" data-testname="li with display: contents, as child of ul, has listitem role" class="ex-role-and-label">y</li>
     </ul>
 
     <ul role="list">
       <li>x</li>
       <li style="display: contents;" data-expectedrole="listitem" data-expectedlabel="y" data-testname="li with display: contents, as child of ul with role list, has listitem role" class="ex-role-and-label">y</li>
-  </ul>
-
-    <ol style="display: contents;" data-expectedrole="list" data-testname="ol with display: contents has list role (child li has display: contents)" class="ex-role">
-        <li style="display: contents;" data-expectedrole="listitem" data-expectedlabel="x" data-testname="li as child of ol, both with display: contents, has listitem role" class="ex-role-and-label">x</li>
-        <li>y</li>
-    </ol>
+    </ul>
 
     <ol role="list" style="display: contents;" data-expectedrole="list" data-testname="ol with role list and display: contents has list role (child li has display: contents)" class="ex-role">
       <li style="display: contents;" data-expectedrole="listitem" data-expectedlabel="x" data-testname="li as child of ol with role list, both with display: contents, has listitem role" class="ex-role-and-label">x</li>
       <li>y</li>
-  </ol>
-
-    <ol style="display: contents;" data-expectedrole="list" data-testname="ol with display: contents has list role" class="ex-role">
-        <li>x</li>
-        <li data-expectedrole="listitem" data-expectedlabel="y" data-testname="li, as child of ol with display: contents, has listitem role" class="ex-role-and-label">y</li>
     </ol>
 
     <ol role="list" style="display: contents;" data-expectedrole="list" data-testname="ol with role list and display: contents has list role" class="ex-role">
       <li>x</li>
       <li data-expectedrole="listitem" data-expectedlabel="y" data-testname="li, as child of ol with role list and display: contents, has listitem role" class="ex-role-and-label">y</li>
-  </ol>
+    </ol>
 
-    <ol>
+    <ol role="list">
         <li>x</li>
         <li style="display: contents;" data-expectedrole="listitem" data-expectedlabel="y" data-testname="li with display: contents, as child of ol, has listitem role" class="ex-role-and-label">y</li>
     </ol>
@@ -213,7 +188,7 @@
     <ol role="list">
       <li>x</li>
       <li style="display: contents;" data-expectedrole="listitem" data-expectedlabel="y" data-testname="li with display: contents, as child of ol with role list, has listitem role" class="ex-role-and-label">y</li>
-  </ol>
+    </ol>
 
     <div role="list" style="display: contents;" data-expectedrole="list" data-testname="div with list role and display: contents has list role" class="ex-role">
         <div role="listitem" data-expectedrole="listitem" data-expectedlabel="x" data-testname="div with listitem role, as child of div with display: contents, has listitem role" class="ex-role-and-label">x</div>
@@ -230,20 +205,7 @@
         <div role="listitem" style="display: contents;" data-expectedrole="listitem" data-expectedlabel="y" data-testname="div with listitem role with display: contents, as child of div with list role, has listitem role" class="ex-role-and-label">y</div>
     </div>
 
-    <!-- Lists: description lists -->
-    <dl>
-        <dt style="display: contents;" data-expectedrole="term" data-expectedlabel="q" data-testname="dt with display: contents, as child of dl, has term role" class="ex-role-and-label">q</dt>
-        <dd style="display: contents;" data-expectedrole="definition" data-expectedlabel="r" data-testname="dd with display: contents, as child of dl, has definition role" class="ex-role-and-label">r</dd>
-        <dt>x</dt>
-        <dd>y</dd>
-    </dl>
-
-    <dl style="display: contents;">
-        <dt style="display: contents;" data-expectedrole="term" data-expectedlabel="q" data-testname="dt with display: contents, as child of dl with display: contents, has term role" class="ex-role-and-label">q</dt>
-        <dd style="display: contents;" data-expectedrole="definition" data-expectedlabel="r" data-testname="dd with display: contents, as child of dl with display: contents, has definition role" class="ex-role-and-label">r</dd>
-        <dt>x</dt>
-        <dd>y</dd>
-    </dl>
+    <!-- Lists: description lists -> wpt/html-aam/roles.html -->
 
     <!-- Tables (including grids/treegrids) -->
     <table role="table" style="display: contents;" data-expectedrole="table" data-testname="table with role table and display: contents has table role" class="ex-role">
@@ -291,20 +253,20 @@
         </tbody>
       </table>
 
-      <div role="grid" style="display: contents;" data-expectedrole="grid" data-testname="div with role grid with display: contents has grid role" class="ex-role">
-        <div role="rowgroup" style="display: contents;" data-expectedrole="rowgroup" data-testname="div with role rowgroup in div with role grid, both with display: contents, has rowgroup role" class="ex-role">
-            <div role="row">
-                <div role="columnheader" style="display: contents;" data-expectedrole="columnheader" data-expectedlabel="x" data-testname="div with role columnheader with display: contents, in div with role rowgroup within div with grid role both with display: contents, has rowgroup role" class="ex-role-and-label">x</div>
-                <div role="columnheader">x</div>
-            </div>
-        </div>
-        <div role="rowgroup">
-            <div role="row">
-                <div role="gridcell"></div>
-                <div role="gridcell" style="display: contents;" data-expectedrole="gridcell" data-expectedlabel="x" data-testname="div with gridcell role and display: contents, within div with role row contained in a div with role grid both with display: contents, has gridcell role" class="ex-role-and-label">x</div>
-            </div>
-        </div>
-    </div>
+    <div role="grid" style="display: contents;" data-expectedrole="grid" data-testname="div with role grid with display: contents has grid role" class="ex-role">
+      <div role="rowgroup" style="display: contents;" data-expectedrole="rowgroup" data-testname="div with role rowgroup in div with role grid, both with display: contents, has rowgroup role" class="ex-role">
+          <div role="row">
+              <div role="columnheader" style="display: contents;" data-expectedrole="columnheader" data-expectedlabel="x" data-testname="div with role columnheader with display: contents, in div with role rowgroup within div with grid role both with display: contents, has rowgroup role" class="ex-role-and-label">x</div>
+              <div role="columnheader">x</div>
+          </div>
+      </div>
+      <div role="rowgroup">
+          <div role="row">
+              <div role="gridcell"></div>
+              <div role="gridcell" style="display: contents;" data-expectedrole="gridcell" data-expectedlabel="x" data-testname="div with gridcell role and display: contents, within div with role row contained in a div with role grid both with display: contents, has gridcell role" class="ex-role-and-label">x</div>
+          </div>
+      </div>
+   </div>
 
     <div role="grid" tabindex="0" style="display: contents;" data-expectedrole="grid" data-testname="div with role grid, tabindex=0 and display: contents has grid role" class="ex-role">
     </div>

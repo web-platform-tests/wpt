@@ -1,23 +1,18 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>CSS Borders 4 Test: Parsing 'box-shadow-blur' with invalid values</title>
-  <link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com">
-  <link rel="help" href="https://drafts.csswg.org/css-borders-4/#box-shadow-blur">
-  <meta name="assert" content="'box-shadow-blur' supports only properly defined length values">
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
-  <script src="/css/support/parsing-testcommon.js"></script>
-</head>
-<body>
-  <script>
-    test_invalid_value("box-shadow-blur", "auto");
-    test_invalid_value("box-shadow-blur", "none");
-    test_invalid_value("box-shadow-blur", "1");
-    test_invalid_value("box-shadow-blur", "1px 2px");
-    test_invalid_value("box-shadow-blur", "-1px");
-    test_invalid_value("box-shadow-blur", "1%");
-  </script>
-</body>
-</html>
+<meta charset="utf-8">
+<title>CSS Borders and Box Decorations 4 Test: Parsing 'box-shadow-blur' with invalid values</title>
+<link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-borders-4/#box-shadow-blur">
+<meta name="assert" content="'box-shadow-blur' supports only properly defined length values">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+
+<script>
+test_invalid_value("box-shadow-blur", "auto");
+test_invalid_value("box-shadow-blur", "none");
+test_invalid_value("box-shadow-blur", "1");
+test_invalid_value("box-shadow-blur", "1px 2px");
+test_invalid_value("box-shadow-blur", "-1px");
+test_invalid_value("box-shadow-blur", "1%");
+</script>

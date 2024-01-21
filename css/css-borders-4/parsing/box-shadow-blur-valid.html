@@ -1,22 +1,17 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>CSS Borders 4 Test: Parsing 'box-shadow-blur' with valid values</title>
-  <link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com">
-  <link rel="help" href="https://drafts.csswg.org/css-borders-4/#box-shadow-blur">
-  <meta name="assert" content="'box-shadow-blur' supports blur values">
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
-  <script src="/css/support/parsing-testcommon.js"></script>
-</head>
-<body>
-  <script>
-    test_valid_value("box-shadow-blur", "0", "0px");
-    test_valid_value("box-shadow-blur", "1px");
-    test_valid_value("box-shadow-blur", "1em");
-    test_valid_value("box-shadow-blur", "calc(1em + 2px)");
-    test_valid_value("box-shadow-blur", "1px, 2px");
-  </script>
-</body>
-</html>
+<meta charset="utf-8">
+<title>CSS Borders and Box Decorations 4 Test: Parsing 'box-shadow-blur' with valid values</title>
+<link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-borders-4/#box-shadow-blur">
+<meta name="assert" content="'box-shadow-blur' supports blur values">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+
+<script>
+test_valid_value("box-shadow-blur", "0", "0px");
+test_valid_value("box-shadow-blur", "1px");
+test_valid_value("box-shadow-blur", "1em");
+test_valid_value("box-shadow-blur", "calc(1em + 2px)");
+test_valid_value("box-shadow-blur", "1px, 2px");
+</script>

@@ -1,54 +1,90 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>CSS Test: Physical 'border-radius-*' shorthands set the two radii of one side.</title>
-  <link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com">
-  <link rel="help" href="https://drafts.csswg.org/css-borders-4/#corner-sizing">
-  <link rel="match" href="border-radius-side-shorthands-001-ref.html">
-  <meta name="assert"
-    content="Physical 'border-radius-*' shorthands set the corresponding 'border-[*]-radius' longhands.">
-  <style>
-    div {
-      width: 200px;
-      height: 200px;
-      margin: 10px;
-    }
+<meta charset="utf-8">
+<title>CSS Borders and Box Decorations 4 Test: Physical 'border-radius-*' shorthands set the two radii of one side.</title>
+<link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-borders-4/#corner-sizing">
+<link rel="match" href="border-radius-side-shorthands-001-ref.html">
+<meta name="assert"
+  content="This test checks that the physical 'border-radius-*' shorthands set the corresponding 'border-[*]-radius' longhands.">
 
-    #test1 {
-      margin-top: -220px;
-      border: 10px solid black;
-      border-radius-top: 40px;
-      border-radius-bottom: 40px;
-    }
+<style>
+div {
+  width: 100px;
+  height: 100px;
+  margin: 10px;
+}
 
-    #test2 {
-      margin-top: -220px;
-      border: 10px solid black;
-      border-radius-top: 2em 0.5em / 1em 3em;
-      border-radius-bottom: 4em 0.5em / 1em 3em;
-    }
+#refenence-shape-1,
+#refenence-shape-2,
+#refenence-shape-3,
+#refenence-shape-4 {
+  border: 10px solid red;
+}
 
-    #test3 {
-      margin-top: -220px;
-      border: 10px solid black;
-      border-radius-left: 40px;
-      border-radius-right: 40px;
-    }
+#test-1,
+#test-2,
+#test-3,
+#test-4 {
+  margin-top: -130px;
+  border: 10px solid black;
+}
 
-    #test4 {
-      margin-top: -220px;
-      border: 10px solid black;
-      border-radius-left: 2em 0.5em / 1em 3em;
-      border-radius-right: 1 3em / 4em 0.5em;
-    }
-  </style>
-</head>
-<body>
-  <p>Test passes if there are four black boxes with rounded corners and red is not visible on the page.</p>
-  <div id="test1"></div>
-  <div id="test2"></div>
-  <div id="test3"></div>
-  <div id="test4"></div>
-</body>
-</html>
+#refenence-shape-1 {
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  border-bottom-right-radius: 40px;
+  border-bottom-left-radius: 40px;
+}
+
+#test-1 {
+  border-radius-top: 40px;
+  border-radius-bottom: 40px;
+}
+
+#refenence-shape-2 {
+  border-top-left-radius: 3em 1em;
+  border-top-right-radius: 2em 4em;
+  border-bottom-right-radius: 5em 1em;
+  border-bottom-left-radius: 2em 4em;
+}
+
+#test-2 {
+  border-radius-top: 3em 1em / 2em 4em;
+  border-radius-bottom: 5em 1em / 2em 4em;
+}
+
+#refenence-shape-3 {
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  border-bottom-right-radius: 40px;
+  border-bottom-left-radius: 40px;
+}
+
+#test-3 {
+  border-radius-left: 40px;
+  border-radius-right: 40px;
+}
+
+#refenence-shape-4 {
+  border-top-left-radius: 3em 1em;
+  border-top-right-radius: 2em 4em;
+  border-bottom-right-radius: 5em 1em;
+  border-bottom-left-radius: 2em 4em;
+}
+
+#test-4 {
+  border-radius-left: 3em 1em / 2em 4em;
+  border-radius-right: 1 4em / 5em 1em;
+}
+</style>
+
+<p>Test passes if there are four black squares with rounded corners and <strong>no red</strong> on the page.
+
+<div id="refenence-shape-1"></div>
+<div id="test-1"></div>
+<div id="refenence-shape-2"></div>
+<div id="test-2"></div>
+<div id="refenence-shape-3"></div>
+<div id="test-3"></div>
+<div id="refenence-shape-4"></div>
+<div id="test-4"></div>

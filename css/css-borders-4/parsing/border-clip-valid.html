@@ -1,25 +1,20 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>CSS Borders 4 Test: Parsing 'border-clip' with valid values</title>
-  <link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com">
-  <link rel="help" href="https://drafts.csswg.org/css-borders-4/#border-clip">
-  <meta name="assert"
-    content="'border-clip' supports the 'normal' keyword, &lt;length-percentage&gt; and &lt;flex&gt; values">
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
-  <script src="/css/support/parsing-testcommon.js"></script>
-</head>
-<body>
-  <script>
-    test_computed_value("border-clip", "normal");
-    test_computed_value("border-clip", "10px");
-    test_computed_value("border-clip", "10%");
-    test_computed_value("border-clip", "0");
-    test_computed_value("border-clip", "1fr");
-    test_computed_value("border-clip", "10px 10%");
-    test_computed_value("border-clip", "10px 1em 10% 1fr 2fr");
-  </script>
-</body>
-</html>
+<meta charset="utf-8">
+<title>CSS Borders and Box Decorations 4 Test: Parsing 'border-clip' with valid values</title>
+<link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-borders-4/#border-clip">
+<meta name="assert"
+  content="'border-clip' supports the 'normal' keyword, &lt;length-percentage&gt; and &lt;flex&gt; values">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+
+<script>
+test_computed_value("border-clip", "normal");
+test_computed_value("border-clip", "10px");
+test_computed_value("border-clip", "10%");
+test_computed_value("border-clip", "0");
+test_computed_value("border-clip", "1fr");
+test_computed_value("border-clip", "10px 10%");
+test_computed_value("border-clip", "10px 1em 10% 1fr 2fr");
+</script>

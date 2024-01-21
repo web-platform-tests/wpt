@@ -1,20 +1,15 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>CSS Borders 4 Test: Parsing 'box-shadow-position' with valid values</title>
-  <link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com">
-  <link rel="help" href="https://drafts.csswg.org/css-borders-4/#box-shadow-position">
-  <meta name="assert" content="'box-shadow-position' supports position values">
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
-  <script src="/css/support/parsing-testcommon.js"></script>
-</head>
-<body>
-  <script>
-    test_valid_value("box-shadow-position", "inset");
-    test_valid_value("box-shadow-position", "outset");
-    test_valid_value("box-shadow-position", "inset, outset");
-  </script>
-</body>
-</html>
+<meta charset="utf-8">
+<title>CSS Borders and Box Decorations 4 Test: Parsing 'box-shadow-position' with valid values</title>
+<link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-borders-4/#box-shadow-position">
+<meta name="assert" content="'box-shadow-position' supports position values">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+
+<script>
+test_valid_value("box-shadow-position", "inset");
+test_valid_value("box-shadow-position", "outset");
+test_valid_value("box-shadow-position", "inset, outset");
+</script>

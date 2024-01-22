@@ -11,8 +11,8 @@ pytestmark = pytest.mark.asyncio
         "https",
     ]
 )
-async def test_page_protocols(bidi_session, get_test_page, domain_value, protocol):
-    set_cookie_result = await bidi_session.storage.set_cookie(cookie=create_cookie(domain=domain_value()))
+async def test_page_protocols(bidi_session, set_cookie, get_test_page, domain_value, protocol):
+    set_cookie_result = await set_cookie(cookie=create_cookie(domain=domain_value()))
 
     assert set_cookie_result == {
         'partitionKey': {},

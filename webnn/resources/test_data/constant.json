@@ -613,7 +613,7 @@
       }
     },
     {
-      "name": "constant float32 4D tensor of int8 type",
+      "name": "constant float32 4D tensor of int8 type step > 0",
       "inputs": {
         "start": {
           "data": -9,
@@ -654,6 +654,52 @@
           12,
           13,
           14
+        ],
+        "type": "int8"
+      }
+    },
+    {
+      "name": "constant float32 4D tensor of int8 type step < 0",
+      "inputs": {
+        "start": {
+          "data": 7,
+          "type": "float32"
+        },
+        "step": {
+          "data": -2,
+          "type": "float32"
+        }
+      },
+      "outputShape": [2, 2, 2, 3],
+      "type": "int8",
+      "expected": {
+        "name": "output",
+        "shape": [2, 2, 2, 3],
+        "data": [
+          7,
+          5,
+          3,
+          1,
+          -1,
+          -3,
+          -5,
+          -7,
+          -9,
+          -11,
+          -13,
+          -15,
+          -17,
+          -19,
+          -21,
+          -23,
+          -25,
+          -27,
+          -29,
+          -31,
+          -33,
+          -35,
+          -37,
+          -39
         ],
         "type": "int8"
       }

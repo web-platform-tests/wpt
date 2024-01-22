@@ -148,6 +148,9 @@ def start_dbus():
 
 
 def install_chrome(channel):
+    if channel == "canary":
+        # Chrome for Testing Canary is installed via --install-browser
+        return
     if channel in ("experimental", "dev"):
         deb_archive = "google-chrome-unstable_current_amd64.deb"
     elif channel == "beta":

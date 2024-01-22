@@ -196,7 +196,6 @@ class ChromeDriverFedCMProtocolPart(WebDriverFedCMProtocolPart):
         # Company prefix to apply to vendor-specific WebDriver extension commands.
         self.fedcm_company_prefix = "goog"
 
-
     def confirm_idp_login(self):
         return self.webdriver.send_session_command("POST",
                                                    self.fedcm_company_prefix + "/fedcm/confirmidplogin")
@@ -224,6 +223,16 @@ class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor, _SanitizerMi
     def __init__(self, *args, reuse_window=False, **kwargs):
         super().__init__(*args, **kwargs)
         self.protocol.reuse_window = reuse_window
+
+    def convert_result(self, test, result, extra=None):
+        test_result, subtest_results = super().convert_result(test, result, extra)
+        # Chromium CI should note when there are compiled expectations that
+        # never ran. See web-platform/tests#43499 for details.
+        subtest_names = {subtest.name for subtest in subtest_results}
+        for unknown_subtest in sorted(test.subtests - subtest_names):
+            subtest_results.append(
+                test.subtest_result_cls(unknown_subtest, "NOTRUN", message=None))
+        return test_result, subtest_results
 
 
 class ChromeDriverPrintRefTestExecutor(ChromeDriverRefTestExecutor):

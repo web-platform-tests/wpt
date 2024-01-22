@@ -265,6 +265,13 @@ class Test(ABC):
         return tuple()
 
     @property
+    def subtests(self):
+        """Get all subtests explicitly listed in the test metadata."""
+        if not self._test_metadata:
+            return frozenset()
+        return frozenset(self._test_metadata.subtests)
+
+    @property
     def abs_path(self):
         return os.path.join(self.tests_root, self.path)
 

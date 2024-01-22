@@ -1685,7 +1685,8 @@ class EdgeChromium(Browser):
             # MojoJS version url must match the browser binary version exactly.
             url = ("https://msedgedriver.azureedge.net/wpt-mojom/"
                    f"{edge_version}/linux64/mojojs.zip")
-            # Check the status without downloading the content (this is a streaming request).
+            # Check the status without downloading the content (this is a
+            # streaming request).
             get(url)
         except requests.RequestException:
             self.logger.error("A valid MojoJS version cannot be found "

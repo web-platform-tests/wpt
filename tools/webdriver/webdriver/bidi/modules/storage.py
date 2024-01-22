@@ -46,14 +46,52 @@ class PartialCookie(Dict[str, Any]):
 PartitionDescriptor = Union[StorageKeyPartitionDescriptor, BrowsingContextPartitionDescriptor]
 
 
+class Filter(Dict[str, Any]):
+    def __init__(
+            self,
+            name: Optional[str] = None,
+            value: Optional[NetworkBytesValue] = None,
+            domain: Optional[str] = None,
+            path: Optional[str] = None,
+            http_only: Optional[bool] = None,
+            secure: Optional[bool] = None,
+            same_site: Optional[str] = None,
+            size: Optional[int] = None,
+            expiry: Optional[int] = None,
+    ):
+        if name is not None:
+            self["name"] = name
+        if value is not None:
+            self["value"] = value
+        if domain is not None:
+            self["domain"] = domain
+        if path is not None:
+            self["path"] = path
+        if http_only is not None:
+            self["httpOnly"] = http_only
+        if secure is not None:
+            self["secure"] = secure
+        if same_site is not None:
+            self["sameSite"] = same_site
+        if size is not None:
+            self["size"] = size
+        if expiry is not None:
+            self["expiry"] = expiry
+
+
 class Storage(BidiModule):
 
-    # TODO: extend with `filter`.
     @command
-    def get_cookies(self, partition: Optional[PartitionDescriptor] = None) -> Mapping[str, Any]:
+    def get_cookies(
+            self,
+            partition: Optional[PartitionDescriptor] = None,
+            filter: Optional[Filter] = None,
+    ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {}
         if partition is not None:
             params["partition"] = partition
+        if filter is not None:
+            params["filter"] = filter
         return params
 
     @command

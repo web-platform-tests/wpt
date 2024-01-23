@@ -72,11 +72,11 @@ els = [
 ]
 
 template = u"""<!-- DO NOT EDIT. This file has been generated. Source:
-    ./tools/build-compute-kind-widget-fallback-props.py
+    ../tools/build-compute-kind-widget-fallback-props.py
 -->
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Basic User Interface Test: Compute kind of widget: {prop} disables native appearance for {el_id}</title>
+<title>CSS Basic User Interface Test: Compute kind of widget: {prop} maybe disables native appearance for {el_id}</title>
 <link rel="help" href="https://drafts.csswg.org/css-ui-4/#computing-kind-widget">
 <meta name="assert" content="appropriate widget is returned when authorProps includes {prop}.">
 <link rel="match" href="../compute-kind-widget-fallback-{el_id}-ref.html">

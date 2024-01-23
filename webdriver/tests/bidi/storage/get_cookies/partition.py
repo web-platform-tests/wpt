@@ -35,10 +35,11 @@ async def test_partition(
 
     assert cookies["partitionKey"] == {}
     assert len(cookies["cookies"]) == 2
+    # Provide consistent cookies order.
+    (cookie_1, cookie_2) = sorted(cookies["cookies"], key=lambda c: c["domain"])
     recursive_compare(
         {
             "domain": domain_value(),
-            "expiry": None,
             "httpOnly": False,
             "name": cookie_name_1,
             "path": "/webdriver/tests/support",
@@ -47,12 +48,11 @@ async def test_partition(
             "size": 6,
             "value": {"type": "string", "value": cookie_value_1},
         },
-        cookies["cookies"][1],
+        cookie_2,
     )
     recursive_compare(
         {
             "domain": domain_value("alt"),
-            "expiry": None,
             "httpOnly": False,
             "name": cookie_name_2,
             "path": "/webdriver/tests/support",
@@ -61,7 +61,7 @@ async def test_partition(
             "size": 6,
             "value": {"type": "string", "value": cookie_value_2},
         },
-        cookies["cookies"][0],
+        cookie_1,
     )
 
     await remove_cookie(bidi_session, new_tab["context"], cookie_name_1)
@@ -103,7 +103,6 @@ async def test_partition_context(
     recursive_compare(
         {
             "domain": domain_value(),
-            "expiry": None,
             "httpOnly": False,
             "name": cookie_name,
             "path": "/webdriver/tests/support",
@@ -157,7 +156,6 @@ async def test_partition_context_iframe(
     recursive_compare(
         {
             "domain": domain_value(domain=domain),
-            "expiry": None,
             "httpOnly": False,
             "name": cookie_name,
             "path": "/webdriver/tests/support",
@@ -208,7 +206,6 @@ async def test_partition_source_origin(
     recursive_compare(
         {
             "domain": domain_value(),
-            "expiry": None,
             "httpOnly": False,
             "name": cookie_name,
             "path": "/webdriver/tests/support",

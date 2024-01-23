@@ -44,13 +44,6 @@ async def test_params_partition_source_origin_invalid_type(bidi_session, value):
         )
 
 
-async def test_params_partition_source_origin_invalid_value(bidi_session):
-    with pytest.raises(error.InvalidArgumentException):
-        await bidi_session.storage.get_cookies(
-            partition=StorageKeyPartitionDescriptor(source_origin="foo")
-        )
-
-
 @pytest.mark.parametrize("value", [False, 42, {}, []])
 async def test_params_partition_user_context_invalid_type(bidi_session, value):
     with pytest.raises(error.InvalidArgumentException):

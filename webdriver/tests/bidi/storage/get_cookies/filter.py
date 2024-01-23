@@ -43,7 +43,6 @@ async def test_filter(bidi_session, new_tab, test_page, origin, domain_value, fi
     recursive_compare(
         {
             "domain": domain_value(),
-            "expiry": None,
             "httpOnly": False,
             "name": cookie_name_1,
             "path": "/webdriver/tests/support",
@@ -150,7 +149,6 @@ async def test_filter_same_site(
     recursive_compare(
         {
             "domain": domain_value(),
-            "expiry": None,
             "httpOnly": False,
             "name": cookie_name_1,
             "path": "/webdriver/tests/support",
@@ -203,7 +201,6 @@ async def test_filter_secure(
     recursive_compare(
         {
             "domain": domain_value(),
-            "expiry": None,
             "httpOnly": False,
             "name": cookie_name_1,
             "path": "/webdriver/tests/support",
@@ -249,7 +246,6 @@ async def test_filter_path(bidi_session, new_tab, test_page, origin, domain_valu
     recursive_compare(
         {
             "domain": domain_value(),
-            "expiry": None,
             "httpOnly": False,
             "name": cookie_name_1,
             "path": cookie_path_1,

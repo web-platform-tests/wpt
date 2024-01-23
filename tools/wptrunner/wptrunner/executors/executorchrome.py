@@ -11,6 +11,7 @@ from webdriver import error
 from .base import (
     CrashtestExecutor,
     TestharnessExecutor,
+    WdspecExecutor,
     get_pages,
 )
 from .executorwebdriver import (
@@ -218,12 +219,34 @@ class ChromeDriverRefTestExecutor(WebDriverRefTestExecutor, _SanitizerMixin):  #
     protocol_cls = ChromeDriverProtocol
 
 
+_incomplete_statuses = {"INTERNAL-ERROR", "TIMEOUT", "EXTERNAL-TIMEOUT", "CRASH"}
+
+
 class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor, _SanitizerMixin):  # type: ignore
     protocol_cls = ChromeDriverProtocol
 
-    def __init__(self, *args, reuse_window=False, **kwargs):
+    def __init__(self, *args, reuse_window=False, check_incomplete_subtests=False, **kwargs):
         super().__init__(*args, **kwargs)
         self.protocol.reuse_window = reuse_window
+        self._check_incomplete_subtests = check_incomplete_subtests
+
+    def convert_result(self, test, results, extra=None):
+        harness_result, subtest_results = super().convert_result(test, results, extra)
+        if not self._check_incomplete_subtests and harness_result.status in _incomplete_statuses:
+            subtest_results = []
+        return harness_result, subtest_results
+
+
+class ChromeDriverWdspecExecutor(WdspecExecutor):
+    def __init__(self, *args, check_incomplete_subtests=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._check_incomplete_subtests = check_incomplete_subtests
+
+    def convert_result(self, test, results):
+        harness_result, subtest_results = super().convert_result(test, results)
+        if not self._check_incomplete_subtests and harness_result.status in _incomplete_statuses:
+            subtest_results = []
+        return harness_result, subtest_results
 
 
 class ChromeDriverPrintRefTestExecutor(ChromeDriverRefTestExecutor):

@@ -383,6 +383,11 @@ scheme host and port.""")
         dest="sanitizer_enabled",
         help="Only alert on sanitizer-related errors and crashes.")
     chrome_group.add_argument(
+        "--no-check-incomplete-subtests",
+        action="store_false",
+        dest="check_incomplete_subtests",
+        help="Do not check or report subtest results for tests that time out or crash.")
+    chrome_group.add_argument(
         "--reuse-window",
         action="store_true",
         help=("Reuse a window across `testharness.js` tests where possible, "

@@ -7,11 +7,11 @@ from .base import get_timeout_multiplier   # noqa: F401
 from .base import cmd_arg
 from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorwebdriver import WebDriverCrashtestExecutor  # noqa: F401
-from ..executors.base import WdspecExecutor  # noqa: F401
 from ..executors.executorchrome import (  # noqa: F401
     ChromeDriverPrintRefTestExecutor,
     ChromeDriverRefTestExecutor,
     ChromeDriverTestharnessExecutor,
+    ChromeDriverWdspecExecutor,
 )
 
 
@@ -21,7 +21,7 @@ __wptrunner__ = {"product": "chrome",
                  "executor": {"testharness": "ChromeDriverTestharnessExecutor",
                               "reftest": "ChromeDriverRefTestExecutor",
                               "print-reftest": "ChromeDriverPrintRefTestExecutor",
-                              "wdspec": "WdspecExecutor",
+                              "wdspec": "ChromeDriverWdspecExecutor",
                               "crashtest": "WebDriverCrashtestExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
@@ -63,6 +63,7 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     executor_kwargs["close_after_done"] = True
     executor_kwargs["sanitizer_enabled"] = sanitizer_enabled
     executor_kwargs["reuse_window"] = kwargs.get("reuse_window", False)
+    executor_kwargs["check_incomplete_subtests"] = kwargs["check_incomplete_subtests"]
 
     capabilities = {
         "goog:chromeOptions": {

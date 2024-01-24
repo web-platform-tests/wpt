@@ -172,14 +172,14 @@ const AriaUtils = {
         data-testname="div with role=button is labelled via aria-label"
         data-expectedlabel="foo"
         data-expectedrole="button"
-        class="ex">
+        class="ex-role-and-label">
 
-      AriaUtils.verifyRoleAndLabelBySelector(".ex")
+      AriaUtils.verifyRoleAndLabelBySelector(".ex-role-and-label")
 
   */
   verifyRoleAndLabelBySelector: function(selector) {
-    let labelTestNamePrefix = "(Label Test) ";
-    let roleTestNamePrefix = "(Role Test) ";
+    let labelTestNamePrefix = "Label: ";
+    let roleTestNamePrefix = "Role: ";
 
     const els = document.querySelectorAll(selector);
     if (!els.length) {

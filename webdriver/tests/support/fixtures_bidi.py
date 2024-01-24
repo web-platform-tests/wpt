@@ -14,6 +14,8 @@ from webdriver.bidi.error import (
     InvalidArgumentException,
     NoSuchFrameException,
     NoSuchScriptException,
+    UnableToSetCookieException,
+    UnderspecifiedStoragePartitionException
 )
 from webdriver.bidi.modules.script import ContextTarget
 from webdriver.error import TimeoutException

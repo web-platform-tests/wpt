@@ -81,6 +81,12 @@
 <label for="input24" aria-hidden="true">input label</label><input id="input24" type="range" data-expectedlabel="input label" data-testname="html: label[for] with aria-hidden=true on input[range]" class="ex">
 <label for="input25" hidden>input label</label><input id="input25" type="range" data-expectedlabel="input label" data-testname="html: label[for] with hidden attribute on input[range]" class="ex">
 
+<label for="input26" style="display: none;">input label</label><input id="input1" type="button" data-expectedlabel="input label" data-testname="html: label[for] with display: none on input[button]" class="ex">
+<label for="input27" style="visibility: hidden;">input label</label><input id="input2" type="button" data-expectedlabel="input label" data-testname="html: label[for] with visibility: hidden on input[button]" class="ex">
+<label for="input28" style="visibility: collapse;">input label</label><input id="input3" type="button" data-expectedlabel="input label" data-testname="html: label[for] with visibility: collapse on input[button]" class="ex">
+<label for="input29" aria-hidden="true">input label</label><input id="input4" type="button" data-expectedlabel="input label" data-testname="html: label[for] with aria-hidden=true on input[button]" class="ex">
+<label for="input30" hidden>input label</label><input id="input5" type="button" data-expectedlabel="input label" data-testname="html: label[for] with hidden attribute on input[button]" class="ex">
+
 <h2>HTML input label encapsulation</h2>
 <!-- above: input[type=button] -->
 <label><input type="checkbox" data-expectedlabel="checkbox label" data-testname="html: label input[type=checkbox] encapsulation" class="ex">checkbox label</label><br>
@@ -148,6 +154,12 @@
 <label style="visibility: collapse;"><input type="range" data-expectedlabel="label" data-testname="hidden html: label has visibility: collapse with input[type=range] encapsulation" class="ex">label</label><br>
 <label aria-hidden="true"><input type="range" data-expectedlabel="label" data-testname="hidden html: label has aria-hidden=true with input[type=range] encapsulation" class="ex">label</label><br>
 <label hidden><input type="range" data-expectedlabel="label" data-testname="hidden html: label has hidden attribute with input[type=range] encapsulation" class="ex">label</label><br>
+
+<label style="display: none;"><input type="button" data-expectedlabel="label" data-testname="hidden html: label has display: none with input[type=button] encapsulation" class="ex">label</label><br>
+<label style="visibility: hidden;"><input type="button" data-expectedlabel="label" data-testname="hidden html: label has visibility: hidden with input[type=button] encapsulation" class="ex">label</label><br>
+<label style="visibility: collapse;"><input type="button" data-expectedlabel="label" data-testname="hidden html: label has visibility: collapse with input[type=button] encapsulation" class="ex">label</label><br>
+<label aria-hidden="true"><input type="button" data-expectedlabel="label" data-testname="hidden html: label has aria-hidden=true with input[type=button] encapsulation" class="ex">label</label><br>
+<label hidden><input type="button" data-expectedlabel="label" data-testname="hidden html: label has hidden attribute with input[type=button] encapsulation" class="ex">label</label><br>
 
 <h2>HTML select</h2>
 <!-- todo: select for/id -->

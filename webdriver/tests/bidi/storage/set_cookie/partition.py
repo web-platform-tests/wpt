@@ -5,30 +5,23 @@ from .. import assert_cookie_is_set, create_cookie
 pytestmark = pytest.mark.asyncio
 
 
-async def test_partition_context(bidi_session, set_cookie, top_context, test_page, origin, domain_value):
+async def test_partition_context(bidi_session, set_cookie, top_context, test_page, domain_value):
     await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
-
-    source_origin = origin()
-    partition = BrowsingContextPartitionDescriptor(top_context["context"])
 
     set_cookie_result = await set_cookie(
         cookie=create_cookie(domain=domain_value()),
-        partition=partition)
+        partition=(BrowsingContextPartitionDescriptor(top_context["context"])))
 
-    assert set_cookie_result == {
-        'partitionKey': {
-            'sourceOrigin': source_origin
-        },
-    }
+    # Browsing context does not require a `sourceOrigin` partition key.
+    assert set_cookie_result == {'partitionKey': {}, }
 
-    await assert_cookie_is_set(bidi_session, domain=domain_value(), partition=partition)
+    await assert_cookie_is_set(bidi_session, domain=domain_value())
 
 
-async def test_partition_context_frame(bidi_session, set_cookie, top_context, test_page, origin, domain_value,
-                                       inline, test_page_cross_origin_frame):
+async def test_partition_context_frame(bidi_session, set_cookie, top_context, test_page, domain_value, inline):
     frame_url = inline("<div>bar</div>", domain="alt")
-    frame_source_origin = origin(domain="alt")
     root_page_url = inline(f"<iframe src='{frame_url}'></iframe>")
+    root_page_domain = domain_value()
 
     # Navigate to a page with a frame.
     await bidi_session.browsing_context.navigate(
@@ -40,19 +33,14 @@ async def test_partition_context_frame(bidi_session, set_cookie, top_context, te
     all_contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])
     frame_context_id = all_contexts[0]["children"][0]["context"]
 
-    partition = BrowsingContextPartitionDescriptor(frame_context_id)
-
     set_cookie_result = await set_cookie(
-        cookie=create_cookie(domain=domain_value()),
-        partition=partition)
+        cookie=create_cookie(domain=root_page_domain),
+        partition=(BrowsingContextPartitionDescriptor(frame_context_id)))
 
-    assert set_cookie_result == {
-        'partitionKey': {
-            'sourceOrigin': frame_source_origin
-        },
-    }
+    # Browsing context does not require a `sourceOrigin` partition key.
+    assert set_cookie_result == {'partitionKey': {}, }
 
-    await assert_cookie_is_set(bidi_session, domain=domain_value(), partition=partition)
+    await assert_cookie_is_set(bidi_session, domain=root_page_domain)
 
 
 async def test_partition_storage_key_source_origin(bidi_session, set_cookie, test_page, origin, domain_value):

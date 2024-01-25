@@ -128,60 +128,15 @@ for (const { method, voweling, stream } of abortOrCancel) {
     assert_equals(reason, '', 'reason should be empty');
   }, `${voweling} the ${stream} should result in a clean close`);
 
-  promise_test(async () => {
-    const wss = new WebSocketStream(ECHOURL);
-    const info = await wss.opened;
-    info[stream][method]({ code: 3333 });
-    const { code, reason } = await wss.closed;
-    assert_equals(code, 3333, 'code should be used');
-    assert_equals(reason, '', 'reason should be empty');
-  }, `${voweling} the ${stream} with a code should send that code`);
-
+  // This test verifies that the obsolete behavior of supporting `code` and
+  // `reason` passed to abort() and cancel() is not supported.
   promise_test(async () => {
     const wss = new WebSocketStream(ECHOURL);
     const info = await wss.opened;
     info[stream][method]({ code: 3456, reason: 'set' });
     const { code, reason } = await wss.closed;
-    assert_equals(code, 3456, 'code should be used');
-    assert_equals(reason, 'set', 'reason should be used');
-  }, `${voweling} the ${stream} with a code and reason should use them`);
-
-  promise_test(async () => {
-    const wss = new WebSocketStream(ECHOURL);
-    const info = await wss.opened;
-    info[stream][method]({ reason: 'specified' });
-    const { code, reason } = await wss.closed;
-    assert_equals(code, 1005, 'code should be unset');
-    assert_equals(reason, '', 'reason should be empty');
-  }, `${voweling} the ${stream} with a reason but no code should be ignored`);
-
-  promise_test(async () => {
-    const wss = new WebSocketStream(ECHOURL);
-    const info = await wss.opened;
-    info[stream][method]({ code: 999 });
-    const { code, reason } = await wss.closed;
-    assert_equals(code, 1005, 'code should be unset');
-    assert_equals(reason, '', 'reason should be empty');
-  }, `${voweling} the ${stream} with an invalid code should be ignored`);
-
-  promise_test(async () => {
-    const wss = new WebSocketStream(ECHOURL);
-    const info = await wss.opened;
-    info[stream][method]({ code: 1000, reason: 'x'.repeat(128) });
-    const { code, reason } = await wss.closed;
-    assert_equals(code, 1005, 'code should be unset');
-    assert_equals(reason, '', 'reason should be empty');
-  }, `${voweling} the ${stream} with an invalid reason should be ignored`);
-
-  // DOMExceptions are only ignored because the |code| attribute is too small to
-  // be a valid WebSocket close code.
-  promise_test(async () => {
-    const wss = new WebSocketStream(ECHOURL);
-    const info = await wss.opened;
-    info[stream][method](new DOMException('yes', 'DataCloneError'));
-    const { code, reason } = await wss.closed;
-    assert_equals(code, 1005, 'code should be unset');
-    assert_equals(reason, '', 'reason should be empty');
-  }, `${voweling} the ${stream} with a DOMException should be ignored`);
+    assert_equals(code, 1005, 'code should be ignored');
+    assert_equals(reason, '', 'reason should be ignored');
+  }, `${voweling} the ${stream} with a code and reason should ignore them`);
 
 }

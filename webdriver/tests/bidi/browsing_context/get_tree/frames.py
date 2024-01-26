@@ -5,19 +5,26 @@ from .. import assert_browsing_context
 pytestmark = pytest.mark.asyncio
 
 
+@pytest.mark.parametrize("user_context", ["default", "new"])
 async def test_multiple_frames(
     bidi_session,
-    top_context,
     test_page,
     test_page2,
     test_page_multiple_frames,
+    user_context,
+    create_user_context
 ):
+    if user_context == "new":
+        user_context = await create_user_context()
+
+    context = await bidi_session.browsing_context.create(type_hint="tab", user_context=user_context)
+
     await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=test_page_multiple_frames, wait="complete"
+        context=context["context"], url=test_page_multiple_frames, wait="complete"
     )
 
     # First retrieve all browsing contexts of the first tab
-    top_level_context_id = top_context["context"]
+    top_level_context_id = context["context"]
     all_contexts = await bidi_session.browsing_context.get_tree(root=top_level_context_id)
 
     assert len(all_contexts) == 1
@@ -28,6 +35,7 @@ async def test_multiple_frames(
         children=2,
         parent=None,
         url=test_page_multiple_frames,
+        user_context=user_context,
     )
 
     child1_info = root_info["children"][0]
@@ -38,6 +46,7 @@ async def test_multiple_frames(
         is_root=False,
         parent=None,
         url=test_page,
+        user_context=user_context,
     )
     assert child1_info["context"] != root_info["context"]
 
@@ -49,6 +58,7 @@ async def test_multiple_frames(
         is_root=False,
         parent=None,
         url=test_page2,
+        user_context=user_context,
     )
     assert child2_info["context"] != root_info["context"]
     assert child2_info["context"] != child1_info["context"]

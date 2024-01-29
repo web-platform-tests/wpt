@@ -148,63 +148,6 @@
     >Malformed aria-level=3</div>
   </div>
 
-  <h2>Levels</h2>
-  <hr>
-
-  <h1
-    class="ex-level"
-    data-testname="invalid parent h1 still conveys level 1"
-    data-expectedlevel="1"
-  >
-    <h2
-      class="ex-level"
-      data-testname="invalid child h2 still conveys level 2"
-      data-expectedlevel="2"
-    >Malformed h2</h2>
-  </h1>
-  <h4
-    class="ex-level"
-    data-testname="invalid parent h4 still conveys level 4"
-    data-expectedlevel="4"
-  >
-    <h3
-      class="ex-level"
-      data-testname="invalid child h3 still conveys level 3"
-      data-expectedlevel="3"
-    >Malformed h3</h3>
-  </h4>
-  <!-- TODO: how to test determined level for native HTML elements? -->
-  <div
-    role="heading"
-    aria-level="1"
-    class="ex-level"
-    data-testname="invalid parent aria-level=1 still conveys level 1"
-    data-expectedlevel="1"
-  >
-    <div
-      role="heading"
-      aria-level="2"
-      class="ex-level"
-      data-testname="invalid child aria-level=2 still conveys level 2"
-      data-expectedlevel="2"
-    >Malformed aria-level=2</div>
-  </div>
-  <div
-    role="heading"
-    aria-level="4"
-    class="ex-level"
-    data-testname="invalid parent aria-level=4 still conveys level 4"
-    data-expectedlevel="4"
-  >
-    <div
-      role="heading"
-      aria-level="3"
-      class="ex-level"
-      data-testname="invalid child aria-level=3 still conveys level 3"
-      data-expectedlevel="3"
-    >Malformed aria-level=3</div>
-  </div>
-
   <h2>No heading ancestors</h2>
   <hr>
 
@@ -238,26 +181,7 @@
   <script>
     AriaUtils.verifyLabelsBySelector(".ex-label");
     AriaUtils.verifyRolesBySelector(".ex-role");
-    verifyLevelsBySelector(".ex-level");
     verifyNoHeadingAncestor(".ex-no-heading-ancestor");
-
-    function verifyLevelsBySelector(selector) {
-      const els = document.querySelectorAll(selector);
-      if (!els.length) {
-        throw `Selector passed in verifyLevelsBySelector("${selector}") should match at least one element.`;
-      }
-      for (const el of els) {
-        let testName = el.getAttribute("data-testname");
-        promise_test(async t => {
-          const expectedLevel = el.getAttribute("data-expectedlevel");
-          // TODO: Yuck. This is surely wrong.
-          // Look for ariaLevel first, otherwise grab only the digit(s) from
-          // the nodeName (e.g., `H2` --> 2).
-          const ariaLevel = el.ariaLevel || el.nodeName.replace(/\D/g, '')
-          assert_equals(ariaLevel, expectedLevel, el.outerHTML);
-        }, `${testName}`);
-      }
-    }
 
     function verifyNoHeadingAncestor(selector) {
       const els = document.querySelectorAll(selector);

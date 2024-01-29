@@ -8,11 +8,11 @@ pytestmark = pytest.mark.asyncio
 @pytest.mark.parametrize("user_context", ["default", "new"])
 async def test_multiple_frames(
     bidi_session,
+    create_user_context,
+    test_page_multiple_frames,
     test_page,
     test_page2,
-    test_page_multiple_frames,
-    user_context,
-    create_user_context
+    user_context
 ):
     if user_context == "new":
         user_context = await create_user_context()

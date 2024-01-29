@@ -156,35 +156,5 @@ const AriaUtils = {
     }
   },
 
-  verifyLevelsBySelector: function (selector) {
-    const els = document.querySelectorAll(selector);
-    if (!els.length) {
-      throw `Selector passed in verifyLevelsBySelector("${selector}") should match at least one element.`;
-    }
-    for (const el of els) {
-      let testName = el.getAttribute("data-testname");
-      promise_test(async t => {
-        const expectedLevel = el.getAttribute("data-expectedlevel");
-        // TODO: Yuck. This is surely wrong.
-        // Look for ariaLevel first, otherwise grab only the digit(s) from
-        // the nodeName (e.g., `H2` --> 2).
-        const ariaLevel = el.ariaLevel || el.nodeName.replace(/\D/g, '')
-        assert_equals(ariaLevel, expectedLevel, el.outerHTML);
-      }, `${testName}`);
-    }
-  },
 
-  verifyNoHeadingAncestor: function (selector) {
-    const els = document.querySelectorAll(selector);
-    if (!els.length) {
-      throw `Selector passed in verifyNoHeadingAncestor("${selector}") should match at least one element.`;
-    }
-    for (const el of els) {
-      let testName = el.getAttribute("data-testname");
-      promise_test(async t => {
-        const elClosestHeading = el.parentNode.closest(':is(h1,h2,h3,h4,h5,h6,[role="heading"]');
-        assert_equals(elClosestHeading, null, el.outerHTML);
-      }, `${testName}`);
-    }
-  },
 };

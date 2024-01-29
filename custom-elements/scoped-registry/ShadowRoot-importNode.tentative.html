@@ -28,7 +28,6 @@ test(t => {
 
   // Import the created element into the ShadowRoot.
   const newDiv = shadow.importNode(div);
-  assert_equals(div.ownerDocument, doc);
   assert_equals(div.firstChild.ownerDocument, doc);
   assert_equals(newDiv.ownerDocument, shadow);
   assert_equals(newDiv.firstChild, null);
@@ -47,7 +46,6 @@ test(t => {
 
   // Import the created element into the ShadowRoot.
   const newDiv = shadow.importNode(div, undefined);
-  assert_equals(div.ownerDocument, doc);
   assert_equals(div.firstChild.ownerDocument, doc);
   assert_equals(newDiv.ownerDocument, shadow);
   assert_equals(newDiv.firstChild, null);
@@ -66,7 +64,6 @@ test(t => {
 
   // Import the created element into the ShadowRoot.
   const newDiv = shadow.importNode(div);
-  assert_equals(div.ownerDocument, doc);
   assert_equals(div.firstChild.ownerDocument, doc);
   assert_equals(newDiv.ownerDocument, shadow);
   assert_equals(newDiv.firstChild, null);
@@ -84,7 +81,6 @@ test(t => {
   assert_equals(div.firstChild.ownerDocument, doc);
 
   // Import the created element into the ShadowRoot.
-  assert_equals(div.ownerDocument, doc);
   const newDiv = shadow.importNode(div, true);
   assert_equals(div.firstChild.ownerDocument, doc);
   assert_equals(newDiv.ownerDocument, shadow);

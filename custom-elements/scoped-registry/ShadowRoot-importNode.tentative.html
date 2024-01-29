@@ -1,0 +1,109 @@
+<title>Tests ShadowRoot.importNode APIs work with scoped custom element registries</title>
+<!DOCTYPE html>
+<meta name="author" title="Kristján Oddsson" href="mailto:wpt@koddsson.com">
+<link rel="help" href="https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+<script>
+function attachShadowForTest(t, registry) {
+  const host = document.createElement('div');
+  const shadow = host.attachShadow({mode: 'open', registry});
+  document.body.appendChild(host);
+  t.add_cleanup(() => host.remove());
+  return shadow;
+}
+
+test(t => {
+  const registry = new CustomElementRegistry;
+  const shadow = attachShadowForTest(t, registry);
+
+  // Create a new element in a new HTML document.
+  const doc = document.implementation.createHTMLDocument("ShadowRoot importNode test document");
+  const div = doc.body.appendChild(doc.createElement("div"));
+  div.appendChild(doc.createElement("span"));
+  assert_equals(div.ownerDocument, doc);
+  assert_equals(div.firstChild.ownerDocument, doc);
+
+  // Import the created element into the ShadowRoot.
+  const newDiv = shadow.importNode(div);
+  assert_equals(div.ownerDocument, doc);
+  assert_equals(div.firstChild.ownerDocument, doc);
+  assert_equals(newDiv.ownerDocument, shadow);
+  assert_equals(newDiv.firstChild, null);
+}, 'ShadowRoot.importNode(Node)');
+
+test(t => {
+  const registry = new CustomElementRegistry;
+  const shadow = attachShadowForTest(t, registry);
+
+  // Create a new element in a new HTML document.
+  const doc = document.implementation.createHTMLDocument("ShadowRoot importNode test document");
+  const div = doc.body.appendChild(doc.createElement("div"));
+  div.appendChild(doc.createElement("span"));
+  assert_equals(div.ownerDocument, doc);
+  assert_equals(div.firstChild.ownerDocument, doc);
+
+  // Import the created element into the ShadowRoot.
+  const newDiv = shadow.importNode(div, undefined);
+  assert_equals(div.ownerDocument, doc);
+  assert_equals(div.firstChild.ownerDocument, doc);
+  assert_equals(newDiv.ownerDocument, shadow);
+  assert_equals(newDiv.firstChild, null);
+}, "ShadowRoot.importNode(Node, undefined)")
+
+test(t => {
+  const registry = new CustomElementRegistry;
+  const shadow = attachShadowForTest(t, registry);
+
+  // Create a new element in a new HTML document.
+  const doc = document.implementation.createHTMLDocument("ShadowRoot importNode test document");
+  const div = doc.body.appendChild(doc.createElement("div"));
+  div.appendChild(doc.createElement("span"));
+  assert_equals(div.ownerDocument, doc);
+  assert_equals(div.firstChild.ownerDocument, doc);
+
+  // Import the created element into the ShadowRoot.
+  const newDiv = shadow.importNode(div);
+  assert_equals(div.ownerDocument, doc);
+  assert_equals(div.firstChild.ownerDocument, doc);
+  assert_equals(newDiv.ownerDocument, shadow);
+  assert_equals(newDiv.firstChild, null);
+}, 'ShadowRoot.importNode(Node, false)');
+
+test(t => {
+  const registry = new CustomElementRegistry;
+  const shadow = attachShadowForTest(t, registry);
+
+  // Create a new element in a new HTML document.
+  const doc = document.implementation.createHTMLDocument("ShadowRoot importNode test document");
+  const div = doc.body.appendChild(doc.createElement("div"));
+  div.appendChild(doc.createElement("span"));
+  assert_equals(div.ownerDocument, doc);
+  assert_equals(div.firstChild.ownerDocument, doc);
+
+  // Import the created element into the ShadowRoot.
+  assert_equals(div.ownerDocument, doc);
+  const newDiv = shadow.importNode(div, true);
+  assert_equals(div.firstChild.ownerDocument, doc);
+  assert_equals(newDiv.ownerDocument, shadow);
+  assert_equals(newDiv.firstChild, shadow);
+}, "ShadowRoot.importNode(Node, true)")
+
+test(t => {
+  const registry = new CustomElementRegistry;
+  const shadow = attachShadowForTest(t, registry);
+
+  const doc = document.implementation.createHTMLDocument("ShadowRoot importNode test document");
+  doc.body.setAttributeNS("http://example.com/", "p:name", "value");
+  const originalAttr = doc.body.getAttributeNodeNS("http://example.com/", "name");
+  const imported = shadow.importNode(originalAttr, true);
+  assert_equals(imported.prefix, originalAttr.prefix);
+  assert_equals(imported.namespaceURI, originalAttr.namespaceURI);
+  assert_equals(imported.localName, originalAttr.localName);
+}, "Import an Attr node with namespace/prefix correctly.");
+
+</script>
+</body>
+

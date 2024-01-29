@@ -87,6 +87,78 @@ test(t => {
   assert_equals(newDiv.firstChild, shadow);
 }, "ShadowRoot.importNode(Node, true)")
 
+
+test(t => {
+  const registry = new CustomElementRegistry;
+  const shadow = attachShadowForTest(t, registry);
+
+  // Create a new element in a new HTML document.
+  const doc = document.implementation.createHTMLDocument("ShadowRoot importNode test document");
+
+  document.customElements.define('my-element', class extends HTMLElement {});
+  const myElement = doc.body.appendChild(doc.createElement("my-element"));
+  myElement.appendChild(doc.createElement("span"));
+  assert_equals(myElement.ownerDocument, doc);
+  assert_equals(myElement.firstChild.ownerDocument, doc);
+
+  // Import the created element into the ShadowRoot.
+  const importedMyElement = shadow.importNode(myElement);
+  assert_equals(myElement.firstChild.ownerDocument, doc);
+  assert_equals(importedMyElement.ownerDocument, shadow);
+  assert_equals(importedMyElement.firstChild, null);
+}, "ShadowRoot.importNode(<my-element>)")
+
+test(t => {
+  const registry = new CustomElementRegistry;
+  const shadow = attachShadowForTest(t, registry);
+
+  // Create a new element in a new HTML document.
+  const doc = document.implementation.createHTMLDocument("ShadowRoot importNode test document");
+
+  document.customElements.define('my-element', class extends HTMLElement {});
+  const myElement = doc.body.appendChild(doc.createElement("my-element"));
+  myElement.appendChild(doc.createElement("span"));
+  assert_equals(myElement.ownerDocument, doc);
+  assert_equals(myElement.firstChild.ownerDocument, doc);
+
+  // Import the created element into the ShadowRoot.
+  const importedMyElement = shadow.importNode(myElement, true);
+  assert_equals(myElement.firstChild.ownerDocument, doc);
+  assert_equals(importedMyElement.ownerDocument, shadow);
+  assert_equals(importedMyElement.firstChild, shadow);
+}, "ShadowRoot.importNode(<my-element>, true)")
+
+test(t => {
+  const registry = new CustomElementRegistry;
+  const shadow = attachShadowForTest(t, registry);
+
+  // Create a new element in a new HTML document.
+  const doc = document.implementation.createHTMLDocument("ShadowRoot importNode test document");
+
+  let connectedCallbackCount = 0;
+  let disconnectedCallbackCount = 0;
+
+  document.customElements.define('my-element', class extends HTMLElement {
+    connectedCallback() { connectedCallbackCount += 1 }
+    disconnectedCallback() { disconnectedCallbackCount += 1 }
+  });
+
+  const myElement = doc.body.appendChild(doc.createElement("my-element"));
+  myElement.appendChild(doc.createElement("span"));
+  assert_equals(myElement.ownerDocument, doc);
+  assert_equals(myElement.firstChild.ownerDocument, doc);
+  assert_equals(connectedCallbackCount, 1);
+  assert_equals(connectedCallbackCount, 0);
+
+  // Import the created element into the ShadowRoot.
+  const importedMyElement = shadow.importNode(myElement);
+  assert_equals(myElement.firstChild.ownerDocument, doc);
+  assert_equals(importedMyElement.ownerDocument, shadow);
+  assert_equals(importedMyElement.firstChild, null);
+  assert_equals(connectedCallbackCount, 2);
+  assert_equals(connectedCallbackCount, 1);
+}, "Check connected callbacks when importing custom element into shadowroot");
+
 test(t => {
   const registry = new CustomElementRegistry;
   const shadow = attachShadowForTest(t, registry);

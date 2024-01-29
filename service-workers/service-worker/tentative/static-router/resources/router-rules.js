@@ -12,11 +12,13 @@ const routerRules = {
   'condition-urlpattern-string-source-network': [
     {condition: {urlPattern: '/**/direct.txt'}, source: 'network'},
   ],
+  'condition-urlpattern-string-source-cache': [
+    {condition: {urlPattern: '/**/cache.txt'}, source: 'cache'},
+  ],
   'condition-urlpattern-constructed-ignore-case-source-network': [{
     condition: {
-      urlPattern: new URLPattern(
-          {pathname: '/**/DiReCT.TxT'},
-          {ignoreCase: true})
+      urlPattern:
+          new URLPattern({pathname: '/**/DiReCT.TxT'}, {ignoreCase: true})
     },
     source: 'network'
   }],
@@ -26,6 +28,22 @@ const routerRules = {
   }],
   'condition-request-source-network':
       [{condition: {requestMode: 'no-cors'}, source: 'network'}],
+  'condition-request-navigate-source-cache':
+      [{condition: {requestMode: 'navigate'}, source: 'cache'}],
+  'condition-request-method-get-network':
+      [{condition: {requestMethod: 'GET'}, source: 'network'}],
+  'condition-request-method-post-network':
+      [{condition: {requestMethod: 'POST'}, source: 'network'}],
+  'condition-request-method-put-network':
+      [{condition: {requestMethod: 'PUT'}, source: 'network'}],
+  'condition-request-method-delete-network':
+      [{condition: {requestMethod: 'DELETE'}, source: 'network'}],
+  'condition-invalid-request-method': [{
+    condition: {requestMethod: String.fromCodePoint(0x3042)},
+    source: 'network'
+  }],
+  'condition-request-destination-script-network':
+      [{condition: {requestDestination: 'script'}, source: 'network'}],
   'condition-or-source-network': [{
     condition: {
       or: [
@@ -37,6 +55,17 @@ const routerRules = {
     },
     source: 'network'
   }],
+  'condition-request-source-fetch-event':
+      [{condition: {requestMode: 'no-cors'}, source: 'fetch-event'}],
+  'multiple-router-rules': [
+    {
+      condition: {
+        urlPattern: '/**/direct.txt',
+      },
+      source: 'network'
+    },
+    {condition: {urlPattern: '/**/direct.html'}, source: 'network'}
+  ]
 };
 
 export {routerRules};

@@ -181,18 +181,25 @@
   <script>
     AriaUtils.verifyLabelsBySelector(".ex-label");
     AriaUtils.verifyRolesBySelector(".ex-role");
-    verifyNoHeadingAncestor(".ex-no-heading-ancestor");
+    verifyNoAncestorRole(".ex-no-heading-ancestor", "heading");
 
-    function verifyNoHeadingAncestor(selector) {
+    function verifyNoAncestorRole(selector, forbiddenRole) {
       const els = document.querySelectorAll(selector);
       if (!els.length) {
-        throw `Selector passed in verifyNoHeadingAncestor("${selector}") should match at least one element.`;
+        throw `Selector passed in verifyNoAncestorRole("${selector}") should match at least one element.`;
       }
       for (const el of els) {
         let testName = el.getAttribute("data-testname");
+        let ancestors = [];
+        let ancestor = el.parentNode;
         promise_test(async t => {
-          const elClosestHeading = el.parentNode.closest(':is(h1,h2,h3,h4,h5,h6,[role="heading"]');
-          assert_equals(elClosestHeading, null, el.outerHTML);
+          // Get computed role of each ancestor up to but excluding the root.
+          while (ancestor && ancestor != document.documentElement) {
+            const computedRole = await test_driver.get_computed_role(ancestor);
+            ancestors.push(computedRole);
+            ancestor = ancestor.parentNode;
+          }
+          assert_true(!ancestors.includes(forbiddenRole), el.outerHTML);
         }, `${testName}`);
       }
     }

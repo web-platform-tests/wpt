@@ -39,7 +39,7 @@
       let testName = el.getAttribute("data-testname");
       test(() => {
         el.focus();
-        assert_equals(document.activeElement, el, "Element is keyboard focusable");
+        assert_equals(document.activeElement, el, "Element is focusable with element.focus()");
       }, `${testName}`);
     }
   };

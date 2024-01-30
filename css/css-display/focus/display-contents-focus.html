@@ -37,11 +37,10 @@
     }
     for (const el of els) {
       let testName = el.getAttribute("data-testname");
-      promise_test(async t => {
+      test(() => {
         el.focus();
-
         assert_equals(document.activeElement, el, "Element is keyboard focusable");
-        }, `${testName}`);
+      }, `${testName}`);
     }
   };
 </script>

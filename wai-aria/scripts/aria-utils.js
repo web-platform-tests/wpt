@@ -174,7 +174,7 @@ const AriaUtils = {
         data-expectedrole="button"
         class="ex-role-and-label">
 
-      AriaUtils.verifyRoleAndLabelBySelector(".ex-role-and-label")
+      AriaUtils.verifyRolesAndLabelsBySelector(".ex-role-and-label")
 
   */
   verifyRolesAndLabelsBySelector: function(selector) {
@@ -182,7 +182,7 @@ const AriaUtils = {
     let roleTestNamePrefix = "Role: ";
     const els = document.querySelectorAll(selector);
     if (!els.length) {
-      throw `Selector passed in verifyRoleAndLabelBySelector("${selector}") should match at least one element.`;
+      throw `Selector passed in verifyRolesAndLabelsBySelector("${selector}") should match at least one element.`;
     }
     for (const el of els) {
       el.classList.add("ex-label-only");

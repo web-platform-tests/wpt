@@ -177,7 +177,7 @@ const AriaUtils = {
       AriaUtils.verifyRoleAndLabelBySelector(".ex-role-and-label")
 
   */
-  verifyRoleAndLabelBySelector: function(selector) {
+  verifyRolesAndLabelsBySelector: function(selector) {
     let labelTestNamePrefix = "Label: ";
     let roleTestNamePrefix = "Role: ";
 

@@ -55,6 +55,6 @@ document.getElementById('host2').attachShadow({ mode: 'open' }).innerHTML = 'foo
 document.getElementById('host3').attachShadow({ mode: 'open' }).innerHTML = 'foo <slot aria-label="label"></slot> bar';
 document.getElementById('host4').attachShadow({ mode: 'open' }).innerHTML = 'foo <slot aria-label="label">default</slot> bar';
 
-AriaUtils.verifyLabelsBySelector('.labelled');
+AriaUtils.verifyLabelsBySelector(4, '.labelled');
 
 </script>

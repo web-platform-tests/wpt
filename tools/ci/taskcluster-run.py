@@ -24,6 +24,7 @@ def get_browser_args(product, channel, artifact_path):
     if product == "chrome" or product == "chromium":
         # Taskcluster machines do not have GPUs, so use software rendering via --enable-swiftshader.
         args = ["--enable-swiftshader"]
+        # Chrome Stable-Dev are still installed in tools/ci/run_tc.py
         if channel == "nightly" or channel == "canary":
             args.extend(["--install-browser", "--install-webdriver"])
         return args

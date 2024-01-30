@@ -180,7 +180,6 @@ const AriaUtils = {
   verifyRolesAndLabelsBySelector: function(selector) {
     let labelTestNamePrefix = "Label: ";
     let roleTestNamePrefix = "Role: ";
-
     const els = document.querySelectorAll(selector);
     if (!els.length) {
       throw `Selector passed in verifyRoleAndLabelBySelector("${selector}") should match at least one element.`;
@@ -189,7 +188,6 @@ const AriaUtils = {
       el.classList.add("ex-label-only");
       el.classList.add("ex-role-only");
     }
-
     this.verifyLabelsBySelector(".ex-label-only", labelTestNamePrefix);
     this.verifyRolesBySelector(".ex-role-only", roleTestNamePrefix);
   },

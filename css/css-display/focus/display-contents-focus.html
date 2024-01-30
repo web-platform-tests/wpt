@@ -28,12 +28,12 @@
   <span role="link" tabindex="0" style="display: contents;" class="ex-focusable" data-testname="span with role link, tabindex=0 and display: contents is focusable"></span>
 
 <script>
-  verifyElementsAreKeyboardFocusable();
+  verifyElementsAreFocusable();
 
-  function verifyElementsAreKeyboardFocusable() {
+  function verifyElementsAreFocusable() {
     const els = document.querySelectorAll(".ex-focusable");
     if (!els.length) {
-      throw `Selector passed in verifyElementsAreKeyboardFocusable should match at least one element.`;
+      throw `Selector passed in verifyElementsAreFocusable should match at least one element.`;
     }
     for (const el of els) {
       let testName = el.getAttribute("data-testname");

@@ -30,17 +30,7 @@
       data-expectedlabel="Malformed h2"
     >Malformed h2</h2>
   </h1>
-  <h4
-    class="ex-label"
-    data-testname="Invalid parent h4 has empty accname"
-    data-expectedlabel=""
-  >
-    <h3
-      class="ex-label"
-      data-testname="Invalid child h3 has accname matching inner text"
-      data-expectedlabel="Malformed h3"
-    >Malformed h3</h3>
-  </h4>
+
   <div
     role="heading"
     aria-level="1"
@@ -56,6 +46,19 @@
       data-expectedlabel="Malformed aria-level=2"
     >Malformed aria-level=2</div>
   </div>
+
+  <h4
+    class="ex-label"
+    data-testname="Invalid parent h4 has empty accname"
+    data-expectedlabel=""
+  >
+    <h3
+      class="ex-label"
+      data-testname="Invalid child h3 has accname matching inner text"
+      data-expectedlabel="Malformed h3"
+    >Malformed h3</h3>
+  </h4>
+
   <div
     role="heading"
     aria-level="4"
@@ -71,6 +74,7 @@
       data-expectedlabel="Malformed aria-level=3"
     >Malformed aria-level=3</div>
   </div>
+
   <h1
     class="ex-label"
     data-testname="Invalid parent h1 accname does not append deeper text"
@@ -106,17 +110,7 @@
       data-expectedrole="heading"
     >Malformed h2</h2>
   </h1>
-  <h4
-    class="ex-role"
-    data-testname="invalid parent h4 still conveys heading role"
-    data-expectedrole="heading"
-  >
-    <h3
-      class="ex-role"
-      data-testname="invalid child h3 still conveys heading role"
-      data-expectedrole="heading"
-    >Malformed h3</h3>
-  </h4>
+
   <div
     role="heading"
     aria-level="1"
@@ -132,6 +126,19 @@
       data-expectedrole="heading"
     >Malformed aria-level=2</div>
   </div>
+
+  <h4
+    class="ex-role"
+    data-testname="invalid parent h4 still conveys heading role"
+    data-expectedrole="heading"
+  >
+    <h3
+      class="ex-role"
+      data-testname="invalid child h3 still conveys heading role"
+      data-expectedrole="heading"
+    >Malformed h3</h3>
+  </h4>
+
   <div
     role="heading"
     aria-level="4"
@@ -176,7 +183,6 @@
       >Three</div>
     </div>
   </div>
-
 
   <script>
     AriaUtils.verifyLabelsBySelector(".ex-label");

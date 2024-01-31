@@ -34,6 +34,9 @@
         <div class="box" id="target">Drag up or down from here</div>
         <div class="box"></div>
         <div class="box"></div>
+        <div id="complete-notice">
+          <p>The following pointer types were detected: <span id="pointertype-log"></span>.</p>
+        </div>
     </body>
     <script>
       let target = document.getElementById("target");
@@ -42,7 +45,6 @@
       document.body.addEventListener("pointerdown", () => target.parentElement.removeChild(target));
       document.body.addEventListener("pointercancel", () => pointercancel_received = true);
 
-      let detected_pointertypes = {};
       add_completion_callback(showPointerTypes);
 
       promise_test(async () => {

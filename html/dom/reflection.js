@@ -505,9 +505,7 @@ ReflectionTests.typeMap = {
      * TODO: Implement the actual algorithm so we can run lots more tests.  For
      * now we're stuck with manually setting up expected values.  Of course,
      * a lot of care has to be taken in checking equality for floats . . .
-     * maybe we should have some tolerance for comparing them.  I'm not even
-     * sure whether setting the content attribute to 0 should return 0.0 or
-     * -0.0 (the former, I hope).
+     * maybe we should have some tolerance for comparing them.
      */
     "double": {
         "jsType": "number",
@@ -539,7 +537,7 @@ ReflectionTests.typeMap = {
         // think).  Yes, String(-0) == "0".
         "idlTests":       [ -10000000000,   -1,  -0,   0,   1,   10000000000],
         "idlDomExpected": ["-10000000000", "-1", "0", "0", "1", "10000000000"],
-        "idlIdlExpected": [ -10000000000,   -1,  -0,   0,   1,   10000000000]
+        "idlIdlExpected": [ -10000000000,   -1,   0,   0,   1,   10000000000]
     }
 };
 

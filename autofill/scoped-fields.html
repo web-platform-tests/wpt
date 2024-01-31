@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<head>
+<meta charset="utf-8" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/autofill_helpers.js"></script>
+</head>
+<body>
+<form id="test_form">
+  <input
+    type="text"
+    name="shipping-address"
+    autocomplete="section-delivery shipping address-line1"
+    placeholder="Shipping address"
+    id="shipping_address"
+  />
+  <input
+    type="text"
+    name="shipping-postal"
+    autocomplete="section-delivery shipping postal-code"
+    placeholder="Shipping Postal Code"
+    id="shipping_postal"
+  />
+
+  <input
+    type="text"
+    name="billing-address"
+    autocomplete="section-payment billing address-line1"
+    placeholder="Billing address"
+    id="billing_address"
+  />
+  <input
+    type="text"
+    name="billing-postal"
+    autocomplete="section-payment billing postal-code"
+    placeholder="Billing Postal Code"
+    id="billing_postal"
+  />
+</form>
+<script>
+  promise_test(async () => {
+    if (!window.test_driver) {
+      return;
+    }
+    const form = create_form_for_data({"address": "1 Main St", "postal": "12345"});
+    await test_driver.save_to_auto_fill(form);
+
+    const suggestions = await test_driver.get_autofill_suggestions(document.getElementById("test_form"), document.getElementById("shipping_address"));
+    // Assert shipping scope was correctly autofilled:
+    assert_element_has_value("shipping_postal", "12345");
+    assert_element_has_value("shipping_address", "1 Main St");
+
+    // Assert billing scope was not autofilled:
+    assert_element_has_value("billing_address", "");
+    assert_element_has_value("billing_postal", "");
+  }, "test autofill suggestions for scoped fields");
+</script>

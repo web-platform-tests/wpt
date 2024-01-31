@@ -1,0 +1,108 @@
+<!DOCTYPE HTML>
+<head>
+<meta charset="utf-8" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/autofill_helpers.js"></script>
+
+<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+
+  <div id="root"></div>
+
+<script type="text/babel">
+  // This would typically come from a server
+  const countries = { "US": "USA", "CA":"Canada", "MX":"Mexico"};
+  const states = {
+    "US": {
+      "CA": "California",
+      "NY": "New York",
+      "TX": "Texas"
+    },
+    "CA": {
+      "ON": "Ontario",
+      "QC": "Quebec",
+      "BC": "British Columbia"
+    },
+    "MX": {
+      "CMX": "Ciudad de Mexico",
+      "JAL": "Jalisco",
+      "NLE": "Nuevo Leon"
+    }
+  };
+
+  function ShippingForm() {
+    const [country, setCountry] = React.useState("US");
+    const [state, setState] = React.useState("CA");
+
+    const handleCountryChange = (event) => {
+      setCountry(event.target.value);
+      setState(Object.keys(countries[event.target.value])[0]);
+    };
+
+    const handleStateChange = (event) => {
+      setState(event.target.value);
+    };
+
+    return (
+      <form id="test_form">
+        <label>
+          Name:
+          <input
+            name="shipping-name"
+            id="name"
+            type="text"
+            autoComplete="shipping name"
+          />
+        </label>
+        <label>
+          Country:
+          <select value={country} onChange={handleCountryChange} id="country" autoComplete="shipping country">
+            {Object.keys(countries).map(countryCode => (
+              <option key={countryCode} value={countryCode}>{countries[countryCode]}</option>
+            ))}
+          </select>
+        </label>
+        <label>
+          State:
+          <select value={state} onChange={handleStateChange} id="state" autocomplete="shipping state">
+            {Object.keys(states[country]).map(stateCode => (
+              <option key={stateCode} value={stateCode}>{states[country][stateCode]}</option>
+            ))}
+          </select>
+        </label>
+        <button type="submit">Submit</button>
+      </form>
+    );
+  }
+
+
+  const container = document.getElementById('root');
+  const root = ReactDOM.createRoot(container);
+  root.render(<ShippingForm />);
+</script>
+
+<script>
+  promise_test(async t => {
+    if (!window.test_driver) {
+      return;
+    }
+    const form = create_form_for_data({"name": "Santa Claus", "address": "1 Main St", "city": "North Pole", "postal": "H0H 0H0", "state": "Ontario", "country": "CA"});
+    await test_driver.save_to_auto_fill(form);
+
+    const suggestions = await test_driver.get_autofill_suggestions(document.getElementById("test_form"), document.getElementById("name"));
+
+    assert_element_has_value("name", "Santa Claus");
+    assert_element_has_value("street", "1 Main St");
+    assert_element_has_value("city", "North Pole");
+    assert_element_has_value("postalcode", "H0H 0H0");
+    assert_element_has_value("state", "Ontario");
+    assert_element_has_value("country", "CA");
+  });
+</script>
+</body>

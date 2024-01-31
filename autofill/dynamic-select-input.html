@@ -1,0 +1,137 @@
+<!DOCTYPE HTML>
+<head>
+<meta charset="utf-8" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/autofill_helpers.js"></script>
+</head>
+<body>
+<form id="test_form">
+  <h2>Delivery Address</h2>
+  <div>
+    <label for="name">Name:</label>
+    <input
+      name="shipping-name"
+      id="name"
+      type="text"
+      autocomplete="shipping name"
+    />
+  </div>
+  <div>
+    <label for="street">Street:</label>
+    <input
+      name="shipping-street"
+      id="street"
+      type="text"
+      autocomplete="shipping address-line1"
+    />
+  </div>
+  <div>
+    <label for="city">City:</label>
+    <input
+      name="shipping-city"
+      id="city"
+      type="text"
+      autocomplete="shipping address-level2"
+    />
+  </div>
+  <div>
+    <label for="postalcode">Postal Code:</label>
+    <input
+      name="shipping-postalcode"
+      id="postalcode"
+      type="text"
+      autocomplete="shipping postal-code"
+    />
+  </div>
+  <div>
+    <label for="state">Province/State:</label>
+    <select
+      name="shipping-state"
+      id="state"
+      type="text"
+      autocomplete="shipping address-level1"
+    >
+    </select>
+  </div>
+  <div>
+    <label for="country">Country:</label>
+    <select
+      name="shipping-country"
+      id="country"
+      type="text"
+      autocomplete="shipping country"
+    >
+    </select>
+  </div>
+</form>
+<script>
+  // This would typically come from a server
+  var countries = { "US": "USA", "CA":"Canada", "MX":"Mexico"};
+  var states = {
+    "US": {
+        "CA": "California",
+        "NY": "New York",
+        "TX": "Texas"
+    },
+    "CA": {
+        "ON": "Ontario",
+        "QC": "Quebec",
+        "BC": "British Columbia"
+    },
+    "MX": {
+        "CMX": "Ciudad de Mexico",
+        "JAL": "Jalisco",
+        "NLE": "Nuevo Leon"
+    }
+};;
+
+  // Get the select elements
+  var countrySelect = document.getElementById("country");
+  var stateSelect = document.getElementById("state");
+
+  function populateSelect(select, data) {
+      for (let val in data) {
+          var option = document.createElement("option");
+          option.value = val;
+          option.text = data[val];
+          select.appendChild(option);
+      }
+  }
+  // Populate the country select element
+  populateSelect(countrySelect, countries);
+  populateSelect(stateSelect, states["US"]);
+
+  // Function to update the state select element
+  function updateStates() {
+      // Clear the state select element
+      stateSelect.innerHTML = "";
+
+      populateSelect(stateSelect, states[countrySelect.value]);
+  }
+
+  countrySelect.addEventListener("change", updateStates);
+</script>
+
+<script>
+  promise_test(async t => {
+    if (!window.test_driver) {
+      return;
+    }
+    const form = create_form_for_data({"name": "Santa Claus", "address": "1 Main St", "city": "North Pole", "postal": "H0H 0H0", "state": "Ontario", "country": "CA"});
+    await test_driver.save_to_auto_fill(form);
+
+    const suggestions = await test_driver.get_autofill_suggestions(document.getElementById("test_form"), document.getElementById("name"));
+
+    assert_element_has_value("name", "Santa Claus");
+    assert_element_has_value("street", "1 Main St");
+    assert_element_has_value("city", "North Pole");
+    assert_element_has_value("postalcode", "H0H 0H0");
+    assert_element_has_value("state", "Ontario");
+    assert_element_has_value("country", "CA");
+  });
+</script>
+
+</body>

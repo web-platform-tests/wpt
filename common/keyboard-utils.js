@@ -1,4 +1,4 @@
-/* Utilities for keyboard-focused accessibility */
+/* Utilities for keyboard testing */
 
 const keys = {
   // See WebDriver key codepoints: https://w3c.github.io/webdriver/#keyboard-actions
@@ -6,7 +6,7 @@ const keys = {
   "Tab": "\uE004",
 };
 
-const keyboardAccessibilityUtils = {
+const keyboardUtils = {
 
   /*
   Tests that all elements matching selector can
@@ -18,7 +18,7 @@ const keyboardAccessibilityUtils = {
         class="ex-focusable">
       </div>
 
-      keyboardAccessibilityUtils.verifyElementsAreFocusable(".ex-focusable")
+      keyboardUtils.verifyElementsAreFocusable(".ex-focusable")
   */
   verifyElementsAreFocusable: function(selector) {
     const els = document.querySelectorAll(selector);
@@ -43,7 +43,7 @@ const keyboardAccessibilityUtils = {
         class="ex-focused">
       </button>
 
-      keyboardAccessibilityUtils.verifyElementIsFocused(".ex-focused")
+      keyboardUtils.verifyElementIsFocused(".ex-focused")
   */
   verifyElementIsFocused: function(selector) {
     const els = document.querySelectorAll(selector);
@@ -68,7 +68,7 @@ const keyboardAccessibilityUtils = {
         class="ex-tabbable">
       </button>
 
-      keyboardAccessibilityUtils.verifyElementsAreTabbable(".ex-tabbable")
+      keyboardUtils.verifyElementsAreTabbable(".ex-tabbable")
   */
   verifyElementsAreTabbable: function(selector) {
     const els = document.querySelectorAll(selector);
@@ -101,7 +101,7 @@ const keyboardAccessibilityUtils = {
         class="ex-no-keyboard-trap">
       </button>
 
-      keyboardAccessibilityUtils.verifyElementsDoNotCauseKeyboardTrap(".ex-no-keyboard-trap")
+      keyboardUtils.verifyElementsDoNotCauseKeyboardTrap(".ex-no-keyboard-trap")
   */
   verifyElementsDoNotCauseKeyboardTrap: function(selector) {
     const els = document.querySelectorAll(selector);

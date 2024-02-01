@@ -6,24 +6,24 @@ const keyboardAccessibilityUtils = {
   Tests that all elements matching selector can
   receive focus (and related) events.
 
-    Ex: <div role="button"
-            tabindex="0"
-            data-testname="div with role button and tabindex is focusable"
-            class="ex">
+  Ex: <div role="button"
+          tabindex="0"
+          data-testname="div with role button and tabindex is focusable"
+          class="ex">
 
-        keyboardAccessibilityUtils.verifyElementsAreFocusable(".ex-focusable")
+      keyboardAccessibilityUtils.verifyElementsAreFocusable(".ex-focusable")
   */
   verifyElementsAreFocusable: function(selector) {
   const els = document.querySelectorAll(selector);
     if (!els.length) {
-        throw `Selector passed in verifyElementsAreFocusable("${selector}") should match at least one element.`;
+      throw `Selector passed in verifyElementsAreFocusable("${selector}") should match at least one element.`;
     }
     for (const el of els) {
       let testName = el.getAttribute("data-testname");
       test(() => {
-          el.focus();
-          assert_equals(document.activeElement, el, "Element is focusable with element.focus()");
-        }, `${testName}`);
+        el.focus();
+        assert_equals(document.activeElement, el, "Element is focusable with element.focus()");
+      }, `${testName}`);
     }
   },
 
@@ -42,7 +42,7 @@ const keyboardAccessibilityUtils = {
     const els = document.querySelectorAll(selector);
     let parentElement = "";
     if (!els.length) {
-        throw `Selector passed in verifyElementsAreFocusable("${selector}") should match at least one element.`;
+      throw `Selector passed in verifyElementsAreTabbable("${selector}") should match at least one element.`;
     }
     for (const el of els) {
       let testName = el.getAttribute("data-testname");
@@ -50,9 +50,9 @@ const keyboardAccessibilityUtils = {
         const focusablePreviousElement = document.createElement("a", { href: "#" }, "A focusable link");
         el.parentNode.insertBefore(focusablePreviousElement, el);
         focusablePreviousElement.focus();
-        assert_equals(document.activeElement, focusablePreviousElement, "precondition: el's previous sibling is focused");
+        assert_equals(document.activeElement, focusablePreviousElement, "precondition: el's previous focusable element is currently focused");
         assert_not_equals(document.activeElement, el, "precondition: el is not focused");
-        await test_driver.send_keys(focusablePreviousElement, "\uE004"); // \uE004 is WebDriver Tab key codepoint (https://w3c.github.io/webdriver/#keyboard-actions)
+        await test_driver.send_keys(focusablePreviousElement, "\uE004"); // \uE004 is the Tab key (see WebDriver key codepoints: https://w3c.github.io/webdriver/#keyboard-actions)
         assert_equals(document.activeElement, el, "Element is tabbable");
       }, `${testName}`);
     }

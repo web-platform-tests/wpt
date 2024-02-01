@@ -1,6 +1,12 @@
 /* Utilities for keyboard-focused accessibility */
 
-const KeyboardAccessibilityUtils = {
+const keys = {
+  // See WebDriver key codepoints: https://w3c.github.io/webdriver/#keyboard-actions
+  "Tab": "\uE004",
+  "ShiftAndTab": "\uE008" + "\uE004",
+};
+
+const keyboardAccessibilityUtils = {
 
   /*
   Tests that all elements matching selector can
@@ -12,7 +18,7 @@ const KeyboardAccessibilityUtils = {
           class="ex">
       </div>
 
-      KeyboardAccessibilityUtils.verifyElementsAreFocusable(".ex-focusable")
+      keyboardAccessibilityUtils.verifyElementsAreFocusable(".ex-focusable")
   */
   verifyElementsAreFocusable: function(selector) {
   const els = document.querySelectorAll(selector);
@@ -37,7 +43,7 @@ const KeyboardAccessibilityUtils = {
           class="ex-focused">
       </button>
 
-      KeyboardAccessibilityUtils.verifyElementIsFocused(".ex-focused")
+      keyboardAccessibilityUtils.verifyElementIsFocused(".ex-focused")
   */
   verifyElementIsFocused: function(selector) {
     const els = document.querySelectorAll(selector);
@@ -62,7 +68,7 @@ const KeyboardAccessibilityUtils = {
         class="ex-tabbable">
       </button>
 
-      KeyboardAccessibilityUtils.verifyElementsAreTabbable(".ex-tabbable")
+      keyboardAccessibilityUtils.verifyElementsAreTabbable(".ex-tabbable")
   */
   verifyElementsAreTabbable: function(selector) {
     const els = document.querySelectorAll(selector);
@@ -79,7 +85,7 @@ const KeyboardAccessibilityUtils = {
         focusablePreviousElement.focus();
         assert_equals(document.activeElement, focusablePreviousElement, "precondition: el's previous focusable element is currently focused");
         assert_not_equals(document.activeElement, el, "precondition: el is not focused");
-        await test_driver.send_keys(focusablePreviousElement, "\uE004"); // \uE004 is the Tab key (see WebDriver key codepoints: https://w3c.github.io/webdriver/#keyboard-actions)
+        await test_driver.send_keys(focusablePreviousElement, keys.Tab); //
         assert_equals(document.activeElement, el, "Element is tabbable");
         document.body.removeChild(focusablePreviousElement);
       }, `${testName}`);
@@ -95,7 +101,7 @@ const KeyboardAccessibilityUtils = {
         class="ex-no-keyboard-trap">
       </button>
 
-      KeyboardAccessibilityUtils.verifyElementsDoNotCauseKeyboardTrap(".ex-no-keyboard-trap")
+      keyboardAccessibilityUtils.verifyElementsDoNotCauseKeyboardTrap(".ex-no-keyboard-trap")
   */
   verifyElementsDoNotCauseKeyboardTrap: function(selector) {
     const els = document.querySelectorAll(selector);
@@ -111,14 +117,13 @@ const KeyboardAccessibilityUtils = {
         el.focus();
         assert_equals(document.activeElement, el, "precondition: el is currently focused");
         el.parentNode.insertBefore(focusablePreviousElement, el);
-        await test_driver.send_keys(el, "\uE004" + "\uE008");
+        await test_driver.send_keys(el, keys.ShiftAndTab);
         assert_equals(document.activeElement, focusablePreviousElement, "precondition: el's previous focusable element is currently focused");
         assert_not_equals(document.activeElement, el, "precondition: el is not focused");
-        await test_driver.send_keys(focusablePreviousElement, "\uE004"); // \uE004 is the Tab key (see WebDriver key codepoints: https://w3c.github.io/webdriver/#keyboard-actions)
+        await test_driver.send_keys(focusablePreviousElement, keys.Tab);
         assert_equals(document.activeElement, el, "el has successfully lost and received focus, and is now focused");
         document.body.removeChild(focusablePreviousElement);
       }, `${testName}`);
     }
   },
 };
-

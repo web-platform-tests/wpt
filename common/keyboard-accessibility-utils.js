@@ -120,7 +120,7 @@ const keyboardAccessibilityUtils = {
         await test_driver.send_keys(el, keys.LeftShiftAndTab);
         assert_equals(document.activeElement, focusablePreviousElement, "precondition: el's previous focusable element is currently focused");
         assert_not_equals(document.activeElement, el, "precondition: el is not focused");
-        await test_driver.send_keys(focusablePreviousElement, keys.LeftShiftAndTab);
+        await test_driver.send_keys(focusablePreviousElement, keys.Tab);
         assert_equals(document.activeElement, el, "el has successfully lost and received focus, and is now focused");
         document.body.removeChild(focusablePreviousElement);
       }, `${testName}`);

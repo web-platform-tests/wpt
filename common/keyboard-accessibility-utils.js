@@ -40,20 +40,20 @@ const keyboardAccessibilityUtils = {
   */
   verifyElementsAreTabbable: function(selector) {
     const els = document.querySelectorAll(selector);
-    let parentElement = "";
+    const focusablePreviousElement = document.createElement("a", { href: "#" }, "A focusable link");
     if (!els.length) {
       throw `Selector passed in verifyElementsAreTabbable("${selector}") should match at least one element.`;
     }
     for (const el of els) {
       let testName = el.getAttribute("data-testname");
       promise_test(async t => {
-        const focusablePreviousElement = document.createElement("a", { href: "#" }, "A focusable link");
         el.parentNode.insertBefore(focusablePreviousElement, el);
         focusablePreviousElement.focus();
         assert_equals(document.activeElement, focusablePreviousElement, "precondition: el's previous focusable element is currently focused");
         assert_not_equals(document.activeElement, el, "precondition: el is not focused");
         await test_driver.send_keys(focusablePreviousElement, "\uE004"); // \uE004 is the Tab key (see WebDriver key codepoints: https://w3c.github.io/webdriver/#keyboard-actions)
         assert_equals(document.activeElement, el, "Element is tabbable");
+        document.body.removeChild(focusablePreviousElement);
       }, `${testName}`);
     }
   },

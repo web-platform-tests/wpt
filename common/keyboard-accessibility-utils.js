@@ -2,8 +2,8 @@
 
 const keys = {
   // See WebDriver key codepoints: https://w3c.github.io/webdriver/#keyboard-actions
+  "LeftShiftAndTab": "\uE008" + "\uE004", // Left Shift = \uE008 and Right Shift = \uE050 however, they should be indistinguishable
   "Tab": "\uE004",
-  "ShiftAndTab": "\uE008" + "\uE004",
 };
 
 const keyboardAccessibilityUtils = {
@@ -13,15 +13,15 @@ const keyboardAccessibilityUtils = {
   receive focus (and related) events.
 
   Ex: <div role="button"
-          tabindex="0"
-          data-testname="div with role button and tabindex is focusable"
-          class="ex">
+        tabindex="0"
+        data-testname="div with role button and tabindex is focusable"
+        class="ex">
       </div>
 
       keyboardAccessibilityUtils.verifyElementsAreFocusable(".ex-focusable")
   */
   verifyElementsAreFocusable: function(selector) {
-  const els = document.querySelectorAll(selector);
+    const els = document.querySelectorAll(selector);
     if (!els.length) {
       throw `Selector passed in verifyElementsAreFocusable("${selector}") should match at least one element.`;
     }
@@ -39,8 +39,8 @@ const keyboardAccessibilityUtils = {
   are currently focused at the point of test execution.
 
   Ex: <button tabindex="0"
-          data-testname="button is focused after associated <dialog> dismissal"
-          class="ex-focused">
+        data-testname="button is focused after associated <dialog> dismissal"
+        class="ex-focused">
       </button>
 
       keyboardAccessibilityUtils.verifyElementIsFocused(".ex-focused")
@@ -117,10 +117,10 @@ const keyboardAccessibilityUtils = {
         el.focus();
         assert_equals(document.activeElement, el, "precondition: el is currently focused");
         el.parentNode.insertBefore(focusablePreviousElement, el);
-        await test_driver.send_keys(el, keys.ShiftAndTab);
+        await test_driver.send_keys(el, keys.LeftShiftAndTab);
         assert_equals(document.activeElement, focusablePreviousElement, "precondition: el's previous focusable element is currently focused");
         assert_not_equals(document.activeElement, el, "precondition: el is not focused");
-        await test_driver.send_keys(focusablePreviousElement, keys.Tab);
+        await test_driver.send_keys(focusablePreviousElement, keys.LeftShiftAndTab);
         assert_equals(document.activeElement, el, "el has successfully lost and received focus, and is now focused");
         document.body.removeChild(focusablePreviousElement);
       }, `${testName}`);

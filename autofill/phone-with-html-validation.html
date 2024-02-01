@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<head>
+<meta charset="utf-8" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/autofill_helpers.js"></script>
+</head>
+<body>
+<form id="test_form">
+  <h2>Delivery Address</h2>
+  <div>
+    <label for="name">Name:</label>
+    <input
+      name="shipping-name"
+      id="name"
+      type="text"
+      autocomplete="shipping name"
+    />
+  </div>
+  <div>
+    <label for="phone">Phone:</label>
+    <input
+      name="shipping-phone"
+      id="phone"
+      type="tel"
+      pattern="[0-9]{3}-[0-9]{3}-[0-9]{3}"
+      autocomplete="shipping tel"
+      required
+    />
+  </div>
+</form>
+<script>
+  promise_test(async t => {
+    if (!window.test_driver) {
+      return;
+    }
+    const form = create_form_for_data({"name": "Santa Claus", "phone": "123-456-7890"});
+    await test_driver.save_to_auto_fill(form);
+
+    const suggestions = await test_driver.get_autofill_suggestions(document.getElementById("test_form"), document.getElementById("name"));
+
+    assert_element_has_value("name", "Santa Claus");
+    // Assert that phone was autofilled although it doesn't match the pattern:
+    assert_element_has_value("phone", "123-456-7890");
+  });
+</script>
+
+</body>

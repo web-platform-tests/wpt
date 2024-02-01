@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<head>
+<meta charset="utf-8" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/autofill_helpers.js"></script>
+</head>
+<body>
+<form id="test_form">
+  <h2>Delivery Address</h2>
+  <div>
+    <label for="name">Name:</label>
+    <input
+      name="shipping-name"
+      id="name"
+      type="text"
+      autocomplete="shipping name"
+    />
+  </div>
+  <div>
+    <label for="state">Province/State:</label>
+      <select
+        name="shipping-state"
+        id="state"
+        type="text"
+        autocomplete="shipping address-level1"
+      >
+      <option value="QC">Quebec</option>
+      <option value="ON">Ontario</option>
+      <option value="BC">British Columbia</option>
+      </select>
+  </div>
+</form>
+<script>
+  promise_test(async t => {
+    if (!window.test_driver) {
+      return;
+    }
+    const form = create_form_for_data({"name": "Santa Claus", "address": "1 Main St", "city": "North Pole", "postal": "H0H 0H0", "state": "British Columbia", "country": "CA"});
+    await test_driver.save_to_auto_fill(form);
+
+    const suggestions = await test_driver.get_autofill_suggestions(document.getElementById("test_form"), document.getElementById("name"));
+
+    assert_element_has_value("name", "Santa Claus");
+    // Assert that state was autofilled with the correct value (British Columbia -> BC)
+    assert_element_has_value("state", "BC");
+  });
+</script>
+
+</body>

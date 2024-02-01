@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<head>
+<meta charset="utf-8" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/autofill_helpers.js"></script>
+</head>
+<body>
+<form id="test_form">
+  <div>
+    <label for="name">Name:</label>
+    <input
+      name="name"
+      id="name"
+      type="text"
+    />
+  </div>
+  <div>
+    <label for="email">E-Mail:</label>
+    <input
+      name="email"
+      id="email"
+      type="email"
+      form="address-form"
+    />
+  </div>
+</form>
+<form id="address-form"></form>
+<script>
+  promise_test(async t => {
+    if (!window.test_driver) {
+      return;
+    }
+    const form = create_form_for_data({"name": "Santa Claus", "email": "test@test.com"});
+    await test_driver.save_to_auto_fill(form);
+
+    const suggestions = await test_driver.get_autofill_suggestions(document.getElementById("test_form"), document.getElementById("name"));
+
+    assert_element_has_value("name", "Santa Claus");
+    assert_element_has_value("email", "");
+  });
+</script>
+
+</body>

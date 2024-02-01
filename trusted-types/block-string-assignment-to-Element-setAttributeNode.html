@@ -11,6 +11,9 @@
 <script>
 const passThroughPolicy = trustedTypes.createPolicy("passThrough", { createHTML: s => s });
 
+// TODO: add tests for the other cases mentioned at
+// https://github.com/w3c/trusted-types/pull/418/files#diff-40cc3a1ba233cc3ca7b6d5873260da9676f6ae20bb897b62f7871c80d0bda4e9R1128-R1134
+
 async_test(t => {
 const sourceFrame = document.createElement("iframe");
 sourceFrame.srcdoc = passThroughPolicy.createHTML(

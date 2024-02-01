@@ -1,6 +1,6 @@
 /* Utilities for keyboard-focused accessibility */
 
-const keyboardAccessibilityUtils = {
+const KeyboardAccessibilityUtils = {
 
   /*
   Tests that all elements matching selector can
@@ -32,15 +32,17 @@ const keyboardAccessibilityUtils = {
   Tests that all elements matching selector are
   tabbable, i.e., present in the keyboard tab order.
 
-    Ex: <button style="display: contents;"
-          data-testname="button with display: contents is in keyboard tab order"
-          class="ex-tabbable">
+  Ex: <button style="display: contents;"
+        data-testname="button with display: contents is in keyboard tab order"
+        class="ex-tabbable">
 
-        keyboardAccessibilityUtils.verifyElementsAreTabbable(".ex-tabbable")
+      keyboardAccessibilityUtils.verifyElementsAreTabbable(".ex-tabbable")
   */
   verifyElementsAreTabbable: function(selector) {
     const els = document.querySelectorAll(selector);
-    const focusablePreviousElement = document.createElement("a", { href: "#" }, "A focusable link");
+    const focusablePreviousElement = document.createElement("a");
+    focusablePreviousElement.setAttribute("href", "#");
+    focusablePreviousElement.appendChild(document.createTextNode("a focusable link"));
     if (!els.length) {
       throw `Selector passed in verifyElementsAreTabbable("${selector}") should match at least one element.`;
     }

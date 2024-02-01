@@ -8,9 +8,9 @@
   <meta http-equiv="Content-Security-Policy" content="require-trusted-types-for 'script';">
 </head>
 <body>
-<iframe id="sourceFrame" src="support/document-without-trusted-types-and-srcdoc-attribute.html"></iframe>
 <script>
-  const nullPolicy = trustedTypes.createPolicy('NullPolicy', {createScript: s => s});
+  const nullPolicy = trustedTypes.createPolicy('NullPolicy', {createScript: s => s,
+    createHTML: s => s});
 
   // TrustedScriptURL Assignments
   const scriptURLTestCases = [
@@ -66,6 +66,34 @@
 
     assert_equals(el.src, '');
   }, "`Script.prototype.setAttribute.SrC = string` throws.");
+
+  async_test(t => {
+    const sourceFrame = document.createElement("iframe");
+    sourceFrame.srcdoc = nullPolicy.createHTML(
+    `<!DOCTYPE html>
+    <head>
+    <meta charset="utf-8">
+    </head>
+    <body><div srcdoc="v"></div>doc without TT</body>`);
+
+    const targetFrame = document.createElement("iframe");
+    document.body.append(targetFrame);
+
+    t.add_cleanup(() => {
+      targetFrame.remove();
+      sourceFrame.remove();
+    });
+
+    sourceFrame.addEventListener("load", t.step_func_done(() => {
+      const div = sourceFrame.contentDocument.body.firstChild;
+      const attrNode = div.getAttributeNode("srcdoc");
+      div.removeAttributeNode(attrNode);
+      assert_throws_js(TypeError, () => { targetFrame.setAttributeNode(attrNode); });
+    }, { once: true }));
+
+    document.body.append(sourceFrame);
+
+  }, "Importing a `srcdoc` attribute node created in a non-TT enforcing realm to an iframe throws.");
 
   // After default policy creation string and null assignments implicitly call createXYZ
   let p = window.trustedTypes.createPolicy("default", { createScriptURL: createScriptURLJS, createHTML: createHTMLJS, createScript: createScriptJS }, true);
@@ -126,22 +154,4 @@
 
     assert_equals(script.getAttribute('src'), RESULTS.SCRIPTURL);
   }, "`script.src = setAttributeNode(embed.src)` with string works.");
-
-  async_test(t => {
-    const sourceFrame = document.getElementById("sourceFrame");
-    const targetFrame = document.createElement("iframe");
-    document.body.append(targetFrame);
-
-    t.add_cleanup(() => {
-      targetFrame.remove();
-      sourceFrame.contentWindow.location.reload();
-    });
-
-    sourceFrame.addEventListener("load", t.step_func_done(() => {
-      const div = sourceFrame.contentDocument.body.firstChild;
-      const attrNode = div.getAttributeNode("srcdoc");
-      div.removeAttributeNode(attrNode);
-      assert_throws_js(TypeError, () => { targetFrame.setAttributeNode(attrNode); });
-    }, { once: true }));
-  }, "Importing a `srcdoc` attribute node created in a non-TT enforcing realm to an iframe throws.")
 </script>

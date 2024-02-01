@@ -11,7 +11,7 @@ const KeyboardAccessibilityUtils = {
           data-testname="div with role button and tabindex is focusable"
           class="ex">
 
-      keyboardAccessibilityUtils.verifyElementsAreFocusable(".ex-focusable")
+      KeyboardAccessibilityUtils.verifyElementsAreFocusable(".ex-focusable")
   */
   verifyElementsAreFocusable: function(selector) {
   const els = document.querySelectorAll(selector);
@@ -27,6 +27,30 @@ const KeyboardAccessibilityUtils = {
     }
   },
 
+  /*
+  Tests that all elements matching selector
+  are currently focused at the point of test execution.
+
+  Ex: <div role="button"
+          tabindex="0"
+          data-testname="native button is focused after associated <dialog> dismissal"
+          class="ex-focused">
+
+      KeyboardAccessibilityUtils.verifyElementIsFocused(".ex-focused")
+  */
+  verifyElementIsFocused: function(selector) {
+    const els = document.querySelectorAll(selector);
+    if (!els.length) {
+      throw `Selector passed in verifyElementIsFocused("${selector}") should match at least one element.`;
+    }
+    for (const el of els) {
+      let testName = el.getAttribute("data-testname");
+      test(() => {
+        assert_equals(document.activeElement, el, "Element is currently focused");
+      }, `${testName}`);
+    }
+  },
+
 
   /*
   Tests that all elements matching selector are
@@ -36,7 +60,7 @@ const KeyboardAccessibilityUtils = {
         data-testname="button with display: contents is in keyboard tab order"
         class="ex-tabbable">
 
-      keyboardAccessibilityUtils.verifyElementsAreTabbable(".ex-tabbable")
+      KeyboardAccessibilityUtils.verifyElementsAreTabbable(".ex-tabbable")
   */
   verifyElementsAreTabbable: function(selector) {
     const els = document.querySelectorAll(selector);

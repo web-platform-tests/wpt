@@ -85,4 +85,40 @@ const KeyboardAccessibilityUtils = {
       }, `${testName}`);
     }
   },
+
+  /*
+  Tests that all elements matching selector are
+  tabbable and do not create a focus trap.
+
+  Ex: <button style="display: flex;"
+        data-testname="button with display: flex does not cause keyboard trap"
+        class="ex-no-keyboard-trap">
+      </button>
+
+      KeyboardAccessibilityUtils.verifyElementsDoNotCauseKeyboardTrap(".ex-no-keyboard-trap")
+  */
+  verifyElementsDoNotCauseKeyboardTrap: function(selector) {
+    const els = document.querySelectorAll(selector);
+    const focusablePreviousElement = document.createElement("a");
+    focusablePreviousElement.setAttribute("href", "#");
+    focusablePreviousElement.appendChild(document.createTextNode("a focusable link"));
+    if (!els.length) {
+      throw `Selector passed in verifyElementsDoNotCauseKeyboardTrap("${selector}") should match at least one element.`;
+    }
+    for (const el of els) {
+      let testName = el.getAttribute("data-testname");
+      promise_test(async t => {
+        el.focus();
+        assert_equals(document.activeElement, el, "precondition: el is currently focused");
+        el.parentNode.insertBefore(focusablePreviousElement, el);
+        await test_driver.send_keys(el, "\uE004" + "\uE008");
+        assert_equals(document.activeElement, focusablePreviousElement, "precondition: el's previous focusable element is currently focused");
+        assert_not_equals(document.activeElement, el, "precondition: el is not focused");
+        await test_driver.send_keys(focusablePreviousElement, "\uE004"); // \uE004 is the Tab key (see WebDriver key codepoints: https://w3c.github.io/webdriver/#keyboard-actions)
+        assert_equals(document.activeElement, el, "el has successfully lost and received focus, and is now focused");
+        document.body.removeChild(focusablePreviousElement);
+      }, `${testName}`);
+    }
+  },
 };
+

@@ -87,6 +87,90 @@ ReflectionTests.parseInt = function(input) {
     return sign * value;
 };
 
+/**
+ * The "rules for parsing floating-point number values" from the HTML spec.
+ * Returns false on error.
+ */
+ReflectionTests.parseFloat = function(input) {
+    var position = 0;
+    var value = 1;
+    var divisor = 1;
+    var exponent = 1;
+    // Skip whitespace
+    while (input.length > position && /^[ \t\n\f\r]$/.test(input[position])) {
+        position++;
+    }
+    if (position >= input.length) {
+        return false;
+    }
+    if (input[position] == "-") {
+        value = -1;
+        divisor = -1;
+        position++;
+    } else if (input[position] == "+") {
+        position++;
+    }
+    if (position >= input.length) {
+        return false;
+    }
+    if (input[position] == "." && position+1 < input.length && /^[0-9]$/.test(input[position+1])) {
+        value = 0;
+        // Use "else" branches rather than "jump to label fraction"
+    } else if (!/^[0-9]$/.test(input[position])) {
+        return false;
+    } else {
+        var val = 0;
+        while (input.length > position && /^[0-9]$/.test(input[position])) {
+            val *= 10;
+            // Don't use parseInt even for single-digit strings . . .
+            val += input.charCodeAt(position) - "0".charCodeAt(0);
+            position++;
+        }
+        value *= val;
+    }
+    // Use nested "if" tests rather than "jump to label conversion" or "skip"
+    // Fraction:
+    if (input.length > position && input[position] == ".") {
+        position++;
+        while (input.length > position && /^[0-9]$/.test(input[position])) {
+            divisor *= 10;
+            // Don't use parseInt even for single-digit strings . . .
+            value += (input.charCodeAt(position) - "0".charCodeAt(0)) / divisor;
+            position++;
+        }
+    }
+    if (input.length > position && (input[position] == "e" || input[position] == "E")) {
+        position++;
+        if (input.length > position) {
+            if (input[position] == "-") {
+                exponent = -1;
+                position++;
+            } else if (input[position] == "+") {
+                position++;
+            }
+            if (input.length > position && /^[0-9]$/.test(input[position])) {
+                var exp = 0;
+                do {
+                    exp *= 10;
+                    // Don't use parseInt even for single-digit strings . . .
+                    exp += input.charCodeAt(position) - "0".charCodeAt(0);
+                    position++;
+                } while (input.length > position && /^[0-9]$/.test(input[position]));
+                exponent *= exp;
+                value *= Math.pow(10, exponent);
+            }
+        }
+    }
+    // Conversion:
+    if (!Number.isFinite(value)) {
+      return false;
+    }
+    if (value === 0) {
+        return 0;
+    }
+    return value;
+}
+
 // Used in initializing typeMap
 var binaryString = "\x00\x01\x02\x03\x04\x05\x06\x07 "
     + "\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f "
@@ -501,11 +585,6 @@ ReflectionTests.typeMap = {
      * "Except where otherwise specified, if an IDL attribute that is a
      * floating point number type (double) is assigned an Infinity or
      * Not-a-Number (NaN) value, a NOT_SUPPORTED_ERR exception must be raised."
-     *
-     * TODO: Implement the actual algorithm so we can run lots more tests.  For
-     * now we're stuck with manually setting up expected values.  Of course,
-     * a lot of care has to be taken in checking equality for floats . . .
-     * maybe we should have some tolerance for comparing them.
      */
     "double": {
         "jsType": "number",
@@ -524,29 +603,21 @@ ReflectionTests.typeMap = {
             {"test": 6}, NaN, +Infinity, -Infinity, "\0",
             {toString:function() {return 2;}, valueOf: null},
             {valueOf:function() {return 3;}, toString: null}],
-        "domExpected": [minInt - 1, minInt, -36, -1, 0, 1, maxInt,
-                        maxInt + 1, maxUnsigned, maxUnsigned + 1, null, null, null,
-                        // Leading whitespace tests
-                        7, null, 7, 7, null, null,
-                        7, 7, null, null, null, null,
-                        null, null, null, null, null, null,
-                        null, null, null, null, null, null, null,
-                        null, null, null, null, null, 7,
-                        // End leading whitespace tests
-                        null, null, 1.5, 5, 100, 0.5, null, null,
-                        1, 100, 100, 0.01, 100, 100, 0.01, 100, 100,
-                        1, 1, 1, 1, 1, 1, 1, 1,
-                        null, null,
-                        null, null, null, null, null,
-                        2, 3],
-        // I checked that ES ToString is well-defined for all of these (I
-        // think).  Yes, String(-0) == "0".
-        "idlTests":       [ -10000000000,   -1,  -0,   0,   1,   10000000000,
-                            1e-10,   1e-4,     1.5,   1e25 ],
-        "idlDomExpected": ["-10000000000", "-1", "0", "0", "1", "10000000000",
-                           "1e-10", "0.0001", "1.5", "1e+25"],
-        "idlIdlExpected": [ -10000000000,   -1,   0,   0,   1,   10000000000,
-                            1e-10,   1e-4,     1.5,   1e25 ],
+        "domExpected": function (val) {
+            var parsed = ReflectionTests.parseFloat(String(val));
+            if (parsed === false) {
+                return null;
+            }
+            return parsed;
+        },
+        "idlTests": [ -10000000000, -1, -0, 0, 1, 10000000000,
+            1e-10, 1e-4, 1.5, 1e25 ],
+        "idlIdlExpected": function (val) {
+            // This is a bit heavy-weight but hopefully will give values
+            // that compare "better" (without introducing some tolerance)
+            // when the test cases are expanded with more values.
+            return ReflectionTests.parseFloat(String(val));
+        }
     },
     /**
      * Reflected IDL attribute of type double, limited to only positive values,
@@ -574,33 +645,24 @@ ReflectionTests.typeMap = {
             {"test": 6}, NaN, +Infinity, -Infinity, "\0",
             {toString:function() {return 2;}, valueOf: null},
             {valueOf:function() {return 3;}, toString: null}],
-        "domExpected": [null, null, null, null, null, 1, maxInt,
-                        maxInt + 1, maxUnsigned, maxUnsigned + 1, null, null, null,
-                        // Leading whitespace tests
-                        7, null, 7, 7, null, null,
-                        7, 7, null, null, null, null,
-                        null, null, null, null, null, null,
-                        null, null, null, null, null, null, null,
-                        null, null, null, null, null, 7,
-                        // End leading whitespace tests
-                        null, null, 1.5, 5, 100, 0.5, null, null,
-                        1, 100, 100, 0.01, 100, 100, 0.01, 100, 100,
-                        1, 1, 1, 1, 1, 1, 1, 1,
-                        null, null,
-                        null, null, null, null, null,
-                        2, 3],
-        // I checked that ES ToString is well-defined for all of these (I
-        // think).  Yes, String(-0) == "0".
-        "idlTests":       [ -10000000000,   -1,  -0,   0,   1,   10000000000,
-                            1e-10,   1e-4,     1.5,   1e25 ],
-        "idlDomExpected": [null/*unchanged*/, null/*unchanged*/,
-                           null/*unchanged*/, null/*unchanged*/,
-                           "1", "10000000000",
-                           "1e-10", "0.0001", "1.5", "1e+25"],
-        "idlIdlExpected": [null/*unchanged*/, null/*unchanged*/,
-                           null/*unchanged*/, null/*unchanged*/,
-                           1, 10000000000,
-                            1e-10,   1e-4,     1.5,   1e25 ],
+        "domExpected": function (val) {
+            var parsed = ReflectionTests.parseFloat(String(val));
+            if (parsed === false || parsed <= 0) {
+                return null;
+            }
+            return parsed;
+        },
+        "idlTests": [ -10000000000, -1, -0, 0, 1, 10000000000,
+            1e-10, 1e-4, 1.5, 1e25 ],
+        "idlIdlExpected": function (val) {
+            // Non-positive values are special-cased below, as they
+            // should be ignored, leaving the current value unchanged
+
+            // This is a bit heavy-weight but hopefully will give values
+            // that compare "better" (without introducing some tolerance)
+            // when the test cases are expanded with more values.
+            return ReflectionTests.parseFloat(String(val));
+        }
     }
 };
 

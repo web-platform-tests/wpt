@@ -3259,6 +3259,44 @@
     @assert ctx.isPointInPath(-0.01, 10) === false;
     @assert ctx.isPointInPath(20.01, 10) === false;
 
+- name: 2d.path.multiple.paths.with.save
+  desc: check if 2 paths are draw correctly with save
+  code: |
+    ctx.fillStyle = 'red'
+    ctx.beginPath();
+    const arrowSide = 20;
+    const arrowHeight = 10;
+    const arrowCenterOffset = arrowHeight / 2;
+    for(const pair of [[100, 100], [200, 200]]) {
+    	const [x, y] = pair;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.moveTo(-arrowCenterOffset, -arrowSide / 2);
+      ctx.lineTo(-arrowCenterOffset, arrowSide / 2);
+      ctx.lineTo(arrowHeight - arrowCenterOffset, 0);
+      ctx.restore();
+    }
+    ctx.fill();
+  reference: |
+    ctx.fillStyle = 'red'
+    ctx.beginPath();
+    const arrowSide = 20;
+    const arrowHeight = 10;
+    const arrowCenterOffset = arrowHeight / 2;
+    ctx.translate(100,100)
+    ctx.moveTo(-arrowCenterOffset, -arrowSide / 2);
+    ctx.lineTo(-arrowCenterOffset, arrowSide / 2);
+    ctx.lineTo(arrowHeight - arrowCenterOffset, 0);
+
+    ctx.translate(100,100)
+    ctx.moveTo(-arrowCenterOffset, -arrowSide / 2);
+    ctx.lineTo(-arrowCenterOffset, arrowSide / 2);
+    ctx.lineTo(arrowHeight - arrowCenterOffset, 0);
+
+    ctx.fill();
+
+
+
 - name: 2d.path.isPointInPath.empty
   desc: isPointInPath() works when there is no path
   code: |

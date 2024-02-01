@@ -15,7 +15,7 @@ const keyboardAccessibilityUtils = {
   Ex: <div role="button"
         tabindex="0"
         data-testname="div with role button and tabindex is focusable"
-        class="ex">
+        class="ex-focusable">
       </div>
 
       keyboardAccessibilityUtils.verifyElementsAreFocusable(".ex-focusable")
@@ -38,8 +38,8 @@ const keyboardAccessibilityUtils = {
   Tests that all elements matching selector
   are currently focused at the point of test execution.
 
-  Ex: <button tabindex="0"
-        data-testname="button is focused after associated <dialog> dismissal"
+  Ex: <button
+        data-testname="button is focused after associated <dialog> Escape key dismissal"
         class="ex-focused">
       </button>
 

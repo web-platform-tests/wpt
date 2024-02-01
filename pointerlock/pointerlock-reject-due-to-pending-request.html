@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+
+<body>Body needed for test_driver.click()</body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+    'use strict';
+
+    promise_test(async (t) => {
+        let target = document.body;
+        await test_driver.bless('Click');
+        target.requestPointerLock();
+        return promise_rejects_dom(t, 'InUseAttributeError', target.requestPointerLock(), 'requestPointerLock invoked during pending lock should be rejected with InUseAttributeError DOMException');
+    }, 'Back to back request');
+
+</script>

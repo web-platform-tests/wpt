@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="require-trusted-types-for 'script';">
+<title>trusted-types (TT): setAttributeNode with node from non-TT realm</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+const passThroughPolicy = trustedTypes.createPolicy("passThrough", { createHTML: s => s });
+
+async_test(t => {
+const sourceFrame = document.createElement("iframe");
+sourceFrame.srcdoc = passThroughPolicy.createHTML(
+`<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+</head>
+<body><div srcdoc="v"></div>doc without TT</body>`);
+
+const targetFrame = document.createElement("iframe");
+document.body.append(targetFrame);
+
+t.add_cleanup(() => {
+    targetFrame.remove();
+    sourceFrame.remove();
+});
+
+sourceFrame.addEventListener("load", t.step_func_done(() => {
+const div = sourceFrame.contentDocument.body.firstChild;
+const attrNode = div.getAttributeNode("srcdoc");
+div.removeAttributeNode(attrNode);
+assert_throws_js(TypeError, () => { targetFrame.setAttributeNode(attrNode); }); }));
+
+document.body.append(sourceFrame);
+
+}, "Importing a `srcdoc` attribute node created in a non-TT enforcing realm to an iframe throws.");
+</script>
+</body>
+</html>

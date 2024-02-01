@@ -8,38 +8,69 @@
 <script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
+<div id="nonSVGTestElements">
+    <iframe srcdoc="v"></iframe>
+    <embed src="v">
+    <script src="v"></script>
+    <object data="v"></object>
+    <object codebase="v"></object>
+</div>
+<svg id="svgTestElements">
+    <script href="v"></script>
+    <script xlink:href="v"></script>
+</svg>
 <script>
-const passThroughPolicy = trustedTypes.createPolicy("passThrough", { createHTML: s => s });
+    const passThroughPolicy = trustedTypes.createPolicy("passThrough", { createHTML: s => s });
 
-// TODO: add tests for the other cases mentioned at
-// https://github.com/w3c/trusted-types/pull/418/files#diff-40cc3a1ba233cc3ca7b6d5873260da9676f6ae20bb897b62f7871c80d0bda4e9R1128-R1134
+    function runTest(aTestElement) {
+        const testAttr = aTestElement.attributes[0];
 
-async_test(t => {
-const sourceFrame = document.createElement("iframe");
-sourceFrame.srcdoc = passThroughPolicy.createHTML(
-`<!DOCTYPE html>
-<head>
-<meta charset="utf-8">
-</head>
-<body><div srcdoc="v"></div>doc without TT</body>`);
+        async_test(t => {
+            const sourceFrame = document.createElement("iframe");
 
-const targetFrame = document.createElement("iframe");
-document.body.append(targetFrame);
+            sourceFrame.srcdoc = passThroughPolicy.createHTML(
+            `<!DOCTYPE html>
+            <head>
+            <meta charset="utf-8">
+            </head>
+            <body><div ` + testAttr.name + `="` + testAttr.value + `"></div>
+            doc without TT CSP.
+            </body>`);
 
-t.add_cleanup(() => {
-    targetFrame.remove();
-    sourceFrame.remove();
-});
+            t.add_cleanup(() => {
+                sourceFrame.remove();
+            });
 
-sourceFrame.addEventListener("load", t.step_func_done(() => {
-const div = sourceFrame.contentDocument.body.firstChild;
-const attrNode = div.getAttributeNode("srcdoc");
-div.removeAttributeNode(attrNode);
-assert_throws_js(TypeError, () => { targetFrame.setAttributeNode(attrNode); }); }));
+            sourceFrame.addEventListener("load", t.step_func_done(() => {
+                // A window is a global object which has 1-to-1 mapping to a realm, see the first
+                // note of <https://html.spec.whatwg.org/#realms-settings-objects-global-objects>
+                // and its following paragraph.
+                assert_not_equals(aTestElement.ownerDocument, null);
+                assert_not_equals(aTestElement.ownerDocument, undefined);
+                assert_not_equals(aTestElement.ownerDocument.defaultView, sourceFrame.contentWindow,
+                "The source frame's realm differs from the test element's realm.");
 
-document.body.append(sourceFrame);
+                const div = sourceFrame.contentDocument.body.querySelector("div");
+                const sourceAttr = div.getAttributeNode(testAttr.name);
+                div.removeAttributeNode(sourceAttr);
 
-}, "Importing a `srcdoc` attribute node created in a non-TT enforcing realm to an iframe throws.");
+                assert_throws_js(TypeError, () => { aTestElement.setAttributeNode(sourceAttr); });
+            }));
+
+            document.body.append(sourceFrame);
+
+        }, `Importing a "` + testAttr.name + `" attribute node created in a non-TT enforcing ` +
+        `realm to a TT enforcing realm to a "`+ aTestElement.localName + `" node with parent="` +
+        aTestElement.parentElement.localName + `" throws.`);
+    }
+
+    for (const testElement of document.querySelectorAll("#nonSVGTestElements *")) {
+        runTest(testElement);
+    }
+
+    for (const testElement of document.querySelectorAll("#svgTestElements *")) {
+        runTest(testElement);
+    }
 </script>
 </body>
 </html>

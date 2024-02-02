@@ -1,0 +1,48 @@
+<!doctype html>
+<title>MediaStreamTrack creation in Worker</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/testdriver.js></script>
+<script src=/resources/testdriver-vendor.js></script>
+<script src=permission-helper.js></script>
+<script id="workerCode" type="javascript/worker">
+self.onmessage = (e) => {
+  try {
+    const track = new MediaStreamTrack('audio');
+    if(track instanceof MediaStreamTrack) {
+      self.postMessage({result: 'Success'});
+      return;
+    } else {
+      self.postMessage({
+        result: 'Failure',
+        error: `${track} is not a MediaStreamTrack`
+      });
+    }
+  } catch (error) {
+    self.postMessage({
+      result: 'Failure',
+      error: error
+    });
+  }
+}
+</script>
+<script>
+promise_test(async () => {
+  const workerBlob = new Blob([document.querySelector('#workerCode').textContent],
+                {type: "text/javascript"});
+  const workerUrl = window.URL.createObjectURL(workerBlob);
+  const worker = new Worker(workerUrl);
+  window.URL.revokeObjectURL(workerUrl);
+  const result = new Promise((resolve, reject) => {
+    worker.onmessage = (e) => {
+      if (e.data.result === 'Failure') {
+        reject('Failed: ' + e.data.error);
+      } else {
+        resolve();
+      }
+    };
+  });
+  worker.postMessage(track, [track]);
+  return result;
+});
+</script>

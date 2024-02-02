@@ -131,8 +131,8 @@ async def get_element_dimensions(bidi_session, context, element):
 async def get_viewport_dimensions(bidi_session, context: str):
     expression = """
         ({
-          height: window.innerHeight || document.documentElement.clientHeight,
-          width: window.innerWidth || document.documentElement.clientWidth,
+          height: document.documentElement.clientHeight,
+          width: document.documentElement.clientWidth,
         });
     """
     result = await bidi_session.script.evaluate(

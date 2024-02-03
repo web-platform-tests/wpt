@@ -128,8 +128,8 @@ const keyboardUtils = {
   },
 
   /*
-  Helper function that returns all of a
-  node's focusable descendants.
+  Helper function that returns all focusable
+  descendants for a parent node.
   */
   findAllFocusableDescendantNodes: function(parentNode)  {
   },

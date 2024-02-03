@@ -518,6 +518,9 @@ ReflectionTests.typeMap = {
             "\u20067", "\u20077", "\u20087", "\u20097", "\u200A7", "\u202F7", "\u30007",
             "\t\u000B7", "\n\u000B7","\f\u000B7", "\r\u000B7", "\x20\u000B7", "7\u000B",
             " " + binaryString + " foo ", undefined, 1.5, "5%", "+100", ".5", true, false,
+            "1.", "1e2", "1e+2", "1e-2", "1E2", "1E+2", "1E-2", "1.e2", "1.0e2",
+            "1. 1", "1 .1", "1. e2", "1 .e2", "1 e2", "1e 2", "1e -2", "1e- 2",
+            "1.8e308", "-1.8e308",
             {"test": 6}, NaN, +Infinity, -Infinity, "\0",
             {toString:function() {return 2;}, valueOf: null},
             {valueOf:function() {return 3;}, toString: null}],
@@ -531,14 +534,20 @@ ReflectionTests.typeMap = {
                         null, null, null, null, null, 7,
                         // End leading whitespace tests
                         null, null, 1.5, 5, 100, 0.5, null, null,
+                        1, 100, 100, 0.01, 100, 100, 0.01, 100, 100,
+                        1, 1, 1, 1, 1, 1, 1, 1,
+                        null, null,
                         null, null, null, null, null,
                         2, 3],
         // I checked that ES ToString is well-defined for all of these (I
         // think).  Yes, String(-0) == "0".
-        "idlTests":       [ -10000000000,   -1,  -0,   0,   1,   10000000000],
-        "idlDomExpected": ["-10000000000", "-1", "0", "0", "1", "10000000000"],
-        "idlIdlExpected": [ -10000000000,   -1,   0,   0,   1,   10000000000]
-    }
+        "idlTests":       [ -10000000000,   -1,  -0,   0,   1,   10000000000,
+                            1e-10,   1e-4,     1.5,   1e25 ],
+        "idlDomExpected": ["-10000000000", "-1", "0", "0", "1", "10000000000",
+                           "1e-10", "0.0001", "1.5", "1e+25"],
+        "idlIdlExpected": [ -10000000000,   -1,   0,   0,   1,   10000000000,
+                            1e-10,   1e-4,     1.5,   1e25 ],
+        }
 };
 
 for (var type in ReflectionTests.typeMap) {

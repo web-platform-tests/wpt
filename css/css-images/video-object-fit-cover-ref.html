@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<script src="/common/reftest-wait.js"></script>
+<style>
+  div {
+    width: 500px;
+    height: 100px;
+    overflow: hidden;
+    border: 2px solid blue;
+  }
+  video {
+    width: 500px;
+    height: 100px;
+    object-fit: fill;
+  }
+</style>
+<div>
+  <video src='../../media/white.webm'></video>
+</div>
+<script>
+var video = document.querySelector("video");
+video.onloadeddata = function() {
+  window.requestAnimationFrame(function() {
+    window.requestAnimationFrame(function() {
+      takeScreenshot();
+    });
+  });
+};
+</script>
+</html>

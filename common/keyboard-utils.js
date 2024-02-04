@@ -126,11 +126,4 @@ const keyboardUtils = {
       }, `${testName}`);
     }
   },
-
-  /*
-  Helper function that returns all focusable
-  descendants for a parent node.
-  */
-  findAllFocusableDescendantNodes: function(parentNode)  {
-  },
 };

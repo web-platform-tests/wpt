@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FrozenArray&lt;VRDisplay&gt; Navigator.activeVRDisplays</title>
+    <meta name="timeout" content="long" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="utils/VRSimulator.js"></script>
+    <script src="utils/WebVRHelpers.js"></script>
+</head>
+<body id="body">
+    <canvas id="webglCanvas"></canvas>
+    <script>
+        // Tests Navigator.activeVRDisplays, which returns a FrozenArray<VRDisplay> of VRDisplays
+        // that are currently presenting. A FrozenArray is an immutable array and any attempts to
+        // modify it throws a TypeError exception. A new FrozenArray object is returned each
+        // time Navigator.activeVRDisplays is accessed. A FrozenArray does not mean that the objects
+        // in the array is frozen.
+        'use strict';
+
+        var webglCanvas = document.getElementById("webglCanvas");
+        var vrDisplay = null;
+
+        promise_test(function(test) {
+            return VRSimulator.AttachWebVRDisplay().then(() => navigator.getVRDisplays()).then((displays) => {
+                // navigator.getVRDisplays() resolve
+
+                assert_equals(displays.length, 1, "displays.length must be one after attach");
+                vrDisplay = displays[0];
+
+                verifyArrayNotFrozen(displays);
+
+                // Test activeVRDisplays before any displays are presenting.
+                testActiveVRDisplays(0);
+
+                return WebVRHelpers.RequestPresentOnVRDisplay(vrDisplay, [{source: webglCanvas}]);
+            }).then(() => {
+                // WebVRHelpers.requestPresent() resolve
+
+                assert_true(vrDisplay.isPresenting, "vrDisplay.isPresenting must be true when requestPresent resolves");
+
+                // Test activeVRDisplays after requestPresent resolved the promise and a display is presenting.
+                var activeDisplay = navigator.activeVRDisplays[0];
+                var activeVRDisplays = testActiveVRDisplays(1);
+
+                assert_equals(activeVRDisplays[0], activeDisplay, "activeVRDisplays[0] must still be the same object after attempts to modify activeVRDisplays");
+                assert_equals(activeDisplay, vrDisplay, "navigator.activeVRDisplays[0] must be the same as the VRDisplay that requestPresent was called on");
+
+                // Verify that the VRDisplay object in the FrozenArray can still be modified.
+                var newDepthNear = activeDisplay.depthNear + 10;
+                activeDisplay.depthNear = newDepthNear;
+                assert_equals(activeDisplay.depthNear, newDepthNear, "activeDisplay.depthNear should be " + newDepthNear + " after assignment but is " + activeDisplay.depthNear);
+
+                var newDepthFar = activeDisplay.depthFar + 10;
+                activeDisplay.depthFar = newDepthFar;
+                assert_equals(activeDisplay.depthFar, newDepthFar, "activeDisplay.depthFar should be " + newDepthFar + " after assignment but is " + activeDisplay.depthFar);
+
+                return vrDisplay.exitPresent();
+            }).then(() => {
+                // vrDisplay.exitPresent() resolve
+
+                assert_false(vrDisplay.isPresenting, "vrDisplay.isPresenting must be false when exitPresent resolves");
+
+                // Test activeVRDisplays while vrDisplay is in the ExitPresent state.
+                testActiveVRDisplays(0);
+            });
+        }, "FrozenArray<VRDisplay> Navigator.activeVRDisplays Test");
+
+        // Verifies that navigator.activeVRDisplays returns a FrozenArray and that attempts to modify it fails and throws the expected exceptions.
+        function testActiveVRDisplays(expectedLength) {
+            var activeVRDisplays = navigator.activeVRDisplays;
+
+            assert_equals(activeVRDisplays.length, expectedLength, "navigator.activeVRDisplays.length initially must be " + expectedLength);
+
+            assert_throws(new TypeError(), function() { activeVRDisplays.push("PushTest"); }, "Pushing into a FrozenArray must throw a TypeError");
+            assert_equals(activeVRDisplays.length, expectedLength, "activeVRDisplays.length must still be " + expectedLength + " after pushing into a FrozenArray");
+
+            assert_throws(new TypeError(), function() { activeVRDisplays.pop(); }, "Popping a FrozenArray must throw a TypeError");
+            assert_equals(activeVRDisplays.length, expectedLength, "activeVRDisplays.length must still be " + expectedLength + " after popping a FrozenArray");
+
+            var oldValue = activeVRDisplays[0];
+            assert_throws(new TypeError(), function() { activeVRDisplays[0] = "AssignTest"; }, "Assigning element [0] of a FrozenArray must throw a TypeError");
+            assert_equals(activeVRDisplays[0], oldValue, "activeVRDisplays[0] must not have changed after assignment");
+            assert_equals(activeVRDisplays.length, expectedLength, "activeVRDisplays.length must still be " + expectedLength + " after assigning an element ([0]) of a FrozenArray");
+
+            assert_throws(new TypeError(), function() { activeVRDisplays[1000] = "AssignTest"; }, "Assigning element [1000] (out of bounds) of a FrozenArray must throw a TypeError");
+            assert_equals(activeVRDisplays[1000], undefined, "activeVRDisplays[1000] must still be undefined after assignment");
+            assert_equals(activeVRDisplays.length, expectedLength, "activeVRDisplays.length must still be " + expectedLength + " after assigning an element ([1000]) of a FrozenArray");
+
+            assert_throws(new TypeError(), function() { activeVRDisplays.expandotest = "AssignExpandoTest"; }, "Assigning a value to an expando property of a FrozenArray must throw a TypeError");
+            assert_equals(activeVRDisplays.expandotest, undefined, "activeVRDisplays.expandotest must still be undefined after assignment")
+
+            var activeVRDisplaysDup = navigator.activeVRDisplays;
+            assert_not_equals(activeVRDisplays, activeVRDisplaysDup, "navigator.activeVRDisplays must return a new FrozenArray");
+
+            return activeVRDisplays;
+        }
+
+        function verifyArrayNotFrozen(notFrozenArray) {
+            var initialLength = notFrozenArray.length;
+
+            assert_equals(notFrozenArray.push("PushTest"), initialLength + 1, "Pushing into an array that is not frozen must return its new length");
+            assert_equals(notFrozenArray[initialLength], "PushTest", "Pushing into an array that is not frozen must add the element to the end of the array");
+            assert_equals(notFrozenArray.length, initialLength + 1, "Pushing into an array that is not frozen must increase its length by 1");
+
+            notFrozenArray[initialLength] = "InBoundsAssignTest";
+            assert_equals(notFrozenArray[initialLength], "InBoundsAssignTest", "Assigning to an index within the bounds of an array that is not frozen must contain the new value at that index");
+            assert_equals(notFrozenArray.length, initialLength + 1, "Assigning to an index within the bounds of an array that is not frozen must not increase its length");
+
+            notFrozenArray[initialLength + 1] = "OutOfBoundsAssignTest";
+            assert_equals(notFrozenArray[initialLength + 1], "OutOfBoundsAssignTest", "Assigning to an index outside the bounds of an array that is not frozen must contain the new value at that index");
+            assert_equals(notFrozenArray.length, initialLength + 2, "Assigning to an index outside the bounds of an array that is not frozen must increase its length by 1");
+
+            assert_equals(notFrozenArray.pop(), "OutOfBoundsAssignTest", "Popping an array that is not frozen must return the element that was popped");
+            assert_equals(notFrozenArray[initialLength + 1], undefined, "The last element of an array that is not frozen must be undefined after pop");
+            assert_equals(notFrozenArray.length, initialLength + 1, "Popping an array that is not frozen must decrease its length by 1");
+
+            assert_equals(notFrozenArray.pop(), "InBoundsAssignTest", "Popping an array that is not frozen must return the element that was popped");
+            assert_equals(notFrozenArray[initialLength], undefined, "The last element of an array that is not frozen must be undefined after pop");
+            assert_equals(notFrozenArray.length, initialLength, "Popping an array that is not frozen must decrease its length by 1");
+
+            notFrozenArray.expandotest = "AssignExpandoTest";
+            assert_equals(notFrozenArray.expandotest, "AssignExpandoTest", "Assigning a value to an expando property of an array that is not frozen must contain the value assigned to it");
+            delete notFrozenArray.expandotest;
+            assert_equals(notFrozenArray.expandotest, undefined, "Deleting an expando property in an array that is not frozen must make that property undefined");
+
+            // Verify that the VRDisplay object in a non frozen array can be modified.
+            var obj = notFrozenArray[0];
+            obj.expandotest = "ObjectExpandoTest";
+            assert_equals(obj.expandotest, "ObjectExpandoTest", "Assigning an expando property to an object in an array that is not frozen must contain the value assigned to it");
+        }
+    </script>
+</body>
+</html>

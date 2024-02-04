@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VRDisplay.getLayers()</title>
+    <meta name="timeout" content="long" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="utils/VRSimulator.js"></script>
+    <script src="utils/WebVRHelpers.js"></script>
+</head>
+<body id="body">
+    <canvas id="webglCanvas"></canvas>
+    <script>
+        'use strict';
+
+        var webglCanvas = document.getElementById("webglCanvas");
+        var vrDisplay = null;
+
+        // Left and right bounds passed into requestPresent()
+        const defaultLeftBounds = [0.0, 0.0, 0.5, 1.0];
+        const defaultRightBounds = [0.5, 0.0, 0.5, 1.0];
+        const customLeftBounds = [0.3, 0.2, 0.5, 0.7];
+        const customRightBounds = [0.8, 0.25, 0.2, 0.75];
+
+        // Array of test cases with each element being the array of VRLayers passed into requestPresent.
+        // Only 1 layer is currently supported. Testing getLayers() after the requestPromise rejection
+        // due to multiple layers is done in webdriver.webvr.requestPresent.
+        const testCases = [
+            [{ source: webglCanvas }],
+            [{ source: webglCanvas, leftBounds: customLeftBounds, rightBounds: customRightBounds }],
+            [{ source: webglCanvas, leftBounds: customLeftBounds }],
+            [{ source: webglCanvas, rightBounds: customRightBounds }]
+        ];
+
+        for (var i = 0; i < testCases.length; i++) {
+            runTest(i);
+        }
+
+        function runTest(testIndex) {
+            var testCase = testCases[testIndex];
+
+            promise_test(function(test) {
+                return VRSimulator.AttachWebVRDisplay().then(() => navigator.getVRDisplays()).then((displays) => {
+                    verifyInitialState(displays);
+
+                    return WebVRHelpers.RequestPresentOnVRDisplay(vrDisplay, testCase);
+                }).then(() => {
+                    // Verify getLayers() after a successful requestPresent()
+                    assert_true(vrDisplay.isPresenting, "vrDisplay.isPresenting must be true after requestPresent succeeds");
+                    verifyGetLayers(testCase[0]);
+
+                    return vrDisplay.exitPresent();
+                }).then(() => {
+                    // Verify getLayers() after exitPresent()
+                    verifyAfterExitPresent();
+                });
+            }, "Test VRDisplay.getLayers() with leftBounds = " + testCase[0].leftBounds + ", rightBounds = " + testCase[0].rightBounds);
+        }
+
+        // Sets the global vrDisplay variable to the first display in the array returned by navigator.getVRDisplays.
+        function verifyInitialState(displays) {
+            assert_equals(displays.length, 1, "displays.length must be one after attach");
+            vrDisplay = displays[0];
+
+            var layers = vrDisplay.getLayers();
+            assert_equals(layers.length, 0, "getLayers() must return an empty array when the VRDisplay is not presenting (before requestPresent)");
+        }
+
+        // Verifies that after vrDisplay.exitPresent, the display is no longer presenting and getLayers() returns an empty array.
+        function verifyAfterExitPresent() {
+            assert_false(vrDisplay.isPresenting, "vrDisplay.isPresenting must be false after exitPresent succeeds");
+            assert_equals(vrDisplay.getLayers().length, 0, "getLayers() must return an empty array when the VRDisplay is not presenting (after exitPresent)");
+        }
+
+        // Verifies that vrDisplay.getLayers() returns an array with one layer and that its members have the expected values.
+        function verifyGetLayers(testCase) {
+            var expectedLeftBounds = testCase.leftBounds === undefined ? defaultLeftBounds : testCase.leftBounds;
+            var expectedRightBounds = testCase.rightBounds === undefined ? defaultRightBounds : testCase.rightBounds;
+
+            var layers = vrDisplay.getLayers();
+            assert_equals(layers.length, 1, "getLayers() must return an array with a length of one when presenting");
+
+            var layer = layers[0];
+
+            assert_equals(layer.source, testCase.source, "layer.source must equal the canvas that was passed into requestPresent");
+
+            // Allow for some error since leftBounds and rightBounds are floats.
+            assert_approx_equals(layer.leftBounds[0], expectedLeftBounds[0], WebVRHelpers.FloatErrorTolerance, "layer.leftBounds[0] must match the value passed into requestPresent or 0.0 by default");
+            assert_approx_equals(layer.leftBounds[1], expectedLeftBounds[1], WebVRHelpers.FloatErrorTolerance, "layer.leftBounds[1] must match the value passed into requestPresent or 0.0 by default");
+            assert_approx_equals(layer.leftBounds[2], expectedLeftBounds[2], WebVRHelpers.FloatErrorTolerance, "layer.leftBounds[2] must match the value passed into requestPresent or 0.5 by default");
+            assert_approx_equals(layer.leftBounds[3], expectedLeftBounds[3], WebVRHelpers.FloatErrorTolerance, "layer.leftBounds[3] must match the value passed into requestPresent or 1.0 by default");
+
+            assert_approx_equals(layer.rightBounds[0], expectedRightBounds[0], WebVRHelpers.FloatErrorTolerance, "layer.rightBounds[0] must match the value passed into requestPresent or 0.5 by default");
+            assert_approx_equals(layer.rightBounds[1], expectedRightBounds[1], WebVRHelpers.FloatErrorTolerance, "layer.rightBounds[1] must match the value passed into requestPresent or 0.0 by default");
+            assert_approx_equals(layer.rightBounds[2], expectedRightBounds[2], WebVRHelpers.FloatErrorTolerance, "layer.rightBounds[2] must match the value passed into requestPresent or 0.5 by default");
+            assert_approx_equals(layer.rightBounds[3], expectedRightBounds[3], WebVRHelpers.FloatErrorTolerance, "layer.rightBounds[3] must match the value passed into requestPresent or 1.0 by default");
+        }
+
+    </script>
+</body>
+</html>

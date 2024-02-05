@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf8">
-<link rel="help" href="https://www.w3.org/TR/payment-request/#paymentaddress-interface">
+<link rel="help" href="https://www.w3.org/TR/payment-request/#ContactAddress-interface">
 <title>
   PaymentResponse.prototype.shippingAddress
 </title>
@@ -17,8 +17,8 @@ function runManualTest(button, expected = {}) {
     assert_idl_attribute(response, "shippingAddress");
     const { shippingAddress: addr } = response;
     assert_true(
-      addr instanceof PaymentAddress,
-      "Expect instance of PaymentAddress"
+      addr instanceof ContactAddress,
+      "Expect instance of ContactAddress"
     );
     // An [ISO3166] alpha-2 code. The canonical form is upper case.
     const { country } = addr;
@@ -37,7 +37,7 @@ function runManualTest(button, expected = {}) {
     );
     for (let [attr, expectedValue] of Object.entries(expected)) {
       assert_idl_attribute(addr, attr);
-      const msg = `Expected paymentAddress.${attr} to equal ${expectedValue}.`;
+      const msg = `Expected ContactAddress.${attr} to equal ${expectedValue}.`;
       //.toString() flattens array addressLine,
       //.toLowerCase() because case can't be enforced for some attributes
       const actualValue = addr[attr].toString().toLowerCase();
@@ -55,7 +55,7 @@ function runManualTest(button, expected = {}) {
   done();
 }
 </script>
-<h2>PaymentAddress interface</h2>
+<h2>ContactAddress interface</h2>
 <p>
   Click on each button in sequence from top to bottom without refreshing the page.
   Each button will bring up the Payment Request UI window.
@@ -80,7 +80,7 @@ function runManualTest(button, expected = {}) {
       phone: '+61733780000',
     };
     runManualTest(this, expectedAddress);">
-      If the requestShipping member is true, then shippingAddress's PaymentAddress must match the expected values.
+      If the requestShipping member is true, then shippingAddress's ContactAddress must match the expected values.
     </button>
     Please use:
     <dl>

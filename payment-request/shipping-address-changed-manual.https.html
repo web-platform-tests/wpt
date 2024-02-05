@@ -64,8 +64,8 @@ function testShippingAddressChange() {
     request.show().catch(err => err);
     const results = await Promise.all([listenerPromise, handlerPromise]);
     results.forEach(obj => {
-      assert_true(obj instanceof PaymentAddress,
-                  "Expected instance of PaymentAddress");
+      assert_true(obj instanceof ContactAddress,
+                  "Expected instance of ContactAddress");
       assert_equals(obj.organization, "", "organization should be redacted");
       assert_equals(obj.phone, "", "phone should be redacted");
       assert_equals(obj.recipient, "", "recipient should be redacted");
@@ -89,7 +89,7 @@ function testShippingAddressChange() {
 <ol>
   <li>
     <button onclick="testShippingAddressChange()">
-      When the shipping address is manually changed, request.shippingAddress is a PaymentAddress.
+      When the shipping address is manually changed, request.shippingAddress is a ContactAddress.
     </button>
   </li>
 </ol>

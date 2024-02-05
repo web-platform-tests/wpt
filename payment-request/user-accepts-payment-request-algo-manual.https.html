@@ -122,8 +122,8 @@ function testAcceptRequestAlgorithm(
     );
     if (options.requestShipping === true) {
       assert_true(
-        response.shippingAddress instanceof PaymentAddress,
-        "Expected an instance of PaymentAddress."
+        response.shippingAddress instanceof ContactAddress,
+        "Expected an instance of ContactAddress."
       );
     }
     const expected = {

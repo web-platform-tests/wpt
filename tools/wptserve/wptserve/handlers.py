@@ -297,6 +297,8 @@ class PythonScriptHandler:
         :return: The return of func
         """
         path = filesystem_path(self.base_path, request, self.url_base)
+        if os.path.isdir(path):
+          path = os.path.join(path, "default.py")
 
         try:
             environ = {"__file__": path}
@@ -416,6 +418,7 @@ class AsIsHandler:
 
     def __call__(self, request, response):
         path = filesystem_path(self.base_path, request, self.url_base)
+        assert not os.path.isdir(path)
 
         try:
             with open(path, 'rb') as f:

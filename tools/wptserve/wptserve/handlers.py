@@ -298,7 +298,7 @@ class PythonScriptHandler:
         """
         path = filesystem_path(self.base_path, request, self.url_base)
         if os.path.isdir(path):
-          path = os.path.join(path, "default.py")
+            path = os.path.join(path, "default.py")
 
         try:
             environ = {"__file__": path}

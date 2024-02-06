@@ -33,7 +33,7 @@ const OTHER_ORIGIN7 = 'https://{{hosts[alt][www]}}:{{ports[https][1]}}';
 //     on behavior of the script; it only serves to make the URL unique.
 // `id` will always be the last query parameter.
 function createTrackerURL(origin, uuid, dispatch, id = null) {
-  let url = new URL(`${origin}${BASE_PATH}resources/request-tracker.py`);
+  let url = new URL(`${origin}${RESOURCE_PATH}request-tracker.py`);
   let search = `uuid=${uuid}&dispatch=${dispatch}`;
   if (id)
     search += `&id=${id}`;
@@ -69,7 +69,7 @@ function createSellerBeaconURL(uuid, id = '1', origin = window.location.origin) 
 }
 
 function createDirectFromSellerSignalsURL(origin = window.location.origin) {
-  let url = new URL(`${origin}${BASE_PATH}resources/direct-from-seller-signals.py`);
+  let url = new URL(`${origin}${RESOURCE_PATH}direct-from-seller-signals.py`);
   return url.toString();
 }
 
@@ -163,6 +163,8 @@ function createBiddingScriptURL(params = {}) {
     url.searchParams.append('generateBid', params.generateBid);
   if (params.reportWin != null)
     url.searchParams.append('reportWin', params.reportWin);
+  if (params.reportAdditionalBidWin != null)
+    url.searchParams.append('reportAdditionalBidWin', params.reportAdditionalBidWin);
   if (params.error != null)
     url.searchParams.append('error', params.error);
   if (params.bid != null)
@@ -256,6 +258,20 @@ async function joinInterestGroup(test, uuid, interestGroupOverrides = {},
   test.add_cleanup(
       async () => {await navigator.leaveAdInterestGroup(interestGroup)});
 }
+
+// DO NOT SUBMIT TODO: Add comment
+async function joinNegativeInterestGroup(test, owner, name, additionalBidKey,
+                                 durationSeconds = 60) {
+  let interestGroup = {
+    owner: owner,
+    name: name,
+    additionalBidKey: additionalBidKey
+  };
+  await navigator.joinAdInterestGroup(interestGroup, durationSeconds);
+  test.add_cleanup(
+      async () => {await navigator.leaveAdInterestGroup(interestGroup)});
+}
+
 
 // Similar to joinInterestGroup, but leaves the interest group instead.
 // Generally does not need to be called manually when using
@@ -642,4 +658,72 @@ function directFromSellerSignalsValidatorCode(uuid, expectedSellerSignals,
     reportWin:
       `sendReportTo("${createBidderReportURL(uuid)}");`,
   };
+}
+
+// Creates an additional bid with the given parameters. This additional bid
+// specifies a biddingLogicURL that provides an implementation of
+// reportAdditionalBidWin.
+//
+// additionalBidOverrides may include:
+// - topLevelSeller: for multi-seller auctions
+// - negativeInterestGroup: a single negative interest group name
+// - negativeInterestGroups: a set of multiple negative interest groups with joining origin
+//
+// All of these are described in more detail at
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#6-additional-bids
+function createAdditionalBid(uuid, auctionNonce, seller, buyer, interestGroupName, bidAmount, additionalBidOverrides = {}) {
+  return {
+    interestGroup: {
+      name: interestGroupName,
+      biddingLogicURL: createBiddingScriptURL(
+        { origin: buyer,
+          reportAdditionalBidWin: `sendReportTo('${createBidderReportURL(uuid, interestGroupName)}');` }),
+      owner: buyer
+    },
+    bid: {
+      ad: ['metadata'],
+      bid: bidAmount,
+      render: createRenderURL(uuid)
+    },
+    auctionNonce: auctionNonce,
+    seller: seller,
+    ...additionalBidOverrides
+  }
+}
+
+// Adds a single negative interest group to an additional bid, as described at:
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#622-how-additional-bids-specify-their-negative-interest-groups
+function addNegativeInterestGroup(additionalBid, negativeInterestGroup) {
+  additionalBid["negativeInterestGroup"] = negativeInterestGroup;
+  return additionalBid;
+}
+
+// Adds multiple negative interest groups to an additional bid, as described at:
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#622-how-additional-bids-specify-their-negative-interest-groups
+function addNegativeInterestGroups(additionalBid, negativeInterestGroups,
+                                   joiningOrigin) {
+  additionalBid["negativeInterestGroups"] = {
+    joiningOrigin: joiningOrigin,
+    interestGroupNames: negativeInterestGroups
+  }
+  return additionalBid;
+}
+
+// Fetch one additional bid from a seller and verify that the
+// 'Ad-Auction-Additional-Bid' header is not visible in this JavaScript context.
+async function fetchAdditionalBids(seller, auctionNonce, additionalBidParams) {
+  const url = new URL(`${seller}${RESOURCE_PATH}additional-bids.py`);
+  let formData = new FormData();
+  formData.append('auctionNonce', auctionNonce);
+  formData.append('additionalBidParams', JSON.stringify(additionalBidParams));
+  const response = await fetch(url.toString(), {
+      method: 'POST',
+      adAuctionHeaders: true,
+      body: formData
+  });
+
+  assert_equals(response.status, 200, 'Failed to fetch additional bid: ' + await response.text());
+  assert_false(
+      response.headers.has('Ad-Auction-Additional-Bid'),
+      'Header "Ad-Auction-Additional-Bid" should not be available in JavaScript context.');
 }

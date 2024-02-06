@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<head>
+<meta charset="windows-1252">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/utils.js"></script>
+<title>`link rel=expect` href uses document encoding</title>
+<link rel="expect" href="#ß" blocking="render">
+<script>
+promise_test(async t => {
+  await new Promise(resolve => {
+    requestAnimationFrame(() => {
+      t.step(() => assert_true(!!document.getElementById("ß"), "should block until eszett element"));
+      t.step(() => assert_false(!!document.getElementById("last"), "should not block until last element"));
+      resolve();
+    });
+  });
+}, "<link rel=expect> should respect document encoding");
+
+</script>
+</head>
+<body>
+  Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias dolore quo natus pariatur beatae voluptatum ab dolores minima animi ullam, fuga vel. Tenetur vitae itaque a reiciendis velit maiores doloribus.
+
+  <div id="first"></div>
+  <script src="/loading/resources/dummy.js?pipe=trickle(d.4)">
+  </script>
+  <hr id="ß">
+  <script src="/loading/resources/dummy.js?pipe=trickle(d1)">
+  </script>
+  <hr id="last">
+</body>

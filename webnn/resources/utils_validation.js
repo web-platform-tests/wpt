@@ -118,6 +118,55 @@ function getAxesArrayContainSameValues(inputDimensions) {
   return axesArrayContainSameValues;
 }
 
+function getNotBroadcastingDimensions(dimensions) {
+  // Current this function returns an array of some not broadcasting dimensions
+  // for example given dimensions [2, 3, 4]
+  // this function returns
+  // [
+  //   [3, 3, 4],
+  //   [2, 2, 4],
+  //   [2, 4, 4],
+  //   [2, 3, 3],
+  //   [2, 3, 5],
+  //   [3],
+  //   [5],
+  //   [1, 3],
+  //   [1, 5],
+  //   [1, 1, 3],
+  //   [1, 1, 5],
+  //   [1, 1, 1, 3],
+  //   [1, 1, 1, 5],
+  // ]
+  if (dimensions.every(v => v === 1)) {
+    throw new Error(`[${dimensions}] always can be broadcasted`);
+  }
+  const resultDimensions = [];
+  const length = dimensions.length;
+  if (!dimensions.slice(0, length - 1).every(v => v === 1)) {
+    for (let i = 0; i < length; i++) {
+      if (dimensions[i] !== 1) {
+        for (let offset of [-1, 1]) {
+          const dimensionsB = dimensions.slice();
+          dimensionsB[i] += offset;
+          if (dimensionsB[i] !== 1) {
+            resultDimensions.push(dimensionsB);
+          }
+        }
+      }
+    }
+  }
+  const lastDimensionSize = dimensions[length - 1];
+  if (lastDimensionSize !== 1) {
+    for (let j = 0; j <= length; j++) {
+      if (lastDimensionSize > 2) {
+        resultDimensions.push(Array(j).fill(1).concat([lastDimensionSize - 1]));
+      }
+      resultDimensions.push(Array(j).fill(1).concat([lastDimensionSize + 1]));
+    }
+  }
+  return resultDimensions;
+}
+
 function getOutsideValueArray(type) {
   let range, outsideValueArray;
   switch (type) {
@@ -140,6 +189,47 @@ promise_setup(async () => {
   builder = new MLGraphBuilder(context);
 });
 
+function validateTwoInputsBroadcastable(operationName) {
+  promise_test(async t => {
+    for (let dataType of operandDataTypeArray) {
+      for (let dimensions of dimensionsArray) {
+        if (dimensions.length > 0) {
+          const inputA = builder.input('inputA', {dataType, dimensions});
+          const notBroadcastingDimensionsArray = getNotBroadcastingDimensions(dimensions);
+          for (let notBroadcastingDimensions of notBroadcastingDimensionsArray) {
+            const inputB = builder.input('inputB', {dataType, dimensions: notBroadcastingDimensions});
+            assert_throws_dom('DataError', () => builder[operationName](inputA, inputB));
+            assert_throws_dom('DataError', () => builder[operationName](inputB, inputA));
+          }
+        }
+      }
+    }
+  }, `[${operationName}] DataError is expected if two inputs aren't broadcastable`);
+}
+
+function validateTwoInputsOfSameDataType(operationName) {
+  let operationNameArray;
+  if (typeof operationName === 'string') {
+    operationNameArray = [operationName];
+  } else if (Array.isArray(operationName)) {
+    operationNameArray = operationName;
+  }
+  for (let subOperationName of operationNameArray) {
+    promise_test(async t => {
+      for (let dataType of operandDataTypeArray) {
+        for (let dimensions of dimensionsArray) {
+          const inputA = builder.input('inputA', {dataType, dimensions});
+          for (let dataTypeB of operandDataTypeArray) {
+            if (dataType !== dataTypeB) {
+              const inputB = builder.input('inputB', {dataType: dataTypeB, dimensions});
+              assert_throws_dom('DataError', () => builder[subOperationName](inputA, inputB));
+            }
+          }
+        }
+      }
+    }, `[${subOperationName}] DataError is expected if two inputs aren't of same data type`);
+  }
+}
 
 /**
  * Validate options.axes by given operation and input rank for

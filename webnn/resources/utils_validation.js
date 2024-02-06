@@ -21,6 +21,13 @@ const dimensions3D = [2, 3, 4];
 const dimensions4D = [2, 3, 4, 5];
 const dimensions5D = [2, 3, 4, 5, 6];
 
+const adjustOffsetArray = [
+  // Decrease 1
+  -1,
+  // Increase 1
+  1
+];
+
 const dimensionsArray = [
   dimensions0D,
   dimensions1D,

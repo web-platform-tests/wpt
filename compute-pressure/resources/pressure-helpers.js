@@ -10,7 +10,6 @@
 //   --enable-blink-features=MojoJS,MojoJSTest
 
 let mockPressureService = undefined;
-
 function pressure_test(func, name, properties) {
   promise_test(async t => {
     if (mockPressureService === undefined) {

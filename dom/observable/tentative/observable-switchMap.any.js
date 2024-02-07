@@ -246,3 +246,32 @@ test(() => {
     "source observable is unsubscribed from"
   );
 }, "switchMap result emits an error if the inner observable emits an error");
+
+test(() => {
+  const teardowns = [];
+  const source = new Observable((subscriber) => {
+    subscriber.next(1);
+    subscriber.addTeardown(() => {
+      teardowns.push("source");
+    });
+  });
+
+  const inner = new Observable((subscriber) => {
+    subscriber.addTeardown(() => {
+      teardowns.push("inner");
+    });
+  });
+
+  const result = source.switchMap(() => inner);
+
+  const ac = new AbortController();
+  result.subscribe({}, { signal: ac.signal });
+
+  ac.abort();
+
+  assert_array_equals(
+    teardowns,
+    ["inner", "source"],
+    "should unsubscribe in the correct order when user aborts the subscription"
+  );
+}, "should unsubscribe in the correct order when user aborts the subscription");

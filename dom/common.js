@@ -54,7 +54,7 @@ function setupRangeTests() {
     paras[4].setAttribute("style", "display:none");
     paras[4].textContent = "Ghijklmn";
     testDiv.appendChild(paras[4]);
-    
+
     paras.push(document.createElement("p"));
     const xmlDocument = new Document();
     paras[5].appendChild(xmlDocument.createCDATASection("1234"));

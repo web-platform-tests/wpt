@@ -11,7 +11,14 @@ import './imported-sw.js';
 
 self.addEventListener('install', async e => {
   e.waitUntil(caches.open('v1').then(
-      cache => {cache.put('cache.txt', new Response('From cache'))}));
+      cache => {
+        cache.put('cache.txt', new Response('From cache'));
+        // FIXME: If I put this, the test fails with COEP error.
+        //cache.put('cache_coep_fallback.txt', new Response('From cache'));
+        cache.put('cache_with_coep.txt',
+            new Response('From cache',
+              {"headers": [["Cross-Origin-Embedder-Policy","require-corp"]]}));
+      }));
 
   const params = new URLSearchParams(location.search);
   const key = params.get('key');

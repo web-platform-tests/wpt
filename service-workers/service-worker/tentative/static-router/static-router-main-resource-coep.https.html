@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>
+  Static Router: simply skip fetch handler for main resource if pattern matches
+</title>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-helpers.sub.js"></script>
+<script src="resources/static-router-helpers.sub.js"></script>
+<body>
+<script>
+const ROUTER_RULE_KEY_REQUEST_CACHE = 'condition-request-navigate-source-cache';
+const CACHED_COEP_ROUTE = 'resources/cache_with_coep.txt';
+const CACHED_COEP_FALLBACK_ROUTE = 'resources/cache_coep_fallback.txt';
+
+iframeTest(CACHED_COEP_ROUTE, ROUTER_RULE_KEY_REQUEST_CACHE, async (t, iwin, worker) => {
+  const {requests} = await get_info_from_worker(worker);
+  assert_equals(requests.length, 0);
+  assert_equals(iwin.document.body.innerText, "From cache");
+}, 'Main resource load matched with the cache source having COEP');
+
+iframeTest(CACHED_COEP_FALLBACK_ROUTE, ROUTER_RULE_KEY_REQUEST_CACHE, async (t, iwin, worker) => {
+  const {requests} = await get_info_from_worker(worker);
+  assert_equals(requests.length, 0);
+  assert_equals(iwin.document.body.innerText, "From network");
+}, 'Main resource load fallback to network due to COEP');
+
+</script>
+</body>

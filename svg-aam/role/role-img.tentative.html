@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+  <title>SVG-AAM Image Role Verification Tests</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+</head>
+<body>
+
+
+<p>Currently tentative due to <a href="https://github.com/w3c/svg-aam/issues/32">SVG-AAM #32: SVG image role should align with HTML on missing versus empty alt</a>.</p>
+
+<!-- [sic] included here b/c the spec says unlabeled, unrendered images are generic, but the spec may be wrong. -->
+<!-- Once https://github.com/w3c/svg-aam/issues/32 is resolved, this test can be moved to another file. -->
+<image data-testname="el-image (missing alt attribute)" data-expectedrole="image" class="ex"></image>
+
+<!-- Undisputed tests -->
+<image data-testname="el-image (non-empty aria-label attribute)" aria-label="x" data-expectedrole="image" class="ex"></image>
+<image data-testname="el-image (non-empty alt attribute)" alt="x" data-expectedrole="image" class="ex"></image>
+<image data-testname="el-image (non-empty title attribute)" title="x" data-expectedrole="image" class="ex"></image>
+<image data-testname="el-image (explicitly empty alt attribute)" alt="" class="ex-generic"></image>
+
+<script>
+AriaUtils.verifyRolesBySelector(".ex");
+AriaUtils.verifyGenericRolesBySelector(".ex-generic");
+</script>
+
+</body>
+</html>

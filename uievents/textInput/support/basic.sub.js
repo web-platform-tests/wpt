@@ -9,9 +9,14 @@ const expectedValue = "{{GET[expectedValue]}}";
 for (const el of els) {
   promise_test(t => {
     return new Promise((resolve, reject) => {
+      let beforeinputEvents = 0;
       let textInputEvents = 0;
+      el.addEventListener('beforeinput', t.step_func(e => {
+        beforeinputEvents++;
+      }));
       el.addEventListener('textInput', t.step_func(e => {
         textInputEvents++;
+        assert_equals(beforeinputEvents, 1);
         assert_equals(e.data, expectedData);
         assert_true(e.bubbles);
         assert_true(e.cancelable);

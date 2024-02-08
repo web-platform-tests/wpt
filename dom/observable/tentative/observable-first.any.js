@@ -121,3 +121,56 @@ promise_test(async () => {
     "observable first should take an option for a default value to return if the source observable completes without emitting any values"
   );
 }, "observable first should take an option for a default value to return if the source observable completes without emitting any values");
+
+promise_test(async () => {
+  const logs = [];
+  const source = new Observable((subscriber) => {
+    logs.push("source subscribe");
+    subscriber.addTeardown(() => {
+      logs.push("source teardown");
+    });
+    subscriber.signal.addEventListener(
+      "abort",
+      () => {
+        logs.push("source abort");
+      },
+      { once: true }
+    );
+    logs.push("before source next 1");
+    subscriber.next(1);
+    logs.push("after source next 1");
+  });
+
+  logs.push("calling first");
+  const promise = source.first();
+
+  assert_array_equals(
+    logs,
+    [
+      "calling first",
+      "source subscribe",
+      "before source next 1",
+      "source teardown",
+      "source abort",
+      "after source next 1",
+    ],
+    "observable first should have a proper lifecycle, synchronous check"
+  );
+
+  const firstValue = await promise;
+  logs.push(`first resolved with: ${firstValue}`);
+
+  assert_array_equals(
+    logs,
+    [
+      "calling first",
+      "source subscribe",
+      "before source next 1",
+      "source teardown",
+      "source abort",
+      "after source next 1",
+      "first resolved with: 1",
+    ],
+    "observable first should have a proper lifecycle"
+  );
+}, "observable first should have a proper lifecycle");

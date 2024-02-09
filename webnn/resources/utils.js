@@ -927,3 +927,52 @@ const toHalf = (value) => {
   bits += m & 1;
   return bits;
 };
+
+
+/**
+ * WebNN buffer creation test.
+ * @param {MLContext} context - the context used to create the buffer.
+ * @param {Number} bufferSize - ize of the buffer to create, in bytes.
+ */
+const createBuffer = (context, bufferSize) => {
+  let buffer;
+  try {
+    buffer = context.createBuffer({size:bufferSize});
+  } catch (e) {
+    assert_true(e instanceof DOMException);
+    assert_equals(e.name, "NotSupportedError");
+    return;
+  }
+  assert_equals(buffer.size(), bufferSize);
+};
+
+/**
+ * WebNN buffer test.
+ * @param {Number} bufferSize - Size of the buffer to create, in bytes.
+ * @param {String} deviceType - The execution device type for this test
+ */
+const testWebNNBuffer = (testName, bufferFunc, bufferSize, deviceType = 'cpu') => {
+  ExecutionArray.forEach(executionType => {
+    const isSync = executionType === 'sync';
+    if (self.GLOBAL.isWindow() && isSync) {
+      return;
+    }
+    let context;
+    if (isSync) {
+      setup(() => {
+        context = navigator.ml.createContextSync({deviceType});
+      });
+      test(() => {
+        bufferFunc(context, bufferSize);
+      }, `${testName} / ${executionType} / ${bufferSize}`);
+    } else {
+      // test async
+      promise_setup(async () => {
+          context = await navigator.ml.createContext({deviceType});
+      });
+      promise_test(async () => {
+        bufferFunc(context, bufferSize);
+      }, `${testName} / ${executionType} / ${bufferSize}`);
+    }
+  });
+};

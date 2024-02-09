@@ -10,7 +10,7 @@ function elDesc(el) {
   return rv;
 }
 
-function setSelection(el) {
+function setSelection(el, selectionStart, selectionEnd) {
   if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
     el.selectionStart = selectionStart;
     el.selectionEnd = selectionEnd;

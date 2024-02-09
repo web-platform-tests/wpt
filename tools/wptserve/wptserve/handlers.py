@@ -2,6 +2,7 @@
 
 import json
 import os
+import pathlib
 from collections import defaultdict
 
 from urllib.parse import quote, unquote, urljoin
@@ -301,9 +302,9 @@ class PythonScriptHandler:
         """
         path = filesystem_path(self.base_path, request, self.url_base)
         if os.path.isdir(path):
-            default_py_matches = glob.glob("default*.py", root_dir=path)
-            if default_py_matches:
-                path = default_py_matches[0]
+            default_py = next(pathlib.Path(path).glob("default*.py"), None)
+            if default_py:
+                path = str(default_py)
 
         try:
             environ = {"__file__": path}

@@ -16,13 +16,12 @@
 
 <!-- [sic] included here b/c the spec says unlabeled, unrendered images are generic, but the spec may be wrong. -->
 <!-- Once https://github.com/w3c/svg-aam/issues/32 is resolved, this test can be moved to another file. -->
-<image data-testname="el-image (missing alt attribute)" data-expectedrole="image" class="ex"></image>
+<image data-testname="el-image (missing image>title element)" data-expectedrole="image" class="ex"></image>
 
-<!-- Undisputed tests -->
+<!-- Additional tests -->
 <image data-testname="el-image (non-empty aria-label attribute)" aria-label="x" data-expectedrole="image" class="ex"></image>
-<image data-testname="el-image (non-empty alt attribute)" alt="x" data-expectedrole="image" class="ex"></image>
-<image data-testname="el-image (non-empty title attribute)" title="x" data-expectedrole="image" class="ex"></image>
-<image data-testname="el-image (explicitly empty alt attribute)" alt="" class="ex-generic"></image>
+<image data-testname="el-image (non-empty image>title element)" data-expectedrole="image" class="ex"><title>x</title></image>
+<image data-testname="el-image (explicitly empty image>title element)" class="ex-generic"><title></title></image>
 
 <script>
 AriaUtils.verifyRolesBySelector(".ex");

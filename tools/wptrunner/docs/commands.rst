@@ -3,7 +3,7 @@ commands.json
 
 :code:`commands.json` files define how subcommands are executed by the
 :code:`./wpt` command. :code:`wpt` searches all command.json files under the top
-directory and sets up subcommands from these JSON files. A typical commands.json
+directory and sets up subcommands from these JSON files. A typical :code:`commands.json` file
 would look like the following::
 
   {

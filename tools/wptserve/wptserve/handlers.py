@@ -301,6 +301,8 @@ class PythonScriptHandler:
         :return: The return of func
         """
         path = filesystem_path(self.base_path, request, self.url_base)
+
+        # Find a default Python file if the specified path is a directory
         if os.path.isdir(path):
             default_py = next(pathlib.Path(path).glob("default*.py"), None)
             if default_py:

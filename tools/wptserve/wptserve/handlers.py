@@ -289,6 +289,9 @@ class PythonScriptHandler:
         """
         This loads the requested python file as an environ variable.
 
+        If the requested file is a directory, this instead loads the first
+        file found in that directory that matches "default*.py".
+
         Once the environ is loaded, the passed `func` is run with this loaded environ.
 
         :param request: The request object
@@ -298,7 +301,9 @@ class PythonScriptHandler:
         """
         path = filesystem_path(self.base_path, request, self.url_base)
         if os.path.isdir(path):
-            path = os.path.join(path, "default.py")
+            default_py_matches = glob.glob("default*.py", root_dir=path)
+            if default_py_matches:
+                path = default_py_matches[0]
 
         try:
             environ = {"__file__": path}

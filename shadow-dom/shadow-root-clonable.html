@@ -67,6 +67,16 @@ test(() => {
   assert_equals(clonedRoot.children.length, 1, "children count");
   assert_equals(clonedRoot.children[0].localName, "input", "children content");
 }, "declarative shadow roots can opt in to clonable with shadowrootclonable");
+
+test(() => {
+  const div = document.createElement("div");
+  const shadow = div.attachShadow({mode: "open", clonable: false});
+  assert_false(shadow.clonable);
+  shadow.clonable = true;
+  assert_true(shadow.clonable);
+  const clone = div.cloneNode(true);
+  assert_true(!!clone.shadowRoot);
+}, "clonable is mutable");
 </script>
 
 <template id="test">

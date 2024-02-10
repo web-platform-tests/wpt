@@ -165,6 +165,29 @@ test(() => {
 }, 'Declarative Shadow DOM: clonable attribute');
 </script>
 
+test(() => {
+  const div = document.createElement('div');
+  div.setHTMLUnsafe(`
+    <div id="host">
+      <template shadowrootmode="open" shadowrootclonable>
+      </template>
+    </div>
+    `);
+  var host = div.querySelector('#host');
+  assert_true(!!host.shadowRoot,"No shadow root found");
+  assert_true(host.shadowRoot.clonable,"clonable should be true");
+  div.setHTMLUnsafe(`
+    <div id="host">
+      <template shadowrootmode="open">
+      </template>
+    </div>
+    `);
+  host = div.querySelector('#host');
+  assert_true(!!host.shadowRoot,"No shadow root found");
+  assert_false(host.shadowRoot.clonable,"clonable should be false without the shadowrootclonable attribute");
+}, 'Declarative Shadow DOM: clonable attribute');
+</script>
+
 <div id="multi-host" style="display:none">
   <template shadowrootmode="open">
     <span>root 1</span>

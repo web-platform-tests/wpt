@@ -49,30 +49,36 @@ test((t) => {
 </script>
 
 <div id=open2>
-  <template shadowrootmode=open shadowrootdelegatesfocus shadowrootclonable>
+  <template shadowrootmode=open shadowrootdelegatesfocus shadowrootclonable serializable>
     Open, delegates focus (not the default), clonable (not the default)
-    named slot assignment (the default)
+    serializable (not the default), named slot assignment (the default)
   </template>
 </div>
 
 <script>
 test((t) => {
+  // These should match the declarative shadow root above.
+  const originalProps = {mode: "open", delegatesFocus: true, slotAssignment: "named", clonable: true, serializable: true};
+
+  // Changing these should throw.
   assert_throws_dom("NotSupportedError",() => {
-    open2.attachShadow({mode: "closed", delegatesFocus: true, slotAssignment: "named", clonable: true});
+    open2.attachShadow({...originalProps, mode: "closed"});
   },'Mismatched shadow root type should throw');
   assert_throws_dom("NotSupportedError",() => {
-    open2.attachShadow({mode: "open", delegatesFocus: false, slotAssignment: "named", clonable: true});
+    open2.attachShadow({...originalProps, delegatesFocus: false});
   },'Mismatched shadow root delegatesFocus should throw');
   assert_throws_dom("NotSupportedError",() => {
-    open2.attachShadow({mode: "open", delegatesFocus: true, slotAssignment: "manual", clonable: true});
+    open2.attachShadow({...originalProps, slotAssignment: "manual"});
   },'Mismatched shadow root slotAssignment should throw');
-  assert_throws_dom("NotSupportedError",() => {
-    open2.attachShadow({mode: "open", delegatesFocus: true, slotAssignment: "named", clonable: false});
-  },'Mismatched shadow root clonable should throw');
 
+  // Boolean arguments just update the shadow root, and return the same root.
   const initialShadow = open2.shadowRoot;
-  const shadow = open2.attachShadow({mode: "open", delegatesFocus: true, slotAssignment: "named", clonable: true}); // Shouldn't throw
+  assert_true(open2.shadowRoot.clonable);
+  assert_true(open2.shadowRoot.serializable);
+  const shadow = open2.attachShadow({...originalProps, clonable: false, serializable: false}); // Shouldn't throw
   assert_equals(shadow,initialShadow,'Same shadow should be returned');
   assert_equals(shadow.textContent,'','Shadow should be empty');
+  assert_false(open2.shadowRoot.clonable,'clonable flag should be updated');
+  assert_false(open2.shadowRoot.serializable,'serializable flag should be updated');
 },'Calling attachShadow() on declarative shadow root must match all parameters');
 </script>

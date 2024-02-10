@@ -123,4 +123,14 @@ function runAllTests() {
 
 runAllTests();
 
+test(() => {
+  const wrapper = document.createElement("div");
+  const div = wrapper.appendChild(document.createElement("div"));
+  const shadow = div.attachShadow({mode: "open", serializable: false});
+  assert_false(shadow.serializable);
+  shadow.serializable = true;
+  assert_true(shadow.serializable);
+  assert_equals(wrapper.getHTML({includeShadowRoots: false}),'<div><template shadowrootmode="open" serializable></template></div>');
+}, "serializable is mutable");
+
 </script>

@@ -5,14 +5,14 @@
 <link rel="help" href="https://drafts.csswg.org/css-borders-4/#box-shadow-spread">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/css/support/parsing-testcommon.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
 
 <div id="target"></div>
 
 <script>
-  test_computed_value("box-shadow-spread", "0", "0px");
-  test_computed_value("box-shadow-spread", "1px");
-  test_computed_value("box-shadow-spread", "1em", "20px");
-  test_computed_value("box-shadow-spread", "-1px");
-  test_computed_value("box-shadow-spread", "calc(1em + 1px)", "21px");
+test_computed_value("box-shadow-spread", "0", "0px");
+test_computed_value("box-shadow-spread", "1px");
+test_computed_value("box-shadow-spread", "1em", "20px");
+test_computed_value("box-shadow-spread", "-1px");
+test_computed_value("box-shadow-spread", "calc(1em + 1px)", "21px");
 </script>

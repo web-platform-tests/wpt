@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Borders and Box Decorations 4 Test: 'corner-shape: round round round round'</title>
+<title>CSS Borders and Box Decorations 4 Test: 'corner-shape: angle round round round'</title>
 <link rel="author" title="Sebastian Zartner" href="mailto:sebastianzartner@gmail.com">
 <link rel="help" href="https://drafts.csswg.org/css-borders-4/#corner-shaping">
-<link rel="match" href="../reference/corner-shape-round-ref.html">
-<meta name="assert" content="This test checks that 'round round round round' is supported for 'corner-shape'.">
+<link rel="match" href="../reference/corner-shape-angle-top-left-ref.html">
+<meta name="assert" content="This test checks that 'angle round round round' is supported for 'corner-shape'.">
 
 <style>
 #test {
@@ -13,10 +13,10 @@
   margin-top: 20px;
   border: 10px solid black;
   border-radius: 40px;
-  corner-shape: round round round round;
+  corner-shape: angle round round round;
 }
 </style>
 
-<p>Test passes if the square has four rounded corners.
+<p>Test passes if the square has a beveled top-left corner and the others are rounded.
 
 <div id="test"></div>

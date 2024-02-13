@@ -19,34 +19,46 @@
       initial-value: 0deg;
       inherits: false;
     }
+    @property --my-number {
+      syntax: "<number>";
+      initial-value: 0;
+      inherits: false;
+    }
+    @property --my-percentage {
+      syntax: "<percentage>";
+      initial-value: 0%;
+      inherits: false;
+    }
   </style>
   <body>
     <script>
+
       test_interpolation({
-        property: '--my-angle',
-        from: '100deg',
-        to: 'calc(sign(20rem - 20px) * 180deg)',
+        property: '--my-number',
+        from: '100',
+        to: 'calc(sign(20rem - 20px) * 180)',
       }, [
-        {at: -1, expect: '20deg'},
-        {at: 0, expect: '100deg'},
-        {at: 0.125, expect: '110deg'},
-        {at: 0.875, expect: '170deg'},
-        {at: 1, expect: '180deg'},
-        {at: 2, expect: '260deg'}
+        {at: -1, expect: '20'},
+        {at: 0, expect: '100'},
+        {at: 0.125, expect: '110'},
+        {at: 0.875, expect: '170'},
+        {at: 1, expect: '180'},
+        {at: 2, expect: '260'}
       ]);
 
       test_interpolation({
-        property: '--my-angle',
-        from: 'calc(sign(20rem - 20px) * 100deg)',
-        to: 'calc(progress(10rem from 20px to 100px) * 180deg)',
+        property: '--my-number',
+        from: 'calc(sign(20rem - 20px) * 100)',
+        to: 'calc(progress(10rem from 20px to 100px) * 180)',
       }, [
-        {at: -1, expect: '20deg'},
-        {at: 0, expect: '100deg'},
-        {at: 0.125, expect: '110deg'},
-        {at: 0.875, expect: '170deg'},
-        {at: 1, expect: '180deg'},
-        {at: 2, expect: '260deg'}
+        {at: -1, expect: '20'},
+        {at: 0, expect: '100'},
+        {at: 0.125, expect: '110'},
+        {at: 0.875, expect: '170'},
+        {at: 1, expect: '180'},
+        {at: 2, expect: '260'}
       ]);
+
     </script>
   </body>
 </html>

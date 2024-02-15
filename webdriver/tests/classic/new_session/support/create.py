@@ -98,6 +98,9 @@ invalid_data = [
         {"pageLoad": {"value": 10}},
         {"pageLoad": 10, "invalid": 10},
     ]),
+    ("setWindowRect", [
+        True, False, 1, [], {}, "false"
+    ]),
     ("strictFileInteractability", [
         1, [], {}, "false",
     ]),

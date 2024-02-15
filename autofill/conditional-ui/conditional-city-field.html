@@ -130,6 +130,10 @@
 </script>
 
 <script>
+  /**
+   * This tests autofilling of city field when switching from a country without that field toa country with that field.
+   * e.g. Vatican City -> Canada
+   */
   promise_test(async t => {
     if (!window.test_driver) {
       return;

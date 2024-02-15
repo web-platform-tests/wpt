@@ -76,6 +76,10 @@
   </div>
 </form>
 <script>
+  /**
+   * This test checks autofilling work for fields that not in the viewport but are in a visible state.
+   * This ensure that autofill works on smaller devices for long forms.
+   */
   promise_test(async t => {
     if (!window.test_driver) {
       return;

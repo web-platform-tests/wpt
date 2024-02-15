@@ -34,6 +34,10 @@
   </div>
 </form>
 <script>
+  /**
+   * This test checks that the select element for state/province is autofilled if the value of the stored address mismatches the values of the select.
+   * This happens especially when you save an address on a free-form field and then try to autofill a form with a select element.
+   */
   promise_test(async t => {
     if (!window.test_driver) {
       return;

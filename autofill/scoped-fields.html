@@ -40,6 +40,10 @@
   />
 </form>
 <script>
+  /**
+   * This test checks that the autofill suggestions are correctly scoped to the form elements.
+   * This is currently not working as expected in Safari.
+   */
   promise_test(async () => {
     if (!window.test_driver) {
       return;

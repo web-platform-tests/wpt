@@ -88,6 +88,14 @@
 </script>
 
 <script>
+  /**
+   * This test checks that the autofill works for select inputs with dynamically load options.
+   * This happens when switching between countries that have different values.
+   * e.g. Canada and USA have different states/provinces.
+   *
+   * This example is done with React because it's the most common JS frame used for this common pattern.
+   * This is for example not working in Safari
+   */
   promise_test(async t => {
     if (!window.test_driver) {
       return;

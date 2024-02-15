@@ -29,6 +29,9 @@
 </form>
 <form id="address-form"></form>
 <script>
+  /*
+  * This test checks fields that belong to a different form are not being autofilled.
+  */
   promise_test(async t => {
     if (!window.test_driver) {
       return;

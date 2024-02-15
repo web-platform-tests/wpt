@@ -127,6 +127,10 @@
 </script>
 
 <script>
+  /**
+   * This tests autofilling of postalcode field when switching from a country without that field toa country with that field.
+   * e.g. Hong Kong -> Canada
+   */
   promise_test(async t => {
     if (!window.test_driver) {
       return;

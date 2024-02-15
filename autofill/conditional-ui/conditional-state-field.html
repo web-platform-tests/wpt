@@ -124,6 +124,10 @@
 </script>
 
 <script>
+  /**
+   * This tests autofilling of state/province field when switching from a country without that field toa country with that field.
+   * e.g. Austria -> Canada
+   */
   promise_test(async t => {
     if (!window.test_driver) {
       return;

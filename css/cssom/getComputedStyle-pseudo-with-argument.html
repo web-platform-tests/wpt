@@ -43,7 +43,8 @@
 [
   "::highlight(name)",
   "::highlight(\nname",
-  "::highlight(name\t"
+  "::highlight(name\t",
+  "::highlight( name ",
 ].forEach(parsablePseudoIdentifier => {
   test(() => {
     const li = document.querySelector('li');

@@ -42,5 +42,10 @@
   test((t) => {
     element.style = `background: padding-box border-box;`;
     assert_equals(element.style.background , 'none');
-  }, "all initial values");
+  }, "use style property when everything is initial value");
+
+  test((t) => {
+    document.body.style.background = 'padding-box border-box';
+    assert_equals(getComputedStyle(document.body).background , 'none');
+  }, "use getComputedStyle method when everything is initial value");
 </script>

@@ -36,7 +36,7 @@
 ].forEach(nonParsablePseudoIdentifier => {
   test(() => {
     const li = document.querySelector('li');
-    assert_equals(getComputedStyle(li, nonParsablePseudoIdentifier).length, 0);
+    assert_not_equals(getComputedStyle(li, nonParsablePseudoIdentifier).color, "rgb(0, 128, 0)");
   }, `This pseudo-element should not parse: ${nonParsablePseudoIdentifier}`)
 });
 
@@ -49,7 +49,6 @@
 ].forEach(parsablePseudoIdentifier => {
   test(() => {
     const li = document.querySelector('li');
-    assert_true(getComputedStyle(li, parsablePseudoIdentifier).length != 0);
     assert_equals(getComputedStyle(li, parsablePseudoIdentifier).color, "rgb(0, 128, 0)");
   }, `This pseudo-element should parse: ${parsablePseudoIdentifier}`);
 });

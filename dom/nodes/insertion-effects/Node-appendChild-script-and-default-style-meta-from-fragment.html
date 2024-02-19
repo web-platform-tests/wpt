@@ -8,7 +8,7 @@
 <div id="div">hello</div>
 <script>
 let scriptRan = false;
-let computedStyle = null;
+let computedStyleDuringInsertion = null;
 test(() => {
   const div = document.getElementById("div");
   const meta = document.createElement("meta");
@@ -16,7 +16,7 @@ test(() => {
   meta.content = "alternative";
   const script = document.createElement("script");
   script.textContent = `
-    computedStyle = getComputedStyle(div).display;
+    computedStyleDuringInsertion = getComputedStyle(div).display;
     scriptRan = true;
 `;
   const df = document.createDocumentFragment();
@@ -26,7 +26,7 @@ test(() => {
   assert_false(scriptRan, "script ran");
   document.head.appendChild(df);
   assert_true(scriptRan, "script has not run");
-  assert_equals(computedStyle, "none", "div is still visible");
-  assert_equals(getComputedStyle(div).display, "none", "div is still visible after insertion");
+  assert_equals(computedStyleDuringInsertion, "none", "style is not applied during insertion");
+  assert_equals(getComputedStyle(div).display, "none", "style is applied after insertion");
 });
 </script>

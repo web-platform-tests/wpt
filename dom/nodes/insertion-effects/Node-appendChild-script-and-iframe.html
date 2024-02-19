@@ -5,7 +5,7 @@
 <script src=/resources/testharnessreport.js></script>
 <div id="log"></div>
 <script>
-const happened = [];
+let state = "script not run yet";
 const iframe = document.createElement("iframe");
 
 test(() => {
@@ -13,15 +13,15 @@ test(() => {
 
   const script = document.createElement("script");
   script.textContent = `
-    happened.push(iframe.contentWindow === null);
+    state = iframe.contentWindow ? "iframe with content window" : "iframe without content window";
 `;
 
   const div = document.createElement("div");
   div.appendChild(script);
   div.appendChild(iframe);
 
-  assert_array_equals(happened, []);
+  assert_equals(state, "script not run yet");
   document.body.appendChild(div);
-  assert_array_equals(happened, [false])
+  assert_equals(state, "iframe with content window");
 });
 </script>

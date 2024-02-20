@@ -45,8 +45,7 @@
                 // A window is a global object which has 1-to-1 mapping to a realm, see the first
                 // note of <https://html.spec.whatwg.org/#realms-settings-objects-global-objects>
                 // and its following paragraph.
-                assert_not_equals(aTestElement.ownerDocument, null);
-                assert_not_equals(aTestElement.ownerDocument, undefined);
+                assert_equals(aTestElement.ownerDocument, document);
                 assert_not_equals(aTestElement.ownerDocument.defaultView, sourceFrame.contentWindow,
                 "The source frame's realm differs from the test element's realm.");
 

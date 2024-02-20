@@ -37,26 +37,50 @@
     const html = createHTML_policy(window, '6').createHTML(INPUTS.HTML);
     const script = createScript_policy(window, '7').createScript(INPUTS.Script);
 
-    const xlink = "http://www.w3.org/1999/xlink";
-    const svg = "http://www.w3.org/2000/svg";
+    const xlinkNamespace = "http://www.w3.org/1999/xlink";
+    const svgNamespace = "http://www.w3.org/2000/svg";
 
     // svg:script xlink:href=... expects a TrustedScriptURL.
     // Assigning a TrustedScriptURL works.
     test(t => {
-      let elem = document.createElementNS(svg, "script");
-      elem.setAttributeNS(xlink, "href", script_url);
+      let elem = document.createElementNS(svgNamespace, "script");
+      elem.setAttributeNS(xlinkNamespace, "href", script_url);
       assert_equals("" + RESULTS.ScriptURL,
-                    elem.getAttributeNodeNS(xlink, "href").value);
+                    elem.getAttributeNodeNS(xlinkNamespace, "href").value);
     }, "Assigning TrustedScriptURL to <svg:script xlink:href=...> works");
 
     // Assigning things that ought to not work.
     test(t => {
-      let elem = document.createElementNS(svg, "script");
+      let elem = document.createElementNS(svgNamespace, "script");
       const values = [ "abc", null, html, script ];
       for (const v of values) {
         assert_throws_js(TypeError, _ => {
-          elem.setAttributeNS(xlink, "href", v);
+          elem.setAttributeNS(xlinkNamespace, "href", v);
         });
       }
     }, "Blocking non-TrustedScriptURL assignment to <svg:script xlink:href=...> works");
+
+    // <https://w3c.github.io/trusted-types/dist/spec/#validate-attribute-mutation>.
+    const nonLowerCaseTests = [
+      { element: "iframe", attribute: "SRCDOC", elementNamespace: htmlNamespace },
+      { element: "embed", attribute: "SRC", elementNamespace: htmlNamespace },
+      { element: "script", attribute: "SRC", elementNamespace: htmlNamespace },
+      { element: "object", attribute: "DATA", elementNamespace: htmlNamespace },
+      { element: "object", attribute: "CODEBASE", elementNamespace: htmlNamespace },
+      { element: "script", attribute: "HREF", elementNamespace: svgNamespace },
+      { element: "script", attribute: "HREF", elementNamespace: svgNamespace,
+        attributeNamespace: xlinkNamespace },
+    ];
+
+    for (const testData of nonLowerCaseTests) {
+      const attributeNamespace = ("attributeNamespace" in testData) ?
+          testData.attributeNamespace : null;
+
+      test(t => {
+        assert_element_accepts_non_trusted_type_set_ns(testData.element, testData.attribute, "v",
+        "v", testData.elementNamespace, attributeNamespace);
+      }, "Check `setAttributeNS` allows setting non-trusted string for non-lowercase attribute \"" +
+         testData.attribute + "\" (ns=" + attributeNamespace + ") for \"" + testData.element +
+         "\" element (ns=" + testData.elementNamespace + ").");
+    }
 </script>

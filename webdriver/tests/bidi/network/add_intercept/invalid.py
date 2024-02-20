@@ -185,3 +185,15 @@ async def test_params_url_patterns_pattern_search_invalid_value(bidi_session, va
             phases=["beforeRequestSent"],
             url_patterns=[{"type": "pattern", "search": value}],
         )
+
+
+@pytest.mark.parametrize("value", [False, 42, {}, ""])
+async def test_params_contexts_invalid_type(bidi_session, value):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.network.add_intercept(phases=[value])
+
+
+@pytest.mark.parametrize("value", [[], ["does not exist"]])
+async def test_params_contexts_invalid_value(bidi_session, value):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.network.add_intercept(phases=["beforeRequestSent"], contexts=value)

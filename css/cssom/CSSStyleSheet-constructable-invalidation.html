@@ -19,7 +19,7 @@ promise_test(async function(t) {
   sheet.rules[0].style.setProperty('--color', 'green');
   assert_equals(getComputedStyle(span1).color, "rgb(0, 128, 0)", "Sheet should invalidate style");
   document.adoptedStyleSheets = [];
-  assert_equals(getComputedStyle(span1).color, "rgb(0, 0, 0)", "Removing sheed should apply");
+  assert_equals(getComputedStyle(span1).color, "rgb(0, 0, 0)", "Removing sheet should apply");
 }, "mutating constructed CSSStyleSheet applied to root invalidates styles");
 
 promise_test(async function() {

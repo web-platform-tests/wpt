@@ -28,12 +28,18 @@
         async_test(t => {
             const sourceFrame = document.createElement("iframe");
 
+            // The markup requires the parent element to ensure the attribute is associated with the
+            // correct namespace.
             sourceFrame.srcdoc = passThroughPolicy.createHTML(
             `<!DOCTYPE html>
             <head>
             <meta charset="utf-8">
             </head>
-            <body><div ` + testAttr.name + `="` + testAttr.value + `"></div>
+            <body>
+                <` + aTestElement.parentElement.localName + `>
+                    <` + aTestElement.localName + ` ` + testAttr.name + `="` + testAttr.value + `">
+                    </` + aTestElement.localName + `>
+                </` + aTestElement.parentElement.localName + `>
             doc without TT CSP.
             </body>`);
 
@@ -49,9 +55,9 @@
                 assert_not_equals(aTestElement.ownerDocument.defaultView, sourceFrame.contentWindow,
                 "The source frame's realm differs from the test element's realm.");
 
-                const div = sourceFrame.contentDocument.body.querySelector("div");
-                const sourceAttr = div.getAttributeNode(testAttr.name);
-                div.removeAttributeNode(sourceAttr);
+                const sourceElement = sourceFrame.contentDocument.body.querySelector(aTestElement.localName);
+                const sourceAttr = sourceElement.getAttributeNode(testAttr.name);
+                sourceElement.removeAttributeNode(sourceAttr);
 
                 assert_throws_js(TypeError, () => { aTestElement.setAttributeNode(sourceAttr); });
             }));

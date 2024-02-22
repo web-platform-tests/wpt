@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: Border-right-color with various invalid values</title>
+<link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-border-right-color" />
+<link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-color-properties" />
+<link rel="match" href="border-color-invalid-ref.xht" />
+<meta name="flags" content="invalid" />
+<style type="text/css">
+div {
+  border-right-style: solid;
+  border-right-width: 20px;
+  width: 0;
+  height: 20px;
+  margin: 2px;
+}
+#test007 {
+  border-right-color: #1000000;
+}
+#test008 {
+  border-right-color: #fgfgfg;
+}
+#test013 {
+  border-right-color: #fg0000;
+}
+#test018 {
+  border-right-color: #00fg00;
+}
+#test023 {
+  border-right-color: #0000fg;
+}
+#test024 {
+  border-right-color: #00;
+}
+#test031 {
+  border-right-color: #ggg;
+}
+#test036 {
+  border-right-color: #g00;
+}
+#test041 {
+  border-right-color: #0g0;
+}
+#test046 {
+  border-right-color: #00g;
+}
+</style>
+</head>
+<body>
+<div id="test007"></div>
+<div id="test008"></div>
+<div id="test013"></div>
+<div id="test018"></div>
+<div id="test023"></div>
+<div id="test024"></div>
+<div id="test031"></div>
+<div id="test036"></div>
+<div id="test041"></div>
+<div id="test046"></div>
+</body>
+</html>

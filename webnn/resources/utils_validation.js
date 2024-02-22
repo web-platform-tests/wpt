@@ -29,7 +29,7 @@ const adjustOffsetsArray = [
 ];
 
 // TODO
-// Add more 5+ D dimensions
+// Add more 5+ dimensions
 const allWebNNDimensionsArray = [
   dimensions0D,
   dimensions1D,

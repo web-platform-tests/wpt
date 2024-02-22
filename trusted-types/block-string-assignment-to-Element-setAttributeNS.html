@@ -21,13 +21,15 @@
       assert_element_accepts_trusted_script_url_set_ns(window, '2', t, 'a', 'b', RESULTS.SCRIPTURL);
     }, "Element.setAttributeNS assigned via policy (successful ScriptURL transformation)");
 
+    const htmlNamespace = "http://www.w3.org/1999/xhtml";
+
     // Unknown attributes should not be TT checked:
     test(t => {
-      assert_element_accepts_non_trusted_type_set_ns('a', 'b', 'A string', 'A string');
+      assert_element_accepts_non_trusted_type_set_ns('a', 'b', 'A string', 'A string', htmlNamespace, null);
     }, "Element.setAttributeNS accepts untrusted string for non-specced accessor");
 
     test(t => {
-      assert_element_accepts_non_trusted_type_set_ns('a', 'b', null, 'null');
+      assert_element_accepts_non_trusted_type_set_ns('a', 'b', null, 'null', htmlNamespace, null);
     }, "Element.setAttributeNS accepts null for non-specced accessor");
 
     // Setup trusted values for use in subsequent tests.

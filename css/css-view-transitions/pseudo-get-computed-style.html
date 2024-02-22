@@ -43,6 +43,7 @@ promise_test(() => {
       assert_equals(getComputedStyle(document.documentElement, "::view-transition-group(root)").mixBlendMode, "normal", "container(root)");
       assert_equals(getComputedStyle(document.documentElement, "::view-transition-image-pair(root)").position, "absolute", "wrapper(root)");
       assert_equals(getComputedStyle(document.documentElement, "::view-transition-old(root)").position, "absolute", "outgoing(root)");
+      assert_equals(getComputedStyle(document.documentElement, "::view-transition-old(root)").animationTimingFunction, "linear", "outgoing(root)");
 
       requestAnimationFrame(() => {
         assert_equals(getComputedStyle(document.documentElement, "::view-transition").position, "fixed", "raf ::view-transition");
@@ -93,6 +94,8 @@ promise_test(() => {
 
     assert_equals(getComputedStyle(document.documentElement, "::view-transition-old(target)").position, "absolute");
     assert_equals(getComputedStyle(document.documentElement, "::view-transition-new(target)").position, "absolute");
+    assert_equals(getComputedStyle(document.documentElement, "::view-transition-old(target)").animationTimingFunction, "linear", "old(target)");
+    assert_equals(getComputedStyle(document.documentElement, "::view-transition-new(target)").animationTimingFunction, "linear", "new(target)");
 
     assert_equals(getComputedStyle(document.documentElement, "::view-transition-group(root)").position, "absolute");
     assert_equals(getComputedStyle(document.documentElement, "::view-transition-image-pair(root)").position, "absolute");

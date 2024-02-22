@@ -291,7 +291,8 @@ class PythonScriptHandler:
         This loads the requested python file as an environ variable.
 
         If the requested file is a directory, this instead loads the first
-        file found in that directory that matches "default*.py".
+        lexicographically sorted file found in that directory that matches
+        "default*.py".
 
         Once the environ is loaded, the passed `func` is run with this loaded environ.
 
@@ -304,9 +305,11 @@ class PythonScriptHandler:
 
         # Find a default Python file if the specified path is a directory
         if os.path.isdir(path):
-            default_py = next(pathlib.Path(path).glob("default*.py"), None)
-            if default_py:
-                path = str(default_py)
+            default_py_files = sorted(list(filter(
+                pathlib.Path.is_file,
+                pathlib.Path(path).glob("default*.py"))))
+            if default_py_files:
+                path = str(default_py_files[0])
 
         try:
             environ = {"__file__": path}

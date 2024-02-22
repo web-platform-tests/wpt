@@ -6,8 +6,7 @@ import socket
 import time
 import traceback
 from abc import ABC, abstractmethod
-from collections.abc import Mapping
-from typing import cast, Any, List, Optional, Tuple, Type, TypedDict
+from typing import cast, Any, List, Mapping, Optional, Tuple, Type
 
 import mozprocess
 from mozdebug import DebuggerInfo
@@ -43,14 +42,10 @@ def maybe_add_args(required_args: List[str], current_args: List[str]) -> List[st
     return current_args
 
 
-class Certificate(TypedDict):
-    host: str
-    certificateFile: str  # noqa: N815
-
-
-def certificate_domain_list(list_of_domains: List[str], certificate_file: str) -> List[Certificate]:
+def certificate_domain_list(list_of_domains: List[str],
+                            certificate_file: str) -> List[Mapping[str, Any]]:
     """Build a list of domains where certificate_file should be used"""
-    cert_list: List[Certificate] = []
+    cert_list: List[Mapping[str, Any]] = []
     for domain in list_of_domains:
         cert_list.append({"host": domain, "certificateFile": certificate_file})
     return cert_list

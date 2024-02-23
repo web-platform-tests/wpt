@@ -1277,7 +1277,7 @@
             throw new Error("clear_device_posture() is not implemented by testdriver-vendor.js");
         },
 
-        async consume_user_activation() {
+        async consume_user_activation(context=null) {
             throw new Error("consume_user_activation() is not implemented by testdriver-vendor.js");
         },
     };

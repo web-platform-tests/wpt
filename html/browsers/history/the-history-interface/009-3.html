@@ -18,7 +18,7 @@ parent.test(function () {
 }, 'document.referrer should use the pushed state');
 window.onload = function () {
         setTimeout(function () {
-                try { history.pushState('','','009-4.html?2345'); } catch(e) {}
+                try { history.replaceState('','','009-4.html?2345'); } catch(e) {}
                 location.href = '009-5.html?pipe=sub';
         },10);
 };

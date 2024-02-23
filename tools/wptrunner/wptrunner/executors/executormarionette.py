@@ -754,7 +754,7 @@ class MarionetteUserActivationProtocolPart(UserActivationProtocolPart):
     def setup(self):
         self.marionette = self.parent.marionette
 
-    def consume_user_activation(self, sensor_type, sensor_params):
+    def consume_user_activation(self, context):
         raise NotImplementedError("consume_user_activation not yet implemented")
 
 class MarionetteDevicePostureProtocolPart(DevicePostureProtocolPart):

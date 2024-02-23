@@ -823,5 +823,5 @@ class UserActivationProtocolPart(ProtocolPart):
     name = "user_activation"
 
     @abstractmethod
-    def consume_user_activation(self):
+    def consume_user_activation(self, context):
         pass

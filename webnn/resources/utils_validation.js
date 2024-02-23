@@ -288,6 +288,7 @@ function validateOptionsAxes(operationName, inputRank) {
         }
       }
     }, `[${subOperationName}] TypeError is expected if any of options.axes elements is not an unsigned long interger`);
+
     // DataError is expected if any of options.axes elements is greater or equal to the size of input
     promise_test(async t => {
       if (inputRank === undefined) {
@@ -311,6 +312,7 @@ function validateOptionsAxes(operationName, inputRank) {
         }
       }
     }, `[${subOperationName}] DataError is expected if any of options.axes elements is greater or equal to the size of input`);
+
     // DataError is expected if two or more values are same in the axes sequence
     promise_test(async t => {
       if (inputRank === undefined) {

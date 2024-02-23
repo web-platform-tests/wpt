@@ -4,6 +4,7 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <style id="style"></style>
+<body>
 <script>
 const happened = []
 const style = document.getElementById("style");
@@ -13,7 +14,7 @@ test(() => {
   const script = document.createElement("script");
   script.textContent = `
     happened.push(style.sheet.cssRules.length);
-`;
+  `;
 
   const df = document.createDocumentFragment();
   df.appendChild(r1);

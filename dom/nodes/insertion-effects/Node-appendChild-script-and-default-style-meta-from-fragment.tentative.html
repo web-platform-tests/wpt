@@ -17,7 +17,7 @@ test(() => {
   script.textContent = `
     computedStyleDuringInsertion = getComputedStyle(div).display;
     scriptRan = true;
-`;
+  `;
   const df = document.createDocumentFragment();
   df.appendChild(script);
   df.appendChild(meta);

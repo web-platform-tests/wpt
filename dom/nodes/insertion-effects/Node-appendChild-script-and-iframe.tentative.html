@@ -1,19 +1,20 @@
-<!doctype html>
+<!DOCTYPE html>
 <meta charset=utf-8>
-<title>Node.appendChild: inserting script and iframe from a div</title>
+<title>Node.appendChild: inserting script and iframe</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
+<body>
 <script>
-let state = "script not run yet";
-const iframe = document.createElement("iframe");
 
 test(() => {
+  window.state = "script not run yet";
+  window.iframe = document.createElement("iframe");
   iframe.src = "data:text/html,"
 
   const script = document.createElement("script");
   script.textContent = `
-    state = iframe.contentWindow ? "iframe with content window" : "iframe without content window";
-`;
+    state = iframe.contentWindow ? "iframe with content window" : "contentWindow is null";
+  `;
 
   const div = document.createElement("div");
   div.appendChild(script);
@@ -21,6 +22,44 @@ test(() => {
 
   assert_equals(state, "script not run yet");
   document.body.appendChild(div);
-  assert_equals(state, "iframe with content window");
-});
+  assert_equals(state, "contentWindow is null", "Script inserted before iframe can observe iframe's contentWindow");
+  iframe.remove();
+}, "using a DIV");
+
+test(() => {
+  window.state = "script not run yet";
+  window.iframe = document.createElement("iframe");
+  iframe.src = "data:text/html,"
+
+  const script = document.createElement("script");
+  script.textContent = `
+    state = iframe.contentWindow ? "has contentWindow" : "contentWindow is null";
+  `;
+
+  const df = document.createDocumentFragment();
+  df.appendChild(script);
+  df.appendChild(iframe);
+
+  assert_equals(state, "script not run yet");
+  document.body.appendChild(df);
+  assert_equals(state, "contentWindow is null", "Script inserted before iframe can observe iframe's contentWindow");
+  iframe.remove();
+}, "using a DocumentFragment");
+
+
+test(() => {
+  window.state = "script not run yet";
+  window.iframe = document.createElement("iframe");
+  iframe.src = "data:text/html,"
+
+  const script = document.createElement("script");
+  script.textContent = `
+    state = iframe.contentWindow ? "has contentWindow" : "contentWindow is null";
+  `;
+
+  assert_equals(state, "script not run yet");
+  document.body.append(script, iframe);
+
+  assert_equals(state, "contentWindow is null", "Script inserted before iframe can observe iframe's contentWindow");
+}, "using an append() with multiple parameters");
 </script>

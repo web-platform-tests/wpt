@@ -3,7 +3,8 @@
 <title>Node.appendChild: inserting three scripts from a document fragment</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script>
+<body>
+  <script>
 const s1 = document.createElement("script");
 const s2 = document.createElement("script");
 const s3 = document.createElement("script");
@@ -13,10 +14,10 @@ test(() => {
   s1.textContent = `
     s3.appendChild(new Text("happened.push('s3');"));
     happened.push("s1");
-`;
+  `;
   s2.textContent = `
     happened.push("s2");
-`;
+  `;
   const df = document.createDocumentFragment();
   df.appendChild(s1);
   df.appendChild(s2);

@@ -3,6 +3,7 @@
 <title>Node.appendChild: inserting a script and a style from a fragment</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
+<body>
 <script>
 const happened = []
 const style = document.createElement("style");
@@ -11,7 +12,7 @@ test(() => {
   style.appendChild(new Text("body {}"));
   const script = document.createElement("script");
   script.textContent = `
-    happened.push(style.sheet === null);
+    happened.push(style.sheet);
     style.appendChild(new Text("body {}"));
     happened.push(style.sheet.cssRules.length);
     styleSheet = style.sheet;
@@ -23,7 +24,7 @@ test(() => {
 
   assert_array_equals(happened, []);
   document.body.appendChild(df);
-  assert_array_equals(happened, [true, 2]);
+  assert_array_equals(happened, [null, 2]);
   assert_not_equals(style.sheet, styleSheet, "style sheet was created only once");
 });
 </script>

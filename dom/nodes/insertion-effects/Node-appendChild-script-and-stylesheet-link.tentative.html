@@ -1,18 +1,39 @@
 <!doctype html>
 <meta charset=utf-8>
-<title>Node.appendChild: inserting script and stylesheet link from a div</title>
+<title>Node.appendChild: inserting script and stylesheet link</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
+<body>
 <script>
-const happened = [];
-const link = document.createElement("link");
 test(() => {
+  window.happened = [];
+  window.link = document.createElement("link");
   link.rel = "stylesheet";
   link.href = "data:text/css,";
 
   const script = document.createElement("script");
   script.textContent = `
-    happened.push(link.sheet === null);
+    happened.push(link.sheet);
+  `;
+
+  const df = document.createDocumentFragment();
+  df.appendChild(script);
+  df.appendChild(link);
+
+  assert_array_equals(happened, []);
+  document.body.appendChild(df);
+  assert_array_equals(happened, [null]);
+}, "Inserting in a fragment");
+
+test(() => {
+  window.happened = [];
+  window.link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "data:text/css,";
+
+  const script = document.createElement("script");
+  script.textContent = `
+    happened.push(link.sheet);
 `;
 
   const div = document.createElement("div");
@@ -21,6 +42,23 @@ test(() => {
 
   assert_array_equals(happened, []);
   document.body.appendChild(div);
-  assert_array_equals(happened, [true]);
-});
+  assert_array_equals(happened, [null]);
+}, "Inserting in a div");
+
+
+test(() => {
+  window.happened = [];
+  window.link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "data:text/css,";
+
+  const script = document.createElement("script");
+  script.textContent = `
+    happened.push(link.sheet);
+`;
+
+  assert_array_equals(happened, []);
+  document.body.append(script, link);
+  assert_array_equals(happened, [null]);
+}, "Inserting in an append");
 </script>

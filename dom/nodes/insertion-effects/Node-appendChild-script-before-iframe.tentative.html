@@ -3,6 +3,7 @@
 <title>Node.appendChild: inserting script and iframe from a div</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
+<body>
 <script>
 let state = "script not run yet";
 const iframe = document.createElement("iframe");
@@ -13,7 +14,7 @@ test(() => {
   const script = document.createElement("script");
   script.textContent = `
     state = iframe.contentWindow ? "iframe with content window" : "iframe without content window";
-`;
+  `;
 
   const div = document.createElement("div");
   div.appendChild(script);

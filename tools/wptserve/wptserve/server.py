@@ -236,7 +236,11 @@ class WebTestServer(http.server.ThreadingHTTPServer):
              isinstance(error.args, tuple) and
              error.args[0] in self.acceptable_errors) or
             (isinstance(error, IOError) and
-             error.errno in self.acceptable_errors)):
+             error.errno in self.acceptable_errors) or
+            # `SSLEOFError` may occur when a client (e.g., wptrunner's
+            # `TestEnvironment`) tests for connectivity but doesn't perform the
+            # handshake.
+            isinstance(error, ssl.SSLEOFError)):
             pass  # remote hang up before the result is sent
         else:
             msg = traceback.format_exc()

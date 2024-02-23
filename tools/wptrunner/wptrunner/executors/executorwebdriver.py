@@ -448,7 +448,7 @@ class WebDriverUserActivationPart(UserActivationProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
-    def consume_user_activation(self):
+    def consume_user_activation(self, context):
         return self.webdriver.window.consume_user_activation()
 
 class WebDriverProtocol(Protocol):

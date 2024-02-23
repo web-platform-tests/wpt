@@ -16,6 +16,7 @@
         @import url("support/a-green.css") screen;
         @import url("support/a-green.css") all;
         @import url("support/a-green") supports((display: flex) or (display: block));
+        @import url("support/a-green") supports(unknown: unknown);
         @import url('quote"quote');
         @page { background-color: red; }
     </style>
@@ -24,7 +25,7 @@
     <div id="log"></div>
 
     <script type="text/javascript">
-        var styleSheet, ruleList, rule, ruleWithMedia, ruleWithMediaAll, ruleWithSupports, ruleWithQuote;
+        var styleSheet, ruleList, rule, ruleWithMedia, ruleWithMediaAll, ruleWithSupports, ruleWithSupportsUnknown, ruleWithQuote;
         setup(function() {
             styleSheet = document.getElementById("styleElement").sheet;
             ruleList = styleSheet.cssRules;
@@ -32,7 +33,8 @@
             ruleWithMedia = ruleList[1];
             ruleWithMediaAll = ruleList[2];
             ruleWithSupports = ruleList[3];
-            ruleWithQuote = ruleList[4];
+            ruleWithSupportsUnknown = ruleList[4];
+            ruleWithQuote = ruleList[5];
         });
 
         test(function() {
@@ -40,8 +42,14 @@
             assert_true(rule instanceof CSSImportRule);
             assert_true(ruleWithMedia instanceof CSSRule);
             assert_true(ruleWithMedia instanceof CSSImportRule);
+            assert_true(ruleWithMediaAll instanceof CSSRule);
+            assert_true(ruleWithMediaAll instanceof CSSImportRule);
             assert_true(ruleWithSupports instanceof CSSRule);
             assert_true(ruleWithSupports instanceof CSSImportRule);
+            assert_true(ruleWithSupportsUnknown instanceof CSSRule);
+            assert_true(ruleWithSupportsUnknown instanceof CSSImportRule);
+            assert_true(ruleWithQuote instanceof CSSRule);
+            assert_true(ruleWithQuote instanceof CSSImportRule);
         }, "CSSRule and CSSImportRule types");
 
         test(function() {
@@ -102,7 +110,7 @@
         }, "CSSImportRule : MediaList mediaText attribute should be updated due to [PutForwards]");
 
         test(function() {
-            var ruleWithPage = ruleList[5];
+            var ruleWithPage = ruleList[6];
             ruleWithPage.style = "margin-top: 10px;"
             assert_equals(ruleWithPage.style.cssText, "margin-top: 10px;");
         }, "CSSStyleDeclaration cssText attribute should be updated due to [PutForwards]");
@@ -120,6 +128,11 @@
         test(function() {
             assert_equals(ruleWithSupports.supportsText, "(display: flex) or (display: block)");
         }, "Value of CSSImportRule supportsText attribute");
+
+        test(function() {
+            assert_true(ruleWithSupports.styleSheet instanceof CSSStyleSheet);
+            assert_equals(ruleWithSupportsUnknown.styleSheet, null);
+        }, "Value of CSSImportRule styleSheet is nullable");
     </script>
 </body>
 </html>

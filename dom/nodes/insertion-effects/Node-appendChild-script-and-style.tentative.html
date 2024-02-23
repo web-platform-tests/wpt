@@ -9,7 +9,7 @@ const happened = [];
 const style = document.createElement("style");
 let styleSheet = null;
 test(() => {
-style.appendChild(new Text("body {}"));
+  style.appendChild(new Text("body {}"));
   const script = document.createElement("script");
   script.textContent = `
     happened.push(style.sheet === null);

@@ -22,7 +22,7 @@ test(() => {
   const df = document.createDocumentFragment();
   df.appendChild(script);
   df.appendChild(meta);
-  assert_equals(getComputedStyle(div).display, "block", "div is not a block");
+  assert_equals(getComputedStyle(div).display, "block", "div has block display");
   assert_false(scriptRan, "script ran");
   document.head.appendChild(df);
   assert_true(scriptRan, "script has not run");

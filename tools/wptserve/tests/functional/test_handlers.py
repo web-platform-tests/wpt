@@ -336,6 +336,15 @@ class TestAsIsHandler(TestUsingServer):
         self.assertEqual(b"Content", resp.read())
         #Add a check that the response is actually sane
 
+    def test_directory_fails(self):
+        route = ("GET", "/subdir", wptserve.handlers.as_is_handler)
+        self.server.router.register(*route)
+        with pytest.raises(HTTPError) as cm:
+            self.request("/subdir")
+
+        assert cm.value.code == 500
+        del cm
+
 
 class TestH2Handler(TestUsingH2Server):
     def test_handle_headers(self):

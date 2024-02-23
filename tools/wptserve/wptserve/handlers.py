@@ -429,7 +429,9 @@ class AsIsHandler:
 
     def __call__(self, request, response):
         path = filesystem_path(self.base_path, request, self.url_base)
-        assert not os.path.isdir(path)
+        if os.path.isdir(path):
+            raise HTTPException(
+                500, "AsIsHandler cannot process directory, %s" % path)
 
         try:
             with open(path, 'rb') as f:

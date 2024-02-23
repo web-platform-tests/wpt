@@ -5,7 +5,7 @@ import platform
 import socket
 import time
 import traceback
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from typing import cast, Any, List, Mapping, Optional, Tuple, Type
 
 import mozprocess
@@ -88,7 +88,10 @@ class BrowserError(Exception):
     pass
 
 
-class Browser(ABC):
+BrowserSettings = Mapping[str, Any]
+
+
+class Browser:
     """Abstract class serving as the basis for Browser implementations.
 
     The Browser is used in the TestRunnerManager to start and stop the browser
@@ -96,6 +99,8 @@ class Browser(ABC):
 
     :param logger: Structured logger to use for output.
     """
+    __metaclass__ = ABCMeta
+
     init_timeout: float = 30
 
     def __init__(self, logger: StructuredLogger):
@@ -105,7 +110,7 @@ class Browser(ABC):
         """Used for browser-specific setup that happens at the start of a test run"""
         pass
 
-    def settings(self, test: Test) -> Mapping[str, Any]:
+    def settings(self, test: Test) -> BrowserSettings:
         """Dictionary of metadata that is constant for a specific launch of a browser.
 
         This is used to determine when the browser instance configuration changes, requiring
@@ -283,6 +288,8 @@ class OutputHandler:
 
 
 class WebDriverBrowser(Browser):
+    __metaclass__ = ABCMeta
+
     def __init__(self,
                  logger: StructuredLogger,
                  binary: Optional[str] = None,
@@ -312,7 +319,7 @@ class WebDriverBrowser(Browser):
         self.env = os.environ.copy() if env is None else env
         self.webdriver_args = webdriver_args if webdriver_args is not None else []
 
-        self.init_deadline: float = 0
+        self.init_deadline: Optional[float] = None
         self._output_handler: Optional[OutputHandler] = None
         self._cmd = None
         self._proc: Optional[mozprocess.ProcessHandler] = None
@@ -338,6 +345,7 @@ class WebDriverBrowser(Browser):
         return OutputHandler(self.logger, cmd)
 
     def _run_server(self, group_metadata: GroupMetadata, **kwargs: Any) -> None:
+        assert self.init_deadline is not None
         cmd = self.make_command()
         self._output_handler = self.create_output_handler(cmd)
 
@@ -377,14 +385,15 @@ class WebDriverBrowser(Browser):
     def stop(self, force: bool = False) -> bool:
         self.logger.debug("Stopping WebDriver")
         clean = True
-        if self._proc and self.is_alive():
+        if self.is_alive():
+            proc = cast(mozprocess.ProcessHandler, self._proc)
             # Pass a timeout value to mozprocess Processhandler.kill()
             # to ensure it always returns within it.
             # See https://bugzilla.mozilla.org/show_bug.cgi?id=1760080
-            kill_result = self._proc.kill(timeout=5)
+            kill_result = proc.kill(timeout=5)
             if force and kill_result != 0:
                 clean = False
-                self._proc.kill(9, timeout=5)
+                proc.kill(9, timeout=5)
         success = not self.is_alive()
         if success and self._output_handler is not None:
             # Only try to do output post-processing if we managed to shut down
@@ -423,7 +432,7 @@ class WebDriverBrowser(Browser):
                                  "pac": self.pac,
                                  "env": self.env}
 
-    def settings(self, test: Test) -> Mapping[str, Any]:
+    def settings(self, test: Test) -> BrowserSettings:
         self._pac = test.environment.get("pac", None) if self._supports_pac else None
         return {"pac": self._pac}
 

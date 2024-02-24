@@ -1,3 +1,3 @@
-self. onpush = ( ) => {
+self.onpush = ( ) => {
   // does nothing...
 };  

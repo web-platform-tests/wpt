@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Parity tests for invalidly nested heading elements</title>
+  <title>WAI-ARIA tests for invalidly nested elements with heading role</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/resources/testdriver.js"></script>
@@ -14,22 +14,12 @@
 
 <body>
 
-  <h1>Parity tests for invalidly nested heading elements</h1>
+  <h1>WAI-ARIA tests for invalidly nested heading elements</h1>
+  <p>Equivalent ARIA patterns tested in <code>/html-aam/heading/invalid-nesting.html</code>.</p>
 
   <h2>Accessible names</h2>
   <hr>
 
-  <h1
-    class="ex-label"
-    data-testname="h1 with invalid h2 descendant should not inherit accname from the text contents of the contained h2"
-    data-expectedlabel=""
-  >
-    <h2
-      class="ex-label"
-      data-testname="Invalidly nested h2 should have accname matching its text contents"
-      data-expectedlabel="Invalid h2"
-    >Invalid h2</h2>
-  </h1>
   <div
     role="heading"
     aria-level="1"
@@ -46,17 +36,6 @@
     >Invalid div[role=heading][aria-level=2]</div>
   </div>
 
-  <h4
-    class="ex-label"
-    data-testname="h4 with invalid h3 descendant should not inherit accname from the text contents of the contained h3"
-    data-expectedlabel=""
-  >
-    <h3
-      class="ex-label"
-      data-testname="Invalidly nested h3 should have accname matching its text contents"
-      data-expectedlabel="Invalid h3"
-    >Invalid h3</h3>
-  </h4>
   <div
     role="heading"
     aria-level="4"
@@ -72,15 +51,6 @@
       data-expectedlabel="Invalid div[role=heading][aria-level=3]"
     >Invalid div[role=heading][aria-level=3]</div>
   </div>
-
-  <h1
-    class="ex-label"
-    data-testname="h1 with text contents and invalid h2 descendant should not accumulate accname from the text contents of the contained h2"
-    data-expectedlabel="Chocolate"
-  >Chocolate
-    <h2
-    >Peanut butter</h2>
-  </h1>
   <div
     role="heading"
     aria-level="1"
@@ -97,17 +67,6 @@
   <h2>Roles</h2>
   <hr>
 
-  <h1
-    class="ex-role"
-    data-testname="h1 with invalid h2 descendant should still convey heading role"
-    data-expectedrole="heading"
-  >
-    <h2
-      class="ex-role"
-      data-testname="invalidly nested h2 should still convey heading role"
-      data-expectedrole="heading"
-    >Invalid h2</h2>
-  </h1>
   <div
     role="heading"
     aria-level="1"
@@ -123,18 +82,6 @@
       data-expectedrole="heading"
     >Invalid div[role=heading][aria-level=2]</div>
   </div>
-
-  <h4
-    class="ex-role"
-    data-testname="h4 with invalid h3 descendant should still convey heading role"
-    data-expectedrole="heading"
-  >
-    <h3
-      class="ex-role"
-      data-testname="invalidly nested h3 should still convey heading role"
-      data-expectedrole="heading"
-    >Invalid h3</h3>
-  </h4>
 
   <div
     role="heading"
@@ -155,17 +102,6 @@
   <h2>No heading ancestors</h2>
   <hr>
 
-  <h1>One
-    <h2
-      class="ex-no-heading-ancestor"
-      data-testname="h2 invalidly nested inside h1 should not, after parsing, have any DOM ancestor with a heading role"
-    >Two
-      <h3
-        class="ex-no-heading-ancestor"
-        data-testname="h3 invalidly nested inside h1 > h2 should not, after parsing, have any DOM ancestor with a heading role"
-      >Three</h3>
-    </h2>
-  </h1>
   <div
     role="heading"
     aria-level="1"

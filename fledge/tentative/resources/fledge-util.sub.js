@@ -148,6 +148,35 @@ async function waitForObservedRequests(uuid, expectedRequests) {
   }
 }
 
+
+// Similar to waitForObservedRequests, but ignore forDebuggingOnly reports.
+async function waitForObservedRequestsIgnoreDebugOnlyReports(
+  uuid, expectedRequests) {
+  // Sort array for easier comparison, as observed request order does not
+  // matter, and replace UUID to print consistent errors on failure.
+  expectedRequests =
+      expectedRequests.sort().map((url) => url.replace(uuid, '<uuid>'));
+
+  while (true) {
+    let numTrackedRequest = 0;
+    let trackedData = await fetchTrackedData(uuid);
+
+    // Clean up "trackedRequests" in same manner as "expectedRequests".
+    let trackedRequests = trackedData.trackedRequests.sort().map(
+        (url) => url.replace(uuid, '<uuid>'));
+
+    for (const trackedRequest of trackedRequests) {
+      // Ignore forDebuggingOnly reports, since their appearance is random.
+      if (!trackedRequest.includes('forDebuggingOnly')) {
+        assert_in_array(trackedRequest, expectedRequests);
+        numTrackedRequest++;
+      }
+    }
+
+    if (numTrackedRequest == expectedRequests.length) break;
+  }
+}
+
 // Creates a bidding script with the provided code in the method bodies. The
 // bidding script's generateBid() method will return a bid of 9 for the first
 // ad, after the passed in code in the "generateBid" input argument has been
@@ -157,17 +186,19 @@ async function waitForObservedRequests(uuid, expectedRequests) {
 function createBiddingScriptURL(params = {}) {
   let origin = params.origin ? params.origin : new URL(BASE_URL).origin;
   let url = new URL(`${origin}${RESOURCE_PATH}bidding-logic.sub.py`);
-  if (params.generateBid)
+  // These checks use "==" to ignore null and not provided arguments, while
+  // treating '' as a valid argument.
+  if (params.generateBid != null)
     url.searchParams.append('generateBid', params.generateBid);
-  if (params.reportWin)
+  if (params.reportWin != null)
     url.searchParams.append('reportWin', params.reportWin);
-  if (params.error)
+  if (params.error != null)
     url.searchParams.append('error', params.error);
-  if (params.bid)
+  if (params.bid != null)
     url.searchParams.append('bid', params.bid);
-  if (params.bidCurrency)
+  if (params.bidCurrency != null)
     url.searchParams.append('bidCurrency', params.bidCurrency);
-  if (params.allowComponentAuction !== undefined)
+  if (params.allowComponentAuction != null)
     url.searchParams.append('allowComponentAuction', JSON.stringify(params.allowComponentAuction))
   return url.toString();
 }
@@ -189,11 +220,13 @@ function createDecisionScriptURL(uuid, params = {}) {
   let origin = params.origin ? params.origin : new URL(BASE_URL).origin;
   let url = new URL(`${origin}${RESOURCE_PATH}decision-logic.sub.py`);
   url.searchParams.append('uuid', uuid);
-  if (params.scoreAd)
+  // These checks use "==" to ignore null and not provided arguments, while
+  // treating '' as a valid argument.
+  if (params.scoreAd != null)
     url.searchParams.append('scoreAd', params.scoreAd);
-  if (params.reportResult)
+  if (params.reportResult != null)
     url.searchParams.append('reportResult', params.reportResult);
-  if (params.error)
+  if (params.error != null)
     url.searchParams.append('error', params.error);
   return url.toString();
 }
@@ -204,12 +237,14 @@ function createDecisionScriptURL(uuid, params = {}) {
 // be last.  "signalsParams" also has no effect, but is used by
 // trusted-scoring-signals.py to affect the response.
 function createRenderURL(uuid, script, signalsParams, origin) {
+  // These checks use "==" to ignore null and not provided arguments, while
+  // treating '' as a valid argument.
   if (origin == null)
     origin = new URL(BASE_URL).origin;
   let url = new URL(`${origin}${RESOURCE_PATH}fenced-frame.sub.py`);
-  if (script)
+  if (script != null)
     url.searchParams.append('script', script);
-  if (signalsParams)
+  if (signalsParams != null)
     url.searchParams.append('signalsParams', signalsParams);
   url.searchParams.append('uuid', uuid);
   return url.toString();
@@ -498,7 +533,7 @@ async function runInFrame(test, child_window, script, param) {
 // iframe or closes the window.
 async function createFrame(test, origin, is_iframe = true, permissions = null) {
   const frameUuid = generateUuid(test);
-  const frameUrl =
+  const frameURL =
       `${origin}${RESOURCE_PATH}subordinate-frame.sub.html?uuid=${frameUuid}`;
   let promise = new Promise(function(resolve, reject) {
     function WaitForMessage(event) {
@@ -517,7 +552,7 @@ async function createFrame(test, origin, is_iframe = true, permissions = null) {
     let iframe = document.createElement('iframe');
     if (permissions)
       iframe.allow = permissions;
-    iframe.src = frameUrl;
+    iframe.src = frameURL;
     document.body.appendChild(iframe);
 
     test.add_cleanup(async () => {
@@ -529,7 +564,7 @@ async function createFrame(test, origin, is_iframe = true, permissions = null) {
     return iframe.contentWindow;
   }
 
-  let child_window = window.open(frameUrl);
+  let child_window = window.open(frameURL);
   test.add_cleanup(async () => {
     await runInFrame(test, child_window, "await test_instance.do_cleanup();");
     child_window.close();
@@ -570,9 +605,21 @@ async function joinInterestGroupInTopLevelWindow(
   let interestGroup = JSON.stringify(
       createInterestGroupForOrigin(uuid, origin, interestGroupOverrides));
 
-  let topLeveWindow = await createTopLevelWindow(test, origin);
-  await runInFrame(test, topLeveWindow,
+  let topLevelWindow = await createTopLevelWindow(test, origin);
+  await runInFrame(test, topLevelWindow,
                    `await joinInterestGroup(test_instance, "${uuid}", ${interestGroup})`);
+}
+
+// Opens a top-level window and calls joinCrossOriginInterestGroup() in it.
+async function joinCrossOriginInterestGroupInTopLevelWindow(
+    test, uuid, windowOrigin, interestGroupOrigin, interestGroupOverrides = {}) {
+  let interestGroup = JSON.stringify(
+      createInterestGroupForOrigin(uuid, interestGroupOrigin, interestGroupOverrides));
+
+  let topLevelWindow = await createTopLevelWindow(test, windowOrigin);
+  await runInFrame(test, topLevelWindow,
+                  `await joinCrossOriginInterestGroup(
+                        test_instance, "${uuid}", "${interestGroupOrigin}", ${interestGroup})`);
 }
 
 // Fetch directFromSellerSignals from seller and check header

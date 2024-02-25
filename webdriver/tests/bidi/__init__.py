@@ -1,5 +1,4 @@
-from typing import Any, Callable, Dict
-
+from typing import Any, Callable, Dict, List, Mapping
 from webdriver.bidi.modules.script import ContextTarget
 
 
@@ -11,15 +10,14 @@ def recursive_compare(expected: Any, actual: Any) -> None:
         expected(actual)
         return
 
-    assert type(expected) is type(actual)
-    if type(expected) is list:
+    if isinstance(actual, List) and isinstance(expected, List):
         assert len(expected) == len(actual)
         for index, _ in enumerate(expected):
             recursive_compare(expected[index], actual[index])
         return
 
-    if type(expected) is dict:
-        # Actual dict can have more keys as part of the forwards-compat design.
+    if isinstance(actual, Dict) and isinstance(expected, Dict):
+        # Actual Mapping can have more keys as part of the forwards-compat design.
         assert (
             expected.keys() <= actual.keys()
         ), f"Key set should be present: {set(expected.keys()) - set(actual.keys())}"
@@ -71,6 +69,28 @@ def int_interval(start: int, end: int) -> Callable[[Any], None]:
         assert start <= actual <= end
 
     return _
+
+
+def assert_handle(obj: Mapping[str, Any], should_contain_handle: bool) -> None:
+    if should_contain_handle:
+        assert "handle" in obj, f"Result should contain `handle`. Actual: {obj}"
+        assert isinstance(obj["handle"], str), f"`handle` should be a string, but was {type(obj['handle'])}"
+
+        # Recursively check that handle is not found in any of the nested values.
+        if "value" in obj:
+            value = obj["value"]
+            if type(value) is list:
+                for v in value:
+                    if type(v) is dict:
+                        assert_handle(v, False)
+
+            if type(value) is dict:
+                for v in value.values():
+                    if type(v) is dict:
+                        assert_handle(v, False)
+
+    else:
+        assert "handle" not in obj, f"Result should not contain `handle`. Actual: {obj}"
 
 
 async def create_console_api_message(bidi_session, context: str, text: str):

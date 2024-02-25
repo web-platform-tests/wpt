@@ -234,6 +234,7 @@ SET TIMEOUT: png/apng/fcTL-dispose-previous-final.html
 SET TIMEOUT: png/apng/fcTL-dispose-previous-first.html
 SET TIMEOUT: png/apng/fcTL-dispose-previous.html
 SET TIMEOUT: png/apng/fdAT-16bit.html
+SET TIMEOUT: png/apng/fDAT-inherits-cICP.html
 SET TIMEOUT: png/apng/fdAT-1bit-PLTE-tRNS.html
 SET TIMEOUT: png/apng/fdAT-1bit-PLTE.html
 SET TIMEOUT: png/apng/fdAT-2bit-PLTE-tRNS.html
@@ -387,7 +388,6 @@ SET TIMEOUT: html/cross-origin-opener-policy/navigate-top-to-aboutblank.https.ht
 SET TIMEOUT: html/dom/documents/dom-tree-accessors/Document.currentScript.html
 SET TIMEOUT: html/webappapis/dynamic-markup-insertion/opening-the-input-stream/crbug-583445-regression.window.js
 SET TIMEOUT: html/webappapis/timers/*
-SET TIMEOUT: orientation-event/resources/orientation-event-helpers.js
 SET TIMEOUT: portals/history/resources/portal-harness.js
 SET TIMEOUT: requestidlecallback/deadline-after-expired-timer.html
 SET TIMEOUT: resources/*
@@ -395,6 +395,7 @@ SET TIMEOUT: scheduler/tentative/current-task-signal-async-abort.any.js
 SET TIMEOUT: scheduler/tentative/current-task-signal-async-priority.any.js
 SET TIMEOUT: speculation-rules/prerender/resources/activation-start.html
 SET TIMEOUT: speculation-rules/prerender/resources/prerender-response-code.html
+SET TIMEOUT: speculation-rules/prerender/resources/prerender-while-prerender-outer.html
 SET TIMEOUT: speculation-rules/prerender/resources/deferred-promise-utils.js
 SET TIMEOUT: speculation-rules/prerender/resources/session-history-harness.js
 SET TIMEOUT: speculation-rules/prerender/resources/utils.js
@@ -520,7 +521,6 @@ SET TIMEOUT: css/CSS2/tables/tables-102.xht
 SET TIMEOUT: css/mediaqueries/min-width-tables-001.html
 SET TIMEOUT: css/css-text/crashtests/rendering-rtl-bidi-override-crash.html
 SET TIMEOUT: css/css-backgrounds/color-mix-currentcolor-border-repaint-parent.html
-SET TIMEOUT: svg/painting/color-mix-currentcolor-fill-stroke-repaint.html
 SET TIMEOUT: svg/painting/currentcolor-fill-stroke-repaint.html
 SET TIMEOUT: resource-timing/resources/run-async-tasks-promise.js
 
@@ -579,6 +579,7 @@ MISSING-LINK: css/cssom-view/scrollTop-display-change.html
 
 # TODO https://github.com/web-platform-tests/wpt/issues/5770
 MISSING-LINK: css/css-highlight-api/idlharness.window.js
+MISSING-LINK: css/css-highlight-api/historical.window.js
 MISSING-LINK: css/geometry/*.worker.js
 MISSING-LINK: css/geometry/*.any.js
 MISSING-LINK: css/filter-effects/*.any.js
@@ -586,7 +587,6 @@ MISSING-LINK: css/filter-effects/*.any.js
 # Tests that use WebKit/Blink testing APIs
 LAYOUTTESTS APIS: import-maps/data-driven/resources/test-helper-iframe.js
 LAYOUTTESTS APIS: resources/chromium/enable-hyperlink-auditing.js
-LAYOUTTESTS APIS: resources/chromium/generic_sensor_mocks.js
 LAYOUTTESTS APIS: resources/chromium/webxr-test.js
 LAYOUTTESTS APIS: webxr/resources/webxr_util.js
 
@@ -613,7 +613,6 @@ MISSING DEPENDENCY: resources/chromium/web-bluetooth-test.js
 MISSING DEPENDENCY: resources/chromium/webusb-test.js
 MISSING DEPENDENCY: resources/chromium/fake-serial.js
 MISSING DEPENDENCY: resources/chromium/fake-hid.js
-MISSING DEPENDENCY: resources/chromium/generic_sensor_mocks.js
 MISSING DEPENDENCY: resources/chromium/mock-battery-monitor.js
 MISSING DEPENDENCY: resources/chromium/mock-barcodedetection.js
 MISSING DEPENDENCY: resources/chromium/mock-direct-sockets.js
@@ -744,5 +743,6 @@ HTML INVALID SYNTAX: domparsing/DOMParser-parseFromString-xml-doctype.html
 HTML INVALID SYNTAX: domparsing/DOMParser-parseFromString-xml-parsererror.html
 HTML INVALID SYNTAX: domparsing/XMLSerializer-serializeToString.html
 HTML INVALID SYNTAX: html/canvas/element/manual/unclosed-canvas-4.htm
+HTML INVALID SYNTAX: html/syntax/parsing/unclosed-svg-script.html
 HTML INVALID SYNTAX: quirks/percentage-height-calculation.html
 HTML INVALID SYNTAX: trusted-types/TrustedTypePolicyFactory-getAttributeType-namespace.html

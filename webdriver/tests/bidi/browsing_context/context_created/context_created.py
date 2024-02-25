@@ -45,6 +45,7 @@ async def test_new_context(bidi_session, wait_for_event, wait_for_future_safe, s
         children=None,
         url="about:blank",
         parent=None,
+        user_context="default"
     )
 
 
@@ -219,5 +220,46 @@ async def test_subscribe_to_one_context(
     # Make sure we received the event for the iframe
     await wait.until(lambda _: len(events) >= 1)
     assert len(events) == 1
+
+    remove_listener()
+
+
+@pytest.mark.parametrize("type_hint", ["tab", "window"])
+async def test_new_user_context(
+    bidi_session,
+    wait_for_event,
+    wait_for_future_safe,
+    subscribe_events,
+    create_user_context,
+    type_hint,
+):
+    events = []
+
+    async def on_event(method, data):
+        events.append(data)
+
+    remove_listener = bidi_session.add_event_listener(CONTEXT_CREATED_EVENT, on_event)
+
+    await subscribe_events([CONTEXT_CREATED_EVENT])
+
+    user_context = await create_user_context()
+    assert len(events) == 0
+
+    on_entry = wait_for_event(CONTEXT_CREATED_EVENT)
+    context = await bidi_session.browsing_context.create(
+        type_hint=type_hint, user_context=user_context
+    )
+    context_info = await wait_for_future_safe(on_entry)
+
+    assert len(events) == 1
+
+    assert_browsing_context(
+        context_info,
+        context["context"],
+        children=None,
+        url="about:blank",
+        parent=None,
+        user_context=user_context,
+    )
 
     remove_listener()

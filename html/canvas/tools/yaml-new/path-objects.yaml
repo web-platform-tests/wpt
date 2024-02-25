@@ -2879,7 +2879,6 @@
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
-
 - name: 2d.path.transformation.basic
   code: |
     ctx.fillStyle = '#f00';

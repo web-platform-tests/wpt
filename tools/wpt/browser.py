@@ -1664,17 +1664,49 @@ class EdgeChromium(Browser):
         existing_driver_notes_path = os.path.join(path, "Driver_notes")
         if os.path.isdir(existing_driver_notes_path):
             self.logger.info(f"Removing existing MSEdgeDriver binary: {existing_driver_notes_path}")
-            print(f"Delete {existing_driver_notes_path} folder")
             rmtree(existing_driver_notes_path)
 
     def download(self, dest=None, channel=None, rename=None):
         raise NotImplementedError
 
     def install_mojojs(self, dest, browser_binary):
-        # TODO: Install MojoJS web framework.
         # MojoJS is platform agnostic, but the version number must be an
         # exact match of the Edge version to be compatible.
-        return None
+        edge_version = self.version(binary=browser_binary)
+        if not edge_version:
+            return None
+
+        try:
+            # MojoJS version url must match the browser binary version exactly.
+            url = ("https://msedgedriver.azureedge.net/wpt-mojom/"
+                   f"{edge_version}/linux64/mojojs.zip")
+            # Check the status without downloading the content (this is a
+            # streaming request).
+            get(url)
+        except requests.RequestException:
+            self.logger.error("A valid MojoJS version cannot be found "
+                              f"for browser binary version {edge_version}.")
+            return None
+
+        extracted = os.path.join(dest, "mojojs", "gen")
+        last_url_file = os.path.join(extracted, "DOWNLOADED_FROM")
+        if os.path.exists(last_url_file):
+            with open(last_url_file, "rt") as f:
+                last_url = f.read().strip()
+            if last_url == url:
+                self.logger.info("Mojo bindings already up to date")
+                return extracted
+            rmtree(extracted)
+
+        try:
+            self.logger.info(f"Downloading Mojo bindings from {url}")
+            unzip(get(url).raw, os.path.join(dest, "mojojs"))
+            with open(last_url_file, "wt") as f:
+                f.write(url)
+            return extracted
+        except Exception as e:
+            self.logger.error(f"Cannot enable MojoJS: {e}")
+            return None
 
     def find_binary(self, venv_path=None, channel=None):
         # TODO: Check for binary in virtual environment first
@@ -1817,65 +1849,6 @@ class EdgeChromium(Browser):
             self.logger.warning(f"Failed to extract version from: {version_string}")
             return None
         return m.group(1)
-
-
-class Edge(Browser):
-    """Edge-specific interface."""
-
-    product = "edge"
-    requirements = "requirements_edge.txt"
-
-    def download(self, dest=None, channel=None, rename=None):
-        raise NotImplementedError
-
-    def install(self, dest=None, channel=None):
-        raise NotImplementedError
-
-    def find_binary(self, venv_path=None, channel=None):
-        raise NotImplementedError
-
-    def find_webdriver(self, venv_path=None, channel=None):
-        return which("MicrosoftWebDriver")
-
-    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
-        raise NotImplementedError
-
-    def version(self, binary=None, webdriver_binary=None):
-        command = "(Get-AppxPackage Microsoft.MicrosoftEdge).Version"
-        try:
-            return call("powershell.exe", command).strip()
-        except (subprocess.CalledProcessError, OSError):
-            self.logger.warning("Failed to call %s in PowerShell" % command)
-            return None
-
-
-class EdgeWebDriver(Edge):
-    product = "edge_webdriver"
-
-
-class InternetExplorer(Browser):
-    """Internet Explorer-specific interface."""
-
-    product = "ie"
-    requirements = "requirements_ie.txt"
-
-    def download(self, dest=None, channel=None, rename=None):
-        raise NotImplementedError
-
-    def install(self, dest=None, channel=None):
-        raise NotImplementedError
-
-    def find_binary(self, venv_path=None, channel=None):
-        raise NotImplementedError
-
-    def find_webdriver(self, venv_path=None, channel=None):
-        return which("IEDriverServer.exe")
-
-    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
-        raise NotImplementedError
-
-    def version(self, binary=None, webdriver_binary=None):
-        return None
 
 
 class Safari(Browser):

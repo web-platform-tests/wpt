@@ -3,15 +3,17 @@
 // META: script=resources/fledge-util.sub.js
 // META: script=/common/subset-tests.js
 // META: timeout=long
-// META: variant=?1-5
-// META: variant=?6-10
-// META: variant=?11-15
-// META: variant=?16-20
-// META: variant=?21-last
+// META: variant=?1-4
+// META: variant=?5-8
+// META: variant=?9-12
+// META: variant=?13-16
+// META: variant=?17-20
+// META: variant=?21-24
+// META: variant=?25-28
+// META: variant=?29-last
 
 "use strict;"
 
-// Subset 1 - 5
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await fetchDirectFromSellerSignals({ 'Buyer-Origin': window.location.origin });
@@ -20,7 +22,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, /*expectedSellerSignals=*/ null,
           /*expectedAuctionSignals=*/ null, /*expectedPerBuyerSignals=*/ null),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -36,7 +38,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, 'sellerSignals/1',
           /*expectedAuctionSignals=*/null, /*expectedPerBuyerSignals=*/null),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -53,7 +55,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, /*expectedSellerSignals=*/null,
           'auctionSignals/2', /*expectedPerBuyerSignals=*/null),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -70,7 +72,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, /*expectedSellerSignals=*/null,
           /*expectedAuctionSignals=*/null, 'perBuyerSignals/3'),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -87,7 +89,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, 'sellerSignals/4',
           'auctionSignals/4', 'perBuyerSignals/4'),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -96,7 +98,6 @@ subsetTest(promise_test, async test => {
   );
 }, 'Test directFromSellerSignals with sellerSignals, auctionSignals and perBuyerSignals.');
 
-// Subset 6 - 10
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await fetchDirectFromSellerSignals({ 'Buyer-Origin': window.location.origin });
@@ -105,7 +106,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, 'sellerSignals/1',
           /*expectedAuctionSignals=*/null, /*expectedPerBuyerSignals=*/null),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -118,7 +119,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, /*expectedSellerSignals=*/null,
           'auctionSignals/2', /*expectedPerBuyerSignals=*/null),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -136,7 +137,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, 'sellerSignals/4',
           'auctionSignals/4', 'perBuyerSignals/4'),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -215,7 +216,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, 'sellerSignals/5',
           'auctionSignals/5', /*expectedPerBuyerSignals=*/null),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -224,7 +225,6 @@ subsetTest(promise_test, async test => {
   );
 }, 'Test directFromSellerSignals with mismatched perBuyerSignals.');
 
-// Subset 11 - 15
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await fetchDirectFromSellerSignals({ 'Buyer-Origin': '*' });
@@ -233,7 +233,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
         uuid, 'sellerSignals/5',
         'auctionSignals/5', /*expectedPerBuyerSignals=*/null),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -250,7 +250,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, /*expectedSellerSignals=*/null,
           /*expectedAuctionSignals=*/null, /*expectedPerBuyerSignals=*/null),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -295,7 +295,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, /*expectedSellerSignals=*/null,
           /*expectedAuctionSignals=*/null, /*expectedPerBuyerSignals=*/null),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -304,7 +304,6 @@ subsetTest(promise_test, async test => {
   );
 }, 'Test directFromSellerSignals with HTTP error.');
 
-// Subset 16 - 20
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await fetchDirectFromSellerSignals({ 'Negative-Test-Option': 'No Ad-Auction-Signals Header' });
@@ -313,7 +312,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, /*expectedSellerSignals=*/null,
           /*expectedAuctionSignals=*/null, /*expectedPerBuyerSignals=*/null),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -330,7 +329,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, /*expectedSellerSignals=*/null,
           /*expectedAuctionSignals=*/null, /*expectedPerBuyerSignals=*/null),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -348,7 +347,7 @@ subsetTest(promise_test, async test => {
   await fetchDirectFromSellerSignals({ 'Buyer-Origin': window.location.origin });
   await runReportTest(
       test, uuid, codeToInsert,
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -367,7 +366,7 @@ subsetTest(promise_test, async test => {
   await fetchDirectFromSellerSignals({ 'Buyer-Origin': window.location.origin }, OTHER_ORIGIN1);
   await runReportTest(
       test, uuid, codeToInsert,
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -387,7 +386,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
         uuid, 'sellerSignals/4',
         'auctionSignals/4', 'perBuyerSignals/4'),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid, '1', OTHER_ORIGIN1)],
       // renderURLOverride
       null,
@@ -397,7 +396,6 @@ subsetTest(promise_test, async test => {
   );
 }, 'Test directFromSellerSignals different interest group owner origin from top frame.');
 
-// Subset 21 - last
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   let iframe = await createIframe(test, OTHER_ORIGIN1, "join-ad-interest-group; run-ad-auction");
@@ -408,7 +406,7 @@ subsetTest(promise_test, async test => {
           test_instance, "${uuid}",
           directFromSellerSignalsValidatorCode(
               "${uuid}", 'sellerSignals/4', 'auctionSignals/4', 'perBuyerSignals/4'),
-          // expectedReportUrls
+          // expectedReportURLs
           [createSellerReportURL("${uuid}"), createBidderReportURL("${uuid}")],
           // renderURLOverride
           null,
@@ -427,7 +425,7 @@ subsetTest(promise_test, async test => {
           directFromSellerSignalsValidatorCode(
               "${uuid}", 'sellerSignals/4',
               'auctionSignals/4', 'perBuyerSignals/4'),
-          // expectedReportUrls
+          // expectedReportURLs
           [createSellerReportURL("${uuid}"), createBidderReportURL("${uuid}")],
           // renderURLOverride
           null,
@@ -449,7 +447,7 @@ subsetTest(promise_test, async test => {
           directFromSellerSignalsValidatorCode(
               "${uuid}", 'sellerSignals/4',
               'auctionSignals/4', 'perBuyerSignals/4'),
-          // expectedReportUrls
+          // expectedReportURLs
           [createSellerReportURL("${uuid}"), createBidderReportURL("${uuid}")],
           // renderURLOverride
           null,
@@ -469,7 +467,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, 'sellerSignals/4',
           'auctionSignals/4', 'perBuyerSignals/4'),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -486,7 +484,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, 'sellerSignals',
           'auctionSignals', /*expectedPerBuyerSignals=*/null),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -513,7 +511,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, 'altSellerSignals/1',
           /*expectedAuctionSignals=*/null, /*expectedPerBuyerSignals=*/null),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -534,7 +532,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, 'altV2SellerSignals/1',
           /*expectedAuctionSignals=*/null, /*expectedPerBuyerSignals=*/null),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -553,7 +551,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, /*expectedSellerSignals=*/null,
           'auctionSignals/2', /*expectedPerBuyerSignals=*/null),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -571,7 +569,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, 'firstSellerSignals/1',
           /*expectedAuctionSignals=*/null, /*expectedPerBuyerSignals=*/null),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -589,7 +587,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, 'nonDupSellerSignals/2',
           /*expectedAuctionSignals=*/null, /*expectedPerBuyerSignals=*/null),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,
@@ -608,7 +606,7 @@ subsetTest(promise_test, async test => {
       directFromSellerSignalsValidatorCode(
           uuid, 'sameSellerSignals',
           'sameAuctionSignals', 'samePerBuyerSignals'),
-      // expectedReportUrls
+      // expectedReportURLs
       [createSellerReportURL(uuid), createBidderReportURL(uuid)],
       // renderURLOverride
       null,

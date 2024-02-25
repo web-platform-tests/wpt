@@ -88,9 +88,10 @@ class MarionetteBaseProtocolPart(BaseProtocolPart):
     def setup(self):
         self.marionette = self.parent.marionette
 
-    def execute_script(self, script, asynchronous=False):
+    def execute_script(self, script, asynchronous=False, args=None):
         method = self.marionette.execute_async_script if asynchronous else self.marionette.execute_script
-        return method(script, new_sandbox=False, sandbox=None)
+        script_args = args if args is not None else []
+        return method(script, script_args=script_args, new_sandbox=False, sandbox=None)
 
     def set_timeout(self, timeout):
         """Set the Marionette script timeout.
@@ -497,6 +498,8 @@ class MarionetteWindowProtocolPart(WindowProtocolPart):
     def set_rect(self, rect):
         self.marionette.set_window_rect(rect["x"], rect["y"], rect["height"], rect["width"])
 
+    def get_rect(self):
+        return self.marionette.window_rect
 
 class MarionetteActionSequenceProtocolPart(ActionSequenceProtocolPart):
     def setup(self):
@@ -976,15 +979,13 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
         if success:
             return self.convert_result(test, data, extra=extra)
 
-        return (test.result_cls(extra=extra, *data), [])
+        return (test.make_result(extra=extra, *data), [])
 
     def do_testharness(self, protocol, url, timeout):
         parent_window = protocol.testharness.close_old_windows(self.last_environment["protocol"])
 
         if self.protocol.coverage.is_enabled:
             self.protocol.coverage.reset()
-
-        format_map = {"url": strip_server(url)}
 
         protocol.base.execute_script("window.open('about:blank', '%s', 'noopener')" % self.window_id)
         test_window = protocol.testharness.get_test_window(self.window_id, parent_window,
@@ -999,7 +1000,7 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
         protocol.marionette.navigate(url)
         while True:
             result = protocol.base.execute_script(
-                self.script_resume % format_map, asynchronous=True)
+                self.script_resume, args=[strip_server(url)], asynchronous=True)
             if result is None:
                 # This can happen if we get an content process crash
                 return None
@@ -1276,7 +1277,7 @@ class MarionetteCrashtestExecutor(CrashtestExecutor):
         if success:
             return self.convert_result(test, data)
 
-        return (test.result_cls(extra=extra, *data), [])
+        return (test.make_result(extra=extra, *data), [])
 
     def do_crashtest(self, protocol, url, timeout):
         if self.protocol.coverage.is_enabled:

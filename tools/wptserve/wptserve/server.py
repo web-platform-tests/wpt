@@ -214,13 +214,20 @@ class WebTestServer(http.server.ThreadingHTTPServer):
                 ssl_context.load_cert_chain(keyfile=self.key_file, certfile=self.certificate)
                 ssl_context.set_alpn_protocols(['h2'])
                 self.socket = ssl_context.wrap_socket(self.socket,
+                                                      do_handshake_on_connect=False,
                                                       server_side=True)
 
             else:
-                self.socket = ssl.wrap_socket(self.socket,
-                                              keyfile=self.key_file,
-                                              certfile=self.certificate,
-                                              server_side=True)
+                ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+                ssl_context.load_cert_chain(keyfile=self.key_file, certfile=self.certificate)
+                self.socket = ssl_context.wrap_socket(self.socket,
+                                                      do_handshake_on_connect=False,
+                                                      server_side=True)
+
+    def finish_request(self, request, client_address):
+        if isinstance(self.socket, ssl.SSLSocket):
+            request.do_handshake()
+        super().finish_request(request, client_address)
 
     def handle_error(self, request, client_address):
         error = sys.exc_info()[1]
@@ -229,7 +236,11 @@ class WebTestServer(http.server.ThreadingHTTPServer):
              isinstance(error.args, tuple) and
              error.args[0] in self.acceptable_errors) or
             (isinstance(error, IOError) and
-             error.errno in self.acceptable_errors)):
+             error.errno in self.acceptable_errors) or
+            # `SSLEOFError` may occur when a client (e.g., wptrunner's
+            # `TestEnvironment`) tests for connectivity but doesn't perform the
+            # handshake.
+            isinstance(error, ssl.SSLEOFError)):
             pass  # remote hang up before the result is sent
         else:
             msg = traceback.format_exc()
@@ -322,10 +333,10 @@ class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
         response.write()
         if self.server.encrypt_after_connect:
             self.logger.debug("Enabling SSL for connection")
-            self.request = ssl.wrap_socket(self.connection,
-                                           keyfile=self.server.key_file,
-                                           certfile=self.server.certificate,
-                                           server_side=True)
+            ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            ssl_context.load_cert_chain(keyfile=self.server.key_file, certfile=self.server.certificate)
+            self.request = ssl_context.wrap_socket(self.connection,
+                                                   server_side=True)
             self.setup()
         return
 
@@ -534,7 +545,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
         dispatcher = request._dispatcher
         try:
             dispatcher.transfer_data(request)
-        except StreamClosedError:
+        except (StreamClosedError, ProtocolError):
             # work around https://github.com/web-platform-tests/wpt/issues/27786
             # The stream was already closed.
             queue.put(None)
@@ -546,7 +557,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                 connection.end_stream(stream_id)
                 data = connection.data_to_send()
                 stream_handler.request.sendall(data)
-            except StreamClosedError:  # maybe the stream has already been closed
+            except (StreamClosedError, ProtocolError):  # maybe the stream has already been closed
                 pass
         queue.put(None)
 

@@ -147,8 +147,7 @@ def start_dbus():
     os.environ["DBUS_SESSION_BUS_ADDRESS"] = "autolaunch:"
 
 def install_chrome(channel):
-    # Interpret experimental channels as Canary.
-    if channel in ("experimental", "nightly", "canary"):
+    if channel in ("experimental", "nightly"):
         channel = "canary"
     run(["sh", "-c", f"./wpt install --channel {channel} chrome browser"])
 

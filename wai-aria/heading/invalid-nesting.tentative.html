@@ -21,63 +21,61 @@
 
   <h1
     class="ex-label"
-    data-testname="Invalid parent h1 has empty accname"
+    data-testname="h1 with invalid h2 descendant should not inherit accname from the text contents of the contained h2"
     data-expectedlabel=""
   >
     <h2
       class="ex-label"
-      data-testname="Invalid child h2 has accname matching inner text"
-      data-expectedlabel="Malformed h2"
-    >Malformed h2</h2>
+      data-testname="Invalidly nested h2 should have accname matching its text contents"
+      data-expectedlabel="Invalid h2"
+    >Invalid h2</h2>
   </h1>
-
   <div
     role="heading"
     aria-level="1"
     class="ex-label"
-    data-testname="Invalid parent aria-level=1 has empty accname"
+    data-testname="div[role=heading][aria-level=1] with invalid div[role=heading][aria-level=2] descendant should not inherit accname from the text contents of the contained div[role=heading][aria-level=2]"
     data-expectedlabel=""
   >
     <div
       role="heading"
       aria-level="2"
       class="ex-label"
-      data-testname="Invalid child aria-level=2 has accname matching inner text"
-      data-expectedlabel="Malformed aria-level=2"
-    >Malformed aria-level=2</div>
+      data-testname="Invalidly nested div[role=heading][aria-level=2] should have accname matching its text contents"
+      data-expectedlabel="Invalid div[role=heading][aria-level=2]"
+    >Invalid div[role=heading][aria-level=2]</div>
   </div>
 
   <h4
     class="ex-label"
-    data-testname="Invalid parent h4 has empty accname"
+    data-testname="h4 with invalid h3 descendant should not inherit accname from the text contents of the contained h3"
     data-expectedlabel=""
   >
     <h3
       class="ex-label"
-      data-testname="Invalid child h3 has accname matching inner text"
-      data-expectedlabel="Malformed h3"
-    >Malformed h3</h3>
+      data-testname="Invalidly nested h3 should have accname matching its text contents"
+      data-expectedlabel="Invalid h3"
+    >Invalid h3</h3>
   </h4>
-
   <div
     role="heading"
     aria-level="4"
     class="ex-label"
-    data-testname="Invalid parent aria-level=4 has empty accname"
+    data-testname="div[role=heading][aria-level=4] with invalid div[role=heading][aria-level=3] descendant should not inherit accname from the text contents of the contained div[role=heading][aria-level=3]"
     data-expectedlabel=""
   >
     <div
       role="heading"
       aria-level="3"
       class="ex-label"
-      data-testname="Invalid child aria-level=3 accname matching inner text"
-      data-expectedlabel="Malformed aria-level=3"
-    >Malformed aria-level=3</div>
+      data-testname="Invalidly nested div[role=heading][aria-level=3] should have accname matching its text contents"
+      data-expectedlabel="Invalid div[role=heading][aria-level=3]"
+    >Invalid div[role=heading][aria-level=3]</div>
   </div>
 
   <h1
     class="ex-label"
-    data-testname="Invalid parent h1 accname does not append deeper text"
+    data-testname="h1 with text contents and invalid h2 descendant should not accumulate accname from the text contents of the contained h2"
     data-expectedlabel="Chocolate"
   >Chocolate
     <h2
@@ -87,7 +85,7 @@
     role="heading"
     aria-level="1"
     class="ex-label"
-    data-testname="Invalid parent aria-level=1 does not append deeper text"
+    data-testname="div[role=heading][aria-level=1] with text contents and invalid div[role=heading][aria-level=2] descendant should not accumulate accname from the text contents of the contained div[role=heading][aria-level=2]"
     data-expectedlabel="Chocolate"
   >Chocolate
     <div
@@ -101,72 +99,73 @@
 
   <h1
     class="ex-role"
-    data-testname="invalid parent h1 still conveys heading role"
+    data-testname="h1 with invalid h2 descendant should still convey heading role"
     data-expectedrole="heading"
   >
     <h2
       class="ex-role"
-      data-testname="invalid child h2 still conveys heading role"
+      data-testname="invalidly nested h2 should still convey heading role"
       data-expectedrole="heading"
-    >Malformed h2</h2>
+    >Invalid h2</h2>
   </h1>
-
   <div
     role="heading"
     aria-level="1"
     class="ex-role"
-    data-testname="invalid parent aria-level=1 still conveys heading role"
+    data-testname="div[role=heading][aria-level=1] with invalid div[role=heading][aria-level=2] descendant should still convey heading role"
     data-expectedrole="heading"
   >
     <div
       role="heading"
       aria-level="2"
       class="ex-role"
-      data-testname="invalid child aria-level=2 still conveys heading role"
+      data-testname="invalidly nested div[role=heading][aria-level=2] should still convey heading role"
       data-expectedrole="heading"
-    >Malformed aria-level=2</div>
+    >Invalid div[role=heading][aria-level=2]</div>
   </div>
 
   <h4
     class="ex-role"
-    data-testname="invalid parent h4 still conveys heading role"
+    data-testname="h4 with invalid h3 descendant should still convey heading role"
     data-expectedrole="heading"
   >
     <h3
       class="ex-role"
-      data-testname="invalid child h3 still conveys heading role"
+      data-testname="invalidly nested h3 should still convey heading role"
       data-expectedrole="heading"
-    >Malformed h3</h3>
+    >Invalid h3</h3>
   </h4>
 
   <div
     role="heading"
     aria-level="4"
     class="ex-role"
-    data-testname="invalid parent aria-level=4 still conveys heading role"
+    data-testname="div[role=heading][aria-level=4] with invalid div[role=heading][aria-level=3] descendant should still convey heading role"
     data-expectedrole="heading"
   >
     <div
       role="heading"
       aria-level="3"
       class="ex-role"
-      data-testname="invalid child aria-level=3 still conveys heading role"
+      data-testname="invalidly nested div[role=heading][aria-level=3] should still convey heading role"
       data-expectedrole="heading"
-    >Malformed aria-level=3</div>
+    >Invalid div[role=heading][aria-level=3]</div>
   </div>
 
   <h2>No heading ancestors</h2>
   <hr>
 
   <h1>One
-    <h2>Two
+    <h2
+      class="ex-no-heading-ancestor"
+      data-testname="h2 invalidly nested inside h1 should not, after parsing, have any DOM ancestor with a heading role"
+    >Two
       <h3
         class="ex-no-heading-ancestor"
-        data-testname="nested h3 has no heading ancestor in DOM"
+        data-testname="h3 invalidly nested inside h1 > h2 should not, after parsing, have any DOM ancestor with a heading role"
       >Three</h3>
     </h2>
   </h1>
-
   <div
     role="heading"
     aria-level="1"
@@ -174,12 +173,14 @@
     <div
       role="heading"
       aria-level="2"
+      class="ex-no-heading-ancestor"
+      data-testname="div[role=heading][aria-level=2] invalidly nested inside div[role=heading][aria-level=1] should not, after parsing, have any DOM ancestor with a heading role"
     >Two
       <div
         role="heading"
         aria-level="3"
         class="ex-no-heading-ancestor"
-        data-testname="nested aria-level=3 has no heading ancestor in DOM"
+        data-testname="div[role=heading][aria-level=3] invalidly nested inside div[role=heading][aria-level=1] > div[role=heading][aria-level=2] should not, after parsing, have any DOM ancestor with a heading role"
       >Three</div>
     </div>
   </div>
@@ -205,7 +206,7 @@
             ancestors.push(computedRole);
             ancestor = ancestor.parentNode;
           }
-          assert_true(!ancestors.includes(forbiddenRole), el.outerHTML);
+          assert_false(ancestors.includes(forbiddenRole));
         }, `${testName}`);
       }
     }

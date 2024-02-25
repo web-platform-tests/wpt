@@ -54,6 +54,8 @@ const routerRules = {
   }],
   'condition-request-source-fetch-event':
       [{condition: {requestMode: 'no-cors'}, source: 'fetch-event'}],
+  'condition-urlpattern-string-source-fetch-event':
+      [{condition: {urlPattern: '/**/*'}, source: 'fetch-event'}],
   'multiple-router-rules': [
     {
       condition: {
@@ -62,7 +64,13 @@ const routerRules = {
       source: 'network'
     },
     {condition: {urlPattern: '/**/direct.html'}, source: 'network'}
-  ]
+  ],
+  'condition-urlpattern-string-source-race-network-and-fetch-handler': [
+    {
+      condition: {urlPattern: '/**/direct.py'},
+      source: 'race-network-and-fetch-handler'
+    },
+  ],
 };
 
 export {routerRules};

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <head>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
@@ -26,22 +27,26 @@
       background-image: url("/images/blue.png?inline-style");
       font-family: remoteFont, sans-serif;
     }
+
     @font-face {
       font-family: remoteFont;
       src: url("/fonts/Ahem.ttf");
     }
   </style>
 </head>
+
 <body>
   <!-- Loading an arbitrary Image using <img> tag -->
-  <img
-    src="/images/blue.png?using-Img-tag"
-    alt="Sample Image for testing initiator Attribute"
-  />
+  <img src="/images/blue.png?using-Img-tag" alt="Sample Image for testing initiator Attribute" />
 
   <iframe src="../resources/green.html"></iframe>
 
   <script>
+      // Insert arbitrary resources with doc.write
+      document.write('<link rel="stylesheet" href="../resources/empty_style.css?inline-script-doc-write">');
+      document.write('<img src="/images/blue.png?inline-script-doc-write">');
+      document.write('<script src="../resources/empty.js?doc-write"><\/script>');
+
     // Load arbitrary stylesheet with inline script
     const link = document.createElement("link");
     link.rel = "stylesheet";
@@ -55,23 +60,24 @@
 
     // Testing Initiator of all the resources loaded
     promise_test(async (t) => {
-      const expectedInitiator = await getDocumentResourceID();
-      const resources = [
+      const DocumentResourceID = await getDocumentResourceID();
+      const parser_attributed_resources = [
         "empty.js?blocking",
         "empty.js?preload",
         "empty.js?async",
-        "empty.js?deferred",
         "empty.js?module",
+        "empty.js?deferred",
         "empty_style.css?link",
         "blue.png?inline-style",
         "Ahem.ttf",
         "blue.png?using-Img-tag",
-        "green.html",
-        "empty_style.css?inline-script",
-        "blue.png?inline-script",
+        "blue.png?inline-style"
+        // The following Cases are yet not covered by Parser Preloading and
+        // thus, will be dealt in subsequent CLs.
+        // "green.html",
       ];
-      for (const resource of resources) {
-        await testResourceInitiator(resource, expectedInitiator);
+      for (const resource of parser_attributed_resources) {
+        await testResourceInitiator(resource, DocumentResourceID);
       }
     }, "Ensure initiator Attribute matches with Document ResourceID");
   </script>

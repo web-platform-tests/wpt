@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>font-size-adjust with the ic-height metric</title>
+<link rel="author" title="ChangSeok Oh" href="mailto:changseok@chromium.org" />
+<style>
+@font-face {
+  font-family: NotoSansCJK;
+  src: url(/fonts/noto/cjk/NotoSansCJKjp-Regular-subset-chws.otf);
+}
+div {
+  font-family: NotoSansCJK;
+  color: green;
+  background: green;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
+.valueRef {
+  font-size: 200px;
+}
+.fromFontRef {
+  font-size: 100px;
+}
+</style>
+<div class="valueRef">水</div>
+<div class="fromFontRef">水</div>

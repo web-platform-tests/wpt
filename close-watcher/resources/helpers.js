@@ -59,3 +59,8 @@ window.maybeTopLayerBless = (watcher) => {
   }
   return test_driver.bless();
 };
+window.waitForPotentialCloseEvent = () => {
+  // CloseWatchers fire close events synchronously, but dialog elements wait
+  // for a rAF before firing them.
+  return new Promise(requestAnimationFrame);
+};

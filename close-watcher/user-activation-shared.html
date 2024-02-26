@@ -102,11 +102,11 @@ promise_test(async t => {
 
   await sendCloseRequest();
   await waitForPotentialCloseEvent();
-  assert_array_equals(events, ["activationWatcher2 close"]);
+  assert_array_equals(events, ["activationWatcher2 cancel", "activationWatcher2 close"]);
 
   await sendCloseRequest();
   await waitForPotentialCloseEvent();
-  assert_array_equals(events, ["activationWatcher2 close", "activationWatcher1 close"]);
+  assert_array_equals(events, ["activationWatcher2 cancel", "activationWatcher2 close", "activationWatcher1 cancel", "activationWatcher1 close"]);
 }, "Multiple close watchers created with user activation close in reverse order");
 
 promise_test(async t => {
@@ -119,19 +119,19 @@ promise_test(async t => {
 
   await sendCloseRequest();
   await waitForPotentialCloseEvent();
-  assert_array_equals(events, ["watcher4 close", "activationWatcher3 close"]);
+  assert_array_equals(events, ["watcher4 cancel", "watcher4 close"]);
 
   await sendCloseRequest();
   await waitForPotentialCloseEvent();
-  assert_array_equals(events, ["watcher4 close", "activationWatcher3 close", "activationWatcher2 close"]);
+  assert_array_equals(events, ["watcher4 cancel", "watcher4 close", "activationWatcher3 cancel", "activationWatcher3 close"]);
 
   await sendCloseRequest();
   await waitForPotentialCloseEvent();
-  assert_array_equals(events, ["watcher4 close", "activationWatcher3 close", "activationWatcher2 close", "activationWatcher1 close"]);
+  assert_array_equals(events, ["watcher4 cancel", "watcher4 close", "activationWatcher3 cancel", "activationWatcher3 close", "activationWatcher2 cancel", "activationWatcher2 close"]);
 
   await sendCloseRequest();
   await waitForPotentialCloseEvent();
-  assert_array_equals(events, ["watcher4 close", "activationWatcher3 close", "activationWatcher2 close", "activationWatcher1 close", "freeWatcher close"]);
+  assert_array_equals(events, ["watcher4 cancel", "watcher4 close", "activationWatcher3 cancel", "activationWatcher3 close", "activationWatcher2 cancel", "activationWatcher2 close", "activationWatcher1 cancel", "activationWatcher1 close"]);
 }, "3 user activations let you have 3 + 1 = 4 ungrouped close watchers/0 cancel events");
 
 promise_test(async t => {
@@ -140,13 +140,13 @@ promise_test(async t => {
 
   await sendCloseRequest();
   await waitForPotentialCloseEvent();
-  assert_array_equals(events, ["freeWatcher1 close"]);
+  assert_array_equals(events, ["freeWatcher1 cancel", "freeWatcher1 close"]);
 
   const freeWatcher2 = createRecordingCloseWatcher(t, events, "freeWatcher2", type);
 
   await sendCloseRequest();
   await waitForPotentialCloseEvent();
-  assert_array_equals(events, ["freeWatcher1 close", "freeWatcher2 close"]);
+  assert_array_equals(events, ["freeWatcher1 cancel", "freeWatcher1 close", "freeWatcher2 cancel", "freeWatcher2 close"]);
 }, "closing the free close watcher via a close request allows a new free one to be created without user activation, and it receives a second close request");
 
 promise_test(async t => {
@@ -156,11 +156,11 @@ promise_test(async t => {
 
   await sendCloseRequest();
   await waitForPotentialCloseEvent();
-  assert_array_equals(events, ["freeWatcher close"]);
+  assert_array_equals(events, ["freeWatcher cancel", "freeWatcher close"]);
 
   await sendCloseRequest();
   await waitForPotentialCloseEvent();
-  assert_array_equals(events, ["freeWatcher close", "activationWatcher close"]);
+  assert_array_equals(events, ["freeWatcher cancel", "freeWatcher close", "activationWatcher cancel", "activationWatcher close"]);
 }, "The second watcher can be the free watcher, if the first is created with user activation");
 
 promise_test(async t => {
@@ -171,15 +171,15 @@ promise_test(async t => {
 
   await sendCloseRequest();
   await waitForPotentialCloseEvent();
-  assert_array_equals(events, ["freeWatcher close"]);
+  assert_array_equals(events, ["freeWatcher cancel", "freeWatcher close"]);
 
   await sendCloseRequest();
   await waitForPotentialCloseEvent();
-  assert_array_equals(events, ["freeWatcher close", "activationWatcher2 close"]);
+  assert_array_equals(events, ["freeWatcher cancel", "freeWatcher close", "activationWatcher2 cancel", "activationWatcher2 close"]);
 
   await sendCloseRequest();
   await waitForPotentialCloseEvent();
-  assert_array_equals(events, ["freeWatcher close", "activationWatcher2 close", "activationWatcher1 close"]);
+  assert_array_equals(events, ["freeWatcher cancel", "freeWatcher close", "activationWatcher2 cancel", "activationWatcher2 close", "activationWatcher1 cancel", "activationWatcher1 close"]);
 }, "The third watcher can be the free watcher, if the first two are created with user activation");
 
 promise_test(async t => {
@@ -196,6 +196,6 @@ promise_test(async t => {
   const freeWatcher2 = createRecordingCloseWatcher(t, events, "freeWatcher2");
 
   await sendCloseRequest();
-  assert_array_equals(events, ["freeWatcher2 close"]);
+  assert_array_equals(events, ["freeWatcher2 cancel", "freeWatcher2 close"]);
 }, "destroy()ing the free close watcher allows a new free one to be created without user activation, and it receives the close request");
 </script>

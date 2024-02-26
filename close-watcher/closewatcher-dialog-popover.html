@@ -16,14 +16,7 @@
   <div id=popover popover=auto>popover</div>
 </dialog>
 
-<script>
-const waitForPotentialCloseEvent = () => {
-  // CloseWatchers fire close events synchronously, but dialog elements wait
-  // for a rAF before firing them.
-  return new Promise(resolve => requestAnimationFrame(resolve));
-};
-
-promise_test(async t => {
+<script> promise_test(async t => {
   const events = [];
   const closeWatcher = createRecordingCloseWatcher(t, events, 'CloseWatcher', 'CloseWatcher');
   const dialog = createRecordingCloseWatcher(t, events, 'dialog', 'dialog');
@@ -57,13 +50,13 @@ promise_test(async t => {
   await waitForPotentialCloseEvent();
   assert_false(popover.matches(':popover-open'), 'Second close request: The popover should be closed.');
   assert_false(dialog.hasAttribute('open'), 'Second close request: The dialog should be closed.');
-  assert_array_equals(events, ['dialog close']);
+  assert_array_equals(events, ['dialog cancel', 'dialog close']);
 
   await sendCloseRequest();
   await waitForPotentialCloseEvent();
   assert_false(popover.matches(':popover-open'), 'Third close request: The popover should be closed.');
   assert_false(dialog.hasAttribute('open'), 'Third close request: The dialog should be closed.');
-  assert_array_equals(events, ['dialog close', 'CloseWatcher close']);
+  assert_array_equals(events, ['dialog cancel', 'dialog close', 'CloseWatcher cancel', 'CloseWatcher close']);
 }, 'Opening a CloseWatcher, modal dialog, and popover with user activation for each should close one at a time with close requests.');
 
 promise_test(async t => {

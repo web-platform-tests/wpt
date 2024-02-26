@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta name=variant content="?dialog">
+<meta name=variant content="?CloseWatcher">
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=author href="mailto:d@domenic.me">
+<link rel=help href="https://github.com/whatwg/html/pull/10048">
+<link rel=help href="https://bugs.chromium.org/p/chromium/issues/detail?id=1512224">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/common/top-layer.js"></script>
+<script src="resources/helpers.js"></script>
+
+<body>
+<script>
+const type = location.search.substring(1);
+promise_test(async t => {
+  const events = [];
+  await createBlessedRecordingCloseWatcher(t, events, "watcher1", type);
+  await sendCloseRequest();
+  await waitForPotentialCloseEvent();
+  assert_array_equals(events, ["watcher1 cancel", "watcher1 close"]);
+}, "Close watchers created with user activation, and immediately closed via a close request, fires cancel");
+</script>

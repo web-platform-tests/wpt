@@ -20,5 +20,8 @@
         await test_driver.bless('show picker');
         select.showPicker();
         select.blur();
+
+        assert_throws_dom('NotAllowedError', () => select.showPicker(),
+            'User activation should be consumed after calling showPicker().');
     }, `select showPicker() does not throw when user activation is active`);
 </script>

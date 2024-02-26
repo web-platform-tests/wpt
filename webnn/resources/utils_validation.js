@@ -192,7 +192,7 @@ let context, builder;
 promise_setup(async () => {
   context = await navigator.ml.createContext();
   builder = new MLGraphBuilder(context);
-});
+}, {explicit_timeout: true});
 
 function validateTwoInputsBroadcastable(operationName) {
   promise_test(async t => {

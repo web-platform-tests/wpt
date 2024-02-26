@@ -1023,6 +1023,40 @@
          */
         get_virtual_sensor_information: function(sensor_type, context=null) {
             return window.test_driver_internal.get_virtual_sensor_information(sensor_type, context);
+        },
+
+        /**
+         * Set autofill data on a form element.
+         *
+         * @param {HTMLFormElement} form_element - The element containing the
+         *                                         autofill data.
+         * @param {WindowProxy} [context=null] - Browsing context in which to
+         *                                       run the call, or null for the
+         *                                       current browsing context.
+         *
+         * @returns {Promise} Fulfilled once the form's data is saved in the
+         *                    browser's autofill database.
+         */
+        save_to_autofill: function(form_element, context=null) {
+            return window.test_driver_internal.save_to_autofill(form_element, context);
+        },
+
+        /**
+         * Get autofill suggestiong on a form field element.
+         *
+         * @param {HTMLInputElement} field_element - The field element on which we
+         *                                         want to get autofill data.
+         * @param {WindowProxy} [context=null] - Browsing context in which to
+         *                                       run the call, or null for the
+         *                                       current browsing context.
+         *
+         * @returns {Promise} Fulfilled once the form's autofill data is
+         *                    received.
+         */
+         apply_autofill_suggestions: function(field_element, context=null) {
+            return window.test_driver_internal.apply_autofill_suggestions(
+                                                                field_element,
+                                                                context);
         }
     };
 
@@ -1203,6 +1237,14 @@
 
         async get_virtual_sensor_information(sensor_type, context=null) {
             throw new Error("get_virtual_sensor_information() is not implemented by testdriver-vendor.js");
+        },
+
+        async save_to_autofill(form_element, context=null) {
+            throw new Error("save_to_autofill() is not implemented by testdriver-vendor.js");
+        },
+
+        async apply_autofill_suggestions(field_element, context=null) {
+            throw new Error("apply_autofill_suggestions() is not implemented by testdriver-vendor.js");
         }
     };
 })();

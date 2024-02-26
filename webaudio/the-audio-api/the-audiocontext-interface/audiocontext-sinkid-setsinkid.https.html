@@ -47,6 +47,18 @@ promise_test(async t => {
 }, 'setSinkId() with the same sink ID should resolve immediately.');
 
 promise_test(async t => {
+  // 'default' named deviceId is also valid default device like
+  // empty string device id.
+  await audioContext.setSinkId('default');
+  t.step(() => {
+    // If 'default' is set, its sinkId should be 'default'.
+    assert_equals(typeof audioContext.sinkId, 'string');
+    assert_equals(audioContext.sinkId, 'default');
+  });
+  return audioContext.setSinkId(firstDeviceId);
+}, "setSinkId with 'default' should be retrieved as 'default' in sinkId.");
+
+promise_test(async t => {
   // If sinkId is a type of AudioSinkOptions and [[sink ID]] is a type of
   // AudioSinkInfo, and type in sinkId and type in [[sink ID]] are equal,
   // resolve the promise immediately.

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<style>
+div {
+  margin: 0em;
+  padding: 2em;
+}
+
+#source {
+  color: blue;
+  border: 1px solid black;
+}
+
+#target {
+  border: 1px solid black;
+}
+
+
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+    /** Compare two arrays.*/
+    function checkArrays(arrA, arrB){
+        if(arrA.length !== arrB.length) return false;
+        for(var i=0;i<arrA.length;i++){
+            if(arrA[i]!==arrB[i]) return false;
+        }
+        return true;
+    }
+
+    // Todo: this value needs to be corrected to ["text/plain","text/html","Files"];
+    // once http://crbug.com/1470718 is fixed.
+    const expected_arr = ["text/plain","text/html"];
+
+    // Todo: this value needs to be corrected to 4 once http://crbug.com/1470718
+    // is fixed.
+    const expected_len = 2;
+
+    function dragstart_handler(e) {
+        e.dataTransfer.setData('text/plain', "sample plain data");
+        e.dataTransfer.setData('text/html', 'sample text html');
+        e.dataTransfer.items.add(new File(["h","e","l","l","o"],
+                                    "hello.txt"));
+        e.dataTransfer.items.add(new File(["h","e","l","l","o","2"],
+                                    "hello2.txt"));
+    }
+
+    function drop_handler(ev) {
+        ev.preventDefault();
+
+        // Get the id of the target and add the moved element to the target's DOM
+        ev.target.appendChild(document.getElementById("source"));
+        test(() => {
+            let length = ev.dataTransfer.items.length;
+            assert_equals(length, expected_len);
+        }, "Check if DataTransfer.length return correct length");
+
+        test(() => {
+            let types_arr = ev.dataTransfer.types;
+            assert_true(checkArrays(types_arr, expected_arr),
+              'item types should be accessible in drop');
+        }, "Check if DataTransfer.types return correct values");
+    }
+
+    function dragover_handler(ev) {
+        ev.preventDefault();
+        test(() => {
+            let length = ev.dataTransfer.items.length;
+            assert_equals(length, expected_len);
+        }, "Check if DataTransfer.length return correct length");
+
+        test(() => {
+            let types_arr = ev.dataTransfer.types;
+            assert_true(checkArrays(types_arr, expected_arr),
+              'item types should be accessible in dragover');
+        }, "Check if DataTransfer.types return correct values");
+    }
+
+    function dragend_handler(ev) {
+        ev.preventDefault();
+        test(() => {
+            let length = ev.dataTransfer.items.length;
+            assert_equals(length, 4);
+        }, "Check if DataTransfer.length return correct length");
+
+        test(() => {
+            const arr1 = ["text/plain","text/html","Files"];
+            let types_arr = ev.dataTransfer.types;
+            assert_true(checkArrays(types_arr,arr1),
+              'item types should be accessible in dragend');
+        }, "Check if DataTransfer.types return correct values");
+    }
+</script>
+<body>
+<div>
+  <p id="source" ondragstart="dragstart_handler(event);" draggable="true">
+    Select this element, drag it to the Drop Zone and then release the selection
+    to move the element.
+  </p>
+</div>
+<div
+  id="target"
+  ondrop="drop_handler(event);"
+  ondragover="dragover_handler(event);"
+  ondragend="dragend_handler(event);">
+  Drop Zone
+</div>
+</body>
+</html>

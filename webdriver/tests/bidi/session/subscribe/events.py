@@ -5,36 +5,23 @@ import pytest
 
 
 @pytest.mark.asyncio
-async def test_subscribe_to_module(bidi_session, subscribe_events, wait_for_event, wait_for_future_safe):
+async def test_subscribe_to_module(
+    bidi_session, subscribe_events, wait_for_events, wait_for_future_safe
+):
     # Subscribe to all browsing context events
     await subscribe_events(events=["browsingContext"])
 
-    # Track all received browsing context events in the events array
-    events = []
-
-    async def on_event(method, _):
-        events.append(method)
-
-    remove_listener_contextCreated = bidi_session.add_event_listener(
-        "browsingContext.contextCreated", on_event
+    # Wait for several events of the browsingContext module which should be
+    # triggered when using browsingContext.create.
+    on_events = wait_for_events(
+        [
+            {"event": "browsingContext.contextCreated"},
+            {"event": "browsingContext.domContentLoaded"},
+            {"event": "browsingContext.load"},
+        ]
     )
-    remove_listener_domContentLoaded = bidi_session.add_event_listener(
-        "browsingContext.domContentLoaded", on_event
-    )
-    remove_listener_load = bidi_session.add_event_listener(
-        "browsingContext.load", on_event
-    )
-
-    # Wait for the last event
-    on_entry_added = wait_for_event("browsingContext.load")
     await bidi_session.browsing_context.create(type_hint="tab")
-    await wait_for_future_safe(on_entry_added)
-
-    assert len(events) == 3
-
-    remove_listener_contextCreated()
-    remove_listener_domContentLoaded()
-    remove_listener_load()
+    await on_events
 
 
 @pytest.mark.asyncio

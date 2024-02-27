@@ -1,8 +1,7 @@
 import pytest
-from webdriver.error import TimeoutException
 from webdriver.bidi.modules.script import ContextTarget
+from webdriver.error import TimeoutException
 
-from tests.support.sync import AsyncPoll
 from .. import assert_browsing_context
 
 pytestmark = pytest.mark.asyncio
@@ -10,25 +9,15 @@ pytestmark = pytest.mark.asyncio
 CONTEXT_CREATED_EVENT = "browsingContext.contextCreated"
 
 
-async def test_not_unsubscribed(bidi_session):
+async def test_not_unsubscribed(bidi_session, wait_for_event, wait_for_future_safe):
     await bidi_session.session.subscribe(events=[CONTEXT_CREATED_EVENT])
     await bidi_session.session.unsubscribe(events=[CONTEXT_CREATED_EVENT])
 
-    # Track all received browsingContext.contextCreated events in the events array
-    events = []
-
-    async def on_event(method, data):
-        events.append(data)
-
-    remove_listener = bidi_session.add_event_listener(CONTEXT_CREATED_EVENT, on_event)
-
+    on_event = wait_for_event(CONTEXT_CREATED_EVENT)
     await bidi_session.browsing_context.create(type_hint="tab")
 
-    wait = AsyncPoll(bidi_session, timeout=0.5)
     with pytest.raises(TimeoutException):
-        await wait.until(lambda _: len(events) > 0)
-
-    remove_listener()
+        await wait_for_future_safe(on_event, timeout=0.5)
 
 
 @pytest.mark.parametrize("type_hint", ["tab", "window"])
@@ -92,24 +81,21 @@ async def test_evaluate_window_open_with_url(bidi_session, subscribe_events, wai
     )
 
 
-async def test_navigate_creates_iframes(bidi_session, subscribe_events, top_context, test_page_multiple_frames):
-    events = []
-
-    async def on_event(method, data):
-        events.append(data)
-
-    remove_listener = bidi_session.add_event_listener(CONTEXT_CREATED_EVENT, on_event)
+async def test_navigate_creates_iframes(
+    bidi_session,
+    subscribe_events,
+    top_context,
+    wait_for_event_expectation,
+    wait_for_future_safe,
+    test_page_multiple_frames,
+):
     await subscribe_events([CONTEXT_CREATED_EVENT])
 
+    on_events = wait_for_event_expectation({"event": CONTEXT_CREATED_EVENT, "count": 2})
     await bidi_session.browsing_context.navigate(
         context=top_context["context"], url=test_page_multiple_frames, wait="complete"
     )
-
-    wait = AsyncPoll(
-        bidi_session, message="Didn't receive context created events for frames"
-    )
-    await wait.until(lambda _: len(events) >= 2)
-    assert len(events) == 2
+    events = await wait_for_future_safe(on_events)
 
     # Get all browsing contexts from the first tab
     contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])
@@ -137,27 +123,22 @@ async def test_navigate_creates_iframes(bidi_session, subscribe_events, top_cont
         parent=root_info["context"],
     )
 
-    remove_listener()
 
-
-async def test_navigate_creates_nested_iframes(bidi_session, subscribe_events, top_context, test_page_nested_frames):
-    events = []
-
-    async def on_event(method, data):
-        events.append(data)
-
-    remove_listener = bidi_session.add_event_listener(CONTEXT_CREATED_EVENT, on_event)
+async def test_navigate_creates_nested_iframes(
+    bidi_session,
+    subscribe_events,
+    top_context,
+    wait_for_event_expectation,
+    wait_for_future_safe,
+    test_page_nested_frames,
+):
     await subscribe_events([CONTEXT_CREATED_EVENT])
 
+    on_events = wait_for_event_expectation({"event": CONTEXT_CREATED_EVENT, "count": 2})
     await bidi_session.browsing_context.navigate(
         context=top_context["context"], url=test_page_nested_frames, wait="complete"
     )
-
-    wait = AsyncPoll(
-        bidi_session, message="Didn't receive context created events for frames"
-    )
-    await wait.until(lambda _: len(events) >= 2)
-    assert len(events) == 2
+    events = await wait_for_future_safe(on_events)
 
     # Get all browsing contexts from the first tab
     contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])
@@ -187,41 +168,34 @@ async def test_navigate_creates_nested_iframes(bidi_session, subscribe_events, t
         parent=child1_info["context"],
     )
 
-    remove_listener()
-
 
 async def test_subscribe_to_one_context(
-    bidi_session, subscribe_events, top_context, test_page_same_origin_frame
+    bidi_session,
+    subscribe_events,
+    top_context,
+    wait_for_event,
+    wait_for_future_safe,
+    test_page_same_origin_frame,
 ):
     # Subscribe to a specific context
     await subscribe_events(
         events=[CONTEXT_CREATED_EVENT], contexts=[top_context["context"]]
     )
 
-    # Track all received browsingContext.contextCreated events in the events array
-    events = []
-
-    async def on_event(method, data):
-        events.append(data)
-
-    remove_listener = bidi_session.add_event_listener(CONTEXT_CREATED_EVENT, on_event)
-
+    on_event = wait_for_event(CONTEXT_CREATED_EVENT)
     await bidi_session.browsing_context.create(type_hint="tab")
 
     # Make sure we didn't receive the event for the new tab
-    wait = AsyncPoll(bidi_session, timeout=0.5)
     with pytest.raises(TimeoutException):
-        await wait.until(lambda _: len(events) > 0)
+        await wait_for_future_safe(on_event, timeout=0.5)
 
+    on_event = wait_for_event(CONTEXT_CREATED_EVENT)
     await bidi_session.browsing_context.navigate(
         context=top_context["context"], url=test_page_same_origin_frame, wait="complete"
     )
 
     # Make sure we received the event for the iframe
-    await wait.until(lambda _: len(events) >= 1)
-    assert len(events) == 1
-
-    remove_listener()
+    await wait_for_future_safe(on_event)
 
 
 @pytest.mark.parametrize("type_hint", ["tab", "window"])
@@ -233,25 +207,20 @@ async def test_new_user_context(
     create_user_context,
     type_hint,
 ):
-    events = []
-
-    async def on_event(method, data):
-        events.append(data)
-
-    remove_listener = bidi_session.add_event_listener(CONTEXT_CREATED_EVENT, on_event)
-
     await subscribe_events([CONTEXT_CREATED_EVENT])
 
+    on_event = wait_for_event(CONTEXT_CREATED_EVENT)
     user_context = await create_user_context()
-    assert len(events) == 0
 
-    on_entry = wait_for_event(CONTEXT_CREATED_EVENT)
+    # Make sure we didn't receive the event for the new user context
+    with pytest.raises(TimeoutException):
+        await wait_for_future_safe(on_event, timeout=0.5)
+
+    on_event = wait_for_event(CONTEXT_CREATED_EVENT)
     context = await bidi_session.browsing_context.create(
         type_hint=type_hint, user_context=user_context
     )
-    context_info = await wait_for_future_safe(on_entry)
-
-    assert len(events) == 1
+    context_info = await wait_for_future_safe(on_event)
 
     assert_browsing_context(
         context_info,
@@ -261,5 +230,3 @@ async def test_new_user_context(
         parent=None,
         user_context=user_context,
     )
-
-    remove_listener()

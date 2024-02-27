@@ -19,12 +19,14 @@ async def test_iframe_navigation_request(
     top_context,
     subscribe_events,
     setup_network_test,
+    wait_for_events,
+    wait_for_future_safe,
     inline,
     test_page,
     test_page_cross_origin,
     test_page_same_origin_frame,
 ):
-    network_events = await setup_network_test(
+    await setup_network_test(
         events=[
             BEFORE_REQUEST_SENT_EVENT,
             RESPONSE_STARTED_EVENT,
@@ -33,13 +35,23 @@ async def test_iframe_navigation_request(
         contexts=[top_context["context"]],
     )
 
-    navigation_events = []
+    on_navigation_events = wait_for_events(
+        [
+            {"event": "browsingContext.navigationStarted", "count": 2},
+        ]
+    )
 
-    async def on_event(method, data):
-        navigation_events.append(data)
-
-    remove_listener = bidi_session.add_event_listener(
-        "browsingContext.navigationStarted", on_event
+    is_top_context_event = lambda e: e["request"]["url"] == test_page_same_origin_frame
+    is_iframe_event = lambda e: e["request"]["url"] == test_page
+    on_network_events = wait_for_events(
+        [
+            {"event": BEFORE_REQUEST_SENT_EVENT, "filter": is_top_context_event},
+            {"event": RESPONSE_STARTED_EVENT, "filter": is_top_context_event},
+            {"event": RESPONSE_COMPLETED_EVENT, "filter": is_top_context_event},
+            {"event": BEFORE_REQUEST_SENT_EVENT, "filter": is_iframe_event},
+            {"event": RESPONSE_STARTED_EVENT, "filter": is_iframe_event},
+            {"event": RESPONSE_COMPLETED_EVENT, "filter": is_iframe_event},
+        ]
     )
     await subscribe_events(events=["browsingContext.navigationStarted"])
 
@@ -47,15 +59,20 @@ async def test_iframe_navigation_request(
         context=top_context["context"], url=test_page_same_origin_frame, wait="complete"
     )
 
+    [navigation_events] = await wait_for_future_safe(on_navigation_events)
+    [
+        [before_request_sent_1],
+        [response_started_1],
+        [response_completed_1],
+        [before_request_sent_2],
+        [response_started_2],
+        [response_completed_2],
+    ] = await wait_for_future_safe(on_network_events)
+
     # Get the frame_context loaded in top_context
     contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])
     assert len(contexts[0]["children"]) == 1
     frame_context = contexts[0]["children"][0]
-
-    assert len(navigation_events) == 2
-    assert len(network_events[BEFORE_REQUEST_SENT_EVENT]) == 2
-    assert len(network_events[RESPONSE_STARTED_EVENT]) == 2
-    assert len(network_events[RESPONSE_COMPLETED_EVENT]) == 2
 
     # Check that 2 distinct navigations were captured, for the expected contexts
     assert navigation_events[0]["navigation"] == result["navigation"]
@@ -64,39 +81,48 @@ async def test_iframe_navigation_request(
     assert navigation_events[1]["context"] == frame_context["context"]
 
     # Helper to assert the 3 main network events for this test
-    def assert_events(event_index, url, context, navigation):
+    def assert_events(events, url, context, navigation):
         expected_request = {"method": "GET", "url": url}
         expected_response = {"url": url}
         assert_before_request_sent_event(
-            network_events[BEFORE_REQUEST_SENT_EVENT][event_index],
+            events[0],
             expected_request=expected_request,
             context=context,
             navigation=navigation,
         )
         assert_response_event(
-            network_events[RESPONSE_STARTED_EVENT][event_index],
+            events[1],
             expected_response=expected_response,
             context=context,
             navigation=navigation,
         )
         assert_response_event(
-            network_events[RESPONSE_COMPLETED_EVENT][event_index],
+            events[2],
             expected_response=expected_response,
             context=context,
             navigation=navigation,
         )
 
     assert_events(
-        0,
+        [before_request_sent_1, response_started_1, response_completed_1],
         url=test_page_same_origin_frame,
         context=top_context["context"],
         navigation=navigation_events[0]["navigation"],
     )
     assert_events(
-        1,
+        [before_request_sent_2, response_started_2, response_completed_2],
         url=test_page,
         context=frame_context["context"],
         navigation=navigation_events[1]["navigation"],
+    )
+
+    on_events = wait_for_events(
+        [
+            {"event": "browsingContext.navigationStarted"},
+            {"event": BEFORE_REQUEST_SENT_EVENT},
+            {"event": RESPONSE_STARTED_EVENT},
+            {"event": RESPONSE_COMPLETED_EVENT},
+        ]
     )
 
     # Navigate the iframe to another url
@@ -104,15 +130,18 @@ async def test_iframe_navigation_request(
         context=frame_context["context"], url=test_page_cross_origin, wait="complete"
     )
 
-    assert len(navigation_events) == 3
-    assert len(network_events[BEFORE_REQUEST_SENT_EVENT]) == 3
-    assert len(network_events[RESPONSE_STARTED_EVENT]) == 3
-    assert len(network_events[RESPONSE_COMPLETED_EVENT]) == 3
+    [
+        [navigation_event],
+        [before_request_sent_3],
+        [response_started_3],
+        [response_completed_3],
+    ] = await wait_for_future_safe(on_events)
+
     assert_events(
-        2,
+        [before_request_sent_3, response_started_3, response_completed_3],
         url=test_page_cross_origin,
         context=frame_context["context"],
-        navigation=navigation_events[2]["navigation"],
+        navigation=navigation_event["navigation"],
     )
 
 

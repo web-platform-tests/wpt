@@ -20,5 +20,7 @@ test(() => {
   assert_equals(buttonForm, null);
   form.appendChild(div);
   assert_equals(buttonForm, form);
-}, "Script inserted after a form-associated button can observe the button's form");
+}, "Script inserted before a form-associated button can observe the button's " +
+   "form, because by the time the script executes, the DOM insertion that " +
+   "associates the button with the form is already done");
 </script>

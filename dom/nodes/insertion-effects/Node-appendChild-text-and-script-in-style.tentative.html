@@ -24,5 +24,7 @@ test(() => {
   assert_array_equals(happened, []);
   style.appendChild(df);
   assert_array_equals(happened, [2]);
-});
+}, "All style rules appended to a <style> element are inserted and " +
+   "script-observable to scripts inserted in the `<style>` element, by the " +
+   "time scripts execute after DOM insertions.");
 </script>

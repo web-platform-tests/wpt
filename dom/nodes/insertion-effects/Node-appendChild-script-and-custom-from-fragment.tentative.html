@@ -28,5 +28,7 @@ test(() => {
   document.head.appendChild(df);
   assert_true(customConstructed);
   assert_true(customConstructedDuringEarlierScript);
-}, "Upgrading an element to be custom should be synchronously observable");
+}, "An earlier-inserted script can upgrade a later-inserted custom element, " +
+   "whose upgrading is synchronously observable to the script, since DOM " +
+   "insertion has been completed by the time it runs");
 </script>

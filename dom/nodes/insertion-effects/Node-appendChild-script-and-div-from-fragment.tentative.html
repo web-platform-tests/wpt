@@ -24,5 +24,6 @@ test(() => {
   document.head.appendChild(df);
   assert_equals(divParent, scriptParent);
   assert_equals(divParent, document.head);
-});
+}, "Earlier-inserted scripts can observe the parentNode of later-inserted " +
+   "nodes, because script runs after DOM insertion completes");
 </script>

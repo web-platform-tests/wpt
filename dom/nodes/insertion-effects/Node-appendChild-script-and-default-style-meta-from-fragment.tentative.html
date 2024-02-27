@@ -22,10 +22,14 @@ test(() => {
   df.appendChild(script);
   df.appendChild(meta);
   assert_equals(getComputedStyle(div).display, "block", "div has block display");
-  assert_false(scriptRan, "script ran");
+  assert_false(scriptRan, "script has not run before insertion");
   document.head.appendChild(df);
-  assert_true(scriptRan, "script has not run");
-  assert_equals(computedStyleDuringInsertion, "none", "style is not applied during insertion");
-  assert_equals(getComputedStyle(div).display, "none", "style is applied after insertion");
-});
+  assert_true(scriptRan, "script has run after insertion");
+  assert_equals(computedStyleDuringInsertion, "none",
+      "display: none; style was applied during DOM insertion, before " +
+      "later-inserted script runs");
+  assert_equals(getComputedStyle(div).display, "none",
+      "style remains display: none; after insertion");
+}, "Inserting <meta> that uses alternate stylesheets, applies the style " +
+   "during DOM insertion, and before script runs as a result of any atomic insertions");
 </script>

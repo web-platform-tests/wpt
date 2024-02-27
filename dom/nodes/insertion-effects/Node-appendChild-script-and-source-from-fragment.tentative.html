@@ -20,6 +20,14 @@ test(() => {
 
   assert_array_equals(happened, []);
   media.appendChild(df);
+  // This is because immediately during DOM insertion, before the
+  // post-insertion steps invoke script, `<source>` insertion invokes the
+  // resource selection algorithm [1] which does this assignment. This
+  // assignment takes place before earlier-inserted script elements run
+  // post-insertion.
+  //
+  // [1]: https://html.spec.whatwg.org/#concept-media-load-algorithm
   assert_array_equals(happened, [HTMLMediaElement.NETWORK_NO_SOURCE]);
-});
+}, "Empty <source> immediately sets media.networkState during DOM insertion, " +
+   "so that an earlier-running script can observe networkState");
 </script>

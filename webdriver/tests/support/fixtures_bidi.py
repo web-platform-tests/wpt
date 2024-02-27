@@ -120,27 +120,177 @@ def send_blocking_command(bidi_session):
 
 
 @pytest.fixture
-def wait_for_event(bidi_session, event_loop):
-    """Wait until the BiDi session emits an event and resolve the event data."""
+def wait_for_event_expectation(bidi_session, event_loop):
+    """Wait until the BiDi session emits events that match an event expectation
+    object which contains the following properties:
+    - "event": str: the name of the event
+    - "count": int: the number of expected events (optional, defaults to 1)
+    - "filter": lambda: function which takes event data as parameter and should
+      return True if the event should be accepted, False if it should be
+      rejected (optional, defaults to lambda _: True)
+
+    Returns an array of event data, in the order in which the events were
+    received.
+
+    Example:
+
+        # Wait for 2 context created events
+        on_context_created_events = wait_for_event_expectation({
+            "event": CONTEXT_CREATED_EVENT,
+            "count": 2,
+        })
+        # Wait for 1 load event for top_context
+        on_load_events = wait_for_event_expectation({
+            "event": LOAD_EVENT,
+            "filter": lambda e: e["context"] == top_context["context"],
+        })
+        # Wait for 1 response completed event
+        on_response_completed_events = wait_for_event_expectation({
+            "event": RESPONSE_COMPLETED_EVENT,
+        })
+
+        # do something
+
+        context_created_events = await on_context_created_events
+        load_events = await on_load_event
+        response_completed_events = await on_response_completed events
+
+        # Note that here the events can be received in any order, each call to
+        # wait_for_event_expectation is independant. See wait_for_events in
+        # order to wait for several events in a specific order.
+
+    To avoid long timeouts, wrap the fixture with wait_for_future_safe, which
+    will by default timeout after 2 seconds:
+
+        on_events = wait_for_event_expectation(some_expectation)
+        # do something
+        events = await wait_for_future_safe(on_events)
+    """
     remove_listeners = []
 
-    def wait_for_event(event_name: str):
+    def wait_for_event_expectation(expectation):
         future = event_loop.create_future()
 
+        event_name = expectation["event"]
+
+        # list of events for this expectation
+        received_events = []
+
+        # use the specified count or fallback to 1
+        if "count" in expectation:
+            count = expectation["count"]
+        else:
+            count = 1
+
+        # use the specified filter or accept any event
+        if "filter" in expectation:
+            filter = expectation["filter"]
+        else:
+            filter = lambda _: True
+
         async def on_event(_, data):
-            remove_listener()
-            remove_listeners.remove(remove_listener)
-            future.set_result(data)
+            try:
+                if not filter(data):
+                    return
+            except Exception:
+                pass
+
+            received_events.append(data)
+
+            # If all events for this expectation have been received,
+            # remove the listener
+            if len(received_events) >= count:
+                remove_listener()
+                remove_listeners.remove(remove_listener)
+                future.set_result(received_events)
 
         remove_listener = bidi_session.add_event_listener(event_name, on_event)
         remove_listeners.append(remove_listener)
         return future
 
-    yield wait_for_event
+    yield wait_for_event_expectation
 
     # Cleanup any leftover callback for which no event was captured.
     for remove_listener in remove_listeners:
         remove_listener()
+
+
+@pytest.fixture
+def wait_for_events(wait_for_event_expectation, event_loop):
+    """Wait until the BiDi session emits events that match a list of event
+    expectations, with the correct order.
+
+    See wait_for_event_expectation for more details about the options available
+    for an event expectation object.
+
+    Returns an array of array of event data, in the same order as the
+    expectations.
+
+    Example:
+
+        # Wait for 2 context destroyed events, followed by one context created,
+        # then 3 response completed events and finally one load event for the top
+        # context.
+        on_events = wait_for_events([
+            {"event": CONTEXT_DESTROYED_EVENT, "count": 2},
+            {"event": CONTEXT_CREATED_EVENT},
+            {"event": RESPONSE_COMPLETED_EVENT, "count": 3}
+            {"event": LOAD_EVENT, "filter": lambda e: e["context"] == top_context["context"]},
+        ])
+
+        # do something
+        [
+            context_destroyed_events,
+            context_created_events,
+            response_completed_events,
+            load_events,
+        ] = await on_events
+
+    To avoid long timeouts, wrap the fixture with wait_for_future_safe, which
+    will by default timeout after 2 seconds:
+
+        on_events = wait_for_events(some_expectations)
+        # do something
+        all_events = await wait_for_future_safe(on_events)
+    """
+
+    def wait_for_events(expectations: list):
+        all_events = []
+        future = event_loop.create_future()
+
+        def on_done(task):
+            all_events.append(task.result())
+            expectations.remove(expectations[0])
+
+            if len(expectations) > 0:
+                # Queue a task for the next expectation.
+                wait_for_event_expectation(expectations[0]).add_done_callback(on_done)
+            else:
+                # If all expectations have been met, resolve the future.
+                future.set_result(all_events)
+
+        # Queue a task for the first expectation.
+        wait_for_event_expectation(expectations[0]).add_done_callback(on_done)
+
+        return future
+
+    yield wait_for_events
+
+
+@pytest.fixture
+def wait_for_event(wait_for_event_expectation, event_loop):
+    """Wait until the BiDi session emits an event and resolve the event data."""
+
+    def wait_for_event(event_name: str):
+        future = event_loop.create_future()
+
+        def on_done(task):
+            future.set_result(task.result()[0])
+
+        wait_for_event_expectation({"event": event_name}).add_done_callback(on_done)
+        return future
+
+    yield wait_for_event
 
 
 @pytest.fixture
@@ -154,7 +304,7 @@ def wait_for_future_safe(configuration):
                 asyncio.shield(future),
                 timeout=timeout * configuration["timeout_multiplier"],
             )
-        except asyncio.exceptions.TimeoutError:
+        except asyncio.TimeoutError:
             raise TimeoutException("Future did not resolve within the given timeout")
 
     return wait_for_future_safe

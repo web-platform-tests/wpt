@@ -36,15 +36,12 @@
     <li>If any button within the group has a blue outline after using either arrow key, then the test result is SUCCESS. If the element has a green background after using either arrow key, then the test result is FAILURE.</li>
   </ol>
   <br />
-
   <button id="button">Click me</button>
   <div id="container">
       <button id="btn1">I will be focused programmatically.</button>
       <button id="btn2">Button 2</button>
       <button id="btn3">Button 3</button>
   </div>
-
-
   <script>
     button.addEventListener("click", () => {
       btn1.focus();

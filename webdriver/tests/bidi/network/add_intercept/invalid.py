@@ -193,10 +193,14 @@ async def test_params_contexts_invalid_type(bidi_session, value):
         await bidi_session.network.add_intercept(phases=[value])
 
 
-@pytest.mark.parametrize("value", [[], ["does not exist"]])
-async def test_params_contexts_invalid_value(bidi_session, value):
+async def test_params_contexts_empty_list(bidi_session):
     with pytest.raises(error.InvalidArgumentException):
-        await bidi_session.network.add_intercept(phases=["beforeRequestSent"], contexts=value)
+        await bidi_session.network.add_intercept(phases=["beforeRequestSent"], contexts=[])
+
+
+async def test_params_contexts_invalid_value(bidi_session):
+    with pytest.raises(error.NoSuchFrameException):
+        await bidi_session.network.add_intercept(phases=["beforeRequestSent"], contexts=["does not exist"])
 
 
 async def test_params_contexts_context_non_top_level(bidi_session, new_tab, test_page_same_origin_frame):

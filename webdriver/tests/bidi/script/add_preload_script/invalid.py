@@ -204,6 +204,14 @@ async def test_params_contexts_empty_list(bidi_session):
         ),
 
 
+async def test_params_contexts_invalid_value(bidi_session):
+    with pytest.raises(error.NoSuchFrameException):
+        await bidi_session.script.add_preload_script(
+            function_declaration="() => {}",
+            contexts=['does no exist']
+        ),
+
+
 @pytest.mark.parametrize("value", [None, False, 42, {}, []])
 async def test_params_contexts_context_invalid_type(bidi_session, value):
     with pytest.raises(error.InvalidArgumentException):

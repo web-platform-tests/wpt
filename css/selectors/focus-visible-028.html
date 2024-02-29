@@ -39,7 +39,7 @@
 
   <button id="button">Click me</button>
   <div id="container">
-      <button id="btn1">I will be focused programmatically.</button>  
+      <button id="btn1">I will be focused programmatically.</button>
       <button id="btn2">Button 2</button>
       <button id="btn3">Button 3</button>
   </div>
@@ -56,7 +56,7 @@
       container.addEventListener('keydown', (e) => {
         if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
         e.preventDefault();
-        
+
         const btns = container.querySelectorAll('button');
         const currentIndex = Array.from(btns).indexOf(document.activeElement);
         let nextIndex;
@@ -81,7 +81,7 @@
       await test_driver.click(button);
       assert_equals(document.activeElement, btn1);
       await test_driver.send_keys(btn1, arrow_right);
-    }, "Programmatic focus after click and keyboard interaction after should match :focus-visible");
+    }, "Programmatic focus after click and keyboard interaction should match :focus-visible");
   </script>
 </body>
 </html>

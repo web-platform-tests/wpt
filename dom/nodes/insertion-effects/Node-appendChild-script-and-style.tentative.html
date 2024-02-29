@@ -12,10 +12,10 @@ test(() => {
   style.appendChild(new Text("body {}"));
   const script = document.createElement("script");
   script.textContent = `
-    happened.push(style.sheet);
-    style.appendChild(new Text("body {}"));
-    happened.push(style.sheet.cssRules.length);
     styleSheet = style.sheet;
+    happened.push(style.sheet ? "sheet" : null);
+    style.appendChild(new Text("body {}"));
+    happened.push(style.sheet?.cssRules.length);
   `;
 
   const div = document.createElement("div");
@@ -24,7 +24,7 @@ test(() => {
 
   assert_array_equals(happened, []);
   document.body.appendChild(div);
-  assert_array_equals(happened, [null, 2]);
+  assert_array_equals(happened, ["sheet", 2]);
   assert_not_equals(style.sheet, styleSheet, "style sheet was created only once");
 });
 </script>

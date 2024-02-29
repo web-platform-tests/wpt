@@ -13,7 +13,7 @@ test(() => {
 
   const script = document.createElement("script");
   script.textContent = `
-    happened.push(link.sheet);
+    happened.push(link.sheet ? "sheet" : null);
   `;
 
   const df = document.createDocumentFragment();
@@ -22,7 +22,7 @@ test(() => {
 
   assert_array_equals(happened, []);
   document.body.appendChild(df);
-  assert_array_equals(happened, [null]);
+  assert_array_equals(happened, ["sheet"]);
 }, "Inserting in a fragment");
 
 test(() => {
@@ -33,7 +33,7 @@ test(() => {
 
   const script = document.createElement("script");
   script.textContent = `
-    happened.push(link.sheet);
+    happened.push(link.sheet ? "sheet" : null);
 `;
 
   const div = document.createElement("div");
@@ -42,7 +42,7 @@ test(() => {
 
   assert_array_equals(happened, []);
   document.body.appendChild(div);
-  assert_array_equals(happened, [null]);
+  assert_array_equals(happened, ["sheet"]);
 }, "Inserting in a div");
 
 
@@ -54,11 +54,11 @@ test(() => {
 
   const script = document.createElement("script");
   script.textContent = `
-    happened.push(link.sheet);
+    happened.push(link.sheet ? "sheet" : null);
 `;
 
   assert_array_equals(happened, []);
   document.body.append(script, link);
-  assert_array_equals(happened, [null]);
+  assert_array_equals(happened, ["sheet"]);
 }, "Inserting in an append");
 </script>

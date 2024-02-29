@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>CSS Test (Selectors): Programmatic focus causes :focus-visible to match after keyboard is used</title>
+  <title>CSS Test (Selectors): Programmatic focus causes :focus-visible to match after keyboard usage when preventDefault() is used</title>
   <link rel="author" title="Tyler Jones" href="tylerjdev@github.com" />
   <link rel="help" href="https://drafts.csswg.org/selectors-4/#the-focus-visible-pseudo" />
   <script src="/resources/testharness.js"></script>
@@ -73,12 +73,10 @@
 
     promise_test(async t => {
       const arrow_right = "\uE014";
-  
-      btn2.addEventListener("focus", (e) => {
+      btn2.addEventListener("focus", t.step_func_done((e) => {
         assert_equals(getComputedStyle(btn2).outlineColor, "rgb(0, 0, 255)", `outlineColor for ${btn2.tagName}#${btn2.id} is blue`);
         assert_not_equals(getComputedStyle(btn2).backgroundColor, "rgb(0, 255, 0)", `backgroundColor for ${btn2.tagName}#${btn2.id} is NOT lime`);
-        t.done();
-      });
+      }));
 
       await test_driver.click(button);
       assert_equals(document.activeElement, btn1);

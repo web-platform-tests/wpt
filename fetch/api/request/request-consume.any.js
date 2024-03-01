@@ -14,16 +14,7 @@ function checkBodyBlob(request, expectedBody, checkContentType) {
     if (checkContentType)
       assert_equals(bodyAsBlob.type, "text/plain", "Blob body type should be computed from the request Content-Type");
 
-    var promise = new Promise(function (resolve, reject) {
-      var reader = new FileReader();
-      reader.onload = function(evt) {
-        resolve(reader.result)
-      };
-      reader.onerror = function() {
-        reject("Blob's reader failed");
-      };
-      reader.readAsText(bodyAsBlob);
-    });
+    var promise = bodyAsBlob.text();
     return promise.then(function(body) {
       assert_equals(body, expectedBody, "Retrieve and verify request's body");
       assert_true(request.bodyUsed, "body as blob: bodyUsed turned true");

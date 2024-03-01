@@ -3,22 +3,7 @@
 <title>Selection drag and drop: events for &lt;input></title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<div><input id=a value="Drag me"></div>
-<div><input id=b placeholder="...to here"></div>
-<script>
-setup({ explicit_timeout: true, single_test: true });
-const a = document.getElementById('a');
-const b = document.getElementById('b');
-const actualEvents = [];
-const expectedEvents = ['drop', 'beforeinput', 'textInput', 'input'];
-for (const eventType of expectedEvents) {
-  b.addEventListener(eventType, e => {
-    actualEvents.push(e.type);
-    if (actualEvents.length === expectedEvents.length) {
-      assert_array_equals(actualEvents, expectedEvents);
-      done();
-    }
-  });
-}
-a.select();
-</script>
+<div><input id=a data-select="0,7" value="Drag me" data-expected-events="beforeinput,input"></div>
+<div><input id=b placeholder="...to here" data-expected-events="drop,beforeinput,textInput,input"></div>
+<script src="/uievents/textInput/support/common.js"></script>
+<script src="support/events.js"></script>

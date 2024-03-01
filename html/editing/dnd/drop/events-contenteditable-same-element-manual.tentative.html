@@ -1,0 +1,8 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Selection drag and drop: events for contenteditable (same element)</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div contenteditable=true id=b data-select="0,7" data-expected-events="drop,beforeinput,input,beforeinput,textInput,input">Drag me ...to here:</div>
+<script src="/uievents/textInput/support/common.js"></script>
+<script src="support/events.js"></script>

@@ -42,6 +42,8 @@ const ButtonsBitfield = {
   PEN_ERASER_BUTTON: 32
 };
 
+let detected_pointertypes = {};
+
 // Check for conformance to PointerEvent interface
 // https://w3c.github.io/pointerevents/#pointerevent-interface
 function check_PointerEvent(event, testNamePrefix, standardAttrs = true) {

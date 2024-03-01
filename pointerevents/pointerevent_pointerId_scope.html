@@ -17,13 +17,11 @@ http://www.w3.org/wiki/PointerEvents/TestAssertions
         <!-- Additional helper script for common checks across event types -->
         <script type="text/javascript" src="pointerevent_support.js"></script>
         <script>
-            var detected_pointertypes = {};
             var test_pointerEvent = async_test("pointerId of an active pointer is the same across iframes");
             // showPointerTypes is defined in pointerevent_support.js
             // Requirements: the callback function will reference the test_pointerEvent object and
             // will fail unless the async_test is created with the var name "test_pointerEvent".
             add_completion_callback(showPointerTypes);
-            var detected_pointertypes = {};
 
             async function run() {
                 var target0 = document.getElementById("target0");

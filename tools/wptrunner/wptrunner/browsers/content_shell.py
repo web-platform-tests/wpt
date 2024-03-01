@@ -1,16 +1,10 @@
 # mypy: allow-untyped-defs
 
 from . import chrome_spki_certs
-from .base import (
-    ExecutorBrowser,
-    OutputHandler,
-    browser_command,
-)
 from .base import cmd_arg, require_arg
 from .base import get_timeout_multiplier   # noqa: F401
 from .chrome import ChromeBrowser, debug_args
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.base import server_url
 from ..executors.base import WdspecExecutor  # noqa: F401
 from ..executors.executorchrome import (  # noqa: F401
     ChromeDriverPrintRefTestExecutor,

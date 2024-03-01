@@ -3,7 +3,8 @@
 <title>Selection drag and drop: events for &lt;input></title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<div><input id=a data-select="0,7" value="Drag me" data-expected-events="beforeinput,input"></div>
-<div><input id=b placeholder="...to here" data-expected-events="drop,beforeinput,textInput,input"></div>
+<body data-expected-events="b:drop,a:beforeinput,a:input,b:beforeinput,b:textInput,b:input">
+<div><input id=a data-select="0,7" value="Drag me"></div>
+<div><input id=b placeholder="...to here"></div>
 <script src="/uievents/textInput/support/common.js"></script>
 <script src="support/events.js"></script>

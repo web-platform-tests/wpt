@@ -3,6 +3,7 @@
 <title>Selection drag and drop: events for &lt;textarea> (same element)</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<textarea id=b data-select="0,7" data-expected-events="drop,beforeinput,input,beforeinput,textInput,input">Drag me ...to here:</textarea>
+<body data-expected-events="b:drop,b:beforeinput,b:input,b:beforeinput,b:textInput,b:input">
+<textarea id=b data-select="0,7">Drag me ...to here:</textarea>
 <script src="/uievents/textInput/support/common.js"></script>
 <script src="support/events.js"></script>

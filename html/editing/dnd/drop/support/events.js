@@ -6,23 +6,21 @@ function rAF() {
 }
 const a = document.getElementById('a');
 const b = document.getElementById('b');
-const aActualEvents = [];
-const bActualEvents = [];
-const aExpectedEvents = a?.dataset.expectedEvents.split(',') || [];
-const bExpectedEvents = b.dataset.expectedEvents.split(',');
-for (const eventType of new Set([aExpectedEvents, ...bExpectedEvents])) {
+const actualEvents = [];
+const expectedEvents = document.body.dataset.expectedEvents.split(',');
+const eventTypes = new Set(expectedEvents.map(s => s.split(':')[1]));
+for (const eventType of eventTypes) {
   if (a) {
     a.addEventListener(eventType, e => {
-      aActualEvents.push(e.type);
+      actualEvents.push(`a:${e.type}`);
     });
   }
   b.addEventListener(eventType, async (e) => {
-    bActualEvents.push(e.type);
+    actualEvents.push(`b:${e.type}`);
     if (e.type === "input") {
       await rAF();
       await rAF();
-      assert_array_equals(aActualEvents, aExpectedEvents);
-      assert_array_equals(bActualEvents, bExpectedEvents);
+      assert_array_equals(actualEvents, expectedEvents);
       done();
     }
   });

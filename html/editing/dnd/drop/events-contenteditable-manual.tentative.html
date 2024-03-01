@@ -6,7 +6,8 @@
 <style>
 [data-placeholder]:empty::before { content: attr(data-placeholder); }
 </style>
-<div><input id=a data-select="0,7" value="Drag me" data-expected-events="beforeinput,input"></div>
-<div contenteditable=true id=b data-placeholder="...to here"  data-expected-events="drop,beforeinput,textInput,input"></div>
+<body data-expected-events="b:drop,a:beforeinput,a:input,b:beforeinput,b:textInput,b:input">
+<div><input id=a data-select="0,7" value="Drag me"></div>
+<div contenteditable=true id=b data-placeholder="...to here"></div>
 <script src="/uievents/textInput/support/common.js"></script>
 <script src="support/events.js"></script>

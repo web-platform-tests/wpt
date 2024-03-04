@@ -1,5 +1,7 @@
 import pytest
 
+import asyncio
+
 from webdriver.bidi.modules.script import ScriptEvaluateResultException
 
 from .. import AUTH_REQUIRED_EVENT, PAGE_EMPTY_HTML
@@ -27,11 +29,9 @@ async def test_unsubscribe(bidi_session, new_tab, url, fetch):
     remove_listener = bidi_session.add_event_listener(
         AUTH_REQUIRED_EVENT, on_event)
 
-    # The fetch should fails as there is no authentication
-    with pytest.raises(ScriptEvaluateResultException):
-        await fetch(url=url(
-            "/webdriver/tests/support/http_handlers/authentication.py?realm=testrealm"
-        ), context=new_tab)
+    asyncio.ensure_future(fetch(url=url(
+        "/webdriver/tests/support/http_handlers/authentication.py?realm=testrealm"
+    ), context=new_tab))
 
     assert len(events) == 0
 

@@ -9,6 +9,12 @@ from .. import assert_response_event, AUTH_REQUIRED_EVENT, PAGE_EMPTY_HTML
 async def test_subscribe_status(
     bidi_session, new_tab, subscribe_events, wait_for_event, wait_for_future_safe, url, fetch
 ):
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"],
+        url=url(PAGE_EMPTY_HTML),
+        wait="complete",
+    )
+
     await subscribe_events(events=[AUTH_REQUIRED_EVENT])
 
     # Track all received network.authRequired events in the events array.

@@ -81,11 +81,7 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
         ','.join(chrome_spki_certs.IGNORE_CERTIFICATE_ERRORS_SPKI_LIST))
     # For WebTransport tests.
     chrome_options["args"].append("--webtransport-developer-mode")
-    chrome_options["args"].extend([
-        "--enable-blink-features=MojoJS,MojoJSTest",
-        "--enable-blink-test-features",
-        "--enable-experimental-web-platform-features"
-    ])
+    chrome_options["args"].append("--enable-blink-test-features")
 
     # always run in headful mode for content_shell
 

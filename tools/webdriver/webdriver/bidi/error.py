@@ -19,7 +19,7 @@ class BidiException(Exception):
 
     def __repr__(self):
         """Return the object representation in string format."""
-        return f"{self.__class__.__name__}({self.error}, {self.message}, {self.stacktrace})"
+        return f"{self.__class__.__name__}({self.message}, {self.stacktrace})"
 
     def __str__(self):
         """Return the string representation of the object."""

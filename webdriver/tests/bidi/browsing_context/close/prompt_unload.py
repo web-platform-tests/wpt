@@ -46,7 +46,7 @@ async def test_prompt_unload_not_triggering_dialog(bidi_session, subscribe_event
 
 
 @pytest.mark.parametrize("type_hint", ["window", "tab"])
-async def test_prompt_unload_triggering_dialog(bidi_session, url, subscribe_events, wait_for_event, type_hint):
+async def test_prompt_unload_triggering_dialog(bidi_session, url, subscribe_events, wait_for_event, wait_for_future_safe, type_hint):
     page_beforeunload = url(
         "/webdriver/tests/support/html/beforeunload.html")
 
@@ -80,7 +80,7 @@ async def test_prompt_unload_triggering_dialog(bidi_session, url, subscribe_even
             context=new_context["context"], prompt_unload=True)
     )
 
-    await user_prompt_opened
+    await wait_for_future_safe(user_prompt_opened)
 
     # Events that come after the handling are OK
     remove_listener()

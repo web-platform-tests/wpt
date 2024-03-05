@@ -103,11 +103,10 @@ async def test_partition_context(
         partition=BrowsingContextPartitionDescriptor(new_tab["context"])
     )
 
-    assert result == {
+    assert cookies["partitionKey"] == {
         **(await get_default_partition_key(bidi_session, new_tab["context"])),
         "userContext": "default"
     }
-
     assert len(cookies["cookies"]) == 1
     recursive_compare(
         {
@@ -129,9 +128,9 @@ async def test_partition_context(
     )
 
     assert cookies["partitionKey"] == {
-        **(await get_default_partition_key(bidi_session)),
+        **(await get_default_partition_key(bidi_session, new_context["context"])),
+        "userContext": user_context
     }
-
     assert len(cookies["cookies"]) == 0
 
 

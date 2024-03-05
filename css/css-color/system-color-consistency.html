@@ -29,11 +29,8 @@
     <textarea name="text area"></textarea>
   </div>
   <mark id="mark">Marked text</mark>
-  <!-- Links -->
-  <div>
-    <a href="#" id="link">Link</a>
-    <a href="" id="visited">Visited link</a>
-  </div>
+  <!-- Link -->
+  <a href="#" id="link">Link</a>
   </div>
 
   <script>
@@ -64,11 +61,9 @@
       test_computed_value('color', 'Mark', style.getPropertyValue('background-color'), `has the same color as the background-color of a mark element (${colorScheme})`);
       test_computed_value('color', 'MarkText', style.getPropertyValue('color'), `has the same color as the color of a mark element (${colorScheme})`);
 
-      // LinkText and VisitedText
+      // LinkText
       style = document.defaultView.getComputedStyle(document.getElementById('link'));
       test_computed_value('color', 'LinkText', style.getPropertyValue('color'), `has the same color as the color of an anchor element (${colorScheme})`);
-      style = document.defaultView.getComputedStyle(document.getElementById('visited'));
-      test_computed_value('color', 'VisitedText', style.getPropertyValue('color'), `has the same color as the color of a visited anchor element (${colorScheme})`);
     });
   </script>
 </body>

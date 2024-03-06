@@ -5,6 +5,8 @@
 <link rel="help" content="https://html.spec.whatwg.org/multipage/custom-elements.html#dom-attachinternals">
 <div id="container"></div>
 <script>
+setup({allow_uncaught_exception : true});
+
 test(() => {
   class MyElement1 extends HTMLElement {
   }
@@ -78,5 +80,29 @@ test(() => {
   assert_true((new MyElement3).attachInternals() instanceof ElementInternals);
 }, 'If a custom element definition for the local name of the element has ' +
      'disable internals flag, throw a NotSupportedError');
+
+test(() => {
+  let myElement4 = document.createElement('my-element4');
+  customElements.define('my-element4', class MyElement4 extends HTMLElement {
+    constructor() {
+      throw new Error();
+    }
+  });
+  customElements.upgrade(myElement4);
+  assert_throws_dom('NotSupportedError', () => {
+    myElement4.attachInternals();
+  });
+
+  customElements.define('my-element5', class MyElement5 extends HTMLElement {
+    constructor() {
+      throw new Error();
+    }
+  });
+  let myElement5 = document.createElement('my-element5');
+  assert_throws_dom('NotSupportedError', () => {
+    myElement5.attachInternals();
+  });
+}, 'attachInternals() throws a NotSupportedError if it is called for ' +
+     'a custome element that is failed to upgrade'
 </script>
 </body>

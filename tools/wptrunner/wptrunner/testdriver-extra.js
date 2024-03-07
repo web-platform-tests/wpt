@@ -327,4 +327,9 @@
     window.test_driver_internal.get_virtual_sensor_information = function(sensor_type, context=null) {
         return create_action("get_virtual_sensor_information", {sensor_type, context});
     };
+
+    window.test_driver_internal.consume_user_activation = function(context=null) {
+        return create_action("consume_user_activation", {context});
+    };
+
 })();

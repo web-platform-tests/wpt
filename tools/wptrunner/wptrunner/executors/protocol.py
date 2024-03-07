@@ -802,3 +802,13 @@ class VirtualSensorProtocolPart(ProtocolPart):
     @abstractmethod
     def get_virtual_sensor_information(self, sensor_type):
         pass
+
+class UserActivationProtocolPart(ProtocolPart):
+    """Protocol part for User Activation"""
+    __metaclass__ = ABCMeta
+
+    name = "user_activation"
+
+    @abstractmethod
+    def consume_user_activation(self, context):
+        pass

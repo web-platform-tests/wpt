@@ -443,6 +443,17 @@ class GetVirtualSensorInformationAction:
         self.logger.debug("Requesting information from %s sensor" % sensor_type)
         return self.protocol.virtual_sensor.get_virtual_sensor_information(sensor_type)
 
+class ConsumeUserActivationAction:
+    name = "consume_user_activation"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        context = payload["context"]
+        self.logger.debug("Consuming user activation")
+        return self.protocol.user_activation.consume_user_activation(context)
 
 actions = [ClickAction,
            DeleteAllCookiesAction,
@@ -477,4 +488,6 @@ actions = [ClickAction,
            CreateVirtualSensorAction,
            UpdateVirtualSensorAction,
            RemoveVirtualSensorAction,
-           GetVirtualSensorInformationAction]
+           GetVirtualSensorInformationAction,
+           ConsumeUserActivationAction,
+           ]

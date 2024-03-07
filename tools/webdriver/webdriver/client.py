@@ -370,6 +370,9 @@ class BrowserWindow:
     def fullscreen(self):
         return self.session.send_session_command("POST", "window/fullscreen")
 
+    @command
+    def consume_user_activation(self):
+        return self.session.send_session_command("POST", "window/consume_user_activation")
 
 class Find:
     def __init__(self, session):

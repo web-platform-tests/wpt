@@ -446,21 +446,17 @@ async def test_max_dom_depth(
 
 async def test_max_dom_depth_null(
     bidi_session,
-    send_blocking_command,
     top_context,
     get_test_page,
 ):
     await bidi_session.browsing_context.navigate(
         context=top_context["context"], url=get_test_page(), wait="complete"
     )
-    result = await send_blocking_command(
-        "script.callFunction",
-        {
-            "functionDeclaration": """() => document.querySelector("div#with-children")""",
-            "target": ContextTarget(top_context["context"]),
-            "awaitPromise": True,
-            "serializationOptions": {"maxDomDepth": None},
-        },
+    result = await bidi_session.script.call_function(
+        function_declaration="""() => document.querySelector("div#with-children")""",
+        target=ContextTarget(top_context["context"]),
+        await_promise=True,
+        serialization_options=SerializationOptions(max_dom_depth=None),
     )
 
     recursive_compare(

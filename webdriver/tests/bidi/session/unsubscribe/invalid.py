@@ -73,7 +73,7 @@ async def test_params_events_value_valid_and_invalid_event_name(
 
 @pytest.mark.asyncio
 async def test_unsubscribe_from_one_event_and_then_from_module(
-    bidi_session, subscribe_events, send_blocking_command
+    bidi_session, subscribe_events
 ):
     await subscribe_events(events=["browsingContext"])
 
@@ -117,7 +117,7 @@ async def test_params_contexts_value_invalid_value(bidi_session):
 
 @pytest.mark.asyncio
 async def test_params_contexts_value_valid_and_invalid_value(
-    bidi_session, subscribe_events, send_blocking_command, wait_for_event, wait_for_future_safe, top_context
+    bidi_session, subscribe_events, wait_for_event, wait_for_future_safe, top_context
 ):
     # Subscribe to a valid context
     await subscribe_events(events=["log.entryAdded"], contexts=[top_context["context"]])
@@ -149,7 +149,7 @@ async def test_params_contexts_value_valid_and_invalid_value(
 
 @pytest.mark.asyncio
 async def test_unsubscribe_from_closed_tab(
-    bidi_session, subscribe_events, send_blocking_command
+    bidi_session, subscribe_events
 ):
     new_tab = await bidi_session.browsing_context.create(type_hint="tab")
     # Subscribe to a new context

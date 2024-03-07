@@ -73,8 +73,7 @@
     ];
 
     for (const testData of nonLowerCaseTests) {
-      const attributeNamespace = ("attributeNamespace" in testData) ?
-          testData.attributeNamespace : null;
+      const attributeNamespace = testData.attributeNamespace ?? null;
 
       test(t => {
         assert_element_accepts_non_trusted_type_set_ns(testData.element, testData.attribute, "v",

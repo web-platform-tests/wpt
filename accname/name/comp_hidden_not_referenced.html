@@ -73,6 +73,36 @@
   </span>
 </h2>
 
+<h2>Input with hidden label</h2>
+<label id="hidden-label" for="input-01" hidden>Hidden label</label>
+<input
+  id="input-01"
+  class="ex-label"
+  data-testname="Input that is aria-labelledby hidden label"
+  data-expectedlabel="Hidden label"
+  aria-labelledby="hidden-label"
+>
+
+<h2>Table with hidden caption</h2>
+<table
+  class="ex-label"
+  data-testname="Table that is aria-labelledby hidden caption"
+  data-expectedlabel="Hidden caption"
+  aria-labelledby="hidden-caption"
+>
+  <caption id="hidden-caption" hidden>Hidden caption</caption>
+</table>
+
+<h2>Fieldset with hidden legend</h2>
+<fieldset
+  class="ex-label"
+  data-testname="Fieldset that is aria-labelledby hidden legend"
+  data-expectedlabel="Hidden legend"
+  aria-labelledby="hidden-legend"
+>
+  <legend id="hidden-legend" hidden>Hidden legend</legend>
+</fieldset>
+
 <!-- TODO: Test cases once https://github.com/w3c/aria/issues/1256 resolved: -->
 <!--       - button labelled by an element that is aria-hidden=true which contains a nested child that is aria-hidden=false -->
 <!--       - button labelled by an element that is aria-hidden=false which belongs to a parent that is aria-hidden=true -->

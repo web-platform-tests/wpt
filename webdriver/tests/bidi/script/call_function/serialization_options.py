@@ -516,7 +516,7 @@ async def test_max_dom_depth_null(
                 "shadowRoot": None,
             },
         },
-        result["result"],
+        result,
     )
 
 

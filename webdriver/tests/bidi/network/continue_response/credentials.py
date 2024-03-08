@@ -23,8 +23,7 @@ async def test_wrong_credentials(
 
     # Continue the request blocked on authRequired, with incorrect credentials.
     on_auth_required = wait_for_event(AUTH_REQUIRED_EVENT)
-    wrong_credentials = AuthCredentials(
-        username=username, password="wrong_password")
+    wrong_credentials = AuthCredentials(username=username, password="wrong_password")
     await bidi_session.network.continue_response(
         request=request, credentials=wrong_credentials
     )
@@ -43,8 +42,7 @@ async def test_correct_credentials(
     )
 
     await subscribe_events(
-        events=[AUTH_REQUIRED_EVENT,
-                RESPONSE_COMPLETED_EVENT, "browsingContext.load"]
+        events=[AUTH_REQUIRED_EVENT, RESPONSE_COMPLETED_EVENT, "browsingContext.load"]
     )
 
     # Track all network.responseCompleted events.

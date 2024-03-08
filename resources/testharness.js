@@ -4194,11 +4194,7 @@
                                                  status
                                                 ],
                                                ],
-                                               ["button",
-                                                {"onclick": "let evt = new Event('__test_restart'); " +
-                                                 "let canceled = !window.dispatchEvent(evt);" +
-                                                 "if (!canceled) { location.reload() }"},
-                                                "Rerun"]
+                                               ["button", { "id": "rerun" }, "Rerun"]
                                               ]];
 
                                     if (harness_status.status === harness_status.ERROR) {
@@ -4230,6 +4226,13 @@
 
         log.appendChild(render(summary_template, {num_tests:tests.length}, output_document));
 
+        output_document.getElementById("rerun").addEventListener("click",
+            function() {
+                let evt = new Event('__test_restart');
+                let canceled = !window.dispatchEvent(evt);
+                if (!canceled) { location.reload(); }
+            });
+
         forEach(output_document.querySelectorAll("section#summary label"),
                 function(element)
                 {
@@ -4253,18 +4256,6 @@
                                  }
                              });
                 });
-
-        // This use of innerHTML plus manual escaping is not recommended in
-        // general, but is necessary here for performance.  Using textContent
-        // on each individual <td> adds tens of seconds of execution time for
-        // large test suites (tens of thousands of tests).
-        function escape_html(s)
-        {
-            return s.replace(/\&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#39;");
-        }
 
         function has_assertions()
         {
@@ -4296,81 +4287,84 @@
         });
 
         function get_asserts_output(test) {
+            const asserts_output = render(
+                ["details", {},
+                    ["summary", {}, ""],
+                    ["table", {}, ""] ]);
+
             var asserts = asserts_run_by_test.get(test);
             if (!asserts) {
-                return "No asserts ran";
+                asserts_output.querySelector("summary").textContent = "No asserts ran";
+                return asserts_output;
             }
-            rv = "<table>";
-            rv += asserts.map(assert => {
-                var output_fn = "<strong>" + escape_html(assert.assert_name) + "</strong>(";
-                var prefix_len = output_fn.length;
-                var output_args = assert.args;
-                var output_len = output_args.reduce((prev, current) => prev+current, prefix_len);
-                if (output_len[output_len.length - 1] > 50) {
-                    output_args = output_args.map((x, i) =>
-                    (i > 0 ? "  ".repeat(prefix_len) : "" )+ x + (i < output_args.length - 1 ? ",\n" : ""));
-                } else {
-                    output_args = output_args.map((x, i) => x + (i < output_args.length - 1 ? ", " : ""));
-                }
-                output_fn += escape_html(output_args.join(""));
-                output_fn += ')';
-                var output_location;
+
+            const table = asserts_output.querySelector("table");
+            const row = render(
+                    ["tr", {},
+                        ["td", {}, ""],
+                        ["td", {}, ["pre", {}, ["strong", {}], ""]] ]);
+            const row_status = row.querySelectorAll("td")[0];
+            const row_name = row.querySelector("strong");
+            const row_other_info = row_name.nextSibling;
+            for (const assert of asserts) {
+                var status_class_name = status_class(Test.prototype.status_formats[assert.status]);
+                row.className = "overall-" + status_class_name;
+                row_status.className = status_class_name;
+                row_status.textContent = Test.prototype.status_formats[assert.status];
+                row_name.textContent = assert.assert_name;
+                var output_fn = "(" + assert.args.join(", ") + ")";
                 if (assert.stack) {
-                    output_location = assert.stack.split("\n", 1)[0].replace(/@?\w+:\/\/[^ "\/]+(?::\d+)?/g, " ");
+                    output_fn += "\n";
+                    output_fn += assert.stack.split("\n", 1)[0].replace(/@?\w+:\/\/[^ "\/]+(?::\d+)?/g, " ");
                 }
-                return "<tr class='overall-" +
-                    status_class(Test.prototype.status_formats[assert.status]) + "'>" +
-                    "<td class='" +
-                    status_class(Test.prototype.status_formats[assert.status]) + "'>" +
-                    Test.prototype.status_formats[assert.status] + "</td>" +
-                    "<td><pre>" +
-                    output_fn +
-                    (output_location ? "\n" + escape_html(output_location) : "") +
-                    "</pre></td></tr>";
+                row_other_info.textContent = output_fn;
+
+                table.appendChild(row.cloneNode(true));
             }
-            ).join("\n");
-            rv += "</table>";
-            return rv;
+            return asserts_output;
         }
 
-        log.appendChild(document.createElementNS(xhtml_ns, "section"));
         var assertions = has_assertions();
-        var html = "<h2>Details</h2><table id='results' " + (assertions ? "class='assertions'" : "" ) + ">" +
-            "<thead><tr><th>Result</th><th>Test Name</th>" +
-            (assertions ? "<th>Assertion</th>" : "") +
-            "<th>Message</th></tr></thead>" +
-            "<tbody>";
-        for (var i = 0; i < tests.length; i++) {
-            var test = tests[i];
-            html += '<tr class="overall-' +
-                status_class(test.format_status()) +
-                '">' +
-                '<td class="' +
-                status_class(test.format_status()) +
-                '">' +
-                test.format_status() +
-                "</td><td>" +
-                escape_html(test.name) +
-                "</td><td>" +
-                (assertions ? escape_html(get_assertion(test)) + "</td><td>" : "") +
-                escape_html(test.message ? tests[i].message : " ") +
-                (tests[i].stack ? "<pre>" +
-                 escape_html(tests[i].stack) +
-                 "</pre>": "");
-            if (!(test instanceof RemoteTest)) {
-                 html += "<details><summary>Asserts run</summary>" + get_asserts_output(test) + "</details>"
+        const section = render(
+            ["section", {},
+                ["h2", {}, "Details"],
+                ["table", {"id": "results", "class": (assertions ? "assertions" : "")},
+                    ["thead", {},
+                        ["tr", {},
+                            ["th", {}, "Result"],
+                            ["th", {}, "Test Name"],
+                            (assertions ? ["th", {}, "Assertion"] : ""),
+                            ["th", {}, "Message" ] ] ],
+                    ["tbody", {}] ] ]);
+
+        const tbody = section.querySelector("tbody");;
+        const row = render(
+            ["tr", {},
+                ["td", {}, ""],
+                ["td", {}, ""],
+                (assertions ? ["td", {}, ""] : ""),
+                ["td", {}, "", ["pre", {}] ] ]);
+        const row_status = row.children[0];
+        const row_name = row.children[1];
+        const row_assertion = assertions ? row.children[2] : undefined;
+        const row_message = row.lastChild;
+        for (const test of tests) {
+            var status_class_name = status_class(test.format_status());
+            row.className = "overall-" + status_class_name;
+            row_status.className = status_class_name;
+            row_status.textContent = status_class_name;
+            row_name.textContent = test.name;
+            if (assertions) {
+              row_assertion.textContent = get_assertion(test);
             }
-            html += "</td></tr>";
+            row_message.firstChild.textContent = test.message;
+            row_message.lastChild.textContent = test.stack;
+            tbody.appendChild(row.cloneNode(true));
+            if (!(test instanceof RemoteTest)) {
+              tbody.lastChild.lastChild.appendChild(get_asserts_output(test));
+            }
         }
-        html += "</tbody></table>";
-        try {
-            log.lastChild.innerHTML = html;
-        } catch (e) {
-            log.appendChild(document.createElementNS(xhtml_ns, "p"))
-               .textContent = "Setting innerHTML for the log threw an exception.";
-            log.appendChild(document.createElementNS(xhtml_ns, "pre"))
-               .textContent = html;
-        }
+        log.appendChild(section);
     };
 
     /*

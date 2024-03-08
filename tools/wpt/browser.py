@@ -1285,8 +1285,8 @@ class Chrome(ChromeChromiumBase):
             # Check if the user has given a Chromium binary.
             chromium = Chromium(self.logger)
             if chromium.version(browser_binary):
-                raise ValueError(f"Provided binary is a Chromium binary and should be run using "
-                                 f"Chromium commands, e.g. \"./wpt run chromium\"")
+                raise ValueError("Provided binary is a Chromium binary and should be run using "
+                                 "Chromium commands, e.g. \"./wpt run chromium\"")
             raise ValueError(f"Unable to detect browser version from binary at {browser_binary}. "
                              " Cannot install ChromeDriver without a valid version to match.")
 

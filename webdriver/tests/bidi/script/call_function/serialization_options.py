@@ -1,5 +1,6 @@
 import pytest
 from webdriver.bidi.modules.script import ContextTarget, SerializationOptions
+from webdriver.bidi.undefined import UNDEFINED
 
 from ... import any_string, recursive_compare
 
@@ -10,7 +11,7 @@ pytestmark = pytest.mark.asyncio
     "include_shadow_tree, shadow_root_mode, contains_children, expected",
     [
         (
-            None,
+            UNDEFINED,
             "open",
             False,
             {
@@ -20,7 +21,7 @@ pytestmark = pytest.mark.asyncio
             },
         ),
         (
-            None,
+            UNDEFINED,
             "closed",
             False,
             {
@@ -189,7 +190,7 @@ async def test_include_shadow_tree_for_custom_element(
     "include_shadow_tree, contains_children, expected",
     [
         (
-            None,
+            UNDEFINED,
             False,
             {
                 "type": "node",
@@ -438,7 +439,8 @@ async def test_max_dom_depth(
         function_declaration="""() => document.querySelector("div#with-children")""",
         target=ContextTarget(top_context["context"]),
         await_promise=True,
-        serialization_options=SerializationOptions(max_dom_depth=max_dom_depth),
+        serialization_options=SerializationOptions(
+            max_dom_depth=max_dom_depth),
     )
 
     recursive_compare(expected, result)
@@ -522,7 +524,7 @@ async def test_max_dom_depth_null(
     "max_object_depth, expected",
     [
         (
-            None,
+            UNDEFINED,
             {
                 "type": "array",
                 "value": [

@@ -78,11 +78,11 @@ Target = Union[RealmTarget, ContextTarget]
 class SerializationOptions(Dict[str, Any]):
     def __init__(
             self,
-            max_dom_depth: Optional[int] = None,
+            max_dom_depth: Optional[Union[int, None]] = 0,
             max_object_depth: Optional[int] = None,
             include_shadow_tree: Optional[str] = None
     ):
-        if max_dom_depth is not None:
+        if max_dom_depth != 0:
             self["maxDomDepth"] = max_dom_depth
         if max_object_depth is not None:
             self["maxObjectDepth"] = max_object_depth

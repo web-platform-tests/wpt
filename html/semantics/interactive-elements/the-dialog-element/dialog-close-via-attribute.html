@@ -14,6 +14,7 @@ const dialog = document.querySelector('dialog');
 const button = document.querySelector('button');
 
 promise_test(async t => {
+  button.focus();
   dialog.showModal();
 
   let closeFired = false;
@@ -32,6 +33,9 @@ promise_test(async t => {
   assert_true(closeFired,
     'The close event should be fired when removing the open attribute.');
 
+  assert_equals(document.activeElement, button,
+    'The previously focused element should be focused after removing the open attribute.');
+
   let buttonFiredClick = false;
   button.addEventListener('click', () => buttonFiredClick = true);
   await test_driver.click(button);
@@ -40,6 +44,7 @@ promise_test(async t => {
 }, 'Removing the open attribute from an open modal dialog should run the closing algorithm.');
 
 promise_test(async t => {
+  button.focus();
   dialog.show();
 
   let closeFired = false;
@@ -55,5 +60,8 @@ promise_test(async t => {
     'The cancel event should not fire when removing the open attribute.');
   assert_true(closeFired,
     'The close event should be fired when removing the open attribute.');
+
+  assert_equals(document.activeElement, button,
+    'The previously focused element should be focused after removing the open attribute.');
 }, 'Removing the open attribute from an open non-modal dialog should fire a close event.');
 </script>

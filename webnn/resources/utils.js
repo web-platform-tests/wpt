@@ -67,21 +67,21 @@ const loadTests = (operationName) => {
 };
 
 /**
- * Get exptected data and data type from given resources with output name.
+ * Get exptected sub output resources from given resources with output name.
  * @param {Array} resources - An array of expected resources
  * @param {String} outputName - An output name
- * @returns {Array.<[Number[], String]>} An array of expected data array and data type
+ * @returns {Object} An object of expected sub output resources
  */
-const getExpectedDataAndType = (resources, outputName) => {
+const getExpectedSubOutputResources = (resources, outputName) => {
   let ret;
   for (let subResources of resources) {
     if (subResources.name === outputName) {
-      ret = [subResources.data, subResources.type];
+      ret = subResources;
       break;
     }
   }
   if (ret === undefined) {
-    throw new Error(`Failed to get expected data sources and type by ${outputName}`);
+    throw new Error(`Failed to get expected sub output resources by ${outputName}`);
   }
   return ret;
 };
@@ -494,13 +494,14 @@ const checkResults = (operationName, namedOutputOperands, outputs, resources) =>
   if (Array.isArray(expected)) {
     // the outputs of split() or gru() is a sequence
     for (let operandName in namedOutputOperands) {
+      const subOutuputResource = getExpectedSubOutputResources(expected, operandName);
+      assert_array_equals(namedOutputOperands[operandName].shape(), subOutuputResource.shape ?? []);
       outputData = outputs[operandName];
-      // for some operations which may have multi outputs of different types
-      [expectedData, operandType] = getExpectedDataAndType(expected, operandName);
       tolerance = getPrecisonTolerance(operationName, metricType, resources);
-      doAssert(operationName, outputData, expectedData, tolerance, operandType, metricType)
+      doAssert(operationName, outputData, subOutuputResource.data, tolerance, subOutuputResource.type, metricType)
     }
   } else {
+    assert_array_equals(namedOutputOperands[expected.name].shape(), expected.shape ?? []);
     outputData = outputs[expected.name];
     expectedData = expected.data;
     operandType = expected.type;

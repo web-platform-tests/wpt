@@ -8,7 +8,7 @@
 <div id="elsewhere"></div>
 <script>
 async_test(t => {
-  var v = document.querySelector('video');
+  const v = document.querySelector('video');
   v.src = getVideoURI('/media/movie_300');
   v.currentTime  = 0;
   v.onplaying = t.step_func(() => {

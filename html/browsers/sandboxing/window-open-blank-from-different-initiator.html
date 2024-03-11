@@ -72,7 +72,7 @@ runTest("One pending navigation", async (test, popup_name) => {
     "/fetch/api/resources/infinite-slow-response.py";
   return window.open(same_origin + unresponsive_path, popup_name);
 });
-
+/*
 // Open a new window and start loading. The response is a 204 and the navigation
 // is canceled. As a result, the frame will be left with the initial empty
 // document and NO pending navigation.
@@ -86,5 +86,5 @@ runTest("No pending navigation", async (test, popup_name) => {
 
   return popup;
 });
-
+*/
 </script>

@@ -1,5 +1,6 @@
 # mypy: allow-untyped-defs
 
+import asyncio
 import base64
 import hashlib
 import io
@@ -15,6 +16,7 @@ from urllib.parse import urljoin, urlsplit, urlunsplit
 
 from . import pytestrunner
 from .actions import actions
+from .asyncactions import async_actions
 from .protocol import Protocol, WdspecProtocol
 
 
@@ -762,7 +764,7 @@ class CallbackHandler:
                     # AttributeError got an obj property in Python 3.10, for older versions we
                     # fall back to looking at the error message.
                     if ((hasattr(e, "obj") and getattr(e, "obj") == self.protocol) or
-                        f"'{self.protocol.__class__.__name__}' object has no attribute" in str(e)):
+                            f"'{self.protocol.__class__.__name__}' object has no attribute" in str(e)):
                         raise NotImplementedError from e
                     raise
         except self.unimplemented_exc:
@@ -784,6 +786,66 @@ class CallbackHandler:
 
     def _send_message(self, cmd_id, message_type, status, message=None):
         self.protocol.testdriver.send_message(cmd_id, message_type, status, message=message)
+
+
+class AsyncCallbackHandler(CallbackHandler):
+    """
+    Handle synchronous and asynchronous actions. Extends `CallbackHandler` with support of async actions.
+    """
+
+    def __init__(self, logger, protocol, test_window, loop):
+        super().__init__(logger, protocol, test_window)
+        self.loop = loop
+        self.async_actions = {cls.name: cls(self.logger, self.protocol) for cls in async_actions}
+
+    def process_action(self, url, payload):
+        action = payload["action"]
+        cmd_id = payload["id"]
+        if action in self.async_actions:
+            # Schedule async action to be processed in the event loop and return immediately.
+            self.logger.debug(f"Scheduling async action processing: {action}")
+            self.loop.create_task(self._process_async_action(action, cmd_id, payload))
+            return False, None
+        else:
+            # Fallback to the default action processing, which will fail if the action is not implemented.
+            return super().process_action(action, url, payload)
+
+    async def _process_async_action(self, action, cmd_id, payload):
+        """
+        Process async action and send the result back to the test driver.
+
+        This method is analogous to `process_action` but is intended to be used with async actions in a task, so it does
+        not raise unexpected exceptions.
+        """
+        async_action_handler = self.async_actions[action]
+
+        try:
+            with ActionContext(self.logger, self.protocol, payload.get("context")):
+                try:
+                    result = await async_action_handler(payload)
+                except AttributeError as e:
+                    # If we fail to get an attribute from the protocol presumably that's a
+                    # ProtocolPart we don't implement
+                    # AttributeError got an obj property in Python 3.10, for older versions we
+                    # fall back to looking at the error message.
+                    if ((hasattr(e, "obj") and getattr(e, "obj") == self.protocol) or
+                            f"'{self.protocol.__class__.__name__}' object has no attribute" in str(e)):
+                        raise NotImplementedError from e
+                    raise
+        except self.unimplemented_exc:
+            self.logger.warning("Action %s not implemented" % action)
+            self._send_message(cmd_id, "complete", "error", f"Action {action} not implemented")
+        except self.expected_exc:
+            self.logger.debug(f"Action {action} failed with an expected exception")
+            self._send_message(cmd_id, "complete", "error", f"Action {action} failed")
+        except Exception:
+            self.logger.warning(f"Action {action} failed")
+            self._send_message(cmd_id, "complete", "error")
+            raise
+        else:
+            self.logger.debug(f"Action {action} completed with result {result}")
+            return_message = {"result": result}
+            self._send_message(cmd_id, "complete", "success", json.dumps(return_message))
 
 
 class ActionContext:

@@ -2,6 +2,7 @@
 
 (function() {
     const pending = new Map();
+    const event_target = new EventTarget();
 
     let result = null;
     let ctx_cmd_id = 0;
@@ -39,6 +40,12 @@
             if (is_test_context()) {
                 window.__wptrunner_process_next_event();
             }
+        } else if (data.type === "testdriver-event") {
+            const event_data = JSON.parse(data.message);
+            const event_name = event_data.method;
+            const event = new Event(event_name);
+            event.payload = event_data.params;
+            event_target.dispatchEvent(event);
         }
     });
 
@@ -160,7 +167,31 @@
         return pending_promise;
     };
 
+    const subscribe = function(events, context=null) {
+        return create_action("bidi.session.subscribe", {events, context});
+    };
+
+    const unsubscribe = function(events, context=null) {
+        return create_action("bidi.session.unsubscribe", {events, context});
+    };
+
     window.test_driver_internal.in_automation = true;
+
+    window.test_driver_internal.bidi.log.entry_added.subscribe = function () {
+        return subscribe(["log.entryAdded"])
+    };
+
+    window.test_driver_internal.bidi.log.entry_added.unsubscribe = function () {
+        return unsubscribe(["log.entryAdded"])
+    };
+
+    window.test_driver_internal.bidi.log.entry_added.on = function (callback) {
+        const on_event = (event)=> {
+            callback(event.payload);
+        };
+        event_target.addEventListener("log.entryAdded", on_event);
+        return () => event_target.removeEventListener("log.entryAdded", on_event);
+    };
 
     window.test_driver_internal.set_test_context = function(context) {
         if (window.__wptrunner_message_queue) {

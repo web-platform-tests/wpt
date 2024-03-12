@@ -2,6 +2,7 @@
 
 import traceback
 from http.client import HTTPConnection
+from typing import Any, Awaitable, Callable, Optional, Mapping
 
 from abc import ABCMeta, abstractmethod
 from typing import ClassVar, List, Type
@@ -318,6 +319,57 @@ class AccessibilityProtocolPart(ProtocolPart):
         """Return the computed accessibility role for a specific element.
 
         :param element: A protocol-specific handle to an element."""
+        pass
+
+
+class BidiEventsProtocolPart(ProtocolPart):
+    """Protocol part for managing BiDi events"""
+    __metaclass__ = ABCMeta
+    name = "bidi_events"
+
+    @abstractmethod
+    async def subscribe(self, events):
+        """Subscribe to events.
+
+        :param list events: The list of events names to subscribe to."""
+        pass
+
+    @abstractmethod
+    async def unsubscribe(self, events):
+        """Unsubscribe from events.
+
+        :param list events: The list of events names to unsubscribe from."""
+        pass
+
+    @abstractmethod
+    def add_event_listener(
+            self,
+            fn: Callable[[str, Mapping[str, Any]], Awaitable[Any]],
+            event: Optional[str] = None
+    ) -> Callable[[], None]:
+        """Add an event listener. The callback will be called with the event name and the event data.
+
+        :param fn: The function to call when the event is received.
+        :param event: The name of the event to listen for. If None, the function will be called for all events.
+        :return: Function to remove the added listener."""
+        pass
+
+
+class BidiScriptProtocolPart(ProtocolPart):
+    """Protocol part for executing BiDi scripts"""
+    __metaclass__ = ABCMeta
+
+    name = "bidi_script"
+
+    @abstractmethod
+    async def async_call_function(self, script, context, args=None):
+        """
+        Executes the provided script in the given context in asynchronous mode.
+
+        :param str script: The js source to execute.
+        :param str context: The context in which to execute the script.
+        :param list args: The arguments to pass to the script.
+        """
         pass
 
 

@@ -381,10 +381,10 @@ function run_test() {
                                                  false, ["verify"])
                   isVerified = await subtle.verify(algorithmName, publicKey, test.signature, test.message);
               } catch (err) {
-                  assert_equals(isVerified, test.verified, "Signature verification result.");
+                  assert_true(publicKey !== undefined, "Public key should be valid.");
                   assert_unreached("The operation shouldn't fail, but it thown this error: " + err.name + ": " + err.message + ".");
               }
-              assert_false(isVerified, "Signature verification result.");
+              assert_equals(isVerified, test.verified, "Signature verification result.");
           }, algorithmName + " Verification checks with small-order key of order - Test " + test.id);
       });
   });

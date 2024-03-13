@@ -16,5 +16,6 @@ test(() => {
   `;
   document.querySelector("main").appendChild(script);
   assert_equals(window.mutationRecords.length, 1);
+  assert_array_equals(window.mutationRecords[0].addedNodes, [script]);
 }, "An inserted script should be able to observe its own mutation record with takeRecords");
 </script>

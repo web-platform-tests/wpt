@@ -1,0 +1,28 @@
+<!doctype html>
+<title>"Cache-Control: no-store" should not reload on srcset mutations</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<img id=target srcset="resources/image.png 400w" sizes="50vw">
+<script>
+  setup({single_test:true});
+  onload = () => {
+    // Post a task so the test is fully after the initial-load.
+    setTimeout(() => {
+      // Modify the sizes attribute. This should re-run the "Updating the image
+      // data" steps (https://html.spec.whatwg.org/#update-the-image-data) to
+      // select a new source.
+      target.setAttribute('sizes', '51vw');
+
+      target.onload = () => {
+        // After the new source loads, we should still only have 3 entries: two
+        // javascript loads (testharness.js and testharnessreport.js), and a
+        // single image load (resources/image.png). Even though
+        // "cache-control: no-store" is present on the image, it should not be
+        // requested twice.
+        assert_equals(performance.getEntriesByType("resource").length, 3);
+        done();
+      }
+    }, 0);
+  }
+</script>

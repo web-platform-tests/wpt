@@ -298,6 +298,8 @@ const getResample2dPrecisionTolerance = (resources, operationName) => {
       tolerance = 84;
     } else if (precisionType === 'float16') {
       tolerance = 10;
+    } else {
+      tolerance = 1;
     }
   } else {
     // interpolation mode is nearest-neighbor

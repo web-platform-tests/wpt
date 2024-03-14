@@ -4299,27 +4299,17 @@
             }
 
             const table = asserts_output.querySelector("table");
-            const row = render(
-                    ["tr", {},
-                        ["td", {}, ""],
-                        ["td", {}, ["pre", {}, ["strong", {}], ""]] ]);
-            const row_status = row.querySelectorAll("td")[0];
-            const row_name = row.querySelector("strong");
-            const row_other_info = row_name.nextSibling;
             for (const assert of asserts) {
-                var status_class_name = status_class(Test.prototype.status_formats[assert.status]);
-                row.className = "overall-" + status_class_name;
-                row_status.className = status_class_name;
-                row_status.textContent = Test.prototype.status_formats[assert.status];
-                row_name.textContent = assert.assert_name;
+                const status_class_name = status_class(Test.prototype.status_formats[assert.status]);
                 var output_fn = "(" + assert.args.join(", ") + ")";
                 if (assert.stack) {
                     output_fn += "\n";
                     output_fn += assert.stack.split("\n", 1)[0].replace(/@?\w+:\/\/[^ "\/]+(?::\d+)?/g, " ");
                 }
-                row_other_info.textContent = output_fn;
-
-                table.appendChild(row.cloneNode(true));
+                table.appendChild(render(
+                    ["tr", {"class": "overall-" + status_class_name},
+                        ["td", {"class": status_class_name}, Test.prototype.status_formats[assert.status]],
+                        ["td", {}, ["pre", {}, ["strong", {}, assert.assert_name], output_fn]] ]));
             }
             return asserts_output;
         }
@@ -4334,34 +4324,22 @@
                             ["th", {}, "Result"],
                             ["th", {}, "Test Name"],
                             (assertions ? ["th", {}, "Assertion"] : ""),
-                            ["th", {}, "Message" ] ] ],
-                    ["tbody", {}] ] ]);
+                            ["th", {}, "Message" ]]],
+                    ["tbody", {}]]]);
 
-        const tbody = section.querySelector("tbody");;
-        const row = render(
-            ["tr", {},
-                ["td", {}, ""],
-                ["td", {}, ""],
-                (assertions ? ["td", {}, ""] : ""),
-                ["td", {}, "", ["pre", {}] ] ]);
-        const row_status = row.children[0];
-        const row_name = row.children[1];
-        const row_assertion = assertions ? row.children[2] : undefined;
-        const row_message = row.lastChild;
+        const tbody = section.querySelector("tbody");
         for (const test of tests) {
-            var status_class_name = status_class(test.format_status());
-            row.className = "overall-" + status_class_name;
-            row_status.className = status_class_name;
-            row_status.textContent = status_class_name;
-            row_name.textContent = test.name;
-            if (assertions) {
-              row_assertion.textContent = get_assertion(test);
-            }
-            row_message.firstChild.textContent = test.message;
-            row_message.lastChild.textContent = test.stack;
-            tbody.appendChild(row.cloneNode(true));
+            const status_class_name = status_class(test.format_status());
+            tbody.appendChild(render(
+                ["tr", {"class": "overall-" + status_class_name},
+                    ["td", {"class": status_class_name}, status_class_name],
+                    ["td", {}, test.name],
+                    (assertions ? ["td", {}, get_assertion(test)] : ""),
+                    ["td", {},
+                        test.message ?? "",
+                        ["pre", {}, test.stack ?? ""]]]));
             if (!(test instanceof RemoteTest)) {
-              tbody.lastChild.lastChild.appendChild(get_asserts_output(test));
+                tbody.lastChild.lastChild.appendChild(get_asserts_output(test));
             }
         }
         log.appendChild(section);

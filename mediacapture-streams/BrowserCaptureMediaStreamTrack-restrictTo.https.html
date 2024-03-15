@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>BrowserCaptureMediaStreamTrack restrictTo()</title>
+  <link rel="help" href="https://screen-share.github.io/element-capture/">
+</head>
+
+<body>
+  <p class="instructions">When prompted, accept to give permission to use your audio and video devices.</p>
+  <h1 class="instructions">Description</h1>
+  <p class="instructions">This test checks that restricting BrowserCaptureMediaStreamTrack works as expected.</p>
+
+  <button id="button">User gesture</button>
+  <div id='test-div' width="500px" height="600px"></div>
+
+  <script src=/resources/testharness.js></script>
+  <script src=/resources/testharnessreport.js></script>
+  <script src=/resources/testdriver.js></script>
+  <script src=/resources/testdriver-vendor.js></script>
+  <script src=permission-helper.js></script>
+
+  <script>
+    "use strict";
+    async function getDisplayMedia(constraints) {
+      const p = new Promise(r => button.onclick = r);
+      await test_driver.click(button);
+      await p;
+      return navigator.mediaDevices.getDisplayMedia(constraints);
+    }
+
+    promise_test(async t => {
+      const stream = await getDisplayMedia({ video: true, preferCurrentTab: true });
+      assert_true(stream.active);
+
+      assert_equals(stream.getVideoTracks().length, 1);
+      const [videoTrack] = stream.getVideoTracks();
+      assert_true(videoTrack instanceof BrowserCaptureMediaStreamTrack, "track should be a BrowserCaptureMediaStreamTrack");
+      assert_equals(videoTrack.readyState, "live");
+
+      const div = document.getElementById('test-div')
+      const restrictionTarget = await RestrictionTarget.fromElement(div)
+      await videoTrack.restrictTo(restrictionTarget);
+
+      // Should be paused since the element is not eligible for restriction.
+      assert_true(videoTrack.muted);
+
+      // Force the DIV into its own stacking context.
+      div.style.isolation = "isolate";
+
+      // Should be unpaused now that the element is eligible.
+      assert_false(videoTrack.muted);
+
+      // Should pause if it because ineligible again.
+      div.style.isolation = "";
+      assert_true(videoTrack.muted);
+
+    }, "Tests that restricting MediaStreamTrack objects works as expected");
+
+  </script>
+</body>
+
+</html>

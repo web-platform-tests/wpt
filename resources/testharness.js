@@ -4194,7 +4194,7 @@
                                                  status
                                                 ],
                                                ],
-                                               ["button", { "id": "rerun" }, "Rerun"]
+                                               ["button", {"id":"rerun"}, "Rerun"]
                                               ]];
 
                                     if (harness_status.status === harness_status.ERROR) {
@@ -4289,12 +4289,12 @@
         function get_asserts_output(test) {
             const asserts_output = render(
                 ["details", {},
-                    ["summary", {}, ""],
+                    ["summary", {}, "Asserts run"],
                     ["table", {}, ""] ]);
 
             var asserts = asserts_run_by_test.get(test);
             if (!asserts) {
-                asserts_output.querySelector("summary").textContent = "No asserts ran";
+                asserts_output.querySelector("summary").insertAdjacentText("afterend", "No asserts ran");
                 return asserts_output;
             }
 
@@ -4307,8 +4307,8 @@
                     output_fn += assert.stack.split("\n", 1)[0].replace(/@?\w+:\/\/[^ "\/]+(?::\d+)?/g, " ");
                 }
                 table.appendChild(render(
-                    ["tr", {"class": "overall-" + status_class_name},
-                        ["td", {"class": status_class_name}, Test.prototype.status_formats[assert.status]],
+                    ["tr", {"class":"overall-" + status_class_name},
+                        ["td", {"class":status_class_name}, Test.prototype.status_formats[assert.status]],
                         ["td", {}, ["pre", {}, ["strong", {}, assert.assert_name], output_fn]] ]));
             }
             return asserts_output;
@@ -4318,7 +4318,7 @@
         const section = render(
             ["section", {},
                 ["h2", {}, "Details"],
-                ["table", {"id": "results", "class": (assertions ? "assertions" : "")},
+                ["table", {"id":"results", "class":(assertions ? "assertions" : "")},
                     ["thead", {},
                         ["tr", {},
                             ["th", {}, "Result"],
@@ -4331,8 +4331,8 @@
         for (const test of tests) {
             const status_class_name = status_class(test.format_status());
             tbody.appendChild(render(
-                ["tr", {"class": "overall-" + status_class_name},
-                    ["td", {"class": status_class_name}, status_class_name],
+                ["tr", {"class":"overall-" + status_class_name},
+                    ["td", {"class":status_class_name}, status_class_name],
                     ["td", {}, test.name],
                     (assertions ? ["td", {}, get_assertion(test)] : ""),
                     ["td", {},

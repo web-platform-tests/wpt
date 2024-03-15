@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="author" href="mailto:sammy.gill@apple.com">
+<link rel="help" href="https://drafts.csswg.org/css-rhythm/#block-step-size">
+<meta name="assert" content="Element's margin box size should just get set to the specified block-step-size if it is smaller"><style>
+div {
+    inline-size: 50px;
+    block-size: 50px;
+    background-color: green;
+}
+div:first-child {
+    margin-block: 25px;
+}
+</style>
+</head>
+<body>
+    <div></div>
+    <div></div>
+</body>
+</html>

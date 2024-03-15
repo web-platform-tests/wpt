@@ -57,7 +57,7 @@ test(t => {
   document.body.setAttribute("style", "background:red");
   assert_true(document.body.matches("[style=\"background:red\"]"));
   assert_equals(getComputedStyle(document.body).backgroundColor, "rgb(255, 0, 0)");
-    
+
   document.body.style.cssText = "background:red";
   assert_equals(getComputedStyle(document.body).backgroundColor, "rgb(255, 255, 255)");
   assert_true(document.body.matches("[style=\"background: red;\"]"));

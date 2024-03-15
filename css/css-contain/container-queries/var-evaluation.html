@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<title>CSS Container Queries Test: var()</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain-3/#size-container">
+<link rel="help" href="https://drafts.csswg.org/mediaqueries-4/#units">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/cq-testcommon.js"></script>
+<style>
+  #container {
+    container-type: size;
+    width: 200px;
+    --query: 100px;
+    --invalid-value: initial;
+  }
+
+  @container (width > var(--invalid-value, var(--query, 500px))) {
+    #target {
+      height: 50px;
+      background-color: green;
+    }
+  }
+</style>
+<div id=container>
+  <div id=target></div>
+</div>
+<script>
+  setup(() => assert_implements_container_queries());
+
+  test(() => {
+    assert_equals(getComputedStyle(target).backgroundColor, 'rgb(0, 128, 0)');
+  }, 'inline-size with var-substitution');
+</script>

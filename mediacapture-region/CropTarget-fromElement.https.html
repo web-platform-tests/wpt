@@ -37,14 +37,13 @@
       assert_equals(crop_target.constructor.name, 'CropTarget');
     }, "Produces a CropTarget for Elements of subtype div.");
 
-    // TODO(crbug.com/1247761): Re-enable after rolling out the
-    // experiment to allow any Element.
-    // promise_test(function (t) {
-    //   assert_true(!!CropTarget.fromElement);
-    //
-    //   return promise_rejects_dom(t, "NotSupportedError",
-    //     CropTarget.fromElement(document.getElementById("test-img")));
-    // }, "Produces a CropTarget for Elements of subtype img.");
+    promise_test(function (t) {
+      assert_true(!!CropTarget.fromElement);
+
+      const crop_target = await CropTarget.fromElement(
+        document.getElementById('test-img'));
+      assert_equals(crop_target.constructor.name, 'CropTarget');
+    }, "Produces a CropTarget for Elements of subtype img.");
 
     promise_test(t => {
       assert_true(!!CropTarget.fromElement);

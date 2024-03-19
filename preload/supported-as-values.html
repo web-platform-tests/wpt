@@ -24,17 +24,13 @@
 <script>
     const params = new URLSearchParams(location.search);
     const as = params.get("as");
-    const expected = +params.get("expected");
+    const expected = Number(params.get("expected"));
     promise_test(async t => {
-        const ex = new URLSearchParams(location.search).get("as");
         const link = document.createElement("link");
         link.href = new URL("/common/echo.py?content=nothing", location.href).href;
         link.rel = "preload";
         link.as = as;
         document.head.append(link);
-        const baseline = new URL(link.href);
-        baseline.searchParams.set("check", "true");
-        await (await fetch(baseline)).text();
         await new Promise(resolve => {
             setTimeout(resolve, 1000);
             link.addEventListener("load", resolve);

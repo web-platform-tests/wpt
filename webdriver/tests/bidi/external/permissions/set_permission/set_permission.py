@@ -106,7 +106,7 @@ async def test_set_permission_origin_unknown(bidi_session, new_tab, origin):
 
 
 @pytest.mark.asyncio
-async def test_set_permission(bidi_session, new_tab, url, create_user_context):
+async def test_set_permission_user_context(bidi_session, new_tab, url, create_user_context):
     test_url = url("/common/blank.html", protocol="https")
 
     user_context = await create_user_context()

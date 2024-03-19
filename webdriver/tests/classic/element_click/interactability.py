@@ -68,6 +68,22 @@ def test_element_not_interactable_css_transform(session, inline, transform):
     assert_error(response, "element not interactable")
 
 
+@pytest.mark.parametrize("transform", ["translate(-100px, -100px)", "rotate(50deg)"])
+def test_element_interactable_in_iframe_with_css_transform(session, inline, iframe, transform):
+    session.url = inline(iframe("""
+        <div style="background-color: blue">
+            <input type=button>
+        </div>"""))
+
+    frame = session.find.css("iframe", all=False)
+    session.execute_script("arguments[0].style.transform = arguments[1]", args=[frame, transform])
+
+    session.switch_frame(frame)
+    element = session.find.css("input", all=False)
+    response = element_click(session, element)
+    assert_success(response)
+
+
 def test_element_not_interactable_out_of_view(session, inline):
     session.url = inline("""
         <style>

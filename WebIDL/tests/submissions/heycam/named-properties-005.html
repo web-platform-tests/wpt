@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<title>Deleting named properties</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.7.3 Platform object [[DefineOwnProperty]] method
+//
+// If an object supports named properties, and a named property
+// deleter is available, then attempting to delete a property with a name that
+// is a supported property name will invoke the deleter.
+
+// feature: DOMStringMap (named property deleter)
+
+test(function() {
+  var span = document.createElement("span");
+  span.dataset.hello = "test";
+  assert_true(span.hasAttribute("data-hello"));
+  assert_true(delete span.dataset.hello);
+  assert_true(!span.hasAttribute("data-hello"));
+}, "invoking the named property deleter on a DOMStringMap works");
+
+test(function() {
+  var span = document.createElement("span");
+  span.dataset.constructor = "test";
+  assert_true(span.hasAttribute("data-constructor"));
+  assert_true(delete span.dataset.constructor);
+  assert_true(span.hasAttribute("data-constructor"));
+}, "using delete on a DOMStringMap on a named property that is hidden due to the named property visibility algorithm will not invoke the named property deleter");
+
+// feature: Storage (named property deleter)
+
+test(function() {
+  window.localStorage.hello = "test";
+  assert_equals(window.localStorage.getItem("hello"), "test");
+  assert_true(delete window.localStorage.hello);
+  assert_equals(window.localStorage.getItem("hello"), null);
+}, "invoking the named property deleter on a Storage works");
+
+test(function() {
+  window.localStorage.constructor = "test";
+  assert_equals(window.localStorage.getItem("constructor"), "test");
+  assert_equals(window.localStorage.constructor, Object.prototype.constructor);
+  assert_true(delete window.localStorage.constructor);
+  assert_equals(window.localStorage.getItem("constructor"), "test");
+}, "using delete on a Storage on a named property that is hidden due to the named property visibility algorithm will not invoke the named property deleter");
+</script>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<title>Invoking regular operations with overloading</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe id="iframe"></iframe>
+</div>
+
+<script>
+// 4.5.7 Operations
+//
+// In this test we're invoking regular operations with overloading.  When too
+// few arguments are passed, a TypeError is thrown.  When too many arguments are
+// passed, the extra ones are ignored.  Candidate overloads are first chosen
+// based on how many arguments were passed.  Then, a specific argument is used
+// as the one that distinguishes between the different candidate overloads.
+// Values before this distinguishing argument are converted to IDL values before
+// the distinguishing argument is inspected.  Looking at the distinguishing
+// argument might then cause the call to fail (and a TypeError to be thrown) if
+// there is not an appropriate value passed in that position.
+
+// feature: CanvasRenderingContext2D.drawImage (operation) (overloaded)
+
+//   void drawImage(CanvasImageSource image, unrestricted double dx, unrestricted double dy);
+//   void drawImage(CanvasImageSource image, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
+//   void drawImage(CanvasImageSource image, unrestricted double sx, unrestricted double sy, unrestricted double sw, unrestricted double sh, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
+
+function makeContext(doc) {
+  var canvas = doc.createElement("canvas");
+  canvas.width = 100;
+  canvas.height = 100;
+  var ctx = canvas.getContext("2d");
+  assert_true(!!ctx);
+  return ctx;
+}
+
+function getPixel(ctx, x, y) {
+  var i = ctx.getImageData(x, y, 1, 1);
+  return [i.data[0], i.data[1], i.data[2], i.data[3]];
+}
+
+var blue = document.createElement("canvas");
+blue.width = 10;
+blue.width = 10;
+var blueCtx = blue.getContext("2d");
+blueCtx.fillStyle = "blue";
+blueCtx.fillRect(0, 0, 10, 10);
+
+test(function() {
+  var ctx = makeContext(document);
+  assert_throws(new TypeError(), function() { ctx.drawImage(); });
+}, "CanvasRenderingContext2D.drawImage() throws when no arguments passed");
+
+test(function() {
+  var ctx = makeContext(document);
+  assert_throws(new TypeError(), function() { ctx.drawImage(blue); });
+}, "CanvasRenderingContext2D.drawImage() throws when one argument passed");
+
+test(function() {
+  var ctx = makeContext(document);
+  assert_throws(new TypeError(), function() { ctx.drawImage(blue, 0); });
+}, "CanvasRenderingContext2D.drawImage() throws when two arguments passed");
+
+test(function() {
+  var ctx = makeContext(document);
+  ctx.drawImage(blue, 0, 0);
+  assert_array_equals(getPixel(ctx, 4, 4), [0, 0, 255, 255]);
+}, "CanvasRenderingContext2D.drawImage() works when three arguments passed");
+
+test(function() {
+  var ctx = makeContext(document);
+  assert_throws(new TypeError(), function() { ctx.drawImage(blue, 0, 0, 10); });
+}, "CanvasRenderingContext2D.drawImage() throws when four arguments passed");
+
+test(function() {
+  var ctx = makeContext(document);
+  ctx.drawImage(blue, 0, 0, 10, 10);
+  assert_throws(new TypeError(), function() { ctx.drawImage(blue, 0, 0, 10); });
+}, "CanvasRenderingContext2D.drawImage() works when five arguments passed");
+
+test(function() {
+  var ctx = makeContext(document);
+  assert_throws(new TypeError(), function() { ctx.drawImage(blue, 0, 0, 10, 10, 0); });
+}, "CanvasRenderingContext2D.drawImage() throws when six arguments passed");
+
+test(function() {
+  var ctx = makeContext(document);
+  assert_throws(new TypeError(), function() { ctx.drawImage(blue, 0, 0, 10, 10, 0, 0); });
+}, "CanvasRenderingContext2D.drawImage() throws when seven arguments passed");
+
+test(function() {
+  var ctx = makeContext(document);
+  assert_throws(new TypeError(), function() { ctx.drawImage(blue, 0, 0, 10, 10, 0, 0, 10); });
+}, "CanvasRenderingContext2D.drawImage() throws when eight arguments passed");
+
+test(function() {
+  var ctx = makeContext(document);
+  ctx.drawImage(blue, 0, 0, 10, 10, 0, 0, 10, 10);
+  assert_array_equals(getPixel(ctx, 4, 4), [0, 0, 255, 255]);
+}, "CanvasRenderingContext2D.drawImage() works when nine arguments passed");
+
+test(function() {
+  var ctx = makeContext(document);
+  ctx.drawImage(blue, 0, 0, 10, 10, 0, 0, 10, 10, "extra");
+  assert_array_equals(getPixel(ctx, 4, 4), [0, 0, 255, 255]);
+}, "CanvasRenderingContext2D.drawImage() works when extra arguments passed");
+
+test(function() {
+  var ctx = makeContext(document.getElementById("iframe").contentDocument);
+  CanvasRenderingContext2D.prototype.drawImage.call(ctx, blue, 0, 0);
+  assert_array_equals(getPixel(ctx, 4, 4), [0, 0, 255, 255]);
+}, "CanvasRenderingContext2D.drawImage() can be applied to objects from other windows");
+
+test(function() {
+  assert_throws(new TypeError(), function() { CanvasRenderingContext2D.prototype.drawImage.call(blue, 0, { valueOf: function() { throw "something"; } }); });
+}, "CanvasRenderingContext2D.drawImage() throws when called with a null this-value");
+
+test(function() {
+  assert_throws(new TypeError(), function() { CanvasRenderingContext2D.prototype.drawImage.call(document, 0, { valueOf: function() { throw "something"; } }); });
+}, "CanvasRenderingContext2D.drawImage() throws when called with a bad this-value");
+
+
+// feature: CanvasRenderingContext2D.createImageData (operation) (overloaded)
+
+//   ImageData createImageData(double sw, double sh);
+//   ImageData createImageData(ImageData imagedata);
+
+test(function() {
+  var ctx = makeContext(document);
+  assert_throws(new TypeError(), function() { ctx.createImageData(); });
+}, "CanvasRenderingContext2D.createImageData throws when no arguments passed");
+
+test(function() {
+  var ctx = makeContext(document);
+  var id1 = ctx.createImageData(1, 1);
+  var id2 = ctx.createImageData(id1);
+  assert_equals(id2.width, 1);
+  assert_equals(id2.height, 1);
+}, "passing (ImageData) to CanvasRenderingContext2D.createImageData selects the (ImageData) overload");
+
+test(function() {
+  var ctx = makeContext(document);
+  assert_throws(new TypeError(), function() { ctx.createImageData(1); });
+}, "passing (Number) to CanvasRenderingContext2D.createImageData selects the (ImageData) overload and throws");
+
+test(function() {
+  var ctx = makeContext(document);
+  assert_throws(new TypeError(), function() { ctx.createImageData(null); });
+}, "passing (null) to CanvasRenderingContext2D.createImageData selects the (ImageData) overload and throws");
+
+test(function() {
+  var ctx = makeContext(document);
+  var id = ctx.createImageData(1, 1);
+  assert_throws(new TypeError(), function() { ctx.createImageData(id, 1); });
+}, "passing (ImageData, Number) to CanvasRenderingContext2D.createImageData selects the (double, double) overload and throws");
+
+test(function() {
+  var ctx = makeContext(document);
+  var id1 = ctx.createImageData(1, 1);
+  id1.valueOf = function() { return 3; };
+  var id2 = ctx.createImageData(id1, 4);
+  assert_equals(id2.width, 3);
+  assert_equals(id2.height, 4);
+}, "passing (ImageData { valueOf }, Number) to CanvasRenderingContext2D.createImageData selects the (double, double) overload and succeeds");
+
+test(function() {
+  var ctx = makeContext(document);
+  var id1 = ctx.createImageData(1, 1);
+  id1.valueOf = function() { return 3; };
+  var id2 = ctx.createImageData(id1, 4, "extra");
+  assert_equals(id2.width, 3);
+  assert_equals(id2.height, 4);
+}, "passing (ImageData { valueOf }, Number, String) to CanvasRenderingContext2D.createImageData selects the (double, double) overload and succeeds");
+</script>

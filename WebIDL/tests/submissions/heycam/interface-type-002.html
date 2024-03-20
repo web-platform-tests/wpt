@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<title>Interface types for regular interfaces</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.18 Interface types
+//
+// If the value being converted to an interface type is not an object, a
+// TypeError exception is thrown.
+//
+// For a regular interface, only a platform object that implements the
+// interface will be accepted.
+
+function runTests() {
+  var iframe = document.getElementById("iframe");
+
+  var object = { };
+  var array = [];
+  var regexp = /abc/;
+  var matrix = document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGMatrix();
+  var fakeMatrix1 = Object.create(matrix);
+  var fakeMatrix2 = Object.create(SVGMatrix.prototype);
+  var fakeMatrix3 = { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 };
+  var otherMatrix = iframe.contentDocument.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGMatrix();
+
+  var values = [
+    undefined,                  undefined,  "undefined",
+    null,                       undefined,  "null",
+    false,                      undefined,  "false",
+    0,                          undefined,  "0",
+    "",                         undefined,  '""',
+    window,                     undefined,  "window",
+    object,                     undefined,  "{ }",
+    array,                      undefined,  "[]",
+    regexp,                     undefined,  "/abc/",
+    matrix,                     SVGPoint,   "an SVGMatrix object",
+    SVGMatrix,                  undefined,  "SVGMatrix",
+    SVGMatrix.prototype,        undefined,  "SVGMatrix.prototype",
+    fakeMatrix1,                undefined,  "fakeMatrix1",
+    fakeMatrix2,                undefined,  "fakeMatrix2",
+    fakeMatrix3,                undefined,  "fakeMatrix3",
+    otherMatrix,                SVGPoint,   "otherMatrix"
+  ];
+
+  // feature: SVGPoint.matrixTransform (operation) (with argument of an interface type)
+
+  for (var i = 0; i < values.length; i += 3) {
+    var value = values[i];
+    var expected = values[i + 1];
+    var desc = values[i + 2];
+
+    test(function() {
+      var point = document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGPoint();
+      if (expected !== undefined) {
+        assert_true(point.matrixTransform(value) instanceof expected);
+      } else {
+        assert_throws(new TypeError(), function() { point.matrixTransform(point); });
+      }
+    }, "passing " + desc + " to SVGPoint.matrixTransform() correctly converts to an IDL SVGMatrix value");
+  }
+}
+</script>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe id="iframe" onload="runTests()"></iframe>
+</div>

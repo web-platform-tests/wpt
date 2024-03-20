@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>[TreatNullAs] on operation arguments</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.16 DOMString
+//
+// Passing null to an operation argument of type DOMString will bye default
+// convert null to "null".  If [TreatNullAs=EmptyString] is on the argument,
+// null will be converted to "" instead.
+
+// feature: DOMImplementation.createDocument (operation) (with [TreatNullAs=EmptyString] on an argument)
+
+test(function() {
+  var doc;
+  doc = document.implementation.createDocument(null, "test", null);
+  assert_true(!!doc.firstChild);
+  doc = document.implementation.createDocument(null, "", null);
+  assert_true(!doc.firstChild);
+  doc = document.implementation.createDocument(null, null, null);
+  assert_true(!doc.firstChild);
+}, "passing null to the qualifiedName argument of DOMImplementation.createDocument does not create a document element");
+</script>

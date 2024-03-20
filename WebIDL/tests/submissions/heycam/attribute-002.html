@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<title>Getters for writable attributes</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe id="iframe"></iframe>
+  <select id="select">
+    <option></option>
+    <option></option>
+  </select>
+</div>
+
+<script>
+// 4.5.6 Attributes
+//
+// Properties for non-[Unforgeable] attributes exist on the interface prototype
+// object and are enumerable and configurable.  These are accessor properties
+// always have a getter.  The getter expects no arguments, and will ignore
+// extra ones.  The getter can be applied to objects of the right type
+// from other windows.  Calling it with a bad this object value will throw
+// a TypeError.
+
+// feature: HTMLSelectElement.length (attribute) (writable, without [Unforgeable])
+
+var select = document.getElementById("select");
+
+test(function() {
+  assert_true(!select.hasOwnProperty("length"));
+}, "HTMLSelectElement object does not have own property \"length\"");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "length");
+  assert_descriptor(desc, { enumerable: true, configurable: true });
+}, "HTMLSelectElement.prototype.length has correct property attributes");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "length");
+  assert_equals(typeof desc.get, "function");
+  assert_equals(desc.get.length, 0);
+}, "HTMLSelectElement.length has a getter function with the right length");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "length");
+  assert_true(!!desc);
+  assert_throws(new TypeError(), function() { desc.get.call(null); });
+}, "calling HTMLSelectElement.length getter with a null this-value throws");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "length");
+  assert_true(!!desc);
+  assert_throws(new TypeError(), function() { desc.get.call(document); });
+}, "calling HTMLSelectElement.length getter with a non-HTMLSelectElement object this-value throws");
+
+test(function() {
+  var e = document.createElement("select");
+  e.appendChild(document.createElement("option"));
+  var desc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "length");
+  assert_equals(desc.get.call(e), 1);
+}, "calling HTMLSelectElement.length getter on a different HTMLSelectElement object works");
+
+test(function() {
+  var doc = document.getElementById("iframe").contentDocument;
+  var e = doc.createElement("select");
+  e.appendChild(doc.createElement("option"));
+  var desc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "length");
+  assert_equals(desc.get.call(e), 1);
+}, "calling HTMLSelectElement.length getter on an object from a different window works");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "length");
+  assert_equals(desc.get.call(select, "extra"), 2);
+}, "arguments passed to HTMLSelectElement.length getter are ignored");
+</script>

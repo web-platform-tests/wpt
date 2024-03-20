@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<title>Named properties</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="container" style="display: none"></div>
+
+<script>
+// 4.7.2 Platform object [[GetOwnProperty]] method
+//
+// If an object supports named properties, then own properties exist on the
+// object corresponding to the supported property names.  Each property is
+// exposed through [[GetOwnProperty]] as being enumerable, configurable,
+// and writable if there is also an named property setter.
+//
+// Whether a given named property is actually exposed on the object depends
+// on the result of the named property visibility algorithm, which by default
+// (when not [OverrideBuiltins]) will not allow named properties whose name
+// matches an actual property on the object or from its prototype chain to be
+// exposed.  Also, if the object supports indexed properties as well, then
+// any named property whose name is an array index property will not be
+// exposed, even if it doesn't currently correspond to a supported index
+// property.
+
+// feature: DOMStringMap (named property getter) (has a named property setter)
+
+test(function() {
+  var span = document.createElement("span");
+  span.setAttribute("data-test", "test");
+  assert_property(span.dataset, "test", { writable: true, enumerable: true, configurable: true, value: "test" });
+}, "DOMStringMap named property has correct attributes and value");
+
+test(function() {
+  var span = document.createElement("span");
+  span.setAttribute("data-test", "test");
+  assert_true(!span.dataset.hasOwnProperty("nonexistent"));
+}, "DOMStringMap property corresponding to a non-existent supported property index does not exist");
+
+test(function() {
+  var span = document.createElement("span");
+  try {
+    DOMStringMap.prototype.test = 123;
+    span.setAttribute("data-test", "test");
+    assert_equals(span.dataset.test, 123);
+  } finally {
+    delete DOMStringMap.prototype.test;
+  }
+}, "DOMStringMap does not expose named properties if there is a same named property on the prototype");
+
+test(function() {
+  var span = document.createElement("span");
+  try {
+    DOMStringMap.prototype.test = 123;
+    span.setAttribute("data-test", "test");
+    assert_equals(span.dataset.test, 123);
+  } finally {
+    delete DOMStringMap.prototype.test;
+  }
+  assert_equals(span.dataset.test, "test");
+}, "DOMStringMap exposes named properties if there was a same named property on the prototype that was deleted");
+
+test(function() {
+  var span = document.createElement("span");
+  try {
+    Object.prototype.test = 123;
+    span.setAttribute("data-test", "test");
+    assert_equals(span.dataset.test, 123);
+  } finally {
+    delete Object.prototype.test;
+  }
+}, "DOMStringMap does not expose named properties if there is a same named property on Object.prototype");
+
+test(function() {
+  var span = document.createElement("span");
+  try {
+    Object.prototype.test = 123;
+    span.setAttribute("data-test", "test");
+    assert_equals(span.dataset.test, 123);
+  } finally {
+    delete Object.prototype.test;
+  }
+  assert_equals(span.dataset.test, "test");
+}, "DOMStringMap exposes named properties if there was a same named property on Object.prototype that was deleted");
+
+
+// feature: HTMLCollection (named property getter) (does not have a named property setter, supports indexed properties)
+
+var container = document.getElementById("container");
+
+function clearContainer() {
+  while (container.lastChild) {
+    container.removeChild(container.lastChild);
+  }
+}
+
+function addForm(name) {
+  var form = document.createElement("form");
+  form.setAttribute("name", name);
+  container.appendChild(form);
+  return form;
+}
+
+test(function() {
+  clearContainer();
+  var form = addForm("hello");
+  assert_property(document.forms, "hello", { writable: false, enumerable: true, configurable: true, value: form });
+}, "HTMLCollection named property has correct attributes and value");
+
+test(function() {
+  clearContainer();
+  assert_true(!document.forms.hasOwnProperty("hello"));
+}, "HTMLCollection property corresponding to a non-existent supported property name does not exist");
+
+test(function() {
+  clearContainer();
+  try {
+    document.forms.hello = 123;
+    addForm("hello");
+    assert_property(document.forms, "hello", { writable: true, enumerable: true, configurable: true, value: 123 });
+  } finally {
+    delete document.forms.hello;
+  }
+}, "HTMLCollection does not expose named properties if there is a same named property on the object");
+
+test(function() {
+  clearContainer();
+  try {
+    document.forms.hello = 123;
+    var form = addForm("hello");
+    assert_property(document.forms, "hello", { writable: true, enumerable: true, configurable: true, value: 123 });
+  } finally {
+    delete document.forms.hello;
+  }
+  assert_property(document.forms, "hello", { writable: true, enumerable: true, configurable: true, value: form });
+}, "HTMLCollection exposes named properties if there was a same named property on the object that was deleted");
+
+test(function() {
+  clearContainer();
+  try {
+    HTMLCollection.prototype.hello = 123;
+    addForm("hello");
+    assert_equals(document.forms.hello, 123);
+  } finally {
+    delete HTMLCollection.prototype.hello;
+  }
+}, "HTMLCollection does not expose named properties if there is a same named property on the prototype");
+
+test(function() {
+  clearContainer();
+  try {
+    HTMLCollection.prototype.hello = 123;
+    var form = addForm("hello");
+    assert_equals(document.forms.hello, 123);
+  } finally {
+    delete HTMLCollection.prototype.hello;
+  }
+  assert_equals(document.forms.hello, form);
+}, "HTMLCollection exposes named properties if there was a same named property on the prototype that was deleted");
+
+test(function() {
+  clearContainer();
+  try {
+    Object.prototype.hello = 123;
+    addForm("hello");
+    assert_equals(document.forms.hello, 123);
+  } finally {
+    delete Object.prototype.hello;
+  }
+}, "HTMLCollection does not expose named properties if there is a same named property on Object.prototype");
+
+test(function() {
+  clearContainer();
+  try {
+    Object.prototype.hello = 123;
+    var form = addForm("hello");
+    assert_equals(document.forms.hello, 123);
+  } finally {
+    delete Object.prototype.hello;
+  }
+  assert_equals(document.forms.hello, form);
+}, "HTMLCollection exposes named properties if there was a same named property on Object.prototype that was deleted");
+
+test(function() {
+  clearContainer();
+  var form1 = addForm("1");
+  var form2 = addForm("2");
+  var form3 = addForm("04");
+  assert_property(document.forms, "0", { writable: false, enumerable: true, configurable: true, value: form1 });
+  assert_property(document.forms, "1", { writable: false, enumerable: true, configurable: true, value: form2 });
+  assert_property(document.forms, "2", { writable: false, enumerable: true, configurable: true, value: form3 });
+  assert_true(!document.forms.hasOwnProperty("3"));
+  assert_property(document.forms, "04", { writable: false, enumerable: true, configurable: true, value: form3 });
+}, "HTMLCollection does not expose named properties if the name is an array index property name");
+</script>

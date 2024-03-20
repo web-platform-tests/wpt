@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<title>Fixing the named properties object</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe id="iframe1"></iframe>
+  <iframe id="iframe2"></iframe>
+  <iframe id="iframe3"></iframe>
+</div>
+
+<script>
+// 4.7.1 Indexed and named properties
+//
+// Attempts to fix a named properties object by calling Object.freeze,
+// Object.seal or Object.preventExtensions on it must fail and throw a
+// TypeError.
+
+// feature: Window (interface) (with [Global])
+
+test(function() {
+  var w = document.getElementById("iframe1").contentWindow;
+  var npo = Object.getPrototypeOf(w.Window.prototype);
+  assert_throws(new TypeError(), function() { Object.freeze(npo); });
+}, "Object.freeze must fail on a named properties object");
+
+test(function() {
+  var w = document.getElementById("iframe2").contentWindow;
+  var npo = Object.getPrototypeOf(w.Window.prototype);
+  assert_throws(new TypeError(), function() { Object.seal(npo); });
+}, "Object.seal must fail on a named properties object");
+
+test(function() {
+  var w = document.getElementById("iframe3").contentWindow;
+  var npo = Object.getPrototypeOf(w.Window.prototype);
+  assert_throws(new TypeError(), function() { Object.preventExtensions(npo); });
+}, "Object.preventExtensions must fail on a named properties object");
+</script>

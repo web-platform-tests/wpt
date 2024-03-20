@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<title>Invoking regular, variadic operations</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe id="iframe"></iframe>
+</div>
+
+<script>
+// 4.5.7 Operations
+//
+// Here we're invoking regular operations that are variadic.  When too few
+// arguments are passed, a TypeError is thrown.  Any additional arguments
+// beyond those explicitly listed in the IDL are passed in are converted
+// to the variadic argument type.
+
+// feature: DOMTokenList.add (operation) (variadic)
+
+test(function() {
+  var span = document.createElement("span");
+  span.setAttribute("class", "abc");
+  span.classList.add();
+  assert_equals(span.getAttribute("class"), "abc");
+}, "passing no arguments corresponding to the variadic argument of DOMTokenList.add works");
+
+test(function() {
+  var span = document.createElement("span");
+  span.setAttribute("class", "abc");
+  span.classList.add("def");
+  assert_equals(span.getAttribute("class"), "abc def");
+}, "passing one argument corresponding to the variadic argument of DOMTokenList.add works");
+
+test(function() {
+  var order = [];
+  var span = document.createElement("span");
+  span.setAttribute("class", "abc");
+  span.classList.add({ toString: function() { order.push("first"); return "def"; } },
+                     { toString: function() { order.push("second"); return "ghi"; } });
+  assert_equals(span.getAttribute("class"), "abc def ghi");
+  assert_array_equals(order, ["first", "second"]);
+}, "passing multiple arguments corresponding to the variadic argument of DOMTokenList.add works");
+
+
+// feature: WindowTimers.setTimeout (operation) (variadic)
+
+test(function() {
+  assert_throws(new TypeError(), function() { window.setTimeout(); });
+}, "passing too few arguments to WindowTimers.setTimeout throws");
+
+async_test(function(t) {
+  window.setTimeout(function() {
+    var argc = arguments.length;
+    t.step(function() {
+      assert_equals(argc, 0);
+      t.done();
+    });
+  }, 1);
+}, "passing no arguments corresponding to the variadic argument of WindowTimers.setTimeout works");
+
+async_test(function(t) {
+  window.setTimeout(function(arg1) {
+    var argc = arguments.length;
+    t.step(function() {
+      assert_equals(argc, 1);
+      assert_equals(arg1, "hello");
+      t.done();
+    });
+  }, 1, "hello");
+}, "passing one argument corresponding to the variadic argument of WindowTimers.setTimeout works");
+
+async_test(function(t) {
+  var object = { };
+  window.setTimeout(function(arg1, arg2, arg3, arg4) {
+    var argc = arguments.length;
+    t.step(function() {
+      assert_equals(argc, 4);
+      assert_equals(arg1, "hello");
+      assert_equals(arg2, object);
+      assert_equals(arg3, -0);
+      assert_equals(arg4, undefined);
+      t.done();
+    });
+  }, 1, "hello", object, -0, undefined);
+}, "passing multiple arguments corresponding to the variadic argument of WindowTimers.setTimeout works");
+</script>

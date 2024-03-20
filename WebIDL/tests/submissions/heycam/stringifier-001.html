@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<title>Stringifiers</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.5.7 Operations
+//
+// Stringifiers correspond to a "toString" property on the interface prototype
+// object.  The property is writable, enumerable and configurable.  The Function
+// object value has length = 0.
+
+var stringifiers = [
+
+  // feature: URLUtils (stringifier)
+  "HTMLAnchorElement",
+
+  // feature: DOMTokenList (stringifier)
+  "DOMTokenList"
+];
+
+for (var i = 0; i < stringifiers.length; i++) {
+  var name = stringifiers[i];
+  test(function() {
+    assert_property(window[name].prototype, "toString", { writable: true, enumerable: true, configurable: true });
+  }, name + ".prototype.toString property has correct attributes");
+  test(function() {
+    assert_equals(window[name].prototype.toString.length, 0);
+  }, name + ".prototype.toString has correct length property");
+}
+</script>

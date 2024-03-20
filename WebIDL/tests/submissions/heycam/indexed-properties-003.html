@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<title>Setting indexed properties</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.7.3 Platform object [[DefineOwnProperty]] method
+//
+// If an object supports indexed properties, and if an indexed property
+// creator/setter is not available, then attempting to set a property with
+// an array property index name will fail.
+
+// feature: NodeList (interface) (supports indexed properties, does not have an indexed property setter, does not have an indexed property creator)
+
+function makeSpan() {
+  var e = document.createElement("span");
+  e.appendChild(document.createElement("span"));
+  e.appendChild(document.createElement("span"));
+  return e;
+}
+
+test(function() {
+  var span = makeSpan();
+  var nl = span.childNodes;
+  nl[0] = "123";
+  assert_equals(nl[0], span.firstChild);
+}, "attempting to assign to a supported property index on a NodeList will be ignored in non-strict mode");
+
+test(function() {
+  var span = makeSpan();
+  var nl = span.childNodes;
+  Object.defineProperty(nl, "0", { value: "123" });
+  assert_equals(nl[0], span.firstChild);
+}, "attempting to define over a supported property index on a NodeList will be ignored in non-strict mode");
+
+test(function() {
+  var span = makeSpan();
+  var nl = span.childNodes;
+  assert_throws(new TypeError(), function() { "use strict"; nl[0] = "123"; });
+}, "attempting to assign to a supported property index on a NodeList will throw in strict mode");
+
+test(function() {
+  var span = makeSpan();
+  var nl = span.childNodes;
+  assert_throws(new TypeError(), function() { "use strict"; Object.defineProperty(nl, "0", { value: "123" }); });
+}, "attempting to define over a supported property index on a NodeList will throw in strict mode");
+
+test(function() {
+  var span = makeSpan();
+  var nl = span.childNodes;
+  nl[2] = "123";
+  assert_true(!Object.hasOwnProperty(nl, "2"));
+}, "attempting to assign to a property with an array index property name (but which is not a supported property index) on a NodeList will be ignored in non-strict mode");
+
+test(function() {
+  var span = makeSpan();
+  var nl = span.childNodes;
+  Object.defineProperty(nl, "2", { value: "123" });
+  assert_true(!Object.hasOwnProperty(nl, "2"));
+}, "attempting to define a property with an array index property name (but which is not a supported property index) on a NodeList will be ignored in non-strict mode");
+
+test(function() {
+  var span = makeSpan();
+  var nl = span.childNodes;
+  assert_throws(new TypeError(), function() { "use strict"; nl[2] = "123"; });
+}, "attempting to assign to a property with an array index property name (but which is not a supported property index) on a NodeList will throw in strict mode");
+
+test(function() {
+  var span = makeSpan();
+  var nl = span.childNodes;
+  assert_throws(new TypeError(), function() { "use strict"; Object.defineProperty(nl, "2", { value: "123" }); });
+}, "attempting to define a property with an array index property name (but which is not a supported property index) on a NodeList will throw in strict mode");
+
+
+// feature: DOMTokenList (interface) (supports indexed properties, does not have an indexed property setter)
+
+test(function() {
+  var span = document.createElement("span");
+  span.setAttribute("class", "abc def");
+  var tl = span.classList;
+  tl[0] = "ghi";
+  assert_equals(tl[0], "abc");
+}, "attempting to assign to a supported property index on a DOMTokenList will be ignored in non-strict mode");
+
+test(function() {
+  var span = document.createElement("span");
+  span.setAttribute("class", "abc def");
+  var tl = span.classList;
+  Object.defineProperty(tl, "0", { value: "ghi" });
+  assert_equals(tl[0], "abc");
+}, "attempting to define over a supported property index on a DOMTokenList will be ignored in non-strict mode");
+
+test(function() {
+  var span = document.createElement("span");
+  span.setAttribute("class", "abc def");
+  var tl = span.classList;
+  assert_throws(new TypeError(), function() { "use strict"; tl[0] = "ghi"; });
+}, "attempting to assign to a supported property index on a DOMTokenList will throw in strict mode");
+
+test(function() {
+  var span = document.createElement("span");
+  span.setAttribute("class", "abc def");
+  var tl = span.classList;
+  assert_throws(new TypeError(), function() { "use strict"; Object.defineProperty(tl, "0", { value: "ghi" }); });
+}, "attempting to define over a supported property index on a DOMTokenList will throw in strict mode");
+
+test(function() {
+  var span = document.createElement("span");
+  span.setAttribute("class", "abc def");
+  var tl = span.classList;
+  tl[2] = "ghi";
+  assert_true(!Object.hasOwnProperty(tl, "2"));
+}, "attempting to assign to a property with an array index property name (but which is not a supported property index) on a DOMTokenList will be ignored in non-strict mode");
+
+test(function() {
+  var span = document.createElement("span");
+  span.setAttribute("class", "abc def");
+  var tl = span.classList;
+  Object.defineProperty(tl, "2", { value: "ghi" });
+  assert_true(!Object.hasOwnProperty(tl, "2"));
+}, "attempting to define a property with an array index property name (but which is not a supported property index) on a DOMTokenList will be ignored in non-strict mode");
+
+test(function() {
+  var span = document.createElement("span");
+  span.setAttribute("class", "abc def");
+  var tl = span.classList;
+  assert_throws(new TypeError(), function() { "use strict"; tl[2] = "ghi"; });
+}, "attempting to assign to a property with an array index property name (but which is not a supported property index) on a DOMTokenList will throw in strict mode");
+
+test(function() {
+  var span = document.createElement("span");
+  span.setAttribute("class", "abc def");
+  var tl = span.classList;
+  assert_throws(new TypeError(), function() { "use strict"; Object.defineProperty(tl, "2", { value: "ghi" }); });
+}, "attempting to define a property with an array index property name (but which is not a supported property index) on a DOMTokenList will throw in strict mode");
+</script>

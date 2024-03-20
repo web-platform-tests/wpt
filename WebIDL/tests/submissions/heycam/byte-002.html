@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>byte</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.4 byte
+//
+// IDL byte values are represented as integer JS Number values in the range
+// [-128, 127]
+
+// feature: Int8Array (indexed property getter) (of type byte)
+
+test(function() {
+  var a = new Int8Array(1);
+  assert_equals(typeof a[0], "number");
+  assert_true(a[0] == Math.floor(a[0]) && a[0] >= -128 && a[0] <= 127);
+}, "Int8Array indexed getter returns a value of the correct type");
+</script>

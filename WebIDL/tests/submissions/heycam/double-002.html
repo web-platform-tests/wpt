@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<title>double</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.14 double
+//
+// Conversion from a JS Number to a double will throw on non-finite values.
+
+var values = [
+  undefined,           undefined,          "undefined",
+  null,                0,                  "null",
+  false,               0,                  "false",
+  true,                1,                  "true",
+  0,                   0,                  "0",
+  1,                   1,                  "1",
+  -1,                  -1,                 "-1",
+  0.5,                 0.5,                "0.5",
+  Infinity,            undefined,          "Infinity",
+  -Infinity,           undefined,          "-Infinity",
+  NaN,                 undefined,          "NaN",
+  -0,                  -0,                 "-0",
+  "",                  0,                  '""',
+  "1",                 1,                  '"1"',
+  "hello",             undefined,          '"hello"',
+  { },                 undefined,          "{ }",
+  [],                  0,                  "[]",
+  /abc/,               undefined,          "/abc/",
+  document,            undefined,          "document",
+  -2147483648,         -2147483648,        "-2147483648",
+  -2147483649,         -2147483649,        "-2147483649",
+  4294967295,          4294967295,         "4294967295",
+  4294967296,          4294967296,         "4294967296",
+  4294967297,          4294967297,         "4294967297",
+  -0.5,                -0.5,               "-0.5",
+  -1.5,                -1.5,               "-1.5",
+  1.5,                 1.5,                "1.5",
+  1.1,                 1.1,                "1.1",
+  1e309,               undefined,          "1e309",
+  1.0000001788139343,  1.0000001788139343, "1.0000001788139343"
+];
+
+// feature: HTMLMeterElement.min (attribute) (writable, of type double)
+
+var meter = document.createElement("meter");
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    if (expected !== undefined) {
+      meter.min = value;
+      assert_equals(meter.getAttribute("min"), String(expected));
+    } else {
+      assert_throws(new TypeError(), function() { meter.min = value; });
+    }
+  }, "assigning " + desc + " to HTMLMeterElement.min coerces the value to an IDL double correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return value; }, toString: function() { return { } } };
+    if (value === null || typeof value != "object") {
+      if (expected !== undefined) {
+        meter.min = objectValue;
+        assert_equals(meter.getAttribute("min"), String(expected));
+      } else {
+      assert_throws(new TypeError(), function() { meter.min = objectValue; });
+      }
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
+      assert_throws(new TypeError(), function() { meter.min = objectValue; });
+    }
+  }, "assigning { valueOf: function() { return " + desc + " } } to HTMLMeterElement.min coerces the value to an IDL double correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return { } }, toString: function() { return value; } };
+    if (value === null || typeof value != "object") {
+      if (expected !== undefined) {
+        meter.min = objectValue;
+        assert_equals(meter.getAttribute("min"), String(expected));
+      } else {
+      assert_throws(new TypeError(), function() { meter.min = objectValue; });
+      }
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
+      assert_throws(new TypeError(), function() { meter.min = objectValue; });
+    }
+  }, "assigning { toString: function() { return " + desc + " } } to HTMLMeterElement.min coerces the value to an IDL double correctly");
+}
+
+test(function() {
+  assert_throws({ name: "SomeError" }, function() { meter.min = { toString: function() { throw { name: "SomeError" }; } }; });
+}, "assigning { toString: function() { throw ... } } to HTMLMeterElement.min will propagate the exception");
+</script>

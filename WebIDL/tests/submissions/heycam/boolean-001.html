@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<title>boolean</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.3 boolean
+//
+// Converting a JS value to an IDL boolean just uses the ToBoolean()
+// ECMAScript operation.
+
+var values = [
+  undefined,   "undefined",
+  null,        "null",
+  false,       "false",
+  true,        "true",
+  0,           "0",
+  1,           "1",
+  -1,          "-1",
+  0.5,         "0.5",
+  Infinity,    "Infinity",
+  -Infinity,   "-Infinity",
+  NaN,         "NaN",
+  -0,          "-0",
+  "",          '""',
+  "1",         '"1"',
+  "hello",     '"hello"',
+  { },         "{ }",
+  [],          "[]",
+  /abc/,       "/abc/",
+  document,    "document"
+];
+
+// feature: Event.initEvent (operation) (with argument of type boolean)
+
+for (var i = 0; i < values.length; i += 2) {
+  var value = values[i];
+  var desc = values[i + 1];
+  test(function() {
+    var e = document.createEvent("Event");
+    e.initEvent("test", value, false);
+    assert_equals(e.bubbles, !!values[i]);
+  }, "passing " + desc + " to the bubbles argument of Event.initEvent() comes out the same from Event.bubbles");
+}
+</script>

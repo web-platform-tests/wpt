@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<title>Interface types for regular interfaces</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.18 Interface type
+//
+// IDL values of an interface type are represented with JS object references
+// to platform objects that implement the interface.
+
+// feature: Node.parentNode (attribute) (of an interface type)
+
+test(function() {
+  var n = document.body.parentNode;
+  assert_equals(typeof n, "object");
+  assert_true(n instanceof Node);
+}, "Node.parentNode returns a value of the correct type");
+
+// feature: SVGSVGElement.createSVGPoint (operation) (with interface type return type)
+
+test(function() {
+  var p = document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGPoint();
+  assert_equals(typeof p, "object");
+  assert_true(p instanceof SVGPoint);
+}, "SVGSVGElement.createSVGPoint() returns a value of the correct type");
+</script>

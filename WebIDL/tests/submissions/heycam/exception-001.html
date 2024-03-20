@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<title>Exception interface object property</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.9 Exceptions
+//
+// For each interface object that isn't [NoInterfaceObject], there's a property
+// on the global object that is writable, unenumerable and configurable.
+
+// feature: DOMException (exception) (without [NoInterfaceObject])
+
+test(function() {
+  assert_property(window, "DOMException", { writable: true, enumerable: false, configurable: true });
+}, "property for DOMException exception interface object exists");
+</script>

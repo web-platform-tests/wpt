@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<title>Interface object property</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.5.1 Interface object
+//
+// Every interface object for a non-callback interface has a "prototype"
+// property (non-writable, non-enumerable, non-configurable), since it is
+// a function object.  Its value is the interface prototype object.
+
+// feature: DOMImplementation (interface)
+
+test(function() {
+  assert_property(DOMImplementation, "prototype", { writable: false, enumerable: false, configurable: false }, "DOMImplementation.prototype");
+}, "DOMImplementation.prototype has the right attributes");
+
+test(function() {
+  assert_equals(DOMImplementation.prototype, Object.getPrototypeOf(document.implementation));
+}, "DOMImplementation.prototype has the right value");
+
+test(function() {
+  assert_equals(typeof DOMImplementation, "function");
+}, "typeof DOMImplementation is correct");
+
+// feature: HTMLCollection (interface)
+
+test(function() {
+  assert_property(HTMLCollection, "prototype", { writable: false, enumerable: false, configurable: false }, "HTMLCollection.prototype");
+}, "HTMLCollection.prototype has the right attributes");
+
+test(function() {
+  assert_equals(HTMLCollection.prototype, Object.getPrototypeOf(document.getElementsByTagName("div")));
+}, "HTMLCollection.prototype has the right value");
+
+test(function() {
+  assert_equals(typeof HTMLCollection, "function");
+}, "typeof HTMLCollection is correct");
+</script>

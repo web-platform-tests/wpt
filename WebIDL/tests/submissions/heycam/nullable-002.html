@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<title>Nullable types</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.22 Nullable types – T?
+//
+// Except in the face of [TreatUndefinedAs] and [TreatNonCallableAs], JS
+// undefined and null values get converted to IDL null.
+
+// feature: Node.insertBefore (operation) (with an argument of a nullable interface type)
+
+function makeDiv() {
+  var div = document.createElement("div");
+  div.appendChild(document.createElement("span"));
+  return div;
+}
+
+test(function() {
+  var div = document.createElement("div");
+  var span1 = document.createElement("span");
+  var span2 = document.createElement("span");
+  div.appendChild(span1);
+
+  div.insertBefore(span2, span1);
+  assert_equals(div.firstChild, span2);
+  assert_equals(div.lastChild, span1);
+}, "passing a Node to Node.insertBefore converts to an IDL \"Node?\" type correctly");
+
+test(function() {
+  var div = document.createElement("div");
+  var span1 = document.createElement("span");
+  var span2 = document.createElement("span");
+  div.appendChild(span1);
+
+  div.insertBefore(span2, null);
+  assert_equals(div.firstChild, span1);
+  assert_equals(div.lastChild, span2);
+}, "passing null to Node.insertBefore converts to an IDL \"Node?\" type correctly");
+
+test(function() {
+  var div = document.createElement("div");
+  var span1 = document.createElement("span");
+  var span2 = document.createElement("span");
+  div.appendChild(span1);
+
+  div.insertBefore(span2, undefined);
+  assert_equals(div.firstChild, span1);
+  assert_equals(div.lastChild, span2);
+}, "passing undefined to Node.insertBefore converts to an IDL \"Node?\" type correctly");
+
+test(function() {
+  var div = document.createElement("div");
+  var span1 = document.createElement("span");
+  var span2 = document.createElement("span");
+  div.appendChild(span1);
+
+  assert_throws(new TypeError(), function() { div.insertBefore(span2, window); });
+}, "passing window to Node.insertBefore converts to an IDL \"Node?\" type correctly");
+
+test(function() {
+  var div = document.createElement("div");
+  var span1 = document.createElement("span");
+  var span2 = document.createElement("span");
+  div.appendChild(span1);
+
+  assert_throws(new TypeError(), function() { div.insertBefore(span2, false); });
+}, "passing false to Node.insertBefore converts to an IDL \"Node?\" type correctly");
+
+test(function() {
+  var div = document.createElement("div");
+  var span1 = document.createElement("span");
+  var span2 = document.createElement("span");
+  div.appendChild(span1);
+
+  assert_throws(new TypeError(), function() { div.insertBefore(span2, { }); });
+}, "passing { } to Node.insertBefore converts to an IDL \"Node?\" type correctly");
+
+test(function() {
+  var div = document.createElement("div");
+  var span1 = document.createElement("span");
+  var span2 = document.createElement("span");
+  div.appendChild(span1);
+
+  assert_throws(new TypeError(), function() { div.insertBefore(span2, Image); });
+}, "passing Image to Node.insertBefore converts to an IDL \"Node?\" type correctly");
+</script>

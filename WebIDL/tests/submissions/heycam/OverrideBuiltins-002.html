@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<title>[OverrideBuiltins] on Document</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <form id="form_a1" name="a1"></form>
+  <form id="form_title" name="title"></form>
+  <form id="form_open" name="open"></form>
+  <form id="form_implementation" name="implementation"></form>
+  <form id="form_createElement" name="createElement"></form>
+  <form id="form_nodeName" name="nodeName"></form>
+  <form id="form_appendChild" name="appendChild"></form>
+  <form id="form_addEventListener" name="addEventListener"></form>
+  <form id="form_expando1" name="expando1"></form>
+  <form id="form_expando2" name="expando2"></form>
+  <form id="form_expando3" name="expando3"></form>
+  <form id="form_expando4" name="expando4"></form>
+</div>
+
+<script>
+// 4.7.1 Indexed and named properties
+//
+// The named property visibility algorithm uses [OverrideBuiltins] to determine
+// whether to look at the prototype chain above the interface that
+// [OverrideBuiltins] is on.
+
+// feature: Document (partial interface) (with [OverrideBuiltins])
+
+var form_a1 = document.getElementById("form_a1");
+var form_name = document.getElementById("form_name");
+var form_title = document.getElementById("form_title");
+var form_id = document.getElementById("form_id");
+var form_nodeName = document.getElementById("form_nodeName");
+var form_addEventListener = document.getElementById("form_addEventListener");
+var form_expando1 = document.getElementById("form_expando1");
+var form_expando2 = document.getElementById("form_expando2");
+var form_expando3 = document.getElementById("form_expando3");
+var form_expando4 = document.getElementById("form_expando4");
+
+test(function() {
+  assert_equals(document.a1, form_a1, "document.a1 == form_a1");
+}, "Document exposes named properties");
+
+// on the instance
+
+test(function() {
+  document.expando0 = 1;
+  assert_equals(document.expando0, 1, "document.expando0 == 1");
+}, "Document allows expandos");
+
+test(function() {
+  document.expando1 = 1;
+  assert_equals(document.expando1, form_expando1, "document.expando1 == form_expando1");
+}, "Document exposes a named property that shadows an expando on an instance");
+
+// on the partial Document
+
+test(function() {
+  assert_equals(document.title, form_title, "document.title == form_title");
+}, "Document exposes a named property that shadows an attribute of the partial Document");
+
+test(function() {
+  assert_equals(document.open, form_open, "document.open == form_open");
+}, "Document exposes a named property that shadows an operation of the partial Document");
+
+// on the main Document
+
+test(function() {
+  assert_equals(document.implementation, form_implementation, "document.implementation == form_implementation");
+}, "Document exposes a named property that shadows an attribute of the main Document");
+
+test(function() {
+  assert_equals(document.createElement, form_createElement, "document.createElement == form_createElement");
+}, "Document exposes a named property that shadows an operation of the main Document");
+
+test(function() {
+  Document.prototype.expando2 = 1;
+  assert_equals(document.expando2, form_expando2, "document.expando2 == form_expando2");
+}, "Document exposes a named property that shadows an expando on Document.prototype");
+
+// on Node
+
+test(function() {
+  assert_equals(document.nodeName, form_nodeName, "document.nodeName == form_nodeName");
+}, "Document exposes a named property that shadows an attribute of Node");
+
+test(function() {
+  assert_equals(document.appendChild, form_appendChild, "document.appendChild == form_appendChild");
+}, "Document exposes a named property that shadows an operation of Node");
+
+test(function() {
+  Node.prototype.expando3 = 1;
+  assert_equals(document.expando3, form_expando3, "document.expando3 == form_expando3");
+}, "Document exposes a named property that shadows an expando on Node.prototype");
+
+// on EventTarget
+
+test(function() {
+  assert_equals(document.addEventListener, form_addEventListener, "document.addEventListener == form_addEventListener");
+}, "Document exposes a named property that shadows an attribute of EventTarget");
+
+test(function() {
+  EventTarget.prototype.expando4 = 1;
+  assert_equals(document.expando4, form_expando4, "document.expando4 == form_expando4");
+}, "Document exposes a named property that shadows an expando on EventTarget.prototype");
+</script>

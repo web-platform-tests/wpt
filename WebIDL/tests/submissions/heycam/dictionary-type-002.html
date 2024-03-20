@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<title>Dictionary type returned from an operation</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <canvas id="canvas" width="100" height="100"></canvas>
+</div>
+
+<script>
+// 4.2.19 Dictionary types
+//
+// When IDL dictionary values are converted to JS values, they are as an object
+// whose [[Prototype]] is Object.prototype, and where all dictionary member
+// values that are present are own, writable, enumerable, configurable
+// properties on the object.
+
+// feature: WebGLRenderingContext.getContextAttributes (operation) (with dictionary type return type)
+
+test(function() {
+  var canvas = document.getElementById("canvas");
+  var ctx = canvas.getContext("webgl") ||
+            canvas.getContext("experimental-webgl");
+  var attrs = ctx.getContextAttributes();
+  assert_equals(Object.getPrototypeOf(attrs), Object.prototype);
+  assert_property(attrs, "alpha", { value: true, writable: true, enumerable: true, configurable: true }, "attrs.alpha");
+  assert_property(attrs, "depth", { value: true, writable: true, enumerable: true, configurable: true }, "attrs.depth");
+  assert_property(attrs, "stencil", { value: false, writable: true, enumerable: true, configurable: true }, "attrs.stencil");
+  assert_property(attrs, "antialias", { value: true, writable: true, enumerable: true, configurable: true }, "attrs.antialias");
+  assert_property(attrs, "premultipliedAlpha", { value: true, writable: true, enumerable: true, configurable: true }, "attrs.premultipliedAlpha");
+  assert_property(attrs, "preserveDrawingBuffer", { value: false, writable: true, enumerable: true, configurable: true }, "attrs.preserveDrawingBuffer");
+}, "WebGLRenderingContext.getContextAttributes() returns a dictionary value correctly");
+</script>

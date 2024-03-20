@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>short</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.6 short
+//
+// IDL short values are represented as integer JS Number values in the range
+// [-32768, 32767].
+
+// feature: Int16Array (indexed property getter) (of type short)
+
+test(function() {
+  var a = new Int16Array(1);
+  assert_equals(typeof a[0], "number");
+  assert_true(a[0] == Math.floor(a[0]) && a[0] >= -32768 && a[0] <= 32767);
+}, "Int16Array indexed getter returns a value of the correct type");
+</script>

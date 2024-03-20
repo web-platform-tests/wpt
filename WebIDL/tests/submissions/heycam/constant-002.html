@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<title>Constants on callback interfaces</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.5.5 Constants
+//
+// Constants on callback interfaces are exposed as non-writable, enumerable,
+// non-configurable properties on the interface object.
+
+// feature: NodeFilter.SHOW_ALL (constant) (on a callback interface)
+
+test(function() {
+  assert_property(NodeFilter, "SHOW_ALL", { writable: false, enumerable: true, configurable: false, value: 0xFFFFFFFF });
+}, "NodeFilter.SHOW_ALL has correct attributes and value");
+</script>

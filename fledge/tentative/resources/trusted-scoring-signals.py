@@ -14,6 +14,7 @@ def main(request, response):
     hostname = None
     renderUrls = None
     adComponentRenderURLs = None
+
     # List of {type: <render URL type>, urls: <render URL list>} pairs, where <render URL type> is
     # one of the two render URL dictionary keys used in the response ("renderURLs" or
     # "adComponentRenderURLs"). May be of length 1 or 2, depending on whether there
@@ -62,6 +63,7 @@ def main(request, response):
     contentType = "application/json"
     adAuctionAllowed = "true"
     dataVersion = None
+
     for urlList in urlLists:
         for renderUrl in urlList["urls"]:
             value = "default value"
@@ -122,6 +124,9 @@ def main(request, response):
                         value = request.GET.first(b"hostname", b"not-found").decode("ASCII")
                     elif signalsParam == "headers":
                         value = fledge_http_server_util.headers_to_ascii(request.headers)
+                    elif signalsParam.startswith("url:"):
+                        value = request.url
+
             if addValue:
                 if urlList["type"] not in responseBody:
                     responseBody[urlList["type"]] = {}

@@ -7,7 +7,7 @@ from fledge.tentative.resources import fledge_http_server_util
 # Script to generate trusted bidding signals. The response depends on the
 # keys and interestGroupNames - some result in entire response failures, others
 # affect only their own value. Keys are preferentially used over
-# interestGroupName, since keys are composible, but some tests need to cover
+# interestGroupName, since keys are compossible, but some tests need to cover
 # there being no keys.
 def main(request, response):
     hostname = None
@@ -57,6 +57,7 @@ def main(request, response):
     contentType = "application/json"
     adAuctionAllowed = "true"
     dataVersion = None
+
     if keys:
         for key in keys:
             value = "default value"
@@ -110,6 +111,9 @@ def main(request, response):
                 value = request.GET.first(b"slotSize", b"not-found").decode("ASCII")
             elif key == "allSlotsRequestedSizes":
                 value = request.GET.first(b"allSlotsRequestedSizes", b"not-found").decode("ASCII")
+            elif key == "url":
+                value = request.url
+
             responseBody["keys"][key] = value
 
     if "data-version" in interestGroupNames:

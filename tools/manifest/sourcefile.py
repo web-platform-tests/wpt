@@ -6,7 +6,7 @@ from fnmatch import fnmatch
 from io import BytesIO
 from typing import (Any, BinaryIO, Callable, Deque, Dict, Iterable, List, Optional, Pattern,
                     Set, Text, Tuple, Union, cast)
-from urllib.parse import urljoin
+from urllib.parse import parse_qsl, urlencode, urljoin, urlsplit, urlunsplit
 
 try:
     from xml.etree import cElementTree as ElementTree
@@ -1032,7 +1032,7 @@ class SourceFile:
                     self.url_base,
                     url,
                     references=[
-                        (ref[0] + variant, ref[1])
+                        (make_ref_variant_url(ref[0], variant), ref[1])
                         for ref in self.references
                     ],
                     timeout=self.timeout,
@@ -1082,3 +1082,13 @@ class SourceFile:
                 specs
             )])
         return rv
+
+
+def make_ref_variant_url(ref_url: str, variant: str) -> str:
+    """Combine a base reference URL with a `<meta name=variant ...>` value."""
+    scheme, netloc, path, query, fragment = urlsplit(ref_url)
+    variant_parts = urlsplit(variant)
+    params = parse_qsl(variant_parts.query, keep_blank_values=True)
+    params.extend(parse_qsl(query, keep_blank_values=True))
+    fragment = variant_parts.fragment or fragment
+    return urlunsplit((scheme, netloc, path, urlencode(params), fragment))

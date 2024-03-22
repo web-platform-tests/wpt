@@ -1,6 +1,7 @@
 # mypy: allow-untyped-defs
 
 import os
+import textwrap
 
 import pytest
 
@@ -551,14 +552,43 @@ def test_reftest_variant():
     expected_tests = [
         {
             "url": "/html/test.html?first",
-            "refs": [("/html/ref.html?first", "==")],
+            "refs": [("/html/ref.html?first=", "==")],
         },
         {
             "url": "/html/test.html?second",
-            "refs": [("/html/ref.html?second", "==")],
+            "refs": [("/html/ref.html?second=", "==")],
         },
     ]
 
+    assert actual_tests == expected_tests
+
+
+def test_reftest_variant_combine_query():
+    content = textwrap.dedent(
+        """\
+        <meta name=variant content="?a&b=c">
+        <link rel="match" href="ref.html?d&e=f">
+        """).encode()
+    s = create("html/test.html", contents=content)
+    assert not s.name_is_non_test
+    assert not s.name_is_manual
+    assert not s.name_is_visual
+    assert not s.name_is_worker
+    assert not s.name_is_reference
+
+    item_type, items = s.manifest_items()
+    assert item_type == "reftest"
+
+    actual_tests = [
+        {"url": item.url, "refs": item.references}
+        for item in items
+    ]
+    expected_tests = [
+        {
+            "url": "/html/test.html?a&b=c",
+            "refs": [("/html/ref.html?a=&b=c&d=&e=f", "==")],
+        },
+    ]
     assert actual_tests == expected_tests
 
 

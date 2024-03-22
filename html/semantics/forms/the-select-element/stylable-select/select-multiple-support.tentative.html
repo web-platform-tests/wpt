@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://github.com/whatwg/html/issues/9799">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+select {
+  appearance: bikeshed;
+}
+</style>
+
+<select id=noattrs></select>
+<select size=1 id=size1></select>
+<select size=2 id=size2></select>
+<select multiple id=multiple></select>
+
+<script>
+test(() => {
+  assert_equals(
+    getComputedStyle(document.getElementById('noattrs')).appearance,
+    'bikeshed',
+    '<select> should support appearance:bikeshed.');
+
+  assert_equals(
+    getComputedStyle(document.getElementById('size1')).appearance,
+    'bikeshed',
+    '<select size=1> should support appearance:bikeshed.');
+
+  assert_equals(
+    getComputedStyle(document.getElementById('size2')).appearance,
+    'auto',
+    '<select size=2> should not support appearance:bikeshed.');
+
+  assert_equals(
+    getComputedStyle(document.getElementById('multiple')).appearance,
+    'auto',
+    '<select multiple> should not support appearance:bikeshed.');
+}, '<select multiple> and <select size=2> should not get a computed style of appearance:bikeshed yet.');
+</script>

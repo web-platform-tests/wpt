@@ -40,7 +40,7 @@
     if (expected == false) {
       assert_equals(URL.parse(url, base), null);
     } else {
-      assert_equals(URL.parse(url, base).href = new URL(url, base).href);    
+      assert_equals(URL.parse(url, base).href = new URL(url, base).href);
     }
   }, `URL.parse(${url}, ${base})`);
 });

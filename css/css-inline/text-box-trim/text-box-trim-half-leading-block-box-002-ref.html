@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>Reference for not trimming block-boxes at their first/last formatted lines if the FCL has non-zero padding. </title>
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#leading-trim">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
+
+<style>
+.div-parent {
+  outline: 1px solid orange;
+  font-family: Ahem;
+  font-size: 20px;
+  line-height: 2;
+}
+</style>
+
+<div class ="div-parent">
+  <div id="d1"></div>
+  <div id="d2" style="padding: 2px">Testline1<br>Testline2<br>Testline3</div>
+</div>

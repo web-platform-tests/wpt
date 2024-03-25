@@ -2,13 +2,30 @@
 <head>
 </head>
 <body>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/fetch/fetch-later/resources/fetch-later-helper.js"></script>
   <script>
     const PARAMS = new URL(location.href).searchParams;
     const TARGET_URL= decodeURIComponent(PARAMS.get('url')) || '';
+    const BODY_TYPE = PARAMS.has('bodyType') ? PARAMS.get('bodyType') : null;
+    const BODY_SIZE = PARAMS.has('bodySize') ? PARAMS.get('bodySize') : null;
+    const BODY = BODY_TYPE !== null && BODY_SIZE !== null ? makeBeaconData(generatePayload(BODY_SIZE), BODY_TYPE) : null;
+    const REQUEST_INIT = Object.assign({},
+      PARAMS.has('activateAfter') ? {activateAfter: parseInt(PARAMS.get('activateAfter'), 10)} : null,
+      PARAMS.has('method') ? {method: PARAMS.get('method')} : null,
+      BODY !== null ? {body: BODY} : null,
+    );
 
-    fetchLater(TARGET_URL, {activateAfter: 0});
-    if (window.opener) {
-      window.opener.postMessage("done", "*");
+    try {
+      fetchLater(TARGET_URL, REQUEST_INIT);
+      if (window.opener) {
+        window.opener.postMessage('done', '*');
+      } else {
+        parent.postMessage({type: FetchLaterIframeMessageType.DONE}, '*');
+      }
+    } catch (e) {
+      parent.postMessage({type: FetchLaterIframeMessageType.ERROR, error: e}, '*');
     }
   </script>
 </body>

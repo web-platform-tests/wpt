@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://github.com/whatwg/html/issues/9799">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<select>
+  <button>
+    <selectedoption></selectedoption>
+  </button>
+  <datalist>
+    <option class=one value=one>
+      <span class=one>span</span> one
+    </option>
+    <option class=two value=two>
+      <span class=two>span</span> two
+    </option>
+  </datalist>
+</select>
+
+<script>
+test(() => {
+  const optionOne = document.querySelector('option.one');
+  const optionTwo = document.querySelector('option.two');
+  const selectedOption = document.querySelector('selectedoption');
+  const select = document.querySelector('select');
+  const spanTwo = document.querySelector('span.two');
+
+  assert_equals(selectedOption.innerHTML, optionOne.innerHTML,
+    'The innerHTML of <selectedoption> should initially match the innerHTML of the selected <option>.');
+
+  select.value = 'two';
+  assert_equals(selectedOption.innerHTML, optionTwo.innerHTML,
+    'The innerHTML of <selectedoption> should change after the selected option is changed.');
+
+  spanTwo.textContent = 'new span';
+  assert_equals(selectedOption.innerHTML, optionTwo.innerHTML,
+    '<selectedoption> should respond to text content changes.');
+
+  spanTwo.appendChild(document.createElement('div'));
+  assert_equals(selectedOption.innerHTML, optionTwo.innerHTML,
+    '<selectedoption> should respond to new elements being added to descendants.');
+}, 'The <selectedoption> element should reflect the HTML contents of the selected <option>.');
+</script>

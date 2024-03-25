@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Zoom Test: Double size Reference File</title>
+    <link rel="author" title="Karl Dubost" href="mailto:kdubost@mozilla.com" />
+    <style>
+      .wrapper {
+        width: 100px;
+        height: 100px;
+        position: absolute;
+        top: 100px;
+        left: 100px;
+      }
+
+      .green {
+        position: absolute;
+        top: 0;
+        left:0;
+        width: 200px;
+        height: 200px;
+      }
+      .green {
+        background-color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <p>The test passes if there is a green square and no red.</p>
+    <div class="wrapper">
+      <div class="red"></div>
+      <div class="green"></div>
+    </div>
+  </body>
+</html>

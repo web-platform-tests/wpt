@@ -1570,12 +1570,12 @@ class ChromeiOS(Browser):
         except subprocess.CalledProcessError as e:
             self.logger.warning(f"Failed to call {webdriver_binary}: {e}")
             return None
-        m = re.match(r"[0-9][0-9.]*", version_string)
+        m = re.match(r"[\d][\d\.]*", version_string)
         if not m:
             self.logger.warning(
                 f"Failed to extract version from: {version_string}")
             return None
-        return m.group(1)
+        return m.group(0)
 
 
 class Opera(Browser):

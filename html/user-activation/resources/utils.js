@@ -16,20 +16,26 @@ function getEvent(eventType) {
   });
 }
 
-
-// Returns a Promise which is resolved with a "true" iff transient activation
-// was available and successfully consumed.
-//
-// This function relies on Fullscreen API to check/consume user activation
-// state.
-async function consumeTransientActivation() {
-  try {
-    await document.body.requestFullscreen();
-    await document.exitFullscreen();
-    return true;
-  } catch(e) {
-    return false;
+/**
+ *
+ * @param {Window} context
+ * @returns {Promise<Boolean>} resolved with a true if transient activation is consumed.
+ */
+async function consumeTransientActivation(context = window) {
+  if (!context.navigator.userActivation.isActive) {
+    throw new Error(
+      "User activation is not active so can't be consumed. Something is probably wrong with the test."
+    );
   }
+  if (test_driver?.consume_user_activation) {
+    return test_driver.consume_user_activation(context);
+  }
+  // fallback to Fullscreen API.
+  if (!context.document.fullscreenElement) {
+    await context.document.documentElement.requestFullscreen();
+  }
+  await context.document.exitFullscreen();
+  return !context.navigator.userActivation.isActive;
 }
 
 function receiveMessage(type) {

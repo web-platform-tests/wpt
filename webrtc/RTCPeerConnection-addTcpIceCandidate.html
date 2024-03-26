@@ -124,7 +124,7 @@ promise_test(async t => {
   const answer = await pc.createAnswer();
   await pc.setLocalDescription(answer);
   await waitForConnectionStateChangeWithTimeout(t, pc,
-						['failed', 'disconnected'], 1000);
+      ['failed', 'disconnected'], 1000);
 }, 'TCP candidate aimed at port 8001 accepted');
 
 promise_test(async t => {

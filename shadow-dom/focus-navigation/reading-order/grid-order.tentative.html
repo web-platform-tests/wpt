@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Display: reading-order-items with value grid-order</title>
+<link rel="help" href="https://drafts.csswg.org/css-display-4/#reading-order-items">
+<link rel="author" title="Di Zhang" href="mailto:dizhangg@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src='../resources/shadow-dom.js'></script>
+<script src="../resources/focus-utils.js"></script>
+
+<style>
+.wrapper {
+  display: grid;
+  reading-order-items: grid-order;
+}
+</style>
+
+<button id="start" tabindex="1">Item Start</button>
+<p>Focus order is default DOM order.</p>
+<div class="wrapper">
+  <button id="a1" tabindex="1">Item A</button>
+  <button id="b1" tabindex="1">Item B</button>
+  <button id="c1" tabindex="1">Item C</button>
+</div>
+<div class="wrapper">
+  <button id="d1" tabindex="1">Item D</button>
+  <button id="e1" tabindex="1">Item E</button>
+</div>
+<p>Focus order uses CSS order attribute.</p>
+<div class="wrapper">
+  <!-- Layout will be B | C | A -->
+  <!-- Tab order will be B | C | A -->
+  <button id="a2" tabindex="1" style="order: 2">Item A</button>
+  <button id="b2" tabindex="1">Item B</button>
+  <button id="c2" tabindex="1">Item C</button>
+</div>
+<div class="wrapper">
+  <!-- Layout will be E | D -->
+  <!-- Tab order will be E | D -->
+  <button id="d2" tabindex="1">Item D</button>
+  <button id="e2" tabindex="1" style="order: -1">Item E</button>
+</div>
+<p>Focus order uses CSS order attribute, but DOM order with tabindex has priority.</p>
+<div class="wrapper">
+  <!-- Layout will be A | C | B -->
+  <!-- Tab order will be A -> C -> B -->
+  <button id="a3" tabindex="2" style="order: -1">Item A</button>
+  <button id="b3" tabindex="3" style="order: 0">Item B</button>
+  <button id="c3" tabindex="3" style="order: -1">Item C</button>
+</div>
+<div class="wrapper">
+  <!-- Layout will be F | D | E -->
+  <!-- Tab order will be D -> F -> E -->
+  <button id="d3" tabindex="3" style="order: 1">Item D</button>
+  <button id="e3" tabindex="4" style="order: 0">Item E</button>
+  <button id="f3" tabindex="4" style="order: -1">Item F</button>
+</div>
+<button id="end" tabindex="5">Item End</button>
+<script>
+
+promise_test(async () => {
+  let elements = [
+      'start',
+      'a1',
+      'b1',
+      'c1',
+      'd1',
+      'e1',
+      'b2',
+      'c2',
+      'a2',
+      'e2',
+      'd2',
+      'a3',
+      'c3',
+      'b3',
+      'd3',
+      'f3',
+      'e3',
+      'end',
+    ];
+    await assert_focus_navigation_forward(elements);
+}, `Verifies focus order for reading-order-items: grider-order.`);
+
+</script>

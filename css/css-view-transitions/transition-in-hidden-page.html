@@ -33,21 +33,20 @@
         await wsc.minimize();
       });
 
-      let event_fired = false;
+      let did_fire_event = false;
 
-      window.addEventListener("visibilitychange", () => {
-        if (document.hidden)
-          event_fired = true;
-      });
+      const event_promise = new Promise(resolve => window.addEventListener("visibilitychange", () => {
+        resolve(document.hidden);
+      }));
 
       // Restoring so that the document has an opportunity to present the real
       // frame and start the transition's animation.
       await wsc.restore();
-
-      const [readyResult] = await Promise.allSettled([transition.ready]);
-      assert_true(event_fired, "visibilitychange event should fire before skipping the transition");
+      await promise_rejects_dom(t, "InvalidStateError", transition.ready);
       await transition.finished;
-      assert_equals(readyResult.status, "rejected");
+      assert_false(did_fire_event, "visibilitystatechange event should fire after promises are resolved");
+      const hidden = await event_promise;
+      assert_true(hidden);
     }, "A view transition should be skipped when a document becomes hidden while processing update callback");
 
     promise_test(async t => {

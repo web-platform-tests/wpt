@@ -32,18 +32,11 @@ main () {
             exit 1
         fi
         git branch "${EPOCH_BRANCH_NAME}" "${EPOCH_SHA}"
-
-        # Only set epoch tag if is not already tagged from a previous run.
-        if ! git tag --points-at "${EPOCH_SHA}" | grep "${EPOCH_BRANCH_NAME}"; then
-            EPOCH_STAMP="$(date +%Y-%m-%d_%HH)"
-            git tag "${EPOCH_BRANCH_NAME}/${EPOCH_STAMP}" "${EPOCH_SHA}"
-        fi
-
         ALL_BRANCHES_NAMES="${ALL_BRANCHES_NAMES} ${EPOCH_BRANCH_NAME}"
     done
     # This is safe because `git push` will by default fail for a non-fast-forward
     # push, for example if the remote branch is ahead of the local branch.
-    git push --tags ${REMOTE} ${ALL_BRANCHES_NAMES}
+    git push ${REMOTE} ${ALL_BRANCHES_NAMES}
 }
 
 cd $WPT_ROOT

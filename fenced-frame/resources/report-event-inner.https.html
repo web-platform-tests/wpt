@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<script src="utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<title>Fenced frame attribution reporting self navigation test</title>
+
+<body>
+<script>
+// This page will call reportEvent() twice. Once for a destination enum event
+// (i.e. an event with an eventType/eventData specified), and once for a
+// destination URL event (i.e. an event with a destinationURL specified).
+const destination_enum_event = {
+  eventType: "click",
+  eventData: "enum",
+  destination: ["buyer"],
+  crossOriginExposed: true
+}
+window.fence.reportEvent(destination_enum_event);
+
+const destination_url = new URL(BEACON_URL + "?type=url",
+    get_host_info().HTTPS_ORIGIN);
+
+const destination_url_event = {
+  destinationURL: destination_url,
+  crossOriginExposed: true
+}
+window.fence.reportEvent(destination_url_event);
+</script>
+</body>

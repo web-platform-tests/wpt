@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="match" href="color-mix-currentcolor-004-ref.html">
+<title>currentColor with missing components is inherited correctly in color-mix()</title>
+<link rel="help" href="https://drafts.csswg.org/css-color-5/#color-mix">
+<link rel="author" title="Romain Menke" href="https://github.com/romainmenke">
+<style>
+body {
+    color: hsl(none 50% 50%);
+}
+div {
+    color: color-mix(in hsl, currentColor 50%, hsl(120deg 50% 50%));
+}
+div > div {
+    color: inherit;
+}
+</style>
+<div>
+    <div>This text should be green</div>
+</div>

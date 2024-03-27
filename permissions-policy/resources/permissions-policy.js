@@ -42,24 +42,34 @@ function test_feature_availability(
     frame.setAttribute(allow_attribute, true);
   }
 
-  function expectFeatureAvailable(evt) {
+  // Returns true when the expected message from the iframe was received, and
+  // false otherwise.
+  function processFrameMessage(evt) {
     if (evt.source === frame.contentWindow &&
         evt.data.type === 'availability-result') {
       expect_feature_available(evt.data, feature_description);
       document.body.removeChild(frame);
-      test.done();
+      if (!is_promise_test) {
+        test.done();
+      }
+      return true;
     }
+    return false;
   }
 
   if (!is_promise_test) {
-    window.addEventListener('message', test.step_func(expectFeatureAvailable));
+    window.addEventListener('message', test.step_func(processFrameMessage));
     document.body.appendChild(frame);
     return;
   }
 
   const promise = new Promise((resolve) => {
-                    window.addEventListener('message', resolve);
-                  }).then(expectFeatureAvailable);
+    window.addEventListener('message', test.step_func(evt => {
+      if (processFrameMessage(evt)) {
+        resolve();
+      }
+    }));
+  });
   document.body.appendChild(frame);
   return promise;
 }

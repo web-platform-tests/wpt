@@ -162,8 +162,8 @@ async function generateURNFromFledgeRawURL(
 // @param {boolean} [ad_with_size = false] - Determines whether the auction is
 //                                           run with ad sizes specified.
 // @param {boolean} [register_beacon = false] - If true, FLEDGE logic will
-//                                               register reporting beacons
-//                                               after completion.
+//                                              register reporting beacons after
+//                                              completion.
 async function generateURNFromFledge(
     href, keylist, nested_urls = [], resolve_to_config = false,
     ad_with_size = false, requested_size = null, register_beacon = false) {

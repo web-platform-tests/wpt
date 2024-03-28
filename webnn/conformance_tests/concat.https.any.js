@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-concat
 
-testWebNNOperation('concat', buildConcat);
+runWebNNConformanceTests('concat', buildConcat);

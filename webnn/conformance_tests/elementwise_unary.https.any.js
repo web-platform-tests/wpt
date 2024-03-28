@@ -7,7 +7,9 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-unary
 
-testWebNNOperation(
-  ['abs', 'ceil', 'cos', 'erf', 'exp', 'floor', 'identity', 'log', 'neg', 'reciprocal', 'sin', 'sqrt', 'tan'],
-  buildOperationWithSingleInput
-);
+runWebNNConformanceTests(
+    [
+      'abs', 'ceil', 'cos', 'erf', 'exp', 'floor', 'identity', 'log', 'neg',
+      'reciprocal', 'sin', 'sqrt', 'tan'
+    ],
+    buildOperationWithSingleInput);

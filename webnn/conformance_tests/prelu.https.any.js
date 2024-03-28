@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-prelu
 
-testWebNNOperation('prelu', buildOperationWithTwoInputs);
+runWebNNConformanceTests('prelu', buildOperationWithTwoInputs);

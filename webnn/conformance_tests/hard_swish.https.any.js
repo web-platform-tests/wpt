@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-hard-swish
 
-testWebNNOperation('hardSwish', buildOperationWithSingleInput);
+runWebNNConformanceTests('hardSwish', buildOperationWithSingleInput);

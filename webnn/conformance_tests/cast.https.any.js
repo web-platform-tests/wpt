@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-cast
 
-testWebNNOperation('cast', buildCast);
+runWebNNConformanceTests('cast', buildCast);

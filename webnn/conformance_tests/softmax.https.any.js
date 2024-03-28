@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-softmax
 
-testWebNNOperation('softmax', buildOperationWithSingleInput);
+runWebNNConformanceTests('softmax', buildOperationWithSingleInput);

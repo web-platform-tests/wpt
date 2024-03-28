@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-gemm
 
-testWebNNOperation('gemm', buildGemm);
+runWebNNConformanceTests('gemm', buildGemm);

@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-batchnorm
 
-testWebNNOperation('batchNormalization', buildBatchNorm);
+runWebNNConformanceTests('batchNormalization', buildBatchNorm);

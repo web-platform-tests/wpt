@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-tanh
 
-testWebNNOperation('tanh', buildOperationWithSingleInput);
+runWebNNConformanceTests('tanh', buildOperationWithSingleInput);

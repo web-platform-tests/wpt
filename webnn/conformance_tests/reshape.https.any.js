@@ -7,5 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-reshape
 
-testWebNNOperation('reshape', buildReshape);
-
+runWebNNConformanceTests('reshape', buildReshape);

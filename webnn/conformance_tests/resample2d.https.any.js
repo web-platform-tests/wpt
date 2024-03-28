@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-resample2d-method
 
-testWebNNOperation('resample2d', buildOperationWithSingleInput);
+runWebNNConformanceTests('resample2d', buildOperationWithSingleInput);

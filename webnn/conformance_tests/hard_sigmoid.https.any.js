@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-hard-sigmoid
 
-testWebNNOperation('hardSigmoid', buildOperationWithSingleInput);
+runWebNNConformanceTests('hardSigmoid', buildOperationWithSingleInput);

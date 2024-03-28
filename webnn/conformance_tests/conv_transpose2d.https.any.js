@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-convtranspose2d
 
-testWebNNOperation('convTranspose2d', buildConvTranspose2d);
+runWebNNConformanceTests('convTranspose2d', buildConvTranspose2d);

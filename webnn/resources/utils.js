@@ -13,6 +13,15 @@ const TypedArrayDict = {
   int64: BigInt64Array,
 };
 
+const kAllSupportedMLContextOptions = {
+  cpu: {
+    deviceType: 'cpu',
+  },
+  gpu: {
+    deviceType: 'gpu',
+  }
+};
+
 // The maximum index to validate for the output's expected value.
 const kMaximumIndexToValidate = 1000;
 
@@ -889,13 +898,8 @@ const run = async (operationName, context, builder, resources, buildFunc) => {
  * Run WebNN operation tests.
  * @param {(String[]|String)} operationName - An operation name array or an operation name
  * @param {Function} buildFunc - A build function for an operation
- * @param {String} deviceType - The execution device type for this test
  */
-const testWebNNOperation = (operationName, buildFunc, deviceType = 'cpu') => {
-  test(() => assert_not_equals(navigator.ml, undefined, "ml property is defined on navigator"));
-  if (navigator.ml === undefined) {
-    return;
-  }
+const testWebNNOperation = (operationName, buildFunc) => {
   let operationNameArray;
   if (typeof operationName === 'string') {
     operationNameArray = [operationName];
@@ -905,18 +909,41 @@ const testWebNNOperation = (operationName, buildFunc, deviceType = 'cpu') => {
 
   let context;
   let builder;
-  operationNameArray.forEach((subOperationName) => {
-    const tests = loadTests(subOperationName);
-    promise_setup(async () => {
-      context = await navigator.ml.createContext({deviceType});
-      builder = new MLGraphBuilder(context);
+  Object.entries(kAllSupportedMLContextOptions).forEach(([
+                                                          optionsDesc, options
+                                                        ]) => {
+    operationNameArray.forEach((subOperationName) => {
+      const tests = loadTests(subOperationName);
+      promise_setup(async () => {
+        context = await navigator.ml.createContext(options);
+        builder = new MLGraphBuilder(context);
+      });
+      for (const subTest of tests) {
+        promise_test(async () => {
+          await run(subOperationName, context, builder, subTest, buildFunc);
+        }, `${subTest.name} / ${optionsDesc}`);
+      }
     });
-    for (const subTest of tests) {
-      promise_test(async () => {
-        await run(subOperationName, context, builder, subTest, buildFunc);
-      }, `${subTest.name}`);
-    }
   });
+};
+
+/**
+ * Run WebNN conformance tests by specified operation.
+ * @param {(String[]|String)} operationName - An operation name array or an
+ *     operation name
+ * @param {Function} buildFunc - A build function for an operation
+ */
+const runWebNNConformanceTests = (operationName, buildFunc) => {
+  // Link to https://github.com/web-platform-tests/wpt/pull/44883
+  // Check navigator.ml is defined before trying to run WebNN tests
+  if (navigator.ml) {
+    testWebNNOperation(operationName, buildFunc);
+  } else {
+    // Show indication to users why the test failed
+    test(
+        () => assert_not_equals(
+            navigator.ml, undefined, 'ml property is defined on navigator'));
+  }
 };
 
 // ref: http://stackoverflow.com/questions/32633585/how-do-you-convert-to-half-floats-in-javascript
@@ -987,37 +1014,43 @@ const createBuffer = (context, bufferSize) => {
 /**
  * WebNN destroy buffer twice test.
  * @param {String} testName - The name of the test operation.
- * @param {String} deviceType - The execution device type for this test.
  */
-const testDestroyWebNNBuffer = (testName, deviceType = 'cpu') => {
+const testDestroyWebNNBuffer = (testName) => {
   let context;
   let buffer;
-  promise_setup(async () => {
-    context = await navigator.ml.createContext({deviceType});
-    buffer = createBuffer(context, 4);
+  Object.entries(kAllSupportedMLContextOptions).forEach(([
+                                                          optionsDesc, options
+                                                        ]) => {
+    promise_setup(async () => {
+      context = await navigator.ml.createContext(options);
+      buffer = createBuffer(context, 4);
+    });
+    promise_test(async () => {
+      // MLBuffer is not supported for this deviceType.
+      if (buffer === undefined) {
+        return;
+      }
+      buffer.destroy();
+      buffer.destroy();
+    }, `${testName} / ${optionsDesc}`);
   });
-  promise_test(async () => {
-    // MLBuffer is not supported for this deviceType.
-    if (buffer === undefined) {
-      return;
-    }
-    buffer.destroy();
-    buffer.destroy();
-  }, `${testName}`);
 };
 
 /**
  * WebNN create buffer test.
  * @param {String} testName - The name of the test operation.
  * @param {Number} bufferSize - Size of the buffer to create, in bytes.
- * @param {String} deviceType - The execution device type for this test.
  */
-const testCreateWebNNBuffer = (testName, bufferSize, deviceType = 'cpu') => {
+const testCreateWebNNBuffer = (testName, bufferSize) => {
   let context;
-  promise_setup(async () => {
-      context = await navigator.ml.createContext({deviceType});
+  Object.entries(kAllSupportedMLContextOptions).forEach(([
+                                                          optionsDesc, options
+                                                        ]) => {
+    promise_setup(async () => {
+      context = await navigator.ml.createContext(options);
+    });
+    promise_test(async () => {
+      createBuffer(context, bufferSize);
+    }, `${testName} / ${bufferSize} / ${optionsDesc}`);
   });
-  promise_test(async () => {
-    createBuffer(context, bufferSize);
-  }, `${testName} / ${bufferSize}`);
 };

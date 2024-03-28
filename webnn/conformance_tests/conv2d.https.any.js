@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-conv2d
 
-testWebNNOperation('conv2d', buildConv2d);
+runWebNNConformanceTests('conv2d', buildConv2d);

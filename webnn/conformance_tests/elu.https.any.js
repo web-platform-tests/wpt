@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-elu
 
-testWebNNOperation('elu', buildOperationWithSingleInput);
+runWebNNConformanceTests('elu', buildOperationWithSingleInput);

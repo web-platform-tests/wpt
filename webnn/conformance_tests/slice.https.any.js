@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-slice
 
-testWebNNOperation('slice', buildSlice);
+runWebNNConformanceTests('slice', buildSlice);

@@ -7,4 +7,5 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-pool2d
 
-testWebNNOperation(['averagePool2d', 'l2Pool2d', 'maxPool2d'], buildOperationWithSingleInput);
+runWebNNConformanceTests(
+    ['averagePool2d', 'l2Pool2d', 'maxPool2d'], buildOperationWithSingleInput);

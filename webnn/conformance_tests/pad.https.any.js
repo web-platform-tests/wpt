@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-pad
 
-testWebNNOperation('pad', buildPad);
+runWebNNConformanceTests('pad', buildPad);

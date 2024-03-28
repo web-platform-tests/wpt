@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-gather
 
-testWebNNOperation('gather', buildOperationWithTwoInputs);
+runWebNNConformanceTests('gather', buildOperationWithTwoInputs);

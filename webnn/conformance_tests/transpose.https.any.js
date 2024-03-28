@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-transpose
 
-testWebNNOperation('transpose', buildOperationWithSingleInput);
+runWebNNConformanceTests('transpose', buildOperationWithSingleInput);

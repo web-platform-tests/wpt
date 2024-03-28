@@ -7,5 +7,5 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-expand
 
-// reuse buildReshape method
-testWebNNOperation('expand', buildReshape);
+// Reuse buildReshape method
+runWebNNConformanceTests('expand', buildReshape);

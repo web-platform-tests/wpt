@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-split
 
-testWebNNOperation('split', buildSplit);
+runWebNNConformanceTests('split', buildSplit);

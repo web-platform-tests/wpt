@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-instancenorm
 
-testWebNNOperation('instanceNormalization', buildLayerNorm);
+runWebNNConformanceTests('instanceNormalization', buildLayerNorm);

@@ -7,4 +7,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-where
 
-testWebNNOperation('where', buildWhere);
+runWebNNConformanceTests('where', buildWhere);

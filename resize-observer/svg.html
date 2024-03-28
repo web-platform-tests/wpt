@@ -590,6 +590,31 @@ function test17() {
   return helper.start();
 }
 
+function test18() {
+  let target = document.querySelector('svg');
+  let helper = new ResizeTestHelper(
+    "test18: observe svg",
+  [
+    {
+      setup: observer => {
+        observer.observe(target);
+      },
+      notify: (entries, observer) => {
+        return true;  // Delay next step
+      }
+    },
+    {
+      setup: observer => {
+        target.setAttribute('height', 500);
+      },
+      notify: (entries, observer) => {
+        assert_equals(entries.length, 1);
+      }
+    }
+  ]);
+  return helper.start();
+}
+
 let guard;
 test(_ => {
   assert_own_property(window, "ResizeObserver");
@@ -614,6 +639,7 @@ test0()
   .then(() => { return test15(); })
   .then(() => { return test16(); })
   .then(() => { return test17(); })
+  .then(() => { return test18(); })
   .then(() => { guard.done(); });
 
 </script>

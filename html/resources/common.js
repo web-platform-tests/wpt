@@ -30,7 +30,7 @@ var HTML5_VOID_ELEMENTS = [
 
 // https://html.spec.whatwg.org/multipage/multipage/forms.html#form-associated-element
 var HTML5_FORM_ASSOCIATED_ELEMENTS = [ 'button', 'fieldset', 'input',
-        'object', 'output', 'select', 'textarea' ];
+        'object', 'output', 'select', 'textarea', 'img' ];
 
 const HTML5_SHADOW_ALLOWED_ELEMENTS = [
   'article', 'aside', 'blockquote', 'body', 'div', 'footer', 'h1', 'h2', 'h3',

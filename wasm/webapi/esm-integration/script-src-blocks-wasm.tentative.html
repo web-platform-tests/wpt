@@ -15,7 +15,7 @@
     });
 
     window.addEventListener("load", test_load.step_func_done(ev => {
-      assert_array_equals(log, ["script-src"]);
+      assert_array_equals(log, ["script-src-elem"]);
     }));
 </script>
 <script type="module" src="./resources/execute-start.wasm"></script>

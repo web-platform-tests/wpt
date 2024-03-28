@@ -10,3 +10,7 @@
 testCreateWebNNBuffer("create", 4);
 
 testDestroyWebNNBuffer("destroyTwice");
+
+testReadWebNNBuffer("read");
+
+testWriteWebNNBuffer("write");

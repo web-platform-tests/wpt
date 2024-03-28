@@ -10,3 +10,7 @@
 testCreateWebNNBuffer("create", 4, 'gpu');
 
 testDestroyWebNNBuffer("destroyTwice", 'gpu');
+
+testReadWebNNBuffer("read", 'gpu');
+
+testWriteWebNNBuffer("write", 'gpu');

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test console log are present</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+    promise_test(async (test) => {
+        const some_message = "SOME MESSAGE";
+        // Subscribe to `log.entryAdded` BiDi events. This will not add a listener to the page.
+        await test_driver.bidi.log.entry_added.subscribe();
+        test.add_cleanup(async function() {
+            // Unsubscribe from `log.entryAdded` BiDi events.
+            await test_driver.bidi.log.entry_added.unsubscribe();
+        });
+        // Add a listener for the log.entryAdded event. This will not subscribe to the event, so the subscription is
+        // required before. After the event is received, the subscription will not be removed, so the cleanup is
+        // required.
+        const log_entry_promise = test_driver.bidi.log.entry_added.once();
+        // Emit a console.log message.
+        console.log(some_message)
+        // Wait for the log.entryAdded event to be received.
+        const event = await log_entry_promise;
+        // Assert the log.entryAdded event has the expected message.
+        assert_equals(event.args.length, 1);
+        const event_message = event.args[0];
+        assert_equals(event_message.value, some_message);
+    }, "Assert log event is logged");
+</script>

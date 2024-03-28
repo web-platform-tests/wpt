@@ -44,11 +44,68 @@
         return pointerInteractablePaintTree.indexOf(element) !== -1;
     }
 
-
     /**
      * @namespace {test_driver}
      */
     window.test_driver = {
+        /**
+         Represents `WebDriver BiDi <https://w3c.github.io/webdriver-bidi>`_ protocol.
+         */
+        bidi: {
+            /**
+             * `log <https://w3c.github.io/webdriver-bidi/#module-log>`_ module.
+             */
+            log: {
+                /**
+                 * `log.entryAdded <https://w3c.github.io/webdriver-bidi/#event-log-entryAdded>`_ event.
+                 */
+                entry_added: {
+                    /**
+                     * Subscribe to the `log.entryAdded` event. This does not actual listeners. To listen to the event,
+                     * use `on` method.
+                     * @return {Promise<void>}
+                     */
+                    subscribe: async function () {
+                        return window.test_driver_internal.bidi.log.entry_added.subscribe();
+                    },
+                    /**
+                     * Unsubscribe from the `log.entryAdded` event.
+                     * @return {Promise<void>}
+                     */
+                    unsubscribe: async function () {
+                        return window.test_driver_internal.bidi.log.entry_added.subscribe();
+                    },
+                    /**
+                     * Add an event listener for the `log.entryAdded
+                     * <https://w3c.github.io/webdriver-bidi/#event-log-entryAdded>`_ event. Make sure `subscribe` is
+                     * called before using this method.
+                     *
+                     * @param callback {function(event): void} - The callback to call when the event is fired.
+                     * @returns {function(): void} - A function to call to remove the event listener.
+                     */
+                    on: function (callback) {
+                        return window.test_driver_internal.bidi.log.entry_added.on(callback);
+                    },
+                    /**
+                     * Get a promise that resolves the next time the `log.entryAdded
+                     * <https://w3c.github.io/webdriver-bidi/#event-log-entryAdded>`_ event is fired.
+                     *
+                     * @returns {Promise<Object>}
+                     */
+                    once: function () {
+                        return new Promise((resolve) => {
+                            const remove_handle = window.test_driver_internal.bidi.log.entry_added.on(
+                                (event) => {
+                                    remove_handle();
+                                    resolve(event);
+                                }
+                            );
+                        });
+                    },
+                }
+            }
+        },
+
         /**
          * Set the context in which testharness.js is loaded
          *
@@ -1023,7 +1080,7 @@
          */
         get_virtual_sensor_information: function(sensor_type, context=null) {
             return window.test_driver_internal.get_virtual_sensor_information(sensor_type, context);
-        }
+        },
     };
 
     window.test_driver_internal = {
@@ -1034,6 +1091,22 @@
          * implementation of one of the methods is not available.
          */
         in_automation: false,
+
+        bidi: {
+            log: {
+                entry_added: {
+                    subscribe: function () {
+                        throw new Error("bidi.log.entry_added.subscribe is not implemented by testdriver-vendor.js");
+                    },
+                    unsubscribe: function () {
+                        throw new Error("bidi.log.entry_added.unsubscribe is not implemented by testdriver-vendor.js");
+                    },
+                    on: function () {
+                        throw new Error("bidi.log.entry_added.on is not implemented by testdriver-vendor.js");
+                    }
+                }
+            }
+        },
 
         async click(element, coords) {
             if (this.in_automation) {

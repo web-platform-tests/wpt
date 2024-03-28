@@ -1023,6 +1023,23 @@
          */
         get_virtual_sensor_information: function(sensor_type, context=null) {
             return window.test_driver_internal.get_virtual_sensor_information(sensor_type, context);
+        },
+
+        /**
+         * Get the accessibility tree.
+         *
+         * Matches the `Accessibility.getFullAXTree
+         * <https://chromedevtools.github.io/devtools-protocol/tot/Accessibility/#method-getFullAXTree>`_
+         * Chrome Devtools Protocol method.
+         *
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         *
+         * @returns {Promise} Fulfilled with an array of objects.
+         */
+        get_accessibility_tree: function(context=null) {
+            return window.test_driver_internal.get_accessibility_tree(context);
         }
     };
 
@@ -1203,6 +1220,10 @@
 
         async get_virtual_sensor_information(sensor_type, context=null) {
             throw new Error("get_virtual_sensor_information() is not implemented by testdriver-vendor.js");
+        },
+
+        async get_accessibility_tree(context=null) {
+            throw new Error("get_accessibility_tree() is not implemented by testdriver-vendor.js");
         }
     };
 })();

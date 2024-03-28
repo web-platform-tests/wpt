@@ -80,21 +80,21 @@ const loadTests = (operationName) => {
 };
 
 /**
- * Get exptected suboutput resources from given resources with output name.
- * @param {Array} resources - An array of expected resources
+ * Get exptected resource from given resources with output name.
+ * @param {Array} resources - An array of given resources
  * @param {String} outputName - An output name
- * @returns {Object} An object of expected suboutput resources
+ * @returns {Object} An object of expected resource
  */
-const getExpectedSubOutputResources = (resources, outputName) => {
+const getNamedResource = (resources, outputName) => {
   let ret;
-  for (let subResources of resources) {
-    if (subResources.name === outputName) {
-      ret = subResources;
+  for (let resource of resources) {
+    if (resource.name === outputName) {
+      ret = resource;
       break;
     }
   }
   if (ret === undefined) {
-    throw new Error(`Failed to get expected suboutput resources by ${outputName}`);
+    throw new Error(`Failed to get expected resource by ${outputName}`);
   }
   return ret;
 };
@@ -535,11 +535,11 @@ const checkResults = (operationName, namedOutputOperands, outputs, resources) =>
   if (Array.isArray(expected)) {
     // the outputs of split() or gru() is a sequence
     for (let operandName in namedOutputOperands) {
-      const subOutuputResource = getExpectedSubOutputResources(expected, operandName);
-      assert_array_equals(namedOutputOperands[operandName].shape(), subOutuputResource.shape ?? []);
+      const suboutputResource = getNamedResource(expected, operandName);
+      assert_array_equals(namedOutputOperands[operandName].shape(), suboutputResource.shape ?? []);
       outputData = outputs[operandName];
       tolerance = getPrecisonTolerance(operationName, metricType, resources);
-      doAssert(operationName, outputData, subOutuputResource.data, tolerance, subOutuputResource.type, metricType)
+      doAssert(operationName, outputData, suboutputResource.data, tolerance, suboutputResource.type, metricType)
     }
   } else {
     assert_array_equals(namedOutputOperands[expected.name].shape(), expected.shape ?? []);

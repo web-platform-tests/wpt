@@ -80,7 +80,7 @@ const loadTests = (operationName) => {
 };
 
 /**
- * Get exptected resource from given resources with output name.
+ * Get expected resource from given resources with output name.
  * @param {Array} resources - An array of given resources
  * @param {String} outputName - An output name
  * @returns {Object} An object of expected resource

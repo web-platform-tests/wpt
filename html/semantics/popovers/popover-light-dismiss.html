@@ -594,14 +594,13 @@ promise_test(async () => {
   p29.showPopover();
   assert_true(p29.matches(':popover-open'));
   let actions = new test_driver.Actions();
-  await actions.pointerMove(0,0,{origin: b29})
+  await actions.pointerMove(1,1,{origin: b29})
       .pointerDown({button: actions.ButtonType.LEFT})
-      .send();
-
-  actions = new test_driver.Actions();
-  await actions.pointerMove(0,0,{origin: iframe29.contentDocument.body})
+      // Using the iframe's contentDocument as the origin would throw an error.
+      .pointerMove(50,50,{origin: document.body})
       .pointerUp({button: actions.ButtonType.LEFT})
       .send();
-  assert_true(p29.matches(':popover-open'));
+
+  assert_true(p29.matches(':popover-open'), 'popover should be open after pointerUp in iframe.');
 },`Pointer down in one document and pointer up in another document shouldn't dismiss popover`);
 </script>

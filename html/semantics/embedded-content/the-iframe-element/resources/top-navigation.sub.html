@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<!--This file attempts to perform a top-level navigation, and then postMessages
+the result to the document that the test lives in.-->
+<body>
+<script>
+  try {
+    window.top.location.href =
+          'http://{{hosts[alt][www2]}}:{{ports[http][0]}}';
+    window.top.opener.postMessage("success", "*");
+  } catch (e) {
+    window.top.opener.postMessage("failure", "*");
+  }
+</script>
+</body>
+</html>

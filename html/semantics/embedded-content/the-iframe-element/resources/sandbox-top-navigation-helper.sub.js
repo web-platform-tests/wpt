@@ -33,6 +33,21 @@ async function createNestedIframe(parent, origin, frame_sandbox, header_sandbox)
   }, iframe_attributes);
 }
 
+function createNestedIframeWithSrc(parent, src, frame_sandbox, header_sandbox) {
+  if (header_sandbox) {
+    src += '?pipe=header(Content-Security-Policy, sandbox allow-scripts ' +
+        header_sandbox + ')';
+  }
+  return parent.executeScript((src, frame_sandbox) => {
+    const iframe = document.createElement('iframe');
+    iframe.src = src;
+    if (frame_sandbox) {
+      iframe.sandbox = 'allow-scripts ' + frame_sandbox;
+    }
+    document.body.appendChild(iframe);
+  }, [src, frame_sandbox]);
+}
+
 async function navigateFrameTo(frame, origin) {
   return frame.navigateToNew({
     origin: origin,

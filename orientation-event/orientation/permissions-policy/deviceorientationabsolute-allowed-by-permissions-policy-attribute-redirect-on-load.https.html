@@ -32,7 +32,7 @@ promise_test(async t => {
     JSON.stringify(orientationData),
     "accelerometer; gyroscope; magnetometer",
   );
-}, `"allow" attribute allows same-origin navigantion in an iframe`);
+}, `"allow" attribute allows same-origin navigation in an iframe`);
 
 promise_test(async t => {
   const helper = new SensorTestHelper(t, 'deviceorientationabsolute');

@@ -34,7 +34,7 @@ promise_test(async t => {
     JSON.stringify(motionData),
     "accelerometer; gyroscope",
   );
-}, `"allow" attribute allows same-origin navigantion in an iframe`);
+}, `"allow" attribute allows same-origin navigation in an iframe`);
 
 promise_test(async t => {
   const helper = new SensorTestHelper(t, 'devicemotion');

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8" />
+<title>This test validates the Content-Encoding of resources.</title>
+<link rel="help" href="https://www.w3.org/TR/resource-timing-2/#sec-performanceresourcetiming"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/entry-invariants.js"></script>
+<script src="resources/resource-loaders.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+</head>
+<body>
+<script>
+const {ORIGIN, REMOTE_ORIGIN} = get_host_info();
+const SAME_ORIGIN = location.origin;
+
+
+// Content-Encoding for same origin resources is exposed.
+const run_test_same_origin = (loader, contentEncoding) => {
+  const path = "/resource-timing/resources/content-encoding.py";
+  const url = new URL(path, ORIGIN);
+  url.searchParams.set("content_encoding", contentEncoding);
+  attribute_test(loader, url, (entry) => {
+    assert_equals(entry.contentEncoding, contentEncoding,
+      `content-encoding for ${entry.name} should be ${contentEncoding}`);
+  });
+}
+
+// Content-Encoding is empty string when a no-cors request is made for cross
+// origin resource.
+// Content-Encoding is empty for cross origin iframes.
+const run_test_cross_origin = (loader, contentEncoding) => {
+  const path = "/resource-timing/resources/content-encoding.py";
+  const url = new URL(path, REMOTE_ORIGIN);
+  url.searchParams.set("content_encoding", contentEncoding);
+  attribute_test(loader, url, (entry) => {
+    assert_equals(entry.contentEncoding, "",
+      `content-encoding for ${entry.name} should be ""`);
+  });
+}
+
+// Content-Encoding is exposed for cors request for cross-origin resources.
+const run_test_cross_origin_allow_origin = (loader, contentEncoding) => {
+  const path = "/resource-timing/resources/content-encoding.py"
+  const url = new URL(path, REMOTE_ORIGIN);
+  url.searchParams.append("content_encoding", contentEncoding);
+  url.searchParams.append("allow_origin", ORIGIN);
+  attribute_test(loader, url, (entry) => {
+    assert_equals(entry.contentEncoding, contentEncoding,
+      `content-encoding for ${entry.name} should be ${contentEncoding}`);
+  });
+}
+
+const content_encodings = [
+  "deflate",
+  "gzip",
+  "br",
+  "zstd",
+]
+
+content_encodings.forEach(contentEncoding => {
+  run_test_same_origin(load.script, contentEncoding);
+  run_test_cross_origin(load.script, contentEncoding);
+
+  const loader = async (url) => {
+    return load.script_with_attrs(url, {"crossOrigin": "anonymous"});
+  }
+  run_test_cross_origin_allow_origin(loader, contentEncoding);
+})
+
+// Content-Encoding for iframes is empty when cross origin redirects are present.
+const multiRedirect = new URL(`${SAME_ORIGIN}/resource-timing/resources/multi_redirect.py`);
+multiRedirect.searchParams.append("page_origin", SAME_ORIGIN);
+multiRedirect.searchParams.append("cross_origin", REMOTE_ORIGIN);
+multiRedirect.searchParams.append("final_resource", "/resource-timing/resources/content-encoding.py?content_encoding=gzip");
+attribute_test(load.iframe, multiRedirect, (entry) => {
+  assert_equals(entry.contentEncoding, "",
+    `content-encoding should be empty for iframes having cross origin redirects`);
+});
+
+
+// Content-Encoding for iframes is exposed for same origin redirects.
+const redirectCORS = new URL(`${SAME_ORIGIN}/resource-timing/resources/redirect-cors.py`);
+const dest = `${SAME_ORIGIN}/resource-timing/resources/content-encoding.py?content_encoding=gzip`;
+redirectCORS.searchParams.append("location", dest)
+attribute_test(load.iframe, redirectCORS, (entry) => {
+  assert_equals(entry.contentEncoding, "gzip",
+    `content-encoding should be exposed for iframes having only same origin redirects`);
+});
+</script>
+</body>
+</html>

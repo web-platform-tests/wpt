@@ -17,11 +17,12 @@ async def add_intercept(bidi_session):
 
     intercepts = []
 
-    async def add_intercept(phases, url_patterns):
+    async def add_intercept(phases, url_patterns, contexts = None):
         nonlocal intercepts
         intercept = await bidi_session.network.add_intercept(
             phases=phases,
             url_patterns=url_patterns,
+            contexts=contexts,
         )
         intercepts.append(intercept)
 
@@ -137,11 +138,19 @@ async def setup_network_test(
 
 @pytest_asyncio.fixture
 async def setup_blocked_request(
-    setup_network_test, url, add_intercept, fetch, wait_for_event
+    bidi_session,
+    setup_network_test,
+    url,
+    add_intercept,
+    fetch,
+    wait_for_event,
+    wait_for_future_safe,
+    top_context,
 ):
     """Creates an intercept for the provided phase, sends a fetch request that
     should be blocked by this intercept and resolves when the corresponding
-    event is received.
+    event is received. Pass navigate=True in order to navigate instead of doing
+    a fetch request.
 
     For the "authRequired" phase, the request will be sent to the authentication
     http handler. The optional arguments username, password and realm can be used
@@ -151,7 +160,12 @@ async def setup_blocked_request(
     """
 
     async def setup_blocked_request(
-        phase, username="user", password="password", realm="test"
+        phase,
+        context=top_context,
+        username="user",
+        password="password",
+        realm="test",
+        navigate=False,
     ):
         await setup_network_test(events=[f"network.{phase}"])
 
@@ -160,6 +174,10 @@ async def setup_blocked_request(
                 "/webdriver/tests/support/http_handlers/authentication.py?"
                 f"username={username}&password={password}&realm={realm}"
             )
+            if navigate:
+                # By default the authentication handler returns a text/plain
+                # content-type. Switch to text/html for a regular navigation.
+                blocked_url = f"{blocked_url}&contenttype=text/html"
         else:
             blocked_url = url(PAGE_EMPTY_TEXT)
 
@@ -173,8 +191,17 @@ async def setup_blocked_request(
             ],
         )
 
-        asyncio.ensure_future(fetch(blocked_url))
-        event = await wait_for_event(f"network.{phase}")
+        network_event = wait_for_event(f"network.{phase}")
+        if navigate:
+            asyncio.ensure_future(
+                bidi_session.browsing_context.navigate(
+                    context=context["context"], url=blocked_url, wait="complete"
+                )
+            )
+        else:
+            asyncio.ensure_future(fetch(blocked_url, context=context))
+
+        event = await wait_for_future_safe(network_event)
         request = event["request"]["request"]
 
         return request

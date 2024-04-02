@@ -265,6 +265,34 @@ def assert_response_event(
     )
 
 
+# Create a simple cookie or set-cookie header. They share the same structure
+# as a regular header, so this is simple alias for create_header.
+def create_cookie_header(overrides=None, value_overrides=None):
+    return create_header(overrides, value_overrides)
+
+
+# Create a simple header dict, with mandatory name and value keys.
+# Use the `overrides` argument to update the values of those properties, or to
+# add new top-level keys.
+# Use the `value_overrides` argument to update keys nested in the `value` dict.
+def create_header(overrides=None, value_overrides=None):
+    header = {
+        "name": "test",
+        "value": {
+            "type": "string",
+            "value": "foo"
+        }
+    }
+
+    if overrides is not None:
+        header.update(overrides)
+
+    if value_overrides is not None:
+        header["value"].update(value_overrides)
+
+    return header
+
+
 # Array of status and status text expected to be available in network events
 HTTP_STATUS_AND_STATUS_TEXT = [
     (101, "Switching Protocols"),
@@ -321,3 +349,9 @@ BEFORE_REQUEST_SENT_EVENT = "network.beforeRequestSent"
 FETCH_ERROR_EVENT = "network.fetchError"
 RESPONSE_COMPLETED_EVENT = "network.responseCompleted"
 RESPONSE_STARTED_EVENT = "network.responseStarted"
+
+PHASE_TO_EVENT_MAP = {
+    "authRequired": [AUTH_REQUIRED_EVENT, assert_response_event],
+    "beforeRequestSent": [BEFORE_REQUEST_SENT_EVENT, assert_before_request_sent_event],
+    "responseStarted": [RESPONSE_STARTED_EVENT, assert_response_event],
+}

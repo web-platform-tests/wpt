@@ -586,7 +586,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         if success:
             return self.convert_result(test, data)
 
-        return (test.result_cls(*data), [])
+        return (test.make_result(*data), [])
 
     def do_testharness(self, protocol, url, timeout):
         # The previous test may not have closed its old windows (if something
@@ -614,7 +614,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             # cases where the browser crashes during script execution:
             #
             # https://github.com/w3c/webdriver/issues/1308
-            if not isinstance(result, list) or len(result) != 2:
+            if not isinstance(result, list) or len(result) != 3:
                 try:
                     is_alive = self.is_alive()
                 except error.WebDriverException:
@@ -622,6 +622,16 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
 
                 if not is_alive:
                     raise Exception("Browser crashed during script execution.")
+
+            # A user prompt created after starting execution of the resume
+            # script will resolve the script with `null` [1, 2]. In that case,
+            # cycle this event loop and handle the prompt the next time the
+            # resume script executes.
+            #
+            # [1]: Step 5.3 of https://www.w3.org/TR/webdriver/#execute-async-script
+            # [2]: https://www.w3.org/TR/webdriver/#dfn-execute-a-function-body
+            if result is None:
+                continue
 
             done, rv = handler(result)
             if done:
@@ -752,7 +762,7 @@ class WebDriverCrashtestExecutor(CrashtestExecutor):
         if success:
             return self.convert_result(test, data)
 
-        return (test.result_cls(*data), [])
+        return (test.make_result(*data), [])
 
     def do_crashtest(self, protocol, url, timeout):
         protocol.base.load(url)

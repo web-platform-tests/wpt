@@ -16,19 +16,21 @@
 async_test(t => {
   // Step 1
   window.addEventListener("message", t.step_func(e => {
+    if (e.data.type != "result") {
+      return;
+    }
     // Step 8
-    assert_equals(e.data, "HasAccess for getDirectory", "Storage Access API should be accessible and return first-party data");
+    assert_equals(e.data.message, "HasAccess for getDirectory", "Storage Access API should be accessible and return first-party data");
     t.done();
   }));
 
   // Step 2
   const id = Date.now();
-  window.navigator.storage.getDirectory().then((root) => {
-    root.getFileHandle(id, {create: true}).then(() => {
-      // Step 3
-      let iframe = document.createElement("iframe");
-      iframe.src = "https://{{hosts[alt][]}}:{{ports[https][0]}}/storage-access-api/resources/storage-access-beyond-cookies-iframe.sub.html?type=getDirectory&id="+id;
-      document.body.appendChild(iframe);
-    });
+  window.navigator.storage.getDirectory().then(async (root) => {
+    await root.getFileHandle(id, {create: true});
+    // Step 3
+    let iframe = document.createElement("iframe");
+    iframe.src = "https://{{hosts[alt][]}}:{{ports[https][0]}}/storage-access-api/resources/storage-access-beyond-cookies-iframe.sub.html?type=getDirectory&id="+id;
+    document.body.appendChild(iframe);
   });
 }, "Verify StorageAccessAPIBeyondCookies for Origin Private File System");

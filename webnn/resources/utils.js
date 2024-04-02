@@ -1,7 +1,5 @@
 'use strict';
 
-const ExecutionArray = ['sync', 'async'];
-
 // https://webmachinelearning.github.io/webnn/#enumdef-mloperanddatatype
 const TypedArrayDict = {
   // workaround use Uint16 for Float16
@@ -15,20 +13,33 @@ const TypedArrayDict = {
   int64: BigInt64Array,
 };
 
-const getTypedArrayData = (type, data) => {
+// The maximum index to validate for the output's expected value.
+const kMaximumIndexToValidate = 1000;
+
+const getTypedArrayData = (type, size, data) => {
   let outData;
+
   if (type === 'float16') {
+    if (typeof (data) === 'number' && size > 1) {
+      return new TypedArrayDict[type](size).fill(toHalf(data));
+    }
     // workaround to convert Float16 to Uint16
     outData = new TypedArrayDict[type](data.length);
     for (let i = 0; i < data.length; i++) {
       outData[i] = toHalf(data[i]);
     }
   } else if (type === 'int64') {
+    if (typeof (data) === 'number' && size > 1) {
+      return new TypedArrayDict[type](size).fill(BigInt(data));
+    }
     outData = new TypedArrayDict[type](data.length);
     for (let i = 0; i < data.length; i++) {
       outData[i] = BigInt(data[i]);
     }
   } else {
+    if (typeof (data) === 'number' && size > 1) {
+      return new TypedArrayDict[type](size).fill(data);
+    }
     outData = new TypedArrayDict[type](data);
   }
   return outData;
@@ -69,24 +80,25 @@ const loadTests = (operationName) => {
 };
 
 /**
- * Get exptected data and data type from given resources with output name.
- * @param {Array} resources - An array of expected resources
+ * Get expected resource from given resources with output name.
+ * @param {Array} resources - An array of given resources
  * @param {String} outputName - An output name
- * @returns {Array.<[Number[], String]>} An array of expected data array and data type
+ * @returns {Object} An object of expected resource
  */
-const getExpectedDataAndType = (resources, outputName) => {
+const getNamedResource = (resources, outputName) => {
   let ret;
-  for (let subResources of resources) {
-    if (subResources.name === outputName) {
-      ret = [subResources.data, subResources.type];
+  for (let resource of resources) {
+    if (resource.name === outputName) {
+      ret = resource;
       break;
     }
   }
   if (ret === undefined) {
-    throw new Error(`Failed to get expected data sources and type by ${outputName}`);
+    throw new Error(`Failed to get expected resource by ${outputName}`);
   }
   return ret;
 };
+
 
 /**
  * Get ULP tolerance of conv2d/convTranspose2d operation.
@@ -193,7 +205,7 @@ const getMatmulPrecisionTolerance = (resources, operationName) => {
 };
 
 /**
- * Get ULP tolerance of averagePool2d operation.
+ * Get ULP tolerance of averagePool2d or l2Pool2d operation.
  * @param {Object} resources - Resources used for building a graph
  * @param {String} operationName - An operation name
  * @returns {Number} A tolerance number
@@ -284,6 +296,32 @@ const getReductionPrecisionTolerance = (resources, operationName) => {
   return tolerance;
 };
 
+/**
+ * Get ULP tolerance of resample2d operations.
+ * @param {Object} resources - Resources used for building a graph
+ * @param {String} operationName - An operation name
+ * @returns {Number} A tolerance number
+ */
+const getResample2dPrecisionTolerance = (resources, operationName) => {
+  const options = {...resources.options};
+  let tolerance;
+  if (options.mode && options.mode === 'linear') {
+    // interpolation mode is linear
+    const precisionType = resources.expected.type;
+    if (precisionType === 'float32') {
+      tolerance = 84;
+    } else if (precisionType === 'float16') {
+      tolerance = 10;
+    } else {
+      tolerance = 1;
+    }
+  } else {
+    // interpolation mode is nearest-neighbor
+    tolerance = 0;
+  }
+  return tolerance;
+};
+
 // Refer to precision metrics on https://github.com/webmachinelearning/webnn/issues/265#issuecomment-1256242643
 const PrecisionMetrics = {
   argMax: {ULP: {int64: 0}},
@@ -292,6 +330,7 @@ const PrecisionMetrics = {
   cast: {ULP: {float32: 1, float16: 1, int32: 0, uint32: 0, int64: 0, int8: 0, uint8: 0}},
   clamp: {ULP: {float32: 0, float16: 0}},
   concat: {ULP: {float32: 0, float16: 0}},
+  constant: {ULP: {float32: 2, float16: 2, int32: 0, uint32: 0, int64: 0, int8: 0, uint8: 0}},
   conv2d: {ULP: {float32: getConv2dPrecisionTolerance, float16: getConv2dPrecisionTolerance}},
   convTranspose2d: {ULP: {float32: getConv2dPrecisionTolerance, float16: getConv2dPrecisionTolerance}},
   // Begin Element-wise binary operations
@@ -340,6 +379,7 @@ const PrecisionMetrics = {
   pad: {ULP: {float32: 0, float16: 0}},
   // Begin Pooling operations
   averagePool2d: {ULP: {float32: getAveragePool2dPrecisionTolerance, float16: getAveragePool2dPrecisionTolerance}},
+  l2Pool2d: {ULP: {float32: getAveragePool2dPrecisionTolerance, float16: getAveragePool2dPrecisionTolerance}},
   maxPool2d: {ULP: {float32: 0, float16: 0}},
   // End Pooling operations
   prelu: {ULP: {float32: 1, float16: 1}},
@@ -356,6 +396,7 @@ const PrecisionMetrics = {
   reduceSumSquare: {ULP: {float32: getReductionPrecisionTolerance, float16: getReductionPrecisionTolerance}},
   // End Reduction operations
   relu: {ULP: {float32: 0, float16: 0}},
+  resample2d: {ULP: {float32: getResample2dPrecisionTolerance, float16: getResample2dPrecisionTolerance}},
   reshape: {ULP: {float32: 0, float16: 0}},
   sigmoid: {ULP: {float32: 32+2, float16: 3}}, // float32 (leaving a few ULP for roundoff)
   slice: {ULP: {float32: 0, float16: 0}},
@@ -365,6 +406,7 @@ const PrecisionMetrics = {
   split: {ULP: {float32: 0, float16: 0}},
   tanh: {ATOL: {float32: 1/1024, float16: 1/512}},
   transpose: {ULP: {float32: 0, float16: 0}},
+  triangular: {ULP: {float32: 0, float16: 0}},
   where: {ULP: {float32: 0, float16: 0}},
 };
 
@@ -493,13 +535,14 @@ const checkResults = (operationName, namedOutputOperands, outputs, resources) =>
   if (Array.isArray(expected)) {
     // the outputs of split() or gru() is a sequence
     for (let operandName in namedOutputOperands) {
+      const suboutputResource = getNamedResource(expected, operandName);
+      assert_array_equals(namedOutputOperands[operandName].shape(), suboutputResource.shape ?? []);
       outputData = outputs[operandName];
-      // for some operations which may have multi outputs of different types
-      [expectedData, operandType] = getExpectedDataAndType(expected, operandName);
       tolerance = getPrecisonTolerance(operationName, metricType, resources);
-      doAssert(operationName, outputData, expectedData, tolerance, operandType, metricType)
+      doAssert(operationName, outputData, suboutputResource.data, tolerance, suboutputResource.type, metricType)
     }
   } else {
+    assert_array_equals(namedOutputOperands[expected.name].shape(), expected.shape ?? []);
     outputData = outputs[expected.name];
     expectedData = expected.data;
     operandType = expected.type;
@@ -515,7 +558,11 @@ const checkResults = (operationName, namedOutputOperands, outputs, resources) =>
  * @returns {MLOperand} A constant operand
  */
 const createConstantOperand = (builder, resources) => {
-  const bufferView = new TypedArrayDict[resources.type](resources.data);
+  const bufferView = (typeof (resources.data) === 'number' &&
+                      sizeOfShape(resources.shape) > 1) ?
+      new TypedArrayDict[resources.type](sizeOfShape(resources.shape))
+          .fill(resources.data) :
+      new TypedArrayDict[resources.type](resources.data);
   return builder.constant({dataType: resources.type, type: resources.type, dimensions: resources.shape}, bufferView);
 };
 
@@ -632,6 +679,13 @@ const buildConcat = (operationName, builder, resources) => {
   }
   // invoke builder.concat()
   namedOutputOperand[resources.expected.name] = builder[operationName](inputOperands, resources.axis);
+  return namedOutputOperand;
+};
+
+const buildConstantRange = (operationName, builder, resources) => {
+  const namedOutputOperand = {};
+  // invoke builder.constant(start, step, outputShape, type)
+  namedOutputOperand[resources.expected.name] = builder[operationName](resources.inputs.start, resources.inputs.step, resources.outputShape, resources.type);
   return namedOutputOperand;
 };
 
@@ -766,14 +820,17 @@ const buildGraph = (operationName, builder, resources, buildFunc) => {
     // the inputs of concat() is a sequence
     for (let subInput of resources.inputs) {
       if (!subInput.hasOwnProperty('constant') || !subInput.constant) {
-        inputs[subInput.name] = getTypedArrayData(subInput.type, subInput.data);
+        inputs[subInput.name] = getTypedArrayData(
+            subInput.type, sizeOfShape(subInput.shape), subInput.data);
       }
     }
   } else {
     for (let inputName in resources.inputs) {
       const subTestByName = resources.inputs[inputName];
       if (!subTestByName.hasOwnProperty('constant') || !subTestByName.constant) {
-        inputs[inputName] = getTypedArrayData(subTestByName.type, subTestByName.data);
+        inputs[inputName] = getTypedArrayData(
+            subTestByName.type, sizeOfShape(subTestByName.shape),
+            subTestByName.data);
       }
     }
   }
@@ -793,25 +850,7 @@ const buildGraph = (operationName, builder, resources, buildFunc) => {
 };
 
 /**
- * Build a graph, synchronously compile graph and execute, then check computed results.
- * @param {String} operationName - An operation name
- * @param {MLContext} context - A ML context
- * @param {MLGraphBuilder} builder - A ML graph builder
- * @param {Object} resources - Resources used for building a graph
- * @param {Function} buildFunc - A build function for an operation
- */
-const runSync = (operationName, context, builder, resources, buildFunc) => {
-  // build a graph
-  const [namedOutputOperands, inputs, outputs] = buildGraph(operationName, builder, resources, buildFunc);
-  // synchronously compile the graph up to the output operand
-  const graph = builder.buildSync(namedOutputOperands);
-  // synchronously execute the compiled graph.
-  context.computeSync(graph, inputs, outputs);
-  checkResults(operationName, namedOutputOperands, outputs, resources);
-};
-
-/**
- * Build a graph, asynchronously compile graph and execute, then check computed results.
+ * Build a graph, compile graph and execute, then check computed results.
  * @param {String} operationName - An operation name
  * @param {MLContext} context - A ML context
  * @param {MLGraphBuilder} builder - A ML graph builder
@@ -821,9 +860,9 @@ const runSync = (operationName, context, builder, resources, buildFunc) => {
 const run = async (operationName, context, builder, resources, buildFunc) => {
   // build a graph
   const [namedOutputOperands, inputs, outputs] = buildGraph(operationName, builder, resources, buildFunc);
-  // asynchronously compile the graph up to the output operand
+  // compile the graph up to the output operand
   const graph = await builder.build(namedOutputOperands);
-  // asynchronously execute the compiled graph
+  // execute the compiled graph
   const result = await context.compute(graph, inputs, outputs);
   checkResults(operationName, namedOutputOperands, result.outputs, resources);
 };
@@ -835,6 +874,10 @@ const run = async (operationName, context, builder, resources, buildFunc) => {
  * @param {String} deviceType - The execution device type for this test
  */
 const testWebNNOperation = (operationName, buildFunc, deviceType = 'cpu') => {
+  test(() => assert_not_equals(navigator.ml, undefined, "ml property is defined on navigator"));
+  if (navigator.ml === undefined) {
+    return;
+  }
   let operationNameArray;
   if (typeof operationName === 'string') {
     operationNameArray = [operationName];
@@ -842,41 +885,18 @@ const testWebNNOperation = (operationName, buildFunc, deviceType = 'cpu') => {
     operationNameArray = operationName;
   }
 
-  ExecutionArray.forEach(executionType => {
-    const isSync = executionType === 'sync';
-    if (self.GLOBAL.isWindow() && isSync) {
-      return;
-    }
-    let context;
-    let builder;
-    if (isSync) {
-      // test sync
-      operationNameArray.forEach((subOperationName) => {
-        const tests = loadTests(subOperationName);
-        setup(() => {
-          context = navigator.ml.createContextSync({deviceType});
-          builder = new MLGraphBuilder(context);
-        });
-        for (const subTest of tests) {
-          test(() => {
-            runSync(subOperationName, context, builder, subTest, buildFunc);
-          }, `${subTest.name} / ${executionType}`);
-        }
-      });
-    } else {
-      // test async
-      operationNameArray.forEach((subOperationName) => {
-        const tests = loadTests(subOperationName);
-        promise_setup(async () => {
-          context = await navigator.ml.createContext({deviceType});
-          builder = new MLGraphBuilder(context);
-        });
-        for (const subTest of tests) {
-          promise_test(async () => {
-            await run(subOperationName, context, builder, subTest, buildFunc);
-          }, `${subTest.name} / ${executionType}`);
-        }
-      });
+  let context;
+  let builder;
+  operationNameArray.forEach((subOperationName) => {
+    const tests = loadTests(subOperationName);
+    promise_setup(async () => {
+      context = await navigator.ml.createContext({deviceType});
+      builder = new MLGraphBuilder(context);
+    });
+    for (const subTest of tests) {
+      promise_test(async () => {
+        await run(subOperationName, context, builder, subTest, buildFunc);
+      }, `${subTest.name}`);
     }
   });
 };
@@ -926,4 +946,343 @@ const toHalf = (value) => {
     * the exponent, which is OK. */
   bits += m & 1;
   return bits;
+};
+
+
+/**
+ * WebNN buffer creation.
+ * @param {MLContext} context - the context used to create the buffer.
+ * @param {Number} bufferSize - Size of the buffer to create, in bytes.
+ * @returns {MLBuffer} the created buffer.
+ */
+const createBuffer = (context, bufferSize) => {
+  let buffer;
+  try {
+    buffer = context.createBuffer({size: bufferSize});
+    assert_equals(buffer.size, bufferSize);
+  } catch (e) {
+    assert_true(e instanceof DOMException);
+    assert_equals(e.name, "NotSupportedError");
+  }
+  return buffer;
+};
+
+/**
+ * WebNN destroy buffer twice test.
+ * @param {String} testName - The name of the test operation.
+ * @param {String} deviceType - The execution device type for this test.
+ */
+const testDestroyWebNNBuffer = (testName, deviceType = 'cpu') => {
+  let context;
+  let buffer;
+  promise_setup(async () => {
+    context = await navigator.ml.createContext({deviceType});
+    buffer = createBuffer(context, 4);
+  });
+  promise_test(async () => {
+    // MLBuffer is not supported for this deviceType.
+    if (buffer === undefined) {
+      return;
+    }
+    buffer.destroy();
+    buffer.destroy();
+  }, `${testName}`);
+};
+
+/**
+ * WebNN create buffer test.
+ * @param {String} testName - The name of the test operation.
+ * @param {Number} bufferSize - Size of the buffer to create, in bytes.
+ * @param {String} deviceType - The execution device type for this test.
+ */
+const testCreateWebNNBuffer = (testName, bufferSize, deviceType = 'cpu') => {
+  let context;
+  promise_setup(async () => {
+      context = await navigator.ml.createContext({deviceType});
+  });
+  promise_test(async () => {
+    createBuffer(context, bufferSize);
+  }, `${testName} / ${bufferSize}`);
+};
+
+/**
+ * Asserts the buffer data in MLBuffer matches expected.
+ * @param {MLContext} ml_context - The context used to create the buffer.
+ * @param {MLBuffer} ml_buffer - The buffer to read and compare data.
+ * @param {Array} expected - Array of the expected data in the buffer.
+ */
+const assert_buffer_data_equals = async (ml_context, ml_buffer, expected) => {
+  const actual = await ml_context.readBuffer(ml_buffer);
+  assert_array_equals(
+      new expected.constructor(actual), expected,
+      'Read buffer data equals expected data.');
+};
+
+/**
+ * WebNN write buffer operation test.
+ * @param {String} testName - The name of the test operation.
+ * @param {String} deviceType - The execution device type for this test.
+ */
+const testWriteWebNNBuffer = (testName, deviceType = 'cpu') => {
+  let ml_context;
+  promise_setup(async () => {
+    ml_context = await navigator.ml.createContext({deviceType});
+  });
+
+  promise_test(async () => {
+    let ml_buffer = createBuffer(ml_context, 4);
+
+    // MLBuffer was unsupported for the deviceType.
+    if (ml_buffer === undefined) {
+      return;
+    }
+
+    let array_buffer = new ArrayBuffer(ml_buffer.size);
+
+    // Writing with a size that goes past that source buffer length.
+    assert_throws_js(
+        TypeError,
+        () => ml_context.writeBuffer(
+            ml_buffer, new Uint8Array(array_buffer), /*srcOffset=*/ 0,
+            /*srcSize=*/ ml_buffer.size + 1));
+    assert_throws_js(
+        TypeError,
+        () => ml_context.writeBuffer(
+            ml_buffer, new Uint8Array(array_buffer), /*srcOffset=*/ 3,
+            /*srcSize=*/ 4));
+
+    // Writing with a source offset that is out of range of the source size.
+    assert_throws_js(
+        TypeError,
+        () => ml_context.writeBuffer(
+            ml_buffer, new Uint8Array(array_buffer),
+            /*srcOffset=*/ ml_buffer.size + 1));
+
+    // Writing with a source offset that is out of range of implicit copy size.
+    assert_throws_js(
+        TypeError,
+        () => ml_context.writeBuffer(
+            ml_buffer, new Uint8Array(array_buffer),
+            /*srcOffset=*/ ml_buffer.size + 1, /*srcSize=*/ undefined));
+
+    assert_throws_js(
+        TypeError,
+        () => ml_context.writeBuffer(
+            ml_buffer, new Uint8Array(array_buffer), /*srcOffset=*/ undefined,
+            /*srcSize=*/ ml_buffer.size + 1));
+
+    assert_throws_js(
+        TypeError,
+        () => ml_context.writeBuffer(
+            ml_buffer, Uint8Array.from([0xEE, 0xEE, 0xEE, 0xEE, 0xEE])));
+  }, `${testName} / error`);
+
+  promise_test(async () => {
+    let ml_buffer = createBuffer(ml_context, 4);
+
+    // MLBuffer was unsupported for the deviceType.
+    if (ml_buffer === undefined) {
+      return;
+    }
+
+    // Writing data to a destroyed MLBuffer should throw.
+    ml_buffer.destroy();
+
+    assert_throws_dom(
+        'InvalidStateError',
+        () =>
+            ml_context.writeBuffer(ml_buffer, new Uint8Array(ml_buffer.size)));
+  }, `${testName} / destroy`);
+
+  promise_test(async () => {
+    let ml_buffer = createBuffer(ml_context, 4);
+
+    // MLBuffer was unsupported for the deviceType.
+    if (ml_buffer === undefined) {
+      return;
+    }
+
+    const array_buffer = new ArrayBuffer(ml_buffer.size);
+    const detached_buffer = array_buffer.transfer();
+    assert_true(array_buffer.detached, 'array buffer should be detached.');
+
+    ml_context.writeBuffer(ml_buffer, array_buffer);
+  }, `${testName} / detached`);
+
+  promise_test(async () => {
+    let ml_buffer = createBuffer(ml_context, 4);
+
+    // MLBuffer was unsupported for the deviceType.
+    if (ml_buffer === undefined) {
+      return;
+    }
+
+    let another_ml_context = await navigator.ml.createContext({deviceType});
+    let another_ml_buffer = createBuffer(another_ml_context, ml_buffer.size);
+
+    let input_data = new Uint8Array(ml_buffer.size).fill(0xAA);
+    assert_throws_js(
+        TypeError, () => ml_context.writeBuffer(another_ml_buffer, input_data));
+    assert_throws_js(
+        TypeError, () => another_ml_context.writeBuffer(ml_buffer, input_data));
+  }, `${testName} / context_mismatch`);
+};
+
+/**
+ * WebNN read buffer operation test.
+ * @param {String} testName - The name of the test operation.
+ * @param {String} deviceType - The execution device type for this test.
+ */
+const testReadWebNNBuffer = (testName, deviceType = 'cpu') => {
+  let ml_context;
+  promise_setup(async () => {
+    ml_context = await navigator.ml.createContext({deviceType});
+  });
+
+  promise_test(async t => {
+    let ml_buffer = createBuffer(ml_context, 4);
+
+    // MLBuffer was unsupported for the deviceType.
+    if (ml_buffer === undefined) {
+      return;
+    }
+
+    // Reading a destroyed MLBuffer should reject.
+    ml_buffer.destroy();
+
+    await promise_rejects_dom(
+        t, 'InvalidStateError', ml_context.readBuffer(ml_buffer));
+  }, `${testName} / destroy`);
+
+  promise_test(async () => {
+    let ml_buffer = createBuffer(ml_context, 4);
+
+    // MLBuffer was unsupported for the deviceType.
+    if (ml_buffer === undefined) {
+      return;
+    }
+
+    // Initialize the buffer.
+    ml_context.writeBuffer(
+        ml_buffer, Uint8Array.from([0xAA, 0xAA, 0xAA, 0xAA]));
+
+    ml_context.writeBuffer(ml_buffer, Uint32Array.from([0xBBBBBBBB]));
+    await assert_buffer_data_equals(
+        ml_context, ml_buffer, Uint32Array.from([0xBBBBBBBB]));
+    ;
+  }, `${testName} / full_size`);
+
+  promise_test(async () => {
+    let ml_buffer = createBuffer(ml_context, 4);
+
+    // MLBuffer was unsupported for the deviceType.
+    if (ml_buffer === undefined) {
+      return;
+    }
+
+    // Initialize the buffer.
+    ml_context.writeBuffer(
+        ml_buffer, Uint8Array.from([0xAA, 0xAA, 0xAA, 0xAA]));
+
+    // Writing to the remainder of the buffer from source offset.
+    ml_context.writeBuffer(
+        ml_buffer, Uint8Array.from([0xCC, 0xCC, 0xBB, 0xBB]),
+        /*srcOffset=*/ 2);
+    await assert_buffer_data_equals(
+        ml_context, ml_buffer, Uint8Array.from([0xBB, 0xBB, 0xAA, 0xAA]));
+  }, `${testName} / src_offset_only`);
+
+  promise_test(async () => {
+    let ml_buffer = createBuffer(ml_context, 4);
+
+    // MLBuffer was unsupported for the deviceType.
+    if (ml_buffer === undefined) {
+      return;
+    }
+
+    // Initialize the buffer.
+    const input_data = [0xAA, 0xAA, 0xAA, 0xAA];
+    ml_context.writeBuffer(ml_buffer, Uint8Array.from(input_data));
+
+    // Writing zero bytes at the end of the buffer.
+    ml_context.writeBuffer(
+        ml_buffer, Uint32Array.from([0xBBBBBBBB]), /*srcOffset=*/ 1);
+    await assert_buffer_data_equals(
+        ml_context, ml_buffer, Uint8Array.from(input_data));
+  }, `${testName} / zero_write`);
+
+  promise_test(async () => {
+    let ml_buffer = createBuffer(ml_context, 4);
+
+    // MLBuffer was unsupported for the deviceType.
+    if (ml_buffer === undefined) {
+      return;
+    }
+
+    // Initialize the buffer.
+    ml_context.writeBuffer(
+        ml_buffer, Uint8Array.from([0xAA, 0xAA, 0xAA, 0xAA]));
+
+    // Writing with both a source offset and size.
+    ml_context.writeBuffer(
+        ml_buffer, Uint8Array.from([0xDD, 0xDD, 0xCC, 0xDD]),
+        /*srcOffset=*/ 2, /*srcSize=*/ 1);
+    await assert_buffer_data_equals(
+        ml_context, ml_buffer, Uint8Array.from([0xCC, 0xAA, 0xAA, 0xAA]));
+  }, `${testName} / src_offset_and_size`);
+
+  promise_test(async () => {
+    let ml_buffer = createBuffer(ml_context, 4);
+
+    // MLBuffer was unsupported for the deviceType.
+    if (ml_buffer === undefined) {
+      return;
+    }
+
+    // Initialize the buffer.
+    ml_context.writeBuffer(
+        ml_buffer, Uint8Array.from([0xAA, 0xAA, 0xAA, 0xAA]));
+
+    // Using an offset allows a larger source buffer to fit.
+    ml_context.writeBuffer(
+        ml_buffer, Uint8Array.from([0xEE, 0xEE, 0xEE, 0xEE, 0xEE]),
+        /*srcOffset=*/ 1);
+    await assert_buffer_data_equals(
+        ml_context, ml_buffer, Uint8Array.from([0xEE, 0xEE, 0xEE, 0xEE]));
+  }, `${testName} / larger_src_data`);
+
+  promise_test(async () => {
+    let ml_buffer = createBuffer(ml_context, 4);
+
+    // MLBuffer was unsupported for the deviceType.
+    if (ml_buffer === undefined) {
+      return;
+    }
+
+    const input_data = [0xAA, 0xAA, 0xAA, 0xAA];
+
+    // Writing with a source offset of undefined should be treated as 0.
+    ml_context.writeBuffer(
+        ml_buffer, Uint8Array.from(input_data), /*srcOffset=*/ undefined,
+        /*srcSize=*/ input_data.length);
+    await assert_buffer_data_equals(
+        ml_context, ml_buffer, Uint8Array.from(input_data));
+  }, `${testName} / no_src_offset`);
+
+  promise_test(async t => {
+    let ml_buffer = createBuffer(ml_context, 4);
+
+    // MLBuffer was unsupported for the deviceType.
+    if (ml_buffer === undefined) {
+      return;
+    }
+
+    let another_ml_context = await navigator.ml.createContext({deviceType});
+    let another_ml_buffer = createBuffer(another_ml_context, ml_buffer.size);
+
+    await promise_rejects_js(
+        t, TypeError, ml_context.readBuffer(another_ml_buffer));
+    await promise_rejects_js(
+        t, TypeError, another_ml_context.readBuffer(ml_buffer));
+  }, `${testName} / context_mismatch`);
 };

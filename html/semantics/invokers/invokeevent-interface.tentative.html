@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8" />
-<meta name="author" title="Keith Cirkel" href="mailto:keithamus@github.com" />
+<meta name="author" title="Keith Cirkel" href="mailto:wpt@keithcirkel.co.uk" />
 <link rel="help" href="https://open-ui.org/components/invokers.explainer/" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -15,9 +15,9 @@
 <script>
   test(function () {
     const event = new InvokeEvent("test");
-    assert_equals(event.action, "auto");
+    assert_equals(event.action, "");
     assert_readonly(event, "action", "readonly attribute value");
-  }, "action is a readonly defaulting to 'auto'");
+  }, "action is a readonly defaulting to ''");
 
   test(function () {
     const event = new InvokeEvent("test");
@@ -32,7 +32,7 @@
 
   test(function () {
     const event = new InvokeEvent("test", { action: undefined });
-    assert_equals(event.action, "auto");
+    assert_equals(event.action, "");
   }, "action set to undefined");
 
   test(function () {

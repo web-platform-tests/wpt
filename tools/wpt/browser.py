@@ -1282,6 +1282,11 @@ class Chrome(ChromeChromiumBase):
 
         version = self.version(browser_binary)
         if version is None:
+            # Check if the user has given a Chromium binary.
+            chromium = Chromium(self.logger)
+            if chromium.version(browser_binary):
+                raise ValueError("Provided binary is a Chromium binary and should be run using "
+                                 "\"./wpt run chromium\" or similar.")
             raise ValueError(f"Unable to detect browser version from binary at {browser_binary}. "
                              " Cannot install ChromeDriver without a valid version to match.")
 
@@ -1554,7 +1559,23 @@ class ChromeiOS(Browser):
         raise NotImplementedError
 
     def version(self, binary=None, webdriver_binary=None):
-        return None
+        if webdriver_binary is None:
+            self.logger.warning(
+                "Cannot find ChromeiOS version without CWTChromeDriver")
+            return None
+        # Use `chrome iOS driver --version` to get the version. Example output:
+        # "125.0.6378.0"
+        try:
+            version_string = call(webdriver_binary, "--version").strip()
+        except subprocess.CalledProcessError as e:
+            self.logger.warning(f"Failed to call {webdriver_binary}: {e}")
+            return None
+        m = re.match(r"[\d][\d\.]*", version_string)
+        if not m:
+            self.logger.warning(
+                f"Failed to extract version from: {version_string}")
+            return None
+        return m.group(0)
 
 
 class Opera(Browser):
@@ -1854,65 +1875,6 @@ class EdgeChromium(Browser):
             self.logger.warning(f"Failed to extract version from: {version_string}")
             return None
         return m.group(1)
-
-
-class Edge(Browser):
-    """Edge-specific interface."""
-
-    product = "edge"
-    requirements = "requirements_edge.txt"
-
-    def download(self, dest=None, channel=None, rename=None):
-        raise NotImplementedError
-
-    def install(self, dest=None, channel=None):
-        raise NotImplementedError
-
-    def find_binary(self, venv_path=None, channel=None):
-        raise NotImplementedError
-
-    def find_webdriver(self, venv_path=None, channel=None):
-        return which("MicrosoftWebDriver")
-
-    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
-        raise NotImplementedError
-
-    def version(self, binary=None, webdriver_binary=None):
-        command = "(Get-AppxPackage Microsoft.MicrosoftEdge).Version"
-        try:
-            return call("powershell.exe", command).strip()
-        except (subprocess.CalledProcessError, OSError):
-            self.logger.warning("Failed to call %s in PowerShell" % command)
-            return None
-
-
-class EdgeWebDriver(Edge):
-    product = "edge_webdriver"
-
-
-class InternetExplorer(Browser):
-    """Internet Explorer-specific interface."""
-
-    product = "ie"
-    requirements = "requirements_ie.txt"
-
-    def download(self, dest=None, channel=None, rename=None):
-        raise NotImplementedError
-
-    def install(self, dest=None, channel=None):
-        raise NotImplementedError
-
-    def find_binary(self, venv_path=None, channel=None):
-        raise NotImplementedError
-
-    def find_webdriver(self, venv_path=None, channel=None):
-        return which("IEDriverServer.exe")
-
-    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
-        raise NotImplementedError
-
-    def version(self, binary=None, webdriver_binary=None):
-        return None
 
 
 class Safari(Browser):

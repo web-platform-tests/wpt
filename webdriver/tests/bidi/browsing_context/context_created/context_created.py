@@ -92,6 +92,37 @@ async def test_evaluate_window_open_with_url(bidi_session, subscribe_events, wai
     )
 
 
+@pytest.mark.parametrize("type_hint", ["tab", "window"])
+async def test_event_emitted_before_create_returns(
+    bidi_session, subscribe_events, type_hint
+):
+    events = []
+
+    async def on_event(method, data):
+        events.append(data)
+
+    remove_listener = bidi_session.add_event_listener(CONTEXT_CREATED_EVENT, on_event)
+
+    await subscribe_events([CONTEXT_CREATED_EVENT])
+    context = await bidi_session.browsing_context.create(type_hint=type_hint)
+
+    # If the browsingContext.contextCreated event was emitted after the
+    # browsingContext.create command resolved, the array would most likely be
+    # empty at this point.
+    assert len(events) == 1
+
+    assert_browsing_context(
+        events[0],
+        context["context"],
+        children=None,
+        url="about:blank",
+        parent=None,
+        user_context="default",
+    )
+
+    remove_listener()
+
+
 async def test_navigate_creates_iframes(bidi_session, subscribe_events, top_context, test_page_multiple_frames):
     events = []
 
@@ -224,7 +255,15 @@ async def test_subscribe_to_one_context(
     remove_listener()
 
 
-async def test_new_user_context(bidi_session, wait_for_event, wait_for_future_safe, subscribe_events, create_user_context):
+@pytest.mark.parametrize("type_hint", ["tab", "window"])
+async def test_new_user_context(
+    bidi_session,
+    wait_for_event,
+    wait_for_future_safe,
+    subscribe_events,
+    create_user_context,
+    type_hint,
+):
     events = []
 
     async def on_event(method, data):
@@ -238,7 +277,9 @@ async def test_new_user_context(bidi_session, wait_for_event, wait_for_future_sa
     assert len(events) == 0
 
     on_entry = wait_for_event(CONTEXT_CREATED_EVENT)
-    context = await bidi_session.browsing_context.create(type_hint="tab", user_context=user_context)
+    context = await bidi_session.browsing_context.create(
+        type_hint=type_hint, user_context=user_context
+    )
     context_info = await wait_for_future_safe(on_entry)
 
     assert len(events) == 1
@@ -249,7 +290,26 @@ async def test_new_user_context(bidi_session, wait_for_event, wait_for_future_sa
         children=None,
         url="about:blank",
         parent=None,
-        user_context=user_context
+        user_context=user_context,
     )
 
     remove_listener()
+
+
+@pytest.mark.parametrize("type_hint", ["tab", "window"])
+async def test_existing_context(bidi_session, wait_for_event, wait_for_future_safe, subscribe_events, type_hint):
+    # See https://w3c.github.io/webdriver-bidi/#ref-for-remote-end-subscribe-steps%E2%91%A1.
+    top_level_context = await bidi_session.browsing_context.create(type_hint=type_hint)
+
+    on_entry = wait_for_event(CONTEXT_CREATED_EVENT)
+    await subscribe_events([CONTEXT_CREATED_EVENT], contexts=[top_level_context["context"]])
+    context_info = await wait_for_future_safe(on_entry)
+
+    assert_browsing_context(
+        context_info,
+        top_level_context["context"],
+        children=None,
+        url="about:blank",
+        parent=None,
+        user_context="default"
+    )

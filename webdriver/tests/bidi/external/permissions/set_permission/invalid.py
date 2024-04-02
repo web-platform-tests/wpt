@@ -34,7 +34,7 @@ async def test_params_state_invalid_type(bidi_session, state):
       )
 
 
-@pytest.mark.parametrize("state", ["UNKOWN", "Granted"])
+@pytest.mark.parametrize("state", ["UNKNOWN", "Granted"])
 async def test_params_state_invalid_value(bidi_session, state):
     with pytest.raises(error.InvalidArgumentException):
       await bidi_session.permissions.set_permission(
@@ -51,4 +51,15 @@ async def test_params_origin_invalid_type(bidi_session, origin):
          descriptor={"name": "geolocation"},
          state="granted",
          origin=origin,
+      )
+
+
+@pytest.mark.parametrize("user_context", [False, 42, {}, [], None])
+async def test_params_origin_invalid_type(bidi_session, user_context):
+    with pytest.raises(error.InvalidArgumentException):
+      await bidi_session.permissions.set_permission(
+         descriptor={"name": "geolocation"},
+         state="granted",
+         origin="https://example.com",
+         user_context=user_context,
       )

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Display: reading-order-items with value grid-order in Shadow DOM</title>
+<link rel="help" href="https://drafts.csswg.org/css-display-4/#reading-order-items">
+<link rel="author" title="Di Zhang" href="mailto:dizhangg@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src='../resources/shadow-dom.js'></script>
+<script src="../resources/focus-utils.js"></script>
+
+<style>
+.wrapper {
+  display: flex;
+  reading-order-items: grid-order;
+}
+</style>
+
+<button>start</button>
+<span>
+  <template shadowrootmode="open" shadowrootdelegatesfocus>
+    <button>inner before</button>
+    <!-- <slot name=slot1></slot> -->
+    <!-- <slot name=slot2 style="display: flex; reading-order-items: grid-order;"></slot> -->
+    <div style="display: flex; reading-order-items: grid-order;">Nested slot
+      <slot name="slot3" id="slot3"></slot>
+    </div>
+    <button id="after">inner after</button>
+  </template>
+
+  <!-- <div style="display: flex; reading-order-items: grid-order;" slot=slot1>
+    <button style="order: 2">Item 1</button>
+    <button>Item 2</button>
+    <div>
+      <button style="order: 2">Item 3</button>
+      <button>Item 4</button>
+    </div>
+  </div>
+
+  <div slot=slot2>
+    <button style="order: 2" id="1">Item 1</button>
+    <button id="2">Item 2</button>
+    <div>
+      <button style="order: 2" id="3">Item 3</button>
+      <button id="4">Item 4</button>
+    </div>
+  </div> -->
+
+  <div slot=slot3 id="div-slot3">
+    <button style="order: 2" id="1">Item 1</button>
+    <button id="2">Item 2</button>
+    <div id="temp">
+      <button style="order: 2" id="3">Item 3</button>
+      <button id="4">Item 4</button>
+    </div>
+  </div>
+
+</span>
+<button id="end">end</button>
+
+<script>
+// TODO:
+promise_test(async () => {
+  let elements = [];
+  await assert_focus_navigation_forward(elements);
+}, `?`);
+
+</script>

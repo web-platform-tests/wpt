@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Display: reading-order-items with value grid-order and display: contents</title>
+<link rel="help" href="https://drafts.csswg.org/css-display-4/#reading-order-items">
+<link rel="author" title="Di Zhang" href="mailto:dizhangg@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src='../resources/shadow-dom.js'></script>
+<script src="../resources/focus-utils.js"></script>
+
+<style>
+.wrapper {
+  display: grid;
+  reading-order-items: grid-order;
+}
+</style>
+
+<div class="wrapper">
+  <button id="a">A</button>
+  <div style="display: contents">
+    <button id="b1" style="order: 2">B.1</button>
+    <button id="b2">B.2</button>
+    <div style="display: contents">
+      <button id="b31" style="order: 2">B.3.1</button>
+      <button id="b32">B.3.2</button>
+    </div>
+  </div>
+  <div id=Block style="display: block">
+    <button id="c1" style="order: 2">C.1</button>
+    <button id="c2">C.2</button>
+  </div>
+  <button id="d">D</button>
+</div>
+
+<script>
+promise_test(async () => {
+  let elements = [
+    'a',
+    'c',
+    'd',
+    'e',
+    'f',
+    'b'
+  ];
+  await assert_focus_navigation_forward(elements);
+}, `Verifies focus order for reading-order-items: grider-order. When display: contents, it should follow the display of parent.`);
+
+</script>

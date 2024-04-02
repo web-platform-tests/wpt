@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Display: reading-order-items with value grid-order in nested grids</title>
+<link rel="help" href="https://drafts.csswg.org/css-display-4/#reading-order-items">
+<link rel="author" title="Di Zhang" href="mailto:dizhangg@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src='../resources/shadow-dom.js'></script>
+<script src="../resources/focus-utils.js"></script>
+
+<style>
+.wrapper .box {
+  display: grid;
+  reading-order-items: grid-order;
+}
+
+.box {
+  border-radius: 5px;
+  padding: 20px;
+  border-style: dashed;
+}
+
+</style>
+<div class="wrapper" id="w" tabindex="0">
+  <div class="box" id="a" tabindex="0">A
+    <div class="box" id="b" tabindex="0">B
+      <div style="order: 2" id="d1">Div1
+        <button id="b1a" style="order: 3">Item 1A</button>
+        <button id="b1b">Item 1B</button>
+      </div>
+      <div id="d2">Div2
+        <button id="b2">Item 2</button>
+      </div>
+      <div id="d3">Div3
+        <button id="b3a">Item 3A</button>
+        <button id="b3b">Item 3B</button>
+      </div>
+    </div>
+  </div>
+  <div class="box" id="c" tabindex="0">C
+    <div class="box" id="d" tabindex="0" style="order: 2">D
+      <div class="box" id="e" tabindex="0" style="order: 2">E</div>
+      <div class="box" id="f" tabindex="0" style="order: 1">F</div>
+      <div class="box" id="g" tabindex="0" style="order: 1">G</div>
+    </div>
+    <div class="box" id="h" tabindex="0">H
+      <button id="b4a" style="order: 3">Item 4A</button>
+      <button id="b4b">Item 4B</button>
+    </div>
+  </div>
+</div>
+
+<script>
+promise_test(async () => {
+  let elements = [
+    'w',
+    'a',
+    'b',
+    'b2',
+    'b3a',
+    'b3b',
+    'b1a',
+    'b1b',
+    'c',
+    'h',
+    'b4b',
+    'b4a',
+    'd',
+    'f',
+    'g',
+    'e',
+  ];
+  await assert_focus_navigation_forward(elements);
+}, `Verifies focus order for reading-order-items: grider-order with grids inside grids.`);
+
+</script>

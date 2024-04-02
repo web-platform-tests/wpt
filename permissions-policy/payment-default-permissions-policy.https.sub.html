@@ -9,7 +9,6 @@
       "/permissions-policy/resources/permissions-policy-payment.html";
     const cross_origin_src =
       "https://{{hosts[alt][]}}:{{ports[https][0]}}" + same_origin_src;
-    const header = 'Default "payment" permissions policy';
 
     test(() => {
       const supportedInstruments = [{ supportedMethods: "visa" }];

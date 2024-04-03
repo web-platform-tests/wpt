@@ -10,7 +10,9 @@ promise_test(t => {
     worker.onmessage = () => {
       let sab = new Uint8Array(new SharedArrayBuffer(16));
       worker.postMessage(sab);
-      while(sab[0] != 1) /*wait to join with the result*/;
+      let end = performance.now() + 30*1000;
+      while(sab[0] != 1 && performance.now() < end) /*wait to join with the result*/;
+      assert_true(sab[0] == 1);
       resolve();
     };
   });

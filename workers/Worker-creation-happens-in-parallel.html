@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>Test that creation of a "new Worker()" will occur in parallel to the main JS thread performing other computation, and can be joined with.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+promise_test(t => {
+  return new Promise(resolve => {
+    let worker = new Worker("support/Worker-creation-happens-in-parallel.js");
+    let sab = new Uint8Array(new SharedArrayBuffer(16));
+    worker.postMessage(sab);
+    while(sab[0] != 1) /*wait to join with the result*/;
+    resolve();
+  });
+}, 'Tests that creation of a "new Worker()" will occur in parallel');
+</script>

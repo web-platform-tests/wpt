@@ -152,12 +152,10 @@ class TestEnvironment:
                                    webtransport_h3=self.enable_webtransport)
 
         if self.options.get("supports_debugger") and self.debug_info and self.debug_info.interactive:
-            self.ignore_interrupts()
+            self._stack.enter_context(self.ignore_interrupts())
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.process_interrupts()
-
         for servers in self.servers.values():
             for _, server in servers:
                 server.request_shutdown()
@@ -168,11 +166,13 @@ class TestEnvironment:
         self._stack.__exit__(exc_type, exc_val, exc_tb)
         self.env_extras_cms = None
 
+    @contextlib.contextmanager
     def ignore_interrupts(self):
-        signal.signal(signal.SIGINT, signal.SIG_IGN)
-
-    def process_interrupts(self):
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
+        prev_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
+        try:
+            yield
+        finally:
+            signal.signal(signal.SIGINT, prev_handler)
 
     def build_config(self):
         override_path = os.path.join(serve_path(self.test_paths), "config.json")

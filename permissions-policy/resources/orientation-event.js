@@ -1,8 +1,12 @@
-'use strict';
+"use strict";
 
 async function waitForOrientationEvent(eventName) {
-  if (eventName !== 'devicemotion' && eventName !== 'deviceorientation' && eventName !== 'deviceorientationabsolute') {
-    return 'ERROR';
+  if (
+    eventName !== "devicemotion" &&
+    eventName !== "deviceorientation" &&
+    eventName !== "deviceorientationabsolute"
+  ) {
+    return "ERROR";
   }
 
   let value;
@@ -15,14 +19,14 @@ async function waitForOrientationEvent(eventName) {
     value = await new Promise((resolve, reject) => {
       const timeoutId = window.setTimeout(() => {
         window.removeEventListener(eventName, handler);
-        reject('NO-EVENT');
+        reject("NO-EVENT");
       }, 1500);
       function handler(event) {
         window.clearTimeout(timeoutId);
 
         let data;
         switch (event.type) {
-          case 'devicemotion':
+          case "devicemotion":
             data = generateMotionData(
               event.acceleration.x,
               event.acceleration.y,
@@ -32,20 +36,20 @@ async function waitForOrientationEvent(eventName) {
               event.accelerationIncludingGravity.z,
               event.rotationRate.alpha,
               event.rotationRate.beta,
-              event.rotationRate.gamma,
+              event.rotationRate.gamma
             );
             break;
-          case 'deviceorientation':
-          case 'deviceorientationabsolute':
+          case "deviceorientation":
+          case "deviceorientationabsolute":
             data = generateOrientationData(
               event.alpha,
               event.beta,
               event.gamma,
-              event.absolute,
+              event.absolute
             );
             break;
           default:
-            reject('UNEXPECTED-EVENT-TYPE');
+            reject("UNEXPECTED-EVENT-TYPE");
             break;
         }
         resolve(JSON.stringify(data));

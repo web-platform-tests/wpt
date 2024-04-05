@@ -1,69 +1,66 @@
 <!DOCTYPE html>
 <body>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
-<script src="/permissions-policy/resources/orientation-event.js"></script>
-<script src="/permissions-policy/resources/permissions-policy.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
-<script src="../../resources/orientation-event-helpers.js"></script>
-<script>
-"use strict";
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/permissions-policy/resources/orientation-event.js"></script>
+  <script src="/permissions-policy/resources/permissions-policy.js"></script>
+  <script src="/common/get-host-info.sub.js"></script>
+  <script src="../../resources/orientation-event-helpers.js"></script>
+  <script>
+    "use strict";
 
-const same_origin_src =
-  "/permissions-policy/resources/permissions-policy-orientation-event.sub.html?eventName=devicemotion";
-const cross_origin_src =
-  get_host_info().HTTPS_REMOTE_ORIGIN + same_origin_src;
+    const same_origin_src =
+      "/permissions-policy/resources/permissions-policy-orientation-event.sub.html?eventName=devicemotion";
+    const cross_origin_src =
+      get_host_info().HTTPS_REMOTE_ORIGIN + same_origin_src;
 
-const header = 'Permissions-Policy header "accelerometer=self, gyroscope=self"';
+    const header =
+      'Permissions-Policy header "accelerometer=self, gyroscope=self"';
 
-promise_test(async t => {
-  const helper = new SensorTestHelper(t, 'devicemotion');
-  await helper.grantSensorsPermissions();
-  await helper.initializeSensors();
+    promise_test(async (t) => {
+      const helper = new SensorTestHelper(t, "devicemotion");
+      await helper.grantSensorsPermissions();
+      await helper.initializeSensors();
 
-  const motionData = generateMotionData(1, 2, 3,
-                                        4, 5, 6,
-                                        7, 8, 9);
-  await helper.setData(motionData);
+      const motionData = generateMotionData(1, 2, 3, 4, 5, 6, 7, 8, 9);
+      await helper.setData(motionData);
 
-  assert_equals(await waitForOrientationEvent('devicemotion'),
-                JSON.stringify(motionData));
-}, '${header} allows the top-level document');
+      assert_equals(
+        await waitForOrientationEvent("devicemotion"),
+        JSON.stringify(motionData)
+      );
+    }, "${header} allows the top-level document");
 
-promise_test(async t => {
-  const helper = new SensorTestHelper(t, 'devicemotion');
-  await helper.grantSensorsPermissions();
-  await helper.initializeSensors();
+    promise_test(async (t) => {
+      const helper = new SensorTestHelper(t, "devicemotion");
+      await helper.grantSensorsPermissions();
+      await helper.initializeSensors();
 
-  const motionData = generateMotionData(1, 2, 3,
-                                        4, 5, 6,
-                                        7, 8, 9);
-  await helper.setData(motionData);
+      const motionData = generateMotionData(1, 2, 3, 4, 5, 6, 7, 8, 9);
+      await helper.setData(motionData);
 
-  return test_feature_availability_with_post_message_result(
-    t,
-    same_origin_src,
-    JSON.stringify(motionData),
-  );
-}, `${header} allows same-origin iframes.`);
+      return test_feature_availability_with_post_message_result(
+        t,
+        same_origin_src,
+        JSON.stringify(motionData)
+      );
+    }, `${header} allows same-origin iframes.`);
 
-promise_test(async t => {
-  const helper = new SensorTestHelper(t, 'devicemotion');
-  await helper.grantSensorsPermissions();
-  await helper.initializeSensors();
+    promise_test(async (t) => {
+      const helper = new SensorTestHelper(t, "devicemotion");
+      await helper.grantSensorsPermissions();
+      await helper.initializeSensors();
 
-  const motionData = generateMotionData(1, 2, 3,
-                                        4, 5, 6,
-                                        7, 8, 9);
-  await helper.setData(motionData);
+      const motionData = generateMotionData(1, 2, 3, 4, 5, 6, 7, 8, 9);
+      await helper.setData(motionData);
 
-  return test_feature_availability_with_post_message_result(
-    t,
-    cross_origin_src,
-    'NO-EVENT',
-  );
-}, `${header} disallows cross-origin iframes.`);
-</script>
+      return test_feature_availability_with_post_message_result(
+        t,
+        cross_origin_src,
+        "NO-EVENT"
+      );
+    }, `${header} disallows cross-origin iframes.`);
+  </script>
 </body>

@@ -5,9 +5,10 @@
   <script>
     "use strict";
 
-    Promise.resolve().then(async () => {
-      const name = await waitForOrientationEvent("{{GET[eventName]}}");
-      window.parent.postMessage({ type: "availability-result", name }, "*");
+    window.addEventListener("load", () => {
+      waitForOrientationEvent("{{GET[eventName]}}").then((name) => {
+        window.parent.postMessage({ type: "availability-result", name }, "*");
+      });
     });
   </script>
 </body>

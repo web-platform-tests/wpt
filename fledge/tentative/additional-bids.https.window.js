@@ -12,7 +12,6 @@
 // TODO:
 // - test that an additional bid with some correct signatures can be negative
 //       targeted for those negative interest groups whose signatures match.
-// - test that additional bids can be fetched using an iframe navigation.
 // - test that additional bids are not fetched using an iframe navigation for
 //      which the `adAuctionHeaders=true` attribute is not specified.
 // - test that additional bids are not fetched using a Fetch request for which
@@ -369,3 +368,23 @@ subsetTest(promise_test, async test => {
                   'throw "missing trusted signals";'}),
         trustedScoringSignalsURL: TRUSTED_SCORING_SIGNALS_URL});
 }, 'trusted seller signals retrieved for additional bids');
+
+
+// Test that additional bids can be retrieved using an iframe navigation when
+// the `adAuctionHeaders` attribute is specified.
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  const auctionNonce = await navigator.createAuctionNonce();
+  const seller = SINGLE_SELLER_AUCTION_SELLER;
+
+  const buyer = OTHER_ORIGIN1;
+  const additionalBid = additionalBidHelper.createAdditionalBid(
+      uuid, auctionNonce, seller, buyer, 'horses', 1.99);
+
+  await runAdditionalBidTest(
+      test, uuid, [buyer], auctionNonce,
+      additionalBidHelper.getAdditionalBidFromIframeNavigation(
+          test, auctionNonce, additionalBid),
+      /*highestScoringOtherBid=*/0,
+      /*winningAdditionalBidId=*/'horses');
+}, 'retrieve additional bids using an iframe navigation');

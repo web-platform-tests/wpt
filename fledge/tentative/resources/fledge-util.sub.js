@@ -583,10 +583,25 @@ async function runInFrame(test, child_window, script, param) {
 // Also adds a cleanup callback to "test", which runs all cleanup functions
 // added within the frame and waits for them to complete, and then destroys the
 // iframe or closes the window.
-async function createFrame(test, origin, is_iframe = true, permissions = null) {
+//
+// Valid params include:
+// - topLevelFrame : Creates a top-level frame instead of an iframe.
+//       Defaults to false.
+// - permissions : When set, sets the given permissions on the new iframe.
+//       Has no effect when topLevelFrame is true.
+// - additionalBidHeader : When set, causes the new iframe to be created with
+//       the `adAuctionHeaders` attribute set to true, and sets an query
+//       parameter that causes the iframe to return this value in its
+//       `Ad-Auction-Additional-Bid` response header.
+//       Has no effect when topLevelFrame is true.
+//
+// Returns [window, promise]
+function createFrame(test, origin, params = {}) {
+  const frameURL = new URL(`${origin}${RESOURCE_PATH}subordinate-frame.sub.html`);
+
   const frameUuid = generateUuid(test);
-  const frameURL =
-      `${origin}${RESOURCE_PATH}subordinate-frame.sub.html?uuid=${frameUuid}`;
+  frameURL.searchParams.append('uuid', frameUuid);
+
   let promise = new Promise(function(resolve, reject) {
     function WaitForMessage(event) {
       if (event.data.messageUuid !== frameUuid)
@@ -600,41 +615,46 @@ async function createFrame(test, origin, is_iframe = true, permissions = null) {
     window.addEventListener('message', WaitForMessage);
   });
 
-  if (is_iframe) {
-    let iframe = document.createElement('iframe');
-    if (permissions)
-      iframe.allow = permissions;
-    iframe.src = frameURL;
-    document.body.appendChild(iframe);
-
+  if (params.topLevelWindow) {
+    let child_window = window.open(frameURL.href);
     test.add_cleanup(async () => {
-      await runInFrame(test, iframe.contentWindow, "await test_instance.do_cleanup();");
-      document.body.removeChild(iframe);
+      await runInFrame(test, child_window, "await test_instance.do_cleanup();");
+      child_window.close();
     });
-
-    await promise;
-    return iframe.contentWindow;
+    return [child_window, promise];
   }
 
-  let child_window = window.open(frameURL);
-  test.add_cleanup(async () => {
-    await runInFrame(test, child_window, "await test_instance.do_cleanup();");
-    child_window.close();
-  });
+  let iframe = document.createElement('iframe');
+  if (params.permissions) {
+    iframe.allow = params.permissions;
+  }
+  if (params.additionalBidHeader) {
+    iframe.adAuctionHeaders = true;
+    frameURL.searchParams.append('additionalBidHeader', params.additionalBidHeader);
+  }
+  iframe.src = frameURL.href;
+  document.body.appendChild(iframe);
 
-  await promise;
-  return child_window;
+  test.add_cleanup(async () => {
+    await runInFrame(test, iframe.contentWindow, "await test_instance.do_cleanup();");
+    document.body.removeChild(iframe);
+  });
+  return [iframe.contentWindow, promise];
 }
 
 // Wrapper around createFrame() that creates an iframe and optionally sets
 // permissions.
 async function createIframe(test, origin, permissions = null) {
-  return await createFrame(test, origin, /*is_iframe=*/true, permissions);
+  [iframe, promise] = createFrame(test, origin, {permissions: permissions});
+  await promise;
+  return iframe;
 }
 
 // Wrapper around createFrame() that creates a top-level window.
 async function createTopLevelWindow(test, origin) {
-  return await createFrame(test, origin, /*is_iframe=*/false);
+  [topLevelWindow, promise] = createFrame(test, origin, {topLevelWindow: true});
+  await promise;
+  return topLevelWindow;
 }
 
 // Joins a cross-origin interest group. Currently does this by joining the
@@ -821,12 +841,28 @@ let additionalBidHelper = function() {
         'Header "Ad-Auction-Additional-Bid" should not be available in JavaScript context.');
   }
 
+  function createAdditionalBidHeader(auctionNonce, additionalBid) {
+    let signedAdditionalBid = {
+      bid: JSON.stringify(additionalBid),
+      signatures: []
+    };
+    return `${auctionNonce}:${btoa(JSON.stringify(signedAdditionalBid))}`
+  }
+
+  async function getAdditionalBidFromIframeNavigation(test, auctionNonce, additionalBid) {
+    [, promise] = createFrame(test, origin, {
+        additionalBidHeader: createAdditionalBidHeader(auctionNonce, additionalBid)
+    });
+    return promise;
+  }
+
   return {
     createAdditionalBid: createAdditionalBid,
     signWithSecretKeys: signWithSecretKeys,
     incorrectlySignWithSecretKeys: incorrectlySignWithSecretKeys,
     addNegativeInterestGroup: addNegativeInterestGroup,
     addNegativeInterestGroups: addNegativeInterestGroups,
-    fetchAdditionalBids: fetchAdditionalBids
+    fetchAdditionalBids: fetchAdditionalBids,
+    getAdditionalBidFromIframeNavigation: getAdditionalBidFromIframeNavigation
   };
 }();

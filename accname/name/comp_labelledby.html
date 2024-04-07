@@ -53,6 +53,10 @@
 <button aria-labelledby="n1" aria-labeledby="n2" class="ex" data-expectedlabel="first label" data-testname="button labelled by aria-labelledby supercedes aria-labeledby (non-standard spelling)">x</button>
 <div role="group" aria-labelledby="n1" aria-labeledby="n2" class="ex" data-expectedlabel="first label" data-testname="div labelled by aria-labelledby supercedes aria-labeledby (non-standard spelling)">x</div>
 
+<a href="#" aria-labeledby="n1" aria-labelledby="n2" class="ex" data-expectedlabel="first label" data-testname="link labelled by [aria-labeledby][aria-labelledby] uses aria-labeledby because it is first">x</a>
+<button aria-labeledby="n1" aria-labelledby="n2" class="ex" data-expectedlabel="first label" data-testname="button labelled by [aria-labeledby][aria-labelledby] uses aria-labeledby because it is first">x</button>
+<div role="group" aria-labeledby="n1" aria-labelledby="n2" class="ex" data-expectedlabel="first label" data-testname="div labelled by [aria-labeledby][aria-labelledby] uses aria-labeledby because it is first">x</div>
+
 <h2>Tests for name precedence with <code>aria-labeledby</code> (non-standard spelling)</h2>
 <!-- Name computation: https://w3c.github.io/accname/#computation-steps -->
 

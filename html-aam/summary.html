@@ -36,6 +36,12 @@
   <summary data-testname="descendant summary of details, that is not the first descendant summary, has generic role" class="ex-generic">x</summary>
 </details>
 
+<details>
+  <div>
+    <summary data-testname="descendant summary of details with intervening element, has generic role" class="ex-generic">x</summary>
+  </div>
+  <p>Other content</p>
+</details>
 <script>
 AriaUtils.verifyGenericRolesBySelector(".ex-generic");
 </script>

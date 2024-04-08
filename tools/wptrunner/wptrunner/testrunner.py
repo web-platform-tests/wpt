@@ -4,7 +4,7 @@ import threading
 import traceback
 from queue import Empty
 from collections import namedtuple, defaultdict
-from typing import Any, Mapping, NamedTuple, Optional
+from typing import Any, Mapping, Optional
 
 from mozlog import structuredlog, capture
 
@@ -30,23 +30,28 @@ TestImplementation = namedtuple('TestImplementation',
                                  'browser_cls', 'browser_kwargs'])
 
 
-class StopState(NamedTuple):
-    """Synchronization for coordinating a graceful exit.
+class StopFlag:
+    """Synchronization for coordinating a graceful exit."""
 
-    Attributes:
-        should_stop: Flag that is polled by threads so that they can gracefully
-            exit in the face of SIGINT.
-        done: A barrier that each `TestRunnerManager` thread waits on when exiting
-            its run loop. This provides a reliable way for the `ManagerGroup` to
-            tell when all threads have cleaned up their resources.
-    """
-    should_stop: threading.Event
-    done: threading.Barrier
-
-    @classmethod
-    def with_size(cls, size: int) -> 'StopState':
+    def __init__(self, size: int):
+        # Flag that is polled by threads so that they can gracefully exit in the
+        # face of SIGINT.
+        self._should_stop = threading.Event()
+        # A barrier that each `TestRunnerManager` thread waits on when exiting
+        # its run loop. This provides a reliable way for the `ManagerGroup` to
+        # tell when all threads have cleaned up their resources.
+        #
         # The barrier's extra waiter is the main thread (`ManagerGroup`).
-        return cls(threading.Event(), threading.Barrier(1 + size))
+        self._all_managers_done = threading.Barrier(1 + size)
+
+    def stop(self) -> None:
+        self._should_stop.set()
+
+    def should_stop(self) -> bool:
+        return self._should_stop.is_set()
+
+    def wait_for_all_managers_done(self, timeout: Optional[float] = None) -> None:
+        self._all_managers_done.wait(timeout)
 
 
 class LogMessageHandler:
@@ -305,7 +310,7 @@ RunnerManagerState = _RunnerManagerState()
 
 class TestRunnerManager(threading.Thread):
     def __init__(self, suite_name, index, test_queue,
-                 test_implementations, stop_state, retry_index=0, rerun=1,
+                 test_implementations, stop_flag, retry_index=0, rerun=1,
                  pause_after_test=False, pause_on_unexpected=False,
                  restart_on_unexpected=True, debug_info=None,
                  capture_stdio=True, restart_on_new_group=True, recording=None, max_restarts=5):
@@ -344,7 +349,7 @@ class TestRunnerManager(threading.Thread):
                 self.test_implementations[key] = test_implementation
 
         # Flags used to shut down this thread if we get a sigint
-        self.parent_stop_state = stop_state
+        self.parent_stop_flag = stop_flag
         self.child_stop_flag = mpcontext.get_context().Event()
 
         # Keep track of the current retry index. The retries are meant to handle
@@ -462,7 +467,7 @@ class TestRunnerManager(threading.Thread):
                 assert self.browser.browser is not None
                 self.browser.browser.cleanup()
             self.logger.debug("TestRunnerManager main loop terminated")
-            self.parent_stop_state.done.wait()
+            self.parent_stop_flag.wait_for_all_managers_done()
 
     def wait_event(self):
         dispatch = {
@@ -536,7 +541,7 @@ class TestRunnerManager(threading.Thread):
             return f(*data)
 
     def should_stop(self):
-        return self.child_stop_flag.is_set() or self.parent_stop_state.should_stop.is_set()
+        return self.child_stop_flag.is_set() or self.parent_stop_flag.should_stop()
 
     def start_init(self):
         subsuite, test_type, test, test_group, group_metadata = self.get_next_test()
@@ -996,7 +1001,7 @@ class ManagerGroup:
         self.max_restarts = max_restarts
 
         self.pool = set()
-        self.stop_state = None
+        self.stop_flag = None
         self.logger = structuredlog.StructuredLogger(suite_name)
 
     def __enter__(self):
@@ -1009,14 +1014,14 @@ class ManagerGroup:
         """Start all managers in the group"""
         test_queue, size = self.test_queue_builder.make_queue(tests)
         self.logger.info("Using %i child processes" % size)
-        self.stop_state = StopState.with_size(size)
+        self.stop_flag = StopFlag(size)
 
         for idx in range(size):
             manager = TestRunnerManager(self.suite_name,
                                         idx,
                                         test_queue,
                                         self.test_implementations,
-                                        self.stop_state,
+                                        self.stop_flag,
                                         self.retry_index,
                                         self.rerun,
                                         self.pause_after_test,
@@ -1054,15 +1059,14 @@ class ManagerGroup:
         # [0]: https://github.com/python/cpython/issues/90882
         # [1]: https://github.com/python/cpython/blob/558b517b/Lib/threading.py#L1146-L1178
         # [2]: https://crbug.com/330236796
-        assert self.stop_state, "ManagerGroup hasn't been started yet"
-        assert not self.stop_state.done.broken, self.stop_state
-        self.stop_state.done.wait(timeout)
+        assert self.stop_flag, "ManagerGroup hasn't been started yet"
+        self.stop_flag.wait_for_all_managers_done(timeout)
 
     def stop(self):
         """Set the stop flag so that all managers in the group stop as soon
         as possible"""
-        if self.stop_state:
-            self.stop_state.should_stop.set()
+        if self.stop_flag:
+            self.stop_flag.stop()
             self.logger.debug("Stop flag set in ManagerGroup")
 
     def test_count(self):

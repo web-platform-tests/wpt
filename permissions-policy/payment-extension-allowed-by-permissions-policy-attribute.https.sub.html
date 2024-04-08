@@ -8,7 +8,7 @@
     var same_origin_src = '/permissions-policy/resources/permissions-policy-payment-extension.html';
     var cross_origin_src = 'https://{{domains[www]}}:{{ports[https][0]}}' +
       same_origin_src;
-    var feature_name = 'permissions policy "payment"';
+    var feature_name = 'WebAuthn "payment" extension';
     var header = 'allow="payment" attribute';
 
     promise_test(t => {

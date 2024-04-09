@@ -820,18 +820,15 @@ class AsyncCallbackHandler(CallbackHandler):
         async_action_handler = self.async_actions[action]
 
         try:
-            with ActionContext(self.logger, self.protocol, payload.get("context")):
-                try:
-                    result = await async_action_handler(payload)
-                except AttributeError as e:
-                    # If we fail to get an attribute from the protocol presumably that's a
-                    # ProtocolPart we don't implement
-                    # AttributeError got an obj property in Python 3.10, for older versions we
-                    # fall back to looking at the error message.
-                    if ((hasattr(e, "obj") and getattr(e, "obj") == self.protocol) or
-                            f"'{self.protocol.__class__.__name__}' object has no attribute" in str(e)):
-                        raise NotImplementedError from e
-                    raise
+            result = await async_action_handler(payload)
+        except AttributeError as e:
+            # If we fail to get an attribute from the protocol presumably that's a
+            # ProtocolPart we don't implement
+            # AttributeError got an obj property in Python 3.10, for older versions we
+            # fall back to looking at the error message.
+            if ((hasattr(e, "obj") and getattr(e, "obj") == self.protocol) or
+                    f"'{self.protocol.__class__.__name__}' object has no attribute" in str(e)):
+                raise NotImplementedError from e
         except self.unimplemented_exc:
             self.logger.warning("Action %s not implemented" % action)
             self._send_message(cmd_id, "complete", "error", f"Action {action} not implemented")

@@ -43,7 +43,6 @@ promise_test(async t => {
 promise_test(async t => {
   const iframe = document.createElement("iframe");
   document.body.appendChild(iframe);
-  // We first got to page1.html, grab a WakeLock object.
   const wakeLock = await getWakeLockObject(
     iframe,
     "/screen-wake-lock/resources/page1.html"

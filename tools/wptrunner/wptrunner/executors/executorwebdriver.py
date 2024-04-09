@@ -774,9 +774,8 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         else:
             # If `bidi_script` is not available, use the classic WebDriver async script execution. This will
             # block the event loop until the test_driver send a message.
-            return protocol.base.execute_script(
-                self.script_resume, context=test_window,
-                args=[strip_server(url)])
+            return protocol.base.execute_script(self.script_resume, asynchronous=True, context=test_window,
+                                                args=[strip_server(url)])
 
 
 class WebDriverRefTestExecutor(RefTestExecutor):

@@ -236,9 +236,7 @@ async def test_with_scrollbars(
 
     assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport
 
-    viewport_without_scrollbar = await get_viewport_dimensions(
-        bidi_session, new_tab, with_scrollbar=False
-    )
+    viewport_without_scrollbar = await get_viewport_dimensions(bidi_session, new_tab)
 
     # The side which has scrollbar takes up space on the other side
     # (e.g. if we have a horizontal scroll height is going to be smaller than viewport height)

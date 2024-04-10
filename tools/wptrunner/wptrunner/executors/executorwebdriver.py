@@ -118,13 +118,13 @@ class WebDriverBidiEventsProtocolPart(BidiEventsProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
-    async def subscribe(self, events):
-        self.logger.info("Subscribing to event %s" % events)
-        return await self.webdriver.bidi_session.session.subscribe(events=events, contexts=None)
+    async def subscribe(self, events, contexts):
+        self.logger.info("Subscribing to events %s in %s" % (events, contexts if contexts else "none"))
+        return await self.webdriver.bidi_session.session.subscribe(events=events, contexts=contexts)
 
-    async def unsubscribe(self, events):
-        self.logger.info("Unsubscribing from events %s" % events)
-        return await self.webdriver.bidi_session.session.unsubscribe(events=events, contexts=None)
+    async def unsubscribe(self, events, contexts):
+        self.logger.info("Unsubscribing from events %s in %s" % (events, contexts if contexts else "none"))
+        return await self.webdriver.bidi_session.session.unsubscribe(events=events, contexts=contexts)
 
     def add_event_listener(self, fn, event=None):
         print("adding event listener %s" % event)

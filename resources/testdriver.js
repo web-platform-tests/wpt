@@ -69,13 +69,6 @@
                         return window.test_driver_internal.bidi.log.entry_added.subscribe();
                     },
                     /**
-                     * Unsubscribe from the `log.entryAdded` event.
-                     * @return {Promise<void>}
-                     */
-                    unsubscribe: async function () {
-                        return window.test_driver_internal.bidi.log.entry_added.subscribe();
-                    },
-                    /**
                      * Add an event listener for the `log.entryAdded
                      * <https://w3c.github.io/webdriver-bidi/#event-log-entryAdded>`_ event. Make sure `subscribe` is
                      * called before using this method.
@@ -1097,9 +1090,6 @@
                 entry_added: {
                     subscribe: function () {
                         throw new Error("bidi.log.entry_added.subscribe is not implemented by testdriver-vendor.js");
-                    },
-                    unsubscribe: function () {
-                        throw new Error("bidi.log.entry_added.unsubscribe is not implemented by testdriver-vendor.js");
                     },
                     on: function () {
                         throw new Error("bidi.log.entry_added.on is not implemented by testdriver-vendor.js");

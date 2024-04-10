@@ -167,22 +167,14 @@
         return pending_promise;
     };
 
-    const subscribe = function(events) {
-        return create_action("bidi.session.subscribe", {events});
-    };
-
-    const unsubscribe = function(events) {
-        return create_action("bidi.session.unsubscribe", {events});
+    const subscribe = function(events, contexts) {
+        return create_action("bidi.session.subscribe", {events, contexts});
     };
 
     window.test_driver_internal.in_automation = true;
 
     window.test_driver_internal.bidi.log.entry_added.subscribe = function () {
-        return subscribe(["log.entryAdded"])
-    };
-
-    window.test_driver_internal.bidi.log.entry_added.unsubscribe = function () {
-        return unsubscribe(["log.entryAdded"])
+        return subscribe(["log.entryAdded"], null)
     };
 
     window.test_driver_internal.bidi.log.entry_added.on = function (callback) {

@@ -167,12 +167,12 @@
         return pending_promise;
     };
 
-    const subscribe = function(events, context=null) {
-        return create_action("bidi.session.subscribe", {events, context});
+    const subscribe = function(events) {
+        return create_action("bidi.session.subscribe", {events});
     };
 
-    const unsubscribe = function(events, context=null) {
-        return create_action("bidi.session.unsubscribe", {events, context});
+    const unsubscribe = function(events) {
+        return create_action("bidi.session.unsubscribe", {events});
     };
 
     window.test_driver_internal.in_automation = true;

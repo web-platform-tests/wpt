@@ -808,7 +808,7 @@ class AsyncCallbackHandler(CallbackHandler):
             return False, None
         else:
             # Fallback to the default action processing, which will fail if the action is not implemented.
-            return super().process_action(action, url, payload)
+            return super().process_action(url, payload)
 
     async def _process_async_action(self, action, cmd_id, payload):
         """

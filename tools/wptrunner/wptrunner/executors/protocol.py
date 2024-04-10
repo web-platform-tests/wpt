@@ -802,3 +802,14 @@ class VirtualSensorProtocolPart(ProtocolPart):
     @abstractmethod
     def get_virtual_sensor_information(self, sensor_type):
         pass
+
+class GetAccessibilityTreeProtocolPart(ProtocolPart):
+    """Protocol part for getting accessibility tree"""
+    __metaclass__ = ABCMeta
+
+    name = "get_accessibility_tree"
+
+    @abstractmethod
+    def get_accessibility_tree(self):
+        """Get the accessibility tree"""
+        pass

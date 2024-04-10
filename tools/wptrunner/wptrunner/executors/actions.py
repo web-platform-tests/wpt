@@ -444,6 +444,17 @@ class GetVirtualSensorInformationAction:
         return self.protocol.virtual_sensor.get_virtual_sensor_information(sensor_type)
 
 
+class GetAccessibilityTreeAction(object):
+    name = "get_accessibility_tree"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("Getting accessibility tree")
+        return self.protocol.get_accessibility_tree.get_accessibility_tree()
+
 actions = [ClickAction,
            DeleteAllCookiesAction,
            GetAllCookiesAction,
@@ -477,4 +488,5 @@ actions = [ClickAction,
            CreateVirtualSensorAction,
            UpdateVirtualSensorAction,
            RemoveVirtualSensorAction,
-           GetVirtualSensorInformationAction]
+           GetVirtualSensorInformationAction,
+           GetAccessibilityTreeAction]

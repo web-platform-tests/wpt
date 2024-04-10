@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>Navigating iframe loading='lazy' before it is loaded: navigation.navigate</title>
+<iframe data-src="support/blank.htm?nav" src="support/blank.htm?src" loading="lazy"></iframe>
+<script>
+const iframe = document.querySelector('iframe');
+iframe.contentWindow.navigation.navigate(iframe.dataset.src);
+</script>
+<!-- Loading testharness.js here is intentional. -->
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+setup({single_test: true});
+onload = () => {
+  assert_true("navigation" in window, "Navigation API is supported");
+  assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?nav", location.href).href);
+  done();
+}
+</script>

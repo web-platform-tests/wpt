@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>History state change for iframe loading='lazy' before it is loaded: history.pushState</title>
+<iframe data-src="support/blank.htm?foo" src="support/blank.htm?src" loading="lazy"></iframe>
+<script>
+const iframe = document.querySelector('iframe');
+// Should have no effect on lazy-loading
+iframe.contentWindow.history.pushState(null, "", iframe.dataset.src);
+</script>
+<!-- Loading testharness.js here is intentional. -->
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+setup({single_test: true});
+onload = () => {
+  assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?src", location.href).href);
+  done();
+}
+</script>

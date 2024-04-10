@@ -111,6 +111,8 @@ addEventListener("__test_restart", e => {e.preventDefault(); callback(true)})"""
 
 
 class WebDriverBidiEventsProtocolPart(BidiEventsProtocolPart):
+    _subscriptions = []
+
     def __init__(self, parent):
         super().__init__(parent)
         self.webdriver = None
@@ -119,12 +121,16 @@ class WebDriverBidiEventsProtocolPart(BidiEventsProtocolPart):
         self.webdriver = self.parent.webdriver
 
     async def subscribe(self, events, contexts):
-        self.logger.info("Subscribing to events %s in %s" % (events, contexts if contexts else "none"))
+        self.logger.info("Subscribing to events %s in %s" % (events, contexts))
+        self._subscriptions.append((events, contexts))
         return await self.webdriver.bidi_session.session.subscribe(events=events, contexts=contexts)
 
-    async def unsubscribe(self, events, contexts):
-        self.logger.info("Unsubscribing from events %s in %s" % (events, contexts if contexts else "none"))
-        return await self.webdriver.bidi_session.session.unsubscribe(events=events, contexts=contexts)
+    async def cleanup(self):
+        self.logger.info("Cleaning up the state.")
+        while self._subscriptions:
+            events, contexts = self._subscriptions.pop()
+            self.logger.info("Unsubscribing from events %s in %s" % (events, contexts))
+            await self.webdriver.bidi_session.session.unsubscribe(events=events, contexts=contexts)
 
     def add_event_listener(self, fn, event=None):
         print("adding event listener %s" % event)
@@ -731,6 +737,11 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             done, rv = handler(test_driver_message)
             if done:
                 break
+
+        # If protocol implements `bidi_events`, cleanup the subscriptions.
+        if protocol.bidi_events:
+            # Use protocol loop to run the async cleanup.
+            protocol.loop.run_until_complete(protocol.bidi_events.cleanup())
 
         # Attempt to cleanup any leftover windows, if allowed. This is
         # preferable as it will blame the correct test if something goes wrong

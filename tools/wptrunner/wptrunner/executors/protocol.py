@@ -336,11 +336,8 @@ class BidiEventsProtocolPart(ProtocolPart):
         pass
 
     @abstractmethod
-    async def unsubscribe(self, events, contexts):
-        """Unsubscribe from events.
-
-        :param list events: The list of events names to unsubscribe from.
-        :param list contexts: The list of contexts to unsubscribe from. None for global unsubscription"""
+    async def cleanup(self):
+        """Cleans up the subscription state. Removes all the previously added subscriptions."""
         pass
 
     @abstractmethod

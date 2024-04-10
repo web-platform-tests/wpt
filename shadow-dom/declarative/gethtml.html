@@ -46,6 +46,7 @@ function testElementType(allowsShadowDom, elementType, runGetHTMLOnShadowRoot,
           `shadowrootmode=${mode}${delegatesAttr}${serializableAttr}` +
           `${clonableAttr}>`;
       wrapper.setHTMLUnsafe(html);
+      // Get hold of the declarative shadow root in a way that works when its mode is "closed"
       shadowRoot = wrapper.firstElementChild.attachShadow(initDict);
     } else {
       // Imperative shadow dom

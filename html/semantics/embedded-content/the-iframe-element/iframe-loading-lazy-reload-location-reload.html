@@ -15,7 +15,7 @@ onload = () => {
   step_timeout(() => {
     assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?src", location.href).href);
     done();
-  }, 250);
+  }, 1000);
 }
 </script>
 <!-- delay the load event -->

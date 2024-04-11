@@ -125,8 +125,8 @@ class WebDriverBidiEventsProtocolPart(BidiEventsProtocolPart):
         self._subscriptions.append((events, contexts))
         return await self.webdriver.bidi_session.session.subscribe(events=events, contexts=contexts)
 
-    async def cleanup(self):
-        self.logger.info("Cleaning up the state.")
+    async def unsubscribe_all(self):
+        self.logger.info("Unsubscribing from all the events")
         while self._subscriptions:
             events, contexts = self._subscriptions.pop()
             self.logger.info("Unsubscribing from events %s in %s" % (events, contexts))
@@ -681,6 +681,11 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         # went wrong or if cleanup_after_test was False), so clean up here.
         parent_window = protocol.testharness.close_old_windows()
 
+        # If protocol implements `bidi_events`, remove all the existing subscriptions.
+        if protocol.bidi_events:
+            # Use protocol loop to run the async cleanup.
+            protocol.loop.run_until_complete(protocol.bidi_events.unsubscribe_all())
+
         # Now start the test harness
         protocol.testharness.open_test_window(self.window_id)
         test_window = protocol.testharness.get_test_window(self.window_id,
@@ -738,10 +743,10 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             if done:
                 break
 
-        # If protocol implements `bidi_events`, cleanup the subscriptions.
+        # If protocol implements `bidi_events`, remove all the existing subscriptions.
         if protocol.bidi_events:
             # Use protocol loop to run the async cleanup.
-            protocol.loop.run_until_complete(protocol.bidi_events.cleanup())
+            protocol.loop.run_until_complete(protocol.bidi_events.unsubscribe_all())
 
         # Attempt to cleanup any leftover windows, if allowed. This is
         # preferable as it will blame the correct test if something goes wrong

@@ -336,7 +336,7 @@ class BidiEventsProtocolPart(ProtocolPart):
         pass
 
     @abstractmethod
-    async def cleanup(self):
+    async def unsubscribe_all(self):
         """Cleans up the subscription state. Removes all the previously added subscriptions."""
         pass
 

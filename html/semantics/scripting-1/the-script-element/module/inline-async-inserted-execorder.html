@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Inline async="" module scripts execute or throw parse errors synchronously</title>
+<title>Inline async="" module scripts execute or throw parse errors asynchronously</title>
+<link rel="help" href="https://github.com/whatwg/html/issues/9864">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
@@ -9,7 +10,7 @@
 "use strict";
 setup({ allow_uncaught_exception: true });
 
-test(() => {
+async_test(t => {
   window.log = ["before any script execution"];
 
   window.addEventListener("error", ev => {
@@ -20,16 +21,39 @@ test(() => {
   noErrorScript.type = "module";
   noErrorScript.async = true;
   noErrorScript.textContent = "window.log.push('no error script executed');";
+
+  // This should queue a microtask to run the script, but not run it immediately.
   document.head.append(noErrorScript);
 
-  assert_array_equals(window.log, ["before any script execution", "no error script executed"]);
+  log.push("after inserting noErrorScript");
+  assert_array_equals(window.log, [
+    "before any script execution",
+    "after inserting noErrorScript"
+  ]);
 
   const parseErrorScript = document.createElement("script");
   parseErrorScript.type = "module";
   parseErrorScript.async = true;
   parseErrorScript.textContent = "+++++";
+
+  // This should queue a microtask to fire the error event, but not fire it immediately.
   document.head.append(parseErrorScript);
 
-  assert_array_equals(window.log, ["before any script execution", "no error script executed", "error event on Window"]);
+  log.push("after inserting parseErrorScript");
+  assert_array_equals(window.log, [
+    "before any script execution",
+    "after inserting noErrorScript",
+    "after inserting parseErrorScript"
+  ]);
+
+  queueMicrotask(t.step_func_done(() => {
+    assert_array_equals(window.log, [
+      "before any script execution",
+      "after inserting noErrorScript",
+      "after inserting parseErrorScript",
+      "no error script executed",
+      "error event on Window"
+    ]);
+  }));
 });
 </script>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Inline async="" module scripts execute or throw parse errors synchronously</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+<script>
+"use strict";
+setup({ allow_uncaught_exception: true });
+
+test(() => {
+  window.log = ["before any script execution"];
+
+  window.addEventListener("error", ev => {
+    window.log.push("error event on Window");
+  });
+
+  const noErrorScript = document.createElement("script");
+  noErrorScript.type = "module";
+  noErrorScript.async = true;
+  noErrorScript.textContent = "window.log.push('no error script executed');";
+  document.head.append(noErrorScript);
+
+  assert_array_equals(window.log, ["before any script execution", "no error script executed"]);
+
+  const parseErrorScript = document.createElement("script");
+  parseErrorScript.type = "module";
+  parseErrorScript.async = true;
+  parseErrorScript.textContent = "+++++";
+  document.head.append(parseErrorScript);
+
+  assert_array_equals(window.log, ["before any script execution", "no error script executed", "error event on Window"]);
+});
+</script>

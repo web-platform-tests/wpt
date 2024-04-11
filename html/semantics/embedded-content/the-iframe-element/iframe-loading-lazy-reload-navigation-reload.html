@@ -11,9 +11,11 @@ iframe.contentWindow.navigation.reload();
 <script src="/resources/testharnessreport.js"></script>
 <script>
 setup({single_test: true});
-onload = () => {
-  assert_true("navigation" in window, "Navigation API is supported");
-  assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?src", location.href).href);
-  done();
-}
+onload = async () => {
+  step_timeout(() => {
+    assert_true("navigation" in window, "Navigation API is supported");
+    assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?src", location.href).href);
+    done();
+  }, 250);
+};
 </script>

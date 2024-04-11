@@ -13,7 +13,9 @@ a.click();
 <script>
 setup({single_test: true});
 onload = () => {
-  assert_equals(iframe.contentWindow.location.href, "about:blank#fragment");
-  done();
+  step_timeout(() => {
+    assert_equals(iframe.contentWindow.location.href, "about:blank#fragment");
+    done();
+  }, 250);
 }
 </script>

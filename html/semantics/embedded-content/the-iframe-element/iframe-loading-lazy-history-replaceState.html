@@ -12,7 +12,9 @@ iframe.contentWindow.history.replaceState(null, "", iframe.dataset.src);
 <script>
 setup({single_test: true});
 onload = () => {
-  assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?src", location.href).href);
-  done();
+  step_timeout(() => {
+    assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?src", location.href).href);
+    done();
+  }, 250);
 }
 </script>

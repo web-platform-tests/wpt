@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>Navigating iframe loading='lazy' and then setting src: location.replace</title>
+<iframe data-src="support/blank.htm?nav" loading="lazy"></iframe>
+<script>
+const iframe = document.querySelector('iframe');
+iframe.contentWindow.location.replace(iframe.dataset.src);
+// Setting src invokes https://html.spec.whatwg.org/multipage/iframe-embed-object.html#process-the-iframe-attributes
+iframe.src = 'support/blank.htm?src';
+</script>
+<!-- Loading testharness.js here is intentional. -->
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+setup({single_test: true});
+onload = () => {
+  step_timeout(() => {
+    assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?src", location.href).href);
+    done();
+  }, 250);
+};
+</script>
+<!-- delay the load event -->
+<iframe src="support/blank.htm?src"></iframe>

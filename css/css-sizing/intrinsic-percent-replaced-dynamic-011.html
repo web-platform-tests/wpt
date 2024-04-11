@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-sizing-3/#intrinsic">
+<link rel="match" href="../reference/ref-filled-green-100px-square-only.html">
+<meta name="assert" content="This test checks that a dynamic change in the width of an element calculates the intrinsic min/max size correctly when a replaced element is present."/>
+<p>Test passes if there is a filled green square.</p>
+<div id="target" style="width: 50px;">
+  <div style="box-sizing: border-box; height: 100px; padding-bottom: 50%; display: inline-block; background: green;">
+    <canvas width=20 height=10 style="height: 100%;"></div>
+  </div>
+</div>
+<script>
+document.body.offsetTop;
+document.getElementById('target').style.width = '100px';
+</script>

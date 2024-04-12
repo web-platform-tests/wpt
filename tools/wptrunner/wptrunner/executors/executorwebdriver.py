@@ -146,15 +146,12 @@ class WebDriverBidiScriptProtocolPart(BidiScriptProtocolPart):
         self.webdriver = self.parent.webdriver
 
     async def async_call_function(self, script, context, args=None):
-        result = await self.webdriver.bidi_session.script.call_function(
+        return await self.webdriver.bidi_session.script.call_function(
             function_declaration=script,
             arguments=args,
             target={
                 "context": context if context else self.current_window},
             await_promise=True)
-        if result["type"] != "string":
-            raise Exception("Unexpected result")
-        return json.loads(result["value"])
 
     async def add_preload_script(self, script, contexts=None, arguments=None, sandbox=None):
         return await self.webdriver.bidi_session.script.add_preload_script(
@@ -723,6 +720,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
 
         while True:
             test_driver_message = self._get_next_message(protocol, url, test_window)
+            self.logger.debug("test_driver_message: %s" % test_driver_message)
 
             # As of 2019-03-29, WebDriver does not define expected behavior for
             # cases where the browser crashes during script execution:
@@ -764,6 +762,36 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
 
         return rv
 
+    def bidi_deserialize(self, bidi_value):
+        # TODO: extend with other types.
+        if isinstance(bidi_value, str):
+            return bidi_value
+        if isinstance(bidi_value, int):
+            return bidi_value
+        if not isinstance(bidi_value, dict):
+            raise ValueError("Unexpected bidi value: %s" % bidi_value)
+        if bidi_value["type"] == "null":
+            return None
+        if bidi_value["type"] == "boolean":
+            return bidi_value["value"]
+        if bidi_value["type"] == "number":
+            return bidi_value["value"]
+        if bidi_value["type"] == "string":
+            return bidi_value["value"]
+        if bidi_value["type"] == "window":
+            return {"window-fcc6-11e5-b4f8-330a88ab9d7f": bidi_value["value"]["context"]}
+        if bidi_value["type"] == "array":
+            result = []
+            for item in bidi_value["value"]:
+                result.append(self.bidi_deserialize(item))
+            return result
+        if bidi_value["type"] == "object":
+            result = {}
+            for item in bidi_value["value"]:
+                result[self.bidi_deserialize(item[0])] = self.bidi_deserialize(item[1])
+            return result
+        raise ValueError("Unexpected bidi value: %s" % bidi_value)
+
     def _get_next_message(self, protocol, url, test_window):
         """
         Get the next message from the test_driver. If the protocol supports bidi scripts, the messages are processed
@@ -779,7 +807,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             # coroutine is finished as well.
             wrapped_script = """async function(...args){
                             return new Promise((resolve, reject) => {
-                                args.push((value)=>resolve(JSON.stringify(value)));
+                                args.push(resolve);
                                 (async function(){
                                     %s
                                 }).apply(null, args);
@@ -791,15 +819,19 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
                 "value": strip_server(url)
             }
 
-            return protocol.loop.run_until_complete(protocol.bidi_script.async_call_function(
+            message = protocol.loop.run_until_complete(protocol.bidi_script.async_call_function(
                 wrapped_script, context=test_window,
                 args=[bidi_url_argument]))
+
+            self.logger.debug("Received BiDi message from test_driver: %s" % message)
+            # The message is a BiDi action. Deserialize it.
+            deserialized_message = self.bidi_deserialize(message)
+            self.logger.debug("Deserialized message from test_driver: %s" % deserialized_message)
+            return deserialized_message
         else:
             # If `bidi_script` is not available, use the classic WebDriver async script execution. This will
             # block the event loop until the test_driver send a message.
-            return protocol.base.execute_script(self.script_resume, asynchronous=True, context=test_window,
-                                                args=[strip_server(url)])
-
+            return protocol.base.execute_script(self.script_resume, asynchronous=True, args=[strip_server(url)])
 
 class WebDriverRefTestExecutor(RefTestExecutor):
     protocol_cls = WebDriverProtocol

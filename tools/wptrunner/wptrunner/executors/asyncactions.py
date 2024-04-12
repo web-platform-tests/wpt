@@ -9,7 +9,9 @@ class BidiSessionSubscribeAction:
         self.protocol = protocol
 
     async def __call__(self, payload):
-        return await self.protocol.bidi_events.subscribe(payload["events"], payload["contexts"])
+        events = payload["events"]
+        contexts = [c["window-fcc6-11e5-b4f8-330a88ab9d7f"] if isinstance(c, dict) else c for c in payload["contexts"]]
+        return await self.protocol.bidi_events.subscribe(events, contexts)
 
 
 async_actions = [BidiSessionSubscribeAction]

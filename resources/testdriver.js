@@ -63,10 +63,11 @@
                     /**
                      * Subscribe to the `log.entryAdded` event. This does not actual listeners. To listen to the event,
                      * use `on` method.
+                     * @param {{contexts?: (string | Window)[]}} props - Parameters for the subscription.
                      * @return {Promise<void>}
                      */
-                    subscribe: async function () {
-                        return window.test_driver_internal.bidi.log.entry_added.subscribe();
+                    subscribe: async function (props = {}) {
+                        return window.test_driver_internal.bidi.log.entry_added.subscribe(props);
                     },
                     /**
                      * Add an event listener for the `log.entryAdded

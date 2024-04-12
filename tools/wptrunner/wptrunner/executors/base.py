@@ -800,17 +800,17 @@ class AsyncCallbackHandler(CallbackHandler):
 
     def process_action(self, url, payload):
         action = payload["action"]
-        cmd_id = payload["id"]
         if action in self.async_actions:
             # Schedule async action to be processed in the event loop and return immediately.
-            self.logger.debug(f"Scheduling async action processing: {action}")
-            self.loop.create_task(self._process_async_action(action, cmd_id, payload))
+            self.logger.debug(f"Scheduling async action processing: {action}, {payload}")
+            self.loop.create_task(self._process_async_action(action, payload))
             return False, None
         else:
             # Fallback to the default action processing, which will fail if the action is not implemented.
+            self.logger.debug(f"Processing synchronous action: {action}, {payload}")
             return super().process_action(url, payload)
 
-    async def _process_async_action(self, action, cmd_id, payload):
+    async def _process_async_action(self, action, payload):
         """
         Process async action and send the result back to the test driver.
 
@@ -818,7 +818,7 @@ class AsyncCallbackHandler(CallbackHandler):
         not raise unexpected exceptions.
         """
         async_action_handler = self.async_actions[action]
-
+        cmd_id = payload["id"]
         try:
             result = await async_action_handler(payload)
         except AttributeError as e:

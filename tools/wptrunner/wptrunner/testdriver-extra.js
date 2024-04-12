@@ -167,14 +167,14 @@
         return pending_promise;
     };
 
-    const subscribe = function(events, contexts) {
-        return create_action("bidi.session.subscribe", {events, contexts});
+    const subscribe = function(props) {
+        return create_action("bidi.session.subscribe", {...props});
     };
 
     window.test_driver_internal.in_automation = true;
 
-    window.test_driver_internal.bidi.log.entry_added.subscribe = function () {
-        return subscribe(["log.entryAdded"], null)
+    window.test_driver_internal.bidi.log.entry_added.subscribe = function (props) {
+        return subscribe({...(props ?? {}), events: ["log.entryAdded"]})
     };
 
     window.test_driver_internal.bidi.log.entry_added.on = function (callback) {

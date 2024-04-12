@@ -54,9 +54,8 @@
     <script src='./externalScript.js'
         integrity="sha256-wIc3KtqOuTFEu6t17sIBuOswgkV406VJvhSk79Gw6U0="></script>
     <script nonce='dummy'>
-        async_test(function(t) {
+        test(function(t) {
             assert_true(externalRan);
-            t.done();
         }, "External script in a script tag with matching SRI hash is allowed with `strict-dynamic`.");
     </script>
 </body>

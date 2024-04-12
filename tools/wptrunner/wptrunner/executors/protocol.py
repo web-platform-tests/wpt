@@ -328,11 +328,12 @@ class BidiEventsProtocolPart(ProtocolPart):
     name = "bidi_events"
 
     @abstractmethod
-    async def subscribe(self, events, contexts):
+    async def subscribe(self, events, contexts=None):
         """Subscribe to events.
 
         :param list events: The list of events names to subscribe to.
-        :param list contexts: The list of contexts to subscribe to. None for global subscription"""
+        :param list contexts: The list of contexts to subscribe to. None for global subscription. None for global
+               subscription."""
         pass
 
     @abstractmethod
@@ -368,6 +369,18 @@ class BidiScriptProtocolPart(ProtocolPart):
         :param str script: The js source to execute.
         :param str context: The context in which to execute the script.
         :param list args: The arguments to pass to the script.
+        """
+        pass
+
+    @abstractmethod
+    async def add_preload_script(self, script, contexts=None, arguments=None, sandbox=None):
+        """
+        Adds preload script to the given context or globally.
+
+        :param str script: The js source to execute.
+        :param list contexts: The context in which to execute the script.
+        :param list arguments: List of channels to pass to the script.
+        :param str sandbox: The sandbox in which to execute the script.
         """
         pass
 

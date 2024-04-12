@@ -120,7 +120,7 @@ class WebDriverBidiEventsProtocolPart(BidiEventsProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
-    async def subscribe(self, events, contexts):
+    async def subscribe(self, events, contexts=None):
         self.logger.info("Subscribing to events %s in %s" % (events, contexts))
         self._subscriptions.append((events, contexts))
         return await self.webdriver.bidi_session.session.subscribe(events=events, contexts=contexts)
@@ -133,7 +133,7 @@ class WebDriverBidiEventsProtocolPart(BidiEventsProtocolPart):
             await self.webdriver.bidi_session.session.unsubscribe(events=events, contexts=contexts)
 
     def add_event_listener(self, fn, event=None):
-        print("adding event listener %s" % event)
+        self.logger.info("adding event listener %s" % event)
         return self.webdriver.bidi_session.add_event_listener(name=event, fn=fn)
 
 
@@ -155,6 +155,13 @@ class WebDriverBidiScriptProtocolPart(BidiScriptProtocolPart):
         if result["type"] != "string":
             raise Exception("Unexpected result")
         return json.loads(result["value"])
+
+    async def add_preload_script(self, script, contexts=None, arguments=None, sandbox=None):
+        return await self.webdriver.bidi_session.script.add_preload_script(
+            function_declaration=script,
+            contexts=contexts,
+            arguments=arguments,
+            sandbox=sandbox)
 
 
 class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):

@@ -10,7 +10,7 @@
 "use strict";
 setup({ allow_uncaught_exception: true });
 
-async_test(t => {
+promise_test(async t => {
   window.log = ["before any script execution"];
 
   window.addEventListener("error", ev => {
@@ -22,7 +22,7 @@ async_test(t => {
   noErrorScript.async = true;
   noErrorScript.textContent = "window.log.push('no error script executed');";
 
-  // This should queue a microtask to run the script, but not run it immediately.
+  // This should queue a task to run the script, but not run it immediately.
   document.head.append(noErrorScript);
 
   log.push("after inserting noErrorScript");
@@ -36,7 +36,7 @@ async_test(t => {
   parseErrorScript.async = true;
   parseErrorScript.textContent = "+++++";
 
-  // This should queue a microtask to fire the error event, but not fire it immediately.
+  // This should queue a task to fire the error event, but not fire it immediately.
   document.head.append(parseErrorScript);
 
   log.push("after inserting parseErrorScript");
@@ -46,14 +46,25 @@ async_test(t => {
     "after inserting parseErrorScript"
   ]);
 
-  queueMicrotask(t.step_func_done(() => {
+  // After a microtask, the script run / error event must not happen.
+  queueMicrotask(t.step_func(() => {
     assert_array_equals(window.log, [
       "before any script execution",
       "after inserting noErrorScript",
-      "after inserting parseErrorScript",
-      "no error script executed",
-      "error event on Window"
+      "after inserting parseErrorScript"
     ]);
   }));
+
+  // But it must eventually happen, after a full task.
+  await t.step_wait(() => window.log.length == 5, "5 items must eventually be logged");
+
+  // And when it does the order must be correct.
+  assert_array_equals(window.log, [
+    "before any script execution",
+    "after inserting noErrorScript",
+    "after inserting parseErrorScript",
+    "no error script executed",
+    "error event on Window"
+  ]);
 });
 </script>

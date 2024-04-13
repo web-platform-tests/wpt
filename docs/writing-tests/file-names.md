@@ -26,8 +26,8 @@ test types are mutually exclusive.
 
 ### Test Features
 
-These flags are preceded and followed by a `.` in the filename, but are otherwise
-unordered.
+These flags are preceded and followed by a `.` in the filename, and must themselves
+go after any test type flag, but are otherwise unordered.
 
 
 `.https`

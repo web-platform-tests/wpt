@@ -127,13 +127,13 @@
         <li>y</li>
       </ul>
 
-       <!-- native platform elements with non-standard rendering -->
-       <button aria-hidden="false" style="display: flex;" data-testname="button with display: contents, aria-hidden='false' is not hidden" data-expectedrole="button" class="ex-role">x></button>
-       <input aria-hidden="false" style="display: flex;" type="checkbox" data-testname="input[checkbox] with display: contents, aria-hidden='false' is not hidden" data-expectedrole="checkbox" class="ex-role">
-       <h3 aria-hidden="false" style="display: contents;" data-testname="h3 with display: contents, aria-hidden='false' is not hidden" data-expectedrole="heading" class="ex-role">x</h3>
-       <nav aria-hidden="false" style="display: contents;" data-testname="nav with display: contents nav,  aria-hidden='false' is not hidden" data-expectedrole="navigation" class="ex-role">x</nav>
-       <button aria-hidden="false" style="transform: scale(0);" data-testname="button with transform: scale(0) and aria-hidden='false' is not hidden" data-expectedrole="button" class="ex-role">x></button>
-       <p aria-hidden="false" data-testname="p with aria-hidden='false' and clip-path sr-only class is not hidden" data-expectedrole="paragraph" class="sr-only ex-role">x</p>
+      <!-- native platform elements with non-standard rendering -->
+      <button aria-hidden="false" style="display: flex;" data-testname="button with display: contents, aria-hidden='false' is not hidden" data-expectedrole="button" class="ex-role">x></button>
+      <input aria-hidden="false" style="display: flex;" type="checkbox" data-testname="input[checkbox] with display: contents, aria-hidden='false' is not hidden" data-expectedrole="checkbox" class="ex-role">
+      <h3 aria-hidden="false" style="display: contents;" data-testname="h3 with display: contents, aria-hidden='false' is not hidden" data-expectedrole="heading" class="ex-role">x</h3>
+      <nav aria-hidden="false" style="display: contents;" data-testname="nav with display: contents nav,  aria-hidden='false' is not hidden" data-expectedrole="navigation" class="ex-role">x</nav>
+      <button aria-hidden="false" style="transform: scale(0);" data-testname="button with transform: scale(0) and aria-hidden='false' is not hidden" data-expectedrole="button" class="ex-role">x></button>
+      <p aria-hidden="false" data-testname="p with aria-hidden='false' and clip-path sr-only class is not hidden" data-expectedrole="paragraph" class="sr-only ex-role">x</p>
 
       <!-- explicit ARIA roles -->
       <div aria-hidden="false" role="button" tabindex="0" data-testname="div with aria-hidden='false', button role and tabindex='0' is not hidden" data-expectedrole="button" class="ex-role">x</div>
@@ -149,11 +149,9 @@
       <div role="tabpanel" hidden>x</div>
       <div aria-hidden="false" role="tabpanel" data-testname="div with aria-hidden='false' and tabpanel role is not hidden" data-expectedrole="tabpanel" class="ex-role">x</div>
 
-    <h2><code>aria-hidden="undefined"</code></h2>
-
     <script>
-      //AriaUtils.verifyRolesBySelector(".ex-role");
-      //AriaUtils.verifyGenericRolesBySelector(".ex-generic");
+      AriaUtils.verifyRolesBySelector(".ex-role");
+      AriaUtils.verifyGenericRolesBySelector(".ex-generic");
       //need method to test html/body elements dynamically for aria-hidden=false/undefined
     </script>
   </body>

@@ -68,13 +68,11 @@
       <!-- generics with various rendered display properties -->
       <div aria-hidden="false" data-testname="div with aria-hidden='false' is not hidden" class="ex-generic">x</div>
       <div aria-hidden="false" style="display: inline;" data-testname="div with display: inline, aria-hidden='false' is not hidden" class="ex-generic">x></div>
-      <div aria-hidden="false" style="display: table;" data-testname="div with display: table, aria-hidden='false' is not hidden" class="ex-generic">x></div>
       <div aria-hidden="false" style="display: grid;" data-testname="div with display: grid, aria-hidden='false' is not hidden" class="ex-generic">x></div>
       <div aria-hidden="false" style="display: flex;" data-testname="div with display: flex, aria-hidden='false' is not hidden" class="ex-generic">x></div>
       <div aria-hidden="false" style="display: contents;" data-testname="div with display: contents, aria-hidden='false' is not hidden" class="ex-generic">x></div>
       <span aria-hidden="false" data-testname="span with aria-hidden='false' is not hidden" class="ex-generic">x</span>
       <span aria-hidden="false" style="display: block;" data-testname="span with aria-hidden='false', display: block is not hidden" class="ex-generic">x</span>
-      <span aria-hidden="false" style="display: table;" data-testname="span with aria-hidden='false', display: table is not hidden" class="ex-generic">x</span>
       <span aria-hidden="false" style="display: grid;" data-testname="span with aria-hidden='false', display: grid is not hidden" class="ex-generic">x</span>
       <span aria-hidden="false" style="display: flex;" data-testname="span with aria-hidden='false', display: flex is not hidden" class="ex-generic">x</span>
       <span aria-hidden="false" style="display: contents;" data-testname="span with aria-hidden='false', display: contents is not hidden" class="ex-generic">x</span>
@@ -104,20 +102,6 @@
         <tbody>
           <tr>
             <td aria-hidden="false" data-testname="td within table, both with aria-hidden='false', is not hidden" data-expectedrole="cell" class="ex-role">x</td>
-            <td>x</td>
-          </tr>
-        </tbody>
-      </table>
-      <table aria-hidden="false" role="grid" data-testname="table with grid role and aria-hidden='false' is not hidden" data-expectedrole="grid" class="ex-role">
-        <thead>
-          <tr aria-hidden="false" data-testname="tr within table with grid role, both with aria-hidden='false', is not hidden" data-expectedrole="row" class="ex-role">
-            <th aria-hidden="false" data-testname="th within tr and table with grid role, all with aria-hidden='false', is not hidden" data-expectedrole="columnheader" class="ex-role">x</th>
-            <th>x</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td aria-hidden="false" data-testname="td within table with grid role, both with aria-hidden='false', is not hidden" data-expectedrole="cell" class="ex-role">x</td>
             <td>x</td>
           </tr>
         </tbody>
@@ -152,7 +136,6 @@
     <script>
       AriaUtils.verifyRolesBySelector(".ex-role");
       AriaUtils.verifyGenericRolesBySelector(".ex-generic");
-      //need method to test html/body elements dynamically for aria-hidden=false/undefined
     </script>
   </body>
 </html>

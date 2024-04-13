@@ -64,9 +64,20 @@
     <h2><code>aria-hidden="false"</code></h2>
 
       <div aria-hidden="false" data-testname="div with aria-hidden='false' is not hidden" class="ex-generic">x</div>
+      <div aria-hidden="false" style="display: inline;" data-testname="div with display: inline, aria-hidden='false' is not hidden" class="ex-generic">x></div>
+      <div aria-hidden="false" style="display: table;" data-testname="div with display: table, aria-hidden='false' is not hidden" class="ex-generic">x></div>
+      <div aria-hidden="false" style="display: grid;" data-testname="div with display: grid, aria-hidden='false' is not hidden" class="ex-generic">x></div>
+      <div aria-hidden="false" style="display: flex;" data-testname="div with display: flex, aria-hidden='false' is not hidden" class="ex-generic">x></div>
+      <div aria-hidden="false" style="display: contents;" data-testname="div with display: contents, aria-hidden='false' is not hidden" class="ex-generic">x></div>
       <span aria-hidden="false" data-testname="span with aria-hidden='false' is not hidden" class="ex-generic">x</span>
+      <span aria-hidden="false" style="display: block;" data-testname="span with aria-hidden='false', display: block is not hidden" class="ex-generic">x</span>
+      <span aria-hidden="false" style="display: table;" data-testname="span with aria-hidden='false', display: table is not hidden" class="ex-generic">x</span>
+      <span aria-hidden="false" style="display: grid;" data-testname="span with aria-hidden='false', display: grid is not hidden" class="ex-generic">x</span>
+      <span aria-hidden="false" style="display: flex;" data-testname="span with aria-hidden='false', display: flex is not hidden" class="ex-generic">x</span>
+      <span aria-hidden="false" style="display: contents;" data-testname="span with aria-hidden='false', display: contents is not hidden" class="ex-generic">x</span>
 
       <button aria-hidden="false" data-testname="button with aria-hidden='false' is not hidden" data-expectedrole="button" class="ex-role">x></button>
+      <input type="checkbox" aria-hidden="false" data-testname="input[checkbox] with aria-hidden='false' is not hidden" data-expectedrole="checkbox" class="ex-role">
       <h3 aria-hidden="false" data-testname="h3 with aria-hidden='false' is not hidden" data-expectedrole="heading" class="ex-role">x</h3>
       <nav aria-hidden="false" data-testname="nav with aria-hidden='false' is not hidden" data-expectedrole="navigation" class="ex-role">x</nav>
 
@@ -76,11 +87,17 @@
       <span aria-hidden="false" role="link" tabindex="0" data-testname="span with aria-hidden='false', link role and tabindex='0' is not hidden" data-expectedrole="link" class="ex-role">x</span>
       <span aria-hidden="false" role="region" aria-label="label" data-testname="span with aria-hidden='false', region role and aria-label is not hidden" data-expectedrole="region" class="ex-role">x</span>
 
-      <button style="display: contents;" aria-hidden="false" data-testname="display: contents button and aria-hidden='false' is not hidden" data-expectedrole="button" class="ex-role">x></button>
-      <h3 style="display: contents;" aria-hidden="false" data-testname="display: contents h3 and aria-hidden='false' is not hidden" data-expectedrole="heading" class="ex-role">x</h3>
-      <nav style="display: contents;" aria-hidden="false" data-testname="display: contents nav and aria-hidden='false' is not hidden" data-expectedrole="navigation" class="ex-role">x</nav>
+      <div role="tablist">
+        <div role="tab">x</div>
+        <div role="tab" aria-selected="true">x</div>
+      </div>
+      <div role="tabpanel" hidden>x</div>
+      <div aria-hidden="false" role="tabpanel" data-testname="div with aria-hidden='false' and tabpanel role is not hidden" data-expectedrole="tabpanel" class="ex-role">x</div>
 
-      <div style="display: block;" aria-hidden="false" data-testname="display: block div and aria-hidden='false' is not hidden" data-expectedrole="button" class="ex-role">x></div>
+      <button style="display: contents;" aria-hidden="false" data-testname="button with display: contents, aria-hidden='false' is not hidden" data-expectedrole="button" class="ex-role">x></button>
+      <input type="checkbox" style="display: contents;" aria-hidden="false" data-testname="input[checkbox] with display: contents, aria-hidden='false' is not hidden" data-expectedrole="checkbox" class="ex-role">
+      <h3 style="display: contents;" aria-hidden="false" data-testname="h3 with display: contents, aria-hidden='false' is not hidden" data-expectedrole="heading" class="ex-role">x</h3>
+      <nav style="display: contents;" aria-hidden="false" data-testname="nav with display: contents nav,  aria-hidden='false' is not hidden" data-expectedrole="navigation" class="ex-role">x</nav>
 
     <h2><code>aria-hidden="undefined"</code></h2>
 

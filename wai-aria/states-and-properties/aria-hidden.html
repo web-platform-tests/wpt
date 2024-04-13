@@ -9,25 +9,85 @@
     <script src="/resources/testdriver-actions.js"></script>
     <script src="/wai-aria/scripts/aria-utils.js"></script>
   </head>
+  <style>
+    .sr-only {
+      clip: rect(1px, 1px, 1px, 1px);
+      clip-path: inset(50%);
+      height: 1px;
+      width: 1px;
+      margin: -1px;
+      overflow: hidden;
+      padding: 0;
+      position: absolute;
+    }
+  </style>
   <body>
     <h1><code>aria-hidden</code> Tests</h1>
     <p>Tests the <a href="https://pr-preview.s3.amazonaws.com/w3c/aria/pull/2090.html#aria-hidden">aria-hidden</a>
       ARIA state and its potential values (e.g., <code>true</code>, <code>false</code>, <code>undefined</code>)</p>
     <!-- Possible aria-hidden values:
-      - "true" = The element is hidden from the accessibility API.
-      - "false" = The element's hidden state is determined by the user agent based on whether it is rendered. Synonym of undefined.
-      - "undefined" = synonym of "false". -->
+      - "true" = The element is hidden from the accessibility API
+      - "false" = The element's hidden state is determined by the user agent based on whether it is rendered. Synonym of undefined
+      - "undefined" = synonym of "false"
+
+    General web techniques related to showing/hiding content:
+      Rendered:
+        - display: <anything besides 'none'> = rendered
+        - visibility: visible = rendered
+        - clipped/off-screen text = rendered
+        - aria-hidden = rendered (but hidden from assistive technologies)
+      Not rendered:
+        - visibility: collapse = not rendered
+        - display: none = not rendered
+        - HTML5 hidden = not rendered
+        - transform(0) = not rendered (but conveyed by assistive technologies)
+        - visibility: hidden = not rendered
+    -->
 
     <h2><code>aria-hidden="true"</code></h2>
-    <!-- Blocked, awaiting WebDriver extension for querying accessibility tree outside of role/name: https://github.com/WICG/aom/issues/203 -->
+    <!-- Blocked, awaiting WebDriver extension for querying accessibility tree outside of role/name per aom #203 https://github.com/WICG/aom/issues/203 -->
+
+    <!-- To-do:
+      - Non-interactives: <h1>, <p>, <div>, <span> <img>, etc.
+      - Sectioning elements: <main>, <nav>, etc.
+      - Nested content: <span> inside <button>, <span> inside <span>, etc.
+      - Focusable elements (note: these should remove aria-hidden on the element and ancestors per aria #1255 https://github.com/w3c/aria/issues/1255)
+        - natively focusable elements: <a>, <button>, <input type"..."">, <textarea>, etc.
+        - script focusable elements: <div tabindex="-1">, etc.
+        - ARIA role equivalents that are focusable: link, button, tab, etc.
+      - General ARIA roles: heading, tabpanel, tree, cell, gridcell, listitem etc.
+      - Root elements: <html> <body> (note: aria-hidden must be ignored on document root elements per #1254 https://github.com/w3c/aria/issues/1254)
+        - Also need additional tests for standalone SVG documents
+      - SVG fragment
+    -->
 
     <h2><code>aria-hidden="false"</code></h2>
+
+      <div aria-hidden="false" data-testname="div with aria-hidden='false' is not hidden" class="ex-generic">x</div>
+      <span aria-hidden="false" data-testname="span with aria-hidden='false' is not hidden" class="ex-generic">x</span>
+
+      <button aria-hidden="false" data-testname="button with aria-hidden='false' is not hidden" data-expectedrole="button" class="ex-role">x></button>
+      <h3 aria-hidden="false" data-testname="h3 with aria-hidden='false' is not hidden" data-expectedrole="heading" class="ex-role">x</h3>
+      <nav aria-hidden="false" data-testname="nav with aria-hidden='false' is not hidden" data-expectedrole="navigation" class="ex-role">x</nav>
+
+      <div aria-hidden="false" role="button" tabindex="0" data-testname="div with aria-hidden='false', button role and tabindex='0' is not hidden" data-expectedrole="button" class="ex-role">x</div>
+      <div aria-hidden="false" role="heading" aria-level="3" data-testname="div with aria-hidden='false', heading role and aria-level='3' is not hidden" data-expectedrole="heading" class="ex-role">x</div>
+      <div aria-hidden="false" role="nav" aria-label="label" data-testname="div with aria-hidden='false', navigation role and aria-label is not hidden" data-expectedrole="navigation" class="ex-role">x</div>
+      <span aria-hidden="false" role="link" tabindex="0" data-testname="span with aria-hidden='false', link role and tabindex='0' is not hidden" data-expectedrole="link" class="ex-role">x</span>
+      <span aria-hidden="false" role="region" aria-label="label" data-testname="span with aria-hidden='false', region role and aria-label is not hidden" data-expectedrole="region" class="ex-role">x</span>
+
+      <button style="display: contents;" aria-hidden="false" data-testname="display: contents button and aria-hidden='false' is not hidden" data-expectedrole="button" class="ex-role">x></button>
+      <h3 style="display: contents;" aria-hidden="false" data-testname="display: contents h3 and aria-hidden='false' is not hidden" data-expectedrole="heading" class="ex-role">x</h3>
+      <nav style="display: contents;" aria-hidden="false" data-testname="display: contents nav and aria-hidden='false' is not hidden" data-expectedrole="navigation" class="ex-role">x</nav>
+
+      <div style="display: block;" aria-hidden="false" data-testname="display: block div and aria-hidden='false' is not hidden" data-expectedrole="button" class="ex-role">x></div>
 
     <h2><code>aria-hidden="undefined"</code></h2>
 
     <script>
-      //AriaUtils.verifyRolesAndLabelsBySelector(".ex-role-and-label");
+      //AriaUtils.verifyRolesBySelector(".ex-role");
       //AriaUtils.verifyGenericRolesBySelector(".ex-generic");
+      //need method to test html/body elements dynamically for aria-hidden=false/undefined
     </script>
   </body>
 </html>

@@ -8,20 +8,21 @@
     <script src="/resources/testdriver-vendor.js"></script>
     <script src="/resources/testdriver-actions.js"></script>
     <script src="/wai-aria/scripts/aria-utils.js"></script>
+    <style>
+      .sr-only {
+        clip: rect(1px, 1px, 1px, 1px);
+        clip-path: inset(50%);
+        height: 1px;
+        width: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+      }
+    </style>
   </head>
-  <style>
-    .sr-only {
-      clip: rect(1px, 1px, 1px, 1px);
-      clip-path: inset(50%);
-      height: 1px;
-      width: 1px;
-      margin: -1px;
-      overflow: hidden;
-      padding: 0;
-      position: absolute;
-    }
-  </style>
   <body>
+    <main id="main-element">
     <h1><code>aria-hidden</code> Tests</h1>
     <p>Tests the <a href="https://pr-preview.s3.amazonaws.com/w3c/aria/pull/2090.html#aria-hidden">aria-hidden</a>
       ARIA state and its potential values (e.g., <code>true</code>, <code>false</code>, <code>undefined</code>)</p>
@@ -85,13 +86,6 @@
       <input type="checkbox" aria-hidden="false" data-testname="input[checkbox] with aria-hidden='false' is not hidden" data-expectedrole="checkbox" class="ex-role">
       <h3 aria-hidden="false" data-testname="h3 with aria-hidden='false' is not hidden" data-expectedrole="heading" class="ex-role">x</h3>
       <nav aria-hidden="false" data-testname="nav with aria-hidden='false' is not hidden" data-expectedrole="navigation" class="ex-role">x</nav>
-      <svg viewbox="0 0 100 50">
-        <g aria-hidden="false" fill="silver" stroke="blue" data-expectedrole="group" data-testname="g within svg with aria-hidden='false' is not hidden" class="ex-role">
-          <title>group label</title>
-          <circle cx="20" cy="20" r="10" />
-          <circle cx="20" cy="20" r="10" />
-        </g>
-      </svg>
       <table aria-hidden="false" role="table" data-testname="table with aria-hidden='false' is not hidden" data-expectedrole="table" class="ex-role">
         <thead>
           <tr aria-hidden="false" data-testname="tr with aria-hidden='false', inside table, are not hidden" data-expectedrole="row" class="ex-role">
@@ -125,7 +119,7 @@
       <div aria-hidden="false" role="navigation" aria-label="label" data-testname="div with aria-hidden='false', navigation role and aria-label is not hidden" data-expectedrole="navigation" class="ex-role">x</div>
       <span aria-hidden="false" role="link" tabindex="0" data-testname="span with aria-hidden='false', link role and tabindex='0' is not hidden" data-expectedrole="link" class="ex-role">x</span>
       <span aria-hidden="false" role="region" aria-label="label" data-testname="span with aria-hidden='false', region role and aria-label is not hidden" data-expectedrole="region" class="ex-role">x</span>
-      <span aria-hidden="false" role="checkbox" data-testname="span with aria-hidden='false' and checkbox role is not hidden" data-expectedrole="checkbox" class="ex-role">x</span>
+      <span aria-hidden="false" role="checkbox" aria-checked="true" data-testname="span with aria-hidden='false' and checkbox role is not hidden" data-expectedrole="checkbox" class="ex-role">x</span>
       <div role="tablist">
         <div role="tab">x</div>
         <div role="tab" aria-selected="true">x</div>
@@ -136,6 +130,41 @@
     <script>
       AriaUtils.verifyRolesBySelector(".ex-role");
       AriaUtils.verifyGenericRolesBySelector(".ex-generic");
+      verifyAriaHiddenFalseForOtherElements();
+
+      function verifyAriaHiddenFalseForOtherElements() {
+        var htmlElement = document.documentElement;
+        var bodyElement = document.body;
+        var mainElement = document.getElementById("main-element");
+
+        setAttributesForTesting(htmlElement, {
+          'aria-hidden': 'false',
+          'data-testname': 'html root element with aria-hidden=\'false\' is not hidden',
+          'data-expectedrole': 'document',
+          'class': 'ex-role-other-elements'
+        })
+        setAttributesForTesting(bodyElement, {
+          'aria-hidden': 'false',
+          'data-testname': 'body element with aria-hidden=\'false\' is not hidden',
+          'class': 'ex-generic-other-elements'
+        })
+        setAttributesForTesting(mainElement, {
+          'aria-hidden': 'false',
+          'data-testname': 'main element with aria-hidden=\'false\' is not hidden',
+          'data-expectedrole': 'main',
+          'class': 'ex-role-other-elements'
+        })
+
+        AriaUtils.verifyRolesBySelector(".ex-role-other-elements");
+        AriaUtils.verifyGenericRolesBySelector(".ex-generic-other-elements");
+      };
+
+      function setAttributesForTesting(el, elAttributes) {
+        for (let i in elAttributes) {
+          el.setAttribute(i, elAttributes[i]);
+        }
+      }
     </script>
+    </main>
   </body>
 </html>

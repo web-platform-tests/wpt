@@ -207,9 +207,9 @@ class SourceFile:
         if "-" in name:
             type_meta = name.rsplit("-", 1)[1].split(".")
             type_flag = type_meta[0]
-            meta_flags = type_meta[1:-1]
+            meta_flags = type_meta[1:]
         else:
-            meta_flags = name.split(".")[1:-1]
+            meta_flags = name.split(".")[1:]
 
         self.tests_root: Text = tests_root
         self.rel_path: Text = rel_path

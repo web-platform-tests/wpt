@@ -8,7 +8,6 @@ import threading
 import time
 import traceback
 import uuid
-from typing import Any, Awaitable, Callable, Optional, Mapping
 from urllib.parse import urljoin
 
 from .base import (AsyncCallbackHandler,

@@ -44,6 +44,7 @@
         return pointerInteractablePaintTree.indexOf(element) !== -1;
     }
 
+
     /**
      * @namespace {test_driver}
      */
@@ -1077,7 +1078,7 @@
          */
         get_virtual_sensor_information: function(sensor_type, context=null) {
             return window.test_driver_internal.get_virtual_sensor_information(sensor_type, context);
-        },
+        }
     };
 
     window.test_driver_internal = {

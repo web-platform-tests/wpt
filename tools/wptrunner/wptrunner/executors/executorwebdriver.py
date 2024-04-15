@@ -120,7 +120,7 @@ class WebDriverBidiEventsProtocolPart(BidiEventsProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
-    async def subscribe(self, events, contexts=None):
+    async def subscribe(self, events, contexts):
         self.logger.info("Subscribing to events %s in %s" % (events, contexts))
         self._subscriptions.append((events, contexts))
         return await self.webdriver.bidi_session.session.subscribe(events=events, contexts=contexts)
@@ -713,7 +713,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
 
         while True:
             test_driver_message = self._get_next_message(protocol, url, test_window)
-            self.logger.debug("test_driver_message: %s" % test_driver_message)
+            self.logger.debug("Receive message from testdriver: %s" % test_driver_message)
 
             # As of 2019-03-29, WebDriver does not define expected behavior for
             # cases where the browser crashes during script execution:
@@ -819,12 +819,12 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
                 "value": strip_server(url)
             }
 
+            # `run_until_complete` allows processing BiDi events in the same loop while waiting for the next message.
             message = protocol.loop.run_until_complete(protocol.bidi_script.async_call_function(
                 wrapped_script, context=test_window,
                 args=[bidi_url_argument]))
             # The message is in WebDriver BiDi format. Deserialize it.
             deserialized_message = self.bidi_deserialize(message)
-            self.logger.debug("Deserialized message from test_driver: %s" % deserialized_message)
             return deserialized_message
         else:
             # If `bidi_script` is not available, use the classic WebDriver async script execution. This will

@@ -1,16 +1,26 @@
 <!DOCTYPE html>
 <title>History state change for iframe loading='lazy' before it is loaded: history.replaceState</title>
-<iframe data-src="support/blank.htm?foo" src="support/blank.htm?src" loading="lazy"></iframe>
+<iframe data-src="about:blank#foo" src="support/blank.htm?src" loading="lazy"></iframe>
 <script>
 const iframe = document.querySelector('iframe');
-// Should have no effect on lazy-loading
-iframe.contentWindow.history.replaceState(null, "", iframe.dataset.src);
+let replaceStateSuccess = true;
+try {
+  // Should have no effect on lazy-loading.
+  // Per https://html.spec.whatwg.org/#can-have-its-url-rewritten
+  // only the fragment can be changed for about: URLs.
+  iframe.contentWindow.history.replaceState(null, "", iframe.dataset.src);
+} catch(ex) {
+  replaceStateSuccess = false;
+}
+const locationAfterReplaceState = iframe.contentWindow.location.href;
 </script>
-<!-- Loading testharness.js here is intentional. -->
+<!-- Loading testharness.js here is intentional to reproduce a bug in WebKit. -->
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
 setup({single_test: true});
+assert_true(replaceStateSuccess);
+assert_equals(locationAfterReplaceState, new URL("about:blank#foo", location.href).href);
 onload = () => {
   step_timeout(() => {
     assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?src", location.href).href);
@@ -18,5 +28,6 @@ onload = () => {
   }, 1000);
 }
 </script>
-<!-- delay the load event -->
+<!-- Delay the load event for the same URLs as the potential lazy iframe navigations
+     to reduce unstable test results. -->
 <iframe src="support/blank.htm?src"></iframe>

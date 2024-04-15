@@ -6,7 +6,7 @@ const iframe = document.querySelector('iframe');
 // Should have no effect on lazy-loading
 iframe.contentWindow.location.reload();
 </script>
-<!-- Loading testharness.js here is intentional. -->
+<!-- Loading testharness.js here is intentional to reproduce a bug in WebKit. -->
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
@@ -18,5 +18,6 @@ onload = () => {
   }, 1000);
 }
 </script>
-<!-- delay the load event -->
+<!-- Delay the load event for the same URLs as the potential lazy iframe navigations
+     to reduce unstable test results. -->
 <iframe src="support/blank.htm?src"></iframe>

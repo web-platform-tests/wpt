@@ -7,18 +7,21 @@ const iframe = document.querySelector('iframe');
 const form = document.querySelector('form');
 form.submit();
 </script>
-<!-- Loading testharness.js here is intentional. -->
+<!-- Loading testharness.js here is intentional to reproduce a bug in WebKit. -->
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
 setup({single_test: true});
 onload = () => {
   step_timeout(() => {
+    // The "?" in the URL is there because the default method is "GET"
+    // and the form data (empty here) is populated into the query.
     assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?", location.href).href);
     done();
   }, 1000);
 };
 </script>
-<!-- delay the load event -->
+<!-- Delay the load event for the same URLs as the potential lazy iframe navigations
+     to reduce unstable test results. -->
 <iframe src="support/blank.htm?src"></iframe>
 <iframe src="support/blank.htm?"></iframe>

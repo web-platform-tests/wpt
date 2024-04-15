@@ -52,7 +52,7 @@ class BidiSessionSubscribeAction:
             for c in payload["contexts"]:
                 if isinstance(c, str):
                     contexts.append(c)
-                elif c["type"] == "window":
+                elif isinstance(c, dict) and "type" in c and c["type"] == "window":
                     contexts.append(c["value"]["context"])
                 else:
                     raise ValueError("Unexpected context type: %s" % c)

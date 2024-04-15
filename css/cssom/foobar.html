@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<link rel="help" href="https://example.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+  // ============= CSSFoo =============
+
+  let foo = new CSSFoo();
+
+  test(() => {
+    assert_equals(foo.length, 3);
+  }, 'CSSFoo.length');
+
+  test(() => {
+    assert_equals(foo[0], 'zero');
+    assert_equals(foo[1], 'one');
+    assert_equals(foo[2], 'two');
+  }, 'CSSFoo[i]');
+
+  test(() => {
+    assert_equals(foo.item(0), 'zero');
+    assert_equals(foo.item(1), 'one');
+    assert_equals(foo.item(2), 'two');
+  }, 'CSSFoo.item(i)');
+
+  test(() => {
+    assert_array_equals(Array.from(foo), ['zero', 'one', 'two']);
+  }, 'Array.from(CSSFoo)');
+
+  // ============= CSSBar =============
+
+  let bar = new CSSBar();
+
+  test(() => {
+    assert_equals(bar.length, 3);
+  }, 'CSSBar.length');
+
+  test(() => {
+    assert_equals(bar[0], 'zero');
+    assert_equals(bar[1], 'one');
+    assert_equals(bar[2], 'two');
+  }, 'CSSBar[i]');
+
+  test(() => {
+    assert_equals(bar.item(0), 'zero');
+    assert_equals(bar.item(1), 'one');
+    assert_equals(bar.item(2), 'two');
+  }, 'CSSBar.item(i)');
+  // FAIL: assert_equals: expected (string) "zero" but got (undefined) undefined
+
+  test(() => {
+    assert_array_equals(Array.from(bar), ['zero', 'one', 'two']);
+  }, 'Array.from(CSSBar)');
+  // FAIL: expected property 0 to be "zero" but got undefined (expected array
+  //       ["zero", "one", "two"] got [undefined, undefined, undefined])
+</script>

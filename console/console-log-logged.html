@@ -12,9 +12,7 @@
         await test_driver.bidi.log.entry_added.subscribe();
         // Add a listener for the log.entryAdded event. This will not subscribe to the event, so the subscription is
         // required before. The cleanup is done automatically after the test is finished.
-        let on_log_entry;
-        const log_entry_promise = new Promise(r => on_log_entry = r);
-        test_driver.bidi.log.entry_added.on(on_log_entry);
+        const log_entry_promise = new Promise(resolve => test_driver.bidi.log.entry_added.on(resolve));
         // Emit a console.log message.
         console.log(some_message)
         // Wait for the log.entryAdded event to be received.

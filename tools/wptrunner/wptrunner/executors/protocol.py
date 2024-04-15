@@ -371,18 +371,6 @@ class BidiScriptProtocolPart(ProtocolPart):
         """
         pass
 
-    @abstractmethod
-    async def add_preload_script(self, script, contexts=None, arguments=None, sandbox=None):
-        """
-        Adds preload script to the given context or globally.
-
-        :param str script: The js source to execute.
-        :param list contexts: The context in which to execute the script.
-        :param list arguments: List of channels to pass to the script.
-        :param str sandbox: The sandbox in which to execute the script.
-        """
-        pass
-
 
 class CookiesProtocolPart(ProtocolPart):
     """Protocol part for managing cookies"""

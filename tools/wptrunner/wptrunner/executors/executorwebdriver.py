@@ -153,13 +153,6 @@ class WebDriverBidiScriptProtocolPart(BidiScriptProtocolPart):
                 "context": context if context else self.current_window},
             await_promise=True)
 
-    async def add_preload_script(self, script, contexts=None, arguments=None, sandbox=None):
-        return await self.webdriver.bidi_session.script.add_preload_script(
-            function_declaration=script,
-            contexts=contexts,
-            arguments=arguments,
-            sandbox=sandbox)
-
 
 class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
     def setup(self):

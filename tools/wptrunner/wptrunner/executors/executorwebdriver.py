@@ -763,7 +763,11 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         return rv
 
     def bidi_deserialize(self, bidi_value):
-        # TODO: extend with other types.
+        """
+        Deserialize the BiDi value to the Python value, keeping non-common data typs (window) in BiDi format. The result
+        can have collisions with the classic values.
+        :param bidi_value: BiDi value to deserialize.
+        """
         if isinstance(bidi_value, str):
             return bidi_value
         if isinstance(bidi_value, int):
@@ -775,11 +779,10 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         if bidi_value["type"] == "boolean":
             return bidi_value["value"]
         if bidi_value["type"] == "number":
+            # TODO: extend with edge case values, like `Infinity`.
             return bidi_value["value"]
         if bidi_value["type"] == "string":
             return bidi_value["value"]
-        if bidi_value["type"] == "window":
-            return {"window-fcc6-11e5-b4f8-330a88ab9d7f": bidi_value["value"]["context"]}
         if bidi_value["type"] == "array":
             result = []
             for item in bidi_value["value"]:
@@ -790,6 +793,10 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             for item in bidi_value["value"]:
                 result[self.bidi_deserialize(item[0])] = self.bidi_deserialize(item[1])
             return result
+        if bidi_value["type"] == "window":
+            return bidi_value
+        # TODO: probably should return bidi value as-is, like `window` instead of raising exception. Keep for now to
+        #  check any regression in classic values.
         raise ValueError("Unexpected bidi value: %s" % bidi_value)
 
     def _get_next_message(self, protocol, url, test_window):

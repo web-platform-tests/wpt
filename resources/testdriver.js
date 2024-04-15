@@ -84,22 +84,6 @@
                     on: function (callback) {
                         return window.test_driver_internal.bidi.log.entry_added.on(callback);
                     },
-                    /**
-                     * Get a promise that resolves the next time the `log.entryAdded
-                     * <https://w3c.github.io/webdriver-bidi/#event-log-entryAdded>`_ event is fired.
-                     *
-                     * @returns {Promise<Object>}
-                     */
-                    once: function () {
-                        return new Promise((resolve) => {
-                            const remove_handle = window.test_driver_internal.bidi.log.entry_added.on(
-                                (event) => {
-                                    remove_handle();
-                                    resolve(event);
-                                }
-                            );
-                        });
-                    },
                 }
             }
         },

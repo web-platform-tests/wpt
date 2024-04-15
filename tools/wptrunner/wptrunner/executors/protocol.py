@@ -328,12 +328,11 @@ class BidiEventsProtocolPart(ProtocolPart):
     name = "bidi_events"
 
     @abstractmethod
-    async def subscribe(self, events, contexts=None):
+    async def subscribe(self, events, contexts):
         """Subscribe to events.
 
         :param list events: The list of events names to subscribe to.
-        :param list contexts: The list of contexts to subscribe to. None for global subscription. None for global
-               subscription."""
+        :param list contexts: The list of contexts to subscribe to. None for global subscription."""
         pass
 
     @abstractmethod

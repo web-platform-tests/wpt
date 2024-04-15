@@ -63,9 +63,10 @@
                     /**
                      * Subscribe to the `log.entryAdded` event. This does not add actual listeners. To listen to the
                      * event, use `on` method.
-                     * @param {{contexts?: (string | Window)[]}} props - Parameters for the subscription.
-                     * `contexts` is an array of window proxies or browsing context ids to listen to the event. If not
-                     * provided, the event subscription is global.
+                     * @param {{contexts?: null | (string | Window)[]}} props - Parameters for the subscription.
+                     * * `contexts`: an array of window proxies or browsing context ids to listen to the event. If not
+                     *   provided, the event subscription is done for the current window's browsing context. `null` for
+                     *   the global subscription.
                      * @return {Promise<void>}
                      */
                     subscribe: async function (props = {}) {

@@ -829,9 +829,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             message = protocol.loop.run_until_complete(protocol.bidi_script.async_call_function(
                 wrapped_script, context=test_window,
                 args=[bidi_url_argument]))
-
-            self.logger.debug("Received BiDi message from test_driver: %s" % message)
-            # The message is a BiDi action. Deserialize it.
+            # The message is in WebDriver BiDi format. Deserialize it.
             deserialized_message = self.bidi_deserialize(message)
             self.logger.debug("Deserialized message from test_driver: %s" % deserialized_message)
             return deserialized_message

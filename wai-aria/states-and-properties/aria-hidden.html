@@ -65,7 +65,7 @@
     -->
 
     <h2><code>aria-hidden="false"</code></h2>
-      <!-- generics with various rendered display properties -->
+      <!-- generics with various display properties -->
       <div aria-hidden="false" data-testname="div with aria-hidden='false' is not hidden" class="ex-generic">x</div>
       <div aria-hidden="false" style="display: inline;" data-testname="div with display: inline, aria-hidden='false' is not hidden" class="ex-generic">x></div>
       <div aria-hidden="false" style="display: grid;" data-testname="div with display: grid, aria-hidden='false' is not hidden" class="ex-generic">x></div>
@@ -104,7 +104,7 @@
         <li>y</li>
       </ul>
 
-      <!-- native platform elements with non-standard rendering -->
+      <!-- native platform elements with non-default rendering -->
       <button aria-hidden="false" style="display: flex;" data-testname="button with display: contents, aria-hidden='false' is not hidden" data-expectedrole="button" class="ex-role">x></button>
       <input aria-hidden="false" style="display: flex;" type="checkbox" data-testname="input[checkbox] with display: contents, aria-hidden='false' is not hidden" data-expectedrole="checkbox" class="ex-role">
       <h3 aria-hidden="false" style="display: contents;" data-testname="h3 with display: contents, aria-hidden='false' is not hidden" data-expectedrole="heading" class="ex-role">x</h3>

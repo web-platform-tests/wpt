@@ -52,12 +52,13 @@
 <li><p><a class="reference internal" href="#secure-payment-confirmation" id="id14">Secure Payment Confirmation</a></p></li>
 <li><p><a class="reference internal" href="#federated-credential-management" id="id15">Federated Credential Management</a></p></li>
 <li><p><a class="reference internal" href="#sensors" id="id16">Sensors</a></p></li>
-<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id17">Using test_driver in other browsing contexts</a></p></li>
-<li><p><a class="reference internal" href="#actions" id="id18">Actions</a></p>
+<li><p><a class="reference internal" href="#device-posture" id="id17">Device Posture</a></p></li>
+<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id18">Using test_driver in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#actions" id="id19">Actions</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id1" id="id19">Markup</a></p></li>
-<li><p><a class="reference internal" href="#id2" id="id20">API</a></p></li>
-<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id21">Using in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#id1" id="id20">Markup</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id21">API</a></p></li>
+<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id22">Using in other browsing contexts</a></p></li>
 </ul>
 </li>
 </ul>
@@ -889,6 +890,47 @@ WebDriver command.</p>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p><strong>Promise</strong> – Fulfilled with an Object with the properties described in <a class="reference external" href="https://w3c.github.io/sensors/#get-virtual-sensor-information-command">Get Virtual Sensor Information</a>. Rejected in case the WebDriver command errors out (including if a virtual sensor of the given type does not exist).</p>
 </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="device-posture">
+<h3>Device Posture<a class="headerlink" href="#device-posture" title="Link to this heading">¶</a></h3>
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.set_device_posture">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_device_posture</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">posture</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_device_posture" title="Link to this definition">¶</a></dt>
+<dd><p>Overrides device posture set by hardware.</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/device-posture/#set-device-posture">Set device posture</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>posture</strong> (<em>String</em>) – A <a class="reference external" href="https://w3c.github.io/device-posture/#dom-deviceposturetype">DevicePostureType</a> either “continuous” or “folded”.</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled when device posture is set. Rejected in case the WebDriver command errors out (including if a device posture of the given type does not exist).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.clear_device_posture">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">clear_device_posture</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.clear_device_posture" title="Link to this definition">¶</a></dt>
+<dd><p>Removes device posture override and returns device posture control
+back to hardware.</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/device-posture/#clear-device-posture">Clear device posture</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the device posture override has been removed. Rejected in case the WebDriver command errors out.</p>
 </dd>
 </dl>
 </dd></dl>

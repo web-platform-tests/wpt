@@ -42,10 +42,10 @@ that is a (recursive) descendent of the directory inherits the flag value.
 These are individually documented for each flag that supports it.</p>
 <section id="test-type">
 <h2>Test Type<a class="headerlink" href="#test-type" title="Link to this heading">¶</a></h2>
-<p>These flags must be the last element in the filename before the
-extension e.g. <code class="docutils literal notranslate"><span class="pre">foo-manual.html</span></code> will indicate a manual test, but
-<code class="docutils literal notranslate"><span class="pre">foo-manual-other.html</span></code> will not. Unlike test features, test types
-are mutually exclusive.</p>
+<p>These flags are preceded by a <code class="docutils literal notranslate"><span class="pre">-</span></code> and followed by a <code class="docutils literal notranslate"><span class="pre">.</span></code>, and must be the
+last such element in the filename, e.g. <code class="docutils literal notranslate"><span class="pre">foo-manual.html</span></code> will indicate
+a manual test, but <code class="docutils literal notranslate"><span class="pre">foo-manual-other.html</span></code> will not. Unlike test features,
+test types are mutually exclusive.</p>
 <p><code class="docutils literal notranslate"><span class="pre">-manual</span></code>
 : Indicates that a test is a non-automated test.</p>
 <p><code class="docutils literal notranslate"><span class="pre">-visual</span></code>
@@ -53,8 +53,8 @@ are mutually exclusive.</p>
 </section>
 <section id="test-features">
 <h2>Test Features<a class="headerlink" href="#test-features" title="Link to this heading">¶</a></h2>
-<p>These flags are preceded by a <code class="docutils literal notranslate"><span class="pre">.</span></code> in the filename, and must
-themselves precede any test type flag, but are otherwise unordered.</p>
+<p>These flags are preceded and followed by a <code class="docutils literal notranslate"><span class="pre">.</span></code> in the filename, and must themselves
+go after any test type flag, but are otherwise unordered.</p>
 <p><code class="docutils literal notranslate"><span class="pre">.https</span></code>
 : Indicates that a test is loaded over HTTPS.</p>
 <p><code class="docutils literal notranslate"><span class="pre">.h2</span></code>

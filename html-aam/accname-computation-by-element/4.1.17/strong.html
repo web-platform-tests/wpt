@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Accname computation tests for element: &lt;strong&gt;
+  </title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+</head>
+
+<body>
+
+  <h1>Accname computation tests for element: &lt;strong&gt;</h1>
+  <p>
+    <a href="https://www.w3.org/TR/html-aam-1.0/#text-level-element-accessible-name-computation">
+      Computation steps described in HTML-AAM 1.0
+    </a>
+  </p>
+
+  <h2>All possible accnames provided</h2>
+  <p id="label-el-01">aria-labelledby element text</p>
+  <strong
+    class="ex-label"
+    aria-labelledby="label-el-01"
+    aria-label="aria-label attribute value"
+    title="Title attribute value"
+    data-testname="All possible accnames provided"
+    data-expectedlabel="aria-labelledby element text"
+  >strong subtree</strong>
+
+  <h2>aria-labelledby eliminated</h2>
+  <strong
+    class="ex-label"
+    aria-label="aria-label attribute value"
+    title="Title attribute value"
+    data-testname="aria-labelledby eliminated"
+    data-expectedlabel="aria-label attribute value"
+  >strong subtree</strong>
+
+  <h2>aria-label eliminated</h2>
+  <strong
+    class="ex-label"
+    title="Title attribute value"
+    data-testname="aria-label eliminated"
+    data-expectedlabel="Title attribute value"
+  >strong subtree</strong>
+
+  <h2>title eliminated</h2>
+  <strong
+    class="ex-label"
+    data-testname="title eliminated"
+    data-expectedlabel=""
+  >strong subtree</strong>
+
+  <script>
+    AriaUtils.verifyLabelsBySelector(".ex-label");
+  </script>
+</body>
+
+</html>

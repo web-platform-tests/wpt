@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Accname computation tests for element: &lt;iframe&gt;
+  </title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+</head>
+
+<body>
+
+  <h1>Accname computation tests for element: &lt;iframe&gt;</h1>
+  <p>
+    <a href="https://www.w3.org/TR/html-aam-1.0/#iframe-element-accessible-name-computation">
+      Computation steps described in HTML-AAM 1.0
+    </a>
+  </p>
+
+  <h2>All possible accnames provided</h2>
+  <p id="label-el-01">aria-labelledby element text</p>
+  <iframe
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4053660.450535263!2d46.52494422266009!3d-7.166077152181472!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x22e02a53ba923a19%3A0x4363dd948132e22c!2zTWFow6k!5e0!3m2!1sen!2sus!4v1713417536078!5m2!1sen!2sus"
+    class="ex-label"
+    aria-labelledby="label-el-01"
+    aria-label="aria-label attribute value"
+    title="Title attribute value"
+    data-testname="All possible accnames provided"
+    data-expectedlabel="aria-labelledby element text"
+  ></iframe>
+
+  <h2>aria-labelledby eliminated</h2>
+  <iframe
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4053660.450535263!2d46.52494422266009!3d-7.166077152181472!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x22e02a53ba923a19%3A0x4363dd948132e22c!2zTWFow6k!5e0!3m2!1sen!2sus!4v1713417536078!5m2!1sen!2sus"
+    class="ex-label"
+    aria-label="aria-label attribute value"
+    title="Title attribute value"
+    data-testname="aria-labelledby eliminated"
+    data-expectedlabel="aria-label attribute value"
+  ></iframe>
+
+  <h2>aria-label eliminated</h2>
+  <iframe
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4053660.450535263!2d46.52494422266009!3d-7.166077152181472!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x22e02a53ba923a19%3A0x4363dd948132e22c!2zTWFow6k!5e0!3m2!1sen!2sus!4v1713417536078!5m2!1sen!2sus"
+    class="ex-label"
+    title="Title attribute value"
+    data-testname="aria-label eliminated"
+    data-expectedlabel="Title attribute value"
+  ></iframe>
+
+  <h2>title eliminated</h2>
+  <iframe
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4053660.450535263!2d46.52494422266009!3d-7.166077152181472!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x22e02a53ba923a19%3A0x4363dd948132e22c!2zTWFow6k!5e0!3m2!1sen!2sus!4v1713417536078!5m2!1sen!2sus"
+    class="ex-label"
+    data-testname="title eliminated"
+    data-expectedlabel=""
+  ></iframe>
+
+  <script>
+    AriaUtils.verifyLabelsBySelector(".ex-label");
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Accname computation tests for element: &lt;summary&gt;</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+</head>
+
+<body>
+
+  <h1>Accname computation tests for element: &lt;summary&gt;</h1>
+  <p>
+    <a href="https://www.w3.org/TR/html-aam-1.0/#summary-element-accessible-name-computation">
+      Computation steps described in HTML-AAM 1.0
+    </a>
+  </p>
+
+  <h2>All possible accnames provided</h2>
+  <p id="label-el-01">aria-labelledby element text</p>
+  <details>
+    <summary
+      class="ex-label"
+      aria-labelledby="label-el-01"
+      aria-label="aria-label attribute value"
+      title="Title attribute value"
+      data-testname="All possible accnames provided"
+      data-expectedlabel="aria-labelledby element text"
+    >Summary #1 subtree</summary>
+    <summary>Summary #2 subtree</summary>
+  </details>
+
+  <h2>aria-labelledby eliminated</h2>
+  <details>
+    <summary
+      class="ex-label"
+      aria-label="aria-label attribute value"
+      title="Title attribute value"
+      data-testname="aria-labelledby eliminated"
+      data-expectedlabel="aria-label attribute value"
+    >Summary #1 subtree</summary>
+    <summary>Summary #2 subtree</summary>
+  </details>
+
+  <h2>aria-label eliminated</h2>
+  <details>
+    <summary
+      class="ex-label"
+      title="Title attribute value"
+      data-testname="aria-label eliminated"
+      data-expectedlabel="Summary #1 subtree"
+    >Summary #1 subtree</summary>
+    <summary>Summary #2 subtree</summary>
+  </details>
+
+<!--
+    PR #44965 TODO: A present-but-empty summary causes web driver to choke?
+
+  <h2>Summary #1 subtree eliminated</h2>
+  <label for="el-04">Host label #1 text</label>
+  <details>
+    <summary
+      class="ex-label"
+      title="Title attribute value"
+      data-testname="Summary #1 subtree eliminated"
+      data-expectedlabel="Title attribute value"
+    ></summary>
+    <summary>Summary #2 subtree</summary>
+  </details>
+
+  <h2>title eliminated</h2>
+  <label for="el-04">Host label #1 text</label>
+  <details>
+    <summary
+      class="ex-label"
+      data-testname="Summary #1 subtree eliminated"
+      data-expectedlabel=""
+    ></summary>
+    <summary>Summary #2 subtree</summary>
+  </details>
+
+  -->
+
+  <script>
+    AriaUtils.verifyLabelsBySelector(".ex-label");
+  </script>
+</body>
+
+</html>

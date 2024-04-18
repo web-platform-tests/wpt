@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Accname computation tests for element: &lt;select&gt;</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+</head>
+
+<body>
+
+  <h1>Accname computation tests for element: &lt;select&gt;</h1>
+  <p>
+    <a href="https://www.w3.org/TR/html-aam-1.0/#other-form-elements-accessible-name-computation">
+      Computation steps described in HTML-AAM 1.0
+    </a>
+  </p>
+
+  <h2>All possible accnames provided</h2>
+  <p id="label-el-01">aria-labelledby element text</p>
+  <label for="el-01">Host label #1 text</label>
+  <label for="el-01">Host label #2 text</label>
+  <select
+    id="el-01"
+    value="Value attribute value"
+    class="ex-label"
+    aria-labelledby="label-el-01"
+    aria-label="aria-label attribute value"
+    title="Title attribute value"
+    data-testname="All possible accnames provided"
+    data-expectedlabel="aria-labelledby element text"
+  >
+    <option>Option inner text</option>
+  </select>
+
+  <h2>aria-labelledby eliminated</h2>
+  <label for="el-02">Host label #1 text</label>
+  <label for="el-02">Host label #2 text</label>
+  <select
+    id="el-02"
+    value="Value attribute value"
+    class="ex-label"
+    aria-label="aria-label attribute value"
+    title="Title attribute value"
+    data-testname="aria-labelledby eliminated"
+    data-expectedlabel="aria-label attribute value"
+  >
+    <option>Option inner text</option>
+  </select>
+
+  <h2>aria-label eliminated</h2>
+  <label for="el-03">Host label #1 text</label>
+  <label for="el-03">Host label #2 text</label>
+  <select
+    id="el-03"
+    value="Value attribute value"
+    class="ex-label"
+    title="Title attribute value"
+    data-testname="aria-label eliminated"
+    data-expectedlabel="Host label #1 text Host label #2 text"
+  >
+    <option>Option inner text</option>
+  </select>
+
+  <h2>One &lt;label&gt; eliminated</h2>
+  <label for="el-04">Host label #1 text</label>
+  <select
+    id="el-04"
+    value="Value attribute value"
+    class="ex-label"
+    title="Title attribute value"
+    data-testname="One &lt;label&gt; eliminated"
+    data-expectedlabel="Host label #1 text"
+  >
+    <option>Option inner text</option>
+  </select>
+
+  <h2>Both &lt;label&gt;s eliminated</h2>
+  <select
+    value="Value attribute value"
+    class="ex-label"
+    title="Title attribute value"
+    data-testname="Both &lt;label&gt;s eliminated"
+    data-expectedlabel="Title attribute value"
+  >
+    <option>Option inner text</option>
+  </select>
+
+  <h2>title eliminated</h2>
+  <select
+    value="Value attribute value"
+    class="ex-label"
+    data-testname="title eliminated"
+    data-expectedlabel=""
+  >
+    <option>Option inner text</option>
+  </select>
+
+  <script>
+    AriaUtils.verifyLabelsBySelector(".ex-label");
+  </script>
+</body>
+
+</html>

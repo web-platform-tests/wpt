@@ -1,0 +1,121 @@
+
+area<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Accname computation tests for element: &lt;area&gt;</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+</head>
+
+<body>
+
+  <h1>Accname computation tests for element: &lt;area&gt;</h1>
+  <p>
+    <a href="https://www.w3.org/TR/html-aam-1.0/#area-element-accessible-name-computation">
+      Computation steps described in HTML-AAM 1.0
+    </a>
+  </p>
+
+  <h2>All possible accnames provided</h2>
+  <p id="label-el-01">aria-labelledby element text</p>
+  <map name="map-01">
+    <area
+      href="#"
+      shape="rect"
+      coords="0,0,20,20"
+      alt="Alt attribute value"
+      class="ex-label"
+      aria-labelledby="label-el-01"
+      aria-label="aria-label attribute value"
+      title="Title attribute value"
+      data-testname="All possible accnames provided"
+      data-expectedlabel="aria-labelledby element text"
+    />
+  </map>
+  <img usemap="#map-01" alt="Mario" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTIwIDZoLTJ2NGgtMlY2aC00djJoLTJ2MmgydjJIOFY4SDZ2NGgydjRoMTR2LTJoLTZ2LTJoMnYtMmgydjJoNnYtMmgtMlY4aC00VjZaIiBmaWxsPSIjRUZDMjk4Ii8+CiAgPHBhdGggZD0iTTYgNmg2djJoLTJ2MmgydjJIOFY4SDZWNloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNNiA4SDR2Nmg0di0ySDZWOFptMTAtMmgydjRoLTJWNlptMiA0aDJ2Mmg0djJoLTh2LTJoMnYtMloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNMiAyMmg0djJoMnYySDZ2Mkgydi02Wm0yMCAwdjJoLTJ2MmgydjJoNHYtNmgtNFoiIGZpbGw9IiNFMUQ3RDYiLz4KICA8cGF0aCBkPSJNNCAzMGg2djRIMnYtMmgydi0yWm0yMCAwaC02djRoOHYtMmgtMnYtMloiIGZpbGw9IiM4RDU3M0QiLz4KICA8cGF0aCBkPSJNMTIgMjJoLTJ2Mmgydi0yWm02IDBoLTJ2Mmgydi0yWiIgZmlsbD0iI0ZDRjEzOCIvPgogIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTIgMTZoLTJ2Nkg4djRINnY0aDZ2LTJoNHYyaDZ2LTRoLTJ2LTRoLTJ2LTRoLTJ2MmgtNHYtNFptNiA2djJoLTJ2LTJoMlptLTggMGgydjJoLTJ2LTJaIiBmaWxsPSIjNTY3MkQ2Ii8+CiAgPHBhdGggZD0iTTggMnYySDZ2MmgxOFY0aC00VjJIOFptMTAgMTRoLTZ2NGg0di0yaDJ2NGgydjJoMnYtMmg0di0yaC0ydi0yaC02di0yWk02IDE4SDR2MkgydjJoNHYyaDJ2LTJoMnYtNkg2djJaIiBmaWxsPSIjRDAxQTE5Ii8+Cjwvc3ZnPgo=" />
+
+  <h2>aria-labelledby eliminated</h2>
+  <map name="map-02">
+    <area
+      href="#"
+      shape="rect"
+      coords="0,0,20,20"
+      alt="Alt attribute value"
+      class="ex-label"
+      aria-label="aria-label attribute value"
+      title="Title attribute value"
+      data-testname="aria-labelledby eliminated"
+      data-expectedlabel="aria-label attribute value"
+    />
+  </map>
+  <img usemap="#map-02" alt="Mario" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTIwIDZoLTJ2NGgtMlY2aC00djJoLTJ2MmgydjJIOFY4SDZ2NGgydjRoMTR2LTJoLTZ2LTJoMnYtMmgydjJoNnYtMmgtMlY4aC00VjZaIiBmaWxsPSIjRUZDMjk4Ii8+CiAgPHBhdGggZD0iTTYgNmg2djJoLTJ2MmgydjJIOFY4SDZWNloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNNiA4SDR2Nmg0di0ySDZWOFptMTAtMmgydjRoLTJWNlptMiA0aDJ2Mmg0djJoLTh2LTJoMnYtMloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNMiAyMmg0djJoMnYySDZ2Mkgydi02Wm0yMCAwdjJoLTJ2MmgydjJoNHYtNmgtNFoiIGZpbGw9IiNFMUQ3RDYiLz4KICA8cGF0aCBkPSJNNCAzMGg2djRIMnYtMmgydi0yWm0yMCAwaC02djRoOHYtMmgtMnYtMloiIGZpbGw9IiM4RDU3M0QiLz4KICA8cGF0aCBkPSJNMTIgMjJoLTJ2Mmgydi0yWm02IDBoLTJ2Mmgydi0yWiIgZmlsbD0iI0ZDRjEzOCIvPgogIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTIgMTZoLTJ2Nkg4djRINnY0aDZ2LTJoNHYyaDZ2LTRoLTJ2LTRoLTJ2LTRoLTJ2MmgtNHYtNFptNiA2djJoLTJ2LTJoMlptLTggMGgydjJoLTJ2LTJaIiBmaWxsPSIjNTY3MkQ2Ii8+CiAgPHBhdGggZD0iTTggMnYySDZ2MmgxOFY0aC00VjJIOFptMTAgMTRoLTZ2NGg0di0yaDJ2NGgydjJoMnYtMmg0di0yaC0ydi0yaC02di0yWk02IDE4SDR2MkgydjJoNHYyaDJ2LTJoMnYtNkg2djJaIiBmaWxsPSIjRDAxQTE5Ii8+Cjwvc3ZnPgo=" />
+
+  <h2>aria-label eliminated</h2>
+  <map name="map-03">
+    <area
+      href="#"
+      shape="rect"
+      coords="0,0,20,20"
+      alt="Alt attribute value"
+      class="ex-label"
+      title="Title attribute value"
+      data-testname="aria-label eliminated"
+      data-expectedlabel="Alt attribute value"
+    />
+  </map>
+  <img usemap="#map-03" alt="Mario" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTIwIDZoLTJ2NGgtMlY2aC00djJoLTJ2MmgydjJIOFY4SDZ2NGgydjRoMTR2LTJoLTZ2LTJoMnYtMmgydjJoNnYtMmgtMlY4aC00VjZaIiBmaWxsPSIjRUZDMjk4Ii8+CiAgPHBhdGggZD0iTTYgNmg2djJoLTJ2MmgydjJIOFY4SDZWNloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNNiA4SDR2Nmg0di0ySDZWOFptMTAtMmgydjRoLTJWNlptMiA0aDJ2Mmg0djJoLTh2LTJoMnYtMloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNMiAyMmg0djJoMnYySDZ2Mkgydi02Wm0yMCAwdjJoLTJ2MmgydjJoNHYtNmgtNFoiIGZpbGw9IiNFMUQ3RDYiLz4KICA8cGF0aCBkPSJNNCAzMGg2djRIMnYtMmgydi0yWm0yMCAwaC02djRoOHYtMmgtMnYtMloiIGZpbGw9IiM4RDU3M0QiLz4KICA8cGF0aCBkPSJNMTIgMjJoLTJ2Mmgydi0yWm02IDBoLTJ2Mmgydi0yWiIgZmlsbD0iI0ZDRjEzOCIvPgogIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTIgMTZoLTJ2Nkg4djRINnY0aDZ2LTJoNHYyaDZ2LTRoLTJ2LTRoLTJ2LTRoLTJ2MmgtNHYtNFptNiA2djJoLTJ2LTJoMlptLTggMGgydjJoLTJ2LTJaIiBmaWxsPSIjNTY3MkQ2Ii8+CiAgPHBhdGggZD0iTTggMnYySDZ2MmgxOFY0aC00VjJIOFptMTAgMTRoLTZ2NGg0di0yaDJ2NGgydjJoMnYtMmg0di0yaC0ydi0yaC02di0yWk02IDE4SDR2MkgydjJoNHYyaDJ2LTJoMnYtNkg2djJaIiBmaWxsPSIjRDAxQTE5Ii8+Cjwvc3ZnPgo=" />
+
+  <h2>alt emptied</h2>
+  <map name="map-04">
+    <area
+      href="#"
+      shape="rect"
+      coords="0,0,20,20"
+      alt=""
+      class="ex-label"
+      title="Title attribute value"
+      data-testname="alt emptied"
+      data-expectedlabel=""
+    />
+  </map>
+  <img usemap="#map-04" alt="Mario" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTIwIDZoLTJ2NGgtMlY2aC00djJoLTJ2MmgydjJIOFY4SDZ2NGgydjRoMTR2LTJoLTZ2LTJoMnYtMmgydjJoNnYtMmgtMlY4aC00VjZaIiBmaWxsPSIjRUZDMjk4Ii8+CiAgPHBhdGggZD0iTTYgNmg2djJoLTJ2MmgydjJIOFY4SDZWNloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNNiA4SDR2Nmg0di0ySDZWOFptMTAtMmgydjRoLTJWNlptMiA0aDJ2Mmg0djJoLTh2LTJoMnYtMloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNMiAyMmg0djJoMnYySDZ2Mkgydi02Wm0yMCAwdjJoLTJ2MmgydjJoNHYtNmgtNFoiIGZpbGw9IiNFMUQ3RDYiLz4KICA8cGF0aCBkPSJNNCAzMGg2djRIMnYtMmgydi0yWm0yMCAwaC02djRoOHYtMmgtMnYtMloiIGZpbGw9IiM4RDU3M0QiLz4KICA8cGF0aCBkPSJNMTIgMjJoLTJ2Mmgydi0yWm02IDBoLTJ2Mmgydi0yWiIgZmlsbD0iI0ZDRjEzOCIvPgogIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTIgMTZoLTJ2Nkg4djRINnY0aDZ2LTJoNHYyaDZ2LTRoLTJ2LTRoLTJ2LTRoLTJ2MmgtNHYtNFptNiA2djJoLTJ2LTJoMlptLTggMGgydjJoLTJ2LTJaIiBmaWxsPSIjNTY3MkQ2Ii8+CiAgPHBhdGggZD0iTTggMnYySDZ2MmgxOFY0aC00VjJIOFptMTAgMTRoLTZ2NGg0di0yaDJ2NGgydjJoMnYtMmg0di0yaC0ydi0yaC02di0yWk02IDE4SDR2MkgydjJoNHYyaDJ2LTJoMnYtNkg2djJaIiBmaWxsPSIjRDAxQTE5Ii8+Cjwvc3ZnPgo=" />
+
+  <h2>alt eliminated</h2>
+  <map name="map-05">
+    <area
+      href="#"
+      shape="rect"
+      coords="0,0,20,20"
+      class="ex-label"
+      title="Title attribute value"
+      data-testname="alt eliminated"
+      data-expectedlabel="Title attribute value"
+    />
+  </map>
+  <img usemap="#map-05" alt="Mario" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTIwIDZoLTJ2NGgtMlY2aC00djJoLTJ2MmgydjJIOFY4SDZ2NGgydjRoMTR2LTJoLTZ2LTJoMnYtMmgydjJoNnYtMmgtMlY4aC00VjZaIiBmaWxsPSIjRUZDMjk4Ii8+CiAgPHBhdGggZD0iTTYgNmg2djJoLTJ2MmgydjJIOFY4SDZWNloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNNiA4SDR2Nmg0di0ySDZWOFptMTAtMmgydjRoLTJWNlptMiA0aDJ2Mmg0djJoLTh2LTJoMnYtMloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNMiAyMmg0djJoMnYySDZ2Mkgydi02Wm0yMCAwdjJoLTJ2MmgydjJoNHYtNmgtNFoiIGZpbGw9IiNFMUQ3RDYiLz4KICA8cGF0aCBkPSJNNCAzMGg2djRIMnYtMmgydi0yWm0yMCAwaC02djRoOHYtMmgtMnYtMloiIGZpbGw9IiM4RDU3M0QiLz4KICA8cGF0aCBkPSJNMTIgMjJoLTJ2Mmgydi0yWm02IDBoLTJ2Mmgydi0yWiIgZmlsbD0iI0ZDRjEzOCIvPgogIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTIgMTZoLTJ2Nkg4djRINnY0aDZ2LTJoNHYyaDZ2LTRoLTJ2LTRoLTJ2LTRoLTJ2MmgtNHYtNFptNiA2djJoLTJ2LTJoMlptLTggMGgydjJoLTJ2LTJaIiBmaWxsPSIjNTY3MkQ2Ii8+CiAgPHBhdGggZD0iTTggMnYySDZ2MmgxOFY0aC00VjJIOFptMTAgMTRoLTZ2NGg0di0yaDJ2NGgydjJoMnYtMmg0di0yaC0ydi0yaC02di0yWk02IDE4SDR2MkgydjJoNHYyaDJ2LTJoMnYtNkg2djJaIiBmaWxsPSIjRDAxQTE5Ii8+Cjwvc3ZnPgo=" />
+
+  <h2>title eliminated</h2>
+  <map name="map-06">
+    <area
+      href="#"
+      shape="rect"
+      coords="0,0,20,20"
+      class="ex-label"
+      data-testname="title eliminated"
+      data-expectedlabel=""
+    />
+  </map>
+  <img usemap="#map-06" alt="Mario" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTIwIDZoLTJ2NGgtMlY2aC00djJoLTJ2MmgydjJIOFY4SDZ2NGgydjRoMTR2LTJoLTZ2LTJoMnYtMmgydjJoNnYtMmgtMlY4aC00VjZaIiBmaWxsPSIjRUZDMjk4Ii8+CiAgPHBhdGggZD0iTTYgNmg2djJoLTJ2MmgydjJIOFY4SDZWNloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNNiA4SDR2Nmg0di0ySDZWOFptMTAtMmgydjRoLTJWNlptMiA0aDJ2Mmg0djJoLTh2LTJoMnYtMloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNMiAyMmg0djJoMnYySDZ2Mkgydi02Wm0yMCAwdjJoLTJ2MmgydjJoNHYtNmgtNFoiIGZpbGw9IiNFMUQ3RDYiLz4KICA8cGF0aCBkPSJNNCAzMGg2djRIMnYtMmgydi0yWm0yMCAwaC02djRoOHYtMmgtMnYtMloiIGZpbGw9IiM4RDU3M0QiLz4KICA8cGF0aCBkPSJNMTIgMjJoLTJ2Mmgydi0yWm02IDBoLTJ2Mmgydi0yWiIgZmlsbD0iI0ZDRjEzOCIvPgogIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTIgMTZoLTJ2Nkg4djRINnY0aDZ2LTJoNHYyaDZ2LTRoLTJ2LTRoLTJ2LTRoLTJ2MmgtNHYtNFptNiA2djJoLTJ2LTJoMlptLTggMGgydjJoLTJ2LTJaIiBmaWxsPSIjNTY3MkQ2Ii8+CiAgPHBhdGggZD0iTTggMnYySDZ2MmgxOFY0aC00VjJIOFptMTAgMTRoLTZ2NGg0di0yaDJ2NGgydjJoMnYtMmg0di0yaC0ydi0yaC02di0yWk02IDE4SDR2MkgydjJoNHYyaDJ2LTJoMnYtNkg2djJaIiBmaWxsPSIjRDAxQTE5Ii8+Cjwvc3ZnPgo=" />
+
+  <script>
+    AriaUtils.verifyLabelsBySelector(".ex-label");
+  </script>
+</body>
+
+</html>

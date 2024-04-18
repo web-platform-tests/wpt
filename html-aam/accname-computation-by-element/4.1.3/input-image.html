@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Accname computation tests for element: &lt;input type="image"&gt;
+  </title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+</head>
+
+<body>
+
+  <h1>Accname computation tests for element: &lt;input type="image"&gt;</h1>
+  <p>
+    <a href="https://www.w3.org/TR/html-aam-1.0/#input-type-image-accessible-name-computation">
+      Computation steps described in HTML-AAM 1.0
+    </a>
+  </p>
+
+  <h2>All possible accnames provided</h2>
+  <label for="el-01">Host label #1 text</label>
+  <label for="el-01">Host label #2 text</label>
+  <p id="label-el-01">aria-labelledby element text</p>
+  <input
+    id="el-01"
+    type="image"
+    src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTIwIDZoLTJ2NGgtMlY2aC00djJoLTJ2MmgydjJIOFY4SDZ2NGgydjRoMTR2LTJoLTZ2LTJoMnYtMmgydjJoNnYtMmgtMlY4aC00VjZaIiBmaWxsPSIjRUZDMjk4Ii8+CiAgPHBhdGggZD0iTTYgNmg2djJoLTJ2MmgydjJIOFY4SDZWNloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNNiA4SDR2Nmg0di0ySDZWOFptMTAtMmgydjRoLTJWNlptMiA0aDJ2Mmg0djJoLTh2LTJoMnYtMloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNMiAyMmg0djJoMnYySDZ2Mkgydi02Wm0yMCAwdjJoLTJ2MmgydjJoNHYtNmgtNFoiIGZpbGw9IiNFMUQ3RDYiLz4KICA8cGF0aCBkPSJNNCAzMGg2djRIMnYtMmgydi0yWm0yMCAwaC02djRoOHYtMmgtMnYtMloiIGZpbGw9IiM4RDU3M0QiLz4KICA8cGF0aCBkPSJNMTIgMjJoLTJ2Mmgydi0yWm02IDBoLTJ2Mmgydi0yWiIgZmlsbD0iI0ZDRjEzOCIvPgogIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTIgMTZoLTJ2Nkg4djRINnY0aDZ2LTJoNHYyaDZ2LTRoLTJ2LTRoLTJ2LTRoLTJ2MmgtNHYtNFptNiA2djJoLTJ2LTJoMlptLTggMGgydjJoLTJ2LTJaIiBmaWxsPSIjNTY3MkQ2Ii8+CiAgPHBhdGggZD0iTTggMnYySDZ2MmgxOFY0aC00VjJIOFptMTAgMTRoLTZ2NGg0di0yaDJ2NGgydjJoMnYtMmg0di0yaC0ydi0yaC02di0yWk02IDE4SDR2MkgydjJoNHYyaDJ2LTJoMnYtNkg2djJaIiBmaWxsPSIjRDAxQTE5Ii8+Cjwvc3ZnPgo="
+    alt="Alt attribute value"
+    class="ex-label"
+    aria-labelledby="label-el-01"
+    aria-label="aria-label attribute value"
+    title="Title attribute value"
+    data-testname="All possible accnames provided"
+    data-expectedlabel="aria-labelledby element text"
+  >
+
+  <h2>aria-labelledby eliminated</h2>
+  <label for="el-02">Host label #1 text</label>
+  <label for="el-02">Host label #2 text</label>
+  <input
+    id="el-02"
+    type="image"
+    src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTIwIDZoLTJ2NGgtMlY2aC00djJoLTJ2MmgydjJIOFY4SDZ2NGgydjRoMTR2LTJoLTZ2LTJoMnYtMmgydjJoNnYtMmgtMlY4aC00VjZaIiBmaWxsPSIjRUZDMjk4Ii8+CiAgPHBhdGggZD0iTTYgNmg2djJoLTJ2MmgydjJIOFY4SDZWNloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNNiA4SDR2Nmg0di0ySDZWOFptMTAtMmgydjRoLTJWNlptMiA0aDJ2Mmg0djJoLTh2LTJoMnYtMloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNMiAyMmg0djJoMnYySDZ2Mkgydi02Wm0yMCAwdjJoLTJ2MmgydjJoNHYtNmgtNFoiIGZpbGw9IiNFMUQ3RDYiLz4KICA8cGF0aCBkPSJNNCAzMGg2djRIMnYtMmgydi0yWm0yMCAwaC02djRoOHYtMmgtMnYtMloiIGZpbGw9IiM4RDU3M0QiLz4KICA8cGF0aCBkPSJNMTIgMjJoLTJ2Mmgydi0yWm02IDBoLTJ2Mmgydi0yWiIgZmlsbD0iI0ZDRjEzOCIvPgogIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTIgMTZoLTJ2Nkg4djRINnY0aDZ2LTJoNHYyaDZ2LTRoLTJ2LTRoLTJ2LTRoLTJ2MmgtNHYtNFptNiA2djJoLTJ2LTJoMlptLTggMGgydjJoLTJ2LTJaIiBmaWxsPSIjNTY3MkQ2Ii8+CiAgPHBhdGggZD0iTTggMnYySDZ2MmgxOFY0aC00VjJIOFptMTAgMTRoLTZ2NGg0di0yaDJ2NGgydjJoMnYtMmg0di0yaC0ydi0yaC02di0yWk02IDE4SDR2MkgydjJoNHYyaDJ2LTJoMnYtNkg2djJaIiBmaWxsPSIjRDAxQTE5Ii8+Cjwvc3ZnPgo="
+    alt="Alt attribute value"
+    class="ex-label"
+    aria-label="aria-label attribute value"
+    title="Title attribute value"
+    data-testname="aria-labelledby eliminated"
+    data-expectedlabel="aria-label attribute value"
+  >
+
+  <h2>aria-label eliminated</h2>
+  <label for="el-03">Host label #1 text</label>
+  <label for="el-03">Host label #2 text</label>
+  <input
+    id="el-03"
+    type="image"
+    src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTIwIDZoLTJ2NGgtMlY2aC00djJoLTJ2MmgydjJIOFY4SDZ2NGgydjRoMTR2LTJoLTZ2LTJoMnYtMmgydjJoNnYtMmgtMlY4aC00VjZaIiBmaWxsPSIjRUZDMjk4Ii8+CiAgPHBhdGggZD0iTTYgNmg2djJoLTJ2MmgydjJIOFY4SDZWNloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNNiA4SDR2Nmg0di0ySDZWOFptMTAtMmgydjRoLTJWNlptMiA0aDJ2Mmg0djJoLTh2LTJoMnYtMloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNMiAyMmg0djJoMnYySDZ2Mkgydi02Wm0yMCAwdjJoLTJ2MmgydjJoNHYtNmgtNFoiIGZpbGw9IiNFMUQ3RDYiLz4KICA8cGF0aCBkPSJNNCAzMGg2djRIMnYtMmgydi0yWm0yMCAwaC02djRoOHYtMmgtMnYtMloiIGZpbGw9IiM4RDU3M0QiLz4KICA8cGF0aCBkPSJNMTIgMjJoLTJ2Mmgydi0yWm02IDBoLTJ2Mmgydi0yWiIgZmlsbD0iI0ZDRjEzOCIvPgogIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTIgMTZoLTJ2Nkg4djRINnY0aDZ2LTJoNHYyaDZ2LTRoLTJ2LTRoLTJ2LTRoLTJ2MmgtNHYtNFptNiA2djJoLTJ2LTJoMlptLTggMGgydjJoLTJ2LTJaIiBmaWxsPSIjNTY3MkQ2Ii8+CiAgPHBhdGggZD0iTTggMnYySDZ2MmgxOFY0aC00VjJIOFptMTAgMTRoLTZ2NGg0di0yaDJ2NGgydjJoMnYtMmg0di0yaC0ydi0yaC02di0yWk02IDE4SDR2MkgydjJoNHYyaDJ2LTJoMnYtNkg2djJaIiBmaWxsPSIjRDAxQTE5Ii8+Cjwvc3ZnPgo="
+    alt="Alt attribute value"
+    class="ex-label"
+    title="Title attribute value"
+    data-testname="aria-label eliminated"
+    data-expectedlabel="Host label #1 text Host label #2 text"
+  >
+
+  <h2>One &lt;label&gt; eliminated</h2>
+  <label for="el-04">Host label #1 text</label>
+  <input
+    id="el-04"
+    type="image"
+    src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTIwIDZoLTJ2NGgtMlY2aC00djJoLTJ2MmgydjJIOFY4SDZ2NGgydjRoMTR2LTJoLTZ2LTJoMnYtMmgydjJoNnYtMmgtMlY4aC00VjZaIiBmaWxsPSIjRUZDMjk4Ii8+CiAgPHBhdGggZD0iTTYgNmg2djJoLTJ2MmgydjJIOFY4SDZWNloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNNiA4SDR2Nmg0di0ySDZWOFptMTAtMmgydjRoLTJWNlptMiA0aDJ2Mmg0djJoLTh2LTJoMnYtMloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNMiAyMmg0djJoMnYySDZ2Mkgydi02Wm0yMCAwdjJoLTJ2MmgydjJoNHYtNmgtNFoiIGZpbGw9IiNFMUQ3RDYiLz4KICA8cGF0aCBkPSJNNCAzMGg2djRIMnYtMmgydi0yWm0yMCAwaC02djRoOHYtMmgtMnYtMloiIGZpbGw9IiM4RDU3M0QiLz4KICA8cGF0aCBkPSJNMTIgMjJoLTJ2Mmgydi0yWm02IDBoLTJ2Mmgydi0yWiIgZmlsbD0iI0ZDRjEzOCIvPgogIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTIgMTZoLTJ2Nkg4djRINnY0aDZ2LTJoNHYyaDZ2LTRoLTJ2LTRoLTJ2LTRoLTJ2MmgtNHYtNFptNiA2djJoLTJ2LTJoMlptLTggMGgydjJoLTJ2LTJaIiBmaWxsPSIjNTY3MkQ2Ii8+CiAgPHBhdGggZD0iTTggMnYySDZ2MmgxOFY0aC00VjJIOFptMTAgMTRoLTZ2NGg0di0yaDJ2NGgydjJoMnYtMmg0di0yaC0ydi0yaC02di0yWk02IDE4SDR2MkgydjJoNHYyaDJ2LTJoMnYtNkg2djJaIiBmaWxsPSIjRDAxQTE5Ii8+Cjwvc3ZnPgo="
+    alt="Alt attribute value"
+    class="ex-label"
+    title="Title attribute value"
+    data-testname="One &lt;label&gt; eliminated"
+    data-expectedlabel="Host label #1 text"
+  >
+
+  <h2>Both &lt;label&gt;s eliminated</h2>
+  <input
+    type="image"
+    src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTIwIDZoLTJ2NGgtMlY2aC00djJoLTJ2MmgydjJIOFY4SDZ2NGgydjRoMTR2LTJoLTZ2LTJoMnYtMmgydjJoNnYtMmgtMlY4aC00VjZaIiBmaWxsPSIjRUZDMjk4Ii8+CiAgPHBhdGggZD0iTTYgNmg2djJoLTJ2MmgydjJIOFY4SDZWNloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNNiA4SDR2Nmg0di0ySDZWOFptMTAtMmgydjRoLTJWNlptMiA0aDJ2Mmg0djJoLTh2LTJoMnYtMloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNMiAyMmg0djJoMnYySDZ2Mkgydi02Wm0yMCAwdjJoLTJ2MmgydjJoNHYtNmgtNFoiIGZpbGw9IiNFMUQ3RDYiLz4KICA8cGF0aCBkPSJNNCAzMGg2djRIMnYtMmgydi0yWm0yMCAwaC02djRoOHYtMmgtMnYtMloiIGZpbGw9IiM4RDU3M0QiLz4KICA8cGF0aCBkPSJNMTIgMjJoLTJ2Mmgydi0yWm02IDBoLTJ2Mmgydi0yWiIgZmlsbD0iI0ZDRjEzOCIvPgogIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTIgMTZoLTJ2Nkg4djRINnY0aDZ2LTJoNHYyaDZ2LTRoLTJ2LTRoLTJ2LTRoLTJ2MmgtNHYtNFptNiA2djJoLTJ2LTJoMlptLTggMGgydjJoLTJ2LTJaIiBmaWxsPSIjNTY3MkQ2Ii8+CiAgPHBhdGggZD0iTTggMnYySDZ2MmgxOFY0aC00VjJIOFptMTAgMTRoLTZ2NGg0di0yaDJ2NGgydjJoMnYtMmg0di0yaC0ydi0yaC02di0yWk02IDE4SDR2MkgydjJoNHYyaDJ2LTJoMnYtNkg2djJaIiBmaWxsPSIjRDAxQTE5Ii8+Cjwvc3ZnPgo="
+    alt="Alt attribute value"
+    class="ex-label"
+    title="Title attribute value"
+    data-testname="Both &lt;label&gt;s eliminated"
+    data-expectedlabel="Alt attribute value"
+  >
+
+  <h2>alt eliminated</h2>
+  <input
+    type="image"
+    src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTIwIDZoLTJ2NGgtMlY2aC00djJoLTJ2MmgydjJIOFY4SDZ2NGgydjRoMTR2LTJoLTZ2LTJoMnYtMmgydjJoNnYtMmgtMlY4aC00VjZaIiBmaWxsPSIjRUZDMjk4Ii8+CiAgPHBhdGggZD0iTTYgNmg2djJoLTJ2MmgydjJIOFY4SDZWNloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNNiA4SDR2Nmg0di0ySDZWOFptMTAtMmgydjRoLTJWNlptMiA0aDJ2Mmg0djJoLTh2LTJoMnYtMloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNMiAyMmg0djJoMnYySDZ2Mkgydi02Wm0yMCAwdjJoLTJ2MmgydjJoNHYtNmgtNFoiIGZpbGw9IiNFMUQ3RDYiLz4KICA8cGF0aCBkPSJNNCAzMGg2djRIMnYtMmgydi0yWm0yMCAwaC02djRoOHYtMmgtMnYtMloiIGZpbGw9IiM4RDU3M0QiLz4KICA8cGF0aCBkPSJNMTIgMjJoLTJ2Mmgydi0yWm02IDBoLTJ2Mmgydi0yWiIgZmlsbD0iI0ZDRjEzOCIvPgogIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTIgMTZoLTJ2Nkg4djRINnY0aDZ2LTJoNHYyaDZ2LTRoLTJ2LTRoLTJ2LTRoLTJ2MmgtNHYtNFptNiA2djJoLTJ2LTJoMlptLTggMGgydjJoLTJ2LTJaIiBmaWxsPSIjNTY3MkQ2Ii8+CiAgPHBhdGggZD0iTTggMnYySDZ2MmgxOFY0aC00VjJIOFptMTAgMTRoLTZ2NGg0di0yaDJ2NGgydjJoMnYtMmg0di0yaC0ydi0yaC02di0yWk02IDE4SDR2MkgydjJoNHYyaDJ2LTJoMnYtNkg2djJaIiBmaWxsPSIjRDAxQTE5Ii8+Cjwvc3ZnPgo="
+    class="ex-label"
+    title="Title attribute value"
+    data-testname="alt eliminated"
+    data-expectedlabel="Title attribute value"
+  >
+
+  <!--
+    PR #44965 TODO: Can data-expectedlabel be tested here? The implementation-
+          definedstrings for <input type="image"> are (as of April 2024):
+
+          1. Chrome: [broken image icon] "Submit"
+          2. Safari: "Submit"
+          3. Firefox: "Submit Query"
+
+          Would a better test be data-expectedlabel=(not empty)?
+  -->
+  <!--
+  <h2>title eliminated</h2>
+  <input
+    type="image"
+    src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTIwIDZoLTJ2NGgtMlY2aC00djJoLTJ2MmgydjJIOFY4SDZ2NGgydjRoMTR2LTJoLTZ2LTJoMnYtMmgydjJoNnYtMmgtMlY4aC00VjZaIiBmaWxsPSIjRUZDMjk4Ii8+CiAgPHBhdGggZD0iTTYgNmg2djJoLTJ2MmgydjJIOFY4SDZWNloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNNiA4SDR2Nmg0di0ySDZWOFptMTAtMmgydjRoLTJWNlptMiA0aDJ2Mmg0djJoLTh2LTJoMnYtMloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNMiAyMmg0djJoMnYySDZ2Mkgydi02Wm0yMCAwdjJoLTJ2MmgydjJoNHYtNmgtNFoiIGZpbGw9IiNFMUQ3RDYiLz4KICA8cGF0aCBkPSJNNCAzMGg2djRIMnYtMmgydi0yWm0yMCAwaC02djRoOHYtMmgtMnYtMloiIGZpbGw9IiM4RDU3M0QiLz4KICA8cGF0aCBkPSJNMTIgMjJoLTJ2Mmgydi0yWm02IDBoLTJ2Mmgydi0yWiIgZmlsbD0iI0ZDRjEzOCIvPgogIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTIgMTZoLTJ2Nkg4djRINnY0aDZ2LTJoNHYyaDZ2LTRoLTJ2LTRoLTJ2LTRoLTJ2MmgtNHYtNFptNiA2djJoLTJ2LTJoMlptLTggMGgydjJoLTJ2LTJaIiBmaWxsPSIjNTY3MkQ2Ii8+CiAgPHBhdGggZD0iTTggMnYySDZ2MmgxOFY0aC00VjJIOFptMTAgMTRoLTZ2NGg0di0yaDJ2NGgydjJoMnYtMmg0di0yaC0ydi0yaC02di0yWk02IDE4SDR2MkgydjJoNHYyaDJ2LTJoMnYtNkg2djJaIiBmaWxsPSIjRDAxQTE5Ii8+Cjwvc3ZnPgo="
+    class="ex-label"
+    data-testname="title eliminated"
+    data-expectedlabel="Submit"
+  >
+  -->
+
+  <!--
+    PR #44965 TODO: What could cause the implementation-defined string to be
+          unavailable and can it be tested? The remaining accname steps are:
+
+          6. If none of the above yield a usable text string there is no
+             accessible name.
+  -->
+
+  <script>
+    AriaUtils.verifyLabelsBySelector(".ex-label");
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<title>Federated Credential Management API network request tests.</title>
+<link rel="help" href="https://fedidcg.github.io/FedCM">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<body>
+
+<script type="module">
+import {fedcm_test,
+        request_options_with_mediation_required,
+        fedcm_get_and_select_first_account} from './support/fedcm-helper.sub.js';
+
+fedcm_test(async t => {
+  const options = request_options_with_mediation_required("manifest_caching.py");
+  let cred = await fedcm_get_and_select_first_account(t, options);
+  assert_equals(cred.token, "token");
+  assert_equals(cred.isAutoSelected, false);
+
+  const configUrl = options.identity.providers[0].configURL;
+  const querySuffix = "?read_last_load_time=1";
+  let response = await fetch(configUrl + querySuffix, { mode: "cors" });
+  const load_time = await response.text();
+  assert_not_equals("0", load_time);
+
+  // Now make another FedCM request and check that we did
+  // not fetch the configURL again.
+  cred = await fedcm_get_and_select_first_account(t, options);
+  assert_equals(cred.token, "token");
+  response = await fetch(configUrl + querySuffix, { mode: "cors" });
+  // Reading the last load time a second time without a real fetch in
+  // between should return 0 because the stash is write-once, read-once.
+  assert_equals("0", await response.text());
+}, "Second request should come from the cache and not hit the server.");
+
+</script>

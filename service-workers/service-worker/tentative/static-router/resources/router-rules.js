@@ -1,9 +1,14 @@
+const TEST_CACHE_NAME = 'v1';
+
 const routerRules = {
   'condition-urlpattern-constructed-source-network': [{
     condition: {urlPattern: new URLPattern({pathname: '/**/direct.txt'})},
     source: 'network'
   }],
-  'condition-urlpattern-urlpatterninit-source-network': [
+  'condition-urlpattern-constructed-match-all-source-cache': [
+    {condition: {urlPattern: new URLPattern({})}, source: 'cache'},
+  ],
+  'condition-urlpattern-urlpatterncompatible-source-network': [
     {condition: {urlPattern: {pathname: '/**/direct.txt'}}, source: 'network'},
   ],
   'condition-urlpattern-string-source-network': [
@@ -11,6 +16,9 @@ const routerRules = {
   ],
   'condition-urlpattern-string-source-cache': [
     {condition: {urlPattern: '/**/cache.txt'}, source: 'cache'},
+  ],
+  'condition-urlpattern-string-source-cache-with-name': [
+    {condition: {urlPattern: '/**/cache.txt'}, source: {cacheName: TEST_CACHE_NAME}},
   ],
   'condition-urlpattern-constructed-ignore-case-source-network': [{
     condition: {
@@ -39,6 +47,25 @@ const routerRules = {
     condition: {requestMethod: String.fromCodePoint(0x3042)},
     source: 'network'
   }],
+  'condition-invalid-or-condition-depth': (() => {
+    const max = 10;
+    const addOrCondition = (obj, depth) => {
+      if (depth > max) {
+        return obj;
+      }
+      return {
+        urlPattern: `/foo-${depth}`,
+        or: [addOrCondition(obj, depth + 1)]
+      };
+    };
+    return {condition: addOrCondition({}, 0), source: 'network'};
+  })(),
+  'condition-invalid-router-size': [...Array(512)].map((val, i) => {
+    return {
+      condition: {urlPattern: `/foo-${i}`},
+      source: 'network'
+    };
+  }),
   'condition-request-destination-script-network':
       [{condition: {requestDestination: 'script'}, source: 'network'}],
   'condition-or-source-network': [{
@@ -71,6 +98,21 @@ const routerRules = {
       source: 'race-network-and-fetch-handler'
     },
   ],
+  'multiple-conditions-network': {
+    condition: {
+      urlPattern: new URLPattern({search: 'test'}),
+      requestMode: 'cors',
+      requestMethod: 'post',
+    },
+    source: 'network'
+  },
+  'multiple-conditions-with-destination-network' : {
+    condition: {
+      urlPattern: new URLPattern({search: 'test'}),
+      requestDestination: 'style'
+    },
+    source: 'network'
+  }
 };
 
-export {routerRules};
+export {routerRules, TEST_CACHE_NAME as cacheName};

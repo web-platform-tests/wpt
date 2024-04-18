@@ -9,6 +9,7 @@
   <script src="/resources/testdriver-vendor.js"></script>
   <script src="/dom/events/scrolling/scroll_support.js"></script>
   <script src="/css/css-scroll-snap-2/resources/common.js"></script>
+  <script src="/css/css-scroll-snap-2/resources/programmatic-scroll-common.js"></script>
 ß  <script src="/web-animations/testcommon.js"></script>
 </head>
 
@@ -66,6 +67,7 @@
   <div id="snap_area_3" class="yellow snap box"></div>
   <script>
     const scroller = document.scrollingElement;
+    const snap_area_2 = document.getElementById("snap_area_2");
 
     promise_test(async (t) => {
       await waitForCompositorCommit();
@@ -74,7 +76,7 @@
         scrolling_function: async () => {
           scroller.scrollTo(0, snap_area_2.offsetTop);
         },
-        expected_snap_targets: [snap_area_2.id],
+        expected_snap_targets: { block: snap_area_2, inline: null },
         expected_scroll_offsets: {
           x: 0,
           y: snap_area_2.offsetTop
@@ -83,6 +85,24 @@
       await test_snap_event(t, test_data, "snapchanging");
     }, "snapchanging fires on programmatic scrolls that changes a scroller's" +
     " snap targets.");
+
+    promise_test(async (t) => {
+      await waitForCompositorCommit();
+      const test_data = {
+        scroller: scroller,
+        scrolling_function: async () => {
+          scroller.scrollTo(0, snap_area_2.offsetTop);
+        },
+        expected_snap_targets: { block: snap_area_2, inline: null },
+        expected_scroll_offsets: {
+          x: 0,
+          y: snap_area_2.offsetTop
+        }
+      };
+      await test_snap_event(t, test_data, "snapchanging",
+                            /*use_onsnap_member*/true);
+    }, "Document.snapchanging fires on programmatic scrolls that changes a" +
+       "scroller's snap targets.");
 
     promise_test(async (t) => {
       checkSnapEventSupport("snapchanging");

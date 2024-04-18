@@ -97,6 +97,11 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     chrome_options["args"].append("--use-fake-ui-for-media-stream")
     # Use a fake UI for FedCM to allow testing it.
     chrome_options["args"].append("--use-fake-ui-for-fedcm")
+    # This is needed until https://github.com/web-platform-tests/wpt/pull/40709
+    # is merged.
+    chrome_options["args"].append("--enable-features=FedCmWithoutWellKnownEnforcement")
+    # Use a fake UI for digital identity to allow testing it.
+    chrome_options["args"].append("--use-fake-ui-for-digital-identity")
     # Shorten delay for Reporting <https://w3c.github.io/reporting/>.
     chrome_options["args"].append("--short-reporting-delay")
     # Point all .test domains to localhost for Chrome
@@ -148,6 +153,7 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     # set. '--headless' should always mean the new headless mode, as the old
     # headless mode is not used anyway.
     if kwargs["headless"] and ("--headless=new" not in chrome_options["args"] and
+                               "--headless=old" not in chrome_options["args"] and
                                "--headless" not in chrome_options["args"]):
         chrome_options["args"].append("--headless=new")
 

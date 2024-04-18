@@ -1282,6 +1282,11 @@ class Chrome(ChromeChromiumBase):
 
         version = self.version(browser_binary)
         if version is None:
+            # Check if the user has given a Chromium binary.
+            chromium = Chromium(self.logger)
+            if chromium.version(browser_binary):
+                raise ValueError("Provided binary is a Chromium binary and should be run using "
+                                 "\"./wpt run chromium\" or similar.")
             raise ValueError(f"Unable to detect browser version from binary at {browser_binary}. "
                              " Cannot install ChromeDriver without a valid version to match.")
 
@@ -1484,20 +1489,6 @@ class ChromeAndroid(ChromeAndroidBase):
         return "com.android.chrome"
 
 
-# TODO(aluo): This is largely copied from the AndroidWebView implementation.
-# Tests are not running for weblayer yet (crbug/1019521), this initial
-# implementation will help to reproduce and debug any issues.
-class AndroidWeblayer(ChromeAndroidBase):
-    """Weblayer-specific interface for Android."""
-
-    product = "android_weblayer"
-    # TODO(aluo): replace this with weblayer version after tests are working.
-    requirements = "requirements_chromium.txt"
-
-    def find_binary(self, venv_path=None, channel=None):
-        return "org.chromium.weblayer.shell"
-
-
 class AndroidWebview(ChromeAndroidBase):
     """Webview-specific interface for Android.
 
@@ -1554,7 +1545,23 @@ class ChromeiOS(Browser):
         raise NotImplementedError
 
     def version(self, binary=None, webdriver_binary=None):
-        return None
+        if webdriver_binary is None:
+            self.logger.warning(
+                "Cannot find ChromeiOS version without CWTChromeDriver")
+            return None
+        # Use `chrome iOS driver --version` to get the version. Example output:
+        # "125.0.6378.0"
+        try:
+            version_string = call(webdriver_binary, "--version").strip()
+        except subprocess.CalledProcessError as e:
+            self.logger.warning(f"Failed to call {webdriver_binary}: {e}")
+            return None
+        m = re.match(r"[\d][\d\.]*", version_string)
+        if not m:
+            self.logger.warning(
+                f"Failed to extract version from: {version_string}")
+            return None
+        return m.group(0)
 
 
 class Opera(Browser):

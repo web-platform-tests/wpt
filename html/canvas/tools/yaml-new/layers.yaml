@@ -1,14 +1,15 @@
 - name: 2d.layer.global-states
   desc: Checks that layers correctly use global render states.
-  size: [200, 200]
+  size: [90, 90]
   code: |
-    ctx.fillStyle = 'rgba(0, 0, 255, 1)';
+    {{ transform_statement }}
 
-    var circle = new Path2D();
-    circle.arc(90, 90, 45, 0, 2 * Math.PI);
-    ctx.fill(circle);
+    ctx.fillStyle = 'rgba(128, 128, 128, 1)';
+    ctx.fillRect(20, 15, 50, 50);
 
-    {{ render_states }}
+    {{ alpha_statement }}
+    {{ composite_op_statement }}
+    {{ shadow_statement }}
 
     ctx.beginLayer();
 
@@ -16,117 +17,86 @@
     // won't individually composite with the background.
     ctx.globalCompositeOperation = 'screen';
 
-    ctx.fillStyle = 'rgba(225, 0, 0, 1)';
-    ctx.fillRect(50, 50, 75, 50);
+    ctx.fillStyle = 'rgba(255, 0, 0, 1)';
+    ctx.fillRect(10, 25, 40, 50);
     ctx.fillStyle = 'rgba(0, 255, 0, 1)';
-    ctx.fillRect(70, 70, 75, 50);
+    ctx.fillRect(30, 5, 50, 40);
 
     ctx.endLayer();
   reference: |
-    ctx.fillStyle = 'rgba(0, 0, 255, 1)';
+    {{ transform_statement }}
 
-    var circle = new Path2D();
-    circle.arc(90, 90, 45, 0, 2 * Math.PI);
-    ctx.fill(circle);
+    ctx.fillStyle = 'rgba(128, 128, 128, 1)';
+    ctx.fillRect(20, 15, 50, 50);
 
-    {{ render_states }}
+    {{ alpha_statement }}
+    {{ composite_op_statement }}
+    {{ shadow_statement }}
 
-    canvas2 = document.createElement("canvas");
-    ctx2 = canvas2.getContext("2d");
+    const canvas2 = document.createElement("canvas");
+    const ctx2 = canvas2.getContext("2d");
 
     ctx2.globalCompositeOperation = 'screen';
-    ctx2.fillStyle = 'rgba(225, 0, 0, 1)';
-    ctx2.fillRect(50, 50, 75, 50);
+    ctx2.fillStyle = 'rgba(255, 0, 0, 1)';
+    ctx2.fillRect(10, 25, 40, 50);
     ctx2.fillStyle = 'rgba(0, 255, 0, 1)';
-    ctx2.fillRect(70, 70, 75, 50);
+    ctx2.fillRect(30, 5, 50, 40);
 
     ctx.drawImage(canvas2, 0, 0);
+  variants_layout: [single_file, multi_files, multi_files, multi_files]
   variants: &global-state-variants
-    no-global-states:
-      render_states: // No global states.
-    alpha: &global-state-alpha
-      render_states: ctx.globalAlpha = 0.6;
+  - no-globalAlpha:
+      alpha_statement: // No globalAlpha.
+    globalAlpha:
+      alpha_statement: ctx.globalAlpha = 0.75;
+  - no-composite-op:
+      composite_op_statement: // No globalCompositeOperation.
     blending:
-      render_states: ctx.globalCompositeOperation = 'multiply';
+      composite_op_statement: ctx.globalCompositeOperation = 'multiply';
     composite:
-      render_states: ctx.globalCompositeOperation = 'source-in';
+      composite_op_statement: ctx.globalCompositeOperation = 'source-in';
+    copy:
+      composite_op_statement: ctx.globalCompositeOperation = 'copy';
+  - no-shadow:
+      shadow_statement: // No shadow.
     shadow:
-      render_states: |-
-        ctx.shadowOffsetX = -10;
-        ctx.shadowOffsetY = 10;
+      shadow_statement: |-
+        ctx.shadowOffsetX = -7;
+        ctx.shadowOffsetY = 7;
         ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
         ctx.shadowBlur = 3;
-    alpha.blending: &global-state-alpha-blending
-      render_states: |-
-        ctx.globalAlpha = 0.6;
-        ctx.globalCompositeOperation = 'multiply';
-    alpha.composite: &global-state-alpha-composite
-      render_states: |-
-        ctx.globalAlpha = 0.6;
-        ctx.globalCompositeOperation = 'source-in';
-    alpha.shadow: &global-state-alpha-shadow
-      render_states: |-
-        ctx.globalAlpha = 0.5;
-        ctx.shadowOffsetX = -10;
-        ctx.shadowOffsetY = 10;
-        ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
-        ctx.shadowBlur = 3;
-    alpha.blending.shadow:
-      render_states: |-
-        ctx.globalAlpha = 0.6;
-        ctx.globalCompositeOperation = 'multiply';
-        ctx.shadowOffsetX = -10;
-        ctx.shadowOffsetY = 10;
-        ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
-        ctx.shadowBlur = 3;
-    alpha.composite.shadow:
-      render_states: |-
-        ctx.globalAlpha = 0.6;
-        ctx.globalCompositeOperation = 'source-in';
-        ctx.shadowOffsetX = -10;
-        ctx.shadowOffsetY = 10;
-        ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
-        ctx.shadowBlur = 3;
-    blending.shadow:
-      render_states: |-
-        ctx.globalCompositeOperation = 'multiply';
-        ctx.shadowOffsetX = -10;
-        ctx.shadowOffsetY = 10;
-        ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
-        ctx.shadowBlur = 3;
-    composite.shadow:
-      render_states: |-
-        ctx.globalCompositeOperation = 'source-in';
-        ctx.shadowOffsetX = -10;
-        ctx.shadowOffsetY = 10;
-        ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
-        ctx.shadowBlur = 3;
+  - no-transform:
+      transform_statement: // No transform.
+    rotation:
+      transform_statement: |-
+        ctx.translate(50, 40);
+        ctx.rotate(Math.PI);
+        ctx.translate(-45, -45);
+
 
 - name: 2d.layer.global-states.filter
   desc: Checks that layers with filters correctly use global render states.
-  size: [200, 200]
+  size: [90, 90]
   code: |
-    ctx.fillStyle = 'rgba(0, 0, 255, 1)';
+    {{ transform_statement }}
 
-    var circle = new Path2D();
-    circle.arc(90, 90, 45, 0, 2 * Math.PI);
-    ctx.fill(circle);
+    ctx.fillStyle = 'rgba(128, 128, 128, 1)';
+    ctx.fillRect(20, 15, 50, 50);
 
-    {{ render_states }}
+    {{ alpha_statement }}
+    {{ composite_op_statement }}
+    {{ shadow_statement }}
 
     ctx.beginLayer({filter: [
-        {name: 'colorMatrix', values: [0.393, 0.769, 0.189, 0, 0,
-                                       0.349, 0.686, 0.168, 0, 0,
-                                       0.272, 0.534, 0.131, 0, 0,
-                                       0, 0, 0, 1, 0]},
+        {name: 'dropShadow',
+            dx: 5, dy: 5, stdDeviation: 0, floodColor: '#00f'},
         {name: 'componentTransfer',
-            funcA: {type: "table", tableValues: [0, 0.7]}},
-        {name: 'dropShadow', dx: 5, dy: 5, floodColor: '#81e'}]});
+            funcA: {type: "table", tableValues: [0, 0.8]}}]});
 
-    ctx.fillStyle = 'rgba(200, 0, 0, 1)';
-    ctx.fillRect(50, 50, 75, 50);
-    ctx.fillStyle = 'rgba(0, 200, 0, 1)';
-    ctx.fillRect(70, 70, 75, 50);
+    ctx.fillStyle = 'rgba(255, 0, 0, 1)';
+    ctx.fillRect(10, 25, 40, 50);
+    ctx.fillStyle = 'rgba(0, 255, 0, 1)';
+    ctx.fillRect(30, 5, 50, 40);
 
     ctx.endLayer();
   reference: |
@@ -135,20 +105,14 @@
             width="{{ size[0] }}" height="{{ size[1] }}"
             color-interpolation-filters="sRGB">
         <filter id="filter" x="-100%" y="-100%" width="300%" height="300%">
-          <feColorMatrix
-              type="matrix"
-              values="0.393 0.769 0.189 0 0
-                      0.349 0.686 0.168 0 0
-                      0.272 0.534 0.131 0 0
-                      0 0 0 1 0" />
+          <feDropShadow dx="5" dy="5" stdDeviation="0" flood-color="#00f" />
           <feComponentTransfer>
-            <feFuncA type="table" tableValues="0 0.7"></feFuncA>
+            <feFuncA type="table" tableValues="0 0.8"></feFuncA>
           </feComponentTransfer>
-          <feDropShadow dx="5" dy="5" flood-color="#81e" />
         </filter>
         <g filter="url(#filter)">
-          <rect x="50" y="50" width="75" height="50" fill="rgba(200, 0, 0, 1)"/>
-          <rect x="70" y="70" width="75" height="50" fill="rgba(0, 200, 0, 1)"/>
+          <rect x="10" y="25" width="40" height="50" fill="rgba(255, 0, 0, 1)"/>
+          <rect x="30" y="5" width="50" height="40" fill="rgba(0, 255, 0, 1)"/>
         </g>
       </svg>`;
 
@@ -156,31 +120,100 @@
     img.width = {{ size[0] }};
     img.height = {{ size[1] }};
     img.onload = () => {
-      ctx.fillStyle = 'rgba(0, 0, 255, 1)';
+      {{ transform_statement | indent(2) }}
 
-      var circle = new Path2D();
-      circle.arc(90, 90, 45, 0, 2 * Math.PI);
-      ctx.fill(circle);
+      ctx.fillStyle = 'rgba(128, 128, 128, 1)';
+      ctx.fillRect(20, 15, 50, 50);
 
-      {{ render_states }}
+      {{ alpha_statement | indent(2) }}
+      {{ composite_op_statement | indent(2) }}
+      {{ shadow_statement | indent(2) }}
 
       ctx.drawImage(img, 0, 0);
     };
     img.src = 'data:image/svg+xml;base64,' + btoa(svg);
+  variants_layout: [single_file, multi_files, multi_files, multi_files]
+  variants: *global-state-variants
+
+- name: 2d.layer.globalCompositeOperation
+  desc: Checks that layers work with all globalCompositeOperation values.
+  size: [90, 90]
+  code: |
+    ctx.translate(50, 50);
+    ctx.scale(2, 2);
+    ctx.rotate(Math.PI);
+    ctx.translate(-25, -25);
+
+    ctx.fillStyle = 'rgba(0, 0, 255, 0.8)';
+    ctx.fillRect(15, 15, 25, 25);
+
+    ctx.globalAlpha = 0.75;
+    ctx.globalCompositeOperation = '{{ variant_names[0] }}';
+    ctx.shadowOffsetX = 7;
+    ctx.shadowOffsetY = 7;
+    ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
+
+    ctx.beginLayer();
+
+    ctx.fillStyle = 'rgba(204, 0, 0, 1)';
+    ctx.fillRect(10, 25, 25, 20);
+    ctx.fillStyle = 'rgba(0, 204, 0, 1)';
+    ctx.fillRect(25, 10, 20, 25);
+
+    ctx.endLayer();
+  reference: |
+    ctx.translate(50, 50);
+    ctx.scale(2, 2);
+    ctx.rotate(Math.PI);
+    ctx.translate(-25, -25);
+
+    ctx.fillStyle = 'rgba(0, 0, 255, 0.8)';
+    ctx.fillRect(15, 15, 25, 25);
+
+    ctx.globalAlpha = 0.75;
+    ctx.globalCompositeOperation = '{{ variant_names[0] }}';
+    ctx.shadowOffsetX = 7;
+    ctx.shadowOffsetY = 7;
+    ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
+
+    const canvas2 = document.createElement("canvas");
+    const ctx2 = canvas2.getContext("2d");
+
+    ctx2.fillStyle = 'rgba(204, 0, 0, 1)';
+    ctx2.fillRect(10, 25, 25, 20);
+    ctx2.fillStyle = 'rgba(0, 204, 0, 1)';
+    ctx2.fillRect(25, 10, 20, 25);
+
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(canvas2, 0, 0);
+  variants_layout: [single_file]
+  grid_width: 7
   variants:
-    <<: *global-state-variants
-    alpha:
-      <<: *global-state-alpha
-      fuzzy: maxDifference=0-2; totalPixels=0-6766
-    alpha.blending:
-      <<: *global-state-alpha-blending
-      fuzzy: maxDifference=0-1; totalPixels=0-2453
-    alpha.composite:
-      <<: *global-state-alpha-composite
-      fuzzy: maxDifference=0-1; totalPixels=0-5204
-    alpha.shadow:
-      <<: *global-state-alpha-shadow
-      fuzzy: maxDifference=0-2; totalPixels=0-6311
+  - source-over:
+    source-in:
+    source-atop:
+    destination-over:
+    destination-in:
+    destination-out:
+    destination-atop:
+    lighter:
+    copy:
+    xor:
+    multiply:
+    screen:
+    overlay:
+    darken:
+    lighten:
+    color-dodge:
+    color-burn:
+    hard-light:
+    soft-light:
+    difference:
+    exclusion:
+    hue:
+    saturation:
+    color:
+    luminosity:
 
 - name: 2d.layer.global-filter
   desc: Tests that layers ignore the global context filter.
@@ -287,6 +320,7 @@
 
 - name: 2d.layer.layer-rendering-state-reset-in-layer
   desc: Tests that layers ignore the global context filter.
+  test_type: sync
   code: |
     ctx.globalAlpha = 0.5;
     ctx.globalCompositeOperation = 'xor';
@@ -426,6 +460,7 @@
 
 - name: 2d.layer.ctm.getTransform
   desc: Tests getTransform inside layers.
+  test_type: sync
   code: |
     ctx.translate(10, 20);
     ctx.beginLayer();
@@ -556,8 +591,8 @@
 - name: 2d.layer.flush-on-frame-presentation
   desc: Check that layers state stack is flushed and rebuilt on frame renders.
   size: [200, 200]
-  canvasType: ['HTMLCanvas']
-  test_type: "promise"
+  canvas_types: ['HtmlCanvas']
+  test_type: promise
   code: |
     ctx.fillStyle = 'purple';
     ctx.fillRect(60, 60, 75, 50);
@@ -597,10 +632,9 @@
     ctx.fillRect(80, 40, 75, 50);
 
 - name: 2d.layer.malformed-operations
-  desc: >-
-    Check that exceptions are thrown for operations that are malformed while
-    layers are open.
+  desc: Throws if {{ variant_names[0] }} is called while layers are open.
   size: [200, 200]
+  test_type: sync
   code: |
     {{ setup }}
     // Shouldn't throw on its own.
@@ -611,8 +645,9 @@
     ctx.beginLayer();
     assert_throws_dom("InvalidStateError",
                       () => {{ operation }});
+  variants_layout: [single_file]
   variants:
-    createPattern:
+  - createPattern:
       operation: ctx.createPattern(canvas, 'repeat')
     drawImage:
       setup: |-
@@ -630,18 +665,16 @@
       operation: |-
         ctx.putImageData(data, 0, 0)
     toDataURL:
-      canvasType: ['HTMLCanvas']
+      canvas_types: ['HtmlCanvas']
       operation: canvas.toDataURL()
     transferToImageBitmap:
-      canvasType: ['OffscreenCanvas', 'Worker']
+      canvas_types: ['OffscreenCanvas', 'Worker']
       operation: canvas.transferToImageBitmap()
 
 - name: 2d.layer.malformed-operations-with-promises
-  desc: >-
-    Check that exceptions are thrown for operations that are malformed while
-    layers are open.
+  desc: Throws if {{ variant_names[0] }} is called while layers are open.
   size: [200, 200]
-  test_type: "promise"
+  test_type: promise
   code: |
     // Shouldn't throw on its own.
     await {{ operation }};
@@ -649,16 +682,18 @@
     await {{ operation }};
     // Calling again inside a layer should throw.
     ctx.beginLayer();
-    await promise_rejects_dom(t, 'InvalidStateError', {{ operation }});
+    await promise_rejects_dom(t, 'InvalidStateError',
+                              {{ operation }});
+  variants_layout: [single_file]
   variants:
-    convertToBlob:
-      canvasType: ['OffscreenCanvas', 'Worker']
+  - convertToBlob:
+      canvas_types: ['OffscreenCanvas', 'Worker']
       operation: |-
         canvas.convertToBlob()
     createImageBitmap:
       operation: createImageBitmap(canvas)
     toBlob:
-      canvasType: ['HTMLCanvas']
+      canvas_types: ['HtmlCanvas']
       operation: |-
         new Promise(resolve => canvas.toBlob(resolve))
 
@@ -824,7 +859,7 @@
 - name: 2d.layer.valid-calls
   desc: No exception raised on {{ variant_desc }}.
   variants:
-    save:
+  - save:
       variant_desc: lone save() calls
       code: ctx.save();
     beginLayer:
@@ -862,12 +897,13 @@
 
 - name: 2d.layer.invalid-calls
   desc: Raises exception on {{ variant_desc }}.
+  test_type: sync
   code: |
     assert_throws_dom("INVALID_STATE_ERR", function() {
       {{ call_sequence | indent(2) }}
     });
   variants:
-    endLayer:
+  - endLayer:
       variant_desc: lone endLayer calls
       call_sequence: ctx.endLayer();
     save-endLayer:
@@ -901,6 +937,7 @@
 
 - name: 2d.layer.exceptions-are-no-op
   desc: Checks that the context state is left unchanged if beginLayer throws.
+  test_type: sync
   code: |
     // Get `beginLayer` to throw while parsing the filter.
     assert_throws_js(TypeError,
@@ -925,6 +962,7 @@
 
 - name: 2d.layer.beginLayer-options
   desc: Checks beginLayer works for different option parameter values
+  test_type: sync
   code: |
     ctx.beginLayer(); ctx.endLayer();
     ctx.beginLayer(null); ctx.endLayer();
@@ -995,7 +1033,7 @@
     };
     img.src = 'data:image/svg+xml;base64,' + btoa(svg);
   variants:
-    no-clipping:
+  - no-clipping:
       clipping: // No clipping.
     with-clipping:
       clipping: |-
@@ -1029,7 +1067,7 @@
     ctx.fillStyle = 'green';
     ctx.fillRect(0, 0, 100, 100);
   variants:
-    short-distance:
+  - short-distance:
       distance: |-
         const delta = 1;
       clipping: // No clipping.
@@ -1056,7 +1094,7 @@
   desc: Checks that layer blending works inside opaque canvas
   size: [300, 300]
   code: |
-    {% if canvas_type == 'htmlcanvas' %}
+    {% if canvas_type == 'HtmlCanvas' %}
     const canvas2 = document.createElement('canvas');
     canvas2.width = 200;
     canvas2.height = 200;
@@ -1126,7 +1164,7 @@
       </g>
     </svg>
   variants:
-    blur:
+  - blur:
       ctx_filter: |-
         'blur(10px)'
       svg_filter: |-
@@ -1149,7 +1187,7 @@
   code: *filter-test-code
   html_reference: *filter-test-reference
   variants:
-    x-only:
+  - x-only:
       ctx_filter: |-
         { name: 'gaussianBlur', stdDeviation: [4, 0] }
       svg_filter: |-

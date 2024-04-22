@@ -78,7 +78,7 @@
                      * <https://w3c.github.io/webdriver-bidi/#event-log-entryAdded>`_ event. Make sure `subscribe` is
                      * called before using this method.
                      *
-                     * @param callback {function(event): void} - The callback to call when the event is fired.
+                     * @param callback {function(event): void} - The callback to be called when the event is fired.
                      * @returns {function(): void} - A function to call to remove the event listener.
                      */
                     on: function (callback) {

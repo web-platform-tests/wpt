@@ -22,7 +22,7 @@ promise_test(() => {
     assert_equals(selectionChangeCount1, 0);
     assert_equals(selectionChangeCount2, 0);
     await new Promise(setTimeout);
-    assert_equals(selectionChangeCount1, 1);
+    assert_equals(selectionChangeCount1, 2);
     assert_equals(selectionChangeCount2, 1);
   })();
 }, "selectionchange event on each input element fires independently");
@@ -39,7 +39,7 @@ promise_test(() => {
     assert_equals(selectionChangeCount1, 0);
     assert_equals(selectionChangeCount2, 0);
     await new Promise(setTimeout);
-    assert_equals(selectionChangeCount1, 1);
+    assert_equals(selectionChangeCount1, 2);
     assert_equals(selectionChangeCount2, 1);
   })();
 }, "selectionchange event on each textarea element fires independently");

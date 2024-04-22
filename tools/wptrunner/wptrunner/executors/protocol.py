@@ -2,10 +2,9 @@
 
 import traceback
 from http.client import HTTPConnection
-from typing import Any, Awaitable, Callable, Optional, Mapping
 
 from abc import ABCMeta, abstractmethod
-from typing import ClassVar, List, Type
+from typing import Any, Awaitable, Callable, ClassVar, List, Mapping, Optional, Type
 
 
 def merge_dicts(target, source):
@@ -19,6 +18,7 @@ def merge_dicts(target, source):
                 merge_dicts(target[key], source_value)
             else:
                 target[key] = source_value
+
 
 class Protocol:
     """Backend for a specific browser-control protocol.
@@ -332,7 +332,7 @@ class BidiEventsProtocolPart(ProtocolPart):
         """Subscribe to events.
 
         :param list events: The list of events names to subscribe to.
-        :param list contexts: The list of contexts to subscribe to. None for global subscription."""
+        :param list|None contexts: The list of contexts ids to subscribe to. None for global subscription."""
         pass
 
     @abstractmethod
@@ -361,13 +361,13 @@ class BidiScriptProtocolPart(ProtocolPart):
     name = "bidi_script"
 
     @abstractmethod
-    async def async_call_function(self, script, context, args=None):
+    async def call_function(self, function_declaration, target, arguments=None):
         """
-        Executes the provided script in the given context in asynchronous mode.
+        Executes the provided script in the given target in asynchronous mode.
 
-        :param str script: The js source to execute.
-        :param str context: The context in which to execute the script.
-        :param list args: The arguments to pass to the script.
+        :param str function_declaration: The js source of the function to execute.
+        :param script.Target target: The target in which to execute the script.
+        :param list[script.LocalValue] arguments: The arguments to pass to the script.
         """
         pass
 

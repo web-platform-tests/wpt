@@ -144,12 +144,11 @@ class WebDriverBidiScriptProtocolPart(BidiScriptProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
-    async def async_call_function(self, script, context, args=None):
+    async def call_function(self, function_declaration, target, arguments=None):
         return await self.webdriver.bidi_session.script.call_function(
-            function_declaration=script,
-            arguments=args,
-            target={
-                "context": context if context else self.current_window},
+            function_declaration=function_declaration,
+            arguments=arguments,
+            target=target,
             await_promise=True)
 
 
@@ -819,9 +818,11 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             }
 
             # `run_until_complete` allows processing BiDi events in the same loop while waiting for the next message.
-            message = protocol.loop.run_until_complete(protocol.bidi_script.async_call_function(
-                wrapped_script, context=test_window,
-                args=[bidi_url_argument]))
+            message = protocol.loop.run_until_complete(protocol.bidi_script.call_function(
+                wrapped_script, target={
+                    "context": test_window
+                },
+                arguments=[bidi_url_argument]))
             # The message is in WebDriver BiDi format. Deserialize it.
             deserialized_message = self.bidi_deserialize(message)
             return deserialized_message

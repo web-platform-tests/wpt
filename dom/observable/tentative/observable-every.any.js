@@ -257,3 +257,57 @@ promise_test(async () => {
     "Promise rejects with any error thrown from the predicate"
   );
 }, "every(): should reject with any error thrown from the predicate");
+
+promise_test(async () => {
+  const indices = [];
+
+  const source = new Observable((subscriber) => {
+    subscriber.next("a");
+    subscriber.next("b");
+    subscriber.next("c");
+    subscriber.complete();
+  });
+
+  const value = await source.every((value, index) => {
+    indices.push(index);
+    return true;
+  });
+
+  assert_array_equals(
+    indices,
+    [0, 1, 2],
+    "every(): should pass the index of the value to the predicate"
+  );
+
+  assert_true(
+    value,
+    "Promise resolves with true if all values pass the predicate"
+  );
+}, "every(): should pass the index of the value to the predicate");
+
+promise_test(async () => {
+  const source = new Observable((subscriber) => {});
+
+  const controller = new AbortController();
+  const promise = source.every(() => true, { signal: controller.signal });
+
+  controller.abort();
+
+  let rejection;
+  try {
+    await promise;
+  } catch (e) {
+    rejection = e;
+  }
+
+  assert_true(
+    rejection instanceof DOMException,
+    "Promise rejects with a DOMException if the source Observable is aborted"
+  );
+
+  assert_equals(
+    rejection.name,
+    "AbortError",
+    "Promise rejects with a DOMException if the source Observable is aborted"
+  );
+}, "every(): Rejects with a DOMException if the source Observable is aborted");

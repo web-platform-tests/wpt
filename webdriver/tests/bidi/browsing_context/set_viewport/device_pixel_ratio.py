@@ -46,14 +46,6 @@ async def test_device_pixel_ratio_with_viewport(
     assert await get_viewport_dimensions(bidi_session, new_tab) == test_viewport
     assert await get_device_pixel_ratio(bidi_session, new_tab) == device_pixel_ratio
 
-    result = await bidi_session.script.evaluate(
-        await_promise=False,
-        expression="window.devicePixelRatio",
-        target=ContextTarget(new_tab["context"]),
-    )
-
-    assert result == {"type": "number", "value": device_pixel_ratio}
-
 
 @pytest.mark.asyncio
 async def test_reset_device_pixel_ratio(bidi_session, inline, new_tab):

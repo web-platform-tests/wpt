@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+  </head>
+  <body>
+    <style>
+      * {
+        scroll-behavior: smooth;
+      }
+      .scroller {
+        top: 100px;
+        width: 200px;
+        height: 200px;
+        position: absolute;
+        border: solid 1px black;
+        overflow: scroll;
+      }
+      #scroller1 {
+        left: 5%;
+      }
+      #scroller2 {
+        left: 55%;
+      }
+      .space {
+        height: 2000px;
+        width: 2000px;
+      }
+      .target {
+        height: 50px;
+        width: 50px;
+        background-color: red;
+      }
+    </style>
+     <script> 
+      window.onload = () => {
+        target2.scrollIntoView({behavior: "smooth"});
+      }
+    </script>
+      <div id="scroller1" class="scroller">
+        <div class="space"></div>
+        <div class="target" id="target1"><h4>Target 1</h4></div>
+      </div>
+      <div id="scroller2" class="scroller">
+        <div class="space"></div>
+        <div class="target" id="target2"><h4>Target 2</h4></div>
+      </div>
+    </div>
+  </body>
+</html>

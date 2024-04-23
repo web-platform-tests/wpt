@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/dom/events/scrolling/scroll_support.js"></script>
+</head>
+<body>
+  <style>
+    * {
+      scroll-behavior: smooth;
+    }
+
+    .box {
+      width: 80px;
+      height: 80px;
+      background: green;
+      color: white;
+      padding: 20px;
+    }
+
+    .up {
+      background: brown;
+      margin-bottom: 10000px;
+    }
+
+    .scroller {
+      overflow-y: scroll;
+      width: 200px;
+      height: 200px;
+      border:solid 1px black;
+      background-color: yellow;
+    }
+  </style>
+  <div id="scroller0" class="scroller">
+    <div id="a0" class="up box"></div>
+    <div id="b0" class="box"></div>
+  </div>
+  <div id="scroller1" class="scroller">
+    <div id="a1" class="up box"></div>
+    <div id="b1" class="box"></div>
+  </div>
+  <div id="scroller2" class="scroller">
+    <div id="a2" class="up box"></div>
+    <div id="b2" class="box"></div>
+  </div>
+  <div id="scroller3" class="scroller">
+    <div id="a3" class="up box"></div>
+    <div id="b3" class="box"></div>
+  </div>
+  <script>
+    promise_test(async (t) => {
+      await waitForCompositorCommit();
+
+      const scrollers = document.querySelectorAll(".scroller");
+      let promises = [];
+      scrollers.forEach((scroller) => {
+        promises.push(waitForScrollendEventNoTimeout(scroller));
+      });
+
+      document.getElementById("b0").scrollIntoView();
+      document.getElementById("b1").scrollIntoView();
+      document.getElementById("b2").scrollIntoView();
+      document.getElementById("b3").scrollIntoView();
+
+      await Promise.all(promises);
+
+      scrollers.forEach((scroller) => {
+        assert_equals(scroller.scrollTop,
+          scroller.scrollHeight - scroller.clientHeight,
+          `${scroller.id} is scrolled all the way down`);
+      });
+    }, "Simulatenous smooth scrollIntoView works");
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/dom/events/scrolling/scroll_support.js"></script>
+  </head>
+  <body>
+    <style>
+      iframe {
+        height: 1000px;
+        width: 1000px;
+      }
+    </style>
+     <script>
+      promise_test(async (t) => {
+        const iframe = document.createElement("iframe");
+        let resolve_test = null;
+        const test_promise = new Promise((resolve) => {
+          resolve_test = resolve;
+        });
+        iframe.onload = async () => {
+          const scroller2 = iframe.contentDocument.getElementById("scroller2");
+          const scroller1 = iframe.contentDocument.getElementById("scroller1");
+          // If the scrollIntoView has already been completed, don't wait for a
+          // scrollend event.
+          if (scroller2.scrollTop !=
+              scroller2.scrollHeight - scroller2.clientHeight) {
+            const scrollend_promise = waitForScrollendEventNoTimeout(scroller2);
+            await scrollend_promise;
+          }
+          t.step(() => {
+            assert_equals(scroller1.scrollTop,
+              scroller1.scrollHeight - scroller1.clientHeight,
+              "hash fragment target is scrolled to");
+          });
+          resolve_test();
+        };
+        iframe.src =
+         "./scrollIntoView-smooth-with-hashfragment-smooth-iframe.html#target1";
+        document.body.appendChild(iframe);
+        await test_promise;
+      }, "scrollIntoView doesn't cancel hashfragment scroller.");
+    </script>
+  </body>
+</html>

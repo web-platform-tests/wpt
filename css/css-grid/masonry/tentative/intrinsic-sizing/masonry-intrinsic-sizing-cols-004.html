@@ -5,10 +5,10 @@
 -->
 <html>
   <meta charset="utf-8">
-  <title>CSS Grid Test: Masonry layout column sizing - min-content</title>
+  <title>CSS Grid Test: Masonry layout column sizing - max-content</title>
   <link rel="author" title="Mats Palmgren" href="mailto:mats@mozilla.com">
-  <link rel="help" href="https://drafts.csswg.org/css-grid-3/#track-sizing">
-  <link rel="match" href="masonry-intrinsic-sizing-003-ref.html">
+  <link rel="help" href="https://drafts.csswg.org/css-grid-3">
+  <link rel="match" href="masonry-intrinsic-sizing-cols-004-ref.html">
   <style>
 
 @import "support/masonry-intrinsic-sizing-visual.css";
@@ -20,7 +20,7 @@ grid {
   border: 1px solid;
   padding: 0 1px 0 2px;
   vertical-align: top;
-  width: min-content;
+  width: max-content;
 }
 .auto grid {
   grid-template-columns: repeat(4,auto);

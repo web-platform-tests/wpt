@@ -6,6 +6,9 @@ html,body {
   border-bottom: 1px solid orange; /* Do Not Cross */
 }
 
+section {
+  float: left;
+}
 
 /* Visualization */
 grid {
@@ -18,7 +21,8 @@ item {
 
 /* Debugging Aid */
 section {
-  border-top: 1px solid gray;
+  border: 1px gray;
+  border-style: solid solid none none;
   counter-reset: grid;
 }
 

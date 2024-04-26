@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<title>Synthetic events isTrusted behavior</title>
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://www.w3.org/TR/DOM-Level-3-Events/#trusted-events">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<button id=target>Target</button>
+
+<script>
+test((t) => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+  t.add_cleanup(() => controller.abort());
+  const handler = t.step_func((e) => {
+    assert_false(e.isTrusted,'Untrusted events shouldn\'t result in trusted synthetic events');
+  });
+  target.addEventListener('DOMActivate', handler, {signal});
+  target.addEventListener('click', handler, {signal});
+  target.dispatchEvent(new MouseEvent('click'));
+  // If the `DOMActivate` event is never fired, that should pass also, since
+  // that behavior is not standardized.
+}, "Untrusted events should not generated trusted ones");
+</script>

@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html class="reftest-wait">
+<link rel="author" title="L. David Baron" href="https://dbaron.org/">
+<link rel="author" title="Google" href="http://www.google.com/">
+<link rel="match" href="constrain-intrinsic-ratio-tall-ref.html">
+<link rel="help" href="https://drafts.csswg.org/css-sizing-3/#sizing-values">
+<link rel="help" href="https://drafts.csswg.org/css-images-3/#sizing">
+<link rel="help" href="https://www.w3.org/TR/CSS2/visudet.html#min-max-widths">
+<meta name="assert" content="Dynamic changes to the intrinsic ratio and size of a replaced element are handled correctly.">
+<script src="support/resize-utils.js"></script>
+<style>
+
+#container {
+  width: 400px;
+  height: 400px;
+}
+
+#image {
+  height: 300px;
+  width: 100px;
+  max-height: max-content;
+}
+
+</style>
+<script>
+
+window.addEventListener("load", (event) => {
+  finish_reftest_on_resize_or_timeout(document.getElementById("image"), 5000);
+});
+
+</script>
+
+<div id="container">
+  <img id="image" src="support/intrinsic-size-animate-to-tall.svg">
+</div>

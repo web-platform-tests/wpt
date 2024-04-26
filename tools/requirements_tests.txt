@@ -1,6 +1,6 @@
 httpx[http2]==0.24.1
 json-e==4.5.3
-jsonschema==4.17.3
+jsonschema==4.21.1
 pyyaml==6.0.1
 taskcluster==64.2.6
 mozterm==1.0.0

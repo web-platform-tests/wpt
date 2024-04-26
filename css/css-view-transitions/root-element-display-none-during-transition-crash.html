@@ -18,10 +18,11 @@ failIfNot(document.startViewTransition, "Missing document.startViewTransition");
 
 async function runTest() {
   transition = document.startViewTransition();
-  transition.ready.then(
+  transition.ready.then(() => {
     requestAnimationFrame(() => {
       document.documentElement.classList.toggle("hidden");
-    }));
+    });
+  });
   transition.finished.then(() => document.documentElement.classList.remove("test-wait"));
 }
 onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));

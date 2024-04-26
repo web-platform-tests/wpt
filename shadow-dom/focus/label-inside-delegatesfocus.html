@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://issues.chromium.org/issues/329003651">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<input value="hello world">
+<div id=host>
+  <template shadowrootmode=open shadowrootdelegatesfocus=true>
+    <label>
+      <p>click me</p>
+      <button>button</button>
+    </label>
+  </template>
+</div>
+
+<script>
+promise_test(async () => {
+  const p = host.shadowRoot.querySelector('p');
+  const button = host.shadowRoot.querySelector('button');
+  const input = document.querySelector('input');
+
+  let gotClick = false;
+  button.onclick = () => gotClick = true;
+
+  input.select();
+
+  // We can't use test_driver.click() here due to this issue:
+  // https://github.com/web-platform-tests/wpt/issues/41257
+  await new Promise(requestAnimationFrame);
+  const rect = p.getBoundingClientRect();
+  const actions = new test_driver.Actions();
+  await actions
+      .pointerMove(Math.round(rect.x + rect.width / 2), Math.round(rect.y + rect.height / 2), {})
+      .pointerDown({button: actions.ButtonType.LEFT})
+      .pointerUp({button: actions.ButtonType.LEFT})
+      .send();
+
+  assert_true(gotClick);
+}, 'Clicking a label should click its target like normal in a delegatesFocus shadowroot.');
+</script>

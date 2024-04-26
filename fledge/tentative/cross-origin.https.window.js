@@ -437,7 +437,7 @@ subsetTest(promise_test, async test => {
   // are requested. They should almost always be requested after the URLs
   // from the first auction.
   let child_window =
-      await createFrame(test, document.location.origin, /*is_iframe=*/false);
+      await createTopLevelWindow(test, document.location.origin);
   await runInFrame(
       test, child_window,
       `await createAndNavigateFencedFrame(test_instance, param);

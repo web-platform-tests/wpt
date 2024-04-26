@@ -12,41 +12,43 @@
     return new Promise(resolve => {test.step_timeout(resolve, ms)});
   }
 
-  promise_test(async test => {
+  async function createIFrame(src) {
     const frame = document.createElement("iframe");
     document.body.appendChild(frame);
-    frame.src = "resources/refresh1.html";
-    await sleep(500, test);
+    frame.src = src;
+    await new Promise(resolve => {
+      frame.addEventListener("load", resolve);
+    });
+    return frame;
+  }
+
+  promise_test(async test => {
+    const frame = await createIFrame("resources/refresh1.html");
+    await sleep(900, test);
     assert_equals(frame.contentWindow.document.title, "refresh 1");
     await sleep(1000, test);
     assert_equals(frame.contentWindow.document.title, "got refreshed");
   }, "Ensure that refresh is observed");
 
   promise_test(async test => {
-    const frame = document.createElement("iframe");
-    document.body.appendChild(frame);
-    frame.src = "resources/refresh.99.html";
-    await sleep(500, test);
+    const frame = await createIFrame("resources/refresh.99.html");
+    await sleep(900, test);
     assert_equals(frame.contentWindow.document.title, "got refreshed");
   }, "Ensure that fractions in refresh time are ignored");
 
   promise_test(async test => {
-    const frame = document.createElement("iframe");
-    document.body.appendChild(frame);
-    frame.src = "resources/refresh1.99.html";
-    await sleep(500, test);
+    const frame = await createIFrame("resources/refresh1.99.html");
+    await sleep(900, test);
     assert_equals(frame.contentWindow.document.title, "refresh 1.99");
     await sleep(1000, test);
     assert_equals(frame.contentWindow.document.title, "got refreshed");
   }, "Ensure that non-fractional part in refresh time does not get discarded");
 
   promise_test(async test => {
-    const frame = document.createElement("iframe");
-    document.body.appendChild(frame);
-    frame.src = "resources/refresh1dotdot5dot.html";
-    await sleep(500, test);
-    assert_equals(frame.contentWindow.document.title, "refresh 1..5.");
-    await sleep(750, test);
+    const frame = await createIFrame("resources/refresh1dotdot9dot.html");
+    await sleep(900, test);
+    assert_equals(frame.contentWindow.document.title, "refresh 1..9.");
+    await sleep(1000, test);
     assert_equals(frame.contentWindow.document.title, "got refreshed");
   }, "Ensure that multiple periods in refresh time just get ignored");
 </script>

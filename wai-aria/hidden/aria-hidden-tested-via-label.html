@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-hidden Tests</title>
+    <title>aria-hidden Tests via Label</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="/resources/testdriver.js"></script>
@@ -22,11 +22,12 @@
     </style>
   </head>
   <body>
-    <main id="main-element">
-    <h1><code>aria-hidden</code> Tests</h1>
+    <main>
+    <h1><code>aria-hidden</code> tests via label</h1>
     <p>Tests the <a href="https://pr-preview.s3.amazonaws.com/w3c/aria/pull/2090.html#aria-hidden">aria-hidden</a>
-      ARIA state and its potential values (e.g., <code>true</code>, <code>false</code>, <code>undefined</code>)</p>
-    <!-- Possible aria-hidden values:
+      state using <a href="https://www.w3.org/TR/webdriver2/#get-computed-label">computedlabel</a></p>
+
+      <!-- Possible aria-hidden values:
       - "true" = The element is hidden from the accessibility API
       - "false" = The element's hidden state is determined by the user agent based on whether it is rendered. Synonym of undefined
       - "undefined" = synonym of "false"
@@ -47,7 +48,7 @@
         - transform: scale(0) = not rendered (but conveyed by assistive technologies)
     -->
 
-    <h2><code>aria-hidden="true"</code></h2>
+    <h2><code>aria-hidden="true"</code> only tested via label</h2>
     <!-- Blocked, awaiting WebDriver extension for querying accessibility tree outside of role/name per aom #203 https://github.com/WICG/aom/issues/203 -->
 
     <!-- To-dos:
@@ -66,7 +67,7 @@
       - inert
     -->
 
-    <h2><code>aria-hidden="false"</code></h2>
+    <h2><code>aria-hidden="false"</code> only tested via label</h2>
       <!-- generics with various display properties -->
       <div aria-hidden="false" data-testname="div with aria-hidden='false' is not hidden" class="ex-generic">x</div>
       <div aria-hidden="false" style="display: inline;" data-testname="div with display: inline, aria-hidden='false' is not hidden" class="ex-generic">x></div>
@@ -128,37 +129,12 @@
       <div aria-hidden="false" role="tabpanel" hidden>x</div>
       <div aria-hidden="false" role="tabpanel" data-testname="div with aria-hidden='false' and tabpanel role is not hidden" data-expectedrole="tabpanel" class="ex-role">x</div>
 
+    <h2>Concurrent <code>aria-hidden="false"</code> and <code>"true"</code> tested via label</h2>
+
     <script>
       AriaUtils.verifyRolesBySelector(".ex-role");
+      AriaUtils.verifyLabelsBySelector(".ex-label");
       AriaUtils.verifyGenericRolesBySelector(".ex-generic");
-      verifyAriaHiddenFalseForOtherElements();
-
-      function verifyAriaHiddenFalseForOtherElements() {
-        var htmlElement = document.documentElement;
-        var bodyElement = document.body;
-        var mainElement = document.getElementById("main-element");
-
-        setAttributesForTesting(htmlElement, {
-          'aria-hidden': 'false',
-          'data-testname': 'html root element with aria-hidden=\'false\' is not hidden',
-          'data-expectedrole': 'document',
-          'class': 'ex-role-other-elements'
-        })
-        setAttributesForTesting(bodyElement, {
-          'aria-hidden': 'false',
-          'data-testname': 'body element with aria-hidden=\'false\' is not hidden',
-          'class': 'ex-generic-other-elements'
-        })
-        setAttributesForTesting(mainElement, {
-          'aria-hidden': 'false',
-          'data-testname': 'main element with aria-hidden=\'false\' is not hidden',
-          'data-expectedrole': 'main',
-          'class': 'ex-role-other-elements'
-        })
-
-        AriaUtils.verifyRolesBySelector(".ex-role-other-elements");
-        AriaUtils.verifyGenericRolesBySelector(".ex-generic-other-elements");
-      };
 
       function setAttributesForTesting(el, elAttributes) {
         for (let i in elAttributes) {

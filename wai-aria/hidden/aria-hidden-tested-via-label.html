@@ -92,6 +92,88 @@
       </div>
 
     <h2>Concurrent <code>aria-hidden="false"</code> and <code>"true"</code> tested via label</h2>
+     <!-- aria-hidden="false" is now a synonym of "undefined" per #aria 1256 https://github.com/w3c/aria/issues/1256 -->
+
+    <h1 data-testname="h1 with name from contents > span with aria-hidden='true' > span with aria-hidden='false' is labelled" data-expectedlabel="label" class="ex-label">
+      label
+      <span aria-hidden="true">
+        one
+        <span aria-hidden="false">
+          two
+        </span>
+      </span>
+    </h1>
+
+    <h1 data-testname="Empty h1 > span with aria-hidden='true' > span with aria-hidden='false' is labelled" data-expectedlabel="" class="ex-label">
+      <span aria-hidden="true">
+        one
+        <span aria-hidden="false">
+          two
+        </span>
+      </span>
+    </h1>
+
+    <h1 data-testname="h1 with name from contents > span with aria-hidden='false' > span with aria-hidden='true' is labelled" data-expectedlabel="label one" class="ex-label">
+      label
+      <span aria-hidden="false">
+        one
+        <span aria-hidden="true">
+          two
+        </span>
+      </span>
+    </h1>
+
+    <h1 data-testname="h1 > img with alt > span with aria-hidden='true' > span with aria-hidden='false' is labelled" data-expectedlabel="label" class="ex-label">
+      <img src="#" alt="label">
+      <span aria-hidden="true">
+        one
+        <span aria-hidden="false">
+          two
+        </span>
+      </span>
+    </h1>
+
+    <h1 data-testname="h1 > img with alt > span with aria-hidden='false' > span with aria-hidden='true' is labelled" data-expectedlabel="label one" class="ex-label">
+      <img src="#" alt="label">
+      <span aria-hidden="false">
+        one
+        <span aria-hidden="true">
+          two
+        </span>
+      </span>
+    </h1>
+
+    <button data-testname="button with name from contents > span with aria-hidden='false' is labelled" data-expectedlabel="label one" class="ex-label">
+      label
+      <span aria-hidden="false">
+        one
+    </button>
+
+    <button data-testname="button with name from contents > span with aria-hidden='true' is labelled" data-expectedlabel="label" class="ex-label">
+      label
+      <span aria-hidden="true">
+        one
+    </button>
+
+    <button data-testname="button with name from contents > span with aria-hidden='true' > span with aria-hidden'false' is labelled" data-expectedlabel="label" class="ex-label">
+      label
+      <span aria-hidden="true">
+        one
+        <span aria-hidden="false">
+          two
+        </span>
+      </span>
+    </button>
+
+    <button data-testname="button with name from contents > span with aria-hidden='false' > span with aria-hidden'true' is labelled" data-expectedlabel="label one" class="ex-label">
+      label
+      <span aria-hidden="false">
+        one
+        <span aria-hidden="true">
+          two
+        </span>
+      </span>
+    </button>
 
     <script>
       AriaUtils.verifyLabelsBySelector(".ex-label");

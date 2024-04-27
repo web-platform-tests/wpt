@@ -32,7 +32,7 @@
       - "false" = The element's hidden state is determined by the user agent based on whether it is rendered. Synonym of undefined
       - "undefined" = synonym of "false"
 
-    General web techniques related to showing/hiding content:
+    - General web techniques related to showing/hiding content:
       Rendered:
         - display: <anything besides 'none'> = rendered
         - visibility: visible = rendered
@@ -46,25 +46,18 @@
         - display: none = not rendered
         - HTML5 hidden = not rendered
         - transform: scale(0) = not rendered (but conveyed by assistive technologies)
-    -->
 
-    <h2><code>aria-hidden="true"</code> only tested via label</h2>
-    <!-- Partially blocked, awaiting WebDriver extension for querying accessibility tree outside of role/name per aom #203 https://github.com/WICG/aom/issues/203 -->
-
-    <!-- To-dos:
-      - Non-interactives: <h1>, <p>, <div>, <span> <img>, etc.
-      - Sectioning elements: <main>, <nav>, etc.
-      - Parent element is aria-hidden="true" with non-hidden children (should be hidden)
-      - Nested content: <span> inside <button>, <span> inside <span>, etc.
-      - Focusable elements (note: these should remove aria-hidden on the element and its ancestors per aria #1255 https://github.com/w3c/aria/issues/1255)
-        - natively focusable elements: <a>, <button>, <input type"..."">, <textarea>, etc.
-        - script focusable elements: <div tabindex="-1">, etc.
-        - ARIA role equivalents that are focusable: link, button, tab, etc.
-      - General ARIA roles: heading, tabpanel, tree, cell, gridcell, listitem etc.
-      - Root elements: <html> <body> (note: aria-hidden must be ignored on document root elements per aria #1254 https://github.com/w3c/aria/issues/1254)
-        - Also need additional tests for standalone SVG documents
-      - SVG fragments
-      - inert
+    - For future general aria-hidden testing that can't be tested with WebDriver computedlabel method, such as
+      realization of WebDriver extension for querying accessibility tree outside of role/name aom #203 https://github.com/WICG/aom/issues/203:
+        - Generics: <div>, <span>
+        - Non-named containers & root elements: <html>, <body> (note: aria-hidden must be ignored on document root elements per aria #1254 https://github.com/w3c/aria/issues/1254)
+        - Sectioning elements: <main>, <nav>
+        - Focusable elements (note: these should remove aria-hidden on the element and its ancestors per aria #1255 https://github.com/w3c/aria/issues/1255)
+          - natively focusable elements: <a>, <button>, <input type"..."">, <textarea>, etc.
+          - script focusable elements: <div tabindex="-1">, etc.
+          - ARIA role equivalents that are focusable: link, button, tab, etc.
+        - SVG
+        - inert
     -->
 
     <h2><code>aria-hidden="false"</code> only tested via label</h2>
@@ -89,12 +82,14 @@
       <span aria-hidden="false" role="link" tabindex="0" data-testname="span with aria-hidden='false', link role and tabindex='0' is not hidden" data-expectedlabel="x" class="ex-label">x</span>
       <span aria-hidden="false" role="region" aria-label="x" data-testname="span with aria-hidden='false', region role and aria-label is not hidden" data-expectedlabel="x" class="ex-label">x</span>
       <span aria-hidden="false" role="checkbox" aria-checked="true" aria-label="x" data-testname="span with aria-hidden='false' labeled via aria-label and checkbox role is not hidden" data-expectedlabel="x" class="ex-label">x</span>
-      <div role="tablist">
-        <div role="tab">x</div>
-        <div aria-hidden="false" role="tab" aria-selected="true" data-testname="div with aria-hidden='false' and tab role is not hidden" data-expectedlabel="x" class="ex-label">x</div>
+      <div>
+        <div role="tablist">
+          <div role="tab">x</div>
+          <div aria-hidden="false" role="tab" aria-selected="true" data-testname="div with aria-hidden='false' and tab role is not hidden" data-expectedlabel="x" class="ex-label">x</div>
+        </div>
+        <div aria-hidden="false" role="tabpanel" hidden>x</div>
+        <div aria-hidden="false" role="tabpanel">x</div>
       </div>
-      <div aria-hidden="false" role="tabpanel" hidden>x</div>
-      <div aria-hidden="false" role="tabpanel">x</div>
 
     <h2>Concurrent <code>aria-hidden="false"</code> and <code>"true"</code> tested via label</h2>
 

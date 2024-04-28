@@ -39,7 +39,7 @@
         - clipped/off-screen text = rendered
         - inert = rendered (but hidden from assistive technologies)
         - aria-hidden=true = rendered (but hidden from assistive technologies)
-        - opacity: o
+        - opacity: 0
         - color: transparent
       Not rendered:
         - visibility: hidden/collapse = not rendered
@@ -47,8 +47,8 @@
         - HTML5 hidden = not rendered
         - transform: scale(0) = not rendered (but conveyed by assistive technologies)
 
-    - For future general aria-hidden testing that can't be tested with WebDriver computedlabel method, such as
-      realization of WebDriver extension for querying accessibility tree outside of role/name aom #203 https://github.com/WICG/aom/issues/203:
+    - For future general aria-hidden testing that can't currently be tested with WebDriver computedlabel method, such as
+      WebDriver extension for querying accessibility tree outside of role/name aom #203 https://github.com/WICG/aom/issues/203:
         - Generics: <div>, <span>
         - Non-named containers & root elements: <html>, <body> (note: aria-hidden must be ignored on document root elements per aria #1254 https://github.com/w3c/aria/issues/1254)
         - Sectioning elements: <main>, <nav>
@@ -93,7 +93,18 @@
 
     <h2>Concurrent <code>aria-hidden="false"</code> and <code>"true"</code> tested via label</h2>
 
-    <h1 data-testname="h1 with name from contents > span with aria-hidden='true' > span with aria-hidden='false' is labelled" data-expectedlabel="label" class="ex-label">
+    <!-- aria-hidden only -->
+    <h3 data-testname="empty h3 > span with aria-hidden='true' has no label" data-expectedlabel="" class="ex-label">
+      <span aria-hidden="true">
+        one
+    </h3>
+
+    <h3 data-testname="empty h3 > span with aria-hidden='false' is labelled" data-expectedlabel="one" class="ex-label">
+      <span aria-hidden="false">
+        one
+    </h3>
+
+    <h3 data-testname="h3 with name from contents > span with aria-hidden='true' > span with aria-hidden='false' is labelled" data-expectedlabel="label" class="ex-label">
       label
       <span aria-hidden="true">
         one
@@ -101,18 +112,18 @@
           two
         </span>
       </span>
-    </h1>
+    </h3>
 
-    <h1 data-testname="Empty h1 > span with aria-hidden='true' > span with aria-hidden='false' is labelled" data-expectedlabel="" class="ex-label">
+    <h3 data-testname="Empty h3 > span with aria-hidden='true' > span with aria-hidden='false' is labelled" data-expectedlabel="" class="ex-label">
       <span aria-hidden="true">
         one
         <span aria-hidden="false">
           two
         </span>
       </span>
-    </h1>
+    </h3>
 
-    <h1 data-testname="h1 with name from contents > span with aria-hidden='false' > span with aria-hidden='true' is labelled" data-expectedlabel="label one" class="ex-label">
+    <h3 data-testname="h3 with name from contents > span with aria-hidden='false' > span with aria-hidden='true' is labelled" data-expectedlabel="label one" class="ex-label">
       label
       <span aria-hidden="false">
         one
@@ -120,9 +131,9 @@
           two
         </span>
       </span>
-    </h1>
+    </h3>
 
-    <h1 data-testname="h1 > img with alt > span with aria-hidden='true' > span with aria-hidden='false' is labelled" data-expectedlabel="label" class="ex-label">
+    <h3 data-testname="h3 > img with alt, [span with aria-hidden='true' > span with aria-hidden='false'] is labelled" data-expectedlabel="label" class="ex-label">
       <img src="#" alt="label">
       <span aria-hidden="true">
         one
@@ -130,9 +141,9 @@
           two
         </span>
       </span>
-    </h1>
+    </h3>
 
-    <h1 data-testname="h1 > img with alt > span with aria-hidden='false' > span with aria-hidden='true' is labelled" data-expectedlabel="label one" class="ex-label">
+    <h3 data-testname="h3 > img with alt, [span with aria-hidden='false' > span with aria-hidden='true'] is labelled" data-expectedlabel="label one" class="ex-label">
       <img src="#" alt="label">
       <span aria-hidden="false">
         one
@@ -140,7 +151,40 @@
           two
         </span>
       </span>
-    </h1>
+    </h3>
+
+    <a href="#" data-testname="link with name from contents > img with alt, span with aria-hidden='false' is labelled" data-expectedlabel="link image one" class="ex-label">
+      link
+      <img alt="image">
+      <span aria-hidden="false">one</span>
+    </a>
+
+    <a href="#" data-testname="link with name from contents > img with alt, [span with aria-hidden='true' > span with aria-hidden='false'] is labelled" data-expectedlabel="link image" class="ex-label">
+      link
+      <img alt="image">
+      <span aria-hidden="true">
+        one
+        <span aria-hidden="false">
+          two
+        </span>
+      </span>
+    </a>
+
+    <a href="#" data-testname="link with name from contents > img with alt, span with aria-hidden='true' is labelled" data-expectedlabel="link image" class="ex-label">
+      link
+      <img alt="image">
+      <span aria-hidden="true">one</span>
+    </a>
+
+    <button data-testname="empty button > span with aria-hidden='false' is labelled" data-expectedlabel="one" class="ex-label">
+      <span aria-hidden="false">
+        one
+    </button>
+
+    <button data-testname="empty button > span with aria-hidden='true' has no label" data-expectedlabel="" class="ex-label">
+      <span aria-hidden="true">
+        one
+    </button>
 
     <button data-testname="button with name from contents > span with aria-hidden='false' is labelled" data-expectedlabel="label one" class="ex-label">
       label
@@ -169,6 +213,75 @@
       <span aria-hidden="false">
         one
         <span aria-hidden="true">
+          two
+        </span>
+      </span>
+    </button>
+
+    <!-- aria-hidden and HTML5 hidden attribute -->
+    <h3 data-testname="h3 > span with hidden attribute > span with aria-hidden='false' is labelled" data-expectedlabel="label" class="ex-label">
+      label
+      <span hidden>
+        one
+        <span aria-hidden="false">
+          two
+        </span>
+      </span>
+    </h3>
+
+    <h3 data-testname="h3 > span with aria-hidden='false' > span with hidden attribute is labelled" data-expectedlabel="label one" class="ex-label">
+      label
+      <span aria-hidden="false">
+        one
+        <span hidden>
+          two
+        </span>
+      </span>
+    </h3>
+
+    <a href="#" data-testname="link with name from contents > img with alt, span with hidden attribute is labelled" data-expectedlabel="link image" class="ex-label">
+      link
+      <img alt="image">
+      <span hidden>one</span>
+    </a>
+
+    <a href="#" data-testname="link with name from contents > img with alt, [span with hidden attribute > span with aria-hidden='false'] is labelled" data-expectedlabel="link image" class="ex-label">
+      link
+      <img alt="image">
+      <span hidden>
+        one
+        <span aria-hidden="false">
+          two
+        </span>
+      </span>
+    </a>
+
+    <a href="#" data-testname="link with name from contents > img with alt, [span with aria-hidden='false' > span with hidden attribute] is labelled" data-expectedlabel="link image one" class="ex-label">
+      link
+      <img alt="image">
+      <span aria-hidden="false">
+        one
+        <span hidden>
+          two
+        </span>
+      </span>
+    </a>
+
+    <button data-testname="button with name from contents > span with hidden attribute > span with aria-hidden'false' is labelled" data-expectedlabel="label" class="ex-label">
+      label
+      <span hidden>
+        one
+        <span aria-hidden="false">
+          two
+        </span>
+      </span>
+    </button>
+
+    <button data-testname="button with name from contents > span with aria-hidden='false' > span with hidden attribute is labelled" data-expectedlabel="label one" class="ex-label">
+      label
+      <span aria-hidden="false">
+        one
+        <span hidden>
           two
         </span>
       </span>

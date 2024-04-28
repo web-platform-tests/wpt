@@ -30,7 +30,7 @@
       <!-- Possible aria-hidden values:
       - "true" = The element is hidden from the accessibility API
       - "false" = The element's hidden state is determined by the user agent based on whether it is rendered. Synonym of undefined
-      - "undefined" = synonym of "false"
+      - "undefined" = synonym of "false" per #aria 1256 https://github.com/w3c/aria/issues/1256
 
     - General web techniques related to showing/hiding content:
       Rendered:
@@ -92,7 +92,6 @@
       </div>
 
     <h2>Concurrent <code>aria-hidden="false"</code> and <code>"true"</code> tested via label</h2>
-     <!-- aria-hidden="false" is now a synonym of "undefined" per #aria 1256 https://github.com/w3c/aria/issues/1256 -->
 
     <h1 data-testname="h1 with name from contents > span with aria-hidden='true' > span with aria-hidden='false' is labelled" data-expectedlabel="label" class="ex-label">
       label

@@ -97,11 +97,13 @@
     <h3 data-testname="empty h3 > span with aria-hidden='true' has no label" data-expectedlabel="" class="ex-label">
       <span aria-hidden="true">
         one
+      </span>
     </h3>
 
     <h3 data-testname="empty h3 > span with aria-hidden='false' is labelled" data-expectedlabel="one" class="ex-label">
       <span aria-hidden="false">
         one
+      </span>
     </h3>
 
     <h3 data-testname="h3 with name from contents > span with aria-hidden='true' > span with aria-hidden='false' is labelled" data-expectedlabel="label" class="ex-label">
@@ -134,7 +136,7 @@
     </h3>
 
     <h3 data-testname="h3 > img with alt, [span with aria-hidden='true' > span with aria-hidden='false'] is labelled" data-expectedlabel="label" class="ex-label">
-      <img src="#" alt="label">
+      <img src="data:," alt="label">
       <span aria-hidden="true">
         one
         <span aria-hidden="false">
@@ -144,7 +146,7 @@
     </h3>
 
     <h3 data-testname="h3 > img with alt, [span with aria-hidden='false' > span with aria-hidden='true'] is labelled" data-expectedlabel="label one" class="ex-label">
-      <img src="#" alt="label">
+      <img src="data:," alt="label">
       <span aria-hidden="false">
         one
         <span aria-hidden="true">
@@ -155,13 +157,13 @@
 
     <a href="#" data-testname="link with name from contents > img with alt, span with aria-hidden='false' is labelled" data-expectedlabel="link image one" class="ex-label">
       link
-      <img alt="image">
+      <img src="data:," alt="image">
       <span aria-hidden="false">one</span>
     </a>
 
     <a href="#" data-testname="link with name from contents > img with alt, [span with aria-hidden='true' > span with aria-hidden='false'] is labelled" data-expectedlabel="link image" class="ex-label">
       link
-      <img alt="image">
+      <img src="data:," alt="image">
       <span aria-hidden="true">
         one
         <span aria-hidden="false">
@@ -172,30 +174,34 @@
 
     <a href="#" data-testname="link with name from contents > img with alt, span with aria-hidden='true' is labelled" data-expectedlabel="link image" class="ex-label">
       link
-      <img alt="image">
+      <img src="data:," alt="image">
       <span aria-hidden="true">one</span>
     </a>
 
     <button data-testname="empty button > span with aria-hidden='false' is labelled" data-expectedlabel="one" class="ex-label">
       <span aria-hidden="false">
         one
+      </span>
     </button>
 
     <button data-testname="empty button > span with aria-hidden='true' has no label" data-expectedlabel="" class="ex-label">
       <span aria-hidden="true">
         one
+      </span>
     </button>
 
     <button data-testname="button with name from contents > span with aria-hidden='false' is labelled" data-expectedlabel="label one" class="ex-label">
       label
       <span aria-hidden="false">
         one
+      </span>
     </button>
 
     <button data-testname="button with name from contents > span with aria-hidden='true' is labelled" data-expectedlabel="label" class="ex-label">
       label
       <span aria-hidden="true">
         one
+      </span>
     </button>
 
     <button data-testname="button with name from contents > span with aria-hidden='true' > span with aria-hidden'false' is labelled" data-expectedlabel="label" class="ex-label">
@@ -241,13 +247,13 @@
 
     <a href="#" data-testname="link with name from contents > img with alt, span with hidden attribute is labelled" data-expectedlabel="link image" class="ex-label">
       link
-      <img alt="image">
+      <img src="data:," alt="image">
       <span hidden>one</span>
     </a>
 
     <a href="#" data-testname="link with name from contents > img with alt, [span with hidden attribute > span with aria-hidden='false'] is labelled" data-expectedlabel="link image" class="ex-label">
       link
-      <img alt="image">
+      <img src="data:," alt="image">
       <span hidden>
         one
         <span aria-hidden="false">
@@ -258,7 +264,7 @@
 
     <a href="#" data-testname="link with name from contents > img with alt, [span with aria-hidden='false' > span with hidden attribute] is labelled" data-expectedlabel="link image one" class="ex-label">
       link
-      <img alt="image">
+      <img src="data:," alt="image">
       <span aria-hidden="false">
         one
         <span hidden>

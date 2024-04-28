@@ -8,18 +8,6 @@
     <script src="/resources/testdriver-vendor.js"></script>
     <script src="/resources/testdriver-actions.js"></script>
     <script src="/wai-aria/scripts/aria-utils.js"></script>
-    <style>
-      .sr-only {
-        clip: rect(1px, 1px, 1px, 1px);
-        clip-path: inset(50%);
-        height: 1px;
-        width: 1px;
-        margin: -1px;
-        overflow: hidden;
-        padding: 0;
-        position: absolute;
-      }
-    </style>
   </head>
   <body>
     <main>
@@ -305,7 +293,7 @@
         </span>
       </h3>
 
-      <h3 data-testname="h3 > span with display: none > span with aria-hidden='false' is labelled" data-expectedlabel="label" class="ex-label">
+      <h3 data-testname="h3 > span with aria-hidden='false' > span with display: none is labelled" data-expectedlabel="label one" class="ex-label">
         label
         <span aria-hidden="false">
           one
@@ -314,6 +302,65 @@
           </span>
         </span>
       </h3>
+
+      <button data-testname="button with name from contents > span with display: none > span with aria-hidden='false' is labelled" data-expectedlabel="label" class="ex-label">
+        label
+        <span style="display: none;">
+          one
+          <span aria-hidden="false">
+            two
+          </span>
+        </span>
+      </button>
+
+      <a href="#" data-testname="link with name from contents > img with alt, [span with display: none > span with aria-hidden='false' is labelled" data-expectedlabel="link image" class="ex-label">
+        link
+        <img src="data:," alt="image">
+        <span style="display: none;">
+          one
+          <span aria-hidden="false">two</span>
+        </span>
+      </a>
+
+      <!-- aria-hidden and visibility:hidden -->
+      <h3 data-testname="h3 > span with visibility: hidden > span with aria-hidden='false' is labelled" data-expectedlabel="label" class="ex-label">
+        label
+        <span style="visibility: hidden;">
+          one
+          <span aria-hidden="false">
+            two
+          </span>
+        </span>
+      </h3>
+
+      <h3 data-testname="h3 > span with aria-hidden='false' > span with visibility: hidden is labelled" data-expectedlabel="label one" class="ex-label">
+        label
+        <span aria-hidden="false">
+          one
+          <span style="visibility: hidden;">
+            two
+          </span>
+        </span>
+      </h3>
+
+      <button data-testname="button with name from contents > span with visibility: hidden > span with aria-hidden='false' is labelled" data-expectedlabel="label" class="ex-label">
+        label
+        <span style="visibility: hidden;">
+          one
+          <span aria-hidden="false">
+            two
+          </span>
+        </span>
+      </button>
+
+      <a href="#" data-testname="link with name from contents > img with alt, [span with visibility: hidden > span with aria-hidden='false' is labelled" data-expectedlabel="link image" class="ex-label">
+        link
+        <img src="data:," alt="image">
+        <span style="visibility: hidden;">
+          one
+          <span aria-hidden="false">two</span>
+        </span>
+      </a>
 
     <script>
       AriaUtils.verifyLabelsBySelector(".ex-label");

@@ -909,6 +909,9 @@ def setup_wptrunner(venv, **kwargs):
     args_general(kwargs)
 
     if kwargs["product"] not in product_setup:
+        if kwargs["product"] == "edgechromium":
+            raise WptrunError("edgechromium has been renamed to edge.")
+
         raise WptrunError("Unsupported product %s" % kwargs["product"])
 
     setup_cls = product_setup[kwargs["product"]](venv, kwargs["prompt"])

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<!--
+This test was procedurally generated. Please do not modify it directly.
+Sources:
+- fetch/metadata/tools/fetch-metadata.conf.yml
+- fetch/metadata/tools/templates/element-script.sub.html
+-->
+<html lang="en">
+  <meta charset="utf-8">
+  <title>HTTP headers on request for HTML "script" element source</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/fetch/metadata/resources/helper.sub.js"></script>
+  <body>
+  <script>
+  'use strict';
+
+  function induceRequest(url, attributes) {
+    const script = document.createElement('script');
+    script.setAttribute('src', url);
+
+    for (const [ name, value ] of Object.entries(attributes)) {
+      script.setAttribute(name, value);
+    }
+
+    return new Promise((resolve, reject) => {
+        script.onload = resolve;
+        script.onerror = () => reject('Failed to load script');
+        document.body.appendChild(script);
+      })
+      .then(() => script.remove());
+  }
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(
+      key, ['httpsOrigin'], { mime: 'application/javascript' }
+    );
+
+    return induceRequest(url,
+        {}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-origin']);
+        });
+  }, 'sec-fetch-frame-ancestors - Same origin, no attributes');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(
+      key, ['httpsOrigin'], { mime: 'application/javascript' }
+    );
+
+    return induceRequest(url,
+        {"type": "module"}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-origin']);
+        });
+  }, 'sec-fetch-frame-ancestors - Same origin, attributes: type=module');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(
+      key, ['httpsCrossSite'], { mime: 'application/javascript' }
+    );
+
+    return induceRequest(url,
+        {}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['cross-site']);
+        });
+  }, 'sec-fetch-frame-ancestors - Cross-site, no attributes');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(
+      key, ['httpsCrossSite'], { mime: 'application/javascript' }
+    );
+
+    return induceRequest(url,
+        {"type": "module"}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['cross-site']);
+        });
+  }, 'sec-fetch-frame-ancestors - Cross-site, attributes: type=module');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(
+      key, ['httpsSameSite'], { mime: 'application/javascript' }
+    );
+
+    return induceRequest(url,
+        {}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-site']);
+        });
+  }, 'sec-fetch-frame-ancestors - Same site, no attributes');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(
+      key, ['httpsSameSite'], { mime: 'application/javascript' }
+    );
+
+    return induceRequest(url,
+        {"type": "module"}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-site']);
+        });
+  }, 'sec-fetch-frame-ancestors - Same site, attributes: type=module');
+  </script>
+</html>

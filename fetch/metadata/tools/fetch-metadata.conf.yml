@@ -42,6 +42,18 @@ cases:
       - headerName: sec-fetch-user
         origins: [httpCrossSite]
         description: Not sent to non-trustworthy cross-site destination
+      - headerName: sec-fetch-frame-ancestors
+        filename_flags: [tentative]
+        origins: [httpOrigin]
+        description: Not sent to non-trustworthy same-origin destination
+      - headerName: sec-fetch-frame-ancestors
+        filename_flags: [tentative]
+        origins: [httpSameSite]
+        description: Not sent to non-trustworthy same-site destination
+      - headerName: sec-fetch-frame-ancestors
+        filename_flags: [tentative]
+        origins: [httpCrossSite]
+        description: Not sent to non-trustworthy cross-site destination
     template_axes:
       # The `audioWorklet` interface is only available in secure contexts
       # https://webaudio.github.io/web-audio-api/#BaseAudioContext
@@ -109,10 +121,13 @@ cases:
       - headerName: sec-fetch-user
         origins: [httpOrigin]
         description: Not sent to non-trustworthy same-origin destination
+      - headerName: sec-fetch-frame-ancestors
+        filename_flags: [tentative]
+        origins: [httpOrigin]
+        description: Not sent to non-trustworthy same-origin destination
     template_axes:
       # All the templates in this block are unused with the exception of
       # `worker-dedicated-constructor`
-      appcache-manifest.sub.https.html: []
       audioworklet.https.sub.html: []
       fetch-via-serviceworker.https.sub.html: []
       serviceworker.https.sub.html: []
@@ -448,6 +463,73 @@ cases:
       header-refresh.optional.sub.html: [{}]
       svg-image.sub.html: [{}]
       window-location.sub.html: [{}]
+
+  # Sec-Fetch-Frame-Ancestors - direct requests
+  - all_subtests:
+      headerName: sec-fetch-frame-ancestors
+      filename_flags: [https, tentative]
+    common_axis:
+      - description: Same origin
+        origins: [httpsOrigin]
+        expected: same-origin
+      - description: Cross-site
+        origins: [httpsCrossSite]
+        expected: cross-site
+      - description: Same site
+        origins: [httpsSameSite]
+        expected: same-site
+    template_axes:
+      # Unused
+      # - the request mode of all "classic" worker scripts is set to
+      #   "same-origin"
+      #   https://html.spec.whatwg.org/#fetch-a-classic-worker-script
+      # - the request mode of all "top-level "module" worker scripts is set to
+      #   "same-origin":
+      #   https://html.spec.whatwg.org/#fetch-a-single-module-script
+      worker-dedicated-constructor.sub.html: []
+
+      audioworklet.https.sub.html: [{}]
+      css-images.sub.html:
+        - filename_flags: [tentative]
+      css-font-face.sub.html:
+        - filename_flags: [tentative]
+      element-a.sub.html: [{}]
+      element-area.sub.html: [{}]
+      element-audio.sub.html: [{}]
+      element-embed.sub.html: [{}]
+      element-frame.sub.html: [{}]
+      element-iframe.sub.html: [{}]
+      element-img.sub.html:
+        - sourceAttr: src
+        - sourceAttr: srcset
+      element-img-environment-change.sub.html: [{}]
+      element-input-image.sub.html: [{}]
+      element-link-icon.sub.html: [{}]
+      element-link-prefetch.optional.sub.html: [{}]
+      element-meta-refresh.optional.sub.html: [{}]
+      element-picture.sub.html: [{}]
+      element-script.sub.html:
+        - {}
+        - elementAttrs: { type: module }
+      element-video.sub.html: [{}]
+      element-video-poster.sub.html: [{}]
+      fetch.sub.html: [{ init: { mode: no-cors } }]
+      fetch-via-serviceworker.https.sub.html: [{ init: { mode: no-cors } }]
+      form-submission.sub.html:
+        - method: GET
+        - method: POST
+      header-link.sub.html:
+        - rel: icon
+        - rel: stylesheet
+      header-refresh.optional.sub.html: [{}]
+      window-location.sub.html: [{}]
+      script-module-import-dynamic.sub.html: [{}]
+      script-module-import-static.sub.html: [{}]
+      serviceworker.https.sub.html: [{}]
+      svg-image.sub.html: [{}]
+      window-history.sub.html: [{}]
+      worker-dedicated-importscripts.sub.html: [{}]
+
 
   # Sec-Fetch-Mode
   # These tests are served over HTTPS so the induced requests will be both

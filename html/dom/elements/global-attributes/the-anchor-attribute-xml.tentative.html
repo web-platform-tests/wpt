@@ -15,11 +15,12 @@ test(() => {
   const target = xmlDoc.documentElement.children[0];
   const anchored = xmlDoc.documentElement.children[1];
 
-  assert_equals(xmlDoc.documentElement.children[1].anchorElement, null,
+  assert_equals(anchored.anchorElement, undefined,
     'Setting the anchor attribute in XML should not set the anchorElement IDL.');
 
+  anchored.removeAttribute('anchor');
   anchored.anchorElement = target;
-  assert_equals(xmlDoc.documentElement.children[1].anchorElement, null,
-    'Setting element.anchorElement in an XML document should not set the anchorElement IDL.');
+  assert_equals(anchored.getAttribute('anchor'), null,
+    'Setting element.anchorElement in an XML document should not set the anchor element.');
 });
 </script>

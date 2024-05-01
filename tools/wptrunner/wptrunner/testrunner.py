@@ -313,7 +313,7 @@ class TestRunnerManager(threading.Thread):
                  test_implementations, stop_flag, retry_index=0, rerun=1,
                  pause_after_test=False, pause_on_unexpected=False,
                  restart_on_unexpected=True, debug_info=None,
-                 capture_stdio=True, restart_on_new_group=True, recording=None, max_restarts=5):
+                 capture_stdio=True, restart_on_new_group=True, recording=None, max_restarts=5, product_name=None):
         """Thread that owns a single TestRunner process and any processes required
         by the TestRunner (e.g. the Firefox binary).
 
@@ -332,6 +332,7 @@ class TestRunnerManager(threading.Thread):
         self.suite_name = suite_name
         self.manager_number = index
         self.test_implementation_key = None
+        self.product_name = product_name
 
         self.test_implementations = {}
         for key, test_implementation in test_implementations.items():
@@ -594,6 +595,7 @@ class TestRunnerManager(threading.Thread):
         self.executor_kwargs["group_metadata"] = self.state.group_metadata
         self.executor_kwargs["browser_settings"] = self.browser.browser_settings
         executor_browser_cls, executor_browser_kwargs = self.browser.browser.executor_browser()
+        executor_browser_kwargs["product_name"] = self.product_name
 
         args = (self.remote_queue,
                 self.command_queue,
@@ -984,8 +986,10 @@ class ManagerGroup:
                  capture_stdio=True,
                  restart_on_new_group=True,
                  recording=None,
-                 max_restarts=5):
+                 max_restarts=5,
+                 product_name=None):
         self.suite_name = suite_name
+        self.product_name = product_name
         self.test_queue_builder = test_queue_builder
         self.test_implementations = test_implementations
         self.pause_after_test = pause_after_test
@@ -1031,7 +1035,8 @@ class ManagerGroup:
                                         self.capture_stdio,
                                         self.restart_on_new_group,
                                         recording=self.recording,
-                                        max_restarts=self.max_restarts)
+                                        max_restarts=self.max_restarts,
+                                        product_name=self.product_name)
             manager.start()
             self.pool.add(manager)
         self.wait()

@@ -1066,6 +1066,18 @@
          */
         clear_device_posture: function(context=null) {
             return window.test_driver_internal.clear_device_posture(context);
+        },
+
+        /**
+         * Get a serialized object representing the accessibility API's accessibility node.
+         *
+         * @param {id}        id of element
+         * @returns {Promise} Fullfilled with object representing accessibilty node,
+         *                    rejected in the cases of failures.
+         */
+        get_accessibility_api_node: async function(dom_id) {
+            let jsonresult = await window.test_driver_internal.get_accessibility_api_node(dom_id);
+            return JSON.parse(jsonresult);
         }
     };
 
@@ -1254,6 +1266,10 @@
 
         async clear_device_posture(context=null) {
             throw new Error("clear_device_posture() is not implemented by testdriver-vendor.js");
+        },
+
+        async get_accessibility_api_node(dom_id) {
+            throw new Error("not implemented, whoops!");
         }
     };
 })();

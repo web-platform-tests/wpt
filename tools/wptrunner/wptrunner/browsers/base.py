@@ -430,7 +430,8 @@ class WebDriverBrowser(Browser):
                                  "host": self.host,
                                  "port": self.port,
                                  "pac": self.pac,
-                                 "env": self.env}
+                                 "env": self.env,
+                                 "pid": self.pid}
 
     def settings(self, test: Test) -> BrowserSettings:
         self._pac = test.environment.get("pac", None) if self._supports_pac else None

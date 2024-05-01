@@ -38,6 +38,8 @@ from .protocol import (BaseProtocolPart,
                        DevicePostureProtocolPart,
                        merge_dicts)
 
+from .executoracacia import (AcaciaPlatformAccessibilityProtocolPart)
+
 from webdriver.client import Session
 from webdriver import error
 
@@ -462,10 +464,12 @@ class WebDriverProtocol(Protocol):
                   WebDriverFedCMProtocolPart,
                   WebDriverDebugProtocolPart,
                   WebDriverVirtualSensorPart,
-                  WebDriverDevicePostureProtocolPart]
+                  WebDriverDevicePostureProtocolPart,
+                  AcaciaPlatformAccessibilityProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)
+        self.product_name = browser.product_name
         self.capabilities = capabilities
         if hasattr(browser, "capabilities"):
             if self.capabilities is None:

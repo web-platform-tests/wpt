@@ -335,4 +335,8 @@
     window.test_driver_internal.clear_device_posture = function(context=null) {
         return create_action("clear_device_posture", {context});
     };
+
+    window.test_driver_internal.get_accessibility_api_node = function(dom_id) {
+        return create_action("get_accessibility_api_node", {dom_id});
+    };
 })();

@@ -1,0 +1,18 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>core-aam: acacia test using testdriver</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<body>
+  <div id=testtest role="button"></div>
+  <script>
+    promise_test(async t => {
+      const node = await test_driver.get_accessibility_api_node('testtest');
+      assert_equals(node.role, 'push button');
+    }, 'An acacia test');
+  </script>
+</body>

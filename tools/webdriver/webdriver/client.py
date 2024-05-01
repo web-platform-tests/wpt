@@ -879,6 +879,10 @@ class WebElement:
     def get_computed_role(self):
         return self.send_element_command("GET", "computedrole")
 
+    @command
+    def get_accessibility_api_node(self):
+        return self.send_element_command("GET", "accessibilityapinode")
+
     # This MUST come last because otherwise @property decorators above
     # will be overridden by this.
     @command

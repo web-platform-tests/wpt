@@ -519,7 +519,8 @@ class Chrome(BrowserSetup):
             # We are on Taskcluster, where our Docker container does not have
             # enough capabilities to run Chrome with sandboxing. (gh-20133)
             kwargs["binary_args"].append("--no-sandbox")
-
+        if kwargs["force_renderer_accessibility"]:
+            kwargs["binary_args"].append("--force-renderer-accessibility")
 
 class ContentShell(BrowserSetup):
     name = "content_shell"

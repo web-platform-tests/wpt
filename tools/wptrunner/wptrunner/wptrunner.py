@@ -307,6 +307,7 @@ def run_test_iteration(test_status, test_loader, test_queue_builder,
                           kwargs["restart_on_new_group"],
                           recording=recording,
                           max_restarts=kwargs["max_restarts"],
+                          product_name=product.name
                           ) as manager_group:
             try:
                 handle_interrupt_signals()

@@ -464,6 +464,18 @@ class ClearDevicePostureAction:
     def __call__(self, payload):
         return self.protocol.device_posture.clear_device_posture()
 
+class GetAccessibilityAPINodeAction:
+    name = "get_accessibility_api_node"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        dom_id = payload["dom_id"]
+        return self.protocol.platform_accessibility.get_accessibility_api_node(dom_id)
+
+
 actions = [ClickAction,
            DeleteAllCookiesAction,
            GetAllCookiesAction,
@@ -499,4 +511,5 @@ actions = [ClickAction,
            RemoveVirtualSensorAction,
            GetVirtualSensorInformationAction,
            SetDevicePostureAction,
-           ClearDevicePostureAction]
+           ClearDevicePostureAction,
+           GetAccessibilityAPINodeAction]

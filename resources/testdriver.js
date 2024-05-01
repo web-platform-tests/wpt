@@ -2169,6 +2169,23 @@
          */
         clear_display_features: function(context=null) {
             return window.test_driver_internal.clear_display_features(context);
+        },
+
+        /**
+         * Test properties of API's accessibility node. This test API endpoint
+         * is still under development and subject to change, and for now should
+         * only be used for core-aam and html-aam tests.
+         *
+         * @param {id}         id of element
+         * @param {test}       an object of tests
+         * @param {api}        string indicating the API to test
+         * @returns {Promise}  The string "match" when the test succeeds,
+         *                     a failure message otherwise
+         */
+        test_accessibility_api: async function(dom_id, test, api) {
+            return window.test_driver_internal.test_accessibility_api(
+              dom_id, test, api, location.href
+            );
         }
     };
 
@@ -2486,6 +2503,11 @@
 
         async clear_display_features(context=null) {
             throw new Error("clear_display_features() is not implemented by testdriver-vendor.js");
+        },
+
+        async test_accessibility_api(dom_id, test, api, url) {
+            throw new Error("test_accessibility_api() is not available.");
         }
+
     };
 })();

@@ -1,0 +1,64 @@
+<!doctype html>
+<meta charset=utf-8>
+<html>
+<head>
+  <title>aria-braillelabel</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/core-aam/scripts/aam-utils.js"></script>
+</head>
+<body>
+
+<p>
+  This test is marked tentative because it uses an experimental testing API
+  that is presently under development.
+</p>
+
+<button id=test aria-braillelabel=foobar>
+
+<script>
+  AAMUtils.verifyAPI(
+    'aria-braillelabel',
+    'test',
+    {
+      "Atspi" : [
+        [
+          "property",
+          "objectAttributes",
+          "contains",
+          "braillelabel:foobar"
+        ]
+      ],
+      "AXAPI" : [
+        [
+          "property",
+          "AXBrailleLabel",
+          "is",
+          "foobar"
+        ]
+      ],
+      "IAccessible2" : [
+        [
+          "property",
+          "objectAttributes",
+          "contains",
+          "braillelabel:foobar"
+        ]
+      ],
+      "UIA" : [
+        [
+          "property",
+          "AriaProperties.braillelabel",
+          "is",
+          "foobar"
+        ]
+      ]
+    },
+  );
+</script>
+
+</body>
+</html>

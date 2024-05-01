@@ -52,7 +52,9 @@ from .protocol import (BaseProtocolPart,
                        WebExtensionsProtocolPart,
                        merge_dicts)
 
-from typing import Any, List, Dict, Optional
+from .executorplatformaccessibility import (PlatformAccessibilityProtocolPart)
+
+from typing import Any, List, Dict, Optional, Tuple
 from webdriver.client import Session
 from webdriver import error as webdriver_error
 from webdriver.bidi import error as webdriver_bidi_error
@@ -1029,10 +1031,12 @@ class WebDriverProtocol(Protocol):
                   WebDriverProtectedAudienceProtocolPart,
                   WebDriverDisplayFeaturesProtocolPart,
                   WebDriverGlobalPrivacyControlProtocolPart,
-                  WebDriverWebExtensionsProtocolPart]
+                  WebDriverWebExtensionsProtocolPart,
+                  PlatformAccessibilityProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)
+        self.product_name = browser.product_name
         self.capabilities = capabilities
         if hasattr(browser, "capabilities"):
             if self.capabilities is None:

@@ -671,8 +671,7 @@
     window.test_driver_internal.set_global_privacy_control = function(gpc, context=null) {
         return create_action("set_global_privacy_control", {gpc});
     };
-  
-  
+
     window.test_driver_internal.bidi.speculation.prefetch_status_updated.subscribe =
         function(params) {
         return subscribe(
@@ -688,5 +687,9 @@
             'speculation.prefetchStatusUpdated', on_event);
         return () => event_target.removeEventListener(
                     'speculation.prefetchStatusUpdated', on_event);
-    }; 
+    };
+
+    window.test_driver_internal.test_accessibility_api = function(dom_id, test, api, url) {
+        return create_action("test_accessibility_api", {dom_id, test, api, url});
+    };
 })();

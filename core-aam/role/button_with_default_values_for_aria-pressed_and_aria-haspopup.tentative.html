@@ -1,0 +1,76 @@
+<!doctype html>
+<meta charset=utf-8>
+<html>
+<head>
+  <title>role button with default values for aria-pressed and aria-hapopup</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/core-aam/scripts/aam-utils.js"></script>
+</head>
+<body>
+
+<p>
+  This test is marked tentative because it uses an experimental testing API
+  that is presently under development.
+</p>
+
+<div id=test1 role=button>click me</div>
+<div id=test2 role=button aria-pressed>click me</div>
+<div id=test3 role=button aria-pressed aria-haspopup>click me</div>
+<div id=test4 role=button aria-haspopup>click me</div>
+<div id=test5 role=button aria-haspopup=false>click me</div>
+
+<script>
+  var test_statements = {
+    "Atspi" : [
+       [
+          "property",
+          "role",
+          "is",
+          "push button"
+       ]
+    ],
+    "AXAPI" : [
+       [
+          "property",
+          "AXRole",
+          "is",
+          "AXButton"
+       ],
+       [
+          "property",
+          "AXSubrole",
+          "is",
+          "<nil>"
+       ]
+    ],
+    "IAccessible2" : [
+       [
+          "property",
+          "msaaRole",
+          "is",
+          "ROLE_SYSTEM_PUSHBUTTON"
+       ]
+    ],
+    "UIA" : [
+       [
+          "property",
+          "ControlType",
+          "is",
+          "Button"
+       ]
+    ]
+  };
+
+  AAMUtils.verifyAPI('role=button', 'test1', test_statements);
+  AAMUtils.verifyAPI('role=button aria-pressed', 'test2', test_statements);
+  AAMUtils.verifyAPI('role=button aria-pressed aria-haspopup', 'test3', test_statements);
+  AAMUtils.verifyAPI('role=button aria-haspopup', 'test4', test_statements);
+  AAMUtils.verifyAPI('role=button aria-haspopup=false', 'test5', test_statements);
+</script>
+
+</body>
+</html>

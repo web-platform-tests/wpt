@@ -1,0 +1,133 @@
+<!doctype html>
+<meta charset=utf-8>
+<html>
+<head>
+  <title>aria-braillelabel</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/core-aam/scripts/aam-utils.js"></script>
+</head>
+<body>
+
+<p>
+  This test is marked tentative because it uses an experimental testing API
+  that is presently under development.
+</p>
+
+<input role='combobox' id='test1' aria-autocomplete='both'>
+<input role='combobox' id='test2' aria-autocomplete='inline'>
+<input role='combobox' id='test3' aria-autocomplete='list'>
+
+<script>
+  AAMUtils.verifyAPI(
+    'aria-autocomplete=both',
+    'test1',
+    {
+      "Atspi" : [
+        [
+          "property",
+          "objectAttributes",
+          "contains",
+          "autocomplete:both"
+        ],
+        [
+          "property",
+          "states",
+          "contains",
+          "STATE_SUPPORTS_AUTOCOMPLETION"
+        ]
+      ],
+      "IAccessible2" : [
+         [
+           "property",
+           "objectAttributes",
+           "contains",
+           "autocomplete:both"
+         ],
+         [
+           "property",
+           "states",
+           "contains",
+           "IA2_STATE_SUPPORTS_AUTOCOMPLETION"
+         ]
+      ]
+    }
+  );
+
+  AAMUtils.verifyAPI(
+    'aria-autocomplete=inline',
+    'test2',
+    {
+      "Atspi" : [
+        [
+          "property",
+          "objectAttributes",
+          "contains",
+          "autocomplete:inline"
+        ],
+        [
+          "property",
+          "states",
+          "contains",
+          "STATE_SUPPORTS_AUTOCOMPLETION"
+        ]
+      ],
+      "IAccessible2" : [
+         [
+           "property",
+           "objectAttributes",
+           "contains",
+           "autocomplete:inline"
+         ],
+         [
+           "property",
+           "states",
+           "contains",
+           "IA2_STATE_SUPPORTS_AUTOCOMPLETION"
+         ]
+      ]
+    }
+  );
+
+  AAMUtils.verifyAPI(
+    'aria-autocomplete=list',
+    'test3',
+    {
+      "Atspi" : [
+        [
+          "property",
+          "objectAttributes",
+          "contains",
+          "autocomplete:list"
+        ],
+        [
+          "property",
+          "states",
+          "contains",
+          "STATE_SUPPORTS_AUTOCOMPLETION"
+        ]
+      ],
+      "IAccessible2" : [
+         [
+           "property",
+           "objectAttributes",
+           "contains",
+           "autocomplete:list"
+         ],
+         [
+           "property",
+           "states",
+           "contains",
+           "IA2_STATE_SUPPORTS_AUTOCOMPLETION"
+         ]
+      ]
+    }
+  );
+
+</script>
+
+</body>
+</html>

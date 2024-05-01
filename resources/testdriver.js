@@ -2307,6 +2307,23 @@
          */
         uninstall_web_extension: function(extension_id) {
             return window.test_driver_internal.uninstall_web_extension(extension_id);
+        },
+
+        /**
+         * Test properties of API's accessibility node. This test API endpoint
+         * is still under development and subject to change, and for now should
+         * only be used for core-aam and html-aam tests.
+         *
+         * @param {id}         id of element
+         * @param {test}       an object of tests
+         * @param {api}        string indicating the API to test
+         * @returns {Promise}  The string "match" when the test succeeds,
+         *                     a failure message otherwise
+         */
+        test_accessibility_api: async function(dom_id, test, api) {
+            return window.test_driver_internal.test_accessibility_api(
+              dom_id, test, api, location.href
+            );
         }
     };
 
@@ -2644,6 +2661,11 @@
 
         async get_global_privacy_control() {
             throw new Error("get_global_privacy_control() is not implemented by testdriver-vendor.js");
+        },
+
+        async test_accessibility_api(dom_id, test, api, url) {
+            throw new Error("test_accessibility_api() is not available.");
         }
+
     };
 })();

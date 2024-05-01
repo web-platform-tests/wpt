@@ -16,7 +16,8 @@ except ImportError:
 import html5lib
 
 from . import XMLParser
-from .item import (ConformanceCheckerTest,
+from .item import (AccessibilityAPIMappingTest,
+                   ConformanceCheckerTest,
                    CrashTest,
                    ManifestItem,
                    ManualTest,
@@ -398,6 +399,15 @@ class SourceFile:
                 fnmatch(self.filename, wd_pattern))
 
     @property
+    def name_is_wai_aria_aam(self) -> bool:
+        """Check if the file name matches the conditions for the file to
+        be a WAI-ARIA AAM spec test file"""
+        rel_path_parts = self.rel_path_parts
+        return ((rel_path_parts[0] == "wai-aria-aam" and len(rel_path_parts) > 1) and
+                self.filename not in ("__init__.py", "conftest.py") and
+                fnmatch(self.filename, wd_pattern))
+
+    @property
     def name_is_reference(self) -> bool:
         """Check if the file name matches the conditions for the file to
         be a reference file (not a reftest)"""
@@ -474,7 +484,7 @@ class SourceFile:
     def script_metadata(self) -> Optional[List[Tuple[Text, Text]]]:
         if self.name_is_worker or self.name_is_multi_global or self.name_is_window or self.name_is_extension:
             regexp = js_meta_re
-        elif self.name_is_webdriver:
+        elif self.name_is_webdriver or self.name_is_wai_aria_aam:
             regexp = python_meta_re
         else:
             return None
@@ -899,6 +909,9 @@ class SourceFile:
         if self.name_is_webdriver:
             return {WebDriverSpecTest.item_type}
 
+        if self.name_is_wai_aria_aam:
+            return {AccessibilityAPIMappingTest.item_type}
+
         if self.name_is_visual:
             return {VisualTest.item_type}
 
@@ -979,6 +992,16 @@ class SourceFile:
         elif self.name_is_webdriver:
             rv = WebDriverSpecTest.item_type, [
                 WebDriverSpecTest(
+                    self.tests_root,
+                    self.rel_path,
+                    self.url_base,
+                    self.rel_url,
+                    timeout=self.timeout
+                )]
+
+        elif self.name_is_wai_aria_aam:
+            rv = AccessibilityAPIMappingTest.item_type, [
+                AccessibilityAPIMappingTest(
                     self.tests_root,
                     self.rel_path,
                     self.url_base,

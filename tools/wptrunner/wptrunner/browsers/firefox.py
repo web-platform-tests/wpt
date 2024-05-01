@@ -40,12 +40,14 @@ from ..executors.executormarionette import (MarionetteTestharnessExecutor,  # no
 __wptrunner__ = {"product": "firefox",
                  "check_args": "check_args",
                  "browser": {None: "FirefoxBrowser",
-                             "wdspec": "FirefoxWdSpecBrowser"},
+                             "wdspec": "FirefoxWdSpecBrowser",
+                             "aamtest": "FirefoxWdSpecBrowser"},
                  "executor": {"crashtest": "MarionetteCrashtestExecutor",
                               "testharness": "MarionetteTestharnessExecutor",
                               "reftest": "MarionetteRefTestExecutor",
                               "print-reftest": "MarionettePrintRefTestExecutor",
-                              "wdspec": "MarionetteWdspecExecutor"},
+                              "wdspec": "MarionetteWdspecExecutor",
+                              "aamtest": "MarionetteWdspecExecutor",},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
@@ -71,7 +73,7 @@ def get_timeout_multiplier(test_type, run_info_data, **kwargs):
             return 4 * multiplier
         else:
             return 2 * multiplier
-    elif test_type == "wdspec":
+    elif test_type in ("wdspec", "aamtest"):
         if (run_info_data.get("asan") or
             run_info_data.get("ccov") or
             run_info_data.get("debug")):
@@ -126,7 +128,7 @@ def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs)
                       "gmp_path": kwargs["gmp_path"] if "gmp_path" in kwargs else None,
                       "debug_test": kwargs["debug_test"]}
 
-    if test_type == "wdspec":
+    if test_type in ("wdspec", "aamtest"):
         browser_kwargs["webdriver_binary"] = kwargs["webdriver_binary"]
         browser_kwargs["webdriver_args"] = kwargs["webdriver_args"].copy()
 
@@ -144,6 +146,9 @@ def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs)
         browser_kwargs["specialpowers_path"] = kwargs["specialpowers_path"]
         browser_kwargs["test_type"] = test_type
         browser_kwargs["timeout_multiplier"] = get_timeout_multiplier(test_type, run_info_data, **kwargs)
+
+    if test_type == "aamtest" and ('accessibility.force_disabled', '-1') not in browser_kwargs["extra_prefs"]:
+        browser_kwargs["extra_prefs"].append(('accessibility.force_disabled', '-1'))
 
     browser_kwargs["extra_prefs"].extend(subsuite.config.get("prefs", []))
     return browser_kwargs
@@ -172,7 +177,8 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
             else:
                 cache_screenshots = major_version < 14
         executor_kwargs["cache_screenshots"] = cache_screenshots
-    if test_type == "wdspec":
+
+    if test_type in ("wdspec", "aamtest"):
         options = {"args": []}
         if kwargs["binary"]:
             executor_kwargs["webdriver_args"].extend(["--binary", kwargs["binary"]])
@@ -775,7 +781,7 @@ class ProfileCreator:
         if self.test_type == "print-reftest":
             prefs["print.always_print_silent"] = True
 
-        if self.test_type == "wdspec":
+        if self.test_type in ("wdspec", "aamtest"):
             prefs.update(
                 {
                     "remote.prefs.recommended": True,
@@ -978,6 +984,7 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
 
         self.env = self.get_env(binary, debug_info, headless, gmp_path, chaos_mode_flags, e10s)
 
+        # Todo: need test type to use "aam" test in profile_creator_cls
         profile_creator = profile_creator_cls(logger,
                                               prefs_root,
                                               config,

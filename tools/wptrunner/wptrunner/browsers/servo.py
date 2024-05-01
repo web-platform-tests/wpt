@@ -27,6 +27,7 @@ __wptrunner__ = {
         "reftest": "ServoRefTestExecutor",
         "crashtest": "ServoCrashtestExecutor",
         "wdspec": "WdspecExecutor",
+        "aamtest": "WdspecExecutor",
     },
     "browser_kwargs": "browser_kwargs",
     "executor_kwargs": "executor_kwargs",

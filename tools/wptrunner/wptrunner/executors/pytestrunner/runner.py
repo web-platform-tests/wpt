@@ -52,6 +52,7 @@ def run(path, server_config, session_config, timeout=0):
 
             config = session_config.copy()
             config["wptserve"] = server_config.as_dict()
+            config["timeout"] = timeout
 
             with open(config_path, "w") as f:
                 json.dump(config, f)

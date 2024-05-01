@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<title>Interpolation of dynamic-range-limit</title>
+<link rel="help" href="https://drafts.csswg.org/css-color-hdr/#the-dynamic-range-limit-property">
+<meta name="assert" content="Interpolation of dynamic-range-limit">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/interpolation-testcommon.js"></script>
+
+<body>
+  <template id="target-template">T</template>
+</body>
+
+<script>
+test_interpolation({
+  property: "dynamic-range-limit",
+  from: "high",
+  to: "standard",
+}, [
+  {at: 0.0, expect: "high"},
+  {at: 0.25, expect: "dynamic-range-limit-mix(high, standard, 25%)"},
+  {at: 0.75, expect: "dynamic-range-limit-mix(high, standard, 75%)"},
+  {at: 1.0, expect: "standard"},
+]);
+
+test_interpolation({
+  property: "dynamic-range-limit",
+  from: "constrained-high",
+  to: "standard",
+}, [
+  {at: 0.0, expect: "constrained-high"},
+  {at: 0.5, expect: "dynamic-range-limit-mix(constrained-high, standard, 50%)"},
+  {at: 1.0, expect: "standard"},
+]);
+
+test_interpolation({
+  property: "dynamic-range-limit",
+  from: "dynamic-range-limit-mix(standard, high, 50%)",
+  to: "standard",
+}, [
+  {at: 0.0, expect: "dynamic-range-limit-mix(standard, high, 50%)"},
+  {at: 0.75, expect: "dynamic-range-limit-mix(dynamic-range-limit-mix(standard, high, 50%), standard, 75%)"},
+  {at: 1.0, expect: "standard"},
+]);
+
+test_interpolation({
+  property: "dynamic-range-limit",
+  from: "dynamic-range-limit-mix(standard, high, 10%)",
+  to: "dynamic-range-limit-mix(standard, high, 90%)",
+}, [
+  {at: 0.0, expect: "dynamic-range-limit-mix(standard, high, 10%)"},
+  {at: 0.5, expect: "dynamic-range-limit-mix(" +
+                        "dynamic-range-limit-mix(standard, high, 10%), " +
+                        "dynamic-range-limit-mix(standard, high, 90%), " +
+                        "50%)"},
+  {at: 1.0, expect: "dynamic-range-limit-mix(standard, high, 90%)"},
+]);
+</script>

@@ -33,8 +33,8 @@ async def test_key_backspace(bidi_session, top_context, setup_key_test):
 @pytest.mark.parametrize(
     "value",
     [
-        "\U0001F604",  # 😄 U+1F604 (\ud83d\ude04) Smiling Face with Open Mouth and Smiling Eyes.
-        "\U0001F60D",  # 😍 U+1F60D (\ud83d\ude0d) Smiling Face with Heart-Eyes.
+        "\U0001F604",  # "😄" (\ud83d\ude04), a single surrogate codepoint.
+        "\U0001F60D",  # "😍" (\ud83d\ude0d), a single surrogate codepoint.
     ],
 )
 async def test_key_codepoint(

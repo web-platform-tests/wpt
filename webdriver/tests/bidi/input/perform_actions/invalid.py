@@ -376,7 +376,12 @@ async def test_params_key_action_value_invalid_type(perform_actions,
 
 @pytest.mark.parametrize(
     "value",
-    ["fa", "\u0BA8\u0BBFb", "\u0BA8\u0BBF\u0BA8", "\u1100\u1161\u11A8c"],
+    [
+        "fa",  # 2 codepoints.
+        "\u0BA8\u0BBF",  # "நிb", 2 codepoints forming a grapheme.
+        "\u1100\u1161\u11A8",  # "각", 3 codepoints forming a grapheme.
+        "\u2764\ufe0f",  # "❤️",  2 codepoints: a base character and a variation selector.
+    ],
 )
 async def test_params_key_action_value_invalid_multiple_codepoints(
         perform_actions, value):

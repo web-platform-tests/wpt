@@ -1,0 +1,4 @@
+features:
+- name: webauthn-public-key-easy
+  files:
+  - webauthn/createcredential-getpublickey.https.html

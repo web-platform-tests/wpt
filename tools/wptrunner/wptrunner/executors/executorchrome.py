@@ -226,6 +226,24 @@ class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor, _SanitizerMi
         super().__init__(*args, **kwargs)
         self.protocol.reuse_window = reuse_window
 
+    def setup(self, runner):
+        super().setup(runner)
+        # Chromium requires the `background-sync` permission for reporting APIs
+        # to work. Not all embedders (notably, `chrome --headless=old`) grant
+        # `background-sync` by default, so this CDP call ensures the permission
+        # is granted for all origins, in line with the background sync spec's
+        # recommendation [0].
+        #
+        # WebDriver's "Set Permission" command can only act on the test's
+        # origin, which may be too limited.
+        #
+        # [0]: https://wicg.github.io/background-sync/spec/#permission
+        params = {
+            "permission": {"name": "background-sync"},
+            "setting": "granted",
+        }
+        self.protocol.cdp.execute_cdp_command("Browser.setPermission", params)
+
 
 class ChromeDriverPrintRefTestExecutor(ChromeDriverRefTestExecutor):
     protocol_cls = ChromeDriverProtocol

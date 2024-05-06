@@ -268,6 +268,11 @@ class MultipleTestdriverVendor(Rule):
     description = "More than one `<script src='/resources/testdriver-vendor.js'>`"
 
 
+class TestdriverVendorWithoutTestdriver(Rule):
+    name = "TESTDRIVER-VENDOR-WITHOUT-TESTDRIVER"
+    description = "File contains `<script src='/resources/testdriver-vendor.js'>` but not `testdriver.js`"
+
+
 class TestharnessPath(Rule):
     name = "TESTHARNESS-PATH"
     description = "testharness.js script seen with incorrect path"

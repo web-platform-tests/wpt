@@ -357,6 +357,56 @@ def test_multiple_testharnessreport():
             ]
 
 
+def test_testharnessreport_without_testharness():
+    code = b"""
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testharnessreport.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind in ["web-lax", "web-strict"]:
+            assert errors == [
+                ("TESTHARNESSREPORT-WITHOUT-TESTHARNESS",
+                    "File contains <script src='/resources/testharnessreport.js'> but not `testharness.js`",
+                    filename,
+                    None),
+            ]
+        elif kind == "python":
+            assert errors == [
+                ("PARSE-FAILED", "Unable to parse file", filename, 2),
+            ]
+
+
+def test_multiple_testharnessreport_without_testharness():
+    code = b"""
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind in ["web-lax", "web-strict"]:
+            assert errors == [
+                ("TESTHARNESSREPORT-WITHOUT-TESTHARNESS",
+                    "File contains <script src='/resources/testharnessreport.js'> but not `testharness.js`",
+                    filename,
+                    None),
+                ("MULTIPLE-TESTHARNESSREPORT", "More than one `<script src='/resources/testharnessreport.js'>`", filename, None),
+            ]
+        elif kind == "python":
+            assert errors == [
+                ("PARSE-FAILED", "Unable to parse file", filename, 2),
+            ]
+
+
 def test_testdriver_in_unsupported():
     code = b"""
 <html xmlns="http://www.w3.org/1999/xhtml">

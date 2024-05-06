@@ -101,8 +101,6 @@ class Browser:
     """
     __metaclass__ = ABCMeta
 
-    init_timeout: float = 30
-
     def __init__(self, logger: StructuredLogger):
         self.logger = logger
 
@@ -319,7 +317,6 @@ class WebDriverBrowser(Browser):
         self.env = os.environ.copy() if env is None else env
         self.webdriver_args = webdriver_args if webdriver_args is not None else []
 
-        self.init_deadline: Optional[float] = None
         self._output_handler: Optional[OutputHandler] = None
         self._cmd = None
         self._proc: Optional[mozprocess.ProcessHandler] = None
@@ -330,7 +327,6 @@ class WebDriverBrowser(Browser):
         return [self.webdriver_binary] + self.webdriver_args
 
     def start(self, group_metadata: GroupMetadata, **kwargs: Any) -> None:
-        self.init_deadline = time.time() + self.init_timeout
         try:
             self._run_server(group_metadata, **kwargs)
         except KeyboardInterrupt:
@@ -345,7 +341,6 @@ class WebDriverBrowser(Browser):
         return OutputHandler(self.logger, cmd)
 
     def _run_server(self, group_metadata: GroupMetadata, **kwargs: Any) -> None:
-        assert self.init_deadline is not None
         cmd = self.make_command()
         self._output_handler = self.create_output_handler(cmd)
 
@@ -364,22 +359,7 @@ class WebDriverBrowser(Browser):
                     "WebDriver executable not found: %s" % self.webdriver_binary) from e
             raise
         self._output_handler.after_process_start(self._proc.pid)
-
-        try:
-            wait_for_service(
-                self.logger,
-                self.host,
-                self.port,
-                timeout=self.init_deadline - time.time(),
-                server_process=self._proc,
-            )
-        except Exception:
-            self.logger.error(
-                "WebDriver was not accessible "
-                f"within the timeout:\n{traceback.format_exc()}")
-            raise
-        finally:
-            self._output_handler.start(group_metadata=group_metadata, **kwargs)
+        self._output_handler.start(group_metadata=group_metadata, **kwargs)
         self.logger.debug("_run complete")
 
     def stop(self, force: bool = False) -> bool:

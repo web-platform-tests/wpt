@@ -42,6 +42,8 @@ class StopFlag:
         # tell when all threads have cleaned up their resources.
         #
         # The barrier's extra waiter is the main thread (`ManagerGroup`).
+
+
         self._all_managers_done = threading.Barrier(1 + size)
 
     def stop(self) -> None:

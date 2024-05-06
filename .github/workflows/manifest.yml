@@ -6,9 +6,11 @@ on:
   pull_request:
     paths:
       - 'tools/**'
+    types: [opened, reopened, synchronize, ready_for_review]
 jobs:
   build-and-tag:
     runs-on: ubuntu-20.04
+    if: github.event.pull_request.draft == false
     steps:
     - name: Set up Python
       uses: actions/setup-python@v5

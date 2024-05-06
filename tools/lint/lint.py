@@ -450,24 +450,31 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
 
     required_elements: List[Text] = []
 
-    testharnessreport_nodes: List[ElementTree.Element] = []
+    testharnessreport_nodes = source_file.root.findall(
+        ".//{http://www.w3.org/1999/xhtml}script[@src='/resources/testharnessreport.js']"
+    )
+
     if source_file.testharness_nodes:
         if test_type not in ("testharness", "manual"):
             errors.append(rules.TestharnessInOtherType.error(path, (test_type,)))
+
         if len(source_file.testharness_nodes) > 1:
             errors.append(rules.MultipleTestharness.error(path))
 
-        testharnessreport_nodes = source_file.root.findall(".//{http://www.w3.org/1999/xhtml}script[@src='/resources/testharnessreport.js']")
         if not testharnessreport_nodes:
             errors.append(rules.MissingTestharnessReport.error(path))
-        else:
-            if len(testharnessreport_nodes) > 1:
-                errors.append(rules.MultipleTestharnessReport.error(path))
 
         required_elements.extend(key for key, value in {"testharness": True,
                                                         "testharnessreport": len(testharnessreport_nodes) > 0,
                                                         "timeout": len(source_file.timeout_nodes) > 0}.items()
                                  if value)
+
+    if testharnessreport_nodes:
+        if not source_file.testharness_nodes:
+            errors.append(rules.TestharnessReportWithoutTestharness.error(path))
+
+        if len(testharnessreport_nodes) > 1:
+            errors.append(rules.MultipleTestharnessReport.error(path))
 
     testdriver_vendor_nodes: List[ElementTree.Element] = []
     if source_file.testdriver_nodes:

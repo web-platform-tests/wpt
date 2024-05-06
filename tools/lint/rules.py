@@ -180,6 +180,15 @@ class MissingTestharnessReport(Rule):
     """
 
 
+class TestharnessReportWithoutTestharness(Rule):
+    name = "TESTHARNESSREPORT-WITHOUT-TESTHARNESS"
+    description = "File contains <script src='/resources/testharnessreport.js'> but not `testharness.js`"
+    to_fix = """
+        ensure each test file contains `<script
+        src='/resources/testharness.js'>`
+    """
+
+
 class MultipleTestharnessReport(Rule):
     name = "MULTIPLE-TESTHARNESSREPORT"
     description = "More than one `<script src='/resources/testharnessreport.js'>`"

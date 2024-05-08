@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://github.com/whatwg/html/issues/9799">
+<link rel=help href="https://github.com/openui/open-ui/issues/939#issuecomment-1910837275">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+select {
+  appearance: base-select;
+}
+</style>
+
+<select id=select-one>
+  <button class=one>button one</button>
+  <button class=two>button two</button>
+  <option>one</option>
+  <option>two</option>
+</select>
+
+<select id=select-two>
+  <button class=one>button one</button>
+  <button class=two type=popover>button two</button>
+  <option>one</option>
+  <option>two</option>
+</select>
+
+<select id=select-three>
+  <button class=one type=popover>button one</button>
+  <button class=two type=popover>button two</button>
+  <option>one</option>
+  <option>two</option>
+</select>
+
+<script>
+promise_test(async () => {
+  const select = document.getElementById('select-one');
+  const b1 = select.querySelector('.one');
+  const b2 = select.querySelector('.two');
+
+  b1.click();
+  assert_true(select.matches(':open'),
+    'Clicking b1 should open the listbox.');
+  b1.click();
+  assert_false(select.matches(':open'),
+    'Clicking b1 again should close the listbox.');
+
+  b2.click();
+  assert_true(select.matches(':open'),
+    'Clicking b2 should open the listbox.');
+  b2.click();
+  assert_false(select.matches(':open'),
+    'Clicking b2 again should close the listbox.');
+}, 'If there are two buttons without type=popover, then they should both open the listbox.');
+
+promise_test(async () => {
+  const select = document.getElementById('select-two');
+  const b1 = select.querySelector('.one');
+  const b2 = select.querySelector('.two');
+
+  b1.click();
+  assert_false(select.matches(':open'),
+    'Clicking b1 should not open the listbox.');
+
+  b2.click();
+  assert_true(select.matches(':open'),
+    'Clicking b2 should open the listbox.');
+  b2.click();
+  assert_false(select.matches(':open'),
+    'Clicking b2 again should close the listbox.');
+}, 'If there are two buttons and one has type=popover, then only the type=popover one should open the listbox.');
+
+promise_test(async () => {
+  const select = document.getElementById('select-three');
+  const b1 = select.querySelector('.one');
+  const b2 = select.querySelector('.two');
+
+  b1.click();
+  assert_true(select.matches(':open'),
+    'Clicking b1 should open the listbox.');
+  b1.click();
+  assert_false(select.matches(':open'),
+    'Clicking b1 again should close the listbox.');
+
+  b2.click();
+  assert_true(select.matches(':open'),
+    'Clicking b2 should open the listbox.');
+  b2.click();
+  assert_false(select.matches(':open'),
+    'Clicking b2 again should close the listbox.');
+}, 'If there are two buttons and they both have type=popover, then they should both open the listbox.');
+</script>

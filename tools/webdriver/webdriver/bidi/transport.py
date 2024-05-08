@@ -77,7 +77,6 @@ class Transport:
                 await self.handle(msg)
         except websockets.exceptions.ConnectionClosed:
             logger.debug("connection closed while reading messages")
-            return
 
     async def wait_closed(self) -> None:
         if self.connection and not self.connection.closed:

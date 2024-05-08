@@ -501,7 +501,7 @@
     fuzzy_test_valid_color(`lch(from lch(0.7 45 30 / none) l c h / alpha)`,                             `lch(0.7 45 30 / 0)`);
 
     // Testing with 'currentColor'
-    fuzzy_test_valid_color(`lch(from currentColor) l c h)`, `lch(from currentColor) l c h)`);
+    fuzzy_test_valid_color(`lch(from currentColor l c h)`, `lch(from currentColor l c h)`);
 
     // color-mix
     fuzzy_test_valid_color(`lch(from color-mix(in lch, lch(70 45 30), lch(70 45 30)) l c h / alpha)`, `lch(70 45 30)`);

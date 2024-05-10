@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="reftest-wait">
+<html class="test-wait">
 <meta charset="utf-8" />
 <title>Dialog-Popover crash</title>
 <link rel="author" href="mailto:masonf@chromium.org">
@@ -21,6 +21,6 @@
   popover.showPopover();
   clickOn(dialog)
     .then(() => {
-      document.documentElement.classList.remove("reftest-wait");
+      document.documentElement.classList.remove("test-wait");
     });
 </script>

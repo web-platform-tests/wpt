@@ -163,6 +163,22 @@ class MultipleTestharness(Rule):
     """
 
 
+class ReftestWaitInOtherType(Rule):
+    name = "REFTESTWAIT-IN-OTHER-TYPE"
+    description = "`class=reftest-wait` on a non-reftest (%s)"
+    to_fix = """
+        ensure the test is either a reftest or remove class=reftest-wait.
+    """
+
+
+class TestWaitInOtherType(Rule):
+    name = "TESTWAIT-IN-OTHER-TYPE"
+    description = "`class=test-wait` on an unsupported test type (%s)"
+    to_fix = """
+        ensure the test is either a type which supports test-wait or remove class=test-wait.
+    """
+
+
 class MissingReftestWait(Rule):
     name = "MISSING-REFTESTWAIT"
     description = "Missing `class=reftest-wait`"

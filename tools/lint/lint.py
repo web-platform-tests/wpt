@@ -402,6 +402,24 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
     if test_type == "visual" and not source_file.name_is_visual:
         errors.append(rules.ContentVisual.error(path))
 
+    root_classes = {
+        c
+        for c in re.split(
+            r"[\x09\x0A\x0C\x0D\x20]+", source_file.root.attrib.get("class", "")
+        )
+        if c != ""
+    }
+
+    if (
+        test_type not in ("print-reftest", "reftest", "support")
+        and "reftest-wait" in root_classes
+    ):
+        # We allow this on support files because it also works on references
+        errors.append(rules.ReftestWaitInOtherType.error(path, (test_type,)))
+
+    if test_type != "crashtest" and "test-wait" in root_classes:
+        errors.append(rules.TestWaitInOtherType.error(path, (test_type,)))
+
     about_blank_parts = urlsplit("about:blank")
     for reftest_node in source_file.reftest_nodes:
         href = reftest_node.attrib.get("href", "").strip(space_chars)
@@ -542,7 +560,7 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
             # This happens if the contents of src isn't something that looks like a URL to Python
             pass
         if (script_path == "/common/reftest-wait.js" and
-            "reftest-wait" not in source_file.root.attrib.get("class", "").split()):
+            "reftest-wait" not in root_classes):
             errors.append(rules.MissingReftestWait.error(path))
 
     return errors

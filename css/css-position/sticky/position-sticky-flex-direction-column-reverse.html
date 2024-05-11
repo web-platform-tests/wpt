@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<title>position:sticky elements should work correctly with flex-direction</title>
+<link rel="match" href="position-sticky-flex-direction-column-reverse-ref.html" />
+<link rel="help" href="https://www.w3.org/TR/css-position-3/#sticky-pos" />
+<meta name="assert" content="This test checks that position:sticky elements interoperate correctly with flex-direction" />
+
+<style>
+.grid {
+  display: grid;
+  gap: 30px;
+  grid-template-columns: repeat(2, 200px);
+  padding: 30px;
+}
+
+.list {
+  max-height: 200px;
+  overflow: auto;
+  list-style: none;
+  padding: 0;
+  border: 1px solid black;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0;
+}
+
+.list-reverse {
+  flex-direction: column-reverse;
+}
+
+.list-item {
+  padding: 3px 5px;
+  background: #c3c3c3;
+  min-height: 20px;
+}
+
+.sticky-item {
+  position: sticky;
+  bottom: 0;
+  top: 0;
+  background: lightgreen;
+}
+
+.sticky-item-error {
+  background: red;
+}
+</style>
+
+<p>You should see two green list items. There should be no red list item.</p>
+
+<div class="grid">
+  <ul class="list">
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item sticky-item-error"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item sticky-item"></li>
+  </ul>
+
+  <ul class="list list-reverse">
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item sticky-item-error"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item"></li>
+    <li class="list-item sticky-item"></li>
+  </ul>
+
+</div>

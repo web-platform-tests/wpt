@@ -1,0 +1,34 @@
+name: Runner smoke Test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    paths:
+      - 'tools/**'
+
+jobs:
+  run-selenium-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r tools/runner/requirements.txt
+
+    - name: Setup Chrome WebDriver
+      uses: browser-actions/setup-chrome@v1.0.1
+
+    - name: Run Smoke tests
+      run: pytest tools/runner/tests/test_runner.py
+

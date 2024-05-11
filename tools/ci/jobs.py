@@ -21,6 +21,9 @@ EXCLUDES = [
     "!.*/README",
     "!css/[^/]*$"
 ]
+EXCLUDE_RUNNER_TEST = [
+    "!tools/runner/"
+]
 
 # Rules are just regex on the path, with a leading ! indicating a regex that must not
 # match for the job. Paths should be kept in sync with scripts in update_built.py.
@@ -30,8 +33,8 @@ job_path_map = {
     "lint": [".*"],
     "manifest_upload": [".*"],
     "resources_unittest": ["resources/", "tools/"],
-    "tools_unittest": ["tools/"],
-    "wptrunner_unittest": ["tools/"],
+    "tools_unittest": ["tools/"] + EXCLUDE_RUNNER_TEST,
+    "wptrunner_unittest": ["tools/"] + EXCLUDE_RUNNER_TEST,
     "update_built": ["conformance-checkers/",
                      "css/css-images/",
                      "css/css-ui/",
@@ -40,11 +43,11 @@ job_path_map = {
                      "html/",
                      "infrastructure/",
                      "mimesniff/"],
-    "wpt_integration": ["tools/"],
+    "wpt_integration": ["tools/"] + EXCLUDE_RUNNER_TEST,
     "wptrunner_infrastructure": ["infrastructure/",
                                  "tools/",
                                  "resources/",
-                                 "webdriver/tests/support"],
+                                 "webdriver/tests/support"]  + EXCLUDE_RUNNER_TEST,
 }
 
 

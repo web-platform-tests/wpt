@@ -29,6 +29,7 @@ function checkBodyArrayBuffer(request, expectedBody) {
 
 function checkBodyBytes(request, expectedBody) {
   return request.bytes().then(function(bodyAsUint8Array) {
+    assert_true(bodyAsUint8Array instanceof Uint8Array);
     validateBufferFromString(bodyAsUint8Array.buffer, expectedBody, "Retrieve and verify request's body");
     assert_true(request.bodyUsed, "body as bytes: bodyUsed turned true");
   });

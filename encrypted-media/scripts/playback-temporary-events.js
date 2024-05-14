@@ -105,7 +105,7 @@ function runTest(config,qualifier) {
                 _video.pause();
 
                 var closedAttributePromise = _mediaKeySession.closed;
-                var closeMethodPromise = _mediaKeySession.close();                
+                var closeMethodPromise = _mediaKeySession.close();
 
                 closedAttributePromise.then(onClosed);
                 closeMethodPromise.then(onClosed);

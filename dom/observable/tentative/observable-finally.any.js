@@ -20,7 +20,7 @@ test(() => {
 
   assert_array_equals(
     results,
-    [1, 2, 3, "complete", "finally called"],
+    [1, 2, 3, "finally called", "complete"],
     "errors thrown in the finally handler should be forwarded to the result observable"
   );
 }, "finally should mirror all values and completions from the source");

@@ -1,42 +1,36 @@
-import acacia_atspi
+import gi
+gi.require_version("Atspi", "2.0")
+from gi.repository import Atspi
 import json
 from .protocol import (PlatformAccessibilityProtocolPart)
 
-# When running against chrome family browser:
-#  self.parent is WebDriverProtocol
-#  self.parent.webdriver is webdriver
-
-def findActiveTab(root):
+def find_active_tab(root):
     stack = [root]
     while stack:
         node = stack.pop()
 
-        if node.getRoleName() == 'frame':
-            relations = node.getRelations()
-            if 'ATSPI_RELATION_EMBEDS' in relations:
-                index = relations.index('ATSPI_RELATION_EMBEDS')
-                target = node.getTargetForRelationAtIndex(index)
-                print(target.getRoleName())
-                print(target.getName())
-                return target
-            continue
+        if Atspi.Accessible.get_role_name(node) == 'frame':
+            ## Helper: list of string relations, get targets for relation?
+            relationset = Atspi.Accessible.get_relation_set(node)
+            for relation in relationset:
+              if relation.get_relation_type() == Atspi.RelationType.EMBEDS:
+                  return relation.get_target(0)
+            contiue
 
-        for i in range(node.getChildCount()):
-            child = node.getChildAtIndex(i)
+        for i in range(Atspi.Accessible.get_child_count(node)):
+            child = Atspi.Accessible.get_child_at_index(node, i)
             stack.append(child)
 
     return None
 
 def serialize_node(node):
     node_dictionary = {}
-    node_dictionary['role'] = node.getRoleName()
-    node_dictionary['name'] = node.getName()
-    node_dictionary['description'] = node.getDescription()
-    node_dictionary['states'] = sorted(node.getStates())
-    node_dictionary['interfaces'] = sorted(node.getInterfaces())
-    node_dictionary['attributes'] = sorted(node.getAttributes())
+    node_dictionary['role'] = Atspi.Accessible.get_role_name(node)
+    node_dictionary['name'] = Atspi.Accessible.get_name(node)
+    node_dictionary['description'] = Atspi.Accessible.get_description(node)
 
     # TODO: serialize other attributes
+    # states, interfaces, attributes, etc.
 
     return node_dictionary
 
@@ -45,45 +39,58 @@ def find_node(root, dom_id):
     while stack:
         node = stack.pop()
 
-        attributes = node.getAttributes()
-        for attribute_pair in attributes:
-            [attribute, value] = attribute_pair.split(':', 1)
-            if attribute == 'id':
-                if value == dom_id:
-                    return node
+        attributes = Atspi.Accessible.get_attributes(node)
+        if 'id' in attributes and attributes['id'] == dom_id:
+            return node
 
-        for i in range(node.getChildCount()):
-            child = node.getChildAtIndex(i)
+        for i in range(Atspi.Accessible.get_child_count(node)):
+            child = Atspi.Accessible.get_child_at_index(node, i)
             stack.append(child)
 
     return None
 
+def find_browser(name):
+    desktop = Atspi.get_desktop(0)
+    child_count = Atspi.Accessible.get_child_count(desktop)
+    for i in range(child_count):
+        app = Atspi.Accessible.get_child_at_index(desktop, i)
+        if name in Atspi.Accessible.get_name(app).lower():
+            return app
+    return
+
+
+
 class AcaciaPlatformAccessibilityProtocolPart(PlatformAccessibilityProtocolPart):
+    def handle_event(self, e):
+        print(f"---------------- EVENT ----------------")
+        print(f"{e.type}")
+
     def setup(self):
         self.product_name = self.parent.product_name
         self.root = None
-        self.errormsg = None
+        self.found_browser = False
 
-        self.root = acacia_atspi.findRootAtspiNodeForName(self.product_name);
-        if self.root.isNull():
-            error = f"Cannot find root accessibility node for {self.product_name} - did you turn on accessibility?"
-            print(error)
-            self.errormsg = error
+        print(f"---------------- LISTENING ----------------")
+        self._event_listener = Atspi.EventListener.new(self.handle_event)
+        self._event_listener.register("document:load-complete")
 
+        self.root = find_browser(self.product_name);
+        if self.root:
+            self.found_browser = True
+        else:
+            print(f"Cannot find root accessibility node for {self.product_name} - did you turn on accessibility?")
 
     def get_accessibility_api_node(self, dom_id):
-        if self.root.isNull():
-            return json.dumps({"role": self.errormsg})
+        if not self.found_browser:
+            return json.dumps({"role": "couldn't find browser"})
 
-        active_tab = findActiveTab(self.root)
-
-        # This will fail sometimes when accessibilty is off.
-        if not active_tab or active_tab.isNull():
+        active_tab = find_active_tab(self.root)
+        if not active_tab:
             return json.dumps({"role": "couldn't find active tab"})
 
-        # This fails sometimes for unknown reasons.
+
         node = find_node(active_tab, dom_id)
-        if not node or node.isNull():
+        if not node:
             return json.dumps({"role": "couldn't find the node with that ID"})
 
         return json.dumps(serialize_node(node))

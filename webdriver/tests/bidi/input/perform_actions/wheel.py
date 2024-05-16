@@ -73,7 +73,7 @@ async def test_scroll_scrollable_overflow(
 
 @pytest.mark.parametrize("delta_x, delta_y", [(0, 10), (5, 0), (5, 10)])
 async def test_scroll_iframe(
-    bidi_session, setup_wheel_test, top_context, get_element, delta_x, delta_y
+    bidi_session, setup_wheel_test, top_context, get_element, delta_x, delta_y, wait_for_future_safe
 ):
     actions = Actions()
 
@@ -87,10 +87,13 @@ async def test_scroll_iframe(
     )
 
     # Chrome requires some time to process the event from the iframe, so we wait for it.
-    while True:
-        events = await get_events(bidi_session, top_context["context"])
-        if len(events) > 0:
-            break
+    async def wait_for_events():
+        while True:
+            received_events = await get_events(bidi_session, top_context["context"])
+            if len(received_events) > 0:
+                return received_events
+
+    events = await wait_for_future_safe(wait_for_events(), timeout=0.5)
 
     assert len(events) == 1
     assert events[0]["type"] == "wheel"

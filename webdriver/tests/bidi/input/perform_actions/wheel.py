@@ -85,7 +85,13 @@ async def test_scroll_iframe(
     await bidi_session.input.perform_actions(
         actions=actions, context=top_context["context"]
     )
-    events = await get_events(bidi_session, top_context["context"])
+
+    # Chrome requires some time to process the event from the iframe, so we wait for it.
+    while True:
+        events = await get_events(bidi_session, top_context["context"])
+        if len(events) > 0:
+            break
+
     assert len(events) == 1
     assert events[0]["type"] == "wheel"
     assert events[0]["deltaX"] == delta_x

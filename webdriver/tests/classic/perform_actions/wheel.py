@@ -55,6 +55,12 @@ def test_scroll_iframe(session, test_actions_scroll_page, wheel_chain):
 
     wheel_chain.scroll(0, 0, 5, 10, origin=target).perform()
 
+    # Chrome requires some time to process the event from the iframe, so we wait for it.
+    while True:
+        events = get_events(session)
+        if len(events) > 0:
+            break
+
     events = get_events(session)
     assert len(events) == 1
     assert events[0]["type"] == "wheel"

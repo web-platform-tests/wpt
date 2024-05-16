@@ -1,9 +1,11 @@
-# mypy: allow-untyped-defs
-
+from __future__ import with_statement
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
+from io import open
 
 
-class StaticHandler:
+class StaticHandler(object):
     def __init__(self, web_root, http_port, https_port):
         self.static_dir = os.path.join(
             os.getcwd(), "tools/wave/www")

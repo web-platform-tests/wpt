@@ -1,5 +1,5 @@
-# mypy: allow-untyped-defs
-
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from ..data.session import Session, UNKNOWN
 from datetime import datetime
 import dateutil.parser
@@ -76,9 +76,6 @@ def deserialize_session(session_dict):
     if "expiration_date" in session_dict:
         expiration_date = session_dict["expiration_date"]
         expiration_date = iso_to_millis(expiration_date)
-    type = None
-    if "type" in session_dict:
-        type = session_dict["type"]
     malfunctioning_tests = []
     if "malfunctioning_tests" in session_dict:
         malfunctioning_tests = session_dict["malfunctioning_tests"]
@@ -102,7 +99,6 @@ def deserialize_session(session_dict):
         reference_tokens=reference_tokens,
         browser=browser,
         expiration_date=expiration_date,
-        type=type,
         malfunctioning_tests=malfunctioning_tests
     )
 

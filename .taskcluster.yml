@@ -57,7 +57,8 @@ tasks:
             owner: ${owner}
             source: ${event.repository.clone_url}
           payload:
-            image: ghcr.io/web-platform-tests/wpt:test-do-not-use
+            image: webplatformtests/wpt:0.57
+            # test change
             maxRunTime: 7200
             artifacts:
               public/results:

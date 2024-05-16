@@ -1,5 +1,5 @@
-# mypy: allow-untyped-defs
-
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import json
 
 from .api_handler import ApiHandler
@@ -9,7 +9,7 @@ from ...data.exceptions.invalid_data_exception import InvalidDataException
 
 class ResultsApiHandler(ApiHandler):
     def __init__(self, results_manager, session_manager, web_root):
-        super().__init__(web_root)
+        super(ResultsApiHandler, self).__init__(web_root)
         self._results_manager = results_manager
         self._sessions_manager = session_manager
 
@@ -75,7 +75,7 @@ class ResultsApiHandler(ApiHandler):
     def read_results_api_wpt_multi_report_uri(self, request, response):
         try:
             uri_parts = self.parse_uri(request)
-            api = uri_parts[2]
+            api = uri_parts[3]
             query = self.parse_query_parameters(request)
             tokens = query["tokens"].split(",")
             uri = self._results_manager.read_results_wpt_multi_report_uri(

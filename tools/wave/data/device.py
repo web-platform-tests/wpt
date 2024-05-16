@@ -1,6 +1,4 @@
-# mypy: allow-untyped-defs
-
-class Device:
+class Device(object):
     def __init__(self, token, user_agent, name, last_active):
         self.token = token
         self.user_agent = user_agent

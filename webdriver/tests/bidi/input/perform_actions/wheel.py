@@ -93,7 +93,7 @@ async def test_scroll_iframe(
 
     wait = AsyncPoll(bidi_session, timeout=0.5)
     await wait.until(wait_for_events)
-    events = await get_events()
+    events = await get_events(bidi_session, top_context["context"])
 
     assert len(events) == 1
     assert events[0]["type"] == "wheel"

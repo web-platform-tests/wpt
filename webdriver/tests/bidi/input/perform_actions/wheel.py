@@ -4,6 +4,7 @@ from webdriver.bidi.error import NoSuchFrameException
 from webdriver.bidi.modules.input import Actions, get_element_origin
 from webdriver.bidi.modules.script import ContextTarget
 
+from tests.support.sync import AsyncPoll
 from tests.support.keys import Keys
 from .. import get_events, get_object_from_context
 from . import get_shadow_root_from_test_page
@@ -86,14 +87,16 @@ async def test_scroll_iframe(
         actions=actions, context=top_context["context"]
     )
 
-    # Chrome requires some time to process the event from the iframe, so we wait for it.
-    async def wait_for_events():
-        while True:
-            received_events = await get_events(bidi_session, top_context["context"])
-            if len(received_events) > 0:
-                return received_events
+    events = []
 
-    events = await wait_for_future_safe(wait_for_events(), timeout=0.5)
+    # Chrome requires some time to process the event from the iframe, so we wait for it.
+    async def wait_for_events(_):
+        nonlocal events
+        events = await get_events(bidi_session, top_context["context"])
+        return len(events) > 0
+
+    wait = AsyncPoll(bidi_session, timeout=0.5)
+    await wait.until(wait_for_events)
 
     assert len(events) == 1
     assert events[0]["type"] == "wheel"

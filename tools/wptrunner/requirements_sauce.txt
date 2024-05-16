@@ -1,7 +1,11 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 selenium==4.20.0
 requests==2.32.3
 =======
 selenium==4.18.1
+=======
+selenium==4.20.0
+>>>>>>> 3ab8232d0c (downgrade hypothesis)
 requests==2.31.0
 >>>>>>> 092c86a3d4 (test previous selenium)

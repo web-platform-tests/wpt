@@ -83,10 +83,18 @@ var simple_tests = [
     submitaction: function(doc) { doc.getElementById("inputsubmit").click(); }
   },
   {
-    name: "form submission from image input should contain the clicked coordinate",
+    name: "form submission from image input should contain entries for its clicked coordinate",
     input: "<input type=submit name=notclicked value=nope/>",
     enctype: "application/x-www-form-urlencoded",
-    submitelement: "<input id=inputsubmit type=\"image\" name=foo>",
+    submitelement: "<input id=inputsubmit type=image name=foo>",
+    submitaction: function(doc) { doc.getElementById("inputsubmit").click(); },
+    expected_body: "foo.x=0&foo.y=0"
+  },
+  {
+    name: "form submission from image input should only entries for its clicked coordinate when multiple image inputs are present",
+    input: "<input type=image name=bar>",
+    enctype: "application/x-www-form-urlencoded",
+    submitelement: "<input id=inputsubmit type=image name=foo>",
     submitaction: function(doc) { doc.getElementById("inputsubmit").click(); },
     expected_body: "foo.x=0&foo.y=0"
   },

@@ -9,10 +9,17 @@
 
 <body>
   <div id=testtest role="button"></div>
+
   <script>
     promise_test(async t => {
       const node = await test_driver.get_accessibility_api_node('testtest');
       assert_equals(node.role, 'push button');
-    }, 'An acacia test');
+    }, 'An acacia test 1');
+
+    // This second test is helping me find a race condition right now!
+    promise_test(async t => {
+      const node = await test_driver.get_accessibility_api_node('testtest');
+      assert_equals(node.role, 'push button');
+    }, 'An acacia test 2');
   </script>
 </body>

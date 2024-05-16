@@ -87,16 +87,13 @@ async def test_scroll_iframe(
         actions=actions, context=top_context["context"]
     )
 
-    events = []
-
     # Chrome requires some time to process the event from the iframe, so we wait for it.
     async def wait_for_events(_):
-        nonlocal events
-        events = await get_events(bidi_session, top_context["context"])
-        return len(events) > 0
+        return len(await get_events(bidi_session, top_context["context"])) > 0
 
     wait = AsyncPoll(bidi_session, timeout=0.5)
     await wait.until(wait_for_events)
+    events = await get_events()
 
     assert len(events) == 1
     assert events[0]["type"] == "wheel"

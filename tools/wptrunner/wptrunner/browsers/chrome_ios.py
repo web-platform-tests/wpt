@@ -1,6 +1,5 @@
 # mypy: allow-untyped-defs
 
-import time
 import traceback
 from .base import WebDriverBrowser, require_arg
 from .base import get_timeout_multiplier   # noqa: F401

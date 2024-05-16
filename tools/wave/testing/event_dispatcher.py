@@ -1,5 +1,4 @@
-# mypy: allow-untyped-defs
-
+from __future__ import unicode_literals
 import uuid
 import time
 from threading import Timer
@@ -13,7 +12,7 @@ DEVICES = "devices"
 DEVICE_ADDED_EVENT = "device_added"
 DEVICE_REMOVED_EVENT = "device_removed"
 
-class EventDispatcher:
+class EventDispatcher(object):
     def __init__(self, event_cache_duration):
         self._listeners = {}
         self._events = {}

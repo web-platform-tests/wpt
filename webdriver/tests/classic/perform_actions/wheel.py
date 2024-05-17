@@ -60,7 +60,7 @@ def test_scroll_iframe(session, test_actions_scroll_page, wheel_chain):
     def wait_for_events(_):
         return len(get_events(session)) > 0
 
-    Poll(session, timeout=0.5, interval=0.01, message='No events found').until(wait_for_events)
+    Poll(session, timeout=0.5, interval=0.01, message='No wheel events found').until(wait_for_events)
     events = get_events(session)
 
     assert len(events) == 1

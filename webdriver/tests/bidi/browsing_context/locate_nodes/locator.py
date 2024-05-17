@@ -85,55 +85,55 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
          "matchType": "full",
          "maxDepth": 0,
          "value": "foobarbarbaz"
-     }, ["body"]),
+     }, ["html"]),
     ({
          "type": "innerText",
          "ignoreCase": False,
          "matchType": "full",
          "maxDepth": 0,
          "value": "foobarBARbaz"
-     }, ["body"]),
+     }, ["html"]),
     ({
          "type": "innerText",
          "ignoreCase": True,
          "matchType": "partial",
          "maxDepth": 0,
          "value": "bar"
-     }, ["body"]),
+     }, ["html"]),
     ({
          "type": "innerText",
          "ignoreCase": False,
          "matchType": "partial",
          "maxDepth": 0,
          "value": "BAR"
-     }, ["body"]),
+     }, ["html"]),
     ({
 
          "type": "innerText",
          "ignoreCase": True,
          "matchType": "full",
-         "maxDepth": 1,
+         "maxDepth": 2,
          "value": "foobarbarbaz"
      }, ["div"]),
     ({
          "type": "innerText",
          "ignoreCase": False,
          "matchType": "full",
-         "maxDepth": 1,
+         "maxDepth": 2,
          "value": "foobarBARbaz"
      }, ["div"]),
     ({
          "type": "innerText",
          "ignoreCase": True,
          "matchType": "partial",
-         "maxDepth": 1,
+         "maxDepth": 2,
          "value": "bar"
      }, ["div"]),
     ({
          "type": "innerText",
          "ignoreCase": False,
          "matchType": "partial",
-         "maxDepth": 1,
+         "maxDepth": 2,
          "value": "BAR"
      }, ["div"]),
 ], ids=[

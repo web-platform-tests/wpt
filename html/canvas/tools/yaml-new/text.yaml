@@ -1344,6 +1344,175 @@
                         () => tm.getSelectionRects(text.length, text.length) );
     }
 
+- name: 2d.text.measure.getActualBoundingBox.tentative
+  desc: >-
+    Test TextMetrics::getActualBoundingBox().
+  test_type: promise
+  fonts:
+  - CanvasTest
+  size: [800, 200]
+  code: |
+    // Use measureText to create a rect for the whole text
+    function getFullTextBoundingBox(text) {
+      const tm = ctx.measureText(text);
+      return {
+        x: -tm.actualBoundingBoxLeft,
+        y: -tm.actualBoundingBoxAscent,
+        width: tm.actualBoundingBoxLeft + tm.actualBoundingBoxRight,
+        height: tm.actualBoundingBoxAscent + tm.actualBoundingBoxDescent
+      };
+    }
+
+    // Returns a string a replaces the characters in text that are not in the
+    // range [start, end] with spaces.
+    function buildTestString(text, start, end) {
+      let ret = '';
+      for (let i = 0; i < text.length; ++i) {
+        if (start <= i && i <= end)
+          ret += text[i];
+        else
+          ret += ' ';
+      }
+      return ret;
+    }
+
+    function checkRectsMatch(rect_a, rect_b) {
+      assert_approx_equals(rect_a.x, rect_b.x, 1.0);
+      assert_approx_equals(rect_a.y, rect_b.y, 1.0);
+      assert_approx_equals(rect_a.width, rect_b.width, 1.0);
+      assert_approx_equals(rect_a.height, rect_b.height, 1.0);
+    }
+
+    function testForSubstring(text, start, end) {
+      const textMetrics = ctx.measureText(text);
+      const rect_from_api = textMetrics.getActualBoundingBox(start, end);
+      const rect_from_full_bounds = getFullTextBoundingBox(
+                                      buildTestString(text, start, end));
+      checkRectsMatch(rect_from_api, rect_from_full_bounds);
+    }
+
+    {{ load_font }}
+
+    const kAligns = [
+      'left',
+      'center',
+      'right',
+    ];
+
+    const kBaselines = [
+      'top',
+      'hanging',
+      'middle',
+      'alphabetic',
+      'ideographic',
+      'bottom',
+    ];
+
+    ctx.font = '50px CanvasTest';
+    const text = 'ABCDE';
+    for (const align of kAligns) {
+      for (const baseline of kBaselines) {
+        ctx.textAlign = align;
+        ctx.textBaseline = baseline;
+        // Full string.
+        testForSubstring(text, 0, text.length - 1);
+        // Intermediate string.
+        testForSubstring(text, 1, text.length - 2);
+        // First character.
+        testForSubstring(text, 0, 0);
+        // Intermediate character.
+        testForSubstring(text, 2, 2);
+      }
+    }
+  variants: *load-font-variant-definition
+
+- name: 2d.text.measure.getActualBoundingBox-full-text.tentative
+  desc: >-
+    Test TextMetrics::getActualBoundingBox() for the full length of the string
+    for some edge cases.
+  fonts:
+  - CanvasTest
+  size: [800, 200]
+  code: |
+    // Use measureText to create a rect for the whole text
+    function getFullTextBoundingBox(text) {
+      const tm = ctx.measureText(text);
+      return {
+        x: -tm.actualBoundingBoxLeft,
+        y: -tm.actualBoundingBoxAscent,
+        width: tm.actualBoundingBoxLeft + tm.actualBoundingBoxRight,
+        height: tm.actualBoundingBoxAscent + tm.actualBoundingBoxDescent
+      };
+    }
+
+    function checkRectsMatch(rect_a, rect_b) {
+      assert_approx_equals(rect_a.x, rect_b.x, 1.0);
+      assert_approx_equals(rect_a.y, rect_b.y, 1.0);
+      assert_approx_equals(rect_a.width, rect_b.width, 1.0);
+      assert_approx_equals(rect_a.height, rect_b.height, 1.0);
+    }
+
+    const kAligns = [
+      'left',
+      'center',
+      'right',
+    ];
+
+    const kBaselines = [
+      'top',
+      'hanging',
+      'middle',
+      'alphabetic',
+      'ideographic',
+      'bottom',
+    ];
+
+    const kTexts = [
+      'UNAVAILABLE',
+      '🏁🎶🏁',
+      '）（あ）（',
+    ]
+
+    ctx.font = '50px sans-serif';
+    for (const align of kAligns) {
+      for (const baseline of kBaselines) {
+        ctx.textAlign = align;
+        ctx.textBaseline = baseline;
+        for (const text of kTexts) {
+          const tm = ctx.measureText(text);
+          const rect_from_api = tm.getActualBoundingBox(0, text.length - 1);
+          const rect_from_full_bounds = getFullTextBoundingBox(text);
+          checkRectsMatch(rect_from_api, rect_from_full_bounds)
+        }
+      }
+    }
+
+- name: 2d.text.measure.getActualBoundingBox-exceptions.tentative
+  desc: >-
+    Check that TextMetrics::getActualBoundingBox() throws when using invalid
+    indexes.
+  code: |
+    const kTexts = [
+      'UNAVAILABLE',
+      '🏁🎶🏁',
+      '）（あ）（'
+    ]
+
+    for (const text of kTexts) {
+      const tm = ctx.measureText(text);
+      // Handled by the IDL binding.
+      assert_throws_js(TypeError, () => tm.getActualBoundingBox(-1, 0) );
+      assert_throws_js(TypeError, () => tm.getActualBoundingBox(0, -1) );
+      assert_throws_js(TypeError, () => tm.getActualBoundingBox(-1, -1) );
+      // Thrown in TextMetrics.
+      assert_throws_dom("IndexSizeError",
+                        () => tm.getActualBoundingBox(text.length, 0) );
+      assert_throws_dom("IndexSizeError",
+                        () => tm.getActualBoundingBox(0, text.length) );
+      assert_throws_dom("IndexSizeError",
+                        () => tm.getActualBoundingBox(text.length, text.length) );
+    }
+
 - name: 2d.text.drawing.style.absolute.spacing
   desc: Testing letter spacing and word spacing with absolute length
   code: |

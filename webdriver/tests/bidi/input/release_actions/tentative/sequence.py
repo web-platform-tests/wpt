@@ -14,6 +14,10 @@ async def test_release_mouse_sequence_resets_dblclick_state_tentative(
         get_element,
         load_static_test_page
 ):
+    """
+    The actual behaviour of the double click, specifically in the light of the `release_actions` is not clear in the
+    spec at the moment: https://github.com/w3c/webdriver/issues/1772
+    """
     await load_static_test_page(page="test_actions.html")
     reporter = await get_element("#outer")
 

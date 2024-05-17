@@ -8,7 +8,7 @@ from ... import get_events
 pytestmark = pytest.mark.asyncio
 
 
-async def test_release_mouse_sequence_resets_dblclick_state(
+async def test_release_mouse_sequence_resets_dblclick_state_tentative(
         bidi_session,
         top_context,
         get_element,

@@ -740,7 +740,7 @@
         fuzzy_test_valid_color(`color(from color(${colorSpace} 7 -20.5 100 / none) ${colorSpace} x y z / alpha)`,               `color(${resultColorSpace} 7 -20.5 100 / 0)`);
 
         // Testing with 'currentColor'
-        fuzzy_test_valid_color(`color(from currentColor ${colorSpace} x y z)`,                                                  `color(from currentcolor ${colorSpace} x y z)`);
+        fuzzy_test_valid_color(`color(from currentColor ${colorSpace} x y z)`,                                                  `color(from currentcolor ${resultColorSpace} x y z)`);
 
         // color-mix
         fuzzy_test_valid_color(`color(from color-mix(in xyz, color(${colorSpace} 0.7 0.5 0.3), color(${colorSpace} 0.7 0.5 0.3)) ${colorSpace} x y z / alpha)`, `color(${resultColorSpace} 0.7 0.5 0.3)`);

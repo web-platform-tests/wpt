@@ -215,7 +215,7 @@ class ChromeDriverProtocol(WebDriverProtocol):
     vendor_prefix = "goog"
 
 
-class ChromeDriverCrashTestExecutor(WebDriverCrashtestExecutor):  # type: ignore
+class ChromeDriverCrashTestExecutor(WebDriverCrashtestExecutor):
     protocol_cls = ChromeDriverProtocol
 
 

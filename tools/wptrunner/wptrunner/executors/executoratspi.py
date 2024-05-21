@@ -66,7 +66,7 @@ def find_browser(name):
     return
 
 
-class AtspiSupport():
+class AtspiExecutorImpl():
     def start_atspi_listener(self):
         self._event_listener = Atspi.EventListener.new(self.handle_event)
         self._event_listener.register("document:load-complete")

@@ -63,7 +63,7 @@ def find_browser(name):
         full_app_name = Atspi.Accessible.get_name(app)
         if name in full_app_name.lower():
             return (app, full_app_name)
-    return
+    return (None, None)
 
 
 class AtspiExecutorImpl():
@@ -98,11 +98,11 @@ class AtspiExecutorImpl():
             print(f"Cannot find root accessibility node for {self.product_name} - did you turn on accessibility?")
 
     def get_accessibility_api_node(self, dom_id):
-        if not self.load_complete:
-          self.atspi_listener_thread.join()
-
         if not self.found_browser:
             return json.dumps({"role": "couldn't find browser"})
+
+        if not self.load_complete:
+          self.atspi_listener_thread.join()
 
         active_tab = find_active_tab(self.root)
         if not active_tab:

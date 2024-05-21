@@ -3,12 +3,12 @@ from webdriver.bidi.modules.input import Actions, get_element_origin
 from webdriver.bidi.modules.script import ContextTarget
 
 from tests.support.helpers import filter_dict, filter_supported_key_events
-from ... import get_events
+from .. import get_events
 
 pytestmark = pytest.mark.asyncio
 
 
-async def test_release_mouse_sequence_resets_dblclick_state_tentative(
+async def test_release_mouse_sequence_resets_dblclick_state(
         bidi_session,
         top_context,
         get_element,

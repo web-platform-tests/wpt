@@ -194,7 +194,7 @@ def update_properties():
 
 
 class ChromeBrowser(WebDriverBrowser):
-    def restart_on_test_type_change(self, new_test_type, old_test_type):
+    def restart_on_test_type_change(self, new_test_type: str, old_test_type: str) -> bool:
         # restart the test runner when switch from/to wdspec tests
         if "wdspec" in [old_test_type, new_test_type]:
             return True

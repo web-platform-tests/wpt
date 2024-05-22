@@ -274,6 +274,60 @@ def test_meta_timeout():
             ]
 
 
+def test_unexpected_reftest_wait():
+    code = b"""
+<html xmlns="http://www.w3.org/1999/xhtml" class="reftest-wait">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for filename, (errors, kind) in error_map.items():
+        check_errors(errors)
+
+        if kind in ["web-lax", "web-strict"]:
+            assert errors == [
+                (
+                    "REFTESTWAIT-IN-OTHER-TYPE",
+                    "`class=reftest-wait` on a non-reftest (testharness)",
+                    filename,
+                    None,
+                ),
+            ]
+        elif kind == "python":
+            assert errors == [
+                ("PARSE-FAILED", "Unable to parse file", filename, 2),
+            ]
+
+
+def test_unexpected_test_wait():
+    code = b"""
+<html xmlns="http://www.w3.org/1999/xhtml" class="test-wait">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for filename, (errors, kind) in error_map.items():
+        check_errors(errors)
+
+        if kind in ["web-lax", "web-strict"]:
+            assert errors == [
+                (
+                    "TESTWAIT-IN-OTHER-TYPE",
+                    "`class=test-wait` on an unsupported test type (testharness)",
+                    filename,
+                    None,
+                ),
+            ]
+        elif kind == "python":
+            assert errors == [
+                ("PARSE-FAILED", "Unable to parse file", filename, 2),
+            ]
+
+
 def test_early_testharnessreport():
     code = b"""
 <html xmlns="http://www.w3.org/1999/xhtml">

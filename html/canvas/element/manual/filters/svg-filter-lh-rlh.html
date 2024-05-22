@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="test-wait">
+<html class="reftest-wait">
 <title>HTML Canvas test: SVG filter using CSS font-relative line-height units</title>
 <link rel="match" href="svg-filter-lh-rlh-expected.html"/>
 <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
@@ -26,7 +26,7 @@ function use_filter(canvas, filter_id) {
 window.addEventListener("load", async () => {
   use_filter(document.getElementById("canvas-lh"), "filter-lh");
   use_filter(document.getElementById("canvas-rlh"), "filter-rlh");
-  document.documentElement.classList.remove('test-wait');
+  document.documentElement.classList.remove('reftest-wait');
 });
 </script>
 </html>

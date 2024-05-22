@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="reftest-wait">
+<html class="test-wait">
 <meta charset="utf-8" />
 <title>Popover=manual crash test</title>
 <link rel="author" href="mailto:masonf@chromium.org">
@@ -27,6 +27,6 @@
   const manual = document.querySelector('[popover=manual]');
   clickOn(manual)
     .then(() => {
-      document.documentElement.classList.remove("reftest-wait");
+      document.documentElement.classList.remove("test-wait");
     });
 </script>

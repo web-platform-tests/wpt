@@ -57,7 +57,7 @@ async def test_prompt_type(
 
 
 @pytest.mark.parametrize(
-    "default", [None, "", "default"], ids=["null", "empty string", "non empty string"]
+    "default", [None, "", "default"], ids=["undefined", "empty string", "non empty string"]
 )
 async def test_prompt_default_value(
     bidi_session, inline, new_tab, subscribe_events, wait_for_event, wait_for_future_safe, default
@@ -68,7 +68,7 @@ async def test_prompt_default_value(
     text = "test"
 
     if default is None:
-        script = f"<script>window.prompt('{text}', null)</script>"
+        script = f"<script>window.prompt('{text}')</script>"
     else:
         script = f"<script>window.prompt('{text}', '{default}')</script>"
 
@@ -85,7 +85,9 @@ async def test_prompt_default_value(
         "message": text,
     }
 
-    if default is not None:
+    if default is None:
+        expected_event["defaultValue"] = ""
+    else:
         expected_event["defaultValue"] = default
 
     assert event == expected_event

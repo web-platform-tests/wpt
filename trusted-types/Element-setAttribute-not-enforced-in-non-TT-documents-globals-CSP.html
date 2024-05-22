@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <script>
+      const iframePolicy = trustedTypes.createPolicy("iframePolicy", {
+        createHTML: (s) => s,
+      });
+
+      const iframe_srcdoc = `
+      <!DOCTYPE html>
+        <head>
+        <meta charset="utf-8">
+        <meta
+        http-equiv="Content-Security-Policy"
+        content="require-trusted-types-for 'script';"
+        />
+      </head>
+        <body>
+          <div id="nonSVGTestElements">
+            <iframe id="iframe.srcdoc" srcdoc="v"></iframe>
+            <script id="script.src" src="v"><\/script>
+          </div>
+          <svg id="svgTestElements">
+            <script id="script.href" href="v"><\/script>
+            <script id="script.xlinkhref" xlink:href="v"><\/script>
+          </svg>
+      </body>`;
+
+      const testCases = [
+        ['iframe', 'srcdoc'],
+        ['script', 'src'],
+        ['script', 'href'],
+        ['script', 'xlinkhref'],
+    ];
+
+      const sourceFrame = document.createElement("iframe");
+      sourceFrame.srcdoc = iframePolicy.createHTML(
+        iframe_srcdoc
+      );
+      document.body.append(sourceFrame);
+
+      async_test(
+        (t) => {
+          t.add_cleanup(() => {
+              sourceFrame.remove();
+            });
+
+          sourceFrame.addEventListener(
+            "load",
+            t.step_func_done(() => {
+              testCases.forEach(c => {
+                const elementId = c[0].concat('.').concat(c[1]);
+                const sourceElement = sourceFrame.contentWindow.document.getElementById(elementId);
+                const testAttr = sourceElement.attributes[1];
+                const sourceAttr = sourceElement.getAttributeNode(
+                  testAttr.name
+                );
+                sourceElement.removeAttributeNode(sourceAttr);
+                // Now `sourceElement`'s node document's global belongs to a non TT-realm.
+                document.body.append(sourceElement);
+                sourceElement.setAttributeNode(sourceAttr);
+                sourceElement.setAttributeNS(sourceAttr.namespaceURI, sourceAttr.name, sourceAttr.value);
+                let attr_name = sourceAttr.name;
+                if (elementId == "script.xlinkhref") {
+                  attr_name = "href";
+                }
+                let attr_node = sourceElement.getAttributeNodeNS(sourceAttr.namespaceURI, attr_name);
+                assert_equals(attr_node.value + "", "v");
+            });
+          })
+        );
+      }, `setAttribute and setAttributeNode are no longer enforced while being taken out to a non-TT realm.`);
+    </script>
+  </body>
+</html>

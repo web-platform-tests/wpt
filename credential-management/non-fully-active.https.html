@@ -9,21 +9,32 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<body></body>
+<body>
+  <iframe></iframe>
+</body>
 <script>
-  promise_test(async (t) => {
-    // Create the iframe, wait for it to load...
-    const iframe = document.createElement("iframe");
-
-    // ...wait for the iframe to load...
+  promise_setup(async () => {
+    const iframe = document.querySelector("iframe");
     await new Promise((resolve) => {
       iframe.addEventListener("load", resolve, { once: true });
-      iframe.src = "resources/iframe.html";
+      iframe.src = "about:blank";
       document.body.appendChild(iframe);
     });
+  });
 
-    // Steal credentials container.
+  promise_test(async (t) => {
+    const iframe = document.querySelector("iframe");
+
+    // The signal check happens after the fully active check.
+    // This allows us to confirm the the right error is thrown
+    // and in the right order.
+    const controller = new iframe.contentWindow.AbortController();
+    const signal = controller.signal;
+    controller.abort();
+
+    // Steal all the needed references.
     const { credentials } = iframe.contentWindow.navigator;
+    const DOMExceptionCtor = iframe.contentWindow.DOMException;
 
     // No longer fully active.
     iframe.remove();
@@ -32,7 +43,8 @@
     await promise_rejects_dom(
       t,
       "NotAllowedError",
-      credentials.get({ password: true }),
+      DOMExceptionCtor,
+      credentials.get({ signal }),
       "Expected NotAllowedError for get() on non-fully-active document"
     );
 
@@ -40,7 +52,8 @@
     await promise_rejects_dom(
       t,
       "NotAllowedError",
-      credentials.create({ password: true }),
+      DOMExceptionCtor,
+      credentials.create({ signal }),
       "Expected NotAllowedError for create() on non-fully-active document"
     );
 
@@ -48,6 +61,7 @@
     await promise_rejects_dom(
       t,
       "NotAllowedError",
+      DOMExceptionCtor,
       credentials.preventSilentAccess(),
       "Expected NotAllowedError for preventSilentAccess() on non-fully-active document"
     );

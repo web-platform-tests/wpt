@@ -54,7 +54,7 @@ promise_test(async () => {
     const blob = new Blob(["bar"]);
 
     const charCodeBytes = await bytes.call(blob);
-    assert_equals(charCodeArrayToString(charCodeBuffer), "bar");
+    assert_equals(charCodeArrayToString(charCodeBytes), "bar");
 }, "bytes()");
 
 promise_test(async () => {

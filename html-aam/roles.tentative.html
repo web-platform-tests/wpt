@@ -18,6 +18,19 @@
 
 <input type="checkbox" switch data-testname="el-input-checkbox-switch" data-expectedrole="switch" class="ex">
 
+<!--
+  These thead, tbody, and tfoot role tests are pending spec discussion.
+  See https://github.com/w3c/html-aam/issues/474
+-->
+<table>
+  <thead data-testname="el-thead" data-expectedrole="rowgroup" class="ex">
+  </thead>
+  <tbody data-testname="el-tbody" data-expectedrole="rowgroup" class="ex">
+  </tbody>
+  <tfoot data-testname="el-tfoot" data-expectedrole="rowgroup" class="ex">
+  </tfoot>
+</table>
+
 <script>
 AriaUtils.verifyRolesBySelector(".ex");
 </script>

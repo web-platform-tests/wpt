@@ -49,11 +49,19 @@ async def test_prompt_type(
 
     event = await wait_for_future_safe(on_entry)
 
-    assert event == {
-        "context": new_tab["context"],
-        "type": prompt_type,
-        "message": text,
-    }
+    if prompt_type == 'prompt':
+        assert event == {
+            "context": new_tab["context"],
+            "type": prompt_type,
+            "message": text,
+            "defaultValue": ""
+        }
+    else:
+        assert event == {
+            "context": new_tab["context"],
+            "type": prompt_type,
+            "message": text,
+        }
 
 
 @pytest.mark.parametrize(

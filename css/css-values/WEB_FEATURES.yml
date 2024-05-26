@@ -5,6 +5,10 @@ features:
 - name: cap
   files:
   - cap-*
+- name: exp-functions
+  files:
+  - exp-log-*
+  - hypot-pow-sqrt-*
 - name: ic
   files:
   - ic-*
@@ -15,3 +19,7 @@ features:
   files:
   - round-function.html
   - round-mod-rem-*
+- name: trig-functions
+  files:
+  - acos-asin-atan-atan2-*
+  - sin-cos-tan-*

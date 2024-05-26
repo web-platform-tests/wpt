@@ -64,11 +64,7 @@ enum MLOperandDataType {
 };
 
 dictionary MLOperandDescriptor {
-  // The operand type.
   required MLOperandDataType dataType;
-
-  // The dimensions field is empty for scalar operands,
-  // and non-empty for tensor operands.
   sequence<[EnforceRange] unsigned long> dimensions = [];
 };
 
@@ -117,12 +113,11 @@ dictionary MLBatchNormalizationOptions {
   MLOperand bias;
   [EnforceRange] unsigned long axis = 1;
   float epsilon = 1e-5;
-  MLActivation activation;
 };
 
 partial interface MLGraphBuilder {
   MLOperand batchNormalization(MLOperand input, MLOperand mean, MLOperand variance,
-                             optional MLBatchNormalizationOptions options = {});
+                               optional MLBatchNormalizationOptions options = {});
 };
 
 partial interface MLGraphBuilder {
@@ -158,11 +153,12 @@ dictionary MLConv2dOptions {
   MLInputOperandLayout inputLayout = "nchw";
   MLConv2dFilterOperandLayout filterLayout = "oihw";
   MLOperand bias;
-  MLActivation activation;
 };
 
 partial interface MLGraphBuilder {
-  MLOperand conv2d(MLOperand input, MLOperand filter, optional MLConv2dOptions options = {});
+  MLOperand conv2d(MLOperand input,
+                   MLOperand filter,
+                   optional MLConv2dOptions options = {});
 };
 
 enum MLConvTranspose2dFilterOperandLayout {
@@ -181,7 +177,6 @@ dictionary MLConvTranspose2dOptions {
   MLInputOperandLayout inputLayout = "nchw";
   MLConvTranspose2dFilterOperandLayout filterLayout = "iohw";
   MLOperand bias;
-  MLActivation activation;
 };
 
 partial interface MLGraphBuilder {
@@ -242,7 +237,14 @@ dictionary MLGatherOptions {
 };
 
 partial interface MLGraphBuilder {
-  MLOperand gather(MLOperand input, MLOperand indices, optional MLGatherOptions options = {});
+  MLOperand gather(MLOperand input,
+                   MLOperand indices,
+                   optional MLGatherOptions options = {});
+};
+
+partial interface MLGraphBuilder {
+  MLOperand gelu(MLOperand input);
+  MLActivation gelu();
 };
 
 dictionary MLGemmOptions {
@@ -329,7 +331,7 @@ dictionary MLInstanceNormalizationOptions {
 
 partial interface MLGraphBuilder {
   MLOperand instanceNormalization(MLOperand input,
-                                optional MLInstanceNormalizationOptions options = {});
+                                  optional MLInstanceNormalizationOptions options = {});
 };
 
 dictionary MLLayerNormalizationOptions {
@@ -340,7 +342,8 @@ dictionary MLLayerNormalizationOptions {
 };
 
 partial interface MLGraphBuilder {
-  MLOperand layerNormalization(MLOperand input, optional MLLayerNormalizationOptions options = {});
+  MLOperand layerNormalization(MLOperand input,
+                               optional MLLayerNormalizationOptions options = {});
 };
 
 dictionary MLLeakyReluOptions {
@@ -509,17 +512,13 @@ partial interface MLGraphBuilder {
 };
 
 partial interface MLGraphBuilder {
-  MLOperand softmax(MLOperand input);
-  MLActivation softmax();
-};
-
-dictionary MLSoftplusOptions {
-  float steepness = 1;
+  MLOperand softmax(MLOperand input, unsigned long axis);
+  MLActivation softmax(unsigned long axis);
 };
 
 partial interface MLGraphBuilder {
-  MLOperand softplus(MLOperand input, optional MLSoftplusOptions options = {});
-  MLActivation softplus(optional MLSoftplusOptions options = {});
+  MLOperand softplus(MLOperand input);
+  MLActivation softplus();
 };
 
 partial interface MLGraphBuilder {
@@ -532,9 +531,10 @@ dictionary MLSplitOptions {
 };
 
 partial interface MLGraphBuilder {
-  sequence<MLOperand> split(MLOperand input,
-                          ([EnforceRange] unsigned long or sequence<[EnforceRange] unsigned long>) splits,
-                          optional MLSplitOptions options = {});
+  sequence<MLOperand> split(
+      MLOperand input,
+      ([EnforceRange] unsigned long or sequence<[EnforceRange] unsigned long>) splits,
+      optional MLSplitOptions options = {});
 };
 
 partial interface MLGraphBuilder {

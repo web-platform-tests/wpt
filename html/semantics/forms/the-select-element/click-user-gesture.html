@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Test showPicker() user gesture requirement</title>
+<title>Test click() user gesture requirement</title>
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -10,26 +10,26 @@
     test(() => {
         const select = document.createElement("select");
 
-        assert_throws_dom('NotAllowedError', () => { select.showPicker(); });
-    }, `select showPicker() requires a user gesture`);
+        assert_throws_dom('NotAllowedError', () => { select.click(); });
+    }, `select click() requires a user gesture`);
 
     promise_test(async t => {
         const select = document.createElement("select");
         document.body.append(select)
 
-        await test_driver.bless('show picker');
-        select.showPicker();
+        await test_driver.bless('click');
+        select.click();
         select.blur();
-    }, `select showPicker() does not throw when user activation is active`);
+    }, `select click() does not throw when user activation is active`);
 
     promise_test(async t => {
         const select = document.createElement("select");
         document.body.append(select)
 
-        await test_driver.bless('show picker');
-        select.showPicker();
+        await test_driver.bless('click');
+        select.click();
         select.blur();
 
         assert_false(navigator.userActivation.isActive);
-    }, `select showPicker() consumes user activation`);
+    }, `select click() consumes user activation`);
 </script>

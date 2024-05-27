@@ -13,7 +13,7 @@ function delayByFrames(f, num_frames) {
 // fired.
 function getEvent(eventType) {
   return new Promise((resolve) => {
-    document.body.addEventListener(eventType, (e) => resolve(e), {
+    document.body.addEventListener(eventType, resolve, {
       once: true,
     });
   });

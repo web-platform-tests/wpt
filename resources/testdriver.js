@@ -1066,7 +1066,7 @@
          */
         clear_device_posture: function(context=null) {
             return window.test_driver_internal.clear_device_posture(context);
-        }
+        },
 
         /**
          * Consumes the user activation

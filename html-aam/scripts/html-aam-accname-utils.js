@@ -1,0 +1,338 @@
+const HtmlAamAccnameUtils = {
+  /*
+  Builds a collection of WPT subtests for verifying the computation steps
+  documented in https://www.w3.org/TR/html-aam-1.0/#accname-computation.
+
+  For each element in elements[], a collection of subtests will be generated to
+  test every potential name source in nameSources[].
+
+  Each entry in elements[] must have a key that is a valid CSS selector
+  conforming to either:
+
+  - `tagname`
+  - `tagname[attrname="attrvalue"]`
+
+  This key will be parsed to create the DOM element which will be used to
+  test the computed name.
+
+  Each entry in elements[] may have an optional properties object specifying
+  any of the following:
+
+  - children[]: elements to be appended as children of the test element. This
+    array may include the string 'textNode' to append a text node.
+  - parents[]: elements to be prepended as parents of the test element.
+  - attrs[]: attributes to be added to the element for every subtest. For
+    example, an `a` element may have an href attribute.
+  - specialContext: a string indicating a special case that requires complex
+    test markup. Currently supported values are 'area', 'ruby', 'rp', and 'rt'.
+
+  nameSources[] is necessarily order-sensitive, matching the computation steps
+  in HTML-AAM. Each string in nameSources[] is a unique identifier and should
+  have a matching key in the nameValues{} dictionary later in this file.
+
+  The first subtest generated will include *every* potential name source and
+  verify that the first source “wins”. Each subsequent subtest eliminates the
+  name source from the previous test, then performs the same verification.
+  In the final subtest, all potential name sources have been eliminated and the
+  computed name is expected to be empty.
+
+  The following example test configuration will generate 24 WPT subtests:
+  3 elements * 8 potential name sources = 24 subtests
+
+  Example:
+    const testConfig = {
+      elements: {
+        'input[type="text"]': { attrs: ['value'] },
+        'input[type="search"]': { attrs: ['value'] },
+        'textarea': { children: ['textNode'] }
+      },
+      nameSources: [
+        'from 2 aria-labelledby refs',
+        'from 1 aria-labelledby ref',
+        'from aria-label',
+        'from 2 labels',
+        'from 1 label',
+        'from title',
+        'from placeholder',
+        'to be empty'
+      ]
+    }
+    HtmlAamAccnameUtils.buildNameComputationTests(testConfig);
+
+  */
+  buildNameComputationTests: function (testConfig) {
+    const elBody = document.querySelector('body');
+    this.buildPageHeading(testConfig);
+    Object.entries(testConfig.elements).forEach(([selector, properties]) => {
+      let nameSources = [...testConfig.nameSources];
+      while (nameSources.length > 0) {
+        let html = this.buildNameComputationTest(selector, nameSources, properties);
+        elBody.insertAdjacentHTML('beforeend', html);
+        this.previewTestMarkup(html);
+        nameSources.shift();
+      }
+    });
+  },
+
+  /*
+  Builds a complete markup block for an individual subtest. Depending on the
+  subtest being permuted (see above), the markup may include some  “preamble”
+  on which the test element itself depends.
+
+  For example, a subtest may be checking the computed name of an
+  <input type="text"> element that depends on a <label> in the preamble.
+
+  */
+  buildNameComputationTest: function (selector, nameSources, properties) {
+    const id = this.getUniqueTestId();
+    const { element, attrName, attrValue } = this.parseSelector(selector);
+    let nameTest = `${selector} expecting name ${nameSources[0]}`;
+    let htmlPreamble = '';
+    let tmpSource = '';
+    let expSource = nameSources[0];
+    let expName = '';
+    let elReturn = null;
+
+    // Generate test case preamble and supporting elements
+    htmlPreamble += `<h2>${nameTest}</h2>`;
+
+    // Create a test element based on the selector and any additional properties
+    let elTest = document.createElement(element);
+    if (attrName) {
+      elTest.setAttribute(attrName, attrValue);
+    }
+
+    elTest.id = `el-${id}`;
+    elTest.className = 'ex-label';
+    elTest.setAttribute('data-testname', nameTest);
+
+    // Add any attributes that should always be present in the test element
+    if (properties?.attrs?.includes('value')) {
+      elTest.setAttribute('value', elTest.tagName.toLowerCase() + ' value attribute value');
+    }
+    if (properties?.attrs?.includes('href')) {
+      elTest.setAttribute('href', '#');
+    }
+    if (properties?.attrs?.includes('img src')) {
+      elTest.src = this.srcImgSample;
+    }
+
+    // If the element desires DOM parents, build them.
+    if (properties?.parents) {
+      elReturn = properties.parents.reduceRight((child, tag) => {
+        let elParent = document.createElement(tag);
+        elParent.appendChild(child);
+        return elParent;
+      }, elTest);
+    }
+
+    // If the element desires DOM children, build them.
+    if (properties?.children) {
+      let tagPrevious = element;
+      properties.children.reduce((parent, tag) => {
+        let elChild = tag === 'textNode' ?
+          document.createTextNode(`${tagPrevious} text node contents`) :
+          document.createElement(tag);
+        parent.appendChild(elChild);
+        tagPrevious = tag;
+        return elChild;
+      }, elTest);
+    }
+
+    if (properties?.specialContext) {
+      elReturn = this.handleSpecialCases(elTest, properties.specialContext, id);
+    }
+
+    // If the test element needed no parent(s), return it
+    if (!elReturn) {
+      elReturn = elTest;
+    }
+
+    // Build label source reference(s)
+    tmpSource = 'from 1 label';
+    if (nameSources.includes(tmpSource)) {
+      htmlPreamble += `<label for="el-${id}">${this.nameValues[tmpSource]}</label>`;
+      if (expSource === tmpSource) expName = this.nameValues[tmpSource];
+    }
+
+    tmpSource = 'from 2 labels';
+    if (nameSources.includes(tmpSource)) {
+      htmlPreamble += `<label for="el-${id}">${this.nameValues[tmpSource]}</label>`;
+      if (expSource === tmpSource) expName = this.nameValues['from 1 label'] + ' ' + this.nameValues[tmpSource];
+    }
+
+    // Build aria-labelledby source reference(s)
+    tmpSource = 'from 1 aria-labelledby ref';
+    if (nameSources.includes(tmpSource)) {
+      htmlPreamble += `<p id="el-${id}-label-1">${this.nameValues[tmpSource]}</p>`;
+      elTest.setAttribute('aria-labelledby', `el-${id}-label-1`);
+      if (expSource === tmpSource) expName = this.nameValues[tmpSource];
+    }
+
+    tmpSource = 'from 2 aria-labelledby refs';
+    if (nameSources.includes(tmpSource)) {
+      htmlPreamble += `<p id="el-${id}-label-2">${this.nameValues[tmpSource]}</p>`;
+      elTest.setAttribute('aria-labelledby', `el-${id}-label-1 el-${id}-label-2`);
+      if (expSource === tmpSource) expName = this.nameValues['from 1 aria-labelledby ref'] + ' ' + this.nameValues[tmpSource];
+    }
+
+    // Build aria-labelledby source reference(s)
+    tmpSource = 'from subtree';
+    if (nameSources.includes(tmpSource)) {
+      let name = elTest.tagName.toLowerCase() + ' ' + this.nameValues[tmpSource];
+      elTest.appendChild(document.createTextNode(name));
+      if (expSource === tmpSource) expName = name;
+    }
+
+    // Build child-based name sources
+    [
+      'from first legend',
+      'from first figcaption',
+      'from first caption'
+    ].forEach(tmpSource => {
+      if (nameSources.includes(tmpSource)) {
+        let child = tmpSource.replace('from first ', '');
+        elTest.insertAdjacentHTML('afterbegin', `<${child}>Duplicate ${this.nameValues[tmpSource]}</${child}>`);
+        elTest.insertAdjacentHTML('afterbegin', `<${child}>${this.nameValues[tmpSource]}</${child}>`);
+        if (expSource === tmpSource) expName = this.nameValues[tmpSource];
+      }
+    });
+
+    // Build attribute-based name sources
+    [
+      'from aria-label',
+      'from value',
+      'from alt',
+      'from title',
+      'from placeholder',
+      'from label attribute'
+    ].forEach(tmpSource => {
+      if (nameSources.includes(tmpSource)) {
+        let attr = tmpSource.replace('from ', '').replace(' attribute', '');
+        let name = elTest.tagName.toLowerCase() + ' ' + this.nameValues[tmpSource];
+        elTest.setAttribute(attr, name);
+        if (expSource === tmpSource) expName = name;
+      }
+    });
+
+    // Build empty alt attribute name source
+    tmpSource = 'from empty alt';
+    if (nameSources.includes(tmpSource)) {
+      elTest.setAttribute('alt', this.nameValues[tmpSource]);
+      if (expSource === tmpSource) expName = this.nameValues[tmpSource];
+    }
+
+    elTest.setAttribute('data-expectedlabel', expName);
+
+    return htmlPreamble + elReturn.outerHTML;
+  },
+
+  /*
+    Some subtests require complex markup context that is not easily broken
+    down into configuration primitives. This function handles them.
+  */
+
+  handleSpecialCases: function (elTest, specialContext, id) {
+    let elReturn = null;
+
+    if (specialContext === 'area') {
+      let elMap = document.createElement('map');
+      let elImg = document.createElement('img');
+      elMap.setAttribute('name', `map-${id}`);
+      elMap.appendChild(elTest);
+      elImg.setAttribute('usemap', `#map-${id}`);
+      elImg.src = this.srcImgSample;
+      elTest.setAttribute('alt', 'Mapped image alt attribute value');
+      elTest.setAttribute('shape', 'rect');
+      elTest.setAttribute('coords', '0,0,20,20');
+      elReturn = document.createElement('div');
+      elReturn.appendChild(elMap)
+      elReturn.appendChild(elImg);
+    }
+
+    else if (specialContext === 'ruby') {
+      elTest.appendChild(document.createTextNode('ruby text node contents'));
+      elTest.appendChild(document.createElement('rp')).appendChild(document.createTextNode('rp #1'));
+      elTest.appendChild(document.createElement('rt')).appendChild(document.createTextNode('rt'));
+      elTest.appendChild(document.createElement('rp')).appendChild(document.createTextNode('rp #2'));
+    }
+
+    else if (specialContext === 'rp') {
+      let elRuby = document.createElement('ruby');
+      elRuby.appendChild(document.createTextNode('ruby text node contents'));
+      elRuby.appendChild(elTest);
+      elTest.appendChild(document.createTextNode('rp #1'));
+      elRuby.appendChild(document.createElement('rt')).appendChild(document.createTextNode('rt'));
+      elRuby.appendChild(document.createElement('rp')).appendChild(document.createTextNode('rp #2'));
+      elReturn = elRuby;
+    }
+
+    else if (specialContext === 'rt') {
+      let elRuby = document.createElement('ruby');
+      elRuby.appendChild(document.createTextNode('ruby text node contents'));
+      elRuby.appendChild(document.createElement('rp')).appendChild(document.createTextNode('rp #1'));
+      elRuby.appendChild(elTest);
+      elTest.appendChild(document.createTextNode('rt'));
+      elRuby.appendChild(document.createElement('rp')).appendChild(document.createTextNode('rp #2'));
+      elReturn = elRuby;
+    }
+
+    return elReturn;
+  },
+
+  getUniqueTestId: function () {
+    return this.testId += 1;
+  },
+
+  parseSelector: function (selector) {
+    const regex = /^(\w+)(?:\[(\w+)="([\w-]+)"\])?$/;
+    const [_, element, attrName = null, attrValue = null] = selector.match(regex);
+    return { element, attrName, attrValue };
+  },
+
+  buildPageHeading: function (testConfig) {
+    const elBody = document.querySelector('body');
+
+    if (!document.querySelector('h1')) {
+      const elH1 = document.createElement('h1');
+      elH1.textContent = document.title;
+      elBody.appendChild(elH1);
+    }
+
+    if (testConfig.urlSpec) {
+      elBody.insertAdjacentHTML('beforeend', `<p><a href="${testConfig.urlSpec}">HTML-AAM computation steps</a></p>`);
+    }
+  },
+
+  previewTestMarkup: function (html) {
+    const elBody = document.querySelector('body');
+    let elTestMarkup = document.createElement('pre');
+    elTestMarkup.style.border = '1px solid green';
+    elTestMarkup.style.backgroundColor = 'palegreen';
+    elTestMarkup.style.padding = '1rem';
+    elTestMarkup.style.whiteSpace = 'pre-wrap';
+    elTestMarkup.appendChild(document.createTextNode(html.replaceAll('><', '>\n<').trim()));
+    elBody.appendChild(elTestMarkup);
+  },
+
+
+  testId: 0,
+  srcImgSample: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTIwIDZoLTJ2NGgtMlY2aC00djJoLTJ2MmgydjJIOFY4SDZ2NGgydjRoMTR2LTJoLTZ2LTJoMnYtMmgydjJoNnYtMmgtMlY4aC00VjZaIiBmaWxsPSIjRUZDMjk4Ii8+CiAgPHBhdGggZD0iTTYgNmg2djJoLTJ2MmgydjJIOFY4SDZWNloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNNiA4SDR2Nmg0di0ySDZWOFptMTAtMmgydjRoLTJWNlptMiA0aDJ2Mmg0djJoLTh2LTJoMnYtMloiIGZpbGw9IiMwMDAiLz4KICA8cGF0aCBkPSJNMiAyMmg0djJoMnYySDZ2Mkgydi02Wm0yMCAwdjJoLTJ2MmgydjJoNHYtNmgtNFoiIGZpbGw9IiNFMUQ3RDYiLz4KICA8cGF0aCBkPSJNNCAzMGg2djRIMnYtMmgydi0yWm0yMCAwaC02djRoOHYtMmgtMnYtMloiIGZpbGw9IiM4RDU3M0QiLz4KICA8cGF0aCBkPSJNMTIgMjJoLTJ2Mmgydi0yWm02IDBoLTJ2Mmgydi0yWiIgZmlsbD0iI0ZDRjEzOCIvPgogIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTIgMTZoLTJ2Nkg4djRINnY0aDZ2LTJoNHYyaDZ2LTRoLTJ2LTRoLTJ2LTRoLTJ2MmgtNHYtNFptNiA2djJoLTJ2LTJoMlptLTggMGgydjJoLTJ2LTJaIiBmaWxsPSIjNTY3MkQ2Ii8+CiAgPHBhdGggZD0iTTggMnYySDZ2MmgxOFY0aC00VjJIOFptMTAgMTRoLTZ2NGg0di0yaDJ2NGgydjJoMnYtMmg0di0yaC0ydi0yaC02di0yWk02IDE4SDR2MkgydjJoNHYyaDJ2LTJoMnYtNkg2djJaIiBmaWxsPSIjRDAxQTE5Ii8+Cjwvc3ZnPgo=",
+  nameValues: {
+    'from 1 aria-labelledby ref': 'aria-labelledby ref element #1 text contents',
+    'from 2 aria-labelledby refs': 'aria-labelledby ref element #2 text contents',
+    'from aria-label': 'aria-label attribute value',
+    'from 1 label': 'associated label #1 text contents',
+    'from 2 labels': 'associated label #2 text contents',
+    'from subtree': 'subtree text contents',
+    'from first legend': 'legend text contents',
+    'from first figcaption': 'figcaption text contents',
+    'from first caption': 'caption text contents',
+    'from value': 'value attribute value',
+    'from label attribute': 'label attribute value',
+    'from alt': 'alt attribute value',
+    'from empty alt': '',
+    'from title': 'title attribute value',
+    'from placeholder': 'placeholder attribute value',
+  }
+};

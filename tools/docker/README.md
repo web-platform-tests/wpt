@@ -4,11 +4,13 @@ images must be updated as well. Doing this requires you to have write
 permissions to the repository.
 
 The tag for a new docker image is of the form
-`{current-version + 0.01}`
+`ghcr.io/web-platform-tests/wpt:${PREV_VERSION++}`.
 
 To update the docker image:
 
-* Run the workflow https://github.com/web-platform-tests/wpt/actions/workflows/docker.yml
+* Run the workflow
+  https://github.com/web-platform-tests/wpt/actions/workflows/docker.yml via the
+  GitHub UI.
 
 * Update the following Taskcluster configurations to use the new image:
  - `.taskcluster.yml` (the decision task)

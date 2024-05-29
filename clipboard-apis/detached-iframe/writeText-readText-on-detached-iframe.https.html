@@ -16,7 +16,11 @@ promise_test(async t => {
   await tryGrantWritePermission();
 
   const iframe = document.getElementById('iframe');
-  await test_driver.bless();
+  await new Promise(resolve => {
+    iframe.onload = resolve;
+    iframe.src = 'about:blank';
+  });
+  await test_driver.bless("clipboard", null, iframe.contentWindow);
   // Clipboard API must only be available in focused documents.
   // reference: https://www.w3.org/TR/clipboard-apis/#privacy-async
   iframe.focus();
@@ -29,7 +33,7 @@ promise_test(async t => {
   assert_equals(attachedWriteResult, attachedWriteText,
       'attached iframes should be able to readText and writeText normally');
 
-  iframe.parentNode.removeChild(iframe);
+  iframe.remove();
   // Writing onto a detached iframe's clipboard should fail, but not crash.
   const detachedWriteText = 'detached write text';
   await iframeClipboard.writeText(detachedWriteText);

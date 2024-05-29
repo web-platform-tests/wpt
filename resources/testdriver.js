@@ -1076,8 +1076,10 @@
          *                    rejected in the cases of failures.
          */
         get_accessibility_api_node: async function(dom_id) {
-            let jsonresult = await window.test_driver_internal.get_accessibility_api_node(dom_id);
-            return JSON.parse(jsonresult);
+            return window.test_driver_internal.get_accessibility_api_node(dom_id)
+                .then((jsonresult) => {
+                  return JSON.parse(jsonresult);
+                });
         }
     };
 
@@ -1269,7 +1271,7 @@
         },
 
         async get_accessibility_api_node(dom_id) {
-            throw new Error("not implemented, whoops!");
+            throw new Error("get_accessibility_api_node() is not available.");
         }
     };
 })();

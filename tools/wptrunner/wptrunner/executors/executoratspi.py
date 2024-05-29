@@ -5,11 +5,6 @@ import json
 import threading
 from .protocol import (PlatformAccessibilityProtocolPart)
 
-
-import traceback
-import time
-
-
 def find_active_tab(root):
     stack = [root]
     while stack:
@@ -31,12 +26,10 @@ def find_active_tab(root):
 
 def serialize_node(node):
     node_dictionary = {}
+    node_dictionary['API'] = 'atspi';
     node_dictionary['role'] = Atspi.Accessible.get_role_name(node)
     node_dictionary['name'] = Atspi.Accessible.get_name(node)
     node_dictionary['description'] = Atspi.Accessible.get_description(node)
-
-    # TODO: serialize other attributes
-    # states, interfaces, attributes, etc.
 
     return node_dictionary
 
@@ -99,18 +92,19 @@ class AtspiExecutorImpl():
 
     def get_accessibility_api_node(self, dom_id):
         if not self.found_browser:
-            return json.dumps({"role": "couldn't find browser"})
+            raise Exception(f"Couldn't find browser {self.product_name}. Did you turn on accessibility?")
 
         if not self.load_complete:
           self.atspi_listener_thread.join()
 
         active_tab = find_active_tab(self.root)
         if not active_tab:
-            return json.dumps({"role": "couldn't find active tab"})
+            raise Exception(f"Could not find the test page within the browser. Did you turn on accessiblity?")
 
         node = find_node(active_tab, dom_id)
         if not node:
-            return json.dumps({"role": "couldn't find the node with that ID"})
+            raise Exception(f"Couldn't find node with id {dom_id}.")
+
 
         return json.dumps(serialize_node(node))
 

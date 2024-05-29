@@ -15,6 +15,7 @@ from ApplicationServices import (
     kAXValueAXErrorType,
 )
 
+
 class AXAPIExecutorImpl:
     def setup(self, product_name):
         self.product_name = product_name
@@ -33,4 +34,3 @@ class AXAPIExecutorImpl:
 
     def get_accessibility_api_node(self, dom_id):
         app = self.get_application_by_name(self.product_name)
-

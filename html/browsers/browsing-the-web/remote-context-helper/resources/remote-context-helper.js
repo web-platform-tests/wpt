@@ -294,7 +294,8 @@
           el.setAttribute(attribute, attributes[attribute]);
         }
         el.src = url;
-        document.body.appendChild(el);
+        const parent = elementName == "frame" ? findOrCreateFrameset() : document.body;
+        parent.appendChild(el);
       }, [url, elementName, attributes]);
     };
   }
@@ -310,9 +311,14 @@
     };
   }
 
-  function workerExecutorCreator() {
+  function workerExecutorCreator(remoteContextWrapper, globalVariable) {
     return url => {
-      new Worker(url);
+      return remoteContextWrapper.executeScript((url, globalVariable) => {
+        const worker = new Worker(url);
+        if (globalVariable) {
+          window[globalVariable] = worker;
+        }
+      }, [url, globalVariable]);
     };
   }
 
@@ -381,7 +387,7 @@
     }
 
     /**
-     * Adds an iframe with `src` attribute to the current document.
+     * Adds an `iframe` with `src` attribute to the current document.
      * @param {RemoteContextConfig} [extraConfig]
      * @param {[string, string][]} [attributes] A list of pairs of strings
      *     of attribute name and value these will be set on the iframe element
@@ -395,6 +401,21 @@
       });
     }
 
+    /**
+     * Adds a `frame` with `src` attribute to the current document's first
+     * `frameset` element.
+     * @param {RemoteContextConfig} [extraConfig]
+     * @param {[string, string][]} [attributes] A list of pairs of strings
+     *     of attribute name and value these will be set on the iframe element
+     *     when added to the document.
+     * @returns {Promise<RemoteContextWrapper>} The remote context.
+     */
+    addFrame(extraConfig, attributes = {}) {
+      return this.helper.createContext({
+        executorCreator: elementExecutorCreator(this, 'frame', attributes),
+        extraConfig,
+      });
+    }
     /**
      * Adds an iframe with `srcdoc` attribute to the current document
      * @param {RemoteContextConfig} [extraConfig]
@@ -412,12 +433,15 @@
 
     /**
      * Adds a dedicated worker to the current document.
+     * @param {string|null} [globalVariable] The name of the global variable to
+     *   which to assign the `Worker` object after construction. If `null`,
+     *   then no assignment will take place.
      * @param {RemoteContextConfig} [extraConfig]
      * @returns {Promise<RemoteContextWrapper>} The remote context.
      */
-    addWorker(extraConfig) {
+    addWorker(globalVariable, extraConfig) {
       return this.helper.createContext({
-        executorCreator: workerExecutorCreator(),
+        executorCreator: workerExecutorCreator(this, globalVariable),
         extraConfig,
         isWorker: true,
       });

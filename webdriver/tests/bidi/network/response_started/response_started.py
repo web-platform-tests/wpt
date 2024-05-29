@@ -135,6 +135,32 @@ async def test_load_page_twice(
     )
 
 
+@pytest.mark.asyncio
+async def test_request_bodysize(
+    wait_for_event, wait_for_future_safe, url, fetch, setup_network_test
+):
+    html_url = url(PAGE_EMPTY_HTML)
+
+    network_events = await setup_network_test(events=[RESPONSE_STARTED_EVENT])
+    events = network_events[RESPONSE_STARTED_EVENT]
+
+    on_before_request_sent = wait_for_event(RESPONSE_STARTED_EVENT)
+    await fetch(html_url, method="POST", post_data="{'a': 1}")
+    await wait_for_future_safe(on_before_request_sent)
+
+    assert len(events) == 1
+    expected_request = {
+        "method": "POST",
+        "url": html_url,
+    }
+    assert_response_event(
+        events[0],
+        expected_request=expected_request,
+        redirect_count=0,
+    )
+    assert events[0]["request"]["bodySize"] > 0
+
+
 @pytest.mark.parametrize(
     "status, status_text",
     HTTP_STATUS_AND_STATUS_TEXT,
@@ -245,6 +271,11 @@ async def test_response_mime_type_file(
 async def test_www_authenticate(
     bidi_session, url, fetch, new_tab, wait_for_event, wait_for_future_safe, setup_network_test
 ):
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"],
+        url=url(PAGE_EMPTY_HTML),
+        wait="complete",
+    )
     auth_url = url(
         "/webdriver/tests/support/http_handlers/authentication.py?realm=testrealm"
     )
@@ -253,11 +284,8 @@ async def test_www_authenticate(
     events = network_events[RESPONSE_STARTED_EVENT]
 
     on_response_started = wait_for_event(RESPONSE_STARTED_EVENT)
-    await bidi_session.browsing_context.navigate(
-        context=new_tab["context"],
-        url=auth_url,
-        wait="none",
-    )
+
+    asyncio.ensure_future(fetch(url=auth_url, context=new_tab))
 
     await wait_for_future_safe(on_response_started)
 
@@ -309,3 +337,28 @@ async def test_redirect(bidi_session, url, fetch, setup_network_test):
 
     # Check that both requests share the same requestId
     assert events[0]["request"]["request"] == events[1]["request"]["request"]
+
+
+@pytest.mark.asyncio
+async def test_url_with_fragment(
+    url, wait_for_event, wait_for_future_safe, fetch, setup_network_test
+):
+    fragment_url = url(f"{PAGE_EMPTY_HTML}#foo")
+
+    network_events = await setup_network_test(events=[RESPONSE_STARTED_EVENT])
+    events = network_events[RESPONSE_STARTED_EVENT]
+
+    on_response_started = wait_for_event(RESPONSE_STARTED_EVENT)
+    await fetch(fragment_url, method="GET")
+    await wait_for_future_safe(on_response_started)
+
+    assert len(events) == 1
+
+    # Assert that the event contains the full fragment URL both in requestData
+    # and responseData
+    assert_response_event(
+        events[0],
+        expected_request={"method": "GET", "url": fragment_url},
+        expected_response={"url": fragment_url},
+        redirect_count=0,
+    )

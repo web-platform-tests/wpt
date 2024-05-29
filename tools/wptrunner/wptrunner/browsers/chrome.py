@@ -53,13 +53,13 @@ def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
             "webdriver_args": kwargs.get("webdriver_args")}
 
 
-def executor_kwargs(logger, test_type, test_environment, run_info_data,
+def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite,
                     **kwargs):
     sanitizer_enabled = kwargs.get("sanitizer_enabled")
     if sanitizer_enabled:
         test_type = "crashtest"
     executor_kwargs = base_executor_kwargs(test_type, test_environment, run_info_data,
-                                           **kwargs)
+                                           subsuite, **kwargs)
     executor_kwargs["close_after_done"] = True
     executor_kwargs["sanitizer_enabled"] = sanitizer_enabled
     executor_kwargs["reuse_window"] = kwargs.get("reuse_window", False)
@@ -97,6 +97,11 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     chrome_options["args"].append("--use-fake-ui-for-media-stream")
     # Use a fake UI for FedCM to allow testing it.
     chrome_options["args"].append("--use-fake-ui-for-fedcm")
+    # This is needed until https://github.com/web-platform-tests/wpt/pull/40709
+    # is merged.
+    chrome_options["args"].append("--enable-features=FedCmWithoutWellKnownEnforcement")
+    # Use a fake UI for digital identity to allow testing it.
+    chrome_options["args"].append("--use-fake-ui-for-digital-identity")
     # Shorten delay for Reporting <https://w3c.github.io/reporting/>.
     chrome_options["args"].append("--short-reporting-delay")
     # Point all .test domains to localhost for Chrome
@@ -110,6 +115,10 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     # The GenericSensorExtraClasses flag enables the browser-side
     # implementation of sensors such as Ambient Light Sensor.
     chrome_options["args"].append("--enable-features=GenericSensorExtraClasses")
+    # Do not show Chrome for Testing infobar. For other Chromium build this
+    # flag is no-op. Required to avoid flakiness in tests, as the infobar
+    # changes the viewport, which can happen during the test run.
+    chrome_options["args"].append("--disable-infobars")
 
     # Classify `http-private`, `http-public` and https variants in the
     # appropriate IP address spaces.
@@ -129,8 +138,14 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
         chrome_options["args"].append(
             "--ip-address-space-overrides=" + address_space_overrides_arg)
 
+    # Always disable antialiasing on the Ahem font.
+    blink_features = ['DisableAhemAntialias']
+
     if kwargs["enable_mojojs"]:
-        chrome_options["args"].append("--enable-blink-features=MojoJS,MojoJSTest")
+        blink_features.append('MojoJS')
+        blink_features.append('MojoJSTest')
+
+    chrome_options["args"].append("--enable-blink-features=" + ','.join(blink_features))
 
     if kwargs["enable_swiftshader"]:
         # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/gpu/swiftshader.md
@@ -144,10 +159,15 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
         if arg not in chrome_options["args"]:
             chrome_options["args"].append(arg)
 
+    for arg in subsuite.config.get("binary_args", []):
+        if arg not in chrome_options["args"]:
+            chrome_options["args"].append(arg)
+
     # Pass the --headless=new flag to Chrome if WPT's own --headless flag was
     # set. '--headless' should always mean the new headless mode, as the old
     # headless mode is not used anyway.
     if kwargs["headless"] and ("--headless=new" not in chrome_options["args"] and
+                               "--headless=old" not in chrome_options["args"] and
                                "--headless" not in chrome_options["args"]):
         chrome_options["args"].append("--headless=new")
 

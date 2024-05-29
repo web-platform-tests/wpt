@@ -215,8 +215,10 @@ class TimedRunner:
             else:
                 if self.protocol.is_alive():
                     message = "Executor hit external timeout (this may indicate a hang)\n"
-                    # get a traceback for the current stack of the executor thread
-                    message += "".join(traceback.format_stack(sys._current_frames()[executor.ident]))
+                    if executor.ident in sys._current_frames():
+                        # get a traceback for the current stack of the executor thread
+                        message += "".join(traceback.format_stack(
+                            sys._current_frames()[executor.ident]))
                     self.result = False, ("EXTERNAL-TIMEOUT", message)
                 else:
                     self.logger.info("Browser not responding, setting status to CRASH")
@@ -313,7 +315,7 @@ class TestExecutor:
             result = self.do_test(test)
         except Exception as e:
             exception_string = traceback.format_exc()
-            message = f"Exception in TextExecutor.run:\n{exception_string}"
+            message = f"Exception in TestExecutor.run:\n{exception_string}"
             self.logger.warning(message)
             result = self.result_from_exception(test, e, exception_string)
 

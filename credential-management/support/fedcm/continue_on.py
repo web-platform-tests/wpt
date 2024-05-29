@@ -7,6 +7,10 @@ def main(request, response):
     return request_error
 
   response.headers.set(b"Content-Type", b"application/json")
+  response.headers.set(b"Access-Control-Allow-Origin", request.headers.get(b"Origin"))
+  response.headers.set(b"Access-Control-Allow-Credentials", "true")
 
-  return "{\"continue_on\": \"resolve.html\"}"
+  account = request.POST.get(b"account_id").decode("utf-8")
+  nonce = request.POST.get(b"nonce").decode("utf-8")
+  return "{\"continue_on\": \"resolve.html?selected=%s&%s\"}" % (account, nonce)
 

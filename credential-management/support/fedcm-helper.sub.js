@@ -1,6 +1,7 @@
 export const manifest_origin = "https://{{host}}:{{ports[https][0]}}";
 export const alt_manifest_origin = 'https://{{hosts[alt][]}}:{{ports[https][0]}}';
 export const same_site_manifest_origin = 'https://{{hosts[][www1]}}:{{ports[https][0]}}';
+export const default_manifest_path = '/credential-management/support/fedcm/manifest.py';
 
 export function open_and_wait_for_popup(origin, path) {
   return new Promise(resolve => {
@@ -8,7 +9,9 @@ export function open_and_wait_for_popup(origin, path) {
 
     // We rely on the popup page to send us a message when done.
     const popup_message_handler = (event) => {
-      if (event.origin == origin) {
+      // We use new URL() to ensure the two origins are normalized the same
+      // way (especially so that default ports are handled identically).
+      if (new URL(event.origin).toString() == new URL(origin).toString()) {
         popup_window.close();
         window.removeEventListener('message', popup_message_handler);
         resolve();
@@ -22,7 +25,7 @@ export function open_and_wait_for_popup(origin, path) {
 // Set the identity provider cookie.
 export function set_fedcm_cookie(host) {
   if (host == undefined) {
-    document.cookie = 'cookie=1; SameSite=Strict; Path=/credential-management/support; Secure';
+    document.cookie = 'cookie=1; SameSite=None; Path=/credential-management/support; Secure';
     return Promise.resolve();
   } else {
     return open_and_wait_for_popup(host, '/credential-management/support/set_cookie');
@@ -98,10 +101,38 @@ credential-management/support/fedcm/${manifest_filename}`;
   };
 }
 
+export function request_options_with_two_idps(mediation = 'required') {
+  const first_config = `${manifest_origin}${default_manifest_path}`;
+  const second_config = `${alt_manifest_origin}${default_manifest_path}`;
+  return {
+    identity: {
+      providers: [{
+        configURL: first_config,
+        clientId: '123',
+        nonce: 'N1'
+      },
+      {
+        configURL: second_config,
+        clientId: '456',
+        nonce: 'N2'
+      }],
+    },
+    mediation: mediation
+  };
+}
 
 // Test wrapper which does FedCM-specific setup.
 export function fedcm_test(test_func, test_name) {
   promise_test(async t => {
+    // Ensure we start from a clean slate.
+    await test_driver.delete_all_cookies();
+    // Turn off delays that are not useful in tests.
+    try {
+      await test_driver.set_fedcm_delay_enabled(false);
+    } catch (e) {
+      // Failure is not critical; it just might slow down tests.
+    }
+
     await set_fedcm_cookie();
     await set_alt_fedcm_cookie();
     await test_func(t);

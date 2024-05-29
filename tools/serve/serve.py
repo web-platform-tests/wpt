@@ -30,7 +30,7 @@ from wptserve import config
 from wptserve.handlers import filesystem_path, wrap_pipeline
 from wptserve.response import ResponseHeaders
 from wptserve.utils import get_port, HTTPException, http2_compatible
-from mod_pywebsocket import standalone as pywebsocket
+from pywebsocket3 import standalone as pywebsocket
 
 
 EDIT_HOSTS_HELP = ("Please ensure all the necessary WPT subdomains "
@@ -829,7 +829,8 @@ def start_http_server(logger, host, port, paths, routes, bind_address, config, *
                                      key_file=None,
                                      certificate=None,
                                      latency=kwargs.get("latency"))
-    except Exception:
+    except Exception as error:
+        logger.critical(f"start_http_server: Caught exception from wptserve.WebTestHttpd: {error}")
         startup_failed(logger)
 
 
@@ -847,7 +848,8 @@ def start_https_server(logger, host, port, paths, routes, bind_address, config, 
                                      certificate=config.ssl_config["cert_path"],
                                      encrypt_after_connect=config.ssl_config["encrypt_after_connect"],
                                      latency=kwargs.get("latency"))
-    except Exception:
+    except Exception as error:
+        logger.critical(f"start_https_server: Caught exception from wptserve.WebTestHttpd: {error}")
         startup_failed(logger)
 
 
@@ -868,7 +870,8 @@ def start_http2_server(logger, host, port, paths, routes, bind_address, config, 
                                      encrypt_after_connect=config.ssl_config["encrypt_after_connect"],
                                      latency=kwargs.get("latency"),
                                      http2=True)
-    except Exception:
+    except Exception as error:
+        logger.critical(f"start_http2_server: Caught exception from wptserve.WebTestHttpd: {error}")
         startup_failed(logger)
 
 
@@ -935,7 +938,8 @@ def start_ws_server(logger, host, port, paths, routes, bind_address, config, **k
                                config.paths["ws_doc_root"],
                                bind_address,
                                ssl_config=None)
-    except Exception:
+    except Exception as error:
+        logger.critical(f"start_ws_server: Caught exception from WebSocketDomain: {error}")
         startup_failed(logger)
 
 
@@ -947,7 +951,8 @@ def start_wss_server(logger, host, port, paths, routes, bind_address, config, **
                                config.paths["ws_doc_root"],
                                bind_address,
                                config.ssl_config)
-    except Exception:
+    except Exception as error:
+        logger.critical(f"start_wss_server: Caught exception from WebSocketDomain: {error}")
         startup_failed(logger)
 
 

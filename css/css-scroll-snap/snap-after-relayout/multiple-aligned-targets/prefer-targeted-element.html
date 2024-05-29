@@ -31,7 +31,7 @@
       // -------------------------
       // within an iframe.
       // This function just gets the numbers beside |box_number| on each row.
-      // E.g. 4: 4%3 = 1; so the nmubers we want are 5 (4+1) and 6 (4+2).
+      // E.g. 4: 4%3 = 1; so the numbers we want are 5 (4+1) and 6 (4+2).
       function getAlignedNumbers(n) {
         const mod_3 = n % 3;
         if (mod_3 == 1) {
@@ -59,8 +59,13 @@
             let scroller = iframe.contentDocument.getElementById("scroller");
             assert_equals(boxes.length, 9);
             await runScrollSnapSelectionVerificationTest(t, scroller,
-              [box(box_number), box(other_box_1), box(other_box_2)],
-              box(box_number), "y");
+                /*aligned_elements_x=*/[],
+                /*aligned_elements_y=*/[box(box_number),
+                                        box(other_box_1),
+                                        box(other_box_2)],
+                /*axis=*/"y",
+                /*expected_target_x*/null,
+                /*expected_target_y*/box(box_number));
 
             // Let scroller no longer be a scroll container.
             scroller.style.overflow = "visible";
@@ -71,8 +76,13 @@
 
             // Run the test again.
             await runScrollSnapSelectionVerificationTest(t, scroller,
-              [box(box_number), box(other_box_1), box(other_box_2)],
-              box(box_number), "y");
+                /*aligned_elements_x=*/[],
+                /*aligned_elements_y=*/[box(box_number),
+                                        box(other_box_1),
+                                        box(other_box_2)],
+                /*axis=*/"y",
+                /*expected_target_x*/null,
+                /*expected_target_y*/box(box_number));
 
             finish();
           };

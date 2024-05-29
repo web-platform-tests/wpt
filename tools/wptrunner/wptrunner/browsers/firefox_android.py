@@ -1,8 +1,9 @@
 # mypy: allow-untyped-defs
 
 import os
-import subprocess
 import re
+import subprocess
+import traceback
 
 from mozrunner import FennecEmulatorRunner, get_app_context
 
@@ -147,11 +148,13 @@ def get_environ(chaos_mode_flags, env_extras=None):
 class ProfileCreator(FirefoxProfileCreator):
     def __init__(self, logger, prefs_root, config, test_type, extra_prefs,
                  disable_fission, debug_test, browser_channel, binary,
-                 package_name, certutil_binary, ca_certificate_path):
+                 package_name, certutil_binary, ca_certificate_path,
+                 allow_list_paths=None):
 
         super().__init__(logger, prefs_root, config, test_type, extra_prefs,
                          disable_fission, debug_test, browser_channel, None,
-                         package_name, certutil_binary, ca_certificate_path)
+                         package_name, certutil_binary, ca_certificate_path,
+                         allow_list_paths)
 
     def _set_required_prefs(self, profile):
         profile.set_preferences({
@@ -322,6 +325,7 @@ class FirefoxAndroidBrowser(Browser):
             self.runner.cleanup()
         self.logger.debug("stopped")
 
+    @property
     def pid(self):
         if self.runner.process_handler is None:
             return None
@@ -349,7 +353,13 @@ class FirefoxAndroidBrowser(Browser):
     def check_crash(self, process, test):
         if not os.environ.get("MINIDUMP_STACKWALK", "") and self.stackwalk_binary:
             os.environ["MINIDUMP_STACKWALK"] = self.stackwalk_binary
-        return bool(self.runner.check_for_crashes(test_name=test))
+        try:
+            return bool(self.runner.check_for_crashes(test_name=test))
+        except Exception:
+            # We sometimes see failures trying to copy the minidump files
+            self.logger.warning(f"""Failed to complete crash check, assuming no crash:
+{traceback.format_exc()}""")
+            return False
 
 
 class FirefoxAndroidWdSpecBrowser(FirefoxWdSpecBrowser):

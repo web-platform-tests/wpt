@@ -170,6 +170,8 @@ const registerAttributionSrc = async ({
   method = 'img',
   extraQueryParams = {},
   reportingOrigin,
+  extraHeaders = [],
+  referrerPolicy = '',
 }) => {
   const searchParams = new URLSearchParams(location.search);
 
@@ -200,13 +202,14 @@ const registerAttributionSrc = async ({
     headers.push({name, value: cookie});
   }
 
-
   let credentials;
   if (method === 'fetch') {
     const params = getFetchParams(reportingOrigin, cookie);
     credentials = params.credentials;
     headers = headers.concat(params.headers);
   }
+
+  headers = headers.concat(extraHeaders);
 
   const url = blankURLWithHeaders(headers, reportingOrigin);
 
@@ -216,6 +219,7 @@ const registerAttributionSrc = async ({
   switch (method) {
     case 'img':
       const img = document.createElement('img');
+      img.referrerPolicy = referrerPolicy;
       if (eligible === null) {
         img.attributionSrc = url;
       } else {
@@ -233,6 +237,7 @@ const registerAttributionSrc = async ({
       return 'event';
     case 'script':
       const script = document.createElement('script');
+      script.referrerPolicy = referrerPolicy;
       if (eligible === null) {
         script.attributionSrc = url;
       } else {
@@ -246,6 +251,7 @@ const registerAttributionSrc = async ({
       return 'event';
     case 'a':
       const a = document.createElement('a');
+      a.referrerPolicy = referrerPolicy;
       a.target = '_blank';
       a.textContent = 'link';
       if (eligible === null) {
@@ -260,12 +266,13 @@ const registerAttributionSrc = async ({
       return 'navigation';
     case 'open':
       await test_driver.bless('open window', () => {
+        const feature = referrerPolicy === 'no-referrer' ? 'noreferrer' : '';
         if (eligible === null) {
           open(
               blankURL(), '_blank',
-              `attributionsrc=${encodeURIComponent(url)}`);
+              `attributionsrc=${encodeURIComponent(url)} ${feature}`);
         } else {
-          open(url, '_blank', 'attributionsrc');
+          open(url, '_blank', `attributionsrc ${feature}`);
         }
       });
       return 'navigation';
@@ -274,7 +281,7 @@ const registerAttributionSrc = async ({
       if (eligible !== null) {
         attributionReporting = JSON.parse(eligible);
       }
-      await fetch(url, {credentials, attributionReporting});
+      await fetch(url, {credentials, attributionReporting, referrerPolicy});
       return 'event';
     }
     case 'xhr':

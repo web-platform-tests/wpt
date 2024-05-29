@@ -111,10 +111,9 @@ otherwise install OpenSSL and ensure that it's on your $PATH.""")
 
 
 def check_environ(product):
-    if product not in ("android_weblayer", "android_webview", "chrome",
-                       "chrome_android", "chrome_ios", "content_shell",
-                       "edgechromium", "firefox", "firefox_android", "ladybird", "servo",
-                       "wktr"):
+    if product not in ("android_webview", "chrome", "chrome_android", "chrome_ios",
+                       "content_shell", "edge", "firefox", "firefox_android",
+                       "ladybird", "servo", "wktr"):
         config_builder = serve.build_config(os.path.join(wpt_root, "config.json"))
         # Override the ports to avoid looking for free ports
         config_builder.ssl = {"type": "none"}
@@ -566,6 +565,8 @@ class ChromeAndroidBase(BrowserSetup):
         if kwargs["package_name"] is None:
             kwargs["package_name"] = self.browser.find_binary(
                 channel=browser_channel)
+        if not kwargs["device_serial"]:
+            kwargs["device_serial"] = ["emulator-5554"]
         if kwargs["webdriver_binary"] is None:
             webdriver_binary = None
             if not kwargs["install_webdriver"]:
@@ -613,17 +614,6 @@ class ChromeiOS(BrowserSetup):
             raise WptrunError("Unable to locate or install chromedriver binary")
 
 
-class AndroidWeblayer(ChromeAndroidBase):
-    name = "android_weblayer"
-    browser_cls = browser.AndroidWeblayer
-
-    def setup_kwargs(self, kwargs):
-        super().setup_kwargs(kwargs)
-        if kwargs["browser_channel"] in self.experimental_channels and kwargs["enable_experimental"] is None:
-            logger.info("Automatically turning on experimental features for WebLayer Dev/Canary")
-            kwargs["enable_experimental"] = True
-
-
 class AndroidWebview(ChromeAndroidBase):
     name = "android_webview"
     browser_cls = browser.AndroidWebview
@@ -661,9 +651,9 @@ class Opera(BrowserSetup):
                 raise WptrunError("Unable to locate or install operadriver binary")
 
 
-class EdgeChromium(BrowserSetup):
+class Edge(BrowserSetup):
     name = "MicrosoftEdge"
-    browser_cls = browser.EdgeChromium
+    browser_cls = browser.Edge
     experimental_channels: ClassVar[Tuple[str, ...]] = ("dev", "canary")
 
     def setup_kwargs(self, kwargs):
@@ -870,7 +860,6 @@ class Epiphany(BrowserSetup):
 
 
 product_setup = {
-    "android_weblayer": AndroidWeblayer,
     "android_webview": AndroidWebview,
     "firefox": Firefox,
     "firefox_android": FirefoxAndroid,
@@ -879,7 +868,7 @@ product_setup = {
     "chrome_ios": ChromeiOS,
     "chromium": Chromium,
     "content_shell": ContentShell,
-    "edgechromium": EdgeChromium,
+    "edge": Edge,
     "safari": Safari,
     "servo": Servo,
     "servodriver": ServoWebDriver,
@@ -922,6 +911,9 @@ def setup_wptrunner(venv, **kwargs):
     args_general(kwargs)
 
     if kwargs["product"] not in product_setup:
+        if kwargs["product"] == "edgechromium":
+            raise WptrunError("edgechromium has been renamed to edge.")
+
         raise WptrunError("Unsupported product %s" % kwargs["product"])
 
     setup_cls = product_setup[kwargs["product"]](venv, kwargs["prompt"])

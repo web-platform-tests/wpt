@@ -9,11 +9,11 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="../resources/user-activation.js"></script>
 <script>
-'use strict';
+"use strict";
 
-promise_test(async () => {  
+promise_test(async () => {
   await tryGrantWritePermission();
   await test_driver.bless();
-  await navigator.clipboard.writeText('xyz');
-}, 'navigator.clipboard.writeText() succeeds when permission granted');
+  await navigator.clipboard.writeText("xyz");
+}, "navigator.clipboard.writeText() succeeds when permission granted");
 </script>

@@ -20,9 +20,9 @@ promise_test(async t => {
   const blobInput1 = new Blob(['input data 1'], {type: format2});
   const clipboardItemInput = new ClipboardItem(
       {[format1]: blobInput1});
-  await waitForUserActivation();
+  await test_driver.bless();
   await navigator.clipboard.write([clipboardItemInput]);
-  await waitForUserActivation();
+  await test_driver.bless();
   const clipboardItems = await navigator.clipboard.read();
   assert_equals(clipboardItems.length, 1);
   const clipboardItem = clipboardItems[0];

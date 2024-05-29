@@ -13,7 +13,7 @@
 // META: variant=?29-32
 // META: variant=?33-last
 
-'use strict;'
+"use strict";
 
 const ORIGIN = window.location.origin;
 

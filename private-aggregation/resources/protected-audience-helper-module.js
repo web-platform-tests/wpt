@@ -2,7 +2,7 @@
 // removing unnecessary logic and modifying to allow it to be run in the
 // private-aggregation directory.
 
-"use strict;"
+"use strict";
 
 const FULL_URL = window.location.href;
 let BASE_URL = FULL_URL.substring(0, FULL_URL.lastIndexOf('/') + 1)

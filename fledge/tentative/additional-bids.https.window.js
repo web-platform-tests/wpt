@@ -5,7 +5,7 @@
 // META: timeout=long
 // META: variant=?1-last
 
-"use strict;"
+"use strict";
 
 // This file contains tests for additional bids and negative targeting.
 //

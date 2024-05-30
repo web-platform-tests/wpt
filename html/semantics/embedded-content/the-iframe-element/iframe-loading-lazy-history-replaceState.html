@@ -9,7 +9,7 @@ const iframeLoaded = new Promise(resolve => {
 let replaceStateSuccess = true;
 try {
   // Should have no effect on lazy-loading.
-  // Per https://html.spec.whatwg.org/#can-have-its-url-rewritten
+  // Per https://html.spec.whatwg.org/C#can-have-its-url-rewritten
   // only the fragment can be changed for about: URLs.
   iframe.contentWindow.history.replaceState(null, "", iframe.dataset.src);
 } catch(ex) {

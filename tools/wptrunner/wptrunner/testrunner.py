@@ -119,6 +119,8 @@ class TestRunner:
         assert self.executor is not None
         # reuse the current protocol connection
         protocol = self.executor.protocol
+        self.executor.protocol = None
+        self.executor.teardown()
         browser = executor_implementation.executor_browser_cls(
             **executor_implementation.executor_browser_kwargs)
         self.executor = executor_implementation.executor_cls(
@@ -326,8 +328,8 @@ class _RunnerManagerState:
     running = namedtuple("running", ["subsuite", "test_type", "test", "test_group", "group_metadata"])
     restarting = namedtuple("restarting", ["subsuite", "test_type", "test", "test_group",
                                            "group_metadata", "force_stop"])
-    switching = namedtuple("switching", ["subsuite", "test_type", "test", "test_group",
-                                           "group_metadata"])
+    switching_executor = namedtuple("switching_executor",
+                                    ["subsuite", "test_type", "test", "test_group", "group_metadata"])
     error = namedtuple("error", [])
     stop = namedtuple("stop", ["force_stop"])
 
@@ -509,7 +511,7 @@ class TestRunnerManager(threading.Thread):
                 "test_ended": self.test_ended,
                 "wait_finished": self.wait_finished,
             },
-            RunnerManagerState.switching:
+            RunnerManagerState.switching_executor:
             {
                 "switch_executor_succeeded": self.switch_executor_succeeded,
                 "switch_executor_failed": self.switch_executor_failed,
@@ -870,7 +872,7 @@ class TestRunnerManager(threading.Thread):
         return self.after_test_end(self.state.test, not rerun, force_rerun=rerun)
 
     def switch_executor_succeeded(self):
-        assert isinstance(self.state, RunnerManagerState.switching)
+        assert isinstance(self.state, RunnerManagerState.switching_executor)
         return RunnerManagerState.running(self.state.subsuite,
                                           self.state.test_type,
                                           self.state.test,
@@ -878,7 +880,7 @@ class TestRunnerManager(threading.Thread):
                                           self.state.group_metadata)
 
     def switch_executor_failed(self):
-        assert isinstance(self.state, RunnerManagerState.switching)
+        assert isinstance(self.state, RunnerManagerState.switching_executor)
         return RunnerManagerState.restarting(self.state.subsuite,
                                              self.state.test_type,
                                              self.state.test,
@@ -910,7 +912,7 @@ class TestRunnerManager(threading.Thread):
                     impl = self.test_implementations[(subsuite, test_type)]
                     self.executor_implementation = self.get_executor_implementation(impl)
                     self.send_message("switch_executor", self.executor_implementation)
-                    return RunnerManagerState.switching(
+                    return RunnerManagerState.switching_executor(
                         subsuite, test_type, test, test_group, group_metadata)
         else:
             subsuite = self.state.subsuite

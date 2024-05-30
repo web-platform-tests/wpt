@@ -635,7 +635,7 @@ class WdspecExecutor(TestExecutor):
 
     def setup(self, runner, protocol=None):
         self.protocol = self.protocol_cls(self, self.browser)
-        super().setup(runner, None)
+        super().setup(runner)
 
     def is_alive(self):
         return self.protocol.is_alive()

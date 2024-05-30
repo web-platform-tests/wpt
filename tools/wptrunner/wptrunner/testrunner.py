@@ -100,7 +100,7 @@ class TestRunner:
     def setup(self):
         self.logger.debug("Executor setup")
         try:
-            self.executor.setup(self, None)
+            self.executor.setup(self)
         except Exception:
             # The caller is responsible for logging the exception if required
             self.send_message("init_failed")
@@ -909,7 +909,7 @@ class TestRunnerManager(threading.Thread):
                     restart = True
                 else:
                     self.logger.info(f"Switching executor for new test type: {self.state.test_type} => {test_type}")
-                    impl = self.test_implementations[(subsuite, test_type)]
+                    impl = self.test_implementations[subsuite, test_type]
                     self.executor_implementation = self.get_executor_implementation(impl)
                     self.send_message("switch_executor", self.executor_implementation)
                     return RunnerManagerState.switching_executor(

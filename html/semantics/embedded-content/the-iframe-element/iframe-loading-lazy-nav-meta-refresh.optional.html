@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <title>Navigating iframe loading='lazy' before it is loaded: meta refresh</title>
 <!-- This test is optional because the spec allows delaying or doing nothing for meta refresh. -->
-<iframe src="support/blank.htm?src" loading="lazy"></iframe>
+<iframe src="support/blank.htm?src" loading="lazy" onload="window.gotIframeLoadEvent = true;"></iframe>
 <script>
 const iframe = document.querySelector('iframe');
+const iframeLoaded = new Promise(resolve => {
+  window.gotIframeLoadEvent ? resolve() : iframe.onload = resolve;
+});
 const meta = iframe.contentDocument.createElement('meta');
 meta.httpEquiv = 'Refresh';
 meta.content = '0; url=support/blank.htm?nav';
@@ -14,14 +17,10 @@ iframe.contentDocument.head.append(meta);
 <script src="/resources/testharnessreport.js"></script>
 <script>
 setup({single_test: true});
-onload = () => {
+iframeLoaded.then(() => {
   step_timeout(() => {
     assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?nav", location.href).href);
     done();
   }, 1000);
-};
+});
 </script>
-<!-- Delay the load event for the same URLs as the potential lazy iframe navigations
-     to reduce unstable test results. -->
-<iframe src="support/blank.htm?src"></iframe>
-<iframe src="support/blank.htm?nav"></iframe>

@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <title>Navigating iframe loading='lazy' before it is loaded: link click</title>
-<iframe name="iframe" src="support/blank.htm?src" loading="lazy"></iframe>
+<iframe name="iframe" src="support/blank.htm?src" loading="lazy" onload="window.gotIframeLoadEvent = true;"></iframe>
 <a href="support/blank.htm?nav" target="iframe"></a>
 <script>
 const iframe = document.querySelector('iframe');
+const iframeLoaded = new Promise(resolve => {
+  window.gotIframeLoadEvent ? resolve() : iframe.onload = resolve;
+});
 const a = document.querySelector('a');
 a.click();
 </script>
@@ -12,14 +15,10 @@ a.click();
 <script src="/resources/testharnessreport.js"></script>
 <script>
 setup({single_test: true});
-onload = () => {
+iframeLoaded.then(() => {
   step_timeout(() => {
     assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?nav", location.href).href);
     done();
   }, 1000);
-};
+});
 </script>
-<!-- Delay the load event for the same URLs as the potential lazy iframe navigations
-     to reduce unstable test results. -->
-<iframe src="support/blank.htm?src"></iframe>
-<iframe src="support/blank.htm?nav"></iframe>

@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <title>Navigating iframe loading='lazy' before it is loaded: navigation.navigate</title>
-<iframe data-src="support/blank.htm?nav" src="support/blank.htm?src" loading="lazy"></iframe>
+<iframe data-src="support/blank.htm?nav" src="support/blank.htm?src" loading="lazy" onload="window.gotIframeLoadEvent = true;"></iframe>
 <script>
 const iframe = document.querySelector('iframe');
+const iframeLoaded = new Promise(resolve => {
+  window.gotIframeLoadEvent ? resolve() : iframe.onload = resolve;
+});
 iframe.contentWindow.navigation.navigate(iframe.dataset.src);
 </script>
 <!-- Loading testharness.js here is intentional to reproduce a bug in WebKit. -->
@@ -10,15 +13,11 @@ iframe.contentWindow.navigation.navigate(iframe.dataset.src);
 <script src="/resources/testharnessreport.js"></script>
 <script>
 setup({single_test: true});
-onload = () => {
+iframeLoaded.then(() => {
   assert_true("navigation" in window, "Navigation API is supported");
   step_timeout(() => {
     assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?nav", location.href).href);
     done();
   }, 1000);
-};
+});
 </script>
-<!-- Delay the load event for the same URLs as the potential lazy iframe navigations
-     to reduce unstable test results. -->
-<iframe src="support/blank.htm?src"></iframe>
-<iframe src="support/blank.htm?nav"></iframe>

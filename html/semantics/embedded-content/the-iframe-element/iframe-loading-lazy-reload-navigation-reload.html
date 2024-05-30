@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <title>Reloading iframe loading='lazy' before it is loaded: location.reload</title>
-<iframe src="support/blank.htm?src" loading="lazy"></iframe>
+<iframe src="support/blank.htm?src" loading="lazy" onload="window.gotIframeLoadEvent = true;"></iframe>
 <script>
 const iframe = document.querySelector('iframe');
+const iframeLoaded = new Promise(resolve => {
+  window.gotIframeLoadEvent ? resolve() : iframe.onload = resolve;
+});
 // Should have no effect on lazy-loading
 iframe.contentWindow.navigation.reload();
 </script>
@@ -11,14 +14,11 @@ iframe.contentWindow.navigation.reload();
 <script src="/resources/testharnessreport.js"></script>
 <script>
 setup({single_test: true});
-onload = async () => {
+iframeLoaded.then(() => {
   step_timeout(() => {
     assert_true("navigation" in window, "Navigation API is supported");
     assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?src", location.href).href);
     done();
   }, 1000);
-};
+});
 </script>
-<!-- Delay the load event for the same URLs as the potential lazy iframe navigations
-     to reduce unstable test results. -->
-<iframe src="support/blank.htm?src"></iframe>

@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <title>Navigating iframe loading='lazy' and then setting src: location.replace</title>
-<iframe data-src="support/blank.htm?nav" loading="lazy"></iframe>
+<iframe data-src="support/blank.htm?nav" loading="lazy" onload="window.gotIframeLoadEvent = true;"></iframe>
 <script>
 const iframe = document.querySelector('iframe');
+const iframeLoaded = new Promise(resolve => {
+  window.gotIframeLoadEvent ? resolve() : iframe.onload = resolve;
+});
 iframe.contentWindow.location.replace(iframe.dataset.src);
 // Setting src invokes https://html.spec.whatwg.org/multipage/iframe-embed-object.html#process-the-iframe-attributes
 iframe.src = 'support/blank.htm?src';
@@ -12,14 +15,10 @@ iframe.src = 'support/blank.htm?src';
 <script src="/resources/testharnessreport.js"></script>
 <script>
 setup({single_test: true});
-onload = () => {
+iframeLoaded.then(() => {
   step_timeout(() => {
     assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?src", location.href).href);
     done();
   }, 1000);
-};
+});
 </script>
-<!-- Delay the load event for the same URLs as the potential lazy iframe navigations
-     to reduce unstable test results. -->
-<iframe src="support/blank.htm?src"></iframe>
-<iframe src="support/blank.htm?nav"></iframe>

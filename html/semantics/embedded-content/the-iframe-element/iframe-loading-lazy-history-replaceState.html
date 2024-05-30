@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <title>History state change for iframe loading='lazy' before it is loaded: history.replaceState</title>
-<iframe data-src="about:blank#foo" src="support/blank.htm?src" loading="lazy"></iframe>
+<iframe data-src="about:blank#foo" src="support/blank.htm?src" loading="lazy" onload="window.gotIframeLoadEvent = true;"></iframe>
 <script>
 const iframe = document.querySelector('iframe');
+const iframeLoaded = new Promise(resolve => {
+  window.gotIframeLoadEvent ? resolve() : iframe.onload = resolve;
+});
 let replaceStateSuccess = true;
 try {
   // Should have no effect on lazy-loading.
@@ -21,13 +24,10 @@ const locationAfterReplaceState = iframe.contentWindow.location.href;
 setup({single_test: true});
 assert_true(replaceStateSuccess);
 assert_equals(locationAfterReplaceState, new URL("about:blank#foo", location.href).href);
-onload = () => {
+iframeLoaded.then(() => {
   step_timeout(() => {
     assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?src", location.href).href);
     done();
   }, 1000);
-}
+});
 </script>
-<!-- Delay the load event for the same URLs as the potential lazy iframe navigations
-     to reduce unstable test results. -->
-<iframe src="support/blank.htm?src"></iframe>

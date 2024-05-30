@@ -1,0 +1,28 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>core-aam: role button</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<body>
+  <div id=test role=button>click me</div>
+
+  <script>
+    promise_test(async t => {
+      const node = await test_driver.get_accessibility_api_node('test');
+
+      if (node.API == 'atspi') {
+        assert_equals(node.role, 'push button', 'Atspi role');
+      }
+      else if (node.API == 'axapi') {
+        assert_equals(node.role, 'AXButton', 'AX API role');
+      }
+      else {
+        assert_unreached(`Unknown API: ${node.API}`)
+      }
+    }, 'role button');
+  </script>
+</body>

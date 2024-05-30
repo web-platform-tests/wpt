@@ -1,14 +1,15 @@
-from .protocol import (PlatformAccessibilityProtocolPart)
+from .protocol import PlatformAccessibilityProtocolPart
 
 from sys import platform
+
 linux = False
 mac = False
 if platform == "linux":
-  linux = True
-  from .executoratspi import *
+    linux = True
+    from .executoratspi import *
 if platform == "darwin":
-  mac = True
-  from .executoraxapi import *
+    mac = True
+    from .executoraxapi import *
 
 
 class AcaciaPlatformAccessibilityProtocolPart(PlatformAccessibilityProtocolPart):
@@ -22,6 +23,5 @@ class AcaciaPlatformAccessibilityProtocolPart(PlatformAccessibilityProtocolPart)
             self.impl = AXAPIExecutorImpl()
             self.impl.setup(self.product_name)
 
-
     def get_accessibility_api_node(self, dom_id):
-      return self.impl.get_accessibility_api_node(dom_id)
+        return self.impl.get_accessibility_api_node(dom_id)

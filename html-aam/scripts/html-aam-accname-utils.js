@@ -18,9 +18,9 @@ const HtmlAamAccnameUtils = {
   Each entry in elements[] may have an optional properties object specifying
   any of the following:
 
-  - children[]: elements to be appended as children of the test element. This
-    array may include the string 'textNode' to append a text node.
-  - parents[]: elements to be prepended as parents of the test element.
+  - descendants[]: elements to be appended as descendants of the test element.
+    This array may include the string 'textNode' to append a text node.
+  - ancestors[]: elements to be prepended as ancestors of the test element.
   - attrs[]: attributes to be added to the element for every subtest. For
     example, an `a` element may have an href attribute.
   - specialContext: a string indicating a special case that requires complex
@@ -44,7 +44,7 @@ const HtmlAamAccnameUtils = {
       elements: {
         'input[type="text"]': { attrs: ['value'] },
         'input[type="search"]': { attrs: ['value'] },
-        'textarea': { children: ['textNode'] }
+        'textarea': { descendants: ['textNode'] }
       },
       nameSources: [
         'from 2 aria-labelledby refs',
@@ -117,25 +117,25 @@ const HtmlAamAccnameUtils = {
       elTest.src = this.srcImgSample;
     }
 
-    // If the element desires DOM parents, build them.
-    if (properties?.parents) {
-      elReturn = properties.parents.reduceRight((child, tag) => {
-        let elParent = document.createElement(tag);
-        elParent.appendChild(child);
-        return elParent;
+    // If the element desires DOM ancestors, build them.
+    if (properties?.ancestors) {
+      elReturn = properties.ancestors.reduceRight((descendant, tag) => {
+        let elAncestor = document.createElement(tag);
+        elAncestor.appendChild(descendant);
+        return elAncestor;
       }, elTest);
     }
 
-    // If the element desires DOM children, build them.
-    if (properties?.children) {
+    // If the element desires DOM descendants, build them.
+    if (properties?.descendants) {
       let tagPrevious = element;
-      properties.children.reduce((parent, tag) => {
-        let elChild = tag === 'textNode' ?
+      properties.descendants.reduce((ancestor, tag) => {
+        let elDescendant = tag === 'textNode' ?
           document.createTextNode(`${tagPrevious} text node contents`) :
           document.createElement(tag);
-        parent.appendChild(elChild);
+        ancestor.appendChild(elDescendant);
         tagPrevious = tag;
-        return elChild;
+        return elDescendant;
       }, elTest);
     }
 
@@ -143,7 +143,7 @@ const HtmlAamAccnameUtils = {
       elReturn = this.handleSpecialCases(elTest, properties.specialContext, id);
     }
 
-    // If the test element needed no parent(s), return it
+    // If the test element needed no ancestor(s), return it
     if (!elReturn) {
       elReturn = elTest;
     }

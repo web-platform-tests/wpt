@@ -18,18 +18,18 @@
     const testConfig = {
       urlSpec: 'https://www.w3.org/TR/html-aam-1.0/#tr-td-th-elements-accessible-name-computation',
       elements: {
-        'tr': { parents: ['table', 'tbody'], children: ['td', 'textNode']},
-        'th': { parents: ['table', 'thead', 'tr'], children: ['textNode'] },
-        'td': { parents: ['table', 'tbody', 'tr'], children: ['textNode'] },
+        'tr': { ancestors: ['table', 'tbody'], descendants: ['td', 'textNode']},
+        'th': { ancestors: ['table', 'thead', 'tr'], descendants: ['textNode'] },
+        'td': { ancestors: ['table', 'tbody', 'tr'], descendants: ['textNode'] },
 
         /*
           PR #44965 TODO:
           How about thead, tbody, and tfoot, which support name from author?
         */
 
-        'thead': { parents: ['table'], children: ['tr', 'th', 'textNode'] },
-        'tbody': { parents: ['table'], children: ['tr', 'td', 'textNode'] },
-        'tfoot': { parents: ['table'], children: ['tr', 'td', 'textNode'] },
+        'thead': { ancestors: ['table'], descendants: ['tr', 'th', 'textNode'] },
+        'tbody': { ancestors: ['table'], descendants: ['tr', 'td', 'textNode'] },
+        'tfoot': { ancestors: ['table'], descendants: ['tr', 'td', 'textNode'] },
 
       },
       nameSources: [

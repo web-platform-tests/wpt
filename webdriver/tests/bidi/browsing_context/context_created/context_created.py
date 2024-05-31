@@ -274,7 +274,7 @@ async def test_new_user_context(
     type_hint,
 ):
     # Subscribe before assigning the listener, as subscription emits the events
-    # for already existing contexts.4
+    # for already existing contexts.
     await subscribe_events([CONTEXT_CREATED_EVENT])
 
     events = []

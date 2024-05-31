@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <title>History state change for iframe loading='lazy' before it is loaded: history.replaceState</title>
-<iframe data-src="about:blank#foo" src="support/blank.htm?src" loading="lazy" onload="window.gotIframeLoadEvent = true;"></iframe>
+<iframe data-src="about:blank#replace" src="support/blank.htm?src" loading="lazy" onload="window.gotIframeLoadEvent = true;"></iframe>
 <script>
 const iframe = document.querySelector('iframe');
 const iframeLoaded = new Promise(resolve => {
@@ -23,7 +23,7 @@ const locationAfterReplaceState = iframe.contentWindow.location.href;
 <script>
 setup({single_test: true});
 assert_true(replaceStateSuccess);
-assert_equals(locationAfterReplaceState, new URL("about:blank#foo", location.href).href);
+assert_equals(locationAfterReplaceState, new URL("about:blank#replace", location.href).href);
 iframeLoaded.then(() => {
   step_timeout(() => {
     assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?src", location.href).href);

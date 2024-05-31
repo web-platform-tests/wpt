@@ -149,6 +149,7 @@ async def test_delete_nested_iframes(
     bidi_session,
     subscribe_events,
     new_tab,
+    test_page,
     test_page_nested_frames,
     test_page_same_origin_frame,
 ):
@@ -167,6 +168,7 @@ async def test_delete_nested_iframes(
 
     contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
     top_iframe = contexts[0]["children"][0]
+    nested_iframe = top_iframe["children"][0]
 
     # Delete top iframe
     await bidi_session.script.evaluate(
@@ -175,9 +177,21 @@ async def test_delete_nested_iframes(
         await_promise=False,
     )
 
-    assert len(events) == 1
+    # First the nested, and then the top-level iframe should be destroyed.
+    assert len(events) == 2
+
+    # Assert first the nested iframe was destroyed.
     assert_browsing_context(
         events[0],
+        nested_iframe["context"],
+        children=None,
+        url=test_page,
+        parent=top_iframe["context"],
+    )
+
+    # Assert second the top level iframe was destroyed.
+    assert_browsing_context(
+        events[1],
         top_iframe["context"],
         children=None,
         url=test_page_same_origin_frame,

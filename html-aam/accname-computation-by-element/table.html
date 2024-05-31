@@ -18,7 +18,7 @@
     const testConfig = {
       urlSpec: 'https://www.w3.org/TR/html-aam-1.0/#table-element-accessible-name-computation',
       elements: {
-        'table': {}
+        'table': { children: ['tbody', 'tr', 'td', 'textNode'] },
       },
       nameSources: [
         'from 2 aria-labelledby refs',

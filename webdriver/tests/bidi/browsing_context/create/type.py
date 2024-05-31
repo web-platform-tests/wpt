@@ -14,6 +14,9 @@ async def test_type(bidi_session, top_context, type_hint):
     contexts = await bidi_session.browsing_context.get_tree(max_depth=0)
     assert len(contexts) == 1
 
+    # It is not guaranteed that the top_context is focused, so we activate it.
+    await bidi_session.browsing_context.activate(context=top_context["context"])
+
     await assert_document_status(bidi_session, top_context, visible=True, focused=True)
 
     new_context = await bidi_session.browsing_context.create(type_hint=type_hint)

@@ -193,6 +193,7 @@ async def test_delete_nested_iframes(
     assert_browsing_context(
         events[1],
         top_iframe["context"],
+        # At this point the child context is already destroyed.
         children=None,
         url=test_page_same_origin_frame,
         parent=new_tab["context"],
@@ -202,7 +203,8 @@ async def test_delete_nested_iframes(
 
 
 async def test_iframe_destroy_parent(
-    bidi_session, subscribe_events, new_tab, test_page_nested_frames
+      bidi_session, subscribe_events, new_tab, test_page_nested_frames,
+      test_page_same_origin_frame, test_page
 ):
     await subscribe_events([CONTEXT_DESTROYED_EVENT])
     # Track all received browsingContext.contextDestroyed events in the events array
@@ -217,16 +219,43 @@ async def test_iframe_destroy_parent(
         url=test_page_nested_frames, context=new_tab["context"], wait="complete"
     )
 
+    contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
+    top_context = contexts[0]
+    top_iframe = top_context["children"][0]
+    nested_iframe = top_iframe["children"][0]
+
     # Destroy top context
     await bidi_session.browsing_context.close(context=new_tab["context"])
 
-    assert len(events) == 1
+    #
+    assert len(events) == 3
+    # Assert first the most nested iframe was destroyed.
     assert_browsing_context(
         events[0],
-        new_tab["context"],
+        nested_iframe["context"],
+        children=None,
+        url=test_page,
+        parent=top_iframe["context"],
+    )
+
+    # Assert the top-level iframe was destroyed.
+    assert_browsing_context(
+        events[1],
+        top_iframe["context"],
+        # At this point the child context is already destroyed.
+        children=None,
+        url=test_page_same_origin_frame,
+        parent=top_context["context"],
+    )
+
+    # Assert third the original browsing context was destroyed.
+    assert_browsing_context(
+        events[2],
+        top_context["context"],
+        # At this point the child context is already destroyed.
         children=None,
         url=test_page_nested_frames,
-        parent=None,
+        parent=None
     )
 
     remove_listener()

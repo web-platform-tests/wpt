@@ -179,7 +179,7 @@ async def test_navigate_creates_iframes(bidi_session, subscribe_events, top_cont
 
 async def test_navigate_creates_nested_iframes(bidi_session, subscribe_events, top_context, test_page_nested_frames):
     # Subscribe before assigning the listener, as subscription emits the events
-    # for already existing contexts.4
+    # for already existing contexts.
     await subscribe_events([CONTEXT_CREATED_EVENT])
 
     events = []

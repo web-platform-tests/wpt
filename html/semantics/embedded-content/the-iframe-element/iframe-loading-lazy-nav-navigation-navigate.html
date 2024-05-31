@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <title>Navigating iframe loading='lazy' before it is loaded: navigation.navigate</title>
-<iframe data-src="support/blank.htm?nav" src="support/blank.htm?src" loading="lazy" onload="window.gotIframeLoadEvent = true;"></iframe>
+<iframe data-src="support/blank.htm?nav" src="support/blank.htm?src" loading="lazy" hidden></iframe>
 <script>
 const iframe = document.querySelector('iframe');
 const iframeLoaded = new Promise(resolve => {
-  window.gotIframeLoadEvent ? resolve() : iframe.onload = resolve;
+  iframe.onload = resolve;
 });
 iframe.contentWindow.navigation.navigate(iframe.dataset.src);
+iframe.hidden = false;
 </script>
 <!-- Loading testharness.js here is intentional to reproduce a bug in WebKit. -->
 <script src="/resources/testharness.js"></script>

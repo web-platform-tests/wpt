@@ -294,6 +294,7 @@ class TestExecutor:
         :param protocol: protocol connection to reuse if not None"""
         self.runner = runner
         if protocol is not None:
+            assert isinstance(protocol, self.protocol_cls)
             self.protocol = protocol
         elif self.protocol is not None:
             self.protocol.setup(runner)

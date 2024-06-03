@@ -18,7 +18,7 @@ def find_active_tab(root):
             for relation in relationset:
                 if relation.get_relation_type() == Atspi.RelationType.EMBEDS:
                     return relation.get_target(0)
-            contiue
+            continue
 
         for i in range(Atspi.Accessible.get_child_count(node)):
             child = Atspi.Accessible.get_child_at_index(node, i)

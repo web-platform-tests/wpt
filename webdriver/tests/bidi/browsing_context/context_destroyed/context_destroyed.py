@@ -167,17 +167,17 @@ async def test_delete_nested_iframes(
     )
 
     contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
-    top_iframe = contexts[0]["children"][0]
-    nested_iframe = top_iframe["children"][0]
+    parent_iframe = contexts[0]["children"][0]
+    nested_iframe = parent_iframe["children"][0]
 
-    # Delete top iframe
+    # Delete parent iframe
     await bidi_session.script.evaluate(
         expression="""document.querySelector('iframe').remove()""",
         target=ContextTarget(new_tab["context"]),
         await_promise=False,
     )
 
-    # First the nested, and then the top-level iframe should be destroyed.
+    # First the nested, and then the parent iframe should be destroyed.
     assert len(events) == 2
 
     # Assert first the nested iframe was destroyed.
@@ -186,13 +186,13 @@ async def test_delete_nested_iframes(
         nested_iframe["context"],
         children=None,
         url=test_page,
-        parent=top_iframe["context"],
+        parent=parent_iframe["context"],
     )
 
-    # Assert second the top level iframe was destroyed.
+    # Assert second the parent iframe was destroyed.
     assert_browsing_context(
         events[1],
-        top_iframe["context"],
+        parent_iframe["context"],
         # At this point the child context is already destroyed.
         children=None,
         url=test_page_same_origin_frame,
@@ -221,34 +221,34 @@ async def test_iframe_destroy_parent(
 
     contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
     top_context = contexts[0]
-    top_iframe = top_context["children"][0]
-    nested_iframe = top_iframe["children"][0]
+    parent_iframe = top_context["children"][0]
+    nested_iframe = parent_iframe["children"][0]
 
     # Destroy top context
     await bidi_session.browsing_context.close(context=new_tab["context"])
 
     assert len(events) == 3
-    
+
     # Assert first the most nested iframe was destroyed.
     assert_browsing_context(
         events[0],
         nested_iframe["context"],
         children=None,
         url=test_page,
-        parent=top_iframe["context"],
+        parent=parent_iframe["context"],
     )
 
     # Assert the parent iframe was destroyed.
     assert_browsing_context(
         events[1],
-        top_iframe["context"],
+        parent_iframe["context"],
         # At this point the child context is already destroyed.
         children=None,
         url=test_page_same_origin_frame,
         parent=top_context["context"],
     )
 
-    # Assert third the top-level browsing context was destroyed.
+    # Assert third the top context was destroyed.
     assert_browsing_context(
         events[2],
         top_context["context"],

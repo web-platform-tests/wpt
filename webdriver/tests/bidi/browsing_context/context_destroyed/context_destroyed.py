@@ -248,7 +248,7 @@ async def test_iframe_destroy_parent(
         parent=top_context["context"],
     )
 
-    # Assert third the original browsing context was destroyed.
+    # Assert third the top-level browsing context was destroyed.
     assert_browsing_context(
         events[2],
         top_context["context"],

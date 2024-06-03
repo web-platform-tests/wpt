@@ -227,8 +227,8 @@ async def test_iframe_destroy_parent(
     # Destroy top context
     await bidi_session.browsing_context.close(context=new_tab["context"])
 
-    #
     assert len(events) == 3
+    
     # Assert first the most nested iframe was destroyed.
     assert_browsing_context(
         events[0],

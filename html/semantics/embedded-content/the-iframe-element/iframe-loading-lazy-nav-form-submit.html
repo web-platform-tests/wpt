@@ -17,6 +17,7 @@ iframe.hidden = false;
 <script>
 setup({single_test: true});
 iframeLoaded.then(() => {
+  // Need a timeout to detect failure when there are two navigations.
   step_timeout(() => {
     // The "?" in the URL is there because the default method is "GET"
     // and the form data (empty here) is populated into the query.

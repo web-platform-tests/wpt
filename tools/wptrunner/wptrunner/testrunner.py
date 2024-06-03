@@ -125,6 +125,10 @@ class TestRunner:
             **executor_implementation.executor_browser_kwargs)
         self.executor = executor_implementation.executor_cls(
             self.logger, browser, **executor_implementation.executor_kwargs)
+        if type(self.executor.protocol) is not type(protocol):
+            self.send_message("switch_executor_failed")
+            self.logger.error("Protocol type does not match, switch executor failed.")
+            return
         try:
             self.executor.setup(self, protocol)
         except Exception:

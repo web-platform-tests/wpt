@@ -634,6 +634,7 @@ class WdspecExecutor(TestExecutor):
         self.binary_args = binary_args
 
     def setup(self, runner, protocol=None):
+        assert protocol is None, "Switch executor not allowed for wdspec tests."
         self.protocol = self.protocol_cls(self, self.browser)
         super().setup(runner)
 

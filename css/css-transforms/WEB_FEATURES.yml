@@ -1,6 +1,6 @@
 features:
 - name: abs-sign
-  file:
+  files:
   - transform-with-sign-function.html
 - name: individual-transforms
   files:

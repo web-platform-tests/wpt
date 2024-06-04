@@ -18,9 +18,9 @@ settings.load_profile(os.getenv("HYPOTHESIS_PROFILE",
 
 
 def pytest_ignore_collect(collection_path, config):
-     # ignore directories which have their own tox.ini
-     assert collection_path != config.rootpath
-     if (collection_path / "tox.ini").is_file():
-         return True
+    # ignore directories which have their own tox.ini
+    assert collection_path != config.rootpath
+    if (collection_path / "tox.ini").is_file():
+        return True
 
-     return None
+    return None

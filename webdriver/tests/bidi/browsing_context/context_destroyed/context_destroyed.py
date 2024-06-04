@@ -81,34 +81,38 @@ async def test_navigate(bidi_session, subscribe_events, new_tab, inline, domain)
 async def test_navigate_iframe(
     bidi_session, wait_for_event, wait_for_future_safe, subscribe_events, new_tab, inline, domain
 ):
-    await subscribe_events([CONTEXT_DESTROYED_EVENT])
-
-    on_entry = wait_for_event(CONTEXT_DESTROYED_EVENT)
-
     frame_url = inline("<div>foo</div>")
     url = inline(f"<iframe src='{frame_url}'></iframe>")
     await bidi_session.browsing_context.navigate(
         url=url, context=new_tab["context"], wait="complete"
     )
 
-    contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
-    frame = contexts[0]["children"][0]
+    # Assert that the iframe was created.
+    contexts = await bidi_session.browsing_context.get_tree(
+        root=new_tab["context"])
+    assert len(contexts) == 1
+    assert len(contexts[0]["children"]) == 1
 
-    # Navigate to destroy iframes
-    url = inline(f"<iframe src='{frame_url}'></iframe>", domain=domain)
+    # Track `browsingContext.contextDestroyed` events.
+    context_destroyed_events = []
+
+    async def on_event(_, data):
+        context_destroyed_events.append(data)
+
+    remove_listener = bidi_session.add_event_listener(CONTEXT_DESTROYED_EVENT,
+                                                      on_event)
+    await subscribe_events([CONTEXT_DESTROYED_EVENT])
+
+    # Navigate to another page to destroy iframe.
+    url = inline(f"<div>another page</div>", domain=domain)
     await bidi_session.browsing_context.navigate(
         url=url, context=new_tab["context"], wait="complete"
     )
 
-    context_info = await wait_for_future_safe(on_entry)
+    # Assert the destroyed context was not emitted for the iframe.
+    assert context_destroyed_events == []
 
-    assert_browsing_context(
-        context_info,
-        frame["context"],
-        children=None,
-        url=frame_url,
-        parent=new_tab["context"],
-    )
+    remove_listener()
 
 
 async def test_delete_iframe(
@@ -149,7 +153,6 @@ async def test_delete_nested_iframes(
     bidi_session,
     subscribe_events,
     new_tab,
-    test_page,
     test_page_nested_frames,
     test_page_same_origin_frame,
 ):
@@ -167,33 +170,19 @@ async def test_delete_nested_iframes(
     )
 
     contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
-    parent_iframe = contexts[0]["children"][0]
-    nested_iframe = parent_iframe["children"][0]
+    top_iframe = contexts[0]["children"][0]
 
-    # Delete parent iframe
+    # Delete top iframe
     await bidi_session.script.evaluate(
         expression="""document.querySelector('iframe').remove()""",
         target=ContextTarget(new_tab["context"]),
         await_promise=False,
     )
 
-    # First the nested, and then the parent iframe should be destroyed.
-    assert len(events) == 2
-
-    # Assert first the nested iframe was destroyed.
+    assert len(events) == 1
     assert_browsing_context(
         events[0],
-        nested_iframe["context"],
-        children=None,
-        url=test_page,
-        parent=parent_iframe["context"],
-    )
-
-    # Assert second the parent iframe was destroyed.
-    assert_browsing_context(
-        events[1],
-        parent_iframe["context"],
-        # At this point the child context is already destroyed.
+        top_iframe["context"],
         children=None,
         url=test_page_same_origin_frame,
         parent=new_tab["context"],
@@ -203,8 +192,7 @@ async def test_delete_nested_iframes(
 
 
 async def test_iframe_destroy_parent(
-      bidi_session, subscribe_events, new_tab, test_page_nested_frames,
-      test_page_same_origin_frame, test_page
+    bidi_session, subscribe_events, new_tab, test_page_nested_frames
 ):
     await subscribe_events([CONTEXT_DESTROYED_EVENT])
     # Track all received browsingContext.contextDestroyed events in the events array
@@ -219,43 +207,16 @@ async def test_iframe_destroy_parent(
         url=test_page_nested_frames, context=new_tab["context"], wait="complete"
     )
 
-    contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
-    top_context = contexts[0]
-    parent_iframe = top_context["children"][0]
-    nested_iframe = parent_iframe["children"][0]
-
     # Destroy top context
     await bidi_session.browsing_context.close(context=new_tab["context"])
 
-    assert len(events) == 3
-
-    # Assert first the most nested iframe was destroyed.
+    assert len(events) == 1
     assert_browsing_context(
         events[0],
-        nested_iframe["context"],
-        children=None,
-        url=test_page,
-        parent=parent_iframe["context"],
-    )
-
-    # Assert the parent iframe was destroyed.
-    assert_browsing_context(
-        events[1],
-        parent_iframe["context"],
-        # At this point the child context is already destroyed.
-        children=None,
-        url=test_page_same_origin_frame,
-        parent=top_context["context"],
-    )
-
-    # Assert third the top context was destroyed.
-    assert_browsing_context(
-        events[2],
-        top_context["context"],
-        # At this point the child context is already destroyed.
+        new_tab["context"],
         children=None,
         url=test_page_nested_frames,
-        parent=None
+        parent=None,
     )
 
     remove_listener()

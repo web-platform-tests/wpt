@@ -108,7 +108,6 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
          "value": "BAR"
      }, ["html"]),
     ({
-
          "type": "innerText",
          "ignoreCase": True,
          "matchType": "full",
@@ -145,10 +144,10 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
     "ignore_case_false_full_match_max_depth_zero",
     "ignore_case_true_partial_match_max_depth_zero",
     "ignore_case_false_partial_match_max_depth_zero",
-    "ignore_case_true_full_match_max_depth_one",
-    "ignore_case_false_full_match_max_depth_one",
-    "ignore_case_true_partial_match_max_depth_one",
-    "ignore_case_false_partial_match_max_depth_one",
+    "ignore_case_true_full_match_max_depth_two",
+    "ignore_case_false_full_match_max_depth_two",
+    "ignore_case_true_partial_match_max_depth_two",
+    "ignore_case_false_partial_match_max_depth_two",
 ])
 @pytest.mark.asyncio
 async def test_find_by_inner_text(bidi_session, inline, top_context, locator, expected_nodes_values):

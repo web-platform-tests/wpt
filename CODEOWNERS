@@ -7,3 +7,4 @@
 
 # Require a review for Dockerfile
 tools/docker/Dockerfile @web-platform-tests/wpt-core-team # @web-platform-tests/admins
+.taskcluster.yml @web-platform-tests/wpt-core-team # @web-platform-tests/admins

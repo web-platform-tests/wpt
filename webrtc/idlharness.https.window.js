@@ -74,7 +74,7 @@ async function asyncInitTransports() {
 
   const iceCandidatePair = iceTransport.getSelectedCandidatePair();
 
-  assert_not_null(iceCandidatePair, 'Expect iceTransport selected pair to be not null');
+  assert_not_equals(iceCandidatePair, null, 'Expect iceTransport selected pair to be not null');
   assert_true(iceCandidatePair instanceof RTCIceCandidatePair,
     'Expect iceTransport.getSelectedCandidatePair() to be instance of RTCIceTransport');
   idlTestObjects.iceCandidatePair = iceCandidatePair;

@@ -55,3 +55,21 @@ promise_test(async t => {
 
   assert_false(response.createObserverSuccess);
 }, 'Creating a FileSystemObserver from a service worker fails');
+
+promise_test(async t => {
+  function dummyCallback(records, observer) {};
+
+  const MaxNumOfObservations = 3;
+
+  const observer = new FileSystemObserver(dummyCallback);
+  for (let i = 0; i < MaxNumOfObservations + 1; i++) {
+    const dir = await navigator.storage.getDirectory(`dir${i}`);
+    if (i < MaxNumOfObservations) {
+      await observer.observe(dir);
+    } else {
+      await promise_rejects_dom(
+          t, 'QuotaExceededError', observer.observe(dir),
+          'Should fail after reaching max observations.')
+    }
+  }
+}, 'Cannot exceed max observations');

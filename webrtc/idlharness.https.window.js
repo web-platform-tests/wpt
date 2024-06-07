@@ -65,13 +65,18 @@ function asyncInitTransports() {
 
     const dtlsTransport = sctpTransport.transport;
     assert_true(dtlsTransport instanceof RTCDtlsTransport,
-      'Expect sctpTransport.transport to be instance of RTCDtlsTransport');
+      'Expect dtlsTransport.transport to be instance of RTCDtlsTransport');
     idlTestObjects.dtlsTransport = dtlsTransport;
 
     const iceTransport = dtlsTransport.iceTransport;
     assert_true(iceTransport instanceof RTCIceTransport,
-      'Expect sctpTransport.transport to be instance of RTCDtlsTransport');
+      'Expect iceTransport.transport to be instance of RTCIceTransport');
     idlTestObjects.iceTransport = iceTransport;
+
+    const iceCandidatePair = iceTransport.getSelectedCandidatePair();
+    assert_true(iceCandidatePair instanceof RTCIceCandidatePair,
+      'Expect iceTransport.getSelectedCandidatePair() to be instance of RTCIceTransport');
+    idlTestObjects.iceCandidatePair = iceCandidatePair;
   });
 }
 
@@ -129,6 +134,7 @@ idl_test(
       RTCSctpTransport: ['idlTestObjects.sctpTransport'],
       RTCDtlsTransport: ['idlTestObjects.dtlsTransport'],
       RTCIceTransport: ['idlTestObjects.iceTransport'],
+      RTCIceCandidatePair: ['idlTestObjects.iceCandidatePair'],
       MediaStreamTrack: ['idlTestObjects.mediaStreamTrack'],
     });
     /*

@@ -12,7 +12,7 @@
         window.removeEventListener("message", listener);
         resolve(event);
       });
-      iframe.contentWindow.postMessage(data, "*");
+      iframe.postMessage(data, "*");
     });
   }
 

@@ -35,8 +35,7 @@ async def test_modify_headers(
     on_response_completed = wait_for_event(RESPONSE_COMPLETED_EVENT)
     await bidi_session.network.continue_request(request=request, headers=headers)
     response_event = await on_response_completed
-    assert_response_event(response_event, expected_request={
-                          "headers": headers})
+    assert_response_event(response_event, expected_request={"headers": headers})
 
 
 async def test_override_cookies(

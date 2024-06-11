@@ -22,8 +22,7 @@ async def test_top_context(
     cookie_value = "bar"
     url = inline(
         "<div>with cookies</div>",
-        parameters={
-            "pipe": f"header(Set-Cookie, {cookie_name}={cookie_value})"},
+        parameters={"pipe": f"header(Set-Cookie, {cookie_name}={cookie_value})"},
     )
 
     await bidi_session.browsing_context.navigate(
@@ -65,8 +64,7 @@ async def test_iframe(
     iframe_url = inline(
         "<div id='in-iframe'>with cookies</div>",
         domain=domain_1,
-        parameters={
-            "pipe": f"header(Set-Cookie, {cookie_name}={cookie_value})"},
+        parameters={"pipe": f"header(Set-Cookie, {cookie_name}={cookie_value})"},
     )
 
     await bidi_session.browsing_context.navigate(

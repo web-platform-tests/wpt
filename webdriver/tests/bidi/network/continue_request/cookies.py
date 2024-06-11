@@ -49,8 +49,7 @@ async def test_modify_cookies(
 
     cookies = []
     for name, value in modified_cookies.items():
-        cookies.append(CookieHeader(
-            name=name, value=NetworkStringValue(value)))
+        cookies.append(CookieHeader(name=name, value=NetworkStringValue(value)))
 
     on_response_completed = wait_for_event(RESPONSE_COMPLETED_EVENT)
     await bidi_session.network.continue_request(request=request, cookies=cookies)

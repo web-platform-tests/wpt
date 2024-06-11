@@ -22,7 +22,8 @@ async def test_top_context(
     cookie_value = "bar"
     url = inline(
         "<div>with cookies</div>",
-        parameters={"pipe": f"header(Set-Cookie, {cookie_name}={cookie_value})"},
+        parameters={
+            "pipe": f"header(Set-Cookie, {cookie_name}={cookie_value})"},
     )
 
     await bidi_session.browsing_context.navigate(
@@ -64,7 +65,8 @@ async def test_iframe(
     iframe_url = inline(
         "<div id='in-iframe'>with cookies</div>",
         domain=domain_1,
-        parameters={"pipe": f"header(Set-Cookie, {cookie_name}={cookie_value})"},
+        parameters={
+            "pipe": f"header(Set-Cookie, {cookie_name}={cookie_value})"},
     )
 
     await bidi_session.browsing_context.navigate(
@@ -111,9 +113,16 @@ async def test_fetch(
     wait_for_future_safe,
     url,
     domain_1,
+    inline
 ):
     # Clean up cookies in case some other tests failed before cleaning up.
     await bidi_session.storage.delete_cookies()
+
+    # Navigate away from about:blank to make sure document.cookies can be used
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=inline("<div>foo</div>"),
+        wait="complete"
+    )
 
     cookie_name = "foo"
     cookie_value = "bar"

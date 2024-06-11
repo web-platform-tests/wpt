@@ -35,7 +35,8 @@ async def test_modify_headers(
     on_response_completed = wait_for_event(RESPONSE_COMPLETED_EVENT)
     await bidi_session.network.continue_request(request=request, headers=headers)
     response_event = await on_response_completed
-    assert_response_event(response_event, expected_request={"headers": headers})
+    assert_response_event(response_event, expected_request={
+                          "headers": headers})
 
 
 async def test_override_cookies(
@@ -44,7 +45,14 @@ async def test_override_cookies(
     wait_for_event,
     bidi_session,
     top_context,
+    inline
 ):
+    # Navigate away from about:blank to make sure document.cookies can be used
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"], url=inline("<div>foo</div>"),
+        wait="complete"
+    )
+
     await bidi_session.script.evaluate(
         expression="document.cookie = 'foo=bar';",
         target=ContextTarget(top_context["context"]),

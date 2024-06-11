@@ -26,10 +26,8 @@ setup({single_test: true});
 assert_true(replaceStateSuccess);
 assert_equals(locationAfterReplaceState, new URL("about:blank#replace", location.href).href);
 iframeLoaded.then(() => {
-  // Need a timeout to detect failure when there are two navigations.
-  step_timeout(() => {
-    assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?src", location.href).href);
-    done();
-  }, 1000);
+  // No timeout needed in this test because history.replaceState() doesn't navigate.
+  assert_equals(iframe.contentWindow.location.href, new URL("support/blank.htm?src", location.href).href);
+  done();
 });
 </script>

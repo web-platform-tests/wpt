@@ -26,11 +26,12 @@ async def test_modify_cookies(
     top_context,
     document_cookies,
     modified_cookies,
-    inline
+    url
 ):
-    # Navigate away from about:blank to make sure document.cookies can be used
+    # Navigate away from about:blank to make sure document.cookies can be used.
     await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=inline("<div>foo</div>"),
+        context=top_context["context"],
+        url=url("/webdriver/tests/bidi/support/empty.html"),
         wait="complete"
     )
 

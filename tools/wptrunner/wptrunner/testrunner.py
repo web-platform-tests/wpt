@@ -494,7 +494,7 @@ class TestRunnerManager(threading.Thread):
         }
         try:
             command, data = self.command_queue.get(True, 1)
-            #self.logger.debug("Got command: %r" % command)
+            self.logger.debug("Got command: %r" % command)
         except OSError:
             self.logger.error("Got IOError from poll")
             return RunnerManagerState.restarting(self.state.subsuite,

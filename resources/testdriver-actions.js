@@ -336,8 +336,8 @@
     /**
      * Create a move event for the current default pointer source
      *
-     * @param {Number} x - Destination x coordinate
-     * @param {Number} y - Destination y coordinate
+     * @param {Number} x - Destination x coordinate. Must be an integer.
+     * @param {Number} y - Destination y coordinate. Must be an integer.
      * @param {String|Element} origin - Origin of the coordinate system.
      *                                  Either "pointer", "viewport" or an Element
      * @param {Number?} duration - Time in ms for the move
@@ -359,10 +359,12 @@
     /**
      * Create a scroll event for the current default wheel source
      *
-     * @param {Number} x - mouse cursor x coordinate
-     * @param {Number} y - mouse cursor y coordinate
-     * @param {Number} deltaX - scroll delta value along the x-axis in pixels
-     * @param {Number} deltaY - scroll delta value along the y-axis in pixels
+     * @param {Number} x - mouse cursor x coordinate. Must be an integer.
+     * @param {Number} y - mouse cursor y coordinate. Must be an integer.
+     * @param {Number} deltaX - scroll delta value along the x-axis in pixels.
+     *                          Must be an integer.
+     * @param {Number} deltaY - scroll delta value along the y-axis in pixels.
+     *                          Must be an integer.
      * @param {String|Element} origin - Origin of the coordinate system.
      *                                  Either "viewport" or an Element
      * @param {Number?} duration - Time in ms for the scroll

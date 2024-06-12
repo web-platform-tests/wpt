@@ -26,7 +26,7 @@ test(() => {
 test(() => {
   const target = new EventTarget();
   const event = new Event("foo");
-  
+
   function listener(e) {
     assert_equals(e, event);
     assert_equals(e.target, target);

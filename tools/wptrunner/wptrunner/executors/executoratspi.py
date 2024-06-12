@@ -4,8 +4,6 @@ gi.require_version("Atspi", "2.0")
 from gi.repository import Atspi
 import json
 import threading
-from .protocol import PlatformAccessibilityProtocolPart
-
 
 def find_active_tab(root):
     stack = [root]

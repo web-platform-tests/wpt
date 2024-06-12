@@ -1,5 +1,6 @@
-from .protocol import PlatformAccessibilityProtocolPart
+from .protocol import ProtocolPart
 
+from abc import ABCMeta
 from sys import platform
 
 linux = False
@@ -12,7 +13,12 @@ if platform == "darwin":
     from .executoraxapi import *
 
 
-class AcaciaPlatformAccessibilityProtocolPart(PlatformAccessibilityProtocolPart):
+class PlatformAccessibilityProtocolPart(ProtocolPart):
+    """Protocol part for platform accessibility introspection"""
+    __metaclass__ = ABCMeta
+
+    name = "platform_accessibility"
+
     def setup(self):
         self.product_name = self.parent.product_name
         self.impl = None

@@ -49,7 +49,7 @@ from .protocol import (AccessibilityProtocolPart,
                        DevicePostureProtocolPart,
                        merge_dicts)
 
-from .executoracacia import (AcaciaPlatformAccessibilityProtocolPart)
+from .executorplatformaccessibility import (PlatformAccessibilityProtocolPart)
 
 def do_delayed_imports():
     global errors, marionette, Addons, WebAuthn
@@ -785,7 +785,7 @@ class MarionetteProtocol(Protocol):
                   MarionetteAccessibilityProtocolPart,
                   MarionetteVirtualSensorProtocolPart,
                   MarionetteDevicePostureProtocolPart,
-                  AcaciaPlatformAccessibilityProtocolPart]
+                  PlatformAccessibilityProtocolPart]
 
     def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1, e10s=True, ccov=False):
         do_delayed_imports()

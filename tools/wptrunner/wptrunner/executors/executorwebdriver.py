@@ -38,7 +38,7 @@ from .protocol import (BaseProtocolPart,
                        DevicePostureProtocolPart,
                        merge_dicts)
 
-from .executoracacia import (AcaciaPlatformAccessibilityProtocolPart)
+from .executorplatformaccessibility import (PlatformAccessibilityProtocolPart)
 
 from webdriver.client import Session
 from webdriver import error
@@ -465,7 +465,7 @@ class WebDriverProtocol(Protocol):
                   WebDriverDebugProtocolPart,
                   WebDriverVirtualSensorPart,
                   WebDriverDevicePostureProtocolPart,
-                  AcaciaPlatformAccessibilityProtocolPart]
+                  PlatformAccessibilityProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)

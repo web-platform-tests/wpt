@@ -321,20 +321,6 @@ class AccessibilityProtocolPart(ProtocolPart):
         pass
 
 
-class PlatformAccessibilityProtocolPart(ProtocolPart):
-    """Protocol part for platform accessibility introspection"""
-    __metaclass__ = ABCMeta
-
-    name = "platform_accessibility"
-
-    @abstractmethod
-    def get_accessibility_api_node(self, dom_id):
-        """Return the the platform accessibilty object.
-
-        :param id: DOM ID."""
-        pass
-
-
 class CookiesProtocolPart(ProtocolPart):
     """Protocol part for managing cookies"""
     __metaclass__ = ABCMeta

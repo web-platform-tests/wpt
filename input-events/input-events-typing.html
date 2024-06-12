@@ -142,6 +142,20 @@ promise_test(async function() {
 
 promise_test(async function() {
     this.add_cleanup(resetRich);
+    rich.innerHTML = '&nbsp;A';
+    await test_driver.click(rich);
+    await test_driver.send_keys(rich, "\uE003"); // Back Space
+    assert_equals(rich.innerHTML, '&nbsp;');
+    assert_equals(inputEventsLog.length, 2);
+    const [beforeInputEvent, inputEvent] = inputEventsLog;
+    assert_equals(beforeInputEvent.type, 'beforeinput');
+    assert_equals(inputEvent.type, 'input');
+    assert_equals(beforeInputEvent.inputType, inputEvent.inputType);
+    assert_equals(beforeInputEvent.data, inputEvent.data);
+}, 'Beforeinput and input events match when typing BACK_SPACE up to a word boundary');
+
+promise_test(async function() {
+    this.add_cleanup(resetRich);
     rich.focus();
     await test_driver.send_keys(rich, "hello");
 

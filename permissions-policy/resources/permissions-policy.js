@@ -1,6 +1,6 @@
 // Feature test to avoid timeouts
 function assert_permissions_policy_supported() {
-  assert_not_equals(document.permissionsPolicy, undefined,
+  assert_true("allow" in HTMLIFrameElement.prototype,
                     'permissions policy is supported');
 }
 // Tests whether a feature that is enabled/disabled by permissions policy works

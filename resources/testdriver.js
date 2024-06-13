@@ -16,8 +16,8 @@
     }
 
     function getPointerInteractablePaintTree(element) {
-        let elementDocument = element.ownerDocument;
-        if (!elementDocument.contains(element)) {
+        const elementDocument = element.ownerDocument;
+        if (!element.isConnected) {
             return [];
         }
 
@@ -30,7 +30,7 @@
         var centerPoint = getInViewCenterPoint(rectangles[0]);
 
         if ("elementsFromPoint" in elementDocument) {
-            return elementDocument.elementsFromPoint(centerPoint[0], centerPoint[1]);
+            return element.getRootNode().elementsFromPoint(centerPoint[0], centerPoint[1]);
         } else if ("msElementsFromPoint" in elementDocument) {
             var rv = elementDocument.msElementsFromPoint(centerPoint[0], centerPoint[1]);
             return Array.prototype.slice.call(rv ? rv : []);

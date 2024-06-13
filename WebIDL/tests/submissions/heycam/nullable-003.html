@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<title>Nullable types</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<span id="span"></span>
+
+<script>
+// 4.2.22 Nullable types – T?
+//
+// IDL nullable types are represented as the JS null value, if the IDL
+// value is null, or of a type appropriate for the inner type otherwise.
+
+// feature: Document.getElementById (operation) (with a nullable return type)
+
+test(function() {
+  var e = document.getElementById("span");
+  assert_equals(typeof e, "object");
+  e = document.getElementById("missing");
+  assert_equals(typeof e, "object");
+}, "Document.getElementById() returns a value of the correct type");
+</script>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>boolean</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.3 boolean
+//
+// IDL boolean values are represented as JS Boolean values.
+
+// feature: Event.bubbles (attribute) (of type boolean)
+
+test(function() {
+  var e = document.createEvent("Event");
+  assert_equals(typeof e.bubbles, "boolean");
+}, "Event.bubbles returns a value of the correct type");
+
+// feature: Document.hasFocus (operation) (with return type boolean)
+
+test(function() {
+  assert_equals(typeof document.hasFocus(), "boolean");
+}, "Document.hasFocus() returns a value of the correct type");
+</script>

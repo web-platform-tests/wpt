@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<title>[[HasInstance]]</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe id="iframe"></iframe>
+</div>
+
+<script>
+// 4.5.1.2. Interface object [[HasInstance]] method
+//
+// The [[HasInstance]] method of interface objects check whether a platform
+// object implements the interface.  This works across different global
+// environments.
+
+var w = document.getElementById("iframe").contentWindow;
+
+// feature: DOMImplementation (interface)
+
+test(function() {
+  assert_true(document.implementation instanceof DOMImplementation);
+}, "a DOMImplementation object is considered to be instanceof window.DOMImplementation");
+
+test(function() {
+  assert_true(document.implementation instanceof w.DOMImplementation);
+}, "a DOMImplementation object is considered to be instanceof anotherWindow.DOMImplementation");
+
+test(function() {
+  var object = Object.create(document.implementation);
+  assert_true(object instanceof DOMImplementation);
+}, "an object whose [[Prototype]] is DOMImplementation.prototype is considered to be instanceof window.DOMImplementation");
+
+test(function() {
+  var object = Object.create(document.implementation);
+  assert_true(object instanceof w.DOMImplementation);
+}, "an object whose [[Prototype]] is DOMImplementation.prototype is considered to be instanceof anotherWindow.DOMImplementation");
+
+// feature: Element (interface)
+
+var div = document.createElement("div");
+
+test(function() {
+  assert_true(div instanceof Element);
+}, "an HTMLDivElement object is considered to be instanceof window.Element");
+
+test(function() {
+  assert_true(div instanceof w.Element);
+}, "an HTMLDivElement object is considered to be instanceof anotherWindow.Element");
+
+test(function() {
+  var object = Object.create(div);
+  assert_true(object instanceof Element);
+}, "an object whose [[Prototype]] is HTMLDivElement.prototype is considered to be instanceof window.Element");
+
+test(function() {
+  var object = Object.create(div);
+  assert_true(object instanceof w.Element);
+}, "an object whose [[Prototype]] is HTMLDivElement.prototype is considered to be instanceof anotherWindow.Element");
+</script>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<title>Getters for read only attributes</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe id="iframe"></iframe>
+</div>
+
+<script>
+// 4.5.6 Attributes
+//
+// Properties for non-[Unforgeable] attributes exist on the interface prototype
+// object and are enumerable and configurable.  These are accessor properties
+// always have a getter.  The getter expects no arguments, and will ignore
+// extra ones.  The getter can be applied to objects of the right type
+// from other windows.  Calling it with a bad this object value will throw
+// a TypeError.
+
+// feature: Node.parentNode (attribute) (read only, without [Unforgeable])
+
+test(function() {
+  assert_true(!document.documentElement.hasOwnProperty("parentNode"));
+}, "HTMLHtmlElement object does not have own property \"parentNode\"");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(Node.prototype, "parentNode");
+  assert_descriptor(desc, { enumerable: true, configurable: true });
+}, "Node.prototype.parentNode has correct property attributes");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(Node.prototype, "parentNode");
+  assert_equals(typeof desc.get, "function");
+  assert_equals(desc.get.length, 0);
+}, "Node.parentNode has a getter function with the right length");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(Node.prototype, "parentNode");
+  assert_true(!desc.set);
+}, "Node.parentNode has no setter function");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(Node.prototype, "parentNode");
+  assert_true(!!desc);
+  assert_throws(new TypeError(), function() { desc.get.call(null); });
+}, "calling Node.parentNode getter with a null this-value throws");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(Node.prototype, "parentNode");
+  assert_true(!!desc);
+  assert_throws(new TypeError(), function() { desc.get.call(new Range()); });
+}, "calling Node.parentNode getter with a non-Node object this-value throws");
+
+test(function() {
+  var doc = document.implementation.createHTMLDocument("test");
+  var desc = Object.getOwnPropertyDescriptor(Node.prototype, "parentNode");
+  assert_equals(desc.get.call(doc.documentElement), doc);
+}, "calling Node.parentNode getter on a different Document object works");
+
+test(function() {
+  var doc = document.getElementById("iframe").contentDocument;
+  var n = doc.createComment("test");
+  doc.insertBefore(n, doc.firstChild);
+  var desc = Object.getOwnPropertyDescriptor(Node.prototype, "parentNode");
+  assert_equals(desc.get.call(n), doc);
+}, "calling Node.parentNode getter on an object for a different window works");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(Node.prototype, "parentNode");
+  assert_equals(desc.get.call(document.documentElement, "extra"), document);
+}, "arguments passed to Node.parentNode getter are ignored");
+</script>

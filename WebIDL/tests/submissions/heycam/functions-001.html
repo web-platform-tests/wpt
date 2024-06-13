@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<title>Function objects have correct [[Class]], [[Prototype]], typeof</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4. ECMAScript binding
+//
+// Objects that are defined to be "function objects" have [[Class]] = "Function"
+// (unless otherwise specified), [[Prototype]] = Function.prototype and are
+// typeof "function".
+
+var objects = [
+
+  // interface object
+
+  // feature: DOMImplementation (interface) (without inheritance, without [NoInterfaceObject])
+  interfaceObject("DOMImplementation"), "DOMImplementation interface object",
+  // feature: HTMLCollection (interface) (withogut inheritance, without [NoInterfaceObject])
+  interfaceObject("HTMLCollection"), "HTMLCollection interface object",
+  // feature: Element (interface) (with inheritance, without [NoInterfaceObject])
+  interfaceObject("Element"), "Element interface object",
+  // feature: UIEvent (interface) (with inheritance, without [NoInterfaceObject])
+  interfaceObject("UIEvent"), "UIEvent interface object",
+  // feature: Event (interface) (with inheritance, with [Constructor])
+  interfaceObject("Event"), "Event interface object",
+  // feature: XMLHttpRequest (interface) (with inheritance, with [Constructor])
+  interfaceObject("XMLHttpRequest"), "XMLHttpRequest interface object",
+
+
+  // named constructor object
+
+  // feature: HTMLImageElement (interface) (with [NamedConstructor])
+  namedConstructorObject("Image"), "Image named constructor object",
+  // feature: HTMLAudioElement (interface) (with [NamedConstructor])
+  namedConstructorObject("Audio"), "Audio named constructor object",
+
+
+  // attribute getter
+
+  // feature: Document.title (attribute) (writable)
+  getter("Document", "title"), "Document.title attribute getter",
+  // feature: HTMLSelectElement.length (attribute) (writable)
+  getter("HTMLSelectElement", "length"), "HTMLSelectElement.length attribute getter",
+
+
+  // read only attribute getter
+
+  // feature: Node.parentNode (attribute) (read only)
+  getter("Node", "parentNode"), "Node.parentNode attribute getter",
+  // feature: HTMLFormElement.length (attribute) (read only)
+  getter("HTMLFormElement", "length"), "HTMLFormElement.length attribute getter",
+
+
+  // attribute setter
+
+  // feature: Document.title (attribute) (writable)
+  setter("Document", "title"), "Document.title attribute setter",
+  // feature: HTMLSelectElement.length (attribute) (writable)
+  setter("HTMLSelectElement", "length"), "HTMLSelectElement.length attribute setter",
+
+
+  // operation function
+
+  // feature: HTMLElement.click (operation)
+  operation("HTMLElement", "click"), "HTMLElement.click function",
+  // feature: Node.appendChild (operation)
+  operation("Node", "appendChild"), "Node.appendChild function",
+
+
+  // static operation
+
+  // feature: URL.createObjectURL (static operation)
+  staticOperation("URL", "createObjectURL"), "URL.createObjectURL static function",
+  // feature: CSS.supports (static operation)
+  staticOperation("CSS", "supports"), "CSS.supports static function",
+
+
+  // stringifier function
+
+  // feature: DOMTokenList (stringifier)
+  stringifier("DOMTokenList"), "DOMTokenList stringifier function",
+  // feature: URLUtils (stringifier)
+  stringifier("HTMLAnchorElement"), "HTMLAnchorElement stringifier function",
+
+
+  // exception interface object
+
+  // feature: DOMException (exception) (without [NoInterfaceObject])
+  interfaceObject("DOMException"), "DOMException exception interface object",
+
+
+  // exception field getter
+
+  // feature: DOMException.code (exception field)
+  getter("DOMException", "code"), "DOMException.code exception field getter",
+];
+
+for (var i = 0; i < objects.length; i += 2) {
+  test(function() {
+    var object = objects[i]();
+    assert_true(Object.prototype.toString.call(object) == "[object Function]", "[[Class]] is \"Function\"");
+    assert_true(Object.getPrototypeOf(object) == Function.prototype, "[[Prototype]] is Function.prototype");
+    assert_true(typeof object == "function", "typeof is \"function\"");
+  }, objects[i + 1] + " is a function object");
+}
+</script>

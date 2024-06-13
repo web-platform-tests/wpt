@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<title>Interface types for regular interfaces</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.18 Interface types
+//
+// If the value being converted to an interface type is not an object, a
+// TypeError exception is thrown.
+//
+// For a regular interface, only a platform object that implements the
+// interface will be accepted.
+
+function runTests() {
+  var iframe = document.getElementById("iframe");
+
+  var object = { };
+  var array = [];
+  var regexp = /abc/;
+  var span = document.createElement("span");
+  var fakeSpan = Object.create(span);
+  var fakeNode = Object.create(Node.prototype);
+  var otherSpan = iframe.contentDocument.createElement("span");
+
+  var values = [
+    undefined,                  undefined,  "undefined",
+    null,                       undefined,  "null",
+    false,                      undefined,  "false",
+    0,                          undefined,  "0",
+    "",                         undefined,  '""',
+    window,                     undefined,  "window",
+    object,                     undefined,  "{ }",
+    array,                      undefined,  "[]",
+    regexp,                     undefined,  "/abc/",
+    span,                       span,       "an HTMLSpanElement object",
+    HTMLSpanElement,            undefined,  "HTMLSpanElement",
+    HTMLSpanElement.prototype,  undefined,  "HTMLSpanElement.prototype",
+    fakeSpan,                   undefined,  "fakeSpan",
+    fakeNode,                   undefined,  "fakeNode",
+    otherSpan,                  otherSpan,  "otherSpan"
+  ];
+
+  // feature: Node.appendChild (operation) (with argument of an interface type)
+
+  for (var i = 0; i < values.length; i += 3) {
+    var value = values[i];
+    var expected = values[i + 1];
+    var desc = values[i + 2];
+
+    test(function() {
+      if (expected !== undefined) {
+        var div = document.createElement("div");
+        div.appendChild(value);
+        assert_equals(div.firstChild, expected);
+      } else {
+        assert_throws(new TypeError(), function() { div.appendChild(value); });
+      }
+    }, "passing " + desc + " to Node.appendChild() correctly converts to an IDL Node value");
+  }
+}
+</script>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe id="iframe" onload="runTests()"></iframe>
+</div>
+

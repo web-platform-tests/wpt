@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<title>Callback function types</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.21 Callback function types
+//
+// Anything that isn't callable is a TypeError.
+
+// feature: MutationObserver (interface) (with [Constructor] with argument of a callback function type)
+
+async_test(function(t) {
+  var invoked = false;
+  var span = document.createElement("span");
+  var obs1 = new MutationObserver(function() { invoked = true; });
+  var obs2 = new MutationObserver(function() { t.step(function() { assert_true(invoked); t.done(); }); });
+  obs1.observe(span, { attributes: true });
+  obs2.observe(span, { attributes: true });
+  span.setAttribute("data-test", "value");
+}, "passing a Function object to the MutationObserver constructor converts to an IDL callback function type correctly");
+
+async_test(function(t) {
+  var span = document.createElement("span");
+  var obs = new MutationObserver(function() { var callbackThis = this; t.step(function() { assert_equals(callbackThis, obs); t.done(); }); });
+  obs.observe(span, { attributes: true });
+  span.setAttribute("data-test", "value");
+}, "callback this value set appropriately for MutationObserver callback function");
+
+test(function() {
+  assert_throws(new TypeError(), function() { new MutationObserver(undefined); });
+}, "passing undefined to the MutationObserver constructor coverts to an IDL callback function type correctly");
+
+test(function() {
+  assert_throws(new TypeError(), function() { new MutationObserver(null); });
+}, "passing null to the MutationObserver constructor coverts to an IDL callback function type correctly");
+
+test(function() {
+  assert_throws(new TypeError(), function() { new MutationObserver(true); });
+}, "passing true to the MutationObserver constructor coverts to an IDL callback function type correctly");
+
+test(function() {
+  assert_throws(new TypeError(), function() { new MutationObserver(123); });
+}, "passing 123 to the MutationObserver constructor coverts to an IDL callback function type correctly");
+
+test(function() {
+  assert_throws(new TypeError(), function() { new MutationObserver("abc"); });
+}, "passing \"abc\" to the MutationObserver constructor coverts to an IDL callback function type correctly");
+
+test(function() {
+  assert_throws(new TypeError(), function() { new MutationObserver({ }); });
+}, "passing { } to the MutationObserver constructor coverts to an IDL callback function type correctly");
+
+test(function() {
+  new MutationObserver(Node.prototype.appendChild);
+}, "passing Node.prototype.appendChild to the MutationObserver constructor converts to an IDL callback function type correctly");
+
+test(function() {
+  new MutationObserver(Image);
+}, "passing Image to the MutationObserver constructor converts to an IDL callback function type correctly");
+</script>

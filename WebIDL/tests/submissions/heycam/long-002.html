@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<title>long</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.8 long
+//
+// Converting a JS value to an IDL long uses ECMAScript's ToInt32 operation.
+
+var values = [
+  undefined,    0,            "undefined",
+  null,         0,            "null",
+  false,        0,            "false",
+  true,         1,            "true",
+  0,            0,            "0",
+  1,            1,            "1",
+  -1,           -1,           "-1",
+  0.5,          0,            "0.5",
+  Infinity,     0,            "Infinity",
+  -Infinity,    0,            "-Infinity",
+  NaN,          0,            "NaN",
+  -0,           0,            "-0",
+  "",           0,            '""',
+  "1",          1,            '"1"',
+  "hello",      0,            '"hello"',
+  { },          0,            "{ }",
+  [],           0,            "[]",
+  /abc/,        0,            "/abc/",
+  document,     0,            "document",
+  -2147483648,  -2147483648,  "-2147483648",
+  -2147483649,  2147483647,   "-2147483649",
+  2147483647,   2147483647,   "2147483647",
+  2147483648,   -2147483648,  "2147483648",
+  -0.5,         0,            "-0.5",
+  -1.5,         -1,           "-1.5",
+  1.5,          1,            "1.5"
+];
+
+// feature: HTMLElement.tabIndex (attribute) (writable, of type long)
+
+var span = document.createElement("span");
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    span.tabIndex = value;
+    assert_equals(+span.getAttribute("tabindex"), expected);
+  }, "assigning " + desc + " to HTMLElement.tabIndex coerces the value to an IDL long correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return value; }, toString: function() { return { } } };
+    if (value === null || typeof value != "object") {
+      span.tabIndex = objectValue;
+      assert_equals(+span.getAttribute("tabindex"), expected);
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
+      assert_throws(new TypeError(), function() { span.tabIndex = objectValue; });
+    }
+  }, "assigning { valueOf: function() { return " + desc + " } } to HTMLElement.tabIndex coerces the value to an IDL long correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return { } }, toString: function() { return value; } };
+    if (value === null || typeof value != "object") {
+      span.tabIndex = objectValue;
+      assert_equals(+span.getAttribute("tabindex"), expected);
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
+      assert_throws(new TypeError(), function() { span.tabIndex = objectValue; });
+    }
+  }, "assigning { toString: function() { return " + desc + " } } to HTMLElement.tabIndex coerces the value to an IDL long correctly");
+}
+
+test(function() {
+  assert_throws({ name: "SomeError" }, function() { span.tabIndex = { toString: function() { throw { name: "SomeError" }; } }; });
+}, "assigning { toString: function() { throw ... } } to HTMLElement.tabIndex will propagate the exception");
+</script>

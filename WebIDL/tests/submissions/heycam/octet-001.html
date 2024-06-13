@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<title>octet</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.5 octet
+//
+// Converting a JS value to an IDL octet performs a similar operation to
+// ECMAScript's ToUint32, but for an 8 bit result.
+
+var values = [
+  undefined,   0,    "undefined",
+  null,        0,    "null",
+  false,       0,    "false",
+  true,        1,    "true",
+  0,           0,    "0",
+  1,           1,    "1",
+  -1,          255,  "-1",
+  0.5,         0,    "0.5",
+  Infinity,    0,    "Infinity",
+  -Infinity,   0,    "-Infinity",
+  NaN,         0,    "NaN",
+  -0,          0,    "-0",
+  "",          0,    '""',
+  "1",         1,    '"1"',
+  "hello",     0,    '"hello"',
+  { },         0,    "{ }",
+  [],          0,    "[]",
+  /abc/,       0,    "/abc/",
+  document,    0,    "document",
+  -128,        128,  "-128",
+  -129,        127,  "-129",
+  255,         255,  "255",
+  256,         0,    "256",
+  -0.5,        0,    "-0.5",
+  -1.5,        255,  "-1.5",
+  1.5,         1,    "1.5"
+];
+
+// feature: Uint8Array (indexed property setter) (of type octet)
+
+var a = new Uint8Array(1);
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    a[0] = value;
+    assert_equals(a[0], expected);
+  }, "passing " + desc + " through an Uint8Array indexed property setter coerces the value to an IDL octet correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return value; }, toString: function() { return { } } };
+    if (value === null || typeof value != "object") {
+      a[0] = objectValue;
+      assert_equals(a[0], expected);
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
+      assert_throws(new TypeError(), function() { a[0] = objectValue; });
+    }
+  }, "passing { valueOf: function() { return " + desc + " } } through an Uint8Array indexed property setter coerces the value to an IDL octet correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return { } }, toString: function() { return value; } };
+    if (value === null || typeof value != "object") {
+      a[0] = objectValue;
+      assert_equals(a[0], expected);
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
+      assert_throws(new TypeError(), function() { a[0] = objectValue; });
+    }
+  }, "passing { toString: function() { return " + desc + " } } through an Uint8Array indexed property setter coerces the value to an IDL octet correctly");
+}
+
+test(function() {
+  assert_throws({ name: "SomeError" }, function() { a[0] = { toString: function() { throw { name: "SomeError" }; } }; });
+}, "passing { toString: function() { throw ... } } to the Int8Array indexed property setter will propagate the exception");
+</script>

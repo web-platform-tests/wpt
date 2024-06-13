@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>unrestricted float</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.13 unrestricted float
+//
+// IDL unrestricted float values are represented with JS Number values, although
+// for the finite values, only values that correspond to a single precision
+// value.
+
+// feature: Float32Array (indexed property getter) (of type unrestricted float)
+
+test(function() {
+  var a = new Float32Array(1);
+  a[0] = 1.1;
+  assert_equals(typeof a[0], "number");
+  assert_equals(a[0], 1.100000023841858);
+}, "Float32Array indexed getter returns a value of the correct type");
+</script>

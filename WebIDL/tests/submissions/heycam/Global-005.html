@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<title>Named properties object [[DefineOwnProperty]]</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.5.4.2 Named properties object [[DefineOwnProperty]] method
+//
+// Named properties objects cannot have expando properties.
+
+// feature: Window (interface) (with [Global])
+
+test(function() {
+  var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
+  namedPropertiesObject.expando1 = 1;
+  assert_equals(window.expando1, undefined);
+}, "expando properties cannot be set on the named properties object");
+</script>

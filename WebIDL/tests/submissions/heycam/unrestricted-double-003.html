@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<title>unrestricted doubles must canonicalize NaN</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.15 unrestricted double
+//
+// When converting a JS Number to an IDL unrestricted double, a NaN with
+// a specific bit pattern must be used.
+
+// feature: Float64Array (indexed property setter) (of type unrestricted double)
+
+function arrays_equal(a, b) {
+  if (a.length != b.length) {
+    return false;
+  }
+  for (var i = 0; i < a.length; i++) {
+    if (a[i] != b[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+test(function() {
+  var buffer = new ArrayBuffer(8);
+  var f = new Float64Array(buffer);
+  var b = new Uint8Array(buffer);
+
+  f[0] = NaN;
+
+  assert_true(arrays_equal(b, [0x7f, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]) ||
+              arrays_equal(b, [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf8, 0x7f]));
+}, "converting a JS NaN to an IDL unrestricted double uses the NaN with bit pattern 0x7ff8000000000000");
+</script>

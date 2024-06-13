@@ -22,26 +22,6 @@ function nextCustomElementDefinition() {
   return {name, constructor, log};
 }
 
-function attachShadowForTest(t, {parent, registry}) {
-  parent = parent || document.body;
-  const host = parent.ownerDocument.createElement('div');
-  const shadow = host.attachShadow({mode: 'open', registry});
-  parent.appendChild(host);
-  t.add_cleanup(() => host.remove());
-  return shadow;
-}
-
-function createIFrameForTest(t, {parent, nextSibling}) {
-  parent = parent || document.body;
-  const iframe = parent.ownerDocument.createElement('iframe');
-  parent.insertBefore(iframe, nextSibling);
-  if (!iframe.contentDocument.body) {
-    iframe.contentDocument.body = iframe.contentDocument.createElement('body');
-  }
-  t.add_cleanup(() => iframe.remove());
-  return iframe;
-}
-
 test(t => {
   const {name, constructor, log} = nextCustomElementDefinition();
   const registry = new CustomElementRegistry;
@@ -115,7 +95,7 @@ promise_test(async t => {
   const sym = Symbol();
   const testPromise = await Promise.race([
     registry.whenDefined(name),
-    new Promise(r => setTimeout(r, 50, sym)),
+    new Promise(r => requestAnimationFrame(() => r(sym))),
   ]);
   assert_equals(testPromise, sym);
 }, 'Scoped Custom element registry getters do not resolve globally registered classes from whenDefined');

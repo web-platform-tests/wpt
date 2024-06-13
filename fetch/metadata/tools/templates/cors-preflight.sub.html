@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!--
+[%provenance%]
+-->
+<html lang="en">
+  <meta charset="utf-8">
+  <title>HTTP headers on CORS preflight request</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/fetch/metadata/resources/helper.sub.js"></script>
+  <body>
+  <script>
+  'use strict';
+
+  {#- This feature can only be observed for cross-domain requests, so subtests
+      which target the current origin are ignored. #}
+  {%- for subtest in subtests %}
+  {%- set origin = subtest.origins[0]|default('httpsCrossSite') %}
+  {%- if origin != 'httpsOrigin' %}
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['[% origin %]'], { requireOPTIONS: true });
+
+    // `DELETE` is not a CORS-safelisted method, so it is expected to induce a
+    // CORS preflight request.
+    // https://fetch.spec.whatwg.org/#ref-for-cors-safelisted-method%E2%91%A0
+    return fetch(url, { method: 'DELETE' })
+      // This request is expected to fail
+      .catch(() => {})
+      .then(() => retrieve(key))
+      .then((headers) => {
+        {%- if subtest.expected == none %}
+          assert_not_own_property(headers, '[%subtest.headerName%]');
+        {%- else %}
+          assert_own_property(headers, '[%subtest.headerName%]');
+          assert_equals(headers['[%subtest.headerName%]'], '[%subtest.expected%]');
+        {%- endif %}
+        });
+  }, '[%subtest.headerName%][%subtest.description | pad("start", " - ")%]');
+  {%- endif %}
+  {%- endfor %}
+  </script>
+  </body>
+</html>

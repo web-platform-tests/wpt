@@ -8,18 +8,18 @@
 class RecorderProcessor extends AudioWorkletProcessor {
   /**
    * @param {*} options
-   * @param {number} options.duration A duration to record in seconds.
-   * @param {number} options.channelCount A channel count to record.
+   * @param {number} options.processorOption.duration A duration to record in seconds.
+   * @param {number} options.processorOptions.channelCount A channel count to record.
    */
   constructor(options) {
     super();
     this._createdAt = currentTime;
     this._elapsed = 0;
-    this._recordDuration = options.duration || 1;
-    this._recordChannelCount = options.channelCount || 1;
+    this._recordDuration = (options.processorOption && options.processorOptions.duration) || 1;
+    this._recordChannelCount = (options.processorOptions && options.processorOptions.channelCount) || 1;
     this._recordBufferLength = sampleRate * this._recordDuration;
     this._recordBuffer = [];
-    for (let i = 0; i < this._recordChannelCount; ++i) {
+    for (let i = 0; i < this._recordChannelCount; i++) {
       this._recordBuffer[i] = new Float32Array(this._recordBufferLength);
     }
   }
@@ -38,7 +38,7 @@ class RecorderProcessor extends AudioWorkletProcessor {
     // |outputs|.
     const input = inputs[0];
     const output = outputs[0];
-    for (let channel = 0; channel < input.length; ++channel) {
+    for (let channel = 0; channel < this._recordChannelCount; ++channel) {
       const inputChannel = input[channel];
       const outputChannel = output[channel];
       outputChannel.set(inputChannel);

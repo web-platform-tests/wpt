@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:html="http://www.w3.org/1999/xhtml" width="1000" height="600" viewBox="0,0,1000,600">
+	<g id="testmeta">
+		<title>Vector Effects nonRotation - 1</title>
+		<html:link rel="author"
+			title="Satoru Takagi"
+			href="mailto:sa-takagi@kddi.com"/>
+		<html:link rel="reviewer"
+			title="NAME_OF_REVIEWER"
+			href="mailto:EMAIL OR http://CONTACT_PAGE" />
+			<!-- YYYY-MM-DD -->
+		<html:link rel="help"
+			href="https://svgwg.org/svg2-draft/coords.html#VectorEffects"/>
+		<metadata class="flags">TOKENS</metadata>
+		<desc class="assert">TEST ASSERTION</desc>
+	</g>
+	<rect x="0" y="0" width="1000" height="600" stroke="orange" stroke-width="3" fill="none"></rect>
+	
+	<!-- Nested user space is transformed by this transform attribute -->
+	<g id="base" transform="matrix(0.8775825618903728,-0.479425538604203,0.479425538604203,0.8775825618903728,0,0)">
+		
+		<!-- Graph paper on the this svg's base user space -->
+		<g stroke="green" stroke-width="1" fill="none">
+			<circle cx="0" cy="0" r="10"></circle>
+			<circle cx="150" cy="150" r="7"></circle>
+			<path fill="green" stroke="none" d="M0,-3 L30,-3 25,-10 50,0 25,10 30,3 0,3z"></path>
+			
+			<line vector-effect="non-scaling-stroke" x1="-100" y1="-100" x2="600" y2="-100" stroke-dasharray="5,5"></line>
+			<line vector-effect="non-scaling-stroke" x1="-100" y1="000" x2="600" y2="000"></line>
+			<line vector-effect="non-scaling-stroke" x1="-100" y1="100" x2="600" y2="100" stroke-dasharray="5,5"></line>
+			<line vector-effect="non-scaling-stroke" x1="-100" y1="200" x2="600" y2="200" stroke-dasharray="5,5"></line>
+			<line vector-effect="non-scaling-stroke" x1="-100" y1="300" x2="600" y2="300" stroke-dasharray="5,5"></line>
+			<line vector-effect="non-scaling-stroke" x1="-100" y1="400" x2="600" y2="400" stroke-dasharray="5,5"></line>
+			<line vector-effect="non-scaling-stroke" x1="-100" y1="500" x2="600" y2="500" stroke-dasharray="5,5"></line>
+			<line vector-effect="non-scaling-stroke" x1="-100" y1="600" x2="600" y2="600" stroke-dasharray="5,5"></line>
+			
+			<line y1="-100" x1="-100" y2="600" x2="-100" stroke-dasharray="5,5"></line>
+			<line y1="-100" x1="000" y2="600" x2="000"></line>
+			<line y1="-100" x1="100" y2="600" x2="100" stroke-dasharray="5,5"></line>
+			<line y1="-100" x1="200" y2="600" x2="200" stroke-dasharray="5,5"></line>
+			<line y1="-100" x1="300" y2="600" x2="300" stroke-dasharray="5,5"></line>
+			<line y1="-100" x1="400" y2="600" x2="400" stroke-dasharray="5,5"></line>
+			<line y1="-100" x1="500" y2="600" x2="500" stroke-dasharray="5,5"></line>
+			<line y1="-100" x1="600" y2="600" x2="600" stroke-dasharray="5,5"></line>
+		</g>
+		
+		<!-- Figure having vector effect -->
+		
+		<!-- Purple path : User space of figure having vector effect is the same as viewport space and its origin is top left corner of the figure. -->
+		<path id="ve1" stroke="purple" stroke-width="3" fill="none" d="M0,0 l50,0 50,50 -50,50 -50,0z M-5,-5l10,10M5,-5l-10,10" vector-effect=" non-rotation" data-transform-matrix-original="1,0,0,1,0,0" transform="matrix(0.8775825557425188,0.47942554985777414,-0.47942554985777414,0.8775825557425188,0,0)"></path>
+		
+		<!-- Red path : User space of figure having vector effect is the same as viewport space but the its origin is far from the figure. -->
+		<path id="ve2" stroke="red" stroke-width="3" fill="none" d="M300,100 l50,0 50,50 -50,50 -50,0z M-5,-5l10,10M5,-5l-10,10" vector-effect=" non-rotation" data-transform-matrix-original="1,0,0,1,0,0" transform="matrix(0.8775825557425188,0.47942554985777414,-0.47942554985777414,0.8775825557425188,0,0)"></path>
+		
+		<!-- Orange path : User space of group having vector effect is the same as viewport space but its child figure's user space is sepataed by transform. -->
+		<g id="ve3" vector-effect=" non-rotation" data-transform-matrix-original="1,0,0,1,0,0" transform="matrix(0.8775825557425188,0.47942554985777414,-0.47942554985777414,0.8775825557425188,0,0)">
+			<path stroke="orange" stroke-width="3" fill="none" d="M-5,-5l10,10M5,-5l-10,10"></path>
+			<path stroke="orange" stroke-width="3" fill="none" transform="matrix(1,0,0,1,100,300)" d="M0,0 l50,0 50,50 -50,50 -50,0z "></path>
+		</g>
+		
+		<!-- Blue path : User space of figure having vector effect is NOT the same as viewport space but its origin is top left corner of the figure. -->
+		<g transform="matrix(1,0,0,1,300,300)">
+			<path id="ve4" stroke="blue" stroke-width="3" fill="none" d="M0,0 l50,0 50,50 -50,50 -50,0z M-5,-5l10,10M5,-5l-10,10" vector-effect=" non-rotation" data-transform-matrix-original="1,0,0,1,0,0" transform="matrix(0.8775825557425188,0.47942554985777414,-0.47942554985777414,0.8775825557425188,0,0)"></path>
+		</g>
+		
+		<!-- Dashed purple path : User space of figure having vector effect is the same as viewport space and its origin is top left corner of the figure. -->
+		<path id="ve5" transform="matrix(0.8775825557425188,0.47942554985777414,-0.47942554985777414,0.8775825557425188,0,0)" stroke="purple" stroke-width="2" fill="none" d="M0,0 l50,0 50,50 -50,50 -50,0z M-5,-5l10,10M5,-5l-10,10" stroke-dasharray="3" vector-effect=" non-rotation" data-transform-matrix-original="1,0,0,1,100,100"></path>
+		
+		<!-- Dashed red path : User space of figure having vector effect is the same as viewport space but the its origin is far from the figure. -->
+		<path id="ve6" transform="matrix(0.8775825557425188,0.47942554985777414,-0.47942554985777414,0.8775825557425188,0,0)" stroke="red" stroke-width="2" fill="none" d="M300,100 l50,0 50,50 -50,50 -50,0z M-5,-5l10,10M5,-5l-10,10" stroke-dasharray="3" vector-effect=" non-rotation" data-transform-matrix-original="1,0,0,1,100,100"></path>
+		
+		<!-- Dashed orange path : User space of group having vector effect is the same as viewport space but its child figure's user space is separated by transform. -->
+		<g id="ve7" transform="matrix(0.8775825557425188,0.47942554985777414,-0.47942554985777414,0.8775825557425188,0,0)" vector-effect=" non-rotation" data-transform-matrix-original="1,0,0,1,100,100">
+			<path stroke="orange" stroke-width="2" fill="none" d="M-5,-5l10,10M5,-5l-10,10"></path>
+			<path stroke="orange" stroke-width="2" fill="none" transform="matrix(1,0,0,1,100,300)" d="M0,0 l50,0 50,50 -50,50 -50,0z " stroke-dasharray="3"></path>
+		</g>
+		
+		<!-- Dashed blue path : User space of figure having vector effect is NOT the same as viewport space but its origin is top left corner of the figure. -->
+		<g transform="matrix(1,0,0,1,300,300)">
+			<path id="ve8" transform="matrix(0.8775825557425188,0.47942554985777414,-0.47942554985777414,0.8775825557425188,0,0)" stroke="blue" stroke-width="2" fill="none" d="M0,0 l50,0 50,50 -50,50 -50,0z M-5,-5l10,10M5,-5l-10,10" stroke-dasharray="3" vector-effect=" non-rotation" data-transform-matrix-original="1,0,0,1,100,100"></path>
+		</g>
+	</g>
+</svg>

@@ -1,0 +1,23 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>FontFaceArial vs Local Arial</title>
+<link rel="author" title="Adam Argyle" href="mailto:argyle@google.com">
+<link rel="help" href="https://drafts.csswg.org/css-fonts/#font-face-rule">
+<link rel="match" href=font-face-local-ref.html>
+<style>
+  @font-face {
+    font-family: "Local Arial";
+    src: local(Arial);
+  }
+
+  html {
+    font-family: Arial;
+  }
+
+  .local-arial {
+    font-family: "Local Arial";
+    font-synthesis: none;
+  }
+</style>
+<h1>Bold</h1>
+<h1 class="local-arial">Regular</h1>

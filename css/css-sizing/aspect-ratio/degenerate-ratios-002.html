@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>CSS aspect-ratio: degenerate ratios</title>
+<link rel=author title="Tab Atkins-Bittner" href="https://www.xanthir.com/contact/">
+<link rel="help" href="https://drafts.csswg.org/css-sizing-4/#aspect-ratio">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/ar.js"></script>
+
+<img class="test" src="support/1x1-green.png">
+
+<script>
+/* Degenerate ratios are treated as 'auto',
+   which falls back to the intrinsic 1/1 aspect ratio
+   of the image */
+
+// First verify it works normally...
+testAR({w:100, ar:"2/1", eh:50});
+
+// Then test all the degenerate situations.
+testAR({w:100, ar:"0/1", eh:100});
+testAR({w:100, ar:"1/0", eh:100});
+testAR({w:100, ar:"0/0", eh:100});
+testAR({h:100, ar:"0/1", ew:100});
+testAR({h:100, ar:"1/0", ew:100});
+testAR({h:100, ar:"0/0", ew:100});
+</script>

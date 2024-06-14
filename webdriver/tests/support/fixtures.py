@@ -237,6 +237,11 @@ def current_session():
 
 
 @pytest.fixture
+def test():
+    return True
+
+
+@pytest.fixture
 def url(server_config):
     def url(path, protocol="https", domain="", subdomain="", query="", fragment=""):
         domain = server_config["domains"][domain][subdomain]

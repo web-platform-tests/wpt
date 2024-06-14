@@ -1,0 +1,26 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Test: element() function cannot be combined with other content</title>
+  <link rel="author" title="Mike Bremford" href="http://bfo.com"/>
+  <link rel="help" href="https://drafts.csswg.org/css-gcpm/#running-syntax"/>
+  <link rel="match" href="reference/running-001-ref.xht"/>
+  <meta name="flags" content="paged" />
+  <meta name="assert" content="The element() function cannot be combined with other content"/>
+  <style>
+  @page {
+      margin: 72px;
+      @top-center {
+          content: "This should say pass: PASS";
+          content: "This should say pass: " element(foo);
+      }
+  }
+  .set {
+      position: running(foo);
+  }
+  </style>
+ </head>
+ <body>
+  <div class="set">FAIL</div>
+  <p>The above text should be centered in the middle of the page.</p>
+ </body>
+</html>

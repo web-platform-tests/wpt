@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>XPathNSResolver does not special-case "xml" prefix</title>
+<link rel="author" title="Kent Tamura" href="tkent@chromium.org">
+<link rel="help" href="https://www.w3.org/TR/DOM-Level-3-XPath/xpath.html#XPathEvaluator">
+<link rel="help" href="https://github.com/whatwg/dom/issues/857">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+"use strict";
+
+const XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
+
+test(() => {
+  const resolver = document.createNSResolver(document.createElement("div"));
+  assert_equals(resolver.lookupNamespaceURI("xml"), XML_NAMESPACE);
+}, "Element");
+
+test(() => {
+  const resolver = document.createNSResolver(document.createAttribute("attr"));
+  assert_equals(resolver.lookupNamespaceURI("xml"), null);
+}, "Attribute");
+
+test(() => {
+  const resolver = document.createNSResolver(new Text());
+  assert_equals(resolver.lookupNamespaceURI("xml"), null);
+}, "Text");
+
+test(() => {
+  const resolver = document.createNSResolver(new Comment());
+  assert_equals(resolver.lookupNamespaceURI("xml"), null);
+}, "Comment");
+
+test(() => {
+  const resolver1 = document.createNSResolver(new Document());
+  assert_equals(resolver1.lookupNamespaceURI("xml"), null);
+
+  const resolver2 = document.createNSResolver(document);
+  assert_equals(resolver2.lookupNamespaceURI("xml"), XML_NAMESPACE);
+}, "Document");
+
+test(() => {
+  const resolver = document.createNSResolver(new DocumentFragment());
+  assert_equals(resolver.lookupNamespaceURI("xml"), null);
+}, "DocumentFragment");
+
+test(() => {
+  const resolver = document.createNSResolver(document.doctype);
+  assert_equals(resolver.lookupNamespaceURI("xml"), null);
+}, "DocumentType");
+</script>
+</body>

@@ -7,13 +7,11 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script>
-  const resetPermission = () => {
-    return test_driver.set_permission({ name: "geolocation" }, "prompt");
-  };
+  promise_setup(async () => {
+    await test_driver.set_permission({ name: "geolocation" }, "denied");
+  });
 
   promise_test(async (t) => {
-    t.add_cleanup(resetPermission);
-    await test_driver.set_permission({ name: "geolocation" }, "denied");
     let errorCBCalled = false;
     let id;
     const errorPromise = new Promise((resolve, reject) => {
@@ -31,8 +29,6 @@
   }, "Check that watchPosition returns synchronously before any callbacks are invoked.");
 
   promise_test(async (t) => {
-    t.add_cleanup(resetPermission);
-    await test_driver.set_permission({ name: "geolocation" }, "denied");
     const promise = new Promise((resolve, reject) => {
       navigator.geolocation.watchPosition(reject, resolve);
     });

@@ -9,12 +9,13 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<body></body>
 <script>
-  promise_test(async (t) => {
-    t.add_cleanup(() => {
-      return test_driver.set_permission({ name: "geolocation" }, "prompt");
-    });
+  promise_setup(async () => {
     await test_driver.set_permission({ name: "geolocation" }, "granted");
+  });
+
+  promise_test(async (t) => {
     const position = await new Promise((resolve, reject) => {
       let calledAsync = false;
       navigator.geolocation.getCurrentPosition(
@@ -36,10 +37,6 @@
   }, "User allows access, check that success callback is called.");
 
   promise_test(async (t) => {
-    t.add_cleanup(() => {
-      return test_driver.set_permission({ name: "geolocation" }, "prompt");
-    });
-    await test_driver.set_permission({ name: "geolocation" }, "granted");
     const position = await new Promise((resolve, reject) => {
       try {
         navigator.geolocation.getCurrentPosition(resolve, null);

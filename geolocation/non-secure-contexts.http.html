@@ -6,7 +6,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
   promise_test(() => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       let isAsync = true;
       const successCallback = () => {
         assert_unreached(
@@ -26,7 +26,7 @@
   }, "When in a non-secure context, getCurrentPosition()'s errorCallback is asynchronously called.");
 
   promise_test(async () => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       let isAsync = true;
       const successCallback = () => {
         assert_unreached(
@@ -43,7 +43,7 @@
   }, "When in a non-secure context, watchPosition()'s errorCallback is asynchronously called.");
 
   promise_test(async () => {
-    const positionErrorPromise = new Promise(errorCallBack => {
+    const positionErrorPromise = new Promise((errorCallBack) => {
       const successCallback = () => {
         assert_unreached(
           "successCallback must never be invoked in non-secure contexts."
@@ -60,7 +60,7 @@
   }, "When in a non-secure context, the getCurrentPosition() errorCallBack gets a GeolocationPositionError with the correct error code.");
 
   promise_test(async () => {
-    const positionErrorPromise = new Promise(errorCallBack => {
+    const positionErrorPromise = new Promise((errorCallBack) => {
       const successCallback = () => {
         assert_unreached(
           "successCallback must never be invoked in non-secure contexts."

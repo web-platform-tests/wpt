@@ -6,15 +6,12 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<script src="support.js"></script>
 <body></body>
 <script>
+  promise_setup(async () => {
+    //await test_driver.set_permission({ name: "geolocation" }, "granted");
+  });
   promise_test(async (t) => {
-    t.add_cleanup(() => {
-      return test_driver.set_permission({ name: "geolocation" }, "prompt");
-    });
-    await test_driver.set_permission({ name: "geolocation" }, "granted");
-
     // Create the iframe, wait for it to load...
     const iframe = document.createElement("iframe");
     // ...wait for the iframe to load...
@@ -54,7 +51,7 @@
         "watchId remains 0 when document is not fully-active"
       );
     });
-
+    debugger
     assert_equals(
       watchError.code,
       GeolocationPositionError.POSITION_UNAVAILABLE,
@@ -90,7 +87,10 @@
       );
     });
     assert_true(Number.isInteger(watchId), "Expected some number for watchId");
-    assert_true(Boolean(position), "Expected a position");
+    assert_true(
+      position instanceof iframe.contentWindow.GeolocationPosition,
+      "Expected a position"
+    );
 
     // Finally, let's get the position from the reattached document.
     position = await new Promise((resolve, reject) => {
@@ -99,7 +99,10 @@
         reject
       );
     });
-    assert_true(Boolean(position), "Expected a position");
+    assert_true(
+      position instanceof iframe.contentWindow.GeolocationPosition,
+      "Expected a position"
+    );
     iframe.contentWindow.navigator.geolocation.clearWatch(watchId);
   }, "non-fully active document behavior");
 </script>

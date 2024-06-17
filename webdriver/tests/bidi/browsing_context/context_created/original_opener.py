@@ -20,39 +20,44 @@ async def test_original_opener_null(bidi_session, wait_for_event, wait_for_futur
 
     assert_browsing_context(
         context_info,
-        # We use None here as evaluate no always returns value
         context=top_level_context["context"],
-        children=None,
-        url="about:blank",
-        parent=None,
-        user_context="default",
-        originalOpener=None
+        original_opener=None
     )
 
 
 @pytest.mark.parametrize("type_hint", ["tab", "window"])
-@pytest.mark.parametrize("window_features", ["", "popup", "noopener", "noreferrer"])
-async def test_original_opener_present(bidi_session, wait_for_event, wait_for_future_safe, subscribe_events, type_hint, window_features):
+@pytest.mark.parametrize("domain", ["", "alt"], ids=["same_origin", "cross_origin"])
+@pytest.mark.parametrize("features, returns_window", [
+    ("", True),
+    ("popup", True),
+    ("noopener", False),
+    ("noreferrer", False)
+]
+)
+async def test_original_opener_window_open(bidi_session, wait_for_event, wait_for_future_safe, subscribe_events, inline,
+                                           type_hint, domain, features, returns_window):
 
     top_level_context = await bidi_session.browsing_context.create(type_hint=type_hint)
 
     await subscribe_events([CONTEXT_CREATED_EVENT])
     on_entry = wait_for_event(CONTEXT_CREATED_EVENT)
 
-    await bidi_session.script.evaluate(
-        expression=f"""window.open("", undefined, "{window_features}");""",
+    url = inline("", domain=domain)
+
+    result = await bidi_session.script.evaluate(
+        expression=f"""window.open("{url}", "_blank", "{features}");""",
         target=ContextTarget(top_level_context["context"]),
         await_promise=False)
 
     context_info = await wait_for_future_safe(on_entry)
 
+    # We use None here as evaluate no always returns value
+    context = None
+    if returns_window:
+        context = result["value"]["context"]
+
     assert_browsing_context(
         context_info,
-        # We use None here as evaluate no always returns value
-        context=None,
-        children=None,
-        url="about:blank",
-        parent=None,
-        user_context="default",
-        originalOpener=top_level_context["context"]
+        context=context,
+        original_opener=top_level_context["context"]
     )

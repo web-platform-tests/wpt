@@ -110,6 +110,10 @@ class Browser:
         """Used for browser-specific setup that happens at the start of a test run"""
         pass
 
+    def restart_on_test_type_change(self, new_test_type: str, old_test_type: str) -> bool:
+        """Determines if a restart is needed when there is a test type switch."""
+        return True
+
     def settings(self, test: Test) -> BrowserSettings:
         """Dictionary of metadata that is constant for a specific launch of a browser.
 

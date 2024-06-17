@@ -51,7 +51,7 @@ async def test_original_opener_window_open(bidi_session, wait_for_event, wait_fo
 
     context_info = await wait_for_future_safe(on_entry)
 
-    # We use None here as evaluate no always returns value
+    # We use None here as evaluate not always returns value.
     context = None
     if returns_window:
         context = result["value"]["context"]

@@ -9,7 +9,7 @@ CONTEXT_CREATED_EVENT = "browsingContext.contextCreated"
 
 
 @pytest.mark.parametrize("type_hint", ["tab", "window"])
-async def test_original_opener_null(bidi_session, wait_for_event, wait_for_future_safe, subscribe_events, type_hint):
+async def test_original_opener_context_create(bidi_session, wait_for_event, wait_for_future_safe, subscribe_events, type_hint):
 
     await subscribe_events([CONTEXT_CREATED_EVENT])
     on_entry = wait_for_event(CONTEXT_CREATED_EVENT)

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Test an inline absolute is positioned after trailing whitespace is trimmed</title>
+  <link rel="author" title="Mike Bremford" href="http://bfo.com"/>
+  <link rel="help" href="https://www.w3.org/TR/CSS21/visuren.html#absolute-positioning"/>
+  <link rel="help" href="https://drafts.csswg.org/css-text-3/#text-encoding"/>
+  <link rel="match" href="../../reference/ref-filled-green-100px-square-only.html"/>
+  <meta name="flags" content="ahem" />
+  <link rel="stylesheet" href="../../../fonts/ahem.css"/>
+  <meta name="assert" contents="The static position of an inline absolute should reflect any trailing whitespace that needs to be trimmed"/>
+  <style>
+   .block {
+       font: 50px/1 Ahem;
+       color: green;
+   }
+   .pos {
+       display: inline;
+       position: absolute;
+   }
+  </style>
+ </head>
+ <body>
+  <p>Test passes if there is a filled green square.</p>
+  <div class="block">
+   A <div class="pos">A</div><br/>
+   AA
+  </div>
+ </body>
+</html>

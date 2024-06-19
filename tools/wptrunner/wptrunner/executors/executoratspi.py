@@ -94,7 +94,7 @@ class AtspiExecutorImpl:
                 f"Cannot find root accessibility node for {self.product_name} - did you turn on accessibility?"
             )
 
-    def get_accessibility_api_node(self, dom_id):
+    def get_accessibility_api_node(self, title, dom_id):
         if not self.found_browser:
             raise Exception(
                 f"Couldn't find browser {self.product_name}. Did you turn on accessibility?"

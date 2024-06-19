@@ -336,7 +336,7 @@
         return create_action("clear_device_posture", {context});
     };
 
-    window.test_driver_internal.get_accessibility_api_node = function(dom_id) {
-        return create_action("get_accessibility_api_node", {dom_id});
+    window.test_driver_internal.get_accessibility_api_node = function(title, dom_id) {
+        return create_action("get_accessibility_api_node", {title, dom_id});
     };
 })();

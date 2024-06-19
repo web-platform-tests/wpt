@@ -20,6 +20,9 @@
       else if (node.API == 'axapi') {
         assert_equals(node.role, 'AXButton', 'AX API role');
       }
+      else if (node.API == 'windows') {
+        assert_equals(node.msaa_role, 'ROLE_SYSTEM_PUSHBUTTON', 'MSAA Role');
+      }
       else {
         assert_unreached(`Unknown API: ${node.API}`)
       }

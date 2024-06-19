@@ -109,7 +109,8 @@ class AtspiExecutorImpl:
                 f"Couldn't find browser {self.product_name} in accessibility API ATSPI. Accessibility API queries will not succeeded."
             )
 
-    def get_accessibility_api_node(self, dom_id):
+
+    def get_accessibility_api_node(self, dom_id, url):
         if not self.root:
             raise Exception(
                 f"Couldn't find browser {self.product_name} in accessibility API ATSPI. Did you turn on accessibility?"

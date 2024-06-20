@@ -11,7 +11,8 @@ USER_PROMPT_OPENED_EVENT = "browsingContext.userPromptOpened"
 
 @pytest.mark.parametrize("type_hint", ["window", "tab"])
 @pytest.mark.parametrize("prompt_unload", [None, False])
-async def test_prompt_unload_not_triggering_dialog(bidi_session, subscribe_events, url, type_hint, prompt_unload):
+async def test_prompt_unload_not_triggering_dialog(bidi_session, subscribe_events, url, wait_for_event,
+                                                   wait_for_future_safe, type_hint, prompt_unload):
 
     new_context = await bidi_session.browsing_context.create(type_hint=type_hint)
 
@@ -25,9 +26,9 @@ async def test_prompt_unload_not_triggering_dialog(bidi_session, subscribe_event
     context_destroyed_events = []
 
     async def on_event(method, data):
-        if method is USER_PROMPT_OPENED_EVENT:
+        if method == USER_PROMPT_OPENED_EVENT:
             prompt_opened_events.append(data)
-        if method is CONTEXT_DESTROYED_EVENT:
+        if method == CONTEXT_DESTROYED_EVENT:
             context_destroyed_events.append(data)
 
     remove_listener_1 = bidi_session.add_event_listener(
@@ -45,7 +46,11 @@ async def test_prompt_unload_not_triggering_dialog(bidi_session, subscribe_event
         await_promise=True,
         user_activation=True)
 
+    on_context_destroyed = wait_for_event(CONTEXT_DESTROYED_EVENT)
+
     await bidi_session.browsing_context.close(context=new_context["context"], prompt_unload=prompt_unload)
+
+    await wait_for_future_safe(on_context_destroyed)
 
     assert prompt_opened_events == []
     assert len(context_destroyed_events) == 1

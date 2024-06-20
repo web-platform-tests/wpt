@@ -9,6 +9,7 @@ import tempfile
 from abc import ABCMeta, abstractmethod
 from datetime import datetime, timedelta, timezone
 from shutil import which
+from typing import Optional
 from urllib.parse import urlsplit
 
 import html5lib
@@ -583,7 +584,7 @@ class ChromeChromiumBase(Browser):
     see https://web-platform-tests.org/running-tests/chrome-chromium-installation-detection.html
     """
 
-    requirements = "requirements_chromium.txt"
+    requirements: Optional[str] = "requirements_chromium.txt"
     platform = {
         "Linux": "Linux",
         "Windows": "Win",
@@ -1392,14 +1393,17 @@ class Chrome(ChromeChromiumBase):
         return m.group(1)
 
 
-class ContentShell(Browser):
-    """Interface for the Chromium content shell.
+class HeadlessShell(ChromeChromiumBase):
+    """Interface for the Chromium headless shell [0].
+
+    [0]: https://chromium.googlesource.com/chromium/src/+/HEAD/headless/README.md
     """
 
-    product = "content_shell"
+    product = "headless_shell"
     requirements = None
 
     def download(self, dest=None, channel=None, rename=None):
+        # TODO(crbug.com/344669542): Download binaries via CfT.
         raise NotImplementedError
 
     def install(self, dest=None, channel=None):
@@ -1409,16 +1413,15 @@ class ContentShell(Browser):
         raise NotImplementedError
 
     def find_binary(self, venv_path=None, channel=None):
-        if uname[0] == "Darwin":
-            return which("Content Shell.app/Contents/MacOS/Content Shell")
-        return which("content_shell")  # .exe is added automatically for Windows
-
-    def find_webdriver(self, venv_path=None, channel=None):
-        return None
+        # `which()` adds `.exe` extension automatically for Windows.
+        # Chromium builds an executable named `headless_shell`, whereas CfT
+        # ships under the name `chrome-headless-shell`.
+        return which("headless_shell") or which("chrome-headless-shell")
 
     def version(self, binary=None, webdriver_binary=None):
-        # content_shell does not return version information.
+        # TODO(crbug.com/327767951): Support `headless_shell --version`.
         return "N/A"
+
 
 class ChromeAndroidBase(Browser):
     """A base class for ChromeAndroid and AndroidWebView.

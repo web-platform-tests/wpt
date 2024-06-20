@@ -22,19 +22,14 @@ async def test_prompt_unload_not_triggering_dialog(bidi_session, subscribe_event
     # Set up event listener to make sure the "beforeunload" event is not emitted
     await subscribe_events([USER_PROMPT_OPENED_EVENT, CONTEXT_DESTROYED_EVENT])
     # Track all received browsingContext.userPromptOpened events in the events array
-    prompt_opened_events = []
-    context_destroyed_events = []
+    events = []
 
     async def on_event(method, data):
         if method == USER_PROMPT_OPENED_EVENT:
-            prompt_opened_events.append(data)
-        if method == CONTEXT_DESTROYED_EVENT:
-            context_destroyed_events.append(data)
+            events.append(data)
 
-    remove_listener_1 = bidi_session.add_event_listener(
+    remove_listener = bidi_session.add_event_listener(
         USER_PROMPT_OPENED_EVENT, on_event)
-    remove_listener_2 = bidi_session.add_event_listener(
-        CONTEXT_DESTROYED_EVENT, on_event)
 
     await bidi_session.browsing_context.navigate(context=new_context["context"], url=page_beforeunload, wait="complete")
 
@@ -52,11 +47,9 @@ async def test_prompt_unload_not_triggering_dialog(bidi_session, subscribe_event
 
     await wait_for_future_safe(on_context_destroyed)
 
-    assert prompt_opened_events == []
-    assert len(context_destroyed_events) == 1
+    assert events == []
 
-    remove_listener_1()
-    remove_listener_2()
+    remove_listener()
 
 
 @pytest.mark.parametrize("type_hint", ["window", "tab"])

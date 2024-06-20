@@ -62,10 +62,7 @@ def tag_exists(tag):
                         "inspect",
                         tag])
     # The command succeeds if the tag exists.
-    if retcode == 0:
-        return False
-
-    return True
+    return retcode != 0
 
 
 def push(venv, tag=None, force=False, *args, **kwargs):

@@ -5,18 +5,18 @@ from .base import get_timeout_multiplier   # noqa: F401
 from .chrome import ChromeBrowser, debug_args, executor_kwargs  # noqa: F401
 from ..executors.base import WdspecExecutor  # noqa: F401
 from ..executors.executorchrome import (  # noqa: F401
+    ChromeDriverCrashTestExecutor,
     ChromeDriverPrintRefTestExecutor,
     ChromeDriverRefTestExecutor,
     ChromeDriverTestharnessExecutor,
 )
-from ..executors.executorwebdriver import WebDriverCrashtestExecutor  # noqa: F401
 
 
 __wptrunner__ = {"product": "headless_shell",
                  "check_args": "check_args",
                  "browser": "HeadlessShellBrowser",
                  "executor": {
-                     "crashtest": "WebDriverCrashtestExecutor",
+                     "crashtest": "ChromeDriverCrashTestExecutor",
                      "print-reftest": "ChromeDriverPrintRefTestExecutor",
                      "reftest": "ChromeDriverRefTestExecutor",
                      "testharness": "ChromeDriverTestharnessExecutor",

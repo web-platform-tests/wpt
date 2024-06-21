@@ -21,7 +21,8 @@ async def test_original_opener_context_create(bidi_session, wait_for_event, wait
     assert_browsing_context(
         context_info,
         context=top_level_context["context"],
-        original_opener=None
+        original_opener=None,
+        url="about:blank",
     )
 
 
@@ -59,5 +60,6 @@ async def test_original_opener_window_open(bidi_session, wait_for_event, wait_fo
     assert_browsing_context(
         context_info,
         context=context,
-        original_opener=top_level_context["context"]
+        original_opener=top_level_context["context"],
+        url="about:blank",
     )

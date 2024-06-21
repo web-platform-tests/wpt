@@ -559,8 +559,8 @@ class TestQueueBuilder:
                 group.test_type,
                 # Next, run larger groups first to avoid straggler runners. Use
                 # timeout to give slow tests greater relative weight.
-                -sum(test.timeout for test in group.group),
-            ))
+                sum(test.timeout for test in group.group),
+            ), reverse=True)
         for item in groups:
             test_queue.put(item)
 

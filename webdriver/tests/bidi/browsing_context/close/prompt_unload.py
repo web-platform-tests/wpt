@@ -11,8 +11,15 @@ USER_PROMPT_OPENED_EVENT = "browsingContext.userPromptOpened"
 
 @pytest.mark.parametrize("type_hint", ["window", "tab"])
 @pytest.mark.parametrize("prompt_unload", [None, False])
-async def test_prompt_unload_not_triggering_dialog(bidi_session, subscribe_events, setup_beforeunload_page,
-                                                   wait_for_event, wait_for_future_safe, type_hint, prompt_unload):
+async def test_prompt_unload_not_triggering_dialog(
+    bidi_session, 
+    subscribe_events, 
+    setup_beforeunload_page,
+    wait_for_event, 
+    wait_for_future_safe, 
+    type_hint, 
+    prompt_unload
+):
 
     new_context = await bidi_session.browsing_context.create(type_hint=type_hint)
 

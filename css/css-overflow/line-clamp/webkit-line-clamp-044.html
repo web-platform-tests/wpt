@@ -17,6 +17,9 @@
     white-space: pre;
   }
   .float {
+    /* Floats create a parallel fragmentation context, and even if
+     * -webkit-line-clamp caused a forced break in the main context, that should
+     * not cause the float to fragment. */
     float: left;
     background-color: orange;
     padding: 0.5em;

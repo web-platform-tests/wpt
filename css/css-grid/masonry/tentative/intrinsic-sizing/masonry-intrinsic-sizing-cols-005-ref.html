@@ -5,11 +5,8 @@
 -->
 <html>
   <meta charset="utf-8">
-  <title>CSS Grid Test: Masonry layout row sizing (vertical writing mode)</title>
+  <title>Reference: Masonry layout row sizing (vertical writing mode)</title>
   <link rel="author" title="Mats Palmgren" href="mailto:mats@mozilla.com">
-  <link rel="help" href="https://drafts.csswg.org/css-grid-3/#track-sizing">
-  <link rel="match" href="masonry-intrinsic-sizing-005-ref.html">
-  <link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
   <style>
 
 @import "support/masonry-intrinsic-sizing-visual.css";
@@ -17,11 +14,13 @@
 grid {
   display: inline-grid;
   gap: 1px 2px;
-  grid-template-columns: masonry;
-  grid-template-rows: repeat(4,auto);
+  grid-template-columns: repeat(4,3ch);
+  grid-auto-rows: max-content;
+  grid-auto-flow: row;
   border: 1px solid;
   padding: 0 1px 0 2px;
   vertical-align: top;
+  align-items: start;
 }
 
 item {
@@ -31,48 +30,48 @@ item {
 
 <body>
 
-<grid title="First item 3ch">
-  <item style="height:3ch">1</item>
+<grid style="grid-template-columns: repeat(4, 3ch)">
+  <item style="width:3ch">1</item>
   <item>2</item>
   <item>3</item>
   <item>4</item>
-  <item>5 5</item>
+  <item style="grid-row: span 2">5 5</item>
   <item>6</item>
   <item>7</item>
   <item>8</item>
   <item>9 9</item>
 </grid>
 
-<grid title="Fifth item 3ch">
+<grid style="grid-template-columns: repeat(4,3ch)">
   <item>1</item>
   <item>2</item>
   <item>3</item>
   <item>4</item>
-  <item style="height:3ch">5 5</item>
+  <item style="width:3ch; grid-row: span 2">5 5</item>
   <item>6</item>
   <item>7</item>
   <item>8</item>
   <item>9 9</item>
 </grid>
 
-<grid title="Fifth item 3ch row 1">
+<grid style="grid-template-columns: 3ch repeat(3,3ch)">
   <item>1</item>
   <item>2</item>
   <item>3</item>
   <item>4</item>
-  <item style="height:3ch; grid-row:1">5 5</item>
+  <item style="width:3ch; grid-column:1; grid-row: span 2">5 5</item>
   <item>6</item>
   <item>7</item>
   <item>8</item>
   <item>9 9</item>
 </grid>
 
-<grid title="Fifth item 3ch col 1 (ignored)">
+<grid style="grid-template-columns: 3ch repeat(3,3ch)">
   <item>1</item>
   <item>2</item>
   <item>3</item>
   <item>4</item>
-  <item style="height:3ch; grid-column:1">5 5</item>
+  <item style="width:3ch; grid-row:1; grid-row: span 2">5 5</item>
   <item>6</item>
   <item>7</item>
   <item>8</item>

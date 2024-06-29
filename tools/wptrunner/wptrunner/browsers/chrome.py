@@ -120,13 +120,13 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     # changes the viewport, which can happen during the test run.
     chrome_options["args"].append("--disable-infobars")
 
-    # Classify `http-private`, `http-public` and https variants in the
+    # Classify `http-local`, `http-public` and https variants in the
     # appropriate IP address spaces.
     # For more details, see: https://github.com/web-platform-tests/rfcs/blob/master/rfcs/address_space_overrides.md
     address_space_overrides_ports = [
-        ("http-private", "private"),
+        ("http-local", "private"),
         ("http-public", "public"),
-        ("https-private", "private"),
+        ("https-local", "private"),
         ("https-public", "public"),
     ]
     address_space_overrides_arg = ",".join(

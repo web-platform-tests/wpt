@@ -7,22 +7,22 @@
 <meta name="fuzzy" content="maxDifference=0-1; totalPixels=0-225">
 <style>
 
-div {
+.container {
     border: solid orange;
     padding: 1ch;
     margin: 1ch;
     float: left;
 }
 
-input { color-scheme: light;}
-#extract-canvas{ accent-color: canvas; display:none;}
-#t3 { background: orange;}
+input, #extract-canvas { color-scheme: light; }
+#extract-canvas{ background-color: canvas; }
+#t3 { background: orange; }
 
 </style>
 
 <p>Test passes if in each box below, you see a pair of identically colored check-boxes.
 
-<input id='extract-canvas' type=checkbox>
+<div id='extract-canvas'></div>
 <div id=t1 class="container">
   <input class=test type=checkbox checked>
   <input class=ref type=checkbox checked>
@@ -40,34 +40,27 @@ input { color-scheme: light;}
 
 <script>
 
-  var testColors = [[255,0,0,0], [0,0,255,0.5], [0,0,255,0.5]]
+  let testColors = [[255,0,0,0], [0,0,255,0.5], [0,0,255,0.5]];
 
-  function getColorComponents(color){
-    var components = []
-    color.substring(color.indexOf("(") + 1).replace(/\s/g,"").split(",").forEach((s) => {
-      components.push(parseFloat(s));
-    });
-    return components;
+  function getColorComponents(color) {
+    return color.substring(color.indexOf("(") + 1).replace(/\s/g,"").split(",").map(parseFloat);
   }
 
-  function constructCSSColor(components){
-    if (components.length == 4)
-      return "rgba(" + components[0] + ", " + components[1] + ", " + components[2] + ", " + components[3] + ")";
-    return "rgb(" + components[0] + ", " + components[1] + ", " + components[2] + ")";
+  function constructCSSColor(components) {
+    return (components.length == 4 ? "rgba(" : "rgb(") + components.join(", ") + ")";
   }
 
-  function computeExpectedColor(canvasColor,colorWithAlpha){
-    var expected = []
+  function computeExpectedColor(canvasColor, colorWithAlpha) {
+    let expected = [];
     for (var i = 0; i < 3; i++)
-      expected.push(canvasColor[i] - canvasColor[i] * colorWithAlpha[3] + colorWithAlpha[i] * colorWithAlpha[3])
+      expected.push(canvasColor[i] - canvasColor[i] * colorWithAlpha[3] + colorWithAlpha[i] * colorWithAlpha[3]);
     return expected;
   }
 
-  var testContainers = document.getElementsByClassName("container");
-  var canvasColorComponents = getColorComponents(window.getComputedStyle(document.getElementById('extract-canvas')).accentColor);
-  for (var i = 0; i < testContainers.length; i++){
-    testContainers[i].getElementsByClassName("test")[0].style.accentColor = constructCSSColor(testColors[i]);
-    testContainers[i].getElementsByClassName("ref")[0].style.accentColor = constructCSSColor(computeExpectedColor(canvasColorComponents,testColors[i]));
+  let canvasColorComponents = getColorComponents(getComputedStyle(document.getElementById('extract-canvas')).backgroundColor);
+  for (const [i, container] of Array.from(document.getElementsByClassName("container")).entries()) {
+    container.getElementsByClassName("test")[0].style.accentColor = constructCSSColor(testColors[i]);
+    container.getElementsByClassName("ref")[0].style.accentColor = constructCSSColor(computeExpectedColor(canvasColorComponents, testColors[i]));
   }
 
 </script>

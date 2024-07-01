@@ -16,12 +16,12 @@ const cross_origin_src =
 
 promise_test(async t => {
   await tryGrantWritePermission();
-  await waitForUserActivation();
+  await test_driver.bless();
   await navigator.clipboard.writeText('test text');
 }, 'Feature-Policy header clipboard-write "*" allows the top-level document.');
 
 promise_test(async t => {
-  await waitForUserActivation();
+  await test_driver.bless();
   test_feature_availability(
     'navigator.clipboard.writeText("test text")',
     t,

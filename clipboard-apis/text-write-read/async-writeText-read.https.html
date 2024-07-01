@@ -16,9 +16,9 @@ async function readWriteTest(textInput) {
     await tryGrantReadPermission();
     await tryGrantWritePermission();
 
-    await waitForUserActivation();
+    await test_driver.bless();
     await navigator.clipboard.writeText(textInput);
-    await waitForUserActivation();
+    await test_driver.bless();
     const clipboardItems = await navigator.clipboard.read();
     assert_equals(clipboardItems.length, 1);
     const clipboardItem = clipboardItems[0];

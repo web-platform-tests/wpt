@@ -38,9 +38,9 @@ promise_test(async t => {
   await tryGrantWritePermission();
   const blobInput = new Blob([html_with_script], {type: 'text/html'});
   const clipboardItem = new ClipboardItem({'text/html': blobInput});
-  await waitForUserActivation();
+  await test_driver.bless();
   await navigator.clipboard.write([clipboardItem]);
-  await waitForUserActivation();
+  await test_driver.bless();
   const clipboardItems = await navigator.clipboard.read();
 
   const html = clipboardItems[0];

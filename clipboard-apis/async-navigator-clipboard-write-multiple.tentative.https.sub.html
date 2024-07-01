@@ -20,7 +20,7 @@
 async function getPermissions() {
   await tryGrantReadPermission();
   await tryGrantWritePermission()
-  await waitForUserActivation();
+  await test_driver.bless();
 }
 
 function waitForMessage(msg) {

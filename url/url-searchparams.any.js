@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 function bURL(url, base) {
   return new URL(url, base || "about:blank")
 }

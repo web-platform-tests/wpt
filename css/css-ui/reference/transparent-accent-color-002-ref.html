@@ -12,14 +12,14 @@
 }
 
 input, #extract-canvas { color-scheme: dark; }
-#extract-canvas{ background-color: canvas; }
+#extract-canvas { background-color: canvas; }
 #t3 { background: orange; }
 
 </style>
 
 <p>Test passes if in each box below, you see a pair of identically colored check-boxes.
 
-<div id='extract-canvas'></div>
+<div id="extract-canvas"></div>
 <div id=t1 class="container">
   <input class=test type=checkbox checked>
   <input class=ref type=checkbox checked>
@@ -37,7 +37,7 @@ input, #extract-canvas { color-scheme: dark; }
 
 <script>
 
-  let testColors = [[255,0,0,0], [0,0,255,0.5], [0,0,255,0.5]];
+  const testColors = [[255,0,0,0], [0,0,255,0.5], [0,0,255,0.5]];
 
   function getColorComponents(color) {
     return color.substring(color.indexOf("(") + 1).replace(/\s/g,"").split(",").map(parseFloat);
@@ -48,14 +48,14 @@ input, #extract-canvas { color-scheme: dark; }
   }
 
   function computeExpectedColor(canvasColor, colorWithAlpha) {
-    let expected = [];
-    for (var i = 0; i < 3; i++)
+    const expected = [];
+    for (let i = 0; i < 3; i++)
       expected.push(canvasColor[i] - canvasColor[i] * colorWithAlpha[3] + colorWithAlpha[i] * colorWithAlpha[3]);
     return expected;
   }
 
-  let canvasColorComponents = getColorComponents(getComputedStyle(document.getElementById('extract-canvas')).backgroundColor);
-  for (const [i, container] of Array.from(document.getElementsByClassName("container")).entries()) {
+  const canvasColorComponents = getColorComponents(getComputedStyle(document.getElementById("extract-canvas")).backgroundColor);
+  for (const [i, container] of document.querySelectorAll(".container").entries()) {
     container.getElementsByClassName("test")[0].style.accentColor = constructCSSColor(computeExpectedColor(canvasColorComponents, testColors[i]));
     container.getElementsByClassName("ref")[0].style.accentColor = constructCSSColor(computeExpectedColor(canvasColorComponents, testColors[i]));
   }

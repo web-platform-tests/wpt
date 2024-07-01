@@ -58,7 +58,6 @@ input, #extract-canvas { color-scheme: dark; }
   }
 
   let canvasColorComponents = getColorComponents(getComputedStyle(document.getElementById('extract-canvas')).backgroundColor);
-  console.log(canvasColorComponents);
   for (const [i, container] of Array.from(document.getElementsByClassName("container")).entries()) {
     container.getElementsByClassName("test")[0].style.accentColor = constructCSSColor(testColors[i]);
     container.getElementsByClassName("ref")[0].style.accentColor = constructCSSColor(computeExpectedColor(canvasColorComponents, testColors[i]));

@@ -4413,8 +4413,10 @@
             var rv = [];
             for (var i = 0; i < components.length; i += 2) {
                 rv.push(components[i]);
-                if (components[i + 1]) {
+                if (substitutions && components[i + 1]) {
                     rv.push(String(substitutions[components[i + 1]]));
+                } else {
+                    break;
                 }
             }
             return rv;

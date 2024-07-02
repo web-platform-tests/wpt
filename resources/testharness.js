@@ -4408,7 +4408,8 @@
     {
         var substitution_re = /\$\{([^ }]*)\}/g;
 
-        function do_substitution(input) {
+        function do_substitution(input)
+        {
             var components = input.split(substitution_re);
             var rv = [];
             for (var i = 0; i < components.length; i += 2) {

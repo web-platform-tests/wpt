@@ -4,6 +4,15 @@ function reset() {
 }
 
 function runTests() {
+  promise_test(async t => {
+    assert_implements(document.fragmentDirective, 'Text directive not implemented');
+    reset();
+
+    location.hash = 'elementid';
+    await t.step_wait(() => window.scrollY > 0, "Wait for scroll");
+    assert_true(isInViewport(document.getElementById('elementid')), 'Scrolled to text');
+  }, 'Basic element fragment navigation');
+
   // Ensure a simple text directive works correctly when navigated to the
   // same document using `location.hash`.
   promise_test(async t => {

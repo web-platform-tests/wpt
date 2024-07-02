@@ -818,4 +818,13 @@ class DevicePostureProtocolPart(ProtocolPart):
 
     @abstractmethod
     def clear_device_posture(self):
+
+class UserActivationProtocolPart(ProtocolPart):
+    """Protocol part for User Activation"""
+    __metaclass__ = ABCMeta
+
+    name = "user_activation"
+
+    @abstractmethod
+    def consume_user_activation(self, context):
         pass

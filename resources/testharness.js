@@ -4404,7 +4404,7 @@
                           }), function(x) {return x !== null;});
     }
 
-    function substitute_single(template, substitutions = [])
+    function substitute_single(template, substitutions = {})
     {
         var substitution_re = /\$\{([^ }]*)\}/g;
 

@@ -335,4 +335,9 @@
     window.test_driver_internal.clear_device_posture = function(context=null) {
         return create_action("clear_device_posture", {context});
     };
+
+    window.test_driver_internal.consume_user_activation = function(context=null) {
+        return create_action("consume_user_activation", {context});
+    };
+
 })();

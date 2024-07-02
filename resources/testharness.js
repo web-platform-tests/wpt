@@ -4406,7 +4406,7 @@
 
     function substitute_single(template, substitutions = {})
     {
-        var substitution_re = /\$\{([^ }]*)\}/g;
+        var substitution_re = /\$\{[^ }]*\}/g;
 
         function do_substitution(input) {
             var components = input.split(substitution_re);

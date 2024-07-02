@@ -50,6 +50,45 @@
      */
     window.test_driver = {
         /**
+         Represents `WebDriver BiDi <https://w3c.github.io/webdriver-bidi>`_ protocol.
+         */
+        bidi: {
+            /**
+             * `log <https://w3c.github.io/webdriver-bidi/#module-log>`_ module.
+             */
+            log: {
+                /**
+                 * `log.entryAdded <https://w3c.github.io/webdriver-bidi/#event-log-entryAdded>`_ event.
+                 */
+                entry_added: {
+                    /**
+                     * Subscribe to the `log.entryAdded` event. This does not add actual listeners. To listen to the
+                     * event, use `on` method.
+                     * @param {{contexts?: null | (string | Window)[]}} props - Parameters for the subscription.
+                     * * `contexts`: an array of window proxies or browsing context ids to listen to the event. If not
+                     *   provided, the event subscription is done for the current window's browsing context. `null` for
+                     *   the global subscription.
+                     * @return {Promise<void>}
+                     */
+                    subscribe: async function (props = {}) {
+                        return window.test_driver_internal.bidi.log.entry_added.subscribe(props);
+                    },
+                    /**
+                     * Add an event listener for the `log.entryAdded
+                     * <https://w3c.github.io/webdriver-bidi/#event-log-entryAdded>`_ event. Make sure `subscribe` is
+                     * called before using this method.
+                     *
+                     * @param callback {function(event): void} - The callback to be called when the event is fired.
+                     * @returns {function(): void} - A function to call to remove the event listener.
+                     */
+                    on: function (callback) {
+                        return window.test_driver_internal.bidi.log.entry_added.on(callback);
+                    },
+                }
+            }
+        },
+
+        /**
          * Set the context in which testharness.js is loaded
          *
          * @param {WindowProxy} context - the window containing testharness.js
@@ -1077,6 +1116,19 @@
          * implementation of one of the methods is not available.
          */
         in_automation: false,
+
+        bidi: {
+            log: {
+                entry_added: {
+                    subscribe: function () {
+                        throw new Error("bidi.log.entry_added.subscribe is not implemented by testdriver-vendor.js");
+                    },
+                    on: function () {
+                        throw new Error("bidi.log.entry_added.on is not implemented by testdriver-vendor.js");
+                    }
+                }
+            }
+        },
 
         async click(element, coords) {
             if (this.in_automation) {

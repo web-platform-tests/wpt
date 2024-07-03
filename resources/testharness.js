@@ -4412,10 +4412,16 @@
         {
             var components = input.split(substitution_re);
             var rv = [];
-            for (var i = 0; i < components.length; i += 2) {
-                rv.push(components[i]);
-                if (substitutions && components[i + 1]) {
-                    rv.push(String(substitutions[components[i + 1]]));
+            if (components.length === 1) {
+                rv = components;
+            } else if (substitutions) {
+                for (var i = 0; i < components.length; i += 2) {
+                    if (components[i]) {
+                        rv.push(components[i]);
+                    }
+                    if (substitutions[components[i + 1]]) {
+                        rv.push(String(substitutions[components[i + 1]]));
+                    }
                 }
             }
             return rv;

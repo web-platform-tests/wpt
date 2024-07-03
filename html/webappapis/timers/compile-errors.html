@@ -1,29 +1,23 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>requestAnimationFrame callback exception reported to error handler</title>
-<link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#run-the-animation-frame-callbacks">
+<title>setTimeout compilation errors</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#timer-initialisation-steps">
 <link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<iframe id="navigate-me" src="callback-exception-support-1.html"></iframe>
+<iframe id="navigate-me" src="compile-errors-support-1.html"></iframe>
 
 <script>
 "use strict";
 setup({ allow_uncaught_exception: true });
 
-const exceptionMessage = "requestAnimationFrameException";
-
 async_test(t => {
   window.addEventListener("error", t.step_func_done(ev => {
     assert_equals(ev.constructor, ErrorEvent);
-    assert_equals(ev.error.message, exceptionMessage);
   }));
-
-  requestAnimationFrame(() => {
-    throw new Error(exceptionMessage);
-  });
-}, "requestAnimationFrame errors in an active document should fire an error event");
+  setTimeout("1 *-* 'syntax error'", 0);
+}, "setTimeout compilation errors in an active document should fire an error event");
 
 async_test(t => {
   const iframe = document.querySelector("#navigate-me");
@@ -32,22 +26,20 @@ async_test(t => {
   window.onload = t.step_func(() => {
     windowProxy.onerror = t.unreached_func("The pre-navigation Window's onerror must not be called");
 
-    const oldRAF = windowProxy.requestAnimationFrame;
+    const oldSetTimeout = windowProxy.setTimeout;
     iframe.addEventListener("load", t.step_func(() => {
-      const newRAF = windowProxy.requestAnimationFrame;
-      assert_not_equals(oldRAF, newRAF, "Sanity check: navigation changed the requestAnimationFrame");
+      const newSetTimeout = windowProxy.setTimeout;
+      assert_not_equals(oldSetTimeout, newSetTimeout, "Sanity check: navigation changed the setTimeout");
       assert_equals(windowProxy.onerror, null, "Sanity check: after navigation reset onerror");
 
       windowProxy.onerror = t.unreached_func("The post-navigation Window's onerror must not be called");
 
-      oldRAF(() => {
-        throw new Error(exceptionMessage);
-      });
+      oldSetTimeout("1 *-* 'syntax error'", 0);
 
       // The test passes if no error events have been fired within this time.
       t.step_timeout(t.step_func_done(), 2000);
     }));
-    windowProxy.location.href = "callback-exception-support-2.html";
+    windowProxy.location.href = "compile-errors-support-2.html";
   });
-}, "requestAnimationFrame errors in navigated-away-from documents should not fire any error events");
+}, "setTimeout compilation errors in navigated-away-from documents should not fire any error events");
 </script>

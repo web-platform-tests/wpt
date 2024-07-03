@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Worker error reporting in navigated-away-from documents</title>
+
+<script>
+const Worker = window.Worker;
+
+window.doWorkerStuffAndExpectNoError = t => {
+  const worker = new Worker("./support/error-after-some-time.js");
+  worker.onerror = t.unreached_func("The Worker object's error event must never fire");
+
+  worker.postMessage("no error expected");
+};
+
+window.doWorkerStuffAndExpectError = t => {
+  const worker = new Worker("./support/error-after-some-time.js");
+  worker.onerror = t.step_func_done(ev => {
+    parent.assert_equals(ev.constructor, ErrorEvent, "The worker error event must fire");
+  });
+
+  worker.postMessage("error expected");
+};
+</script>

@@ -4406,7 +4406,7 @@
 
     function substitute_single(template, substitutions = {})
     {
-        var substitution_re = /\$\{[^ }]*\}/g;
+        var substitution_re = /\$\{([^ }]*)\}/g;
 
         function do_substitution(input)
         {
@@ -4416,8 +4416,6 @@
                 rv.push(components[i]);
                 if (substitutions && components[i + 1]) {
                     rv.push(String(substitutions[components[i + 1]]));
-                } else {
-                    break;
                 }
             }
             return rv;

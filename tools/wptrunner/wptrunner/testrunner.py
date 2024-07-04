@@ -478,7 +478,7 @@ class TestRunnerManager(threading.Thread):
             self.logger.debug("TestRunnerManager main loop terminating, starting cleanup")
 
             skipped_tests = []
-            test_group, subsuite, _, _= self.test_source.current_group
+            test_group, subsuite, _, _ = self.test_source.current_group
             while test_group is not None and len(test_group) > 0:
                 test = test_group.popleft()
                 skipped_tests.append(test)
@@ -956,6 +956,8 @@ class TestRunnerManager(threading.Thread):
         try:
             self.browser.stop(force=force)
             self.ensure_runner_stopped()
+        except (OSError, PermissionError):
+            self.logger.error("Failed to stop the runner")
         finally:
             self.cleanup()
 

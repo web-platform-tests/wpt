@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name='author' title='weizman' href='https://www.weizmangal.com'>
+<meta name='assert' content='Shadow DOM should not leak via Selection API'>
+<link rel='help' href='https://w3c.github.io/webcomponents/spec/shadow/'>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+</head>
+<body>
+<div id='log'></div>
+<div id='container'></div>
+</body>
+<script>
+  'use strict';
+
+  const container = document.getElementById('container');
+  
+  function reset(text) {
+    const host = container.appendChild(document.createElement('div'));
+    const shadow = host.attachShadow({mode: 'closed'});
+    const child = document.createElement('span');
+    child.textContent = text;
+    return shadow;
+  }
+  
+  test(() => {
+    const shadow = reset('secret');
+    find('secret');
+    const node = getSelection().anchorNode;
+    assert_not_equals(node, shadow, 'getSelection().anchorNode should not return the shadow node');
+  }, 'selection API should not leak nodes in Shadow DOM.');
+</script>
+</html>

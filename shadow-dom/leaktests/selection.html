@@ -19,7 +19,7 @@
   function reset(text) {
     const host = container.appendChild(document.createElement('div'));
     const shadow = host.attachShadow({mode: 'closed'});
-    const child = document.createElement('span');
+    const child = shadow.appendChild(document.createElement('span'));
     child.textContent = text;
     return shadow;
   }
@@ -28,7 +28,7 @@
     const shadow = reset('secret');
     find('secret');
     const node = getSelection().anchorNode;
-    assert_not_equals(node, shadow, 'getSelection().anchorNode should not return the shadow node');
+    assert_equals(node, container, 'getSelection().anchorNode should return the host of the shadow');
   }, 'selection API should not leak nodes in Shadow DOM.');
 </script>
 </html>

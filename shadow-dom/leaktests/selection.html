@@ -25,10 +25,12 @@
   }
   
   test(() => {
-    const shadow = reset('secret');
-    find('secret');
+    const text = 'text inside shadow';
+    const shadow = reset(text);
+    find(text);
     const node = getSelection().anchorNode;
     assert_equals(node, container, 'getSelection().anchorNode should return the host of the shadow');
+    assert_not_equals(node.textContent, text, 'getSelection().anchorNode textContent should not be the text contents of the shadow');
   }, 'selection API should not leak nodes in Shadow DOM.');
 </script>
 </html>

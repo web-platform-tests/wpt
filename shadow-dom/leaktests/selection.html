@@ -15,7 +15,7 @@
   'use strict';
 
   const container = document.getElementById('container');
-  
+
   function reset(text) {
     const host = container.appendChild(document.createElement('div'));
     const shadow = host.attachShadow({mode: 'closed'});
@@ -23,7 +23,7 @@
     child.textContent = text;
     return shadow;
   }
-  
+
   test(() => {
     const text = 'text inside shadow';
     const shadow = reset(text);

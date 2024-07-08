@@ -38,16 +38,16 @@ async def test_one_context(
     assert await is_request_from_cache(url=cached_url, context=new_tab) is True
 
     # Disable cache only in one context.
-    await bidi_session.network.set_cache_bypass(
-        bypass=True, contexts=[new_tab["context"]]
+    await bidi_session.network.set_cache_behavior(
+        cache_behavior="bypass", contexts=[new_tab["context"]]
     )
 
     assert await is_request_from_cache(url=cached_url, context=top_context) is True
     assert await is_request_from_cache(url=cached_url, context=new_tab) is False
 
     # Reset to default behavior.
-    await bidi_session.network.set_cache_bypass(
-        bypass=False, contexts=[new_tab["context"]]
+    await bidi_session.network.set_cache_behavior(
+        cache_behavior="default", contexts=[new_tab["context"]]
     )
 
 
@@ -75,8 +75,8 @@ async def test_new_context(
     assert await is_request_from_cache(url=cached_url) is True
 
     # Disable cache only in one context.
-    await bidi_session.network.set_cache_bypass(
-        bypass=True, contexts=[top_context["context"]]
+    await bidi_session.network.set_cache_behavior(
+        cache_behavior="bypass", contexts=[top_context["context"]]
     )
 
     assert await is_request_from_cache(url=cached_url, context=top_context) is False
@@ -94,6 +94,7 @@ async def test_new_context(
     assert await is_request_from_cache(cached_url, context=new_context) is True
 
     # Reset to default behavior.
-    await bidi_session.network.set_cache_bypass(
-        bypass=False, contexts=[top_context["context"]]
+    await bidi_session.network.set_cache_behavior(
+        cache_behavior="default", contexts=[
+            top_context["context"]]
     )

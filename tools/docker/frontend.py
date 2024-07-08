@@ -57,10 +57,7 @@ def read_image_name():
 
 
 def tag_exists(tag):
-    retcode = subprocess.call(["docker",
-                        "manifest",
-                        "inspect",
-                        tag])
+    retcode = subprocess.call(["docker", "manifest", "inspect", tag])
     # The command succeeds if the tag exists.
     return retcode != 0
 

@@ -6,7 +6,7 @@ from .. import RESPONSE_COMPLETED_EVENT
 pytestmark = pytest.mark.asyncio
 
 
-async def test_set_cache_bypass(
+async def test_set_cache_behavior(
     bidi_session, setup_network_test, url, is_request_from_cache
 ):
     await setup_network_test(events=[RESPONSE_COMPLETED_EVENT])
@@ -22,11 +22,11 @@ async def test_set_cache_bypass(
     # The second request for the same URL has to be read from the local cache.
     assert await is_request_from_cache(cached_url) is True
 
-    await bidi_session.network.set_cache_bypass(bypass=True)
+    await bidi_session.network.set_cache_behavior(cache_behavior="bypass")
 
     assert await is_request_from_cache(cached_url) is False
 
-    await bidi_session.network.set_cache_bypass(bypass=False)
+    await bidi_session.network.set_cache_behavior(cache_behavior="default")
 
     assert await is_request_from_cache(cached_url) is True
 
@@ -48,7 +48,7 @@ async def test_new_context(
     # The second request for the same URL has to be read from the local cache.
     assert await is_request_from_cache(cached_url) is True
 
-    await bidi_session.network.set_cache_bypass(bypass=True)
+    await bidi_session.network.set_cache_behavior(cache_behavior="bypass")
 
     assert await is_request_from_cache(cached_url) is False
 
@@ -65,4 +65,4 @@ async def test_new_context(
     assert await is_request_from_cache(cached_url, context=new_context) is False
 
     # Reset to default behavior.
-    await bidi_session.network.set_cache_bypass(bypass=False)
+    await bidi_session.network.set_cache_behavior(cache_behavior="default")

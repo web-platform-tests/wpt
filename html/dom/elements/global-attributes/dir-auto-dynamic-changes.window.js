@@ -274,3 +274,17 @@ test(() => {
 
   tree.remove();
 }, "slotted non-HTML elements after dynamically assigning dir=auto, and dir attribute ignored on non-HTML elements");
+
+test(() => {
+  const e1 = document.createElement("div");
+  e1.dir = "auto";
+  const e2 = document.createElement("div");
+  e2.dir = "ltr";
+  e2.innerText = "\u05D0";
+  e1.append(e2);
+  assert_true(e1.matches(":dir(ltr)"), "parent is LTR before changes");
+  assert_true(e2.matches(":dir(ltr)"), "child is LTR before changes");
+  e2.removeAttribute("dir");
+  assert_false(e1.matches(":dir(ltr)"), "parent is RTL after removing dir from child");
+  assert_false(e2.matches(":dir(ltr)"), "child is RTL after removing dir from child");
+}, "dir=auto ancestor considers text in subtree after removing dir=ltr from it");

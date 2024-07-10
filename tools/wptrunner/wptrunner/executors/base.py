@@ -747,7 +747,7 @@ class CallbackHandler:
     def process_action(self, url, payload):
         action = payload["action"]
         cmd_id = payload["id"]
-        self.logger.debug(f"Got action: {action}")
+        self.logger.info(f"Got action: {action}")
         try:
             action_handler = self.actions[action]
         except KeyError as e:

@@ -6,6 +6,9 @@
 <link rel='help' href='https://w3c.github.io/webcomponents/spec/shadow/'>
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 </head>
 <body>
 <div id='log'></div>
@@ -21,16 +24,29 @@
     const shadow = host.attachShadow({mode: 'closed'});
     const child = shadow.appendChild(document.createElement('span'));
     child.textContent = text;
-    return shadow;
+    return host;
   }
 
-  test(() => {
-    const text = 'text inside shadow';
-    const shadow = reset(text);
-    find(text);
-    const node = getSelection().anchorNode;
-    assert_equals(node, container, 'getSelection().anchorNode should return the host of the shadow');
-    assert_not_equals(node.textContent, text, 'getSelection().anchorNode textContent should not be the text contents of the shadow');
+  function dblclick(target) {
+      return new test_driver.Actions()
+          .pointerMove(0, 0, {origin: target})
+          .pointerDown()
+          .pointerUp()
+          .pointerDown()
+          .pointerUp()
+          .send();
+  }
+
+  test((t) => {
+    const text = 'text_inside_shadow';
+    const host = reset(text);
+    const actions_promise = dblclick(host);
+    t.add_cleanup(() => actions_promise);
+    setTimeout(() => {
+        const node = getSelection().anchorNode;
+        assert_equals(container, node, 'getSelection().anchorNode should return the host of the shadow');
+        assert_not_equals(node.textContent, text, 'getSelection().anchorNode textContent should not be the text contents of the shadow');
+    }, 1000);
   }, 'selection API should not leak nodes in Shadow DOM.');
 </script>
 </html>

@@ -53,7 +53,6 @@ function makeI420Frames(colorSpace) {
       [kYellow, kRed, kBlue, kGreen, kMagenta, kBlack, kWhite, kPink];
   const data = new Uint8Array(24);
   init.colorSpace = colorSpace;
-  result.push(new VideoFrame(data, init));
   for (let color of colors) {
     color = rgb2yuv(color.r, color.g, color.b);
     data.fill(color.y, 0, 16);

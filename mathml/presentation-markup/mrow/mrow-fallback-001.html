@@ -38,12 +38,13 @@
 
   function runTests() {
     let container = document.getElementById("container");
+    let math = container.firstElementChild;
     const epsilon = 1;
     ["mfrac", "mroot", "munder", "mover", "munderover", "msub", "msup", "msubsup", "mmultiscripts"].forEach(tag => {
       let element = FragmentHelper.createElement(tag);
       let reference = FragmentHelper.createElement("mrow");
-      container.appendChild(element);
-      container.appendChild(reference);
+      math.appendChild(element);
+      math.appendChild(reference);
       let maxCount = tag == "mmultiscripts" ? 10 : 5;
       let mspaceCount = 0;
       for (let count = 0; count <= maxCount; count++) {
@@ -82,7 +83,9 @@
 </head>
 <body>
   <div id="log"></div>
-  <div id="container"></div>
+  <div id="container">
+    <math></math>
+  </div>
   <div id="invalidMultiscripts">
     <math>
       <mmultiscripts data-description="first in-flow child is an <mprescripts>">

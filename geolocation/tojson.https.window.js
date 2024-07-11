@@ -18,7 +18,7 @@ function check_equals(original, json) {
 
 promise_setup(async () => {
   await test_driver.set_permission({ name: "geolocation" }, "granted");
-}, "Grant permission and wait for the document to be fully active.");
+});
 
 promise_test(async (t) => {
   const position = await new Promise((resolve, reject) => {
@@ -31,7 +31,7 @@ promise_test(async (t) => {
     json.timestamp,
     "GeolocationPosition timestamp entry does not match its toJSON value",
   );
-  check_equals(position.coords, json.coords, GeolocationCoordinates);
 
+  check_equals(position.coords, json.coords);
   check_equals(position.coords, position.coords.toJSON());
 }, "Test toJSON() in GeolocationPosition and GeolocationCoordinates.");

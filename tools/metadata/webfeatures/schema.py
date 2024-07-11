@@ -11,6 +11,9 @@ YAML filename for meta files
 """
 WEB_FEATURES_YML_FILENAME = "WEB_FEATURES.yml"
 
+# File prefix to indicate that this FeatureFile should run in EXCLUDE mode.
+EXCLUSION_PREFIX = "!"
+
 
 class SpecialFileEnum(Enum):
     """All files recursively"""
@@ -26,12 +29,13 @@ class FeatureFile(str):
     @cached_property
     def matching_mode(self) -> FileMatchingMode:
         """Determines if the pattern should include or exclude matches."""
-        return FileMatchingMode.EXCLUDE if self.startswith("!") else FileMatchingMode.INCLUDE
+        return FileMatchingMode.EXCLUDE if self.startswith(EXCLUSION_PREFIX) else FileMatchingMode.INCLUDE
 
     @cached_property
     def processed_filename(self) -> str:
         """Removes the exclusion prefix "!" from the pattern."""
-        return self.removeprefix("!")
+        # TODO. After moving to Python3.9, use: return self.removeprefix(EXCLUSION_PREFIX)
+        return self[self.startswith(EXCLUSION_PREFIX) and len(EXCLUSION_PREFIX):]
 
     def match_files(self, base_filenames: Sequence[str]) -> Sequence[str]:
         """

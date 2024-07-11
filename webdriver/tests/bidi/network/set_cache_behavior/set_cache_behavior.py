@@ -1,5 +1,4 @@
 import pytest
-import random
 
 from .. import RESPONSE_COMPLETED_EVENT
 
@@ -7,50 +6,34 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_set_cache_behavior(
-    bidi_session, setup_network_test, url, is_request_from_cache
+    bidi_session, setup_network_test, url, is_cache_enabled_for_context
 ):
     await setup_network_test(events=[RESPONSE_COMPLETED_EVENT])
 
-    cached_url = url(
-        f"/webdriver/tests/support/http_handlers/cached.py?status=200&nocache={random.random()}"
-    )
-
-    # The first request/response is used to fill the browser cache,
-    # so we expect fromCache to be False here.
-    assert await is_request_from_cache(cached_url) is False
-
-    # The second request for the same URL has to be read from the local cache.
-    assert await is_request_from_cache(cached_url) is True
+    # Make sure that cache is enabled by default.
+    assert await is_cache_enabled_for_context() is True
 
     await bidi_session.network.set_cache_behavior(cache_behavior="bypass")
 
-    assert await is_request_from_cache(cached_url) is False
+    assert await is_cache_enabled_for_context() is False
 
     await bidi_session.network.set_cache_behavior(cache_behavior="default")
 
-    assert await is_request_from_cache(cached_url) is True
+    assert await is_cache_enabled_for_context() is True
 
 
 @pytest.mark.parametrize("type_hint", ["tab", "window"])
 async def test_new_context(
-    bidi_session, setup_network_test, url, inline, is_request_from_cache, type_hint
+    bidi_session, setup_network_test, inline, is_cache_enabled_for_context, type_hint
 ):
     await setup_network_test(events=[RESPONSE_COMPLETED_EVENT])
 
-    cached_url = url(
-        f"/webdriver/tests/support/http_handlers/cached.py?status=200&nocache={random.random()}"
-    )
-
-    # The first request/response is used to fill the browser cache,
-    # so we expect fromCache to be False here.
-    assert await is_request_from_cache(cached_url) is False
-
-    # The second request for the same URL has to be read from the local cache.
-    assert await is_request_from_cache(cached_url) is True
+    # Make sure that cache is enabled by default.
+    assert await is_cache_enabled_for_context() is True
 
     await bidi_session.network.set_cache_behavior(cache_behavior="bypass")
 
-    assert await is_request_from_cache(cached_url) is False
+    assert await is_cache_enabled_for_context() is False
 
     # Create a new tab.
     new_context = await bidi_session.browsing_context.create(type_hint=type_hint)
@@ -62,7 +45,7 @@ async def test_new_context(
     )
 
     # Make sure that the new context still has cache disabled.
-    assert await is_request_from_cache(cached_url, context=new_context) is False
+    assert await is_cache_enabled_for_context(new_context) is False
 
     # Reset to default behavior.
     await bidi_session.network.set_cache_behavior(cache_behavior="default")

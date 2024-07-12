@@ -1156,6 +1156,231 @@ Sources:
 
   async_test((t) => {
     const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsOrigin']);
+
+    declarations.push(`background-image: url("${url}");`);
+
+    whenIframeReady
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_equals(headers['sec-fetch-frame-ancestors'], 'same-origin');
+        })
+        .then(t.step_func_done(), (error) => t.unreached_func());
+  }, 'background-image sec-fetch-frame-ancestors - Same origin');
+
+  async_test((t) => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsOrigin']);
+
+    declarations.push(`border-image: url("${url}");`);
+
+    whenIframeReady
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-origin']);
+        })
+      .then(t.step_func_done(), t.unreached_func());
+  }, 'border-image sec-fetch-frame-ancestors - Same origin');
+
+  async_test((t) => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsOrigin']);
+
+    declarations.push(`content: url("${url}");`);
+
+    whenIframeReady
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-origin']);
+        })
+      .then(t.step_func_done(), t.unreached_func());
+  }, 'content sec-fetch-frame-ancestors - Same origin');
+
+  async_test((t) => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsOrigin']);
+
+    declarations.push(`cursor: url("${url}"), auto;`);
+
+    whenIframeReady
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-origin']);
+        })
+      .then(t.step_func_done(), t.unreached_func());
+  }, 'cursor sec-fetch-frame-ancestors - Same origin');
+
+  async_test((t) => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsOrigin']);
+
+    declarations.push(`list-style-image: url("${url}");`);
+
+    whenIframeReady
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-origin']);
+        })
+      .then(t.step_func_done(), t.unreached_func());
+  }, 'list-style-image sec-fetch-frame-ancestors - Same origin');
+
+  async_test((t) => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsCrossSite']);
+
+    declarations.push(`background-image: url("${url}");`);
+
+    whenIframeReady
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_equals(headers['sec-fetch-frame-ancestors'], 'cross-site');
+        })
+        .then(t.step_func_done(), (error) => t.unreached_func());
+  }, 'background-image sec-fetch-frame-ancestors - Cross-site');
+
+  async_test((t) => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsCrossSite']);
+
+    declarations.push(`border-image: url("${url}");`);
+
+    whenIframeReady
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['cross-site']);
+        })
+      .then(t.step_func_done(), t.unreached_func());
+  }, 'border-image sec-fetch-frame-ancestors - Cross-site');
+
+  async_test((t) => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsCrossSite']);
+
+    declarations.push(`content: url("${url}");`);
+
+    whenIframeReady
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['cross-site']);
+        })
+      .then(t.step_func_done(), t.unreached_func());
+  }, 'content sec-fetch-frame-ancestors - Cross-site');
+
+  async_test((t) => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsCrossSite']);
+
+    declarations.push(`cursor: url("${url}"), auto;`);
+
+    whenIframeReady
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['cross-site']);
+        })
+      .then(t.step_func_done(), t.unreached_func());
+  }, 'cursor sec-fetch-frame-ancestors - Cross-site');
+
+  async_test((t) => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsCrossSite']);
+
+    declarations.push(`list-style-image: url("${url}");`);
+
+    whenIframeReady
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['cross-site']);
+        })
+      .then(t.step_func_done(), t.unreached_func());
+  }, 'list-style-image sec-fetch-frame-ancestors - Cross-site');
+
+  async_test((t) => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsSameSite']);
+
+    declarations.push(`background-image: url("${url}");`);
+
+    whenIframeReady
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_equals(headers['sec-fetch-frame-ancestors'], 'same-site');
+        })
+        .then(t.step_func_done(), (error) => t.unreached_func());
+  }, 'background-image sec-fetch-frame-ancestors - Same site');
+
+  async_test((t) => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsSameSite']);
+
+    declarations.push(`border-image: url("${url}");`);
+
+    whenIframeReady
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-site']);
+        })
+      .then(t.step_func_done(), t.unreached_func());
+  }, 'border-image sec-fetch-frame-ancestors - Same site');
+
+  async_test((t) => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsSameSite']);
+
+    declarations.push(`content: url("${url}");`);
+
+    whenIframeReady
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-site']);
+        })
+      .then(t.step_func_done(), t.unreached_func());
+  }, 'content sec-fetch-frame-ancestors - Same site');
+
+  async_test((t) => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsSameSite']);
+
+    declarations.push(`cursor: url("${url}"), auto;`);
+
+    whenIframeReady
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-site']);
+        })
+      .then(t.step_func_done(), t.unreached_func());
+  }, 'cursor sec-fetch-frame-ancestors - Same site');
+
+  async_test((t) => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsSameSite']);
+
+    declarations.push(`list-style-image: url("${url}");`);
+
+    whenIframeReady
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-site']);
+        })
+      .then(t.step_func_done(), t.unreached_func());
+  }, 'list-style-image sec-fetch-frame-ancestors - Same site');
+
+  async_test((t) => {
+    const key = '{{uuid()}}';
     const url = makeRequestURL(key, []);
 
     declarations.push(`background-image: url("${url}");`);

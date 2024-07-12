@@ -3,11 +3,11 @@
 This test was procedurally generated. Please do not modify it directly.
 Sources:
 - fetch/metadata/tools/fetch-metadata.conf.yml
-- fetch/metadata/tools/templates/header-link.sub.html
+- fetch/metadata/tools/templates/element-img.sub.html
 -->
 <html lang="en">
   <meta charset="utf-8">
-  <title>HTTP headers on request for HTTP "Link" header</title>
+  <title>HTTP headers on request for HTML "img" element source</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/fetch/metadata/resources/helper.sub.js"></script>
@@ -15,127 +15,108 @@ Sources:
   <script>
   'use strict';
 
-  function induceRequest(url, rel, test) {
-    const iframe = document.createElement('iframe');
+  function induceRequest(url, sourceAttr, attributes) {
+    const image = document.createElement('img');
 
-    iframe.setAttribute(
-      'src',
-      '/fetch/metadata/resources/header-link.py' +
-        `?location=${encodeURIComponent(url)}&rel=${rel}`
-    );
-
-    document.body.appendChild(iframe);
-    test.add_cleanup(() => iframe.remove());
+    for (const [ name, value ] of Object.entries(attributes)) {
+      image.setAttribute(name, value);
+    }
 
     return new Promise((resolve) => {
-        iframe.onload = iframe.onerror = resolve;
+        image.setAttribute(sourceAttr, url);
+        image.onload = image.onerror = resolve;
       });
   }
 
-  promise_test((t) => {
+  promise_test(() => {
     const key = '{{uuid()}}';
 
     return induceRequest(
-        makeRequestURL(key, ['httpsOrigin'], {mime: 'text/html'}),
-        'icon',
-        t
+        makeRequestURL(key, ['httpsOrigin']),
+        'src',
+        {}
       )
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-frame-ancestors');
           assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-origin']);
         });
-  }, 'sec-fetch-frame-ancestors rel=icon - Same origin');
+  }, 'sec-fetch-frame-ancestors - src - Same origin, no attributes');
 
-  promise_test((t) => {
+  promise_test(() => {
     const key = '{{uuid()}}';
 
     return induceRequest(
-        makeRequestURL(key, ['httpsOrigin'], {mime: 'text/html'}),
-        'stylesheet',
-        t
+        makeRequestURL(key, ['httpsOrigin']),
+        'srcset',
+        {}
       )
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-frame-ancestors');
           assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-origin']);
         });
-  }, 'sec-fetch-frame-ancestors rel=stylesheet - Same origin');
+  }, 'sec-fetch-frame-ancestors - srcset - Same origin, no attributes');
 
-  promise_test((t) => {
+  promise_test(() => {
     const key = '{{uuid()}}';
 
     return induceRequest(
-        makeRequestURL(key, ['httpsCrossSite'], {mime: 'text/html'}),
-        'icon',
-        t
+        makeRequestURL(key, ['httpsCrossSite']),
+        'src',
+        {}
       )
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-frame-ancestors');
           assert_array_equals(headers['sec-fetch-frame-ancestors'], ['cross-site']);
         });
-  }, 'sec-fetch-frame-ancestors rel=icon - Cross-site');
+  }, 'sec-fetch-frame-ancestors - src - Cross-site, no attributes');
 
-  promise_test((t) => {
+  promise_test(() => {
     const key = '{{uuid()}}';
 
     return induceRequest(
-        makeRequestURL(key, ['httpsCrossSite'], {mime: 'text/html'}),
-        'stylesheet',
-        t
+        makeRequestURL(key, ['httpsCrossSite']),
+        'srcset',
+        {}
       )
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-frame-ancestors');
           assert_array_equals(headers['sec-fetch-frame-ancestors'], ['cross-site']);
         });
-  }, 'sec-fetch-frame-ancestors rel=stylesheet - Cross-site');
+  }, 'sec-fetch-frame-ancestors - srcset - Cross-site, no attributes');
 
-  promise_test((t) => {
+  promise_test(() => {
     const key = '{{uuid()}}';
 
     return induceRequest(
-        makeRequestURL(key, ['httpsSameSite'], {mime: 'text/html'}),
-        'icon',
-        t
+        makeRequestURL(key, ['httpsSameSite']),
+        'src',
+        {}
       )
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-frame-ancestors');
           assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-site']);
         });
-  }, 'sec-fetch-frame-ancestors rel=icon - Same site');
+  }, 'sec-fetch-frame-ancestors - src - Same site, no attributes');
 
-  promise_test((t) => {
+  promise_test(() => {
     const key = '{{uuid()}}';
 
     return induceRequest(
-        makeRequestURL(key, ['httpsSameSite'], {mime: 'text/html'}),
-        'stylesheet',
-        t
+        makeRequestURL(key, ['httpsSameSite']),
+        'srcset',
+        {}
       )
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-frame-ancestors');
           assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-site']);
         });
-  }, 'sec-fetch-frame-ancestors rel=stylesheet - Same site');
-
-  promise_test((t) => {
-    const key = '{{uuid()}}';
-
-    return induceRequest(
-        makeRequestURL(key, [], {mime: 'text/html'}),
-        'stylesheet',
-        t
-      )
-      .then(() => retrieve(key))
-      .then((headers) => {
-          assert_own_property(headers, 'sec-fetch-dest');
-          assert_array_equals(headers['sec-fetch-dest'], ['style']);
-        });
-  }, 'sec-fetch-dest rel=stylesheet');
+  }, 'sec-fetch-frame-ancestors - srcset - Same site, no attributes');
   </script>
   </body>
 </html>

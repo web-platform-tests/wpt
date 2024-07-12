@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<!--
+This test was procedurally generated. Please do not modify it directly.
+Sources:
+- fetch/metadata/tools/fetch-metadata.conf.yml
+- fetch/metadata/tools/templates/element-img.sub.html
+-->
+<html lang="en">
+  <meta charset="utf-8">
+  <title>HTTP headers on request for HTML "img" element source</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/fetch/metadata/resources/helper.sub.js"></script>
+  <body>
+  <script>
+  'use strict';
+
+  function induceRequest(url, sourceAttr, attributes) {
+    const image = document.createElement('img');
+
+    for (const [ name, value ] of Object.entries(attributes)) {
+      image.setAttribute(name, value);
+    }
+
+    return new Promise((resolve) => {
+        image.setAttribute(sourceAttr, url);
+        image.onload = image.onerror = resolve;
+      });
+  }
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+
+    return induceRequest(
+        makeRequestURL(key, ['httpOrigin']),
+        'src',
+        {}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-frame-ancestors');
+        });
+  }, 'sec-fetch-frame-ancestors - src - Not sent to non-trustworthy same-origin destination, no attributes');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+
+    return induceRequest(
+        makeRequestURL(key, ['httpOrigin']),
+        'srcset',
+        {}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-frame-ancestors');
+        });
+  }, 'sec-fetch-frame-ancestors - srcset - Not sent to non-trustworthy same-origin destination, no attributes');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+
+    return induceRequest(
+        makeRequestURL(key, ['httpSameSite']),
+        'src',
+        {}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-frame-ancestors');
+        });
+  }, 'sec-fetch-frame-ancestors - src - Not sent to non-trustworthy same-site destination, no attributes');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+
+    return induceRequest(
+        makeRequestURL(key, ['httpSameSite']),
+        'srcset',
+        {}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-frame-ancestors');
+        });
+  }, 'sec-fetch-frame-ancestors - srcset - Not sent to non-trustworthy same-site destination, no attributes');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+
+    return induceRequest(
+        makeRequestURL(key, ['httpCrossSite']),
+        'src',
+        {}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-frame-ancestors');
+        });
+  }, 'sec-fetch-frame-ancestors - src - Not sent to non-trustworthy cross-site destination, no attributes');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+
+    return induceRequest(
+        makeRequestURL(key, ['httpCrossSite']),
+        'srcset',
+        {}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-frame-ancestors');
+        });
+  }, 'sec-fetch-frame-ancestors - srcset - Not sent to non-trustworthy cross-site destination, no attributes');
+  </script>
+  </body>
+</html>

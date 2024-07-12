@@ -3,32 +3,39 @@
 This test was procedurally generated. Please do not modify it directly.
 Sources:
 - fetch/metadata/tools/fetch-metadata.conf.yml
-- fetch/metadata/tools/templates/header-link.sub.html
+- fetch/metadata/tools/templates/fetch-via-serviceworker.https.sub.html
 -->
 <html lang="en">
   <meta charset="utf-8">
-  <title>HTTP headers on request for HTTP "Link" header</title>
+  <title>HTTP headers on request using the "fetch" API and passing through a Serive Worker</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
   <script src="/fetch/metadata/resources/helper.sub.js"></script>
   <body>
   <script>
   'use strict';
 
-  function induceRequest(url, rel, test) {
-    const iframe = document.createElement('iframe');
+  const scripts = {
+    fallback: '/fetch/metadata/resources/fetch-via-serviceworker--fallback--sw.js',
+    respondWith: '/fetch/metadata/resources/fetch-via-serviceworker--respondWith--sw.js'
+  };
 
-    iframe.setAttribute(
-      'src',
-      '/fetch/metadata/resources/header-link.py' +
-        `?location=${encodeURIComponent(url)}&rel=${rel}`
-    );
+  function induceRequest(t, url, init, script) {
+    const SCOPE = '/fetch/metadata/resources/fetch-via-serviceworker-frame.html';
+    const SCRIPT = scripts[script];
 
-    document.body.appendChild(iframe);
-    test.add_cleanup(() => iframe.remove());
+    return service_worker_unregister_and_register(t, SCRIPT, SCOPE)
+      .then((registration) => {
+        t.add_cleanup(() => registration.unregister());
 
-    return new Promise((resolve) => {
-        iframe.onload = iframe.onerror = resolve;
+        return wait_for_state(t, registration.installing, 'activated');
+      })
+      .then(() => with_iframe(SCOPE))
+      .then((frame) => {
+        t.add_cleanup(() => frame.remove());
+
+        return frame.contentWindow.fetch(url, init);
       });
   }
 
@@ -36,106 +43,98 @@ Sources:
     const key = '{{uuid()}}';
 
     return induceRequest(
-        makeRequestURL(key, ['httpsOrigin'], {mime: 'text/html'}),
-        'icon',
-        t
+        t,
+        makeRequestURL(key, ['httpsOrigin']),
+        {"mode": "no-cors"},
+        'respondWith'
       )
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-frame-ancestors');
           assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-origin']);
         });
-  }, 'sec-fetch-frame-ancestors rel=icon - Same origin');
+  }, 'sec-fetch-frame-ancestors - Same origin, init: mode=no-cors - respondWith');
 
   promise_test((t) => {
     const key = '{{uuid()}}';
 
     return induceRequest(
-        makeRequestURL(key, ['httpsOrigin'], {mime: 'text/html'}),
-        'stylesheet',
-        t
+        t,
+        makeRequestURL(key, ['httpsOrigin']),
+        {"mode": "no-cors"},
+        'fallback'
       )
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-frame-ancestors');
           assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-origin']);
         });
-  }, 'sec-fetch-frame-ancestors rel=stylesheet - Same origin');
+  }, 'sec-fetch-frame-ancestors - Same origin, init: mode=no-cors - fallback');
 
   promise_test((t) => {
     const key = '{{uuid()}}';
 
     return induceRequest(
-        makeRequestURL(key, ['httpsCrossSite'], {mime: 'text/html'}),
-        'icon',
-        t
+        t,
+        makeRequestURL(key, ['httpsCrossSite']),
+        {"mode": "no-cors"},
+        'respondWith'
       )
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-frame-ancestors');
           assert_array_equals(headers['sec-fetch-frame-ancestors'], ['cross-site']);
         });
-  }, 'sec-fetch-frame-ancestors rel=icon - Cross-site');
+  }, 'sec-fetch-frame-ancestors - Cross-site, init: mode=no-cors - respondWith');
 
   promise_test((t) => {
     const key = '{{uuid()}}';
 
     return induceRequest(
-        makeRequestURL(key, ['httpsCrossSite'], {mime: 'text/html'}),
-        'stylesheet',
-        t
+        t,
+        makeRequestURL(key, ['httpsCrossSite']),
+        {"mode": "no-cors"},
+        'fallback'
       )
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-frame-ancestors');
           assert_array_equals(headers['sec-fetch-frame-ancestors'], ['cross-site']);
         });
-  }, 'sec-fetch-frame-ancestors rel=stylesheet - Cross-site');
+  }, 'sec-fetch-frame-ancestors - Cross-site, init: mode=no-cors - fallback');
 
   promise_test((t) => {
     const key = '{{uuid()}}';
 
     return induceRequest(
-        makeRequestURL(key, ['httpsSameSite'], {mime: 'text/html'}),
-        'icon',
-        t
+        t,
+        makeRequestURL(key, ['httpsSameSite']),
+        {"mode": "no-cors"},
+        'respondWith'
       )
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-frame-ancestors');
           assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-site']);
         });
-  }, 'sec-fetch-frame-ancestors rel=icon - Same site');
+  }, 'sec-fetch-frame-ancestors - Same site, init: mode=no-cors - respondWith');
 
   promise_test((t) => {
     const key = '{{uuid()}}';
 
     return induceRequest(
-        makeRequestURL(key, ['httpsSameSite'], {mime: 'text/html'}),
-        'stylesheet',
-        t
+        t,
+        makeRequestURL(key, ['httpsSameSite']),
+        {"mode": "no-cors"},
+        'fallback'
       )
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-frame-ancestors');
           assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-site']);
         });
-  }, 'sec-fetch-frame-ancestors rel=stylesheet - Same site');
+  }, 'sec-fetch-frame-ancestors - Same site, init: mode=no-cors - fallback');
 
-  promise_test((t) => {
-    const key = '{{uuid()}}';
-
-    return induceRequest(
-        makeRequestURL(key, [], {mime: 'text/html'}),
-        'stylesheet',
-        t
-      )
-      .then(() => retrieve(key))
-      .then((headers) => {
-          assert_own_property(headers, 'sec-fetch-dest');
-          assert_array_equals(headers['sec-fetch-dest'], ['style']);
-        });
-  }, 'sec-fetch-dest rel=stylesheet');
   </script>
   </body>
 </html>

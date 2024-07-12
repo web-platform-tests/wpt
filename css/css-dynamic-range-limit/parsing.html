@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<title>Parsing dynamic-range-limit with valid and invalid values</title>
+<link rel="help" href="https://drafts.csswg.org/css-color-hdr/#the-dynamic-range-limit-property">
+<meta name="assert" content="Parsing of dynamic-range-limit">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+
+<script>
+  test_valid_value("dynamic-range-limit", "standard");
+  test_valid_value("dynamic-range-limit", "high");
+  test_valid_value("dynamic-range-limit", "constrained-high");
+  test_valid_value("dynamic-range-limit", "dynamic-range-limit-mix(high, standard, 20%)");
+  test_valid_value("dynamic-range-limit", "dynamic-range-limit-mix(constrained-high, high, 80%)");
+  test_valid_value("dynamic-range-limit",
+      "dynamic-range-limit-mix(" +
+          "dynamic-range-limit-mix(constrained-high, high, 10%), " +
+          "high, " +
+          "80%)");
+  test_valid_value("dynamic-range-limit",
+      "dynamic-range-limit-mix(" +
+          "high, " +
+          "dynamic-range-limit-mix(constrained-high, high, 10%), " +
+          "80%)");
+  test_valid_value("dynamic-range-limit",
+      "dynamic-range-limit-mix(" +
+          "dynamic-range-limit-mix(high, standard, 30%), " +
+          "dynamic-range-limit-mix(constrained-high, high, 10%), " +
+          "80%)");
+  test_invalid_value("dynamic-range-limit", "none");
+  test_invalid_value("dynamic-range-limit", "default");
+  test_invalid_value("dynamic-range-limit", "hdr");
+  test_invalid_value("dynamic-range-limit", "sdr");
+  test_invalid_value("dynamic-range-limit", "low");
+  test_invalid_value("dynamic-range-limit", "dynamic-range-limit-mix(low, high, 10%)");
+  test_invalid_value("dynamic-range-limit", "dynamic-range-limit-mix(standard, high, 0.1)");
+</script>

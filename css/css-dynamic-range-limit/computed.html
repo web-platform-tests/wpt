@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<title>Computed value of dynamic-range-limit</title>
+<link rel="help" href="https://drafts.csswg.org/css-color-hdr/#the-dynamic-range-limit-property">
+<meta name="assert" content="Computed value of dynamic-range-limit">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+
+<div id="target"></div>
+
+<script>
+test_computed_value("dynamic-range-limit", "high");
+test_computed_value("dynamic-range-limit", "constrained-high");
+test_computed_value("dynamic-range-limit", "standard");
+test_computed_value("dynamic-range-limit", "dynamic-range-limit-mix(standard, high, 25%)");
+test_computed_value("dynamic-range-limit", "dynamic-range-limit-mix(standard, high, 75%)");
+test_computed_value("dynamic-range-limit", "dynamic-range-limit-mix(standard, constrained-high, 25%)");
+test_computed_value("dynamic-range-limit", "dynamic-range-limit-mix(standard, constrained-high, 75%)");
+test_computed_value("dynamic-range-limit", "dynamic-range-limit-mix(constrained-high, standard, 25%)");
+test_computed_value("dynamic-range-limit", "dynamic-range-limit-mix(constrained-high, standard, 75%)");
+test_computed_value("dynamic-range-limit", "dynamic-range-limit-mix(constrained-high, high, 25%)");
+test_computed_value("dynamic-range-limit", "dynamic-range-limit-mix(constrained-high, high, 75%)");
+test_computed_value("dynamic-range-limit", "dynamic-range-limit-mix(high, standard, 25%)");
+test_computed_value("dynamic-range-limit", "dynamic-range-limit-mix(high, standard, 75%)");
+test_computed_value("dynamic-range-limit", "dynamic-range-limit-mix(high, constrained-high, 25%)");
+test_computed_value("dynamic-range-limit", "dynamic-range-limit-mix(high, constrained-high, 75%)");
+test_computed_value("dynamic-range-limit",
+    "dynamic-range-limit-mix(" +
+        "dynamic-range-limit-mix(standard, high, 10%), " +
+        "dynamic-range-limit-mix(standard, high, 90%), " +
+        "50%)";
+</script>

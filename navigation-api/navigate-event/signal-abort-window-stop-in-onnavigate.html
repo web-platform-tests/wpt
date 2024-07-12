@@ -1,24 +1,24 @@
 <!doctype html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="../navigation-methods/return-value/resources/helpers.js"></script>
 <script>
-async_test(t => {
-  window.onload = t.step_func_done(() => {
-    let abort_signal;
-    let onabort_called = false;
-    let canceled_in_second_handler = false;
-    navigation.addEventListener("navigate", t.step_func(e => {
-      abort_signal = e.signal;
-      abort_signal.onabort = () => onabort_called = true;
-      window.stop();
-    }));
-    navigation.addEventListener("navigate", t.step_func(e => {
-      canceled_in_second_handler = e.defaultPrevented;
-    }));
-    navigation.navigate("?1");
-    assert_true(abort_signal.aborted);
-    assert_true(onabort_called);
-    assert_true(canceled_in_second_handler);
-  });
+promise_test(async t => {
+  await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
+  let abort_signal;
+  let onabort_called = false;
+  let canceled_in_second_handler = false;
+  navigation.addEventListener("navigate", t.step_func(e => {
+    abort_signal = e.signal;
+    abort_signal.onabort = () => onabort_called = true;
+    window.stop();
+  }));
+  navigation.addEventListener("navigate", t.step_func(e => {
+    canceled_in_second_handler = e.defaultPrevented;
+  }));
+  await assertBothRejectDOM(t, navigation.navigate("?1"), "AbortError");
+  assert_true(abort_signal.aborted);
+  assert_true(onabort_called);
+  assert_true(canceled_in_second_handler);
 }, "window.stop() signals event.signal inside a navigate event handler");
 </script>

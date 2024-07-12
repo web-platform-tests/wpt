@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 // This intentionally does not use resources/urltestdata.json to preserve resources.
 [
   {

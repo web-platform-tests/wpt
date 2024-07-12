@@ -3,7 +3,7 @@
 // META: script=resources/fledge-util.sub.js
 // META: timeout=long
 
-"use strict;"
+"use strict";
 
 promise_test(async test => {
   const uuid = generateUuid(test);

@@ -17,7 +17,7 @@
 // META: variant=?56-60
 // META: variant=?61-last
 
-"use strict;"
+"use strict";
 
 // The tests in this file focus on calls to runAdAuction with various
 // auctionConfigs.

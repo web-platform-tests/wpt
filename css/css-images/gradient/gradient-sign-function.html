@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>CSS Images Test: sign() function works in gradients</title>
+<link rel="help" href="https://drafts.csswg.org/css-values-4/#sign-funcs">
+<link rel="help" href="https://drafts.csswg.org/css-images-4/#linear-gradients">
+<link rel="match" href="gradient-sign-function-ref.html">
+<style>
+    #test1 {
+        font-size: 10px;
+        background: linear-gradient(red calc(40% * sign(1em - 9px)),
+                                    yellow calc(30% * sign(1em - 9px)),
+                                    blue calc(65% * sign(1em - 9px)));
+        width: 100px;
+        height: 100px;
+    }
+    #test2 {
+        font-size: 10px;
+        background: radial-gradient(red calc(40% * sign(1em - 9px)),
+                                    yellow calc(30% * sign(1em - 9px)),
+                                    blue calc(65% * sign(1em - 9px)));
+        width: 100px;
+        height: 100px;
+    }
+</style>
+<div id="test1"></div>
+<div id="test2"></div>

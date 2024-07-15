@@ -222,3 +222,45 @@ test((t) => {
   assert_equals(getComputedStyle(second).zIndex, '1');
 }, '@scope with sibling style sharing, second sibling enters scope with :has');
 </script>
+
+<template id=test_11>
+  <style>
+    @scope (#first) {
+      :scope {
+        z-index: 1;
+      }
+    }
+  </style>
+  <div id="first" class="sibling"></div>
+  <div id="second" class="sibling"></div>
+</template>
+<script>
+test((t) => {
+  t.add_cleanup(() => main.replaceChildren());
+  main.append(test_11.content.cloneNode(true));
+
+  assert_equals(getComputedStyle(first).zIndex, '1');
+  assert_equals(getComputedStyle(second).zIndex, 'auto');
+}, '@scope with sibling style sharing, first sibling enters scope with ID selector');
+</script>
+
+<template id=test_12>
+  <style>
+    @scope (#second) {
+      :scope {
+        z-index: 1;
+      }
+    }
+  </style>
+  <div id="first" class="sibling"></div>
+  <div id="second" class="sibling"></div>
+</template>
+<script>
+test((t) => {
+  t.add_cleanup(() => main.replaceChildren());
+  main.append(test_12.content.cloneNode(true));
+
+  assert_equals(getComputedStyle(first).zIndex, 'auto');
+  assert_equals(getComputedStyle(second).zIndex, '1');
+}, '@scope with sibling style sharing, second sibling enters scope with ID selector');
+</script>

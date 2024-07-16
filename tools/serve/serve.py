@@ -754,7 +754,9 @@ def check_subdomains(logger, config, routes, mp_context, log_handlers):
 def make_hosts_file(config, host):
     rv = []
 
-    for domain in config.domains_set:
+    for domain in sorted(
+        config.domains_set, key=lambda x: tuple(reversed(x.split(".")))
+    ):
         rv.append("%s\t%s\n" % (host, domain))
 
     # Windows interpets the IP address 0.0.0.0 as non-existent, making it an
@@ -765,7 +767,9 @@ def make_hosts_file(config, host):
     #
     # https://github.com/web-platform-tests/wpt/issues/10560
     if platform.uname()[0] == "Windows":
-        for not_domain in config.not_domains_set:
+        for not_domain in sorted(
+            config.not_domains_set, key=lambda x: tuple(reversed(x.split(".")))
+        ):
             rv.append("0.0.0.0\t%s\n" % not_domain)
 
     return "".join(rv)

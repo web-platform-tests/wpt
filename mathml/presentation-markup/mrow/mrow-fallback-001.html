@@ -32,6 +32,7 @@
       let description = element.dataset.description;
       test(function() {
         compareLayout(element, reference, epsilon);
+        assert_approx_equals(element.getBoundingClientRect().top, reference.getBoundingClientRect().top, epsilon);
       }, `Invalid <${element.tagName}> should lay out as an mrow (${description})`);
     }
 

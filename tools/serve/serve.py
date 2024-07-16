@@ -752,12 +752,12 @@ def check_subdomains(logger, config, routes, mp_context, log_handlers):
 
 
 def make_hosts_file(config, host):
-    rv = []
+    rv = ["# Start web-platform-tests hosts"]
 
     for domain in sorted(
         config.domains_set, key=lambda x: tuple(reversed(x.split(".")))
     ):
-        rv.append("%s\t%s\n" % (host, domain))
+        rv.append("%s\t%s" % (host, domain))
 
     # Windows interpets the IP address 0.0.0.0 as non-existent, making it an
     # appropriate alias for non-existent hosts. However, UNIX-like systems
@@ -770,9 +770,12 @@ def make_hosts_file(config, host):
         for not_domain in sorted(
             config.not_domains_set, key=lambda x: tuple(reversed(x.split(".")))
         ):
-            rv.append("0.0.0.0\t%s\n" % not_domain)
+            rv.append("0.0.0.0\t%s" % not_domain)
 
-    return "".join(rv)
+    rv.append("# End web-platform-tests hosts")
+    rv.append("")
+
+    return "\n".join(rv)
 
 
 def start_servers(logger, host, ports, paths, routes, bind_address, config,

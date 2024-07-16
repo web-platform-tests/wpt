@@ -1,13 +1,9 @@
 <!DOCTYPE html>
 <title>CSS Anchor Positioning: Pseudo elements as anchors</title>
-<link
-  rel="help"
-  href="https://drafts.csswg.org/css-anchor-1/#position-anchor"
-/>
+<link rel="help" href="https://drafts.csswg.org/css-anchor-1/#position-anchor">
 <script src="/resources/testharness.js"></script>
 <script src="support/test-common.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/rendering-utils.js"></script>
 <style>
   .cb {
     position: relative;
@@ -38,12 +34,8 @@
     top: anchor(bottom);
     background: orange;
   }
-  #anchored1 {
-    position-anchor: --a1;
-  }
-  #anchored2 {
-    position-anchor: --a2;
-  }
+  #anchored1 { position-anchor: --a1; }
+  #anchored2 { position-anchor: --a2; }
 </style>
 <div class="cb">
   <div id="anchor1"></div>

@@ -42,7 +42,7 @@
       assert_equals(event.target, target);
   }
 
-  test(async (t) => {
+  promise_test(async (t) => {
     const text = 'text_inside_shadow';
     const host = reset(text);
     await dblclick(t, host);

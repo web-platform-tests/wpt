@@ -39,7 +39,7 @@ const context = canvas.getContext("2d");
     "output": "color(srgb 1 none 1)" // one could argue for #ff00ff here?
   },
   {
-    "input": "color(srgb none -1 2 / 3)", // alpha is clamped to [0, 1] 
+    "input": "color(srgb none -1 2 / 3)", // alpha is clamped to [0, 1]
     "output": "color(srgb none -1 2)"
   },
   {
@@ -55,7 +55,7 @@ const context = canvas.getContext("2d");
     "output": "rgba(0, 0, 0, 0)"
   }
 ].forEach(({ input, output }) => {
-  test(t => {
+  test(() => {
     ["fillStyle", "strokeStyle", "shadowColor"].forEach(colorGetterSetter => {
       context[colorGetterSetter] = input;
       assert_equals(context[colorGetterSetter], output, colorGetterSetter);

@@ -16,9 +16,9 @@ body {
 </body>
 <script>
     const iframe = document.getElementById('iframe');
-    iframe.contentWindow.location.reload();
-    iframe.contentWindow.onload = function(){
+    iframe.contentWindow.onload = function() {
         document.documentElement.classList.remove("reftest-wait");
     };
+    iframe.contentWindow.location.reload();
 </script>
 </html>

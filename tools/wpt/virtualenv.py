@@ -58,7 +58,6 @@ class Virtualenv:
 
     @property
     def pip_path(self):
-        print(f"pip_path, self.bin_path is {self.bin_path}", file=sys.stderr)
         path = which("pip3", path=self.bin_path)
         if path is None:
             path = which("pip", path=self.bin_path)

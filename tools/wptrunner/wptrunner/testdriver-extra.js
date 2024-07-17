@@ -125,7 +125,6 @@
         return selector;
     };
 
-    // NOTE(alice): this is where the action is :D
     const create_action = function(name, props) {
         let cmd_id;
         const action_msg = {type: "action",

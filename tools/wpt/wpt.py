@@ -127,7 +127,6 @@ def create_complete_parser():
     # `wpt build-docs` command but we need to look up the environment to
     # find out where it's located.
     venv_path = os.environ["VIRTUAL_ENV"]
-    print(f"venv_path: {venv_path}", file=sys.stderr)
     venv = virtualenv.Virtualenv(venv_path, True)
 
     for command in commands:

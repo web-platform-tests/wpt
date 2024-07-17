@@ -20,7 +20,7 @@ oleaccMod = comtypes.client.GetModule("oleacc.dll")
 IAccessible = oleaccMod.IAccessible
 del oleaccMod
 
-## CoCreateInstance of UIA also initialized IA2
+# CoCreateInstance of UIA also initializes IA2
 uiaMod = comtypes.client.GetModule("UIAutomationCore.dll")
 uiaClient = comtypes.CoCreateInstance(
     uiaMod.CUIAutomation._reg_clsid_,

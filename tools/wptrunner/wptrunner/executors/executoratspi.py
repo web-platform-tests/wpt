@@ -8,31 +8,32 @@ import time
 
 import sys
 
-def poll_for_active_tab(root):
-    active_tab = find_active_tab(root)
+
+def poll_for_active_tab(root, logger, product):
+    active_tab = find_active_tab(root, product)
     iterations = 0
     while not active_tab:
         time.sleep(0.01)
-        active_tab = find_active_tab(root)
+        active_tab = find_active_tab(root, product)
         iterations += 1
 
-    print(f"found active tab in {iterations} iterations", file=sys.stderr)
+    logger.debug(f"Found ATSPI active tab in {iterations} iterations")
     return active_tab
 
 
-def find_active_tab(root):
+def find_active_tab(root, product):
     stack = [root]
-    root_role = Atspi.Accessible.get_role_name(root)
     while stack:
         node = stack.pop()
-        role= Atspi.Accessible.get_role_name(node)
         if Atspi.Accessible.get_role_name(node) == "frame":
-            attributes = Atspi.Accessible.get_attributes(node)
-            ## Helper: list of string relations, get targets for relation?
             relationset = Atspi.Accessible.get_relation_set(node)
             for relation in relationset:
                 if relation.get_relation_type() == Atspi.RelationType.EMBEDS:
-                    return relation.get_target(0)
+                    active_tab = relation.get_target(0)
+                    if is_ready(active_tab, product):
+                        return active_tab
+                    else:
+                        return None
             continue
 
         for i in range(Atspi.Accessible.get_child_count(node)):
@@ -40,6 +41,24 @@ def find_active_tab(root):
             stack.append(child)
 
     return None
+
+
+def is_ready(active_tab, product):
+    # Firefox uses the "BUSY" state to indicate the page is not ready.
+    if product == "firefox":
+        state_set = Atspi.Accessible.get_state_set(active_tab)
+        return not Atspi.StateSet.contains(state_set, Atspi.StateType.BUSY)
+
+    # Chromium family browsers do not use "BUSY", but you can
+    # tell if the document can be queried by Title attribute. If the 'Title'
+    # attribute is not here, we need to query for a new accessible object.
+    # TODO: eventually we should test this against the actual title of the
+    # page being tested.
+    document = Atspi.Accessible.get_document_iface(active_tab)
+    document_attributes = Atspi.Document.get_document_attributes(document)
+    if "Title" in document_attributes and document_attributes["Title"]:
+        return True
+    return False
 
 
 def serialize_node(node):
@@ -80,43 +99,31 @@ def find_browser(name):
 
 
 class AtspiExecutorImpl:
-    def setup(self, product_name):
+    def setup(self, product_name, logger):
+        self.logger = logger
         self.product_name = product_name
         self.full_app_name = ""
         self.root = None
         self.found_browser = False
 
         (self.root, self.full_app_name) = find_browser(self.product_name)
-        if self.root:
-            self.found_browser = True
-        else:
-            print(
-                f"Cannot find root accessibility node for {self.product_name} - did you turn on accessibility?"
+        if not self.root:
+            self.logger.error(
+                f"Couldn't find browser {self.product_name} in accessibility API ATSPI. Accessibility API queries will not succeeded."
             )
 
     def get_accessibility_api_node(self, dom_id):
-        if not self.found_browser:
+        if not self.root:
             raise Exception(
-                f"Couldn't find browser {self.product_name}. Did you turn on accessibility?"
+                f"Couldn't find browser {self.product_name} in accessibility API ATSPI. Did you turn on accessibility?"
             )
 
-        active_tab = poll_for_active_tab(self.root)
+        active_tab = poll_for_active_tab(self.root, self.logger, self.product_name)
 
-        state_set = Atspi.Accessible.get_state_set(active_tab)
-        iterations = 0
-        while Atspi.StateSet.contains(state_set, Atspi.StateType.BUSY):
-            state_set = Atspi.Accessible.get_state_set(active_tab)
-            iterations += 1
-        print(f"active tab no longer busy after {iterations} iterations", file=sys.stderr)
-        role = Atspi.Accessible.get_role_name(active_tab)
-        attributes = Atspi.Accessible.get_attributes(active_tab)
-        print(f"active tab role: {role}; attributes: {attributes}", file=sys.stderr)
-        document = Atspi.Accessible.get_document_iface(active_tab)
-        document_attributes = Atspi.Document.get_document_attributes(document)
-        url = document_attributes["DocURL"]
-        print(f"document: {document}; attributes: {document_attributes}, url: {url}", file=sys.stderr)
         node = find_node(active_tab, dom_id)
         if not node:
-            raise Exception(f"Couldn't find node with id {dom_id}.")
+            raise Exception(
+                f"Couldn't find node with id={dom_id} in accessibility API ATSPI."
+            )
 
         return json.dumps(serialize_node(node))

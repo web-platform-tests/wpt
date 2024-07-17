@@ -9,10 +9,10 @@
 
 <body>
   <iframe id="same-origin"></iframe>
-  <iframe id="cross-origin"></iframe>
+  <iframe id="cross-origin" allow="digital-credentials-get"></iframe>
 </body>
 <script type="module">
-  import { makeGetOptions, sendMessage, loadIFrame } from "./support/helper.js";
+  import { makeGetOptions, sendMessage, loadIframe } from "./support/helper.js";
 
   const iframeSameOrigin = document.querySelector("iframe#same-origin");
   const iframeCrossOrigin = document.querySelector("iframe#cross-origin");
@@ -29,8 +29,13 @@
   });
 
   promise_test(async (t) => {
+    await test_driver.bless("user activation");
     promise_rejects_dom(t, "NotSupportedError", navigator.identity.get());
+
+    await test_driver.bless("user activation");
     promise_rejects_dom(t, "NotSupportedError", navigator.identity.get({}));
+
+    await test_driver.bless("user activation");
     promise_rejects_dom(
       t,
       "NotSupportedError",
@@ -39,19 +44,26 @@
   }, "Calling navigator.identity.get() without an digital member.");
 
   promise_test(async (t) => {
+    iframeSameOrigin.focus();
     const { contentWindow: iframeWindow } = iframeSameOrigin;
+
+    await test_driver.bless("user activation");
     promise_rejects_dom(
       t,
       "NotSupportedError",
       iframeWindow.DOMException,
       iframeWindow.navigator.identity.get()
     );
+
+    await test_driver.bless("user activation");
     promise_rejects_dom(
       t,
       "NotSupportedError",
       iframeWindow.DOMException,
       iframeWindow.navigator.identity.get({})
     );
+
+    await test_driver.bless("user activation");
     promise_rejects_dom(
       t,
       "NotSupportedError",
@@ -63,14 +75,17 @@
   promise_test(async (t) => {
     for (const provider of [undefined, []]) {
       const options = makeGetOptions(provider);
+      await test_driver.bless("user activation");
       await promise_rejects_js(t, TypeError, navigator.identity.get(options));
     }
   }, "navigator.identity.get() API rejects if there are no providers.");
 
   promise_test(async (t) => {
+    iframeSameOrigin.focus();
     const { contentWindow: iframeWindow } = iframeSameOrigin;
     for (const provider of [undefined, []]) {
       const options = makeGetOptions(provider);
+      await test_driver.bless("user activation");
       await promise_rejects_js(
         t,
         iframeWindow.TypeError,
@@ -80,6 +95,7 @@
   }, "navigator.identity.get() API rejects if there are no providers for same-origin iframe.");
 
   promise_test(async (t) => {
+    iframeCrossOrigin.focus();
     for (const provider of [undefined, []]) {
       const options = makeGetOptions(provider);
       const result = await sendMessage(iframeCrossOrigin, {
@@ -109,11 +125,16 @@
     const { signal } = abortController;
     abortController.abort();
     for (const options of [{ signal }, { signal, ...makeGetOptions([]) }]) {
+      await test_driver.bless("user activation");
       await promise_rejects_dom(
         t,
         "AbortError",
         iframeWindow.DOMException,
         iframeWindow.navigator.identity.get(options)
+      );
+      assert_true(
+        navigator.userActivation.isActive,
+        "User activation is still active."
       );
     }
   }, "navigator.identity.get() promise is rejected if called with an aborted signal in same-origin iframe.");

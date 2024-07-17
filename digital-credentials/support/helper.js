@@ -77,7 +77,7 @@ export function sendMessage(iframe, data) {
  * @param {string|URL} url
  * @returns {Promise<void>}
  */
-export function loadIFrame(iframe, url) {
+export function loadIframe(iframe, url) {
   return new Promise((resolve, reject) => {
     iframe.addEventListener("load", resolve, { once: true });
     iframe.addEventListener("error", reject, { once: true });

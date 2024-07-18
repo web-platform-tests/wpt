@@ -21,8 +21,10 @@ iframe {
         let loadCount = 0;
         const iframe = document.createElement("iframe");
         iframe.addEventListener("load", function() {
-            if (loadCount == 2)
+            if (loadCount == 2) {
                 document.documentElement.classList.remove("reftest-wait");
+                return;
+            }
             iframe.contentWindow.location.reload();
             loadCount++;
         });

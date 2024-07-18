@@ -48,7 +48,7 @@
     await dblclick(t, host);
     const node = getSelection().anchorNode;
     assert_equals(node, container, 'getSelection().anchorNode should return the host of the shadow');
-    assert_not_equals(node.textContent, text, 'getSelection().anchorNode textContent should not be the text contents of the shadow');
+    assert_not_equals(node.textContent, text, 'getSelection().anchorNode textContent should not be the text contents of an element inside the shadow root');
   }, 'selection API should not leak nodes in Shadow DOM.');
 </script>
 </html>

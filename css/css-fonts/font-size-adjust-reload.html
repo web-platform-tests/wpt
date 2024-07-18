@@ -20,12 +20,12 @@ iframe {
     <script>
         const loadCount = 0;
         const iframe = document.createElement("iframe");
-        iframe.src = "font-size-adjust-reload-ref.html";
         iframe.addEventListener("load", function() {
             if (loadCount == 2)
                 document.documentElement.classList.remove("reftest-wait");
             loadCount++;
         });
+        iframe.src = "font-size-adjust-reload-ref.html";
         document.body.append(iframe);
         iframe.contentWindow.location.reload();
     </script>

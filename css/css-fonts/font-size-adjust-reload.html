@@ -23,11 +23,11 @@ iframe {
         iframe.addEventListener("load", function() {
             if (loadCount == 2)
                 document.documentElement.classList.remove("reftest-wait");
+            iframe.contentWindow.location.reload();
             loadCount++;
         });
-        iframe.src = "font-size-adjust-reload-ref.html";
+        iframe.src = "./font-size-adjust-reload-ref.html";
         document.body.append(iframe);
-        iframe.contentWindow.location.reload();
     </script>
 </body>
 </html>

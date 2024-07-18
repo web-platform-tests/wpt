@@ -11,13 +11,10 @@ import sys
 
 def poll_for_active_tab(root, logger, product):
     active_tab = find_active_tab(root, product)
-    iterations = 0
     while not active_tab:
         time.sleep(0.01)
         active_tab = find_active_tab(root, product)
-        iterations += 1
 
-    logger.debug(f"Found ATSPI active tab in {iterations} iterations")
     return active_tab
 
 

@@ -102,7 +102,6 @@ class AtspiExecutorImpl:
         self.document = None
         self.test_url = None
 
-
         (self.root, self.full_app_name) = find_browser(self.product_name)
         if not self.root:
             self.logger.error(

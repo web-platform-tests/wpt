@@ -9,16 +9,16 @@ import time
 import sys
 
 
-def poll_for_active_tab(root, logger, product):
-    active_tab = find_active_tab(root, product)
-    while not active_tab:
+def poll_for_tab(root, product, url):
+    tab = find_tab(root, product, url)
+    while not tab:
         time.sleep(0.01)
-        active_tab = find_active_tab(root, product)
+        tab = find_tab(root, product, url)
 
-    return active_tab
+    return tab
 
 
-def find_active_tab(root, product):
+def find_tab(root, product, url):
     stack = [root]
     while stack:
         node = stack.pop()
@@ -26,9 +26,9 @@ def find_active_tab(root, product):
             relationset = Atspi.Accessible.get_relation_set(node)
             for relation in relationset:
                 if relation.get_relation_type() == Atspi.RelationType.EMBEDS:
-                    active_tab = relation.get_target(0)
-                    if is_ready(active_tab, product):
-                        return active_tab
+                    tab = relation.get_target(0)
+                    if is_ready(tab, product, url):
+                        return tab
                     else:
                         return None
             continue
@@ -40,20 +40,18 @@ def find_active_tab(root, product):
     return None
 
 
-def is_ready(active_tab, product):
+def is_ready(tab, product, url):
     # Firefox uses the "BUSY" state to indicate the page is not ready.
     if product == "firefox":
-        state_set = Atspi.Accessible.get_state_set(active_tab)
+        state_set = Atspi.Accessible.get_state_set(tab)
         return not Atspi.StateSet.contains(state_set, Atspi.StateType.BUSY)
 
     # Chromium family browsers do not use "BUSY", but you can
-    # tell if the document can be queried by Title attribute. If the 'Title'
+    # tell if the document can be queried by URL attribute. If the 'URL'
     # attribute is not here, we need to query for a new accessible object.
-    # TODO: eventually we should test this against the actual title of the
-    # page being tested.
-    document = Atspi.Accessible.get_document_iface(active_tab)
+    document = Atspi.Accessible.get_document_iface(tab)
     document_attributes = Atspi.Document.get_document_attributes(document)
-    if "Title" in document_attributes and document_attributes["Title"]:
+    if "URI" in document_attributes and document_attributes["URI"] == url:
         return True
     return False
 
@@ -101,7 +99,9 @@ class AtspiExecutorImpl:
         self.product_name = product_name
         self.full_app_name = ""
         self.root = None
-        self.found_browser = False
+        self.document = None
+        self.test_url = None
+
 
         (self.root, self.full_app_name) = find_browser(self.product_name)
         if not self.root:
@@ -116,9 +116,11 @@ class AtspiExecutorImpl:
                 f"Couldn't find browser {self.product_name} in accessibility API ATSPI. Did you turn on accessibility?"
             )
 
-        active_tab = poll_for_active_tab(self.root, self.logger, self.product_name)
+        if self.test_url != url or not self.document:
+            self.test_url = url
+            self.document = poll_for_tab(self.root, self.product_name, url)
 
-        node = find_node(active_tab, dom_id)
+        node = find_node(self.document, dom_id)
         if not node:
             raise Exception(
                 f"Couldn't find node with id={dom_id} in accessibility API ATSPI."

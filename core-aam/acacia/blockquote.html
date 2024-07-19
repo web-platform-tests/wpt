@@ -1,0 +1,32 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>core-aam: blockquote role</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<body>
+  <div id=test role=blockquote>quote</div>
+
+  <script>
+    promise_test(async t => {
+      const node = await test_driver.get_accessibility_api_node('test');
+
+      if (node.API == 'atspi') {
+        assert_equals(node.role, 'block quote', 'Atspi role');
+      }
+      else if (node.API == 'axapi') {
+        assert_equals(node.role, 'AXGroup', 'AX API role');
+      }
+      else if (node.API == 'windows') {
+        assert_equals(node.msaa_role, 'ROLE_SYSTEM_GROUPING', 'MSAA Role');
+        assert_equals(node.msaa_role, 'IA2_ROLE_BLOCK_QUOTE', 'IA2 Role');
+      }
+      else {
+        assert_unreached(`Unknown API: ${node.API}`)
+      }
+    }, 'role blockquote');
+  </script>
+</body>

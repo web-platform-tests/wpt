@@ -1,4 +1,6 @@
+import os
 import pytest
+from urllib.parse import urlparse
 
 from webdriver.bidi.modules.script import ContextTarget
 from webdriver.bidi.modules.storage import (
@@ -168,6 +170,7 @@ async def test_image(
     wait_for_future_safe,
     url,
     inline,
+    origin,
     domain_1,
 ):
     # Clean up cookies in case some other tests failed before cleaning up.
@@ -200,8 +203,10 @@ async def test_image(
     )
     await wait_for_future_safe(on_before_request_sent)
 
+    image_path = os.sep + os.path.join(*(urlparse(image_url).path.split("/")[1:-1]))
     result = await bidi_session.storage.get_cookies(
-        partition=BrowsingContextPartitionDescriptor(new_tab["context"])
+        partition=StorageKeyPartitionDescriptor(source_origin=origin(domain=domain_1)),
+        filter={"path": image_path}
     )
 
     # Find the network event which belongs to the image.

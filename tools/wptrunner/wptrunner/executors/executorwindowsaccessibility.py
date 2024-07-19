@@ -67,22 +67,22 @@ def find_browser(product_name):
     root = accessible_object_from_window(hwnd)
     return to_ia2(root)
 
-def poll_for_tab(title, root):
-    tab = find_tab(title, root)
+def poll_for_tab(url, root):
+    tab = find_tab(url, root)
     while not tab:
         time.sleep(0.01)
-        tab = find_tab(title, root)
+        tab = find_tab(url, root)
     return tab
 
-def find_tab(title, root):
+def find_tab(url, root):
     for i in range(1, root.accChildCount + 1):
         child = to_ia2(root.accChild(i))
         if child.accRole(CHILDID_SELF) == ROLE_SYSTEM_DOCUMENT:
-            if child.accName(CHILDID_SELF) == title:
+            if child.accValue(CHILDID_SELF) == url:
                 return child
             # No need to search within documents.
             return
-        descendant = find_tab(title, child)
+        descendant = find_tab(url, child)
         if descendant:
             return descendant
 
@@ -115,12 +115,12 @@ class WindowsAccessibilityExecutorImpl:
     def setup(self, product_name):
         self.product_name = product_name
 
-    def get_accessibility_api_node(self, title, dom_id):
+    def get_accessibility_api_node(self, dom_id, url):
         self.root = find_browser(self.product_name)
         if not self.root:
             raise Exception(f"Couldn't find browser {self.product_name}.")
         
-        tab = poll_for_tab(title, self.root)
+        tab = poll_for_tab(url, self.root)
         node = find_ia2_node(tab, dom_id)
         if not node:
             raise Exception(f"Couldn't find node with ID {dom_id}.")

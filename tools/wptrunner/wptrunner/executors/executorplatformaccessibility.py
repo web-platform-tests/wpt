@@ -33,5 +33,5 @@ class PlatformAccessibilityProtocolPart(ProtocolPart):
             self.impl = WindowsAccessibilityExecutorImpl()
             self.impl.setup(self.product_name)
 
-    def get_accessibility_api_node(self, title, dom_id):
-        return self.impl.get_accessibility_api_node(title, dom_id)
+    def get_accessibility_api_node(self, dom_id, url):
+        return self.impl.get_accessibility_api_node(dom_id, url)

@@ -91,7 +91,7 @@ class AXAPIExecutorImpl:
             raise Exception(f"Couldn't find application: {product_name}")
 
 
-    def get_accessibility_api_node(self, title, dom_id):
+    def get_accessibility_api_node(self, dom_id, url):
         tab = find_active_tab(self.root)
         node = find_node(tab, "AXDOMIdentifier", dom_id)
         if not node:

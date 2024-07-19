@@ -472,9 +472,9 @@ class GetAccessibilityAPINodeAction:
         self.protocol = protocol
 
     def __call__(self, payload):
-        title = payload["title"]
         dom_id = payload["dom_id"]
-        return self.protocol.platform_accessibility.get_accessibility_api_node(title, dom_id)
+        url = payload["url"]
+        return self.protocol.platform_accessibility.get_accessibility_api_node(dom_id, url)
 
 
 actions = [ClickAction,

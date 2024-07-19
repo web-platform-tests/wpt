@@ -24,7 +24,7 @@ class PlatformAccessibilityProtocolPart(ProtocolPart):
         self.impl = None
         if linux:
             self.impl = AtspiExecutorImpl()
-            self.impl.setup(self.product_name)
+            self.impl.setup(self.product_name, self.logger)
         if mac:
             self.impl = AXAPIExecutorImpl()
             self.impl.setup(self.product_name)

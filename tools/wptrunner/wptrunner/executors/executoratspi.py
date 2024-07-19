@@ -4,18 +4,33 @@ gi.require_version("Atspi", "2.0")
 from gi.repository import Atspi
 import json
 import threading
+import time
 
-def find_active_tab(root):
+import sys
+
+
+def poll_for_active_tab(root, logger, product):
+    active_tab = find_active_tab(root, product)
+    while not active_tab:
+        time.sleep(0.01)
+        active_tab = find_active_tab(root, product)
+
+    return active_tab
+
+
+def find_active_tab(root, product):
     stack = [root]
     while stack:
         node = stack.pop()
-
         if Atspi.Accessible.get_role_name(node) == "frame":
-            ## Helper: list of string relations, get targets for relation?
             relationset = Atspi.Accessible.get_relation_set(node)
             for relation in relationset:
                 if relation.get_relation_type() == Atspi.RelationType.EMBEDS:
-                    return relation.get_target(0)
+                    active_tab = relation.get_target(0)
+                    if is_ready(active_tab, product):
+                        return active_tab
+                    else:
+                        return None
             continue
 
         for i in range(Atspi.Accessible.get_child_count(node)):
@@ -23,6 +38,24 @@ def find_active_tab(root):
             stack.append(child)
 
     return None
+
+
+def is_ready(active_tab, product):
+    # Firefox uses the "BUSY" state to indicate the page is not ready.
+    if product == "firefox":
+        state_set = Atspi.Accessible.get_state_set(active_tab)
+        return not Atspi.StateSet.contains(state_set, Atspi.StateType.BUSY)
+
+    # Chromium family browsers do not use "BUSY", but you can
+    # tell if the document can be queried by Title attribute. If the 'Title'
+    # attribute is not here, we need to query for a new accessible object.
+    # TODO: eventually we should test this against the actual title of the
+    # page being tested.
+    document = Atspi.Accessible.get_document_iface(active_tab)
+    document_attributes = Atspi.Document.get_document_attributes(document)
+    if "Title" in document_attributes and document_attributes["Title"]:
+        return True
+    return False
 
 
 def serialize_node(node):
@@ -63,54 +96,31 @@ def find_browser(name):
 
 
 class AtspiExecutorImpl:
-    def start_atspi_listener(self):
-        self._event_listener = Atspi.EventListener.new(self.handle_event)
-        self._event_listener.register("document:load-complete")
-        Atspi.event_main()
-
-    def handle_event(self, e):
-        app = Atspi.Accessible.get_application(e.source)
-        app_name = Atspi.Accessible.get_name(app)
-        if self.full_app_name == app_name and e.any_data:
-            self.load_complete = True
-            self._event_listener.deregister("document:load-complete")
-            Atspi.event_quit()
-
-    def setup(self, product_name):
+    def setup(self, product_name, logger):
+        self.logger = logger
         self.product_name = product_name
         self.full_app_name = ""
         self.root = None
         self.found_browser = False
-        self.load_complete = False
-
-        self.atspi_listener_thread = threading.Thread(target=self.start_atspi_listener)
 
         (self.root, self.full_app_name) = find_browser(self.product_name)
-        if self.root:
-            self.found_browser = True
-            self.atspi_listener_thread.start()
-        else:
-            print(
-                f"Cannot find root accessibility node for {self.product_name} - did you turn on accessibility?"
+        if not self.root:
+            self.logger.error(
+                f"Couldn't find browser {self.product_name} in accessibility API ATSPI. Accessibility API queries will not succeeded."
             )
 
     def get_accessibility_api_node(self, dom_id):
-        if not self.found_browser:
+        if not self.root:
             raise Exception(
-                f"Couldn't find browser {self.product_name}. Did you turn on accessibility?"
+                f"Couldn't find browser {self.product_name} in accessibility API ATSPI. Did you turn on accessibility?"
             )
 
-        if not self.load_complete:
-            self.atspi_listener_thread.join()
-
-        active_tab = find_active_tab(self.root)
-        if not active_tab:
-            raise Exception(
-                f"Could not find the test page within the browser. Did you turn on accessiblity?"
-            )
+        active_tab = poll_for_active_tab(self.root, self.logger, self.product_name)
 
         node = find_node(active_tab, dom_id)
         if not node:
-            raise Exception(f"Couldn't find node with id {dom_id}.")
+            raise Exception(
+                f"Couldn't find node with id={dom_id} in accessibility API ATSPI."
+            )
 
         return json.dumps(serialize_node(node))

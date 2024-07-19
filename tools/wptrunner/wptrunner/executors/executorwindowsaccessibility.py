@@ -18,7 +18,6 @@ user32 = ctypes.windll.user32
 oleacc = ctypes.oledll.oleacc
 oleaccMod = comtypes.client.GetModule("oleacc.dll")
 IAccessible = oleaccMod.IAccessible
-del oleaccMod
 
 # CoCreateInstance of UIA also initializes IA2
 uiaMod = comtypes.client.GetModule("UIAutomationCore.dll")
@@ -28,10 +27,10 @@ uiaClient = comtypes.CoCreateInstance(
     clsctx=comtypes.CLSCTX_INPROC_SERVER,
 )
 
-def accessible_object_from_window(hwnd, objectID=OBJID_CLIENT):
+def accessible_object_from_window(hwnd):
     p = POINTER(IAccessible)()
     oleacc.AccessibleObjectFromWindow(
-        hwnd, objectID, byref(IAccessible._iid_), byref(p)
+        hwnd, OBJID_CLIENT, byref(IAccessible._iid_), byref(p)
     )
     return p
 
@@ -45,39 +44,37 @@ def get_browser_hwnd(product_name):
     found = []
 
     @ctypes.WINFUNCTYPE(BOOL, HWND, LPARAM)
-    def callback(hwnd, lParam):
-        name = name_from_hwnd(hwnd)
-        if product_name not in name.lower():
+    def check_window_name(hwnd, lParam):
+        window_name = name_from_hwnd(hwnd)
+        if product_name not in window_name.lower():
+            # EnumWindows should continue enumerating
             return True
         found.append(hwnd)
+        # EnumWindows should stop enumerating (since we found the right window)
         return False
 
-    user32.EnumWindows(callback, LPARAM(0))
+    user32.EnumWindows(check_window_name, LPARAM(0))
     if not found:
         raise LookupError(f"Couldn't find {product_name} HWND")
     return found[0]
 
 def to_ia2(node):
-    serv = node.QueryInterface(IServiceProvider)
-    return serv.QueryService(IAccessible2._iid_, IAccessible2)
+    service = node.QueryInterface(IServiceProvider)
+    return service.QueryService(IAccessible2._iid_, IAccessible2)
 
 def find_browser(product_name):
     hwnd = get_browser_hwnd(product_name)
     root = accessible_object_from_window(hwnd)
     return to_ia2(root)
 
-def poll_for_active_tab(title, root):
-    active_tab = find_active_tab(title, root)
-    iterations = 0
-    while not active_tab:
+def poll_for_tab(title, root):
+    tab = find_tab(title, root)
+    while not tab:
         time.sleep(0.01)
-        active_tab = find_active_tab(title, root)
-        iterations += 1
+        tab = find_tab(title, root)
+    return tab
 
-    print(f"found active tab in {iterations} iterations", file=sys.stderr)
-    return active_tab
-
-def find_active_tab(title, root):
+def find_tab(title, root):
     for i in range(1, root.accChildCount + 1):
         child = to_ia2(root.accChild(i))
         if child.accRole(CHILDID_SELF) == ROLE_SYSTEM_DOCUMENT:
@@ -85,15 +82,15 @@ def find_active_tab(title, root):
                 return child
             # No need to search within documents.
             return
-        descendant = find_active_tab(title, child)
+        descendant = find_tab(title, child)
         if descendant:
             return descendant
 
 def find_ia2_node(root, id):
-    search = f"id:{id};"
+    id_attribute = f"id:{id};"
     for i in range(1, root.accChildCount + 1):
         child = to_ia2(root.accChild(i))
-        if child.attributes and search in child.attributes:
+        if child.attributes and id_attribute in child.attributes:
             return child
         descendant = find_ia2_node(child, id)
         if descendant:
@@ -123,8 +120,8 @@ class WindowsAccessibilityExecutorImpl:
         if not self.root:
             raise Exception(f"Couldn't find browser {self.product_name}.")
         
-        active_tab = poll_for_active_tab(title, self.root)
-        node = find_ia2_node(active_tab, dom_id)
+        tab = poll_for_tab(title, self.root)
+        node = find_ia2_node(tab, dom_id)
         if not node:
             raise Exception(f"Couldn't find node with ID {dom_id}.")
         return json.dumps(serialize_node(node))

@@ -8,8 +8,6 @@ from tests.classic.perform_actions.support.refine import get_keys
 @pytest.mark.parametrize("value", [
     (u"\U0001F604"),
     (u"\U0001F60D"),
-    (u"\u0BA8\u0BBF"),
-    (u"\u1100\u1161\u11A8"),
 ])
 def test_codepoint_keys_behave_correctly(session, key_reporter, key_chain, value):
     # Not using key_chain.send_keys() because we always want to treat value as

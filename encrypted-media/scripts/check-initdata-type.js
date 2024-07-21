@@ -2,12 +2,12 @@
  {
     function checkInitDataType(initDataType)
     {
-        return isInitDataTypeSupported(initDataType).then(function(result) {
+        return isInitDataTypeSupported(config.keysystem, initDataType).then(function(result) {
             // If |initDataType| is not supported, simply succeed.
             if (!result)
                 return Promise.resolve('Not supported');
 
-            return navigator.requestMediaKeySystemAccess( config.keysystem, getSimpleConfigurationForInitDataType(initDataType))
+            return navigator.requestMediaKeySystemAccess(config.keysystem, getSimpleConfigurationForInitDataType(initDataType))
                 .then(function(access) {
                     return access.createMediaKeys();
                 }).then(function(mediaKeys) {

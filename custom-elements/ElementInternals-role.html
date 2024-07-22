@@ -106,9 +106,9 @@ test_roles.map((testdata) => {
     promise_test(async () => {
         const el = generate_role_element(role);
         const computed_role = await test_driver.get_computed_role(el);
-		const computed_label = await test_driver.get_computed_label(el);
+        const computed_label = await test_driver.get_computed_label(el);
         assert_equals(computed_role, roleName, el);
-		assert_equals(computed_label, `Test ${role} label`, el);
+        assert_equals(computed_label, `Test ${role} label`, el);
         el.remove();
     }, `Applies "${role}" via Element Internals`);
 });
@@ -130,23 +130,22 @@ const child_test_roles = [
 
 child_test_roles.map((roles) => {
     promise_test(async () => {
-		// Build the DOM tree by appending each role applied element as a child of the last.
-		const el = generate_role_element(roles[0]);
-		let currentElement = el;
-		for (let i = 1; i < roles.length; i++) {
-			currentElement = generate_child_role_element(roles[i], currentElement);
-		}
-		console.log(el);
-		// Test the DOM tree starting at the initial ancestor of the tree.
-		let testEl = el;
-		for (let i = 0; i < roles.length; i++) {
-			const role = roles[i];
-			const computed_role = await test_driver.get_computed_role(testEl);
-			const computed_label = await test_driver.get_computed_label(testEl);
-			assert_equals(computed_role, role, testEl);
-			assert_equals(computed_label, `Test ${role} label`, testEl);
-			testEl = testEl.children[0];
-		}
+        // Build the DOM tree by appending each role applied element as a child of the last.
+        const el = generate_role_element(roles[0]);
+        let currentElement = el;
+        for (let i = 1; i < roles.length; i++) {
+            currentElement = generate_child_role_element(roles[i], currentElement);
+        }
+        // Test the DOM tree starting at the initial ancestor of the tree.
+        let testEl = el;
+        for (let i = 0; i < roles.length; i++) {
+            const role = roles[i];
+            const computed_role = await test_driver.get_computed_role(testEl);
+            const computed_label = await test_driver.get_computed_label(testEl);
+            assert_equals(computed_role, role, testEl);
+            assert_equals(computed_label, `Test ${role} label`, testEl);
+            testEl = testEl.children[0];
+        }
         el.remove();
     }, `Applies parent/child relationship of "${roles.join('"/"')}" via Element Internals`);
 });

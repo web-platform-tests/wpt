@@ -14,7 +14,7 @@ function conditionally_register_element(role) {
                 super();
                 this.internals_ = this.attachInternals();
                 this.internals_.role = role;
-                this.internals_.ariaLabel = "Test label";
+                this.internals_.ariaLabel = `Test ${role} label`;
             }
         });
     }
@@ -105,8 +105,10 @@ test_roles.map((testdata) => {
     }
     promise_test(async () => {
         const el = generate_role_element(role);
-        const computedRole = await test_driver.get_computed_role(el);
-        assert_equals(computedRole, roleName, el);
+        const computed_role = await test_driver.get_computed_role(el);
+		const computed_label = await test_driver.get_computed_label(el);
+        assert_equals(computed_role, roleName, el);
+		assert_equals(computed_label, `Test ${role} label`, el);
         el.remove();
     }, `Applies "${role}" via Element Internals`);
 });
@@ -128,23 +130,24 @@ const child_test_roles = [
 
 child_test_roles.map((roles) => {
     promise_test(async () => {
-        const els = roles.reduce((acc, role) => {
-            const previous = acc.at(-1);
-            if (previous) {
-                acc.push(generate_child_role_element(role, previous))
-            } else {
-                acc.push(generate_role_element(role));
-            }
-            return acc;
-        }, []);
-        const computedRoles = [];
-        for(let i=0; i < els.length; i++) {
-            computedRoles.push(await test_driver.get_computed_role(els[i]));
-        }
-        computedRoles.map((role, i) => {
-            assert_equals(role, roles[i], els[i]);
-        })
-        els[0].remove();
+		// Build the DOM tree by appending each role applied element as a child of the last.
+		const el = generate_role_element(roles[0]);
+		let currentElement = el;
+		for (let i = 1; i < roles.length; i++) {
+			currentElement = generate_child_role_element(roles[i], currentElement);
+		}
+		console.log(el);
+		// Test the DOM tree starting at the initial ancestor of the tree.
+		let testEl = el;
+		for (let i = 0; i < roles.length; i++) {
+			const role = roles[i];
+			const computed_role = await test_driver.get_computed_role(testEl);
+			const computed_label = await test_driver.get_computed_label(testEl);
+			assert_equals(computed_role, role, testEl);
+			assert_equals(computed_label, `Test ${role} label`, testEl);
+			testEl = testEl.children[0];
+		}
+        el.remove();
     }, `Applies parent/child relationship of "${roles.join('"/"')}" via Element Internals`);
 });
 </script>

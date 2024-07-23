@@ -35,7 +35,7 @@ class FeatureFile(str):
     def processed_filename(self) -> str:
         """Removes the exclusion prefix "!" from the pattern."""
         # TODO. After moving to Python3.9, use: return self.removeprefix(EXCLUSION_PREFIX)
-        return self[self.startswith(EXCLUSION_PREFIX) and len(EXCLUSION_PREFIX):]
+        return self[len(EXCLUSION_PREFIX):] if self.startswith(EXCLUSION_PREFIX) else self
 
     def match_files(self, base_filenames: Sequence[str]) -> Sequence[str]:
         """

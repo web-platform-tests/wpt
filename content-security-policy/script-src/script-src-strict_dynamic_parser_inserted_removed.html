@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<meta http-equiv="content-security-policy"
+      content="script-src 'nonce-abc' 'strict-dynamic'">
+
+<script nonce="abc">
+  promise_setup(async test => {
+    await new Promise(resolve => addEventListener("DOMContentLoaded", resolve));
+  }, "Wait for DomContentLoaded");
+</script>
+
+<!-----  https://crbug.com/816794. Proof-of-concept 1.1 ----------------------->
+
+<!-- XSS here. Inserted by the attacker-->
+<script id="bypass_me_poc_1"></script>
+
+<!-- Legitimate div inserted by the developer -->
+<div id="bypass_me_poc_1"></script>
+
+<script nonce="abc">
+  bypass_poc_1 = false;
+  promise_test(async test => {
+    const from_attacker = "bypass_poc_1=true";
+    document.querySelector("#bypass_me_poc_1").textContent = from_attacker;
+    await new Promise(resolve => step_timeout(resolve, 50)); // Optional.
+    assert_false(bypass_poc_1);
+  }, "parser_inserted false, after checking no src attribute and no children");
+</script>
+
+
+<!-----  https://crbug.com/816794. Proof-of-concept 2 ------------------------->
+
+<!--XSS here-->
+<template id="template_poc_2"><script>bypass_poc_2 = true;//</script></template>
+
+<script nonce="abc">
+  bypass_poc_2 = false;
+  promise_test(async test => {
+    const template_poc_2 = document.getElementById("template_poc_2");
+    const imported_node = document.importNode(template_poc_2.content, true);
+    document.body.appendChild(imported_node);
+    await new Promise(resolve => step_timeout(resolve, 50)); // Optional.
+    assert_false(bypass_poc_2);
+  }, "parser_inserted false, after checking the element is not connected");
+</script>
+
+
+<!-----  https://crbug.com/816794. Proof-of-concept 3 ------------------------->
+<script nonce="abc">
+  bypass_poc_3 = false;
+</script>
+
+<!-- XSS here -->
+<script src="data:,bypass_poc_3=true" id="bypass_me_poc_3" type="bogo"></script>
+
+<script nonce="abc">
+  promise_test(async test => {
+    let script = document.querySelector("#bypass_me_poc_3");
+    script.type = "";
+    script.textContent = "Totally safe";
+    await new Promise(resolve => step_timeout(resolve, 50)); // Optional.
+    assert_false(bypass_poc_3);
+  }, "parser_inserted false, after an invalid type/langage");
+</script>

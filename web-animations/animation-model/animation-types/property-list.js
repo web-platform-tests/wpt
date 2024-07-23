@@ -1373,6 +1373,12 @@ const gCSSProperties2 = {
       { type: 'discrete', options: [ [ 'capitalize', 'uppercase' ] ] }
     ]
   },
+  'text-underline-position': {
+    // https://drafts.csswg.org/css-text-decor-4/#text-underline-position-property
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'under' ] ] }
+    ]
+  },
   'text-wrap': {
     // https://drafts.csswg.org/css-text-4/#propdef-text-wrap
     types: [

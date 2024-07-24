@@ -11,16 +11,18 @@ window.addEventListener("message", async (e) => {
     test_driver.set_test_context(window.parent);
     await tryGrantReadPermission();
     await tryGrantWritePermission();
-    await waitForUserActivation();
-    await navigator.clipboard.write([
-      new ClipboardItem({
-        "text/plain":  e.data[1],
-      }),
-    ]).catch(() => {
-      assert_true(false, `should not fail`);
-    });
-    window.parent.postMessage("done", "*");
+    await test_driver.bless();
+    try {
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          "text/plain": e.data[1],
+        }),
+      ]);
+    } catch (e) {
+      assert_unreached("should not fail");
+    } finally {
+      window.parent.postMessage("done", "*");
+    }
   }
-});
+  });
 </script>
-</html>

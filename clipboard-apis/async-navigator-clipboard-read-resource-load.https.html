@@ -29,7 +29,7 @@ promise_test(async test => {
   await tryGrantReadPermission();
   await test_driver.click(button);
 
-  await waitForUserActivation();
+  await test_driver.bless();
   const items = await navigator.clipboard.read();
   const htmlBlob = await items[0].getType("text/html");
   const html = await htmlBlob.text();

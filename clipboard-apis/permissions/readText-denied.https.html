@@ -13,7 +13,7 @@
 
 promise_test(async t => {
   await trySetPermission('clipboard-read', 'denied');
-  await waitForUserActivation();
+  await test_driver.bless();
   await promise_rejects_dom(t,
       'NotAllowedError', navigator.clipboard.readText());
 }, 'navigator.clipboard.readText() fails when permission denied');

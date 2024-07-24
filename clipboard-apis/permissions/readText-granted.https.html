@@ -13,7 +13,7 @@
 
 promise_test(async () => {
   await tryGrantReadPermission();
-  await waitForUserActivation();
+  await test_driver.bless();
   await navigator.clipboard.readText();
 }, 'navigator.clipboard.readText() succeeds when permission granted');
 </script>

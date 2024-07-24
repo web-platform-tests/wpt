@@ -41,6 +41,44 @@
       "NotSupportedError",
       navigator.identity.get({ x: "y" })
     );
+
+    await test_driver.bless("user activation");
+    promise_rejects_dom(
+      t,
+      "NotSupportedError",
+      navigator.identity.get({ x: "y", y: "z" })
+    );
+
+    await test_driver.bless("user activation");
+    promise_rejects_dom(
+      t,
+      "NotSupportedError",
+      navigator.identity.get({ x: "y" })
+    );
+
+    await test_driver.bless("user activation");
+    promise_rejects_dom(
+      t,
+      "NotSupportedError",
+      navigator.identity.get({ mediation: "required" })
+    );
+
+    const abortController = new AbortController();
+    const { signal } = abortController;
+
+    await test_driver.bless("user activation");
+    await promise_rejects_dom(
+      t,
+      "NotSupportedError",
+      navigator.identity.get({ signal })
+    );
+
+    await test_driver.bless("user activation");
+    await promise_rejects_dom(
+      t,
+      "NotSupportedError",
+      navigator.identity.get({ signal, mediation: "required" })
+    );
   }, "Calling navigator.identity.get() without an digital member.");
 
   promise_test(async (t) => {

@@ -4,7 +4,50 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 
-<body></body>
+<body>
+	<table-element id="table-row-columnheader-test">
+		<row-element>
+			<columnheader-element></columnheader-element>
+		</row-element>
+	</table-element>
+	<grid-element id="grid-row-gridcell-test">
+		<row-element>
+			<gridcell-element></gridcell-element>
+		</row-element>
+	</grid-element>
+	<list-element id="list-listitem-test">
+		<listitem-element></listitem-element>
+	</list-element>
+	<menu-element id="menu-menuitem-test">
+		<menuitem-element></menuitem-element>
+	</menu-element>
+	<menu-element id="menu-menuitemcheckbox-test">
+		<menuitemcheckbox-element></menuitemcheckbox-element>
+	</menu-element>
+	<menu-element id="menu-menuitemradio-test">
+		<menuitemradio-element></menuitemradio-element>
+	</menu-element>
+	<listbox-element id="listbox-option-test">
+		<option-element></option-element>
+	</listbox-element>
+	<table-element id="table-row-test">
+		<row-element></row-element>
+	</table-element>
+	<table-element id="table-rowgroup-test">
+		<rowgroup-element></rowgroup-element>
+	</table-element>
+	<table-element id="table-row-rowheader-test">
+		<row-element>
+			<rowheader-element></rowheader-element>
+		</row-element>
+	</table-element>
+	<tablist-element id="tablist-tab-test">
+		<tab-element></tab-element>
+	</tablist-element>
+	<tree-element id="tree-treeitem-test">
+		<treeitem-element></treeitem-element>
+	</tree-element>
+</body>
 
 <script>
 function conditionally_register_element(role) {
@@ -130,14 +173,12 @@ const child_test_roles = [
 
 child_test_roles.map((roles) => {
     promise_test(async () => {
-        // Build the DOM tree by appending each role applied element as a child of the last.
-        const el = generate_role_element(roles[0]);
-        let currentElement = el;
-        for (let i = 1; i < roles.length; i++) {
-            currentElement = generate_child_role_element(roles[i], currentElement);
-        }
-        // Test the DOM tree starting at the initial ancestor of the tree.
-        let testEl = el;
+		// Ensure role applied elements are registered.
+		roles.forEach((role) => {
+			conditionally_register_element(role);
+		});
+		// Gather test DOM and walk children to ensure parent/child relationships are correct.
+        let testEl = document.getElementById([...roles, 'test'].join('-'));
         for (let i = 0; i < roles.length; i++) {
             const role = roles[i];
             const computed_role = await test_driver.get_computed_role(testEl);
@@ -146,7 +187,6 @@ child_test_roles.map((roles) => {
             assert_equals(computed_label, `Test ${role} label`, testEl);
             testEl = testEl.children[0];
         }
-        el.remove();
     }, `Applies parent/child relationship of "${roles.join('"/"')}" via Element Internals`);
 });
 </script>

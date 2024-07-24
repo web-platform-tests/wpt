@@ -26,10 +26,13 @@
       }
       data.options.signal = abortController.signal;
     }
+    if (data.needsActivation) {
+      await test_driver.bless("user activation", null, window);
+    }
     let result;
     try {
-      /** @type {CrendetialManager} */
-      const { identity } = navigator;
+      /** @type {CredentialsContainer} */
+      const identity = navigator.identity;
       if (abortController && data.abort === "before") {
         abortController.abort();
       }
@@ -41,8 +44,6 @@
           result = await identity.create(data.options);
           break;
         case "get":
-          await test_driver.bless("user activation", null, window);
-          assert_true(navigator.userActivation.isActive, "user activation must be active");
           result = await identity.get(data.options);
           break;
         case "preventSilentAccess":

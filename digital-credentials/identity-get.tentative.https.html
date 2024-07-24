@@ -29,91 +29,72 @@
   });
 
   promise_test(async (t) => {
-    await test_driver.bless("user activation");
-    promise_rejects_dom(t, "NotSupportedError", navigator.identity.get());
-
-    await test_driver.bless("user activation");
-    promise_rejects_dom(t, "NotSupportedError", navigator.identity.get({}));
-
-    await test_driver.bless("user activation");
-    promise_rejects_dom(
-      t,
-      "NotSupportedError",
-      navigator.identity.get({ x: "y" })
-    );
-
-    await test_driver.bless("user activation");
-    promise_rejects_dom(
-      t,
-      "NotSupportedError",
-      navigator.identity.get({ x: "y", y: "z" })
-    );
-
-    await test_driver.bless("user activation");
-    promise_rejects_dom(
-      t,
-      "NotSupportedError",
-      navigator.identity.get({ x: "y" })
-    );
-
-    await test_driver.bless("user activation");
-    promise_rejects_dom(
-      t,
-      "NotSupportedError",
-      navigator.identity.get({ mediation: "required" })
-    );
-
-    const abortController = new AbortController();
-    const { signal } = abortController;
-
-    await test_driver.bless("user activation");
-    await promise_rejects_dom(
-      t,
-      "NotSupportedError",
-      navigator.identity.get({ signal })
-    );
-
-    await test_driver.bless("user activation");
-    await promise_rejects_dom(
-      t,
-      "NotSupportedError",
-      navigator.identity.get({ signal, mediation: "required" })
-    );
-  }, "Calling navigator.identity.get() without an digital member.");
-
-  promise_test(async (t) => {
     iframeSameOrigin.focus();
-    const { contentWindow: iframeWindow } = iframeSameOrigin;
+    for (const global of [window, iframeSameOrigin.contentWindow]) {
+      await promise_rejects_dom(
+        t,
+        "NotSupportedError",
+        global.DOMException,
+        global.navigator.identity.get()
+      );
 
-    await test_driver.bless("user activation");
-    promise_rejects_dom(
-      t,
-      "NotSupportedError",
-      iframeWindow.DOMException,
-      iframeWindow.navigator.identity.get()
-    );
+      await promise_rejects_dom(
+        t,
+        "NotSupportedError",
+        global.DOMException,
+        global.navigator.identity.get({})
+      );
 
-    await test_driver.bless("user activation");
-    promise_rejects_dom(
-      t,
-      "NotSupportedError",
-      iframeWindow.DOMException,
-      iframeWindow.navigator.identity.get({})
-    );
+      await promise_rejects_dom(
+        t,
+        "NotSupportedError",
+        global.DOMException,
+        global.navigator.identity.get({ x: "y" })
+      );
 
-    await test_driver.bless("user activation");
-    promise_rejects_dom(
-      t,
-      "NotSupportedError",
-      iframeWindow.DOMException,
-      iframeWindow.navigator.identity.get({ x: "y" })
-    );
-  }, "Calling navigator.identity.get() without an digitral member same-origin iframe.");
+      await promise_rejects_dom(
+        t,
+        "NotSupportedError",
+        global.DOMException,
+        global.navigator.identity.get({ x: "y", y: "z" })
+      );
+
+      await promise_rejects_dom(
+        t,
+        "NotSupportedError",
+        global.DOMException,
+        global.navigator.identity.get({ x: "y" })
+      );
+
+      await promise_rejects_dom(
+        t,
+        "NotSupportedError",
+        global.DOMException,
+        global.navigator.identity.get({ mediation: "required" })
+      );
+
+      const abortController = new AbortController();
+      const { signal } = abortController;
+
+      await promise_rejects_dom(
+        t,
+        "NotSupportedError",
+        global.DOMException,
+        global.navigator.identity.get({ signal })
+      );
+
+      await promise_rejects_dom(
+        t,
+        "NotSupportedError",
+        global.DOMException,
+        global.navigator.identity.get({ signal, mediation: "required" })
+      );
+    }
+  }, "Calling navigator.identity.get() without an digital member same origin.");
 
   promise_test(async (t) => {
     for (const provider of [undefined, []]) {
       const options = makeGetOptions(provider);
-      await test_driver.bless("user activation");
       await promise_rejects_js(t, TypeError, navigator.identity.get(options));
     }
   }, "navigator.identity.get() API rejects if there are no providers.");
@@ -123,7 +104,6 @@
     const { contentWindow: iframeWindow } = iframeSameOrigin;
     for (const provider of [undefined, []]) {
       const options = makeGetOptions(provider);
-      await test_driver.bless("user activation");
       await promise_rejects_js(
         t,
         iframeWindow.TypeError,
@@ -163,7 +143,6 @@
     const { signal } = abortController;
     abortController.abort();
     for (const options of [{ signal }, { signal, ...makeGetOptions([]) }]) {
-      await test_driver.bless("user activation");
       await promise_rejects_dom(
         t,
         "AbortError",

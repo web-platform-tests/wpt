@@ -52,19 +52,13 @@ export interface EventData {
    * The options to pass to the API.
    */
   options?: object;
+  /**
+  * If the API needs to blessed before the action is performed.
+  */
+  needsUserActivation?: boolean;
 }
-
-
 
 export interface SendMessageData {
   action: IframeActionType;
   options?: CredentialRequestOptions;
 }
-
-/**
- * @param {HTMLIFrameElement} iframe - The iframe element to send the message to.
- * @param {SendMessageData} data - The data to be sent to the iframe.
- * @returns {Promise<any>} - A promise that resolves with the response from the iframe.
- */
-export type SendMessage = (iframe: HTMLIFrameElement, data: SendMessageData) => Promise<any>;
-

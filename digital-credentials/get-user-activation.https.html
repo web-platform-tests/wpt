@@ -4,8 +4,11 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/helper.js" type="module"></script>
 <body></body>
-<script>
+<script type="module">
+  import { makeGetOptions } from "./support/helper.js";
+
   promise_test(async (t) => {
     assert_false(
       navigator.userActivation.isActive,
@@ -14,7 +17,7 @@
     await promise_rejects_dom(
       t,
       "NotAllowedError",
-      navigator.identity.get({ digitial: [] })
+      navigator.identity.get({ digital: { providers: [makeGetOptions("openid4vp")] } })
     );
   }, "navigator.identity.get() calling the API without user activation should reject with NotAllowedError.");
 
@@ -27,7 +30,7 @@
     await promise_rejects_dom(
       t,
       "NotSupportedError",
-      navigator.identity.get({ digitial: [] })
+      navigator.identity.get({ digital: { providers: [makeGetOptions("openid4vp")] } })
     );
     assert_false(
       navigator.userActivation.isActive,

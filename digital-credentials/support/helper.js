@@ -42,7 +42,8 @@ function makeIdentityRequestProvider(protocol = "protocol", request = {}) {
 }
 
 /**
- * Representation of a digital identity object with an OpenID4VP provider
+ * Representation of a digital identity object with an OpenID4VP provider.
+ *
  * @returns {IdentityRequestProvider}
  **/
 function makeOID4VPDict() {
@@ -52,6 +53,8 @@ function makeOID4VPDict() {
 }
 
 /**
+ * Sends a message to an iframe and return the response.
+ *
  * @param {HTMLIFrameElement} iframe - The iframe element to send the message to.
  * @param {SendMessageData} data - The data to be sent to the iframe.
  * @returns {Promise<any>} - A promise that resolves with the response from the iframe.
@@ -77,6 +80,8 @@ export function sendMessage(iframe, data) {
 }
 
 /**
+ * Load an iframe with the specified URL and wait for it to load.
+ *
  * @param {HTMLIFrameElement} iframe
  * @param {string|URL} url
  * @returns {Promise<void>}

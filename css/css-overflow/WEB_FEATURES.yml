@@ -7,4 +7,4 @@ features:
   - overflow-*
   - "!overflow-auto-scrollbar-gutter-intrinsic-*"
   - "!overflow-scroll-*"
-  - "!overflow-no-interpolation.html # depends on transition-behavior"
+  - "!overflow-no-interpolation.html" # depends on transition-behavior

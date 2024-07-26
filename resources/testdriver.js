@@ -1066,7 +1066,7 @@
          */
         clear_device_posture: function(context=null) {
             return window.test_driver_internal.clear_device_posture(context);
-        }
+        },
 
         /**
          * Run the deletion algorithm for all hosts in the stateful bounce
@@ -1090,7 +1090,7 @@
         }
     };
 
-  window.test_driver_internal = {
+    window.test_driver_internal = {
         /**
          * This flag should be set to `true` by any code which implements the
          * internal methods defined below for automation purposes. Doing so
@@ -1288,5 +1288,5 @@
         async run_bounce_tracking_mitigations(context=null) {
             throw new Error("run_bounce_tracking_mitigations() is not implemented by testdriver-vendor.js");
         }
-  };
+    };
 })();

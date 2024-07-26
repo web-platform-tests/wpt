@@ -5,6 +5,6 @@ features:
 - name: overflow-shorthand
   files:
   - overflow-*
-  - !overflow-auto-scrollbar-gutter-intrinsic-*
-  - !overflow-scroll-*
-  - !overflow-no-interpolation.html # depends on transition-behavior
+  - "!overflow-auto-scrollbar-gutter-intrinsic-*"
+  - "!overflow-scroll-*"
+  - "!overflow-no-interpolation.html # depends on transition-behavior"

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<title>Tests that `anchor-center` self-alignment keyword center-aligns the element with its anchor</title>
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#anchor-center">
+<link rel="author" href="mailto:xiaochengh@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+<script src="support/test-common.js"></script>
+
+<style>
+.cb {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  outline: 1px dashed gray;
+}
+
+.anchor {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  top: 40px;
+  left: 60px;
+  background: orange;
+  anchor-name: --a;
+}
+
+.target {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: lime;
+  anchor-default: --a;
+}
+</style>
+
+<body onload="checkLayoutForAnchorPos('.target')">
+  <div class="cb">
+    <div class="anchor"></div>
+    <div class="target" style="align-self: anchor-center"
+         data-offset-x="0" data-offset-y="45"></div>
+  </div>
+
+  <div class="cb">
+    <div class="anchor"></div>
+    <div class="target" style="justify-self: anchor-center"
+         data-offset-x="65" data-offset-y="0"></div>
+  </div>
+
+  <div class="cb">
+    <div class="anchor"></div>
+    <div class="target" style="align-self: anchor-center; justify-self: anchor-center"
+         data-offset-x="65" data-offset-y="45"></div>
+  </div>
+
+  <!-- Test cases with non-auto insets; Should center-align the element with
+       its anchor instead of the inset-modified containing block. -->
+
+  <div class="cb">
+    <div class="anchor"></div>
+    <div class="target"
+         style="align-self: anchor-center; top: anchor(top); bottom: 0"
+         data-offset-x="0" data-offset-y="45"></div>
+  </div>
+
+  <div class="cb">
+    <div class="anchor"></div>
+    <div class="target"
+         style="justify-self: anchor-center; left: anchor(left); right: 0"
+         data-offset-x="65" data-offset-y="0"></div>
+  </div>
+</body>

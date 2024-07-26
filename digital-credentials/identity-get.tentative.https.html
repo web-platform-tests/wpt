@@ -167,4 +167,30 @@
       assert_equals(result.name, "AbortError");
     }
   }, "navigator.identity.get() promise is rejected if called with an aborted signal in cross-origin iframe.");
+
+  promise_test(async (t) => {
+    const abortController = new AbortController();
+    const { signal } = abortController;
+    const options = makeGetOptions(["openid4vp"]);
+    await test_driver.bless("user activation");
+    const promise = promise_rejects_dom(
+      t,
+      "AbortError",
+      DOMException,
+      navigator.identity.get(options)
+    );
+    abortController.abort();
+    await promise;
+  }, "navigator.identity.get() promise is rejected if abort controller is aborted after call to get().");
+
+  promise_test(async (t) => {
+    const result = await sendMessage(iframeCrossOrigin, {
+      abort: "after",
+      action: "get",
+      needsActivation: true,
+      options: makeGetOptions(["openid4vp"]),
+    });
+    assert_equals(result.constructor, "DOMException");
+    assert_equals(result.name, "AbortError");
+  }, "navigator.identity.get() promise is rejected if abort controller is aborted after call to get() in cross-origin iframe.");
 </script>

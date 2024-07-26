@@ -33,27 +33,32 @@
     try {
       /** @type {CredentialsContainer} */
       const identity = navigator.identity;
-      if (abortController && data.abort === "before") {
+      if (data.abort === "before") {
         abortController.abort();
       }
+      let promise;
       switch (data.action) {
         case "ping":
-          result = "pong";
+          promise = Promise.resolve("pong");
           break;
         case "create":
-          result = await identity.create(data.options);
+          promise = identity.create(data.options);
           break;
         case "get":
-          result = await identity.get(data.options);
+          promise = identity.get(data.options);
           break;
         case "preventSilentAccess":
-          result = await identity.preventSilentAccess();
+          promise = identity.preventSilentAccess();
           break;
         default:
           throw new Error(
             `Unsupported action in ${window.location}: ${data.action}`
           );
       }
+      if (data.abort === "after") {
+        abortController.abort();
+      }
+      result = await promise;
     } catch (error) {
       result = {
         constructor: error.constructor.name,

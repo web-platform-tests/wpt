@@ -8,7 +8,7 @@
  * @typedef {import('../dc-types').SendMessageData} SendMessageData
  */
 /**
- * @param {ProviderType[]} [providersToUse=["default"]] - An array that can only contain "default" or "oid4vp".
+ * @param {ProviderType[]} [providersToUse=["default"]] - An array that can only contain "default" or "openid4vp".
  * @returns {CredentialRequestOptions}
  */
 export function makeGetOptions(providersToUse = ["default"]) {

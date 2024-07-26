@@ -27,6 +27,10 @@ body {
 <div class="stack" style="float: left;">
   <article class="grid-container" style="display: grid; grid-template-columns: 1fr; width: 300px">
     <div style="justify-self: auto;">auto</div>
+    <div style="justify-self: normal;">normal</div>
+    <div style="justify-self: stretch; width: auto; margin: 0;">stretch</div>
+    <div style="justify-self: stretch; margin: 0;">stretch</div>
+    <div style="justify-self: stretch; width: auto; margin: auto;">stretch</div>
     <div style="justify-self: left;">left</div>
     <div style="justify-self: right;">right</div>
     <div style="justify-self: start;">start</div>
@@ -45,14 +49,16 @@ body {
     <div style="justify-self: end">end parent
       <div style="position: absolute;">absolute child</div>
     </div>
-    <div style="justify-self: end; position: absolute;">absolute parent
-      <div>child</div>
-    </div>
+    <div style="justify-self: end; position: absolute;">absolute parent</div>
   </article>
 </div>
 <div class="stack" style="float: right; direction: rtl">
   <article class="grid-container" style="display: grid; grid-template-columns: 1fr; width: 300px">
     <div style="justify-self: auto;">auto</div>
+    <div style="justify-self: normal;">normal</div>
+    <div style="justify-self: stretch; width: auto; margin: 0;">stretch</div>
+    <div style="justify-self: stretch; margin: 0;">stretch</div>
+    <div style="justify-self: stretch; width: auto; margin: auto;">stretch</div>
     <div style="justify-self: left;">left</div>
     <div style="justify-self: right;">right</div>
     <div style="justify-self: start;">start</div>
@@ -71,8 +77,6 @@ body {
     <div style="justify-self: end">end parent
       <div style="position: absolute;">absolute child</div>
     </div>
-    <div style="justify-self: end; position: absolute;">absolute parent
-      <div>child</div>
-    </div>
+    <div style="justify-self: end; position: absolute;">absolute parent</div>
   </article>
 </div>

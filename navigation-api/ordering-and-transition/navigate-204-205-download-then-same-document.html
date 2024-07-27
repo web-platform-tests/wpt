@@ -16,7 +16,8 @@ for (const [description, url] of tests) {
     const i = document.createElement("iframe");
     i.src = "/common/blank.html";
     document.body.append(i);
-    await new Promise(resolve => i.onload = () => t.step_timeout(resolve, 0));
+    if (document.readyState != 'complete')
+      await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
 
     const fromStart = i.contentWindow.navigation.currentEntry;
 

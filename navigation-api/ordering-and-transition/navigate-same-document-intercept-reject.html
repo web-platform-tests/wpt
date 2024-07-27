@@ -10,7 +10,8 @@ import { Recorder, hasVariant } from "./resources/helpers.mjs";
 promise_test(async t => {
   // Wait for after the load event so that the navigation doesn't get converted
   // into a replace navigation.
-  await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
+  if (document.readyState != 'complete')
+    await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
 
   const from = navigation.currentEntry;
   const expectedError = new Error("boo");

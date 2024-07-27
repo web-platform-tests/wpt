@@ -1,0 +1,34 @@
+<svg id="svg-root"
+  width="100%" height="100%" viewBox="0 0 480 360"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+  <g id="testmeta">
+    <title>Positioning Attributes - Unicode Points</title>
+    <html:link rel="author"
+          title="Tavmjong Bah"
+          href="http://tavmjong.free.fr"/>
+    <html:link rel="help"
+          href="https://www.w3.org/TR/SVG2/text.html#TSpanNotes"/>
+    <html:link rel="match"  href="positioning-001-ref.svg" />
+  </g>
+
+  <style id="test-font" type="text/css">
+    /* Standard Font (if needed). */
+    @font-face {
+      font-family: FreeSans;
+      src: url("../fonts/FreeSans.woff") format("woff");
+    }
+    text {
+      font-family: FreeSans, sans-serif;
+      text-anchor: middle;
+      fill: black;
+    }
+  </style>
+
+  <g id="test-body-content" font-size="24">
+    <text x="50%" y="30%" dy="0 10 -20 30 -40 50 -60 70 -80">ABCDE</text> <!-- Plane 0 -->
+    <text x="50%" y="70%" dy="0 10 -20 30 -40 50 -60 70 -80">𐄷𐄸𐄹𐄺𐄻</text> <!-- Plane 1 -->
+  </g>
+
+</svg>

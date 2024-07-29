@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<title>Implements statements</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.6 Implements statement
+//
+// The implements statement causes all of the properties that would exist
+// on the RHS interface's interface object and interface prototype object to
+// appear on those objects for the LHS interface.  If they values of the
+// properties are objects, they do not refer to the same object.  They
+// also can only be applied to the interface that the properties exist on.
+
+// feature: URLUtils (interface) (used on RHS of implements statement)
+
+test(function() {
+  var desc1 = Object.getOwnPropertyDescriptor(HTMLAnchorElement.prototype, "href");
+  var desc2 = Object.getOwnPropertyDescriptor(HTMLAreaElement.prototype, "href");
+  assert_true(desc1.get != desc2.get);
+}, "HTMLAnchorElement.prototype and HTMLAreaElement.prototype have distinct Function objects for their URLUtils.href attribute getter");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLAnchorElement.prototype, "href");
+  var area = document.createElement("area");
+  assert_throws(new TypeError(), function() { desc.get.call(area); });
+}, "HTMLAnchorElement.prototype.href's getter cannot be applied to an HTMLAnchorElement object");
+</script>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>[Unforgeable] on attributes</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.5.6 Attributes
+//
+// Attributes that are [Unforgeable] exist on the instance rather than on
+// the prototype.  They are unconfigurable.
+
+// feature: Window.document (attribute) (with [Unforgeable])
+
+test(function() {
+  assert_property(window, "document", { enumerable: true, configurable: false }, "window.document");
+}, "\"document\" is an own, enumerable, non-configurable property on window");
+
+// feature: Event.isTrusted (attribute) (with [Unforgeable])
+
+test(function() {
+  var e = document.createEvent("Event");
+  assert_property(e, "isTrusted", { enumerable: true, configurable: false }, "e.isTrusted");
+}, "\"isTrusted\" is an own, enumerable, non-configurable property on Event objects");
+</script>

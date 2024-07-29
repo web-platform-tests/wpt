@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<title>short</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.7 unsigned short
+//
+// IDL unsigned short values are represented as integer JS Number values in the
+// range [0, 65536].
+
+// feature: CloseEvent.code (attribute) (of type unsigned short)
+
+test(function() {
+  var event = new CloseEvent("test");
+  assert_equals(typeof event.code, "number");
+  assert_true(event.code == Math.floor(event.code) && event.code >= 0 && event.code <= 65535);
+}, "CloseEvent.code returns a value of the correct type");
+
+// feature: WebSocket.readyState (attribute) (of type unsigned short)
+
+test(function() {
+  var ws = new WebSocket("wss://test.invalid");
+  assert_equals(typeof ws.readyState, "number");
+  assert_true(ws.readyState == Math.floor(ws.readyState) && ws.readyState >= 0 && ws.readyState <= 65535);
+}, "WebSocket.readyState returns a value of the correct type");
+</script>

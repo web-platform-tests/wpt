@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<title>[PutForwards]</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe id="iframe"></iframe>
+  <span id="span1"></span>
+  <span id="span2"></span>
+  <span id="span3"></span>
+</div>
+
+<script>
+// 4.5.6 Attributes
+//
+// If [PutForwards] is on an attribute, the property will have a setter,
+// and invoking it will forward the assignment to the specified property
+// on the object.
+//
+// Document.location is [Unforgeable], so it is not exposed as an
+// accessor property.  HTMLElement.style is not [Unforgeable], so
+// it will have an accessor property on HTMLElement.prototype.
+
+// feature: Document.location (attribute) (with [PutForwards])
+
+async_test(function(t) {
+  var iframe = document.getElementById("iframe");
+  var locationObject = iframe.contentDocument.location;
+  var href = iframe.contentDocument.location.href;
+  var newHref = "data:text/html,hello";
+
+  iframe.onload = function() {
+    iframe.onload = null;
+    t.step(function() {
+      assert_equals(iframe.contentDocument.location, locationObject);
+      assert_not_equals(iframe.contentDocument.location.href, href);
+      assert_equals(iframe.contentDocument.location.href, newHref);
+      t.done();
+    });
+  };
+  iframe.contentDocument.location = newHref;
+}, "Document.location assignment forwards property assignment");
+
+// feature: HTMLElement.style (attribute) (with [PutForwards])
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "style");
+  assert_true(!!desc, "!!desc");
+  assert_true(!!desc.set, "!!desc.set");
+}, "HTMLElement.protoype.style has a setter");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "style");
+  assert_true(!!desc, "!!desc");
+  assert_equals(desc.set.length, 1, "desc.set.length");
+}, "HTMLElement.prototype.style setter has correct length property");
+
+test(function() {
+  var e = document.getElementById("span1");
+  e.style.color = "red";
+
+  assert_equals(e.style.color, "red");
+
+  var styleObject = e.style;
+  var oldStyle = e.style.cssText;
+  var newStyle = "color: green";
+
+  e.style = newStyle;
+
+  assert_equals(e.style, styleObject);
+  assert_not_equals(e.style.cssText, oldStyle);
+  assert_equals(e.style.color, "green");
+}, "HTMLElement.prototype.style setter forwards property assignment");
+
+test(function() {
+  var e = document.getElementById("span1");
+  var desc = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "style");
+  assert_true(!!desc, "!!desc");
+  assert_throws(new TypeError(), function() {
+    desc.set.call(e.style);
+  });
+}, "HTMLElement.prototype.style setter throws TypeError when called with no arguments");
+
+test(function() {
+  var e = document.getElementById("span2");
+  var putInvoked = false;
+  Object.defineProperty(e.style, "cssText", { set: function() { putInvoked = true; } });
+  e.style = "color: pink";
+  assert_true(putInvoked, "putInvoked");
+}, "HTMLElement.prototype.style setter forwards to an object other than a CSSStyleDeclaration");
+
+test(function() {
+  var e = document.getElementById("span3");
+  var desc = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "style");
+
+  assert_true(!!desc, "!!desc");
+
+  var object = { };
+  Object.defineProperty(e, "style", { value: object });
+
+  desc.set.call(e, "hello");
+  assert_equals(object.cssText, "hello");
+}, "HTMLElement.prototype.style setter invokes [[Get]] on the object to find the forwarded-to object");
+</script>

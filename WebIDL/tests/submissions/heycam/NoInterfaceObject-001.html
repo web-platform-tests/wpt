@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>[NoInterfaceObject]</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.5 Interfaces
+//
+// Interface objects don't exist for [NoInterfaceObject] interfaces.
+
+// feature: WindowTimers (interface) (with [NoInterfaceObject])
+
+test(function() {
+  assert_true(!!window.setTimeout, "!!window.setTimeout");
+  assert_true(!window.WindowTimers, "!window.WindowTimers");
+}, "WindowTimers is implemented but does not have an interface object");
+
+// feature: NavigatorID (interface) (with [NoInterfaceObject])
+
+test(function() {
+  assert_true(!!window.navigator.platform, "!!window.navigator.platform");
+  assert_true(!window.NavigatorID, "!window.NavigatorID");
+}, "NavigatorID is implemented but does not have an interface object");
+</script>

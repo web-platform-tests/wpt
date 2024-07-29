@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<title>Exception interface object</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.9.1 Exception interface object
+//
+// Every exception interface object for an exception has a "prototype"
+// property (non-writable, non-enumerable, non-configurable), since it is
+// a function object.  Its value is the exception interface prototype object.
+
+// feature: DOMException (exception)
+
+test(function() {
+  assert_property(DOMException, "prototype", { writable: false, enumerable: false, configurable: false }, "DOMException.prototype");
+}, "DOMException.prototype has the right attributes");
+
+test(function() {
+  var exception;
+  try {
+    document.appendChild(document);
+  } catch (e) {
+    exception = e;
+  }
+  assert_true(!!exception);
+  assert_equals(DOMException.prototype, Object.getPrototypeOf(exception));
+}, "DOMException.prototype has the right value");
+
+test(function() {
+  assert_equals(typeof DOMException, "function");
+}, "typeof DOMException is correct");
+</script>

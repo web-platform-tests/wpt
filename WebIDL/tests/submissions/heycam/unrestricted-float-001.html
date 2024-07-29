@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<title>unrestricted float</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.13 unrestricted float
+//
+// Check that the JS Number (double) -> IDL unrestricted float ->
+// JS Number (double) conversion is done correctly.
+
+var values = [
+  undefined,           NaN,                "undefined",
+  null,                0,                  "null",
+  false,               0,                  "false",
+  true,                1,                  "true",
+  0,                   0,                  "0",
+  1,                   1,                  "1",
+  -1,                  -1,                 "-1",
+  0.5,                 0.5,                "0.5",
+  Infinity,            Infinity,           "Infinity",
+  -Infinity,           -Infinity,          "-Infinity",
+  NaN,                 NaN,                "NaN",
+  -0,                  -0,                 "-0",
+  "",                  0,                  '""',
+  "1",                 1,                  '"1"',
+  "hello",             NaN,                '"hello"',
+  { },                 NaN,                "{ }",
+  [],                  0,                  "[]",
+  /abc/,               NaN,                "/abc/",
+  document,            NaN,                "document",
+  -2147483648,         -2147483648,        "-2147483648",
+  -2147483649,         -2147483648,        "-2147483649",
+  4294967295,          4294967296,         "4294967295",
+  4294967296,          4294967296,         "4294967296",
+  4294967297,          4294967296,         "4294967297",
+  -0.5,                -0.5,               "-0.5",
+  -1.5,                -1.5,               "-1.5",
+  1.5,                 1.5,                "1.5",
+  1.1,                 1.100000023841858,  "1.1",
+  1e39,                Infinity,            "1e39",
+  1.0000001788139343,  1.000000238418579,  "1.0000001788139343"
+];
+
+// feature: Float32Array (indexed property setter) (of type unrestricted float)
+
+var a = new Float32Array(1);
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    a[0] = value;
+    assert_equals(a[0], expected);
+  }, "passing " + desc + " through a Float32Array indexed property setter coerces the value to an IDL unrestricted float correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return value; }, toString: function() { return { } } };
+    if (value === null || typeof value != "object") {
+      a[0] = objectValue;
+      assert_equals(a[0], expected);
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
+      assert_throws(new TypeError(), function() { a[0] = objectValue; });
+    }
+  }, "passing { valueOf: function() { return " + desc + " } } through a Float32Array indexed property setter coerces the value to an IDL unrestricted float correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return { } }, toString: function() { return value; } };
+    if (value === null || typeof value != "object") {
+      a[0] = objectValue;
+      assert_equals(a[0], expected);
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
+      assert_throws(new TypeError(), function() { a[0] = objectValue; });
+    }
+  }, "passing { toString: function() { return " + desc + " } } through a Float32Array indexed property setter coerces the value to an IDL unrestricted float correctly");
+}
+
+test(function() {
+  assert_throws({ name: "SomeError" }, function() { a[0] = { toString: function() { throw { name: "SomeError" }; } }; });
+}, "passing { toString: function() { throw ... } } to the Float32Array indexed property setter will propagate the exception");
+</script>

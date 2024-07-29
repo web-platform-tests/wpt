@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<title>Exception fields</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.9.4 Exception fields
+//
+// Exception fields are exposed as accessor properties on the exception
+// interface prototype object.
+
+// feature: DOMException.code (exception field)
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(DOMException.prototype, "code");
+  assert_descriptor(desc, { enumerable: true, configurable: true });
+  assert_equals(typeof desc.get, "function");
+  assert_true(!desc.set);
+}, "DOMException.prototype.code is an accessor property with the correct attributes and with no setter");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(DOMException.prototype, "code");
+  assert_equals(desc.get.length, 0);
+}, "DOMException.code getter length property has the right value");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(DOMException.prototype, "code");
+  assert_throws(new TypeError(), function() { desc.get.call(null); });
+}, "DOMException.code getter throws when called with a null this value");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(DOMException.prototype, "code");
+  assert_throws(new TypeError(), function() { desc.get.call(document); });
+}, "DOMException.code getter throws when called with a bad this value");
+
+test(function() {
+  var exception;
+  try {
+    document.appendChild(document);
+  } catch (e) {
+    exception = e;
+  }
+  assert_equals(exception.code, 3);
+
+  var desc = Object.getOwnPropertyDescriptor(DOMException.prototype, "code");
+  assert_equals(desc.get.call(exception, "extra"), 3);
+}, "arguments passed to DOMException.code getter are ignored");
+</script>

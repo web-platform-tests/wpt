@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<title>Fixing objects that support named properties</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe id="iframe"></iframe>
+</div>
+
+<script>
+// 4.7.1 Indexed and named properties
+//
+// Attempts to fix an object that supports named properties by calling
+// Object.freeze, Object.seal or Object.preventExtensions on it must fail and
+// throw a TypeError.
+
+// feature: Storage (interface) (supports named properties)
+
+test(function() {
+  var storage = document.getElementById("iframe").contentWindow.localStorage;
+  assert_throws(new TypeError(), function() { Object.freeze(storage); });
+}, "Object.freeze must fail on a Storage since it supports named properties");
+
+test(function() {
+  var storage = document.getElementById("iframe").contentWindow.localStorage;
+  assert_throws(new TypeError(), function() { Object.seal(storage); });
+}, "Object.seal must fail on a Storage since it supports named properties");
+
+test(function() {
+  var storage = document.getElementById("iframe").contentWindow.localStorage;
+  assert_throws(new TypeError(), function() { Object.preventExtensions(storage); });
+}, "Object.preventExtensions must fail on a Storage since it supports named properties");
+
+
+// feature: DOMStringMap (interface) (supports named properties)
+
+test(function() {
+  var dataset = document.createElement("span").dataset;
+  assert_throws(new TypeError(), function() { Object.freeze(dataset); });
+}, "Object.freeze must fail on a DOMStringMap since it supports named properties");
+
+test(function() {
+  var dataset = document.createElement("span").dataset;
+  assert_throws(new TypeError(), function() { Object.seal(dataset); });
+}, "Object.seal must fail on a DOMStringMap since it supports named properties");
+
+test(function() {
+  var dataset = document.createElement("span").dataset;
+  assert_throws(new TypeError(), function() { Object.preventExtensions(dataset); });
+}, "Object.preventExtensions must fail on a DOMStringMap since it supports named properties");
+</script>

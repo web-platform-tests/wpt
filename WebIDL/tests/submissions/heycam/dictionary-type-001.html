@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<title>Dictionary types</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <form name="bubbles"></form>
+  <form name="cancelable"></form>
+  <form name="detail"></form>
+</div>
+
+<script>
+// 4.2.19 Dictionary types
+//
+// Converting a JS value to an IDL dictionary type involves:
+//   - throwing if the value is not undefined, null or an object
+//   - throwing if the value is a native Date object
+//   - using [[Get]] to get the value of each dictionary member,
+//     in a specific order
+
+// feature: CustomEvent (interface) (with constructor with argument of a dictionary type)
+
+test(function() {
+  var e = new CustomEvent("test", undefined);
+  assert_true(!e.bubbles);
+  assert_true(!e.cancelable);
+}, "passing undefined to CustomEvent constructor");
+
+test(function() {
+  var e = new CustomEvent("test", null);
+  assert_true(!e.bubbles);
+  assert_true(!e.cancelable);
+}, "passing null to CustomEvent constructor");
+
+test(function() {
+  assert_throws(new TypeError(), function() { new CustomEvent("test", false); });
+}, "passing false to CustomEvent constructor");
+
+test(function() {
+  assert_throws(new TypeError(), function() { new CustomEvent("test", "hello"); });
+}, "passing \"hello\" to CustomEvent constructor");
+
+test(function() {
+  var e = new CustomEvent("test", { bubbles: true, cancelable: true, detail: 123 });
+  assert_true(e.bubbles);
+  assert_true(e.cancelable);
+  assert_equals(e.detail, 123);
+}, "passing { bubbles, cancelable, detail } to CustomEvent constructor");
+
+test(function() {
+  var object = [];
+  object.bubbles = true;
+  object.cancelable = true;
+  object.detail = 123;
+  var e = new CustomEvent("test", object);
+  assert_true(e.bubbles);
+  assert_true(e.cancelable);
+  assert_equals(e.detail, 123);
+}, "passing [ bubbles, cancelable, detail ] to CustomEvent constructor");
+
+test(function() {
+  var object = Object.create({ bubbles: true, cancelable: true, detail: 123 });
+  var e = new CustomEvent("test", object);
+  assert_true(e.bubbles);
+  assert_true(e.cancelable);
+  assert_equals(e.detail, 123);
+}, "passing { } -> { bubbles, cancelable, detail } to CustomEvent constructor");
+
+test(function() {
+  var object = Object.create(/abc/);
+  object.bubbles = true;
+  object.cancelable = true;
+  object.detail = 123;
+  var e = new CustomEvent("test", object);
+  assert_true(e.bubbles);
+  assert_true(e.cancelable);
+  assert_equals(e.detail, 123);
+}, "passing { bubbles, cancelable, detail } -> /abc/ to CustomEvent constructor");
+
+test(function() {
+  var object = /abc/;
+  object.bubbles = true;
+  object.cancelable = true;
+  object.detail = 123;
+  var e = new CustomEvent("test", object);
+  assert_true(e.bubbles);
+  assert_true(e.cancelable);
+  assert_equals(e.detail, 123);
+}, "passing /{bubbles, cancelable, detail}/ to CustomEvent constructor");
+
+test(function() {
+  var object = { };
+  var invokedBubbles = false;
+  var invokedCancelable = false;
+  var invokedDetail = false;
+  Object.defineProperty(object, "bubbles", { get: function() { invokedBubbles = true; return true; } });
+  Object.defineProperty(object, "cancelable", { get: function() { invokedCancelable = true; return true; } });
+  Object.defineProperty(object, "detail", { get: function() { invokedDetail = true; return 123; } });
+  var e = new CustomEvent("test", object);
+  assert_true(e.bubbles);
+  assert_true(e.cancelable);
+  assert_equals(e.detail, 123);
+  assert_true(invokedBubbles);
+  assert_true(invokedCancelable);
+  assert_true(invokedDetail);
+}, "passing { bubbles getter, cancelable getter, detail: getter } to CustomEvent constructor");
+
+test(function() {
+  var object = { };
+  var order = [];
+  Object.defineProperty(object, "cancelable", { get: function() { order.push("cancelable"); return true; } });
+  Object.defineProperty(object, "detail", { get: function() { order.push("detail"); return 123; } });
+  Object.defineProperty(object, "bubbles", { get: function() { order.push("bubbles"); return true; } });
+  var e = new CustomEvent("test", object);
+  assert_true(e.bubbles);
+  assert_true(e.cancelable);
+  assert_equals(e.detail, 123);
+  assert_array_equals(order, ["bubbles", "cancelable", "detail"]);
+}, "passing { cancelable getter, detail getter, bubbles getter } to CustomEvent constructor");
+
+test(function() {
+  var e = new CustomEvent("test", document.forms);
+  assert_true(e.bubbles);
+  assert_true(e.cancelable);
+  assert_equals(e.detail, document.forms[2]);
+}, "passing HTMLCollection to CustomEvent constructor");
+
+test(function() {
+  var object = { };
+  Object.defineProperty(object, "something", { get: function() { throw "SomeError"; } });
+  var e = new CustomEvent("test", object);
+  assert_true(!e.bubbles);
+  assert_true(!e.cancelable);
+  assert_equals(e.detail, null);
+}, "passing { throwing something getter } to CustomEvent constructor");
+
+test(function() {
+  var object = { };
+  Object.defineProperty(object, "detail", { get: function() { throw { name: "SomeError" }; } });
+  assert_throws({ name: "SomeError" }, function() { new CustomEvent("test", object); });
+}, "passing { throwing detail getter } to CustomEvent constructor");
+
+test(function() {
+  var e = new CustomEvent("test", { detail: undefined });
+  assert_equals(e.detail, null);
+}, "passing { detail: undefined } to CustomEvent constructor");
+</script>

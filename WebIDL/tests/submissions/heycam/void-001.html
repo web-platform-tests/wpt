@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<title>void</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.2 void
+//
+// Operations defined with a return type of void return undefined.
+
+// feature: HTMLElement.click (operation) (with return type void)
+
+test(function() {
+  assert_equals(document.documentElement.click(), undefined);
+}, "HTMLElement.click() returns undefined");
+
+// feature: HTMSelectLElement.add (operation) (with return type void)
+
+test(function() {
+  assert_equals(document.createElement("select").add(document.createElement("option")), undefined);
+}, "HTMLSelectElement.add() returns undefined");
+</script>

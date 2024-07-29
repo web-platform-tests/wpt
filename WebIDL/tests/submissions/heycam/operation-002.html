@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<title>Invoking regular operations without overloading but with optional arguments</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe id="iframe"></iframe>
+</div>
+
+<script>
+// 4.5.7 Operations
+//
+// Here we're invoking regular operations that do not use overloading
+// but which do have optional arguments.  When too few arguments are passed,
+// a TypeError is thrown.  When too many arguments are passed, the
+// extra ones are ignored.  Undefined is treated as a missing optional
+// argument.  Argument types are not used to eliminate the single entry in the
+// effective overload set.  The function can be applied to objects of the right
+// type from other windows. Calling it with a bad this object value will throw
+// a TypeError.
+
+// feature: Window.postMessage (operation) (with optional argument)
+
+test(function() {
+  assert_throws(new TypeError(), function() { window.postMessage(); });
+}, "Window.postMessage throws when no arguments passed");
+
+test(function() {
+  assert_throws(new TypeError(), function() { window.postMessage("test"); });
+}, "Window.postMessage throws when one argument passed");
+
+async_test(function(t) {
+  var invoked = false;
+  window.onmessage = function() { invoked = true; };
+  window.postMessage("test", "*", [], "extra");
+  setTimeout(function() { t.step(function() { assert_true(invoked); t.done(); }); }, 1);
+}, "extra argument passed to Window.postMessage is ignored");
+
+async_test(function(t) {
+  var invoked = false;
+  var w = document.getElementById("iframe").contentWindow;
+  w.onmessage = function() { invoked = true; };
+  window.postMessage.call(w, "test", "*");
+  w.setTimeout(function() { t.step(function() { assert_true(invoked); t.done(); }); }, 1);
+}, "Window.postMessage can be applied to other objects");
+
+test(function() {
+  assert_throws(new TypeError(), function() { window.postMessage.call(null); });
+}, "Window.postMessage throws a TypeError when called with a null this-value");
+
+test(function() {
+  assert_throws(new TypeError(), function() { window.postMessage.call(document); });
+}, "Window.postMessage throws a TypeError when called with a bad this-value");
+
+
+// feature: DOMImplementation.createHTMLDocument (operation) (with optional argument)
+
+test(function() {
+  var doc = document.implementation.createHTMLDocument("test", "extra");
+  assert_equals(doc.title, "test");
+}, "extra argument passed to DOMImplementation.createHTMLDocument is ignored");
+
+test(function() {
+  var doc = document.implementation.createHTMLDocument.call(document.getElementById("iframe").contentDocument.implementation, "test");
+  assert_equals(doc.title, "test");
+}, "DOMImplementation.createHTMLDocument can be applied to objects from other windows");
+
+test(function() {
+  assert_throws(new TypeError(), function() { document.implementation.createHTMLDocument.call(null); });
+}, "DOMImplementation.createHTMLDocument throws a TypeError when called with a null this-value");
+
+test(function() {
+  assert_throws(new TypeError(), function() { document.implementation.createHTMLDocument.call(document); });
+}, "DOMImplementation.createHTMLDocument throws a TypeError when called with a bad this-value");
+
+
+function makeDivSpan(doc) {
+  var div = doc.createElement("div");
+  div.appendChild(doc.createElement("span"));
+  return div;
+}
+
+test(function() {
+  var div = makeDivSpan(document);
+  assert_equals(div.cloneNode(false, "extra").firstChild, null);
+}, "extra argument passed to Node.cloneNode is ignored");
+
+test(function() {
+  var div = makeDivSpan(document);
+  assert_true(!!div.cloneNode().firstChild);
+}, "optional argument filled in correctly when calling Node.cloneNode");
+
+test(function() {
+  var div = makeDivSpan(document);
+  assert_not_equals(div.cloneNode(undefined).firstChild, null);
+}, "passing undefined to Node.cloneNode is treated as a missing optional argument");
+
+test(function() {
+  var div = makeDivSpan(document.getElementById("iframe").contentDocument);
+  Node.prototype.cloneNode.call(div);
+  assert_true(!!div.firstChild);
+}, "Node.cloneNode can be applied to objects from other windows");
+
+test(function() {
+  assert_throws(new TypeError(), function() { Node.prototype.cloneNode.call(null); });
+}, "Node.cloneNode throws a TypeError when called with a null this-value");
+
+test(function() {
+  assert_throws(new TypeError(), function() { Node.prototype.cloneNode.call(new Range()); });
+}, "Node.cloneNode throws a TypeError when called with a bad this-value");
+
+
+function makeSelectOption(doc) {
+  var select = doc.createElement("select");
+  select.appendChild(doc.createElement("option"));
+  return select;
+}
+
+test(function() {
+  var select = makeSelectOption(document);
+  assert_throws(new TypeError(), function() { select.add(); });
+}, "passing too few arguments to HTMLSelectElement.add throws");
+
+test(function() {
+  var select = makeSelectOption(document);
+  var option = document.createElement("option");
+  select.add(option, null, "extra");
+  assert_equals(select.lastChild, option);
+}, "extra argument passed to HTMLSelectElement.add is ignored");
+
+test(function() {
+  var select = makeSelectOption(document);
+  var option = document.createElement("option");
+  select.add(option);
+  assert_equals(select.lastChild, option);
+}, "optional argument filled in correctly when calling HTMLSelectElement.add");
+
+test(function() {
+  var select = makeSelectOption(document);
+  var option = document.createElement("option");
+  select.add(option, undefined);
+  assert_equals(select.lastChild, option);
+}, "passing undefined to HTMLSelectElement.add is treated as a missing optional argument");
+
+test(function() {
+  var doc = document.getElementById("iframe").contentDocument;
+  var select = makeSelectOption(doc);
+  var option = doc.createElement("option");
+  HTMLSelectElement.prototype.add.call(select, option, select.firstChild);
+  assert_equals(select.firstChild, option);
+}, "HTMLSelectElement.add can be applied to objects from other windows");
+
+test(function() {
+  var option = document.createElement("option");
+  assert_throws(new TypeError(), function() { HTMLSelectElement.protoype.add.call(null, { toString: function() { throw "something"; } }); });
+}, "HTMLSelectElement.add throws a TypeError when called with a null this-value");
+
+test(function() {
+  var option = document.createElement("option");
+  assert_throws(new TypeError(), function() { HTMLSelectElement.protoype.add.call(document, { toString: function() { throw "something"; } }); });
+}, "HTMLSelectElement.add throws a TypeError when called with a bad this-value");
+</script>

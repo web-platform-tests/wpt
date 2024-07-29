@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<title>[OverrideBuiltins] on HTMLFormElement</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <form name="formname" title="formtitle">
+    <input id="input_a1" name="a1"></input>
+    <input id="input_name" name="name"></input>
+    <input id="input_submit" name="submit"></input>
+    <input id="input_title" name="title"></input>
+    <input id="input_click" name="click"></input>
+    <input id="input_id" name="id"></input>
+    <input id="input_getAttribute" name="getAttribute"></input>
+    <input id="input_nodeName" name="nodeName"></input>
+    <input id="input_appendChild" name="appendChild"></input>
+    <input id="input_addEventListener" name="addEventListener"></input>
+    <input id="input_expando1" name="expando1"></input>
+    <input id="input_expando2" name="expando2"></input>
+    <input id="input_expando3" name="expando3"></input>
+    <input id="input_expando4" name="expando4"></input>
+    <input id="input_expando5" name="expando5"></input>
+    <input id="input_expando6" name="expando6"></input>
+  </form>
+</div>
+
+<script>
+// 4.7.1 Indexed and named properties
+//
+// The named property visibility algorithm uses [OverrideBuiltins] to determine
+// whether to look at the prototype chain above the interface that
+// [OverrideBuiltins] is on.
+
+// feature: HTMLFormElement (interface) (with [OverrideBuiltins])
+
+var form = document.forms[0];
+var input_a1 = document.getElementById("input_a1");
+var input_name = document.getElementById("input_name");
+var input_submit = document.getElementById("input_submit");
+var input_title = document.getElementById("input_title");
+var input_click = document.getElementById("input_click");
+var input_id = document.getElementById("input_id");
+var input_getAttribute = document.getElementById("input_getAttribute");
+var input_nodeName = document.getElementById("input_nodeName");
+var input_appendChild = document.getElementById("input_appendChild");
+var input_addEventListener = document.getElementById("input_addEventListener");
+var input_expando1 = document.getElementById("input_expando1");
+var input_expando2 = document.getElementById("input_expando2");
+var input_expando3 = document.getElementById("input_expando3");
+var input_expando4 = document.getElementById("input_expando4");
+var input_expando5 = document.getElementById("input_expando5");
+var input_expando6 = document.getElementById("input_expando6");
+
+test(function() {
+  assert_equals(form.a1, input_a1, "form.a1 == input_a1");
+}, "HTMLFormElement exposes named properties");
+
+// on the instance
+
+test(function() {
+  form.expando0 = 1;
+  assert_equals(form.expando0, 1, "form.expando0 == 1");
+}, "HTMLFormElement allows expandos");
+
+test(function() {
+  form.expando1 = 1;
+  assert_equals(form.expando1, input_expando1, "form.expando1 == input_expando1");
+}, "HTMLFormElement exposes a named property that shadows an expando on an instance");
+
+// on HTMLFormElement
+
+test(function() {
+  assert_equals(form.name, input_name, "form.name == input_name");
+}, "HTMLFormElement exposes a named property that shadows an attribute of HTMLFormElement");
+
+test(function() {
+  assert_equals(form.submit, input_submit, "form.submit == input_submit");
+}, "HTMLFormElement exposes a named property that shadows an operation of HTMLFormElement");
+
+test(function() {
+  HTMLFormElement.prototype.expando2 = 1;
+  assert_equals(form.expando2, input_expando2, "form.expando2 == input_expando2");
+}, "HTMLFormElement exposes a named property that shadows an expando on HTMLFormElement.prototype");
+
+// on HTMLElement
+
+test(function() {
+  assert_equals(form.title, input_title, "form.title == input_title");
+}, "HTMLFormElement exposes a named property that shadows an attribute of HTMLElement");
+
+test(function() {
+  assert_equals(form.click, input_click, "form.click == input_click");
+}, "HTMLFormElement exposes a named property that shadows an operation of HTMLElement");
+
+test(function() {
+  HTMLElement.prototype.expando3 = 1;
+  assert_equals(form.expando3, input_expando3, "form.expando3 == input_expando3");
+}, "HTMLFormElement exposes a named property that shadows an expando on HTMLElement.prototype");
+
+// on Element
+
+test(function() {
+  assert_equals(form.id, input_id, "form.id == input_id");
+}, "HTMLFormElement exposes a named property that shadows an attribute of Element");
+
+test(function() {
+  assert_equals(form.getAttribute, input_getAttribute, "form.getAttribute == input_getAttribute");
+}, "HTMLFormElement exposes a named property that shadows an operation of Element");
+
+test(function() {
+  Element.prototype.expando4 = 1;
+  assert_equals(form.expando4, input_expando4, "form.expando4 == input_expando4");
+}, "HTMLFormElement exposes a named property that shadows an expando on Element.prototype");
+
+// on Node
+
+test(function() {
+  assert_equals(form.nodeName, input_nodeName, "form.nodeName == input_nodeName");
+}, "HTMLFormElement exposes a named property that shadows an attribute of Node");
+
+test(function() {
+  assert_equals(form.appendChild, input_appendChild, "form.appendChild == input_appendChild");
+}, "HTMLFormElement exposes a named property that shadows an operation of Node");
+
+test(function() {
+  Node.prototype.expando5 = 1;
+  assert_equals(form.expando5, input_expando5, "form.expando5 == input_expando5");
+}, "HTMLFormElement exposes a named property that shadows an expando on Node.prototype");
+
+// on EventTarget
+
+test(function() {
+  assert_equals(form.addEventListener, input_addEventListener, "form.addEventListener == input_addEventListener");
+}, "HTMLFormElement exposes a named property that shadows an operation of EventTarget");
+
+test(function() {
+  EventTarget.prototype.expando6 = 1;
+  assert_equals(form.expando6, input_expando6, "form.expando6 == input_expando6");
+}, "HTMLFormElement exposes a named property that shadows an expando on EventTarget.prototype");
+</script>

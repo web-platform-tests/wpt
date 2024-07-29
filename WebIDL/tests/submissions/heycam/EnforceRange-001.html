@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>[EnforceRange]</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.3.4 [EnforceRange]
+//
+// When converting a JS value to an IDL numeric type with [EnforceRange],
+// then out of range values will throw a TypeError rather than being
+// converted to a valid value.
+
+// feature: IDBFactory.open (operation) (with [EnforceRange] on an argument)
+
+var throwingValues = [NaN, Infinity, -Infinity, -1, Math.pow(2, 54)];
+
+for (var i = 0; i < throwingValues.length; i++) {
+  var value = throwingValues[i];
+  test(function() {
+    indexedDB.deleteDatabase('EnforceRangeTest');
+    assert_throws(new TypeError(), function() { indexedDB.open('EnforceRangeTest', value); });
+  }, "passing " + value + " to IDBFactory.open() as the version argument throws a TypeError");
+}
+</script>

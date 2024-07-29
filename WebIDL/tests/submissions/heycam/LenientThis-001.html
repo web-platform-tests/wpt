@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<title>[LenientThis]</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.5.6 Attributes
+//
+// If [LenientThis] is on an attribute, invoking an attribute getter/setter
+// with an invalid this object will cause the function to return without
+// doing anything.
+
+function noop1() { }
+function noop2() { }
+
+// feature: Document.onreadystatechange (attribute) (with [LenientThis])
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(Document.prototype, "onreadystatechange");
+
+  document.onreadystatechange = noop1;
+  assert_equals(document.onreadystatechange, noop1, "document.onreadystatechange == noop1");
+
+  assert_true(!!desc, "Document.prototype.onreadystatechange");
+  assert_equals(desc.get.call({ }), undefined, "document.onreadystatechange getter.call({}) == undefined");
+}, "invoking Document.onreadystatechange's getter with an invalid this object returns undefined");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(Document.prototype, "onreadystatechange");
+
+  document.onreadystatechange = noop1;
+  assert_equals(document.onreadystatechange, noop1, "document.onreadystatechange == noop1");
+
+  assert_true(!!desc, "Document.prototype.onreadystatechange");
+  assert_equals(desc.set.call({ }, noop2), undefined, "document.onreadystatechange setter.call({}) == undefined");
+  assert_equals(document.onreadystatechange, noop1, "document.onreadystatechange == noop1 (still)");
+}, "invoking Document.onreadystatechange's setter with an invalid this object does nothing and returns undefined");
+
+// feature: GlobalEventHandlers.onmouseenter (attribute) (with [LenientThis])
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(Document.prototype, "onmouseenter");
+
+  document.onmouseenter = noop1;
+  assert_equals(document.onmouseenter, noop1, "document.onmouseenter == noop1");
+
+  assert_true(!!desc, "Document.prototype.onmouseenter");
+  assert_equals(desc.get.call({ }), undefined, "document.onmouseenter getter.call({}) == undefined");
+}, "invoking GlobalEventHandlers.onmouseenter's getter with an invalid this object returns undefined");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(Document.prototype, "onmouseenter");
+
+  document.onmouseenter = noop1;
+  assert_equals(document.onmouseenter, noop1, "document.onmouseenter == noop1");
+
+  assert_true(!!desc, "Document.prototype.onmouseenter");
+  assert_equals(desc.set.call({ }, noop2), undefined, "document.onmouseenter setter.call({}) == undefined");
+  assert_equals(document.onmouseenter, noop1, "document.onmouseenter == noop1 (still)");
+}, "invoking GlobalEventHandlers.onmouseenter's setter with an invalid this object does nothing and returns undefined");
+</script>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Self-Alignment: justify-self - block-level elements</title>
+<link rel="author" title="David Tran" href="mailto:davidtranhq+wpt@gmail.com">
+<link rel="match" href="block-justify-self-ref.html">
+<link rel="help" href="https://www.w3.org/TR/css-align-3/#justify-block" />
+<meta name="assert" content="justify-self applies to block-level boxes">
+<style>
+.test {
+  width: 300px;
+  border: 1px solid;
+}
+
+.expected {
+  background-color: green; 
+  width: 100px;
+}
+  
+.actual {
+  background-color: cyan;
+  width: 100px;
+}
+
+.test-suite {
+  display: flex;
+  flex-flow: column wrap;
+  width: 800px;
+  height: 570px;
+}
+
+</style>
+<div class="test-suite">
+  `auto` inherits from parent
+  <div class="test" style="justify-items: center;">
+    <div class="expected" style="margin: auto">expected</div>
+    <div class="actual" style="margin: auto;">actual</div>
+  </div>
+
+  `normal` acts as default layout
+  <div class="test">
+    <div class="expected">expected</div>
+    <div class="actual">actual</div>
+  </div>
+
+  `stretch`es if auto width and !auto margins
+  <div class="test">
+    <div class="expected" style="width: auto;">expected</div>
+    <div class="actual" style="width: auto">actual</div>
+  </div>
+
+  `stretch` fallsback to flex-start otherwise
+  <div class="test">
+    <div class="expected">expected</div>
+    <div class="actual">actual</div>
+  </div>
+
+  `stretch` respects max-width
+  <div class="test">
+    <div class="expected" style="width: 150px;">expected</div>
+    <div class="actual" style="width: 150px">actual</div>
+  </div>
+
+  `center`
+  <div class="test">
+    <div class="expected" style="margin: auto;">expected</div>
+    <div class="actual" style="margin: auto;">actual</div>
+  </div>
+
+  `left`
+  <div class="test">
+    <div class="expected">expected</div>
+    <div class="actual">actual</div>
+  </div>
+
+  `right`
+  <div class="test">
+    <div class="expected" style="margin-left: 200px;">expected</div>
+    <div class="actual" style="margin-left: 200px">actual</div>
+  </div>
+
+  `start`
+  <div class="test">
+    <div class="expected">expected</div>
+    <div class="actual">actual</div>
+  </div>
+
+  `end`
+  <div class="test">
+    <div class="expected" style="margin-left: 200px;">expected</div>
+    <div class="actual" style="margin-left: 200px">actual</div>
+  </div>
+
+  `flex-start`
+  <div class="test">
+    <div class="expected">expected</div>
+    <div class="actual">actual</div>
+  </div>
+
+  `flex-end`
+  <div class="test">
+    <div class="expected" style="margin-left: 200px;">expected</div>
+    <div class="actual" style="margin-left: 200px;">actual</div>
+  </div>
+
+  `self-start`
+  <div class="test">
+    <div class="expected" style="direction: rtl; margin-left: 200px;">expected</div>
+    <div class="actual" style="direction: rtl; margin-left: 200px;">actual</div>
+  </div>
+
+  `self-end`
+  <div class="test">
+    <div class="expected" style="direction: rtl;">expected</div>
+    <div class="actual" style="direction: rtl;">actual</div>
+  </div>
+
+  `normal` (absolute is `stretch`)
+  <div class="test">
+    <div class="expected" style="position: absolute; width: 300px;">expected</div>
+    <div>dummy</div>
+    <div class="actual" style="position: absolute; width: 300px;">actual</div>
+    <div>dummy</div>
+  </div>
+
+  `normal` (replaced box absolute is `start`)
+  <div class="test">
+    <img src="https://via.placeholder.com/100x18" alt="Placeholder Image" style="position: absolute;">
+    <div>dummy</div>
+    <img src="https://via.placeholder.com/100x18" alt="Placeholder Image" style="position: absolute;">
+    <div>dummy</div>
+  </div>
+
+  `normal` (absolute is `stretch`)
+  <div class="test" style="position: relative;">
+    <div class="expected" style="position: absolute; width: auto; inset: auto 0 auto 0;">expected</div>
+    <div>dummy</div>
+    <div class="actual" style="position: absolute; width: auto; inset: auto 0 auto 0;">actual</div>
+    <div>dummy</div>
+  </div>
+
+  `safe end` overflows to `start`
+  <div class="test">
+    <div class="expected" style="width: 350px">expected</div>
+    <div class="actual" style="width: 350px">actual</div>
+  </div>
+
+  `unsafe end` overflows to `end`
+  <div class="test">
+    <div class="expected" style="width: 350px; margin-left: -50px">expected</div>
+    <div class="actual" style="width: 350px; margin-left: -50px">actual</div>
+  </div>
+
+  no effect on table cells
+  <div class="test" style="display: table">
+    <div class="expected">expected</div>
+    <div class="actual">actual</div>
+  </div>
+</div>

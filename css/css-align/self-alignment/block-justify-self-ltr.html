@@ -151,8 +151,12 @@
   </div>
 
   no effect on table cells
-  <div class="test" style="display: table">
-    <div class="expected">expected</div>
-    <div class="actual" style="justify-self: center">actual</div>
+  <div class="test" style="display: table; table-layout: fixed">
+    <div style="display: table-row">
+      <div class="expected" style="display: table-cell; width: 100px;">expected</div>
+    </div>
+    <div style="display: table-row">
+      <div class="actual" style="justify-self: center; display: table-cell; width: 100px;">actual</div>
+    </div>
   </div>
 </div> 

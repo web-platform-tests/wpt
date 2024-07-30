@@ -298,3 +298,82 @@ async def test_with_new_navigation_inside_page(
             "url": slow_page_url,
         },
     )
+
+
+@pytest.mark.parametrize("type_hint", ["tab", "window"])
+async def test_close_context(
+    bidi_session,
+    subscribe_events,
+    url,
+    wait_for_event,
+    wait_for_future_safe,
+    type_hint,
+):
+    new_context = await bidi_session.browsing_context.create(type_hint=type_hint)
+    slow_page_url = url(
+        "/webdriver/tests/bidi/browsing_context/support/empty.html?pipe=trickle(d10)"
+    )
+    await subscribe_events(events=[NAVIGATION_FAILED_EVENT])
+
+    result = await bidi_session.browsing_context.navigate(
+        context=new_context["context"], url=slow_page_url, wait="none"
+    )
+
+    on_navigation_failed = wait_for_event(NAVIGATION_FAILED_EVENT)
+    await bidi_session.browsing_context.close(context=new_context["context"])
+    event = await wait_for_future_safe(on_navigation_failed)
+
+    # Make sure that the navigation failed.
+    assert_navigation_info(
+        event,
+        {
+            "context": new_context["context"],
+            "navigation": result["navigation"],
+            "url": slow_page_url,
+        },
+    )
+
+
+async def test_close_iframe(
+    bidi_session,
+    subscribe_events,
+    inline,
+    url,
+    new_tab,
+    wait_for_event,
+    wait_for_future_safe,
+):
+    iframe_url = inline("<div>foo</div>")
+    page_url = inline(f"<iframe src={iframe_url}></iframe")
+
+    await subscribe_events(events=[NAVIGATION_FAILED_EVENT])
+
+    result = await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=page_url, wait="complete"
+    )
+
+    contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
+    iframe_context = contexts[0]["children"][0]["context"]
+
+    slow_page_url = url(
+        "/webdriver/tests/bidi/browsing_context/support/empty.html?pipe=trickle(d10)"
+    )
+    # Navigate in the iframe.
+    result = await bidi_session.browsing_context.navigate(
+        context=iframe_context, url=slow_page_url, wait="none"
+    )
+
+    on_navigation_failed = wait_for_event(NAVIGATION_FAILED_EVENT)
+    # Reload the top context to destroy the iframe.
+    await bidi_session.browsing_context.reload(context=new_tab["context"], wait="none")
+    event = await wait_for_future_safe(on_navigation_failed)
+
+    # Make sure that the iframe navigation failed.
+    assert_navigation_info(
+        event,
+        {
+            "context": iframe_context,
+            "navigation": result["navigation"],
+            "url": slow_page_url,
+        },
+    )

@@ -1,3 +1,4 @@
+import asyncio
 import pytest
 from tests.support.sync import AsyncPoll
 
@@ -10,6 +11,7 @@ pytestmark = pytest.mark.asyncio
 
 NAVIGATION_FAILED_EVENT = "browsingContext.navigationFailed"
 NAVIGATION_STARTED_EVENT = "browsingContext.navigationStarted"
+USER_PROMPT_OPENED_EVENT = "browsingContext.userPromptOpened"
 
 
 async def test_unsubscribe(bidi_session, inline, new_tab):
@@ -375,5 +377,59 @@ async def test_close_iframe(
             "context": iframe_context,
             "navigation": result["navigation"],
             "url": slow_page_url,
+        },
+    )
+
+
+@pytest.mark.capabilities({"unhandledPromptBehavior": {"beforeUnload": "ignore"}})
+async def test_with_beforeunload_prompt(
+    bidi_session,
+    new_tab,
+    wait_for_event,
+    wait_for_future_safe,
+    url,
+    subscribe_events,
+    setup_beforeunload_page,
+):
+    await subscribe_events(
+        events=[
+            NAVIGATION_FAILED_EVENT,
+            NAVIGATION_STARTED_EVENT,
+            USER_PROMPT_OPENED_EVENT,
+        ]
+    )
+    await setup_beforeunload_page(new_tab)
+    target_url = url("/webdriver/tests/support/html/default.html", domain="alt")
+
+    on_navigation_started = wait_for_event(NAVIGATION_STARTED_EVENT)
+    on_prompt_opened = wait_for_event(USER_PROMPT_OPENED_EVENT)
+
+    asyncio.ensure_future(
+        bidi_session.browsing_context.navigate(
+            context=new_tab["context"], url=target_url, wait="none"
+        )
+    )
+
+    # Wait for the navigation to start.
+    navigation_started_event = await wait_for_future_safe(on_navigation_started)
+
+    # Wait for the prompt to open.
+    await wait_for_future_safe(on_prompt_opened)
+
+    on_navigation_failed = wait_for_event(NAVIGATION_FAILED_EVENT)
+    # Stay on the page to fail the started navigation.
+    await bidi_session.browsing_context.handle_user_prompt(
+        context=new_tab["context"], accept=False
+    )
+
+    event = await wait_for_future_safe(on_navigation_failed)
+
+    # Make sure that the first navigation failed.
+    assert_navigation_info(
+        event,
+        {
+            "context": new_tab["context"],
+            "navigation": navigation_started_event["navigation"],
+            "url": target_url,
         },
     )

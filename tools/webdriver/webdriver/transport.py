@@ -2,6 +2,7 @@
 
 import json
 import select
+import socket
 
 from http.client import HTTPConnection
 from typing import Dict, List, Mapping, Sequence, Tuple
@@ -251,16 +252,20 @@ class HTTPWireProtocol:
         self._last_request_is_blocked = True
         self.connection.request(method, url, payload, headers)
 
-        # timeout for request has to be set just before calling httplib.getresponse()
-        # and the previous value restored just after that, even on exception raised
+        # `timeout` for this request has to be set just before calling
+        # `getresponse()` and the previous value restored just after that,
+        # even on exception raised. Initialize `previous_timeout` to the global
+        # default socket timeout in case the lazily created socket doesn't exist
+        # before `getresponse()`.
+        previous_timeout = socket.getdefaulttimeout()
         try:
-            if timeout and self._conn.sock:
-                previous_timeout = self._conn.sock.gettimeout()
-                self._conn.sock.settimeout(timeout)
+            if timeout and self.connection.sock:
+                previous_timeout = self.connection.sock.gettimeout()
+                self.connection.sock.settimeout(timeout)
             response = self.connection.getresponse()
         finally:
-            if timeout and self._conn.sock:
-                self._conn.sock.settimeout(previous_timeout)
+            if timeout and self.connection.sock:
+                self.connection.sock.settimeout(previous_timeout)
 
         self._last_request_is_blocked = False
         return response

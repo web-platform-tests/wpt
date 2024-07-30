@@ -36,6 +36,7 @@ from .protocol import (BaseProtocolPart,
                        FedCMProtocolPart,
                        VirtualSensorProtocolPart,
                        DevicePostureProtocolPart,
+                       UserActivationProtocolPart,
                        merge_dicts)
 
 from webdriver.client import Session
@@ -443,6 +444,13 @@ class WebDriverDevicePostureProtocolPart(DevicePostureProtocolPart):
     def clear_device_posture(self):
         return self.webdriver.send_session_command("DELETE", "deviceposture")
 
+class WebDriverUserActivationPart(UserActivationProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def consume_user_activation(self, context):
+        return self.webdriver.window.consume_user_activation()
+
 class WebDriverProtocol(Protocol):
     implements = [WebDriverBaseProtocolPart,
                   WebDriverTestharnessProtocolPart,
@@ -462,7 +470,9 @@ class WebDriverProtocol(Protocol):
                   WebDriverFedCMProtocolPart,
                   WebDriverDebugProtocolPart,
                   WebDriverVirtualSensorPart,
-                  WebDriverDevicePostureProtocolPart]
+                  WebDriverDevicePostureProtocolPart,
+                  WebDriverUserActivationPart,
+                  ]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)

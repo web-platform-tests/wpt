@@ -217,3 +217,84 @@ async def test_with_x_frame_options_header(
     )
 
     remove_listener()
+
+
+async def test_with_new_navigation(
+    bidi_session,
+    subscribe_events,
+    inline,
+    url,
+    new_tab,
+    wait_for_event,
+    wait_for_future_safe,
+):
+    slow_page_url = url(
+        "/webdriver/tests/bidi/browsing_context/support/empty.html?pipe=trickle(d10)"
+    )
+    await subscribe_events(events=[NAVIGATION_FAILED_EVENT])
+
+    result = await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=slow_page_url, wait="none"
+    )
+    on_navigation_failed = wait_for_event(NAVIGATION_FAILED_EVENT)
+    second_url = inline("<div>foo</div>")
+
+    # Trigger the second navigation which should fail the first one.
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=second_url, wait="none"
+    )
+
+    event = await wait_for_future_safe(on_navigation_failed)
+
+    # Make sure that the first navigation failed.
+    assert_navigation_info(
+        event,
+        {
+            "context": new_tab["context"],
+            "navigation": result["navigation"],
+            "url": slow_page_url,
+        },
+    )
+
+
+async def test_with_new_navigation_inside_page(
+    bidi_session,
+    subscribe_events,
+    inline,
+    new_tab,
+    wait_for_event,
+    wait_for_future_safe,
+):
+    second_url = inline("<div>foo</div>")
+    slow_page_url = inline(
+        f"""
+<!DOCTYPE html>
+<html>
+    <body>
+        <img src="/webdriver/tests/bidi/browsing_context/support/empty.svg?pipe=trickle(d10)" />
+        <script>
+            location.href = "{second_url}"
+        </script>
+        <img src="/webdriver/tests/bidi/browsing_context/support/empty.svg?pipe=trickle(d10)" />
+    </body>
+</html>
+"""
+    )
+    await subscribe_events(events=["browsingContext"])
+    on_navigation_failed = wait_for_event(NAVIGATION_FAILED_EVENT)
+
+    result = await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=slow_page_url, wait="none"
+    )
+
+    event = await wait_for_future_safe(on_navigation_failed)
+
+    # Make sure that the first navigation failed.
+    assert_navigation_info(
+        event,
+        {
+            "context": new_tab["context"],
+            "navigation": result["navigation"],
+            "url": slow_page_url,
+        },
+    )

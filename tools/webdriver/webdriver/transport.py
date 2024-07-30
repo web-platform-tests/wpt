@@ -204,6 +204,8 @@ class HTTPWireProtocol:
             ``json.JSONEncoder`` unless specified.
         :param decoder: JSON decoder class, which defaults to
             ``json.JSONDecoder`` unless specified.
+        :param timeout: Optional timeout for the underlying socket. `None` will
+            retain the existing timeout.
         :param codec_kwargs: Surplus arguments passed on to `encoder`
             and `decoder` on construction.
 
@@ -224,7 +226,7 @@ class HTTPWireProtocol:
                 raise ValueError("Failed to encode request body as JSON:\n"
                                  "%s" % json.dumps(body, indent=2))
 
-        response = self._request(method, uri, payload, headers, timeout=None)
+        response = self._request(method, uri, payload, headers, timeout=timeout)
         return Response.from_http(response, decoder=decoder, **codec_kwargs)
 
     def _request(self, method, uri, payload, headers=None, timeout=None):
@@ -252,13 +254,13 @@ class HTTPWireProtocol:
         # timeout for request has to be set just before calling httplib.getresponse()
         # and the previous value restored just after that, even on exception raised
         try:
-            if timeout:
-                previous_timeout = self._conn.gettimeout()
-                self._conn.settimeout(timeout)
+            if timeout and self._conn.sock:
+                previous_timeout = self._conn.sock.gettimeout()
+                self._conn.sock.settimeout(timeout)
             response = self.connection.getresponse()
         finally:
-            if timeout:
-                self._conn.settimeout(previous_timeout)
+            if timeout and self._conn.sock:
+                self._conn.sock.settimeout(previous_timeout)
 
         self._last_request_is_blocked = False
         return response

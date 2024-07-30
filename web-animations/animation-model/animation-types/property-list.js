@@ -1292,6 +1292,10 @@ const gCSSProperties2 = {
     types: [
     ]
   },
+  'stroke-color': {
+    // https://drafts.fxtf.org/fill-stroke-3/#propdef-stroke-color
+    types: [ 'color' ]
+  },
   'stroke-dasharray': {
     // https://svgwg.org/svg2-draft/painting.html#StrokeDasharrayProperty
     types: [

@@ -48,10 +48,16 @@
     <div class="actual" style="width: auto;">actual</div>
   </div>
 
-  `stretch` fallsback to flex-start otherwise
+  `stretch` = `flex-start` if fixed width
   <div class="test">
     <div class="expected">expected</div>
     <div class="actual">actual</div>
+  </div>
+
+  `stretch` = `flex-start` if auto margins
+  <div class="test">
+    <div class="expected" style="width: auto;">expected</div>
+    <div class="actual" style="width: auto;">actual</div>
   </div>
 
   `stretch` respects max-width
@@ -112,14 +118,6 @@
   <div class="test">
     <div class="expected" style="direction: ltr;">expected</div>
     <div class="actual" style="direction: ltr;">actual</div>
-  </div>
-
-  `normal` (absolute is `stretch`)
-  <div class="test">
-    <div class="expected" style="position: absolute; width: 300px;">expected</div>
-    <div>dummy</div>
-    <div class="actual" style="position: absolute; width: 300px;">actual</div>
-    <div>dummy</div>
   </div>
 
   `normal` (replaced box absolute is `start`)

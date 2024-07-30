@@ -1066,7 +1066,28 @@
          */
         clear_device_posture: function(context=null) {
             return window.test_driver_internal.clear_device_posture(context);
-        }
+        },
+
+        /**
+         * Consumes the user activation
+         *
+         * Matches the consume-user-activation WebDriver command:
+         * https://html.spec.whatwg.org/#user-activation-user-agent-automation
+         *
+         * Which corresponds to these steps in HTML:
+         * https://html.spec.whatwg.org/#consume-user-activation
+         *
+         * @example
+         * await test_driver.consume_user_activation();
+         * await test_driver.consume_user_activation(iframe.contentWindow);
+         *
+         * @param {WindowProxy?} [context=null] - Browsing context in which to run the
+         *                                        call.
+         * @returns {Promise<boolean>} fulfilled when user activation is consumed.
+         */
+        consume_user_activation(context=null) {
+            return window.test_driver_internal.consume_user_activation(context);
+        },
     };
 
     window.test_driver_internal = {
@@ -1262,6 +1283,10 @@
 
         async clear_device_posture(context=null) {
             throw new Error("clear_device_posture() is not implemented by testdriver-vendor.js");
-        }
+        },
+
+        async consume_user_activation(context=null) {
+            throw new Error("consume_user_activation() is not implemented by testdriver-vendor.js");
+        },
     };
 })();

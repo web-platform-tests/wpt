@@ -53,12 +53,13 @@
 <li><p><a class="reference internal" href="#federated-credential-management" id="id15">Federated Credential Management</a></p></li>
 <li><p><a class="reference internal" href="#sensors" id="id16">Sensors</a></p></li>
 <li><p><a class="reference internal" href="#device-posture" id="id17">Device Posture</a></p></li>
-<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id18">Using test_driver in other browsing contexts</a></p></li>
-<li><p><a class="reference internal" href="#actions" id="id19">Actions</a></p>
+<li><p><a class="reference internal" href="#bounce-tracking-mitigations" id="id18">Bounce Tracking Mitigations</a></p></li>
+<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id19">Using test_driver in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#actions" id="id20">Actions</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id1" id="id20">Markup</a></p></li>
-<li><p><a class="reference internal" href="#id2" id="id21">API</a></p></li>
-<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id22">Using in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#id1" id="id21">Markup</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id22">API</a></p></li>
+<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id23">Using in other browsing contexts</a></p></li>
 </ul>
 </li>
 </ul>
@@ -931,6 +932,31 @@ WebDriver command.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the device posture override has been removed. Rejected in case the WebDriver command errors out.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="bounce-tracking-mitigations">
+<h3>Bounce Tracking Mitigations<a class="headerlink" href="#bounce-tracking-mitigations" title="Link to this heading">¶</a></h3>
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.run_bounce_tracking_mitigations">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">run_bounce_tracking_mitigations</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.run_bounce_tracking_mitigations" title="Link to this definition">¶</a></dt>
+<dd><p>Runs the <a class="reference external" href="https://privacycg.github.io/nav-tracking-mitigations/#bounce-tracking-timer">bounce tracking timer algorithm</a>,
+which removes all hosts from the stateful bounce tracking map, without
+regard for the bounce tracking grace period and returns a list of the
+deleted hosts.</p>
+<p>Matches the <a href="#id24"><span class="problematic" id="id25">`Run Bounce Tracking Mitigations
+https://privacycg.github.io/nav-tracking-mitigations/#run-bounce-tracking-mitigations-command`_</span></a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the bounce tracking timer algorithm has finished running. Returns an array of all hosts that were in the stateful bounce tracking map before deletion occurred.</p>
 </dd>
 </dl>
 </dd></dl>

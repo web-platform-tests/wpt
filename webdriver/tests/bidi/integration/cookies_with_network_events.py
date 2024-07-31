@@ -203,7 +203,7 @@ async def test_image(
     )
     await wait_for_future_safe(on_before_request_sent)
 
-    image_path = os.sep + os.path.join(*(urlparse(image_url).path.split("/")[1:-1]))
+    image_path = os.path.dirname(urlparse(image_url).path.replace("/", os.sep))
     result = await bidi_session.storage.get_cookies(
         partition=StorageKeyPartitionDescriptor(source_origin=origin(domain=domain_1)),
         filter={"path": image_path}

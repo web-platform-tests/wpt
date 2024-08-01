@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Reporting: Nested report</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+window.onload = function() {
+  async_test(function(test) {
+    var step = 0;
+    var observer = new ReportingObserver(function(reports, observer) {
+      test.step(function() {
+        assert_equals(reports.length, 1);
+        assert_equals(reports[0].body.message, "" + step);
+      });
+
+      ++step;
+      let report = new CustomReport("1");
+      report.send();
+
+      if (step == 1)
+        test.done();
+    });
+    observer.observe();
+
+    let report = new CustomReport("0");
+    report.send();
+  });
+};
+</script>
+</body>
+</html>

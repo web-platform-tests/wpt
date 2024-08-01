@@ -11,8 +11,21 @@
 
 promise_test(async t => {
   const main = await setupTest();
-  const iframe_1 = await createNestedIframe(
-      main, 'HTTP_REMOTE_ORIGIN', 'allow-top-navigation', '');
+  const iframe_url = new URL(
+      '/html/semantics/embedded-content/the-iframe-element/resources/' +
+          'top-navigation.sub.html',
+      get_host_info().HTTP_REMOTE_ORIGIN);
+  let promise = new Promise((resolve, reject) => {
+    window.onmessage =
+        msg => {
+          if (msg.data == 'success') {
+            resolve('The top-level navigation was successful.');
+          } else {
+            reject('The top-level navigation was not successful.');
+          }
+        }
+  });
 
-  await attemptTopNavigation(iframe_1, true);
+  await createNestedIframeWithSrc(main, iframe_url, 'allow-top-navigation');
+  await promise;
 }, 'A cross-origin frame with frame sandbox flags can navigate top');

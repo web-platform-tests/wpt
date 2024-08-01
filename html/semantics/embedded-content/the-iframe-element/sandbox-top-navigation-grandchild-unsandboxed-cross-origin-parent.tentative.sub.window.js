@@ -12,7 +12,22 @@
 promise_test(async t => {
   const main = await setupTest();
   const iframe_1 = await createNestedIframe(main, 'HTTP_REMOTE_ORIGIN', '', '');
-  const iframe_2 = await createNestedIframe(iframe_1, 'HTTP_ORIGIN', '', '');
 
-  await attemptTopNavigation(iframe_2, true);
+  let promise = new Promise((resolve, reject) => {
+    window.onmessage =
+        msg => {
+          if (msg.data == 'success') {
+            resolve('The top-level navigation was successful.');
+          } else {
+            reject('The top-level navigation was not successful.');
+          }
+        }
+  });
+
+  const iframe_2_url = new URL(
+      '/html/semantics/embedded-content/the-iframe-element/resources/' +
+          'top-navigation.sub.html',
+      location.origin);
+  await createNestedIframeWithSrc(iframe_1, iframe_2_url, '', '');
+  await promise;
 }, 'A same-origin grandchild in a cross-origin parent can navigate top');

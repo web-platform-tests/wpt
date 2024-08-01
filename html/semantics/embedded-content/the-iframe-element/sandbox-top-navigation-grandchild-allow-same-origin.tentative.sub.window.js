@@ -12,9 +12,23 @@
 promise_test(async t => {
   const main = await setupTest();
   const iframe_1 = await createNestedIframe(main, 'HTTP_ORIGIN', '', '');
-  const iframe_2 = await createNestedIframe(
-      iframe_1, 'HTTP_ORIGIN', '', 'allow-same-origin allow-top-navigation');
 
-  await attemptTopNavigation(iframe_2, true);
+  let promise = new Promise((resolve, reject) => {
+    window.onmessage =
+        msg => {
+          if (msg.data == 'success') {
+            resolve('The top-level navigation was successful.');
+          } else {
+            reject('The top-level navigation was not successful.');
+          }
+        }
+  });
+
+  const iframe_2_url =
+      '/html/semantics/embedded-content/the-iframe-element/resources/' +
+      'top-navigation.sub.html';
+  await createNestedIframeWithSrc(
+      iframe_1, iframe_2_url, '', 'allow-same-origin allow-top-navigation');
+  await promise;
 }, 'A sandboxed same-origin grandchild with allow-same-origin can \
-    give itself top-nav privileges');
+    give itself top-navigation privileges');

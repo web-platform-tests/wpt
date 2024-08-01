@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Sandbox Navigation Timing</title>
+    <script src=/resources/testharness.js></script>
+    <script src=/resources/testharnessreport.js></script>
+  </head>
+  <body>
+    <script>
+    const resourcePath =
+        location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1) +
+        'resources/';
+    async_test(t => {
+      const iframe = document.createElement('iframe');
+      iframe.src = resourcePath + 'post-sandbox-state-to-parent.html';
+
+      // Navigation should be initiated here. The value of the sandbox attribute
+      // should be snapshotted.
+      document.body.appendChild(iframe);
+
+      // Manipulating the sandbox attribute at this point should not affect the
+      // sandbox flags used for either the initial about:blank document or the
+      // final document in the iframe.
+      iframe.sandbox = 'allow-scripts';
+
+      const iframeAboutBlankDocument = iframe.contentDocument;
+
+      // Before navigation, about:blank should not be sandboxed.
+      assert_equals(iframeAboutBlankDocument.body.tagName, "BODY",
+        "about:blank document's contents should be accessible");
+
+      // After navigation, about:blank should not be sandboxed.
+      iframe.onload = t.step_func(() => {
+        assert_equals(iframeAboutBlankDocument.body.tagName, "BODY",
+          "about:blank document's contents should still be accessible.");
+      });
+
+      // After navigation, child frame should not be sandboxed.
+      window.onmessage = t.step_func_done(e => {
+        assert_equals(e.data, 'Not sandboxed');
+      });
+    }, "setting sandbox attribute after navigation starts should not affect" +
+       " document in iframe.");
+    </script>
+  </body>
+</html>

@@ -298,7 +298,7 @@ promise_test(async t => {
   });
 
   await decoder.flush();
-  assert_equals(outputs, CHUNKS.length, 'outputs');
+  assert_equals(outputs, CONFIG.codec === 'vorbis' ? CHUNKS.length - 1 : CHUNKS.length, 'outputs');
 }, 'Test decoding');
 
 promise_test(async t => {
@@ -314,9 +314,11 @@ promise_test(async t => {
   decoder.configure(CONFIG);
   decoder.decode(new EncodedAudioChunk(
       {type: 'key', timestamp: -42, data: CHUNK_DATA[0]}));
+  decoder.decode(new EncodedAudioChunk(
+      {type: 'key', timestamp: CHUNKS[0].duration - 42, data: CHUNK_DATA[1]}));
 
   await decoder.flush();
-  assert_equals(outputs, 1, 'outputs');
+  assert_equals(outputs, CONFIG.codec === 'vorbis' ? 1 : 2, 'outputs');
 }, 'Test decoding a with negative timestamp');
 
 promise_test(async t => {
@@ -331,13 +333,14 @@ promise_test(async t => {
 
   decoder.configure(CONFIG);
   decoder.decode(CHUNKS[0]);
+  decoder.decode(CHUNKS[1]);
 
   await decoder.flush();
-  assert_equals(outputs, 1, 'outputs');
+  assert_equals(outputs, CONFIG.codec === 'vorbis' ? 1 : 2, 'outputs');
 
-  decoder.decode(CHUNKS[0]);
+  decoder.decode(CHUNKS[2]);
   await decoder.flush();
-  assert_equals(outputs, 2, 'outputs');
+  assert_equals(outputs, CONFIG.codec === 'vorbis' ? 2 : 3, 'outputs');
 }, 'Test decoding after flush');
 
 promise_test(async t => {

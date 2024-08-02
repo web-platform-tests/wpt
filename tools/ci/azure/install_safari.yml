@@ -16,8 +16,10 @@ steps:
       # https://github.com/web-platform-tests/wpt/issues/21751
       mkdir -p ~/Library/WebDriver/
       cp tools/ci/azure/com.apple.SafariTechnologyPreview.plist ~/Library/WebDriver/
-      defaults write com.apple.SafariTechnologyPreview WebKitJavaScriptCanOpenWindowsAutomatically 1
-      defaults write com.apple.SafariTechnologyPreview ExperimentalServerTimingEnabled 1
+      defaults write com.apple.SafariTechnologyPreview WebKitPreferences.requiresUserGestureForAudioPlayback 0
+      defaults write com.apple.SafariTechnologyPreview WebKitPreferences.requiresUserGestureForMediaPlayback 0
+      defaults write com.apple.SafariTechnologyPreview WebKitPreferences.requiresUserGestureForVideoPlayback 0
+      defaults write com.apple.SafariTechnologyPreview WebKitPreferences.javaScriptCanOpenWindowsAutomatically 1
     displayName: 'Install Safari Technology Preview'
 - ${{ if eq(parameters.channel, 'stable') }}:
   - script: |
@@ -25,5 +27,8 @@ steps:
       export SYSTEM_VERSION_COMPAT=0
       sudo softwareupdate --install $( softwareupdate -l | grep -o '\* Label: \(Safari.*\)' | sed -e 's/* Label: //' )
       sudo safaridriver --enable
-      defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically 1
+      defaults write com.apple.Safari WebKitPreferences.requiresUserGestureForAudioPlayback 0
+      defaults write com.apple.Safari WebKitPreferences.requiresUserGestureForMediaPlayback 0
+      defaults write com.apple.Safari WebKitPreferences.requiresUserGestureForVideoPlayback 0
+      defaults write com.apple.Safari WebKitPreferences.javaScriptCanOpenWindowsAutomatically 1
     displayName: 'Configure Safari'

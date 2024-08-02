@@ -137,9 +137,9 @@ const VORBIS_DATA = {
       2,
       30,
       62,
-      { offset: 28, size: 30},
-      { offset: 101, size: 62},
-      { offset: 163, size: 3771}
+      {offset: 28, size: 30},
+      {offset: 101, size: 62},
+      {offset: 163, size: 3771}
     ],
     numberOfChannels: 1,
     sampleRate: 48000,

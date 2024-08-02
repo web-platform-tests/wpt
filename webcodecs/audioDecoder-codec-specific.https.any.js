@@ -6,6 +6,7 @@
 // META: variant=?opus
 // META: variant=?pcm_alaw
 // META: variant=?pcm_mulaw
+// META: variant=?vorbis
 
 const ADTS_AAC_DATA = {
   src: 'sfx.adts',
@@ -115,6 +116,30 @@ const PCM_MULAW_DATA = {
   duration: 35555
 };
 
+const VORBIS_DATA = {
+  src: 'sfx-vorbis.ogg',
+  config: {
+    codec: 'vorbis',
+    description: [
+      2,
+      30,
+      62,
+      { offset: 28, size: 30},
+      { offset: 101, size: 62},
+      { offset: 163, size: 3771}
+    ],
+    numberOfChannels: 1,
+    sampleRate: 48000,
+  },
+  chunks: [
+    {offset: 3968, size: 44}, {offset: 4012, size: 21},
+    {offset: 4033, size: 57}, {offset: 4090, size: 37},
+    {offset: 4127, size: 37}, {offset: 4164, size: 107},
+    {offset: 4271, size: 172}
+  ],
+  duration: 21333
+};
+
 // Allows mutating `callbacks` after constructing the AudioDecoder, wraps calls
 // in t.step().
 function createAudioDecoder(t, callbacks) {
@@ -152,6 +177,7 @@ promise_setup(async () => {
     '?opus': OPUS_DATA,
     '?pcm_alaw': PCM_ALAW_DATA,
     '?pcm_mulaw': PCM_MULAW_DATA,
+    '?vorbis': VORBIS_DATA,
   }[location.search];
 
   // Don't run any tests if the codec is not supported.
@@ -174,7 +200,26 @@ promise_setup(async () => {
 
   CONFIG = {...data.config};
   if (data.config.description) {
-    CONFIG.description = view(buf, data.config.description);
+    if (Array.isArray(data.config.description)) {
+      const length = data.config.description.reduce((sum, value) => sum + ((typeof value === 'number') ? 1 : value.size), 0);
+      const description = new Uint8Array(length);
+
+      data.config.description.reduce((offset, value) => {
+          if (typeof value === 'number') {
+              description[offset] = value;
+
+              return offset + 1;
+          }
+
+          description.set(view(buf, value), offset);
+
+          return offset + value.size;
+      }, 0);
+
+      CONFIG.description = description;
+    } else {
+      CONFIG.description = view(buf, data.config.description);
+    }
   }
 
   CHUNK_DATA = data.chunks.map((chunk, i) => view(buf, chunk));

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://github.com/openui/open-ui/issues/565">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id=container>
+  <template shadowrootmode=open>
+    <selectmenu>
+      <option>inner option</option>
+      <slot></slot>
+    </selectmenu>
+  </template>
+  <option>outer option</option>
+</div>
+
+<script>
+test(() => {
+  const selectmenu = container.shadowRoot.querySelector('selectmenu');
+  const slot = container.shadowRoot.querySelector('slot');
+
+  selectmenu.value = 'outer option';
+  assert_equals(selectmenu.value, 'outer option',
+    'The slotted in option should be selectable.');
+
+  slot.remove();
+  assert_equals(selectmenu.value, 'inner option',
+    'Removing the slot should remove the slotted option.');
+
+  selectmenu.appendChild(document.createElement('slot'));
+  selectmenu.value = 'outer option';
+  assert_equals(selectmenu.value, 'outer option',
+    'Dynamically adding a slot back in should make the slotted option selectable.');
+
+  const newOption = document.createElement('option');
+  newOption.textContent = 'new option';
+  container.appendChild(newOption);
+  selectmenu.value = 'new option';
+  assert_equals(selectmenu.value, 'new option',
+    'Dynamically added slotted options should be selectable.');
+}, 'Slotted options should be selectable.');
+</script>

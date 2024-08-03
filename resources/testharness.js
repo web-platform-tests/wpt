@@ -91,8 +91,8 @@
         }
 
         on_event(window, 'load', function() {
+          this_obj.all_loaded = true;
           setTimeout(() => {
-            this_obj.all_loaded = true;
             if (tests.all_done()) {
               tests.complete();
             }

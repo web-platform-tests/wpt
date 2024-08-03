@@ -43,6 +43,7 @@
             "sharedworker-import",
             "sharedworker-import-data",
             "sharedworker-module",
+            "speculationrules",
             "worker-classic",
             "worker-import",
             "worker-import-data",
@@ -72,6 +73,7 @@
             "sharedworker-classic",
             "sharedworker-import",
             "sharedworker-module",
+            "speculationrules",
             "worker-classic",
             "worker-import",
             "worker-module",
@@ -96,6 +98,7 @@
             "sharedworker-classic",
             "sharedworker-import",
             "sharedworker-module",
+            "speculationrules",
             "worker-classic",
             "worker-import",
             "worker-module",
@@ -120,6 +123,7 @@
             "sharedworker-classic",
             "sharedworker-import",
             "sharedworker-module",
+            "speculationrules",
             "worker-classic",
             "worker-import",
             "worker-module",
@@ -455,6 +459,34 @@
       "subresource": "*",
       "expectation": "*"
     },
+    {
+      // Skip tests for Speculation-Rules with worker related CSP
+      "expansion": "*",
+      "source_scheme": "*",
+      "source_context_list": "*",
+      "delivery_type": "*",
+      "delivery_value": [
+        "worker-src-none",
+        "worker-src-self",
+        "worker-src-wildcard"
+      ],
+      "redirection": "*",
+      "subresource": "*",
+      "origin": "*",
+      "expectation": "*"
+    },
+    {
+      // Skip tests for Speculation-Rules with <meta>
+      "expansion": "*",
+      "source_scheme": "*",
+      "source_context_list": "*",
+      "delivery_type": "meta",
+      "delivery_value": "*",
+      "redirection": "*",
+      "subresource": "*",
+      "origin": "*",
+      "expectation": "*"
+    }
   ],
   "source_context_schema": {
     "supported_delivery_type": {
@@ -509,6 +541,7 @@
       "picture-tag": [],
       "script-tag": [],
       "script-tag-dynamic-import": [],
+      "speculationrules": [],
       "sharedworker-classic": [],
       "sharedworker-import": [],
       "sharedworker-import-data": [],

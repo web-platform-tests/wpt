@@ -4,45 +4,65 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-@page{
-	size: 640px 480px;
+@page {
+    size: 640px 480px;
 }
-@page{
-	size: 8.5in 11in;
+@page {
+    size: 8.5in 11in;
 }
-@page{
-	size: A4;
+@page {
+    size: 3in 10in;
 }
-@page{
-	size: 3in 10in;
+@page {
+    size: auto;
 }
-@page{
-	size: jis-B5;
+@page {
+    size: A5;
 }
-@page{
-	size: auto;
+@page {
+    size: A4;
 }
-@page{
-	size: landscape;
+@page {
+    size: A3;
 }
-@page{
+@page {
+    size: B5;
+}
+@page {
+    size: B4;
+}
+@page {
+    size: jis-B5;
+}
+@page {
+    size: jis-B4;
+}
+@page {
+    size: landscape;
+}
+@page {
     size: letter portrait;
 }
-@page{
+@page {
     size: legal landscape;
 }
 </style>
 
 <script>
-'use strict';
+"use strict";
 
 const expectedSizes = [
     "640px 480px",
     "8.5in 11in",
-    "a4",
     "3in 10in",
-    "jis-b5",
     "auto",
+    "a5",
+    "a4",
+    "a3",
+    "b5",
+    "b4",
+    "jis-b5",
+    "jis-b4",
     "landscape",
     "letter",
     "legal landscape"
@@ -53,11 +73,11 @@ test(t => {
   assert_equals(document.styleSheets.length, 1);
   let styleSheet = document.styleSheets[0];
   assert_equals(styleSheet.rules.length, expectedSizes.length);
-  for(let i = 0; i < expectedSizes.length; i++){
+  for (let i = 0; i < expectedSizes.length; i++) {
     let cssText = styleSheet.cssRules[i].style.cssText;
     assert_true(cssText.startsWith(sizePrefix));
     cssText = cssText.slice(sizePrefix.length);
     assert_equals(cssText, expectedSizes[i] + ";", "for rule " + i);
   }
-}, "size-001");
+}, "Test valid values for size descriptor");
 </script>

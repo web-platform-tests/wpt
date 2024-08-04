@@ -80,6 +80,6 @@ for (let i = 0; i < expectedSizes.length; i++) {
         assert_true(cssText.startsWith(sizePrefix));
         cssText = cssText.slice(sizePrefix.length);
         assert_equals(cssText, expectedSizes[i] + ";", "for rule " + i);
-    }, "size: " + expectedSizes[i] + " is valid for @page.");
+    }, "size: " + expectedSizes[i]);
 }
 </script>

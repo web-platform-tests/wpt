@@ -69,15 +69,17 @@ const expectedSizes = [
 ];
 const sizePrefix = "size: ";
 
-test(t => {
-  assert_equals(document.styleSheets.length, 1);
-  let styleSheet = document.styleSheets[0];
-  assert_equals(styleSheet.rules.length, expectedSizes.length);
-  for (let i = 0; i < expectedSizes.length; i++) {
-    let cssText = styleSheet.cssRules[i].style.cssText;
-    assert_true(cssText.startsWith(sizePrefix));
-    cssText = cssText.slice(sizePrefix.length);
-    assert_equals(cssText, expectedSizes[i] + ";", "for rule " + i);
-  }
-}, "Test valid values for size descriptor");
+test(() => {
+    assert_equals(document.styleSheets.length, 1);
+    assert_equals(document.styleSheets[0].rules.length, expectedSizes.length);
+}, "Test setup");
+
+for (let i = 0; i < expectedSizes.length; i++) {
+    test(() => {
+        let cssText = document.styleSheets[0].cssRules[i].style.cssText;
+        assert_true(cssText.startsWith(sizePrefix));
+        cssText = cssText.slice(sizePrefix.length);
+        assert_equals(cssText, expectedSizes[i] + ";", "for rule " + i);
+    }, "size: " + expectedSizes[i] + " is valid for @page.");
+}
 </script>

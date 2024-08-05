@@ -185,15 +185,15 @@ promise_test(async t => {
 }, "Transferring a MessagePort with a TransformStream should set `.ports`");
 
 promise_test(async t => {
-  await transferMessagePortWith(ReadableStream);
+  await advancedTransferMessagePortWith(ReadableStream);
 }, "Transferring a MessagePort with a ReadableStream should set `.ports`, advanced");
 
 promise_test(async t => {
-  await transferMessagePortWith(WritableStream);
+  await advancedTransferMessagePortWith(WritableStream);
 }, "Transferring a MessagePort with a WritableStream should set `.ports`, advanced");
 
 promise_test(async t => {
-  await transferMessagePortWith(TransformStream);
+  await advancedTransferMessagePortWith(TransformStream);
 }, "Transferring a MessagePort with a TransformStream should set `.ports`, advanced");
 
 promise_test(async t => {

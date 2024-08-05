@@ -215,14 +215,12 @@ const generateTest = async ({
     }
 
     const jsRelativePath = path.relative(testsPath, currentPath);
-    // console.log(jsRelativePath.replace('.js', ''))
     const jsOutputPath = path.join(outputPath, jsRelativePath);
     const htmlOutputPath = jsOutputPath.replace(".js", ".html");
     const iframeHtmlOutputPath = jsOutputPath.replace(".js", ".iframe.html");
     const jsSrc = await readFile(currentPath);
     const meta = parseFrontmatter(jsSrc);
     const includes = (meta && meta.includes) || [];
-    //console.log(includes);
     const testContent = replacePlaceholders(templateContent, {
       jsRelativePath,
       includes,

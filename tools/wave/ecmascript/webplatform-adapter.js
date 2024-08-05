@@ -102,8 +102,3 @@ var errorEventListener = function(error) {
 window.addEventListener("error", errorEventListener);
 document.getElementById("iframe").contentWindow.addEventListener("error", errorEventListener);
 document.getElementById("iframe").contentWindow.$ERROR = $ERROR;
-
-// /ecmascript/tests/built-ins/RegExp/prototype/Symbol.match/builtin-coerce-global.html "Aw Snap"
-// /ecmascript/tests/built-ins/RegExp/prototype/Symbol.match/coerce-global.html "Aw Snap"
-// /ecmascript/tests/built-ins/RegExp/prototype/Symbol.replace/coerce-global.html "Aw Snap"
-// /ecmascript/tests/language/statements/for-of/iterator-next-reference.html "Website unresponsive"

@@ -805,7 +805,15 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
                         # as the BiDi protocol allows sending commands even with the user prompt opened. However, the
                         # user prompt can block the testdriver JS execution and cause the dead loop. To overcome this
                         # issue, the user prompt of the test window is always dismissed and the test is failing.
-                        await protocol.bidi_browsing_context.handle_user_prompt(params["context"])
+                        try:
+                            await protocol.bidi_browsing_context.handle_user_prompt(params["context"])
+                        except Exception as e:
+                            if "no such alert" in str(e):
+                                # The user prompt is already dismissed by WebDriver BiDi server. Ignore the exception.
+                                pass
+                            else:
+                                # The exception is unexpected. Re-raising it to handle it in the main loop.
+                                raise e
                         raise Exception("Unexpected user prompt in test window: %s" % params)
                     else:
                         protocol.testdriver.send_message(-1, "event", method, json.dumps({

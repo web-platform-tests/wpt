@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://github.com/whatwg/dom/issues/769">
+<link rel=help href="https://github.com/whatwg/dom/issues/849">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+const testTagName = 'TEST-\u{1f602}';
+const testAttributeValue = 'hello world';
+const testNamespace = 'http://example.com';
+
+test(() => {
+  const element = document.createElement(testTagName);
+  assert_equals(element.tagName, testTagName);
+}, 'document.createElement should accept emojis.');
+
+test(() => {
+  const element = document.createElementNS(testNamespace, 'test-\u{1f602}');
+  assert_equals(element.tagName, testTagName);
+}, 'document.createElementNS should accept emojis.');
+
+test(() => {
+  const element = document.createElement('div');
+  element.setAttribute(testTagName, testAttributeValue);
+  assert_equals(element.getAttribute(testTagName), testAttributeValue);
+}, 'element.setAttribute should accept emojis.');
+
+test(() => {
+  const element = document.createElement('div');
+  element.setAttributeNS(testNamespace, testTagName, testAttributeValue);
+  assert_equals(element.getAttributeNS(testNamespace, testTagName), testAttributeValue);
+}, 'element.setAttributeNS should accept emojis.');
+
+test(() => {
+  const element = document.createElement('div');
+  element.toggleAttribute(testTagName);
+  assert_true(element.hasAttribute(testTagName));
+}, 'element.toggleAttribute should accept emojis.');
+
+test(() => {
+  const attr = document.createAttribute(testTagName);
+  assert_equals(attr.name, testTagName, 'attr.name should return the requested name.');
+  assert_equals(attr.localName, testTagName, 'attr.tagName should return the requested name.');
+}, 'document.createAttribute should accept emojis.');
+
+test(() => {
+  const attr = document.createAttributeNS(testNamespace, testTagName);
+  assert_equals(attr.name, testTagName, 'attr.name should return the requested name.');
+  assert_equals(attr.localName, testTagName, 'attr.tagName should return the requested name.');
+}, 'document.createAttributeNS should accept emojis.');
+
+test(() => {
+  document.implementation.createDocument(testNamespace, testTagName);
+  // TODO how do i check the document's name?
+}, 'createDocument should accept emojis.');
+</script>

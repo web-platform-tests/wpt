@@ -6,17 +6,19 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script>
-    promise_test(async test => {
+    promise_test(async () => {
         await test_driver.bidi.log.entry_added.subscribe();
 
-        const log_entries = [];
-        // Collect all the `count` log entries' texts into `log_entries`.
-        test_driver.bidi.log.entry_added.on(event => {
-                if (event.method === 'count') {
-                    log_entries.push(event.text);
+        // Create a promise that resolves when all the log entries are added.
+        const log_entries_promise = new Promise(resolve => {
+            const log_entries = [];
+            test_driver.bidi.log.entry_added.on(event => {
+                log_entries.push(event.text);
+                if (log_entries.length === 4) {
+                    resolve(log_entries);
                 }
-            }
-        );
+            });
+        });
 
         console.count();
         console.count(undefined);
@@ -27,8 +29,8 @@
             }
         });
 
-        await test.step_wait(() => log_entries.length >= 4,
-            "Wait for all the log entries to be received");
+        // Wait for the log entries to be added.
+        const log_entries = await log_entries_promise;
 
         assert_array_equals(log_entries, [
             "default: 1",

@@ -14,7 +14,7 @@ features:
   files:
   - lineAlign.html
   - positionAlign.html
-- name: webvtt-region
+- name: webvtt-regions
   files:
   - region.html
 # Note: constructor.html spans features and is not mapped.

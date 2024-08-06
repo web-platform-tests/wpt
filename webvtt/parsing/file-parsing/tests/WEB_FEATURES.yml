@@ -34,7 +34,7 @@ features:
   files:
   - settings-line.html
   - settings-position.html
-- name: webvtt-region
+- name: webvtt-regions
   files:
   - header-regions.html
   - regions-edge-case.html

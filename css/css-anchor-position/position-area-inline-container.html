@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<title>CSS Anchor Positioning: inset-area positioning with absolute inline container</title>
-<link rel="help" href="https://drafts.csswg.org/css-anchor-position/#inset-area">
-<link rel="match" href="inset-area-inline-container-ref.html">
+<title>CSS Anchor Positioning: position-area positioning with inline container</title>
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position/#position-area">
+<link rel="match" href="position-area-inline-container-ref.html">
 <link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
 <style>
   #in-flow {
@@ -10,7 +10,7 @@
     color: orange;
   }
   #inline-container {
-    position: absolute;
+    position: relative;
   }
   #anchor {
     position: absolute;
@@ -28,10 +28,10 @@
     position-anchor: --anchor;
     background-color: blue;
   }
-  #top-left { inset-area: top left; }
-  #top-right { inset-area: top right; }
-  #bottom-left { inset-area: bottom left; }
-  #bottom-right { inset-area: bottom right; }
+  #top-left { position-area: top left; }
+  #top-right { position-area: top right; }
+  #bottom-left { position-area: bottom left; }
+  #bottom-right { position-area: bottom right; }
 </style>
 <div id="in-flow">
   <br>

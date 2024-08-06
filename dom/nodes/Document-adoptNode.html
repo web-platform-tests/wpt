@@ -47,4 +47,45 @@ test(function() {
   var doc = document.implementation.createDocument(null, null, null)
   assert_throws_dom("NOT_SUPPORTED_ERR", function() { document.adoptNode(doc) })
 }, "Adopting a Document should throw.")
+
+test(function() {
+  var iframe = document.createElement("iframe")
+  document.body.appendChild(iframe)
+  var parent_doc = iframe.contentDocument
+  var doc = parent_doc.body.appendChild(parent_doc.createElement("iframe")).contentDocument
+  assert_not_equals(parent_doc, doc)
+  var y = parent_doc.documentElement
+  var child = y.firstChild
+  assert_equals(y.parentNode, parent_doc)
+  assert_equals(y.ownerDocument, parent_doc)
+  assert_equals(child.ownerDocument, parent_doc)
+  assert_equals(doc.adoptNode(y), y)
+  assert_equals(y.parentNode, null)
+  assert_equals(y.firstChild, child)
+  assert_equals(y.ownerDocument, doc)
+  assert_equals(child.ownerDocument, doc)
+}, "Adopting the element which contains the iframe should work")
+
+
+test(function() {
+  var iframe = document.createElement("iframe")
+  document.body.appendChild(iframe)
+  var parent_doc = iframe.contentDocument
+  var doc = parent_doc.body.appendChild(parent_doc.createElement("iframe")).contentDocument
+  assert_not_equals(parent_doc, doc)
+  var y = parent_doc.documentElement
+  var child = y.firstChild
+  assert_equals(y.parentNode, parent_doc)
+  assert_equals(y.ownerDocument, parent_doc)
+  assert_equals(parent_doc.adoptNode(y), y)
+  assert_equals(y.parentNode, null)
+  assert_equals(y.firstChild, child)
+  assert_equals(y.ownerDocument, parent_doc)
+  assert_equals(child.ownerDocument, parent_doc)
+  assert_equals(doc.adoptNode(y), y)
+  assert_equals(y.parentNode, null)
+  assert_equals(y.firstChild, child)
+  assert_equals(y.ownerDocument, doc)
+  assert_equals(child.ownerDocument, doc)
+}, "Adopting the (detached) element which contains the iframe should work")
 </script>

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<title>CSS Anchor Positioning: position-try-order behavior with inset-area</title>
+<title>CSS Anchor Positioning: position-try-order behavior with position-area</title>
 <link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#position-try-order-property">
-<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#inset-area">
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#position-area">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <!--
-  Note: This test is the inset-area version of position-try-order-basic.html.
+  Note: This test is the position-area version of position-try-order-basic.html.
 -->
 <style>
   #cb {
@@ -58,19 +58,19 @@ for --left, etc.
 
   @position-try --right {
     inset: unset;
-    inset-area: right;
+    position-area: right;
   }
   @position-try --left {
     inset: unset;
-    inset-area: left;
+    position-area: left;
   }
   @position-try --top {
     inset: unset;
-    inset-area: top;
+    position-area: top;
   }
   @position-try --bottom {
     inset: unset;
-    inset-area: bottom;
+    position-area: bottom;
   }
 
 /*
@@ -92,22 +92,22 @@ moved right, and similarly for --left-sweep, etc.
 
   @position-try --right-sweep {
     inset: unset;
-    inset-area: right center;
+    position-area: right center;
   }
 
   @position-try --left-sweep {
     inset: unset;
-    inset-area: left center;
+    position-area: left center;
   }
 
   @position-try --bottom-sweep {
     inset: unset;
-    inset-area: bottom center;
+    position-area: bottom center;
   }
 
   @position-try --top-sweep {
     inset: unset;
-    inset-area: top center;
+    position-area: top center;
   }
 
 </style>
@@ -122,7 +122,7 @@ moved right, and similarly for --left-sweep, etc.
 
 // Test that an element with the specified `position_try` gets the same
 // position as a reference element with `position_try_expected`.
-function test_inset_area_order(position_try, position_try_expected) {
+function test_position_area_order(position_try, position_try_expected) {
   test((t) => {
     style.textContent = `
       #target {
@@ -141,54 +141,54 @@ function test_inset_area_order(position_try, position_try_expected) {
 // Note: --right, --left, --top, and --bottom all fit, but have different
 // inset-modifed containing blocks.
 
-test_inset_area_order('--right', '--right');
-test_inset_area_order('--left', '--left');
-test_inset_area_order('--top', '--top');
-test_inset_area_order('--bottom', '--bottom');
+test_position_area_order('--right', '--right');
+test_position_area_order('--left', '--left');
+test_position_area_order('--top', '--top');
+test_position_area_order('--bottom', '--bottom');
 
 // position-try-order:normal just picks the first fallback.
-test_inset_area_order('--right, --left, --bottom, --top', '--right');
-test_inset_area_order('normal --right, --left, --bottom, --top', '--right');
-test_inset_area_order('normal --top, --left, --bottom, --right', '--top');
+test_position_area_order('--right, --left, --bottom, --top', '--right');
+test_position_area_order('normal --right, --left, --bottom, --top', '--right');
+test_position_area_order('normal --top, --left, --bottom, --right', '--top');
 
 // --right and --left have the same IMCB block-size.
-test_inset_area_order('most-block-size --right, --left', '--right');
-test_inset_area_order('most-height --right, --left', '--right');
+test_position_area_order('most-block-size --right, --left', '--right');
+test_position_area_order('most-height --right, --left', '--right');
 // --left has more inline-size than --right.
-test_inset_area_order('most-inline-size --right, --left', '--left');
-test_inset_area_order('most-width --right, --left', '--left');
+test_position_area_order('most-inline-size --right, --left', '--left');
+test_position_area_order('most-width --right, --left', '--left');
 
 // --bottom and --top have the same IMCB inline-size.
-test_inset_area_order('most-inline-size --bottom, --top', '--bottom');
-test_inset_area_order('most-width --bottom, --top', '--bottom');
+test_position_area_order('most-inline-size --bottom, --top', '--bottom');
+test_position_area_order('most-width --bottom, --top', '--bottom');
 // --top has more block-size than --bottom.
-test_inset_area_order('most-block-size --bottom, --top', '--top');
-test_inset_area_order('most-height --bottom, --top', '--top');
+test_position_area_order('most-block-size --bottom, --top', '--top');
+test_position_area_order('most-height --bottom, --top', '--top');
 
 // --bottom/--top has more IMBC inline-size than --right/--left.
-test_inset_area_order('most-inline-size --right, --left, --bottom, --top', '--bottom');
-test_inset_area_order('most-inline-size --right, --left, --top, --bottom', '--top');
+test_position_area_order('most-inline-size --right, --left, --bottom, --top', '--bottom');
+test_position_area_order('most-inline-size --right, --left, --top, --bottom', '--top');
 
 // --right/--left has more IMBC block-size than --bottom/--top.
-test_inset_area_order('most-block-size --bottom, --top, --right, --left', '--right');
-test_inset_area_order('most-block-size --bottom, --top, --left, --right', '--left');
+test_position_area_order('most-block-size --bottom, --top, --right, --left', '--right');
+test_position_area_order('most-block-size --bottom, --top, --left, --right', '--left');
 
 // --left-sweep and --bottom-sweep has the same IMBC inline-size ...
-test_inset_area_order('most-inline-size --left-sweep, --bottom-sweep', '--left-sweep');
-test_inset_area_order('most-inline-size --bottom-sweep, --left-sweep', '--bottom-sweep');
+test_position_area_order('most-inline-size --left-sweep, --bottom-sweep', '--left-sweep');
+test_position_area_order('most-inline-size --bottom-sweep, --left-sweep', '--bottom-sweep');
 // ... but not the same block-size.
-test_inset_area_order('most-block-size --left-sweep, --bottom-sweep', '--left-sweep');
-test_inset_area_order('most-block-size --bottom-sweep, --left-sweep', '--left-sweep');
+test_position_area_order('most-block-size --left-sweep, --bottom-sweep', '--left-sweep');
+test_position_area_order('most-block-size --bottom-sweep, --left-sweep', '--left-sweep');
 
-test_inset_area_order('most-inline-size --right-sweep, --left-sweep, --bottom-sweep, --top-sweep', '--left-sweep');
-test_inset_area_order('most-block-size --right-sweep, --left-sweep, --bottom-sweep, --top-sweep', '--top-sweep');
+test_position_area_order('most-inline-size --right-sweep, --left-sweep, --bottom-sweep, --top-sweep', '--left-sweep');
+test_position_area_order('most-block-size --right-sweep, --left-sweep, --bottom-sweep, --top-sweep', '--top-sweep');
 
-test_inset_area_order(`most-inline-size
+test_position_area_order(`most-inline-size
   --right-sweep, --left-sweep, --bottom-sweep, --top-sweep,
   --right, --left, --bottom, --top
   `, '--left-sweep');
 
-test_inset_area_order(`most-block-size
+test_position_area_order(`most-block-size
   --right-sweep, --left-sweep, --bottom-sweep, --top-sweep,
   --right, --left, --bottom, --top
   `, '--right');

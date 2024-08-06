@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>CSS Anchor Positioning: inset-area positioning inside grid</title>
-<link rel="help" href="https://drafts.csswg.org/css-anchor-position/#inset-area">
+<title>CSS Anchor Positioning: position-area positioning inside grid</title>
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position/#position-area">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <!--
@@ -84,8 +84,8 @@
   <div id="anchored"></div>
 </div>
 <script>
-  function test_inset_area(inset_area, insets, expected_offsets) {
-    anchored.style.insetArea = inset_area;
+  function test_position_area(position_area, insets, expected_offsets) {
+    anchored.style.positionArea = position_area;
     for (const [prop, value] of Object.entries(insets)) {
       anchored.style[prop] = value;
     }
@@ -95,12 +95,12 @@
       assert_equals(anchored.offsetTop, expected_offsets.top, "Check expected offsetTop");
       assert_equals(anchored.offsetWidth, expected_offsets.width, "Check expected offsetWidth");
       assert_equals(anchored.offsetHeight, expected_offsets.height, "Check expected offsetHeight");
-    }, "Offsets for inset-area: " + inset_area + " and insets: " + JSON.stringify(insets));
+    }, "Offsets for position-area: " + position_area + " and insets: " + JSON.stringify(insets));
   }
 
-  test_inset_area("span-bottom span-left", {left:"auto", right:"auto", top:"auto", bottom:"auto"},
+  test_position_area("span-bottom span-left", {left:"auto", right:"auto", top:"auto", bottom:"auto"},
                   {left:200, top:150, width:50, height:150});
 
-  test_inset_area("span-bottom span-left", {left:"10px", right:"10px", top:"10px", bottom:"10px"},
+  test_position_area("span-bottom span-left", {left:"10px", right:"10px", top:"10px", bottom:"10px"},
                   {left:210, top:160, width:30, height:130});
 </script>

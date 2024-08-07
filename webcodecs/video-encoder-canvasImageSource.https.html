@@ -1,4 +1,5 @@
 <title>Test Encode VideoFrame from CanvasImageSource.</title>
+<img src="four-colors.png"/>
 <canvas id=""></canvas>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -7,6 +8,32 @@
 promise_test(() => {
   return new Promise(resolve => onload = resolve);
 }, "Wait for onload event to get access to image data");
+
+promise_test(async t => {
+  const img = document.querySelector('img');
+  const frame = new VideoFrame(img, {timestamp: 0});
+  assert_equals(frame.codedWidth, img.width);
+  assert_equals(frame.codedHeight, img.height);
+
+  let outputs = 0;
+  const codecInit = getDefaultCodecInit(t);
+  codecInit.output = (chunk, metadata) => {
+    outputs += 1;
+  }
+
+  const encoder = new VideoEncoder(codecInit);
+  encoder.configure({
+    codec: 'vp8',
+    width: frame.codedWidth,
+    height: frame.codedHeight,
+  });
+  encoder.encode(frame);
+  frame.close();
+  await encoder.flush();
+  encoder.close();
+
+  assert_equals(outputs, 1, 'outputs');
+}, 'Test encode ImageElement-constructed VideoFrame');
 
 function drawFourColors(canvas) {
   let ctx = canvas.getContext('2d');

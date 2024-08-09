@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <title>Name Comp: Name From Content (Tentative)</title>
   <meta charset="utf-8">
@@ -36,6 +36,17 @@
   <!-- but it's picked up again (after the self-referencial image alt) in inverse order b/c of cross-referencial aria-labelledby edge case -->
   <img id="nested_image_label4" alt="image" aria-labelledby="nested_image_label4 crossref_link2" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">
 </h3>
+
+<h1>heading which visually transforms <span lang="ja">びょういん</span> (hospital) to <span lang="ja">びよういん</span> (beauty parlor) using CSS <code>text-transform:full-size-kana</code></h1>
+<h3 lang="ja" data-expectedlabel="びょういん" data-testname="heading name from content with text-transform:full-size-kana" class="ex" style="text-transform:full-size-kana;">びょういん</h3>
+
+<h1><code>ruby > rt</code> element which visually transforms <span lang="ja">りゅう</span> (dragon) to <span lang="ja">りゆう</span> (reason) using CSS <code>text-transform:full-size-kana</code></h1>
+<ruby lang="ja">
+  竜
+  <rp>(</rp>
+  <rt data-expectedlabel="りゅう" data-testname="ruby > rt name from content with text-transform:full-size-kana" class="ex" style="text-transform:full-size-kana;">りゅう</rt>
+  <rp>)</rp>
+</ruby>
 
 <script>
 AriaUtils.verifyLabelsBySelector(".ex");

@@ -1,7 +1,8 @@
-# mypy: allow-untyped-defs
-
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import json
 import os
+from io import open
 
 from tools.wpt import wpt
 
@@ -91,7 +92,7 @@ def load_configuration_file(path):
         return {}
 
     configuration = None
-    with open(path) as configuration_file:
+    with open(path, "r") as configuration_file:
         configuration_file_content = configuration_file.read()
         configuration = json.loads(configuration_file_content)
     return configuration

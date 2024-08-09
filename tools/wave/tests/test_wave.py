@@ -1,13 +1,14 @@
-# mypy: allow-untyped-defs
-
 import errno
 import os
 import socket
 import subprocess
 import time
 
-from urllib.request import urlopen
-from urllib.error import URLError
+try:
+    from urllib.request import urlopen
+    from urllib.error import URLError
+except ImportError:
+    from urllib2 import urlopen, URLError
 
 from tools.wpt import wpt
 
@@ -15,7 +16,7 @@ def is_port_8080_in_use():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         s.bind(("127.0.0.1", 8080))
-    except OSError as e:
+    except socket.error as e:
         if e.errno == errno.EADDRINUSE:
             return True
         else:
@@ -52,4 +53,3 @@ def test_serve():
                 break
     finally:
         os.killpg(p.pid, 15)
-        p.wait(10)

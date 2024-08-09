@@ -606,6 +606,8 @@ class SingleTestSource(TestQueueBuilder):
 
 
 class PathGroupedSource(TestQueueBuilder):
+    SUBSUITE_GROUP_SIZE = 50
+
     def new_group(self,
                   state: MutableMapping[str, Any],
                   subsuite: str,
@@ -619,10 +621,30 @@ class PathGroupedSource(TestQueueBuilder):
         state["prev_group_key"] = (subsuite, test_type, path)
         return rv
 
+    def in_one_group(self,
+                     subsuite: str,
+                     tests: List[wpttest.Test]) -> bool:
+        return (cls.SUBSUITE_GROUP_SIZE > 0 and subsuite and
+                len(tests) < cls.SUBSUITE_GROUP_SIZE)
+
     def make_groups(self, tests_by_type: TestsByType) -> List[TestGroup]:
         groups = []
         state: MutableMapping[str, Any] = {}
         for (subsuite, test_type), tests in tests_by_type.items():
+            # For subsuites only have few tests, put them in one group so that
+            # it will be picked up by one worker and only one restart will be
+            # needed. Tests have a different test type will still be put into
+            # different group though.
+            if self.in_one_group(subsuite, tests):
+                state["prev_group_key"] = (subsuite, test_type, [""])
+                group_metadata = self.group_metadata(state)
+                groups.append(TestGroup(deque(), subsuite, test_type, group_metadata))
+                for test in tests:
+                    group, _, _, metadata = groups[-1]
+                    group.append(test)
+                    test.update_metadata(metadata)
+                continue
+
             for test in tests:
                 if self.new_group(state, subsuite, test_type, test):
                     group_metadata = self.group_metadata(state)
@@ -636,6 +658,11 @@ class PathGroupedSource(TestQueueBuilder):
         groups = defaultdict(list)
         state: MutableMapping[str, Any] = {}
         for (subsuite, test_type), tests in tests_by_type.items():
+            if self.in_one_group(subsuite, tests):
+                group_name = f"{subsuite}:/"
+                for test in tests:
+                    groups[group_name].append(test.id)
+                continue
             for test in tests:
                 if self.new_group(state, subsuite, test_type, test):
                     group = self.group_metadata(state)['scope']
@@ -651,6 +678,8 @@ class PathGroupedSource(TestQueueBuilder):
 
 
 class FullyParallelGroupedSource(PathGroupedSource):
+    SUBSUITE_GROUP_SIZE = 0
+
     # Chuck every test into a different group, so that they can run
     # fully parallel with each other. Useful to run a lot of tests
     # clustered in a few directories.

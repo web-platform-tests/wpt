@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Check that appropriate quotes are used after lang attribute is modified</title>
+<link rel="match" href="quotes-lang-change-ref.html">
+<link rel="help" href="https://drafts.csswg.org/css-content/#quotes-property">
+<link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1891486">
+
+<script>
+function run() {
+  document.getElementById("test").setAttribute("lang", "fr");
+}
+</script>
+
+<style>
+q { quotes: auto; }
+</style>
+
+<body onload="run()">
+<div id="test" lang="de">
+  Both examples below should use «French» quotes:<br>
+  <q>one</q> <q lang="en">two</q>
+</div>
+</body>

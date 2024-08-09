@@ -71,6 +71,8 @@ def load_commands():
 
 def parse_args(argv, commands=load_commands()):
     parser = argparse.ArgumentParser()
+    parser.add_argument("--log-level", action="store", choices=["debug", "info", "warning", "error", "critical"],
+                        default="info", help="Main wpt log level")
     parser.add_argument("--venv", action="store", help="Path to an existing virtualenv to use")
     parser.add_argument("--skip-venv-setup", action="store_true",
                         dest="skip_venv_setup",
@@ -202,6 +204,8 @@ def main(prog=None, argv=None):
 
     if not main_args:
         return
+
+    logging.getLogger().setLevel(main_args.log_level.upper())
 
     command = main_args.command
     props = commands[command]

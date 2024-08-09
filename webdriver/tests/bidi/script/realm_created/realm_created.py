@@ -192,7 +192,7 @@ async def test_subscribe_to_one_context(
 
 @pytest.mark.parametrize("method", ["evaluate", "call_function"])
 async def test_script_when_realm_is_created(
-    bidi_session, subscribe_events, new_tab, wait_for_event,wait_for_future_safe, inline, method
+    bidi_session, subscribe_events, new_tab, wait_for_event, wait_for_future_safe, inline, method
 ):
     await bidi_session.browsing_context.navigate(
         context=new_tab["context"], url=inline("<div>foo</div>"), wait="complete"
@@ -360,6 +360,30 @@ async def test_service_worker(
             "type": "service-worker",
             "realm": any_string,
             "origin": worker_url,
+        },
+        realm,
+    )
+
+
+@pytest.mark.parametrize("type_hint", ["tab", "window"])
+async def test_existing_context(bidi_session, wait_for_event, wait_for_future_safe, subscribe_events, test_origin, type_hint):
+    # See https://w3c.github.io/webdriver-bidi/#ref-for-remote-end-subscribe-steps%E2%91%A1.
+    top_level_context = await bidi_session.browsing_context.create(type_hint=type_hint)
+
+    await bidi_session.browsing_context.navigate(
+        context=top_level_context["context"], url=test_origin, wait="complete"
+    )
+
+    on_entry = wait_for_event(REALM_CREATED_EVENT)
+    await subscribe_events([REALM_CREATED_EVENT], contexts=[top_level_context["context"]])
+    realm = await wait_for_future_safe(on_entry)
+
+    recursive_compare(
+        {
+            "type": "window",
+            "context": top_level_context["context"],
+            "realm": any_string,
+            "origin": test_origin,
         },
         realm,
     )

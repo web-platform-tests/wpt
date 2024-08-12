@@ -40,7 +40,7 @@ jobs:
             latest
             type=raw,value=${{ inputs.tag }}
       - name: Build and push the Docker image
-        uses: docker/build-push-action@1a162644f9a7e87d8f4b053101d1d9a712edc18c # v6.3.0
+        uses: docker/build-push-action@16ebe778df0e7752d2cfcbd924afdbbd89c1a755 # v6.6.1
         with:
           context: ./tools/docker
           push: true

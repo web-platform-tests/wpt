@@ -606,8 +606,6 @@ class SingleTestSource(TestQueueBuilder):
 
 
 class PathGroupedSource(TestQueueBuilder):
-    SUBSUITE_GROUP_SIZE = 50
-
     def new_group(self,
                   state: MutableMapping[str, Any],
                   subsuite: str,
@@ -624,8 +622,8 @@ class PathGroupedSource(TestQueueBuilder):
     def in_one_group(self,
                      subsuite: str,
                      tests: List[wpttest.Test]) -> bool:
-        return (cls.SUBSUITE_GROUP_SIZE > 0 and subsuite and
-                len(tests) < cls.SUBSUITE_GROUP_SIZE)
+        small_subsuite_size = self.kwargs.get("small_subsuite_size")
+        return subsuite and len(tests) <= small_subsuite_size
 
     def make_groups(self, tests_by_type: TestsByType) -> List[TestGroup]:
         groups = []
@@ -678,7 +676,10 @@ class PathGroupedSource(TestQueueBuilder):
 
 
 class FullyParallelGroupedSource(PathGroupedSource):
-    SUBSUITE_GROUP_SIZE = 0
+    def in_one_group(self,
+                     subsuite: str,
+                     tests: List[wpttest.Test]) -> bool:
+        return False
 
     # Chuck every test into a different group, so that they can run
     # fully parallel with each other. Useful to run a lot of tests

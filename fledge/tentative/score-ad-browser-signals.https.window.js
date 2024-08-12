@@ -4,7 +4,7 @@
 // META: script=/common/subset-tests.js
 // META: timeout=long
 
-"use strict;"
+"use strict";
 
 // These tests focus on the browserSignals argument passed to scoreAd().
 

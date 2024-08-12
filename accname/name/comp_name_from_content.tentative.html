@@ -38,8 +38,8 @@
 </h3>
 
 
-<!-- びょういんのかんじゃサービス means “Hospital patient services -->
-<!-- text-transform:full-size-kana incorrectlys change: -->
+<!-- “びょういんのかんじゃサービス” means “Hospital patient services” -->
+<!-- text-transform:full-size-kana incorrectly changes: -->
 <!--   1. びょういん (byōin = hospital) into びよういん (biyōin = beauty parlor) -->
 <!--   2. かんじゃ (kanja = patient) into かんじや (kanjiya = [no meaning]) -->
 <!-- ...causing the whole heading to become nonsensical. -->
@@ -47,7 +47,7 @@
 <h3 lang="ja" data-expectedlabel="びょういんのかんじゃサービス" data-testname="heading name from content with text-transform:full-size-kana" class="ex" style="text-transform:full-size-kana;">びょういんのかんじゃサービス</h3>
 
 <!-- “竜の背に乗る” means “Ride the dragon’s back” -->
-<!-- text-transform:full-size-kana incorrectly changes the <rp> furigana: -->
+<!-- text-transform:full-size-kana incorrectly changes 竜’s <rt> furigana: -->
 <!-- from りゅう (ryū = dragon) to りゆう (riyuu = reason) -->
 <h1>link containing a <code>ruby > rt</code> element which visually transforms <span lang="ja">りゅう</span> (dragon) to <span lang="ja">りゆう</span> (reason) using CSS <code>text-transform:full-size-kana</code></h1>
 <button lang="ja" data-expectedlabel="竜の背に乗る" data-testname="ruby > rt name from content with text-transform:full-size-kana" class="ex" >

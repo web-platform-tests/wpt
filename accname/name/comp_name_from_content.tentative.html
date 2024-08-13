@@ -49,10 +49,14 @@
 <!-- “竜の背に乗る” means “Ride the dragon’s back” -->
 <!-- text-transform:full-size-kana visually changes the <rt> furigana for 竜 -->
 <!-- from りゅう (ryū = dragon) to りゆう (riyuu = reason) -->
+<!-- TODO: Restore this subtest when ruby’s accname computation and -->
+<!-- text-to-speech requirements are settled. -->
+<!--
 <h1>link containing a <code>ruby > rt</code> element which visually transforms <span lang="ja">りゅう</span> (dragon) to <span lang="ja">りゆう</span> (reason) using CSS <code>text-transform:full-size-kana</code></h1>
 <button lang="ja" data-expectedlabel="竜の背に乗る" data-testname="ruby > rt name from content with text-transform:full-size-kana" class="ex" >
   <ruby>竜<rp>(</rp><rt style="text-transform:full-size-kana;">りゅう</rt><rp>)</rp>の背<rp>(</rp><rt>せ</rt><rp>)</rp>に乗<rp>(</rp><rt>の</rt><rp>)</rp>る</ruby>
 </button>
+-->
 
 <script>
 AriaUtils.verifyLabelsBySelector(".ex");

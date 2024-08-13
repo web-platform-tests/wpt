@@ -7,9 +7,12 @@
 <div id="host">
     <template shadowrootmode="open">
       <style>
-        :host:has(h1) div {
+        div {
           width: 100px;
           height: 100px;
+          background-color: red;
+        }
+        :host:has(h1) div {
           background-color: green;
         }
       </style>

@@ -622,8 +622,8 @@ class PathGroupedSource(TestQueueBuilder):
     def in_one_group(self,
                      subsuite: str,
                      tests: List[wpttest.Test]) -> bool:
-        small_subsuite_size = self.kwargs.get("small_subsuite_size")
-        return subsuite and len(tests) <= small_subsuite_size
+        small_subsuite_size = self.kwargs.get("small_subsuite_size", 0)
+        return len(subsuite) > 0 and len(tests) <= small_subsuite_size
 
     def make_groups(self, tests_by_type: TestsByType) -> List[TestGroup]:
         groups = []

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import os
-from typing import Any, Optional, TYPE_CHECKING
+from typing import Any, List, Optional, Text, TYPE_CHECKING
 
 from . import manifest
 from . import vcs
@@ -23,6 +23,7 @@ def update(tests_root: str,
            manifest_path: Optional[str] = None,
            working_copy: bool = True,
            cache_root: Optional[str] = None,
+           subdirs_to_update: Optional[List[Text]] = None,
            rebuild: bool = False,
            parallel: bool = True
            ) -> bool:
@@ -30,7 +31,7 @@ def update(tests_root: str,
     logger.info("Updating manifest")
 
     tree = vcs.get_tree(tests_root, manifest, manifest_path, cache_root,
-                        working_copy, rebuild)
+                        subdirs_to_update, working_copy, rebuild)
     return manifest.update(tree, parallel)
 
 
@@ -45,6 +46,7 @@ def update_from_cli(**kwargs: Any) -> None:
     manifest.load_and_update(tests_root,
                              path,
                              kwargs["url_base"],
+                             subdirs_to_update=kwargs['tests'],
                              update=True,
                              rebuild=kwargs["rebuild"],
                              cache_root=kwargs["cache_root"],
@@ -79,6 +81,9 @@ def create_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--no-parallel", dest="parallel", action="store_false",
         help="Do not parallelize building the manifest")
+    parser.add_argument('tests',
+                        nargs='*',
+                        help='Paths of test files or directories to update.')
     return parser
 
 

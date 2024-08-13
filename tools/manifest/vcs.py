@@ -24,6 +24,7 @@ def get_tree(tests_root: Text,
              manifest: "Manifest",
              manifest_path: Optional[Text],
              cache_root: Optional[Text],
+             subdirs_to_update: Optional[List[Text]],
              working_copy: bool = True,
              rebuild: bool = False) -> "FileSystem":
     tree = None
@@ -43,7 +44,9 @@ def get_tree(tests_root: Text,
                           manifest.url_base,
                           manifest_path=manifest_path,
                           cache_path=cache_root,
-                          rebuild=rebuild)
+                          subdirs_to_update=subdirs_to_update,
+                          rebuild=rebuild,
+                          )
     return tree
 
 
@@ -91,10 +94,12 @@ class FileSystem:
                  tests_root: Text,
                  url_base: Text,
                  cache_path: Optional[Text],
+                 subdirs_to_update: Optional[List[Text]] = None,
                  manifest_path: Optional[Text] = None,
                  rebuild: bool = False) -> None:
         self.tests_root = tests_root
         self.url_base = url_base
+        self.subdirs_to_update = subdirs_to_update or ['']
         self.ignore_cache = None
         self.mtime_cache = None
         tests_root_bytes = tests_root.encode("utf8")
@@ -111,15 +116,27 @@ class FileSystem:
 
     def __iter__(self) -> Iterator[Tuple[Text, Optional[Text], bool]]:
         mtime_cache = self.mtime_cache
-        for dirpath, dirnames, filenames in self.path_filter(
-                walk(self.tests_root.encode("utf8"))):
-            for filename, path_stat in filenames:
-                path = os.path.join(dirpath, filename).decode("utf8")
+        for subdir in self.subdirs_to_update:
+            path = os.path.join(self.tests_root, subdir)
+            if os.path.isfile(path):
+                path_stat = os.stat(path)
+                path = subdir
                 if mtime_cache is None or mtime_cache.updated(path, path_stat):
                     file_hash = self.hash_cache.get(path, None)
                     yield path, file_hash, True
                 else:
                     yield path, None, False
+            elif os.path.isdir(path):
+                for dirpath, dirnames, filenames in self.path_filter(
+                        walk(path.encode("utf8"))):
+                    for filename, path_stat in filenames:
+                        path = os.path.join(subdir,
+                                            os.path.join(dirpath, filename).decode("utf8"))
+                        if mtime_cache is None or mtime_cache.updated(path, path_stat):
+                            file_hash = self.hash_cache.get(path, None)
+                            yield os.path.join(subdir, path), file_hash, True
+                        else:
+                            yield os.path.join(subdir, path), None, False
 
     def dump_caches(self) -> None:
         for cache in [self.mtime_cache, self.ignore_cache]:

@@ -46,10 +46,10 @@
 <h1>heading which visually transforms <span lang="ja">びょういん</span> (hospital) to <span lang="ja">びよういん</span> (beauty parlor) using CSS <code>text-transform:full-size-kana</code></h1>
 <h3 lang="ja" data-expectedlabel="びょういんのかんじゃサービス" data-testname="heading name from content with text-transform:full-size-kana" class="ex" style="text-transform:full-size-kana;">びょういんのかんじゃサービス</h3>
 
-<!-- “竜の背に乗る” means “Ride the dragon’s back” -->
-<!-- text-transform:full-size-kana visually changes the furigana for 竜 -->
-<!-- from りゅう (ryū = dragon) to りゆう (riyuu = reason) -->
+<!-- text-transform:full-size-kana visually changes -->
+<!-- りゅう (ryū = dragon) into りゆう (riyuu = reason) -->
 <!-- but the computed accessibility label should retain the original meaning. -->
+<h1>button which visually transforms <span lang="ja">りゅう</span> (dragon) to <span lang="ja">りゆう</span> (reason) using CSS <code>text-transform:full-size-kana</code></h1>
 <button lang="ja" data-expectedlabel="りゅう" data-testname="button with text-transform: full-size-kana on contents" class="ex" style="text-transform: full-size-kana;">りゅう</button>
 
 <script>

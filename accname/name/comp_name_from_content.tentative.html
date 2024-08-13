@@ -47,8 +47,9 @@
 <h3 lang="ja" data-expectedlabel="びょういんのかんじゃサービス" data-testname="heading name from content with text-transform:full-size-kana" class="ex" style="text-transform:full-size-kana;">びょういんのかんじゃサービス</h3>
 
 <!-- “竜の背に乗る” means “Ride the dragon’s back” -->
-<!-- text-transform:full-size-kana visually changes the <rt> furigana for 竜 -->
+<!-- text-transform:full-size-kana visually changes the furigana for 竜 -->
 <!-- from りゅう (ryū = dragon) to りゆう (riyuu = reason) -->
+<!-- but the computed accessibility label should retain the original meaning. -->
 <button lang="ja" data-expectedlabel="りゅう" data-testname="button with text-transform: full-size-kana on contents" class="ex" style="text-transform: full-size-kana;">りゅう</button>
 
 <script>

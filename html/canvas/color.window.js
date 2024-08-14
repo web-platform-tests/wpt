@@ -24,19 +24,19 @@ const context = canvas.getContext("2d");
   },
   {
     "input": "color(srgb 1 0 1)",
-    "output": "#ff00ff"
+    "output": "color(srgb 1 0 1)"
   },
   {
     "input": "color(srgb 1 0 1 / 1)",
-    "output": "#ff00ff"
+    "output": "color(srgb 1 0 1)"
   },
   {
-    "input": "color(srgb 1 0 1 / 0)",
-    "output": "rgba(255, 0, 255, 0)"
+    "input": "color(srgb 1 0 1/0)",
+    "output": "color(srgb 1 0 1 / 0)"
   },
   {
     "input": "color(srgb 1 none 1)",
-    "output": "color(srgb 1 none 1)" // one could argue for #ff00ff here?
+    "output": "color(srgb 1 none 1)"
   },
   {
     "input": "color(srgb none -1 2 / 3)", // alpha is clamped to [0, 1]

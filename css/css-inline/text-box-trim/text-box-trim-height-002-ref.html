@@ -1,9 +1,4 @@
 <!DOCTYPE html>
-<title>text-box-trim does not interfere with height and vice versa (end edge)</title>
-<link rel="help" href="https://drafts.csswg.org/css-inline-3/#text-box-trim">
-<link rel="help" href="https://drafts.csswg.org/css-inline-3/#text-box-edge">
-<link ref="help" href="https://www.w3.org/TR/css-align-3/#distribution-block">
-<link rel="match" href="text-box-trim-height-001-ref.html">
 <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 <style>
 .spacer {
@@ -15,22 +10,18 @@
 }
 
 .target {
-  font: 100px/2 Ahem;
-  text-box-trim: trim-both;
-  text-box-edge: text alphabetic;
-  align-content: end;
+  font: 100px/1 Ahem;
 }
 
-.height > .target {
-  height: 120px;
-}
-
+.height > .target,
 .min-height > .target {
-  min-height: 120px;
+  padding-top: 40px;
+  height: 80px;
 }
 
 .max-height > .target {
-  max-height: 10px;
+  margin-top: -80px;
+  height: 90px;
 }
 </style>
 

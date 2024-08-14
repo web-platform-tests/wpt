@@ -780,6 +780,28 @@ body {
             ]
 
 
+def test_not_ahem_system_font():
+    code = b"""\
+<html>
+<style>
+body {
+  font-family: AhemExtra , sans-serif;
+  font-family: ExtraAhem , sans-serif;
+  font-family: Extra, ExtraAhem ;
+  font-family: Ahem Extra;
+  font-family: Ahem Extra, sans-serif;
+}
+</style>
+</html>
+"""
+    error_map = check_with_files(code)
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if filename.endswith((".htm", ".html", ".xht", ".xhtml")):
+            assert errors == []
+
+
 def test_ahem_web_font():
     code = b"""\
 <html>

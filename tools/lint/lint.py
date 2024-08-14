@@ -660,7 +660,7 @@ def check_script_metadata(repo_root: Text, path: Text, f: IO[bytes]) -> List[rul
     return errors
 
 
-ahem_font_re = re.compile(br"font.*:.*ahem", flags=re.IGNORECASE)
+ahem_font_re = re.compile(br"font.*?:(?:.*\W)?ahem\s*[;,]", flags=re.IGNORECASE)
 # Ahem can appear either in the global location or in the support
 # directory for legacy Mozilla imports
 ahem_stylesheet_re = re.compile(br"\/fonts\/ahem\.css|support\/ahem.css",

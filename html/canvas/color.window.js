@@ -53,6 +53,14 @@ const context = canvas.getContext("2d");
   {
     "input": "transparent",
     "output": "rgba(0, 0, 0, 0)"
+  },
+  {
+    "input": "rgb(none none none)",
+    "output": "#000000"
+  },
+  {
+    "input": "rgb(300 none 400)",
+    "output": "#ff00ff"
   }
 ].forEach(({ input, output }) => {
   test(() => {

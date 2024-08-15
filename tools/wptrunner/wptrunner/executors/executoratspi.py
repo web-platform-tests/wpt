@@ -55,33 +55,6 @@ def is_ready(tab, product, url):
         return True
     return False
 
-
-def serialize_node(node):
-    node_dictionary = {}
-    node_dictionary["API"] = "atspi"
-    node_dictionary["role"] = Atspi.Accessible.get_role_name(node)
-    node_dictionary["name"] = Atspi.Accessible.get_name(node)
-    node_dictionary["description"] = Atspi.Accessible.get_description(node)
-
-    return node_dictionary
-
-
-def find_node(root, dom_id):
-    stack = [root]
-    while stack:
-        node = stack.pop()
-
-        attributes = Atspi.Accessible.get_attributes(node)
-        if "id" in attributes and attributes["id"] == dom_id:
-            return node
-
-        for i in range(Atspi.Accessible.get_child_count(node)):
-            child = Atspi.Accessible.get_child_at_index(node, i)
-            stack.append(child)
-
-    return None
-
-
 def find_browser(name):
     desktop = Atspi.get_desktop(0)
     child_count = Atspi.Accessible.get_child_count(desktop)
@@ -91,6 +64,22 @@ def find_browser(name):
         if name in full_app_name.lower():
             return (app, full_app_name)
     return (None, None)
+
+
+def find_node(root, dom_id):
+    stack = [root]
+    while stack:
+        node = stack.pop()
+
+        attributes = Atspi.Accessible.get_attributes(node)
+        if "id" in attributes and attributes["id"] == dom_id:
+            return TestNode(root, dom_id, node)
+
+        for i in range(Atspi.Accessible.get_child_count(node)):
+            child = Atspi.Accessible.get_child_at_index(node, i)
+            stack.append(child)
+
+    return None
 
 
 class AtspiExecutorImpl:
@@ -108,8 +97,7 @@ class AtspiExecutorImpl:
                 f"Couldn't find browser {self.product_name} in accessibility API ATSPI. Accessibility API queries will not succeeded."
             )
 
-
-    def get_accessibility_api_node(self, dom_id, url):
+    def __poll_for_tab_if_necessary(self, url):
         if not self.root:
             raise Exception(
                 f"Couldn't find browser {self.product_name} in accessibility API ATSPI. Did you turn on accessibility?"
@@ -119,10 +107,179 @@ class AtspiExecutorImpl:
             self.test_url = url
             self.document = poll_for_tab(self.root, self.product_name, url)
 
-        node = find_node(self.document, dom_id)
-        if not node:
+    def get_accessibility_api_node(self, dom_id, url):
+        self.__poll_for_tab_if_necessary(url)
+
+        test_node = find_node(self.document, dom_id)
+        if not test_node:
             raise Exception(
                 f"Couldn't find node with id={dom_id} in accessibility API ATSPI."
             )
 
-        return json.dumps(serialize_node(node))
+        return json.dumps(test_node.serialize())
+
+    def test_accessibility_api(self, dom_id, test, api, url):
+        self.__poll_for_tab_if_necessary(url)
+
+        test_node = find_node(self.document, dom_id)
+
+        errors = []
+        for test_statement in test['Atspi']:
+            error = test_node.run_test_statement(TestStatement(test_statement));
+            if (error):
+                errors.append(error)
+
+        if len(errors):
+            return '; '.join(errors)
+
+        return "match"
+
+
+class TestNode():
+    """Wrapper around an Atspi Node for testing purposes"""
+    def __init__(self, root, dom_id, node):
+        self.root = root
+        self.dom_id = dom_id
+        self.node = node
+
+    def serialize(self):
+        node_dictionary = {}
+        node_dictionary["API"] = "atspi"
+        node_dictionary["role"] = Atspi.Accessible.get_role_name(self.node)
+        node_dictionary["name"] = Atspi.Accessible.get_name(self.node)
+        node_dictionary["description"] = Atspi.Accessible.get_description(self.node)
+        node_dictionary["states"] = self.get_state_list()
+        node_dictionary["objectAttributes"] = Atspi.Accessible.get_attributes_as_array(self.node)
+        node_dictionary["relations"] = self.get_relations_dictionary()
+
+        return node_dictionary
+
+    # Returns error or undefined
+    # 'statement' is a TestStatement object
+    def run_test_statement(self, statement):
+        if statement.type == 'property':
+            return self.run_property_test(statement)
+
+        if statement.type == 'relation':
+            return self.run_relation_test(statement)
+
+        if statement.type == 'reverseRelation':
+            return self.run_reverse_relation_test(statement)
+            return "not implemented reverse relations"
+
+        return f"Not implemented: {test}"
+
+    # Returns error or undefined
+    # 'statement' is a TestStatement object
+    def run_property_test(self, statement):
+        if statement.key == 'role':
+            role = Atspi.Accessible.get_role_name(self.node)
+            return statement.value_compare_with(role)
+
+        if statement.key == 'objectAttributes':
+            attributes = Atspi.Accessible.get_attributes_as_array(self.node)
+            return statement.value_contained_or_not_contained_in(attributes)
+
+        if statement.key == 'states':
+            states = self.get_state_list()
+            return statement.value_contained_or_not_contained_in(states)
+
+        return f"Not implemented: {statement}"
+
+
+    # Returns error or undefined
+    # 'statement' is a TestStatement object
+    def run_relation_test(self, statement):
+        expected_relation = statement.key
+        expected_ids = statement.value
+        relations_dict = self.get_relations_dictionary()
+        if expected_relation not in relations_dict:
+            return f"Node {self.dom_id} did not have relation {expected_relation}"
+
+        id_str = ','.join(relations_dict[expected_relation])
+        expected_ids.sort()
+        expected_id_str = ','.join(expected_ids)
+        if (id_str != expected_id_str):
+            return f"{expected_relation} should include elements with dom IDs {expected_ids}, but found only: {relations_dict[expected_relation]}"
+
+    # Returns error or undefined
+    # 'statement' is a TestStatement object
+    def run_reverse_relation_test(self, statement):
+        expected_relation = statement.key
+        # statement.value is also dom_ids, but representing the nodes that should have
+        # a reverse relation back to this node.
+        expected_elements = statement.value
+
+        for element in expected_elements:
+            test_node = find_node(self.root, element)
+            relation_dict = test_node.get_relations_dictionary()
+            if expected_relation not in relation_dict:
+                return f"Element with dom ID {element} should have relation {expected_relation}"
+            if self.dom_id not in relation_dict[expected_relation]:
+                return f"Element with dom ID {element} should have relation {expected_relation} pointing to {self.dom_id}, but found: {relation_dict[expected_relation]}"
+
+
+    # Returns dictionary where the keys are relation names and the values
+    # are a sorted list of dom IDs.
+    def get_relations_dictionary(self):
+        relations_dict = {}
+        relations = Atspi.Accessible.get_relation_set(self.node)
+        for relation in relations:
+            name = relation.get_relation_type().value_name.removeprefix('ATSPI_')
+            relations_dict[name] = []
+            num_targets = relation.get_n_targets()
+
+            for i in range(num_targets):
+                target = relation.get_target(i)
+                attributes = Atspi.Accessible.get_attributes(target)
+                if "id" in attributes:
+                    relations_dict[name].append(attributes["id"])
+                else:
+                    relations_dict[name].append("[unknown id]")
+        return relations_dict
+
+    def get_state_list(self):
+        state_list =  Atspi.Accessible.get_state_set(self.node).get_states()
+        state_string_list = []
+        for state in state_list:
+            state_string_list.append(state.value_name.replace('ATSPI_',''))
+        return state_string_list
+
+
+class TestStatement:
+    def __init__(self, test_statement_arr):
+        self.test_statement_arr = test_statement_arr
+
+        self.type = test_statement_arr[0];
+        self.key = test_statement_arr[1];
+        self.assertion = test_statement_arr[2];
+        self.value = test_statement_arr[3];
+
+    def __str__(self):
+        return str(self.test_statement_arrary)
+
+    # Returns error or undefined
+    def value_compare_with(self, value):
+        if self.assertion == 'is':
+            if self.value != value:
+                return f"{self.key} is {value}, but should be {self.value}"
+        elif self.assertion == 'isNot':
+            if self.value == value:
+                return f"{self.key} is {value}, but should not be {value}"
+        else:
+            return f"Test statement malformed, item 2 of '{self.test_statement_arr}' is not 'is' or 'isNot'."
+
+        return
+
+    # returns error undefined
+    def value_contained_or_not_contained_in(self, array):
+        if self.assertion == 'contains':
+            if self.value not in array:
+                return f"{self.key} {array} does not contain {self.value}"
+        elif self.assertion == 'doesNotContain':
+            if self.value in array:
+                return f"{self.key} {array} contains {self.value}"
+        else:
+            return f"Test statement malformed, item 2 of '{self.test_statement_arr}' is not 'contains' or 'doesNotContain'."
+
+        return

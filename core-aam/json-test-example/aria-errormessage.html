@@ -1,0 +1,30 @@
+<!doctype html>
+<meta charset=utf-8>
+<html>
+<head>
+  <title>aria-flowto</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="scripts/attr-map.js"></script>
+  <script src="scripts/aam-utils.js"></script>
+</head>
+<body>
+
+<div role='checkbox' id='test' aria-errormessage='error1 error2' aria-invalid='true'>content</div>
+<div id='error1'>hello</div>
+<div id='error2'>world</div>
+
+<script>
+  AAMUtils.verifyRelationAPI(
+    'test',
+    ['error1', 'error2'],
+    attrmap['aria-errormessage'],
+    'aria-flowto'
+  );
+</script>
+
+</body>
+</html>

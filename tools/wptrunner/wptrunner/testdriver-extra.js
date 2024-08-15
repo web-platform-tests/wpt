@@ -339,4 +339,9 @@
     window.test_driver_internal.get_accessibility_api_node = function(dom_id, url) {
         return create_action("get_accessibility_api_node", {dom_id, url});
     };
+
+    window.test_driver_internal.test_accessibility_api = function(dom_id, test, api, url) {
+        return create_action("test_accessibility_api", {dom_id, test, api, url});
+    };
+
 })();

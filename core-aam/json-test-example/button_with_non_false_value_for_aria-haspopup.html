@@ -1,0 +1,62 @@
+<!doctype html>
+<meta charset=utf-8>
+<html>
+<head>
+  <title>role button with non false value for aria-pressed</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="scripts/role-map.js"></script>
+  <script src="scripts/aam-utils.js"></script>
+</head>
+<body>
+
+<div id=test1 role=button aria-haspopup=true>click me</div>
+<div id=test2 role=button aria-haspopup=menu>click me</div>
+<div id=test3 role=button aria-haspopup=listbox>click me</div>
+<div id=test4 role=button aria-haspopup=tree>click me</div>
+<div id=test5 role=button aria-haspopup=grid>click me</div>
+<div id=test6 role=button aria-haspopup=dialog>click me</div>
+
+<script>
+
+  AAMUtils.verifyAPI(
+    'test1',
+    rolemap['button_with_non_false_value_for_aria-haspopup'],
+    'role=button aria-haspopup=true'
+  );
+
+  AAMUtils.verifyAPI(
+    'test2',
+    rolemap['button_with_non_false_value_for_aria-haspopup'],
+    'role=button aria-haspopup=menu'
+  );
+
+  AAMUtils.verifyAPI(
+    'test3',
+    rolemap['button_with_non_false_value_for_aria-haspopup'],
+    'role=button aria-haspopup=listbox'
+  );
+
+  AAMUtils.verifyAPI(
+    'test4',
+    rolemap['button_with_non_false_value_for_aria-haspopup'],
+    'role=button aria-haspopup=tree'
+  );
+
+  AAMUtils.verifyAPI(
+    'test5',
+    rolemap['button_with_non_false_value_for_aria-haspopup'],
+    'role=button aria-haspopup=grid'
+  );
+
+  AAMUtils.verifyAPI(
+    'test6',
+    rolemap['button_with_non_false_value_for_aria-haspopup'],
+    'role=button aria-haspopup=dialog'
+  );
+
+</script>
+</body>

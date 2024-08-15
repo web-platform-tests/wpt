@@ -1080,6 +1080,21 @@
                 .then((jsonresult) => {
                   return JSON.parse(jsonresult);
                 });
+        },
+
+        /**
+         * Test properties of API's accessibility node.
+         *
+         * @param {id}         id of element
+         * @param {test}       an object of tests
+         * @param {api}        string indicating the API to test
+         * @returns {Promise}  The string "match" when the test succeeds,
+         *                     a failure message otherwise
+         */
+        test_accessibility_api: async function(dom_id, test, api) {
+            return window.test_driver_internal.test_accessibility_api(
+              dom_id, test, api, location.href
+            );
         }
     };
 
@@ -1272,6 +1287,11 @@
 
         async get_accessibility_api_node(dom_id, url) {
             throw new Error("get_accessibility_api_node() is not available.");
+        },
+
+        async test_accessibility_api(dom_id, test, api, url) {
+            throw new Error("test_accessibility_api() is not available.");
         }
+
     };
 })();

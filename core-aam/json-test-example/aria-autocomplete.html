@@ -1,0 +1,45 @@
+<!doctype html>
+<meta charset=utf-8>
+<html>
+<head>
+  <title>aria-braillelabel</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="scripts/attr-map.js"></script>
+  <script src="scripts/aam-utils.js"></script>
+</head>
+<body>
+
+<input role='combobox' id='test1' aria-autocomplete='both'>
+<input role='combobox' id='test2' aria-autocomplete='inline'>
+<input role='combobox' id='test3' aria-autocomplete='list'>
+
+<script>
+  AAMUtils.verifyAttrAPI(
+    'test1',
+    'both',
+    attrmap['aria-autocomplete'],
+    'aria-autocomplete=both'
+  );
+
+  AAMUtils.verifyAttrAPI(
+    'test2',
+    'inline',
+    attrmap['aria-autocomplete'],
+    'aria-autocomplete=inline'
+  );
+
+  AAMUtils.verifyAttrAPI(
+    'test3',
+    'list',
+    attrmap['aria-autocomplete'],
+    'aria-autocomplete=list'
+  );
+
+</script>
+
+</body>
+</html>

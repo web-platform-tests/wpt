@@ -476,6 +476,20 @@ class GetAccessibilityAPINodeAction:
         url = payload["url"]
         return self.protocol.platform_accessibility.get_accessibility_api_node(dom_id, url)
 
+class TestAccessibilityAPIAction:
+    name = "test_accessibility_api"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        dom_id = payload["dom_id"]
+        test = payload["test"]
+        api = payload["api"]
+        url = payload["url"]
+        return self.protocol.platform_accessibility.test_accessibility_api(dom_id, test, api, url)
+
 
 actions = [ClickAction,
            DeleteAllCookiesAction,
@@ -513,4 +527,5 @@ actions = [ClickAction,
            GetVirtualSensorInformationAction,
            SetDevicePostureAction,
            ClearDevicePostureAction,
-           GetAccessibilityAPINodeAction]
+           GetAccessibilityAPINodeAction,
+           TestAccessibilityAPIAction]

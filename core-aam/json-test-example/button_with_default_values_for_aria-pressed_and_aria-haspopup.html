@@ -1,0 +1,55 @@
+<!doctype html>
+<meta charset=utf-8>
+<html>
+<head>
+  <title>role button with default values for aria-pressed and aria-hapopup</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="scripts/role-map.js"></script>
+  <script src="scripts/aam-utils.js"></script>
+</head>
+<body>
+
+<div id=test1 role=button>click me</div>
+<div id=test2 role=button aria-pressed>click me</div>
+<div id=test3 role=button aria-pressed aria-haspopup>click me</div>
+<div id=test4 role=button aria-haspopup>click me</div>
+<div id=test5 role=button aria-haspopup=false>click me</div>
+
+<script>
+  AAMUtils.verifyAPI(
+    'test1',
+    rolemap['button_with_default_values_for_aria-pressed_and_aria-haspopup'],
+    'role=button'
+  );
+
+  AAMUtils.verifyAPI(
+    'test2',
+    rolemap['button_with_default_values_for_aria-pressed_and_aria-haspopup'],
+    'role=button aria-pressed'
+  );
+
+  AAMUtils.verifyAPI(
+    'test3',
+    rolemap['button_with_default_values_for_aria-pressed_and_aria-haspopup'],
+    'role=button aria-pressed aria-haspopup'
+  );
+
+  AAMUtils.verifyAPI(
+    'test4',
+    rolemap['button_with_default_values_for_aria-pressed_and_aria-haspopup'],
+    'role=button aria-haspopup'
+  );
+
+  AAMUtils.verifyAPI(
+    'test5',
+    rolemap['button_with_default_values_for_aria-pressed_and_aria-haspopup'],
+    'role=button aria-haspopup=false'
+  );
+</script>
+
+</body>
+</html>

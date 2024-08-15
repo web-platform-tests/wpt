@@ -1,0 +1,32 @@
+<!doctype html>
+<meta charset=utf-8>
+<html>
+<head>
+  <title>role button with defined value for aria-pressed</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="scripts/role-map.js"></script>
+  <script src="scripts/aam-utils.js"></script>
+</head>
+<body>
+
+<div id=test1 role=button aria-pressed=true>press me</div>
+<div id=test2 role=button aria-pressed=false>press me</div>
+
+<script>
+  AAMUtils.verifyAPI(
+    'test1',
+    rolemap['button_with_defined_value_for_aria-pressed'],
+    'role=button aria-pressed=true'
+  );
+
+  AAMUtils.verifyAPI(
+    'test2',
+    rolemap['button_with_defined_value_for_aria-pressed'],
+    'role=button aria-pressed=false'
+  );
+</script>
+</body>

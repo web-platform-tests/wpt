@@ -1,0 +1,28 @@
+<!doctype html>
+<meta charset=utf-8>
+<html>
+<head>
+  <title>aria-braillelabel</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="scripts/attr-map.js"></script>
+  <script src="scripts/aam-utils.js"></script>
+</head>
+<body>
+
+<button id=test aria-braillelabel=foobar>
+
+<script>
+  AAMUtils.verifyAttrAPI(
+    'test',
+    'foobar',
+    attrmap['aria-braillelabel'],
+    'aria-braillelabel'
+  );
+</script>
+
+</body>
+</html>

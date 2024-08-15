@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+  <title>Tentative Invalid Role Verification Tests</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+  <meta charset="utf-8">
+</head>
+<body>
+
+<p>Tests invalid ARIA roles from <a href="https://w3c.github.io/aria/#document-handling_author-errors_roles">9.1 Roles - handling author errors</a>.</p>
+
+<!-- associationlist and related roles were briefly in the editors draft but removed pending: https://github.com/w3c/aria/issues/1662 -->
+<div role="associationlist" data-testname="associationlist is not a valid role" class="ex-generic">
+  <div role="associationlistkey" data-testname="associationlistkey is not a valid role" class="ex-generic">x</div>
+  <div role="associationlistvalue" data-testname="associationlistvalue is not a valid role" class="ex-generic">x</div>
+</div>
+
+<script>
+AriaUtils.verifyGenericRolesBySelector(".ex-generic");
+</script>
+
+</body>
+</html>

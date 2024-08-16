@@ -356,7 +356,7 @@ class TestExecutor:
             status = e.status
         else:
             status = "INTERNAL-ERROR"
-        message = str(getattr(e, "message", ""))
+        message = str(e)
         if message:
             message += "\n"
         message += exception_string
@@ -715,7 +715,7 @@ class WdspecRun:
         except (socket.timeout, OSError):
             self.result = False, ("CRASH", None)
         except Exception as e:
-            message = getattr(e, "message") if hasattr(e, "message") else str(e)
+            message = str(e)
             if message:
                 message += "\n"
             message += traceback.format_exc()

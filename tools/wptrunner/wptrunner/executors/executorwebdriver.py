@@ -629,7 +629,7 @@ class WebDriverProtocol(Protocol):
         try:
             self.webdriver.end()
         except Exception as e:
-            message = str(getattr(e, "message", ""))
+            message = str(e)
             if message:
                 message += "\n"
             message += traceback.format_exc()
@@ -676,7 +676,7 @@ class WebDriverBidiProtocol(WebDriverProtocol):
         try:
             self.loop.run_until_complete(self.webdriver.bidi_session.end())
         except Exception as e:
-            message = str(getattr(e, "message", ""))
+            message = str(e)
             if message:
                 message += "\n"
             message += traceback.format_exc()
@@ -711,7 +711,7 @@ class WebDriverRun(TimedRunner):
                 self.result = False, ("EXTERNAL-TIMEOUT", None)
             else:
                 status = "INTERNAL-ERROR" if self.protocol.is_alive() else "CRASH"
-                message = str(getattr(e, "message", ""))
+                message = str(e)
                 if message:
                     message += "\n"
                 message += traceback.format_exc()

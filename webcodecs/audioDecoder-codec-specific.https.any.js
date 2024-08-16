@@ -6,6 +6,7 @@
 // META: variant=?opus
 // META: variant=?pcm_alaw
 // META: variant=?pcm_mulaw
+// META: variant=?vorbis
 
 const ADTS_AAC_DATA = {
   src: 'sfx.adts',
@@ -115,6 +116,30 @@ const PCM_MULAW_DATA = {
   duration: 35555
 };
 
+const VORBIS_DATA = {
+  src: 'sfx-vorbis.ogg',
+  config: {
+    codec: 'vorbis',
+    description: [
+      2,
+      30,
+      62,
+      {offset: 28, size: 30},
+      {offset: 101, size: 62},
+      {offset: 163, size: 3771}
+    ],
+    numberOfChannels: 1,
+    sampleRate: 48000,
+  },
+  chunks: [
+    {offset: 3968, size: 44}, {offset: 4012, size: 21},
+    {offset: 4033, size: 57}, {offset: 4090, size: 37},
+    {offset: 4127, size: 37}, {offset: 4164, size: 107},
+    {offset: 4271, size: 172}
+  ],
+  duration: 21333
+};
+
 // Allows mutating `callbacks` after constructing the AudioDecoder, wraps calls
 // in t.step().
 function createAudioDecoder(t, callbacks) {
@@ -152,21 +177,8 @@ promise_setup(async () => {
     '?opus': OPUS_DATA,
     '?pcm_alaw': PCM_ALAW_DATA,
     '?pcm_mulaw': PCM_MULAW_DATA,
+    '?vorbis': VORBIS_DATA,
   }[location.search];
-
-  // Don't run any tests if the codec is not supported.
-  assert_equals("function", typeof AudioDecoder.isConfigSupported);
-  let supported = false;
-  try {
-    const support = await AudioDecoder.isConfigSupported({
-      codec: data.config.codec,
-      sampleRate: data.config.sampleRate,
-      numberOfChannels: data.config.numberOfChannels
-    });
-    supported = support.supported;
-  } catch (e) {
-  }
-  assert_implements_optional(supported, data.config.codec + ' unsupported');
 
   // Fetch the media data and prepare buffers.
   const response = await fetch(data.src);
@@ -174,8 +186,37 @@ promise_setup(async () => {
 
   CONFIG = {...data.config};
   if (data.config.description) {
-    CONFIG.description = view(buf, data.config.description);
+    if (Array.isArray(data.config.description)) {
+      const length = data.config.description.reduce((sum, value) => sum + ((typeof value === 'number') ? 1 : value.size), 0);
+      const description = new Uint8Array(length);
+
+      data.config.description.reduce((offset, value) => {
+          if (typeof value === 'number') {
+              description[offset] = value;
+
+              return offset + 1;
+          }
+
+          description.set(view(buf, value), offset);
+
+          return offset + value.size;
+      }, 0);
+
+      CONFIG.description = description;
+    } else {
+      CONFIG.description = view(buf, data.config.description);
+    }
   }
+
+  // Don't run any tests if the codec is not supported.
+  assert_equals("function", typeof AudioDecoder.isConfigSupported);
+  let supported = false;
+  try {
+    const support = await AudioDecoder.isConfigSupported(CONFIG);
+    supported = support.supported;
+  } catch (e) {
+  }
+  assert_implements_optional(supported, data.config.codec + ' unsupported');
 
   CHUNK_DATA = data.chunks.map((chunk, i) => view(buf, chunk));
 
@@ -257,7 +298,7 @@ promise_test(async t => {
   });
 
   await decoder.flush();
-  assert_equals(outputs, CHUNKS.length, 'outputs');
+  assert_equals(outputs, CONFIG.codec === 'vorbis' ? CHUNKS.length - 1 : CHUNKS.length, 'outputs');
 }, 'Test decoding');
 
 promise_test(async t => {
@@ -273,9 +314,11 @@ promise_test(async t => {
   decoder.configure(CONFIG);
   decoder.decode(new EncodedAudioChunk(
       {type: 'key', timestamp: -42, data: CHUNK_DATA[0]}));
+  decoder.decode(new EncodedAudioChunk(
+      {type: 'key', timestamp: CHUNKS[0].duration - 42, data: CHUNK_DATA[1]}));
 
   await decoder.flush();
-  assert_equals(outputs, 1, 'outputs');
+  assert_equals(outputs, CONFIG.codec === 'vorbis' ? 1 : 2, 'outputs');
 }, 'Test decoding a with negative timestamp');
 
 promise_test(async t => {
@@ -290,13 +333,14 @@ promise_test(async t => {
 
   decoder.configure(CONFIG);
   decoder.decode(CHUNKS[0]);
+  decoder.decode(CHUNKS[1]);
 
   await decoder.flush();
-  assert_equals(outputs, 1, 'outputs');
+  assert_equals(outputs, CONFIG.codec === 'vorbis' ? 1 : 2, 'outputs');
 
-  decoder.decode(CHUNKS[0]);
+  decoder.decode(CHUNKS[2]);
   await decoder.flush();
-  assert_equals(outputs, 2, 'outputs');
+  assert_equals(outputs, CONFIG.codec === 'vorbis' ? 2 : 3, 'outputs');
 }, 'Test decoding after flush');
 
 promise_test(async t => {

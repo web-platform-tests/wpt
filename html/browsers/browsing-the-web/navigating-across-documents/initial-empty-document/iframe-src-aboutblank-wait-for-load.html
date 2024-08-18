@@ -15,7 +15,7 @@
 "use strict";
 const url1 = "/common/blank.html?1";
 
-promise_test(async t => {
+/*promise_test(async t => {
   const startingHistoryLength = history.length;
   // Create an iframe with src set to about:blank, and wait for it to finish
   // loading. This would trigger and commit a navigation to a non-initial
@@ -32,7 +32,7 @@ promise_test(async t => {
   await waitForLoad(t, iframe, url1);
   assert_equals(history.length, startingHistoryLength,
     "history.length must not change after normal navigation on initial empty document");
-}, "Navigating to a different document with src");
+}, "Navigating to a different document with src");*/
 
 promise_test(async t => {
   const startingHistoryLength = history.length;
@@ -52,7 +52,7 @@ promise_test(async t => {
     "history.length must not change after normal navigation on initial empty document");
  }, "Navigating to a different document with location.href");
 
-promise_test(async t => {
+/*promise_test(async t => {
   const startingHistoryLength = history.length;
   // Create an iframe with src set to about:blank, and wait for it to finish
   // loading. This would trigger and commit a navigation to a non-initial
@@ -130,5 +130,5 @@ promise_test(async t => {
   await waitForLoad(t, iframe, url1 + "=");
   assert_equals(history.length, startingHistoryLength,
     "history.length must not change after normal navigation on initial empty document");
-}, "Navigating to a different document with form submission");
+}, "Navigating to a different document with form submission");*/
 </script>

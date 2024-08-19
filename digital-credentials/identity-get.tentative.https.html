@@ -88,6 +88,7 @@
   promise_test(async (t) => {
     for (const provider of [undefined, []]) {
       const options = makeGetOptions(provider);
+      await test_driver.bless("user activation");
       await promise_rejects_js(t, TypeError, navigator.identity.get(options));
     }
   }, "navigator.identity.get() API rejects if there are no providers.");
@@ -97,6 +98,7 @@
     const { contentWindow: iframeWindow } = iframeSameOrigin;
     for (const provider of [undefined, []]) {
       const options = makeGetOptions(provider);
+      await test_driver.bless("user activation");
       await promise_rejects_js(
         t,
         iframeWindow.TypeError,
@@ -131,11 +133,13 @@
   }, "navigator.identity.get() promise is rejected if called with an aborted signal.");
 
   promise_test(async (t) => {
+    iframeCrossOrigin.focus();
     const { contentWindow: iframeWindow } = iframeSameOrigin;
     const abortController = new iframeWindow.AbortController();
     const { signal } = abortController;
     abortController.abort();
     for (const options of [{ signal }, { signal, ...makeGetOptions([]) }]) {
+      await test_driver.bless("user activation");
       await promise_rejects_dom(
         t,
         "AbortError",
@@ -150,6 +154,7 @@
   }, "navigator.identity.get() promise is rejected if called with an aborted signal in same-origin iframe.");
 
   promise_test(async (t) => {
+    iframeCrossOrigin.focus();
     for (const options of [undefined, {}, makeGetOptions([])]) {
       const result = await sendMessage(iframeCrossOrigin, {
         abort: "before",
@@ -177,6 +182,7 @@
   }, "navigator.identity.get() promise is rejected if abort controller is aborted after call to get().");
 
   promise_test(async (t) => {
+    iframeCrossOrigin.focus();
     const result = await sendMessage(iframeCrossOrigin, {
       abort: "after",
       action: "get",

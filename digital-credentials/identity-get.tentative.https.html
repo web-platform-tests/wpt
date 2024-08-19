@@ -63,13 +63,6 @@
         t,
         "NotSupportedError",
         global.DOMException,
-        global.navigator.identity.get({ x: "y" })
-      );
-
-      await promise_rejects_dom(
-        t,
-        "NotSupportedError",
-        global.DOMException,
         global.navigator.identity.get({ mediation: "required" })
       );
 

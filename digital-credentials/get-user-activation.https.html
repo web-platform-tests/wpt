@@ -14,10 +14,11 @@
       navigator.userActivation.isActive,
       "User activation should not be active"
     );
+    const options = makeGetOptions();
     await promise_rejects_dom(
       t,
       "NotAllowedError",
-      navigator.identity.get({ digital: { providers: [makeGetOptions("openid4vp")] } })
+      navigator.identity.get(options)
     );
   }, "navigator.identity.get() calling the API without user activation should reject with NotAllowedError.");
 
@@ -27,10 +28,11 @@
       navigator.userActivation.isActive,
       "User activation should be active after test_driver.bless()."
     );
+    const options = makeGetOptions();
     await promise_rejects_dom(
       t,
       "NotSupportedError",
-      navigator.identity.get({ digital: { providers: [makeGetOptions("openid4vp")] } })
+      navigator.identity.get(options)
     );
     assert_false(
       navigator.userActivation.isActive,

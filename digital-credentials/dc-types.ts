@@ -31,7 +31,7 @@ export interface CredentialRequestOptions {
 /**
  * The actions that can be performed on the API via the iframe.
  */
-export type IframeActionType = "create" | "get" | "preventSilentAccess";
+export type IframeActionType = "create" | "get" | "ping" | "preventSilentAccess" ;
 
 /**
  * If present, when the abort controller should be aborted

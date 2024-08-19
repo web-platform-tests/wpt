@@ -14,7 +14,7 @@
       navigator.userActivation.isActive,
       "User activation should not be active"
     );
-    const options = makeGetOptions();
+    const options = makeGetOptions([]);
     await promise_rejects_dom(
       t,
       "NotAllowedError",
@@ -28,12 +28,8 @@
       navigator.userActivation.isActive,
       "User activation should be active after test_driver.bless()."
     );
-    const options = makeGetOptions();
-    await promise_rejects_dom(
-      t,
-      "NotSupportedError",
-      navigator.identity.get(options)
-    );
+    const options = makeGetOptions([]);
+    await promise_rejects_js(t, TypeError, navigator.identity.get(options));
     assert_false(
       navigator.userActivation.isActive,
       "User activation should be consumed after navigator.identity.get()."

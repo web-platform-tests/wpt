@@ -8,10 +8,15 @@
  * @typedef {import('../dc-types').SendMessageData} SendMessageData
  */
 /**
- * @param {ProviderType[]} [providersToUse=["default"]] - An array that can only contain "default" or "openid4vp".
+ * @param {ProviderType | ProviderType[]} [providersToUse=["default"]]
  * @returns {CredentialRequestOptions}
  */
 export function makeGetOptions(providersToUse = ["default"]) {
+  if (typeof providersToUse === "string") {
+    if (providersToUse === "default" || providersToUse === "openid4vp"){
+      return makeGetOptions([providersToUse]);
+    }
+  }
   if (!Array.isArray(providersToUse) || !providersToUse?.length) {
     return { digital: { providers: providersToUse } };
   }
@@ -21,8 +26,10 @@ export function makeGetOptions(providersToUse = ["default"]) {
       case "openid4vp":
         providers.push(makeOID4VPDict());
         break;
-      default:
+      case "default":
         providers.push(makeIdentityRequestProvider(undefined, undefined));
+      default:
+        throw new Error(`Unknown provider type: ${provider}`);
         break;
     }
   }

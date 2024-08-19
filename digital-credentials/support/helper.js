@@ -28,6 +28,7 @@ export function makeGetOptions(providersToUse = ["default"]) {
         break;
       case "default":
         providers.push(makeIdentityRequestProvider(undefined, undefined));
+        break;
       default:
         throw new Error(`Unknown provider type: ${provider}`);
         break;

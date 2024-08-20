@@ -169,7 +169,7 @@
   promise_test(async (t) => {
     const abortController = new AbortController();
     const { signal } = abortController;
-    const options = makeGetOptions(["openid4vp"]);
+    const options = makeGetOptions("openid4vp");
     await test_driver.bless("user activation");
     const promise = promise_rejects_dom(
       t,
@@ -187,7 +187,7 @@
       abort: "after",
       action: "get",
       needsActivation: true,
-      options: makeGetOptions(["openid4vp"]),
+      options: makeGetOptions("openid4vp"),
     });
     assert_equals(result.constructor, "DOMException");
     assert_equals(result.name, "AbortError");

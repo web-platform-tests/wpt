@@ -133,7 +133,7 @@
   }, "navigator.identity.get() promise is rejected if called with an aborted signal.");
 
   promise_test(async (t) => {
-    iframeCrossOrigin.focus();
+    iframeSameOrigin.focus();
     const { contentWindow: iframeWindow } = iframeSameOrigin;
     const abortController = new iframeWindow.AbortController();
     const { signal } = abortController;

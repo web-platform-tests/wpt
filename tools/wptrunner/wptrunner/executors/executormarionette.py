@@ -912,7 +912,7 @@ class ExecuteAsyncScriptRun(TimedRunner):
             if isinstance(e, errors.JavascriptException) and str(e).startswith("Document was unloaded"):
                 message = "Document unloaded; maybe test navigated the top-level-browsing context?"
             else:
-                message = str(e)
+                message = getattr(e, "message", "")
                 if message:
                     message += "\n"
                 message += traceback.format_exc()

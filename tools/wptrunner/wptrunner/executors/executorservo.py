@@ -267,7 +267,7 @@ class ServoTimedRunner(TimedRunner):
         try:
             self.result = (True, self.func(self.protocol, self.url, self.timeout))
         except Exception as e:
-            message = str(e)
+            message = getattr(e, "message", "")
             if message:
                 message += "\n"
             message += traceback.format_exc(e)

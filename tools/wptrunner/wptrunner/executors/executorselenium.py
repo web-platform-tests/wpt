@@ -324,7 +324,7 @@ class SeleniumRun(TimedRunner):
         except (socket.timeout, exceptions.ErrorInResponseException):
             self.result = False, ("CRASH", None)
         except Exception as e:
-            message = str(e)
+            message = getattr(e, "message", "")
             if message:
                 message += "\n"
             message += traceback.format_exc()

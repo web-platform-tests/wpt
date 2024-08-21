@@ -1,0 +1,11 @@
+Troubleshooting info:
+  Principal: zuelumlandspacedevelopments@gmail.com
+  Resource: chromium-swarm
+  Troubleshooting URL: console.cloud.google.com/iam-admin/troubleshooter;permissions=appengine.applications.get,appengine.applications.listRuntimes,appengine.operations.list,appengine.services.list,appengine.versions.list;principal=zuelumlandspacedevelopments@gmail.com;resources=%2F%2Fcloudresourcemanager.googleapis.com%2Fprojects%2Fchromium-swarm,%2F%2Fcloudresourcemanager.googleapis.com%2Fprojects%2Fchromium-swarm,%2F%2Fcloudresourcemanager.googleapis.com%2Fprojects%2Fchromium-swarm,%2F%2Fcloudresourcemanager.googleapis.com%2Fprojects%2Fchromium-swarm,%2F%2Fcloudresourcemanager.googleapis.com%2Fprojects%2Fchromium-swarm/result
+
+Missing permissions:
+  appengine.applications.get
+  appengine.applications.listRuntimes
+  appengine.operations.list
+  appengine.services.list
+  appengine.versions.list

@@ -24,8 +24,8 @@
   test_valid_selector(":not(:has-slotted(foo))");
   test_valid_selector(":has-slotted(div + div)");
   test_valid_selector(":has-slotted(div:has(> span))");
+  test_valid_selector(":has-slotted");
   test_invalid_selector("::has-slotted(foo)");
-  test_invalid_selector(":has-slotted");
   test_invalid_selector(":has-slotted()");
   test_invalid_selector(":has-slotted(0)");
   test_invalid_selector(":has-slotted(div > span)");

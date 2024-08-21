@@ -356,6 +356,10 @@ class WebDriverBrowser(Browser):
         self._proc = mozprocess.ProcessHandler(
             cmd,
             processOutputLine=self._output_handler,
+            # Since the ELF interpreter path of the webdriver binary may be
+            # relative, we need to use `cwd` to specify the same directory
+            # of the binary.
+            cwd=os.path.dirname(cmd[0]),
             env=self.env,
             storeOutput=False)
 

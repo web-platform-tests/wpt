@@ -198,8 +198,7 @@
     const disallowedMediations = [ "conditional", "optional", "silent"];
     for (const mediation of disallowedMediations) {
       const options = makeGetOptions("default", mediation);
-      await test_driver.bless("user activation");
       await promise_rejects_js(t, TypeError, navigator.identity.get(options));
     }
-  }, "Calling mediation is always required to get a DigitalCredential.");
+  }, "Mediation is required to get a DigitalCredential.");
 </script>

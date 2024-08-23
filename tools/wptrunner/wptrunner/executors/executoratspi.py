@@ -123,16 +123,11 @@ class AtspiExecutorImpl:
 
         test_node = find_node(self.document, dom_id)
 
-        errors = []
+        results = []
         for test_statement in test['Atspi']:
-            error = test_node.run_test_statement(TestStatement(test_statement));
-            if (error):
-                errors.append(error)
+            results.append(test_node.run_test_statement(TestStatement(test_statement)));
 
-        if len(errors):
-            return '; '.join(errors)
-
-        return "match"
+        return results
 
 
 class TestNode():
@@ -154,7 +149,6 @@ class TestNode():
 
         return node_dictionary
 
-    # Returns error or undefined
     # 'statement' is a TestStatement object
     def run_test_statement(self, statement):
         if statement.type == 'property':
@@ -167,9 +161,8 @@ class TestNode():
             return self.run_reverse_relation_test(statement)
             return "not implemented reverse relations"
 
-        return f"Not implemented: {test}"
+        return "Error: not implemented ({statement.type})"
 
-    # Returns error or undefined
     # 'statement' is a TestStatement object
     def run_property_test(self, statement):
         if statement.key == 'role':
@@ -184,42 +177,41 @@ class TestNode():
             states = self.get_state_list()
             return statement.value_contained_or_not_contained_in(states)
 
-        return f"Not implemented: {statement}"
+        return f"Error: not implemented ({statement.key})"
 
-
-    # Returns error or undefined
     # 'statement' is a TestStatement object
     def run_relation_test(self, statement):
         expected_relation = statement.key
         expected_ids = statement.value
         relations_dict = self.get_relations_dictionary()
         if expected_relation not in relations_dict:
-            return f"Node {self.dom_id} did not have relation {expected_relation}"
-
+            return f"Fail: relation not in list: {list(relations_dict.keys())}"
         id_str = ','.join(relations_dict[expected_relation])
         expected_ids.sort()
         expected_id_str = ','.join(expected_ids)
         if (id_str != expected_id_str):
-            return f"{expected_relation} should include elements with dom IDs {expected_ids}, but found only: {relations_dict[expected_relation]}"
+            return f"Fail: {expected_relation}={relations_dict[expected_relation]}"
+        return "Pass"
 
-    # Returns error or undefined
     # 'statement' is a TestStatement object
     def run_reverse_relation_test(self, statement):
         expected_relation = statement.key
-        # statement.value is also dom_ids, but representing the nodes that should have
+        # statement.value is a list of dom_ids representing the nodes that should have
         # a reverse relation back to this node.
         expected_elements = statement.value
 
         for element in expected_elements:
             test_node = find_node(self.root, element)
-            relation_dict = test_node.get_relations_dictionary()
-            if expected_relation not in relation_dict:
-                return f"Element with dom ID {element} should have relation {expected_relation}"
-            if self.dom_id not in relation_dict[expected_relation]:
-                return f"Element with dom ID {element} should have relation {expected_relation} pointing to {self.dom_id}, but found: {relation_dict[expected_relation]}"
+            relations_dict = test_node.get_relations_dictionary()
 
+            if expected_relation not in relations_dict:
+                return f"Fail: element '{element}' does not have reverse relation, has relations: {list(relations_dict.keys())}"
 
-    # Returns dictionary where the keys are relation names and the values
+            if self.dom_id not in relations_dict[expected_relation]:
+                return f"Fail: element '{element}' {expected_relation}={relations_dict[expected_relation]}"
+
+        return "Pass"
+
     # are a sorted list of dom IDs.
     def get_relations_dictionary(self):
         relations_dict = {}
@@ -255,31 +247,28 @@ class TestStatement:
         self.assertion = test_statement_arr[2];
         self.value = test_statement_arr[3];
 
-    def __str__(self):
-        return str(self.test_statement_arrary)
-
     # Returns error or undefined
     def value_compare_with(self, value):
         if self.assertion == 'is':
             if self.value != value:
-                return f"{self.key} is {value}, but should be {self.value}"
+                return f"Fail: {self.key} is {value}"
         elif self.assertion == 'isNot':
             if self.value == value:
-                return f"{self.key} is {value}, but should not be {value}"
+                return f"Fail: {self.key} is {value}"
         else:
-            return f"Test statement malformed, item 2 of '{self.test_statement_arr}' is not 'is' or 'isNot'."
+            return f"Error: Test statement malformed, '{self.assertion}' must be 'is' or 'isNot'."
 
-        return
+        return "Pass"
 
     # returns error undefined
     def value_contained_or_not_contained_in(self, array):
         if self.assertion == 'contains':
             if self.value not in array:
-                return f"{self.key} {array} does not contain {self.value}"
+                return f"Fail: {array} does not contain {self.value}"
         elif self.assertion == 'doesNotContain':
             if self.value in array:
-                return f"{self.key} {array} contains {self.value}"
+                return f"Fail: {array} contains {self.value}"
         else:
-            return f"Test statement malformed, item 2 of '{self.test_statement_arr}' is not 'contains' or 'doesNotContain'."
+            return f"Error: Test statement malformed, '{self.assertion}' must be 'contains' or 'doesNotContain'."
 
-        return
+        return "Pass"

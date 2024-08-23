@@ -4,8 +4,23 @@
 */
 
 const AAMUtils = {
-
   APIS: ['Atspi', 'AXAPI', 'IAccessible2', 'UIA'],
+
+  runAssertions: function(test_statements, results) {
+    // If the test was not run, the API doesn't apply to backend OS,
+    // pass with no asserts.
+    if (!results) {
+      return;
+    }
+
+    if (results.length !== test_statements.length)
+      assert_unreached(`Recieved a different number of results than test statements: ${results}`)
+
+    for (i = 0; i < results.length; i++) {
+      assert_equals(results[i], "Pass", `${test_statements[i].join(' ')}`)
+    }
+  },
+
 
   /*
     Creates a subtest for each API. Runs no asserts for APIs not found.
@@ -21,16 +36,16 @@ const AAMUtils = {
     }
 
     for (const api of this.APIS) {
-      if (map[api]) {
+      if (map[api] && map[api].length) {
         promise_test(async t => {
-          let result = await test_driver.test_accessibility_api(
+          let results = await test_driver.test_accessibility_api(
             id,
             map,
             api
           );
-          if (result) {
-            assert_equals(result, "match");
-          }
+
+          this.runAssertions(map[api], results);
+
         }, `api: ${api}, ${test_name}`);
       }
     }
@@ -58,14 +73,14 @@ const AAMUtils = {
     for (const api of this.APIS) {
       if (new_map[api]) {
         promise_test(async t => {
-          let result = await test_driver.test_accessibility_api(
+          let results = await test_driver.test_accessibility_api(
             id,
             new_map,
             api
           );
-          if (result) {
-            assert_equals(result, "match");
-          }
+
+          this.runAssertions(new_map[api], results);
+
         }, `api: ${api}, ${test_name}`);
       }
     }
@@ -92,14 +107,14 @@ const AAMUtils = {
     for (const api of this.APIS) {
       if (new_map[api]) {
         promise_test(async t => {
-          let result = await test_driver.test_accessibility_api(
+          let results = await test_driver.test_accessibility_api(
             id,
             new_map,
             api
           );
-          if (result) {
-            assert_equals(result, "match");
-          }
+
+          this.runAssertions(new_map[api], results);
+
         }, `api: ${api}, ${test_name}`);
       }
     }

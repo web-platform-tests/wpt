@@ -5,12 +5,24 @@
 
 [Exposed=Window]
 interface PerformanceLongTaskTiming : PerformanceEntry {
+    /* Overloading PerformanceEntry */
+    readonly attribute DOMHighResTimeStamp startTime;
+    readonly attribute DOMHighResTimeStamp duration;
+    readonly attribute DOMString name;
+    readonly attribute DOMString entryType;
+
     readonly attribute FrozenArray<TaskAttributionTiming> attribution;
     [Default] object toJSON();
 };
 
 [Exposed=Window]
 interface TaskAttributionTiming : PerformanceEntry {
+    /* Overloading PerformanceEntry */
+    readonly attribute DOMHighResTimeStamp startTime;
+    readonly attribute DOMHighResTimeStamp duration;
+    readonly attribute DOMString name;
+    readonly attribute DOMString entryType;
+
     readonly attribute DOMString containerType;
     readonly attribute DOMString containerSrc;
     readonly attribute DOMString containerId;

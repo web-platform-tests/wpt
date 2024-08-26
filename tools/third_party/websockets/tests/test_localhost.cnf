@@ -22,5 +22,6 @@ subjectAltName = @san
 [ san ]
 
 DNS.1 = localhost
-IP.2 = 127.0.0.1
-IP.3 = ::1
+DNS.2 = overridden
+IP.3 = 127.0.0.1
+IP.4 = ::1

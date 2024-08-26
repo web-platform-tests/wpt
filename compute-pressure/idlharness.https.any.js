@@ -2,7 +2,7 @@
 // META: script=/resources/idlharness.js
 // META: global=window,dedicatedworker,sharedworker
 
-// https://wicg.github.io/compute-pressure/
+// https://w3c.github.io/compute-pressure/
 
 'use strict';
 
@@ -11,5 +11,5 @@ idl_test(['compute-pressure'], ['dom', 'html'], async idl_array => {
     PressureObserver: ['observer'],
   });
 
-  self.observer = new PressureObserver(() => {}, {sampleRate: 1.0});
+  self.observer = new PressureObserver(() => {});
 });

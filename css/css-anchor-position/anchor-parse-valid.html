@@ -24,6 +24,8 @@ const insetProperties = [
 ];
 
 const anchorSides = [
+  'inside',
+  'outside',
   'left',
   'right',
   'top',
@@ -40,7 +42,7 @@ const fallbacks = [
   null,
   '1px',
   '50%',
-  'calc(1px + 50%)',
+  'calc(50% + 1px)',
   'anchor(left)',
   'anchor(--bar left)',
   'anchor(--bar left, anchor(--baz right))',

@@ -5,11 +5,15 @@ that media resources are not loaded during prerendering, but it's possible the
 spec will allow loading and only disallow playback.
 -->
 <title>Access to the Play of the Media is deferred</title>
+<meta name="variant" content="?target_hint=_self">
+<meta name="variant" content="?target_hint=_blank">
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
-<script src="/speculation-rules/prerender/resources/utils.js"></script>
+<script src="../resources/utils.js"></script>
+<script src="resources/utils.js"></script>
+
 <body>
 <script>
 setup(() => assertSpeculationRulesIsSupported());
@@ -28,7 +32,7 @@ function RunTest(type, description) {
       });
     });
 
-    const url = `resources/media-play.html?type=${type}&uid=${uid}`;
+    const url = `resources/media-play.html?type=${type}&uid=${uid}&target_hint=${getTargetHint()}`;
     window.open(url, '_blank', 'noopener');
 
     const result = await gotMessage;
@@ -66,6 +70,4 @@ function RunTest(type, description) {
 RunTest('audio', `play of the audio media should be deferred until the prerendered page is activated`);
 
 RunTest('video', `play of the video media should be deferred until the prerendered page is activated`);
-
 </script>
-</body>

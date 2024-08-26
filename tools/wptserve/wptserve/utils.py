@@ -141,6 +141,7 @@ def is_bad_port(port: int) -> bool:
         2049,  # nfs
         3659,  # apple-sasl
         4045,  # lockd
+        4190,  # sieve
         5060,  # sip
         5061,  # sips
         6000,  # x11
@@ -150,6 +151,7 @@ def is_bad_port(port: int) -> bool:
         6667,  # irc (default)
         6668,  # irc (alternate)
         6669,  # irc (alternate)
+        6679,  # osaut
         6697,  # irc+tls
         10080,  # amanda
     ]
@@ -193,3 +195,12 @@ def http2_compatible() -> bool:
             (ssl_v[0] == 1 and
              (ssl_v[1] == 1 or
               (ssl_v[1] == 0 and ssl_v[2] >= 2))))
+
+
+def get_error_cause(exc: BaseException) -> BaseException:
+    """Get the parent cause/context from an exception"""
+    if exc.__cause__ is not None:
+        return exc.__cause__
+    if exc.__context__ is not None:
+        return exc.__context__
+    return exc

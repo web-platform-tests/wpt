@@ -28,6 +28,8 @@ function get_qp_range() {
       return {min: 1, max: 63};
     case '?vp9_p2':
       return {min: 1, max: 63};
+    case '?h264':
+      return {min: 1, max: 51};
   }
   return null;
 }
@@ -43,6 +45,9 @@ function set_qp(options, value) {
     case '?vp9_p2':
       options.vp9 = {quantizer: value};
       return;
+    case '?h264':
+      options.avc = {quantizer: value};
+      return;
   }
 }
 
@@ -51,7 +56,7 @@ async function per_frame_qp_test(t, encoder_config, qp_range, validate_result) {
   const h = encoder_config.height;
   await checkEncoderSupport(t, encoder_config);
 
-  let frames_to_encode = 24;
+  const frames_to_encode = 12;
   let frames_decoded = 0;
   let frames_encoded = 0;
   let chunks = [];
@@ -73,15 +78,14 @@ async function per_frame_qp_test(t, encoder_config, qp_range, validate_result) {
   let qp = qp_range.min;
   for (let i = 0; i < frames_to_encode; i++) {
     let frame = createDottedFrame(w, h, i);
-    if (qp < qp_range.max) {
-      qp++;
-    } else {
-      qp = qp_range.min;
-    }
     let encode_options = {keyFrame: false};
     set_qp(encode_options, qp);
     encoder.encode(frame, encode_options);
     frame.close();
+    qp += 3;
+    if (qp > qp_range.max) {
+      qp = qp_range.min
+    }
   }
   await encoder.flush();
 

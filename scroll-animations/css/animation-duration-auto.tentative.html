@@ -13,7 +13,7 @@
     width: 100px;
     height: 100px;
   }
-  #scroller > div {
+  #scroller > #content {
     height: 200px;
     width: 200px;
   }
@@ -24,21 +24,21 @@
   }
 
   #scroller {
-    scroll-timeline: timeline;
+    scroll-timeline: --timeline;
   }
 
   #element {
     z-index: -1;
     animation-name: anim;
     animation-duration: auto;
-    animation-timeline: timeline;
+    animation-timeline: --timeline;
   }
 </style>
 <main>
   <div id=scroller>
-    <div></div>
+    <div id=content></div>
+    <div id=element></div>
   </div>
-  <div id=element></div>
 </main>
 <script>
   promise_test(async (t) => {
@@ -50,7 +50,9 @@
 <div id="target"></div>
 <script>
   test_valid_value('animation-duration', 'auto');
-  test_computed_value('animation-duration', 'auto');
+  test_computed_value('animation-duration', 'auto', '0s');
   test_valid_value('animation', 'auto cubic-bezier(0, -2, 1, 3) -3s 4 reverse both paused anim');
-  test_computed_value('animation', 'auto cubic-bezier(0, -2, 1, 3) -3s 4 reverse both paused anim');
+  test_computed_value('animation',
+    'auto cubic-bezier(0, -2, 1, 3) -3s 4 reverse both paused anim',
+    '0s cubic-bezier(0, -2, 1, 3) -3s 4 reverse both paused anim');
 </script>

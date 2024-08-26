@@ -147,6 +147,13 @@ const tests = [
       doc.execCommand("forwarddelete");
     }
   },
+  {
+    description: "delete at start of second paragraph ending with a non editable item",
+    editorInnerHTML: "<p>A line</p><p>[]Second line with <b contenteditable='false'>non-editable item</b></p>",
+    run: (win, doc, editingHost) => {
+      doc.execCommand("delete");
+    }
+  }
 ];
 
 for (const curTest of tests) {
@@ -214,7 +221,10 @@ for (const curTest of tests) {
     if (typeof curTest.cleanUp == "function") {
       await curTest.cleanUp(contentWindow, contentDocument, editingHost);
     }
-    iframe.srcdoc = "";
+    await new Promise(resolve => {
+      iframe.addEventListener("load", resolve, {once: true});
+      iframe.srcdoc = "";
+    });
     contentDocument.documentElement.scrollHeight; // flush pending things
     await new Promise(resolve =>
       requestAnimationFrame(

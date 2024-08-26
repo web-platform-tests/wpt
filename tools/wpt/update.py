@@ -13,8 +13,8 @@ def manifest_update(test_paths):
     from manifest import manifest  # type: ignore
     for url_base, paths in test_paths.items():
         manifest.load_and_update(
-            paths["tests_path"],
-            paths["manifest_path"],
+            paths.tests_path,
+            paths.manifest_path,
             url_base)
 
 
@@ -43,7 +43,6 @@ def update_expectations(_, **kwargs):
 
     update_properties = metadata.get_properties(properties_file=kwargs["properties_file"],
                                                 extra_properties=kwargs["extra_property"],
-                                                config=kwargs["config"],
                                                 product=kwargs["product"])
 
     manifest_update(kwargs["test_paths"])

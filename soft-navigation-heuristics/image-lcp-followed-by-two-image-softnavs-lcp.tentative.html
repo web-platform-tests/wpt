@@ -12,7 +12,7 @@
 <body>
   <main id=main>
     <div>
-      <a id=link><img src="/images/ggrr-256x256.png"></a>
+      <a id=link><img src="/images/lcp-256x256.png"></a>
     </div>
   </main>
   <script>
@@ -28,7 +28,7 @@
 
       const first_click_paint_promise = waitOnPaintEntriesPromise();
 
-      click(link);
+      interact(link);
       await new Promise(resolve => {
         (new PerformanceObserver(resolve)).observe({
           type: 'soft-navigation'
@@ -51,7 +51,7 @@
 
       const second_click_paint_promise = waitOnPaintEntriesPromise();
       const preClickLcp2 = await getLcpEntries();
-      click(link);
+      interact(link);
       await new Promise(resolve => {
         (new PerformanceObserver(() => resolve())).observe({
           type: 'soft-navigation'

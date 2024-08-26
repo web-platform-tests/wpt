@@ -41,6 +41,7 @@ enum XRVisibilityState {
   [SameObject] readonly attribute XRRenderState renderState;
   [SameObject] readonly attribute XRInputSourceArray inputSources;
   readonly attribute FrozenArray<DOMString> enabledFeatures;
+  readonly attribute boolean isSystemKeyboardSupported;
 
   // Methods
   undefined updateRenderState(optional XRRenderStateInit state = {});
@@ -166,7 +167,8 @@ enum XRHandedness {
 enum XRTargetRayMode {
   "gaze",
   "tracked-pointer",
-  "screen"
+  "screen",
+  "transient-pointer"
 };
 
 [SecureContext, Exposed=Window]
@@ -176,6 +178,7 @@ interface XRInputSource {
   [SameObject] readonly attribute XRSpace targetRaySpace;
   [SameObject] readonly attribute XRSpace? gripSpace;
   [SameObject] readonly attribute FrozenArray<DOMString> profiles;
+  [SameObject] readonly attribute boolean skipRendering;
 };
 
 [SecureContext, Exposed=Window]
@@ -261,8 +264,8 @@ interface XRInputSourcesChangeEvent : Event {
 
 dictionary XRInputSourcesChangeEventInit : EventInit {
   required XRSession session;
-  required FrozenArray<XRInputSource> added;
-  required FrozenArray<XRInputSource> removed;
+  required sequence<XRInputSource> added;
+  required sequence<XRInputSource> removed;
 
 };
 

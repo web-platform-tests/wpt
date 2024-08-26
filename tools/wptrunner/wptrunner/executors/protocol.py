@@ -4,7 +4,7 @@ import traceback
 from http.client import HTTPConnection
 
 from abc import ABCMeta, abstractmethod
-from typing import ClassVar, List, Type
+from typing import Any, Awaitable, Callable, ClassVar, List, Mapping, Optional, Type
 
 
 def merge_dicts(target, source):
@@ -32,7 +32,7 @@ class Protocol:
     :param Browser browser: The Browser using this protocol"""
     __metaclass__ = ABCMeta
 
-    implements = []  # type: ClassVar[List[Type[ProtocolPart]]]
+    implements: ClassVar[List[Type["ProtocolPart"]]] = []
 
     def __init__(self, executor, browser):
         self.executor = executor
@@ -70,9 +70,10 @@ class Protocol:
             msg = "Post-connection steps failed"
             self.after_connect()
         except Exception:
-            if msg is not None:
-                self.logger.warning(msg)
-            self.logger.warning(traceback.format_exc())
+            message = "Protocol.setup caught an exception:\n"
+            message += f"{msg}\n" if msg is not None else ""
+            message += traceback.format_exc()
+            self.logger.warning(message)
             raise
 
     @abstractmethod
@@ -98,7 +99,7 @@ class ProtocolPart:
     :param Protocol parent: The parent protocol"""
     __metaclass__ = ABCMeta
 
-    name = None  # type: ClassVar[str]
+    name: ClassVar[str]
 
     def __init__(self, parent):
         self.parent = parent
@@ -202,7 +203,7 @@ class TestharnessProtocolPart(ProtocolPart):
         pass
 
     @abstractmethod
-    def get_test_window(self, window_id, parent):
+    def get_test_window(self, window_id: str, parent: str) -> str:
         """Get the window handle dorresponding to the window containing the
         currently active test.
 
@@ -261,6 +262,12 @@ class StorageProtocolPart(ProtocolPart):
         :param url: A url belonging to the origin"""
         pass
 
+    @abstractmethod
+    def run_bounce_tracking_mitigations(self):
+        """Run the Bounce Tracking Mitigations deletion/enforcement algorithm
+
+        :returns: A list of sites corresponding to bounce trackers whose state was removed"""
+        pass
 
 class SelectorProtocolPart(ProtocolPart):
     """Protocol part for selecting elements on the page."""
@@ -299,7 +306,6 @@ class ClickProtocolPart(ProtocolPart):
         pass
 
 
-
 class AccessibilityProtocolPart(ProtocolPart):
     """Protocol part for accessibility introspection"""
     __metaclass__ = ABCMeta
@@ -317,6 +323,83 @@ class AccessibilityProtocolPart(ProtocolPart):
         """Return the computed accessibility role for a specific element.
 
         :param element: A protocol-specific handle to an element."""
+        pass
+
+
+class BidiBrowsingContextProtocolPart(ProtocolPart):
+    """Protocol part for managing BiDi events"""
+    __metaclass__ = ABCMeta
+    name = "bidi_browsing_context"
+
+    @abstractmethod
+    async def handle_user_prompt(self,
+                                 context: str,
+                                 accept: Optional[bool] = None,
+                                 user_text: Optional[str] = None) -> None:
+        """
+        Allows closing an open prompt.
+        :param context: The context of the prompt.
+        :param accept: Whether to accept or dismiss the prompt.
+        :param user_text: The text to input in the prompt.
+        """
+        pass
+
+
+class BidiEventsProtocolPart(ProtocolPart):
+    """Protocol part for managing BiDi events"""
+    __metaclass__ = ABCMeta
+    name = "bidi_events"
+
+    @abstractmethod
+    async def subscribe(self,
+                        events: List[str],
+                        contexts: Optional[List[str]]) -> Mapping[str, Any]:
+        """
+        Subscribes to the given events in the given contexts.
+        :param events: The events to subscribe to.
+        :param contexts: The contexts to subscribe to. If None, the function will subscribe to all contexts.
+        """
+        pass
+
+    @abstractmethod
+    async def unsubscribe_all(self):
+        """Cleans up the subscription state. Removes all the previously added subscriptions."""
+        pass
+
+    @abstractmethod
+    def add_event_listener(
+            self,
+            name: Optional[str],
+            fn: Callable[[str, Mapping[str, Any]], Awaitable[Any]]
+    ) -> Callable[[], None]:
+        """Add an event listener. The callback will be called with the event name and the event data.
+
+        :param name: The name of the event to listen for. If None, the function will be called for all events.
+        :param fn: The function to call when the event is received.
+        :return: Function to remove the added listener."""
+        pass
+
+
+class BidiScriptProtocolPart(ProtocolPart):
+    """Protocol part for executing BiDi scripts"""
+    __metaclass__ = ABCMeta
+
+    name = "bidi_script"
+
+    @abstractmethod
+    async def call_function(
+            self,
+            function_declaration: str,
+            target: Mapping[str, Any],
+            arguments: Optional[List[Mapping[str, Any]]] = None
+    ) -> Mapping[str, Any]:
+        """
+        Executes the provided script in the given target in asynchronous mode.
+
+        :param str function_declaration: The js source of the function to execute.
+        :param script.Target target: The target in which to execute the script.
+        :param list[script.LocalValue] arguments: The arguments to pass to the script.
+        """
         pass
 
 
@@ -367,6 +450,11 @@ class WindowProtocolPart(ProtocolPart):
     @abstractmethod
     def set_rect(self, rect):
         """Restores the window to the given rect."""
+        pass
+
+    @abstractmethod
+    def get_rect(self):
+        """Gets the current window rect."""
         pass
 
     @abstractmethod
@@ -615,6 +703,71 @@ class SPCTransactionsProtocolPart(ProtocolPart):
         :param str mode: The automation mode to set"""
         pass
 
+class RPHRegistrationsProtocolPart(ProtocolPart):
+    """Protocol part for Custom Handlers registrations"""
+    __metaclass__ = ABCMeta
+
+    name = "rph_registrations"
+
+    @abstractmethod
+    def set_rph_registration_mode(self, mode):
+        """Set the RPH registration automation mode
+
+        :param str mode: The automation mode to set"""
+        pass
+
+class FedCMProtocolPart(ProtocolPart):
+    """Protocol part for Federated Credential Management"""
+    __metaclass__ = ABCMeta
+
+    name = "fedcm"
+
+    @abstractmethod
+    def cancel_fedcm_dialog(self):
+        """Cancel the FedCM dialog"""
+        pass
+
+    @abstractmethod
+    def click_fedcm_dialog_button(self, dialog_button):
+        """Click a button on the FedCM dialog
+
+        :param str dialog_button: The dialog button to click"""
+        pass
+
+    @abstractmethod
+    def select_fedcm_account(self, account_index):
+        """Select a FedCM account
+
+        :param int account_index: The index of the account to select"""
+        pass
+
+    @abstractmethod
+    def get_fedcm_account_list(self):
+        """Get the FedCM account list"""
+        pass
+
+    @abstractmethod
+    def get_fedcm_dialog_title(self):
+        """Get the FedCM dialog title"""
+        pass
+
+    @abstractmethod
+    def get_fedcm_dialog_type(self):
+        """Get the FedCM dialog type"""
+        pass
+
+    @abstractmethod
+    def set_fedcm_delay_enabled(self, enabled):
+        """Sets the FedCM delay as enabled or disabled
+
+        :param bool enabled: The delay to set"""
+        pass
+
+    @abstractmethod
+    def reset_fedcm_cooldown(self):
+        """Set the FedCM cooldown"""
+        pass
+
 
 class PrintProtocolPart(ProtocolPart):
     """Protocol part for rendering to a PDF."""
@@ -705,6 +858,46 @@ class WdspecProtocol(ConnectionlessProtocol):
         proof enough to us that the server is alive and kicking.
         """
         conn = HTTPConnection(self.browser.host, self.browser.port)
-        conn.request("HEAD", "/invalid")
-        res = conn.getresponse()
-        return res.status == 404
+        try:
+            conn.request("HEAD", "/invalid")
+            res = conn.getresponse()
+            return res.status == 404
+        except OSError:
+            return False
+
+
+class VirtualSensorProtocolPart(ProtocolPart):
+    """Protocol part for Sensors"""
+    __metaclass__ = ABCMeta
+
+    name = "virtual_sensor"
+
+    @abstractmethod
+    def create_virtual_sensor(self, sensor_type, sensor_params):
+        pass
+
+    @abstractmethod
+    def update_virtual_sensor(self, sensor_type, reading):
+        pass
+
+    @abstractmethod
+    def remove_virtual_sensor(self, sensor_type):
+        pass
+
+    @abstractmethod
+    def get_virtual_sensor_information(self, sensor_type):
+        pass
+
+class DevicePostureProtocolPart(ProtocolPart):
+    """Protocol part for Device Posture"""
+    __metaclass__ = ABCMeta
+
+    name = "device_posture"
+
+    @abstractmethod
+    def set_device_posture(self, posture):
+        pass
+
+    @abstractmethod
+    def clear_device_posture(self):
+        pass

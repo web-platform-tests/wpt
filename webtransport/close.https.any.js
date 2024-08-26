@@ -13,7 +13,7 @@ promise_test(async t => {
 
   const close_info = await wt.closed;
 
-  assert_equals(close_info.closeCode, 0 , 'code');
+  assert_equals(close_info.closeCode, 0, 'code');
   assert_equals(close_info.reason, '', 'reason');
 
   await wait(10);
@@ -26,6 +26,19 @@ promise_test(async t => {
   assert_equals(info.close_info.code, 0, 'code');
   assert_equals(info.close_info.reason, '', 'reason');
 }, 'close');
+
+promise_test(async t => {
+  const wt = new WebTransport(webtransport_url('echo.py'));
+  wt.close();
+  try {
+    await wt.closed;
+  } catch(e) {
+    await promise_rejects_exactly(t, e, wt.ready, 'ready promise should be rejected');
+    assert_true(e instanceof WebTransportError);
+    assert_equals(e.source, 'session', 'source');
+    assert_equals(e.streamErrorCode, null, 'streamErrorCode');
+  }
+}, 'close without waiting for ready');
 
 promise_test(async t => {
   const id = token();
@@ -128,3 +141,48 @@ promise_test(async t => {
   assert_equals(e.source, 'session', 'source');
   assert_equals(e.streamErrorCode, null, 'streamErrorCode');
 }, 'server initiated connection closure');
+
+promise_test(async t => {
+  const wt = new WebTransport(webtransport_url('echo.py'));
+  const stream = await wt.createUnidirectionalStream();
+  await wt.ready;
+}, 'opening unidirectional stream before ready');
+
+promise_test(async t => {
+  const wt = new WebTransport(webtransport_url('echo.py'));
+  const stream = await wt.createBidirectionalStream();
+  await wt.ready;
+}, 'opening bidirectional stream before ready');
+
+promise_test(async t => {
+  const wt = new WebTransport(webtransport_url('server-close.py'));
+  await promise_rejects_dom(t, "InvalidStateError",
+                            wt.createUnidirectionalStream());
+}, 'server initiated closure while opening unidirectional stream before ready');
+
+promise_test(async t => {
+  const wt = new WebTransport(webtransport_url('server-close.py'));
+  await promise_rejects_dom(t, "InvalidStateError",
+                            wt.createBidirectionalStream());
+}, 'server initiated closure while opening bidirectional stream before ready');
+
+// Regression test for https://crbug.com/347710668.
+promise_test(async t => {
+  const wt = new WebTransport(webtransport_url('server-read-then-close.py'));
+  add_completion_callback(() => wt.close());
+  await wt.ready;
+
+  const bidi_reader = wt.incomingBidirectionalStreams.getReader();
+  const { value: bidi } = await bidi_reader.read();
+
+  bidi.writable.getWriter().write(new TextEncoder().encode('some data'));
+  const reader = bidi.readable.getReader();
+  await reader.closed.catch(t.step_func(
+      e => assert_true(e instanceof WebTransportError)));
+
+  // The WebTransport session will already be closed.
+  const {reason, closeCode} = await wt.closed;
+
+  assert_equals(reason, '', 'reason should be default');
+  assert_equals(closeCode, 0, 'closeCode should be default');
+}, 'reading closed property after close should work');

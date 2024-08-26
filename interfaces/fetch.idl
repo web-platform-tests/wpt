@@ -12,6 +12,7 @@ interface Headers {
   undefined append(ByteString name, ByteString value);
   undefined delete(ByteString name);
   ByteString? get(ByteString name);
+  sequence<ByteString> getSetCookie();
   boolean has(ByteString name);
   undefined set(ByteString name, ByteString value);
   iterable<ByteString, ByteString>;
@@ -25,6 +26,7 @@ interface mixin Body {
   readonly attribute boolean bodyUsed;
   [NewObject] Promise<ArrayBuffer> arrayBuffer();
   [NewObject] Promise<Blob> blob();
+  [NewObject] Promise<Uint8Array> bytes();
   [NewObject] Promise<FormData> formData();
   [NewObject] Promise<any> json();
   [NewObject] Promise<USVString> text();
@@ -75,7 +77,7 @@ dictionary RequestInit {
   any window; // can only be set to null
 };
 
-enum RequestDestination { "", "audio", "audioworklet", "document", "embed", "font", "frame", "iframe", "image", "manifest", "object", "paintworklet", "report", "script", "sharedworker", "style",  "track", "video", "worker", "xslt" };
+enum RequestDestination { "", "audio", "audioworklet", "document", "embed", "font", "frame", "iframe", "image", "json", "manifest", "object", "paintworklet", "report", "script", "sharedworker", "style",  "track", "video", "worker", "xslt" };
 enum RequestMode { "navigate", "same-origin", "no-cors", "cors" };
 enum RequestCredentials { "omit", "same-origin", "include" };
 enum RequestCache { "default", "no-store", "reload", "no-cache", "force-cache", "only-if-cached" };

@@ -2,24 +2,33 @@
 
 The tests are designed to be run from your local computer.
 
+# Install WPT
+
+If you haven't already, clone the web-platform-tests repository:
+
+```bash
+git clone https://github.com/web-platform-tests/wpt.git
+cd wpt
+```
+
 ## System Setup
 
-Running the tests requires `python`, `pip` and `virtualenv`, as well as updating
-the system `hosts` file.
+Running the tests requires `python` and `pip` as well as updating the
+system `hosts` file.
 
-WPT requires Python 3.7 or higher.
+WPT requires Python 3.8 or higher.
 
 The required setup is different depending on your operating system.
 
 ### Linux Setup
 
 If not already present, use the system package manager to install `python`,
-`pip` and `virtualenv`.
+and `pip`.
 
-On Debian or Ubuntu:
+On Ubuntu:
 
 ```bash
-sudo apt-get install python python-pip virtualenv
+sudo apt-get install python3 python3-pip python3-venv
 ```
 
 It is important to have a package that provides a `python` binary. On Fedora,
@@ -28,13 +37,12 @@ Ubuntu Focal and later, the package is called `python-is-python3`.
 
 ### macOS Setup
 
-The system-provided Python can be used, while `pip` and `virtualenv` can be
+The system-provided Python can be used, while `pip` can be
 installed for the user only:
 
 ```bash
 python -m ensurepip --user
 export PATH="$PATH:$( python3 -m site --user-base )/bin"
-pip install --user virtualenv
 ```
 
 To make the `PATH` change persistent, add it to your `~/.bash_profile` file or
@@ -49,12 +57,6 @@ installer includes `pip` by default.
 
 Add `C:\Python39` and `C:\Python39\Scripts` to your `%Path%`
 [environment variable](http://www.computerhope.com/issues/ch000549.htm).
-
-Finally, install `virtualenv`:
-
-```bash
-pip install virtualenv
-```
 
 The standard Windows shell requires that all `wpt` commands are prefixed
 by the Python binary i.e. assuming `python` is on your path the server is
@@ -187,7 +189,9 @@ a single process (the default), so there may be more noise in the test results.
 ### Output formats
 
 By default, `./wpt run` outputs test results and a summary in a human readable
-format. For debugging, `--log-mach` can give more verbose output. For example:
+format. For debugging, `--log-mach` can give more verbose output. (In particular,
+it will show the console output from the browser and driver;
+by default, those are not shown) For example:
 
     ./wpt run --log-mach=- --log-mach-level=info firefox dom/
 

@@ -1,7 +1,6 @@
 // META: global=window
+// META: timeout=long
 // META: title=Fetch API: keepalive handling
-// META: script=/resources/testharness.js
-// META: script=/resources/testharnessreport.js
 // META: script=/common/utils.js
 // META: script=/common/get-host-info.sub.js
 // META: script=../resources/keepalive-helper.js
@@ -14,43 +13,23 @@ const {
   HTTP_REMOTE_ORIGIN_WITH_DIFFERENT_PORT
 } = get_host_info();
 
-promise_test(async (test) => {
-  const token1 = token();
-  const iframe = document.createElement('iframe');
-  iframe.src = getKeepAliveAndRedirectIframeUrl(
-      token1, '', '', /*withPreflight=*/ false);
-  document.body.appendChild(iframe);
-  await iframeLoaded(iframe);
-  assert_equals(await getTokenFromMessage(), token1);
-  iframe.remove();
 
-  assertStashedTokenAsync('same-origin redirect', token1);
-}, 'same-origin redirect; setting up');
-
-promise_test(async (test) => {
-  const token1 = token();
-  const iframe = document.createElement('iframe');
-  iframe.src = getKeepAliveAndRedirectIframeUrl(
-      token1, HTTP_REMOTE_ORIGIN, HTTP_REMOTE_ORIGIN_WITH_DIFFERENT_PORT,
-      /*withPreflight=*/ false);
-  document.body.appendChild(iframe);
-  await iframeLoaded(iframe);
-  assert_equals(await getTokenFromMessage(), token1);
-  iframe.remove();
-
-  assertStashedTokenAsync('cross-origin redirect', token1);
-}, 'cross-origin redirect; setting up');
-
-promise_test(async (test) => {
-  const token1 = token();
-  const iframe = document.createElement('iframe');
-  iframe.src = getKeepAliveAndRedirectIframeUrl(
-      token1, HTTP_REMOTE_ORIGIN, HTTP_REMOTE_ORIGIN_WITH_DIFFERENT_PORT,
-      /*withPreflight=*/ true);
-  document.body.appendChild(iframe);
-  await iframeLoaded(iframe);
-  assert_equals(await getTokenFromMessage(), token1);
-  iframe.remove();
-
-  assertStashedTokenAsync('cross-origin redirect with preflight', token1);
-}, 'cross-origin redirect with preflight; setting up');
+keepaliveRedirectInUnloadTest('same-origin redirect');
+keepaliveRedirectInUnloadTest(
+    'same-origin redirect + preflight', {withPreflight: true});
+keepaliveRedirectInUnloadTest('cross-origin redirect', {
+  origin1: HTTP_REMOTE_ORIGIN,
+  origin2: HTTP_REMOTE_ORIGIN_WITH_DIFFERENT_PORT
+});
+keepaliveRedirectInUnloadTest('cross-origin redirect + preflight', {
+  origin1: HTTP_REMOTE_ORIGIN,
+  origin2: HTTP_REMOTE_ORIGIN_WITH_DIFFERENT_PORT,
+  withPreflight: true
+});
+keepaliveRedirectInUnloadTest(
+    'redirect to file URL',
+    {url2: 'file://tmp/bar.txt', expectFetchSucceed: false});
+keepaliveRedirectInUnloadTest('redirect to data URL', {
+  url2: 'data:text/plain;base64,cmVzcG9uc2UncyBib2R5',
+  expectFetchSucceed: false
+});

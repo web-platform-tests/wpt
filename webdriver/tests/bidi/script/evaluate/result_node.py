@@ -1,5 +1,5 @@
 import pytest
-from webdriver.bidi.modules.script import ContextTarget
+from webdriver.bidi.modules.script import ContextTarget, SerializationOptions
 
 from ... import any_string, recursive_compare
 
@@ -140,6 +140,7 @@ async def test_element_node(bidi_session, get_test_page, top_context, expression
         expression=expression,
         target=ContextTarget(top_context["context"]),
         await_promise=False,
+        serialization_options=SerializationOptions(max_dom_depth=1),
     )
 
     recursive_compare(expected, result)
@@ -158,7 +159,6 @@ async def test_element_node(bidi_session, get_test_page, top_context, expression
                 "sharedId": any_string,
                 "value": {
                     "childNodeCount": 0,
-                    "children": [],
                     "localName": "id",
                     "namespaceURI": None,
                     "nodeType": 2,
@@ -174,7 +174,6 @@ async def test_element_node(bidi_session, get_test_page, top_context, expression
                 "sharedId": any_string,
                 "value": {
                     "childNodeCount": 0,
-                    "children": [],
                     "localName": "foo",
                     "namespaceURI": "http://www.w3.org/2000/svg",
                     "nodeType": 2,
@@ -214,7 +213,6 @@ async def test_attribute_node(bidi_session, get_test_page, top_context, expressi
                 "sharedId": any_string,
                 "value": {
                     "childNodeCount": 0,
-                    "children": [],
                     "nodeType": 3,
                     "nodeValue": "Lorem",
                 }
@@ -251,7 +249,6 @@ async def test_text_node(bidi_session, get_test_page, top_context, expression, e
                 "sharedId": any_string,
                 "value": {
                     "childNodeCount": 0,
-                    "children": [],
                     "nodeType": 4,
                     "nodeValue": " < > & ",
                 }
@@ -290,7 +287,6 @@ async def test_cdata_node(bidi_session, inline, new_tab, expression, expected):
                 "sharedId": any_string,
                 "value": {
                     "childNodeCount": 0,
-                    "children": [],
                     "nodeType": 7,
                     "nodeValue": "href='foo.css'",
                 }
@@ -331,7 +327,6 @@ async def test_processing_instruction_node(
                 "sharedId": any_string,
                 "value": {
                     "childNodeCount": 0,
-                    "children": [],
                     "nodeType": 8,
                     "nodeValue": " Comment ",
                 }
@@ -403,6 +398,7 @@ async def test_document_node(bidi_session, get_test_page, top_context, expressio
         expression=expression,
         target=ContextTarget(top_context["context"]),
         await_promise=False,
+        serialization_options=SerializationOptions(max_dom_depth=1),
     )
 
     recursive_compare(expected, result)
@@ -421,7 +417,6 @@ async def test_document_node(bidi_session, get_test_page, top_context, expressio
                 "sharedId": any_string,
                 "value": {
                     "childNodeCount": 0,
-                    "children": [],
                     "nodeType": 10,
                 }
             }
@@ -457,17 +452,7 @@ async def test_doctype_node(bidi_session, get_test_page, top_context, expression
                 "sharedId": any_string,
                 "value": {
                     "childNodeCount": 1,
-                    "children": [{
-                        "type": "node",
-                        "sharedId": any_string,
-                        "value": {
-                            "attributes": {"id": "in-shadow-dom"},
-                            "childNodeCount": 1,
-                            "localName": "div",
-                            "namespaceURI": "http://www.w3.org/1999/xhtml",
-                            "nodeType": 1
-                        }
-                    }],
+                    "mode": "open",
                     "nodeType": 11
                 }
             }
@@ -502,39 +487,147 @@ async def test_document_fragment_node(
         expression=expression,
         target=ContextTarget(top_context["context"]),
         await_promise=False,
+        serialization_options=SerializationOptions(max_dom_depth=1),
     )
 
     recursive_compare(expected, result)
 
 
 @pytest.mark.asyncio
-async def test_node_within_object(bidi_session, get_test_page, top_context):
+@pytest.mark.parametrize(
+    "expression, expected",
+    [
+        (
+            """
+                [document.querySelector("img")]
+            """,
+            {
+                "type": "array",
+                "value": [
+                    {
+                        "type": "node",
+                        "sharedId": any_string,
+                        "value": {
+                            "attributes": {},
+                            "childNodeCount": 0,
+                            "localName": "img",
+                            "namespaceURI": "http://www.w3.org/1999/xhtml",
+                            "nodeType": 1,
+                        },
+                    },
+                ],
+            },
+        ),
+        (
+            """
+                const map = new Map();
+                map.set(document.querySelector("img"), "elem");
+                map
+            """,
+            {
+                "type": "map",
+                "value": [[
+                    {
+                        "type": "node",
+                        "sharedId": any_string,
+                        "value": {
+                            "attributes": {},
+                            "childNodeCount": 0,
+                            "localName": "img",
+                            "namespaceURI": "http://www.w3.org/1999/xhtml",
+                            "nodeType": 1
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "value": "elem"
+                    }
+                ]]
+            }
+        ),
+        (
+            """
+                const map = new Map();
+                map.set("elem", document.querySelector("img"));
+                map
+            """,
+            {
+                "type": "map",
+                "value": [[
+                    "elem", {
+                        "type": "node",
+                        "sharedId": any_string,
+                        "value": {
+                            "attributes": {},
+                            "childNodeCount": 0,
+                            "localName": "img",
+                            "namespaceURI": "http://www.w3.org/1999/xhtml",
+                            "nodeType": 1
+                        }
+                    }
+                ]]
+            }
+        ),
+        (
+            """
+                ({"elem": document.querySelector("img")})
+            """,
+            {
+                "type": "object",
+                "value": [
+                    ["elem", {
+                        "type": "node",
+                        "sharedId": any_string,
+                        "value": {
+                            "attributes": {},
+                            "childNodeCount": 0,
+                            "localName": "img",
+                            "namespaceURI": "http://www.w3.org/1999/xhtml",
+                            "nodeType": 1
+                        }
+                    }]
+                ]
+            }
+        ),
+        (
+            """
+                const set = new Set();
+                set.add(document.querySelector("img"));
+                set
+            """,
+            {
+                "type": "set",
+                "value": [
+                    {
+                        "type": "node",
+                        "sharedId": any_string,
+                        "value": {
+                            "attributes": {},
+                            "childNodeCount": 0,
+                            "localName": "img",
+                            "namespaceURI": "http://www.w3.org/1999/xhtml",
+                            "nodeType": 1,
+                        },
+                    },
+                ],
+            },
+        ),
+    ], ids=[
+        "array", "map-key", "map-value", "object", "set"
+    ]
+)
+async def test_node_embedded_within(
+    bidi_session, get_test_page, top_context, expression, expected
+):
     await bidi_session.browsing_context.navigate(
         context=top_context['context'], url=get_test_page(), wait="complete"
     )
 
     result = await bidi_session.script.evaluate(
-        expression="""({"elem": document.querySelector("img")})""",
+        expression=expression,
         target=ContextTarget(top_context["context"]),
         await_promise=False,
     )
-
-    expected = {
-        "type": "object",
-        "value": [
-            ["elem", {
-                "type": "node",
-                "sharedId": any_string,
-                "value": {
-                    "attributes": {},
-                    "childNodeCount": 0,
-                    "localName": "img",
-                    "namespaceURI": "http://www.w3.org/1999/xhtml",
-                    "nodeType": 1
-                }
-            }]
-        ]
-    }
 
     recursive_compare(expected, result)
 
@@ -601,6 +694,7 @@ async def test_node_within_dom_collection(
         expression=expression,
         target=ContextTarget(top_context["context"]),
         await_promise=False,
+        serialization_options=SerializationOptions(max_dom_depth=1),
     )
 
     recursive_compare(expected, result)
@@ -631,7 +725,6 @@ async def test_custom_element_with_shadow_root(
                 "id": "custom-element",
             },
             "childNodeCount": 0,
-            "children": [],
             "localName": "custom-element",
             "namespaceURI": "http://www.w3.org/1999/xhtml",
             "nodeType": 1,

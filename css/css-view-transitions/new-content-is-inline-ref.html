@@ -2,9 +2,14 @@
 <title>View transitions: New content is an inline element (ref)</title>
 <link rel="help" href="https://www.w3.org/TR/css-view-transitions-1/">
 <link rel="author" href="mailto:bokan@chromium.org">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 
 <style>
-:root { background-color: rebeccapurple; }
+:root {
+  background-color: rebeccapurple;
+  font: 20px/1 Ahem;
+}
+
 body { margin: 0; }
 
 .container {
@@ -25,7 +30,7 @@ body { margin: 0; }
 
 .container.transitioned {
   left: 20px;
-  width: 200px;
+  width: 600px;
   transform: translateY(-50px);
 }
 
@@ -43,7 +48,7 @@ body { margin: 0; }
   position: absolute;
   left: 100px;
   top: 100px;
-  width: 200px;
+  width: 600px;
   /* scale transform applied in script below */
   transform-origin: top left;
 }
@@ -70,6 +75,10 @@ body { margin: 0; }
   let endWidth = document.getElementById('end').getBoundingClientRect().width;
   let startWidth = document.getElementById('start').getBoundingClientRect().width;
   let scale = startWidth / endWidth;
+  /* Default UA CSS scales the image pseudos to match the group in the inline
+     direction. The block direction scales to retain the image's aspect ratio.
+     So have the dummy end line scale to match the start state width and apply
+     the same scale to its height. */
   document.getElementById('dummyStartInline').style.transform = `scale(${scale})`;
 </script>
 

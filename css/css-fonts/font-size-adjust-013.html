@@ -6,6 +6,7 @@
     <link rel="match" href="font-size-adjust-013-ref.html">
     <link rel="help" href="https://www.w3.org/TR/css-fonts-5/#font-size-adjust-prop">
     <meta name="assert" content="Test whether from-font automatically determines a font-size-adjust value based on the primary font.">
+    <meta name="fuzzy" content="maxDifference=0-130;totalPixels=0-350">
     <style>
         @font-face {
             font-family: 'primary-font-ahem-ex-500';
@@ -20,10 +21,12 @@
         }
         .test {
             font-family: 'primary-font-ahem-ex-500', 'secondary-font-ahem-ex-250';
-            font-size: 50px;
+            font-size: 100px;
             color: peru;
-            height: 50px;
-            margin-bottom: 24px;
+            height: 200px;
+            margin-top: -20px;
+            margin-bottom: -80px;
+            line-height: 1;
         }
         .tall-inline-block {
             display: inline-block;

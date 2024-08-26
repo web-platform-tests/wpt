@@ -15,7 +15,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from aioquic.buffer import Buffer  # type: ignore
 from aioquic.asyncio import QuicConnectionProtocol, serve  # type: ignore
 from aioquic.asyncio.client import connect  # type: ignore
-from aioquic.h3.connection import H3_ALPN, FrameType, H3Connection, ProtocolError  # type: ignore
+from aioquic.h3.connection import H3_ALPN, FrameType, H3Connection, ProtocolError, SettingsError  # type: ignore
 from aioquic.h3.events import H3Event, HeadersReceived, WebTransportStreamDataReceived, DatagramReceived, DataReceived  # type: ignore
 from aioquic.quic.configuration import QuicConfiguration  # type: ignore
 from aioquic.quic.connection import logger as quic_connection_logger  # type: ignore
@@ -23,7 +23,8 @@ from aioquic.quic.connection import stream_is_unidirectional
 from aioquic.quic.events import QuicEvent, ProtocolNegotiated, ConnectionTerminated, StreamReset  # type: ignore
 from aioquic.tls import SessionTicket  # type: ignore
 
-from tools.wptserve.wptserve import stash  # type: ignore
+from tools import localpaths  # noqa: F401
+from wptserve import stash
 from .capsule import H3Capsule, H3CapsuleDecoder, CapsuleType
 
 """
@@ -52,6 +53,11 @@ class H3DatagramSetting(IntEnum):
     RFC = 0x33
 
 
+class WebTransportHttp3Setting(IntEnum):
+    # https://datatracker.ietf.org/doc/html/draft-ietf-webtrans-http3-07#section-8.2
+    WEBTRANSPORT_MAX_SESSIONS_DRAFT07 = 0xc671706a
+
+
 class H3ConnectionWithDatagram(H3Connection):
     """
     A H3Connection subclass, to make it work with the latest
@@ -65,17 +71,24 @@ class H3ConnectionWithDatagram(H3Connection):
         self._datagram_setting: Optional[H3DatagramSetting] = None
 
     def _validate_settings(self, settings: Dict[int, int]) -> None:
-        super()._validate_settings(settings)
+        # aioquic doesn't recognize the RFC version of HTTP Datagrams yet.
+        # Intentionally don't call `super()._validate_settings(settings)` since
+        # it raises a SettingsError when only the RFC version is negotiated.
         if settings.get(H3DatagramSetting.RFC) == 1:
             self._datagram_setting = H3DatagramSetting.RFC
         elif settings.get(H3DatagramSetting.DRAFT04) == 1:
             self._datagram_setting = H3DatagramSetting.DRAFT04
+
+        if self._datagram_setting is None:
+            raise SettingsError("HTTP Datagrams support required")
 
     def _get_local_settings(self) -> Dict[int, int]:
         settings = super()._get_local_settings()
         settings[H3DatagramSetting.RFC] = 1
         settings[H3DatagramSetting.DRAFT04] = 1
         settings[H3ConnectionWithDatagram.ENABLE_CONNECT_PROTOCOL] = 1
+        # This connection can handle only one WebTransport session.
+        settings[WebTransportHttp3Setting.WEBTRANSPORT_MAX_SESSIONS_DRAFT07] = 1
         return settings
 
     @property
@@ -309,8 +322,8 @@ class WebTransportSession:
     def stash(self) -> stash.Stash:
         """A Stash object for storing cross-session state."""
         if self._stash is None:
-            address, authkey = stash.load_env_config()
-            self._stash = stash.Stash(self._stash_path, address, authkey)
+            address, authkey = stash.load_env_config()  # type: ignore
+            self._stash = stash.Stash(self._stash_path, address, authkey)  # type: ignore
         return self._stash
 
     @property

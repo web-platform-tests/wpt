@@ -5,12 +5,16 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/web-animations/testcommon.js"></script>
 <style>
-  main > div {
+  main {
+    timeline-scope: --top_timeline, --bottom_timeline, --left_timeline, --right_timeline;
+  }
+
+  .scroller {
     overflow: hidden;
     width: 100px;
     height: 100px;
   }
-  main > div > div {
+  .scroller > div {
     height: 200px;
     width:  200px;
   }
@@ -33,58 +37,55 @@
   }
 
   #top_scroller {
-    scroll-timeline: top_timeline block;
+    scroll-timeline-name: --top_timeline;
+    scroll-timeline-axis: block;
   }
   #bottom_scroller {
-    scroll-timeline: bottom_timeline inline;
+    scroll-timeline-name: --bottom_timeline;
+    scroll-timeline-axis: inline;
   }
   #left_scroller {
-    scroll-timeline: left_timeline block;
+    scroll-timeline-name: --left_timeline;
+    scroll-timeline-axis: block;
   }
   #right_scroller {
-    scroll-timeline: right_timeline inline;
+    scroll-timeline-name: --right_timeline;
+    scroll-timeline-axis: inline;
   }
 
   #element {
     animation-name: top, bottom, left, right;
     animation-duration: 10s;
     animation-timing-function: linear;
-    animation-timeline: top_timeline, bottom_timeline, left_timeline, right_timeline;
+    animation-timeline: --top_timeline, --bottom_timeline, --left_timeline, --right_timeline;
   }
   /* Ensure stable expectations if feature is not supported */
-  @supports not (animation-timeline:foo) {
+  @supports not (animation-timeline:--foo) {
     #element { animation-play-state: paused; }
   }
 </style>
 <main>
-  <div id=top_scroller><div></div></div>
-  <div id=bottom_scroller><div></div></div>
-  <div id=left_scroller><div></div></div>
-  <div id=right_scroller><div></div></div>
+  <div class=scroller id=top_scroller><div></div></div>
+  <div class=scroller id=bottom_scroller><div></div></div>
+  <div class=scroller id=left_scroller><div></div></div>
+  <div class=scroller id=right_scroller><div></div></div>
   <div id=element></div>
 </main>
 <script>
-  // Force layout of scrollers.
-  top_scroller.offsetTop;
-  bottom_scroller.offsetTop;
-  left_scroller.offsetTop;
-  right_scroller.offsetTop;
-
-  top_scroller.scrollTop = 20;
-  top_scroller.scrollLeft = 40;
-  bottom_scroller.scrollTop = 20;
-  bottom_scroller.scrollLeft = 40;
-  left_scroller.scrollTop = 60;
-  left_scroller.scrollLeft = 80;
-  right_scroller.scrollTop = 60;
-  right_scroller.scrollLeft = 80;
-
   promise_test(async (t) => {
-    await waitForNextFrame();
+    await runAndWaitForFrameUpdate(() => {
+      top_scroller.scrollTop = 20;
+      top_scroller.scrollLeft = 40;
+      bottom_scroller.scrollTop = 20;
+      bottom_scroller.scrollLeft = 40;
+      left_scroller.scrollTop = 60;
+      left_scroller.scrollLeft = 80;
+      right_scroller.scrollTop = 60;
+      right_scroller.scrollLeft = 80;
+    });
     assert_equals(getComputedStyle(element).top, '120px');
     assert_equals(getComputedStyle(element).bottom, '140px');
     assert_equals(getComputedStyle(element).left, '160px');
     assert_equals(getComputedStyle(element).right, '180px');
   }, 'animation-timeline works with multiple timelines');
-
 </script>

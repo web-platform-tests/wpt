@@ -2,8 +2,13 @@ from abc import ABC
 import math
 from typing import Any, Dict, Union
 from .undefined import UNDEFINED
-from ..client import WebElement
 
+WebElement = None
+
+
+def do_delayed_imports():
+    global WebElement
+    from ..client import WebElement
 
 class BidiValue(ABC):
     """Represents the non-primitive values received via BiDi."""
@@ -11,6 +16,7 @@ class BidiValue(ABC):
     type: str
 
     def __init__(self, protocol_value: Dict[str, Any]):
+        do_delayed_imports()
         assert isinstance(protocol_value, dict)
         assert isinstance(protocol_value["type"], str)
         self.type = protocol_value["type"]

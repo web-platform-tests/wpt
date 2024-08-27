@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 from abc import ABC
 import math
 from typing import Any, Dict, Union

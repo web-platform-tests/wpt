@@ -44,7 +44,7 @@ class BidiNode(BidiValue):
         self.shared_id = self.protocol_value["sharedId"]
 
     def to_classic_protocol_value(self) -> Dict[str, Any]:
-        return {WebElement.identifier: self.shared_id} # type: ignore
+        return {WebElement.identifier: self.shared_id}  # type: ignore
 
 
 class BidiWindow(BidiValue):

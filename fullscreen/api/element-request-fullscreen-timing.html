@@ -28,11 +28,11 @@ promise_test(async t => {
       }
     });
     document.onfullscreenchange = window.onresize = callback;
-  })
+  });
   await trusted_request(div);
-  await p
+  await p;
   // so the user doesn't have to exit for themselves
-  document.exitFullscreen()
+  document.exitFullscreen();
 }, 'Timing of fullscreenchange and resize events');
 
 async_test(t => {

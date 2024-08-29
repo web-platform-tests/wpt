@@ -434,7 +434,7 @@ test(() => {
 
   const observable = Observable.from(generator());
 
-  observable.subscribe({ 
+  observable.subscribe({
     next: (n) => results.push(n),
     error: (e) => results.push(e.message)
   });
@@ -535,7 +535,7 @@ promise_test(async t => {
   const observable = Observable.from(asyncGenerator());
 
   await new Promise((resolve) => {
-    observable.subscribe({ 
+    observable.subscribe({
       next: (n) => results.push(n),
       error: (e) => {
         results.push(e.message);

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>SVG Content Sniffing Test</title>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+    </head>
+    <body>
+        <script>
+            async_test(t => {
+                const text = `<svg id="x" xmlns="http://www.w3.org/2000/svg"><image href="xyz" onerror="window.exploitRan = true;" /></svg>`;
+                const blob = new Blob([text], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
+                let attackerControlledString = url + "#x";
+
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+
+                use.setAttribute('href', attackerControlledString);
+                svg.appendChild(use);
+
+                document.body.appendChild(svg);
+                const resultDiv = document.getElementById('result');
+                t.step_timeout(() => {
+                    if (Boolean(window.exploitRan))
+                        assert_false(window.exploitRan);
+                    t.done();
+                }, 10);
+            }, 'SVG should not leak MIME data.');
+        </script>
+    </body>
+</html>

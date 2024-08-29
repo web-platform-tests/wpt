@@ -352,3 +352,200 @@ test(() => {
   assert_array_equals(results, ["from @@iterator", "complete"]);
 }, "from(): Promise that implements @@iterator protocol gets converted as " +
    "an iterable, not Promise");
+
+test(() => {
+  const results = [];
+  let generatorFinalized = false;
+
+  const generator = function* () {
+    try {
+      for (let n = 0; n < 10; n++) {
+        yield n;
+      }
+    } catch {
+      assert_unreached("generator should not be aborted");
+    } finally {
+      generatorFinalized = true;
+    }
+  };
+
+  const observable = Observable.from(generator());
+
+  const abortController = new AbortController();
+
+  observable.subscribe((n) => {
+    results.push(n);
+    if (n === 3) {
+      abortController.abort();
+    }
+  }, { signal: abortController.signal });
+
+  assert_array_equals(results, [0, 1, 2, 3],
+      "from(): generator values are emitted until aborted");
+
+  assert_true(generatorFinalized, "from(): generator finalization should be called when the observable subscription is aborted");
+
+}, "from(): generator finalization should be called when the observable subscription is aborted");
+
+test(() => {
+  const results = [];
+  let generatorFinalized = false;
+
+  const generator = function* () {
+    try {
+      for (let n = 0; n < 10; n++) {
+        yield n;
+      }
+    } catch {
+      assert_unreached("generator should not be aborted");
+    } finally {
+      generatorFinalized = true;
+    }
+  };
+
+  const observable = Observable.from(generator());
+
+  observable.subscribe((n) => {
+    results.push(n);
+  });
+
+  assert_array_equals(results, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+      "from(): generator values are emitted until the generator completes");
+
+  assert_true(generatorFinalized, "from(): generator finalization should be called when the observable completes");
+}, "from(): generator finalization should be called when the observable completes");
+
+test(() => {
+  const results = [];
+  let generatorFinalized = false;
+
+  const generator = function* () {
+    try {
+      for (let n = 0; n < 10; n++) {
+        yield n;
+      }
+      throw new Error('from the generator');
+    } catch (e) {
+      assert_equals(e.message, 'from the generator', "from(): generator errors are propagated to the observable");
+    } finally {
+      generatorFinalized = true;
+    }
+  };
+
+  const observable = Observable.from(generator());
+
+  observable.subscribe({ 
+    next: (n) => results.push(n),
+    error: (e) => results.push(e.message)
+  });
+
+  assert_array_equals(results, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "from the generator"],
+      "from(): generator values are emitted until the generator errors");
+
+  assert_true(generatorFinalized, "from(): generator finalization should be called when the observable errors");
+}, "from(): generator finalization should be called when the observable errors");
+
+
+promise_test(async t => {
+  const results = [];
+  let generatorFinalized = false;
+
+  async function* asyncGenerator() {
+    try {
+      for (let n = 0; n < 10; n++) {
+        await Promise.resolve(); // some delay for "realism".
+        yield n;
+      }
+    } finally {
+      generatorFinalized = true;
+    }
+  }
+
+  const observable = Observable.from(asyncGenerator());
+
+  const abortController = new AbortController();
+
+  await new Promise((resolve) => {
+    observable.subscribe((n) => {
+      results.push(n);
+      if (n === 3) {
+        abortController.abort();
+        resolve();
+      }
+    }, { signal: abortController.signal });
+  });
+
+  assert_array_equals(results, [0, 1, 2, 3],
+      "from(): async generator values are emitted until aborted");
+
+  assert_true(generatorFinalized, "from(): async generator finalization should be called when the observable subscription is aborted");
+
+}, "from(): async generator finalization should be called when the observable subscription is aborted");
+
+promise_test(async t => {
+  const results = [];
+  let generatorFinalized = false;
+
+  async function* asyncGenerator() {
+    try {
+      for (let n = 0; n < 10; n++) {
+        await Promise.resolve(); // some delay for "realism".
+        yield n;
+      }
+    } finally {
+      generatorFinalized = true;
+    }
+  }
+
+  const observable = Observable.from(asyncGenerator());
+
+  await new Promise((resolve) => {
+    observable.subscribe((n) => {
+      results.push(n);
+      if (n === 3) {
+        resolve();
+      }
+    });
+  });
+
+  assert_array_equals(results, [0, 1, 2, 3],
+      "from(): async generator values are emitted until the generator completes");
+
+  assert_true(generatorFinalized, "from(): async generator finalization should be called when the observable completes");
+}, "from(): async generator finalization should be called when the observable completes");
+
+promise_test(async t => {
+  const results = [];
+  let generatorFinalized = false;
+
+  async function* asyncGenerator() {
+    try {
+      for (let n = 0; n < 10; n++) {
+        await Promise.resolve(); // some delay for "realism".
+        yield n;
+      }
+      throw new Error('from the async generator');
+    } catch (e) {
+      assert_equals(e.message, 'from the async generator', "from(): async generator errors are propagated to the observable");
+    } finally {
+      generatorFinalized = true;
+    }
+  }
+
+  const observable = Observable.from(asyncGenerator());
+
+  await new Promise((resolve) => {
+    observable.subscribe({ 
+      next: (n) => results.push(n),
+      error: (e) => {
+        results.push(e.message);
+        resolve();
+      }
+    });
+  });
+
+  assert_array_equals(results, [0, 1, 2, 3, "from the async generator"],
+      "from(): async generator values are emitted until the generator errors");
+
+  assert_true(generatorFinalized, "from(): async generator finalization should be called when the observable errors");
+}, "from(): async generator finalization should be called when the observable errors");

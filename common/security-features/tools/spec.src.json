@@ -111,6 +111,7 @@
         "sharedworker-import",
         "sharedworker-import-data",
         "sharedworker-module",
+        "speculationrules",
         "video-tag",
         "worker-classic",
         "worker-import",
@@ -156,7 +157,32 @@
       ],
       "origin": "*",
       "expectation": "*"
-    }
+    },
+    {
+      // Only test speculation rules in the top document.
+      "expansion": "*",
+      "source_scheme": "*",
+      "source_context_list": [
+        "srcdoc-inherit",
+        "srcdoc",
+        "iframe",
+        "iframe-blank-inherit",
+        "worker-classic",
+        "worker-classic-data",
+        "worker-module",
+        "worker-module-data",
+        "sharedworker-classic",
+        "sharedworker-classic-data",
+        "sharedworker-module",
+        "sharedworker-module-data"
+      ],
+      "delivery_type": "*",
+      "delivery_value": "*",
+      "redirection": "*",
+      "subresource": "speculationrules",
+      "origin": "*",
+      "expectation": "*"
+    },
   ],
   "source_context_schema": {
     "supported_subresource": {
@@ -513,6 +539,7 @@
       "sharedworker-import",
       "sharedworker-import-data",
       "sharedworker-module",
+      "speculationrules",
       "video-tag",
       "websocket",
       "worker-classic",

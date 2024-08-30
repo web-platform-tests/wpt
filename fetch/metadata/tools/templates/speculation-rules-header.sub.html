@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!--
+[%provenance%]
+-->
+{%- if subtests|length > 10 %}
+<meta name="timeout" content="long">
+{%- endif %}
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/fetch/metadata/resources/helper.sub.js"></script>
+<body>
+<script>
+'use strict';
+
+async function induceRequest(url, test) {
+  const win = window.open();
+  test.add_cleanup(() => win.close());
+  win.location = `/common/blank.html?pipe=header(Speculation-Rules,"${encodeURIComponent(url)}")`;
+}
+
+const responseParams = {
+  mime: 'application/speculationrules+json',
+  body: '{}',
+};
+{%- for subtest in subtests %}
+
+promise_test((t) => {
+  const key = '{{uuid()}}';
+
+  return induceRequest(
+      makeRequestURL(key, [% subtest.origins %], responseParams), t
+    )
+    .then(() => retrieve(key, {poll: true}))
+    .then((headers) => {
+      {%- if subtest.expected == none %}
+        assert_not_own_property(headers, '[%subtest.headerName%]');
+      {%- else %}
+        assert_own_property(headers, '[%subtest.headerName%]');
+        assert_array_equals(headers['[%subtest.headerName%]'], ['[%subtest.expected%]']);
+      {%- endif %}
+      });
+}, '[%subtest.headerName%][%subtest.description | pad("start", " - ")%]');
+
+{%- endfor %}
+</script>

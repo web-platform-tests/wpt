@@ -86,6 +86,8 @@ cases:
       window-location.sub.html: [{}]
       script-module-import-dynamic.sub.html: [{}]
       script-module-import-static.sub.html: [{}]
+      speculation-rules-header.sub.html:
+        - filename_flags: [tentative]
       svg-image.sub.html: [{}]
       window-history.sub.html: [{}]
       worker-dedicated-importscripts.sub.html: [{}]
@@ -209,6 +211,8 @@ cases:
       script-module-import-dynamic.sub.html: [{}]
       script-module-import-static.sub.html: [{}]
       serviceworker.https.sub.html: [{}]
+      speculation-rules-header.sub.html:
+        - filename_flags: [tentative]
       svg-image.sub.html: [{}]
       window-history.sub.html: [{}]
       worker-dedicated-importscripts.sub.html: [{}]
@@ -284,6 +288,8 @@ cases:
       window-location.sub.html: [{}]
       script-module-import-dynamic.sub.html: [{}]
       script-module-import-static.sub.html: [{}]
+      speculation-rules-header.sub.html:
+        - filename_flags: [tentative]
       svg-image.sub.html: [{}]
       worker-dedicated-importscripts.sub.html: [{}]
 
@@ -378,6 +384,8 @@ cases:
       window-location.sub.html: [{}]
       script-module-import-dynamic.sub.html: [{}]
       script-module-import-static.sub.html: [{}]
+      speculation-rules-header.sub.html:
+        - filename_flags: [tentative]
       svg-image.sub.html: [{}]
       worker-dedicated-importscripts.sub.html: [{}]
 
@@ -419,6 +427,7 @@ cases:
       header-link.sub.html: []
       script-module-import-static.sub.html: []
       script-module-import-dynamic.sub.html: []
+      speculation-rules-header.sub.html: []
       # Service Workers' redirect mode is "error"
       serviceworker.https.sub.html: []
       # Interstitial locations in an HTTP redirect chain are not added to the
@@ -607,6 +616,9 @@ cases:
         - expected: cors
       script-module-import-static.sub.html:
         - expected: cors
+      speculation-rules-header.sub.html:
+        - filename_flags: [tentative]
+          expected: cors
       # https://svgwg.org/svg2-draft/linking.html#processingURL-fetch
       svg-image.sub.html:
         - expected: no-cors
@@ -737,6 +749,9 @@ cases:
         - expected: script
       serviceworker.https.sub.html:
         - expected: serviceworker
+      speculation-rules-header.sub.html:
+        - filename_flags: [tentative]
+          expected: speculationrules
       # Implemented as "image" in Chromium and Firefox, but specified as
       # "empty"
       # https://github.com/w3c/svgwg/issues/782
@@ -840,6 +855,9 @@ cases:
         - expected: NULL
       serviceworker.https.sub.html:
         - expected: NULL
+      speculation-rules-header.sub.html:
+        - filename_flags: [tentative]
+          expected: NULL
       svg-image.sub.html:
         - expected: NULL
       worker-dedicated-constructor.sub.html:

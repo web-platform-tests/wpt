@@ -356,6 +356,7 @@ PHASE_TO_EVENT_MAP = {
 }
 
 expires_a_day_from_now = datetime.now(timezone.utc) + timedelta(days=1)
+expires_a_day_from_now_timestamp = int(expires_a_day_from_now.timestamp())
 
 # Common parameters for Set-Cookie headers tests used for network interception
 # commands.
@@ -483,7 +484,7 @@ SET_COOKIE_TEST_PARAMETERS = [
         ),
         None,
         {
-            "expiry": int(expires_a_day_from_now.timestamp()),
+            "expiry": expires_a_day_from_now_timestamp,
             "httpOnly": False,
             "name": "foo",
             "path": "/",

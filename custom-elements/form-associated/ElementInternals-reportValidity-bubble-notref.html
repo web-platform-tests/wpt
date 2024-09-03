@@ -23,4 +23,6 @@ class FocusableCustomElement extends HTMLElement {
 }
 
 customElements.define('focusable-custom-element', FocusableCustomElement);
+
+document.querySelector('unfocusable-custom-element').focus();
 </script>

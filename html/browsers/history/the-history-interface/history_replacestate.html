@@ -4,6 +4,7 @@
     <title>history_replaceState</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <base href="#" target="_blank" />
   </head>
   <body>
     <div id="log"></div>
@@ -14,7 +15,24 @@
       var second;
       second = window.history.state;
       assert_equals(second, 1, "history state");
-    }, "history replaceState");
+    }, "history replaceState: default");
+
+    // updateToDeepLink test
+   test(function () {
+      const url = window.location.origin + window.location.pathname + "#/deeplink?test-id=6f5d61af";
+      window.history.replaceState('', '', url);
+
+      var currentUrl = window.location.href;
+      assert_equals(currentUrl, url, "URL should be updated to deep link");
+    }, "history replaceState: updateToDeepLink");
+
+    // clearDeepLink test
+    test(function () {
+      window.history.replaceState('', '', '');
+
+      var currentUrl = window.location.href;
+      assert_equals(currentUrl, window.location.origin + window.location.pathname + '#', "URL should be cleared to default route");
+    }, "history replaceState: clearDeepLink");
     </script>
   </body>
 </html>

@@ -1,0 +1,34 @@
+<!doctype html>
+<html class="reftest-wait">
+<head>
+<meta charset="utf-8">
+<script>
+let waitForWindowClose;
+addEventListener("load", () => {
+  try {
+    document.documentElement.setHTML("", {});
+  } catch (e) {}
+  Promise.all([waitForWindowClose]).then(
+    () => document.documentElement.removeAttribute("class")
+  );
+});
+</script>
+</head>
+<body>
+<header contenteditable="true">
+<script>
+(() => {
+  document.querySelector("header[contenteditable]").focus();
+  const db = indexedDB.open("DB_FOO", 1);
+  waitForWindowClose = new Promise(resolve => {
+    db.onsuccess = () => {
+      window.close();
+    }
+    resolve();
+  });
+})();
+</script>
+<iframe src="&gt;"></iframe>
+</header>
+</body>
+</html>

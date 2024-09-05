@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#the-link-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link id=style_link rel=stylesheet>
+<script>
+  async_test(t => {
+    const link = document.querySelector('#style_link');
+    link.onerror = t.unreached_func('Sheet should load successfully');
+    link.onload = t.step_func(() => {
+      link.onload = t.step_func_done(() => {});
+      t.step_timeout(() => { link.href = 'style.css?second'; }, 0);
+    });
+
+    link.href = 'style.css?first';
+
+  }, "Check if the <link>'s load event fires even after the first load event");
+  </script>
+</head>
+</html>

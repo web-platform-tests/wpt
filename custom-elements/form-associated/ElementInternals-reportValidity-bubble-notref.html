@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <title>Both focusable and unfocusable custom elements can show validation bubbles</title>
 <link rel=help href=https://html.spec.whatwg.org/C/#report-validity-steps>
-<focusable-custom-element tabindex="0"></focusable-custom-element>
+<focusable-custom-element></focusable-custom-element>
 <script>
 class FocusableCustomElement extends HTMLElement {
   constructor() {
@@ -11,6 +11,7 @@ class FocusableCustomElement extends HTMLElement {
     this.elementInternals = this.attachInternals();
     const validationAnchor = this.shadowRoot.querySelector('input');
     this.elementInternals.setValidity({valueMissing: true}, 'value missing', validationAnchor);
+    this.shadowRoot.firstChild.focus();
   }
 
   static get formAssociated() {
@@ -23,6 +24,4 @@ class FocusableCustomElement extends HTMLElement {
 }
 
 customElements.define('focusable-custom-element', FocusableCustomElement);
-
-document.querySelector('unfocusable-custom-element').focus();
 </script>

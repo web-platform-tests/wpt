@@ -212,6 +212,7 @@ testText("<div><iframe src='data:text/html,abc'>", ""," <iframe> subdocument ign
 testText("<div><audio>abc", "", "<audio> contents ignored");
 testText("<div><video>abc", "", "<video> contents ignored");
 testText("<div><canvas>abc", "", "<canvas> contents ignored");
+testText("<div><object>abc", "", "<object> contents ignored");
 testText("<div><img alt='abc'>", "", "<img> alt text ignored");
 
 /**** Lines around blocks ****/

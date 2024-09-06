@@ -243,6 +243,8 @@ testText("<div>123<h3>abc</h3>def", "123\nabc\ndef", "No blank lines around <h3>
 testText("<div>123<h4>abc</h4>def", "123\nabc\ndef", "No blank lines around <h4>");
 testText("<div>123<h5>abc</h5>def", "123\nabc\ndef", "No blank lines around <h5>");
 testText("<div>123<h6>abc</h6>def", "123\nabc\ndef", "No blank lines around <h6>");
+testText("<div>123<p style='display:block'>abc", "123\n\nabc", "2 blank lines around <p> even when display:block");
+testText("<div>123<p style='display:inline-block'>abc", "123\n\nabc", "2 blank lines around <p> even when display:inline-block");
 
 /**** Spans ****/
 

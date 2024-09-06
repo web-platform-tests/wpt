@@ -75,11 +75,14 @@ fetch("/interfaces/html.idl").then(res => res.text()).then(htmlIDL => {
 
     test(() => {
       const element = document.createElement("meta");
+      let fired = false;
       element[name] = e => {
         assert_equals(e.currentTarget, element, "The event must be fired at the <meta> element");
+        fired = true;
       };
 
       element.dispatchEvent(new Event(withoutOn));
+      assert_true(fired);
     }, `${name}: dispatching an Event at a <meta> element must trigger element.${name}`);
   }
 

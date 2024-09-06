@@ -329,6 +329,8 @@ testText("<div>abc<!--comment-->def", "abcdef", "comment ignored");
 testText("<br>", "", "<br>");
 testText("<p>", "", "empty <p>");
 testText("<div>", "", "empty <div>");
+testText("<div><details><summary>abc</summary>123", "abc", "unopened <details> ignored");
+testText("<div><details open><summary>abc</summary>123", "abc\n123", "opened <details> content shown");
 
 /**** text-transform ****/
 

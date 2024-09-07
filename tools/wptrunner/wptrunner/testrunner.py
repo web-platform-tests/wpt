@@ -959,13 +959,15 @@ class TestRunnerManager(threading.Thread):
         if self.test_runner_proc is None:
             return
 
-        if self.test_runner_proc.is_alive():
-            self.send_message("stop")
         try:
+            # Stop the runner process before the browser process so that the
+            # former can gracefully tear down the protocol (e.g., closing an
+            # active WebDriver session).
+            self._ensure_runner_stopped()
             self.browser.stop(force=force)
-            self.ensure_runner_stopped()
         except (OSError, PermissionError):
-            self.logger.error("Failed to stop the runner")
+            self.logger.error("Failed to stop either the runner or the browser process",
+                              exc_info=True)
         finally:
             self.cleanup()
 
@@ -978,12 +980,12 @@ class TestRunnerManager(threading.Thread):
         self.remote_queue = None
         self.recording.pause()
 
-    def ensure_runner_stopped(self):
-        self.logger.debug("ensure_runner_stopped")
+    def _ensure_runner_stopped(self):
         if self.test_runner_proc is None:
             return
 
-        self.browser.stop(force=True)
+        self.logger.debug("Stopping runner process")
+        self.send_message("stop")
         self.test_runner_proc.join(10)
         mp = mpcontext.get_context()
         if self.test_runner_proc.is_alive():

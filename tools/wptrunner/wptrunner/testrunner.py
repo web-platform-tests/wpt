@@ -1009,7 +1009,8 @@ class TestRunnerManager(threading.Thread):
             self.logger.debug("Runner process exited with code %i" % self.test_runner_proc.exitcode)
 
     def runner_teardown(self):
-        self.ensure_runner_stopped()
+        # No need to stop the runner or browser processes here. It will be done
+        # when the `stop` state terminates the `TestRunnerManager` run loop.
         return RunnerManagerState.stop(False)
 
     def send_message(self, command, *args):

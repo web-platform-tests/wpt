@@ -110,7 +110,6 @@ class TestRunner:
 
     def teardown(self):
         self.executor.teardown()
-        self.send_message("runner_teardown")
         self.result_queue = None
         self.command_queue = None
         self.browser = None
@@ -140,12 +139,7 @@ class TestRunner:
     def run(self):
         """Main loop accepting commands over the pipe and triggering
         the associated methods"""
-        try:
-            self.setup()
-        except Exception:
-            self.logger.warning("An error occured during executor setup:\n%s" %
-                                traceback.format_exc())
-            raise
+        self.setup()
         commands = {"run_test": self.run_test,
                     "switch_executor": self.switch_executor,
                     "reset": self.reset,
@@ -531,9 +525,8 @@ class TestRunnerManager(threading.Thread):
             RunnerManagerState.error: {},
             RunnerManagerState.stop: {},
             None: {
-                "runner_teardown": self.runner_teardown,
                 "log": self.log,
-                "error": self.error
+                "error": self.error,
             }
         }
         try:
@@ -553,6 +546,7 @@ class TestRunnerManager(threading.Thread):
                 self.logger.debug("Debugger exited")
                 return RunnerManagerState.stop(False)
 
+            # `test_runner_proc` must be nonnull in the manager's `running` state.
             if (isinstance(self.state, RunnerManagerState.running) and
                 not self.test_runner_proc.is_alive()):
                 if not self.command_queue.empty():
@@ -956,15 +950,14 @@ class TestRunnerManager(threading.Thread):
     def stop_runner(self, force=False):
         """Stop the TestRunner and the browser binary."""
         self.recording.set(["testrunner", "stop_runner"])
-        if self.test_runner_proc is None:
-            return
-
         try:
             # Stop the runner process before the browser process so that the
             # former can gracefully tear down the protocol (e.g., closing an
             # active WebDriver session).
             self._ensure_runner_stopped()
-            self.browser.stop(force=force)
+            # TODO(web-platform-tests/wpt#48030): Consider removing the
+            # `stop(force=...)` argument.
+            self.browser.stop(force=True)
         except (OSError, PermissionError):
             self.logger.error("Failed to stop either the runner or the browser process",
                               exc_info=True)
@@ -973,7 +966,6 @@ class TestRunnerManager(threading.Thread):
 
     def teardown(self):
         self.logger.debug("TestRunnerManager teardown")
-        self.test_runner_proc = None
         self.command_queue.close()
         self.remote_queue.close()
         self.command_queue = None
@@ -983,7 +975,6 @@ class TestRunnerManager(threading.Thread):
     def _ensure_runner_stopped(self):
         if self.test_runner_proc is None:
             return
-
         self.logger.debug("Stopping runner process")
         self.send_message("stop")
         self.test_runner_proc.join(10)
@@ -1009,11 +1000,7 @@ class TestRunnerManager(threading.Thread):
             self.remote_queue = mp.Queue()
         else:
             self.logger.debug("Runner process exited with code %i" % self.test_runner_proc.exitcode)
-
-    def runner_teardown(self):
-        # No need to stop the runner or browser processes here. It will be done
-        # when the `stop` state terminates the `TestRunnerManager` run loop.
-        return RunnerManagerState.stop(False)
+        self.test_runner_proc = None
 
     def send_message(self, command, *args):
         """Send a message to the remote queue (to Executor)."""
@@ -1037,11 +1024,6 @@ class TestRunnerManager(threading.Thread):
             else:
                 if cmd == "log":
                     self.log(*data)
-                elif cmd == "runner_teardown":
-                    # It's OK for the "runner_teardown" message to be left in
-                    # the queue during cleanup, as we will already have tried
-                    # to stop the TestRunner in `stop_runner`.
-                    pass
                 else:
                     self.logger.warning(f"Command left in command_queue during cleanup: {cmd!r}, {data!r}")
         while True:

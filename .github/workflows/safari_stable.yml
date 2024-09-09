@@ -5,6 +5,7 @@ name: "All Tests: Safari (stable)"
 permissions: {}
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - epochs/daily

@@ -5,6 +5,7 @@ name: "All Tests: Safari Technology Preview"
 permissions: {}
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - epochs/three_hourly

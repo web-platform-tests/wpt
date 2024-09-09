@@ -775,6 +775,10 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         # The previous test may not have closed its old windows (if something
         # went wrong or if cleanup_after_test was False), so clean up here.
         parent_window = protocol.testharness.close_old_windows()
+        # At this point, the runner window should be focused with the runner
+        # page loaded over the same origin as `url`. Clear cookies to isolate
+        # state between tests.
+        protocol.cookies.delete_all_cookies()
 
         # If protocol implements `bidi_events`, remove all the existing subscriptions.
         if hasattr(protocol, 'bidi_events'):

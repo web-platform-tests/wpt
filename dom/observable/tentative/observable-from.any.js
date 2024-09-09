@@ -425,8 +425,6 @@ test(() => {
         yield n;
       }
       throw new Error('from the generator');
-    } catch (e) {
-      assert_equals(e.message, 'from the generator', "from(): generator errors are propagated to the observable");
     } finally {
       generatorFinalized = true;
     }
@@ -525,8 +523,6 @@ promise_test(async t => {
         yield n;
       }
       throw new Error('from the async generator');
-    } catch (e) {
-      assert_equals(e.message, 'from the async generator', "from(): async generator errors are propagated to the observable");
     } finally {
       generatorFinalized = true;
     }

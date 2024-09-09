@@ -68,7 +68,7 @@ jobs:
             --max-restarts 100 \
             safari
       - name: Publish results
-        uses: actions/upload-artifact@v4.1.0
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: safari-results-${{ matrix.current-chunk }}
           path: |
@@ -77,7 +77,7 @@ jobs:
           if-no-files-found: "error"
       - name: Publish safaridriver logs
         if: env.SAFARIDRIVER_DIAGNOSE == true
-        uses: actions/upload-artifact@v4.1.0
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: safaridriver-logs-${{ matrix.current-chunk }}
           path: ~/Library/Logs/com.apple.WebDriver/

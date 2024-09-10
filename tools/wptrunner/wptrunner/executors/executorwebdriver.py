@@ -696,7 +696,6 @@ class WebDriverRun(TimedRunner):
             self.logger.error(msg)
             return ("INTERNAL-ERROR", msg)
 
-
     def run_func(self):
         try:
             self.result = True, self.func(self.protocol, self.url, self.timeout)
@@ -709,12 +708,12 @@ class WebDriverRun(TimedRunner):
                 # so mark it as a CRASH unconditionally.
                 status = "CRASH"
             elif isinstance(e, webdriver_error.WebDriverException):
-                if e.http_status == 408 and e.status_code == "asynchronous script timeout":
-                    # workaround for https://bugs.chromium.org/p/chromedriver/issues/detail?id=2001
-                    status = "EXTERNAL-TIMEOUT"
-                elif e.http_status == 500 and e.status_code == "disconnected":
-                    # In a multiple processes architecture, the browser process
-                    # might be alive even when the renderer process has crashed.
+                # In a multiple processes architecture, the browser process might be
+                # alive even when the renderer process has crashed.
+                # TODO(https://github.com/w3c/webdriver/issues/1308): The http
+                # status and status code below are chromium specific. Replace
+                # that with a standarded code once the issue is resolved.
+                if e.http_status == 500 and e.status_code == "disconnected":
                     status = "CRASH"
             if status is None:
                 status = "INTERNAL-ERROR" if self.protocol.is_alive() else "CRASH"

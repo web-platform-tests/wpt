@@ -5,6 +5,7 @@ name: "All Tests: Safari Technology Preview"
 permissions: {}
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - epochs/three_hourly
@@ -17,8 +18,24 @@ env:
   SAFARIDRIVER_DIAGNOSE: false
 
 jobs:
+  check-workflow-run:
+    name: "Check for appropriate epochs"
+    uses: ./.github/workflows/check-workflow-run.yml
+    with:
+      check-refs: '["refs/heads/epochs/daily"]'
+    permissions:
+      actions: read
+
   safari-technology-preview-results:
     name: "All Tests: Safari Technology Preview"
+    needs: check-workflow-run
+    if: |
+      # We need always() here to then check for success/skipped from the dependency, as otherwise
+      # the skip cascades. See
+      # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/using-jobs-in-a-workflow#defining-prerequisite-jobs.
+      always() &&
+      (needs.check-workflow-run.result == 'success' || needs.check-workflow-run.result == 'skipped') &&
+      (github.event_name != 'workflow_run' || fromJSON(needs.check-workflow-run.outputs.updated-refs)[0] != null)
     runs-on:
       - self-hosted
       - webkit-ews

@@ -1179,7 +1179,7 @@
          * @param {String} source_type - A `virtual pressure source type
          *                               <https://w3c.github.io/compute-pressure/#dom-pressuresource>`_
          *                               such as "cpu".
-         * @param {String} sample - A `virtual pressure sample
+         * @param {String} sample - A `virtual pressure state
          *                          <https://w3c.github.io/compute-pressure/#dom-pressurestate>`_
          *                          such as "critical".
          * @param {WindowProxy} [context=null] - Browsing context in which to

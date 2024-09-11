@@ -25,6 +25,7 @@ test(() => {
         alg: -7,
       },
     ],
+    hints: ["duplicated-value", "duplicated-value"]
   });
   let expected = {
     rp: {
@@ -45,7 +46,7 @@ test(() => {
     ],
     // The spec defaults the following fields:
     attestation: "none",
-    hints: [],
+    hints: ["duplicated-value", "duplicated-value"]
   };
 
   assertJsonEquals(actual.rp, expected.rp);

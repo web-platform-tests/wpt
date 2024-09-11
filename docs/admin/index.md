@@ -29,11 +29,22 @@ infrastructure which makes the project possible.
 * :ref:`search`
 ```
 
-## Secrets
+## Coordinating different CI systems
 
-SSL certificates for all HTTPS-enabled domains are retrieved via [Let's
-Encrypt](https://letsencrypt.org/), so that data does not represent an
-explicitly-managed secret.
+Multiple CI systems are used to run tests and upload results to
+[wpt.fyi](https://wpt.fyi/). In order to ensure the same commit is
+used across CI systems, there are "epoch branches" like
+`epochs/daily` and `epochs/weekly` which can be used to trigger such
+runs.
+
+These branches are update by a [workflow](https://github.com/web-platform-tests/wpt/blob/master/.github/workflows/epochs.yml)
+using the `./wpt rev-list` command. This command can also be used to
+show what commits these branches have pointed to in the past, e.g., to
+show what the `epochs/daily` branch has been the past 10 days:
+
+```bash
+./wpt rev-list --epoch 1d --max-count 10
+```
 
 ## Third-party account owners
 

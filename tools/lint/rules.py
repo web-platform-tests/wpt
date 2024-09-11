@@ -565,3 +565,11 @@ class HTMLInvalidSyntaxRegexp(Regexp):
     file_extensions = EXTENSIONS["html"]
     description = "Test-file line has a non-void HTML tag with /> syntax"
     to_fix = """Replace with start tag and end tag"""
+
+
+class TestDriverInternalRegexp(Regexp):
+    pattern = br"test_driver_internal"
+    name = "TEST DRIVER INTERNAL"
+    file_extensions = EXTENSIONS["js_all"]
+    description = "Test-file uses test_driver_internal API"
+    to_fix = """Only use test_driver public API"""

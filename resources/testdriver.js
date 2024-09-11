@@ -211,11 +211,7 @@
                 return Promise.reject(new Error("element click intercepted error"));
             }
 
-            var rect = element.getClientRects()[0];
-            var centerPoint = getInViewCenterPoint(rect);
-            return window.test_driver_internal.click(element,
-                                                     {x: centerPoint[0],
-                                                      y: centerPoint[1]});
+            return window.test_driver_internal.click(element);
         },
 
         /**

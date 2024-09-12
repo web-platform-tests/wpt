@@ -30,7 +30,7 @@ var HTML5_VOID_ELEMENTS = [
 
 // https://html.spec.whatwg.org/multipage/multipage/forms.html#form-associated-element
 var HTML5_FORM_ASSOCIATED_ELEMENTS = [ 'button', 'fieldset', 'input',
-        'object', 'output', 'select', 'textarea' ];
+        'object', 'output', 'select', 'textarea', 'img' ];
 
 // https://html.spec.whatwg.org/#category-label
 const HTML5_LABELABLE_ELEMENTS = [

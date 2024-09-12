@@ -151,7 +151,7 @@
         "User activation is still active."
       );
     }
-  }, "navigator.credentials.get() promise is rejected if called with an aborted signal in same-origin iframe.");
+  }, "navigator.credentials.get() promise is rejected if called with an aborted controller in same-origin iframe.");
 
   promise_test(async (t) => {
     iframeCrossOrigin.focus();

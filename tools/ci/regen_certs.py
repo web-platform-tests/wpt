@@ -27,16 +27,6 @@ IGNORE_CERTIFICATE_ERRORS_SPKI_LIST = [
 ]
 """
 
-
-def get_parser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--checkend-seconds", type=int, default=5184000,
-                        help="The number of seconds the certificates must be valid for")
-    parser.add_argument("--force", action="store_true",
-                        help="Regenerate certificates even if not reaching expiry")
-    return parser
-
-
 def check_cert(certificate, checkend_seconds):
     """Checks whether an x509 certificate will expire within a set period.
 
@@ -87,7 +77,16 @@ def calculate_spki(cert_path):
     return base64.b64encode(dgst_output).decode('utf-8')
 
 
-def run(**kwargs):
+def get_parser_regen():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--checkend-seconds", type=int, default=5184000,
+                        help="The number of seconds the certificates must be valid for")
+    parser.add_argument("--force", action="store_true",
+                        help="Regenerate certificates even if not reaching expiry")
+    return parser
+
+
+def run_regen(**kwargs):
     logging.basicConfig()
 
     if kwargs["force"]:
@@ -100,3 +99,51 @@ def run(**kwargs):
         regen_chrome_spki()
     else:
         logger.info("Certificates are still valid for at least %s seconds, skipping regeneration" % checkend_seconds)
+
+
+def get_parser_checkend():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--days", type=int, default=None,
+                        help="The number of days the certificates must be valid for")
+    parser.add_argument("--hours", type=int, default=None,
+                        help="The additional number of hours the certificates must be valid for")
+    parser.add_argument("--minutes", type=int, default=None,
+                        help="The additional number of minutes the certificates must be valid for")
+    parser.add_argument("--seconds", type=int, default=None,
+                        help="The additional number of seconds the certificates must be valid for")
+    return parser
+
+
+def run_checkend(**kwargs):
+    logging.basicConfig()
+
+    time_delta_params = {key: value for key, value in kwargs.items()
+                         if key in ["days", "hours", "minutes", "seconds"] and value is not None}
+    if time_delta_params:
+        allowed_delta = datetime.timedelta(**time_delta_params)
+    else:
+        allowed_delta = None
+
+    valid_expiry = True
+
+
+    for cert in ["tools/certs/cacert.pem",
+                 "tools/certs/web-platform.test.pem"]:
+        expires_time = get_end_time(cert)
+        now = datetime.datetime.now(expires_time.tzinfo)
+        time_to_expiry: datetime.timedelta = expires_time - now
+
+        if time_to_expiry.total_seconds() > 0:
+            msg = (f"Certificate {cert} expires in {time_to_expiry.days} days, {time_to_expiry.seconds} seconds")
+            cert_valid_expiry = allowed_delta is None or time_to_expiry > allowed_delta
+        else:
+            msg = f"Certificate {cert} is expired"
+            cert_valid_expiry = False
+
+        if not cert_valid_expiry:
+            valid_expiry = False
+            logger.error(msg)
+        else:
+            logger.info(msg)
+
+    return 0 if valid_expiry else 1

@@ -130,7 +130,7 @@
         navigator.credentials.get(options)
       );
     }
-  }, "navigator.credentials.get() promise is rejected if called with an aborted signal.");
+  }, "navigator.credentials.get() promise is rejected if called with an aborted controller.");
 
   promise_test(async (t) => {
     iframeSameOrigin.focus();

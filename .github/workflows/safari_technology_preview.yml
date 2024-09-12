@@ -6,6 +6,10 @@ permissions: {}
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: [epochs]
+    types:
+      - completed
   push:
     branches:
       - epochs/three_hourly
@@ -22,7 +26,7 @@ jobs:
     name: "Check for appropriate epochs"
     uses: ./.github/workflows/check-workflow-run.yml
     with:
-      check-refs: '["refs/heads/epochs/daily"]'
+      check-refs: '["refs/heads/epochs/three_hourly"]'
     permissions:
       actions: read
 

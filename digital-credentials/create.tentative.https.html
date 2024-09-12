@@ -107,7 +107,7 @@
     });
     assert_equals(result.constructor, "DOMException");
     assert_equals(result.name, "AbortError");
-  }, "navigator.credentials.create() rejects if called with an aborted signal in cross-origin iframe.");
+  }, "navigator.credentials.create() rejects if called with an aborted controller in cross-origin iframe.");
 
   promise_test(async (t) => {
     const abortController = new AbortController();

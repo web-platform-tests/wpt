@@ -83,7 +83,7 @@
         signal,
       })
     );
-  }, "navigator.credentials.create() rejects if called with an aborted signal.");
+  }, "navigator.credentials.create() rejects if called with an aborted controller.");
 
   promise_test(async (t) => {
     const { contentWindow: iframeWindow } = iframeSameOrigin;

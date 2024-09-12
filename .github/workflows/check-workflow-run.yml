@@ -28,6 +28,7 @@ jobs:
           name: git-push-output
           path: ${{ runner.temp }}/git-push-output.txt
           run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - id: check
         run: |-
           python3 tools/ci/check_for_updated_refs.py >> "$GITHUB_OUTPUT"

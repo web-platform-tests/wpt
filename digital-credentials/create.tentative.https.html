@@ -98,7 +98,7 @@
         signal,
       })
     );
-  }, "navigator.credentials.create() rejects if called with an aborted signal in same-origin iframe.");
+  }, "navigator.credentials.create() rejects if called with an aborted controller in same-origin iframe.");
 
   promise_test(async (t) => {
     const result = await sendMessage(iframeCrossOrigin, {

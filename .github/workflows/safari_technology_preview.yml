@@ -65,7 +65,6 @@ jobs:
           ./wpt install --channel preview --download-only -d . --rename STP safari browser
           sudo installer -pkg STP.pkg -target LocalSystem
           sudo /Applications/Safari\ Technology\ Preview.app/Contents/MacOS/safaridriver --enable
-          defaults write com.apple.SafariTechnologyPreview WebKitJavaScriptCanOpenWindowsAutomatically 1
       - name: Update hosts
         run: |-
           set -eux -o pipefail

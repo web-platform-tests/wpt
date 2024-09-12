@@ -62,7 +62,6 @@ jobs:
         run: |-
           set -eux -o pipefail
           sudo safaridriver --enable
-          defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically 1
       - name: Update hosts
         run: |-
           set -eux -o pipefail

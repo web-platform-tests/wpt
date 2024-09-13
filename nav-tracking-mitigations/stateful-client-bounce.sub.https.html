@@ -18,9 +18,6 @@
   });
 
   promise_test(async t => {
-    const {promise: getLinkPromise, resolve: getLinkResolver} =
-      Promise.withResolvers();
-
     let linkInNewPage = null;
 
     // Open a new tab and retrieve the link to start the test.
@@ -39,7 +36,8 @@
     // not navigate away. Doing this from the main test page avoids the issue.
     test_driver.click(linkInNewPage);
 
-    await new Promise(resolve => window.addEventListener('message', resolve, {once: true}));
+    await new Promise(resolve => window.addEventListener(
+      'message', resolve, {once: true}));
 
     let result = [];
     while (result.length == 0) {

@@ -23,6 +23,12 @@ jobs:
     outputs:
       output: ${{ steps.check.outputs.test }}
     steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+        sparse-checkout: |
+          tools
       - uses: actions/download-artifact@v4
         with:
           name: git-push-output

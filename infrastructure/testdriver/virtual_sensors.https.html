@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>TestDriver virtual sensors methods</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+"use strict";
+
+promise_test(async t => {
+  const sensorType = 'gyroscope';
+  await test_driver.set_permission({name: sensorType}, 'granted');
+  await test_driver.create_virtual_sensor(sensorType);
+
+  const sensor = new Gyroscope();
+  t.add_cleanup(async () => {
+    sensor.stop();
+    await test_driver.remove_virtual_sensor(sensorType);
+  });
+  const watcher = new EventWatcher(t, sensor, ['activate']);
+
+  sensor.start();
+  await watcher.wait_for('activate');
+}, "Test that virtual sensors can be created and removed.");
+
+promise_test(async t => {
+  const sensorType = 'gyroscope';
+  await test_driver.set_permission({name: sensorType}, 'granted');
+  await test_driver.create_virtual_sensor(sensorType, {connected: false});
+
+  const sensor = new Gyroscope();
+  t.add_cleanup(async () => {
+    sensor.stop();
+    await test_driver.remove_virtual_sensor(sensorType);
+  });
+
+  const watcher = new EventWatcher(t, sensor, ['error']);
+  sensor.start();
+  const error = await watcher.wait_for('error');
+  assert_equals(error.error.name, 'NotReadableError');
+}, "Test that unavailable virtual sensors can be created.");
+
+promise_test(async t => {
+  const sensorType = 'gyroscope';
+  const minSamplingFrequency = 6.0;
+
+  await test_driver.set_permission({name: sensorType}, 'granted');
+  await test_driver.create_virtual_sensor(sensorType, {minSamplingFrequency});
+
+  const sensor = new Gyroscope({frequency: 5.0});
+  t.add_cleanup(async () => {
+    sensor.stop();
+    await test_driver.remove_virtual_sensor(sensorType);
+  });
+
+  const watcher = new EventWatcher(t, sensor, ['activate', 'reading', 'error']);
+  sensor.start();
+  await watcher.wait_for('activate');
+
+  const info = await test_driver.get_virtual_sensor_information(sensorType);
+
+  assert_equals(info['requestedSamplingFrequency'], minSamplingFrequency);
+}, "Test that minimum frequency setting works and virtual sensor information can be fetched.");
+
+promise_test(async t => {
+  const sensorType = 'accelerometer';
+  await test_driver.set_permission({name: sensorType}, 'granted');
+  await test_driver.create_virtual_sensor(sensorType);
+
+  const sensor = new Accelerometer();
+  t.add_cleanup(async () => {
+    sensor.stop();
+    await test_driver.remove_virtual_sensor(sensorType);
+  });
+
+  const watcher = new EventWatcher(t, sensor, ['activate', 'reading', 'error']);
+  sensor.start();
+  await watcher.wait_for('activate');
+
+  const reading = {'x': 1.0, 'y': 2.0, 'z': 3.0};
+  test_driver.update_virtual_sensor(sensorType, reading);
+
+  await watcher.wait_for('reading');
+  assert_equals(sensor.x, reading.x);
+  assert_equals(sensor.y, reading.y);
+  assert_equals(sensor.z, reading.z);
+}, "Test that virtual sensors can be updated.");
+
+</script>

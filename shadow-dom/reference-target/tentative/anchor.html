@@ -50,38 +50,34 @@
   </div>
 
   <script>
-    customElements.define('x-anchor-2', class extends HTMLElement {
-    constructor() {
-      super();
-      this.attachShadow({ mode: 'open', referencetarget: 'anchor' });
-      this.shadowRoot.innerHTML =`
-  <style>
-  div {
-    width: 100px;
-    height: 100px;
-  }
+    const customAnchor = document.querySelector('x-anchor-2');
+    customAnchor.attachShadow({ mode: 'open', referencetarget: 'anchor' });
+    customAnchor.shadowRoot.innerHTML =`
+<style>
+div {
+width: 100px;
+height: 100px;
+}
 
-  #anchor {
-    background-color: yellow;
-  }
-  </style>
+#anchor {
+background-color: yellow;
+}
+</style>
 
-  <div></div>
-  <div id="anchor"></div>`;
-    }
-    });
+<div></div>
+<div id="anchor"></div>`;
   </script>
   <script>
-    function testPopoverAnchor(id) {
+    function testPopoverAnchor(id, name) {
       test(function () {
       const popover = document.getElementById(id);
       popover.showPopover();
       assert_equals(popover.offsetLeft, 100, "popover.offsetLeft");
       assert_equals(popover.offsetTop, 100, "popover.offsetTop");
-      }, "ShadowRoot ReferenceTarget works with anchor attribute.");
+      }, name);
     }
-    testPopoverAnchor('popover-1');
-    testPopoverAnchor('popover-2');
+    testPopoverAnchor('popover-1', "ShadowRoot ReferenceTarget works with anchor attribute.");
+    testPopoverAnchor('popover-2', "ShadowRoot ReferenceTarget works with anchor attribute via options.");
   </script>
 </body>
 

@@ -32,13 +32,9 @@
 </label>
 
 <script>
-  customElements.define('x-input1', class extends HTMLElement {
-    constructor() {
-    super();
-    this.attachShadow({ mode: 'open', referenceTarget: 'input1' });
-    this.shadowRoot.innerHTML = `<input id="input1">`;
-    }
-  });
+  const customInput1 = document.querySelector('x-input1');
+  customInput1.attachShadow({ mode: 'open', referenceTarget: 'input1' });
+  customInput1.shadowRoot.innerHTML = `<input id="input1">`;
 </script>
 
 <script>
@@ -77,20 +73,12 @@
 </label>
 
 <script>
-  customElements.define('x-outer2', class extends HTMLElement {
-    constructor() {
-      super();
-      this.attachShadow({ mode: 'open', referenceTarget: 'x-inner2' });
-      this.shadowRoot.innerHTML = `<x-inner2 id="x-inner2"></x-inner2>`;
-    }
-  });
-  customElements.define('x-inner2', class extends HTMLElement {
-    constructor() {
-      super();
-      this.attachShadow({ mode: 'open', referenceTarget: 'input2' });
-      this.shadowRoot.innerHTML = `<input id="input2">`;
-    }
-  });
+  const customOuter2 = document.querySelector('x-outer2');
+  customOuter2.attachShadow({ mode: 'open', referenceTarget: 'x-inner2' });
+  customOuter2.shadowRoot.innerHTML = `<x-inner2 id="x-inner2"></x-inner2>`;
+  const customInner2 = document.querySelector('x-inner2');
+  customInner2.attachShadow({ mode: 'open', referenceTarget: 'input2' });
+  customInner2.shadowRoot.innerHTML = `<input id="input2">`;
 </script>
 
 <script>

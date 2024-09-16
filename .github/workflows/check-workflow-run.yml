@@ -32,12 +32,12 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: git-push-output
-          path: ${{ runner.temp }}/git-push-output.txt
+          path: ${{ runner.temp }}/git-push-output
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - id: check
         run: |-
           python3 tools/ci/check_for_updated_refs.py >> "$GITHUB_OUTPUT"
         env:
-          GIT_PUSH_OUTPUT: ${{ runner.temp }}/git-push-output.txt
+          GIT_PUSH_OUTPUT: ${{ runner.temp }}/git-push-output/git-push-output.txt
           REFS: ${{ inputs.check-refs }}

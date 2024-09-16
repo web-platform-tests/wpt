@@ -54,12 +54,13 @@
 <li><p><a class="reference internal" href="#sensors" id="id16">Sensors</a></p></li>
 <li><p><a class="reference internal" href="#device-posture" id="id17">Device Posture</a></p></li>
 <li><p><a class="reference internal" href="#bounce-tracking-mitigations" id="id18">Bounce Tracking Mitigations</a></p></li>
-<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id19">Using test_driver in other browsing contexts</a></p></li>
-<li><p><a class="reference internal" href="#actions" id="id20">Actions</a></p>
+<li><p><a class="reference internal" href="#compute-pressure" id="id19">Compute Pressure</a></p></li>
+<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id20">Using test_driver in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#actions" id="id21">Actions</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id1" id="id21">Markup</a></p></li>
-<li><p><a class="reference internal" href="#id2" id="id22">API</a></p></li>
-<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id23">Using in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#id1" id="id22">Markup</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id23">API</a></p></li>
+<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id24">Using in other browsing contexts</a></p></li>
 </ul>
 </li>
 </ul>
@@ -956,6 +957,69 @@ WebDriver command.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the bounce tracking timer algorithm has finished running. Returns an array of all hosts that were in the stateful bounce tracking map before deletion occurred.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="compute-pressure">
+<h3>Compute Pressure<a class="headerlink" href="#compute-pressure" title="Link to this heading">¶</a></h3>
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.create_virtual_pressure_source">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">create_virtual_pressure_source</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata={}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.create_virtual_pressure_source" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a virtual pressure source.</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/compute-pressure/#create-virtual-pressure-source">Create virtual pressure source</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_type</strong> (<em>String</em>) – A <a class="reference external" href="https://w3c.github.io/compute-pressure/#dom-pressuresource">virtual pressure source type</a> such as “cpu”.</p></li>
+<li><p><strong>metadata</strong> (<em>Object</em>) – <p>Optional parameters described in <a class="reference external" href="https://w3c.github.io/compute-pressure/#create-virtual-pressure-source">Create virtual pressure source</a>.</p>
+</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled when virtual pressure source is created. Rejected in case the WebDriver command errors out (including if a virtual pressure source of the same type already exists).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.update_virtual_pressure_source">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">update_virtual_pressure_source</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.update_virtual_pressure_source" title="Link to this definition">¶</a></dt>
+<dd><p>Causes a virtual pressure source to report a new reading.</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/compute-pressure/#update-virtual-pressure-source">Update virtual pressure source</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_type</strong> (<em>String</em>) – A <a class="reference external" href="https://w3c.github.io/compute-pressure/#dom-pressuresource">virtual pressure source type</a> such as “cpu”.</p></li>
+<li><p><strong>sample</strong> (<em>String</em>) – A <a class="reference external" href="https://w3c.github.io/compute-pressure/#dom-pressurestate">virtual pressure state</a> such as “critical”.</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the reading update reaches the virtual pressure source. Rejected in case the WebDriver command errors out (including if a virtual pressure source of the given type does not exist).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.remove_virtual_pressure_source">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">remove_virtual_pressure_source</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.remove_virtual_pressure_source" title="Link to this definition">¶</a></dt>
+<dd><p>Removes created virtual pressure source.</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/compute-pressure/#delete-virtual-pressure-source">Delete virtual pressure source</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_type</strong> (<em>String</em>) – A <a class="reference external" href="https://w3c.github.io/compute-pressure/#dom-pressuresource">virtual pressure source type</a> such as “cpu”.</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the virtual pressure source has been removed or if a pressure source of the given type does not exist. Rejected in case the WebDriver command errors out.</p>
 </dd>
 </dl>
 </dd></dl>

@@ -5,8 +5,6 @@
 const detachedArrayBuffer = new ArrayBuffer(4);
 var b = detachedArrayBuffer.transferToFixedLength();
 
-const emptyArrayBuffer = new ArrayBuffer(0);
-
 const invalidConfigs = [
   {
     comment: 'Missing codec',

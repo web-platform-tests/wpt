@@ -96,7 +96,7 @@ def get_paths(**kwargs):
     else:
         revish = kwargs["revish"]
 
-    changed, _ = files_changed(revish, ignore_rules=[])
+    changed, _ = files_changed(wpt_root, revish, ignore_rules=[])
     all_changed = {os.path.relpath(item, wpt_root) for item in set(changed)}
     return all_changed
 

@@ -41,3 +41,11 @@ jobs:
         env:
           GIT_PUSH_OUTPUT: ${{ runner.temp }}/git-push-output/git-push-output.txt
           REFS: ${{ inputs.check-refs }}
+
+  check-workflow-run-noop:
+    name: "Check for appropriate epochs (noop)"
+    if: ${{ github.event_name != 'workflow_run' }}
+    runs-on:
+      - ubuntu-22.04
+    steps:
+      - run: exit 0

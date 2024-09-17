@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<title>event and htmlFor IDL attributes of HTMLScriptElement</title>
+<title>event, for and htmlFor IDL attributes of HTMLScriptElement</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-script-event">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-script-for">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-script-htmlfor">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -10,6 +11,7 @@
 test(function() {
   var script = document.createElement("script");
   assert_equals(script.event, "");
+  assert_equals(script.for, "");
   assert_equals(script.htmlFor, "");
 })
 test(function() {
@@ -17,6 +19,7 @@ test(function() {
   script.setAttribute("event", "blah");
   script.setAttribute("for", "blah");
   assert_equals(script.event, "blah");
+  assert_equals(script.for, "blah");
   assert_equals(script.htmlFor, "blah");
   assert_equals(script.getAttribute("event"), "blah");
   assert_equals(script.getAttribute("for"), "blah");
@@ -28,9 +31,14 @@ test(function() {
   script.event = "foo";
   script.htmlFor = "foo";
   assert_equals(script.event, "foo");
+  assert_equals(script.for, "foo");
   assert_equals(script.htmlFor, "foo");
   assert_equals(script.getAttribute("event"), "foo");
-  assert_equals(script.getAttribute("for"), "foo");
+  
+  script.for = "bar";
+  assert_equals(script.for, "bar");
+  assert_equals(script.htmlFor, "bar");
+  assert_equals(script.getAttribute("for"), "bar");
 })
 test(function() {
   var script = document.createElement("script");
@@ -39,8 +47,15 @@ test(function() {
   script.event = null;
   script.htmlFor = null;
   assert_equals(script.event, "null");
+  assert_equals(script.for, "null");
   assert_equals(script.htmlFor, "null");
   assert_equals(script.getAttribute("event"), "null");
+  assert_equals(script.getAttribute("for"), "null");
+  
+  script.setAttribute("for", "blah");
+  script.for = null;
+  assert_equals(script.for, "null");
+  assert_equals(script.htmlFor, "null");
   assert_equals(script.getAttribute("for"), "null");
 })
 test(function() {
@@ -50,8 +65,15 @@ test(function() {
   script.event = undefined;
   script.htmlFor = undefined;
   assert_equals(script.event, "undefined");
+  assert_equals(script.for, "undefined");
   assert_equals(script.htmlFor, "undefined");
   assert_equals(script.getAttribute("event"), "undefined");
+  assert_equals(script.getAttribute("for"), "undefined");
+  
+  script.setAttribute("for", "blah");
+  script.for = undefined;
+  assert_equals(script.for, "undefined");
+  assert_equals(script.htmlFor, "undefined");
   assert_equals(script.getAttribute("for"), "undefined");
 })
 </script>

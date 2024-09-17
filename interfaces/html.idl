@@ -2908,8 +2908,7 @@ partial interface HTMLStyleElement {
 partial interface HTMLScriptElement {
   [CEReactions] attribute DOMString charset;
   [CEReactions] attribute DOMString event;
-  [CEReactions] attribute DOMString for;
-  [CEReactions] attribute DOMString htmlFor; // legacy alias of .for
+  [CEReactions] attribute DOMString htmlFor;
 };
 
 partial interface HTMLTableElement {

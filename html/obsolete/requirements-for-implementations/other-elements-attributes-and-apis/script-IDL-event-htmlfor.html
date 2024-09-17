@@ -34,7 +34,7 @@ test(function() {
   assert_equals(script.for, "foo");
   assert_equals(script.htmlFor, "foo");
   assert_equals(script.getAttribute("event"), "foo");
-  
+
   script.for = "bar";
   assert_equals(script.for, "bar");
   assert_equals(script.htmlFor, "bar");
@@ -51,7 +51,7 @@ test(function() {
   assert_equals(script.htmlFor, "null");
   assert_equals(script.getAttribute("event"), "null");
   assert_equals(script.getAttribute("for"), "null");
-  
+
   script.setAttribute("for", "blah");
   script.for = null;
   assert_equals(script.for, "null");
@@ -69,7 +69,7 @@ test(function() {
   assert_equals(script.htmlFor, "undefined");
   assert_equals(script.getAttribute("event"), "undefined");
   assert_equals(script.getAttribute("for"), "undefined");
-  
+
   script.setAttribute("for", "blah");
   script.for = undefined;
   assert_equals(script.for, "undefined");

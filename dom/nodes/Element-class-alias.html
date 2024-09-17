@@ -10,7 +10,7 @@
 test(function() {
   assert_equals(testDiv.class, "", "class must reflect \"class\"");
   assert_equals(testDiv.className, "", "className must reflect \"class\"");
-  
+
   testDiv.setAttribute("class", "test 1");
   assert_equals(testDiv.class, "test 1", "class must reflect changes made to \"class\"");
   assert_equals(testDiv.className, "test 1", "className must reflect changes made to \"class\"");

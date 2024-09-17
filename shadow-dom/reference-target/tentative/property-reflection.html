@@ -62,15 +62,15 @@
         return host;
       },
       function appendTestWithOptions(host_container, referenced_element_type) {
-		host_container.setHTMLUnsafe('<div id="host-id"></div>');
+        host_container.setHTMLUnsafe('<div id="host-id"></div>');
         const host = host_container.firstElementChild;
         host.attachShadow({ mode: 'open', referenceTarget: 'target' });
         host.shadowRoot.innerHTML = `<${referenced_element_type} id="target"></${referenced_element_type}>`;
         return host;
       }
     ];
-	element_creation_methods[0].name = '';
-	element_creation_methods[1].name = ' via options';
+    element_creation_methods[0].name = '';
+    element_creation_methods[1].name = ' via options';
     // We want to test types of elements that are associated with properties that can reflect other
     // elements and can therefore interact with reference target in interesting ways.
     // The HTML5_LABELABLE_ELEMENTS are defined in https://html.spec.whatwg.org/#category-label,

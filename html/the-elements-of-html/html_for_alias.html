@@ -11,7 +11,7 @@ test(function() {
   for (const elem of elements) {
     assert_equals(elem.for, "", "for must reflect \"for\"");
     assert_equals(elem.htmlFor, "", "htmlFor must reflect \"for\"");
-    
+
     elem.setAttribute("for", "test1");
     assert_equals(elem.for, "test1", "for must reflect changes made to \"for\"");
     assert_equals(elem.htmlFor, "test1", "htmlFor must reflect changes made to \"for\"");

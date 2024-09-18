@@ -1,4 +1,4 @@
-export type ProviderType = "default" | "openid4vp";
+export type Protocol = "default" | "openid4vp";
 export type CredentialMediationRequirement =
   | "conditional"
   | "optional"
@@ -27,9 +27,6 @@ export interface DigitalCredentialRequestOptions {
  * @see https://wicg.github.io/digital-credentials/#extensions-to-credentialrequestoptions
  */
 export interface CredentialRequestOptions {
-  /**
-   * The digital credential request options.
-   */
   digital: DigitalCredentialRequestOptions;
   mediation: CredentialMediationRequirement;
 }

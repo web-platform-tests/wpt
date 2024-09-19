@@ -29,6 +29,10 @@
       linkInNewPage = otherTab.document.getElementById('navigate-link');
     });
 
+    const redirectEndedPromise = new Promise(resolve => {
+      window.addEventListener('message', resolve, {once: true});
+    });
+
     // Click the link in the new tab.
     //
     // Ideally, we would click this from within the page, but because the page
@@ -36,8 +40,7 @@
     // not navigate away. Doing this from the main test page avoids the issue.
     test_driver.click(linkInNewPage);
 
-    await new Promise(resolve => window.addEventListener(
-      'message', resolve, {once: true}));
+    await redirectEndedPromise;
 
     let result = [];
     while (result.length == 0) {

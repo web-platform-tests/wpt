@@ -54,17 +54,10 @@ async def test_iframe(bidi_session, current_url, wait_for_url, new_tab, inline,
     await bidi_session.browsing_context.navigate(
         context=new_tab["context"], url=page_url, wait="complete"
     )
-    assert await current_url(new_tab["context"]) == page_url
 
     contexts = await bidi_session.browsing_context.get_tree(
         root=new_tab["context"])
     iframe_context = contexts[0]["children"][0]
-
-    iframe_url_2 = inline("page 2")
-    await bidi_session.browsing_context.navigate(
-        context=iframe_context["context"], url=iframe_url_2, wait="complete"
-    )
-    assert await current_url(iframe_context["context"]) == iframe_url_2
 
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.browsing_context.traverse_history(

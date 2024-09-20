@@ -21,8 +21,8 @@ def get_IdnaTestV2_lines():
     IdnaTestV2 = os.path.join(os.path.dirname(__file__), "IdnaTestV2.txt")
     if not os.path.exists(IdnaTestV2):
         # Download IdnaTestV2.txt if it doesn't exist yet
-        open(IdnaTestV2, "w").write(requests.get("https://unicode.org/Public/idna/latest/IdnaTestV2.txt").text)
-    return open(IdnaTestV2, "r").readlines()
+        open(IdnaTestV2, "w", encoding="utf-8").write(requests.get("https://unicode.org/Public/idna/latest/IdnaTestV2.txt").text)
+    return open(IdnaTestV2, "r", encoding="utf-8").readlines()
 
 def remove_escapes(input):
     return json.loads("\"" + input + "\"")
@@ -147,7 +147,7 @@ def parse(lines, exclude_ipv4_like, exclude_std3, exclude_bidi):
     return { "tests": output, "unique_statuses": unique_statuses }
 
 def to_json(data):
-    handle = open(os.path.join(os.path.dirname(__file__), "../resources/IdnaTestV2.json"), "w")
+    handle = open(os.path.join(os.path.dirname(__file__), "../resources/IdnaTestV2.json"), "w", encoding="utf-8")
     handle.write(json.dumps(data, sort_keys=True, allow_nan=False, indent=2, separators=(',', ': ')))
     handle.write("\n")
     handle.close()

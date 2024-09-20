@@ -50,7 +50,7 @@ def contains_bidi_status(statuses):
 def parse(lines, exclude_ipv4_like, exclude_std3, exclude_bidi):
     # Main quest.
     output = ["THIS IS A GENERATED FILE. PLEASE DO NOT MODIFY DIRECTLY. See ../tools/IdnaTestV2-parser.py instead."]
-    output.append(f"--exclude-ipv4-like: {exclude_ipv4_like}; --exclude-std3: {exclude_std3}; --exclude_bidi: {exclude_bidi}")
+    output.append(f"--exclude-ipv4-like: {exclude_ipv4_like}; --exclude-std3: {exclude_std3}; --exclude-bidi: {exclude_bidi}")
 
     # Side quest.
     unique_statuses = []

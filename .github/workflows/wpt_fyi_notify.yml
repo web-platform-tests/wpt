@@ -14,7 +14,7 @@ jobs:
       - name: "wpt.fyi"
         uses: fjogeleit/http-request-action@v1
         with:
-          url: 'https://wpt.fyi/api/checks/github-actions/'
+          url: 'https://wpt.fyi/api/github-actions/'
           method: 'POST'
           contentType: 'application/x-www-form-urlencoded'
           data: |
@@ -29,7 +29,7 @@ jobs:
       - name: "staging.wpt.fyi"
         uses: fjogeleit/http-request-action@v1
         with:
-          url: 'https://staging.wpt.fyi/api/checks/github-actions/'
+          url: 'https://staging.wpt.fyi/api/github-actions/'
           method: 'POST'
           contentType: 'application/x-www-form-urlencoded'
           data: |

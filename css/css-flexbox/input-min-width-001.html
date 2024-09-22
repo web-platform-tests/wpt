@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<title>compressible min-width for input elements</title>
+<link rel="author" title="David Grogan" href="mailto:dgrogan@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-flexbox/#min-size-auto" title="content size suggestion">
+<link rel="help" href="https://drafts.csswg.org/css-sizing/#min-content-zero">
+<link rel="bookmark" href="https://crbug.com/581545">
+<link rel="bookmark" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1585485">
+<meta name="assert" content="'Compressible' min-width is honored on input elements." />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+
+<style>
+.flexContainer {
+  display: flex;
+  width: 200px;
+  border: 2px solid blue;
+}
+
+.sibling {
+  min-width: 100%;
+  background: grey;
+}
+
+input {
+  border: 0px;
+  padding: 0px;
+  outline: 1px solid orange;
+}
+</style>
+
+min-width is min(200px specified, 0px content). 0px content is because specifying width:100% makes this element 'compressible', which means its min-content size is 0.
+<div class="flexContainer">
+  <div class=sibling></div>
+  <input style="width: 100%" data-expected-width=0>
+</div>
+
+Specifying a fixed width doesn't make the element compressible.
+<div class="flexContainer">
+  <div class=sibling></div>
+  <input style="width: 90px" data-expected-width=90>
+</div>
+
+<script>
+  checkLayout('input');
+</script>

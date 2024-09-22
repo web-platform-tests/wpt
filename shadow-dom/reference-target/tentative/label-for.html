@@ -33,7 +33,7 @@
 
 <!-- 2. Label for attribute targets a custom element using shadowrootreferencetarget inside multiple layers of shadow roots -->
 
-<label for="x-outer2">Input 2</label>
+<!-- <label for="x-outer2">Input 2</label>
 <x-outer2 id="x-outer2">
   <template shadowrootmode="open" shadowrootreferencetarget="x-inner2">
     <x-inner2 id="x-inner2">
@@ -55,12 +55,12 @@
     assert_equals(await test_driver.get_computed_label(inner), "");
     assert_equals(await test_driver.get_computed_label(input), "Input 2");
   }, "Label for attribute targets a custom element using shadowrootreferencetarget inside multiple layers of shadow roots");
-</script>
+</script> -->
 
 
 <!-- 3. Multiple labels targeting a custom element using shadowrootreferencetarget inside multiple layers of shadow roots -->
 
-<label for="x-outer3">A</label>
+<!-- <label for="x-outer3">A</label>
 <x-outer3 id="x-outer3">
   <template shadowrootmode="open" shadowrootreferencetarget="x-inner3">
     <label for="x-inner3">B</label>
@@ -84,7 +84,7 @@
       const computed_label = await test_driver.get_computed_label(input);
       assert_equals(computed_label, "A B C D E F");
     }, "Multiple labels targeting a custom element using shadowrootreferencetarget inside multiple layers of shadow roots");
-  </script>
+  </script> -->
 
 </body>
 

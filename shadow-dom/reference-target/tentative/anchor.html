@@ -51,7 +51,7 @@
 
   <script>
     const customAnchor = document.querySelector('x-anchor-2');
-    customAnchor.attachShadow({ mode: 'open', referencetarget: 'anchor' });
+    customAnchor.attachShadow({ mode: 'open', referenceTarget: 'anchor' });
     customAnchor.shadowRoot.innerHTML =`
 <style>
 div {
@@ -70,10 +70,12 @@ background-color: yellow;
   <script>
     function testPopoverAnchor(id, name) {
       test(function () {
-      const popover = document.getElementById(id);
-      popover.showPopover();
-      assert_equals(popover.offsetLeft, 100, "popover.offsetLeft");
-      assert_equals(popover.offsetTop, 100, "popover.offsetTop");
+        const popover = document.getElementById(id);
+        popover.showPopover();
+        assert_equals(popover.offsetLeft, 100, "popover.offsetLeft");
+        assert_equals(popover.offsetTop, 100, "popover.offsetTop");
+		// Clean up the test context for future tests.
+		popover.parentElement.remove();
       }, name);
     }
     testPopoverAnchor('popover-1', "ShadowRoot ReferenceTarget works with anchor attribute.");

@@ -13,8 +13,8 @@
 <body>
   <button id="toggle-button-1" popovertarget="x-popover-1">Toggle the popover</button>
   <x-popover-1 id="x-popover-1">
-    <template shadowrootmode="open" shadowrootreferencetarget="popover-1">
-      <div id="popover-1" popover>Popover content inside shadow root</div>
+    <template shadowrootmode="open" shadowrootreferencetarget="popover">
+      <div id="popover" popover>Popover content inside shadow root</div>
     </template>
   </x-popover-1>
 
@@ -23,15 +23,15 @@
 
   <script>
     const customPopover2 = document.querySelector('x-popover-2');
-    customPopover2.attachShadow({ mode: 'open', referenceTarget: 'popover-2' });
-    customPopover2.shadowRoot.innerHTML = '<div id="popover-1" popover>Popover content inside shadow root</div>';
+    customPopover2.attachShadow({ mode: 'open', referenceTarget: 'popover' });
+    customPopover2.shadowRoot.innerHTML = '<div id="popover" popover>Popover content inside shadow root</div>';
   </script>
 
   <script>
     function testPopoverTarget(popoverId, buttonId, name) {
       test(function () {
         const xPopover = document.getElementById(popoverId);
-        const popover = xPopover.shadowRoot.getElementById("popover-1");
+        const popover = xPopover.shadowRoot.getElementById("popover");
 
         let showCount = 0;
         popover.addEventListener('beforetoggle', (e) => {

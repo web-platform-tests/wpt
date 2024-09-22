@@ -74,8 +74,8 @@ background-color: yellow;
         popover.showPopover();
         assert_equals(popover.offsetLeft, 100, "popover.offsetLeft");
         assert_equals(popover.offsetTop, 100, "popover.offsetTop");
-		// Clean up the test context for future tests.
-		popover.parentElement.remove();
+        // Clean up the test context for future tests.
+        popover.parentElement.remove();
       }, name);
     }
     testPopoverAnchor('popover-1', "ShadowRoot ReferenceTarget works with anchor attribute.");

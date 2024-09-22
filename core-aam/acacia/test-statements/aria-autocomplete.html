@@ -8,7 +8,6 @@
   <script src="/resources/testdriver.js"></script>
   <script src="/resources/testdriver-vendor.js"></script>
   <script src="/resources/testdriver-actions.js"></script>
-  <script src="scripts/attr-map.js"></script>
   <script src="scripts/aam-utils.js"></script>
 </head>
 <body>
@@ -18,25 +17,109 @@
 <input role='combobox' id='test3' aria-autocomplete='list'>
 
 <script>
-  AAMUtils.verifyAttrAPI(
+  AAMUtils.verifyAPI(
+    'aria-autocomplete=both',
     'test1',
-    'both',
-    attrmap['aria-autocomplete'],
-    'aria-autocomplete=both'
+    {
+      "Atspi" : [
+        [
+          "property",
+          "objectAttributes",
+          "contains",
+          "autocomplete:both"
+        ],
+        [
+          "property",
+          "states",
+          "contains",
+          "STATE_SUPPORTS_AUTOCOMPLETION"
+        ]
+      ],
+      "IAccessible2" : [
+         [
+           "property",
+           "objectAttributes",
+           "contains",
+           "autocomplete:both"
+         ],
+         [
+           "property",
+           "states",
+           "contains",
+           "IA2_STATE_SUPPORTS_AUTOCOMPLETION"
+         ]
+      ]
+    }
   );
 
-  AAMUtils.verifyAttrAPI(
+  AAMUtils.verifyAPI(
+    'aria-autocomplete=inline',
     'test2',
-    'inline',
-    attrmap['aria-autocomplete'],
-    'aria-autocomplete=inline'
+    {
+      "Atspi" : [
+        [
+          "property",
+          "objectAttributes",
+          "contains",
+          "autocomplete:inline"
+        ],
+        [
+          "property",
+          "states",
+          "contains",
+          "STATE_SUPPORTS_AUTOCOMPLETION"
+        ]
+      ],
+      "IAccessible2" : [
+         [
+           "property",
+           "objectAttributes",
+           "contains",
+           "autocomplete:inline"
+         ],
+         [
+           "property",
+           "states",
+           "contains",
+           "IA2_STATE_SUPPORTS_AUTOCOMPLETION"
+         ]
+      ]
+    }
   );
 
-  AAMUtils.verifyAttrAPI(
+  AAMUtils.verifyAPI(
+    'aria-autocomplete=list',
     'test3',
-    'list',
-    attrmap['aria-autocomplete'],
-    'aria-autocomplete=list'
+    {
+      "Atspi" : [
+        [
+          "property",
+          "objectAttributes",
+          "contains",
+          "autocomplete:list"
+        ],
+        [
+          "property",
+          "states",
+          "contains",
+          "STATE_SUPPORTS_AUTOCOMPLETION"
+        ]
+      ],
+      "IAccessible2" : [
+         [
+           "property",
+           "objectAttributes",
+           "contains",
+           "autocomplete:list"
+         ],
+         [
+           "property",
+           "states",
+           "contains",
+           "IA2_STATE_SUPPORTS_AUTOCOMPLETION"
+         ]
+      ]
+    }
   );
 
 </script>

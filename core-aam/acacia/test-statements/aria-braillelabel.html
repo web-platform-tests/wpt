@@ -8,7 +8,6 @@
   <script src="/resources/testdriver.js"></script>
   <script src="/resources/testdriver-vendor.js"></script>
   <script src="/resources/testdriver-actions.js"></script>
-  <script src="scripts/attr-map.js"></script>
   <script src="scripts/aam-utils.js"></script>
 </head>
 <body>
@@ -16,11 +15,43 @@
 <button id=test aria-braillelabel=foobar>
 
 <script>
-  AAMUtils.verifyAttrAPI(
+  AAMUtils.verifyAPI(
+    'aria-braillelabel',
     'test',
-    'foobar',
-    attrmap['aria-braillelabel'],
-    'aria-braillelabel'
+    {
+      "Atspi" : [
+        [
+          "property",
+          "objectAttributes",
+          "contains",
+          "braillelabel:foobar"
+        ]
+      ],
+      "AXAPI" : [
+        [
+          "property",
+          "AXBrailleLabel",
+          "is",
+          "foobar"
+        ]
+      ],
+      "IAccessible2" : [
+        [
+          "property",
+          "objectAttributes",
+          "contains",
+          "braillelabel:foobar"
+        ]
+      ],
+      "UIA" : [
+        [
+          "property",
+          "AriaProperties.braillelabel",
+          "is",
+          "foobar"
+        ]
+      ]
+    },
   );
 </script>
 

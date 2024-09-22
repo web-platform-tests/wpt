@@ -8,7 +8,6 @@
   <script src="/resources/testdriver.js"></script>
   <script src="/resources/testdriver-vendor.js"></script>
   <script src="/resources/testdriver-actions.js"></script>
-  <script src="scripts/role-map.js"></script>
   <script src="scripts/aam-utils.js"></script>
 </head>
 <body>
@@ -16,7 +15,62 @@
 <div id=test role=blockquote>quote</div>
 
 <script>
-  AAMUtils.verifyAPI('test', rolemap['blockquote'], 'role=blockquote');
+  AAMUtils.verifyAPI(
+    'role=blockquote',
+    'test',
+    {
+      "Atspi" : [
+         [
+            "property",
+            "role",
+            "is",
+            "block quote"
+         ]
+      ],
+      "AXAPI" : [
+         [
+            "property",
+            "AXRole",
+            "is",
+            "AXGroup"
+         ],
+         [
+            "property",
+            "AXSubrole",
+            "is",
+            "<nil>"
+         ]
+      ],
+      "IAccessible2" : [
+         [
+            "property",
+            "role",
+            "is",
+            "IA2_ROLE_BLOCK_QUOTE"
+         ],
+         [
+            "property",
+            "msaaRole",
+            "is",
+            "ROLE_SYSTEM_GROUPING"
+         ]
+      ],
+      "UIA" : [
+         [
+            "property",
+            "ControlType",
+            "is",
+            "Group"
+         ],
+         [
+            "property",
+            "LocalizedControlType",
+            "is",
+            "blockquote"
+         ]
+      ]
+    }
+  );
 </script>
 
 </body>

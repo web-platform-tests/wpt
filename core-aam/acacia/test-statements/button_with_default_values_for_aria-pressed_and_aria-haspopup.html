@@ -8,7 +8,6 @@
   <script src="/resources/testdriver.js"></script>
   <script src="/resources/testdriver-vendor.js"></script>
   <script src="/resources/testdriver-actions.js"></script>
-  <script src="scripts/role-map.js"></script>
   <script src="scripts/aam-utils.js"></script>
 </head>
 <body>
@@ -20,35 +19,52 @@
 <div id=test5 role=button aria-haspopup=false>click me</div>
 
 <script>
-  AAMUtils.verifyAPI(
-    'test1',
-    rolemap['button_with_default_values_for_aria-pressed_and_aria-haspopup'],
-    'role=button'
-  );
+  var test_statements = {
+    "Atspi" : [
+       [
+          "property",
+          "role",
+          "is",
+          "push button"
+       ]
+    ],
+    "AXAPI" : [
+       [
+          "property",
+          "AXRole",
+          "is",
+          "AXButton"
+       ],
+       [
+          "property",
+          "AXSubrole",
+          "is",
+          "<nil>"
+       ]
+    ],
+    "IAccessible2" : [
+       [
+          "property",
+          "msaaRole",
+          "is",
+          "ROLE_SYSTEM_PUSHBUTTON"
+       ]
+    ],
+    "UIA" : [
+       [
+          "property",
+          "ControlType",
+          "is",
+          "Button"
+       ]
+    ]
+  };
 
-  AAMUtils.verifyAPI(
-    'test2',
-    rolemap['button_with_default_values_for_aria-pressed_and_aria-haspopup'],
-    'role=button aria-pressed'
-  );
-
-  AAMUtils.verifyAPI(
-    'test3',
-    rolemap['button_with_default_values_for_aria-pressed_and_aria-haspopup'],
-    'role=button aria-pressed aria-haspopup'
-  );
-
-  AAMUtils.verifyAPI(
-    'test4',
-    rolemap['button_with_default_values_for_aria-pressed_and_aria-haspopup'],
-    'role=button aria-haspopup'
-  );
-
-  AAMUtils.verifyAPI(
-    'test5',
-    rolemap['button_with_default_values_for_aria-pressed_and_aria-haspopup'],
-    'role=button aria-haspopup=false'
-  );
+  AAMUtils.verifyAPI('role=button', 'test1', test_statements);
+  AAMUtils.verifyAPI('role=button aria-pressed', 'test2', test_statements);
+  AAMUtils.verifyAPI('role=button aria-pressed aria-haspopup', 'test3', test_statements);
+  AAMUtils.verifyAPI('role=button aria-haspopup', 'test4', test_statements);
+  AAMUtils.verifyAPI('role=button aria-haspopup=false', 'test5', test_statements);
 </script>
 
 </body>

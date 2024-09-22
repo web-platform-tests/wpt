@@ -8,7 +8,6 @@
   <script src="/resources/testdriver.js"></script>
   <script src="/resources/testdriver-vendor.js"></script>
   <script src="/resources/testdriver-actions.js"></script>
-  <script src="scripts/attr-map.js"></script>
   <script src="scripts/aam-utils.js"></script>
 </head>
 <body>
@@ -18,11 +17,55 @@
 <div id='error2'>world</div>
 
 <script>
-  AAMUtils.verifyRelationAPI(
+  AAMUtils.verifyAPI(
+    'aria-flowto',
     'test',
-    ['error1', 'error2'],
-    attrmap['aria-errormessage'],
-    'aria-flowto'
+    {
+      "Atspi" : [
+        [
+          "relation",
+          "RELATION_ERROR_MESSAGE",
+          "is",
+          ['error1', 'error2']
+        ],
+        [
+          "reverseRelation",
+          "RELATION_ERROR_FOR",
+          "is",
+          ['error1', 'error2']
+        ]
+      ],
+      "AXAPI" : [
+        [
+          "property",
+          "AXErrorMessageElements",
+          "is",
+          ['error1', 'error2']
+        ]
+      ],
+      "IAccessible2" : [
+        [
+          "relation",
+          "IA2_RELATION_ERROR",
+          "is",
+          ['error1', 'error2']
+        ],
+        [
+          "reverseRelation",
+          "IA2_RELATION_ERROR_FOR",
+          "is",
+          ['error1', 'error2']
+        ]
+      ],
+      "UIA" : [
+        [
+          "property",
+          "ControllerFor",
+          "is",
+          ['error1', 'error2']
+        ]
+      ]
+    }
   );
 </script>
 

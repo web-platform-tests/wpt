@@ -30,7 +30,7 @@ const AAMUtils = {
     name:   name of the test
   */
 
-  verifyAPI: function(id, map, test_name) {
+  verifyAPI: function(test_name, id, map) {
     if (!map) {
       throw "Error: missing accessibility API test map";
     }
@@ -45,75 +45,6 @@ const AAMUtils = {
           );
 
           this.runAssertions(map[api], results);
-
-        }, `api: ${api}, ${test_name}`);
-      }
-    }
-  },
-
-  /*
-    Creates a subtest for each API. Runs no asserts for APIs not found.
-
-    id:         id of element to test the accessibility node of
-    value:      value of the attribute being tested
-    map:        entry in attr-map.js, or similar, with the string "<value>"
-                to be replaced by the value argument
-    test_name:  name of the test
-  */
-
-  verifyAttrAPI: function(id, value, map, test_name) {
-    if (!map) {
-      throw "Error: missing accessibility API test map";
-    }
-
-    let new_map = JSON.parse(
-      JSON.stringify(map).replaceAll("<value>", value)
-    );
-
-    for (const api of this.APIS) {
-      if (new_map[api]) {
-        promise_test(async t => {
-          let results = await test_driver.test_accessibility_api(
-            id,
-            new_map,
-            api
-          );
-
-          this.runAssertions(new_map[api], results);
-
-        }, `api: ${api}, ${test_name}`);
-      }
-    }
-  },
-
-  /*
-    Creates a subtest for each API. Runs no asserts for APIs not found.
-
-    id:         id of element to test the accessibility node of
-    relations:  list of ids of "related" elements
-    map:        entry in attr-map.js, or similar
-    test_name:  name of the test
-  */
-
-  verifyRelationAPI: function(id, relations, map, test_name) {
-    if (!map) {
-      throw "Error: missing accessibility API test map";
-    }
-
-    let new_map = JSON.parse(
-      JSON.stringify(map).replaceAll("\"<id-list>\"", JSON.stringify(relations))
-    );
-
-    for (const api of this.APIS) {
-      if (new_map[api]) {
-        promise_test(async t => {
-          let results = await test_driver.test_accessibility_api(
-            id,
-            new_map,
-            api
-          );
-
-          this.runAssertions(new_map[api], results);
 
         }, `api: ${api}, ${test_name}`);
       }

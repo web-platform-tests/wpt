@@ -5,27 +5,27 @@
 <link rel="match" href="/css/reference/ref-filled-green-100px-square-only.html">
 <p>Test passes if there is a filled green square.</p>
 <div id="ancestor">
-	<template shadowrootmode="open">
-		<div id="host">
-			<template shadowrootmode="open">
-			  <style>
-				[name] {
-				  display: block;
-				  width: 100px;
-				  height: 100px;
-				  background-color: red;
-				}
-				:has-slotted(div) + :has-slotted(div) {
-				  background-color: green;
-				}
-			  </style>
-			  <slot></slot>
-			  <slot name="after"></slot>
-			</template>
-			<slot></slot>
-			<slot name="after" slot="after"></slot>
-		</div>
-	</template>
-	<div></div>
-	<div slot="after"></div>
+    <template shadowrootmode="open">
+        <div id="host">
+            <template shadowrootmode="open">
+                <style>
+                    [name] {
+                    display: block;
+                    width: 100px;
+                    height: 100px;
+                    background-color: red;
+                    }
+                    :has-slotted(div) + :has-slotted(div) {
+                    background-color: green;
+                    }
+                </style>
+                <slot></slot>
+                <slot name="after"></slot>
+            </template>
+            <slot></slot>
+            <slot name="after" slot="after"></slot>
+        </div>
+    </template>
+    <div></div>
+    <div slot="after"></div>
 </div>

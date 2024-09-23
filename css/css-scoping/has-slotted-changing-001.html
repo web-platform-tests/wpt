@@ -45,11 +45,11 @@
       test.replaceChildren();;
       styles = getComputedStyle(target);
       assert_equals(styles.getPropertyValue('color'), green);
-	  const div = document.createElement('div');
-	  test.append(div);
+      const div = document.createElement('div');
+      test.append(div);
       styles = getComputedStyle(target);
       assert_equals(styles.getPropertyValue('color'), fuchsia);
-	  const node = document.createTextNode(' ');
+      const node = document.createTextNode(' ');
       test.replaceChildren(node);
       styles = getComputedStyle(target);
       assert_equals(styles.getPropertyValue('color'), blue);

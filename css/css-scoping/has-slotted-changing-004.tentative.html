@@ -44,7 +44,7 @@
     const fuchsia = 'rgb(255, 0, 255)';
     test(function () {
       const test = document.getElementById('test');
-      const inner = test.getElementById('inner');
+      const inner = test.shadowRoot.getElementById('inner');
       const target = inner.shadowRoot.getElementById('target');
       let styles = getComputedStyle(target);
       assert_equals(styles.getPropertyValue('color'), green);

@@ -244,12 +244,20 @@ async def test_page_with_cached_duplicated_stylesheets(
         events[0],
         expected_request={"method": "GET", "url": page_with_cached_css},
     )
-    assert_before_request_sent_event(
-        events[1],
-        expected_request={"method": "GET", "url": cached_link_css_url},
+
+    link_css_event = next(
+        e for e in events if cached_link_css_url == e["request"]["url"]
     )
     assert_before_request_sent_event(
-        events[2],
+        link_css_event,
+        expected_request={"method": "GET", "url": cached_link_css_url},
+    )
+
+    import_css_event = next(
+        e for e in events if cached_import_css_url == e["request"]["url"]
+    )
+    assert_before_request_sent_event(
+        import_css_event,
         expected_request={"method": "GET", "url": cached_import_css_url},
     )
 
@@ -261,15 +269,24 @@ async def test_page_with_cached_duplicated_stylesheets(
     await wait.until(lambda _: len(events) >= 6)
     assert len(events) == 6
 
+    # Assert only cached events after reload.
+    cached_events = events[3:]
+
     assert_before_request_sent_event(
-        events[3],
+        cached_events[0],
         expected_request={"method": "GET", "url": page_with_cached_css},
     )
-    assert_before_request_sent_event(
-        events[4],
-        expected_request={"method": "GET", "url": cached_link_css_url},
+    cached_link_css_event = next(
+        e for e in cached_events if cached_link_css_url == e["request"]["url"]
     )
     assert_before_request_sent_event(
-        events[5],
+        cached_link_css_event,
+        expected_request={"method": "GET", "url": cached_link_css_url},
+    )
+    cached_import_css_event = next(
+        e for e in cached_events if cached_import_css_url == e["request"]["url"]
+    )
+    assert_before_request_sent_event(
+        cached_import_css_event,
         expected_request={"method": "GET", "url": cached_import_css_url},
     )

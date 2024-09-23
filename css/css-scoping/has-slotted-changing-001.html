@@ -42,13 +42,15 @@
       test.innerHTML = ' ';
       styles = getComputedStyle(target);
       assert_equals(styles.getPropertyValue('color'), blue);
-      test.innerHTML = '';
+      test.replaceChildren();;
       styles = getComputedStyle(target);
       assert_equals(styles.getPropertyValue('color'), green);
-      test.innerHTML = '<div></div>';
+	  const div = document.createElement('div');
+	  test.append(div);
       styles = getComputedStyle(target);
       assert_equals(styles.getPropertyValue('color'), fuchsia);
-      test.innerHTML = ' ';
+	  const node = document.createTextNode(' ');
+      test.replaceChildren(node);
       styles = getComputedStyle(target);
       assert_equals(styles.getPropertyValue('color'), blue);
       test.innerHTML = '';

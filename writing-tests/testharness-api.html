@@ -423,6 +423,24 @@ preferable if the entire test is optional.</p>
 <h2>Testing Across Globals<a class="headerlink" href="#testing-across-globals" title="Link to this heading">¶</a></h2>
 <section id="consolidating-tests-from-other-documents">
 <h3>Consolidating tests from other documents<a class="headerlink" href="#consolidating-tests-from-other-documents" title="Link to this heading">¶</a></h3>
+<dl class="js function">
+<dt class="sig sig-object js" id="fetch_tests_from_window">
+<span class="sig-name descname"><span class="n"><span class="pre">fetch_tests_from_window</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fetch_tests_from_window" title="Link to this definition">¶</a></dt>
+<dd><p>Aggregate tests from separate windows or iframes
+into the current document as if they were all part of the same test file.</p>
+<p>The document of the second window (or iframe) should include
+<code class="docutils literal notranslate"><span class="pre">testharness.js</span></code>, but not <code class="docutils literal notranslate"><span class="pre">testharnessreport.js</span></code>, and use
+<a class="reference internal" href="#test" title="test"><code class="xref js js-func docutils literal notranslate"><span class="pre">test()</span></code></a>, <a class="reference internal" href="#async_test" title="async_test"><code class="xref js js-func docutils literal notranslate"><span class="pre">async_test()</span></code></a>, and <a class="reference internal" href="#promise_test" title="promise_test"><code class="xref js js-func docutils literal notranslate"><span class="pre">promise_test()</span></code></a> in
+the usual manner.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>window</strong> (<em>Window</em>) – The window to fetch tests from.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <p><strong>Note:</strong> By default any markup file referencing <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> will
 be detected as a test. To avoid this, it must be put in a <code class="docutils literal notranslate"><span class="pre">support</span></code>
 directory.</p>
@@ -469,6 +487,22 @@ failures for the suite in the current context.</p>
 </section>
 <section id="web-workers">
 <h3>Web Workers<a class="headerlink" href="#web-workers" title="Link to this heading">¶</a></h3>
+<dl class="js function">
+<dt class="sig sig-object js" id="fetch_tests_from_worker">
+<span class="sig-name descname"><span class="n"><span class="pre">fetch_tests_from_worker</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fetch_tests_from_worker" title="Link to this definition">¶</a></dt>
+<dd><p>Get test results from a worker and include them in the current test.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>port</strong> (<em>Worker|SharedWorker|ServiceWorker|MessagePort</em>) – Either a worker object or a port connected to a worker which is running tests..</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – - A promise that’s resolved once all the remote tests are complete.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <p>The <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> script can be used from within <a class="reference external" href="https://html.spec.whatwg.org/multipage/workers.html">dedicated workers, shared
 workers</a> and <a class="reference external" href="https://w3c.github.io/ServiceWorker/">service
 workers</a>.</p>

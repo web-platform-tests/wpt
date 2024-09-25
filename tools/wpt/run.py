@@ -930,8 +930,10 @@ def setup_wptrunner(venv, **kwargs):
 
     affected_revish = kwargs.get("affected")
     if affected_revish is not None:
+        # TODO: wpt run should support --repo-root as wpt tooling and the tests
+        # can be put into different directory.
         files_changed, _ = testfiles.files_changed(
-            affected_revish, include_uncommitted=True, include_new=True)
+            None, affected_revish, include_uncommitted=True, include_new=True)
         # TODO: Perhaps use wptrunner.testloader.ManifestLoader here
         # and remove the manifest-related code from testfiles.
         # https://github.com/web-platform-tests/wpt/issues/14421

@@ -825,35 +825,35 @@ def output_error_count(error_count: Dict[Text, int]) -> None:
         logger.info("There were %d errors (%s)" % (count, by_type))
 
 
-def changed_files(wpt_root: Text) -> List[Text]:
+def changed_files(repo_root: Text) -> List[Text]:
     revish = testfiles.get_revish(revish=None)
-    changed, _ = testfiles.files_changed(revish, None, include_uncommitted=True, include_new=True)
-    return [os.path.relpath(item, wpt_root) for item in changed]
+    changed, _ = testfiles.files_changed(repo_root, revish, None, include_uncommitted=True, include_new=True)
+    return [os.path.relpath(item, repo_root) for item in changed]
 
 
-def lint_paths(kwargs: Dict[Text, Any], wpt_root: Text) -> List[Text]:
+def lint_paths(kwargs: Dict[Text, Any], repo_root: Text) -> List[Text]:
     if kwargs.get("paths"):
         paths = []
         for path in kwargs.get("paths", []):
             if os.path.isdir(path):
-                path_dir = list(all_filesystem_paths(wpt_root, path))
+                path_dir = list(all_filesystem_paths(repo_root, path))
                 paths.extend(path_dir)
             elif os.path.isfile(path):
-                paths.append(os.path.relpath(os.path.abspath(path), wpt_root))
+                paths.append(os.path.relpath(os.path.abspath(path), repo_root))
     elif kwargs["all"]:
-        paths = list(all_filesystem_paths(wpt_root))
+        paths = list(all_filesystem_paths(repo_root))
     elif kwargs["paths_file"]:
         paths = []
         with open(kwargs["paths_file"], 'r', newline='') as f:
             for line in f.readlines():
                 path = line.strip()
                 if os.path.isdir(path):
-                    path_dir = list(all_filesystem_paths(wpt_root, path))
+                    path_dir = list(all_filesystem_paths(repo_root, path))
                     paths.extend(path_dir)
                 elif os.path.isfile(path):
-                    paths.append(os.path.relpath(os.path.abspath(path), wpt_root))
+                    paths.append(os.path.relpath(os.path.abspath(path), repo_root))
     else:
-        changed_paths = changed_files(wpt_root)
+        changed_paths = changed_files(repo_root)
         force_all = False
         for path in changed_paths:
             path = path.replace(os.path.sep, "/")
@@ -861,7 +861,7 @@ def lint_paths(kwargs: Dict[Text, Any], wpt_root: Text) -> List[Text]:
                 force_all = True
                 break
         paths = (list(changed_paths) if not force_all
-                 else list(all_filesystem_paths(wpt_root)))
+                 else list(all_filesystem_paths(repo_root)))
 
     return paths
 

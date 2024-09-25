@@ -678,7 +678,7 @@ class VTTCueParser(W3CParser):
         value_4 = int(string)
 
         # 17.
-        if value_2 >= 59 or value_3 >= 59:
+        if value_2 > 59 or value_3 > 59:
             return None
 
         # 18.

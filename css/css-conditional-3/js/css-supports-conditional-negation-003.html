@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CSS.supports condition text for negation</title>
+<link rel="author" title="Adobe" href="http://html.adobe.com">
+<link rel="author" title="Bear Travis" href="mailto:betravis@adobe.com">
+<link rel="help" href="http://www.w3.org/TR/css3-conditional/#the-css-interface">
+<meta name="assert" content="CSS.supports appropriately negates compound parentheticals.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='css-supports-utils.js'></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+
+function buildTestCases(items) {
+    return items.map(function(item) {
+        var condition = 'NOT ' + item[0];
+        return [condition, CSS.supports(condition), !item[1]];
+    });
+}
+
+generate_tests(assert_equals, buildTestCases(compoundParentheticals));
+
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CSS.supports condition text for conjunction</title>
+<link rel="author" title="Adobe" href="http://html.adobe.com">
+<link rel="author" title="Bear Travis" href="mailto:betravis@adobe.com">
+<link rel="help" href="http://www.w3.org/TR/css3-conditional/#the-css-interface">
+<meta name="assert" content="CSS.supports covers basic conjunctions.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='css-supports-utils.js'></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+
+function buildTestCases(items) {
+    var cases = [];
+    items.forEach(function(item1) {
+        items.forEach(function(item2) {
+            var condition = item1[0] + ' AND ' + item2[0];
+            cases.push([condition, CSS.supports(condition), item1[1] && item2[1]]);
+        });
+    });
+    return cases;
+}
+
+generate_tests(assert_equals, buildTestCases(parentheticals));
+
+</script>
+</body>
+</html>

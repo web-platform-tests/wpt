@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Reporting: Cross frame</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  window.onload = function() {
+    async_test(function(test) {
+      var observer = new ReportingObserver(function(reports, observer) {
+        test.step(function() {
+          assert_equals(reports.length, 1);
+          assert_equals(reports[0].body.message, "Cross frame message.");
+        });
+
+        test.done();
+      });
+      observer.observe();
+      window.console.log("observed");
+  });
+};
+</script>
+
+<body>
+  <iframe src="resources/iframe.html">
+</body>
+
+</html>

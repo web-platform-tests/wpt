@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Reporting: Custom report</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+window.onload = function() {
+  async_test(function(test) {
+    var observer = new ReportingObserver(function(reports, observer) {
+      test.step(function() {
+        assert_equals(reports.length, 1);
+
+        // Ensure that the contents of the report are valid.
+        assert_equals(reports[0].type, "custom");
+        assert_true(reports[0].url.endsWith("reporting-observer/customReport.html"));
+        assert_equals(reports[0].body.message, "Test message.");
+        assert_true(reports[0].body.sourceFile.endsWith("reporting-observer/customReport.html"));
+        assert_equals(reports[0].body.lineNumber, 27);
+        assert_equals(reports[0].body.columnNumber, 12);
+      });
+
+      test.done();
+    });
+    observer.observe();
+
+    var report = new CustomReport("Test message.");
+    report.send();
+  });
+};
+</script>
+</body>
+</html>

@@ -40,7 +40,8 @@ promise_test(async t => {
 }, 'setup');
 
 promise_test(async t => {
-  assert_implements_optional(MediaSource.isTypeSupported(media.type));
+  assert_implements_optional(MediaSource.isTypeSupported(media.type),
+                             'type supported');
 
   const v = document.createElement('video');
   const v_watcher = new EventWatcher(t, v, ['error', 'ended']);

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Abort event fires when aborting a document load</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+// delay window.load event with slow imageso we can abort page load
+const img = document.createElement('img');
+img.src = '../../xhr/resources/delay.py?ms=1000'
+
+// Allow time for image to begin downloading
+const loadAbortTimeout = 50;
+
+// queue tests to run after abort
+const evalEventsTimeout = loadAbortTimeout+1;
+
+// abort page load. Test harness will timeout.
+step_timeout(window.stop, loadAbortTimeout);
+
+// track test completion to call window.onload since window.stop() prevents that
+let testsStarted = 0, testsCompleted = 0;
+
+async_test(test => {
+  testStarted();
+  let eventFired = false;
+  window.addEventListener('abort', () => eventFired = true);
+  test.step_timeout(_ => {
+    test.step(t => assert_true(eventFired));
+    testCompleted(test);
+  }, evalEventsTimeout);
+}, '"abort" event fired on Window');
+
+async_test(test => {
+  testStarted();
+  let eventFired = false;
+  window.addEventListener('load', () => eventFired = true);
+  test.step_timeout(_ => {
+    test.step(t => assert_false(eventFired));
+    testCompleted(test);
+  }, evalEventsTimeout);
+}, '"load" event NOT fired on Window');
+
+
+function testStarted() {
+  testsStarted++;
+}
+
+// window.stop() prevents window.onload from firing, which prevents the tests
+// from completing normally.  Explicitly call to prevent testharness timeout.
+function testCompleted(test) {
+  test.done();
+  if (++testsCompleted === testsStarted) {
+    window.dispatchEvent(new Event('load'));
+  }
+}
+
+</script>
+</body>
+</html>

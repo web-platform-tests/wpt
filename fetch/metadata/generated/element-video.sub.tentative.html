@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--
+This test was procedurally generated. Please do not modify it directly.
+Sources:
+- fetch/metadata/tools/fetch-metadata.conf.yml
+- fetch/metadata/tools/templates/element-video.sub.html
+-->
+<html lang="en">
+  <meta charset="utf-8">
+  <title>HTTP headers on request for HTML "video" element source</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/fetch/metadata/resources/helper.sub.js"></script>
+  <body>
+  <script>
+  'use strict';
+
+  function induceRequest(url, attributes) {
+    const video = document.createElement('video');
+
+    for (const [ name, value ] of Object.entries(attributes)) {
+      video.setAttribute(name, value);
+    }
+
+    return new Promise((resolve) => {
+        video.setAttribute('src', url);
+        video.onload = video.onerror = resolve;
+      });
+  }
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+
+    return induceRequest(
+        makeRequestURL(key, ['httpOrigin']),
+        {}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-frame-ancestors');
+        });
+  }, 'sec-fetch-frame-ancestors - Not sent to non-trustworthy same-origin destination, no attributes');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+
+    return induceRequest(
+        makeRequestURL(key, ['httpSameSite']),
+        {}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-frame-ancestors');
+        });
+  }, 'sec-fetch-frame-ancestors - Not sent to non-trustworthy same-site destination, no attributes');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+
+    return induceRequest(
+        makeRequestURL(key, ['httpCrossSite']),
+        {}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-frame-ancestors');
+        });
+  }, 'sec-fetch-frame-ancestors - Not sent to non-trustworthy cross-site destination, no attributes');
+  </script>
+  </body>
+</html>

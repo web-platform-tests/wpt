@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<!--
+This test was procedurally generated. Please do not modify it directly.
+Sources:
+- fetch/metadata/tools/fetch-metadata.conf.yml
+- fetch/metadata/tools/templates/form-submission.sub.html
+-->
+<html lang="en">
+  <meta charset="utf-8">
+  <meta name="timeout" content="long">
+  <title>HTTP headers on request for HTML form navigation</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/fetch/metadata/resources/helper.sub.js"></script>
+  <body>
+  <script>
+  'use strict';
+
+  function induceRequest(method, url, userActivated) {
+    const windowName = String(Math.random());
+    const form = document.createElement('form');
+    const submit = document.createElement('input');
+    submit.setAttribute('type', 'submit');
+    form.appendChild(submit);
+    const win = open('about:blank', windowName);
+    form.setAttribute('method', method);
+    form.setAttribute('action', url);
+    form.setAttribute('target', windowName);
+    document.body.appendChild(form);
+
+    // Query parameters must be expressed as form values so that they are sent
+    // with the submission of forms whose method is POST.
+    Array.from(new URL(url, location.origin).searchParams)
+      .forEach(([name, value]) => {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'hidden');
+        input.setAttribute('name', name);
+        input.setAttribute('value', value);
+        form.appendChild(input);
+      });
+
+    return new Promise((resolve) => {
+        addEventListener('message', function(event) {
+          if (event.source === win) {
+            resolve();
+          }
+        });
+
+        if (userActivated) {
+          test_driver.click(submit);
+        } else {
+          submit.click();
+        }
+      })
+      .then(() => {
+        form.remove();
+        win.close();
+      });
+  }
+  const responseParams = {
+    mime: 'text/html',
+    body: `<script>opener.postMessage('done', '*')</${''}script>`
+  };
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsOrigin'], responseParams);
+    const userActivated = false;
+    return induceRequest('GET', url, userActivated)
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-origin']);
+        });
+  }, 'sec-fetch-frame-ancestors - Same origin - GET');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsOrigin'], responseParams);
+    const userActivated = false;
+    return induceRequest('POST', url, userActivated)
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-origin']);
+        });
+  }, 'sec-fetch-frame-ancestors - Same origin - POST');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsCrossSite'], responseParams);
+    const userActivated = false;
+    return induceRequest('GET', url, userActivated)
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['cross-site']);
+        });
+  }, 'sec-fetch-frame-ancestors - Cross-site - GET');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsCrossSite'], responseParams);
+    const userActivated = false;
+    return induceRequest('POST', url, userActivated)
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['cross-site']);
+        });
+  }, 'sec-fetch-frame-ancestors - Cross-site - POST');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsSameSite'], responseParams);
+    const userActivated = false;
+    return induceRequest('GET', url, userActivated)
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-site']);
+        });
+  }, 'sec-fetch-frame-ancestors - Same site - GET');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(key, ['httpsSameSite'], responseParams);
+    const userActivated = false;
+    return induceRequest('POST', url, userActivated)
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-site']);
+        });
+  }, 'sec-fetch-frame-ancestors - Same site - POST');
+  </script>
+  </body>
+</html>

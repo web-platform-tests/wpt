@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+    <head>
+        <title>HTML5 Drag and Drop: Set a value to effectAllowed attribute</title>
+        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+        <link rel='author' title='Kashish Jain' href='mailto:kashishjain@microsoft.com'/>
+        <link rel="help" href="http://dev.w3.org/html5/spec/dnd.html#datatransfer"/>
+        <meta name="assert" content="set a value to dropEffect attribute"/>
+        <script type="text/javascript">
+            var TARGET1, TARGET2, Ret = true;
+
+            function DragstartEvent(evt)
+            {
+                if ((TARGET1 == evt.target) && ("dragstart" == evt.type))
+                {
+                    evt.dataTransfer.effectAllowed = "move";
+                }
+            }
+            function DragenterEvent(evt)
+            {
+                if ((TARGET2 == evt.target) && ("dragenter" == evt.type))
+                {
+                  if("move" != evt.dataTransfer.dropEffect)
+                    {
+                      document.getElementById("test_result").firstChild.data = "FAIL in DragEnter event";
+                    }
+                }
+            }
+            function DragoverEvent(evt)
+            {
+                if ((TARGET2 == evt.target) && ("dragover" == evt.type))
+                {
+                    if("move" != evt.dataTransfer.dropEffect)
+                    {
+                      document.getElementById("test_result").firstChild.data = "FAIL in DragOver event";
+                    }
+                }
+            }
+            function DragleaveEvent(evt)
+            {
+                if ((TARGET2 == evt.target) && ("dragleave" == evt.type))
+                {
+                    if("none" != evt.dataTransfer.dropEffect)
+                    {
+                      document.getElementById("test_result").firstChild.data = "FAIL in DragLeave event";
+                    }
+                }
+            }
+            function DragendEvent(evt)
+            {
+                if ((TARGET2 == evt.target) && ("dragend" == evt.type))
+                {
+                    if("none" != evt.dataTransfer.dropEffect)
+                    {
+                      document.getElementById("test_result").firstChild.data = "FAIL in DragEnd event";
+                    }
+                }
+            }
+            function DropEvent(evt)
+            {
+                if ((TARGET2 == evt.target) && ("drop" == evt.type))
+                {
+                    if("none" != evt.dataTransfer.dropEffect)
+                    {
+                      document.getElementById("test_result").firstChild.data = "FAIL in Drop event";
+                    }
+                }
+            }
+
+            window.onload = function()
+            {
+                TARGET1 = document.getElementById("target1");
+                TARGET2 = document.getElementById("target2");
+                TARGET1.addEventListener("dragstart", DragstartEvent, false);
+                TARGET2.addEventListener("dragenter", DragenterEvent, false);
+                TARGET2.addEventListener("dragleave", DragleaveEvent, false);
+                TARGET2.addEventListener("dragover", DragoverEvent, false);
+                TARGET2.addEventListener("dragend", DragendEvent, false);
+                TARGET2.addEventListener("drop", DropEvent, false);
+            }
+        </script>
+    </head>
+    <body>
+        <pre>Description: Set a value to effectAllowed attribute</pre>
+        <table id='testtable' border='1'>
+            <tr>
+                <td>Test Result</td>
+                <td>Test Assertion</td>
+            </tr>
+            <tr>
+                <td id='test_result'>Manual</td>
+                <td id='test_assertion'>Test passes if if the word "Manual" stays to the left after following the steps below.
+                <div id="manualsteps">
+                    Steps:
+                    <ol>
+                        <li> Drag the blue image and enter the green box
+                    </ol>
+                </div>
+            </td>
+            </tr>
+        </table>
+        <p>
+        http://dev.w3.org/html5/spec/dnd.html#datatransfer
+        </p>
+        <p>
+        Attributes value should always be set based on spec.
+        </p>
+        <img src="/images/blue.png" style="width:200px; height:100px" draggable="true" id="target1"/>
+        <br /><br />
+        <input type="text" id="target2" style="border:2px green solid; width:200px; height:50px"></input>
+    </body>
+</html>

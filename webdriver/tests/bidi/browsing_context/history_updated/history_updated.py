@@ -135,7 +135,7 @@ async def test_history_state_update(
        remove_history_updated_listener()
 
 
-async def test_history_about_blank_iframe_insertion(
+async def test_history_document_open(
     bidi_session, new_tab, url, subscribe_events
 ):
     target_context = new_tab["context"]
@@ -169,12 +169,16 @@ async def test_history_about_blank_iframe_insertion(
       await bidi_session.script.call_function(
           raw_result=True,
           function_declaration="""() => {
-              const iframe = document.createElement("iframe");
-              const { promise, resolve, reject } = Promise.withResolvers();
-              iframe.src = "about:blank?foo";
-              iframe.onload = () => resolve();
-              document.body.append(iframe);
-              return promise;
+              const frame = document.createElement("iframe");
+              document.body.append(frame);
+              frame.contentDocument.open();
+              return new Promise(resolve => {
+                window.onhashchange = () => {
+                  frame.contentDocument.open();
+                  resolve();
+                };
+                window.location.hash = "heya";
+              });
           }""",
           await_promise=True,
           target=ContextTarget(target_context),
@@ -187,78 +191,25 @@ async def test_history_about_blank_iframe_insertion(
           browsing_context_created_events
       )
 
-      # Not implemented yet.
-      # recursive_compare(
-      #     [{
-      #         'url': 'about:blank?foo'
-      #     }],
-      #     history_updated_events
-      # )
-
-      assert len(fragment_navigated_events) == 0
-    finally:
-       remove_fragment_navigated_listener()
-       remove_history_updated_listener()
-       remove_created_listener()
-
-
-async def test_history_iframe_insertion(
-    bidi_session, new_tab, url, subscribe_events
-):
-    target_context = new_tab["context"]
-
-    target_url = url(EMPTY_PAGE)
-    await bidi_session.browsing_context.navigate(
-        context=new_tab["context"], url=target_url, wait="complete"
-    )
-
-    await subscribe_events([FRAGMENT_NAVIGATED_EVENT, HISTORY_UPDATED_EVENT, CREATED_EVENT])
-
-    fragment_navigated_events = []
-    history_updated_events = []
-    browsing_context_created_events = []
-
-
-    async def on_event(method, data):
-        if method == FRAGMENT_NAVIGATED_EVENT:
-          fragment_navigated_events.append(data)
-        if method == HISTORY_UPDATED_EVENT:
-           history_updated_events.append(data)
-        if method == CREATED_EVENT:
-           browsing_context_created_events.append(data)
-
-
-    remove_fragment_navigated_listener = bidi_session.add_event_listener(FRAGMENT_NAVIGATED_EVENT, on_event)
-    remove_history_updated_listener = bidi_session.add_event_listener(HISTORY_UPDATED_EVENT, on_event)
-    remove_created_listener = bidi_session.add_event_listener(CREATED_EVENT, on_event)
-
-    try:
-      await bidi_session.script.call_function(
-          raw_result=True,
-          function_declaration="""(url) => {
-              const iframe = document.createElement("iframe");
-              const { promise, resolve, reject } = Promise.withResolvers();
-              iframe.src = url;
-              iframe.onload = () => resolve();
-              document.body.append(iframe);
-              return promise;
-          }""",
-          arguments=[
-              {"type": "string", "value": target_url},
-          ],
-          await_promise=True,
-          target=ContextTarget(target_context),
-      )
-
       recursive_compare(
           [{
-              'url': 'about:blank'
+              'context': target_context,
+              'url': target_url + '#heya'
           }],
-          browsing_context_created_events
+          fragment_navigated_events
       )
 
-      assert len(history_updated_events) == 0
-      assert len(fragment_navigated_events) == 0
+      # History updated URL should match the target_context's URL
+      # without the fragment per
+      # https://html.spec.whatwg.org/#document-open-steps step 12.2.
+      recursive_compare(
+          [{
+              'context': browsing_context_created_events[0]['context'],
+              'url': target_url
+          }],
+          history_updated_events
+      )
+
     finally:
        remove_fragment_navigated_listener()
        remove_history_updated_listener()

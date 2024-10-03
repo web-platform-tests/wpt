@@ -2,6 +2,7 @@
 // META: script=/webcodecs/utils.js
 // META: variant=?adts_aac
 // META: variant=?mp4_aac
+// META: variant=?mp4_raw_aac_no_desc
 // META: variant=?mp3
 // META: variant=?opus
 // META: variant=?pcm_alaw
@@ -54,6 +55,30 @@ const MP4_AAC_DATA = {
     sampleRate: 48000,
     numberOfChannels: 1,
     description: {offset: 2552, size: 5},
+  },
+  chunks: [
+    {offset: 44, size: 241},
+    {offset: 285, size: 273},
+    {offset: 558, size: 251},
+    {offset: 809, size: 118},
+    {offset: 927, size: 223},
+    {offset: 1150, size: 141},
+    {offset: 1291, size: 217},
+    {offset: 1508, size: 159},
+    {offset: 1667, size: 209},
+    {offset: 1876, size: 176},
+  ],
+  duration: 21333
+};
+
+// By spec, if the description is absent, the bitstream defaults to ADTS format.
+// However, this is added to ensure compatibility and handle potential misuse cases.
+const MP4_AAC_DATA_NO_DESCRIPTION = {
+  src: 'sfx-aac.mp4',
+  config: {
+    codec: 'mp4a.40.2',
+    sampleRate: 48000,
+    numberOfChannels: 1,
   },
   chunks: [
     {offset: 44, size: 241},
@@ -162,6 +187,7 @@ promise_setup(async () => {
     '?adts_aac': ADTS_AAC_DATA,
     '?mp3': MP3_DATA,
     '?mp4_aac': MP4_AAC_DATA,
+    '?mp4_raw_aac_no_desc': MP4_AAC_DATA_NO_DESCRIPTION,
     '?opus': OPUS_DATA,
     '?pcm_alaw': PCM_ALAW_DATA,
     '?pcm_ulaw': PCM_ULAW_DATA,

@@ -29,7 +29,8 @@ def read(config_path: str) -> Mapping[str, ConfigDict]:
     success = parser.read(config_path)
     assert config_path in success, success
 
-    subns = {"pwd": os.path.abspath(os.path.curdir)}
+    subns = {"pwd": os.path.abspath(os.path.curdir),
+             "dir": os.path.abspath(os.path.dirname(config_path))}
 
     rv = OrderedDict()
     for section in parser.sections():

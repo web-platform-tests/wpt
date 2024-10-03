@@ -213,6 +213,13 @@ class TestEnvironment:
         config.server_host = self.options.get("server_host", None)
         config.doc_root = serve_path(self.test_paths)
         config.inject_script = self.inject_script
+        # Resolve `local-dir` relative to the main test root instead of `wpt
+        # run`'s CWD, which can be unstable between different users. Absolute
+        # paths are passed through as-is.
+        config.aliases = [{
+            **alias,
+            "local-dir": os.path.normpath(os.path.join(config.doc_root, alias["local-dir"])),
+        } for alias in config.aliases]
 
         if self.suppress_handler_traceback is not None:
             config.logging["suppress_handler_traceback"] = self.suppress_handler_traceback

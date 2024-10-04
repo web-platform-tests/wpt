@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Test: custom media queries that are undefined behave different from queries that evaluate to false</title>
+		<link rel="author" title="Romain Menke" href="https://github.com/romainmenke">
+		<link rel="help" href="https://www.w3.org/TR/mediaqueries-5/#at-ruledef-custom-media">
+		<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+		<meta name="assert" content="Test passes if custom media queries are correctly evaluated.">
+		<style>
+			div {
+				background-color: red;
+				height: 25px;
+				width: 100px;
+			}
+
+			@custom-media --test screen;
+			@media (--test) {
+				.test1 { background: green; }
+				.test2 { background: green; }
+			}
+
+			@media (--test1) {
+				.test1 { background: red; }
+			}
+
+			@media (not (--test2)) {
+				.test2 { background: red; }
+			}
+
+			@media (--test3), screen {
+				.test3 { background: green; }
+			}
+
+			@media (--test4) or (color) {
+				.test4 { background: green; }
+			}
+	</style>
+	</head>
+	<body>
+		<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+		<div class="test1"></div>
+		<div class="test2"></div>
+		<div class="test3"></div>
+		<div class="test4"></div>
+	</body>
+</html>

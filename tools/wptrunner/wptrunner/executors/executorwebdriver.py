@@ -1031,8 +1031,9 @@ class WebDriverTestharnessExecutor(TestharnessExecutor, TestDriverExecutorMixin)
         return test_window
 
 
-class WebDriverRefTestExecutor(RefTestExecutor):
+class WebDriverRefTestExecutor(RefTestExecutor, TestDriverExecutorMixin):
     protocol_cls = WebDriverProtocol
+    supports_testdriver = True
 
     def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  screenshot_cache=None, close_after_done=True,
@@ -1056,7 +1057,8 @@ class WebDriverRefTestExecutor(RefTestExecutor):
         self.debug_test = debug_test
 
         with open(os.path.join(here, "test-wait.js")) as f:
-            self.wait_script = f.read() % {"classname": "reftest-wait"}
+            wait_script = f.read() % {"classname": "reftest-wait"}
+        TestDriverExecutorMixin.__init__(self, wait_script)
 
     def reset(self):
         self.implementation.reset()
@@ -1102,8 +1104,9 @@ class WebDriverRefTestExecutor(RefTestExecutor):
                             self.extra_timeout).run()
 
     def _screenshot(self, protocol, url, timeout):
-        self.protocol.base.load(url)
-        self.protocol.base.execute_script(self.wait_script, True)
+        # There's nothing we want from the "complete" message, so discard the
+        # return value.
+        self.run_testdriver(protocol, url, timeout)
 
         screenshot = self.protocol.webdriver.screenshot()
         if screenshot is None:
@@ -1148,8 +1151,9 @@ class WebDriverPrintRefTestExecutor(WebDriverRefTestExecutor):
                             self.extra_timeout).run()
 
     def _render(self, protocol, url, timeout):
-        protocol.webdriver.url = url
-        protocol.base.execute_script(self.wait_script, asynchronous=True)
+        # There's nothing we want from the "complete" message, so discard the
+        # return value.
+        self.run_testdriver(protocol, url, timeout)
 
         pdf = protocol.pdf_print.render_as_pdf(*self.viewport_size)
         screenshots = protocol.pdf_print.pdf_to_png(pdf, self.page_ranges)
@@ -1161,8 +1165,9 @@ class WebDriverPrintRefTestExecutor(WebDriverRefTestExecutor):
         return screenshots
 
 
-class WebDriverCrashtestExecutor(CrashtestExecutor):
+class WebDriverCrashtestExecutor(CrashtestExecutor, TestDriverExecutorMixin):
     protocol_cls = WebDriverProtocol
+    supports_testdriver = True
 
     def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  screenshot_cache=None, close_after_done=True,
@@ -1180,7 +1185,8 @@ class WebDriverCrashtestExecutor(CrashtestExecutor):
                                           capabilities=capabilities)
 
         with open(os.path.join(here, "test-wait.js")) as f:
-            self.wait_script = f.read() % {"classname": "test-wait"}
+            wait_script = f.read() % {"classname": "test-wait"}
+        TestDriverExecutorMixin.__init__(self, wait_script)
 
     def do_test(self, test):
         timeout = (test.timeout * self.timeout_multiplier if self.debug_info is None
@@ -1199,8 +1205,9 @@ class WebDriverCrashtestExecutor(CrashtestExecutor):
         return (test.make_result(*data), [])
 
     def do_crashtest(self, protocol, url, timeout):
-        protocol.base.load(url)
-        protocol.base.execute_script(self.wait_script, asynchronous=True)
+        # There's nothing we want from the "complete" message, so discard the
+        # return value.
+        self.run_testdriver(protocol, url, timeout)
         result = {"status": "PASS", "message": None}
         if (leak_part := getattr(protocol, "leak", None)) and (counters := leak_part.check()):
             result["extra"] = {"leak_counters": counters}

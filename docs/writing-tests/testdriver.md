@@ -13,9 +13,6 @@ written purely using web platform APIs. Outside of automation
 contexts, it allows human operators to provide expected input
 manually (for operations which may be described in simple terms).
 
-It is currently supported only for [testharness.js](testharness)
-tests.
-
 ## Markup ##
 
 The `testdriver.js` and `testdriver-vendor.js` must both be included

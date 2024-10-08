@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<title>Initial objects have [[Prototype]]s from the same global environment</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.1 ECMAScript environment
+//
+// The [[Prototype]]s of all initial objects in a given global environment
+// come from that same global environment. 
+
+function runTest(iframe) {
+  iframe.onload = null;
+
+  var w = iframe.contentWindow;
+  var objects = [
+
+    // interface object
+
+    // feature: DOMImplementation (interface) (without inheritance, without [NoInterfaceObject])
+    interfaceObject("DOMImplementation"), interfaceObject("DOMImplementation", w), "DOMImplementation interface object",
+    // feature: HTMLCollection (interface) (without inheritance, without [NoInterfaceObject])
+    interfaceObject("HTMLCollection"), interfaceObject("HTMLCollection", w), "HTMLCollection interface object",
+
+
+    // interface object for inherited interface
+
+    // feature: Element (interface) (with inheritance, without [NoInterfaceObject])
+    interfaceObject("Element"), interfaceObject("Element", w), "Element interface object",
+    // feature: UIEvent (interface) (with inheritance, without [NoInterfaceObject])
+    interfaceObject("UIEvent"), interfaceObject("UIEvent", w), "UIEvent interface object",
+
+
+    // interface prototype object
+
+    // feature: DOMImplementation (interface) (without inheritance)
+    interfacePrototypeObject("DOMImplementation"), interfacePrototypeObject("DOMImplementation", w), "DOMImplementation interface prototype object",
+    // feature: HTMLCollection (interface) (without inheritance)
+    interfacePrototypeObject("HTMLCollection"), interfacePrototypeObject("HTMLCollection", w), "HTMLCollection interface prototype object",
+
+
+    // interface prototype object for inherited interface
+
+    // feature: Element (interface) (with inheritance)
+    interfacePrototypeObject("Element"), interfacePrototypeObject("Element", w), "Element interface prototype object",
+    // feature: UIEvent (interface) (with inheritance)
+    interfacePrototypeObject("UIEvent"), interfacePrototypeObject("UIEvent", w), "UIEvent interface prototype object",
+
+
+    // named constructor object
+
+    // feature: HTMLImageElement (interface) (with [NamedConstructor])
+    namedConstructorObject("Image"), namedConstructorObject("Image", w), "Image named constructor object",
+    // feature: HTMLAudioElement (interface) (with [NamedConstructor])
+    namedConstructorObject("Audio"), namedConstructorObject("Audio", w), "Audio named constructor object",
+
+
+    // attribute getter
+
+    // feature: Document.title (attribute) (writable)
+    getter("Document", "title"), getter("Document", "title", w), "Document.title attribute getter",
+    // feature: HTMLSelectElement.length (attribute) (writable)
+    getter("HTMLSelectElement", "length"), getter("HTMLSelectElement", "length", w), "HTMLSelectElement.length attribute getter",
+
+
+    // read only attribute getter
+
+    // feature: Node.parentNode (attribute) (read only)
+    getter("Node", "parentNode"), getter("Node", "parentNode", w), "Node.parentNode attribute getter",
+    // feature: HTMLFormElement.length (attribute) (read only)
+    getter("HTMLFormElement", "length"), getter("HTMLFormElement", "length", w), "HTMLFormElement.length attribute getter",
+
+
+    // attribute setter
+
+    // feature: Document.title (attribute) (writable)
+    setter("Document", "title"), setter("Document", "title", w), "Document.title attribute setter",
+    // feature: HTMLSelectElement.length (attribute) (writable)
+    setter("HTMLSelectElement", "length"), setter("HTMLSelectElement", "length", w), "HTMLSelectElement.length attribute setter",
+
+
+    // operation function
+
+    // feature: HTMLElement.click (operation)
+    operation("HTMLElement", "click"), operation("HTMLElement", "click", w), "HTMLElement.click function",
+    // feature: Node.appendChild (operation)
+    operation("Node", "appendChild"), operation("Node", "appendChild", w), "Node.appendChild function",
+
+
+    // static operation function
+
+    // feature: URL.createObjectURL (static operation)
+    staticOperation("URL", "createObjectURL"), staticOperation("URL", "createObjectURL", w), "URL.createObjectURL function",
+    // feature: CSS.supports (static operation)
+    staticOperation("CSS", "supports"), staticOperation("CSS", "supports", w), "CSS.supports function",
+
+
+    // stringifier function
+
+    // feature: DOMTokenList (stringifier)
+    stringifier("DOMTokenList"), stringifier("DOMTokenList", w), "DOMTokenList stringifier function",
+    // feature: URLUtils (stringifier)
+    stringifier("HTMLAnchorElement"), stringifier("HTMLAnchorElement", w), "HTMLAnchorElement stringifier function",
+
+
+    // exception interface object
+
+    // feature: DOMException (exception) (without [NoInterfaceObject])
+    interfaceObject("DOMException"), interfaceObject("DOMException", w), "DOMException exception interface object",
+
+
+    // exception interface prototype object
+
+    // feature: DOMException (exception)
+    interfacePrototypeObject("DOMException"), interfacePrototypeObject("DOMException", w), "DOMException exception interface prototype object",
+
+
+    // exception field getter
+
+    // feature: DOMException.code (exception field)
+    getter("DOMException", "code"), getter("DOMException", "code", w), "DOMException.code exception field getter",
+
+
+    // named properties object
+
+    // feature: Window (interface) (with [NamedPropertiesObject])
+    function() { return Object.getPrototypeOf(Window.prototype); }, function() { return Object.getPrototypeOf(w.Window.prototype); }, "named properties object"
+  ];
+
+  for (var i = 0; i < objects.length; i += 3) {
+    test(function() {
+      var object1 = objects[i]();
+      var object2 = objects[i + 1]();
+      assert_true(object1 instanceof Object, "object1 instanceof Object");
+      assert_true(!(object1 instanceof w.Object), "!(object1 instanceof w.Object)");
+      assert_true(!(object2 instanceof Object), "!(object2 instanceof Object)");
+      assert_true(object2 instanceof w.Object, "object2 instanceof w.Object");
+    }, objects[i + 2] + " has a [[Prototype]] from its own global environment");
+  }
+}
+</script>
+
+<div style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe onload="runTest(event.target)"></iframe>
+</div>

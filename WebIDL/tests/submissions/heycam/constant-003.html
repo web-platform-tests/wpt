@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<title>Constants on exceptions</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.9.3 Constants
+//
+// Constants on callback interfaces are exposed as non-writable, enumerable,
+// non-configurable properties on the exception interface object and
+// exception interface prototype.
+
+// feature: DOMException.INVALID_STATE_ERR (constant) (on an exception)
+
+test(function() {
+  assert_property(DOMException, "INVALID_STATE_ERR", { writable: false, enumerable: true, configurable: false, value: 11 });
+}, "DOMException.INVALID_STATE_ERR has correct attributes and value");
+
+test(function() {
+  assert_property(DOMException.prototype, "INVALID_STATE_ERR", { writable: false, enumerable: true, configurable: false, value: 11 });
+}, "DOMException.prototype.INVALID_STATE_ERR has correct attributes and value");
+</script>

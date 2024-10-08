@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<title>float</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.12 float
+//
+// IDL float values are represented with JS Number values, although only ones
+// that are (a) finite, and (b) correspond to a single precision value.
+
+// feature: SVGNumber.value (attribute) (of type float)
+
+test(function() {
+  var number = document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGNumber();
+  number.value = 1.1;
+  assert_equals(typeof number.value, "number");
+  assert_true(number.value * 0 == 0);
+  assert_equals(number.value, 1.100000023841858);
+}, "SVGNumber.value returns a value of the correct type");
+
+// feature: SVGMatrix.a (attribute) (of type float)
+
+test(function() {
+  var matrix = document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGMatrix();
+  matrix.a = 1.1;
+  assert_equals(typeof matrix.a, "number");
+  assert_true(matrix.a * 0 == 0);
+  assert_equals(matrix.a, 1.100000023841858);
+}, "SVGMatrix.a returns a value of the correct type");
+</script>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<title>Setting indexed properties</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.7.3 Platform object [[DefineOwnProperty]] method
+//
+// If an object supports indexed properties, and an indexed property
+// creator is available, then attempting to set a property with a name that
+// is not a supported property index will invoke the creator.
+
+// feature: HTMLSelectElement (indexed property creator)
+
+test(function() {
+  var select = document.createElement("select");
+  select[0] = document.createElement("option");
+  assert_property(select, "0", { writable: true, enumerable: true, configurable: true, value: select.firstChild });
+}, "invoking the indexed property creator by assigning to a property on a HTMLSelectElement works");
+
+test(function() {
+  var select = document.createElement("select");
+  Object.defineProperty(select, "0", { writable: false, enumerable: false, configurable: false, value: document.createElement("option") });
+  assert_property(select, "0", { writable: true, enumerable: true, configurable: true, value: select.firstChild });
+}, "invoking the indexed property creator by defining a property on a HTMLSelectElement works");
+
+test(function() {
+  var select = document.createElement("select");
+  Object.defineProperty(HTMLSelectElement.prototype, "10", { get: function() { }, set: function() { throw { name: "SomeError" }; } });
+  try {
+    assert_throws({ name: "SomeError" }, function() { select[10] = document.createElement("option"); });
+  } finally {
+    delete HTMLSelectElement.prototype[10];
+  }
+}, "assigning to an array index property (on an HTMLSelectElement) that is not a supported property index and which corresponds to an accessor property on the prototype will invoke that property's creator");
+
+test(function() {
+  var select = document.createElement("select");
+  Object.defineProperty(HTMLSelectElement.prototype, "20", { get: function() { }, set: function() { throw { name: "SomeError" }; } });
+  try {
+    Object.defineProperty(select, "20", { value: document.createElement("option") });
+    assert_property(select, "20", { writable: true, enumerable: true, configurable: true, value: select.lastChild });
+  } finally {
+    delete HTMLSelectElement.prototype[20];
+  }
+}, "defining an array index property (on an HTMLSelectElement) that is not a supported property index and which corresponds to an accessor property on the prototype will invoke the indexed property creator");
+
+
+// feature: HTMLOptionsCollection (indexed property creator)
+
+test(function() {
+  var select = document.createElement("select");
+  select.options[0] = document.createElement("option");
+  assert_property(select.options, "0", { writable: true, enumerable: true, configurable: true, value: select.firstChild });
+}, "invoking the indexed property creator by assigning to a property on a HTMLOptionsCollection works");
+
+test(function() {
+  var select = document.createElement("select");
+  Object.defineProperty(select.options, "0", { writable: false, enumerable: false, configurable: false, value: document.createElement("option") });
+  assert_property(select.options, "0", { writable: true, enumerable: true, configurable: true, value: select.firstChild });
+}, "invoking the indexed property creator by defining a property on a HTMLOptionsCollection works");
+
+test(function() {
+  var select = document.createElement("select");
+  Object.defineProperty(HTMLOptionsCollection.prototype, "10", { get: function() { }, set: function() { throw { name: "SomeError" }; } });
+  try {
+    assert_throws({ name: "SomeError" }, function() { select.options[10] = document.createElement("option"); });
+  } finally {
+    delete HTMLOptionsCollection.prototype[10];
+  }
+}, "assigning to an array index property (on an HTMLOptionsCollection) that is not a supported property index and which corresponds to an accessor property on the prototype will invoke that property's creator");
+
+test(function() {
+  var select = document.createElement("select");
+  Object.defineProperty(HTMLOptionsCollection.prototype, "20", { get: function() { }, set: function() { throw { name: "SomeError" }; } });
+  try {
+    Object.defineProperty(select.options, "20", { value: document.createElement("option") });
+    assert_property(select.options, "20", { writable: true, enumerable: true, configurable: true, value: select.lastChild });
+  } finally {
+    delete HTMLOptionsCollection.prototype[20];
+  }
+}, "defining an array index property (on an HTMLOptionsCollection) that is not a supported property index and which corresponds to an accessor property on the prototype will invoke the indexed property creator");
+</script>

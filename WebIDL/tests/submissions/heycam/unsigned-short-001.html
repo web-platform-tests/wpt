@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<title>unsigned short</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.7 unsigned short
+//
+// Converting a JS value to an IDL unsigned short uses ECMAScript's ToUint16
+// operation.
+
+var values = [
+  undefined,   0,       "undefined",
+  null,        0,       "null",
+  false,       0,       "false",
+  true,        1,       "true",
+  0,           0,       "0",
+  1,           1,       "1",
+  -1,          65535,   "-1",
+  0.5,         0,       "0.5",
+  Infinity,    0,       "Infinity",
+  -Infinity,   0,       "-Infinity",
+  NaN,         0,       "NaN",
+  -0,          0,       "-0",
+  "",          0,       '""',
+  "1",         1,       '"1"',
+  "hello",     0,       '"hello"',
+  { },         0,       "{ }",
+  [],          0,       "[]",
+  /abc/,       0,       "/abc/",
+  document,    0,       "document",
+  -32768,      32768,   "-32768",
+  -32769,      32767,   "-32769",
+  65535,       65535,   "65535",
+  65536,       0,       "65536",
+  -0.5,        0,       "-0.5",
+  -1.5,        65535,   "-1.5",
+  1.5,         1,       "1.5"
+];
+
+// feature: CloseEvent (interface) (with constructor with argument of type unsigned short)
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var e = new CloseEvent("test", { code: value });
+    assert_equals(e.code, expected);
+  }, "passing " + desc + " to CloseEvent constructor coerces the value to an IDL unsigned short correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return value; }, toString: function() { return { } } };
+    if (value === null || typeof value != "object") {
+      var e = new CloseEvent("test", { code: value });
+      assert_equals(e.code, expected);
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
+      assert_throws(new TypeError(), function() { new CloseEvent("test", { code: objectValue }); });
+    }
+  }, "passing { valueOf: function() { return " + desc + " } } to CloseEvent constructor coerces the value to an IDL unsigned short correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return { } }, toString: function() { return value; } };
+    if (value === null || typeof value != "object") {
+      var e = new CloseEvent("test", { code: value });
+      assert_equals(e.code, expected);
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
+      assert_throws(new TypeError(), function() { new CloseEvent("test", { code: objectValue }); });
+    }
+  }, "passing { toString: function() { return " + desc + " } } to CloseEvent constructor coerces the value to an IDL unsigned short correctly");
+}
+
+test(function() {
+  assert_throws({ name: "SomeError" }, function() { new CloseEvent("test", { code: { toString: function() { throw { name: "SomeError" }; } } }); });
+}, "passing { toString: function() { throw ... } } to CloseEvent constructor will propagate the exception");
+</script>

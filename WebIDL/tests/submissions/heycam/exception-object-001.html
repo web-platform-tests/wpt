@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>Exception objects</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.10 Exception objects
+//
+// The [[Prototype]] of a platform object representing an exception is the
+// exception interface prototype object.
+
+// feature: DOMException (exception)
+
+test(function() {
+  var exception;
+  try {
+    document.appendChild(document);
+  } catch (e) {
+    exception = e;
+  }
+  assert_equals(Object.getPrototypeOf(exception), DOMException.prototype);
+}, "[[Prototype]] of a DOMException object is correct");
+</script>

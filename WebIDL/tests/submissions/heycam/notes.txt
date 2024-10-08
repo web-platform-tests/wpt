@@ -1,0 +1,49 @@
+Some notes on missing Web IDL test coverage
+-------------------------------------------
+
+Web IDL features that are tested by only a single API feature:
+
+  * constants on an exception; DOMException.INVALID_STATE_ERR is tested
+  * stringifier on an attribute; URLUtils.href is tested
+  * [ArrayClass]; NodeList is tested
+  * JS <-> IDL conversion of byte; Int8Array indexed properties are tested
+  * JS <-> IDL conversion of octet; Uint8Array indexed properties are tested
+  * JS <-> IDL conversion of short; Int16Array indexed properties are tested
+  * JS <-> IDL conversion of unrestricted float; Float32Array indexed properties are tested
+  * JS <-> IDL conversion of object; TrackEvent.track is tested
+  * JS <-> IDL conversion of union type; HTMLSelectElement.add is tested
+  * JS <-> IDL conversion of Date; HTMLInputElement.valueAsDate is tested, and File.lastModifiedDate is hard to test
+
+Web IDL features that are used but not yet implemented:
+
+  * partial dictionary; there is a partial MouseEventInit in HTML
+  * unsigned long long without [EnforceRange]; there is IDBVersionChangeEvent.oldVersion in IndexedDB
+  * platform array objects
+  * array types not as an argument type (JS <-> IDL conversion); there are a few uses in HTML
+
+Web IDL features that are used but are hard to test:
+
+  * long long; there are some uses in WebGL
+  * unsigned long long
+
+Web IDL features that are not used in specific interesting ways:
+
+  * implements statement, with more than one consequential interface
+  * operation overloading with distinguishing index > 0
+  * operation overloading distinguishing between boolean, numeric types and DOMString
+  * callback interface with multiple operations
+  * callback interface with attribute
+  * exception inheritance
+  * [Clamp] on an attribute
+  * [EnforceRange] on an attribute
+  * [NoInterfaceObject] on an exception
+  * writable attribute with an enum type (JS -> IDL conversion)
+  * enum type as an operation return type or attribute type (IDL -> JS conversion)
+  * stringifier on an operation
+  * interface with a named property setter but not a named property creator
+  * optional arguments not just in trailing positions
+
+Web IDL features that are not used at all:
+
+  * indexed property deleter
+  * [ImplicitThis]

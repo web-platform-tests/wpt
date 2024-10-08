@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<title>unsigned short</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <span id="span">abcd</span>
+</div>
+
+<script>
+// 4.2.7 unsigned short
+//
+// Converting a JS value to an IDL unsigned short uses ECMAScript's ToUint16
+// operation.
+
+var values = [
+  undefined,   0,       "undefined",
+  null,        0,       "null",
+  false,       0,       "false",
+  true,        1,       "true",
+  0,           0,       "0",
+  1,           1,       "1",
+  -1,          65535,   "-1",
+  0.5,         0,       "0.5",
+  Infinity,    0,       "Infinity",
+  -Infinity,   0,       "-Infinity",
+  NaN,         0,       "NaN",
+  -0,          0,       "-0",
+  "",          0,       '""',
+  "2",         2,       '"2"',
+  "hello",     0,       '"hello"',
+  { },         0,       "{ }",
+  [],          0,       "[]",
+  /abc/,       0,       "/abc/",
+  document,    0,       "document",
+  -32768,      32768,   "-32768",
+  -32769,      32767,   "-32769",
+  65535,       65535,   "65535",
+  65536,       0,       "65536",
+  -0.5,        0,       "-0.5",
+  -1.5,        65535,   "-1.5",
+  1.5,         1,       "1.5",
+  65538.9,     2,       "65538.9",
+  -65534.9,    2,       "-65534.9",
+  -65533,      3,       "-65533",
+  16777219,    3,       "16777219"
+];
+
+// feature: Range.compareBoundaryPoints (operation) (with argument of type unsigned short)
+
+var node = document.getElementById("span").firstChild;
+
+function makeRange(start, end) {
+  var range = document.createRange();
+  range.setStart(node, start);
+  range.setEnd(node, end);
+  return range;
+}
+
+// Valid values to pass in to compareBoundaryPoints() are 0, 1, 2 and 3.
+// In each of the cases below, the correct result from calling
+// a.compareBoundaryPoints(how, b) is 0, and passing any other
+// valid |how| value would return -1 or 1.
+
+var rangePairs = [
+  // To test START_TO_START = 0:
+  //
+  //   a:    |----|
+  //   b:    |------|
+  { a: makeRange(1, 2), b: makeRange(1, 3) },
+
+  // To test START_TO_END = 1:
+  //
+  //   a:    |----|
+  //   b:         |----|
+  { a: makeRange(1, 2), b: makeRange(2, 3) },
+
+  // To test END_TO_END = 3:
+  //
+  //   a:    |------|
+  //   b:      |----|
+  { a: makeRange(1, 3), b: makeRange(2, 3) },
+
+  // To test END_TO_START = 4:
+  //
+  //   a:         |----|
+  //   b:    |----|
+  { a: makeRange(2, 3), b: makeRange(1, 2) }
+];
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    if (expected >= 0 && expected <= 3) {
+      var rangePair = rangePairs[expected];
+      var result = rangePair.a.compareBoundaryPoints(value, rangePair.b);
+      assert_equals(result, 0);
+    } else {
+      assert_throws({ name: "NotSupportedError" }, function() { rangePairs[0].a.compareBoundaryPoints(value, rangePairs[0].b); });
+    }
+  }, "passing " + desc + " as the \"how\" argument of Range.compareBoundaryPoints() coerces the value to an IDL unsigned short correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return value; }, toString: function() { return { } } };
+    if (value === null || typeof value != "object") {
+      if (expected >= 0 && expected <= 3) {
+        var rangePair = rangePairs[expected];
+        var result = rangePair.a.compareBoundaryPoints(objectValue, rangePair.b);
+        assert_equals(result, 0);
+      } else {
+        assert_throws({ name: "NotSupportedError" }, function() { rangePairs[0].a.compareBoundaryPoints(objectValue, rangePairs[0].b); });
+      }
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
+      assert_throws(new TypeError(), function() { rangePairs[0].a.compareBoundaryPoints(objectValue, rangePairs[0].b); });
+    }
+  }, "passing { valueOf: function() { return " + desc + " } } as the \"how\" argument of Range.compareBoundaryPoints() coerces the value to an IDL unsigned short correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return { } }, toString: function() { return value; } };
+    if (value === null || typeof value != "object") {
+      if (expected >= 0 && expected <= 3) {
+        var rangePair = rangePairs[expected];
+        var result = rangePair.a.compareBoundaryPoints(objectValue, rangePair.b);
+        assert_equals(result, 0);
+      } else {
+        assert_throws({ name: "NotSupportedError" }, function() { rangePairs[0].a.compareBoundaryPoints(objectValue, rangePairs[0].b); });
+      }
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
+      assert_throws(new TypeError(), function() { rangePairs[0].a.compareBoundaryPoints(objectValue, rangePairs[0].b); });
+    }
+  }, "passing { toString: function() { return " + desc + " } } as the \"how\" argument of Range.compareBoundaryPoints() coerces the value to an IDL unsigned short correctly");
+}
+
+test(function() {
+  assert_throws({ name: "SomeError" }, function() { rangePairs[0].a.compareBoundaryPoints({ toString: function() { throw { name: "SomeError" }; } }, rangePairs[0].b); });
+}, "passing { toString: function() { throw ... } } as the \"how\" argument of Range.compareBoundaryPoints() will propagate the exception");
+</script>

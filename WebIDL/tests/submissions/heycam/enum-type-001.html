@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<title>Enumeration types</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="evenodd" class="evenodd"></div>
+
+<script>
+// 4.2.20 Enumeration types
+//
+// Converting a JS value to an IDL enumeration type involves:
+//   - converting the value with ToString()
+//   - throwing a TypeError if it not a valid enumerated value, except when
+//     assigning to an attribute, in which case the assignment is ignored
+
+// feature: CanvasRenderingContext2D.fill (operation, with argument of an enum type)
+
+function drawAndGetPixel(rule) {
+  var e = document.createElement("canvas");
+  e.width = 40;
+  e.height = 40;
+  var c = e.getContext("2d");
+  c.rect(0, 0, 40, 40);
+  c.rect(10, 10, 20, 20);
+  c.fill(rule);
+  var i = c.getImageData(20, 20, 1, 1);
+  return i.data[3];
+}
+
+test(function() {
+  assert_equals(drawAndGetPixel("nonzero"), 255);
+}, "passing \"nonzero\" to CanvasRenderingContext2D.fill() converts to the CanvasFillRule enum correctly");
+
+test(function() {
+  assert_equals(drawAndGetPixel("evenodd"), 0);
+}, "passing \"evenodd\" to CanvasRenderingContext2D.fill() converts to the CanvasFillRule enum correctly");
+
+test(function() {
+  assert_throws(new TypeError(), function() { drawAndGetPixel("evenodd "); });
+}, "passing \"evenodd \" to CanvasRenderingContext2D.fill() converts to the CanvasFillRule enum correctly");
+
+test(function() {
+  assert_throws(new TypeError(), function() { drawAndGetPixel("Evenodd"); });
+}, "passing \"Evenodd\" to CanvasRenderingContext2D.fill() converts to the CanvasFillRule enum correctly");
+
+test(function() {
+  assert_equals(drawAndGetPixel({ toString: function() { return "nonzero"; } }), 255);
+}, "passing { toString: ... \"nonzero\" } to CanvasRenderingContext2D.fill() converts to the CanvasFillRule enum correctly");
+
+test(function() {
+  assert_equals(drawAndGetPixel({ toString: function() { return "evenodd"; } }), 0);
+}, "passing { toString: ... \"evenodd\" } to CanvasRenderingContext2D.fill() converts to the CanvasFillRule enum correctly");
+
+test(function() {
+  assert_throws({ name: "SomeError" }, function() { drawAndGetPixel({ toString: function() { throw { name: "SomeError" }; } }); });
+}, "passing { toString: ... throw } to CanvasRenderingContext2D.fill() converts to the CanvasFillRule enum correctly");
+
+test(function() {
+  assert_equals(drawAndGetPixel(document.getElementById("evenodd").classList), 0);
+}, "passing DOMTokenList to CanvasRenderingContext2D.fill() converts to the CanvasFillRule enum correctly");
+</script>

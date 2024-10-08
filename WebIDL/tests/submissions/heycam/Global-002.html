@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<title>[Global] property lookup</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <form id="f1" name="f1"></form>
+  <form id="f2" name="f2"></form>
+</div>
+
+<script>
+// 4.5.4.1 Named properties object [[GetOwnProperty]] method
+//
+// Named properties are exposed as data properties through [[GetOwnProperty]].
+
+// feature: Window (interface) (with [Global])
+
+var hidden = document.getElementById("hidden");
+var form1 = document.getElementById("f1");
+var form2 = document.getElementById("f2");
+
+test(function() {
+  assert_equals(window.f1, form1);
+}, "properties from the named properties object can be looked up on window");
+
+test(function() {
+  assert_equals(Window.prototype.f1, form1);
+}, "properties from the named properties object can be looked up on Window.prototype");
+
+test(function() {
+  var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
+  assert_equals(namedPropertiesObject.f1, form1);
+}, "named properties can be looked up on the named properties object");
+
+test(function() {
+  var object = window;
+  var desc;
+  while (object && !desc) {
+    desc = Object.getOwnPropertyDescriptor(object, "f1");
+    object = Object.getPrototypeOf(object);
+  }
+  assert_true(!!desc, "named property exposed through [[GetOwnProperty]]");
+  assert_descriptor(desc, { writable: false, enumerable: true, configurable: true, value: form1 }, "f1");
+}, "named properties are exposed correctly through [[GetOwnProperty]]");
+
+// XXX We probably shouldn't allow non-configurable properties to be defined
+// on the named properties object: https://www.w3.org/Bugs/Public/show_bug.cgi?id=21929
+// Once that bug is resolved, we should test this.
+</script>

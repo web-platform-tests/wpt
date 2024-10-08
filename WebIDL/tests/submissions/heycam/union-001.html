@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<title>Union types</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.25 Union types
+//
+// The rules are:
+//   - JS null and undefined become IDL null, if the type contains a
+//     nullable type
+//   - platform object implementing an interface -> interface type or object
+//   - native Date object -> Date or object
+//   - callable -> callback function or object
+//   - null, undefined, non-Date object -> dictionary type
+//   - non-Date object -> array type, sequence type, callback interface type
+//     or object
+//   - anything -> DOMString or enum
+//   - anything -> primitive
+//   - TypeError
+//
+// In this test we're using the second argument of HTMLSelectElement.add,
+// which is of type (HTMLElement or long)?.
+
+// feature: HTMLSelectElement.add (operation) (with argument of a union type)
+
+function makeSelect() {
+  var select = document.createElement("select");
+  select.appendChild(document.createElement("option"));
+  select.appendChild(document.createElement("option"));
+  select.appendChild(document.createElement("option"));
+  return select;
+}
+
+test(function() {
+  var select = makeSelect();
+  var option = document.createElement("option");
+  select.add(option, null);
+  assert_equals(select.childNodes[3], option);
+}, 'passing null to HTMLSelectElement.add as the before argument correctly converts to "(HTMLElement or long)?"');
+
+test(function() {
+  var select = makeSelect();
+  var option = document.createElement("option");
+  select.add(option, undefined);
+  assert_equals(select.childNodes[3], option);
+}, 'passing undefined to HTMLSelectElement.add as the before argument correctly converts to "(HTMLElement or long)?"');
+
+test(function() {
+  var select = makeSelect();
+  var option = document.createElement("option");
+  select.add(option, select.childNodes[0]);
+  assert_equals(select.childNodes[0], option);
+}, 'passing HTMLOptionElement to HTMLSelectElement.add as the before argument correctly converts to "(HTMLElement or long)?"');
+
+test(function() {
+  var select = makeSelect();
+  var option = document.createElement("option");
+  select.add(option, 1);
+  assert_equals(select.childNodes[1], option);
+}, 'passing 1 to HTMLSelectElement.add as the before argument correctly converts to "(HTMLElement or long)?"');
+
+test(function() {
+  var select = makeSelect();
+  var option = document.createElement("option");
+  select.add(option, window);  // ToNumber(window) is NaN, then NaN is treated as long 0
+  assert_equals(select.childNodes[0], option);
+}, 'passing window to HTMLSelectElement.add as the before argument correctly converts to "(HTMLElement or long)?"');
+
+test(function() {
+  var select = makeSelect();
+  var option = document.createElement("option");
+  select.add(option, { valueOf: function() { return "1.9"; } });
+  assert_equals(select.childNodes[1], option);
+}, 'passing { valueOf } to HTMLSelectElement.add as the before argument correctly converts to "(HTMLElement or long)?"');
+
+test(function() {
+  var select = makeSelect();
+  var option = document.createElement("option");
+  select.add(option, { toString: function() { return 1.9; } });
+  assert_equals(select.childNodes[1], option);
+}, 'passing { toString } to HTMLSelectElement.add as the before argument correctly converts to "(HTMLElement or long)?"');
+
+test(function() {
+  var select = makeSelect();
+  var option = document.createElement("option");
+  assert_throws(new TypeError(), function() { select.add(option, { toString: function() { return { }; } }); });
+}, 'passing { toString: return { } } to HTMLSelectElement.add as the before argument correctly converts to "(HTMLElement or long)?"');
+
+test(function() {
+  var select = makeSelect();
+  var option = document.createElement("option");
+  assert_throws({ name: "SomeError" }, function() { select.add(option, { toString: function() { throw { name: "SomeError" }; } }); });
+}, 'passing { toString: throw } to HTMLSelectElement.add as the before argument correctly converts to "(HTMLElement or long)?"');
+
+test(function() {
+  var select = makeSelect();
+  var option = document.createElement("option");
+  select.add(option, new Date());  // Date will convert to a large number, so option will be added to the end
+  assert_equals(select.childNodes[3], option);
+}, 'passing Date object to HTMLSelectElement.add as the before argument correctly converts to "(HTMLElement or long)?"');
+</script>

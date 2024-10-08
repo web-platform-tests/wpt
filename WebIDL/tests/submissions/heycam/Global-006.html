@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>Named properties object [[DefineOwnProperty]]</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <form id="f1" name="f1"></form>
+  <form id="f2" name="f2"></form>
+</div>
+
+<script>
+// 4.5.4.3 Named properties object [[Delete]] method
+//
+// Named properties exposed on a named properties object cannot be removed.
+
+// feature: Window (interface) (with [Global])
+
+test(function() {
+  var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
+  assert_equals(namedPropertiesObject.f1, document.getElementById("f1"));
+  delete namedPropertiesObject.f1;
+  assert_equals(namedPropertiesObject.f1, document.getElementById("f1"));
+}, "named properties cannot be deleted from the named properties object");
+</script>

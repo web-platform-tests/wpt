@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<title>Sequence types</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.23 Sequences – sequence<T>
+//
+// IDL sequence values are represented in JS as newly created Array objects
+// which have had their array index properties set as own, writable, enumerable,
+// configurable properties.
+
+// feature: MutationCallback (operation) (on a callback interface, of a sequence type)
+
+async_test(function(t) {
+  var span = document.createElement("span");
+  var obs = new MutationObserver(function(records) {
+    t.step(function() {
+      assert_true(Array.isArray(records));
+      assert_equals(Object.getPrototypeOf(records), Array.prototype);
+      assert_property(records, "0", { writable: true, enumerable: true, configurable: true }, "records[0]");
+      assert_true(records[0] instanceof MutationRecord);
+      t.done();
+    });
+  });
+  obs.observe(span, { attributes: true });
+  span.setAttribute("data-test", "test");
+}, "a MutationObserver correctly converts a sequence<MutationRecord> value to a JS value");
+</script>

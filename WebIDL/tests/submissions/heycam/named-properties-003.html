@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<title>Setting named properties</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="container" style="display: none"></div>
+
+<script>
+// 4.7.3 Platform object [[DefineOwnProperty]] method
+//
+// If an object supports named properties, and if a named property
+// creator/setter is not available, then attempting to set a property with
+// a name that is a supported property name will fail, and attempting to
+// set a property with a name that is not a supported property name will
+// fall through to setting the property on the object.
+
+// feature: HTMLCollection (interface) (supports named properties, does not have a named property setter, does not have a named property creator)
+
+var container = document.getElementById("container");
+
+function clearContainer() {
+  while (container.lastChild) {
+    container.removeChild(container.lastChild);
+  }
+}
+
+function addForm(name) {
+  var form = document.createElement("form");
+  form.setAttribute("name", name);
+  container.appendChild(form);
+  return form;
+}
+
+test(function() {
+  clearContainer();
+  var form = addForm("hello");
+  document.forms.hello = "123";
+  assert_equals(document.forms.hello, form);
+}, "attempting to assign to a supported property name on an HTMLCollection will be ignored in non-strict mode");
+
+test(function() {
+  clearContainer();
+  var form = addForm("hello2");
+  Object.defineProperty(document.forms, "hello2", { configurable: true, value: "123" });
+  assert_equals(document.forms.hello2, form);
+}, "attempting to define over supported property name on an HTMLCollection will be ignored in non-strict mode");
+
+test(function() {
+  clearContainer();
+  addForm("hello3");
+  assert_throws(new TypeError(), function() { "use strict"; document.forms.hello3 = "123"; });
+}, "attempting to assign to a supported property name on an HTMLCollection will throw in strict mode");
+
+test(function() {
+  clearContainer();
+  addForm("hello4");
+  assert_throws(new TypeError(), function() { "use strict"; Object.defineProperty(document.forms, "hello4", { configurable: true, value: "123" }); });
+}, "attempting to define over a supported property name on an HTMLCollection will throw in strict mode");
+
+test(function() {
+  clearContainer();
+  addForm("hello5");
+  document.forms.something = "123";
+  assert_property(document.forms, "something", { writable: true, enumerable: true, configurable: true, value: "123" });
+}, "attempting to assign to a property (which is not a supported property name) on an HTMLCollection will work");
+
+test(function() {
+  clearContainer();
+  addForm("hello6");
+  Object.defineProperty(document.forms, "something", { writable: false, enumerable: false, configurable: true, value: "123" });
+  assert_property(document.forms, "something", { configurable: true, value: "123" });
+}, "attempting to define a property (which is not a supported property name) on an HTMLCollection will work");
+
+test(function() {
+  clearContainer();
+  Object.defineProperty(document.forms, "hello7", { });
+  assert_true(!Object.hasOwnProperty(document.forms, "hello7"));
+}, "attempting to define a non-data property on an HTMLCollection will be ignored");
+
+test(function() {
+  clearContainer();
+  assert_throws(new TypeError(), function() { "use strict"; Object.defineProperty(document.forms, "hello8", { configurable: true }); });
+}, "attempting to define a non-data property on an HTMLCollection will throw in strict mode");
+
+test(function() {
+  clearContainer();
+  Object.defineProperty(document.forms, "hello9", { writable: true, configurable: false, value: "999" });
+  assert_property(document.forms, "hello9", { writable: true, enumerable: false, configurable: true, value: "999" });
+}, "properties defined on HTMLCollection will be forced to be configurable");
+</script>

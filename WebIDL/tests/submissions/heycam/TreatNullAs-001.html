@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<title>[TreatNullAs] on attributes</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.16 DOMString
+//
+// Assigning to an attribute of type DOMString will by default convert null to
+// "null".  If [TreatNullAs=EmptyString] is on the attribute, null will be
+// converted to "" instead.
+
+// feature: Element.className (attribute) (without [TreatNullAs])
+
+test(function() {
+  var e = document.createElement("span");
+  e.className = "hello";
+  assert_equals(e.className, "hello", "e.className");
+  e.className = null;
+  assert_equals(e.className, "null", "e.className");
+}, "assigning to Element.className converts null to \"null\"");
+
+// feature: CharacterData.data (attribute) (with [TreatNullAs=EmptyString])
+
+test(function() {
+  var n = document.createTextNode("hello");
+  assert_equals(n.data, "hello", "n.data");
+  n.data = null;
+  assert_equals(n.data, "", "n.data");
+}, "assigning to CharacterData.data converts null to \"\"");
+
+// feature: HTMLFrameElement.marginWidth (attribute) (with [TreatNullAs=EmptyString])
+
+test(function() {
+  var e = document.createElement("frame");
+  e.setAttribute("marginwidth", "hello");
+  assert_equals(e.marginWidth, "hello", "e.marginWidth");
+  e.marginWidth = null;
+  assert_equals(e.marginWidth, "", "e.marginWidth");
+}, "assigning to HTMLFrameElement.marginWidth converts null to \"\"");
+</script>

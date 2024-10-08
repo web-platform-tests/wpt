@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<title>Stringifiers on attributes</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.5.7 Operations
+//
+// Stringifiers that appear on an attribute do not invoke the [[Get]] internal
+// method on the object to get the value of the IDL attribute it is on.  Instead,
+// it just performs the same behavior as getting the attribute, internally.
+// The toString Function ignores any arguments passed to it.  If applied to the
+// wrong kind of object, a TypeError is thrown.
+
+// feature: URLUtils (stringifier)
+
+var url = "http://test.invalid/somewhere";
+
+test(function() {
+  var a = document.createElement("a");
+  a.setAttribute("href", url);
+  assert_equals(a.toString(), a.href);
+}, "the HTMLAnchorElement stringifier returns the same value as the href attribute");
+
+test(function() {
+  assert_throws(new TypeError(), function() { HTMLAnchorElement.prototype.toString.call(null); });
+}, "the HTMLAnchorElement stringifier throws when passed a null this-object");
+
+test(function() {
+  assert_throws(new TypeError(), function() { HTMLAnchorElement.prototype.toString.call(document); });
+}, "the HTMLAnchorElement stringifier throws when passed a bad this-object");
+
+test(function() {
+  var a = document.createElement("a");
+  a.setAttribute("href", url);
+  Object.defineProperty(a, "href", { value: 123 });
+  assert_equals(String(a), url);
+}, "the HTMLAnchorElement stringifier does not call [[Get]](\"href\")");
+
+test(function() {
+  var a = document.createElement("a");
+  a.setAttribute("href", url);
+  Object.defineProperty(a, "href", { get: function() { throw { name: "Something" }; } });
+  assert_equals(String(a), url);
+}, "the HTMLAnchorElement stringifier does not invoke an \"href\" accessor property");
+</script>

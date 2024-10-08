@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<title>unrestricted double</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.15 unrestricted double
+//
+// We're using HTMLInputElement.valueAsNumber, which says to throw when
+// an infinite value.  NaNs get converted into an empty string for the
+// value="" attribute.
+
+var values = [
+  undefined,           NaN,                "undefined",
+  null,                0,                  "null",
+  false,               0,                  "false",
+  true,                1,                  "true",
+  0,                   0,                  "0",
+  1,                   1,                  "1",
+  -1,                  -1,                 "-1",
+  0.5,                 0.5,                "0.5",
+  Infinity,            Infinity,           "Infinity",
+  -Infinity,           -Infinity,          "-Infinity",
+  NaN,                 NaN,                "NaN",
+  -0,                  -0,                 "-0",
+  "",                  0,                  '""',
+  "1",                 1,                  '"1"',
+  "hello",             NaN,                '"hello"',
+  { },                 NaN,                "{ }",
+  [],                  0,                  "[]",
+  /abc/,               NaN,                "/abc/",
+  document,            NaN,                "document",
+  -2147483648,         -2147483648,        "-2147483648",
+  -2147483649,         -2147483649,        "-2147483649",
+  4294967295,          4294967295,         "4294967295",
+  4294967296,          4294967296,         "4294967296",
+  4294967297,          4294967297,         "4294967297",
+  -0.5,                -0.5,               "-0.5",
+  -1.5,                -1.5,               "-1.5",
+  1.5,                 1.5,                "1.5",
+  1.1,                 1.1,                "1.1",
+  1e309,               Infinity,           "1e309",
+  1.0000001788139343,  1.0000001788139343, "1.0000001788139343"
+];
+
+// feature: HTMLInputElement.valueAsNumber (attribute) (writable, of type unrestricted double)
+
+var input = document.createElement("input");
+input.setAttribute("type", "number");
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    if (value != Infinity && value != -Infinity) {
+      input.valueAsNumber = value;
+      assert_equals(input.value, expected == expected ? String(expected) : "");
+    } else {
+      assert_throws(new TypeError(), function() { input.valueAsNumber = value; });
+    }
+  }, "assigning " + desc + " to HTMLInputElement.valueAsNumber coerces the value to an IDL unrestricted double correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return value; }, toString: function() { return { } } };
+    if ((value === null || typeof value != "object") && value != Infinity && value != -Infinity) {
+      input.valueAsNumber = objectValue;
+      assert_equals(input.value, expected == expected ? String(expected) : "");
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both
+      // return an object.  Also, Infinity and -Infinity will throw according
+      // to HTMLInputNumber.valueAsNumber's behavior.
+      assert_throws(new TypeError(), function() { input.valueAsNumber = objectValue; });
+    }
+  }, "assigning { valueOf: function() { return " + desc + " } } to HTMLInputElement.valueAsNumber coerces the value to an IDL unrestricted double correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return { } }, toString: function() { return value; } };
+    if ((value === null || typeof value != "object") && value != Infinity && value != -Infinity) {
+      input.valueAsNumber = objectValue;
+      assert_equals(input.value, expected == expected ? String(expected) : "");
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both
+      // return an object.  Also, Infinity and -Infinity will throw according
+      // to HTMLInputNumber.valueAsNumber's behavior.
+      assert_throws(new TypeError(), function() { input.valueAsNumber = objectValue; });
+    }
+  }, "assigning { toString: function() { return " + desc + " } } to HTMLInputElement.valueAsNumber coerces the value to an IDL unrestricted double correctly");
+}
+
+test(function() {
+  assert_throws({ name: "SomeError" }, function() { input.valueAsNumber = { toString: function() { throw { name: "SomeError" }; } }; });
+}, "assigning { toString: function() { throw ... } } to HTMLInputElement.valueAsNumber will propagate the exception");
+</script>

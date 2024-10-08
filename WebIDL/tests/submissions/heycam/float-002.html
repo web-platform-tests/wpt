@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<title>float</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.12 float
+//
+// We need to check that float values after the JS to IDL conversion
+// are finite, otherwise we throw.  Also, we need to check that
+// the JS Number (double) -> IDL float -> JS Number (double)
+// conversion is done correctly.
+
+var values = [
+  undefined,           undefined,          "undefined",
+  null,                0,                  "null",
+  false,               0,                  "false",
+  true,                1,                  "true",
+  0,                   0,                  "0",
+  1,                   1,                  "1",
+  -1,                  -1,                 "-1",
+  0.5,                 0.5,                "0.5",
+  Infinity,            undefined,          "Infinity",
+  -Infinity,           undefined,          "-Infinity",
+  NaN,                 undefined,          "NaN",
+  -0,                  -0,                 "-0",
+  "",                  0,                  '""',
+  "1",                 1,                  '"1"',
+  "hello",             undefined,          '"hello"',
+  { },                 undefined,          "{ }",
+  [],                  0,                  "[]",
+  /abc/,               undefined,          "/abc/",
+  document,            undefined,          "document",
+  -2147483648,         -2147483648,        "-2147483648",
+  -2147483649,         -2147483648,        "-2147483649",
+  4294967295,          4294967296,         "4294967295",
+  4294967296,          4294967296,         "4294967296",
+  4294967297,          4294967296,         "4294967297",
+  -0.5,                -0.5,               "-0.5",
+  -1.5,                -1.5,               "-1.5",
+  1.5,                 1.5,                "1.5",
+  1.1,                 1.100000023841858,  "1.1",
+  1e39,                undefined,           "1e39",
+  1.0000001788139343,  1.000000238418579,  "1.0000001788139343"
+];
+
+// feature: SVGMatrix.translate (operation) (with argument of type float)
+
+var matrix = document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGMatrix();
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    if (expected !== undefined) {
+      var m = matrix.translate(value, 0);
+      assert_equals(m.e, expected);
+    } else {
+      assert_throws(new TypeError(), function() { matrix.translate(value, 0); });
+    }
+  }, "passing " + desc + " to SVGMatrix.translate coerces the value to an IDL float correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return value; }, toString: function() { return { } } };
+    if (value === null || typeof value != "object") {
+      if (expected !== undefined) {
+        var m = matrix.translate(objectValue, 0);
+        assert_equals(m.e, expected);
+      } else {
+        assert_throws(new TypeError(), function() { matrix.translate(objectValue, 0); });
+      }
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
+      assert_throws(new TypeError(), function() { matrix.translate(objectValue, 0); });
+    }
+  }, "passing { valueOf: function() { return " + desc + " } } to SVGMatrix.translate coerces the value to an IDL float correctly");
+}
+
+for (var i = 0; i < values.length; i += 3) {
+  var value = values[i];
+  var expected = values[i + 1];
+  var desc = values[i + 2];
+  test(function() {
+    var objectValue = { valueOf: function() { return { } }, toString: function() { return value; } };
+    if (value === null || typeof value != "object") {
+      if (expected !== undefined) {
+        var m = matrix.translate(objectValue, 0);
+        assert_equals(m.e, expected);
+      } else {
+        assert_throws(new TypeError(), function() { matrix.translate(objectValue, 0); });
+      }
+    } else {
+      // ToPrimitive() will throw a TypeError if valueOf and toString both return an object.
+      assert_throws(new TypeError(), function() { matrix.translate(objectValue, 0); });
+    }
+  }, "passing { toString: function() { return " + desc + " } } to SVGMatrix.translate coerces the value to an IDL float correctly");
+}
+
+test(function() {
+  assert_throws({ name: "SomeError" }, function() { matrix.translate({ toString: function() { throw { name: "SomeError" }; } }, 0); });
+}, "passing { toString: function() { throw ... } } to SVGMatrix.translate will propagate the exception");
+</script>

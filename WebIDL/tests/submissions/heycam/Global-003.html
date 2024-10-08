@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<title>[Global] property lookup</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe></iframe>
+  <form name="document"></form>
+  <form name="0"></form>
+  <form name="1000"></form>
+  <form name="addEventListener"></form>
+  <form name="toString"></form>
+  <form name="Window-expando"></form>
+  <form name="EventTarget-expando"></form>
+  <form name="Object-expando"></form>
+</div>
+
+<script>
+// 4.5.4.1 Named properties object [[GetOwnProperty]] method
+//
+// The named property visibility algorithm will cause named properties with
+// names that match [Unforgeable] attributes on Window, and properties from
+// EventTarget.prototype and Object.prototype, not to be visible on the named
+// properties object.
+
+// feature: Window (interface) (with [Global])
+
+test(function() {
+  assert_true("document" in window, '"document" in window');
+  assert_true(!("document" in Window.prototype), '!("document" in Window.prototype)');
+  assert_true(document instanceof Document, "document instanceof Document");
+}, "properties for unforgeable attributes cause named properties of the same name not to be visible");
+
+test(function() {
+  var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
+
+  assert_true(window.hasOwnProperty("0"), 'window.hasOwnProperty("0")');
+  assert_true(namedPropertiesObject.hasOwnProperty("0"), 'namedPropertiesObject.hasOwnProperty("0")');
+  assert_not_equals(window[0], namedPropertiesObject[0]);
+  assert_true(!(window[0] instanceof HTMLFormElement), '!(window[0] instanceof HTMLFormElement)');
+  assert_true(namedPropertiesObject[0] instanceof HTMLFormElement, 'namedPropertiesObject[0] instanceof HTMLFormElement');
+}, "named properties with the same name as an indexed property on window are visible on the named properties object");
+
+test(function() {
+  var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
+
+  assert_true(!window.hasOwnProperty("1000"), '!window.hasOwnProperty("1000")');
+  assert_true(namedPropertiesObject.hasOwnProperty("1000"), 'namedPropertiesObject.hasOwnProperty("1000")');
+  assert_equals(window[1000], namedPropertiesObject[1000]);
+  assert_true(window[1000] instanceof HTMLFormElement, 'window[1000] instanceof HTMLFormElement');
+}, "named properties with an array index name but which do not correspond to an indexed property are still visible on the named properties object");
+
+test(function() {
+  var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
+
+  Window.prototype["Window-expando"] = "hello 1";
+
+  assert_true(namedPropertiesObject.hasOwnProperty("Window-expando"), 'namedPropertiesObject.hasOwnProperty("Window-expando")');
+  assert_true(namedPropertiesObject["Window-expando"] instanceof HTMLFormElement, 'namedPropertiesObject["Window-expando"] instanceof HTMLFormElement');
+  assert_equals(window["Window-expando"], "hello 1");
+}, "expando properties on Window.prototype do not prevent named properties with the same name from being visible on the named properties object");
+
+test(function() {
+  var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
+
+  assert_true(!namedPropertiesObject.hasOwnProperty("addEventListener"), '!namedPropertiesObject.hasOwnProperty("addEventListener")');
+  assert_equals(window.addEventListener, document.addEventListener, 'window.addEventListener == document.addEventListener');
+}, "built-in properties on EventTarget.prototype prevent named properties with the same name from being visible on the named properties object");
+
+test(function() {
+  var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
+
+  EventTarget.prototype["EventTarget-expando"] = "hello 2";
+
+  assert_true(!namedPropertiesObject.hasOwnProperty("EventTarget-expando"), '!namedPropertiesObject.hasOwnProperty("EventTarget-expando")');
+  assert_equals(window["EventTarget-expando"], "hello 2");
+}, "expando properties on EventTarget.prototype prevents named properties with the same name from being visible on the named properties object");
+
+test(function() {
+  var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
+
+  assert_true(!namedPropertiesObject.hasOwnProperty("toString"), '!namedPropertiesObject.hasOwnProperty("toString")');
+  assert_equals(window.toString, {}.toString, 'window.toString == {}.toString');
+}, "built-in properties on Object.prototype prevent named properties with the same name from being visible on the named properties object");
+
+test(function() {
+  var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
+
+  Object.prototype["Object-expando"] = "hello 3";
+
+  assert_true(!namedPropertiesObject.hasOwnProperty("Object-expando"), '!namedPropertiesObject.hasOwnProperty("Object-expando")');
+  assert_equals(window["Object-expando"], "hello 3");
+}, "expando properties on Object.prototype prevents named properties with the same name from being visible on the named properties object");
+</script>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<title>[Global] prototype chain</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.5.4 Named properties object
+//
+// Its [[Prototype]] points to the interface prototype object of any
+// interface the one [[Prototype]] is on inherits from, or Object.prototype.
+
+// feature: Window (interface) (with [Global])
+
+// window -> Window.prototype -> [named properties] -> EventTarget.prototype -> Object.prototype
+
+var chain = prototypeChain(window);
+
+test(function() {
+  assert_equals(chain[1], Window.prototype);
+}, "window has correct [[Prototype]]");
+
+test(function() {
+  assert_true(chain[2] && chain[2] != EventTarget.prototype && chain[2] != Object.prototype);
+}, "Window.prototype doesn't have incorrect [[Prototype]]");
+
+test(function() {
+  assert_equals(chain[3], EventTarget.prototype);
+}, "named properties object has correct [[Prototype]]");
+
+test(function() {
+  assert_equals(chain[4], Object.prototype);
+}, "EventTarget.prototype has correct [[Prototype]]");
+
+test(function() {
+  assert_equals(chain.length, 5);
+}, "window has expected prototype chain length");
+</script>

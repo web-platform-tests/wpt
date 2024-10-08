@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<title>any</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.1 any
+//
+// Converting a JS value to an IDL any values and back again should be
+// lossless.
+
+var values = [
+  undefined,   "undefined",
+  null,        "null",
+  false,       "false",
+  true,        "true",
+  0,           "0",
+  1,           "1",
+  -1,          "-1",
+  0.5,         "0.5",
+  Infinity,    "Infinity",
+  -Infinity,   "-Infinity",
+  NaN,         "NaN",
+  -0,          "-0",
+  "",          '""',
+  "1",         '"1"',
+  "hello",     '"hello"',
+  { },         "{ }",
+  [],          "[]",
+  /abc/,       "/abc/",
+  document,    "document"
+];
+
+// feature: CustomEvent.initCustomEvent (operation) (with argument of type any)
+
+for (var i = 0; i < values.length; i += 2) {
+  var value = values[i];
+  var desc = values[i + 1];
+  test(function() {
+    var e = document.createEvent("CustomEvent");
+    e.initCustomEvent("test", false, false, value);
+    assert_equals(e.detail, values[i]);
+  }, "passing " + desc + " to CustomEvent.initCustomEvent() comes out the same from CustomEvent.detail");
+}
+</script>

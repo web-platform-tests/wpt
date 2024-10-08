@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<title>Interface prototype objects</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.5.3 Interface prototype object
+//
+// The [[Prototype]] of an interface prototype object is Object.prototype,
+// if the interface does not inherit from another; otherwise it is
+// is the interface prototype object of the inherited interface.
+// The interface prototype object has "constructor" property if it is not
+// [NoInterfaceObject].
+
+var interfaces = [
+
+  // feature: DOMImplementation (interface) (without inheritance, without [NoInterfaceObject])
+  "DOMImplementation", "Object",
+
+  // feature: HTMLCollection (interface) (without inheritance, without [NoInterfaceObject])
+  "HTMLCollection", "Object",
+
+  // feature: Element (interface) (with inheritance, without [NoInterfaceObject])
+  "Element", "Node",
+
+  // feature: UIEvent (interface) (with inheritance, without [NoInterfaceObject])
+  "UIEvent", "Event"
+];
+
+for (var i = 0; i < interfaces.length; i += 2) {
+  var name = interfaces[i];
+  var inh = interfaces[i + 1];
+
+  test(function() {
+    assert_equals(Object.getPrototypeOf(window[name].prototype), window[inh].prototype);
+  }, name + ".prototype has the right [[Prototype]]");
+
+  test(function() {
+    assert_property(window[name].prototype, "constructor", { writable: true, enumerable: false, configurable: true, value: window[name] });
+  }, name + ".prototype.constructor has the right attributes and value");
+}
+</script>

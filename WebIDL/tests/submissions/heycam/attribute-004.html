@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<title>Getters for read only attributes</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe id="iframe"></iframe>
+  <form id="form">
+    <input></input>
+    <input></input>
+  </form>
+</div>
+
+<script>
+// 4.5.6 Attributes
+//
+// Properties for non-[Unforgeable] attributes exist on the interface prototype
+// object and are enumerable and configurable.  These are accessor properties
+// always have a getter.  The getter expects no arguments, and will ignore
+// extra ones.  The getter can be applied to objects of the right type
+// from other windows.  Calling it with a bad this object value will throw
+// a TypeError.
+
+// feature: HTMLFormElement (attribute) (read only, without [Unforgeable])
+
+var form = document.getElementById("form");
+
+test(function() {
+  assert_true(!form.hasOwnProperty("length"));
+}, "HTMLFormElement object does not have own property \"length\"");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLFormElement.prototype, "length");
+  assert_descriptor(desc, { enumerable: true, configurable: true });
+}, "HTMLFormElement.prototype.length has correct property attributes");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLFormElement.prototype, "length");
+  assert_equals(typeof desc.get, "function");
+  assert_equals(desc.get.length, 0);
+}, "HTMLFormElement.length has a getter function with the right length");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLFormElement.prototype, "length");
+  assert_true(!desc.set);
+}, "HTMLFormElement.length has no setter function");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLFormElement.prototype, "length");
+  assert_true(!!desc);
+  assert_throws(new TypeError(), function() { desc.get.call(null); });
+}, "calling HTMLFormElement.length getter with a null this-value throws");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLFormElement.prototype, "length");
+  assert_true(!!desc);
+  assert_throws(new TypeError(), function() { desc.get.call(document); });
+}, "calling HTMLFormElement.length getter with a non-HTMLFormElement object this-value throws");
+
+test(function() {
+  var e = document.createElement("form");
+  e.appendChild(document.createElement("input"));
+  var desc = Object.getOwnPropertyDescriptor(HTMLFormElement.prototype, "length");
+  assert_equals(desc.get.call(e), 1);
+}, "calling HTMLFormElement.length getter on a different HTMLFormElement object works");
+
+test(function() {
+  var doc = document.getElementById("iframe").contentDocument;
+  var e = doc.createElement("form");
+  e.appendChild(doc.createElement("input"));
+  var desc = Object.getOwnPropertyDescriptor(HTMLFormElement.prototype, "length");
+  assert_equals(desc.get.call(e), 1);
+}, "calling HTMLFormElement.length getter on an object from a different window works");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLFormElement.prototype, "length");
+  assert_equals(desc.get.call(form, "extra"), 2);
+}, "arguments passed to HTMLFormElement.length getter are ignored");
+</script>

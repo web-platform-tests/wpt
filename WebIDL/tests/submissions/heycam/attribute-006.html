@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<title>Setters for writable attributes</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe id="iframe"></iframe>
+  <select id="select">
+    <option></option>
+    <option></option>
+  </select>
+</div>
+
+<script>
+// 4.5.6 Attributes
+//
+// Properties for non-[Unforgeable] attributes exist on the interface prototype
+// object and are enumerable and configurable.  These are accessor properties
+// and have a setter if they are not read only.  The setter expects one
+// argument, and will ignore extra ones.  If no argument is passed, a TypeError
+// is thrown.  The setter can be applied to objects of the right type from
+// other windows.  Calling it with a bad this object value will throw
+// a TypeError.
+
+// feature: HTMLSelectElement.length (attribute) (writable, without [Unforgeable])
+
+var select = document.getElementById("select");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "length");
+  assert_equals(typeof desc.set, "function");
+  assert_equals(desc.set.length, 1);
+}, "HTMLSelectElement.length has a setter function with the right length");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "length");
+  assert_true(!!desc);
+  assert_throws(new TypeError(), function() { desc.set.call(null); });
+}, "calling HTMLSelectElement.length setter with a null this-value throws");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "length");
+  assert_true(!!desc);
+  assert_throws(new TypeError(), function() { desc.set.call(document, 0); });
+}, "calling HTMLSelectElement.length setter with a non-HTMLSelectElement object this-value throws");
+
+test(function() {
+  var e = document.createElement("select");
+  e.appendChild(document.createElement("option"));
+  var desc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "length");
+  desc.set.call(e, 1);
+  assert_equals(e.length, 1);
+}, "calling HTMLSelectElement.length setter on a different HTMLSelectElement object works");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "length");
+  assert_equals(desc.set.call(select, 4), undefined);
+}, "calling HTMLSelectElement.length setter returns undefined");
+
+test(function() {
+  var doc = document.getElementById("iframe").contentDocument;
+  var e = doc.createElement("select");
+  e.appendChild(doc.createElement("option"));
+  var desc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "length");
+  desc.set.call(e, 0);
+  assert_equals(e.length, 0);
+}, "calling HTMLSelectElement.length setter on an object from a different window works");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "length");
+  desc.set.call(select, 3, "extra");
+  assert_equals(select.length, 3);
+}, "arguments passed to HTMLSelectElement.length setter are ignored");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(Document.prototype, "length");
+  assert_throws(new TypeError(), function() { desc.set.call(select); });
+}, "passing no arguments to HTMLSelectElement.length setter will throw");
+</script>

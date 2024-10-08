@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<title>Indexed properties</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.7.2 Platform object [[GetOwnProperty]] method
+//
+// If an object supports indexed properties, then own properties exist on the
+// object corresponding to the supported property indexes.  Each property is
+// exposed through [[GetOwnProperty]] as being enumerable, configurable,
+// and writable if there is also an indexed property setter.
+
+// feature: NodeList (indexed property getter) (does not have an indexed property setter)
+
+function makeSpan() {
+  var e = document.createElement("span");
+  e.appendChild(document.createElement("span"));
+  e.appendChild(document.createElement("span"));
+  return e;
+}
+
+test(function() {
+  var span = makeSpan();
+  var nl = span.childNodes;
+  assert_property(nl, "0", { writable: false, enumerable: true, configurable: true, value: span.firstChild });
+}, "NodeList indexed property has correct attributes and value");
+
+test(function() {
+  var span = makeSpan();
+  var nl = span.childNodes;
+  assert_true(!nl.hasOwnProperty(2));
+}, "NodeList property corresponding to a non-existent supported property index does not exist");
+
+test(function() {
+  var span = makeSpan();
+  var nl = span.childNodes;
+  try {
+    NodeList.prototype[2] = "hello";
+    assert_equals(nl[2], "hello");
+  } finally {
+    delete NodeList.prototype[2];
+  }
+}, "NodeList allows properties with names that are array index property names to show through from the prototype");
+
+
+// feature: HTMLSelectElement (indexed property getter) (has an indexed property setter)
+
+function makeSelect() {
+  var e = document.createElement("select");
+  e.appendChild(document.createElement("option"));
+  e.appendChild(document.createElement("option"));
+  return e;
+}
+
+test(function() {
+  var select = makeSelect();
+  assert_property(select, "0", { writable: true, enumerable: true, configurable: true, value: select.firstChild });
+}, "HTMLSelectElement indexed property has correct attributes and value");
+
+test(function() {
+  var select = makeSelect();
+  assert_true(!select.hasOwnProperty(2));
+}, "HTMLSelectElement property corresponding to a non-existent supported property index does not exist");
+
+test(function() {
+  var select = makeSelect();
+  try {
+    HTMLSelectElement.prototype[2] = "hello";
+    assert_equals(select[2], "hello");
+  } finally {
+    delete HTMLSelectElement.prototype[2];
+  }
+}, "HTMLSelectElement allows properties with names that are array index property names to show through from the prototype");
+</script>

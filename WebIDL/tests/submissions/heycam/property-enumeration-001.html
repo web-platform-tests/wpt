@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<title>Property enumeration</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="container" style="display: none">
+  <form name="abc"></form>
+  <form name="def"></form>
+</div>
+
+<script>
+// 4.7.6 Property enumeration
+//
+// If an object supports indexed properties, they are enumerated first,
+// in numerical order.  If it supports named properties, they are enumerated
+// next, in the order that is defined by the spec that describes the set
+// of supported property names.  Finally, any own properties and properties
+// from the prototype are enumerated, in an unspecified order.
+
+// feature: HTMLCollection (interface) (supports indexed properties, supports named properties)
+
+test(function() {
+  document.forms.some = 1;
+  document.forms.thing = 1;
+
+  var container = document.getElementById("container");
+
+  var form = document.createElement("form");
+  form.setAttribute("name", "ghi");
+  container.insertBefore(form, container.firstChild);
+
+  form = document.createElement("form");
+  form.setAttribute("name", "thing");
+  container.insertBefore(form, container.firstChild);
+
+  var expectedOrder = ["0", "1", "2", "3", "thing", "ghi", "abc", "def", "some"];
+  var expected = Object.create(null);
+  for (var i = 0; i < expectedOrder.length; i++) {
+    expected[expectedOrder[i]] = true;
+  }
+
+  var actualOrder = [];
+  for (var p in document.forms) {
+    if (expected[p]) {
+      actualOrder.push(p);
+    }
+  }
+
+  assert_array_equals(actualOrder, expectedOrder);
+}, "HTMLCollection enumerates properties in the right order");
+
+
+// feature: Uint8Array (interface) (supports indexed properties, does not support named properties)
+
+test(function() {
+  var a = new Uint8Array(3);
+  a.something = 1;
+
+  var expectedOrder = ["0", "1", "2", "something"];
+  var expected = Object.create(null);
+  for (var i = 0; i < expectedOrder.length; i++) {
+    expected[expectedOrder[i]] = true;
+  }
+
+  var actualOrder = [];
+  for (var p in a) {
+    if (expected[p]) {
+      actualOrder.push(p);
+    }
+  }
+
+  assert_array_equals(actualOrder, expectedOrder);
+}, "Uint8Array enumerates properties in the right order");
+
+
+// feature: DOMStringMap (interface) (does not support indexed properties, supports named properties)
+
+test(function() {
+  try {
+    DOMStringMap.prototype.some = 1;
+    DOMStringMap.prototype.thing = 1;
+
+    var span = document.createElement("span");
+    window.span = span;
+    span.dataset.abc = "test";
+    span.dataset.thing = "test";
+    span.dataset.def = "test";
+    span.dataset.ghi = "test";
+    delete span.dataset.abc;
+
+    var expectedOrder = ["thing", "def", "ghi", "some"];
+    var expected = Object.create(null);
+    for (var i = 0; i < expectedOrder.length; i++) {
+      expected[expectedOrder[i]] = true;
+    }
+
+    var actualOrder = [];
+    for (var p in span.dataset) {
+      if (expected[p]) {
+        actualOrder.push(p);
+      }
+    }
+
+    assert_array_equals(actualOrder, expectedOrder);
+  } finally {
+    delete DOMStringMap.prototype.something;
+  }
+}, "DOMStringMap enumerates properties in the right order");
+</script>

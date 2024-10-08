@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<title>[Replaceable]</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe id="iframe1"></iframe>
+  <iframe id="iframe2"></iframe>
+  <iframe id="iframe3"></iframe>
+  <iframe id="iframe4"></iframe>
+</div>
+
+<script>
+// 4.5.6 Attributes
+//
+// Read only attributes that are [Replaceable] allow themselves to be replaced
+// when you assign to them.
+
+// feature: Window.self (attribute) (with [Replaceable])
+
+test(function() {
+  var iframe = document.getElementById("iframe1");
+  var w = iframe.contentWindow;
+
+  assert_equals(w, w.self);
+  w.self = "hello";
+  assert_equals(w.self, "hello");
+}, "assigning to Window.self will define a property on the window instance");
+
+test(function() {
+  var iframe = document.getElementById("iframe2");
+  var w = iframe.contentWindow;
+
+  w.self = "hello";
+  assert_true(delete w.self, "delete w.self");
+  assert_true(!w.hasOwnProperty("self"), "!w.hasOwnProperty(\"self\")");
+}, "replacing Window.self and deleting the property will result in no own property \"self\" on the window");
+
+// feature: Window.length (attribute) (with [Replaceable])
+
+test(function() {
+  var iframe = document.getElementById("iframe3");
+  var w = iframe.contentWindow;
+
+  assert_equals(typeof w.length, "number");
+  w.length = "hello";
+  assert_equals(w.length, "hello");
+}, "assigning to Window.length will define a property on the window instance");
+
+test(function() {
+  var iframe = document.getElementById("iframe4");
+  var w = iframe.contentWindow;
+
+  w.length = "hello";
+  assert_true(delete w.length, "delete w.length");
+  assert_true(!w.hasOwnProperty("length"), "!w.hasOwnProperty(\"length\")");
+}, "replacing Window.length and deleting the property will result in no own property \"length\" on the window");
+
+// XXX The only [Replaceable] attributes are on Window, and the way that
+// attributes are exposed on Window might change.  If the result is that
+// attributes should exist as accessor properties on the window instance,
+// we can add some tests for the setter.
+</script>

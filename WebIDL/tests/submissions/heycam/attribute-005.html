@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<title>Setters for writable attributes</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe id="iframe"></iframe>
+</div>
+
+<script>
+// 4.5.6 Attributes
+//
+// Properties for non-[Unforgeable] attributes exist on the interface prototype
+// object and are enumerable and configurable.  These are accessor properties
+// and have a setter if they are not read only.  The setter expects one
+// argument, and will ignore extra ones.  If no argument is passed, a TypeError
+// is thrown.  The setter can be applied to objects of the right type from
+// other windows.  Calling it with a bad this object value will throw
+// a TypeError.
+
+// feature: Document.title (attribute) (writable, without [Unforgeable])
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(Document.prototype, "title");
+  assert_equals(typeof desc.set, "function");
+  assert_equals(desc.set.length, 1);
+}, "Document.title has a setter function with the right length");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(Document.prototype, "title");
+  assert_true(!!desc);
+  assert_throws(new TypeError(), function() { desc.set.call(null); });
+}, "calling Document.title setter with a null this-value throws");
+
+test(function() {
+  var desc = Object.getOwnPropertyDescriptor(Document.prototype, "title");
+  assert_true(!!desc);
+  assert_throws(new TypeError(), function() { desc.set.call(document.documentElement); });
+}, "calling Document.title setter with a non-Document object this-value throws");
+
+test(function() {
+  var doc = document.implementation.createHTMLDocument("test");
+  var desc = Object.getOwnPropertyDescriptor(Document.prototype, "title");
+  desc.set.call(doc, "something");
+  assert_equals(doc.title, "something");
+}, "calling Document.title setter on a different document object works");
+
+test(function() {
+  var doc = document.implementation.createHTMLDocument("test");
+  var desc = Object.getOwnPropertyDescriptor(Document.prototype, "title");
+  assert_equals(desc.set.call(doc, "something"), undefined);
+}, "calling Document.title setter returns undefined");
+
+test(function() {
+  var doc = document.getElementById("iframe").contentDocument;
+  doc.title = "test";
+  var desc = Object.getOwnPropertyDescriptor(Document.prototype, "title");
+  desc.set.call(doc, "something");
+  assert_equals(doc.title, "something");
+}, "calling Document.title setter on an object from a different window works");
+
+test(function() {
+  var doc = document.implementation.createHTMLDocument("test");
+  var desc = Object.getOwnPropertyDescriptor(Document.prototype, "title");
+  desc.set.call(doc, "something");
+  assert_equals(doc.title, "something");
+}, "arguments passed to Document.title setter are ignored");
+
+test(function() {
+  var doc = document.implementation.createHTMLDocument("test");
+  var desc = Object.getOwnPropertyDescriptor(Document.prototype, "title");
+  assert_throws(new TypeError(), function() { desc.set.call(doc); });
+}, "passing no arguments to Document.title setter will throw");
+</script>

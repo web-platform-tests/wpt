@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<title>Platform objects implementing interfaces</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.7 Platform objects implementing interfaces
+//
+// The [[Prototype]] of a platform object implementing an interface is the
+// interface prototype object of its primary interface.
+
+var objects = [
+
+  // DOMImplementation (interface) (without inheritance, primary interface)
+  function() { return document.implementation; }, "DOMImplementation",
+
+  // HTMLCollection (interface) (without inheritance, primary interface)
+  function() { return document.forms; }, "HTMLCollection",
+
+  // HTMLSpanElement (interface) (with inheritance, primary interface)
+  function() { return document.createElement("span"); }, "HTMLSpanElement",
+
+  // UIEvent (interface) (with inheritance, primary interface)
+  function() { return document.createEvent("UIEvent"); }, "UIEvent"
+];
+
+for (var i = 0; i < objects.length; i += 2) {
+  var object = objects[i]();
+  var name = objects[i + 1];
+
+  test(function() {
+    assert_equals(Object.getPrototypeOf(object), window[name].prototype);
+  }, name + " object has correct [[Prototype]]");
+}
+</script>

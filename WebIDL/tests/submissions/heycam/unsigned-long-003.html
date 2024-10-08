@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<title>unsigned long</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.9 unsigned long
+//
+// IDL unsigned long values are represented as integer JS Number values in the
+// range [0, 4294967295].
+
+// feature: HTMLCollection.length (attribute) (of type unsigned long)
+
+test(function() {
+  var collection = document.getElementsByTagName("div");
+  assert_equals(typeof collection.length, "number");
+  assert_true(collection.length == Math.floor(collection.length) && collection.length >= 0 && collection.length <= 4294967296);
+}, "HTMLCollection.length returns a value of the correct type");
+
+// feature: WheelEvent.deltaMode (attribute) (of type unsigned long)
+
+test(function() {
+  var e = new WheelEvent("test");
+  assert_equals(typeof e.deltaMode, "number");
+  assert_true(e.deltaMode == Math.floor(e.deltaMode) && e.deltaMode >= 0 && e.deltaMode <= 4294967296);
+}, "WheelEvent.deltaMode returns a value of the correct type");
+</script>

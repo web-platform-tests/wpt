@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<title>Nullable types</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.2.22 Nullable types – T?
+//
+// Except in the face of [TreatUndefinedAs] and [TreatNonCallableAs], JS
+// undefined and null values get converted to IDL null.
+
+// feature: Node.textContext (attribute) (writable, of type DOMString?)
+
+test(function() {
+  var span = document.createElement("span");
+  span.textContent = "test";
+  assert_equals(span.textContent, "test");
+}, "assigning a string to Node.textContent converts to an IDL \"DOMString?\" type correctly");
+
+test(function() {
+  var span = document.createElement("span");
+  span.textContent = "test";
+  assert_equals(span.textContent, "test");
+  span.textContent = null;
+  assert_equals(span.textContent, "");
+}, "assigning null to Node.textContent converts to an IDL \"DOMString?\" type correctly");
+
+test(function() {
+  var span = document.createElement("span");
+  span.textContent = "test";
+  assert_equals(span.textContent, "test");
+  span.textContent = undefined;
+  assert_equals(span.textContent, "");
+}, "assigning undefined to Node.textContent converts to an IDL \"DOMString?\" type correctly");
+
+test(function() {
+  var span = document.createElement("span");
+  span.textContent = "test";
+  assert_equals(span.textContent, "test");
+  span.textContent = window;
+  assert_equals(span.textContent, "[object Window]");
+}, "assigning window to Node.textContent converts to an IDL \"DOMString?\" type correctly");
+
+test(function() {
+  var span = document.createElement("span");
+  span.textContent = "test";
+  assert_equals(span.textContent, "test");
+  span.textContent = { toString: function() { return "hello"; } };
+  assert_equals(span.textContent, "hello");
+}, "assigning { toString: ... string } to Node.textContent converts to an IDL \"DOMString?\" type correctly");
+
+test(function() {
+  var span = document.createElement("span");
+  span.textContent = "test";
+  assert_equals(span.textContent, "test");
+  span.textContent = { toString: function() { return null; } };
+  assert_equals(span.textContent, "null");
+}, "assigning { toString: ... null } to Node.textContent converts to an IDL \"DOMString?\" type correctly");
+
+test(function() {
+  var span = document.createElement("span");
+  span.textContent = "test";
+  assert_equals(span.textContent, "test");
+  span.textContent = { toString: function() { return undefined; } };
+  assert_equals(span.textContent, "undefined");
+}, "assigning { toString: ... undefined } to Node.textContent converts to an IDL \"DOMString?\" type correctly");
+
+test(function() {
+  var span = document.createElement("span");
+  span.textContent = "test";
+  assert_equals(span.textContent, "test");
+  assert_throws(new TypeError(), function() { span.textContent = { toString: function() { return { }; } } });
+}, "assigning { toString: ... { } } to Node.textContent converts to an IDL \"DOMString?\" type correctly");
+</script>

@@ -137,7 +137,7 @@ const receive = async function (uuid) {
   }
 }
 
-// Returns an URL. When called, the server sends toward the `uuid` queue the
+// Returns a URL. When called, the server sends toward the `uuid` queue the
 // request headers. Useful for determining if something was requested with
 // Cookies.
 const showRequestHeaders = function(origin, uuid) {

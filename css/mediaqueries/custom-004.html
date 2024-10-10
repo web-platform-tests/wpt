@@ -1,42 +1,40 @@
 <!doctype html>
 <html>
 	<head>
-		<title>Test: support for custom media queries</title>
+		<title>Test: custom media queries that are undefined behave different from queries that evaluate to false</title>
 		<link rel="author" title="Romain Menke" href="https://github.com/romainmenke">
 		<link rel="help" href="https://www.w3.org/TR/mediaqueries-5/#at-ruledef-custom-media">
+		<link rel="help" href="https://www.w3.org/TR/mediaqueries-4/#error-handling">
+		<link rel="help" href="https://www.w3.org/TR/mediaqueries-4/#evaluating">
 		<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
 		<meta name="assert" content="Test passes if custom media queries are correctly evaluated.">
 		<style>
 			div {
 				background-color: red;
-				height: 20px;
+				height: 25px;
 				width: 100px;
 			}
 
-			@custom-media --test1 screen;
-			@media (--test1) {
+			@custom-media --test screen;
+			@media (--test) {
 				.test1 { background: green; }
-			}
-
-			@custom-media --test2 (color);
-			@media (--test2) {
 				.test2 { background: green; }
 			}
 
-			@custom-media --test3 true;
-			@media (--test3) {
+			@media (--test1) {
+				.test1 { background: red; }
+			}
+
+			@media (not (--test2)) {
+				.test2 { background: red; }
+			}
+
+			@media (--test3), screen {
 				.test3 { background: green; }
 			}
 
-			@custom-media --test4 false;
-			@media (not (--test4)) {
+			@media (--test4) or (color) {
 				.test4 { background: green; }
-			}
-
-			/* custom media are evaluated logically, not by lexical substitution */
-			@custom-media --test5 print, screen;
-			@media (color) and (--test5) {
-				.test5 { background: green; }
 			}
 	</style>
 	</head>
@@ -46,6 +44,5 @@
 		<div class="test2"></div>
 		<div class="test3"></div>
 		<div class="test4"></div>
-		<div class="test5"></div>
 	</body>
 </html>

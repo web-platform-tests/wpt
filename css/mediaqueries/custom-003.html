@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 	<head>
-		<title>Test: custom media queries that are undefined behave different from queries that evaluate to false</title>
+		<title>Test: custom media queries with cycles are invalid</title>
 		<link rel="author" title="Romain Menke" href="https://github.com/romainmenke">
 		<link rel="help" href="https://www.w3.org/TR/mediaqueries-5/#at-ruledef-custom-media">
 		<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
@@ -9,30 +9,61 @@
 		<style>
 			div {
 				background-color: red;
-				height: 25px;
+				height: 15px;
 				width: 100px;
+			}
+
+			div:last-child {
+				height: 25px; /* fill out to 100px */
 			}
 
 			@custom-media --test screen;
 			@media (--test) {
 				.test1 { background: green; }
 				.test2 { background: green; }
+				.test3 { background: green; }
+				.test4 { background: green; }
 			}
 
-			@media (--test1) {
+			/* "a" depends on "b" and "b" depends "a" */
+			@custom-media --test1-a (--test1-b);
+			@custom-media --test1-b (--test1-a);
+			@media (--test1-a) {
 				.test1 { background: red; }
 			}
 
-			@media (not (--test2)) {
+			/* "a" depends on "b", "b" depends "c" and "c" depends "a" */
+			@custom-media --test2-a (--test2-b);
+			@custom-media --test2-b (--test2-c);
+			@custom-media --test2-c (--test2-a);
+			@media (--test2-a) {
 				.test2 { background: red; }
 			}
 
-			@media (--test3), screen {
-				.test3 { background: green; }
+			/* the negation of unknown is unknown */
+			@custom-media --test3-a (--test3-b);
+			@custom-media --test3-b (--test3-a);
+			@media (not (--test3-a)) {
+				.test3 { background: red; }
 			}
 
-			@media (--test4) or (color) {
+			/* cyclic query lists are invalid even when each has a query that matches */
+			@custom-media --test4-a screen, (--test4-b);
+			@custom-media --test4-b screen, (--test4-a);
+			@media (--test4-a) {
 				.test4 { background: green; }
+			}
+
+			@custom-media --test5-a (--test5-b);
+			@custom-media --test5-b (--test5-a);
+			@media (color) or (--test5-a) {
+				.test5 { background: green; }
+			}
+
+			@custom-media --test6-a (--test6-b);
+			@custom-media --test6-b (--test6-a);
+			@media screen, (--test6-a) {
+				.test6 { background: green; }
 			}
 	</style>
 	</head>
@@ -42,5 +73,7 @@
 		<div class="test2"></div>
 		<div class="test3"></div>
 		<div class="test4"></div>
+		<div class="test5"></div>
+		<div class="test6"></div>
 	</body>
 </html>

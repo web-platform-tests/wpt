@@ -1,42 +1,36 @@
 <!doctype html>
 <html>
 	<head>
-		<title>Test: support for custom media queries</title>
+		<title>Test: custom media query naming collisions</title>
 		<link rel="author" title="Romain Menke" href="https://github.com/romainmenke">
 		<link rel="help" href="https://www.w3.org/TR/mediaqueries-5/#at-ruledef-custom-media">
+		<link rel="help" href="https://drafts.csswg.org/css-cascade-5/#layering">
 		<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
 		<meta name="assert" content="Test passes if custom media queries are correctly evaluated.">
 		<style>
 			div {
 				background-color: red;
-				height: 20px;
+				height: 50px;
 				width: 100px;
 			}
 
-			@custom-media --test1 screen;
+			/* by source order */
+			@custom-media --test1 false;
 			@media (--test1) {
 				.test1 { background: green; }
 			}
+			@custom-media --test1 true;
 
-			@custom-media --test2 (color);
+			/* using layer order */
+			@layer test2-a, test2-b;
+			@layer test2-b {
+				@custom-media --test2 true;
+			}
+			@layer test2-a {
+				@custom-media --test2 false;
+			}
 			@media (--test2) {
 				.test2 { background: green; }
-			}
-
-			@custom-media --test3 true;
-			@media (--test3) {
-				.test3 { background: green; }
-			}
-
-			@custom-media --test4 false;
-			@media (not (--test4)) {
-				.test4 { background: green; }
-			}
-
-			/* custom media are evaluated logically, not by lexical substitution */
-			@custom-media --test5 print, screen;
-			@media (color) and (--test5) {
-				.test5 { background: green; }
 			}
 	</style>
 	</head>
@@ -44,8 +38,5 @@
 		<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
 		<div class="test1"></div>
 		<div class="test2"></div>
-		<div class="test3"></div>
-		<div class="test4"></div>
-		<div class="test5"></div>
 	</body>
 </html>

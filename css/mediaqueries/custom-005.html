@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Test: custom media queries can refer to other custom media queries</title>
+		<link rel="author" title="Romain Menke" href="https://github.com/romainmenke">
+		<link rel="help" href="https://www.w3.org/TR/mediaqueries-5/#at-ruledef-custom-media">
+		<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+		<meta name="assert" content="Test passes if custom media queries are correctly evaluated.">
+		<style>
+			div {
+				background-color: red;
+				height: 100px;
+				width: 100px;
+			}
+
+			@custom-media --test1-a true;
+			@custom-media --test1-b (--test1-a);
+			@media (--test1-b) {
+				.test1 { background: green; }
+			}
+
+			@media not ((color) or (monochrome)) {
+				.test1 { background: green; }
+			}
+	</style>
+	</head>
+	<body>
+		<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+		<div class="test1"></div>
+	</body>
+</html>

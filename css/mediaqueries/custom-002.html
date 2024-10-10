@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 	<head>
-		<title>Test: custom media queries with cycles are invalid</title>
+		<title>Test: support for custom media queries that do not match</title>
 		<link rel="author" title="Romain Menke" href="https://github.com/romainmenke">
 		<link rel="help" href="https://www.w3.org/TR/mediaqueries-5/#at-ruledef-custom-media">
 		<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
@@ -13,42 +13,36 @@
 				width: 100px;
 			}
 
-			@custom-media --test screen;
+			@custom-media --test true;
 			@media (--test) {
-				.test1 { background: green; }
-				.test2 { background: green; }
-				.test3 { background: green; }
+				div {
+					background-color: green;
+				}
 			}
 
-			@custom-media --test1-a (--test1-b);
-			@custom-media --test1-b (--test1-a);
-			@media (--test1-a) {
+			@media (--test1) {
 				.test1 { background: red; }
 			}
 
-			@custom-media --test2-a (--test2-b);
-			@custom-media --test2-b (--test2-c);
-			@custom-media --test2-c (--test2-a);
-			@media (--test2-a) {
+			@custom-media --test2 (color: 234678);
+			@media (--test2) {
 				.test2 { background: red; }
 			}
 
-			@custom-media --test3-a (--test3-b);
-			@custom-media --test3-b (--test3-a);
-			@media (not (--test3-a)) {
+			@custom-media --test3 false;
+			@media (--test3) {
 				.test3 { background: red; }
 			}
 
-			@custom-media --test4-a (--test4-b);
-			@custom-media --test4-b (--test4-a);
-			@media (color) or (--test4-a) {
-				.test4 { background: green; }
+			@custom-media --test4 true;
+			@media (not (--test4)) {
+				.test4 { background: red; }
 			}
 
-			@custom-media --test5-a (--test5-b);
-			@custom-media --test5-b (--test5-a);
-			@media screen, (--test5-a) {
-				.test5 { background: green; }
+			/* custom media are evaluated logically, not by lexical substitution */
+			@custom-media --test5 print, screen;
+			@media (color) and (not (--test5)) {
+				.test5 { background: red; }
 			}
 	</style>
 	</head>

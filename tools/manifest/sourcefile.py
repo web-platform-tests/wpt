@@ -85,7 +85,8 @@ _any_variants: Dict[Text, VariantData] = {
     "dedicatedworker-module": {"suffix": ".any.worker-module.html"},
     "worker": {"longhand": {"dedicatedworker", "sharedworker", "serviceworker"}},
     "worker-module": {},
-    "shadowrealm": {},
+    "shadowrealm-in-window": {},
+    "shadowrealm": {"longhand": {"shadowrealm-in-window"}},
     "jsshell": {"suffix": ".any.js"},
 }
 

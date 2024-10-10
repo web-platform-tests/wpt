@@ -425,9 +425,10 @@ class ServiceWorkerModulesHandler(HtmlWrapperHandler):
 </script>
 """
 
-class ShadowRealmHandler(HtmlWrapperHandler):
-    global_type = "shadowrealm"
-    path_replace = [(".any.shadowrealm.html", ".any.js")]
+
+class ShadowRealmInWindowHandler(HtmlWrapperHandler):
+    global_type = "shadowrealm-in-window"
+    path_replace = [(".any.shadowrealm-in-window.html", ".any.js")]
 
     wrapper = """<!doctype html>
 <meta charset=utf-8>
@@ -590,7 +591,7 @@ class RoutesBuilder:
             ("GET", "*.any.sharedworker-module.html", SharedWorkerModulesHandler),
             ("GET", "*.any.serviceworker.html", ServiceWorkersHandler),
             ("GET", "*.any.serviceworker-module.html", ServiceWorkerModulesHandler),
-            ("GET", "*.any.shadowrealm.html", ShadowRealmHandler),
+            ("GET", "*.any.shadowrealm-in-window.html", ShadowRealmInWindowHandler),
             ("GET", "*.any.window-module.html", WindowModulesHandler),
             ("GET", "*.any.worker.js", ClassicWorkerHandler),
             ("GET", "*.any.worker-module.js", ModuleWorkerHandler),

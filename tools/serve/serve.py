@@ -462,6 +462,58 @@ class ShadowRealmInWindowHandler(HtmlWrapperHandler):
         return None
 
 
+class ShadowRealmInShadowRealmHandler(HtmlWrapperHandler):
+    global_type = "shadowrealm-in-shadowrealm"
+    path_replace = [(".any.shadowrealm-in-shadowrealm.html", ".any.js")]
+
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testharness-shadowrealm-outer.js"></script>
+<script>
+(async function() {
+  const outer = new ShadowRealm();
+  outer.evaluate(`
+    var inner = new ShadowRealm();
+  `);
+  await shadowRealmEvalAsync(outer, `
+    await import("/resources/testharness-shadowrealm-outer.js");
+    await shadowRealmEvalAsync(inner, \\`
+      await import("/resources/testharness-shadowrealm-inner.js");
+      await import("/resources/testharness.js");
+    \\`);
+  `);
+
+  outer.evaluate(`
+    inner.evaluate("setShadowRealmGlobalProperties")
+  `)(location.search, fetchAdaptor);
+
+  await shadowRealmEvalAsync(outer, `
+    await shadowRealmEvalAsync(inner, \\`
+      %(script)s
+      await import("%(path)s");
+    \\`);
+  `);
+
+  outer.evaluate(`
+    function begin_shadow_realm_tests(windowCallback) {
+      inner.evaluate("begin_shadow_realm_tests")(windowCallback);
+    }
+  `);
+  await fetch_tests_from_shadow_realm(outer);
+  done();
+})();
+</script>
+"""
+
+    def _script_replacement(self, key, value):
+        if key == "script":
+            return 'await import("%s");' % value
+        return None
+
+
 class BaseWorkerHandler(WrapperHandler):
     headers = [('Content-Type', 'text/javascript')]
 
@@ -577,6 +629,7 @@ class RoutesBuilder:
             ("GET", "*.any.serviceworker.html", ServiceWorkersHandler),
             ("GET", "*.any.serviceworker-module.html", ServiceWorkerModulesHandler),
             ("GET", "*.any.shadowrealm-in-window.html", ShadowRealmInWindowHandler),
+            ("GET", "*.any.shadowrealm-in-shadowrealm.html", ShadowRealmInShadowRealmHandler),
             ("GET", "*.any.window-module.html", WindowModulesHandler),
             ("GET", "*.any.worker.js", ClassicWorkerHandler),
             ("GET", "*.any.worker-module.js", ModuleWorkerHandler),

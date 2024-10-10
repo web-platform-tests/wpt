@@ -170,6 +170,9 @@ are:
 * `shadowrealm-in-window`: runs the test code in a
   [ShadowRealm](https://github.com/tc39/proposal-shadowrealm) context hosted in
   an ordinary Window context; to be run at <code><var>x</var>.any.shadowrealm-in-window.html</code>
+* `shadowrealm-in-shadowrealm`: runs the test code in a ShadowRealm context
+  hosted in another ShadowRealm context; to be run at
+  <code><var>x</var>.any.shadowrealm-in-shadowrealm.html</code>
 * `shadowrealm`: shorthand for all of the ShadowRealm scopes
 
 To check what scope your test is run from, you can use the following methods that will

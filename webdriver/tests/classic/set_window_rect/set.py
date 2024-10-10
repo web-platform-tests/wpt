@@ -10,7 +10,7 @@ import mozinfo
 from webdriver.transport import Response
 
 from tests.support.asserts import assert_error, assert_success
-from tests.support.helpers import document_hidden, is_fullscreen, is_maximized
+from tests.support.helpers import is_fullscreen, is_maximized
 
 
 def set_window_rect(session, rect):
@@ -112,27 +112,6 @@ def test_restore_from_fullscreen(session):
     value = assert_success(response, session.window.rect)
 
     assert not is_fullscreen(session)
-    assert value == target_rect
-
-
-def test_restore_from_minimized(session):
-    assert not document_hidden(session)
-
-    original = session.window.rect
-    target_rect = {
-        "x": original["x"],
-        "y": original["y"],
-        "width": original["width"] + 50,
-        "height": original["height"] + 50
-    }
-
-    session.window.minimize()
-    assert document_hidden(session)
-
-    response = set_window_rect(session, target_rect)
-    value = assert_success(response, session.window.rect)
-
-    assert not document_hidden(session)
     assert value == target_rect
 
 

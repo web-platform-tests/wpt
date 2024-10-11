@@ -435,34 +435,20 @@ class ShadowRealmInWindowHandler(HtmlWrapperHandler):
 %(meta)s
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testharness-shadowrealm-outer.js"></script>
 <script>
 (async function() {
   const r = new ShadowRealm();
-  r.evaluate(`func => {
-    globalThis.fetch_json = (resource) => {
-      const thenMethod = func(resource);
-      return new Promise((resolve, reject) => thenMethod((s) => resolve(JSON.parse(s)), reject));
-    };
-  }`)((resource) => function (resolve, reject) {
-    fetch(resource).then(res => res.text(), String).then(resolve, reject);
-  });
-  r.evaluate(`s => {
-    globalThis.location = { search: s };
-  }`)(location.search);
-  await new Promise(r.evaluate(`
-    (resolve, reject) => {
-      (async () => {
-        globalThis.self.GLOBAL = {
-          isWindow: function() { return false; },
-          isWorker: function() { return false; },
-          isShadowRealm: function() { return true; },
-        };
-        await import("/resources/testharness.js");
-        %(script)s
-        await import("%(path)s");
-      })().then(resolve, (e) => reject(e.toString()));
-    }
-  `));
+  await shadowRealmEvalAsync(r, `
+    await import("/resources/testharness-shadowrealm-inner.js");
+    await import("/resources/testharness.js");
+  `);
+  r.evaluate("setShadowRealmGlobalProperties")(location.search, fetchAdaptor);
+
+  await shadowRealmEvalAsync(r, `
+    %(script)s
+    await import("%(path)s");
+  `);
 
   await fetch_tests_from_shadow_realm(r);
   done();

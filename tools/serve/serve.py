@@ -425,6 +425,35 @@ class ServiceWorkerModulesHandler(HtmlWrapperHandler):
 </script>
 """
 
+set_shadow_realm_global_properties_js_code = """
+function setShadowRealmGlobalProperties(queryString, fetchAdaptor) {
+  globalThis.fetch_json = (resource) => {
+    const thenMethod = fetchAdaptor(resource);
+    return new Promise((resolve, reject) => thenMethod((s) => resolve(JSON.parse(s)), reject));
+  };
+
+  globalThis.GLOBAL = {
+    isWindow: function() { return false; },
+    isWorker: function() { return false; },
+    isShadowRealm: function() { return true; },
+  };
+
+  globalThis.location = { search: queryString };
+
+  // Remove definition of .self in future; should already be provided
+  // according to https://github.com/whatwg/html/pull/9893
+  globalThis.self = globalThis;    
+}
+setShadowRealmGlobalProperties
+"""
+
+fetch_json_shadow_realm_adaptor_js_code = """
+const fetchAdaptor = (resource) => (resolve, reject) =>
+  fetch(resource)
+    .then(res => res.text(), String)
+    .then(resolve, reject);
+"""
+
 class ShadowRealmInWindowHandler(HtmlWrapperHandler):
     global_type = "shadowrealm-in-window"
     path_replace = [(".any.shadowrealm-in-window.html", ".any.js")]
@@ -436,27 +465,14 @@ class ShadowRealmInWindowHandler(HtmlWrapperHandler):
 <script src="/resources/testharnessreport.js"></script>
 <script>
 (async function() {
+  """ + fetch_json_shadow_realm_adaptor_js_code + """
   const r = new ShadowRealm();
-  r.evaluate("globalThis.self = globalThis; undefined;");
-  r.evaluate(`func => {
-    globalThis.fetch_json = (resource) => {
-      const thenMethod = func(resource);
-      return new Promise((resolve, reject) => thenMethod((s) => resolve(JSON.parse(s)), reject));
-    };
-  }`)((resource) => function (resolve, reject) {
-    fetch(resource).then(res => res.text(), String).then(resolve, reject);
-  });
-  r.evaluate(`s => {
-    globalThis.location = { search: s };
-  }`)(location.search);
+  r.evaluate(`
+    """ + set_shadow_realm_global_properties_js_code + """
+  `)(location.search, fetchAdaptor);
   await new Promise(r.evaluate(`
     (resolve, reject) => {
       (async () => {
-        globalThis.self.GLOBAL = {
-          isWindow: function() { return false; },
-          isWorker: function() { return false; },
-          isShadowRealm: function() { return true; },
-        };
         await import("/resources/testharness.js");
         %(script)s
         await import("%(path)s");

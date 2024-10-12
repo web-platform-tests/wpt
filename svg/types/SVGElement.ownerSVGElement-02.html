@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>SVGElement.ownerSVGElement</title>
+<link rel="author" title="Cameron McCormack" href="mailto:cam@mcc.id.au">
+<link rel="help" href="http://www.w3.org/TR/SVG2/types.html#__svg__SVGElement__ownerSVGElement">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<div id="test">
+  <iframe src="helper-SVGElement.ownerSVGElement-02.svg" onload="run()"></iframe>
+</div>
+<script>
+function run() {
+  var iframe = document.querySelector("iframe");
+  var svg = iframe.contentDocument.documentElement;
+  var rect = svg.firstElementChild;
+  test(function() {
+    assert_equals(svg.ownerSVGElement, null);
+  }, "root svg element");
+  test(function() {
+    assert_equals(rect.ownerSVGElement, svg);
+  }, "non-svg child of root svg element");
+}
+</script>

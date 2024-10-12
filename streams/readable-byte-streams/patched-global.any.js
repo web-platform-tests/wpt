@@ -15,7 +15,7 @@ promise_test(async (t) => {
   });
   const reader = rs.getReader({mode: 'byob'});
 
-  const length = 0x42424240;
+  const length = 0x4000;
   const buffer = new ArrayBuffer(length);
   const bigArray = new BigUint64Array(buffer, length - 8, 1);
 

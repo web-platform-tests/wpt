@@ -222,6 +222,14 @@ const HtmlAamAccnameUtils = {
       if (expSource === tmpSource) expName = this.nameValues[tmpSource];
     }
 
+    // If the test element is empty but can contain descendants, add an
+    // unnamed image element to render something that is visible.
+    if (!elTest.hasChildNodes() && this.canContainDescendants(elTest)) {
+      let elImg = document.createElement('img');
+      elImg.src = this.srcImgSample;
+      elTest.appendChild(elImg);
+    }
+
     elTest.setAttribute('data-expectedlabel', expName);
 
     return htmlPreamble + elReturn.outerHTML;
@@ -311,13 +319,18 @@ const HtmlAamAccnameUtils = {
     elTestMarkup.style.backgroundColor = 'palegreen';
     elTestMarkup.style.padding = '1rem';
     elTestMarkup.style.whiteSpace = 'pre-wrap';
+    elTestMarkup.style.overflow = 'auto';
     elTestMarkup.appendChild(document.createTextNode(html.replaceAll('><', '>\n<').trim()));
     elBody.appendChild(elTestMarkup);
   },
 
+  canContainDescendants: function (element) {
+    const voidElements = new Set(['AREA', 'BASE', 'BR', 'COL', 'EMBED', 'HR', 'IMG', 'INPUT', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR']);
+    return !voidElements.has(element.nodeName);
+  },
 
   testId: 0,
-  srcImgSample: "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==",
+  srcImgSample: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAP1BMVEWqAKoAAACrAKuqAKqrAKuvAK+vAK+nAKepAKmsAKyrAKutAK2oAKixALGqAKqqAKqqAKqqAKqqAKqqAKqqAKqx+4SNAAAAFHRSTlMzAL9gQBAgIKCfKxQZBu/fr4BwUHCcwvYAAAEASURBVEjHvdbLEoMgDAVQbkKg9f3I/39rpdiZutHAgrtywZkxESEOxTmJCLwqA6SK9PgCXqoeUCWAVR3kQvZpRbwnETzzHyFd8BhS+iNxG4fO3aYLI8cfYQronSE9Au1fMisnYTGbTnIQYRqdMVhWybVEKxlyLS6gs5IOwR9EFc4cqNYRZjvJqwGUEKCOEJUQojYda1a+9yXEt9sw77edpNVtOlbxYm06VvEp23SsTfkVP3Kb8iuOvnYbpuyycLn8wUpCLl/WBVYyEksik269TQysMw6CnaL1Eo/EiaQEHuPTqDBgC5eBhPCY5TKQ8MzPY8867SfJEbh74iGCkxTnA3SZDugOkmV1AAAAAElFTkSuQmCC",
   nameValues: {
     'from 1 aria-labelledby ref': 'aria-labelledby ref element #1 text contents',
     'from 2 aria-labelledby refs': 'aria-labelledby ref element #2 text contents',

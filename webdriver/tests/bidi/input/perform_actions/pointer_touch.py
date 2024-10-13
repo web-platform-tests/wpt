@@ -131,8 +131,6 @@ async def test_touch_pointer_properties(
     )
 
     events = await get_events(bidi_session, top_context["context"])
-    # Filter mouse events.
-    events = [e for e in events if e["pointerType"] == "touch"]
 
     assert len(events) == 7
     event_types = [e["type"] for e in events]
@@ -206,8 +204,6 @@ async def test_touch_pointer_properties_angle_twist(
     )
 
     events = await get_events(bidi_session, top_context["context"])
-    # Filter mouse events.
-    events = [e for e in events if e["pointerType"] == "touch"]
 
     assert len(events) == 7
     event_types = [e["type"] for e in events]

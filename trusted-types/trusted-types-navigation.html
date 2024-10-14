@@ -20,8 +20,7 @@
 
   function expectViolationAsMessage(sample) {
     const filter = e => {
-      const result = ((e.data.effectiveDirective == "require-trusted-types-for" ||
-                           e.data.effectiveDirective == "trusted-types") &&
+      const result = (e.data.effectiveDirective == "require-trusted-types-for" &&
                          (!sample || e.data.sample.startsWith(sample)));
       if (result) {
         assert_true(true, "Expected violation as message: " + sample);

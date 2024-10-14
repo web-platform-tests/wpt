@@ -6,6 +6,8 @@
 </head>
 <body>
 <script>
+  "use strict";
+
   function expectMessage(filter) {
     return new Promise(resolve => {
 
@@ -50,72 +52,116 @@
     test.add_cleanup(_ => win.close());
   }
 
-  promise_test(t => {
-    openWindow(t, "support/navigation-support.html");
-    return Promise.all([
-      expectLoadedAsMessage("navigation-support.html"),
-      expectViolationAsMessage("Location href"),
-    ]);
-  }, "Navigate a window with javascript:-urls in enforcing mode.");
+  const kFormSubmission = "form-submission";
+  // When adding more elements, adapt all functions consuming the existing elements.
+  const kNavigationElements =
+  [
+    "anchor",
+    kFormSubmission,
+  ];
 
-  promise_test(t => {
-    openWindow(t, "support/navigation-support.html?defaultpolicy=1");
-    return Promise.all([
-      expectLoadedAsMessage("navigation-support.html?defaultpolicy=1"),
-      expectLoadedAsMessage("navigation-support.html?defaultpolicy=1&" + kNavigationAttempted + "&defaultpolicywashere"),
-    ]);
-  }, "Navigate a window with javascript:-urls w/ default policy in enforcing mode.");
+  function maybeAddFormSubmissionToSearchParams(navigationElement, searchParams) {
+    return (navigationElement == kFormSubmission) ?
+      [kFormSubmission + "=1", ...searchParams] : searchParams;
+  }
 
-  promise_test(t => {
-    const page = "navigation-report-only-support.html"
-    openWindow(t, `support/${page}`);
-    return Promise.all([
-      expectLoadedAsMessage(page),
-      expectLoadedAsMessage("navigation-support.html?" + kNavigationAttempted + "&continue"),
-    ]);
-  }, "Navigate a window with javascript:-urls in report-only mode.");
+  function joinToHref(searchParams, originAndPathName) {
+    if (searchParams.length > 0) {
+      return originAndPathName + "?" + searchParams.join("&");
+    }
 
-  promise_test(t => {
-    const page = "navigation-report-only-support.html?defaultpolicy=1";
-    openWindow(t, `support/${page}`);
-    return Promise.all([
-      expectLoadedAsMessage(page),
-      expectLoadedAsMessage("navigation-support.html?defaultpolicy=1&" + kNavigationAttempted + "&defaultpolicywashere"),
-    ]);
-  }, "Navigate a window with javascript:-urls w/ default policy in report-only mode.");
+    return originAndPathName;
+  }
 
-  promise_test(t => {
-    openWindow(t, "support/navigation-support.html?frame=1");
-    return Promise.all([
-      expectLoadedAsMessage("navigation-support.html?frame=1"),
-      expectViolationAsMessage("Location href"),
-    ]);
-  }, "Navigate a frame with javascript:-urls in enforcing mode.");
+  for (const navigationElement of kNavigationElements) {
+    promise_test(t => {
+      const page = joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement, []),
+        "navigation-support.html");
+      openWindow(t, `support/${page}`);
+      return Promise.all([
+        expectLoadedAsMessage(page),
+        expectViolationAsMessage("Location href"),
+      ]);
+    }, `Navigate a window via ${navigationElement} with javascript:-urls in enforcing mode.`);
 
-  promise_test(t => {
-    openWindow(t, "support/navigation-support.html?defaultpolicy=1&frame=1");
-    return Promise.all([
-      expectLoadedAsMessage("navigation-support.html?defaultpolicy=1&frame=1"),
-      expectLoadedAsMessage("navigation-support.html?defaultpolicy=1&frame=1&" + kNavigationAttempted + "&defaultpolicywashere"),
-    ]);
-  }, "Navigate a frame with javascript:-urls w/ default policy in enforcing mode.");
+    promise_test(t => {
+      const page = joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement, ["defaultpolicy=1"]),
+        "navigation-support.html");
+      openWindow(t, `support/${page}`);
+      return Promise.all([
+        expectLoadedAsMessage(page),
+        expectLoadedAsMessage(page + "&" + kNavigationAttempted + "&defaultpolicywashere"),
+      ]);
+    }, `Navigate a window via ${navigationElement} with javascript:-urls w/ default policy in enforcing mode.`);
 
-  promise_test(t => {
-    const page = "navigation-report-only-support.html?frame=1"
-    openWindow(t, `support/${page}`);
-    return Promise.all([
-      expectLoadedAsMessage(page),
-      expectLoadedAsMessage("navigation-support.html?frame=1&" + kNavigationAttempted + "&continue"),
-    ]);
-  }, "Navigate a frame with javascript:-urls in report-only mode.");
+    promise_test(t => {
+      const page = joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement, []),
+        "navigation-report-only-support.html");
+      openWindow(t, `support/${page}`);
+      return Promise.all([
+        expectLoadedAsMessage(page),
+        expectLoadedAsMessage(joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement,
+          [kNavigationAttempted, "continue"]), "navigation-support.html")),
+      ]);
+    }, `Navigate a window via ${navigationElement} with javascript:-urls in report-only mode.`);
 
-  promise_test(t => {
-    const page = "navigation-report-only-support.html?defaultpolicy=1&frame=1";
-    openWindow(t, `support/${page}`);
-    return Promise.all([
-      expectLoadedAsMessage(page),
-      expectLoadedAsMessage("navigation-support.html?defaultpolicy=1&frame=1&" + kNavigationAttempted + "&defaultpolicywashere"),
-    ]);
-  }, "Navigate a frame with javascript:-urls w/ default policy in report-only mode.");
+    promise_test(t => {
+      const page = joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement, ["defaultpolicy=1"]),
+        "navigation-report-only-support.html");
+      openWindow(t, `support/${page}`);
+      return Promise.all([
+        expectLoadedAsMessage(page),
+        expectLoadedAsMessage(joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement,
+            ["defaultpolicy=1", kNavigationAttempted, "defaultpolicywashere"]),
+          "navigation-support.html")),
+      ]);
+    }, `Navigate a window via ${navigationElement} with javascript:-urls w/ default policy in report-only mode.`);
+
+    promise_test(t => {
+      const page = joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement, ["frame=1"]),
+        "navigation-support.html");
+      openWindow(t, `support/${page}`);
+      return Promise.all([
+        expectLoadedAsMessage(page),
+        expectViolationAsMessage("Location href"),
+      ]);
+    }, `Navigate a frame via ${navigationElement} with javascript:-urls in enforcing mode.`);
+
+    promise_test(t => {
+      const page = joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement,
+          ["defaultpolicy=1", "frame=1"]),
+        "navigation-support.html");
+      openWindow(t, `support/${page}`);
+      return Promise.all([
+        expectLoadedAsMessage(page),
+        expectLoadedAsMessage(page + "&" + kNavigationAttempted + "&defaultpolicywashere"),
+      ]);
+    }, `Navigate a frame via ${navigationElement} with javascript:-urls w/ default policy in enforcing mode.`);
+
+    promise_test(t => {
+      const page = joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement, ["frame=1"]),
+        "navigation-report-only-support.html");
+      openWindow(t, `support/${page}`);
+      return Promise.all([
+        expectLoadedAsMessage(page),
+        expectLoadedAsMessage(joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement,
+            ["frame=1", kNavigationAttempted, "continue"]),
+          "navigation-support.html")),
+      ]);
+    }, `Navigate a frame via ${navigationElement} with javascript:-urls in report-only mode.`);
+
+    promise_test(t => {
+      const page = joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement,
+          ["defaultpolicy=1", "frame=1"]),
+          "navigation-report-only-support.html");
+      openWindow(t, `support/${page}`);
+      return Promise.all([
+        expectLoadedAsMessage(page),
+        expectLoadedAsMessage(joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement,
+            ["defaultpolicy=1", "frame=1", kNavigationAttempted, "defaultpolicywashere"]),
+          "navigation-support.html")),
+      ]);
+    }, `Navigate a frame via ${navigationElement} with javascript:-urls w/ default policy in report-only mode.`);
+  }
 </script>
 </body>

@@ -2,6 +2,7 @@
 <head>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="support/navigation-support.js"></script>
 </head>
 <body>
 <script>
@@ -61,7 +62,7 @@
     openWindow(t, "support/navigation-support.html?defaultpolicy=1");
     return Promise.all([
       expectLoadedAsMessage("navigation-support.html?defaultpolicy=1"),
-      expectLoadedAsMessage("navigation-support.html?defaultpolicy=1&defaultpolicywashere"),
+      expectLoadedAsMessage("navigation-support.html?defaultpolicy=1&" + kNavigationAttempted + "&defaultpolicywashere"),
     ]);
   }, "Navigate a window with javascript:-urls w/ default policy in enforcing mode.");
 
@@ -70,7 +71,7 @@
     openWindow(t, `support/${page}`);
     return Promise.all([
       expectLoadedAsMessage(page),
-      expectLoadedAsMessage("navigation-support.html#continue"),
+      expectLoadedAsMessage("navigation-support.html?" + kNavigationAttempted + "&continue"),
     ]);
   }, "Navigate a window with javascript:-urls in report-only mode.");
 
@@ -79,7 +80,7 @@
     openWindow(t, `support/${page}`);
     return Promise.all([
       expectLoadedAsMessage(page),
-      expectLoadedAsMessage("navigation-support.html?defaultpolicy=1#defaultpolicywashere"),
+      expectLoadedAsMessage("navigation-support.html?defaultpolicy=1&" + kNavigationAttempted + "&defaultpolicywashere"),
     ]);
   }, "Navigate a window with javascript:-urls w/ default policy in report-only mode.");
 
@@ -95,7 +96,7 @@
     openWindow(t, "support/navigation-support.html?defaultpolicy=1&frame=1");
     return Promise.all([
       expectLoadedAsMessage("navigation-support.html?defaultpolicy=1&frame=1"),
-      expectLoadedAsMessage("navigation-support.html?defaultpolicy=1&frame=1&defaultpolicywashere"),
+      expectLoadedAsMessage("navigation-support.html?defaultpolicy=1&frame=1&" + kNavigationAttempted + "&defaultpolicywashere"),
     ]);
   }, "Navigate a frame with javascript:-urls w/ default policy in enforcing mode.");
 
@@ -104,7 +105,7 @@
     openWindow(t, `support/${page}`);
     return Promise.all([
       expectLoadedAsMessage(page),
-      expectLoadedAsMessage("navigation-support.html?frame=1#continue"),
+      expectLoadedAsMessage("navigation-support.html?frame=1&" + kNavigationAttempted + "&continue"),
     ]);
   }, "Navigate a frame with javascript:-urls in report-only mode.");
 
@@ -113,7 +114,7 @@
     openWindow(t, `support/${page}`);
     return Promise.all([
       expectLoadedAsMessage(page),
-      expectLoadedAsMessage("navigation-support.html?defaultpolicy=1&frame=1#defaultpolicywashere"),
+      expectLoadedAsMessage("navigation-support.html?defaultpolicy=1&frame=1&" + kNavigationAttempted + "&defaultpolicywashere"),
     ]);
   }, "Navigate a frame with javascript:-urls w/ default policy in report-only mode.");
 </script>

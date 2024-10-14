@@ -1,3 +1,4 @@
+const kNavigationAttempted = "navigationattempted=1";
 
 function navigateToJavascriptURL(reportOnly) {
     const params = new URLSearchParams(location.search);
@@ -27,12 +28,12 @@ function navigateToJavascriptURL(reportOnly) {
     if (reportOnly) {
         // Navigate to the non-report-only version of the test. That has the same
         // event listening setup as this, but is a different target URI.
-        target_script = `location.href='${location.href.replace("-report-only", "") + "#continue"}';`;
+        target_script = `location.href='${location.href.replace("-report-only", "") +
+            (location.href.includes("?") ? "&" : "?") + kNavigationAttempted + "&continue"}';`;
     } else {
         // We'll use a javascript:-url to navigate to ourselves, so that we can
-        // re-use the messageing mechanisms above. In order to not end up in a loop,
-        // we'll only click if we don't find fragment in the current URL.
-        target_script = `location.href='${location.href}&continue';`;
+        // re-use the messageing mechanisms above.
+        target_script = `location.href='${location.href + "&" + kNavigationAttempted}&continue';`;
     }
     const target = `javascript:${target_script}`;
 
@@ -47,6 +48,8 @@ function navigateToJavascriptURL(reportOnly) {
       anchor.target = "frame";
     }
 
-    if (!location.hash)
+    // Prevent loops.
+    if (!location.search.includes(kNavigationAttempted)) {
       document.addEventListener("DOMContentLoaded", _ => anchor.click());
+    }
 }

@@ -37,11 +37,20 @@ let sharedWorkerMessagePortPromise;
  * Used when the hosting realm is a worker. This value is a Promise that
  * resolves to a function that posts a message to the worker's message port,
  * just like postMessage(). The message port is only available asynchronously in
- * SharedWorkers.
+ * SharedWorkers and ServiceWorkers.
  */
 globalThis.getPostMessageFunc = async function () {
   if (typeof postMessage === "function") {
     return postMessage;  // postMessage available directly in dedicated worker
+  }
+
+  if (typeof clients === "object") {
+    // Messages from the ShadowRealm are not in response to any message received
+    // from the ServiceWorker's client, so broadcast them to all clients
+    const allClients = await clients.matchAll({ includeUncontrolled: true });
+    return function broadcast(msg) {
+      allClients.map(client => client.postMessage(msg));
+    }
   }
 
   if (sharedWorkerMessagePortPromise) {
@@ -62,3 +71,32 @@ if (globalThis.constructor.name === "SharedWorkerGlobalScope") {
     savedResolver(port.postMessage.bind(port));
   });
 }
+
+/**
+ * Used when the hosting realm does not permit dynamic import, e.g. in
+ * ServiceWorkers or AudioWorklets. Requires an adaptor function such as
+ * fetchAdaptor() above, or an equivalent if fetch() is not present in the
+ * hosting realm.
+ *
+ * @param {ShadowRealm} realm - the ShadowRealm in which to setup a
+ *   fakeDynamicImport() global function.
+ * @param {function} adaptor - an adaptor function that does what fetchAdaptor()
+ *   does.
+ */
+globalThis.setupFakeDynamicImportInShadowRealm = function(realm, adaptor) {
+  function fetchModuleTextExecutor(url) {
+    return (resolve, reject) => {
+      new Promise(adaptor(url))
+        .then(text => realm.evaluate(text + ";\nundefined"))
+        .then(resolve, (e) => reject(e.toString()));
+    }
+  }
+
+  realm.evaluate(`
+    (fetchModuleTextExecutor) => {
+      globalThis.fakeDynamicImport = function (url) {
+        return new Promise(fetchModuleTextExecutor(url));
+      }
+    }
+  `)(fetchModuleTextExecutor);
+};

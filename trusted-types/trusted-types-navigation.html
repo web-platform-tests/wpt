@@ -7,7 +7,14 @@
 <script>
   function expectMessage(filter) {
     return new Promise(resolve => {
-      window.addEventListener("message", e => { if (filter(e)) resolve(); });
+
+      function listener(e) {
+        if (filter(e)) {
+          window.removeEventListener("message", listener);
+          resolve();
+        }
+      }
+      window.addEventListener("message", listener);
     });
   }
 

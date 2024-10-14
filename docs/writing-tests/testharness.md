@@ -179,6 +179,9 @@ are:
 * `shadowrealm-in-sharedworker`: runs the test code in a ShadowRealm context
   hosted in a shared worker; to be run at
   <code><var>x</var>.any.shadowrealm-in-sharedworker.html</code>
+* `shadowrealm-in-serviceworker`: runs the test code in a ShadowRealm context
+  hosted in a service worker; to be run at
+  <code><var>x</var>.https.any.shadowrealm-in-serviceworker.html</code>
 * `shadowrealm`: shorthand for all of the ShadowRealm scopes
 
 To check what scope your test is run from, you can use the following methods that will

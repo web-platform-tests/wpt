@@ -31,3 +31,34 @@ globalThis.fetchAdaptor = (resource) => (resolve, reject) => {
     .then(res => res.text())
     .then(resolve, (e) => reject(e.toString()));
 };
+
+let sharedWorkerMessagePortPromise;
+/**
+ * Used when the hosting realm is a worker. This value is a Promise that
+ * resolves to a function that posts a message to the worker's message port,
+ * just like postMessage(). The message port is only available asynchronously in
+ * SharedWorkers.
+ */
+globalThis.getPostMessageFunc = async function () {
+  if (typeof postMessage === "function") {
+    return postMessage;  // postMessage available directly in dedicated worker
+  }
+
+  if (sharedWorkerMessagePortPromise) {
+    return await sharedWorkerMessagePortPromise;
+  }
+
+  throw new Error("getPostMessageFunc is intended for Worker scopes");
+}
+
+// Port available asynchronously in shared worker, but not via an async func
+let savedResolver;
+if (globalThis.constructor.name === "SharedWorkerGlobalScope") {
+  sharedWorkerMessagePortPromise = new Promise((resolve) => {
+    savedResolver = resolve;
+  });
+  addEventListener("connect", function (event) {
+    const port = event.ports[0];
+    savedResolver(port.postMessage.bind(port));
+  });
+}

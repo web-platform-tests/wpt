@@ -521,6 +521,13 @@ class ShadowRealmInDedicatedWorkerHandler(WorkersHandler):
                      ".any.worker-shadowrealm.js")]
 
 
+class ShadowRealmInSharedWorkerHandler(SharedWorkersHandler):
+    global_type = "shadowrealm-in-sharedworker"
+    path_replace = [(".any.shadowrealm-in-sharedworker.html",
+                     ".any.js",
+                     ".any.worker-shadowrealm.js")]
+
+
 class BaseWorkerHandler(WrapperHandler):
     headers = [('Content-Type', 'text/javascript')]
 
@@ -596,8 +603,9 @@ importScripts("/resources/testharness-shadowrealm-outer.js");
     await import("%(path)s");
   `);
 
+  const postMessageFunc = await getPostMessageFunc();
   function forwardMessage(msgJSON) {
-    postMessage(JSON.parse(msgJSON));
+    postMessageFunc(JSON.parse(msgJSON));
   }
   r.evaluate('begin_shadow_realm_tests')(forwardMessage);
 })();
@@ -666,6 +674,7 @@ class RoutesBuilder:
             ("GET", "*.any.shadowrealm-in-window.html", ShadowRealmInWindowHandler),
             ("GET", "*.any.shadowrealm-in-shadowrealm.html", ShadowRealmInShadowRealmHandler),
             ("GET", "*.any.shadowrealm-in-dedicatedworker.html", ShadowRealmInDedicatedWorkerHandler),
+            ("GET", "*.any.shadowrealm-in-sharedworker.html", ShadowRealmInSharedWorkerHandler),
             ("GET", "*.any.window-module.html", WindowModulesHandler),
             ("GET", "*.any.worker.js", ClassicWorkerHandler),
             ("GET", "*.any.worker-module.js", ModuleWorkerHandler),

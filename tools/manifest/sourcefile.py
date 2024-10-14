@@ -88,10 +88,12 @@ _any_variants: Dict[Text, VariantData] = {
     "shadowrealm-in-window": {},
     "shadowrealm-in-shadowrealm": {},
     "shadowrealm-in-dedicatedworker": {},
+    "shadowrealm-in-sharedworker": {},
     "shadowrealm": {"longhand": {
         "shadowrealm-in-window",
         "shadowrealm-in-shadowrealm",
         "shadowrealm-in-dedicatedworker",
+        "shadowrealm-in-sharedworker",
     }},
     "jsshell": {"suffix": ".any.js"},
 }

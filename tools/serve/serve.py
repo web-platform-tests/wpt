@@ -514,6 +514,13 @@ class ShadowRealmInShadowRealmHandler(HtmlWrapperHandler):
         return None
 
 
+class ShadowRealmInDedicatedWorkerHandler(WorkersHandler):
+    global_type = "shadowrealm-in-dedicatedworker"
+    path_replace = [(".any.shadowrealm-in-dedicatedworker.html",
+                     ".any.js",
+                     ".any.worker-shadowrealm.js")]
+
+
 class BaseWorkerHandler(WrapperHandler):
     headers = [('Content-Type', 'text/javascript')]
 
@@ -570,6 +577,34 @@ done();
 
     def _create_script_import(self, attribute):
         return 'import "%s";' % attribute
+
+
+class ShadowRealmWorkerWrapperHandler(BaseWorkerHandler):
+    path_replace = [(".any.worker-shadowrealm.js", ".any.js")]
+    wrapper = """%(meta)s
+importScripts("/resources/testharness-shadowrealm-outer.js");
+(async function() {
+  const r = new ShadowRealm();
+  await shadowRealmEvalAsync(r, `
+    await import("/resources/testharness-shadowrealm-inner.js");
+    await import("/resources/testharness.js");
+  `);
+  r.evaluate("setShadowRealmGlobalProperties")("%(query)s", fetchAdaptor);
+
+  await shadowRealmEvalAsync(r, `
+    %(script)s
+    await import("%(path)s");
+  `);
+
+  function forwardMessage(msgJSON) {
+    postMessage(JSON.parse(msgJSON));
+  }
+  r.evaluate('begin_shadow_realm_tests')(forwardMessage);
+})();
+"""
+
+    def _create_script_import(self, attribute):
+        return 'await import("%s");' % attribute
 
 
 rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl2.js")]
@@ -630,9 +665,11 @@ class RoutesBuilder:
             ("GET", "*.any.serviceworker-module.html", ServiceWorkerModulesHandler),
             ("GET", "*.any.shadowrealm-in-window.html", ShadowRealmInWindowHandler),
             ("GET", "*.any.shadowrealm-in-shadowrealm.html", ShadowRealmInShadowRealmHandler),
+            ("GET", "*.any.shadowrealm-in-dedicatedworker.html", ShadowRealmInDedicatedWorkerHandler),
             ("GET", "*.any.window-module.html", WindowModulesHandler),
             ("GET", "*.any.worker.js", ClassicWorkerHandler),
             ("GET", "*.any.worker-module.js", ModuleWorkerHandler),
+            ("GET", "*.any.worker-shadowrealm.js", ShadowRealmWorkerWrapperHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
             ("*", "/.well-known/attribution-reporting/report-event-attribution", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/debug/report-event-attribution", handlers.PythonScriptHandler),

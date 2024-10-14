@@ -173,6 +173,9 @@ are:
 * `shadowrealm-in-shadowrealm`: runs the test code in a ShadowRealm context
   hosted in another ShadowRealm context; to be run at
   <code><var>x</var>.any.shadowrealm-in-shadowrealm.html</code>
+* `shadowrealm-in-dedicatedworker`: runs the test code in a ShadowRealm context
+  hosted in a dedicated worker; to be run at
+  <code><var>x</var>.any.shadowrealm-in-dedicatedworker.html</code>
 * `shadowrealm`: shorthand for all of the ShadowRealm scopes
 
 To check what scope your test is run from, you can use the following methods that will

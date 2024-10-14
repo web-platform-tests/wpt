@@ -128,6 +128,45 @@ When used for expectation data, metadata files have the following format:
       would indicate a test that usually passes but has a known-flaky
       ``ERROR`` outcome.
 
+      Values reported by tests:
+
+      * ``PASS``
+      * ``FAIL``
+      * ``OK``: Indicates that a test ran its subtests successfully. Subtests may contain their own
+        ``PASS`` and ``FAIL`` outcomes.
+      * ``ERROR``: TODO
+      * ``TIMEOUT``: Indicates that either:
+        * …this test exceeded the harness timeout (TODO: `link
+          <https://web-platform-tests.org/writing-tests/testharness-api.html#harness-timeout>`)
+        * …one of this test's subtests exceeded the harness timeout. The subtest will be indicated
+          with its own ``TIMEOUT`` status, and subsequent subtests are reported as `NOTRUN`.
+      * ``CRASH``: Reported when the process presenting web content is detected to have crashed.
+      * ``ASSERT``: TODO
+      * ``PRECONDITION_FAILED``: Reported when a call to ``assert_implements_optional`` (TODO:
+        `link<https://web-platform-tests.org/writing-tests/testharness-api.html#optional-features>`)
+        fails. That is, some optional functionality is not implemented that the test requires.
+      * ``SKIP``: `wptrunner` was directed to skip a test via:
+        * …a `disabled` test property.
+        * …CLI arguments that caused this test to be filtered out, such as ``--backlog``,
+          ``--implementation-status``, or ``--exclude-tag``.
+
+      Values reported by subtests:
+
+      * ``PASS``
+      * ``FAIL``
+      * ``ERROR``: TODO
+      * ``TIMEOUT``
+      * ``ASSERT``: TODO
+      * ``PRECONDITION_FAILED``: Reported when a call to ``assert_implements_optional`` (TODO:
+        `link<https://web-platform-tests.org/writing-tests/testharness-api.html#optional-features>`)
+        fails. That is, some optional functionality is not implemented that the test requires.
+      * ``SKIP``: `wptrunner` was directed to skip a test via:
+        * …a `disabled` test property.
+        * …CLI arguments that caused this test to be filtered out, such as ``--backlog``,
+          ``--implementation-status``, or ``--exclude-tag``.
+      * ``NOTRUN``: Reported when a subtest was skipped after a previous subtest encountered a
+        ``TIMEOUT``.
+
    :disabled:
      Any values apart from the special value ``@False``
      indicates that the (sub)test is disabled and should either not be

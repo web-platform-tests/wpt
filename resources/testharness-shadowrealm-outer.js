@@ -100,3 +100,28 @@ globalThis.setupFakeDynamicImportInShadowRealm = function(realm, adaptor) {
     }
   `)(fetchModuleTextExecutor);
 };
+
+/**
+ * Used when the hosting realm does not expose fetch(), i.e. in worklets. The
+ * port on the other side of the channel needs to send messages starting with
+ * 'fetchRequest::' and listen for messages starting with 'fetchResult::'. See
+ * testharness-shadowrealm-audioworkletprocessor.js.
+ *
+ * @param {port} MessagePort - the message port on which to listen for fetch
+ *   requests
+ */
+globalThis.setupFakeFetchOverMessagePort = function (port) {
+  port.addEventListener("message", (event) => {
+    if (typeof event.data !== "string" || !event.data.startsWith("fetchRequest::")) {
+      return;
+    }
+
+    fetch(event.data.slice("fetchRequest::".length))
+      .then(res => res.text())
+      .then(
+        text => port.postMessage(`fetchResult::success::${text}`),
+        error => port.postMessage(`fetchResult::fail::${error}`),
+      );
+  });
+  port.start();
+}

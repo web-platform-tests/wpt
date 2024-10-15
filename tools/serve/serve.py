@@ -535,6 +535,33 @@ class ShadowRealmInServiceWorkerHandler(ServiceWorkersHandler):
                      ".any.serviceworker-shadowrealm.js")]
 
 
+class ShadowRealmInAudioWorkletHandler(HtmlWrapperHandler):
+    global_type = "shadowrealm-in-audioworklet"
+    path_replace = [(".https.any.shadowrealm-in-audioworklet.html", ".any.js",
+                     ".any.audioworklet-shadowrealm.js")]
+
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testharness-shadowrealm-outer.js"></script>
+<script>
+(async function() {
+  const context = new AudioContext();
+  await context.audioWorklet.addModule(
+    "/resources/testharness-shadowrealm-outer.js");
+  await context.audioWorklet.addModule(
+    "/resources/testharness-shadowrealm-audioworkletprocessor.js");
+  await context.audioWorklet.addModule("%(path)s%(query)s");
+  const node = new AudioWorkletNode(context, "test-runner");
+  setupFakeFetchOverMessagePort(node.port);
+  fetch_tests_from_worker(node.port);
+})();
+</script>
+"""
+
+
 class BaseWorkerHandler(WrapperHandler):
     headers = [('Content-Type', 'text/javascript')]
 
@@ -654,6 +681,37 @@ importScripts("/resources/testharness-shadowrealm-outer.js");
         return 'await fakeDynamicImport("%s");' % attribute
 
 
+class ShadowRealmAudioWorkletWrapperHandler(BaseWorkerHandler):
+    path_replace = [(".any.audioworklet-shadowrealm.js", ".any.js")]
+    wrapper = """%(meta)s
+TestRunner.prototype.createShadowRealmAndStartTests = async function() {
+  const queryPart = import.meta.url.split('?')[1];
+  const locationSearch = queryPart ? '?' + queryPart : '';
+
+  const r = new ShadowRealm();
+  const adaptor = this.fetchOverPortExecutor.bind(this);
+  setupFakeDynamicImportInShadowRealm(r, adaptor);
+
+  await shadowRealmEvalAsync(r, `
+    await fakeDynamicImport("/resources/testharness-shadowrealm-inner.js");
+    await fakeDynamicImport("/resources/testharness.js");
+  `);
+  r.evaluate("setShadowRealmGlobalProperties")(locationSearch, adaptor);
+
+  await shadowRealmEvalAsync(r, `
+    %(script)s
+    await fakeDynamicImport("%(path)s");
+  `);
+  const forwardMessage = (msgJSON) =>
+    this.port.postMessage(JSON.parse(msgJSON));
+  r.evaluate("begin_shadow_realm_tests")(forwardMessage);
+}
+"""
+
+    def _create_script_import(self, attribute):
+        return 'await fakeDynamicImport("%s");' % attribute
+
+
 rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl2.js")]
 
 
@@ -715,11 +773,13 @@ class RoutesBuilder:
             ("GET", "*.any.shadowrealm-in-dedicatedworker.html", ShadowRealmInDedicatedWorkerHandler),
             ("GET", "*.any.shadowrealm-in-sharedworker.html", ShadowRealmInSharedWorkerHandler),
             ("GET", "*.any.shadowrealm-in-serviceworker.html", ShadowRealmInServiceWorkerHandler),
+            ("GET", "*.any.shadowrealm-in-audioworklet.html", ShadowRealmInAudioWorkletHandler),
             ("GET", "*.any.window-module.html", WindowModulesHandler),
             ("GET", "*.any.worker.js", ClassicWorkerHandler),
             ("GET", "*.any.worker-module.js", ModuleWorkerHandler),
             ("GET", "*.any.serviceworker-shadowrealm.js", ShadowRealmServiceWorkerWrapperHandler),
             ("GET", "*.any.worker-shadowrealm.js", ShadowRealmWorkerWrapperHandler),
+            ("GET", "*.any.audioworklet-shadowrealm.js", ShadowRealmAudioWorkletWrapperHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
             ("*", "/.well-known/attribution-reporting/report-event-attribution", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/debug/report-event-attribution", handlers.PythonScriptHandler),

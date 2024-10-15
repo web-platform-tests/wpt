@@ -204,12 +204,14 @@ class ChromeDriverRefTestExecutor(WebDriverRefTestExecutor, _SanitizerMixin):  #
 
 
 @_evaluate_leaks
-class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor, _SanitizerMixin):  # type: ignore
+class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor,
+                                      _SanitizerMixin):  # type: ignore
     protocol_cls = None
 
     def __init__(self, *args, reuse_window=False, **kwargs):
-        require_bidi = kwargs.get("browser_settings", {}).get("require_bidi", None)
-        if require_bidi=='true':
+        require_bidi = kwargs.get("browser_settings", {}).get("require_bidi",
+                                                              None)
+        if require_bidi == 'true':
             self.protocol_cls = ChromeDriverBidiProtocol
         else:
             self.protocol_cls = ChromeDriverProtocol

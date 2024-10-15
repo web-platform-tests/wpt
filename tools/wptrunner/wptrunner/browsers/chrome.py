@@ -273,7 +273,7 @@ class ChromeBrowser(WebDriverBrowser):
         """ Required to store `require_bidi` in browser settings."""
         settings = super().settings(test)
         self._require_bidi = test.require_bidi
-        settings[ "require_bidi"] = self._require_bidi
+        settings["require_bidi"] = self._require_bidi
         return settings
 
 

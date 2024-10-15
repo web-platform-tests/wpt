@@ -167,7 +167,7 @@ class TestharnessTest(URLManifestItem):
 
     @property
     def require_bidi(self) -> Optional[Text]:
-       return self._extras.get("require_bidi")
+        return self._extras.get("require_bidi")
 
     @property
     def testdriver(self) -> Optional[Text]:

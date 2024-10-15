@@ -166,6 +166,10 @@ class TestharnessTest(URLManifestItem):
         return self._extras.get("pac")
 
     @property
+    def require_bidi(self) -> Optional[Text]:
+        return self._extras.get("require_bidi")
+
+    @property
     def testdriver(self) -> Optional[Text]:
         return self._extras.get("testdriver")
 
@@ -183,6 +187,8 @@ class TestharnessTest(URLManifestItem):
             rv[-1]["timeout"] = self.timeout
         if self.pac is not None:
             rv[-1]["pac"] = self.pac
+        if self.require_bidi is not None:
+            rv[-1]["require_bidi"] = self.require_bidi
         if self.testdriver:
             rv[-1]["testdriver"] = self.testdriver
         if self.jsshell:

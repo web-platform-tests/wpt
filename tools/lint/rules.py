@@ -152,6 +152,24 @@ class InvalidTimeout(Rule):
     to_fix = "replace the value of the `content` attribute with `long`"
 
 
+class MultipleRequireBidi(Rule):
+    name = "MULTIPLE-REQUIRE-BIDI"
+    description = "More than one meta name='require-bidi'"
+    to_fix = """
+        ensure each test file has only one instance of a `<meta
+        name="require-bidi"...>` element
+    """
+
+
+class InvalidRequireBidi(Rule):
+    name = "INVALID-REQUIRE-BIDI"
+    description = collapse("""
+        Test file with `<meta name='require-bidi'...>` element that has a `content`
+        attribute whose value is not a boolean: %s
+    """)
+    to_fix = "replace the value of the `content` attribute with `true` or `false`"
+
+
 class MultipleTestharness(Rule):
     name = "MULTIPLE-TESTHARNESS"
     description = "More than one `<script src='/resources/testharness.js'>`"

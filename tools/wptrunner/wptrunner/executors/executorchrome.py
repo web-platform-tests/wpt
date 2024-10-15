@@ -17,6 +17,7 @@ from .executorwebdriver import (
     WebDriverFedCMProtocolPart,
     WebDriverPrintRefTestExecutor,
     WebDriverProtocol,
+    WebDriverBidiProtocol,
     WebDriverRefTestExecutor,
     WebDriverTestharnessExecutor,
     WebDriverTestharnessProtocolPart,
@@ -129,6 +130,27 @@ class ChromeDriverDevToolsProtocolPart(ProtocolPart):
                                                    body=body)
 
 
+class ChromeDriverBidiProtocol(WebDriverBidiProtocol):
+    implements = [
+        ChromeDriverDevToolsProtocolPart,
+        ChromeDriverFedCMProtocolPart,
+        ChromeDriverTestharnessProtocolPart,
+    ]
+    for base_part in WebDriverBidiProtocol.implements:
+        if base_part.name not in {part.name for part in implements}:
+            implements.append(base_part)
+
+    reuse_window = False
+    # Prefix to apply to vendor-specific WebDriver extension commands.
+    vendor_prefix = "goog"
+
+    def __init__(self, executor, browser, capabilities, **kwargs):
+        self.implements = list(ChromeDriverProtocol.implements)
+        if getattr(browser, "leak_check", False):
+            self.implements.append(ChromeDriverLeakProtocolPart)
+        super().__init__(executor, browser, capabilities, **kwargs)
+
+
 class ChromeDriverProtocol(WebDriverProtocol):
     implements = [
         ChromeDriverDevToolsProtocolPart,
@@ -182,9 +204,15 @@ class ChromeDriverRefTestExecutor(WebDriverRefTestExecutor, _SanitizerMixin):  #
 
 @_evaluate_leaks
 class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor, _SanitizerMixin):  # type: ignore
-    protocol_cls = ChromeDriverProtocol
+    protocol_cls = None
 
     def __init__(self, *args, reuse_window=False, **kwargs):
+        require_bidi = kwargs.get("browser_settings", {}).get("require_bidi", None)
+        if require_bidi=='true':
+            self.protocol_cls = ChromeDriverBidiProtocol
+        else:
+            self.protocol_cls = ChromeDriverProtocol
+
         super().__init__(*args, **kwargs)
         self.reuse_window = reuse_window
 

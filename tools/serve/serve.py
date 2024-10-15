@@ -566,6 +566,27 @@ class ShadowRealmInServiceWorkerHandler(ServiceWorkersHandler):
                      ".any.worker-shadowrealm.js")]
 
 
+class ShadowRealmInAudioWorkletHandler(HtmlWrapperHandler):
+    global_type = "shadowrealm-in-audioworklet"
+    path_replace = [(".https.any.shadowrealm-in-audioworklet.html", ".any.js",
+                     ".any.audioworklet-shadowrealm.js")]
+
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+(async function() {
+  const context = new AudioContext();
+  await context.audioWorklet.addModule("%(path)s%(query)s");
+  const node = new AudioWorkletNode(context, "test-runner");
+  fetch_tests_from_worker(node.port);
+})();
+</script>
+"""
+
+
 class BaseWorkerHandler(WrapperHandler):
     headers = [('Content-Type', 'text/javascript')]
 
@@ -652,6 +673,49 @@ new Promise(r.evaluate(`
         return 'await import("%s");' % attribute
 
 
+class ShadowRealmAudioWorkletWrapperHandler(BaseWorkerHandler):
+    path_replace = [(".any.audioworklet-shadowrealm.js", ".any.js")]
+    wrapper = """%(meta)s
+""" + fetch_json_shadow_realm_adaptor_js_code + """
+class TestRunner extends AudioWorkletProcessor {
+  constructor() {
+    super();
+
+    const queryPart = import.meta.url.split('?')[1];
+    const locationSearch = queryPart ? '?' + queryPart : '';
+
+    const r = new ShadowRealm();
+    r.evaluate(`
+    """ + set_shadow_realm_global_properties_js_code + """
+    `)(locationSearch, fetchAdaptor);
+
+    new Promise(r.evaluate(`
+      (resolve, reject) => {
+        (async () => {
+          await import("/resources/testharness.js");
+          %(script)s
+          await import("%(path)s");
+        })().then(resolve, (e) => reject(e.toString()));
+      }
+    `)).then(() => {
+      function forwardMessage(msgJSON) {
+        this.port.postMessage(JSON.parse(msgJSON))
+      }
+      r.evaluate('begin_shadow_realm_tests')(forwardMessage);
+    });
+  }
+
+  process() {
+    return false;
+  }
+}
+registerProcessor('test-runner', TestRunner);
+"""
+
+    def _create_script_import(self, attribute):
+        return 'await import("%s");' % attribute
+
+
 rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl2.js")]
 
 
@@ -713,10 +777,12 @@ class RoutesBuilder:
             ("GET", "*.any.shadowrealm-in-dedicatedworker.html", ShadowRealmInDedicatedWorkerHandler),
             ("GET", "*.any.shadowrealm-in-sharedworker.html", ShadowRealmInSharedWorkerHandler),
             ("GET", "*.any.shadowrealm-in-serviceworker.html", ShadowRealmInServiceWorkerHandler),
+            ("GET", "*.any.shadowrealm-in-audioworklet.html", ShadowRealmInAudioWorkletHandler),
             ("GET", "*.any.window-module.html", WindowModulesHandler),
             ("GET", "*.any.worker.js", ClassicWorkerHandler),
             ("GET", "*.any.worker-module.js", ModuleWorkerHandler),
             ("GET", "*.any.worker-shadowrealm.js", ShadowRealmWorkerWrapperHandler),
+            ("GET", "*.any.audioworklet-shadowrealm.js", ShadowRealmAudioWorkletWrapperHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
             ("*", "/.well-known/attribution-reporting/report-event-attribution", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/debug/report-event-attribution", handlers.PythonScriptHandler),

@@ -25,5 +25,5 @@ test(() => {
   assert_equals(input.colorSpace, "display-p3");
   input.colorSpace = "DıSPLAY-P3";
   assert_equals(input.getAttribute("colorspace"), "DıSPLAY-P3");
-  assert_equals(input.colorSpace, "limited-srgb");  
+  assert_equals(input.colorSpace, "limited-srgb");
 }, "<input type=color>: colorspace attribute");

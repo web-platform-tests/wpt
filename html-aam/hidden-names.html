@@ -35,6 +35,16 @@
     <caption hidden>Hidden caption</caption>
   </table>
 
+  <h2>Table with two captions, the first hidden</h2>
+  <table
+    class="ex-label"
+    data-testname="Table with two captions, the first hidden"
+    data-expectedlabel="Visible caption"
+  >
+    <caption hidden>Hidden caption</caption>
+    <caption>Visible caption</caption>
+  </table>
+
   <h2>Fieldset with hidden legend</h2>
   <fieldset
     class="ex-label"
@@ -42,6 +52,16 @@
     data-expectedlabel=""
   >
     <legend hidden>Hidden legend</legend>
+  </fieldset>
+
+  <h2>Fieldset with two legends, the first hidden</h2>
+  <fieldset
+    class="ex-label"
+    data-testname="Fieldset with two legends, the first hidden"
+    data-expectedlabel="Visible legend"
+  >
+    <legend hidden>Hidden legend</legend>
+    <legend>Visible legend</legend>
   </fieldset>
 
   <script>

@@ -1,52 +1,112 @@
+const HOST_INFO = {
+  get HTTP_PORT() {
+    return "{{ports[http][0]}}";
+  },
+  get HTTP_PORT2() {
+    return "{{ports[http][1]}}";
+  },
+  get HTTPS_PORT() {
+    return "{{ports[https][0]}}";
+  },
+  get HTTPS_PORT2() {
+    return "{{ports[https][1]}}";
+  },
+  get PROTOCOL() {
+    return self.location.protocol;
+  },
+  get IS_HTTPS() {
+    return this.PROTOCOL === "https:";
+  },
+  get PORT() {
+    return this.IS_HTTPS ? this.HTTPS_PORT : this.HTTP_PORT;
+  },
+  get PORT2() {
+    return this.IS_HTTPS ? this.HTTPS_PORT2 : this.HTTP_PORT2;
+  },
+  get HTTP_PORT_ELIDED() {
+    return this.HTTP_PORT === "80" ? "" : `:${this.HTTP_PORT}`;
+  },
+  get HTTP_PORT2_ELIDED() {
+    return this.HTTP_PORT2 === "80" ? "" : `:${this.HTTP_PORT2}`;
+  },
+  get HTTPS_PORT_ELIDED() {
+    return this.HTTPS_PORT === "443" ? "" : `:${this.HTTPS_PORT}`;
+  },
+  get PORT_ELIDED() {
+    return this.IS_HTTPS ? this.HTTPS_PORT_ELIDED : this.HTTP_PORT_ELIDED;
+  },
+  get ORIGINAL_HOST() {
+    return "{{host}}";
+  },
+  get REMOTE_HOST() {
+    return this.ORIGINAL_HOST === "localhost"
+      ? "127.0.0.1"
+      : `www1.${this.ORIGINAL_HOST}`;
+  },
+  get OTHER_HOST() {
+    return "{{domains[www2]}}";
+  },
+  get NOTSAMESITE_HOST() {
+    return this.ORIGINAL_HOST === "localhost"
+      ? "127.0.0.1"
+      : "{{hosts[alt][]}}";
+  },
+  get ORIGIN() {
+    return `${this.PROTOCOL}//${this.ORIGINAL_HOST}${this.PORT_ELIDED}`;
+  },
+  get HTTP_ORIGIN() {
+    return `http://${this.ORIGINAL_HOST}${this.HTTP_PORT_ELIDED}`;
+  },
+  get HTTPS_ORIGIN() {
+    return `https://${this.ORIGINAL_HOST}${this.HTTPS_PORT_ELIDED}`;
+  },
+  get HTTPS_ORIGIN_WITH_CREDS() {
+    return `https://foo:bar@${this.ORIGINAL_HOST}${this.HTTPS_PORT_ELIDED}`;
+  },
+  get HTTP_ORIGIN_WITH_DIFFERENT_PORT() {
+    return `http://${this.ORIGINAL_HOST}${this.HTTP_PORT2_ELIDED}`;
+  },
+  get REMOTE_ORIGIN() {
+    return `${this.PROTOCOL}//${this.REMOTE_HOST}${this.PORT_ELIDED}`;
+  },
+  get OTHER_ORIGIN() {
+    return `${this.PROTOCOL}//${this.OTHER_HOST}${this.PORT_ELIDED}`;
+  },
+  get HTTP_REMOTE_ORIGIN() {
+    return `http://${this.REMOTE_HOST}${this.HTTP_PORT_ELIDED}`;
+  },
+  get HTTP_NOTSAMESITE_ORIGIN() {
+    return `http://${this.NOTSAMESITE_HOST}${this.HTTP_PORT_ELIDED}`;
+  },
+  get HTTP_REMOTE_ORIGIN_WITH_DIFFERENT_PORT() {
+    return `http://${this.REMOTE_HOST}${this.HTTP_PORT2_ELIDED}`;
+  },
+  get HTTPS_REMOTE_ORIGIN() {
+    return `https://${this.REMOTE_HOST}${this.HTTPS_PORT_ELIDED}`;
+  },
+  get HTTPS_REMOTE_ORIGIN_WITH_CREDS() {
+    return `https://foo:bar@${this.REMOTE_HOST}${this.HTTPS_PORT_ELIDED}`;
+  },
+  get HTTPS_NOTSAMESITE_ORIGIN() {
+    return `https://${this.NOTSAMESITE_HOST}${this.HTTPS_PORT_ELIDED}`;
+  },
+  get UNAUTHENTICATED_ORIGIN() {
+    return `http://${this.OTHER_HOST}${this.HTTP_PORT_ELIDED}`;
+  },
+  get AUTHENTICATED_ORIGIN() {
+    return `https://${this.OTHER_HOST}${this.HTTPS_PORT_ELIDED}`;
+  },
+  getPort(loc) {
+    return loc.port || (loc.protocol === "https:" ? "443" : "80");
+  },
+};
+
 /**
  * Host information for cross-origin tests.
  * @returns {Object} with properties for different host information.
  */
 function get_host_info() {
-
-  var HTTP_PORT = '{{ports[http][0]}}';
-  var HTTP_PORT2 = '{{ports[http][1]}}';
-  var HTTPS_PORT = '{{ports[https][0]}}';
-  var HTTPS_PORT2 = '{{ports[https][1]}}';
-  var PROTOCOL = self.location.protocol;
-  var IS_HTTPS = (PROTOCOL == "https:");
-  var PORT = IS_HTTPS ? HTTPS_PORT : HTTP_PORT;
-  var PORT2 = IS_HTTPS ? HTTPS_PORT2 : HTTP_PORT2;
-  var HTTP_PORT_ELIDED = HTTP_PORT == "80" ? "" : (":" + HTTP_PORT);
-  var HTTP_PORT2_ELIDED = HTTP_PORT2 == "80" ? "" : (":" + HTTP_PORT2);
-  var HTTPS_PORT_ELIDED = HTTPS_PORT == "443" ? "" : (":" + HTTPS_PORT);
-  var PORT_ELIDED = IS_HTTPS ? HTTPS_PORT_ELIDED : HTTP_PORT_ELIDED;
-  var ORIGINAL_HOST = '{{host}}';
-  var REMOTE_HOST = (ORIGINAL_HOST === 'localhost') ? '127.0.0.1' : ('www1.' + ORIGINAL_HOST);
-  var OTHER_HOST = '{{domains[www2]}}';
-  var NOTSAMESITE_HOST = (ORIGINAL_HOST === 'localhost') ? '127.0.0.1' : ('{{hosts[alt][]}}');
-
-  return {
-    HTTP_PORT: HTTP_PORT,
-    HTTP_PORT2: HTTP_PORT2,
-    HTTPS_PORT: HTTPS_PORT,
-    HTTPS_PORT2: HTTPS_PORT2,
-    PORT: PORT,
-    PORT2: PORT2,
-    ORIGINAL_HOST: ORIGINAL_HOST,
-    REMOTE_HOST: REMOTE_HOST,
-
-    ORIGIN: PROTOCOL + "//" + ORIGINAL_HOST + PORT_ELIDED,
-    HTTP_ORIGIN: 'http://' + ORIGINAL_HOST + HTTP_PORT_ELIDED,
-    HTTPS_ORIGIN: 'https://' + ORIGINAL_HOST + HTTPS_PORT_ELIDED,
-    HTTPS_ORIGIN_WITH_CREDS: 'https://foo:bar@' + ORIGINAL_HOST + HTTPS_PORT_ELIDED,
-    HTTP_ORIGIN_WITH_DIFFERENT_PORT: 'http://' + ORIGINAL_HOST + HTTP_PORT2_ELIDED,
-    REMOTE_ORIGIN: PROTOCOL + "//" + REMOTE_HOST + PORT_ELIDED,
-    OTHER_ORIGIN: PROTOCOL + "//" + OTHER_HOST + PORT_ELIDED,
-    HTTP_REMOTE_ORIGIN: 'http://' + REMOTE_HOST + HTTP_PORT_ELIDED,
-    HTTP_NOTSAMESITE_ORIGIN: 'http://' + NOTSAMESITE_HOST + HTTP_PORT_ELIDED,
-    HTTP_REMOTE_ORIGIN_WITH_DIFFERENT_PORT: 'http://' + REMOTE_HOST + HTTP_PORT2_ELIDED,
-    HTTPS_REMOTE_ORIGIN: 'https://' + REMOTE_HOST + HTTPS_PORT_ELIDED,
-    HTTPS_REMOTE_ORIGIN_WITH_CREDS: 'https://foo:bar@' + REMOTE_HOST + HTTPS_PORT_ELIDED,
-    HTTPS_NOTSAMESITE_ORIGIN: 'https://' + NOTSAMESITE_HOST + HTTPS_PORT_ELIDED,
-    UNAUTHENTICATED_ORIGIN: 'http://' + OTHER_HOST + HTTP_PORT_ELIDED,
-    AUTHENTICATED_ORIGIN: 'https://' + OTHER_HOST + HTTPS_PORT_ELIDED
-  };
+  return { ...HOST_INFO };
 }
 
 /**
@@ -56,8 +116,5 @@ function get_host_info() {
  * @returns {string} The port number.
  */
 function get_port(loc) {
-  if (loc.port) {
-    return loc.port;
-  }
-  return loc.protocol === 'https:' ? '443' : '80';
+  return HOST_INFO.getPort(loc);
 }

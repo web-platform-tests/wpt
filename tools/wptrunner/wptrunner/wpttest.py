@@ -215,8 +215,10 @@ class Test(ABC):
     default_timeout = 10  # seconds
     long_timeout = 60  # seconds
 
-    def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata,
-                 timeout=None, path=None, protocol="http", subdomain=False, pac=None, require_bidi=None):
+    def __init__(self, url_base, tests_root, url, inherit_metadata,
+          test_metadata,
+          timeout=None, path=None, protocol="http", subdomain=False, pac=None,
+          require_webdriver_bidi=None):
         self.url_base = url_base
         self.tests_root = tests_root
         self.url = url
@@ -224,7 +226,7 @@ class Test(ABC):
         self._test_metadata = test_metadata
         self.timeout = timeout if timeout is not None else self.default_timeout
         self.path = path
-        self.require_bidi = require_bidi
+        self.require_webdriver_bidi = require_webdriver_bidi
         self.subdomain = subdomain
         self.environment = {"url_base": url_base,
                             "protocol": protocol,
@@ -481,11 +483,14 @@ class TestharnessTest(Test):
     subtest_result_cls = TestharnessSubtestResult
     test_type = "testharness"
 
-    def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata,
-                 timeout=None, path=None, protocol="http", testdriver=False,
-                 jsshell=False, scripts=None, subdomain=False, pac=None, require_bidi=None):
-        Test.__init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, timeout,
-                      path, protocol, subdomain, pac, require_bidi)
+    def __init__(self, url_base, tests_root, url, inherit_metadata,
+          test_metadata,
+          timeout=None, path=None, protocol="http", testdriver=False,
+          jsshell=False, scripts=None, subdomain=False, pac=None,
+          require_webdriver_bidi=None):
+        Test.__init__(self, url_base, tests_root, url, inherit_metadata,
+                      test_metadata, timeout,
+                      path, protocol, subdomain, pac, require_webdriver_bidi)
 
         self.testdriver = testdriver
         self.jsshell = jsshell
@@ -495,7 +500,7 @@ class TestharnessTest(Test):
     def from_manifest(cls, manifest_file, manifest_item, inherit_metadata, test_metadata):
         timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
         pac = manifest_item.pac
-        require_bidi = manifest_item.require_bidi
+        require_webdriver_bidi = manifest_item.require_webdriver_bidi
         testdriver = manifest_item.testdriver if hasattr(manifest_item, "testdriver") else False
         jsshell = manifest_item.jsshell if hasattr(manifest_item, "jsshell") else False
         script_metadata = manifest_item.script_metadata or []
@@ -508,7 +513,7 @@ class TestharnessTest(Test):
                    test_metadata,
                    timeout=timeout,
                    pac=pac,
-                   require_bidi=require_bidi,
+                   require_webdriver_bidi=require_webdriver_bidi,
                    path=os.path.join(manifest_file.tests_root, manifest_item.path),
                    protocol=server_protocol(manifest_item),
                    testdriver=testdriver,

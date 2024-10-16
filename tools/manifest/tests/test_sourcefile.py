@@ -962,13 +962,14 @@ def test_hash():
     assert "b45ef6fec89518d314f546fd6c3025367b721684" == s.hash
 
 
-REQUIRE_BIDI_VALUES = [None, "true", "false", "SOME_NONSENSE"]
+REQUIRE_WEBDRIVER_BIDI_VALUES = [None, "true", "false", "SOME_NONSENSE"]
 
 
-@pytest.mark.parametrize("require_bidi_value", REQUIRE_BIDI_VALUES)
-def test_worker_require_bidi(require_bidi_value):
-    if require_bidi_value is not None:
-        contents = f"""// META: require_bidi={require_bidi_value}
+@pytest.mark.parametrize("require_webdriver_bidi_value",
+                         REQUIRE_WEBDRIVER_BIDI_VALUES)
+def test_worker_require_webdriver_bidi(require_webdriver_bidi_value):
+    if require_webdriver_bidi_value is not None:
+        contents = f"""// META: require_webdriver_bidi={require_webdriver_bidi_value}
 importScripts('/resources/testharness.js')
 test()""".encode("utf-8")
     else:
@@ -976,8 +977,8 @@ test()""".encode("utf-8")
 test()"""
 
     metadata = list(read_script_metadata(BytesIO(contents), js_meta_re))
-    assert metadata == ([("require_bidi",
-                          require_bidi_value)] if require_bidi_value is not None else [])
+    assert metadata == ([("require_webdriver_bidi",
+                          require_webdriver_bidi_value)] if require_webdriver_bidi_value is not None else [])
 
     s = create("html/test.worker.js", contents=contents)
     assert s.name_is_worker
@@ -986,13 +987,14 @@ test()"""
     assert item_type == "testharness"
 
     for item in items:
-        assert item.require_bidi == require_bidi_value
+        assert item.require_webdriver_bidi == require_webdriver_bidi_value
 
 
-@pytest.mark.parametrize("require_bidi_value", REQUIRE_BIDI_VALUES)
-def test_window_require_bidi(require_bidi_value):
-    if require_bidi_value is not None:
-        contents = f"""// META: require_bidi={require_bidi_value}
+@pytest.mark.parametrize("require_webdriver_bidi_value",
+                         REQUIRE_WEBDRIVER_BIDI_VALUES)
+def test_window_require_webdriver_bidi(require_webdriver_bidi_value):
+    if require_webdriver_bidi_value is not None:
+        contents = f"""// META: require_webdriver_bidi={require_webdriver_bidi_value}
 importScripts('/resources/testharness.js')
 test()""".encode("utf-8")
     else:
@@ -1000,8 +1002,8 @@ test()""".encode("utf-8")
 test()"""
 
     metadata = list(read_script_metadata(BytesIO(contents), js_meta_re))
-    assert metadata == ([("require_bidi",
-                          require_bidi_value)] if require_bidi_value is not None else [])
+    assert metadata == ([("require_webdriver_bidi",
+                          require_webdriver_bidi_value)] if require_webdriver_bidi_value is not None else [])
 
     s = create("html/test.window.js", contents=contents)
     assert s.name_is_window
@@ -1010,13 +1012,14 @@ test()"""
     assert item_type == "testharness"
 
     for item in items:
-        assert item.require_bidi == require_bidi_value
+        assert item.require_webdriver_bidi == require_webdriver_bidi_value
 
 
-@pytest.mark.parametrize("require_bidi_value", REQUIRE_BIDI_VALUES)
-def test_multi_global_require_bidi(require_bidi_value):
-    if require_bidi_value is not None:
-        contents = f"""// META: require_bidi={require_bidi_value}
+@pytest.mark.parametrize("require_webdriver_bidi_value",
+                         REQUIRE_WEBDRIVER_BIDI_VALUES)
+def test_multi_global_require_webdriver_bidi(require_webdriver_bidi_value):
+    if require_webdriver_bidi_value is not None:
+        contents = f"""// META: require_webdriver_bidi={require_webdriver_bidi_value}
 importScripts('/resources/testharness.js')
 test()""".encode("utf-8")
     else:
@@ -1024,8 +1027,8 @@ test()""".encode("utf-8")
 test()"""
 
     metadata = list(read_script_metadata(BytesIO(contents), js_meta_re))
-    assert metadata == ([("require_bidi",
-                          require_bidi_value)] if require_bidi_value is not None else [])
+    assert metadata == ([("require_webdriver_bidi",
+                          require_webdriver_bidi_value)] if require_webdriver_bidi_value is not None else [])
 
     s = create("html/test.any.js", contents=contents)
     assert s.name_is_multi_global
@@ -1034,17 +1037,18 @@ test()"""
     assert item_type == "testharness"
 
     for item in items:
-        assert item.require_bidi == require_bidi_value
+        assert item.require_webdriver_bidi == require_webdriver_bidi_value
 
 
-@pytest.mark.parametrize("require_bidi_value", REQUIRE_BIDI_VALUES)
-def test_html_require_bidi(require_bidi_value):
-    if require_bidi_value is not None:
-        content = f"<meta name=require-bidi content={require_bidi_value} />".encode(
+@pytest.mark.parametrize("require_webdriver_bidi_value",
+                         REQUIRE_WEBDRIVER_BIDI_VALUES)
+def test_html_require_webdriver_bidi(require_webdriver_bidi_value):
+    if require_webdriver_bidi_value is not None:
+        content = f"<meta name=require_webdriver_bidi content={require_webdriver_bidi_value} />".encode(
             "utf-8")
     else:
         content = b""
 
     s = create("test.html", content)
 
-    assert s.require_bidi == require_bidi_value
+    assert s.require_webdriver_bidi == require_webdriver_bidi_value

@@ -442,13 +442,15 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
         if timeout_value != "long":
             errors.append(rules.InvalidTimeout.error(path, (timeout_value,)))
 
-    if len(source_file.require_bidi_nodes) > 1:
+    if len(source_file.require_webdriver_bidi_nodes) > 1:
         errors.append(rules.MultipleRequireBidi.error(path))
 
-    for timeout_node in source_file.require_bidi_nodes:
-        require_bidi_value = timeout_node.attrib.get("content", "").lower()
-        if require_bidi_value != "true" and require_bidi_value != "false":
-            errors.append(rules.InvalidRequireBidi.error(path, (require_bidi_value,)))
+    for timeout_node in source_file.require_webdriver_bidi_nodes:
+        require_webdriver_bidi_value = timeout_node.attrib.get("content",
+                                                               "").lower()
+        if require_webdriver_bidi_value != "true" and require_webdriver_bidi_value != "false":
+            errors.append(rules.InvalidRequireBidi.error(path, (
+                require_webdriver_bidi_value,)))
 
     if source_file.content_is_ref_node or source_file.content_is_testharness:
         for element in source_file.variant_nodes:

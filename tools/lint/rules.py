@@ -153,18 +153,18 @@ class InvalidTimeout(Rule):
 
 
 class MultipleRequireBidi(Rule):
-    name = "MULTIPLE-REQUIRE-BIDI"
-    description = "More than one meta name='require-bidi'"
+    name = "MULTIPLE-REQUIRE-WEBDRIVER-BIDI"
+    description = "More than one meta name='require_webdriver_bidi'"
     to_fix = """
         ensure each test file has only one instance of a `<meta
-        name="require-bidi"...>` element
+        name="require_webdriver_bidi"...>` element
     """
 
 
 class InvalidRequireBidi(Rule):
-    name = "INVALID-REQUIRE-BIDI"
+    name = "INVALID-REQUIRE-WEBDRIVER-BIDI"
     description = collapse("""
-        Test file with `<meta name='require-bidi'...>` element that has a `content`
+        Test file with `<meta name='require_webdriver_bidi'...>` element that has a `content`
         attribute whose value is not a boolean: %s
     """)
     to_fix = "replace the value of the `content` attribute with `true` or `false`"

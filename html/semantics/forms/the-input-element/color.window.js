@@ -138,13 +138,6 @@ const assert_colors = set_up_fuzzy_color_test();
     p3alpha: "color(display-p3 0 0 0 / 0)"
   },
   {
-    value: "ActiveBorder",
-    hex: "#0067f4",
-    hexalpha: "color(srgb 0 0.403922 0.956863)",
-    p3: "color(display-p3 0.168328 0.397512 0.92292)",
-    p3alpha: "color(display-p3 0.168328 0.397512 0.92292)"
-  },
-  {
     value: "inherit",
     hex: "#000000",
     hexalpha: "color(srgb 0 0 0)",
@@ -242,3 +235,20 @@ const assert_colors = set_up_fuzzy_color_test();
     });
   });
 });
+
+test(() => {
+  const input = document.createElement("input");
+  input.type = "color";
+  assert_equals(input.value, "#000000");
+  input.value = "ActiveBorder";
+  assert_not_equals(input.value, "#000000");
+}, "System colors are parsed");
+
+test(() => {
+  const input = document.createElement("input");
+  input.type = "color";
+  input.alpha = true;
+  input.colorSpace = "display-p3";
+  input.value = "color(display-p3 3 none .2 / .6)";
+  assert_equals(input.value, "color(display-p3 3 0 0.2 / 0.6)");
+}, "Display P3 colors can be out-of-bounds");

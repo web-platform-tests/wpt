@@ -440,6 +440,14 @@ class SourceFile:
         return self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='timeout']")
 
     @cached_property
+    def require_webdriver_bidi_nodes(self) -> List[ElementTree.Element]:
+        """List of ElementTree Elements corresponding to nodes in a test that
+        specify timeouts"""
+        assert self.root is not None
+        return self.root.findall(
+            ".//{http://www.w3.org/1999/xhtml}meta[@name='require_webdriver_bidi']")
+
+    @cached_property
     def pac_nodes(self) -> List[ElementTree.Element]:
         """List of ElementTree Elements corresponding to nodes in a test that
         specify PAC (proxy auto-config)"""
@@ -489,6 +497,23 @@ class SourceFile:
 
         if self.pac_nodes:
             return self.pac_nodes[0].attrib.get("content", None)
+
+        return None
+
+    @cached_property
+    def require_webdriver_bidi(self) -> Optional[Text]:
+        """Flag indicating if BiDi functionality is required for the given test"""
+        if self.script_metadata:
+            for (meta, content) in self.script_metadata:
+                if meta == 'require_webdriver_bidi':
+                    return content
+
+        if self.root is None:
+            return None
+
+        if self.require_webdriver_bidi_nodes:
+            return self.require_webdriver_bidi_nodes[0].attrib.get("content",
+                                                                   None)
 
         return None
 
@@ -965,6 +990,7 @@ class SourceFile:
                     global_variant_url(self.rel_url, suffix) + variant,
                     timeout=self.timeout,
                     pac=self.pac,
+                    require_webdriver_bidi=self.require_webdriver_bidi,
                     jsshell=jsshell,
                     script_metadata=self.script_metadata
                 )
@@ -983,6 +1009,7 @@ class SourceFile:
                     test_url + variant,
                     timeout=self.timeout,
                     pac=self.pac,
+                    require_webdriver_bidi=self.require_webdriver_bidi,
                     script_metadata=self.script_metadata
                 )
                 for variant in self.test_variants
@@ -999,6 +1026,7 @@ class SourceFile:
                     test_url + variant,
                     timeout=self.timeout,
                     pac=self.pac,
+                    require_webdriver_bidi=self.require_webdriver_bidi,
                     script_metadata=self.script_metadata
                 )
                 for variant in self.test_variants
@@ -1026,6 +1054,7 @@ class SourceFile:
                     url,
                     timeout=self.timeout,
                     pac=self.pac,
+                    require_webdriver_bidi=self.require_webdriver_bidi,
                     testdriver=testdriver,
                     script_metadata=self.script_metadata
                 ))

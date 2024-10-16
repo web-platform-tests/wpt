@@ -216,7 +216,7 @@ class ChromeBrowser(WebDriverBrowser):
         super().__init__(logger, **kwargs)
         self._leak_check = leak_check
         self._actual_port = None
-        self._require_bidi = None
+        self._require_webdriver_bidi = None
 
     def restart_on_test_type_change(self, new_test_type: str, old_test_type: str) -> bool:
         # Restart the test runner when switch from/to wdspec tests. Wdspec test
@@ -266,16 +266,16 @@ class ChromeBrowser(WebDriverBrowser):
         return browser_cls, {**browser_kwargs, "leak_check": self._leak_check}
 
     @property
-    def require_bidi(self) -> Optional[bool]:
-        return self._require_bidi
+    def require_webdriver_bidi(self) -> Optional[bool]:
+        return self._require_webdriver_bidi
 
     def settings(self, test: Test) -> BrowserSettings:
-        """ Required to store `require_bidi` in browser settings."""
+        """ Required to store `require_webdriver_bidi` in browser settings."""
         settings = super().settings(test)
-        self._require_bidi = test.require_bidi
+        self._require_webdriver_bidi = test.require_webdriver_bidi
         return {
             **settings,
-            "require_bidi": self._require_bidi
+            "require_webdriver_bidi": self._require_webdriver_bidi
         }
 
 

@@ -3212,6 +3212,7 @@
         this.remote = remote;
         this.message_target = message_target;
         this.message_handler = function(message) {
+            console.log("Received message", message.data);
             var passesFilter = !message_filter || message_filter(message);
             // The reference to the `running` property in the following
             // condition is unnecessary because that value is only set to

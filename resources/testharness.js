@@ -360,6 +360,7 @@
      */
     function SharedWorkerTestEnvironment() {
         WorkerTestEnvironment.call(this);
+        console.log("SharedWorkerTestEnvironment() constructor")
         var this_obj = this;
         // Shared workers receive message ports via the 'onconnect' event for
         // each connection.
@@ -3934,7 +3935,7 @@
      * RemoteContext
      */
     function begin_shadow_realm_tests(postMessage) {
-        log("called begin_shadow_realm_tests")
+        console.log("called begin_shadow_realm_tests")
         if (!(test_environment instanceof ShadowRealmTestEnvironment)) {
             throw new Error("begin_shadow_realm_tests called in non-Shadow Realm environment");
         }
@@ -4840,6 +4841,8 @@
 
         addEventListener("unhandledrejection", function(e) {
             var message;
+            console.log(e)
+            console.log(e.reason)
             if (e.reason && e.reason.message) {
                 message = "Unhandled rejection: " + e.reason.message;
             } else {

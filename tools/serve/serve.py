@@ -648,6 +648,7 @@ done();
 class ShadowRealmWorkerWrapperHandler(BaseWorkerHandler):
     path_replace = [(".any.worker-shadowrealm.js", ".any.js")]
     wrapper = """%(meta)s
+importScripts("/resources/testharness.js");
 """ + fetch_json_shadow_realm_adaptor_js_code + """
 const r = new ShadowRealm();
 r.evaluate(`

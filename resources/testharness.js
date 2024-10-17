@@ -360,13 +360,26 @@
      */
     function SharedWorkerTestEnvironment() {
         WorkerTestEnvironment.call(this);
-        console.log("SharedWorkerTestEnvironment() constructor")
+        globalThis.PENDING_MESSAGES = [];
+        globalThis.DEBUG_LOG = function(msg) {
+            if (globalThis.DEBUG_PORT) {
+                globalThis.DEBUG_PORT.postMessage(msg);
+            } else {
+                globalThis.PENDING_MESSAGES.push(msg)
+            }
+        }
+        DEBUG_LOG("SharedWorkerTestEnvironment() constructor")
         var this_obj = this;
         // Shared workers receive message ports via the 'onconnect' event for
         // each connection.
         self.addEventListener("connect",
                 function(message_event) {
+                    DEBUG_LOG("connect event");
                     this_obj._add_message_port(message_event.source);
+                    globalThis.DEBUG_PORT = message_event.source;
+                    for (const msg of globalThis.PENDING_MESSAGES) {
+                        globalThis.DEBUG_PORT.postMessage(msg);
+                    }
                 }, false);
     }
     SharedWorkerTestEnvironment.prototype = Object.create(WorkerTestEnvironment.prototype);

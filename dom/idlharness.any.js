@@ -1,4 +1,6 @@
 // META: global=worker,shadowrealm
+// META: script=/resources/WebIDLParser.js
+// META: script=/resources/idlharness.js
 // META: timeout=long
 
 // Note: This test doesn't cover the Window context, see idlharness.window.js
@@ -6,6 +8,7 @@
 
 'use strict';
 
+// This does not work yet, "unhandled rejection"
 /*
 idl_test(
   ['dom'],

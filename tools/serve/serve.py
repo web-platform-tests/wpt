@@ -664,7 +664,7 @@ new Promise(r.evaluate(`
 }
 `)).then(() => {
   function forwardMessage(msgJSON) {
-    postMessage(JSON.parse(msgJSON))
+    globalThis.DEBUG_LOG(JSON.parse(msgJSON))
   }
   r.evaluate('begin_shadow_realm_tests')(forwardMessage);
 });

@@ -1,7 +1,8 @@
-onconnect = function(e) {
-  try {
-  e.source.postMessage("START")
-  console.log = msg => e.source.postMessage(msg)
+importScripts("/resources/testharness.js");
+debugger;
+try {
+  DEBUG_PORT.postMessage("START")
+  console.log = msg => DEBUG_PORT.postMessage(msg)
   console.log("Starting SharedWorker")
 
   const fetchAdaptor = (resource) => (resolve, reject) =>
@@ -77,4 +78,3 @@ onconnect = function(e) {
   } catch (e) {
     console.log(e)
   }
-}

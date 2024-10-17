@@ -3824,12 +3824,15 @@
         var message_port;
 
         if (is_service_worker(worker)) {
+            console.log("is_service_worker")
             message_port = navigator.serviceWorker;
             worker.postMessage({type: "connect"});
         } else if (is_shared_worker(worker)) {
+            console.log("is_shared_worker")
             message_port = worker.port;
             message_port.start();
         } else {
+            console.log("neither")
             message_port = worker;
         }
 
@@ -3852,9 +3855,11 @@
 
     Tests.prototype.fetch_tests_from_worker = function(worker) {
         if (this.phase >= this.phases.COMPLETE) {
+            console.log("Already done")
             return;
         }
 
+        console.log("create_remote_worker")
         var remoteContext = this.create_remote_worker(worker);
         this.pending_remotes.push(remoteContext);
         return remoteContext.done;
@@ -3928,6 +3933,7 @@
      * RemoteContext
      */
     function begin_shadow_realm_tests(postMessage) {
+        log("called begin_shadow_realm_tests")
         if (!(test_environment instanceof ShadowRealmTestEnvironment)) {
             throw new Error("begin_shadow_realm_tests called in non-Shadow Realm environment");
         }
@@ -3935,6 +3941,7 @@
         test_environment.begin(function (msg) {
             postMessage(JSON.stringify(msg));
         });
+
     }
     expose(begin_shadow_realm_tests, 'begin_shadow_realm_tests');
 

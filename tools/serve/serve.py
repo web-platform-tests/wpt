@@ -442,7 +442,7 @@ function setShadowRealmGlobalProperties(queryString, fetchAdaptor) {
 
   // Remove definition of .self in future; should already be provided
   // according to https://github.com/whatwg/html/pull/9893
-  globalThis.self = globalThis;    
+  globalThis.self = globalThis;
 }
 setShadowRealmGlobalProperties
 """
@@ -472,7 +472,7 @@ class ShadowRealmInWindowHandler(HtmlWrapperHandler):
   `)(location.search, fetchAdaptor);
   await new Promise(r.evaluate(`
     (resolve, reject) => {
-      (async () => {
+      return (async () => {
         await import("/resources/testharness.js");
         %(script)s
         await import("%(path)s");
@@ -515,7 +515,7 @@ class ShadowRealmInShadowRealmHandler(HtmlWrapperHandler):
 
   const testExecutor = `
   (resolve, reject) => {
-    (async () => {
+    return (async () => {
       await import("/resources/testharness.js");
       %(script)s
       await import("%(path)s");
@@ -655,7 +655,7 @@ r.evaluate(`
 `)("%(query)s", fetchAdaptor);
 new Promise(r.evaluate(`
   (resolve, reject) => {
-    (async () => {
+    return (async () => {
     await import("/resources/testharness.js");
     %(script)s
     await import("%(path)s");
@@ -691,7 +691,7 @@ class TestRunner extends AudioWorkletProcessor {
 
     new Promise(r.evaluate(`
       (resolve, reject) => {
-        (async () => {
+        return (async () => {
           await import("/resources/testharness.js");
           %(script)s
           await import("%(path)s");

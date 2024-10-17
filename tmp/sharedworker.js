@@ -46,8 +46,8 @@ console.log(`evaluated first block result = ${result}`)
 
 const promise_creator = r.evaluate(`
 (resolve, reject) => {
-  log("Creating promise")
-  return (async () => {
+  log("Creating promise");
+  (async () => {
     log("Will import")
     await import("/resources/testharness.js");
     await import("/dom/idlharness.any.js");

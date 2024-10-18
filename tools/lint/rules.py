@@ -180,6 +180,11 @@ class MissingTestharnessReport(Rule):
     """
 
 
+class TestharnessReportInUnsupportedType(Rule):
+    name = "TESTHARNESSREPORT-IN-UNSUPPORTED-TYPE"
+    description = "testharnessreport.js included in a %s test"
+
+
 class MultipleTestharnessReport(Rule):
     name = "MULTIPLE-TESTHARNESSREPORT"
     description = "More than one `<script src='/resources/testharnessreport.js'>`"

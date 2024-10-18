@@ -10,11 +10,11 @@ on:
       safari-technology-preview:
         description: "Run Safari Technology Preview rather than the system Safari"
         required: true
-        type: bool
+        type: boolean
       safaridriver-diagnose:
         description: "Run safaridriver capturing diagnostics"
         required: true
-        type: bool
+        type: boolean
 
 # We never interact with the GitHub API, thus we can simply disable all
 # permissions the GitHub token would have.

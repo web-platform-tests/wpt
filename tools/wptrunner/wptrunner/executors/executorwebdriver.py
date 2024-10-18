@@ -803,7 +803,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             protocol.loop.run_until_complete(protocol.bidi_events.unsubscribe_all())
 
         # Now start the test harness
-        test_window = self.get_test_window(protocol)
+        test_window = self.get_or_create_test_window(protocol)
         self.protocol.base.set_window(test_window)
         # Wait until about:blank has been loaded
         protocol.base.execute_script(self.window_loaded_script, asynchronous=True)
@@ -909,7 +909,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
 
         return rv, extra
 
-    def get_test_window(self, protocol):
+    def get_or_create_test_window(self, protocol):
         return protocol.base.create_window()
 
     def _get_next_message_classic(self, protocol, url, _):

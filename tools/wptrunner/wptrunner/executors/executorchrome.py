@@ -215,7 +215,7 @@ class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor, _SanitizerMi
         super().__init__(*args, **kwargs)
         self.protocol.reuse_window = reuse_window
 
-    def get_test_window(self, protocol):
+    def get_or_create_test_window(self, protocol):
         if protocol.reuse_window and self.protocol.testharness.test_window:
             # Mimic the "new window" WebDriver command by loading `about:blank`
             # with no other browsing history.
@@ -223,7 +223,7 @@ class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor, _SanitizerMi
             protocol.base.load("about:blank")
             protocol.cdp.execute_cdp_command("Page.resetNavigationHistory")
         else:
-            self.protocol.testharness.test_window = super().get_test_window(protocol)
+            self.protocol.testharness.test_window = super().get_or_create_test_window(protocol)
         return self.protocol.testharness.test_window
 
     def _get_next_message_classic(self, protocol, url, test_window):

@@ -80,33 +80,7 @@ class ChromeDriverTestharnessProtocolPart(WebDriverTestharnessProtocolPart):
     The main difference from the default WebDriver testharness implementation is
     that the test window can be reused between tests for better performance.
     """
-
-    def setup(self):
-        super().setup()
-        # Handle (an alphanumeric string) that may be set if window reuse is
-        # enabled. This state allows the protocol to distinguish the test
-        # window from other windows a test itself may create that the "Get
-        # Window Handles" command also returns.
-        #
-        # Because test window persistence is a Chrome-only feature, it's not
-        # exposed to the base WebDriver testharness executor.
-        self.test_window = None
-        self.reuse_window = self.parent.reuse_window
-
-    def close_old_windows(self):
-        self.webdriver.actions.release()
-        for handle in self.webdriver.handles:
-            if handle not in {self.runner_handle, self.test_window}:
-                self._close_window(handle)
-        if not self.reuse_window and self.test_window:
-            self._close_window(self.test_window)
-            self.test_window = None
-        self.webdriver.window_handle = self.runner_handle
-        self._reset_browser_state()
-        return self.runner_handle
-
-    def _reset_browser_state(self):
-        """Reset browser-wide state that normally persists between tests."""
+    def reset_browser_state(self):
         # TODO(web-platform-tests/wpt#48078): Find a cross-vendor way to clear
         # cookies for all domains.
         self.parent.cdp.execute_cdp_command("Network.clearBrowserCookies")
@@ -165,7 +139,6 @@ class ChromeDriverProtocol(WebDriverProtocol):
         if base_part.name not in {part.name for part in implements}:
             implements.append(base_part)
 
-    reuse_window = False
     # Prefix to apply to vendor-specific WebDriver extension commands.
     vendor_prefix = "goog"
 
@@ -213,18 +186,24 @@ class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor, _SanitizerMi
 
     def __init__(self, *args, reuse_window=False, **kwargs):
         super().__init__(*args, **kwargs)
-        self.protocol.reuse_window = reuse_window
+        self.reuse_window = reuse_window
 
     def get_or_create_test_window(self, protocol):
-        if protocol.reuse_window and self.protocol.testharness.test_window:
-            # Mimic the "new window" WebDriver command by loading `about:blank`
-            # with no other browsing history.
-            protocol.base.set_window(self.protocol.testharness.test_window)
-            protocol.base.load("about:blank")
-            protocol.cdp.execute_cdp_command("Page.resetNavigationHistory")
-        else:
-            self.protocol.testharness.test_window = super().get_or_create_test_window(protocol)
-        return self.protocol.testharness.test_window
+        test_window = self.protocol.testharness.persistent_test_window
+        if test_window:
+            try:
+                # Mimic the "new window" WebDriver command by loading `about:blank`
+                # with no other browsing history.
+                protocol.base.set_window(test_window)
+                protocol.base.load("about:blank")
+                protocol.cdp.execute_cdp_command("Page.resetNavigationHistory")
+            except error.NoSuchWindowException:
+                test_window = self.protocol.testharness.persistent_test_window = None
+        if not test_window:
+            test_window = super().get_or_create_test_window(protocol)
+        if self.reuse_window:
+            self.protocol.testharness.persistent_test_window = test_window
+        return test_window
 
     def _get_next_message_classic(self, protocol, url, test_window):
         try:

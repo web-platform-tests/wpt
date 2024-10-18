@@ -227,6 +227,7 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
         self.runner_handle = None
+        self.persistent_test_window = None
         with open(os.path.join(here, "runner.js")) as f:
             self.runner_script = f.read()
 
@@ -244,10 +245,11 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
 
     def close_old_windows(self):
         self.webdriver.actions.release()
-        handles = [item for item in self.webdriver.handles if item != self.runner_handle]
-        for handle in handles:
-            self._close_window(handle)
+        for handle in self.webdriver.handles:
+            if handle not in {self.runner_handle, self.persistent_test_window}:
+                self._close_window(handle)
         self.webdriver.window_handle = self.runner_handle
+        self.reset_browser_state()
         return self.runner_handle
 
     def _close_window(self, window_handle):
@@ -256,6 +258,9 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
             self.webdriver.window.close()
         except webdriver_error.NoSuchWindowException:
             pass
+
+    def reset_browser_state(self):
+        """Reset browser-wide state that normally persists between tests."""
 
 
 class WebDriverPrintProtocolPart(PrintProtocolPart):

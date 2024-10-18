@@ -1,0 +1,48 @@
+name: '.github schema check'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/dependabot.yml'
+      - '.github/actions/*/action.yml'
+      - '.github/workflows/*.yml'
+  pull_request:
+    paths:
+      - '.github/dependabot.yml'
+      - '.github/actions/*/action.yml'
+      - '.github/workflows/*.yml'
+
+jobs:
+  github-schemas:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.1
+        with:
+          fetch-depth: 1
+
+      - name: '.github/dependabot.yml'
+        if: ${{ hashFiles('.github/dependabot.yml') != '' }}
+        uses: cardinalby/schema-validator-action@v3
+        with:
+          file: '.github/dependabot.yml'
+          schema: 'https://json.schemastore.org/dependabot-2.0.json'
+          mode: 'lax'  # We really just want allowUnusedKeywords: true
+
+      - name: '.github/actions'
+        if: ${{ hashFiles('.github/actions/*/action.yml') != '' }}
+        uses: cardinalby/schema-validator-action@v3
+        with:
+          file: '.github/actions/*/action.yml'
+          schema: 'https://json.schemastore.org/github-action.json'
+
+      - name: '.github/workflows'
+        if: ${{ hashFiles('.github/workflows/*.yml') != '' }}
+        uses: cardinalby/schema-validator-action@v3
+        with:
+          file: '.github/workflows/*.yml'
+          schema: 'https://json.schemastore.org/github-workflow.json'
+          mode: 'lax'  # https://github.com/SchemaStore/schemastore/issues/3102

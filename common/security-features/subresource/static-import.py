@@ -15,7 +15,7 @@ def get_csp_value(value):
     # Test-related scripts like testharness.js and inline scripts containing
     # test bodies.
     # 'unsafe-inline' is added as a workaround here. This is probably not so
-    # bad, as it shouldn't intefere non-inline-script requests that we want to
+    # bad, as it shouldn't interfere non-inline-script requests that we want to
     # test.
     if value == 'script-src-wildcard':
         return "script-src * 'unsafe-inline'"

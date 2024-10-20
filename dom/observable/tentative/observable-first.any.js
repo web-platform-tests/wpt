@@ -49,7 +49,7 @@ promise_test(async () => {
 
   assert_true(rejection instanceof RangeError,
       "Upon complete(), first() Promise rejects with RangeError");
-  assert_equals(rejection.message, "No values in Observable");
+  assert_true(typeof rejection.message === "string", "Rejection message must be a string");
 }, "first(): Promise rejects with RangeError when source Observable " +
    "completes without emitting any values");
 

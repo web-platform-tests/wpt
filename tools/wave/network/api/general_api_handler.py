@@ -1,4 +1,5 @@
-# mypy: allow-untyped-defs
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from .api_handler import ApiHandler
 
@@ -16,7 +17,7 @@ class GeneralApiHandler(ApiHandler):
         test_type_selection_enabled,
         test_file_selection_enabled
     ):
-        super().__init__(web_root)
+        super(GeneralApiHandler, self).__init__(web_root)
         self.read_sessions_enabled = read_sessions_enabled
         self.import_results_enabled = import_results_enabled
         self.reports_enabled = reports_enabled

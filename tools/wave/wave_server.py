@@ -1,5 +1,4 @@
-# mypy: allow-untyped-defs
-
+from __future__ import unicode_literals
 import os
 import logging
 
@@ -23,7 +22,7 @@ from .testing.event_dispatcher import EventDispatcher
 VERSION_STRING = "v3.3.0"
 
 
-class WaveServer:
+class WaveServer(object):
     def initialize(self,
                    tests,
                    configuration_file_path=None,

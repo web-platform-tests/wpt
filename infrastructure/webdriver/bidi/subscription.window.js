@@ -1,6 +1,6 @@
 // META: title=Test console log are present
-// META: require_webdriver_bidi=true
-// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-bidi.js
+// META: script=/resources/testdriver-vendor.js
 
 'use strict';
 

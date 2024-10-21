@@ -294,8 +294,8 @@ def test_update_from_json_modified():
     # Reload it from JSON
     m = manifest.Manifest.from_json("/", json_str)
 
-    # Update timeout, pac and require_webdriver_bidi
-    s2 = SourceFileWithTest("test1", "1"*40, item.TestharnessTest, timeout="long", pac="proxy.pac", require_webdriver_bidi="true")
+    # Update timeout, pac and testdriver_bidi
+    s2 = SourceFileWithTest("test1", "1"*40, item.TestharnessTest, timeout="long", pac="proxy.pac", testdriver_bidi=True)
     tree, sourcefile_mock = tree_and_sourcefile_mocks([(s2, None, True)])
     with mock.patch("tools.manifest.manifest.SourceFile", side_effect=sourcefile_mock):
         m.update(tree)
@@ -303,7 +303,7 @@ def test_update_from_json_modified():
     assert json_str == {
         'items': {'testharness': {'test1': [
             "1"*40,
-            (None, {'timeout': 'long', 'pac': 'proxy.pac', 'require_webdriver_bidi': 'true'})
+            (None, {'timeout': 'long', 'pac': 'proxy.pac', 'testdriver_bidi': True})
         ]}},
         'url_base': '/',
         'version': 8

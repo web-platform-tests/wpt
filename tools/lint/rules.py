@@ -152,24 +152,6 @@ class InvalidTimeout(Rule):
     to_fix = "replace the value of the `content` attribute with `long`"
 
 
-class MultipleRequireBidi(Rule):
-    name = "MULTIPLE-REQUIRE-WEBDRIVER-BIDI"
-    description = "More than one meta name='require_webdriver_bidi'"
-    to_fix = """
-        ensure each test file has only one instance of a `<meta
-        name="require_webdriver_bidi"...>` element
-    """
-
-
-class InvalidRequireBidi(Rule):
-    name = "INVALID-REQUIRE-WEBDRIVER-BIDI"
-    description = collapse("""
-        Test file with `<meta name='require_webdriver_bidi'...>` element that has a `content`
-        attribute whose value is not a boolean: %s
-    """)
-    to_fix = "replace the value of the `content` attribute with `true` or `false`"
-
-
 class MultipleTestharness(Rule):
     name = "MULTIPLE-TESTHARNESS"
     description = "More than one `<script src='/resources/testharness.js'>`"
@@ -265,6 +247,18 @@ class EarlyTestdriverVendor(Rule):
 class MultipleTestdriver(Rule):
     name = "MULTIPLE-TESTDRIVER"
     description = "More than one `<script src='/resources/testdriver.js'>`"
+
+
+class MultipleTestdriverBidi(Rule):
+    name = "MULTIPLE-TESTDRIVER-BIDI"
+    description = "More than one `<script src='/resources/testdriver-bidi.js'>`"
+
+
+class TestdriverAndTestdriverBidi(Rule):
+    name = "TESTDRIVER-AND-TESTDRIVER-BIDI"
+    description = ("The `<script src='/resources/testdriver.js'>` and "
+                   "`<script src='/resources/testdriver-bidi.js'>` are mutually "
+                   "exclusive")
 
 
 class MissingTestdriverVendor(Rule):

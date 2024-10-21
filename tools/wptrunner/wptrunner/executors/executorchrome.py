@@ -207,9 +207,9 @@ class ChromeDriverRefTestExecutor(WebDriverRefTestExecutor, _SanitizerMixin):  #
 class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor,
                                       _SanitizerMixin):  # type: ignore
     def __init__(self, *args, reuse_window=False, **kwargs):
-        require_webdriver_bidi = kwargs.get("browser_settings", {}).get("require_webdriver_bidi",
-                                                              None)
-        if require_webdriver_bidi == 'true':
+        testdriver_bidi = kwargs.get("browser_settings", {}).get("testdriver_bidi",
+                                                              False)
+        if testdriver_bidi:
             self.protocol_cls = ChromeDriverBidiProtocol
         else:
             self.protocol_cls = ChromeDriverProtocol

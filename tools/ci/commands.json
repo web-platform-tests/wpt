@@ -24,8 +24,8 @@
   },
   "regen-certs": {
     "path": "regen_certs.py",
-    "script": "run",
-    "parser": "get_parser",
+    "script": "run_regen",
+    "parser": "get_parser_regen",
     "help": "Regenerate the WPT certificates",
     "virtualenv": false
   },

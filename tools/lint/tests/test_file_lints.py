@@ -562,6 +562,12 @@ def test_testdriver_path():
             expected.append(("PARSE-FAILED", "Unable to parse file", filename, 1))
         elif kind in ["web-lax", "web-strict"]:
             expected.extend([
+                (
+                    "TESTDRIVER-VENDOR-WITHOUT-TESTDRIVER",
+                    "File contains `<script src='/resources/testdriver-vendor.js'>` but not `testdriver.js`",
+                    filename,
+                    None,
+                ),
                 ("TESTDRIVER-PATH", "testdriver.js script seen with incorrect path", filename, None),
                 ("TESTDRIVER-PATH", "testdriver.js script seen with incorrect path", filename, None),
                 ("TESTDRIVER-PATH", "testdriver.js script seen with incorrect path", filename, None),

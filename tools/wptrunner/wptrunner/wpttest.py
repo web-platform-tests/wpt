@@ -481,12 +481,13 @@ class TestharnessTest(Test):
     test_type = "testharness"
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata,
-                 timeout=None, path=None, protocol="http", testdriver=False,
+                 timeout=None, path=None, protocol="http", testdriver=False, testdriver_bidi=False,
                  jsshell=False, scripts=None, subdomain=False, pac=None):
         Test.__init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, timeout,
                       path, protocol, subdomain, pac)
 
         self.testdriver = testdriver
+        self.testdriver_bidi = testdriver_bidi
         self.jsshell = jsshell
         self.scripts = scripts or []
 
@@ -495,6 +496,7 @@ class TestharnessTest(Test):
         timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
         pac = manifest_item.pac
         testdriver = manifest_item.testdriver if hasattr(manifest_item, "testdriver") else False
+        testdriver_bidi = manifest_item.testdriver_bidi if hasattr(manifest_item, "testdriver_bidi") else False
         jsshell = manifest_item.jsshell if hasattr(manifest_item, "jsshell") else False
         script_metadata = manifest_item.script_metadata or []
         scripts = [v for (k, v) in script_metadata
@@ -509,6 +511,7 @@ class TestharnessTest(Test):
                    path=os.path.join(manifest_file.tests_root, manifest_item.path),
                    protocol=server_protocol(manifest_item),
                    testdriver=testdriver,
+                   testdriver_bidi=testdriver_bidi,
                    jsshell=jsshell,
                    scripts=scripts,
                    subdomain=manifest_item.subdomain)

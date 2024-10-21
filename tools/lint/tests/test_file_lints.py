@@ -383,13 +383,42 @@ def test_testdriver_in_unsupported():
             ]
 
 
-def test_early_testdriver_vendor():
+def test_testdriver_vendor_prior_testdriver():
     code = b"""
 <html xmlns="http://www.w3.org/1999/xhtml">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind in ["web-lax", "web-strict"]:
+            assert errors == [
+                ("EARLY-TESTDRIVER-VENDOR",
+                    "Test file has an instance of "
+                    "`<script src='/resources/testdriver-vendor.js'>` "
+                    "prior to `<script src='/resources/testdriver.js'>`",
+                    filename,
+                    None),
+            ]
+        elif kind == "python":
+            assert errors == [
+                ("PARSE-FAILED", "Unable to parse file", filename, 2),
+            ]
+
+
+def test_testdriver_vendor_prior_testdriver_bidi():
+    code = b"""
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-bidi.js"></script>
 </html>
 """
     error_map = check_with_files(code)
@@ -430,6 +459,56 @@ def test_multiple_testdriver():
         if kind in ["web-lax", "web-strict"]:
             assert errors == [
                 ("MULTIPLE-TESTDRIVER", "More than one `<script src='/resources/testdriver.js'>`", filename, None),
+            ]
+        elif kind == "python":
+            assert errors == [
+                ("PARSE-FAILED", "Unable to parse file", filename, 2),
+            ]
+
+
+def test_multiple_testdriver_bidi():
+    code = b"""
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver-bidi.js"></script>
+<script src="/resources/testdriver-bidi.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind in ["web-lax", "web-strict"]:
+            assert errors == [
+                ("MULTIPLE-TESTDRIVER-BIDI", "More than one `<script src='/resources/testdriver-bidi.js'>`", filename, None),
+            ]
+        elif kind == "python":
+            assert errors == [
+                ("PARSE-FAILED", "Unable to parse file", filename, 2),
+            ]
+
+
+def test_testdriver_and_testdriver_bidi():
+    code = b"""
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-bidi.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind in ["web-lax", "web-strict"]:
+            assert errors == [
+                ("TESTDRIVER-AND-TESTDRIVER-BIDI", "The `<script src='/resources/testdriver.js'>` and `<script src='/resources/testdriver-bidi.js'>` are mutually exclusive", filename, None),
             ]
         elif kind == "python":
             assert errors == [

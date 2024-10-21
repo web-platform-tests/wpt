@@ -474,12 +474,18 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
                                  if value)
 
     testdriver_vendor_nodes: List[ElementTree.Element] = []
-    if source_file.testdriver_nodes:
+    if source_file.testdriver_nodes or source_file.testdriver_bidi_nodes:
         if test_type != "testharness":
             errors.append(rules.TestdriverInUnsupportedType.error(path, (test_type,)))
 
         if len(source_file.testdriver_nodes) > 1:
             errors.append(rules.MultipleTestdriver.error(path))
+
+        if len(source_file.testdriver_bidi_nodes) > 1:
+            errors.append(rules.MultipleTestdriverBidi.error(path))
+
+        if (len(source_file.testdriver_nodes) > 0) and (len(source_file.testdriver_bidi_nodes) > 0):
+            errors.append(rules.TestdriverAndTestdriverBidi.error(path))
 
         testdriver_vendor_nodes = source_file.root.findall(".//{http://www.w3.org/1999/xhtml}script[@src='/resources/testdriver-vendor.js']")
         if not testdriver_vendor_nodes:
@@ -512,9 +518,12 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
             elif source_file.testdriver_nodes and elem == source_file.testdriver_nodes[0]:
                 seen_elements["testdriver"] = True
 
+            elif source_file.testdriver_bidi_nodes and elem == source_file.testdriver_bidi_nodes[0]:
+                seen_elements["testdriver-bidi"] = True
+
             elif testdriver_vendor_nodes and elem == testdriver_vendor_nodes[0]:
                 seen_elements["testdriver-vendor"] = True
-                if not seen_elements["testdriver"]:
+                if not seen_elements["testdriver"] and  not seen_elements["testdriver-bidi"]:
                     errors.append(rules.EarlyTestdriverVendor.error(path))
 
             if all(seen_elements[name] for name in required_elements):

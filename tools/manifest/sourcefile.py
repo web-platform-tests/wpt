@@ -715,6 +715,31 @@ class SourceFile:
         return bool(self.testdriver_nodes)
 
     @cached_property
+    def testdriver_bidi_nodes(self) -> List[ElementTree.Element]:
+        """List of ElementTree Elements corresponding to nodes in a test that
+        specify timeouts"""
+        assert self.root is not None
+        return self.root.findall(
+            ".//{http://www.w3.org/1999/xhtml}script[@src='/resources/testdriver-bidi.js']")
+
+    @cached_property
+    def testdriver_bidi(self) -> bool:
+        """Flag indicating if BiDi functionality is required for the given test"""
+        if self.script_metadata:
+            for (meta, content) in self.script_metadata:
+                if meta == 'script':
+                    if content == '/resources/testdriver-bidi.js':
+                        return True
+
+        if self.root is None:
+            return False
+
+        if self.testdriver_bidi_nodes:
+            return bool(self.testdriver_bidi_nodes)
+
+        return False
+
+    @cached_property
     def reftest_nodes(self) -> List[ElementTree.Element]:
         """List of ElementTree Elements corresponding to nodes representing a
         to a reftest <link>"""
@@ -965,6 +990,7 @@ class SourceFile:
                     global_variant_url(self.rel_url, suffix) + variant,
                     timeout=self.timeout,
                     pac=self.pac,
+                    testdriver_bidi=self.testdriver_bidi,
                     jsshell=jsshell,
                     script_metadata=self.script_metadata
                 )
@@ -983,6 +1009,7 @@ class SourceFile:
                     test_url + variant,
                     timeout=self.timeout,
                     pac=self.pac,
+                    testdriver_bidi=self.testdriver_bidi,
                     script_metadata=self.script_metadata
                 )
                 for variant in self.test_variants
@@ -999,6 +1026,7 @@ class SourceFile:
                     test_url + variant,
                     timeout=self.timeout,
                     pac=self.pac,
+                    testdriver_bidi=self.testdriver_bidi,
                     script_metadata=self.script_metadata
                 )
                 for variant in self.test_variants
@@ -1027,6 +1055,7 @@ class SourceFile:
                     timeout=self.timeout,
                     pac=self.pac,
                     testdriver=testdriver,
+                    testdriver_bidi=self.testdriver_bidi,
                     script_metadata=self.script_metadata
                 ))
 

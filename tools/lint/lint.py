@@ -385,9 +385,6 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
             not source_file.spec_links):
             return [rules.MissingLink.error(path)]
 
-    if source_file.name_is_non_test:
-        return []
-
     if source_file.markup_type is None:
         return []
 
@@ -456,13 +453,16 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
 
     testharnessreport_nodes: List[ElementTree.Element] = []
     if source_file.testharness_nodes:
-        if test_type not in ("testharness", "manual"):
+        if test_type not in ("testharness", "manual", "support"):
             errors.append(rules.TestharnessInOtherType.error(path, (test_type,)))
         if len(source_file.testharness_nodes) > 1:
             errors.append(rules.MultipleTestharness.error(path))
 
         testharnessreport_nodes = source_file.root.findall(".//{http://www.w3.org/1999/xhtml}script[@src='/resources/testharnessreport.js']")
-        if not testharnessreport_nodes:
+        if test_type == "support":
+            if testharnessreport_nodes:
+                errors.append(rules.TestharnessReportInUnsupportedType.error(path, (test_type,)))
+        elif not testharnessreport_nodes:
             errors.append(rules.MissingTestharnessReport.error(path))
         else:
             if len(testharnessreport_nodes) > 1:
@@ -475,7 +475,7 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
 
     testdriver_vendor_nodes: List[ElementTree.Element] = []
     if source_file.testdriver_nodes:
-        if test_type != "testharness":
+        if test_type not in ("testharness", "support"):
             errors.append(rules.TestdriverInUnsupportedType.error(path, (test_type,)))
 
         if len(source_file.testdriver_nodes) > 1:

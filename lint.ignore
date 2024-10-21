@@ -75,6 +75,12 @@ AHEM COPY: fonts/Ahem.ttf
 # None of these are actually Ahem
 AHEM COPY: fonts/ahem-extra/AHEM_*.TTF
 
+## Ignore the testharness.js unit tests
+INVALID-TIMEOUT: resources/test/*
+TESTHARNESS-PATH: resources/test/*
+TESTHARNESSREPORT-IN-UNSUPPORTED-TYPE: resources/test/*
+TESTHARNESSREPORT-PATH: resources/test/*
+
 ## Test exclusions ##
 
 # Intentional use of CRLF
@@ -137,6 +143,12 @@ PARSE-FAILED: dom/nodes/Document-createElement-namespace-tests/minimal_html.svg
 PARSE-FAILED: dom/nodes/Document-createElement-namespace-tests/minimal_html.xhtml
 PARSE-FAILED: dom/nodes/Document-createElement-namespace-tests/minimal_html.xml
 PARSE-FAILED: custom-elements/xhtml-crash.xhtml
+
+# Files that don't parse because UTF-32 support is gone
+PARSE-FAILED: encoding/resources/utf-32-little-endian-nobom.xml
+PARSE-FAILED: encoding/resources/utf-32-little-endian-bom.xml
+PARSE-FAILED: encoding/resources/utf-32-big-endian-nobom.xml
+PARSE-FAILED: encoding/resources/utf-32-big-endian-bom.xml
 
 # setTimeout usage (should probably mostly be fixed)
 SET TIMEOUT: *-manual.*
@@ -461,6 +473,18 @@ INDENT TABS: css/mediaqueries/*
 INDENT TABS: css/selectors/*
 INDENT TABS: css/WOFF2/*
 
+## Templates can deal with certain things being wrong; we only care about the output
+INVALID-TIMEOUT: */templates/*
+NON-EXISTENT-REF: */*-template.html
+NON-EXISTENT-REF: */templates/*
+NON-EXISTENT-REF: css/css-images/tools/template-object-fit-test.html
+NON-EXISTENT-REF: css/css-images/tools/template-object-position-test.html
+REFERENCE-IN-OTHER-TYPE: */*-template.html
+REFERENCE-IN-OTHER-TYPE: */templates/*
+REFERENCE-IN-OTHER-TYPE: css/css-images/tools/template-object-fit-test.html
+REFERENCE-IN-OTHER-TYPE: css/css-images/tools/template-object-position-test.html
+TESTHARNESSREPORT-IN-UNSUPPORTED-TYPE: */templates/*
+TESTHARNESSREPORT-IN-UNSUPPORTED-TYPE: css/css-writing-modes/tools/generators/template.html
 
 ## Things we're stopping from getting worse
 CONSOLE: css/css-shapes/shape-outside/supported-shapes/support/test-utils.js
@@ -817,3 +841,12 @@ TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/change-shipping-option-manual.ht
 TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/payment-request-event-manual.https.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/supports-shipping-contact-delegation-manual.https.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: shadow-dom/crashtests/move-to-new-tree-1343016.html
+
+# Intentional use of testharness.js with an absolute URL
+TESTHARNESS-PATH: fetch/connection-pool/resources/network-partition-checker.html
+TESTHARNESS-PATH: fetch/connection-pool/resources/network-partition-iframe-checker.html
+TESTHARNESS-PATH: fetch/connection-pool/resources/network-partition-worker-checker.html
+
+# View Transitions tests include references relative to the original test URL
+NON-EXISTENT-REF: css/css-view-transitions/navigation/resources/*
+REFERENCE-IN-OTHER-TYPE: css/css-view-transitions/navigation/resources/*

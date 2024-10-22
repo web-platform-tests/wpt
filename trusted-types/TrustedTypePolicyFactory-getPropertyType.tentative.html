@@ -2,6 +2,7 @@
 <script src="/resources/testharness.js" ></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/helper.sub.js"></script>
+<script src="support/namespaces.js"></script>
 
 <body>
 <div id="target"></div>
@@ -95,5 +96,26 @@
     assert_equals(trustedTypes.getAttributeType("script", "Src"), "TrustedScriptURL");
     assert_equals(trustedTypes.getAttributeType("script", "ſrc"), null);
   }, "ASCII case-insensitivity of tag name and attribute parameters");
+
+  test(t => {
+    NSURI_ARRAY.forEach(elementNs => {
+      const emptyOrHTML = (elementNs === NSURI_EMPTY || elementNs === NSURI_HTML);
+      assert_equals(trustedTypes.getPropertyType("iframe", "srcdoc", elementNs),
+                    emptyOrHTML ? "TrustedHTML" : null);
+      assert_equals(trustedTypes.getPropertyType("script", "innerText", elementNs),
+                    emptyOrHTML ? "TrustedScript" : null);
+      assert_equals(trustedTypes.getPropertyType("script", "src", elementNs),
+                    emptyOrHTML ? "TrustedScriptURL" : null);
+      assert_equals(trustedTypes.getPropertyType("script", "text", elementNs),
+                    emptyOrHTML ? "TrustedScript" : null);
+      assert_equals(trustedTypes.getPropertyType("script", "textContent", elementNs),
+                    emptyOrHTML ? "TrustedScript" : null);
+      assert_equals(trustedTypes.getPropertyType("foo", "innerHTML", elementNs),
+                    "TrustedHTML");
+      assert_equals(trustedTypes.getPropertyType("foo", "outerHTML", elementNs),
+                    "TrustedHTML");
+    });
+    assert_equals(trustedTypes.getPropertyType("iframe", "srcdoc", NSURI_HTML.toUpperCase()), null, "case-sensitiveness");
+  }, "getPropertyType with an explicit elementNs parameter");
 </script>
 </body>

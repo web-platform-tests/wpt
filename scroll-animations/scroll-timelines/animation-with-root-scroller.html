@@ -44,7 +44,7 @@
 
   const scroller = document.scrollingElement;
   const timeline = new ScrollTimeline(
-      { source: scroller, orientation: 'block' });
+      { source: scroller, axis: 'block' });
   const animation = new Animation(effect, timeline);
   animation.play();
 

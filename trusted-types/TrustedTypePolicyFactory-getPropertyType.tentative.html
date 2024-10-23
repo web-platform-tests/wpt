@@ -117,5 +117,22 @@
     });
     assert_equals(trustedTypes.getPropertyType("iframe", "srcdoc", NSURI_HTML.toUpperCase()), null, "case-sensitiveness");
   }, "getPropertyType with an explicit elementNs parameter");
+
+  test(t => {
+    NSURI_ARRAY.forEach(elementNs => {
+      const emptyOrHTMLElementNs = (elementNs === NSURI_EMPTY || elementNs === NSURI_HTML);
+      NSURI_ARRAY.forEach(attrNs => {
+         const emptyAttrNs = (attrNs === NSURI_EMPTY);
+         assert_equals(trustedTypes.getAttributeType("iframe", "srcdoc", elementNs, attrNs),
+                       emptyOrHTMLElementNs && emptyAttrNs ? "TrustedHTML" : null);
+         assert_equals(trustedTypes.getAttributeType("script", "src", elementNs, attrNs),
+                       emptyOrHTMLElementNs && emptyAttrNs ? "TrustedScriptURL" : null);
+         assert_equals(trustedTypes.getAttributeType("script", "href", elementNs, attrNs),
+                       elementNs === NSURI_SVG && (emptyAttrNs || attrNs === NSURI_XLINK) ? "TrustedScriptURL" : null);
+      });
+    });
+    assert_equals(trustedTypes.getAttributeType("script", "href", NSURI_SVG.toUpperCase(), NSURI_XLINK), null, "case-sensitiveness of elementNs");
+    assert_equals(trustedTypes.getAttributeType("script", "href", NSURI_SVG, NSURI_XLINK.toUpperCase()), null, "case-sensitiveness of attrNs");
+  }, "getAttributeType with explicit elementNs and attrNs parameters");
 </script>
 </body>

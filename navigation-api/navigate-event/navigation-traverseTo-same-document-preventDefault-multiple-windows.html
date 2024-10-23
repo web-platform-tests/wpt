@@ -19,7 +19,9 @@ promise_test(async t => {
 
   navigation.onnavigate = e => e.preventDefault();
   i.contentWindow.navigation.onnavigate = t.unreached_func("navigate event should not fire in the iframe, because the traversal was cancelled in the top window");
-  await promise_rejects_dom(t, "AbortError", navigation.traverseTo(navigation.entries()[start_index].key).finished);
+  result = navigation.traverseTo(navigation.entries()[start_index].key);
+  await promise_rejects_dom(t, "AbortError", result.committed);
+  await promise_rejects_dom(t, "AbortError", result.finished);
   assert_equals(navigation.currentEntry.index, start_index + 1);
   assert_equals(i.contentWindow.navigation.currentEntry.index, 1);
 }, "navigation.traverseTo() - if a top window cancels the traversal, any iframes should not fire navigate");

@@ -134,5 +134,10 @@
     assert_equals(trustedTypes.getAttributeType("script", "href", NSURI_SVG.toUpperCase(), NSURI_XLINK), null, "case-sensitiveness of elementNs");
     assert_equals(trustedTypes.getAttributeType("script", "href", NSURI_SVG, NSURI_XLINK.toUpperCase()), null, "case-sensitiveness of attrNs");
   }, "getAttributeType with explicit elementNs and attrNs parameters");
+
+  test(t => {
+    assert_equals(trustedTypes.getAttributeType("script", "href", NSURI_SVG, NSURI_XLINK), "TrustedScriptURL", "local name 'href'");
+    assert_equals(trustedTypes.getAttributeType("script", "xlink:href", NSURI_SVG, NSURI_XLINK), null, "qualified name 'xlink:href'");
+  }, "getAttributeType with qualified attribute name");
 </script>
 </body>

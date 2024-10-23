@@ -1,0 +1,102 @@
+<!DOCTYPE HTML>
+<head>
+<meta charset="utf-8" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="../resources/autofill_helpers.js"></script>
+<script src="../resources/country-test-helpers.js"></script>
+</head>
+<body>
+<form id="test_form">
+  <h2>Delivery Address</h2>
+  <div>
+    <label for="name">Name:</label>
+    <input
+      name="shipping-name"
+      id="name"
+      type="text"
+      autocomplete="shipping name"
+    />
+  </div>
+  <div>
+    <label for="email">E-Mail:</label>
+    <input
+      name="shipping-email"
+      id="email"
+      type="email"
+      autocomplete="shipping email"
+    />
+  </div>
+  <div>
+    <label for="phone">Phone:</label>
+    <input
+      name="shipping-phone"
+      id="phone"
+      type="tel"
+      autocomplete="shipping tel"
+    />
+  </div>
+  <div>
+    <label for="street">Street:</label>
+    <input
+      name="shipping-street"
+      id="street"
+      type="text"
+      autocomplete="shipping address-line1"
+    />
+  </div>
+  <div>
+    <label for="city">City:</label>
+    <input
+      name="shipping-city"
+      id="city"
+      type="text"
+      autocomplete="shipping address-level2"
+    />
+  </div>
+  <div>
+    <label for="postalcode">Postal Code:</label>
+    <input
+      name="shipping-postalcode"
+      id="postalcode"
+      type="text"
+      autocomplete="shipping postal-code"
+    />
+  </div>
+  <div>
+    <label for="state">Province/State:</label>
+    <input
+      name="shipping-state"
+      id="state"
+      type="text"
+      autocomplete="shipping address-level1"
+    />
+  </div>
+  <div>
+    <label for="country">Country:</label>
+    <input
+      name="shipping-country"
+      id="country"
+      type="text"
+      autocomplete="shipping country"
+    />
+  </div>
+</form>
+
+<script>
+  const autofillData = {
+    "name": "Santa Claus",
+    "address": "1 Main St",
+    "city": "North Pole",
+    "postal": "H0H 0H0",
+    "state": "ON",
+    "country": "CA",
+    "tel": "132 132 1234",
+    "email": "test@test.com"
+  };
+  runTest(autofillData, "name")
+</script>
+
+</body>

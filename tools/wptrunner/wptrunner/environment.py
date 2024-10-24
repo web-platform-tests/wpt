@@ -246,7 +246,8 @@ class TestEnvironment:
             route_builder.add_static(path, format_args, content_type, route,
                                      headers=headers)
 
-        route_builder.add_handler("GET", "/resources/testdriver.js", TestdriverLoader())
+        route_builder.add_handler("GET", "/resources/testdriver.js", TestdriverLoader(False))
+        route_builder.add_handler("GET", "/resources/testdriver-bidi.js", TestdriverLoader(True))
 
         for url_base, test_root in self.test_paths.items():
             if url_base == "/":
@@ -322,14 +323,20 @@ class TestdriverLoader:
     need to pass the entire file contents to child `wptserve` processes, which
     can slow `wptserve` startup by several seconds (crbug.com/1479850).
     """
-    def __init__(self):
+    def __init__(self, require_bidi=False):
         self._handler = None
+        self._require_bidi = require_bidi
 
     def __call__(self, request, response):
         if not self._handler:
             data = b""
-            with open(os.path.join(repo_root, "resources", "testdriver.js"), "rb") as fp:
+            with open(os.path.join(repo_root, "resources", "testdriver.js"),
+                      "rb") as fp:
                 data += fp.read()
+            if self._require_bidi:
+                with open(os.path.join(repo_root, "resources",
+                                       "testdriver-bidi.js"), "rb") as fp:
+                    data += fp.read()
             with open(os.path.join(here, "testdriver-extra.js"), "rb") as fp:
                 data += fp.read()
             self._handler = StringHandler(data, "text/javascript")

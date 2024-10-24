@@ -249,6 +249,18 @@ class MultipleTestdriver(Rule):
     description = "More than one `<script src='/resources/testdriver.js'>`"
 
 
+class MultipleTestdriverBidi(Rule):
+    name = "MULTIPLE-TESTDRIVER-BIDI"
+    description = "More than one `<script src='/resources/testdriver-bidi.js'>`"
+
+
+class TestdriverAndTestdriverBidi(Rule):
+    name = "TESTDRIVER-AND-TESTDRIVER-BIDI"
+    description = ("The `<script src='/resources/testdriver.js'>` and "
+                   "`<script src='/resources/testdriver-bidi.js'>` are mutually "
+                   "exclusive")
+
+
 class MissingTestdriverVendor(Rule):
     name = "MISSING-TESTDRIVER-VENDOR"
     description = "Missing `<script src='/resources/testdriver-vendor.js'>`"

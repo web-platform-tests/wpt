@@ -6,7 +6,7 @@ import time
 from mozlog.structuredlog import StructuredLogger
 
 from . import chrome_spki_certs
-from .base import BrowserError
+from .base import BrowserError, BrowserSettings
 from .base import WebDriverBrowser, require_arg
 from .base import NullBrowser  # noqa: F401
 from .base import OutputHandler
@@ -40,6 +40,8 @@ __wptrunner__ = {"product": "chrome",
                  "env_options": "env_options",
                  "update_properties": "update_properties",
                  "timeout_multiplier": "get_timeout_multiplier",}
+
+from ..wpttest import Test
 
 
 def debug_args(debug_info):
@@ -214,6 +216,7 @@ class ChromeBrowser(WebDriverBrowser):
         super().__init__(logger, **kwargs)
         self._leak_check = leak_check
         self._actual_port = None
+        self._testdriver_bidi = False
 
     def restart_on_test_type_change(self, new_test_type: str, old_test_type: str) -> bool:
         # Restart the test runner when switch from/to wdspec tests. Wdspec test
@@ -261,6 +264,21 @@ class ChromeBrowser(WebDriverBrowser):
     def executor_browser(self):
         browser_cls, browser_kwargs = super().executor_browser()
         return browser_cls, {**browser_kwargs, "leak_check": self._leak_check}
+
+    @property
+    def testdriver_bidi(self) -> bool:
+        return self._testdriver_bidi
+
+    def settings(self, test: Test) -> BrowserSettings:
+        """ Required to store `testdriver_bidi` in browser settings."""
+        settings = super().settings(test)
+        self._testdriver_bidi = test.testdriver_bidi
+        return {
+            **settings,
+            **({
+                   "testdriver_bidi": self._testdriver_bidi
+               } if self._testdriver_bidi else {})
+        }
 
 
 class ChromeDriverOutputHandler(OutputHandler):

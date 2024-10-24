@@ -960,3 +960,33 @@ def test_page_ranges_invalid(page_ranges):
 def test_hash():
     s = SourceFile("/", "foo", "/", contents=b"Hello, World!")
     assert "b45ef6fec89518d314f546fd6c3025367b721684" == s.hash
+
+
+@pytest.mark.parametrize("testdriver_bidi", [True, False])
+@pytest.mark.parametrize("file_name", [
+    "foo/test.worker.js",
+    "foo/test.window.js",
+    "foo/test.any.js"])
+def test_meta_testdriver_bidi(testdriver_bidi, file_name):
+    if testdriver_bidi:
+        contents = f"""// META: script=/resources/testdriver-bidi.js
+            importScripts('/resources/testharness.js')
+            test()""".encode("utf-8")
+    else:
+        contents = b"""importScripts('/resources/testharness.js')
+            test()"""
+
+    source_file = create(file_name, contents)
+    assert bool(source_file.testdriver_bidi) == bool(testdriver_bidi)
+
+
+@pytest.mark.parametrize("testdriver_bidi", [True, False])
+def test_html_testdriver_bidi(testdriver_bidi):
+    if testdriver_bidi:
+        contents = f"<script src='/resources/testdriver-bidi.js'></script>".encode(
+            "utf-8")
+    else:
+        contents = b""
+
+    source_file = create("foo/test.html", contents)
+    assert bool(source_file.testdriver_bidi) == bool(testdriver_bidi)

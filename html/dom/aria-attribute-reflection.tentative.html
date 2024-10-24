@@ -34,6 +34,18 @@ test(function(t) {
 </script>
 
 <!-- tentative -->
+<div id="description" aria-description="cold as ice"></div>
+<script>
+test(function(t) {
+    var element = document.getElementById("description");
+    assert_equals(element.ariaDescription, "cold as ice");
+    element.ariaDescription = "hot as fire";
+    assert_equals(element.getAttribute("aria-description"), "hot as fire");
+    testNullable(element, "ariaDescription", "aria-description");
+}, "aria-description attribute reflects.");
+</script>
+
+<!-- tentative -->
 <div id="rowindextext" aria-rowindextext="x"></div>
 <script>
     test(function(t) {

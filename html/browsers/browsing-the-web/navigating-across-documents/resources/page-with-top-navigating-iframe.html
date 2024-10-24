@@ -15,6 +15,7 @@ function addIframe() {
 addEventListener('load', () => {
   const urlParams = new URLSearchParams(location.search);
   const parentUserGesture = urlParams.get('parent_user_gesture') === 'true';
+  test_driver.set_test_context(opener);
   if (parentUserGesture)
     test_driver.bless("Giving parent frame user activation").then(addIframe);
   else

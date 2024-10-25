@@ -8,7 +8,12 @@ import pytest
 from webdriver.transport import Response
 
 from tests.support.asserts import assert_error, assert_success
-from tests.support.helpers import is_fullscreen, is_maximized, is_wayland
+from tests.support.helpers import (
+    is_fullscreen,
+    is_maximized,
+    is_not_maximized,
+    is_wayland,
+)
 
 
 def set_window_rect(session, rect):
@@ -114,7 +119,7 @@ def test_restore_from_fullscreen(session):
 
 
 def test_restore_from_maximized(session):
-    assert not is_maximized(session)
+    assert is_not_maximized(session)
 
     original = session.window.rect
     target_rect = {
@@ -125,12 +130,12 @@ def test_restore_from_maximized(session):
     }
 
     session.window.maximize()
-    assert is_maximized(session)
+    assert is_maximized(session, original)
 
     response = set_window_rect(session, target_rect)
     value = assert_success(response, session.window.rect)
 
-    assert not is_maximized(session)
+    assert is_not_maximized(session)
     assert value == target_rect
 
 

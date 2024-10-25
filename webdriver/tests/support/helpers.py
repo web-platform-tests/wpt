@@ -1,6 +1,7 @@
 import collections
 import math
 import sys
+import os
 from urllib.parse import urlparse
 
 import webdriver
@@ -226,6 +227,12 @@ def is_maximized(session):
         # Only return true if the window is not in fullscreen mode
         not is_fullscreen(session)
     )
+
+
+def is_wayland():
+    # We don't use mozinfo.display here to make sure it also
+    # works upstream in wpt Github repo.
+    return os.environ.get("WAYLAND_DISPLAY", "") != ""
 
 
 def filter_dict(source, d):

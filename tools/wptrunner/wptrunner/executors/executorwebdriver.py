@@ -245,19 +245,21 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
 
     def close_old_windows(self):
         self.webdriver.actions.release()
-        for handle in self.webdriver.handles:
-            if handle not in {self.runner_handle, self.persistent_test_window}:
-                self._close_window(handle)
+        self.close_windows(set(self.webdriver.handles) - {
+            self.runner_handle,
+            self.persistent_test_window,
+        })
         self.webdriver.window_handle = self.runner_handle
         self.reset_browser_state()
         return self.runner_handle
 
-    def _close_window(self, window_handle):
-        try:
-            self.webdriver.window_handle = window_handle
-            self.webdriver.window.close()
-        except webdriver_error.NoSuchWindowException:
-            pass
+    def close_windows(self, window_handles):
+        for window_handle in window_handles:
+            try:
+                self.webdriver.window_handle = window_handle
+                self.webdriver.window.close()
+            except webdriver_error.NoSuchWindowException:
+                pass
 
     def reset_browser_state(self):
         """Reset browser-wide state that normally persists between tests."""
@@ -898,8 +900,19 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             protocol.loop.run_until_complete(protocol.bidi_events.unsubscribe_all())
 
         extra = {}
-        if (leak_part := getattr(protocol, "leak", None)) and (counters := leak_part.check()):
-            extra["leak_counters"] = counters
+        if leak_part := getattr(protocol, "leak", None):
+            testharness_window = protocol.base.current_window
+            extra_windows = set(protocol.base.window_handles())
+            extra_windows -= {protocol.testharness.runner_handle, testharness_window}
+            protocol.testharness.close_windows(extra_windows)
+            try:
+                protocol.base.set_window(testharness_window)
+                if counters := leak_part.check():
+                    extra["leak_counters"] = counters
+            except webdriver_error.NoSuchWindowException:
+                pass
+            finally:
+                protocol.base.set_window(protocol.testharness.runner_handle)
 
         # Attempt to clean up any leftover windows, if allowed. This is
         # preferable as it will blame the correct test if something goes wrong

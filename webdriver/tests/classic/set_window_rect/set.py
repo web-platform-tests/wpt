@@ -5,12 +5,10 @@
 
 import pytest
 
-import mozinfo
-
 from webdriver.transport import Response
 
 from tests.support.asserts import assert_error, assert_success
-from tests.support.helpers import is_fullscreen, is_maximized
+from tests.support.helpers import is_fullscreen, is_maximized, is_wayland
 
 
 def set_window_rect(session, rect):
@@ -141,7 +139,7 @@ def test_x_y_floats(session):
     value = assert_success(response)
 
     # Wayland doesn't return correct coordinates after changing window position.
-    if mozinfo.display != "wayland":
+    if not is_wayland():
         assert value["x"] == 150
         assert value["y"] == 250
 
@@ -149,7 +147,7 @@ def test_x_y_floats(session):
     value = assert_success(response, session.window.rect)
 
     # Wayland doesn't return correct coordinates after changing window position.
-    if mozinfo.display != "wayland":
+    if not is_wayland():
         assert value["x"] == 150
         assert value["y"] == 250
 
@@ -215,7 +213,7 @@ def test_set_to_available_size(
     value = assert_success(response, session.window.rect)
 
     # Wayland doesn't return correct coordinates after changing window position.
-    if mozinfo.display != "wayland":
+    if not is_wayland():
         assert value == target_rect
     else:
         target_rect["width"] == available_width
@@ -335,7 +333,7 @@ def test_x_y(session):
     assert value["height"] == original["height"]
 
     # Wayland doesn't return correct coordinates after changing window position.
-    if mozinfo.display != "wayland":
+    if not is_wayland():
         assert value["x"] == original["x"] + 10
         assert value["y"] == original["y"] + 10
 
@@ -369,7 +367,7 @@ def test_x_as_current(session):
     assert value["height"] == original["height"]
 
     # Wayland doesn't return correct coordinates after changing window position.
-    if mozinfo.display != "wayland":
+    if not is_wayland():
         assert value["x"] == original["x"]
         assert value["y"] == original["y"] + 10
 
@@ -386,7 +384,7 @@ def test_y_as_current(session):
     assert value["width"] == original["width"]
     assert value["height"] == original["height"]
     # Wayland doesn't return correct coordinates after changing window position.
-    if mozinfo.display != "wayland":
+    if not is_wayland():
         assert value["x"] == original["x"] + 10
         assert value["y"] == original["y"]
 
@@ -404,7 +402,7 @@ def test_negative_x_y(session, minimal_screen_position):
         assert value["height"] == original["height"]
 
         # Wayland doesn't return correct coordinates after changing window position.
-        if mozinfo.display != "wayland":
+        if not is_wayland():
             assert value["x"] <= 0
             assert value["y"] <= 0
 

@@ -73,12 +73,7 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
         return method(script, args=args)
 
     def set_timeout(self, timeout):
-        try:
-            self.webdriver.timeouts.script = timeout
-        except webdriver_error.WebDriverException:
-            # workaround https://bugs.chromium.org/p/chromedriver/issues/detail?id=2057
-            body = {"type": "script", "ms": timeout * 1000}
-            self.webdriver.send_session_command("POST", "timeouts", body)
+        self.webdriver.timeouts.script = timeout
 
     def create_window(self, type="tab", **kwargs):
         return self.webdriver.new_window(type_hint=type)

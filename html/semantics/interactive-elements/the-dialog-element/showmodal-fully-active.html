@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:me@marais.co" />
+<link rel=help href="https://html.spec.whatwg.org/multipage/interactive-elements.html#the-dialog-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script type="module">
+    async function attachIframe(src = 'about:blank') {
+    const iframe = document.createElement('iframe');
+    await new Promise(resolve => {
+      iframe.onload = resolve
+      iframe.src = src;
+      document.body.appendChild(iframe);
+    });
+    return iframe;
+  }
+
+  promise_test(async () => {
+    const iframe = await attachIframe();
+    const dialog = iframe.contentDocument.createElement('dialog');
+    iframe.contentDocument.body.appendChild(dialog);
+
+    const frameDOMException = iframe.contentWindow.DOMException;
+    iframe.remove();
+
+    assert_throws_dom("InvalidStateError", frameDOMException, () => dialog.showModal());
+  }, 'Attempting to showModal on non-fully active documents results in a InvalidStateError');
+
+  test(() => {
+  	const customDoc = document.implementation.createHTMLDocument()
+   	const dialog = customDoc.createElement('dialog');
+    customDoc.body.appendChild(dialog);
+
+    assert_throws_dom("InvalidStateError", () => dialog.showModal());
+  }, 'Making a document non-fully active results in a InvalidStateError when attempting to showModal');
+</script>

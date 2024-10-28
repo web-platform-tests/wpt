@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:me@marais.co" />
+<link rel=help href="https://open-ui.org/components/popover.research.explainer">
+<link rel=help href="https://html.spec.whatwg.org/multipage/popover.html">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script type="module">
+  async function attachIframe(src = 'about:blank') {
+    const iframe = document.createElement('iframe');
+    await new Promise(resolve => {
+      iframe.onload = resolve
+      iframe.src = src;
+      document.body.appendChild(iframe);
+    });
+    return iframe;
+  }
+
+  promise_test(async () => {
+    const iframe = await attachIframe();
+    const popover = iframe.contentDocument.createElement('div');
+    popover.setAttribute('popover', '');
+    iframe.contentDocument.body.appendChild(popover);
+
+    const frameDOMException = iframe.contentWindow.DOMException;
+    iframe.remove();
+
+    assert_throws_dom("InvalidStateError", frameDOMException, () => popover.showPopover());
+  }, 'Attempting to showPopover on non-fully active documents results in a InvalidStateError');
+
+  test(() => {
+  	const customDoc = document.implementation.createHTMLDocument()
+   	const popover = customDoc.createElement('div');
+   	popover.setAttribute('popover', '');
+    customDoc.body.appendChild(popover);
+
+    assert_throws_dom("InvalidStateError", () => popover.showPopover());
+  }, 'Making a document non-fully active results in a InvalidStateError when attempting to showPopover');
+</script>

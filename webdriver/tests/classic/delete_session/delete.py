@@ -13,6 +13,11 @@ def test_null_response_value(session):
     value = assert_success(response)
     assert value is None
 
+    response = session.transport.send(
+        "GET", f"session/{session.session_id}/alert/text"
+    )
+    assert_error(response, "invalid session id")
+
     # Need an explicit call to session.end() to notify the test harness
     # that a new session needs to be created for subsequent tests.
     session.end()

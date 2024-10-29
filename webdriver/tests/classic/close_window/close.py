@@ -74,6 +74,11 @@ def test_close_last_browsing_context(session):
     assert_success(response, [])
 
     # With no more open top-level browsing contexts, the session is closed.
+    response = session.transport.send(
+        "GET", f"session/{session.session_id}/alert/text"
+    )
+    assert_error(response, "invalid session id")
+
     session.session_id = None
 
 

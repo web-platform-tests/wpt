@@ -11,7 +11,10 @@ function getVideoURI(base)
 
     if ( videotag.canPlayType )
     {
-      if (videotag.canPlayType('video/webm; codecs="vp9, opus"') )
+      if (videotag.canPlayType('video/mp4')
+      {
+          extension = '.mp4';
+      } else if (videotag.canPlayType('video/webm; codecs="vp9, opus"') )
       {
           extension = '.webm';
       }

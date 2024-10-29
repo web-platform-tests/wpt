@@ -32,8 +32,10 @@ def test_accepted_beforeunload_prompt(session, url):
     assert_success(response)
 
     # A beforeunload prompt has to be automatically accepted, and the session deleted
-    with pytest.raises(error.InvalidSessionIdException):
-        session.alert.text
+    response = session.transport.send(
+        "GET", f"session/{session.session_id}/alert/text"
+    )
+    assert_error(response, "invalid session id")
 
     # Need an explicit call to session.end() to notify the test harness
     # that a new session needs to be created for subsequent tests.

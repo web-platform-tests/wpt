@@ -97,7 +97,7 @@ const validButUnsupportedConfigs = [
   {
     comment: 'codec with spaces',
     config: {codec: '  vp09.00.10.08  '},
-  },  
+  },
 ];  //  validButUnsupportedConfigs
 
 validButUnsupportedConfigs.forEach(entry => {

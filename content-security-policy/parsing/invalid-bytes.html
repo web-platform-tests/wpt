@@ -22,6 +22,7 @@ csp_parsing_test("frame-ancestors 'self'; script-src 'self'", "00", EXPECT_BLOCK
 csp_parsing_test("frame-ancestors 'self', frame-ancestors 'self'", "00", EXPECT_BLOCK, `CSP: "frame-ancestors 'self', frame-ancestors 'self'\\x00" should block rendering (Network Error).`);
 csp_parsing_test("frame-ancestors 'none', frame-ancestors 'self'", "00", EXPECT_BLOCK, `CSP: "frame-ancestors 'none', frame-ancestors 'self'\\x00" should block rendering (Network Error).`);  // No network error in Safari, flaky in Safari
 csp_parsing_test("frame-ancestors 'none', frame-ancestors", "00", EXPECT_BLOCK, `CSP: "frame-ancestors 'none', frame-ancestors\\x00" should block rendering (Network Error).`);  // No network error in Safari, flaky in Safari
+csp_parsing_test("frame-ancestors 'self', frame-ancestors", "00", EXPECT_BLOCK, `CSP: "frame-ancestors 'self', frame-ancestors\\x00" should block rendering (Network Error).`);
 
 
 // \x01
@@ -33,6 +34,7 @@ csp_parsing_test("frame-ancestors 'self'; script-src 'self'", "01", EXPECT_LOAD,
 csp_parsing_test("frame-ancestors 'self', frame-ancestors 'self'", "01", EXPECT_LOAD, `CSP: "frame-ancestors 'self', frame-ancestors 'self'\\x01" should allow rendering.`);
 csp_parsing_test("frame-ancestors 'none', frame-ancestors 'self'", "01", EXPECT_BLOCK, `CSP: "frame-ancestors 'none', frame-ancestors 'self'\\x01" should block rendering.`);
 csp_parsing_test("frame-ancestors 'none', frame-ancestors", "01", EXPECT_BLOCK, `CSP: "frame-ancestors 'none', frame-ancestors\\x01" should block rendering.`);
+csp_parsing_test("frame-ancestors 'self', frame-ancestors", "01", EXPECT_LOAD, `CSP: "frame-ancestors 'self', frame-ancestors\\x01" should block rendering.`);
 
 
 // \x7f
@@ -44,6 +46,7 @@ csp_parsing_test("frame-ancestors 'self'; script-src 'self'", "7f", EXPECT_LOAD,
 csp_parsing_test("frame-ancestors 'self', frame-ancestors 'self'", "7f", EXPECT_LOAD, `CSP: "frame-ancestors 'self', frame-ancestors 'self'\\x7f" should allow rendering.`);
 csp_parsing_test("frame-ancestors 'none', frame-ancestors 'self'", "7f", EXPECT_BLOCK, `CSP: "frame-ancestors 'none', frame-ancestors 'self'\\x7f" should block rendering.`);
 csp_parsing_test("frame-ancestors 'none', frame-ancestors", "7f", EXPECT_BLOCK, `CSP: "frame-ancestors 'none', frame-ancestors\\x7f" should block rendering.`);
+csp_parsing_test("frame-ancestors 'self', frame-ancestors", "7f", EXPECT_LOAD, `CSP: "frame-ancestors 'self', frame-ancestors\\x7f" should block rendering.`);
 
 
 </script>

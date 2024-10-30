@@ -44,12 +44,14 @@ following packages installed:</p>
 The <code class="docutils literal notranslate"><span class="pre">wpt</span></code> script will try to automatically locate it, but if you need
 to run it manually you can find it on any of this paths:</p>
 <ul class="simple">
-<li><p>Fedora: <code class="docutils literal notranslate"><span class="pre">/usr/libexec/webkit2gtk-4.0/MiniBrowser</span></code></p></li>
-<li><p>Debian or Ubuntu: <code class="docutils literal notranslate"><span class="pre">/usr/lib/x86_64-linux-gnu/webkit2gtk-4.0/MiniBrowser</span></code></p>
+<li><p>Fedora: <code class="docutils literal notranslate"><span class="pre">/usr/libexec/webkit2gtk-${VERSION}/MiniBrowser</span></code></p></li>
+<li><p>Debian or Ubuntu: <code class="docutils literal notranslate"><span class="pre">/usr/lib/x86_64-linux-gnu/webkit2gtk-${VERSION}/MiniBrowser</span></code></p></li>
+<li><p>Note:</p>
 <ul>
-<li><p>Note: if the machine architecture is not <code class="docutils literal notranslate"><span class="pre">x86_64</span></code>, then it will be located
-inside:
-<code class="docutils literal notranslate"><span class="pre">/usr/lib/${TRIPLET}/webkit2gtk-4.0/MiniBrowser</span></code>
+<li><p><code class="docutils literal notranslate"><span class="pre">VERSION</span></code> is <code class="docutils literal notranslate"><span class="pre">4.0</span></code> or <code class="docutils literal notranslate"><span class="pre">4.1</span></code>.</p></li>
+<li><p>If not Fedora and the machine architecture is not <code class="docutils literal notranslate"><span class="pre">x86_64</span></code>, then it will
+be located inside:
+<code class="docutils literal notranslate"><span class="pre">/usr/lib/${TRIPLET}/webkit2gtk-${VERSION}/MiniBrowser</span></code>
 where <code class="docutils literal notranslate"><span class="pre">TRIPLET=$(gcc</span> <span class="pre">-dumpmachine)</span></code></p></li>
 </ul>
 </li>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<!--
+This test was procedurally generated. Please do not modify it directly.
+Sources:
+- fetch/metadata/tools/fetch-metadata.conf.yml
+- fetch/metadata/tools/templates/element-input-image.sub.html
+-->
+<html lang="en">
+  <meta charset="utf-8">
+  <title>HTTP headers on request for HTML "input" element with type="button"</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/fetch/metadata/resources/helper.sub.js"></script>
+  <body>
+  <script>
+  'use strict';
+
+  function induceRequest(url, test) {
+    const input = document.createElement('input');
+    input.setAttribute('type', 'image');
+
+    document.body.appendChild(input);
+    test.add_cleanup(() => input.remove());
+
+    return new Promise((resolve) => {
+        input.onload = input.onerror = resolve;
+        input.setAttribute('src', url);
+      });
+  }
+
+  promise_test((t) => {
+    const key = '{{uuid()}}';
+
+    return induceRequest(makeRequestURL(key, ['httpOrigin']), t)
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-frame-ancestors');
+        });
+  }, 'sec-fetch-frame-ancestors - Not sent to non-trustworthy same-origin destination, no attributes');
+
+  promise_test((t) => {
+    const key = '{{uuid()}}';
+
+    return induceRequest(makeRequestURL(key, ['httpSameSite']), t)
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-frame-ancestors');
+        });
+  }, 'sec-fetch-frame-ancestors - Not sent to non-trustworthy same-site destination, no attributes');
+
+  promise_test((t) => {
+    const key = '{{uuid()}}';
+
+    return induceRequest(makeRequestURL(key, ['httpCrossSite']), t)
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-frame-ancestors');
+        });
+  }, 'sec-fetch-frame-ancestors - Not sent to non-trustworthy cross-site destination, no attributes');
+  </script>
+  </body>
+</html>

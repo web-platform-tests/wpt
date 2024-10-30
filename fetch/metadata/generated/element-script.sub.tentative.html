@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!--
+This test was procedurally generated. Please do not modify it directly.
+Sources:
+- fetch/metadata/tools/fetch-metadata.conf.yml
+- fetch/metadata/tools/templates/element-script.sub.html
+-->
+<html lang="en">
+  <meta charset="utf-8">
+  <title>HTTP headers on request for HTML "script" element source</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/fetch/metadata/resources/helper.sub.js"></script>
+  <body>
+  <script>
+  'use strict';
+
+  function induceRequest(url, attributes) {
+    const script = document.createElement('script');
+    script.setAttribute('src', url);
+
+    for (const [ name, value ] of Object.entries(attributes)) {
+      script.setAttribute(name, value);
+    }
+
+    return new Promise((resolve, reject) => {
+        script.onload = resolve;
+        script.onerror = () => reject('Failed to load script');
+        document.body.appendChild(script);
+      })
+      .then(() => script.remove());
+  }
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(
+      key, ['httpOrigin'], { mime: 'application/javascript' }
+    );
+
+    return induceRequest(url,
+        {}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-frame-ancestors');
+        });
+  }, 'sec-fetch-frame-ancestors - Not sent to non-trustworthy same-origin destination, no attributes');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(
+      key, ['httpOrigin'], { mime: 'application/javascript' }
+    );
+
+    return induceRequest(url,
+        {"type": "module"}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-frame-ancestors');
+        });
+  }, 'sec-fetch-frame-ancestors - Not sent to non-trustworthy same-origin destination, attributes: type=module');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(
+      key, ['httpSameSite'], { mime: 'application/javascript' }
+    );
+
+    return induceRequest(url,
+        {}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-frame-ancestors');
+        });
+  }, 'sec-fetch-frame-ancestors - Not sent to non-trustworthy same-site destination, no attributes');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(
+      key, ['httpSameSite'], { mime: 'application/javascript' }
+    );
+
+    return induceRequest(url,
+        {"type": "module"}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-frame-ancestors');
+        });
+  }, 'sec-fetch-frame-ancestors - Not sent to non-trustworthy same-site destination, attributes: type=module');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(
+      key, ['httpCrossSite'], { mime: 'application/javascript' }
+    );
+
+    return induceRequest(url,
+        {}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-frame-ancestors');
+        });
+  }, 'sec-fetch-frame-ancestors - Not sent to non-trustworthy cross-site destination, no attributes');
+
+  promise_test(() => {
+    const key = '{{uuid()}}';
+    const url = makeRequestURL(
+      key, ['httpCrossSite'], { mime: 'application/javascript' }
+    );
+
+    return induceRequest(url,
+        {"type": "module"}
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_not_own_property(headers, 'sec-fetch-frame-ancestors');
+        });
+  }, 'sec-fetch-frame-ancestors - Not sent to non-trustworthy cross-site destination, attributes: type=module');
+  </script>
+</html>

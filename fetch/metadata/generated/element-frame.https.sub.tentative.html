@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!--
+This test was procedurally generated. Please do not modify it directly.
+Sources:
+- fetch/metadata/tools/fetch-metadata.conf.yml
+- fetch/metadata/tools/templates/element-frame.sub.html
+-->
+<html lang="en">
+  <meta charset="utf-8">
+  <title>HTTP headers on request for HTML "frame" element source</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/fetch/metadata/resources/helper.sub.js"></script>
+  <body>
+  <script>
+  'use strict';
+
+  function induceRequest(url, test, userActivated) {
+    const frame = document.createElement('frame');
+
+    const setSrc = () => frame.setAttribute('src', url);
+
+    document.body.appendChild(frame);
+    test.add_cleanup(() => frame.remove());
+
+    return new Promise((resolve) => {
+       if (userActivated) {
+         test_driver.bless('enable user activation', setSrc);
+       } else {
+         setSrc();
+       }
+
+        frame.onload = frame.onerror = resolve;
+      });
+  }
+
+  promise_test((t) => {
+    const key = '{{uuid()}}';
+
+    return induceRequest(
+        makeRequestURL(key, ['httpsOrigin'], {mime: 'text/html'}),
+        t,
+        false
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-origin']);
+        });
+  }, 'sec-fetch-frame-ancestors - Same origin');
+
+  promise_test((t) => {
+    const key = '{{uuid()}}';
+
+    return induceRequest(
+        makeRequestURL(key, ['httpsCrossSite'], {mime: 'text/html'}),
+        t,
+        false
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['cross-site']);
+        });
+  }, 'sec-fetch-frame-ancestors - Cross-site');
+
+  promise_test((t) => {
+    const key = '{{uuid()}}';
+
+    return induceRequest(
+        makeRequestURL(key, ['httpsSameSite'], {mime: 'text/html'}),
+        t,
+        false
+      )
+      .then(() => retrieve(key))
+      .then((headers) => {
+          assert_own_property(headers, 'sec-fetch-frame-ancestors');
+          assert_array_equals(headers['sec-fetch-frame-ancestors'], ['same-site']);
+        });
+  }, 'sec-fetch-frame-ancestors - Same site');
+  </script>
+  </body>
+</html>

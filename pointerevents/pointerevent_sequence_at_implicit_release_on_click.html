@@ -40,10 +40,11 @@
 
           // Make sure the test finishes after all the input actions are completed.
           actions_promise.then( () => {
+            let extra_events = event_log.join(", ").replace(new RegExp(`^${expected_events}(, )?`), "");
             test_pointer_event.done();
 
             no_extra_event_test.step(() => {
-              assert_equals(event_log.join(", "), expected_events);
+              assert_equals(extra_events, "");
             });
             no_extra_event_test.done();
           });

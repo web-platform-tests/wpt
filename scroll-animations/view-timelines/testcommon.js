@@ -92,6 +92,9 @@ async function runTimelineBoundsTest(t, options, message) {
 // });
 async function runTimelineRangeTest(t, options) {
   const rangeToString = range => {
+    if (typeof range === 'string')
+      return range;
+
     const parts = [];
     if (range.rangeName)
       parts.push(range.rangeName);

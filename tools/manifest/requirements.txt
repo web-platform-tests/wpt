@@ -1,1 +1,2 @@
-zstandard==0.22.0
+-r requirements.in
+-c ../constraints.txt

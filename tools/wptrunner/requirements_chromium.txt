@@ -1,1 +1,2 @@
-aioquic==1.2.0
+-r requirements_chromium.in
+-c ../constraints.txt

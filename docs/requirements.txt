@@ -1,7 +1,2 @@
-recommonmark==0.7.1
-sphinx-argparse==0.4.0
-sphinx-autobuild==2021.3.14
-sphinx-js==3.2.2
-sphinx==7.1.2 ; python_version < '3.9'
-sphinx==7.2.6 ; python_version >= '3.9'
-markupsafe==2.0.1
+-r requirements.in
+-c ../tools/constraints.txt

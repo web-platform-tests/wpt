@@ -3,7 +3,10 @@ parameters:
   toxenv: 'ALL'
   
 steps:
-- script: python -m pip --disable-pip-version-check install --upgrade -r tools/ci/requirements_tox.txt
+- script: |
+    python --version
+    python -m pip --version
+    python -m pip --debug --verbose --verbose --disable-pip-version-check install --upgrade -r tools/ci/requirements_tox.txt
   displayName: 'Install Python packages'
 
 - script: |

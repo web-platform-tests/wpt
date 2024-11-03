@@ -32,6 +32,8 @@ babel==2.16.0
     # via sphinx
 blessed==1.20.0
     # via mozlog
+cachetools==5.5.0
+    # via tox
 cairocffi==1.7.0
     # via -r tools/ci/requirements_build.in
 certifi==2024.8.30
@@ -48,6 +50,8 @@ cffi==1.17.1
     #   pynacl
     #   trio
     #   zstandard
+chardet==5.2.0
+    # via tox
 charset-normalizer==3.4.0
     # via requests
 colorama==0.4.6
@@ -55,6 +59,7 @@ colorama==0.4.6
     #   pytest
     #   sphinx
     #   sphinx-autobuild
+    #   tox
 commonmark==0.9.1
     # via recommonmark
 coverage==7.6.1
@@ -67,6 +72,8 @@ cryptography==43.0.3
     #   service-identity
 deprecated==1.2.14
     # via pygithub
+distlib==0.3.9
+    # via virtualenv
 distro==1.9.0
     # via mozinfo
 docutils==0.20.1
@@ -80,6 +87,10 @@ exceptiongroup==1.2.2 ; python_full_version < '3.11'
     #   pytest
     #   trio
     #   trio-websocket
+filelock==3.16.1
+    # via
+    #   tox
+    #   virtualenv
 flake8==5.0.4 ; python_full_version < '3.9'
     # via
     #   -r tools/requirements_flake8.in
@@ -230,8 +241,10 @@ packaging==24.0
     # via
     #   -r tools/wpt/requirements_install.in
     #   -r tools/wptrunner/requirements.in
+    #   pyproject-api
     #   pytest
     #   sphinx
+    #   tox
 parsimonious==0.10.0
     # via sphinx-js
 pep8-naming==0.13.3
@@ -240,8 +253,14 @@ pillow==10.3.0
     # via -r tools/wptrunner/requirements.in
 pkgutil-resolve-name==1.3.10 ; python_full_version < '3.9'
     # via jsonschema
+platformdirs==4.3.6
+    # via
+    #   tox
+    #   virtualenv
 pluggy==1.5.0
-    # via pytest
+    # via
+    #   pytest
+    #   tox
 propcache==0.2.0
     # via yarl
 psutil==5.9.8
@@ -299,6 +318,8 @@ pyobjc-framework-quartz==9.2
     # via -r tools/ci/requirements_macos_color_profile.in
 pyopenssl==24.2.1
     # via aioquic
+pyproject-api==1.6.1
+    # via tox
 pyrsistent==0.20.0
     # via jsonschema
 pysocks==1.7.1
@@ -421,9 +442,13 @@ tomli==2.0.1
     #   -r tools/requirements_mypy.in
     #   coverage
     #   mypy
+    #   pyproject-api
     #   pytest
+    #   tox
 tornado==6.4.1
     # via livereload
+tox==4.15.1
+    # via -r tools/ci/requirements_tox.in
 trio==0.27.0
     # via
     #   selenium
@@ -465,6 +490,8 @@ urllib3==2.2.2
     #   requests
     #   selenium
     #   types-requests
+virtualenv==20.27.1
+    # via tox
 wcwidth==0.2.13
     # via blessed
 webencodings==0.5.1

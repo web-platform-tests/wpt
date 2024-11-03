@@ -19,7 +19,7 @@ run_applicable_tox () {
 }
 
 if ./wpt test-jobs --includes tools_unittest; then
-    pip install --user -U tox
+    pip install --user -r "$SCRIPT_DIR/requirements_tox.txt"
     cd tools
     run_applicable_tox
     cd $WPT_ROOT

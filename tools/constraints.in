@@ -3,6 +3,7 @@
 -r ci/requirements_build.in
 -r ci/requirements_macos_color_profile.in
 -r ci/requirements_tc.in
+-r ci/requirements_tox.in
 -r docker/requirements.in
 -r manifest/requirements.in
 -r metadata/yaml/requirements.in

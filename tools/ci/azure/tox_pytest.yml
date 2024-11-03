@@ -5,7 +5,7 @@ parameters:
 steps:
 - template: pip_install.yml
   parameters:
-    packages: tox
+    packages: -r tools/ci/requirements_tox.txt
 
 - script: |
     set -eux -o pipefail

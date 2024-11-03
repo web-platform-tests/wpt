@@ -39,6 +39,17 @@
       "requirements_build.txt"
     ]
   },
+  "vendoring": {
+    "path": "vendoring.py",
+    "script": "run",
+    "parser": "get_parser",
+    "help": "Update tools/third_party",
+    "virtualenv": true,
+    "requirements": [
+      "requirements_vendoring.txt"
+    ]
+  },
+        
   "tc-download": {
     "path": "tc/download.py",
     "script": "run",

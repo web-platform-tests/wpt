@@ -1,0 +1,25 @@
+atomicwrites==1.1.5  # Update license in pyproject.toml when this changes.
+attrs==23.2.0
+certifi==2018.4.16
+exceptiongroup==1.2.1
+h2==4.1.0
+hpack==4.0.0
+
+# This is commit _after_ the 1.1 release, probably due to a mistake during vendoring html5lib previously.
+html5lib @ git+https://github.com/html5lib/html5lib-python.git@f4646e6ed4eeb9780f67d2083d0c09c8fffbec53
+
+hyperframe==6.0.1
+importlib-metadata==2.1.0
+iniconfig==1.1.1
+more-itertools==4.2.0  # Update license in pyproject.toml when this changes.
+mozilla-tooltool-client@ git+https://github.com/mozilla-releng/tooltool.git@c1bda97eda1ec5246aa73a358c5e1d47e222380c#subdirectory=client
+packaging==21.3
+pathlib2==2.3.5  # Update license in pyproject.toml when this changes.
+pluggy==1.5.0
+pytest==8.2.1
+pytest-asyncio==0.19.0
+pywebsocket3==4.0.2
+six==1.16.0
+webencodings==0.5.1  # Update license in pyproject.toml when this changes.
+websockets==12.0
+zipp==1.2.0

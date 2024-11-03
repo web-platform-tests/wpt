@@ -4,6 +4,14 @@ atomicwrites==1.1.5
     # via
     #   -c tools/constraints.txt
     #   -r tools/requirements_vendor.in
+colorama==0.4.6 ; sys_platform == 'win32'
+    # via
+    #   -c tools/constraints.txt
+    #   pytest
+exceptiongroup==1.2.1 ; python_full_version < '3.11'
+    # via
+    #   -c tools/constraints.txt
+    #   pytest
 h2==4.1.0
     # via
     #   -c tools/constraints.txt
@@ -20,10 +28,35 @@ hyperframe==6.0.1
     # via
     #   -c tools/constraints.txt
     #   h2
+iniconfig==1.1.1
+    # via
+    #   -c tools/constraints.txt
+    #   pytest
+packaging==24.0
+    # via
+    #   -c tools/constraints.txt
+    #   pytest
+pluggy==1.5.0
+    # via
+    #   -c tools/constraints.txt
+    #   pytest
+pytest==8.2.1
+    # via
+    #   -c tools/constraints.txt
+    #   -r tools/requirements_vendor.in
+    #   pytest-asyncio
+pytest-asyncio==0.19.0
+    # via
+    #   -c tools/constraints.txt
+    #   -r tools/requirements_vendor.in
 six==1.16.0
     # via
     #   -c tools/constraints.txt
     #   html5lib
+tomli==2.0.1 ; python_full_version < '3.11'
+    # via
+    #   -c tools/constraints.txt
+    #   pytest
 webencodings==0.5.1
     # via
     #   -c tools/constraints.txt

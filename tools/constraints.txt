@@ -82,7 +82,7 @@ docutils==0.20.1
     # via
     #   recommonmark
     #   sphinx
-exceptiongroup==1.2.2 ; python_full_version < '3.11'
+exceptiongroup==1.2.1 ; python_full_version < '3.11'
     # via
     #   anyio
     #   hypothesis
@@ -145,7 +145,7 @@ importlib-metadata==8.5.0 ; python_full_version < '3.10'
     # via sphinx
 importlib-resources==6.4.5 ; python_full_version < '3.9'
     # via jsonschema
-iniconfig==2.0.0
+iniconfig==1.1.1
     # via pytest
 jinja2==3.1.4
     # via
@@ -329,10 +329,14 @@ pyrsistent==0.20.0
     # via jsonschema
 pysocks==1.7.1
     # via urllib3
-pytest==8.3.2
+pytest==8.2.1
     # via
     #   -r tools/requirements_pytest.in
+    #   -r tools/requirements_vendor.in
+    #   pytest-asyncio
     #   pytest-cov
+pytest-asyncio==0.19.0
+    # via -r tools/requirements_vendor.in
 pytest-cov==5.0.0
     # via -r tools/requirements_pytest.in
 python-dateutil==2.9.0.post0

@@ -1,3 +1,5 @@
 atomicwrites==1.1.5
 h2==4.1.0
 html5lib==1.1
+pytest==8.2.1
+pytest-asyncio==0.19.0

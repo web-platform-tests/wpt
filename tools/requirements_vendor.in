@@ -4,3 +4,4 @@ html5lib==1.1
 pywebsocket3==4.0.2
 pytest==8.2.1
 pytest-asyncio==0.19.0
+websockets==12.0

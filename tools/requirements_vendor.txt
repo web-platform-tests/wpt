@@ -66,3 +66,7 @@ webencodings==0.5.1
     # via
     #   -c tools/constraints.txt
     #   html5lib
+websockets==12.0
+    # via
+    #   -c tools/constraints.txt
+    #   -r tools/requirements_vendor.in

@@ -234,7 +234,6 @@ jobs:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '3.8'
-      addToPath: false
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/tox_pytest.yml
     parameters:
@@ -251,7 +250,6 @@ jobs:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '3.12'
-      addToPath: false
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/tox_pytest.yml
     parameters:
@@ -268,7 +266,6 @@ jobs:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '3.8'
-      addToPath: false
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/tox_pytest.yml
     parameters:
@@ -285,7 +282,6 @@ jobs:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '3.12'
-      addToPath: false
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/tox_pytest.yml
     parameters:

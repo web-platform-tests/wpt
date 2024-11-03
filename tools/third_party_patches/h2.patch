@@ -1,0 +1,64 @@
+diff --git a/tools/third_party/h2/exceptions.py b/tools/third_party/h2/exceptions.py
+index e22bebc0b5..3a221c9df0 100644
+--- a/tools/third_party/h2/exceptions.py
++++ b/tools/third_party/h2/exceptions.py
+@@ -5,7 +5,7 @@ h2/exceptions
+ 
+ Exceptions for the HTTP/2 module.
+ """
+-import h2.errors
++import h2.errors as h2_errors
+ 
+ 
+ class H2Error(Exception):
+@@ -19,7 +19,7 @@ class ProtocolError(H2Error):
+     An action was attempted in violation of the HTTP/2 protocol.
+     """
+     #: The error code corresponds to this kind of Protocol Error.
+-    error_code = h2.errors.ErrorCodes.PROTOCOL_ERROR
++    error_code = h2_errors.ErrorCodes.PROTOCOL_ERROR
+ 
+ 
+ class FrameTooLargeError(ProtocolError):
+@@ -27,7 +27,7 @@ class FrameTooLargeError(ProtocolError):
+     The frame that we tried to send or that we received was too large.
+     """
+     #: The error code corresponds to this kind of Protocol Error.
+-    error_code = h2.errors.ErrorCodes.FRAME_SIZE_ERROR
++    error_code = h2_errors.ErrorCodes.FRAME_SIZE_ERROR
+ 
+ 
+ class FrameDataMissingError(ProtocolError):
+@@ -37,7 +37,7 @@ class FrameDataMissingError(ProtocolError):
+     .. versionadded:: 2.0.0
+     """
+     #: The error code corresponds to this kind of Protocol Error.
+-    error_code = h2.errors.ErrorCodes.FRAME_SIZE_ERROR
++    error_code = h2_errors.ErrorCodes.FRAME_SIZE_ERROR
+ 
+ 
+ class TooManyStreamsError(ProtocolError):
+@@ -53,7 +53,7 @@ class FlowControlError(ProtocolError):
+     An attempted action violates flow control constraints.
+     """
+     #: The error code corresponds to this kind of Protocol Error.
+-    error_code = h2.errors.ErrorCodes.FLOW_CONTROL_ERROR
++    error_code = h2_errors.ErrorCodes.FLOW_CONTROL_ERROR
+ 
+ 
+ class StreamIDTooLowError(ProtocolError):
+@@ -109,7 +109,7 @@ class StreamClosedError(NoSuchStreamError):
+         self.stream_id = stream_id
+ 
+         #: The relevant HTTP/2 error code.
+-        self.error_code = h2.errors.ErrorCodes.STREAM_CLOSED
++        self.error_code = h2_errors.ErrorCodes.STREAM_CLOSED
+ 
+         # Any events that internal code may need to fire. Not relevant to
+         # external users that may receive a StreamClosedError.
+@@ -184,4 +184,4 @@ class DenialOfServiceError(ProtocolError):
+     """
+     #: The error code corresponds to this kind of
+     #: :class:`ProtocolError <h2.exceptions.ProtocolError>`
+-    error_code = h2.errors.ErrorCodes.ENHANCE_YOUR_CALM
++    error_code = h2_errors.ErrorCodes.ENHANCE_YOUR_CALM

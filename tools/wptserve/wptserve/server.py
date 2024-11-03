@@ -14,12 +14,12 @@ from collections import OrderedDict
 from queue import Empty, Queue
 from typing import Dict
 
-from h2.config import H2Configuration
-from h2.connection import H2Connection
-from h2.events import RequestReceived, ConnectionTerminated, DataReceived, StreamReset, StreamEnded
-from h2.exceptions import StreamClosedError, ProtocolError
-from h2.settings import SettingCodes
-from h2.utilities import extract_method_header
+from third_party.h2.config import H2Configuration
+from third_party.h2.connection import H2Connection
+from third_party.h2.events import RequestReceived, ConnectionTerminated, DataReceived, StreamReset, StreamEnded
+from third_party.h2.exceptions import StreamClosedError, ProtocolError
+from third_party.h2.settings import SettingCodes
+from third_party.h2.utilities import extract_method_header
 
 from urllib.parse import urlsplit, urlunsplit
 

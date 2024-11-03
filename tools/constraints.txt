@@ -114,7 +114,9 @@ h11==0.14.0
     #   httpcore
     #   wsproto
 h2==4.1.0
-    # via httpx
+    # via
+    #   -r tools/requirements_vendor.in
+    #   httpx
 hpack==4.0.0
     # via h2
 html5lib==1.1

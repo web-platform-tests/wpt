@@ -13,7 +13,7 @@ try:
 except ImportError:
     from xml.etree import ElementTree as ElementTree  # type: ignore
 
-import third_party.html5lib
+from third_party import html5lib
 
 from . import XMLParser
 from .item import (ConformanceCheckerTest,

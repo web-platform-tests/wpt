@@ -24,7 +24,7 @@ pytest = None
 
 def do_delayed_imports():
     global pytest
-    import pytest
+    from third_party import pytest
 
 
 def run(path, server_config, session_config, timeout=0):

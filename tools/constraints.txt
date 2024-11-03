@@ -345,6 +345,8 @@ python-dateutil==2.9.0.post0
     #   taskcluster
 pytz==2024.2 ; python_full_version < '3.9'
     # via babel
+pywebsocket3==4.0.2
+    # via -r tools/requirements_vendor.in
 pyyaml==6.0.1
     # via
     #   -r tools/ci/requirements_build.in
@@ -391,6 +393,7 @@ six==1.16.0
     #   mozterm
     #   mozversion
     #   python-dateutil
+    #   pywebsocket3
 slugid==2.0.0
     # via taskcluster
 sniffio==1.3.1

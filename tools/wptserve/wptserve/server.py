@@ -23,8 +23,8 @@ from third_party.h2.utilities import extract_method_header
 
 from urllib.parse import urlsplit, urlunsplit
 
-from pywebsocket3 import dispatch
-from pywebsocket3.handshake import HandshakeException, AbortedByUserException
+from third_party.pywebsocket3 import dispatch
+from third_party.pywebsocket3.handshake import HandshakeException, AbortedByUserException
 
 from . import routes as default_routes
 from .config import ConfigBuilder

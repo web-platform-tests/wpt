@@ -7,12 +7,12 @@ Specification:
 https://tools.ietf.org/html/rfc8441
 """
 
-from pywebsocket3 import common
+from third_party.pywebsocket3 import common
 
-from pywebsocket3.handshake.base import get_mandatory_header
-from pywebsocket3.handshake.base import HandshakeException
-from pywebsocket3.handshake.base import validate_mandatory_header
-from pywebsocket3.handshake.base import HandshakerBase
+from third_party.pywebsocket3.handshake.base import get_mandatory_header
+from third_party.pywebsocket3.handshake.base import HandshakeException
+from third_party.pywebsocket3.handshake.base import validate_mandatory_header
+from third_party.pywebsocket3.handshake.base import HandshakerBase
 
 
 def check_connect_method(request):

@@ -6,7 +6,6 @@ repo_root = os.path.abspath(os.path.join(here, os.pardir))
 
 sys.path.insert(0, os.path.join(here))
 sys.path.insert(0, os.path.join(here, "wptserve"))
-sys.path.insert(0, os.path.join(here, "third_party", "pywebsocket3"))
 sys.path.insert(0, os.path.join(here, "third_party", "attrs", "src"))
 sys.path.insert(0, os.path.join(here, "third_party", "zipp"))
 sys.path.insert(0, os.path.join(here, "third_party", "exceptiongroup", "src"))

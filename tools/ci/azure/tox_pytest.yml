@@ -3,13 +3,12 @@ parameters:
   toxenv: 'ALL'
   
 steps:
-- template: pip_install.yml
-  parameters:
-    packages: -r tools/ci/requirements_tox.txt
+- script: python -m pip --disable-pip-version-check install --upgrade -r tools/ci/requirements_tox.txt
+  displayName: 'Install Python packages'
 
 - script: |
     set -eux -o pipefail
-    tox -c ${{ parameters.directory }} -e ${{ parameters.toxenv }} -- --junitxml=results.xml
+    python -m tox -c ${{ parameters.directory }} -e ${{ parameters.toxenv }} -- --junitxml=results.xml
   displayName: 'Run tests'
 
 - task: PublishTestResults@2

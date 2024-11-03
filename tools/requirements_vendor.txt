@@ -32,6 +32,10 @@ iniconfig==1.1.1
     # via
     #   -c tools/constraints.txt
     #   pytest
+mozilla-tooltool-client @ git+https://github.com/mozilla-releng/tooltool.git@c1bda97eda1ec5246aa73a358c5e1d47e222380c#subdirectory=client
+    # via
+    #   -c tools/constraints.txt
+    #   -r tools/requirements_vendor.in
 packaging==24.0
     # via
     #   -c tools/constraints.txt

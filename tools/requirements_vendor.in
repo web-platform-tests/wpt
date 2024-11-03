@@ -1,6 +1,7 @@
 atomicwrites==1.1.5
 h2==4.1.0
 html5lib==1.1
+mozilla-tooltool-client @ git+https://github.com/mozilla-releng/tooltool.git@c1bda97eda1ec5246aa73a358c5e1d47e222380c#subdirectory=client
 pywebsocket3==4.0.2
 pytest==8.2.1
 pytest-asyncio==0.19.0

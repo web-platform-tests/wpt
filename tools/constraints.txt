@@ -187,6 +187,8 @@ mozfile==3.0.0
     #   mozlog
     #   mozprofile
     #   mozrunner
+mozilla-tooltool-client @ git+https://github.com/mozilla-releng/tooltool.git@c1bda97eda1ec5246aa73a358c5e1d47e222380c#subdirectory=client
+    # via -r tools/requirements_vendor.in
 mozinfo==1.2.3
     # via
     #   -r tools/wptrunner/requirements.in

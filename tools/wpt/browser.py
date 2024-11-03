@@ -12,9 +12,10 @@ from shutil import which
 from typing import Optional
 from urllib.parse import urlsplit, quote
 
-import html5lib
 import requests
 from packaging.specifiers import SpecifierSet
+
+import third_party.html5lib
 
 from .utils import (
     call,

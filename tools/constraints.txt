@@ -122,6 +122,7 @@ hpack==4.0.0
 html5lib==1.1
     # via
     #   -r tools/../resources/test/requirements.in
+    #   -r tools/requirements_vendor.in
     #   -r tools/wptrunner/requirements.in
 httpcore==1.0.6
     # via httpx

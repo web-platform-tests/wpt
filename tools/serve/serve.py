@@ -18,7 +18,7 @@ import uuid
 from collections import defaultdict, OrderedDict
 from io import IOBase
 from itertools import chain, product
-from html5lib import html5parser
+from third_party.html5lib import html5parser
 from typing import ClassVar, List, Optional, Set, Tuple
 
 from localpaths import repo_root  # type: ignore

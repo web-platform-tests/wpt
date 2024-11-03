@@ -12,7 +12,19 @@ hpack==4.0.0
     # via
     #   -c tools/constraints.txt
     #   h2
+html5lib==1.1
+    # via
+    #   -c tools/constraints.txt
+    #   -r tools/requirements_vendor.in
 hyperframe==6.0.1
     # via
     #   -c tools/constraints.txt
     #   h2
+six==1.16.0
+    # via
+    #   -c tools/constraints.txt
+    #   html5lib
+webencodings==0.5.1
+    # via
+    #   -c tools/constraints.txt
+    #   html5lib

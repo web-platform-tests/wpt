@@ -6,3 +6,4 @@ patches-dir = "third_party_patches"
 
 [tool.vendoring.license.fallback-urls]
 atomicwrites = "https://raw.githubusercontent.com/untitaker/python-atomicwrites/refs/tags/1.1.5/LICENSE"
+webencodings = "https://raw.githubusercontent.com/gsnedders/python-webencodings/refs/tags/v0.5.1/LICENSE"

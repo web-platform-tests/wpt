@@ -4,9 +4,9 @@ import logging
 import sys
 from typing import Any, Callable, Coroutine, List, Optional, Mapping
 
-import websockets
+from third_party import websockets
 
-from websockets.exceptions import ConnectionClosed
+from third_party.websockets.exceptions import ConnectionClosed
 
 logger = logging.getLogger("webdriver.bidi")
 

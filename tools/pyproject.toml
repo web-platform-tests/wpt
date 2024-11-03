@@ -1,0 +1,8 @@
+[tool.vendoring]
+destination = "third_party/"
+requirements = "requirements_vendor.txt"
+namespace = "third_party"
+patches-dir = "third_party_patches"
+
+[tool.vendoring.license.fallback-urls]
+atomicwrites = "https://raw.githubusercontent.com/untitaker/python-atomicwrites/refs/tags/1.1.5/LICENSE"

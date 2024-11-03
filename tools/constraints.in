@@ -11,6 +11,7 @@
 -r requirements_mypy.in
 -r requirements_pytest.in
 -r requirements_tests.in
+-r requirements_vendor.in
 -r wave/requirements.in
 -r webtransport/requirements.in
 -r wpt/requirements.in

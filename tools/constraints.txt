@@ -20,6 +20,8 @@ async-timeout==4.0.3
     # via
     #   aiohttp
     #   taskcluster
+atomicwrites==1.1.5
+    # via -r tools/requirements_vendor.in
 attrs==24.2.0
     # via
     #   aiohttp

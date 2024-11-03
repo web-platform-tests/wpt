@@ -1,5 +1,5 @@
 import os
-from atomicwrites import atomic_write
+from third_party.atomicwrites import atomic_write
 from copy import deepcopy
 from logging import Logger
 from multiprocessing import Pool

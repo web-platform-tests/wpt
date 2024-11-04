@@ -1,6 +1,5 @@
-from __future__ import division
-from __future__ import absolute_import
-from __future__ import unicode_literals
+# mypy: allow-untyped-defs
+
 import re
 from threading import Timer
 import functools

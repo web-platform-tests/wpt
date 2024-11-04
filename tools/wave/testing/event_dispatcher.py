@@ -1,4 +1,5 @@
-from __future__ import unicode_literals
+# mypy: allow-untyped-defs
+
 import uuid
 import time
 from threading import Timer

@@ -1,5 +1,4 @@
-from __future__ import absolute_import
-from __future__ import unicode_literals
+# mypy: allow-untyped-defs
 
 from .api_handler import ApiHandler
 

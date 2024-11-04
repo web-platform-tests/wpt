@@ -975,6 +975,18 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
         test_window = protocol.base.create_window()
         self.protocol.base.set_window(test_window)
 
+        # Resize the browser window so that its inner dimensions have
+        # exactly a size of 800x600 pixels, which means ignoring all
+        # visible toolbars and sidebars.
+        offsets = self.protocol.marionette.execute_script("""
+            return {
+                width: window.outerWidth - window.innerWidth,
+                height: window.outerHeight - window.innerHeight,
+            };
+        """)
+        self.protocol.marionette.set_window_rect(
+            x=0, y=0, width=800 + offsets["width"], height=600 + offsets["height"])
+
         if self.debug_test and self.browser.supports_devtools:
             self.protocol.debug.load_devtools()
 
@@ -1271,6 +1283,18 @@ class MarionetteCrashtestExecutor(CrashtestExecutor):
     def do_crashtest(self, protocol, url, timeout):
         if self.protocol.coverage.is_enabled:
             self.protocol.coverage.reset()
+
+        # Resize the browser window so that its inner dimensions have
+        # exactly a size of 800x600 pixels, which means ignoring all
+        # visible toolbars and sidebars.
+        offsets = self.protocol.marionette.execute_script("""
+            return {
+                width: window.outerWidth - window.innerWidth,
+                height: window.outerHeight - window.innerHeight,
+            };
+        """)
+        self.protocol.marionette.set_window_rect(
+            x=0, y=0, width=800 + offsets["width"], height=600 + offsets["height"])
 
         protocol.base.load(url)
         protocol.base.execute_script(self.wait_script, asynchronous=True)

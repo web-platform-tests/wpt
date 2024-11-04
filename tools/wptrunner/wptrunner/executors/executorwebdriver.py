@@ -812,6 +812,20 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         # Wait until about:blank has been loaded
         protocol.base.execute_script(self.window_loaded_script, asynchronous=True)
 
+        width_offset, height_offset = self.protocol.webdriver.execute_script(
+            """return [window.outerWidth - window.innerWidth,
+                       window.outerHeight - window.innerHeight];"""
+        )
+        # width_offset and height_offset should never be negative
+        width_offset = max(width_offset, 0)
+        height_offset = max(height_offset, 0)
+        try:
+            self.protocol.webdriver.window.position = (0, 0)
+        except webdriver_error.InvalidArgumentException:
+            # Safari 12 throws with 0 or 1, treating them as bools; fixed in STP
+            self.protocol.webdriver.window.position = (2, 2)
+        self.protocol.webdriver.window.size = (800 + width_offset, 600 + height_offset)
+
         # Exceptions occurred outside the main loop.
         unexpected_exceptions = []
 
@@ -1123,6 +1137,20 @@ class WebDriverCrashtestExecutor(CrashtestExecutor):
     def do_test(self, test):
         timeout = (test.timeout * self.timeout_multiplier if self.debug_info is None
                    else None)
+
+        width_offset, height_offset = self.protocol.webdriver.execute_script(
+            """return [window.outerWidth - window.innerWidth,
+                       window.outerHeight - window.innerHeight];"""
+        )
+        # width_offset and height_offset should never be negative
+        width_offset = max(width_offset, 0)
+        height_offset = max(height_offset, 0)
+        try:
+            self.protocol.webdriver.window.position = (0, 0)
+        except webdriver_error.InvalidArgumentException:
+            # Safari 12 throws with 0 or 1, treating them as bools; fixed in STP
+            self.protocol.webdriver.window.position = (2, 2)
+        self.protocol.webdriver.window.size = (800 + width_offset, 600 + height_offset)
 
         success, data = WebDriverRun(self.logger,
                                      self.do_crashtest,

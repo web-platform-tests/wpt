@@ -1,8 +1,6 @@
-from __future__ import unicode_literals
-try:
-    import http.client as httplib
-except ImportError:
-    import httplib
+# mypy: allow-untyped-defs
+
+import http.client as httplib
 import sys
 import logging
 import traceback

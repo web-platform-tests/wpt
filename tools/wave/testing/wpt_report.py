@@ -1,4 +1,5 @@
-from __future__ import unicode_literals
+# mypy: allow-untyped-defs
+
 import subprocess
 import os
 import ntpath

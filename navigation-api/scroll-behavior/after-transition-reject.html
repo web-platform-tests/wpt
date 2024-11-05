@@ -1,6 +1,7 @@
 <!doctype html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="../navigation-methods/return-value/resources/helpers.js"></script>
 <body>
 <div style="height: 1000px; width: 1000px;"></div>
 <div id="frag"></div>
@@ -16,7 +17,7 @@ promise_test(async t => {
       e => e.intercept({ handler: () => Promise.reject(),
                          scroll: "after-transition" });
 
-  await promise_rejects_exactly(t, undefined, navigation.back().finished);
+  assertBothRejectDOM(t, navigation.back(), "AbortError");
   assert_not_equals(window.scrollY, 0);
 }, "scroll: after-transition should not scroll when the intercept() handler rejects");
 </script>

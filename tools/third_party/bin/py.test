@@ -1,4 +1,4 @@
-#!/Volumes/gsnedders/projects/wpt/wpt2/tools/venv/bin/python3
+#!/private/var/folders/s_/xqf0y_kx0g5bflff0vsd3xvc0000gn/T/tmp.uAODAmOq0S/venv/bin/python3.12
 # -*- coding: utf-8 -*-
 import re
 import sys

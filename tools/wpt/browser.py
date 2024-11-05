@@ -15,7 +15,7 @@ from urllib.parse import urlsplit, quote
 import requests
 from packaging.specifiers import SpecifierSet
 
-from third_party import html5lib
+from tools.third_party import html5lib
 
 from .utils import (
     call,

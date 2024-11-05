@@ -1,0 +1,1 @@
+from atomicwrites-stubs import *

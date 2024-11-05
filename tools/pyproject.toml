@@ -3,12 +3,18 @@ destination = "third_party/"
 requirements = "requirements_vendor.txt"
 namespace = "third_party"
 patches-dir = "third_party_patches"
+protected-files = ["pdf_js"]
 
 [tool.vendoring.license.fallback-urls]
 atomicwrites = "https://raw.githubusercontent.com/untitaker/python-atomicwrites/refs/tags/1.1.5/LICENSE"
 webencodings = "https://raw.githubusercontent.com/gsnedders/python-webencodings/refs/tags/v0.5.1/LICENSE"
+types_html5lib = "https://raw.githubusercontent.com/python/typeshed/refs/heads/main/LICENSE"
+types_atomicwrites = "https://raw.githubusercontent.com/python/typeshed/refs/heads/main/LICENSE"
 
 [tool.vendoring.transformations]
 drop = [
   "websockets/speedups.*.so",
 ]
+
+[tool.vendoring.typing-stubs]
+py = []

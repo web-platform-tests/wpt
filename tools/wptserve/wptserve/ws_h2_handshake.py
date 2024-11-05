@@ -7,12 +7,12 @@ Specification:
 https://tools.ietf.org/html/rfc8441
 """
 
-from third_party.pywebsocket3 import common
+from tools.third_party.pywebsocket3 import common
 
-from third_party.pywebsocket3.handshake.base import get_mandatory_header
-from third_party.pywebsocket3.handshake.base import HandshakeException
-from third_party.pywebsocket3.handshake.base import validate_mandatory_header
-from third_party.pywebsocket3.handshake.base import HandshakerBase
+from tools.third_party.pywebsocket3.handshake.base import get_mandatory_header
+from tools.third_party.pywebsocket3.handshake.base import HandshakeException
+from tools.third_party.pywebsocket3.handshake.base import validate_mandatory_header
+from tools.third_party.pywebsocket3.handshake.base import HandshakerBase
 
 
 def check_connect_method(request):
@@ -20,7 +20,7 @@ def check_connect_method(request):
         raise HandshakeException('Method is not CONNECT: %r' % request.method)
 
 
-class WsH2Handshaker(HandshakerBase):  # type: ignore
+class WsH2Handshaker(HandshakerBase):
     def __init__(self, request, dispatcher):
         """Bootstrapping handshake processor for the WebSocket protocol with HTTP/2 (RFC 8441).
 

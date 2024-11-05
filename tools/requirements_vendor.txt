@@ -4,11 +4,11 @@ atomicwrites==1.1.5
     # via
     #   -c tools/constraints.txt
     #   -r tools/requirements_vendor.in
-colorama==0.4.6 ; sys_platform == 'win32'
+colorama==0.4.6
     # via
     #   -c tools/constraints.txt
     #   pytest
-exceptiongroup==1.2.1 ; python_full_version < '3.11'
+exceptiongroup==1.2.1
     # via
     #   -c tools/constraints.txt
     #   pytest
@@ -62,10 +62,18 @@ six==1.16.0
     #   -c tools/constraints.txt
     #   html5lib
     #   pywebsocket3
-tomli==2.0.1 ; python_full_version < '3.11'
+tomli==2.0.1
     # via
     #   -c tools/constraints.txt
     #   pytest
+types-atomicwrites==1.4.5.1
+    # via
+    #   -c tools/constraints.txt
+    #   -r tools/requirements_vendor.in
+types-html5lib==1.1.11.20241018
+    # via
+    #   -c tools/constraints.txt
+    #   -r tools/requirements_vendor.in
 webencodings==0.5.1
     # via
     #   -c tools/constraints.txt

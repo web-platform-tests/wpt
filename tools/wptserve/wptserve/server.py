@@ -14,17 +14,17 @@ from collections import OrderedDict
 from queue import Empty, Queue
 from typing import Dict
 
-from third_party.h2.config import H2Configuration
-from third_party.h2.connection import H2Connection
-from third_party.h2.events import RequestReceived, ConnectionTerminated, DataReceived, StreamReset, StreamEnded
-from third_party.h2.exceptions import StreamClosedError, ProtocolError
-from third_party.h2.settings import SettingCodes
-from third_party.h2.utilities import extract_method_header
+from tools.third_party.h2.config import H2Configuration
+from tools.third_party.h2.connection import H2Connection
+from tools.third_party.h2.events import RequestReceived, ConnectionTerminated, DataReceived, StreamReset, StreamEnded
+from tools.third_party.h2.exceptions import StreamClosedError, ProtocolError
+from tools.third_party.h2.settings import SettingCodes
+from tools.third_party.h2.utilities import extract_method_header
 
 from urllib.parse import urlsplit, urlunsplit
 
-from third_party.pywebsocket3 import dispatch
-from third_party.pywebsocket3.handshake import HandshakeException, AbortedByUserException
+from tools.third_party.pywebsocket3 import dispatch
+from tools.third_party.pywebsocket3.handshake import HandshakeException, AbortedByUserException
 
 from . import routes as default_routes
 from .config import ConfigBuilder

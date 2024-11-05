@@ -472,7 +472,9 @@ trio-websocket==0.11.1
 typed-ast==1.5.5
     # via -r tools/requirements_mypy.in
 types-atomicwrites==1.4.5.1
-    # via -r tools/requirements_mypy.in
+    # via -r tools/requirements_vendor.in
+types-html5lib==1.1.11.20241018
+    # via -r tools/requirements_vendor.in
 types-python-dateutil==2.9.0.20240906
     # via -r tools/requirements_mypy.in
 types-pyyaml==6.0.12.12

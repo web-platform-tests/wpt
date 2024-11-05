@@ -18,7 +18,7 @@ import uuid
 from collections import defaultdict, OrderedDict
 from io import IOBase
 from itertools import chain, product
-from third_party.html5lib import html5parser
+from tools.third_party.html5lib import html5parser
 from typing import ClassVar, List, Optional, Set, Tuple
 
 from localpaths import repo_root  # type: ignore
@@ -30,7 +30,7 @@ from wptserve import config
 from wptserve.handlers import filesystem_path, wrap_pipeline
 from wptserve.response import ResponseHeaders
 from wptserve.utils import get_port, HTTPException, http2_compatible
-from third_party.pywebsocket3 import standalone as pywebsocket
+from tools.third_party.pywebsocket3 import standalone as pywebsocket
 
 
 EDIT_HOSTS_HELP = ("Please ensure all the necessary WPT subdomains "

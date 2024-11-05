@@ -13,7 +13,7 @@ try:
 except ImportError:
     from xml.etree import ElementTree as ElementTree  # type: ignore
 
-from third_party import html5lib
+from tools.third_party import html5lib
 
 from . import XMLParser
 from .item import (ConformanceCheckerTest,
@@ -160,7 +160,7 @@ def global_variant_url(url: Text, suffix: Text) -> Text:
 
 
 def _parse_html(f: BinaryIO) -> ElementTree.Element:
-    doc = html5lib.parse(f, treebuilder="etree", useChardet=False)
+    doc = html5lib.parse(f, treebuilder="etree", useChardet=False)  # type: ignore
     return cast(ElementTree.Element, doc)
 
 def _parse_xml(f: BinaryIO) -> ElementTree.Element:

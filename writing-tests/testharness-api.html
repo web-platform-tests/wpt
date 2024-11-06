@@ -1269,14 +1269,11 @@ than or equal to <code class="docutils literal notranslate"><span class="pre">up
 <dl class="js function">
 <dt class="sig sig-object js" id="assert_readonly">
 <span class="sig-name descname"><span class="n"><span class="pre">assert_readonly</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#assert_readonly" title="Link to this definition">¶</a></dt>
-<dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">object</span></code> has a property named <code class="docutils literal notranslate"><span class="pre">property_name</span></code> and that the property is readonly.</p>
-<p>Note: The implementation tries to update the named property, so
-any side effects of updating will be triggered. Users are
-encouraged to instead inspect the property descriptor of <code class="docutils literal notranslate"><span class="pre">property_name</span></code> on <code class="docutils literal notranslate"><span class="pre">object</span></code>.</p>
+<dd><p>Assert that <code class="docutils literal notranslate"><span class="pre">object</span></code> has a property named <code class="docutils literal notranslate"><span class="pre">property_name</span></code> and that the property is not writable or has no setter.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>object</strong> (<em>Object</em>) – Object that should have the given property in its prototype chain.</p></li>
+<li><p><strong>object</strong> (<em>Object</em>) – Object that should have the given (not necessarily own) property.</p></li>
 <li><p><strong>property_name</strong> (<em>string</em>) – Expected property name.</p></li>
 <li><p><strong>description</strong> (<em>string</em>) – Description of the condition being tested.</p></li>
 </ul>

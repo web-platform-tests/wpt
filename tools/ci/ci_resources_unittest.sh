@@ -7,7 +7,7 @@ cd $WPT_ROOT
 
 main() {
     cd $WPT_ROOT
-    pip install --user -U tox
+    pip install --user -r "$SCRIPT_DIR/requirements_tox.txt"
     ./wpt install firefox browser --destination $HOME
     ./wpt install firefox webdriver --destination $HOME/firefox
     export PATH=$HOME/firefox:$PATH

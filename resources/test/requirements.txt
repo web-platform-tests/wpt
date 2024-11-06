@@ -1,1 +1,2 @@
-html5lib==1.1
+-r requirements.in
+-c ../../tools/constraints.txt

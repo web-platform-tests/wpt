@@ -1,1 +1,2 @@
-psutil==5.9.8
+-r requirements_safari.in
+-c ../constraints.txt

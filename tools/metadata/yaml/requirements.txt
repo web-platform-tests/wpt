@@ -1,1 +1,2 @@
-pyyaml==6.0.1
+-r requirements.in
+-c ../../constraints.txt

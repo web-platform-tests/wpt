@@ -7,7 +7,7 @@ cd $WPT_ROOT
 
 main() {
     git fetch --quiet --unshallow https://github.com/web-platform-tests/wpt.git +refs/heads/*:refs/remotes/origin/*
-    pip install --user -U tox
+    pip install --user -r "$SCRIPT_DIR/requirements_tox.txt"
 
     # wpt commands integration tests
     cd tools/wpt

@@ -222,3 +222,43 @@ Note that if an action uses an element reference, the context will be
 derived from that element, and must match any explicitly set
 context. Using elements in multiple contexts in a single action chain
 is not supported.
+
+
+### BiDi ###
+
+Represents [WebDriver BiDi](https://w3c.github.io/webdriver-bidi>) protocol.
+
+<!-- sphinx-js doesn't support documenting types so we have to copy in the Context
+documentation by hand -->
+
+```eval_rst
+:Context: (*String|Window*) Represents a browsing context either with the browsing
+          context id equals to the given string value, or one with the given Window
+          object.
+```
+
+
+#### Log ####
+
+Represents WebDriver BiDi [Log](https://w3c.github.io/webdriver-bidi/#module-log)
+module.
+
+
+##### Entry added #####
+
+Allows subscribing and listening to the
+[`log.entryAdded`](https://w3c.github.io/webdriver-bidi/#event-log-entryAdded) event.
+
+Example:
+```javascript
+await test_driver.bidi.log.entry_added.subscribe();
+const log_entry_promise = test_driver.bidi.log.entry_added.once();
+console.log("some message");
+const event = await log_entry_promise;
+```
+
+```eval_rst
+.. js:autofunction:: test_driver.bidi.log.entry_added.subscribe
+.. js:autofunction:: test_driver.bidi.log.entry_added.on
+.. js:autofunction:: test_driver.bidi.log.entry_added.once
+```

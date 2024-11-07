@@ -746,72 +746,19 @@ class WebDriverRun(TimedRunner):
             self.result_flag.set()
 
 
-class WebDriverTestharnessExecutor(TestharnessExecutor):
-    supports_testdriver = True
-    protocol_cls = WebDriverProtocol
-    _get_next_message = None
+# TODO(web-platform-tests/wpt#13183): Add testdriver support to the other
+# executors.
+class TestDriverExecutorMixin:
+    def __init__(self, script_resume: str):
+        self.script_resume = script_resume
 
-    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
-                 close_after_done=True, capabilities=None, debug_info=None,
-                 cleanup_after_test=True, **kwargs):
-        """WebDriver-based executor for testharness.js tests"""
-        TestharnessExecutor.__init__(self, logger, browser, server_config,
-                                     timeout_multiplier=timeout_multiplier,
-                                     debug_info=debug_info)
-        self.protocol = self.protocol_cls(self, browser, capabilities)
-        with open(os.path.join(here, "testharness_webdriver_resume.js")) as f:
-            self.script_resume = f.read()
-        with open(os.path.join(here, "window-loaded.js")) as f:
-            self.window_loaded_script = f.read()
-
-        if hasattr(self.protocol, 'bidi_script'):
-            # If `bidi_script` is available, the messages can be handled via BiDi.
-            self._get_next_message = self._get_next_message_bidi
-        else:
-            self._get_next_message = self._get_next_message_classic
-
-        self.close_after_done = close_after_done
-        self.cleanup_after_test = cleanup_after_test
-
-    def is_alive(self):
-        return self.protocol.is_alive()
-
-    def on_environment_change(self, new_environment):
-        if new_environment["protocol"] != self.last_environment["protocol"]:
-            self.protocol.testharness.load_runner(new_environment["protocol"])
-
-    def do_test(self, test):
-        url = self.test_url(test)
-
-        success, data = WebDriverRun(self.logger,
-                                     self.do_testharness,
-                                     self.protocol,
-                                     url,
-                                     test.timeout * self.timeout_multiplier,
-                                     self.extra_timeout).run()
-
-        if success:
-            data, extra = data
-            return self.convert_result(test, data, extra=extra)
-
-        return (test.make_result(*data), [])
-
-    def do_testharness(self, protocol, url, timeout):
-        # The previous test may not have closed its old windows (if something
-        # went wrong or if cleanup_after_test was False), so clean up here.
-        protocol.testharness.close_old_windows()
-
+    def run_testdriver(self, protocol, url, timeout):
         # If protocol implements `bidi_events`, remove all the existing subscriptions.
         if hasattr(protocol, 'bidi_events'):
             # Use protocol loop to run the async cleanup.
             protocol.loop.run_until_complete(protocol.bidi_events.unsubscribe_all())
 
-        # Now start the test harness
         test_window = self.get_or_create_test_window(protocol)
-        self.protocol.base.set_window(test_window)
-        # Wait until about:blank has been loaded
-        protocol.base.execute_script(self.window_loaded_script, asynchronous=True)
-
         # Exceptions occurred outside the main loop.
         unexpected_exceptions = []
 
@@ -896,36 +843,14 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             # Use protocol loop to run the async cleanup.
             protocol.loop.run_until_complete(protocol.bidi_events.unsubscribe_all())
 
-        extra = {}
-        if leak_part := getattr(protocol, "leak", None):
-            testharness_window = protocol.base.current_window
-            extra_windows = set(protocol.base.window_handles())
-            extra_windows -= {protocol.testharness.runner_handle, testharness_window}
-            protocol.testharness.close_windows(extra_windows)
-            try:
-                protocol.base.set_window(testharness_window)
-                if counters := leak_part.check():
-                    extra["leak_counters"] = counters
-            except webdriver_error.NoSuchWindowException:
-                pass
-            finally:
-                protocol.base.set_window(protocol.testharness.runner_handle)
-
-        # Attempt to clean up any leftover windows, if allowed. This is
-        # preferable as it will blame the correct test if something goes wrong
-        # closing windows, but if the user wants to see the test results we
-        # have to leave the window(s) open.
-        if self.cleanup_after_test:
-            protocol.testharness.close_old_windows()
-
         if len(unexpected_exceptions) > 0:
             # TODO: what to do if there are more then 1 unexpected exceptions?
             raise unexpected_exceptions[0]
 
-        return rv, extra
+        return rv
 
     def get_or_create_test_window(self, protocol):
-        return protocol.base.create_window()
+        return protocol.base.current_window
 
     def _get_next_message_classic(self, protocol, url, _):
         """
@@ -967,6 +892,99 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         # The message is in WebDriver BiDi format. Deserialize it.
         deserialized_message = bidi_deserialize(message)
         return deserialized_message
+
+
+class WebDriverTestharnessExecutor(TestharnessExecutor, TestDriverExecutorMixin):
+    supports_testdriver = True
+    protocol_cls = WebDriverProtocol
+    _get_next_message = None
+
+    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
+                 close_after_done=True, capabilities=None, debug_info=None,
+                 cleanup_after_test=True, **kwargs):
+        """WebDriver-based executor for testharness.js tests"""
+        TestharnessExecutor.__init__(self, logger, browser, server_config,
+                                     timeout_multiplier=timeout_multiplier,
+                                     debug_info=debug_info)
+        self.protocol = self.protocol_cls(self, browser, capabilities)
+        with open(os.path.join(here, "testharness_webdriver_resume.js")) as f:
+            script_resume = f.read()
+        TestDriverExecutorMixin.__init__(self, script_resume)
+        with open(os.path.join(here, "window-loaded.js")) as f:
+            self.window_loaded_script = f.read()
+
+        if hasattr(self.protocol, 'bidi_script'):
+            # If `bidi_script` is available, the messages can be handled via BiDi.
+            self._get_next_message = self._get_next_message_bidi
+        else:
+            self._get_next_message = self._get_next_message_classic
+
+        self.close_after_done = close_after_done
+        self.cleanup_after_test = cleanup_after_test
+
+    def is_alive(self):
+        return self.protocol.is_alive()
+
+    def on_environment_change(self, new_environment):
+        if new_environment["protocol"] != self.last_environment["protocol"]:
+            self.protocol.testharness.load_runner(new_environment["protocol"])
+
+    def do_test(self, test):
+        url = self.test_url(test)
+
+        success, data = WebDriverRun(self.logger,
+                                     self.do_testharness,
+                                     self.protocol,
+                                     url,
+                                     test.timeout * self.timeout_multiplier,
+                                     self.extra_timeout).run()
+
+        if success:
+            data, extra = data
+            return self.convert_result(test, data, extra=extra)
+
+        return (test.make_result(*data), [])
+
+    def do_testharness(self, protocol, url, timeout):
+        try:
+            # The previous test may not have closed its old windows (if something
+            # went wrong or if cleanup_after_test was False), so clean up here.
+            protocol.testharness.close_old_windows()
+            raw_results = self.run_testdriver(protocol, url, timeout)
+            extra = {}
+            if counters := self._check_for_leaks(protocol):
+                extra["leak_counters"] = counters
+            return raw_results, extra
+        finally:
+            # Attempt to clean up any leftover windows, if allowed. This is
+            # preferable as it will blame the correct test if something goes
+            # wrong closing windows, but if the user wants to see the test
+            # results we have to leave the window(s) open.
+            if self.cleanup_after_test:
+                protocol.testharness.close_old_windows()
+
+    def _check_for_leaks(self, protocol):
+        leak_part = getattr(protocol, "leak", None)
+        if not leak_part:
+            return None
+        testharness_window = protocol.base.current_window
+        extra_windows = set(protocol.base.window_handles())
+        extra_windows -= {protocol.testharness.runner_handle, testharness_window}
+        protocol.testharness.close_windows(extra_windows)
+        try:
+            protocol.base.set_window(testharness_window)
+            return leak_part.check()
+        except webdriver_error.NoSuchWindowException:
+            pass
+        finally:
+            protocol.base.set_window(protocol.testharness.runner_handle)
+
+    def get_or_create_test_window(self, protocol):
+        test_window = protocol.base.create_window()
+        protocol.base.set_window(test_window)
+        # Wait until about:blank has been loaded
+        protocol.base.execute_script(self.window_loaded_script, asynchronous=True)
+        return test_window
 
 
 class WebDriverRefTestExecutor(RefTestExecutor):

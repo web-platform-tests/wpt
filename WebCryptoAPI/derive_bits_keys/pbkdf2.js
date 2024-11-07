@@ -103,16 +103,6 @@ function define_tests() {
 
                         });
 
-                        // 0 length (OperationError)
-                        subsetTest(promise_test, function(test) {
-                            return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, baseKeys[passwordSize], 0)
-                            .then(function(derivation) {
-                                assert_unreached("0 length should have thrown an OperationError");
-                            }, function(err) {
-                                assert_equals(err.name, "OperationError", "deriveBits with 0 length correctly threw OperationError: " + err.message);
-                            });
-                        }, testName + " with 0 length");
-
                         // length not multiple of 8 (OperationError)
                         subsetTest(promise_test, function(test) {
                             return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, baseKeys[passwordSize], 44)

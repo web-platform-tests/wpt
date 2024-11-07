@@ -1274,6 +1274,7 @@ class MarionetteCrashtestExecutor(CrashtestExecutor):
 
         protocol.base.load(url)
         protocol.base.execute_script(self.wait_script, asynchronous=True)
+        protocol.base.load("about:blank")
 
         if self.protocol.coverage.is_enabled:
             self.protocol.coverage.dump()

@@ -14,6 +14,6 @@ async def test_contexts_are_isolated(bidi_session, top_context, test_page):
     await set_simulate_adapter(bidi_session, another_browsing_context,
                                test_page, "absent")
 
-    assert await get_bluetooth_availability(bidi_session, top_context) == True
+    assert await get_bluetooth_availability(bidi_session, top_context) is True
     assert await get_bluetooth_availability(bidi_session,
-                                            another_browsing_context) == False
+                                            another_browsing_context) is False

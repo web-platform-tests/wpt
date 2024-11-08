@@ -74,7 +74,7 @@ The wdspec tests for [WebDriver BiDi](https://w3c.github.io/webdriver-bidi) are
 located in the `tests/bidi/` and `tests/interop` directories. Tests related to
 external specifications (like [Permissions](https://www.w3.org/TR/permissions/) or
 [Web Bluetooth](https://webbluetoothcg.github.io/web-bluetooth)) are located in
-`external` subdirectories. E.g. `tests/bidi/external/permissions/`.
+`external` subdirectories. E.g. `tests/bidi/external/bluetooth/`.
 
 The `webdriver.bidi.client.BidiSession` class provides an abstraction for the BiDi
 client and contains properties corresponding to the
@@ -155,9 +155,9 @@ For example, tests for
 [`bluetooth.simulateAdapter`](https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateAdapter-command)
 could be split into:
 
-* Invalid parameters: `webdriver/tests/bidi/bluetooth/simulate_adapter/invalid.py`
-* State: `webdriver/tests/bidi/bluetooth/simulate_adapter/state.py`
-* Context: `webdriver/tests/bidi/bluetooth/simulate_adapter/context.py`
+* Invalid parameters: `webdriver/tests/bidi/external/bluetooth/simulate_adapter/invalid.py`
+* State: `webdriver/tests/bidi/external/bluetooth/simulate_adapter/state.py`
+* Context: `webdriver/tests/bidi/external/bluetooth/simulate_adapter/context.py`
 
 Tests should use `bidi_session`'s modules' methods to send commands and verify its
 side effects.

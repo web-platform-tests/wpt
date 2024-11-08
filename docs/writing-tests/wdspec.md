@@ -1,8 +1,7 @@
 # wdspec tests
 
 The term "wdspec" describes a type of test in WPT which verifies some aspect of
-[WebDriver Classic](https://w3c.github.io/webdriver/) or 
-[WebDriver BiDi](https://w3c.github.io/webdriver-bidi) protocols. These tests are
+[the WebDriver protocol](https://w3c.github.io/webdriver/). These tests are
 written in [the Python programming language](https://www.python.org/) and
 structured with [the pytest testing
 framework](https://docs.pytest.org/en/latest/).
@@ -67,96 +66,3 @@ a WebDriver session) are defined in terms of Pytest "fixtures" and must be
 loaded accordingly. For more detail on how to define and use test fixtures,
 please refer to [the pytest project's documentation on the
 topic](https://docs.pytest.org/en/latest/fixture.html).
-
-## WebDriver BiDi
-
-The wdspec tests for [WebDriver BiDi](https://w3c.github.io/webdriver-bidi) are 
-located in the `tests/bidi/` and `tests/interop` directories. Tests related to 
-external specifications (like [Permissions](https://www.w3.org/TR/permissions/) or 
-[Web Bluetooth](https://webbluetoothcg.github.io/web-bluetooth)) are located in 
-`external` subdirectories. E.g. `tests/bidi/external/permissions/`. 
-
-The `webdriver.bidi.client.BidiSession` class provides an abstraction for the BiDi 
-client and contains properties corresponding to the 
-[WebDriver BiDi modules](https://w3c.github.io/webdriver-bidi/#protocol-modules). It 
-can be retrieved by fixture `bidi_session`.  
-
-### Extending WebDriver BiDi
-
-This section describes how to extend the WebDriver BiDi client with an example of 
-adding support for [Web Bluetooth](https://webbluetoothcg.github.io/web-bluetooth).
-
-#### Adding a New Module
-
-##### Create `BidiModule`
-
-BiDi modules are defined in the `tools/webdriver/webdriver/bidi/modules/` directory.
-To add a new module called `bluetooth`, declare a Python class 
-`webdriver.bidi.modules.bluetooth.Bluetooth` that inherits from `BidiModule` and 
-store it in `tools/webdriver/webdriver/bidi/modules/bluetooth.py`:
-
-```python
-class Bluetooth(BidiModule):
-    """
-    Represents the Bluetooth automation module specified in
-    https://webbluetoothcg.github.io/web-bluetooth/#automated-testing
-    """
-    pass
-```
-
-##### Import the Module in `bidi/modules/__init__.py`
-
-Import this class in `tools/webdriver/webdriver/bidi/modules/__init__.py`:
-
-```python
-from .bluetooth import Bluetooth
-```
-
-##### Create an Instance of the Module in `webdriver.bidi.client.BidiSession`
-
-Modify the `webdriver.bidi.client.BidiSession.__init__` method to create an instance 
-of `Bluetooth` and store it in a `bluetooth` property:
-
-```python
-self.bluetooth = modules.Bluetooth(self)
-```
-
-#### Adding a New Command
-
-[WebDriver BiDi commands](https://w3c.github.io/webdriver-bidi/#commands) are 
-represented as module methods decorated with 
-`@command` (`webdriver.bidi.modules._module.command`). To add a new command, add 
-a method with the corresponding name (translated from camel case to snake case) to 
-the module. The method should return a dictionary that represents the 
-[command parameters](https://w3c.github.io/webdriver-bidi/#command-command-parameters).
-
-For example, to add the 
-[`bluetooth.simulateAdapter`](https://w3c.github.io/webdriver-bidi/#command-command-parameters)
-command, add the following `simulate_adapter` method to the `Bluetooth` class:
-
-```python
-from ._module import command
-...
-class Bluetooth(BidiModule):
-    ...
-    @command
-    def simulate_adapter(self, context: str, state: str) -> Mapping[str, Any]:
-        return {
-            "context": context,
-            "state": state
-        }
-```
-
-### Adding Tests
-
-Generally, a single test file should contain tests for a single parameter or feature 
-and stored in `webdriver/tests/bidi/{MODULE}/{METHOD}/{FEATURE}.py`
-For example, tests for 
-[`bluetooth.simulateAdapter`](https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateAdapter-command) 
-could be split into:
-* Invalid parameters: `webdriver/tests/bidi/bluetooth/simulate_adapter/invalid.py`
-* State: `webdriver/tests/bidi/bluetooth/simulate_adapter/state.py`
-* Context: `webdriver/tests/bidi/bluetooth/simulate_adapter/context.py`
-
-Tests should use `bidi_session`'s modules' methods to send commands and verify its 
-side effects.

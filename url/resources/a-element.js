@@ -10,7 +10,7 @@ function setBase(base) {
 function bURL(url, base) {
   setBase(base);
   const a = document.createElement("a");
-  a.setAttribute("href", url);
+  a.href = url;
   return a;
 }
 

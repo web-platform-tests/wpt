@@ -5,7 +5,10 @@
 <script src="/resources/testharnessreport.js"></script>
 <div></div>
 <script>
-  var noop = function() {};
+  const noop = () => {};
+  const expect_error = (e) => {
+    assert_equals(e.constructor, Event);
+  };
 
   ["non-empty", "empty"].forEach(function(content) {
     ["text/csv",
@@ -18,15 +21,41 @@
      "image/jpeg",
      "image/gif",
      "image/whatever"].forEach(function(test_case) {
+      const url = "../resources/script-with-header.py?content=" + content +
+                  "&mime=" + test_case;
+
       async_test(function(t) {
         var script = document.createElement("script");
-        script.onerror = t.step_func_done(noop);
+        script.onerror = t.step_func_done(expect_error);
         script.onload = t.unreached_func("Unexpected load event");
-        script.src = "../resources/script-with-header.py?content=" + content +
-                     "&mime=" + test_case;
+        script.src = url;
         document.body.appendChild(script);
       }, "Should fail loading " + content + " script with " + test_case +
-         " MIME type");
+         " MIME type (script)");
+
+      async_test(function(t) {
+        var script = document.createElement("script");
+        script.setAttribute("type", "module");
+        script.onerror = t.step_func_done(expect_error);
+        script.onload = t.unreached_func("Unexpected load event");
+        script.src = url;
+        document.body.appendChild(script);
+      }, "Should fail loading " + content + " script with " + test_case +
+         " MIME type (module script)");
+
+      async_test(function(t) {
+        const worker = new Worker(url);
+        worker.onerror = t.step_func_done(expect_error);
+        worker.onload = t.unreached_func("Unexpected load event");
+      }, "Should fail loading " + content + " script with " + test_case +
+         " MIME type (dedicated worker)");
+
+      async_test(function(t) {
+        const worker = new Worker(url, {type: "module"});
+        worker.onerror = t.step_func_done(expect_error);
+        worker.onload = t.unreached_func("Unexpected load event");
+      }, "Should fail loading " + content + " script with " + test_case +
+         " MIME type (module dedicated worker)");
     });
   });
 
@@ -37,7 +66,7 @@
       script.onload = t.step_func_done(noop);
       script.src = "../resources/script-with-header.py?mime=text/" + test_case;
       document.body.appendChild(script);
-    }, "Should load script with text/" + test_case + " MIME type");
+    }, "Should load script with text/" + test_case + " MIME type (script)");
   });
 
 </script>

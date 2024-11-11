@@ -6,6 +6,8 @@ from typing import Any, Callable, Coroutine, List, Optional, Mapping
 
 import websockets
 
+from websockets.exceptions import ConnectionClosed
+
 logger = logging.getLogger("webdriver.bidi")
 
 
@@ -26,7 +28,7 @@ class Transport:
                  msg_handler: Callable[[Mapping[str, Any]], Coroutine[Any, Any, None]],
                  loop: Optional[asyncio.AbstractEventLoop] = None):
         self.url = url
-        self.connection: Optional[websockets.WebSocketClientProtocol] = None
+        self.connection: Optional[websockets.WebSocketClientProtocol] = None  # type: ignore
         self.msg_handler = msg_handler
         self.send_buf: List[Mapping[str, Any]] = []
 
@@ -37,7 +39,7 @@ class Transport:
         self.read_message_task: Optional[asyncio.Task[Any]] = None
 
     async def start(self) -> None:
-        self.connection = await websockets.client.connect(self.url)
+        self.connection = await websockets.connect(self.url)  # type: ignore
         self.read_message_task = self.loop.create_task(self.read_messages())
 
         for msg in self.send_buf:
@@ -51,7 +53,7 @@ class Transport:
 
     @staticmethod
     async def _send(
-        connection: websockets.WebSocketClientProtocol,
+        connection: websockets.WebSocketClientProtocol,  # type: ignore
         data: Mapping[str, Any]
     ) -> None:
         msg = json.dumps(data)
@@ -70,7 +72,14 @@ class Transport:
 
     async def read_messages(self) -> None:
         assert self.connection is not None
-        async for msg in self.connection:
-            if not isinstance(msg, str):
-                raise ValueError("Got a binary message")
-            await self.handle(msg)
+        try:
+            async for msg in self.connection:
+                if not isinstance(msg, str):
+                    raise ValueError("Got a binary message")
+                await self.handle(msg)
+        except ConnectionClosed:
+            logger.debug("connection closed while reading messages")
+
+    async def wait_closed(self) -> None:
+        if self.connection and not self.connection.closed:
+            await self.connection.wait_closed()

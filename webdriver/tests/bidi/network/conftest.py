@@ -1,90 +1,140 @@
-import json
+import asyncio
+import pytest_asyncio
 
-import pytest
+from webdriver.bidi.error import NoSuchInterceptException
 
-from webdriver.bidi.modules.script import ContextTarget
-
-RESPONSE_COMPLETED_EVENT = "network.responseCompleted"
-
-PAGE_EMPTY_HTML = "/webdriver/tests/bidi/network/support/empty.html"
+from tests.support.sync import AsyncPoll
+from . import PAGE_EMPTY_TEXT
 
 
-@pytest.fixture
-def fetch(bidi_session, top_context):
-    """Perform a fetch from the page of the provided context, default to the
-    top context.
-    """
-    async def fetch(url, method="GET", headers=None, context=top_context):
-        method_arg = f"method: '{method}',"
+@pytest_asyncio.fixture
+async def add_intercept(bidi_session):
+    """Add a network intercept for the provided phases and url patterns, and
+    ensure the intercept is removed at the end of the test."""
 
-        headers_arg = ""
-        if headers != None:
-            headers_arg = f"headers: {json.dumps(headers)},"
+    intercepts = []
 
-        # Wait for fetch() to resolve a response and for response.text() to
-        # resolve as well to make sure the request/response is completed when
-        # the helper returns.
-        await bidi_session.script.evaluate(
-            expression=f"""
-                 fetch("{url}", {{
-                   {method_arg}
-                   {headers_arg}
-                 }}).then(response => response.text());""",
-            target=ContextTarget(context["context"]),
-            await_promise=True,
+    async def add_intercept(phases, url_patterns, contexts = None):
+        nonlocal intercepts
+        intercept = await bidi_session.network.add_intercept(
+            phases=phases,
+            url_patterns=url_patterns,
+            contexts=contexts,
         )
+        intercepts.append(intercept)
 
-    return fetch
+        return intercept
+
+    yield add_intercept
+
+    # Remove all added intercepts at the end of the test
+    for intercept in intercepts:
+        try:
+            await bidi_session.network.remove_intercept(intercept=intercept)
+        except NoSuchInterceptException:
+            # Ignore exceptions in case a specific intercept was already removed
+            # during the test.
+            pass
 
 
-@pytest.fixture
-async def setup_network_test(
-    bidi_session, subscribe_events, wait_for_event, top_context, url
+@pytest_asyncio.fixture
+async def setup_blocked_request(
+    bidi_session,
+    setup_network_test,
+    url,
+    add_intercept,
+    fetch,
+    wait_for_event,
+    wait_for_future_safe,
+    top_context,
 ):
-    """Navigate the current top level context to the provided url and subscribe
-    to network.beforeRequestSent.
+    """Creates an intercept for the provided phase, sends a fetch request that
+    should be blocked by this intercept and resolves when the corresponding
+    event is received.
 
-    Returns an `events` dictionary in which the captured network events will be added.
-    The keys of the dictionary are network event names (eg. "network.beforeRequestSent"),
-    and the value is an array of collected events.
+    Pass blocked_url to target a specific URL. Otherwise, the test will use
+    PAGE_EMPTY_TEXT as default test url.
+
+    Pass navigate=True in order to navigate instead of doing a fetch request.
+    If the navigation url should be different from the blocked url, you can
+    specify navigate_url.
+
+    For the "authRequired" phase, the request will be sent to the authentication
+    http handler. The optional arguments username, password and realm can be used
+    to configure the handler.
+
+    Returns the `request` id of the intercepted request.
     """
-    listeners = []
 
-    async def _setup_network_test(events, test_url=url(PAGE_EMPTY_HTML), contexts=None):
-        nonlocal listeners
+    async def setup_blocked_request(
+        phase,
+        context=top_context,
+        username="user",
+        password="password",
+        realm="test",
+        blocked_url=None,
+        navigate=False,
+        navigate_url=None,
+        **kwargs,
+    ):
+        await setup_network_test(events=[f"network.{phase}"])
 
-        # Listen for network.responseCompleted for the initial navigation to
-        # make sure this event will not be captured unexpectedly by the tests.
-        await bidi_session.session.subscribe(
-            events=[RESPONSE_COMPLETED_EVENT], contexts=[top_context["context"]]
+        if blocked_url is None:
+            if phase == "authRequired":
+                blocked_url = url(
+                    "/webdriver/tests/support/http_handlers/authentication.py?"
+                    f"username={username}&password={password}&realm={realm}"
+                )
+                if navigate:
+                    # By default the authentication handler returns a text/plain
+                    # content-type. Switch to text/html for a regular navigation.
+                    blocked_url = f"{blocked_url}&contenttype=text/html"
+            else:
+                blocked_url = url(PAGE_EMPTY_TEXT)
+
+        await add_intercept(
+            phases=[phase],
+            url_patterns=[
+                {
+                    "type": "string",
+                    "pattern": blocked_url,
+                }
+            ],
         )
-        on_response_completed = wait_for_event(RESPONSE_COMPLETED_EVENT)
 
-        await bidi_session.browsing_context.navigate(
-            context=top_context["context"],
-            url=test_url,
-            wait="complete",
-        )
-        await on_response_completed
-        await bidi_session.session.unsubscribe(
-            events=[RESPONSE_COMPLETED_EVENT], contexts=[top_context["context"]]
+        events = []
+
+        async def on_event(method, data):
+            events.append(data)
+
+        remove_listener = bidi_session.add_event_listener(
+            f"network.{phase}", on_event
         )
 
-        await subscribe_events(events, contexts)
 
-        network_events = {}
-        for event in events:
-            network_events[event] = []
+        network_event = wait_for_event(f"network.{phase}")
+        if navigate:
+            if navigate_url is None:
+                navigate_url = blocked_url
 
-            async def on_event(method, data, event=event):
-                network_events[event].append(data)
+            asyncio.ensure_future(
+                bidi_session.browsing_context.navigate(
+                    context=context["context"], url=navigate_url, wait="complete"
+                )
+            )
+        else:
+            asyncio.ensure_future(fetch(blocked_url, context=context, **kwargs))
 
-            listeners.append(bidi_session.add_event_listener(event, on_event))
 
-        return network_events
+        # Wait for the first blocked request. When testing a navigation where
+        # navigate_url is different from blocked_url, non-blocked events will
+        # be received before the blocked request.
+        wait = AsyncPoll(bidi_session, timeout=2)
+        await wait.until(lambda _: any(e["isBlocked"] is True for e in events))
 
-    yield _setup_network_test
+        [blocked_event] = [e for e in events if e["isBlocked"] is True]
+        request = blocked_event["request"]["request"]
 
-    # cleanup
-    for remove_listener in listeners:
-        remove_listener()
+        return request
+
+    return setup_blocked_request

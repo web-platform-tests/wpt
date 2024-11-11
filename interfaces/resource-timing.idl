@@ -6,6 +6,7 @@
 [Exposed=(Window,Worker)]
 interface PerformanceResourceTiming : PerformanceEntry {
     readonly attribute DOMString initiatorType;
+    readonly attribute DOMString deliveryType;
     readonly attribute ByteString nextHopProtocol;
     readonly attribute DOMHighResTimeStamp workerStart;
     readonly attribute DOMHighResTimeStamp redirectStart;
@@ -17,6 +18,7 @@ interface PerformanceResourceTiming : PerformanceEntry {
     readonly attribute DOMHighResTimeStamp connectEnd;
     readonly attribute DOMHighResTimeStamp secureConnectionStart;
     readonly attribute DOMHighResTimeStamp requestStart;
+    readonly attribute DOMHighResTimeStamp firstInterimResponseStart;
     readonly attribute DOMHighResTimeStamp responseStart;
     readonly attribute DOMHighResTimeStamp responseEnd;
     readonly attribute unsigned long long  transferSize;
@@ -24,6 +26,7 @@ interface PerformanceResourceTiming : PerformanceEntry {
     readonly attribute unsigned long long  decodedBodySize;
     readonly attribute unsigned short responseStatus;
     readonly attribute RenderBlockingStatusType renderBlockingStatus;
+    readonly attribute DOMString contentType;
     [Default] object toJSON();
 };
 

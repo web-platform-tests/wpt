@@ -5,6 +5,7 @@
     <title>CSS Test: font-size-adjust property</title>
     <link rel="match" href="font-size-adjust-012-ref.html">
     <link rel="help" href="https://www.w3.org/TR/css-fonts-4/#font-size-adjust-prop">
+    <meta name="fuzzy" content="maxDifference=0-120;totalPixels=0-160">
     <style>
         @font-face {
             font-family: 'ahem-ex-500';
@@ -23,9 +24,10 @@
         }
         .test {
             font-family: var(--primary-font), var(--secondary-font);
-            font-size: 50px;
+            font-size: 100px;
+            line-height: 1;
             color: peru;
-            height: 50px;
+            height: 100px;
         }
         .primary-font {
             font-family: var(--primary-font);

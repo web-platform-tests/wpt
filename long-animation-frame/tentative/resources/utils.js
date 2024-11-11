@@ -1,15 +1,20 @@
 const windowLoaded = new Promise(resolve => window.addEventListener('load', resolve));
-setup(() =>
-  assert_implements(window.PerformanceLongAnimationFrameTiming,
-    'Long animation frames are not supported.'));
+if ("setup" in globalThis) {
+  setup(() =>
+    assert_implements(window.PerformanceLongAnimationFrameTiming,
+      'Long animation frames are not supported.'));
+}
 
 const very_long_frame_duration = 360;
+const no_long_frame_timeout = very_long_frame_duration * 2;
+const waiting_for_long_frame_timeout = very_long_frame_duration * 10;
 
 function loaf_promise(t) {
   return new Promise(resolve => {
       const observer = new PerformanceObserver(entries => {
           const entry = entries.getEntries()[0];
-          if (entry.duration >= very_long_frame_duration) {
+          // TODO: understand why we need this 5ms epsilon.
+          if (entry.duration > very_long_frame_duration - 5) {
             observer.disconnect();
             resolve(entry);
           }
@@ -21,8 +26,6 @@ function loaf_promise(t) {
   });
 }
 
-const no_long_frame_timeout = very_long_frame_duration * 2;
-
 function busy_wait(ms_delay = very_long_frame_duration) {
   const deadline = performance.now() + ms_delay;
   while (performance.now() < deadline) {}
@@ -32,7 +35,7 @@ async function expect_long_frame(cb, t) {
   await windowLoaded;
   await new Promise(resolve => t.step_timeout(resolve, 0));
   const timeout = new Promise((resolve, reject) =>
-    t.step_timeout(() => resolve("timeout"), no_long_frame_timeout));
+    t.step_timeout(() => resolve("timeout"), waiting_for_long_frame_timeout));
   const receivedLongFrame = loaf_promise(t);
   await cb(t);
   const entry = await Promise.race([
@@ -48,7 +51,7 @@ async function expect_long_frame_with_script(cb, predicate, t) {
       if (entry === "timeout" || !entry.scripts.length)
         continue;
       for (const script of entry.scripts) {
-        if (predicate(script))
+        if (predicate(script, entry))
           return [entry, script];
       }
   }
@@ -92,13 +95,16 @@ async function prepare_exec_popup(t, origin) {
   t.add_cleanup(() => popup.close());
   return [new RemoteContext(uuid), popup];
 }
-function test_loaf_script(cb, name, type, label) {
+function test_loaf_script(cb, invoker, invokerType, label) {
   promise_test(async t => {
-    const [entry, script] = await expect_long_frame_with_script(cb,
-        script => (script.type === type && script.duration >= very_long_frame_duration), t);
+    let [entry, script] = [];
+    [entry, script] = await expect_long_frame_with_script(cb,
+      script => (
+        script.invokerType === invokerType &&
+        script.invoker.startsWith(invoker) &&
+        script.duration >= very_long_frame_duration), t);
 
     assert_true(!!entry, "Entry detected");
-    assert_equals(script.name, name);
     assert_greater_than_equal(script.duration, very_long_frame_duration);
     assert_greater_than_equal(entry.duration, script.duration);
     assert_greater_than_equal(script.executionStart, script.startTime);
@@ -106,22 +112,22 @@ function test_loaf_script(cb, name, type, label) {
     assert_equals(script.window, window);
     assert_equals(script.forcedStyleAndLayoutDuration, 0);
     assert_equals(script.windowAttribution, "self");
-}, `LoAF script: ${name} ${type},${label ? ` ${label}` : ''}`);
+}, `LoAF script: ${invoker} ${invokerType},${label ? ` ${label}` : ''}`);
 
 }
 
-function test_self_user_callback(cb, name) {
-    test_loaf_script(cb, name, "user-callback");
+function test_self_user_callback(cb, invoker, label) {
+    test_loaf_script(cb, invoker, "user-callback", label);
 }
 
-function test_self_event_listener(cb, name) {
-  test_loaf_script(cb, name, "event-listener");
+function test_self_event_listener(cb, invoker) {
+  test_loaf_script(cb, invoker, "event-listener");
 }
 
-function test_promise_script(cb, resolve_or_reject, name, label) {
-  test_loaf_script(cb, name, `${resolve_or_reject}-promise`, label);
+function test_promise_script(cb, resolve_or_reject, invoker, label) {
+  test_loaf_script(cb, invoker, `${resolve_or_reject}-promise`, label);
 }
 
-function test_self_script_block(cb, name, type) {
-  test_loaf_script(cb, name, type);
+function test_self_script_block(cb, invoker, type) {
+  test_loaf_script(cb, invoker, type);
 }

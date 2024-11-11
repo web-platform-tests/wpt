@@ -124,6 +124,8 @@ async def test_params_page_invalid_type(bidi_session, top_context, page):
     [
         {"height": -1},
         {"width": -1},
+        {"height": 0.03},
+        {"width": 0.03},
     ],
 )
 async def test_params_page_invalid_value(bidi_session, top_context, page):
@@ -152,6 +154,7 @@ async def test_params_page_ranges_invalid_type(bidi_session, top_context, page_r
         await bidi_session.browsing_context.print(
             context=top_context["context"], page_ranges=page_ranges
         )
+
 
 @pytest.mark.parametrize(
     "page_ranges",

@@ -1,7 +1,8 @@
 import pytest
-from typing import Any, List, Mapping
+import pytest_asyncio
+from typing import Any, List, Mapping, Optional
 
-from webdriver.bidi.modules.script import ContextTarget, OwnershipModel
+from webdriver.bidi.modules.script import ContextTarget, OwnershipModel, SerializationOptions
 
 
 @pytest.fixture
@@ -13,11 +14,12 @@ def call_function(bidi_session, top_context):
         context: str = top_context["context"],
         sandbox: str = None,
         result_ownership: OwnershipModel = OwnershipModel.NONE.value,
+        serialization_options: Optional[SerializationOptions] = None,
     ) -> Mapping[str, Any]:
         if sandbox is None:
-            target = ContextTarget(top_context["context"])
+            target = ContextTarget(context)
         else:
-            target = ContextTarget(top_context["context"], sandbox)
+            target = ContextTarget(context, sandbox)
 
         result = await bidi_session.script.call_function(
             function_declaration=function_declaration,
@@ -25,6 +27,7 @@ def call_function(bidi_session, top_context):
             this=this,
             await_promise=False,
             result_ownership=result_ownership,
+            serialization_options=serialization_options,
             target=target,
         )
         return result
@@ -32,7 +35,7 @@ def call_function(bidi_session, top_context):
     return call_function
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def default_realm(bidi_session, top_context):
     realms = await bidi_session.script.get_realms(context=top_context["context"])
     return realms[0]["realm"]
@@ -45,16 +48,18 @@ def evaluate(bidi_session, top_context):
         context: str = top_context["context"],
         sandbox: str = None,
         result_ownership: OwnershipModel = OwnershipModel.NONE.value,
+        serialization_options: Optional[SerializationOptions] = None,
     ) -> Mapping[str, Any]:
         if sandbox is None:
-            target = ContextTarget(top_context["context"])
+            target = ContextTarget(context)
         else:
-            target = ContextTarget(top_context["context"], sandbox)
+            target = ContextTarget(context, sandbox)
 
         result = await bidi_session.script.evaluate(
             expression=expression,
             await_promise=False,
             result_ownership=result_ownership,
+            serialization_options=serialization_options,
             target=target,
         )
         return result

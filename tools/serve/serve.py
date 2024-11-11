@@ -19,7 +19,7 @@ from collections import defaultdict, OrderedDict
 from io import IOBase
 from itertools import chain, product
 from html5lib import html5parser
-from typing import ClassVar, List, Set, Tuple
+from typing import ClassVar, List, Optional, Set, Tuple
 
 from localpaths import repo_root  # type: ignore
 
@@ -30,7 +30,7 @@ from wptserve import config
 from wptserve.handlers import filesystem_path, wrap_pipeline
 from wptserve.response import ResponseHeaders
 from wptserve.utils import get_port, HTTPException, http2_compatible
-from mod_pywebsocket import standalone as pywebsocket
+from pywebsocket3 import standalone as pywebsocket
 
 
 EDIT_HOSTS_HELP = ("Please ensure all the necessary WPT subdomains "
@@ -97,7 +97,7 @@ class WrapperHandler:
 
     __meta__ = abc.ABCMeta
 
-    headers = []  # type: ClassVar[List[Tuple[str, str]]]
+    headers: ClassVar[List[Tuple[str, str]]] = []
 
     def __init__(self, base_path=None, url_base="/"):
         self.base_path = base_path
@@ -214,18 +214,18 @@ class WrapperHandler:
 
 
 class HtmlWrapperHandler(WrapperHandler):
-    global_type = None  # type: ClassVar[str]
+    global_type: ClassVar[Optional[str]] = None
     headers = [('Content-Type', 'text/html')]
 
     def check_exposure(self, request):
-        if self.global_type:
-            globals = ""
+        if self.global_type is not None:
+            global_variants = ""
             for (key, value) in self._get_metadata(request):
                 if key == "global":
-                    globals = value
+                    global_variants = value
                     break
 
-            if self.global_type not in parse_variants(globals):
+            if self.global_type not in parse_variants(global_variants):
                 raise HTTPException(404, "This test cannot be loaded in %s mode" %
                                     self.global_type)
 
@@ -312,6 +312,20 @@ class WindowHandler(HtmlWrapperHandler):
 %(script)s
 <div id=log></div>
 <script src="%(path)s"></script>
+"""
+
+
+class WindowModulesHandler(HtmlWrapperHandler):
+    global_type = "window-module"
+    path_replace = [(".any.window-module.html", ".any.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+%(script)s
+<div id=log></div>
+<script type=module src="%(path)s"></script>
 """
 
 
@@ -423,7 +437,18 @@ class ShadowRealmHandler(HtmlWrapperHandler):
 <script>
 (async function() {
   const r = new ShadowRealm();
-
+  r.evaluate("globalThis.self = globalThis; undefined;");
+  r.evaluate(`func => {
+    globalThis.fetch_json = (resource) => {
+      const thenMethod = func(resource);
+      return new Promise((resolve, reject) => thenMethod((s) => resolve(JSON.parse(s)), reject));
+    };
+  }`)((resource) => function (resolve, reject) {
+    fetch(resource).then(res => res.text(), String).then(resolve, reject);
+  });
+  r.evaluate(`s => {
+    globalThis.location = { search: s };
+  }`)(location.search);
   await new Promise(r.evaluate(`
     (resolve, reject) => {
       (async () => {
@@ -566,6 +591,7 @@ class RoutesBuilder:
             ("GET", "*.any.serviceworker.html", ServiceWorkersHandler),
             ("GET", "*.any.serviceworker-module.html", ServiceWorkerModulesHandler),
             ("GET", "*.any.shadowrealm.html", ShadowRealmHandler),
+            ("GET", "*.any.window-module.html", WindowModulesHandler),
             ("GET", "*.any.worker.js", ClassicWorkerHandler),
             ("GET", "*.any.worker-module.js", ModuleWorkerHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
@@ -573,7 +599,10 @@ class RoutesBuilder:
             ("*", "/.well-known/attribution-reporting/debug/report-event-attribution", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/report-aggregate-attribution", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/debug/report-aggregate-attribution", handlers.PythonScriptHandler),
+            ("*", "/.well-known/attribution-reporting/debug/report-aggregate-debug", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/debug/verbose", handlers.PythonScriptHandler),
+            ("GET", "/.well-known/interest-group/permissions/", handlers.PythonScriptHandler),
+            ("*", "/.well-known/private-aggregation/*", handlers.PythonScriptHandler),
             ("*", "/.well-known/web-identity", handlers.PythonScriptHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
             ("GET", "*", handlers.FileHandler)
@@ -621,19 +650,19 @@ class ServerProc:
     def start(self, init_func, host, port, paths, routes, bind_address, config, log_handlers, **kwargs):
         self.proc = self.mp_context.Process(target=self.create_daemon,
                                             args=(init_func, host, port, paths, routes, bind_address,
-                                                  config, log_handlers),
+                                                  config, log_handlers, dict(**os.environ)),
                                             name='%s on port %s' % (self.scheme, port),
                                             kwargs=kwargs)
         self.proc.daemon = True
         self.proc.start()
 
     def create_daemon(self, init_func, host, port, paths, routes, bind_address,
-                      config, log_handlers, **kwargs):
+                      config, log_handlers, env, **kwargs):
         # Ensure that when we start this in a new process we have the global lock
         # in the logging module unlocked
         importlib.reload(logging)
-
-        logger = get_logger(config.log_level, log_handlers)
+        os.environ = env
+        logger = get_logger(config.logging["level"], log_handlers)
 
         if sys.platform == "darwin":
             # on Darwin, NOFILE starts with a very low limit (256), so bump it up a little
@@ -651,7 +680,7 @@ class ServerProc:
         try:
             self.daemon = init_func(logger, host, port, paths, routes, bind_address, config, **kwargs)
         except OSError:
-            logger.critical("Socket error on port %s" % port, file=sys.stderr)
+            logger.critical("Socket error on port %s" % port)
             raise
         except Exception:
             logger.critical(traceback.format_exc())
@@ -801,7 +830,8 @@ def start_http_server(logger, host, port, paths, routes, bind_address, config, *
                                      key_file=None,
                                      certificate=None,
                                      latency=kwargs.get("latency"))
-    except Exception:
+    except Exception as error:
+        logger.critical(f"start_http_server: Caught exception from wptserve.WebTestHttpd: {error}")
         startup_failed(logger)
 
 
@@ -819,7 +849,8 @@ def start_https_server(logger, host, port, paths, routes, bind_address, config, 
                                      certificate=config.ssl_config["cert_path"],
                                      encrypt_after_connect=config.ssl_config["encrypt_after_connect"],
                                      latency=kwargs.get("latency"))
-    except Exception:
+    except Exception as error:
+        logger.critical(f"start_https_server: Caught exception from wptserve.WebTestHttpd: {error}")
         startup_failed(logger)
 
 
@@ -840,7 +871,8 @@ def start_http2_server(logger, host, port, paths, routes, bind_address, config, 
                                      encrypt_after_connect=config.ssl_config["encrypt_after_connect"],
                                      latency=kwargs.get("latency"),
                                      http2=True)
-    except Exception:
+    except Exception as error:
+        logger.critical(f"start_http2_server: Caught exception from wptserve.WebTestHttpd: {error}")
         startup_failed(logger)
 
 
@@ -868,7 +900,7 @@ class WebSocketDaemon:
             # TODO: Fix the logging configuration in WebSockets processes
             # see https://github.com/web-platform-tests/wpt/issues/22719
             logger.critical("Failed to start websocket server on port %s, "
-                            "is something already using that port?" % port, file=sys.stderr)
+                            "is something already using that port?" % port)
             raise OSError()
         assert all(item == ports[0] for item in ports)
         self.port = ports[0]
@@ -907,7 +939,8 @@ def start_ws_server(logger, host, port, paths, routes, bind_address, config, **k
                                config.paths["ws_doc_root"],
                                bind_address,
                                ssl_config=None)
-    except Exception:
+    except Exception as error:
+        logger.critical(f"start_ws_server: Caught exception from WebSocketDomain: {error}")
         startup_failed(logger)
 
 
@@ -919,7 +952,8 @@ def start_wss_server(logger, host, port, paths, routes, bind_address, config, **
                                config.paths["ws_doc_root"],
                                bind_address,
                                config.ssl_config)
-    except Exception:
+    except Exception as error:
+        logger.critical(f"start_wss_server: Caught exception from WebSocketDomain: {error}")
         startup_failed(logger)
 
 
@@ -1003,7 +1037,6 @@ class ConfigBuilder(config.ConfigBuilder):
             "webtransport-h3": ["auto"],
         },
         "check_subdomains": True,
-        "log_level": "info",
         "bind_address": True,
         "ssl": {
             "type": "pregenerated",
@@ -1022,7 +1055,11 @@ class ConfigBuilder(config.ConfigBuilder):
             },
             "none": {}
         },
-        "aliases": []
+        "aliases": [],
+        "logging": {
+            "level": "info",
+            "suppress_handler_traceback": False
+        }
     }
 
     computed_properties = ["ws_doc_root"] + config.ConfigBuilder.computed_properties
@@ -1082,7 +1119,7 @@ def build_config(logger, override_path=None, config_cls=ConfigBuilder, **kwargs)
             raise ValueError("Config path %s does not exist" % other_path)
 
     if kwargs.get("verbose"):
-        rv.log_level = "debug"
+        rv.logging["level"] = "DEBUG"
 
     setattr(rv, "inject_script", kwargs.get("inject_script"))
 
@@ -1174,7 +1211,7 @@ def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, log_handl
                       config_cls=config_cls,
                       **kwargs) as config:
         # This sets the right log level
-        logger = get_logger(config.log_level, log_handlers)
+        logger = get_logger(config.logging["level"], log_handlers)
 
         bind_address = config["bind_address"]
 

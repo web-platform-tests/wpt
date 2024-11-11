@@ -4,7 +4,7 @@ components:
     workerType: ci
     schedulerId: taskcluster-github
     deadline: "24 hours"
-    image: webplatformtests/wpt:0.52
+    image: ghcr.io/web-platform-tests/wpt:1
     maxRunTime: 7200
     artifacts:
       public/results:
@@ -22,7 +22,7 @@ components:
       test-type: testharness
 
   wpt-reftest:
-    chunks: 5
+    chunks: 6
     vars:
       test-type: reftest
 
@@ -108,24 +108,31 @@ components:
 
   browser-servo: {}
 
-  tox-python3_6:
+  browser-firefox_android:
+    privileged: true
+    scopes:
+      - "docker-worker:capability:privileged"
+    chunks-override:
+      testharness: 24
+
+  tox-python3_8:
     env:
-      TOXENV: py36
+      TOXENV: py38
       PY_COLORS: "0"
     install:
-      - python3.6
-      - python3.6-distutils
-      - python3.6-dev
+      - python3.8
+      - python3.8-distutils
+      - python3.8-dev
+      - python3.8-venv
 
-  tox-python3_10:
+  tox-python3_12:
     env:
-      TOXENV: py310
+      TOXENV: py312
       PY_COLORS: "0"
     install:
-      - python3.10
-      - python3.10-distutils
-      - python3.10-dev
-
+      - python3.12
+      - python3.12-dev
+      - python3.12-venv
   tests-affected:
     options:
       browser:
@@ -180,6 +187,12 @@ tasks:
                 - trigger-push
             - vars:
                 browser: chrome
+                channel: canary
+              use:
+                - trigger-master
+                - trigger-push
+            - vars:
+                browser: chrome
                 channel: dev
               use:
                 - trigger-master
@@ -218,7 +231,13 @@ tasks:
                 browser: servo
                 channel: nightly
               use:
-                - trigger-weekly
+                - trigger-daily
+                - trigger-push
+            - vars:
+                browser: firefox_android
+                channel: nightly
+              use:
+                - trigger-daily
                 - trigger-push
           do:
             - ${vars.browser}-${vars.channel}-${vars.suite}:
@@ -268,6 +287,12 @@ tasks:
                 - trigger-push
             - vars:
                 browser: chrome
+                channel: canary
+              use:
+                - trigger-master
+                - trigger-push
+            - vars:
+                browser: chrome
                 channel: dev
               use:
                 - trigger-master
@@ -304,11 +329,13 @@ tasks:
             channel: nightly
             stability-exclude-users:
               - moz-wptsync-bot
+            required: true
         - vars:
             browser: chrome
             channel: dev
             stability-exclude-users:
               - chromium-wpt-export-bot
+            required: false
       do:
         - wpt-${vars.browser}-${vars.channel}-stability:
             use:
@@ -333,6 +360,7 @@ tasks:
               --verify-repeat-restart=10
               --github-checks-text-file="/home/test/artifacts/checkrun.md"
             exclude-users: ${vars.stability-exclude-users}
+            required: ${vars.required}
 
         - wpt-${vars.browser}-${vars.channel}-results:
             use:
@@ -409,13 +437,13 @@ tasks:
           - update_built
       command: "./tools/ci/ci_built_diff.sh"
 
-  - tools/ unittests (Python 3.6):
+  - tools/ unittests (Python 3.8):
       description: >-
-        Unit tests for tools running under Python 3.6, excluding wptrunner
+        Unit tests for tools running under Python 3.8, excluding wptrunner
       use:
         - wpt-base
         - trigger-pr
-        - tox-python3_6
+        - tox-python3_8
       command: ./tools/ci/ci_tools_unittest.sh
       env:
         HYPOTHESIS_PROFILE: ci
@@ -423,13 +451,13 @@ tasks:
         run-job:
           - tools_unittest
 
-  - tools/ unittests (Python 3.10):
+  - tools/ unittests (Python 3.12):
       description: >-
-        Unit tests for tools running under Python 3.10, excluding wptrunner
+        Unit tests for tools running under Python 3.12, excluding wptrunner
       use:
         - wpt-base
         - trigger-pr
-        - tox-python3_10
+        - tox-python3_12
       command: ./tools/ci/ci_tools_unittest.sh
       env:
         HYPOTHESIS_PROFILE: ci
@@ -437,13 +465,13 @@ tasks:
         run-job:
           - tools_unittest
 
-  - tools/ integration tests (Python 3.6):
+  - tools/ integration tests (Python 3.8):
       description: >-
-        Integration tests for tools running under Python 3.6
+        Integration tests for tools running under Python 3.8
       use:
         - wpt-base
         - trigger-pr
-        - tox-python3_6
+        - tox-python3_8
       command: ./tools/ci/ci_tools_integration_test.sh
       install:
         - libnss3-tools
@@ -459,13 +487,13 @@ tasks:
         run-job:
           - wpt_integration
 
-  - tools/ integration tests (Python 3.10):
+  - tools/ integration tests (Python 3.12):
       description: >-
-        Integration tests for tools running under Python 3.10
+        Integration tests for tools running under Python 3.12
       use:
         - wpt-base
         - trigger-pr
-        - tox-python3_10
+        - tox-python3_12
       command: ./tools/ci/ci_tools_integration_test.sh
       install:
         - libnss3-tools
@@ -481,13 +509,13 @@ tasks:
         run-job:
           - wpt_integration
 
-  - resources/ tests (Python 3.6):
+  - resources/ tests (Python 3.8):
       description: >-
-        Tests for testharness.js and other files in resources/ under Python 3.6
+        Tests for testharness.js and other files in resources/ under Python 3.8
       use:
         - wpt-base
         - trigger-pr
-        - tox-python3_6
+        - tox-python3_8
       command: ./tools/ci/ci_resources_unittest.sh
       install:
         - libnss3-tools
@@ -500,13 +528,13 @@ tasks:
         run-job:
           - resources_unittest
 
-  - resources/ tests (Python 3.10):
+  - resources/ tests (Python 3.12):
       description: >-
-        Tests for testharness.js and other files in resources/ under Python 3.10
+        Tests for testharness.js and other files in resources/ under Python 3.12
       use:
         - wpt-base
         - trigger-pr
-        - tox-python3_10
+        - tox-python3_12
       command: ./tools/ci/ci_resources_unittest.sh
       install:
         - libnss3-tools
@@ -528,6 +556,7 @@ tasks:
         - wpt-base
         - trigger-pr
         - browser-firefox
+        - browser-firefox_android
       command: ./tools/ci/ci_wptrunner_infrastructure.sh
       install:
         - python3-pip
@@ -539,6 +568,7 @@ tasks:
         browser:
           - firefox
           - chrome
+          - firefox_android
         channel: experimental
         xvfb: true
         hosts: false

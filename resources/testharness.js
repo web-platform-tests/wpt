@@ -91,7 +91,12 @@
         }
 
         on_event(window, 'load', function() {
+          setTimeout(() => {
             this_obj.all_loaded = true;
+            if (tests.all_done()) {
+              tests.complete();
+            }
+          },0);
         });
 
         on_event(window, 'message', function(event) {
@@ -852,7 +857,7 @@
             promise = promiseOrConstructor;
             description = descriptionOrPromise;
             assert(maybeDescription === undefined,
-                   "Too many args pased to no-constructor version of promise_rejects_dom");
+                   "Too many args passed to no-constructor version of promise_rejects_dom, or accidentally explicitly passed undefined");
         }
         return bring_promise_to_current_realm(promise)
             .then(test.unreached_func("Should have rejected: " + description))
@@ -1196,6 +1201,23 @@
         object.addEventListener(event, callback, false);
     }
 
+    // Internal helper function to provide timeout-like functionality in
+    // environments where there is no setTimeout(). (No timeout ID or
+    // clearTimeout().)
+    function fake_set_timeout(callback, delay) {
+        var p = Promise.resolve();
+        var start = Date.now();
+        var end = start + delay;
+        function check() {
+            if ((end - Date.now()) > 0) {
+                p.then(check);
+            } else {
+                callback();
+            }
+        }
+        p.then(check);
+    }
+
     /**
      * Global version of :js:func:`Test.step_timeout` for use in single page tests.
      *
@@ -1207,7 +1229,8 @@
     function step_timeout(func, timeout) {
         var outer_this = this;
         var args = Array.prototype.slice.call(arguments, 2);
-        return setTimeout(function() {
+        var local_set_timeout = typeof global_scope.setTimeout === "undefined" ? fake_set_timeout : setTimeout;
+        return local_set_timeout(function() {
             func.apply(outer_this, args);
         }, timeout * tests.timeout_multiplier);
     }
@@ -1426,12 +1449,16 @@
         function assert_wrapper(...args) {
             let status = Test.statuses.TIMEOUT;
             let stack = null;
+            let new_assert_index = null;
             try {
                 if (settings.debug) {
                     console.debug("ASSERT", name, tests.current_test && tests.current_test.name, args);
                 }
                 if (tests.output) {
                     tests.set_assert(name, args);
+                    // Remember the newly pushed assert's index, because `apply`
+                    // below might push new asserts.
+                    new_assert_index = tests.asserts_run.length - 1;
                 }
                 const rv = f.apply(undefined, args);
                 status = Test.statuses.PASS;
@@ -1445,7 +1472,7 @@
                     stack = get_stack();
                 }
                 if (tests.output) {
-                    tests.set_assert_status(status, stack);
+                    tests.set_assert_status(new_assert_index, status, stack);
                 }
             }
         }
@@ -1493,7 +1520,7 @@
     /**
      * Assert that ``actual`` is the same value as ``expected``.
      *
-     * For objects this compares by cobject identity; for primitives
+     * For objects this compares by object identity; for primitives
      * this distinguishes between 0 and -0, and has correct handling
      * of NaN.
      *
@@ -2147,7 +2174,7 @@
             func = funcOrConstructor;
             description = descriptionOrFunc;
             assert(maybeDescription === undefined,
-                   "Too many args pased to no-constructor version of assert_throws_dom");
+                   "Too many args passed to no-constructor version of assert_throws_dom, or accidentally explicitly passed undefined");
         }
         assert_throws_dom_impl(type, func, description, "assert_throws_dom", constructor)
     }
@@ -2711,7 +2738,8 @@
     Test.prototype.step_timeout = function(func, timeout) {
         var test_this = this;
         var args = Array.prototype.slice.call(arguments, 2);
-        return setTimeout(this.step_func(function() {
+        var local_set_timeout = typeof global_scope.setTimeout === "undefined" ? fake_set_timeout : setTimeout;
+        return local_set_timeout(this.step_func(function() {
             return func.apply(test_this, args);
         }), timeout * tests.timeout_multiplier);
     };
@@ -2725,8 +2753,9 @@
      * speed when the condition is quickly met.
      *
      * @param {Function} cond A function taking no arguments and
-     *                        returning a boolean. The callback is called
-     *                        when this function returns true.
+     *                        returning a boolean or a Promise. The callback is
+     *                        called when this function returns true, or the
+     *                        returned Promise is resolved with true.
      * @param {Function} func A function taking no arguments to call once
      *                        the condition is met.
      * @param {string} [description] Error message to add to assert in case of
@@ -2741,18 +2770,25 @@
         var timeout_full = timeout * tests.timeout_multiplier;
         var remaining = Math.ceil(timeout_full / interval);
         var test_this = this;
+        var local_set_timeout = typeof global_scope.setTimeout === 'undefined' ? fake_set_timeout : setTimeout;
 
-        var wait_for_inner = test_this.step_func(() => {
-            if (cond()) {
+        const step = test_this.step_func((result) => {
+            if (result) {
                 func();
             } else {
-                if(remaining === 0) {
+                if (remaining === 0) {
                     assert(false, "step_wait_func", description,
                            "Timed out waiting on condition");
                 }
                 remaining--;
-                setTimeout(wait_for_inner, interval);
+                local_set_timeout(wait_for_inner, interval);
             }
+        });
+
+        var wait_for_inner = test_this.step_func(() => {
+            Promise.resolve(cond()).then(
+                step,
+                test_this.unreached_func("step_wait_func"));
         });
 
         wait_for_inner();
@@ -2780,8 +2816,9 @@
      * }, "Navigating a popup to about:blank");
      *
      * @param {Function} cond A function taking no arguments and
-     *                        returning a boolean. The callback is called
-     *                        when this function returns true.
+     *                        returning a boolean or a Promise. The callback is
+     *                        called when this function returns true, or the
+     *                        returned Promise is resolved with true.
      * @param {Function} func A function taking no arguments to call once
      *                        the condition is met.
      * @param {string} [description] Error message to add to assert in case of
@@ -2817,7 +2854,7 @@
      * }, "");
      *
      * @param {Function} cond A function taking no arguments and
-     *                        returning a boolean.
+     *                        returning a boolean or a Promise.
      * @param {string} [description] Error message to add to assert in case of
      *                              failure.
      * @param {number} timeout Timeout in ms. This is multiplied by the global
@@ -3673,8 +3710,8 @@
         this.asserts_run.push(new AssertRecord(this.current_test, assert_name, args))
     }
 
-    Tests.prototype.set_assert_status = function(status, stack) {
-        let assert_record = this.asserts_run[this.asserts_run.length - 1];
+    Tests.prototype.set_assert_status = function(index, status, stack) {
+        let assert_record = this.asserts_run[index];
         assert_record.status = status;
         assert_record.stack = stack;
     }
@@ -4157,11 +4194,7 @@
                                                  status
                                                 ],
                                                ],
-                                               ["button",
-                                                {"onclick": "let evt = new Event('__test_restart'); " +
-                                                 "let canceled = !window.dispatchEvent(evt);" +
-                                                 "if (!canceled) { location.reload() }"},
-                                                "Rerun"]
+                                               ["button", {"id":"rerun"}, "Rerun"]
                                               ]];
 
                                     if (harness_status.status === harness_status.ERROR) {
@@ -4193,6 +4226,13 @@
 
         log.appendChild(render(summary_template, {num_tests:tests.length}, output_document));
 
+        output_document.getElementById("rerun").addEventListener("click",
+            function() {
+                let evt = new Event('__test_restart');
+                let canceled = !window.dispatchEvent(evt);
+                if (!canceled) { location.reload(); }
+            });
+
         forEach(output_document.querySelectorAll("section#summary label"),
                 function(element)
                 {
@@ -4216,18 +4256,6 @@
                                  }
                              });
                 });
-
-        // This use of innerHTML plus manual escaping is not recommended in
-        // general, but is necessary here for performance.  Using textContent
-        // on each individual <td> adds tens of seconds of execution time for
-        // large test suites (tens of thousands of tests).
-        function escape_html(s)
-        {
-            return s.replace(/\&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#39;");
-        }
 
         function has_assertions()
         {
@@ -4259,81 +4287,63 @@
         });
 
         function get_asserts_output(test) {
+            const asserts_output = render(
+                ["details", {},
+                    ["summary", {}, "Asserts run"],
+                    ["table", {}, ""] ]);
+
             var asserts = asserts_run_by_test.get(test);
             if (!asserts) {
-                return "No asserts ran";
+                asserts_output.querySelector("summary").insertAdjacentText("afterend", "No asserts ran");
+                return asserts_output;
             }
-            rv = "<table>";
-            rv += asserts.map(assert => {
-                var output_fn = "<strong>" + escape_html(assert.assert_name) + "</strong>(";
-                var prefix_len = output_fn.length;
-                var output_args = assert.args;
-                var output_len = output_args.reduce((prev, current) => prev+current, prefix_len);
-                if (output_len[output_len.length - 1] > 50) {
-                    output_args = output_args.map((x, i) =>
-                    (i > 0 ? "  ".repeat(prefix_len) : "" )+ x + (i < output_args.length - 1 ? ",\n" : ""));
-                } else {
-                    output_args = output_args.map((x, i) => x + (i < output_args.length - 1 ? ", " : ""));
-                }
-                output_fn += escape_html(output_args.join(""));
-                output_fn += ')';
-                var output_location;
+
+            const table = asserts_output.querySelector("table");
+            for (const assert of asserts) {
+                const status_class_name = status_class(Test.prototype.status_formats[assert.status]);
+                var output_fn = "(" + assert.args.join(", ") + ")";
                 if (assert.stack) {
-                    output_location = assert.stack.split("\n", 1)[0].replace(/@?\w+:\/\/[^ "\/]+(?::\d+)?/g, " ");
+                    output_fn += "\n";
+                    output_fn += assert.stack.split("\n", 1)[0].replace(/@?\w+:\/\/[^ "\/]+(?::\d+)?/g, " ");
                 }
-                return "<tr class='overall-" +
-                    status_class(Test.prototype.status_formats[assert.status]) + "'>" +
-                    "<td class='" +
-                    status_class(Test.prototype.status_formats[assert.status]) + "'>" +
-                    Test.prototype.status_formats[assert.status] + "</td>" +
-                    "<td><pre>" +
-                    output_fn +
-                    (output_location ? "\n" + escape_html(output_location) : "") +
-                    "</pre></td></tr>";
+                table.appendChild(render(
+                    ["tr", {"class":"overall-" + status_class_name},
+                        ["td", {"class":status_class_name}, Test.prototype.status_formats[assert.status]],
+                        ["td", {}, ["pre", {}, ["strong", {}, assert.assert_name], output_fn]] ]));
             }
-            ).join("\n");
-            rv += "</table>";
-            return rv;
+            return asserts_output;
         }
 
-        log.appendChild(document.createElementNS(xhtml_ns, "section"));
         var assertions = has_assertions();
-        var html = "<h2>Details</h2><table id='results' " + (assertions ? "class='assertions'" : "" ) + ">" +
-            "<thead><tr><th>Result</th><th>Test Name</th>" +
-            (assertions ? "<th>Assertion</th>" : "") +
-            "<th>Message</th></tr></thead>" +
-            "<tbody>";
-        for (var i = 0; i < tests.length; i++) {
-            var test = tests[i];
-            html += '<tr class="overall-' +
-                status_class(test.format_status()) +
-                '">' +
-                '<td class="' +
-                status_class(test.format_status()) +
-                '">' +
-                test.format_status() +
-                "</td><td>" +
-                escape_html(test.name) +
-                "</td><td>" +
-                (assertions ? escape_html(get_assertion(test)) + "</td><td>" : "") +
-                escape_html(test.message ? tests[i].message : " ") +
-                (tests[i].stack ? "<pre>" +
-                 escape_html(tests[i].stack) +
-                 "</pre>": "");
+        const section = render(
+            ["section", {},
+                ["h2", {}, "Details"],
+                ["table", {"id":"results", "class":(assertions ? "assertions" : "")},
+                    ["thead", {},
+                        ["tr", {},
+                            ["th", {}, "Result"],
+                            ["th", {}, "Test Name"],
+                            (assertions ? ["th", {}, "Assertion"] : ""),
+                            ["th", {}, "Message" ]]],
+                    ["tbody", {}]]]);
+
+        const tbody = section.querySelector("tbody");
+        for (const test of tests) {
+            const status = test.format_status();
+            const status_class_name = status_class(status);
+            tbody.appendChild(render(
+                ["tr", {"class":"overall-" + status_class_name},
+                    ["td", {"class":status_class_name}, status],
+                    ["td", {}, test.name],
+                    (assertions ? ["td", {}, get_assertion(test)] : ""),
+                    ["td", {},
+                        test.message ?? "",
+                        ["pre", {}, test.stack ?? ""]]]));
             if (!(test instanceof RemoteTest)) {
-                 html += "<details><summary>Asserts run</summary>" + get_asserts_output(test) + "</details>"
+                tbody.lastChild.lastChild.appendChild(get_asserts_output(test));
             }
-            html += "</td></tr>";
         }
-        html += "</tbody></table>";
-        try {
-            log.lastChild.innerHTML = html;
-        } catch (e) {
-            log.appendChild(document.createElementNS(xhtml_ns, "p"))
-               .textContent = "Setting innerHTML for the log threw an exception.";
-            log.appendChild(document.createElementNS(xhtml_ns, "pre"))
-               .textContent = html;
-        }
+        log.appendChild(section);
     };
 
     /*
@@ -4758,6 +4768,15 @@
             return location.pathname.substring(location.pathname.lastIndexOf('/') + 1, location.pathname.indexOf('.'));
         }
         return "Untitled";
+    }
+
+    /** Fetches a JSON resource and parses it */
+    async function fetch_json(resource) {
+        const response = await fetch(resource);
+        return await response.json();
+    }
+    if (!global_scope.GLOBAL || !global_scope.GLOBAL.isShadowRealm()) {
+        expose(fetch_json, 'fetch_json');
     }
 
     /**

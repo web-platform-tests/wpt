@@ -1,5 +1,12 @@
 <!DOCTYPE html>
 <title>Prefetch with the referrer policy specified in speculation rules</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/common/subset-tests.js"></script>
+<script src="/common/utils.js"></script>
+<script src="../resources/utils.js"></script>
+<script src="resources/utils.sub.js"></script>
 
 <!--Split test cases due to the use of timeouts in speculation rules test utilities.-->
 <meta name="variant" content="?1-1">
@@ -8,21 +15,15 @@
 <meta name="variant" content="?4-4">
 <meta name="variant" content="?5-5">
 <meta name="variant" content="?6-6">
-<meta name="variant" content="?7-last">
-
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/common/dispatcher/dispatcher.js"></script>
-<script src="/common/subset-tests.js"></script>
-<script src="/common/utils.js"></script>
-<script src="resources/utils.sub.js"></script>
+<meta name="variant" content="?7-7">
+<meta name="variant" content="?8-last">
 
 <script>
 "use strict";
 
-subsetTest(promise_test, async t => {
-  assert_implements(HTMLScriptElement.supports('speculationrules'), "Speculation Rules not supported");
+setup(() => assertSpeculationRulesIsSupported());
 
+subsetTest(promise_test, async t => {
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("strict-origin-when-cross-origin");
   const expectedReferrer = agent.getExecutorURL().origin + "/";
@@ -37,8 +38,6 @@ subsetTest(promise_test, async t => {
 }, 'with "strict-origin" referrer policy in rule set overriding "strict-origin-when-cross-origin" of referring page');
 
 subsetTest(promise_test, async t => {
-  assert_implements(HTMLScriptElement.supports('speculationrules'), "Speculation Rules not supported");
-
   const agent = await spawnWindow(t);
   const next_url = agent.getExecutorURL({ page: 2 });
   await agent.execute_script((url) => {
@@ -56,14 +55,11 @@ subsetTest(promise_test, async t => {
 }, 'with "strict-origin" referrer policy in rule set override "no-referrer" of link');
 
 subsetTest(promise_test, async t => {
-  assert_implements(HTMLScriptElement.supports('speculationrules'), "Speculation Rules not supported");
-
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("unsafe-url");
 
   const nextURL = agent.getExecutorURL({ hostname: PREFETCH_PROXY_BYPASS_HOST, page: 2 });
-  await agent.forceSinglePrefetch(
-      nextURL, { referrer_policy: "no-referrer", requires: ["anonymous-client-ip-when-cross-origin"] });
+  await agent.forceSinglePrefetch(nextURL, { referrer_policy: "no-referrer" });
   await agent.navigate(nextURL);
 
   // This referring page's referrer policy would not be eligible for
@@ -75,8 +71,6 @@ subsetTest(promise_test, async t => {
 }, 'with "no-referrer" referrer policy in rule set overriding "unsafe-url" of cross-site referring page');
 
 subsetTest(promise_test, async t => {
-  assert_implements(HTMLScriptElement.supports('speculationrules'), "Speculation Rules not supported");
-
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("strict-origin-when-cross-origin");
 
@@ -89,8 +83,25 @@ subsetTest(promise_test, async t => {
 }, 'unrecognized policies invalidate the rule');
 
 subsetTest(promise_test, async t => {
-  assert_implements(HTMLScriptElement.supports('speculationrules'), "Speculation Rules not supported");
+  const agent = await spawnWindow(t);
+  await agent.setReferrerPolicy("strict-origin");
+  const expectedReferrer = agent.getExecutorURL().origin + "/";
 
+  const nextURL = agent.getExecutorURL({ page: 2 });
+  await agent.execute_script((url) => {
+    const a = addLink(url);
+    a.referrerPolicy = 'no-referrrrrrrer';
+    insertDocumentRule();
+  }, [nextURL]);
+  await new Promise(resolve => t.step_timeout(resolve, 2000));
+  await agent.navigate(nextURL);
+
+  const headers = await agent.getRequestHeaders();
+  assert_prefetched(headers, "must be prefetched");
+  assert_equals(headers.referer, expectedReferrer, "must send the origin as the referrer");
+}, 'unrecognized policies in link referrerpolicy attribute are ignored');
+
+subsetTest(promise_test, async t => {
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("strict-origin-when-cross-origin");
 
@@ -103,15 +114,12 @@ subsetTest(promise_test, async t => {
 }, 'treat legacy referrer policy values as invalid');
 
 subsetTest(promise_test, async t => {
-  assert_implements(HTMLScriptElement.supports('speculationrules'), "Speculation Rules not supported");
-
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("strict-origin");
   const expectedReferrer = agent.getExecutorURL().origin + "/";
 
   const nextURL = agent.getExecutorURL({ hostname: PREFETCH_PROXY_BYPASS_HOST, page: 2 });
-  await agent.forceSinglePrefetch(
-      nextURL, { referrer_policy: "unsafe-url", requires: ["anonymous-client-ip-when-cross-origin"] });
+  await agent.forceSinglePrefetch(nextURL, { referrer_policy: "unsafe-url" });
   await agent.navigate(nextURL);
 
   // This referring page's referrer policy would normally make it eligible for
@@ -123,8 +131,6 @@ subsetTest(promise_test, async t => {
 }, 'with "unsafe-url" referrer policy in rule set overriding "strict-origin" of cross-site referring page');
 
 subsetTest(promise_test, async t => {
-  assert_implements(HTMLScriptElement.supports('speculationrules'), "Speculation Rules not supported");
-
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("strict-origin");
   const expectedReferrer = agent.getExecutorURL().origin + "/";
@@ -139,5 +145,4 @@ subsetTest(promise_test, async t => {
   assert_prefetched(headers, "must be prefetched");
   assert_equals(headers.referer, expectedReferrer, "must send the origin as the referrer");
 }, 'with empty string referrer policy in rule set defaulting to "strict-origin" of referring page');
-
 </script>

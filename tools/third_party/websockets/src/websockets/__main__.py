@@ -1,13 +1,19 @@
+from __future__ import annotations
+
 import argparse
-import asyncio
 import os
 import signal
 import sys
 import threading
-from typing import Any, Set
 
-from .client import connect
-from .exceptions import ConnectionClosed, format_close
+
+try:
+    import readline  # noqa: F401
+except ImportError:  # Windows has no `readline` normally
+    pass
+
+from .sync.client import ClientConnection, connect
+from .version import version as websockets_version
 
 
 if sys.platform == "win32":
@@ -42,20 +48,6 @@ if sys.platform == "win32":
             raise RuntimeError("unable to set console mode")
 
 
-def exit_from_event_loop_thread(
-    loop: asyncio.AbstractEventLoop, stop: "asyncio.Future[None]"
-) -> None:
-    loop.stop()
-    if not stop.done():
-        # When exiting the thread that runs the event loop, raise
-        # KeyboardInterrupt in the main thread to exit the program.
-        try:
-            ctrl_c = signal.CTRL_C_EVENT  # Windows
-        except AttributeError:
-            ctrl_c = signal.SIGINT  # POSIX
-        os.kill(os.getpid(), ctrl_c)
-
-
 def print_during_input(string: str) -> None:
     sys.stdout.write(
         # Save cursor position
@@ -88,65 +80,41 @@ def print_over_input(string: str) -> None:
     sys.stdout.flush()
 
 
-async def run_client(
-    uri: str,
-    loop: asyncio.AbstractEventLoop,
-    inputs: "asyncio.Queue[str]",
-    stop: "asyncio.Future[None]",
-) -> None:
-    try:
-        websocket = await connect(uri)
-    except Exception as exc:
-        print_over_input(f"Failed to connect to {uri}: {exc}.")
-        exit_from_event_loop_thread(loop, stop)
-        return
-    else:
-        print_during_input(f"Connected to {uri}.")
-
-    try:
-        while True:
-            incoming: asyncio.Future[Any] = asyncio.ensure_future(websocket.recv())
-            outgoing: asyncio.Future[Any] = asyncio.ensure_future(inputs.get())
-            done: Set[asyncio.Future[Any]]
-            pending: Set[asyncio.Future[Any]]
-            done, pending = await asyncio.wait(
-                [incoming, outgoing, stop], return_when=asyncio.FIRST_COMPLETED
-            )
-
-            # Cancel pending tasks to avoid leaking them.
-            if incoming in pending:
-                incoming.cancel()
-            if outgoing in pending:
-                outgoing.cancel()
-
-            if incoming in done:
-                try:
-                    message = incoming.result()
-                except ConnectionClosed:
-                    break
-                else:
-                    if isinstance(message, str):
-                        print_during_input("< " + message)
-                    else:
-                        print_during_input("< (binary) " + message.hex())
-
-            if outgoing in done:
-                message = outgoing.result()
-                await websocket.send(message)
-
-            if stop in done:
-                break
-
-    finally:
-        await websocket.close()
-        close_status = format_close(websocket.close_code, websocket.close_reason)
-
-        print_over_input(f"Connection closed: {close_status}.")
-
-        exit_from_event_loop_thread(loop, stop)
+def print_incoming_messages(websocket: ClientConnection, stop: threading.Event) -> None:
+    for message in websocket:
+        if isinstance(message, str):
+            print_during_input("< " + message)
+        else:
+            print_during_input("< (binary) " + message.hex())
+    if not stop.is_set():
+        # When the server closes the connection, raise KeyboardInterrupt
+        # in the main thread to exit the program.
+        if sys.platform == "win32":
+            ctrl_c = signal.CTRL_C_EVENT
+        else:
+            ctrl_c = signal.SIGINT
+        os.kill(os.getpid(), ctrl_c)
 
 
 def main() -> None:
+    # Parse command line arguments.
+    parser = argparse.ArgumentParser(
+        prog="python -m websockets",
+        description="Interactive WebSocket client.",
+        add_help=False,
+    )
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--version", action="store_true")
+    group.add_argument("uri", metavar="<uri>", nargs="?")
+    args = parser.parse_args()
+
+    if args.version:
+        print(f"websockets {websockets_version}")
+        return
+
+    if args.uri is None:
+        parser.error("the following arguments are required: <uri>")
+
     # If we're on Windows, enable VT100 terminal support.
     if sys.platform == "win32":
         try:
@@ -160,33 +128,17 @@ def main() -> None:
             sys.stderr.flush()
 
     try:
-        import readline  # noqa
-    except ImportError:  # Windows has no `readline` normally
-        pass
+        websocket = connect(args.uri)
+    except Exception as exc:
+        print(f"Failed to connect to {args.uri}: {exc}.")
+        sys.exit(1)
+    else:
+        print(f"Connected to {args.uri}.")
 
-    # Parse command line arguments.
-    parser = argparse.ArgumentParser(
-        prog="python -m websockets",
-        description="Interactive WebSocket client.",
-        add_help=False,
-    )
-    parser.add_argument("uri", metavar="<uri>")
-    args = parser.parse_args()
+    stop = threading.Event()
 
-    # Create an event loop that will run in a background thread.
-    loop = asyncio.new_event_loop()
-
-    # Create a queue of user inputs. There's no need to limit its size.
-    inputs: asyncio.Queue[str] = asyncio.Queue(loop=loop)
-
-    # Create a stop condition when receiving SIGINT or SIGTERM.
-    stop: asyncio.Future[None] = loop.create_future()
-
-    # Schedule the task that will manage the connection.
-    asyncio.ensure_future(run_client(args.uri, loop, inputs, stop), loop=loop)
-
-    # Start the event loop in a background thread.
-    thread = threading.Thread(target=loop.run_forever)
+    # Start the thread that reads messages from the connection.
+    thread = threading.Thread(target=print_incoming_messages, args=(websocket, stop))
     thread.start()
 
     # Read from stdin in the main thread in order to receive signals.
@@ -194,11 +146,12 @@ def main() -> None:
         while True:
             # Since there's no size limit, put_nowait is identical to put.
             message = input("> ")
-            loop.call_soon_threadsafe(inputs.put_nowait, message)
+            websocket.send(message)
     except (KeyboardInterrupt, EOFError):  # ^C, ^D
-        loop.call_soon_threadsafe(stop.set_result, None)
+        stop.set()
+        websocket.close()
+        print_over_input("Connection closed.")
 
-    # Wait for the event loop to terminate.
     thread.join()
 
 

@@ -2,6 +2,16 @@
 <html>
 <head>
     <title>MediaRecorder events and exceptions</title>
+    <meta name=timeout content=long>
+    <meta name=variant content="?mimeType=''">
+    <meta name=variant content="?mimeType=video/webm;codecs=vp8,opus">
+    <meta name=variant content="?mimeType=video/webm;codecs=vp9,opus">
+    <meta name=variant content="?mimeType=video/webm;codecs=av1,opus">
+    <meta name=variant content="?mimeType=video/mp4;codecs=avc1,mp4a.40.2">
+    <meta name=variant content="?mimeType=video/mp4;codecs=vp9,opus">
+    <meta name=variant content="?mimeType=video/mp4;codecs=av01,opus">
+    <meta name=variant content="?mimeType=video/mp4;codecs=av01,mp4a.40.2">
+    <meta name=variant content="?mimeType=video/mp4">
     <link rel="help" href="https://w3c.github.io/mediacapture-record/MediaRecorder.html#mediarecorder">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
@@ -72,7 +82,15 @@
                           new MediaStream(), {mimeType : "video/invalid"});
                       },
                       "recorder should throw() with unsupported mimeType");
-    const recorder = new MediaRecorder(new MediaStream());
+
+    const params = new URLSearchParams(window.location.search);
+    const mimeType = params.get('mimeType');
+    if (mimeType && !MediaRecorder.isTypeSupported(mimeType)) {
+      test.done();
+      return;
+    }
+
+    const recorder = new MediaRecorder(new MediaStream(), { mimeType });
     assert_equals(recorder.state, "inactive");
 
     recorder.stop();

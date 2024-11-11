@@ -5,18 +5,13 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src="../webrtc/RTCPeerConnection-helper.js"></script>
-<script src="../webrtc/dictionary-helper.js"></script>
-<script src="../webrtc/RTCStats-helper.js"></script>
 <script src="/resources/WebIDLParser.js"></script>
 <script>
 'use strict';
 
 // inspired from similar test for MTI stats in ../webrtc/RTCPeerConnection-mandatory-getStats.https.html
 
-
-
 // From https://w3c.github.io/webrtc-stats/webrtc-stats.html#rtcstatstype-str*
-
 const dictionaryNames = {
   "codec": "RTCCodecStats",
   "inbound-rtp": "RTCInboundRtpStreamStats",
@@ -72,6 +67,9 @@ function isPropertyTestable(type, property) {
     'outbound-rtp': [
       'rid', // requires simulcast.
     ],
+    'inbound-rtp': [
+      'fecSsrc', // requires FlexFEC to be negotiated.
+    ],
     'media-source': [
       'echoReturnLoss', // requires gUM with an audio input device.
       'echoReturnLossEnhancement', // requires gUM with an audio input device.
@@ -116,7 +114,6 @@ async function getAllStats(t, pc) {
   return stats;
 }
 
-
 promise_test(async t => {
   // load the IDL to know which members to be looking for
   const idl = await fetch("/interfaces/webrtc-stats.idl").then(r => r.text());
@@ -147,9 +144,9 @@ promise_test(async t => {
   }
 
   const remaining = JSON.parse(JSON.stringify(all));
-    for (const type in remaining) {
-      remaining[type] = new Set(remaining[type]);
-    }
+  for (const type in remaining) {
+    remaining[type] = new Set(remaining[type]);
+  }
 
   const pc1 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -175,8 +172,24 @@ promise_test(async t => {
   await pc2.setLocalDescription();
   await waitForIceGatheringState(pc2, ['complete']);
   await pc1.setRemoteDescription(pc2.localDescription);
-
+  // Await the DTLS handshake.
+  await Promise.all([
+    listenToConnected(pc1),
+    listenToConnected(pc2),
+  ]);
   const stats = await getAllStats(t, pc1);
+
+  // The focus of this test is that there are no dangling references,
+  // i.e. keys ending with `Id` as described in
+  // https://w3c.github.io/webrtc-stats/#guidelines-for-design-of-stats-objects
+  test(t => {
+    for (const stat of stats.values()) {
+      Object.keys(stat).forEach(key => {
+        if (!key.endsWith('Id')) return;
+        assert_true(stats.has(stat[key]), `${stat.type}.${key} can be resolved`);
+      });
+    }
+  }, 'All references resolve');
 
   // The focus of this test is not API correctness, but rather to provide an
   // accessible metric of implementation progress by dictionary member. We count

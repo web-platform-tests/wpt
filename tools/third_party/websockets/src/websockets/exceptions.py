@@ -13,7 +13,8 @@
             * :exc:`InvalidHeaderValue`
             * :exc:`InvalidOrigin`
             * :exc:`InvalidUpgrade`
-        * :exc:`InvalidStatusCode`
+        * :exc:`InvalidStatus`
+        * :exc:`InvalidStatusCode` (legacy)
         * :exc:`NegotiationError`
             * :exc:`DuplicateParameter`
             * :exc:`InvalidParameterName`
@@ -27,10 +28,13 @@
 
 """
 
+from __future__ import annotations
+
 import http
 from typing import Optional
 
-from .http import Headers, HeadersLike
+from . import datastructures, frames, http11
+from .typing import StatusLike
 
 
 __all__ = [
@@ -46,6 +50,7 @@ __all__ = [
     "InvalidHeaderValue",
     "InvalidOrigin",
     "InvalidUpgrade",
+    "InvalidStatus",
     "InvalidStatusCode",
     "NegotiationError",
     "DuplicateParameter",
@@ -63,88 +68,88 @@ __all__ = [
 
 class WebSocketException(Exception):
     """
-    Base class for all exceptions defined by :mod:`websockets`.
+    Base class for all exceptions defined by websockets.
 
     """
-
-
-CLOSE_CODES = {
-    1000: "OK",
-    1001: "going away",
-    1002: "protocol error",
-    1003: "unsupported type",
-    # 1004 is reserved
-    1005: "no status code [internal]",
-    1006: "connection closed abnormally [internal]",
-    1007: "invalid data",
-    1008: "policy violation",
-    1009: "message too big",
-    1010: "extension required",
-    1011: "unexpected error",
-    1015: "TLS failure [internal]",
-}
-
-
-def format_close(code: int, reason: str) -> str:
-    """
-    Display a human-readable version of the close code and reason.
-
-    """
-    if 3000 <= code < 4000:
-        explanation = "registered"
-    elif 4000 <= code < 5000:
-        explanation = "private use"
-    else:
-        explanation = CLOSE_CODES.get(code, "unknown")
-    result = f"code = {code} ({explanation}), "
-
-    if reason:
-        result += f"reason = {reason}"
-    else:
-        result += "no reason"
-
-    return result
 
 
 class ConnectionClosed(WebSocketException):
     """
     Raised when trying to interact with a closed connection.
 
-    Provides the connection close code and reason in its ``code`` and
-    ``reason`` attributes respectively.
+    Attributes:
+        rcvd (Optional[Close]): if a close frame was received, its code and
+            reason are available in ``rcvd.code`` and ``rcvd.reason``.
+        sent (Optional[Close]): if a close frame was sent, its code and reason
+            are available in ``sent.code`` and ``sent.reason``.
+        rcvd_then_sent (Optional[bool]): if close frames were received and
+            sent, this attribute tells in which order this happened, from the
+            perspective of this side of the connection.
 
     """
 
-    def __init__(self, code: int, reason: str) -> None:
-        self.code = code
-        self.reason = reason
-        super().__init__(format_close(code, reason))
+    def __init__(
+        self,
+        rcvd: Optional[frames.Close],
+        sent: Optional[frames.Close],
+        rcvd_then_sent: Optional[bool] = None,
+    ) -> None:
+        self.rcvd = rcvd
+        self.sent = sent
+        self.rcvd_then_sent = rcvd_then_sent
+
+    def __str__(self) -> str:
+        if self.rcvd is None:
+            if self.sent is None:
+                assert self.rcvd_then_sent is None
+                return "no close frame received or sent"
+            else:
+                assert self.rcvd_then_sent is None
+                return f"sent {self.sent}; no close frame received"
+        else:
+            if self.sent is None:
+                assert self.rcvd_then_sent is None
+                return f"received {self.rcvd}; no close frame sent"
+            else:
+                assert self.rcvd_then_sent is not None
+                if self.rcvd_then_sent:
+                    return f"received {self.rcvd}; then sent {self.sent}"
+                else:
+                    return f"sent {self.sent}; then received {self.rcvd}"
+
+    # code and reason attributes are provided for backwards-compatibility
+
+    @property
+    def code(self) -> int:
+        if self.rcvd is None:
+            return frames.CloseCode.ABNORMAL_CLOSURE
+        return self.rcvd.code
+
+    @property
+    def reason(self) -> str:
+        if self.rcvd is None:
+            return ""
+        return self.rcvd.reason
 
 
 class ConnectionClosedError(ConnectionClosed):
     """
     Like :exc:`ConnectionClosed`, when the connection terminated with an error.
 
-    This means the close code is different from 1000 (OK) and 1001 (going away).
+    A close frame with a code other than 1000 (OK) or 1001 (going away) was
+    received or sent, or the closing handshake didn't complete properly.
 
     """
-
-    def __init__(self, code: int, reason: str) -> None:
-        assert code != 1000 and code != 1001
-        super().__init__(code, reason)
 
 
 class ConnectionClosedOK(ConnectionClosed):
     """
     Like :exc:`ConnectionClosed`, when the connection terminated properly.
 
-    This means the close code is 1000 (OK) or 1001 (going away).
+    A close code with code 1000 (OK) or 1001 (going away) or without a code was
+    received and sent.
 
     """
-
-    def __init__(self, code: int, reason: str) -> None:
-        assert code == 1000 or code == 1001
-        super().__init__(code, reason)
 
 
 class InvalidHandshake(WebSocketException):
@@ -172,39 +177,38 @@ class InvalidMessage(InvalidHandshake):
 
 class InvalidHeader(InvalidHandshake):
     """
-    Raised when a HTTP header doesn't have a valid format or value.
+    Raised when an HTTP header doesn't have a valid format or value.
 
     """
 
     def __init__(self, name: str, value: Optional[str] = None) -> None:
         self.name = name
         self.value = value
-        if value is None:
-            message = f"missing {name} header"
-        elif value == "":
-            message = f"empty {name} header"
+
+    def __str__(self) -> str:
+        if self.value is None:
+            return f"missing {self.name} header"
+        elif self.value == "":
+            return f"empty {self.name} header"
         else:
-            message = f"invalid {name} header: {value}"
-        super().__init__(message)
+            return f"invalid {self.name} header: {self.value}"
 
 
 class InvalidHeaderFormat(InvalidHeader):
     """
-    Raised when a HTTP header cannot be parsed.
+    Raised when an HTTP header cannot be parsed.
 
     The format of the header doesn't match the grammar for that header.
 
     """
 
     def __init__(self, name: str, error: str, header: str, pos: int) -> None:
-        self.name = name
-        error = f"{error} at {pos} in {header}"
-        super().__init__(name, error)
+        super().__init__(name, f"{error} at {pos} in {header}")
 
 
 class InvalidHeaderValue(InvalidHeader):
     """
-    Raised when a HTTP header has a wrong value.
+    Raised when an HTTP header has a wrong value.
 
     The format of the header is correct but a value isn't acceptable.
 
@@ -228,18 +232,34 @@ class InvalidUpgrade(InvalidHeader):
     """
 
 
+class InvalidStatus(InvalidHandshake):
+    """
+    Raised when a handshake response rejects the WebSocket upgrade.
+
+    """
+
+    def __init__(self, response: http11.Response) -> None:
+        self.response = response
+
+    def __str__(self) -> str:
+        return (
+            "server rejected WebSocket connection: "
+            f"HTTP {self.response.status_code:d}"
+        )
+
+
 class InvalidStatusCode(InvalidHandshake):
     """
     Raised when a handshake response status code is invalid.
 
-    The integer status code is available in the ``status_code`` attribute.
-
     """
 
-    def __init__(self, status_code: int) -> None:
+    def __init__(self, status_code: int, headers: datastructures.Headers) -> None:
         self.status_code = status_code
-        message = f"server rejected WebSocket connection: HTTP {status_code}"
-        super().__init__(message)
+        self.headers = headers
+
+    def __str__(self) -> str:
+        return f"server rejected WebSocket connection: HTTP {self.status_code}"
 
 
 class NegotiationError(InvalidHandshake):
@@ -257,8 +277,9 @@ class DuplicateParameter(NegotiationError):
 
     def __init__(self, name: str) -> None:
         self.name = name
-        message = f"duplicate parameter: {name}"
-        super().__init__(message)
+
+    def __str__(self) -> str:
+        return f"duplicate parameter: {self.name}"
 
 
 class InvalidParameterName(NegotiationError):
@@ -269,8 +290,9 @@ class InvalidParameterName(NegotiationError):
 
     def __init__(self, name: str) -> None:
         self.name = name
-        message = f"invalid parameter name: {name}"
-        super().__init__(message)
+
+    def __str__(self) -> str:
+        return f"invalid parameter name: {self.name}"
 
 
 class InvalidParameterValue(NegotiationError):
@@ -282,33 +304,48 @@ class InvalidParameterValue(NegotiationError):
     def __init__(self, name: str, value: Optional[str]) -> None:
         self.name = name
         self.value = value
-        if value is None:
-            message = f"missing value for parameter {name}"
-        elif value == "":
-            message = f"empty value for parameter {name}"
+
+    def __str__(self) -> str:
+        if self.value is None:
+            return f"missing value for parameter {self.name}"
+        elif self.value == "":
+            return f"empty value for parameter {self.name}"
         else:
-            message = f"invalid value for parameter {name}: {value}"
-        super().__init__(message)
+            return f"invalid value for parameter {self.name}: {self.value}"
 
 
 class AbortHandshake(InvalidHandshake):
     """
-    Raised to abort the handshake on purpose and return a HTTP response.
+    Raised to abort the handshake on purpose and return an HTTP response.
 
     This exception is an implementation detail.
 
-    The public API is :meth:`~server.WebSocketServerProtocol.process_request`.
+    The public API
+    is :meth:`~websockets.server.WebSocketServerProtocol.process_request`.
 
+    Attributes:
+        status (~http.HTTPStatus): HTTP status code.
+        headers (Headers): HTTP response headers.
+        body (bytes): HTTP response body.
     """
 
     def __init__(
-        self, status: http.HTTPStatus, headers: HeadersLike, body: bytes = b""
+        self,
+        status: StatusLike,
+        headers: datastructures.HeadersLike,
+        body: bytes = b"",
     ) -> None:
-        self.status = status
-        self.headers = Headers(headers)
+        # If a user passes an int instead of a HTTPStatus, fix it automatically.
+        self.status = http.HTTPStatus(status)
+        self.headers = datastructures.Headers(headers)
         self.body = body
-        message = f"HTTP {status}, {len(self.headers)} headers, {len(body)} bytes"
-        super().__init__(message)
+
+    def __str__(self) -> str:
+        return (
+            f"HTTP {self.status:d}, "
+            f"{len(self.headers)} headers, "
+            f"{len(self.body)} bytes"
+        )
 
 
 class RedirectHandshake(InvalidHandshake):
@@ -339,14 +376,16 @@ class InvalidState(WebSocketException, AssertionError):
 
 class InvalidURI(WebSocketException):
     """
-    Raised when connecting to an URI that isn't a valid WebSocket URI.
+    Raised when connecting to a URI that isn't a valid WebSocket URI.
 
     """
 
-    def __init__(self, uri: str) -> None:
+    def __init__(self, uri: str, msg: str) -> None:
         self.uri = uri
-        message = "{} isn't a valid URI".format(uri)
-        super().__init__(message)
+        self.msg = msg
+
+    def __str__(self) -> str:
+        return f"{self.uri} isn't a valid URI: {self.msg}"
 
 
 class PayloadTooBig(WebSocketException):
@@ -358,7 +397,7 @@ class PayloadTooBig(WebSocketException):
 
 class ProtocolError(WebSocketException):
     """
-    Raised when the other side breaks the protocol.
+    Raised when a frame breaks the protocol.
 
     """
 

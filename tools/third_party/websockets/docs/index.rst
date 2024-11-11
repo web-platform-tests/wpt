@@ -1,99 +1,75 @@
 websockets
 ==========
 
-|pypi-v| |pypi-pyversions| |pypi-l| |pypi-wheel| |circleci| |codecov|
+|licence| |version| |pyversions| |tests| |docs| |openssf|
 
-.. |pypi-v| image:: https://img.shields.io/pypi/v/websockets.svg
+.. |licence| image:: https://img.shields.io/pypi/l/websockets.svg
     :target: https://pypi.python.org/pypi/websockets
 
-.. |pypi-pyversions| image:: https://img.shields.io/pypi/pyversions/websockets.svg
+.. |version| image:: https://img.shields.io/pypi/v/websockets.svg
     :target: https://pypi.python.org/pypi/websockets
 
-.. |pypi-l| image:: https://img.shields.io/pypi/l/websockets.svg
+.. |pyversions| image:: https://img.shields.io/pypi/pyversions/websockets.svg
     :target: https://pypi.python.org/pypi/websockets
 
-.. |pypi-wheel| image:: https://img.shields.io/pypi/wheel/websockets.svg
-    :target: https://pypi.python.org/pypi/websockets
+.. |tests| image:: https://img.shields.io/github/checks-status/python-websockets/websockets/main?label=tests
+   :target: https://github.com/python-websockets/websockets/actions/workflows/tests.yml
 
-.. |circleci| image:: https://img.shields.io/circleci/project/github/aaugustin/websockets.svg
-   :target: https://circleci.com/gh/aaugustin/websockets
+.. |docs| image:: https://img.shields.io/readthedocs/websockets.svg
+   :target: https://websockets.readthedocs.io/
 
-.. |codecov| image:: https://codecov.io/gh/aaugustin/websockets/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/aaugustin/websockets
+.. |openssf| image:: https://bestpractices.coreinfrastructure.org/projects/6475/badge
+   :target: https://bestpractices.coreinfrastructure.org/projects/6475
 
-``websockets`` is a library for building WebSocket servers_ and clients_ in
-Python with a focus on correctness and simplicity.
+websockets is a library for building WebSocket_ servers and clients in Python
+with a focus on correctness, simplicity, robustness, and performance.
 
-.. _servers: https://github.com/aaugustin/websockets/blob/master/example/server.py
-.. _clients: https://github.com/aaugustin/websockets/blob/master/example/client.py
+.. _WebSocket: https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API
 
-Built on top of :mod:`asyncio`, Python's standard asynchronous I/O framework,
-it provides an elegant coroutine-based API.
+It supports several network I/O and control flow paradigms:
 
-Here's how a client sends and receives messages:
+1. The default implementation builds upon :mod:`asyncio`, Python's standard
+   asynchronous I/O framework. It provides an elegant coroutine-based API. It's
+   ideal for servers that handle many clients concurrently.
+2. The :mod:`threading` implementation is a good alternative for clients,
+   especially if you aren't familiar with :mod:`asyncio`. It may also be used
+   for servers that don't need to serve many clients.
+3. The `Sans-I/O`_ implementation is designed for integrating in third-party
+   libraries, typically application servers, in addition being used internally
+   by websockets.
 
-.. literalinclude:: ../example/hello.py
+.. _Sans-I/O: https://sans-io.readthedocs.io/
 
-And here's an echo server:
+Here's an echo server with the :mod:`asyncio` API:
 
 .. literalinclude:: ../example/echo.py
 
-Do you like it? Let's dive in!
+Here's how a client sends and receives messages with the :mod:`threading` API:
 
-Tutorials
----------
+.. literalinclude:: ../example/hello.py
 
-If you're new to ``websockets``, this is the place to start.
+Don't worry about the opening and closing handshakes, pings and pongs, or any
+other behavior described in the WebSocket specification. websockets takes care
+of this under the hood so you can focus on your application!
 
-.. toctree::
-   :maxdepth: 2
+Also, websockets provides an interactive client:
 
-   intro
-   faq
+.. code-block:: console
 
-How-to guides
--------------
+    $ python -m websockets ws://localhost:8765/
+    Connected to ws://localhost:8765/.
+    > Hello world!
+    < Hello world!
+    Connection closed: 1000 (OK).
 
-These guides will help you build and deploy a ``websockets`` application.
-
-.. toctree::
-   :maxdepth: 2
-
-   cheatsheet
-   deployment
-   extensions
-
-Reference
----------
-
-Find all the details you could ask for, and then some.
+Do you like it? :doc:`Let's dive in! <intro/index>`
 
 .. toctree::
-   :maxdepth: 2
+   :hidden:
 
-   api
-
-Discussions
------------
-
-Get a deeper understanding of how ``websockets`` is built and why.
-
-.. toctree::
-   :maxdepth: 2
-
-   design
-   limitations
-   security
-
-Project
--------
-
-This is about websockets-the-project rather than websockets-the-software.
-
-.. toctree::
-   :maxdepth: 2
-
-   changelog
-   contributing
-   license
-   For enterprise <tidelift>
+   intro/index
+   howto/index
+   faq/index
+   reference/index
+   topics/index
+   project/index

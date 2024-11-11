@@ -80,19 +80,6 @@
 </div>
 
 <script>
-// TODO delete this when all browsers support declarative shadowdom
-(function attachShadowRoots(root) {
-  root.querySelectorAll("template[shadowroot]").forEach(template => {
-    const mode = template.getAttribute("shadowroot");
-    const shadowRoot = template.parentNode.attachShadow({ mode });
-    shadowRoot.appendChild(template.content);
-    template.remove();
-    attachShadowRoots(shadowRoot);
-  });
-})(document);
-</script>
-
-<script>
 test(() => {
   assert_equals(target1.offsetTop, 38);
 }, 'Verifies that HTMLElement.offsetTop accounts for shadow boundaries.');

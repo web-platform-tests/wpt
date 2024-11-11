@@ -3,38 +3,35 @@
 // (https://github.com/w3c/webref)
 // Source: Compute Pressure Level 1 (https://w3c.github.io/compute-pressure/)
 
-enum PressureState { "nominal", "fair", "serious", "critical" };
+enum PressureSource { "thermals", "cpu" };
 
-enum PressureFactor { "thermal", "power-supply" };
+enum PressureState { "nominal", "fair", "serious", "critical" };
 
 callback PressureUpdateCallback = undefined (
   sequence<PressureRecord> changes,
   PressureObserver observer
 );
 
-enum PressureSource { "cpu" };
-
 [Exposed=(DedicatedWorker,SharedWorker,Window), SecureContext]
 interface PressureObserver {
-  constructor(PressureUpdateCallback callback, optional PressureObserverOptions options = {});
+  constructor(PressureUpdateCallback callback);
 
-  Promise<undefined> observe(PressureSource source);
+  Promise<undefined> observe(PressureSource source, optional PressureObserverOptions options = {});
   undefined unobserve(PressureSource source);
   undefined disconnect();
   sequence<PressureRecord> takeRecords();
 
-  [SameObject] static readonly attribute FrozenArray<PressureSource> supportedSources;
+  [SameObject] static readonly attribute FrozenArray<PressureSource> knownSources;
 };
 
 [Exposed=(DedicatedWorker,SharedWorker,Window), SecureContext]
 interface PressureRecord {
   readonly attribute PressureSource source;
   readonly attribute PressureState state;
-  readonly attribute FrozenArray<PressureFactor> factors;
   readonly attribute DOMHighResTimeStamp time;
   [Default] object toJSON();
 };
 
 dictionary PressureObserverOptions {
-  double sampleRate = 1.0;
+  [EnforceRange] unsigned long sampleInterval = 0;
 };

@@ -1,32 +1,87 @@
+// META: timeout=long
 // META: global=window,dedicatedworker
 // META: script=/webcodecs/video-encoder-utils.js
 // META: variant=?av1
+// META: variant=?av1_444_high
 // META: variant=?vp8
 // META: variant=?vp9_p0
 // META: variant=?vp9_p2
+// META: variant=?vp9_444_p1
+// META: variant=?vp9_444_p3
 // META: variant=?h264_avc
 // META: variant=?h264_annexb
+// META: variant=?h265_hevc
+// META: variant=?h265_annexb
 
 var ENCODER_CONFIG = null;
 promise_setup(async () => {
   const config = {
-    // FIXME: H.264 has embedded color space information too.
-    '?av1': {codec: 'av01.0.04M.08', hasEmbeddedColorSpace: true},
-    '?vp8': {codec: 'vp8', hasEmbeddedColorSpace: false},
-    '?vp9_p0': {codec: 'vp09.00.10.08', hasEmbeddedColorSpace: true},
-    '?vp9_p2': {codec: 'vp09.02.10.10', hasEmbeddedColorSpace: true},
+    '?av1': {
+      codec: 'av01.0.04M.08',
+      hasEmbeddedColorSpace: true,
+      hardwareAcceleration: 'prefer-software',
+    },
+    '?av1_444_high': {
+      codec: 'av01.1.04M.08.0.000',
+      hasEmbeddedColorSpace: true,
+      hardwareAcceleration: 'prefer-software',
+      outputPixelFormat: 'I444',
+    },
+    '?vp8': {
+      codec: 'vp8',
+      hasEmbeddedColorSpace: false,
+      hardwareAcceleration: 'prefer-software',
+    },
+    '?vp9_p0': {
+      codec: 'vp09.00.10.08',
+      hasEmbeddedColorSpace: true,
+      hardwareAcceleration: 'prefer-software',
+    },
+    '?vp9_p2': {
+      codec: 'vp09.02.10.10',
+      hasEmbeddedColorSpace: true,
+      hardwareAcceleration: 'prefer-software',
+      // TODO(https://github.com/w3c/webcodecs/issues/384):
+      // outputPixelFormat should be 'I420P10'
+    },
+    '?vp9_444_p1': {
+      codec: 'vp09.01.10.08.03',
+      hasEmbeddedColorSpace: true,
+      hardwareAcceleration: 'prefer-software',
+      outputPixelFormat: 'I444',
+    },
+    '?vp9_444_p3': {
+      codec: 'vp09.03.10.10.03',
+      hasEmbeddedColorSpace: true,
+      hardwareAcceleration: 'prefer-software',
+      // TODO(https://github.com/w3c/webcodecs/issues/384):
+      // outputPixelFormat should be 'I444P10'
+    },
     '?h264_avc': {
       codec: 'avc1.42001E',
       avc: {format: 'avc'},
-      hasEmbeddedColorSpace: true
+      hasEmbeddedColorSpace: true,
+      hardwareAcceleration: 'prefer-software',
     },
     '?h264_annexb': {
       codec: 'avc1.42001E',
       avc: {format: 'annexb'},
-      hasEmbeddedColorSpace: true
+      hasEmbeddedColorSpace: true,
+      hardwareAcceleration: 'prefer-software',
+    },
+    '?h265_hevc': {
+      codec: 'hvc1.1.6.L123.00',
+      hevc: {format: 'hevc'},
+      hasEmbeddedColorSpace: true,
+      hardwareAcceleration: 'prefer-hardware',
+    },
+    '?h265_annexb': {
+      codec: 'hvc1.1.6.L123.00',
+      hevc: {format: 'annexb'},
+      hasEmbeddedColorSpace: true,
+      hardwareAcceleration: 'prefer-hardware',
     }
   }[location.search];
-  config.hardwareAcceleration = 'prefer-software';
   config.width = 320;
   config.height = 200;
   config.bitrate = 1000000;
@@ -37,6 +92,9 @@ promise_setup(async () => {
 
 async function runFullCycleTest(t, options) {
   let encoder_config = { ...ENCODER_CONFIG };
+  if (options.realTimeLatencyMode) {
+    encoder_config.latencyMode = 'realtime';
+  }
   let encoder_color_space = {};
   const w = encoder_config.width;
   const h = encoder_config.height;
@@ -48,9 +106,19 @@ async function runFullCycleTest(t, options) {
   await checkEncoderSupport(t, encoder_config);
   let decoder = new VideoDecoder({
     output(frame) {
+      t.add_cleanup(() => { frame.close() });
+
       assert_equals(frame.visibleRect.width, w, "visibleRect.width");
       assert_equals(frame.visibleRect.height, h, "visibleRect.height");
-      assert_equals(frame.timestamp, next_ts++, "decode timestamp");
+      if (!options.realTimeLatencyMode) {
+        assert_equals(frame.timestamp, next_ts++, "decode timestamp");
+      }
+
+      if (ENCODER_CONFIG.outputPixelFormat) {
+        assert_equals(
+            frame.format, ENCODER_CONFIG.outputPixelFormat,
+            "decoded pixel format");
+      }
 
       // The encoder is allowed to change the color space to satisfy the
       // encoder when readback is needed to send the frame for encoding, but
@@ -71,7 +139,6 @@ async function runFullCycleTest(t, options) {
       frames_decoded++;
       assert_true(validateBlackDots(frame, frame.timestamp),
         "frame doesn't match. ts: " + frame.timestamp);
-      frame.close();
     },
     error(e) {
       assert_unreached(e.message);
@@ -82,7 +149,10 @@ async function runFullCycleTest(t, options) {
   const encoder_init = {
     output(chunk, metadata) {
       let config = metadata.decoderConfig;
-      if (config) {
+      // Issue a configure if there's a new config, or on the
+      // first chunk if testing rate control
+      if (!options.rateControl && config ||
+          options.rateControl && chunk.timestamp == 0) {
         config.hardwareAcceleration = encoder_config.hardwareAcceleration;
         encoder_color_space = config.colorSpace;
 
@@ -95,7 +165,9 @@ async function runFullCycleTest(t, options) {
       }
       decoder.decode(chunk);
       frames_encoded++;
-      assert_equals(chunk.timestamp, next_encode_ts++, "encode timestamp");
+      if (!options.realTimeLatencyMode) {
+        assert_equals(chunk.timestamp, next_encode_ts++, "encode timestamp");
+      }
     },
     error(e) {
       assert_unreached(e.message);
@@ -116,14 +188,23 @@ async function runFullCycleTest(t, options) {
 
     let keyframe = (i % 5 == 0);
     encoder.encode(frame, { keyFrame: keyframe });
+    if (i % 3 == 0 && options.rateControl) {
+      // reconfigure with a different rate
+      encoder_config.bitrate = encoder_config.bitrate * 0.9;
+      encoder.configure(encoder_config);
+    }
     frame.close();
   }
   await encoder.flush();
   await decoder.flush();
   encoder.close();
   decoder.close();
-  assert_equals(frames_encoded, frames_to_encode, "frames_encoded");
-  assert_equals(frames_decoded, frames_to_encode, "frames_decoded");
+  if (options.realTimeLatencyMode) {
+    assert_greater_than(frames_encoded, 0, "frames_encoded");
+  } else {
+    assert_equals(frames_encoded, frames_to_encode, "frames_encoded");
+  }
+  assert_equals(frames_decoded, frames_encoded, "frames_decoded");
 }
 
 promise_test(async t => {
@@ -131,6 +212,14 @@ promise_test(async t => {
 }, 'Encoding and decoding cycle');
 
 promise_test(async t => {
+  return runFullCycleTest(t, {realTimeLatencyMode: true});
+}, 'Encoding and decoding cycle with realtime latency mode');
+
+promise_test(async t => {
   if (ENCODER_CONFIG.hasEmbeddedColorSpace)
     return runFullCycleTest(t, {stripDecoderConfigColorSpace: true});
 }, 'Encoding and decoding cycle w/ stripped color space');
+
+promise_test(async t => {
+  return runFullCycleTest(t, {rateControl: true});
+}, 'Encoding and decoding cycle w/ rate control');

@@ -2,6 +2,7 @@
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/test-only-api.js"></script>
 <script src="/permissions-policy/resources/permissions-policy.js"></script>
 <script>
 'use strict';
@@ -44,5 +45,6 @@ async_test(t => {
 
 fetch_tests_from_worker(new Worker(
     'resources/serial-disabled-by-permissions-policy-worker.js'));
+
 </script>
 </body>

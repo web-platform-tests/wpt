@@ -1,10 +1,14 @@
 *.pyc
 *.so
 .coverage
+.direnv
+.envrc
+.idea/
 .mypy_cache
 .tox
 build/
 compliance/reports/
+experiments/compression/corpus.pkl
 dist/
 docs/_build/
 htmlcov/

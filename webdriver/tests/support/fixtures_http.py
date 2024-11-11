@@ -1,22 +1,25 @@
+import base64
+
 import pytest
 from webdriver.error import NoSuchAlertException
 
+from tests.support.image import png_dimensions, ImageDifference
 from tests.support.sync import Poll
 
 
 @pytest.fixture
-def add_event_listeners(session):
+def add_event_listeners():
     """Register listeners for tracked events on element."""
     def add_event_listeners(element, tracked_events):
         element.session.execute_script("""
-            let element = arguments[0];
-            let trackedEvents = arguments[1];
+            const element = arguments[0];
+            const trackedEvents = arguments[1];
 
             if (!("events" in window)) {
               window.events = [];
             }
 
-            for (var i = 0; i < trackedEvents.length; i++) {
+            for (let i = 0; i < trackedEvents.length; i++) {
               element.addEventListener(trackedEvents[i], function (event) {
                 window.events.push(event.type);
               });
@@ -178,98 +181,60 @@ def stale_element(current_session, get_test_page):
 
 
 @pytest.fixture
-def get_test_page(iframe, inline):
-    def get_test_page(
-        as_frame=False,
-        frame_doc=None,
-        shadow_doc=None,
-        nested_shadow_dom=False
-    ):
-        if frame_doc is None:
-            frame_doc = """<div id="in-frame"><input type="checkbox"/></div>"""
+def load_pdf_http(current_session, test_page_with_pdf_js):
+    """Load a PDF document in the browser using pdf.js"""
+    def load_pdf_http(encoded_pdf_data):
+        current_session.url = test_page_with_pdf_js(encoded_pdf_data)
 
-        if shadow_doc is None:
-            shadow_doc = """
-                <div id="in-shadow-dom">
-                    <input type="checkbox"/>
-                </div>
-            """
-
-        definition_inner_shadow_dom = ""
-        if nested_shadow_dom:
-            definition_inner_shadow_dom = f"""
-                customElements.define('inner-custom-element',
-                    class extends HTMLElement {{
-                        constructor() {{
-                            super();
-                            this.attachShadow({{mode: "open"}}).innerHTML = `
-                                {shadow_doc}
-                            `;
-                        }}
-                    }}
-                );
-            """
-            shadow_doc = """
-                <style>
-                    inner-custom-element {
-                        display:block; width:20px; height:20px;
-                    }
-                </style>
-                <div id="in-nested-shadow-dom">
-                    <inner-custom-element></inner-custom-element>
-                </div>
-                """
-
-        page_data = f"""
-            <style>
-                custom-element {{
-                    display:block; width:20px; height:20px;
-                }}
-            </style>
-            <div id="with-children"><p><span></span></p><br/></div>
-            <div id="with-text-node">Lorem</div>
-            <div id="with-comment"><!-- Comment --></div>
-
-            <input id="button" type="button"/>
-            <input id="checkbox" type="checkbox"/>
-            <input id="file" type="file"/>
-            <input id="hidden" type="hidden"/>
-            <input id="text" type="text"/>
-
-            {iframe(frame_doc)}
-
-            <svg></svg>
-
-            <custom-element id="custom-element"></custom-element>
-            <script>
-                var svg = document.querySelector("svg");
-                svg.setAttributeNS("http://www.w3.org/2000/svg", "svg:foo", "bar");
-
-                customElements.define("custom-element",
-                    class extends HTMLElement {{
-                        constructor() {{
-                            super();
-                            this.attachShadow({{mode: "open"}}).innerHTML = `
-                                {shadow_doc}
-                            `;
-                        }}
-                    }}
-                );
-                {definition_inner_shadow_dom}
-            </script>"""
-
-        if as_frame:
-            return inline(iframe(page_data))
-        else:
-            return inline(page_data)
-
-    return get_test_page
+    return load_pdf_http
 
 
 @pytest.fixture
-def load_pdf_document(current_session, test_page_with_pdf_js):
-    """Load a PDF document in the browser using pdf.js"""
-    def load_pdf_document(encoded_pdf_data):
-        current_session.url = test_page_with_pdf_js(encoded_pdf_data)
+def render_pdf_to_png_http(current_session, url):
+    """Render a PDF document to png"""
 
-    return load_pdf_document
+    def render_pdf_to_png_http(
+        encoded_pdf_data, page=1
+    ):
+        current_session.url = url(path="/print_pdf_runner.html")
+        result = current_session.execute_async_script(f"""arguments[0](window.render("{encoded_pdf_data}"))""")
+        index = page - 1
+
+        assert 0 <= index < len(result)
+
+        image_string = result[index]
+        image_string_without_data_type = image_string[image_string.find(",") + 1:]
+
+        return base64.b64decode(image_string_without_data_type)
+
+    return render_pdf_to_png_http
+
+
+@pytest.fixture
+def compare_png_http(current_session, url):
+    def compare_png_http(img1, img2):
+        """Calculate difference statistics between two PNG images.
+
+        :param img1: Bytes of first PNG image
+        :param img2: Bytes of second PNG image
+        :returns: ImageDifference representing the total number of different pixels,
+                and maximum per-channel difference between the images.
+        """
+        if img1 == img2:
+            return ImageDifference(0, 0)
+
+        width, height = png_dimensions(img1)
+        assert (width, height) == png_dimensions(img2)
+
+        current_session.url = url("/webdriver/tests/support/html/render.html")
+        result = current_session.execute_async_script(
+            "const callback = arguments[arguments.length - 1]; callback(compare(arguments[0], arguments[1], arguments[2], arguments[3]))",
+            args=[base64.encodebytes(img1).decode(), base64.encodebytes(img2).decode(), width, height],
+        )
+
+        assert "maxDifference" in result
+        assert "totalPixels" in result
+
+        return ImageDifference(result["totalPixels"], result["maxDifference"])
+
+    return compare_png_http

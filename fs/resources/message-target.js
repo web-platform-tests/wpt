@@ -108,8 +108,8 @@ function add_message_event_handlers(receiver, target, target_origin) {
           // success to the sender.
           let success = true;
           try {
-            const access_handle = await message_data.file_handle
-                                    .createSyncAccessHandle({mode: "in-place"});
+            const access_handle =
+                await message_data.file_handle.createSyncAccessHandle();
             access_handle.close();
           } catch (error) {
             success = false;
@@ -118,6 +118,26 @@ function add_message_event_handlers(receiver, target, target_origin) {
           message_source.postMessage(
             { type: 'receive-sync-access-handle-result', success },
             { targetOrigin: target_origin });
+          break;
+
+        case 'create-file-system-observer':
+          // Attempt to create a file system observer with a dummy callback.
+          // Respond with whether creating the observer succeeded.
+          function dummyCallback(records, observer) {};
+
+          let createObserverSuccess = true;
+          try {
+            const observer = new FileSystemObserver(dummyCallback);
+          } catch (error) {
+            createObserverSuccess = false;
+          }
+
+          message_source.postMessage(
+              {
+                type: 'receive-create-file-system-observer-result',
+                createObserverSuccess
+              },
+              {targetOrigin: target_origin});
           break;
 
         default:

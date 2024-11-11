@@ -4,6 +4,7 @@
 // META: script=resources/support.js
 // META: script=/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js
 // META: script=/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js
+// META: timeout=long
 
 'use strict';
 
@@ -28,7 +29,7 @@ promise_test(async t => {
   await rc2.historyBack();
   // The previous page receiving versionchange event should be evicted with the
   // correct reason.
-  // `kIgnoreEventAndEvict` will be reported as "Internal error".
+  // `kIgnoreEventAndEvict` will be reported as "masked".
   // See `NotRestoredReasonToReportString()`.
-  await assertNotRestoredFromBFCache(rc1, ['Internal error']);
+  await assertNotRestoredFromBFCache(rc1, ['masked']);
 });

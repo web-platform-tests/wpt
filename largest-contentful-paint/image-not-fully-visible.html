@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
 <meta charset=utf-8>
+<meta name="viewport" content="width=device-width, minimum-scale=1">
 <title>Largest Contentful Paint: size when image overflows</title>
 <body>
 <style>
@@ -14,6 +15,7 @@ body {
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/largest-contentful-paint-helpers.js"></script>
 <script>
+  setup({"hide_test_state": true});
   let beforeRender;
   const viewportWidth = document.documentElement.clientWidth;
   const viewportHeight = document.documentElement.clientHeight;
@@ -26,7 +28,7 @@ body {
       t.step_func_done(function(entryList) {
         assert_equals(entryList.getEntries().length, 1);
         const entry = entryList.getEntries()[0];
-        const url = window.location.origin + '/images/green-100x50.png';
+        const url = window.location.origin + '/images/lcp-100x50.png';
         // To compute the size, compute the percentage of the image visible and
         // scale by its natural dimensions. In this test, the image is expanded to twice its size
         // but place towards the bottom right corner of the viewport, so it is
@@ -41,7 +43,7 @@ body {
     ).observe({type: 'largest-contentful-paint', buffered: true});
     // Add an image, setting width and height equal to viewport.
     img = document.createElement('img');
-    img.src = '/images/green-100x50.png';
+    img.src = '/images/lcp-100x50.png';
     img.id = 'image_id';
     img.width = imgWidth * 2;
     img.height = imgHeight * 2;

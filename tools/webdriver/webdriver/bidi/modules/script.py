@@ -3,12 +3,45 @@ from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Union
 
 from ..error import UnknownErrorException
 from ._module import BidiModule, command
+from ..undefined import UNDEFINED, Undefined
 
 
 class ScriptEvaluateResultException(Exception):
     def __init__(self, result: Mapping[str, Any]):
+        super().__init__()
+
         self.result = result
-        super().__init__("Script execution failed.")
+
+        details = result.get("exceptionDetails", {})
+        self.column_number = details.get("columnNumber")
+        self.exception = details.get("exception")
+        self.line_number = details.get("lineNumber")
+        self.stacktrace = self.process_stacktrace(details.get("stackTrace", {}))
+        self.text = details.get("text")
+
+    def process_stacktrace(self, stacktrace: Mapping[str, Any]) -> str:
+        stack = ""
+        for frame in stacktrace.get("callFrames", []):
+            data = frame.get("functionName") or "eval code"
+            if "url" in frame:
+                data += f"@{frame['url']}"
+            data += f":{frame.get('lineNumber', 0)}:{frame.get('columnNumber', 0)}"
+            stack += data + "\n"
+
+        return stack
+
+    def __repr__(self) -> str:
+        """Return the object representation in string format."""
+        return f"<{self.__class__.__name__}(), {self.text})>"
+
+    def __str__(self) -> str:
+        """Return the string representation of the object."""
+        message: str = self.text
+
+        if self.stacktrace:
+            message += f"\n\nStacktrace:\n\n{self.stacktrace}"
+
+        return message
 
 
 class OwnershipModel(Enum):
@@ -43,12 +76,28 @@ class ContextTarget(Dict[str, Any]):
 Target = Union[RealmTarget, ContextTarget]
 
 
+class SerializationOptions(Dict[str, Any]):
+    def __init__(
+            self,
+            max_dom_depth: Union[Optional[int], Undefined] = UNDEFINED,
+            max_object_depth: Union[Optional[int], Undefined] = UNDEFINED,
+            include_shadow_tree: Union[Optional[str], Undefined] = UNDEFINED
+    ):
+        if max_dom_depth is not UNDEFINED:
+            self["maxDomDepth"] = max_dom_depth
+        if max_object_depth is not UNDEFINED:
+            self["maxObjectDepth"] = max_object_depth
+        if include_shadow_tree is not UNDEFINED and include_shadow_tree is not None:
+            self["includeShadowTree"] = include_shadow_tree
+
+
 class Script(BidiModule):
     @command
     def add_preload_script(
         self,
         function_declaration: str,
         arguments: Optional[List[Mapping[str, Any]]] = None,
+        contexts: Optional[List[str]] = None,
         sandbox: Optional[str] = None
     ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
@@ -57,6 +106,8 @@ class Script(BidiModule):
 
         if arguments is not None:
             params["arguments"] = arguments
+        if contexts is not None:
+            params["contexts"] = contexts
         if sandbox is not None:
             params["sandbox"] = sandbox
 
@@ -77,6 +128,8 @@ class Script(BidiModule):
         arguments: Optional[List[Mapping[str, Any]]] = None,
         this: Optional[Mapping[str, Any]] = None,
         result_ownership: Optional[OwnershipModel] = None,
+        serialization_options: Optional[SerializationOptions] = None,
+        user_activation: Optional[bool] = None
     ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "functionDeclaration": function_declaration,
@@ -90,6 +143,10 @@ class Script(BidiModule):
             params["this"] = this
         if result_ownership is not None:
             params["resultOwnership"] = result_ownership
+        if serialization_options is not None:
+            params["serializationOptions"] = serialization_options
+        if user_activation is not None:
+            params["userActivation"] = user_activation
         return params
 
     @call_function.result
@@ -115,6 +172,8 @@ class Script(BidiModule):
         target: Target,
         await_promise: bool,
         result_ownership: Optional[OwnershipModel] = None,
+        serialization_options: Optional[SerializationOptions] = None,
+        user_activation: Optional[bool] = None
     ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "expression": expression,
@@ -124,6 +183,10 @@ class Script(BidiModule):
 
         if result_ownership is not None:
             params["resultOwnership"] = result_ownership
+        if serialization_options is not None:
+            params["serializationOptions"] = serialization_options
+        if user_activation is not None:
+            params["userActivation"] = user_activation
         return params
 
     @evaluate.result

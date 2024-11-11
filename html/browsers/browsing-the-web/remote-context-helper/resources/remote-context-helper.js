@@ -49,7 +49,7 @@
 {
   const RESOURCES_PATH =
       '/html/browsers/browsing-the-web/remote-context-helper/resources';
-  const WINDOW_EXECUTOR_PATH = `${RESOURCES_PATH}/executor.sub.html`;
+  const WINDOW_EXECUTOR_PATH = `${RESOURCES_PATH}/executor-window.py`;
   const WORKER_EXECUTOR_PATH = `${RESOURCES_PATH}/executor-worker.js`;
 
   /**
@@ -88,6 +88,10 @@
     return new URL(url, location).toString();
   }
 
+  async function fetchText(url) {
+    return fetch(url).then(r => r.text());
+  }
+
   /**
    * Represents a configuration for a remote context executor.
    */
@@ -104,13 +108,26 @@
      *     when this event occurs, e.g. "pageshow",
      *     (@see window.addEventListener). This only makes sense for
      *     window-based executors, not worker-based.
+     * @param {string} [options.status] If supplied, the executor will pass
+     *     this value in the "status" parameter to the executor. The default
+     *     executor will default to a status code of 200, if the parameter is
+     *     not supplied.
+     * @param {string} [options.urlType] Determines what kind of URL is used. Options:
+     *     'origin', the URL will be based on the origin;
+     *      'data' or 'blob', the URL will contains the document content in
+     *      a 'data:' or 'blob:' URL; 'blank', the URL will be blank and the
+     *     document content will be written to the initial empty document using
+     *     `document.open()`, `document.write()`, and `document.close()`. If not
+     *     supplied, the default is 'origin'.
      */
     constructor(
-        {origin, scripts = [], headers = [], startOn} = {}) {
+        {origin, scripts = [], headers = [], startOn, status, urlType} = {}) {
       this.origin = origin;
       this.scripts = scripts;
       this.headers = headers;
       this.startOn = startOn;
+      this.status = status;
+      this.urlType = urlType;
     }
 
     /**
@@ -143,14 +160,63 @@
       if (extraConfig.startOn) {
         startOn = extraConfig.startOn;
       }
+      let status = this.status;
+      if (extraConfig.status) {
+        status = extraConfig.status;
+      }
+      let urlType = this.urlType;
+      if (extraConfig.urlType) {
+        urlType = extraConfig.urlType;
+      }
       const headers = this.headers.concat(extraConfig.headers);
       const scripts = this.scripts.concat(extraConfig.scripts);
-      return new RemoteContextConfig({
-        origin,
-        headers,
-        scripts,
-        startOn,
-      });
+      return new RemoteContextConfig(
+          {origin, headers, scripts, startOn, status, urlType});
+    }
+
+    /**
+     * Creates a URL for an executor based on this config.
+     * @param {string} uuid The unique ID of the executor.
+     * @param {boolean} isWorker If true, the executor will be Worker. If false,
+     * it will be a HTML document.
+     * @returns {string|Blob|undefined}
+     */
+    async createExecutorUrl(uuid, isWorker) {
+      const origin = finalizeOrigin(this.origin);
+      const url = new URL(
+          isWorker ? WORKER_EXECUTOR_PATH : WINDOW_EXECUTOR_PATH, origin);
+
+      // UUID is needed for executor.
+      url.searchParams.append('uuid', uuid);
+
+      if (this.headers) {
+        addHeaders(url, this.headers);
+      }
+      for (const script of this.scripts) {
+        url.searchParams.append('script', makeAbsolute(script));
+      }
+
+      if (this.startOn) {
+        url.searchParams.append('startOn', this.startOn);
+      }
+
+      if (this.status) {
+        url.searchParams.append('status', this.status);
+      }
+
+      const urlType = this.urlType || 'origin';
+      switch (urlType) {
+        case 'origin':
+        case 'blank':
+          return url.href;
+        case 'data':
+          return `data:text/html;base64,${btoa(await fetchText(url.href))}`;
+        case 'blob':
+          return URL.createObjectURL(
+              new Blob([await fetchText(url.href)], {type: 'text/html'}));
+        default:
+          throw TypeError(`Invalid urlType: ${urlType}`);
+      };
     }
   }
 
@@ -180,9 +246,13 @@
      * access to it.
      * @private
      * @param {Object} options
-     * @param {(url: string) => Promise<undefined>} options.executorCreator A
+     * @param {(url: string) => Promise<undefined>} [options.executorCreator] A
      *     function that takes a URL and causes the browser to navigate some
-     *     window to that URL, e.g. via an iframe or a new window.
+     *     window to that URL, e.g. via an iframe or a new window. If this is
+     *     not supplied, then the returned RemoteContextWrapper won't actually
+     *     be communicating with something yet, and something will need to
+     *     navigate to it using its `url` property, before communication can be
+     *     established.
      * @param {RemoteContextConfig|object} [options.extraConfig] If supplied,
      *     extra configuration for this remote context to be merged with
      *     `this`'s existing config. If it's not a `RemoteContextConfig`, it
@@ -197,27 +267,19 @@
       const config =
           this.config.merged(RemoteContextConfig.ensure(extraConfig));
 
-      const origin = finalizeOrigin(config.origin);
-      const url = new URL(
-          isWorker ? WORKER_EXECUTOR_PATH : WINDOW_EXECUTOR_PATH, origin);
-
       // UUID is needed for executor.
       const uuid = token();
-      url.searchParams.append('uuid', uuid);
+      const url = await config.createExecutorUrl(uuid, isWorker);
 
-      if (config.headers) {
-        addHeaders(url, config.headers);
-      }
-      for (const script of config.scripts) {
-        url.searchParams.append('script', makeAbsolute(script));
-      }
-
-      if (config.startOn) {
-        url.searchParams.append('startOn', config.startOn);
+      if (executorCreator) {
+        if (config.urlType == 'blank') {
+          await executorCreator(undefined, await fetchText(url));
+        } else {
+          await executorCreator(url, undefined);
+        }
       }
 
-      await executorCreator(url.href);
-      return new RemoteContextWrapper(new RemoteContext(uuid), this, url.href);
+      return new RemoteContextWrapper(new RemoteContext(uuid), this, url);
     }
 
     /**
@@ -237,15 +299,6 @@
         extraConfig,
       });
     }
-
-    async createContextWithUrl(extraConfig) {
-      let saveUrl;
-      let wrapper = await this.createContext({
-        executorCreator: (url) => {saveUrl = url},
-        extraConfig,
-      });
-      return [wrapper, saveUrl];
-    }
   }
   // Export this class.
   self.RemoteContextHelper = RemoteContextHelper;
@@ -259,7 +312,7 @@
    */
   function addHeaders(url, headers) {
     function escape(s) {
-      return s.replace('(', '\\(').replace(')', '\\)');
+      return s.replace('(', '\\(').replace(')', '\\)').replace(',', '\\,');
     }
     const formattedHeaders = headers.map((header) => {
       return `header(${escape(header[0])}, ${escape(header[1])})`;
@@ -268,28 +321,69 @@
   }
 
   function windowExecutorCreator({target = '_blank', features} = {}) {
-    return url => {
-      window.open(url, target, features);
+    return (url, documentContent) => {
+      if (url && url.substring(0, 5) == 'data:') {
+        throw new TypeError('Windows cannot use data: URLs.');
+      }
+
+      const w = window.open(url, target, features);
+      if (documentContent) {
+        w.document.open();
+        w.document.write(documentContent);
+        w.document.close();
+      }
     };
   }
 
   function elementExecutorCreator(
       remoteContextWrapper, elementName, attributes) {
-    return url => {
-      return remoteContextWrapper.executeScript((url, elementName, attributes) => {
-        const el = document.createElement(elementName);
-        for (const attribute in attributes) {
-          el.setAttribute(attribute, attributes[attribute]);
-        }
-        el.src = url;
-        document.body.appendChild(el);
-      }, [url, elementName, attributes]);
+    return (url, documentContent) => {
+      return remoteContextWrapper.executeScript(
+          (url, elementName, attributes, documentContent) => {
+            const el = document.createElement(elementName);
+            for (const attribute in attributes) {
+              el.setAttribute(attribute, attributes[attribute]);
+            }
+            if (url) {
+              if (elementName == 'object') {
+                el.data = url;
+              } else {
+                el.src = url;
+              }
+            }
+            const parent =
+                elementName == 'frame' ? findOrCreateFrameset() : document.body;
+            parent.appendChild(el);
+            if (documentContent) {
+              el.contentDocument.open();
+              el.contentDocument.write(documentContent);
+              el.contentDocument.close();
+            }
+          },
+          [url, elementName, attributes, documentContent]);
     };
   }
 
-  function workerExecutorCreator() {
+  function iframeSrcdocExecutorCreator(remoteContextWrapper, attributes) {
+    return async (url) => {
+      // `url` points to the content needed to run an `Executor` in the frame.
+      // So we download the content and pass it via the `srcdoc` attribute,
+      // setting the iframe's `src` to `undefined`.
+      attributes['srcdoc'] = await fetchText(url);
+
+      elementExecutorCreator(
+          remoteContextWrapper, 'iframe', attributes)(undefined);
+    };
+  }
+
+  function workerExecutorCreator(remoteContextWrapper, globalVariable) {
     return url => {
-      new Worker(url);
+      return remoteContextWrapper.executeScript((url, globalVariable) => {
+        const worker = new Worker(url);
+        if (globalVariable) {
+          window[globalVariable] = worker;
+        }
+      }, [url, globalVariable]);
     };
   }
 
@@ -314,9 +408,10 @@
      * This should only be constructed by `RemoteContextHelper`.
      * @private
      */
-    constructor(context, helper) {
+    constructor(context, helper, url) {
       this.context = context;
       this.helper = helper;
+      this.url = url;
     }
 
     /**
@@ -357,7 +452,7 @@
     }
 
     /**
-     * Adds an iframe to the current document.
+     * Adds an `iframe` with `src` attribute to the current document.
      * @param {RemoteContextConfig} [extraConfig]
      * @param {[string, string][]} [attributes] A list of pairs of strings
      *     of attribute name and value these will be set on the iframe element
@@ -372,16 +467,100 @@
     }
 
     /**
+     * Adds a `frame` with `src` attribute to the current document's first
+     * `frameset` element.
+     * @param {RemoteContextConfig} [extraConfig]
+     * @param {[string, string][]} [attributes] A list of pairs of strings
+     *     of attribute name and value these will be set on the frame element
+     *     when added to the document.
+     * @returns {Promise<RemoteContextWrapper>} The remote context.
+     */
+    addFrame(extraConfig, attributes = {}) {
+      return this.helper.createContext({
+        executorCreator: elementExecutorCreator(this, 'frame', attributes),
+        extraConfig,
+      });
+    }
+
+    /**
+     * Adds an `embed` with `src` attribute to the current document.
+     * @param {RemoteContextConfig} [extraConfig]
+     * @param {[string, string][]} [attributes] A list of pairs of strings
+     *     of attribute name and value these will be set on the embed element
+     *     when added to the document.
+     * @returns {Promise<RemoteContextWrapper>} The remote context.
+     */
+    addEmbed(extraConfig, attributes = {}) {
+      return this.helper.createContext({
+        executorCreator: elementExecutorCreator(this, 'embed', attributes),
+        extraConfig,
+      });
+    }
+
+    /**
+     * Adds an `object` with `data` attribute to the current document.
+     * @param {RemoteContextConfig} [extraConfig]
+     * @param {[string, string][]} [attributes] A list of pairs of strings
+     *     of attribute name and value these will be set on the object element
+     *     when added to the document.
+     * @returns {Promise<RemoteContextWrapper>} The remote context.
+     */
+    addObject(extraConfig, attributes = {}) {
+      return this.helper.createContext({
+        executorCreator: elementExecutorCreator(this, 'object', attributes),
+        extraConfig,
+      });
+    }
+
+    /**
+     * Adds an iframe with `srcdoc` attribute to the current document
+     * @param {RemoteContextConfig} [extraConfig]
+     * @param {[string, string][]} [attributes] A list of pairs of strings
+     *     of attribute name and value these will be set on the iframe element
+     *     when added to the document.
+     * @returns {Promise<RemoteContextWrapper>} The remote context.
+     */
+    addIframeSrcdoc(extraConfig, attributes = {}) {
+      return this.helper.createContext({
+        executorCreator: iframeSrcdocExecutorCreator(this, attributes),
+        extraConfig,
+      });
+    }
+
+    /**
      * Adds a dedicated worker to the current document.
+     * @param {string|null} [globalVariable] The name of the global variable to
+     *   which to assign the `Worker` object after construction. If `null`,
+     *   then no assignment will take place.
      * @param {RemoteContextConfig} [extraConfig]
      * @returns {Promise<RemoteContextWrapper>} The remote context.
      */
-    addWorker(extraConfig) {
+    addWorker(globalVariable, extraConfig) {
       return this.helper.createContext({
-        executorCreator: workerExecutorCreator(),
+        executorCreator: workerExecutorCreator(this, globalVariable),
         extraConfig,
         isWorker: true,
       });
+    }
+
+    /**
+     * Gets a `Headers` object containing the request headers that were used
+     * when the browser requested this document.
+     *
+     * Currently, this only works for `RemoteContextHelper`s representing
+     * windows, not workers.
+     * @returns {Promise<Headers>}
+     */
+    async getRequestHeaders() {
+      // This only works in window environments for now. We could make it work
+      // for workers too; if you have a need, just share or duplicate the code
+      // that's in executor-window.py. Anyway, we explicitly use `window` in
+      // the script so that we get a clear error if you try using it on a
+      // worker.
+
+      // We need to serialize and deserialize the `Headers` object manually.
+      const asNestedArrays = await this.executeScript(() => [...window.__requestHeaders]);
+      return new Headers(asNestedArrays);
     }
 
     /**

@@ -7,12 +7,12 @@ from tests.support.screenshot import (DEFAULT_CONTENT,
                                       OUTER_IFRAME_STYLE,
                                       INNER_IFRAME_STYLE)
 
-from . import compare_png_data, viewport_dimensions
+from . import get_physical_viewport_dimensions
 
 
 @pytest.mark.asyncio
 async def test_iframe(bidi_session, top_context, inline, iframe):
-    viewport_size = await viewport_dimensions(bidi_session, top_context)
+    viewport_size = await get_physical_viewport_dimensions(bidi_session, top_context)
 
     iframe_content = f"{INNER_IFRAME_STYLE}{DEFAULT_CONTENT}"
     url = inline(f"{OUTER_IFRAME_STYLE}{iframe(iframe_content)}")
@@ -33,8 +33,8 @@ async def test_iframe(bidi_session, top_context, inline, iframe):
 
 @pytest.mark.parametrize("domain", ["", "alt"], ids=["same_origin", "cross_origin"])
 @pytest.mark.asyncio
-async def test_context_origin(bidi_session, url, top_context, inline, iframe, domain):
-    expected_size = await viewport_dimensions(bidi_session, top_context)
+async def test_context_origin(bidi_session, top_context, inline, iframe, compare_png_bidi, domain):
+    expected_size = await get_physical_viewport_dimensions(bidi_session, top_context)
 
     initial_url = inline(f"{REFERENCE_STYLE}{REFERENCE_CONTENT}")
     await bidi_session.browsing_context.navigate(context=top_context["context"],
@@ -52,9 +52,6 @@ async def test_context_origin(bidi_session, url, top_context, inline, iframe, do
                                                  wait="complete")
 
     data = await bidi_session.browsing_context.capture_screenshot(context=top_context["context"])
-    comparison = await compare_png_data(bidi_session,
-                                        url,
-                                        reference_data,
-                                        data)
+    comparison = await compare_png_bidi(data, reference_data)
 
     assert comparison.equal()

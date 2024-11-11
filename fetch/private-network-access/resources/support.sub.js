@@ -81,6 +81,7 @@ const SERVER_PORTS = {
   },
   "https": {
     "local": {{ports[https][0]}},
+    "other-local": {{ports[https][1]}},
     "private": {{ports[https-private][0]}},
     "public": {{ports[https-public][0]}},
   },
@@ -130,6 +131,7 @@ class Server {
   static HTTP_PRIVATE = Server.get("http", "private");
   static HTTP_PUBLIC = Server.get("http", "public");
   static HTTPS_LOCAL = Server.get("https", "local");
+  static OTHER_HTTPS_LOCAL = Server.get("https", "other-local");
   static HTTPS_PRIVATE = Server.get("https", "private");
   static HTTPS_PUBLIC = Server.get("https", "public");
   static WS_LOCAL = Server.get("ws", "local");
@@ -205,6 +207,7 @@ function sourceResolveOptions({ server, treatAsPublic }) {
 //   - `response`: The result of calling one of `ResponseBehavior`'s methods.
 //   - `redirect`: A URL to which the target should redirect GET requests.
 function preflightUrl({ server, behavior }) {
+  assert_not_equals(server, undefined, 'server');
   const options = {...server};
   if (behavior) {
     const { preflight, response, redirect } = behavior;
@@ -265,6 +268,13 @@ const PreflightBehavior = {
     "preflight-uuid": uuid,
     "preflight-headers": "cors+pna",
     "expect-single-preflight": true,
+  }),
+
+  // The preflight response should succeed and allow origins and headers for
+  // navigations.
+  navigation: (uuid) => ({
+    "preflight-uuid": uuid,
+    "preflight-headers": "navigation",
   }),
 };
 
@@ -338,6 +348,40 @@ async function fetchTest(t, { source, target, fetchOptions, expected }) {
   }
 }
 
+// Similar to `fetchTest`, but replaced iframes with fenced frames.
+async function fencedFrameFetchTest(t, { source, target, fetchOptions, expected }) {
+  const fetcher_url =
+      resolveUrl("resources/fenced-frame-fetcher.https.html", sourceResolveOptions(source));
+
+  const target_url = preflightUrl(target);
+  target_url.searchParams.set("is-loaded-in-fenced-frame", true);
+
+  fetcher_url.searchParams.set("mode", fetchOptions.mode);
+  fetcher_url.searchParams.set("method", fetchOptions.method);
+  fetcher_url.searchParams.set("url", target_url);
+
+  const error_token = token();
+  const ok_token = token();
+  const body_token = token();
+  const type_token = token();
+  const source_url = generateURL(fetcher_url, [error_token, ok_token, body_token, type_token]);
+
+  const urn = await generateURNFromFledge(source_url, []);
+  attachFencedFrame(urn);
+
+  const error = await nextValueFromServer(error_token);
+  const ok = await nextValueFromServer(ok_token);
+  const body = await nextValueFromServer(body_token);
+  const type = await nextValueFromServer(type_token);
+
+  assert_equals(error, expected.error || "" , "error");
+  assert_equals(body, expected.body || "", "response body");
+  assert_equals(ok, expected.ok !== undefined ? expected.ok.toString() : "", "response ok");
+  if (expected.type !== undefined) {
+    assert_equals(type, expected.type, "response type");
+  }
+}
+
 const XhrTestResult = {
   SUCCESS: {
     loaded: true,
@@ -390,7 +434,7 @@ async function xhrTest(t, { source, target, method, expected }) {
   assert_equals(body, expected.body, "response body");
 }
 
-const IframeTestResult = {
+const FrameTestResult = {
   SUCCESS: "loaded",
   FAILURE: "timeout",
 };
@@ -402,6 +446,10 @@ async function iframeTest(t, { source, target, expected }) {
   const targetUrl = preflightUrl(target);
   targetUrl.searchParams.set("file", "iframed.html");
   targetUrl.searchParams.set("iframe-uuid", uuid);
+  targetUrl.searchParams.set(
+    "file-if-no-preflight-received",
+    "iframed-no-preflight-received.html",
+  );
 
   const sourceUrl =
       resolveUrl("resources/iframer.html", sourceResolveOptions(source));
@@ -419,9 +467,127 @@ async function iframeTest(t, { source, target, expected }) {
   const result = await Promise.race([
       messagePromise.then((data) => data.message),
       new Promise((resolve) => {
-        t.step_timeout(() => resolve("timeout"), 500 /* ms */);
+        t.step_timeout(() => resolve("timeout"), 2000 /* ms */);
       }),
   ]);
+
+  assert_equals(result, expected);
+}
+
+const NavigationTestResult = {
+  SUCCESS: "success",
+  FAILURE: "timeout",
+};
+
+async function windowOpenTest(t, { source, target, expected }) {
+  const targetUrl = preflightUrl(target);
+  targetUrl.searchParams.set("file", "openee.html");
+  targetUrl.searchParams.set(
+    "file-if-no-preflight-received",
+    "no-preflight-received.html",
+  );
+
+  const sourceUrl =
+      resolveUrl("resources/opener.html", sourceResolveOptions(source));
+  sourceUrl.searchParams.set("url", targetUrl);
+
+  const iframe = await appendIframe(t, document, sourceUrl);
+  const reply = futureMessage({ source: iframe.contentWindow });
+
+  iframe.contentWindow.postMessage({ url: targetUrl.href }, "*");
+
+  const result = await Promise.race([
+      reply,
+      new Promise((resolve) => {
+        t.step_timeout(() => resolve("timeout"), 10000 /* ms */);
+      }),
+  ]);
+
+  assert_equals(result, expected);
+}
+
+async function windowOpenExistingTest(t, { source, target, expected }) {
+  const targetUrl = preflightUrl(target);
+  targetUrl.searchParams.set("file", "openee.html");
+  targetUrl.searchParams.set(
+    "file-if-no-preflight-received",
+    "no-preflight-received.html",
+  );
+
+  const sourceUrl = resolveUrl(
+      'resources/open-to-existing-window.html', sourceResolveOptions(source));
+  sourceUrl.searchParams.set("url", targetUrl);
+  sourceUrl.searchParams.set("token", token());
+
+  const iframe = await appendIframe(t, document, sourceUrl);
+  const reply = futureMessage({ source: iframe.contentWindow });
+
+  iframe.contentWindow.postMessage({ url: targetUrl.href }, "*");
+
+  const result = await Promise.race([
+      reply,
+      new Promise((resolve) => {
+        t.step_timeout(() => resolve("timeout"), 10000 /* ms */);
+      }),
+  ]);
+
+  assert_equals(result, expected);
+}
+
+async function anchorTest(t, { source, target, expected }) {
+  const targetUrl = preflightUrl(target);
+  targetUrl.searchParams.set("file", "openee.html");
+  targetUrl.searchParams.set(
+    "file-if-no-preflight-received",
+    "no-preflight-received.html",
+  );
+
+  const sourceUrl =
+      resolveUrl("resources/anchor.html", sourceResolveOptions(source));
+  sourceUrl.searchParams.set("url", targetUrl);
+
+  const iframe = await appendIframe(t, document, sourceUrl);
+  const reply = futureMessage({ source: iframe.contentWindow });
+
+  iframe.contentWindow.postMessage({ url: targetUrl.href }, "*");
+
+  const result = await Promise.race([
+      reply,
+      new Promise((resolve) => {
+        t.step_timeout(() => resolve("timeout"), 10000 /* ms */);
+      }),
+  ]);
+
+  assert_equals(result, expected);
+}
+
+// Similar to `iframeTest`, but replaced iframes with fenced frames.
+async function fencedFrameTest(t, { source, target, expected }) {
+  // Allows running tests in parallel.
+  const target_url = preflightUrl(target);
+  target_url.searchParams.set("file", "fenced-frame-private-network-access-target.https.html");
+  target_url.searchParams.set("is-loaded-in-fenced-frame", true);
+
+  const frame_loaded_key = token();
+  const child_frame_target = generateURL(target_url, [frame_loaded_key]);
+
+  const source_url =
+      resolveUrl("resources/fenced-frame-private-network-access.https.html", sourceResolveOptions(source));
+  source_url.searchParams.set("fenced_frame_url", child_frame_target);
+
+  const urn = await generateURNFromFledge(source_url, []);
+  attachFencedFrame(urn);
+
+  // The grandchild fenced frame writes a value to the server iff it loads
+  // successfully.
+  const result = (expected == FrameTestResult.SUCCESS) ?
+    await nextValueFromServer(frame_loaded_key) :
+    await Promise.race([
+      nextValueFromServer(frame_loaded_key),
+      new Promise((resolve) => {
+        t.step_timeout(() => resolve("timeout"), 10000 /* ms */);
+      }),
+    ]);
 
   assert_equals(result, expected);
 }
@@ -688,4 +854,67 @@ async function sharedWorkerBlobFetchTest(t, { source, target, expected }) {
   assert_equals(error, expected.error, "fetch error");
   assert_equals(status, expected.status, "response status");
   assert_equals(body, expected.body, "response body");
+}
+
+async function makeServiceWorkerTest(t, { source, target, expected, fetch_document=false }) {
+  const bridgeUrl = resolveUrl(
+      "resources/service-worker-bridge.html",
+      sourceResolveOptions({ server: source.server }));
+
+  const scriptUrl = fetch_document?
+      resolveUrl("resources/service-worker-fetch-all.js", sourceResolveOptions(source)):
+      resolveUrl("resources/service-worker.js", sourceResolveOptions(source));
+
+  const realTargetUrl = preflightUrl(target);
+
+  // Fetch a URL within the service worker's scope, but tell it which URL to
+  // really fetch.
+  const targetUrl = new URL("service-worker-proxy", scriptUrl);
+  targetUrl.searchParams.append("proxied-url", realTargetUrl.href);
+
+  const iframe = await appendIframe(t, document, bridgeUrl);
+
+  const request = (message) => {
+    const reply = futureMessage();
+    iframe.contentWindow.postMessage(message, "*");
+    return reply;
+  };
+
+  {
+    const { error, loaded } = await request({
+      action: "register",
+      url: scriptUrl.href,
+    });
+
+    assert_equals(error, undefined, "register error");
+    assert_true(loaded, "response loaded");
+  }
+
+  try {
+    const { controlled, numControllerChanges } = await request({
+      action: "wait",
+      numControllerChanges: 1,
+    });
+
+    assert_equals(numControllerChanges, 1, "controller change");
+    assert_true(controlled, "bridge script is controlled");
+
+    const { error, ok, body } = await request({
+      action: "fetch",
+      url: targetUrl.href,
+    });
+
+    assert_equals(error, expected.error, "fetch error");
+    assert_equals(ok, expected.ok, "response ok");
+    assert_equals(body, expected.body, "response body");
+  } finally {
+    // Always unregister the service worker.
+    const { error, unregistered } = await request({
+      action: "unregister",
+      scope: new URL("./", scriptUrl).href,
+    });
+
+    assert_equals(error, undefined, "unregister error");
+    assert_true(unregistered, "unregistered");
+  }
 }

@@ -11,8 +11,11 @@
 <h1><code>pattern</code> attribute</h1>
 <div style="display: none">
   <input pattern="[a-z]{3}" value="abcd" id="basic">
+
   <input pattern="a.b" value="a&#x1D306;b" id="unicode-code-points">
-  <input pattern="\p{ASCII_Hex_Digit}+" value="c0ff33" id="unicode-property-escape">
+  <input pattern="\p{ASCII_Hex_Digit}+" value="c0ff33" id="unicode-property">
+
+  <input pattern="\p{RGI_Emoji}+" value="&#x1F618;&#x1F48B;" id="unicode-property-of-strings">
 </div>
 <div id="log"></div>
 <script>
@@ -24,6 +27,7 @@
 
     assert_inherits(input, "validity");
     assert_false(input.validity.valid);
+    assert_true(input.validity.patternMismatch);
 
     assert_true(input.matches(":invalid"));
   }, "basic <input pattern> support");
@@ -32,11 +36,20 @@
     const input = document.querySelector("#unicode-code-points");
     assert_true(input.validity.valid);
     assert_true(input.matches(":valid"));
+    assert_false(input.validity.patternMismatch);
   }, "<input pattern> is Unicode code point-aware");
 
   test(() => {
-    const input = document.querySelector("#unicode-property-escape");
+    const input = document.querySelector("#unicode-property");
     assert_true(input.validity.valid);
     assert_true(input.matches(":valid"));
+    assert_false(input.validity.patternMismatch);
   }, "<input pattern> supports Unicode property escape syntax");
+
+  test(() => {
+    const input = document.querySelector("#unicode-property-of-strings");
+    assert_true(input.validity.valid);
+    assert_true(input.matches(":valid"));
+    assert_false(input.validity.patternMismatch);
+  }, "<input pattern> supports Unicode property escape syntax for properties of strings");
 </script>

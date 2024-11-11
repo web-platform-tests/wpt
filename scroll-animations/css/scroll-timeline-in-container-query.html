@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <title>scroll-timeline and container queries</title>
 <link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-shorthand">
-<link rel="help" src="https://drafts.csswg.org/css-contain-3/#container-queries">
+<link rel="help" src="https://drafts.csswg.org/css-conditional-5/#container-queries">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/web-animations/testcommon.js"></script>
@@ -21,6 +21,7 @@
     width: auto;
     height: 100px;
   }
+
   #scroller > div {
     height: 200px;
   }
@@ -28,19 +29,20 @@
   /* This does not apply initially. */
   @container (width > 200px) {
     #scroller {
-      scroll-timeline: timeline;
+      scroll-timeline: --timeline;
     }
   }
 
-  @keyframes expand {
+  @keyframes recolor {
     from { background-color: rgb(100, 100, 100); }
     to { background-color: rgb(200, 200, 200); }
   }
+
   #element {
     height: 10px;
     width: 10px;
-    animation: expand 10s linear;
-    animation-timeline: timeline;
+    animation: recolor 10s linear;
+    animation-timeline: --timeline;
     background-color: rgb(0, 0, 0);
   }
 </style>
@@ -48,8 +50,7 @@
   <div id=container>
     <div id=scroller>
       <div></div>
-    </div>
-    <div id=element>
+      <div id=element></div>
     </div>
   </div>
 </div>
@@ -58,7 +59,7 @@
 
   promise_test(async (t) => {
     element.offsetTop;
-    scroller.scrollTop = 50;
+    scroller.scrollTop = (scroller.scrollHeight - scroller.clientHeight) / 2;
     await waitForNextFrame();
     // Unknown timeline, time held at zero.
     assert_equals(getComputedStyle(element).backgroundColor, 'rgb(100, 100, 100)');

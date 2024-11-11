@@ -74,7 +74,7 @@ The wdspec tests for [WebDriver BiDi](https://w3c.github.io/webdriver-bidi) are
 located in the `tests/bidi/` and `tests/interop` directories. Tests related to
 external specifications (like [Permissions](https://www.w3.org/TR/permissions/) or
 [Web Bluetooth](https://webbluetoothcg.github.io/web-bluetooth)) are located in
-`external` subdirectories. E.g. `tests/bidi/external/bluetooth/`.
+`external` subdirectories. E.g. `tests/bidi/external/permissions/`.
 
 The `webdriver.bidi.client.BidiSession` class provides an abstraction for the BiDi
 client and contains properties corresponding to the
@@ -84,23 +84,19 @@ can be retrieved by fixture `bidi_session`.
 ### Extending WebDriver BiDi
 
 This section describes how to extend the WebDriver BiDi client with an example of
-adding support for [Web Bluetooth](https://webbluetoothcg.github.io/web-bluetooth).
+adding support for [Permissions](https://www.w3.org/TR/permissions/).
 
 #### Adding a New Module
 
 ##### Create `BidiModule`
 
 BiDi modules are defined in the `tools/webdriver/webdriver/bidi/modules/` directory.
-To add a new module called `bluetooth`, declare a Python class
-`webdriver.bidi.modules.bluetooth.Bluetooth` that inherits from `BidiModule` and
-store it in `tools/webdriver/webdriver/bidi/modules/bluetooth.py`:
+To add a new module called `permissions`, declare a Python class
+`webdriver.bidi.modules.permissions.Permissions` that inherits from `BidiModule` and
+store it in [`tools/webdriver/webdriver/bidi/modules/permissions.py`](https://github.com/web-platform-tests/wpt/blob/b81831169b8527a6c569a4ad92cf8a1baf4a7118/tools/webdriver/webdriver/bidi/modules/permissions.py#L7):
 
 ```python
-class Bluetooth(BidiModule):
-    """
-    Represents the Bluetooth automation module specified in
-    https://webbluetoothcg.github.io/web-bluetooth/#automated-testing
-    """
+class Permissions(BidiModule):
     pass
 ```
 
@@ -109,16 +105,16 @@ class Bluetooth(BidiModule):
 Import this class in `tools/webdriver/webdriver/bidi/modules/__init__.py`:
 
 ```python
-from .bluetooth import Bluetooth
+from .permissions import Permissions
 ```
 
 ##### Create an Instance of the Module in `webdriver.bidi.client.BidiSession`
 
 Modify the `webdriver.bidi.client.BidiSession.__init__` method to create an instance
-of `Bluetooth` and store it in a `bluetooth` property:
+of `Permissions` and store it in a `permissions` [property](https://github.com/web-platform-tests/wpt/blob/b81831169b8527a6c569a4ad92cf8a1baf4a7118/tools/webdriver/webdriver/bidi/client.py#L98):
 
 ```python
-self.bluetooth = modules.Bluetooth(self)
+self.permissions = modules.Permissions(self)
 ```
 
 #### Adding a New Command
@@ -131,20 +127,27 @@ the module. The method should return a dictionary that represents the
 [command parameters](https://w3c.github.io/webdriver-bidi/#command-command-parameters).
 
 For example, to add the
-[`bluetooth.simulateAdapter`](https://w3c.github.io/webdriver-bidi/#command-command-parameters)
-command, add the following `simulate_adapter` method to the `Bluetooth` class:
+[`permissions.setPermission`](https://www.w3.org/TR/permissions/#webdriver-bidi-command-permissions-setPermission)
+command, add the following `set_permission` method to the [`Permissions` class](https://github.com/web-platform-tests/wpt/blob/b81831169b8527a6c569a4ad92cf8a1baf4a7118/tools/webdriver/webdriver/bidi/modules/permissions.py#L9):
 
 ```python
 from ._module import command
 ...
-class Bluetooth(BidiModule):
-    ...
+class Permissions(BidiModule):
+...
     @command
-    def simulate_adapter(self, context: str, state: str) -> Mapping[str, Any]:
-        return {
-            "context": context,
-            "state": state
+    def set_permission(self,
+          descriptor: Union[Optional[Mapping[str, Any]], Undefined] = UNDEFINED,
+          state: Union[Optional[str], Undefined] = UNDEFINED,
+          origin: Union[Optional[str], Undefined] = UNDEFINED,
+          user_context: Union[Optional[str], Undefined] = UNDEFINED) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {
+            "descriptor": descriptor,
+            "state": state,
+            "origin": origin,
+            "userContext": user_context,
         }
+        return params
 ```
 
 ### Adding Tests
@@ -152,12 +155,12 @@ class Bluetooth(BidiModule):
 Generally, a single test file should contain tests for a single parameter or feature
 and stored in `webdriver/tests/bidi/{MODULE}/{METHOD}/{FEATURE}.py`
 For example, tests for
-[`bluetooth.simulateAdapter`](https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateAdapter-command)
+[`permissions.setPermission`](https://www.w3.org/TR/permissions/#webdriver-bidi-command-permissions-setPermission)
 could be split into:
 
-* Invalid parameters: `webdriver/tests/bidi/external/bluetooth/simulate_adapter/invalid.py`
-* State: `webdriver/tests/bidi/external/bluetooth/simulate_adapter/state.py`
-* Context: `webdriver/tests/bidi/external/bluetooth/simulate_adapter/context.py`
+* Invalid parameters: [`set_permission/invalid.py`](https://github.com/web-platform-tests/wpt/blob/aa019e3ff08cc75644edca41cfb095601477cb9d/webdriver/tests/bidi/external/permissions/set_permission/invalid.py)
+* Common scenarios: [`set_permission/set_permission.py`](https://github.com/web-platform-tests/wpt/blob/aa019e3ff08cc75644edca41cfb095601477cb9d/webdriver/tests/bidi/external/permissions/set_permission/set_permission.py)
+* User context: [`set_permission/user_context.py`](https://github.com/web-platform-tests/wpt/blob/master/webdriver/tests/bidi/external/permissions/set_permission/user_context.py)
 
 Tests should use `bidi_session`'s modules' methods to send commands and verify its
 side effects.

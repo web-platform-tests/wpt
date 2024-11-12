@@ -30,5 +30,3 @@ jobs:
         body: |
           This automated pull request renews the core WPT certificates.
 
-          See the [workflow](https://github.com/web-platform-tests/wpt/blob/master/.github/workflows/regen_certs.yml) for how this pull request was created.
-        branch: actions/regen-certs

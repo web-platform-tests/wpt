@@ -1,4 +1,4 @@
-    name: certificates
+name: certificates
 on:
   # Our certificates are good for ~1 year, but we regenerate them every
   # month to be sure. Also support manually triggering the workflow.

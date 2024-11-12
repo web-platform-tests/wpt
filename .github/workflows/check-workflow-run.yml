@@ -22,7 +22,6 @@ jobs:
       actions: read
     outputs:
       output: ${{ steps.check.outputs.updated-refs }}
-    steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:

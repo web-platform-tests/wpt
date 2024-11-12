@@ -1,7 +1,4 @@
-              - name: Create Pull Request
-                uses: peter-evans/create-pull-request@v7.0.5
-            
-            name: certificates
+    name: certificates
 on:
   # Our certificates are good for ~1 year, but we regenerate them every
   # month to be sure. Also support manually triggering the workflow.

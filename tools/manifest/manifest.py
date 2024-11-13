@@ -363,7 +363,7 @@ def load_and_update(tests_root: Text,
                     url_base: Text,
                     update: bool = True,
                     rebuild: bool = False,
-                    subdirs_to_update: Optional[List[Text]] = None,
+                    paths_to_update: Optional[List[Text]] = None,
                     metadata_path: Optional[Text] = None,
                     cache_root: Optional[Text] = None,
                     working_copy: bool = True,
@@ -402,7 +402,7 @@ def load_and_update(tests_root: Text,
         for retry in range(2):
             try:
                 tree = vcs.get_tree(tests_root, manifest, manifest_path, cache_root,
-                                    subdirs_to_update, working_copy, rebuild)
+                                    paths_to_update, working_copy, rebuild)
                 changed = manifest.update(tree, parallel)
                 break
             except InvalidCacheError:

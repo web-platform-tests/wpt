@@ -523,20 +523,34 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
     for element in source_file.root.findall(".//{http://www.w3.org/1999/xhtml}script[@src]"):
         src = element.attrib["src"]
 
-        def incorrect_path(script: Text, src: Text) -> bool:
-            return (script == src or
-                ("/%s" % script in src and src != "/resources/%s" % script))
+        def is_path_correct(script: Text, src: Text,
+              allow_query_params: bool = False) -> bool:
+            if script == src:
+                # The src does not provide the full path.
+                return False
 
-        if incorrect_path("testharness.js", src):
+            if "/%s" % script not in src:
+                # The src is not related to the script.
+                return True
+
+            if src == "/resources/%s" % script:
+                # The src is properly included.
+                return True
+
+            # Check if the script is properly included with query parameters.
+            return allow_query_params and ("%s" % src).startswith(
+                "/resources/%s?" % script)
+
+        if not is_path_correct("testharness.js", src):
             errors.append(rules.TestharnessPath.error(path))
 
-        if incorrect_path("testharnessreport.js", src):
+        if not is_path_correct("testharnessreport.js", src):
             errors.append(rules.TestharnessReportPath.error(path))
 
-        if incorrect_path("testdriver.js", src):
+        if not is_path_correct("testdriver.js", src, True):
             errors.append(rules.TestdriverPath.error(path))
 
-        if incorrect_path("testdriver-vendor.js", src):
+        if not is_path_correct("testdriver-vendor.js", src):
             errors.append(rules.TestdriverVendorPath.error(path))
 
         script_path = None

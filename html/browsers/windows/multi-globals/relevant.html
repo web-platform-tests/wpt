@@ -2,11 +2,13 @@
 <title>Relevant page used as a test helper</title>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<button id="focus-opener-button" onclick="opener.focus()">Focus opener</button>
 <script>
 'use strict';
 
-const bless = async () => {
-  await test_driver.bless("relevant page", null, window);
+onload = async () => {
+  test_driver.set_test_context(opener.opener);
+  await test_driver.click(document.getElementById("focus-opener-button"));
+  opener.postMessage("relevant page", "*");
 };
-onload = () => {}; // See https://github.com/web-platform-tests/wpt/pull/18157
 </script>

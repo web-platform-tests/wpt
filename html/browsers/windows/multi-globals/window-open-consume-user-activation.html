@@ -17,21 +17,24 @@
 <script>
 'use strict';
 
-promise_test(async function(t){
-  await test_driver.bless("open incumbent popup");
-  const gotMessage = new Promise(resolve => {
+function pageDone(expectedMessage) {
+  return new Promise(resolve => {
     window.addEventListener('message', e => {
-      if (e.data === "ready") {
+      if (e.data === expectedMessage) {
         resolve();
       }
     });
   });
+}
+
+promise_test(async function(t) {
+  await test_driver.bless("open incumbent popup");
+  const incumbentDone = pageDone("incumbent page");
   const incumbentWin = window.open("incumbent.html", "_blank");
   // incumbent.html opens two further popups and sets these properties (for this window):
   // window.currentWin
   // window.relevantWin
-  await gotMessage;
-  window.focus();
+  await incumbentDone;
   await test_driver.bless("user activation in entry global");
   const testWin = incumbentWin.openTestPopup();
   t.add_cleanup(() => {

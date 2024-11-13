@@ -16,8 +16,8 @@ function do_test(t, e) {
   target.addEventListener("", t.step_func(function(e) {
     handled = true;
   }));
-  assert_true(target.dispatchEvent(e));
-  assert_true(handled);
+  assert_true(target.dispatchEvent(e), "dispatchEvent should return true");
+  assert_true(handled, "callback should be called");
 }
 
 async_test(function() {

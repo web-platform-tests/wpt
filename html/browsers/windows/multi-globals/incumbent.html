@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<title>Incumbent page used as a test helper</title>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+'use strict';
+
+onload = async () => {
+  await test_driver.bless("open current popup");
+  const currentWin = window.open("current.html", "_blank");
+  await new Promise(resolve => {
+    currentWin.addEventListener('load', () => resolve());
+  });
+  await test_driver.bless("open relevant popup");
+  const relevantWin = window.open("relevant.html", "_blank");
+  await new Promise(resolve => {
+    relevantWin.addEventListener('load', () => resolve());
+  });
+  window.openTestPopup = function() {
+    // This is the multi-global incarnation
+    return currentWin.open.call(relevant, "/resources/blank.html", "_blank");
+  };
+  opener.currentWin = currentWin;
+  opener.relevantWin = relevantWin;
+  await currentWin.bless();
+  await relevantWin.bless();
+  await test_driver.bless("incumbent page", null, window);
+  opener.postMessage('ready', '*');
+};
+</script>

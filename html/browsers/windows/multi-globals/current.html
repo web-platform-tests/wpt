@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<title>Current page used as a test helper</title>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+'use strict';
+
+const bless = async () => {
+  await test_driver.bless("current page", null, window);
+};
+onload = () => {}; // See https://github.com/web-platform-tests/wpt/pull/18157
+</script>

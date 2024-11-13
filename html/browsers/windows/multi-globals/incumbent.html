@@ -33,6 +33,6 @@ onload = async () => {
   opener.currentWin = currentWin;
   opener.relevantWin = relevantWin;
   await test_driver.click(document.getElementById("focus-opener-button"));
-  opener.postMessage("incumbent page");
+  opener.postMessage("incumbent page", "*");
 };
 </script>

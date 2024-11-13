@@ -30,7 +30,7 @@ function pageDone(expectedMessage) {
 promise_test(async function(t) {
   await test_driver.bless("open incumbent popup");
   const incumbentDone = pageDone("incumbent page");
-  const incumbentWin = window.open("incumbent.html", "_blank");
+  const incumbentWin = window.open("support/incumbent.html", "_blank");
   // incumbent.html opens two further popups and sets these properties (for this window):
   // window.currentWin
   // window.relevantWin

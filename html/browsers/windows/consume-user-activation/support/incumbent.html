@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <title>Incumbent page used as a test helper</title>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
 <button id="focus-opener-button" onclick="opener.focus()">Focus opener</button>
 <script>
 'use strict';
@@ -17,12 +15,11 @@ function pageDone(expectedMessage) {
 }
 
 onload = async () => {
-  test_driver.set_test_context(opener);
-  await test_driver.bless("open current popup", null, window);
+  await opener.test_driver.bless("open current popup", null, window);
   const currentDone = pageDone("current page");
   const currentWin = window.open("current.html", "_blank");
   await currentDone;
-  await test_driver.bless("open relevant popup", null, window);
+  await opener.test_driver.bless("open relevant popup", null, window);
   const relevantDone = pageDone("relevant page");
   const relevantWin = window.open("relevant.html", "_blank");
   await relevantDone;
@@ -32,7 +29,7 @@ onload = async () => {
   };
   opener.currentWin = currentWin;
   opener.relevantWin = relevantWin;
-  await test_driver.click(document.getElementById("focus-opener-button"));
+  await opener.test_driver.click(document.getElementById("focus-opener-button"));
   opener.postMessage("incumbent page", "*");
 };
 </script>

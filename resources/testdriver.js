@@ -98,6 +98,31 @@
                         });
                     },
                 }
+            },
+            /**
+             * `permissions <https://www.w3.org/TR/permissions/>`_ module.
+             */
+            permissions: {
+                /**
+                 * `permissions.setPermission <https://w3c.github.io/permissions/#webdriver-bidi-command-permissions-setPermission`_
+                 * command.
+                 * @param {object} params - Parameters for the command.
+                 * @param {PermissionDescriptor} params.descriptor - a `PermissionDescriptor
+                 *                               <https://w3c.github.io/permissions/#dom-permissiondescriptor>`_
+                 *                               or derived object.
+                 * @param {PermissionState} params.state - a `PermissionState
+                 *                          <https://w3c.github.io/permissions/#dom-permissionstate>`_
+                 *                          value.
+                 * @param {string} [params.origin] - The origin to set the permission for. If
+                 *                 omitted, the permission is set for the current window's origin.
+                 * @returns {Promise} fulfilled after the permission is set, or rejected if setting
+                 *                    the permission fails.
+                 */
+                set_permission: function (params) {
+                    assertBidiIsEnabled();
+                    return window.test_driver_internal.bidi.permissions.set_permission(
+                        params);
+                }
             }
         },
 
@@ -1239,6 +1264,12 @@
                         throw new Error(
                             "bidi.log.entry_added.on is not implemented by testdriver-vendor.js");
                     }
+                }
+            },
+            permissions: {
+                async set_permission() {
+                    throw new Error(
+                        "bidi.permissions.set_permission() is not implemented by testdriver-vendor.js");
                 }
             }
         },

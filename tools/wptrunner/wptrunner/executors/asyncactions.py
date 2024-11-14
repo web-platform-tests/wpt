@@ -41,10 +41,12 @@ class BidiPermissionsSetPermissionAction:
         self.protocol = protocol
 
     async def __call__(self, payload):
-        descriptor=payload['descriptor']
-        state=payload['state']
-        origin=payload['origin']
-        return await self.protocol.bidi_permissions.set_permission(descriptor, state, origin)
+        descriptor = payload['descriptor']
+        state = payload['state']
+        origin = payload['origin']
+        return await self.protocol.bidi_permissions.set_permission(descriptor,
+                                                                   state,
+                                                                   origin)
 
 
 async_actions = [BidiPermissionsSetPermissionAction, BidiSessionSubscribeAction]

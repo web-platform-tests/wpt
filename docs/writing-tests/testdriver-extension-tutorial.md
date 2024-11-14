@@ -43,7 +43,7 @@ Members of the community will then have the opportunity to comment on our propos
 
 With that said, developing a prototype implementation may help others evaluate the proposal during the RFC process, so let's move on to writing some code.
 
-Note that for extensions to testdriver.js that directly reflect a [WebDriver Classic](https://w3c.github.io/webdriver/) command, [WebDriver BiDi](https://w3c.github.io/webdriver-bidi) command, or event, a formal RFC process isn't strictly required.
+Note that for extensions to testdriver.js that directly reflect a [WebDriver Classic](https://w3c.github.io/webdriver/) command, [WebDriver BiDi](https://w3c.github.io/webdriver-bidi) command, or event, the [RFC](https://github.com/web-platform-tests/rfcs) process isn't required.
 
 ## Code!
 

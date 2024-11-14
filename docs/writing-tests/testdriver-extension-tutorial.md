@@ -118,11 +118,11 @@ Next, this is passed to the executor and protocol in wptrunner. Time to switch t
 To add this command, you'll need to create a corresponding protocol part class in [tools/wptrunner/wptrunner/executors/protocol.py](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/protocol.py).
 
 ```python
-class SetWindowRectProtocolPart(ProtocolPart):
+class WindowRectProtocolPart(ProtocolPart):
     """Protocol part for resizing and changing location of window"""
     __metaclass__ = ABCMeta
 
-    name = "set_window_rect_protocol_part"
+    name = "window_rect"
 
     @abstractmethod
     def set_window_rect(self, x, y, width, height):
@@ -157,14 +157,14 @@ class SetWindowRectAction:
         x, y, width, height = payload["x"], payload["y"], payload["width"], payload["height"]
         self.logger.debug("Setting window rect to be: x=%s, y=%s, width=%s, height=%s"
                           .format(x, y, width, height))
-        self.protocol.set_window_rect_protocol_part.set_window_rect(x, y, width, height)
+        self.protocol.window_rect.set_window_rect(x, y, width, height)
 ```
 
 The `name` property should match the `name` used in [tools/wptrunner/wptrunner/testdriver-extra.js](#tools-wptrunner-wptrunner-testdriver-extra-js). This name acts as the key that connects the testdriver function in JavaScript with its corresponding Python action.
 
-You can access the `SetWindowRectProtocolPart` using its name `set_window_rect_protocol_part` we defined earlier:
+You can access the `WindowRectProtocolPart` using its name `window_rect` we defined earlier:
 ```python
-self.protocol.set_window_rect_protocol_part.set_window_rect(x, y, width, height)
+self.protocol.window_rect.set_window_rect(x, y, width, height)
 ```
 
 Then add your newly created class to the [`actions = [...]`](https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/actions.py#L514) list at the end of the file.
@@ -190,7 +190,7 @@ There isn't too much work to do here, we just need to define a subclass of the p
 ##### Implement protocol part
 
 ```python
-class WebDriverSetWindowRectProtocolPart(SetWindowRectProtocolPart):
+class WebDriverWindowRectProtocolPart(WindowRectProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
@@ -208,7 +208,7 @@ from .protocol import (BaseProtocolPart,
                        ClickProtocolPart,
                        SendKeysProtocolPart,
                        {... other protocol parts}
-                       SetWindowRectProtocolPart, # add this!
+                       WindowRectProtocolPart, # add this!
                        TestDriverProtocolPart)
 ```
 
@@ -230,7 +230,7 @@ class WebDriverProtocol(Protocol):
                   WebDriverClickProtocolPart,
                   WebDriverSendKeysProtocolPart,
                   {... other protocol parts}
-                  WebDriverSetWindowRectProtocolPart, # add this!
+                  WebDriverWindowRectProtocolPart, # add this!
                   WebDriverTestDriverProtocolPart]
 ```
 
@@ -256,7 +256,7 @@ We will modify [executormarionette.py](https://github.com/web-platform-tests/wpt
 We have little actual work to do here! We just need to define a subclass of the protocol part we defined earlier.
 
 ```python
-class MarionetteSetWindowRectProtocolPart(SetWindowRectProtocolPart):
+class MarionetteWindowRectProtocolPart(WindowRectProtocolPart):
     def setup(self):
         self.marionette = self.parent.marionette
 
@@ -274,7 +274,7 @@ from .protocol import (BaseProtocolPart,
                        ClickProtocolPart,
                        SendKeysProtocolPart,
                        {... other protocol parts}
-                       SetWindowRectProtocolPart, # add this!
+                       WindowRectProtocolPart, # add this!
                        TestDriverProtocolPart)
 ```
 
@@ -292,7 +292,7 @@ class MarionetteProtocol(Protocol):
                   MarionetteClickProtocolPart,
                   MarionetteSendKeysProtocolPart,
                   {... other protocol parts}
-                  MarionetteSetWindowRectProtocolPart, # add this
+                  MarionetteWindowRectProtocolPart, # add this
                   MarionetteTestDriverProtocolPart]
 ```
 
@@ -335,22 +335,35 @@ run instead of testdriver-extra.js in browser-specific test environments. For ex
 
 ### What if I need to return a value from my testdriver API?
 
-You can return values from testdriver by just making your Action and Protocol classes use return statements. The data being returned will be serialized into JSON and passed
-back to the test on the resolving promise. The test can then deserialize the JSON to access the return values. Here is an example of a theoretical GetWindowRect API:
+You can return values from testdriver by just making your Action and Protocol classes use return statements. The data being returned will be serialized into JSON and passed back to the test on the resolving promise. The test can then deserialize the JSON to access the return values. Here is an example of a theoretical GetWindowRect API:
 
 ```python
 class GetWindowRectAction(object):
+    name = "get_window_rect"
     def __call__(self, payload):
-        return self.protocol.get_window_rect.get_window_rect()
+        return self.protocol.window_rect.get_window_rect()
 ```
 
-The WebDriver command will return a [WindowRect object](https://w3c.github.io/webdriver/#dfn-window-rect), which is a dictionary with keys `x`, `y`, `width`, and `height`.
+Extend pProtocol part:
 ```python
-class WebDriverGetWindowRectProtocolPart(GetWindowRectProtocolPart):
+class WindowRectProtocolPart(ProtocolPart):
+
+    ...
+
+    @abstractmethod
+    def get_window_rect(self):
+        pass
+```
+
+And implement it:
+```python
+class WebDriverWindowRectProtocolPart(WindowRectProtocolPart):
+    ...
     def get_window_rect(self):
         # The communication channel between testharness and backend is blocked until the end of the action.
         return self.webdriver.get_window_rect()
 ```
+
 
 Then a test can access the return value as follows:
 ```html

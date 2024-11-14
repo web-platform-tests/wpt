@@ -12,7 +12,7 @@ We assume the following in this writeup:
 
 Let's implement window resizing. We can do this via the [Set Window Rect](https://w3c.github.io/webdriver/#set-window-rect) command in WebDriver.
 
-For extensions to `testdriver.js` that use a [WebDriver BiDi](https://w3c.github.io/webdriver-bidi) command, the process is similar, with any differences noted in this document.
+The process of extending `testdriver.js` is similar for [WebDriver Classic](https://w3c.github.io/webdriver/) and [WebDriver BiDi](https://w3c.github.io/webdriver-bidi) commands. This tutorial highlights the differences inline.
 
 First, we need to think of what the API will look like a little. We will be using WebDriver and Marionette for this, so we can look and see that they take in x, y coordinates, width and height integers.
 

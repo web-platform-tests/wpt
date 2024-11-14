@@ -90,7 +90,7 @@ We will leave this unimplemented and override it in another file. Lets do that n
 
 #### WebDriver BiDi
 
-For commands using the WebDriver BiDi protocol, the methods should be added in the `window.test_driver.bidi` object. Parameters for these methods are passed as a single object named `params`. 
+For commands using WebDriver BiDi, add the methods to `window.test_driver.bidi`. Parameters are passed as a single object `params`. 
 <!-- TODO: add an example link once a first bidi command (probably `test_driver.bidi.permissions.set_permission`) is implemented.-->
 
 ### [tools/wptrunner/wptrunner/testdriver-extra.js](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/testdriver-extra.js)
@@ -105,17 +105,17 @@ window.test_driver_internal.set_element_rect = function(x, y, width, height) {
 
 The `create_action` helper function does the heavy lifting of setting up a postMessage to the wptrunner internals as well as returning a promise that will resolve once the call is complete. 
 
-Note the action `name`, it will be used later in the python action representation.
+The action's `name` is important and will be used later when defining the corresponding Python action representation. Keep this name in mind for the next steps.
 
 #### WebDriver BiDi
 
-For BiDi actions, the action `name` should be in format of `bidi.{MODULE_NAME}.{COMMAND}` like [`bidi.session.subscribe`](https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/testdriver-extra.js#L202).
+For actions related to WebDriver BiDi, the `name` should follow the format `bidi.{MODULE_NAME}.{COMMAND}`, for example, [`bidi.session.subscribe`](https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/testdriver-extra.js#L202).
 
 ### Protocol part
 
 Next, this is passed to the executor and protocol in wptrunner. Time to switch to Python!
 
-Create a protocol part class in [tools/wptrunner/wptrunner/executors/protocol.py](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/protocol.py): 
+To add this command, you'll need to create a corresponding protocol part class in [tools/wptrunner/wptrunner/executors/protocol.py](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/protocol.py).
 
 ```python
 class SetWindowRectProtocolPart(ProtocolPart):
@@ -135,15 +135,15 @@ class SetWindowRectProtocolPart(ProtocolPart):
         pass
 ```
 
-Note the protocol part `name`, it will be used later by the action.
+The protocol part's `name` is important. It will be used when we define the action that uses this protocol part. Make a note of this name for the next steps.
 
 #### WebDriver BiDi
 
-The BiDi protocol parts are normally split by BiDi modules. They should have a prefix `Bidi{ModuleName}` and the name prefix `bidi_` like [`BidiScriptProtocolPart`](https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/protocol.py#L388) with the name [`bidi_script`](https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/protocol.py#L392).
+When working with WebDriver BiDi, organize protocol parts by WebDriver BiDi modules. Name these parts using the prefix `Bidi{ModuleName}ProtocolPart` (e.g., [`BidiScriptProtocolPart`](https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/protocol.py#L388)) and use the prefix `bidi_` for their corresponding methods (e.g., [`bidi_script`](https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/protocol.py#L392)).
 
 ### Action representation
 
-Next we create a representation of our new action in [tools/wptrunner/wptrunner/executors/actions.py](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/actions.py).
+Next create an action representation in [tools/wptrunner/wptrunner/executors/actions.py](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/actions.py). This defines how the command's parameters are processed and how the command is executed using the protocol part we defined earlier.
 
 ```python
 class SetWindowRectAction:
@@ -160,17 +160,22 @@ class SetWindowRectAction:
         self.protocol.set_window_rect_protocol_part.set_window_rect(x, y, width, height)
 ```
 
-The `name` should be the one used in [tools/wptrunner/wptrunner/testdriver-extra.js](#tools-wptrunner-wptrunner-testdriver-extra-js). It is the key, the `create_action` binds the testdriver actions to. 
+The `name` property should match the `name` used in [tools/wptrunner/wptrunner/testdriver-extra.js](#tools-wptrunner-wptrunner-testdriver-extra-js). This name acts as the key that connects the testdriver function in JavaScript with its corresponding Python action.
 
-The protocol part name `set_window_rect_protocol_part` can be used to access the `SetWindowRectProtocolPart`: `self.protocol.set_window_rect_protocol_part...`.
+You can access the `SetWindowRectProtocolPart` using its name `set_window_rect_protocol_part` we defined earlier: 
+```python
+self.protocol.set_window_rect_protocol_part.set_window_rect(x, y, width, height)
+```
 
-Then add your new class to the `actions = [...]` list at the end of the file.
+Then add your newly created class to the [`actions = [...]`](https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/actions.py#L514) list at the end of the file.
 
 Don't forget to write docs in ```testdriver.md```.
 
 #### WebDriver BiDi
 
-The BiDi action representation should be added to the [`tools/wptrunner/wptrunner/executors/asyncactions.py`](https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/asyncactions.py) file, and this new class should be added to the [`async_actions = [...]`](https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/asyncactions.py#L35C1-L35C14).
+For WebDriver BiDi actions, add the new action representation class to [`tools/wptrunner/wptrunner/executors/asyncactions.py`](https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/asyncactions.py) and include it in the [`async_actions = [...]`](https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/asyncactions.py#L35C1-L35C14) list.
+
+Note that the BiDi actions' `__call__` can be `async`.
 
 ### Browser specific implementations
 
@@ -211,7 +216,7 @@ Here we have the setup method which just redefines the webdriver object at this 
 
 ###### WebDriver BiDi
 
-The [BidiSession](https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/webdriver/webdriver/bidi/client.py#L13) can be accessed via `self.webdriver.bidi_session` like in [this example](https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/wptrunner/wptrunner/executors/executorwebdriver.py#L214C22-L214C49).
+You can access the [BidiSession](https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/webdriver/webdriver/bidi/client.py#L13) through the webdriver object using `self.webdriver.bidi_session`, similar to how it's done for the [`WebDriverBidiScriptProtocolPart.call_function`](https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/wptrunner/wptrunner/executors/executorwebdriver.py#L214C22-L214C49).
 
 ##### (WebDriver Classic only) Extend `WebDriverProtocol` implementation
 
@@ -231,7 +236,7 @@ class WebDriverProtocol(Protocol):
 
 ##### (WebDriver BiDi only) Extend `WebDriverBidiProtocol` implementation
 
-Extend the [`WebDriverBidiProtocol`](https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/wptrunner/wptrunner/executors/executorwebdriver.py#L679C7-L679C28)'s [`implements`](https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/wptrunner/wptrunner/executors/executorwebdriver.py#L681) list with this new protocol part implementation (eg `WebDriverBidiScriptProtocolPart`):
+To make this new WebDriver BiDi command available, add the newly added protocol part implementation (e.g., `WebDriverBidiScriptProtocolPart`) to the [`implements`](https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/wptrunner/wptrunner/executors/executorwebdriver.py#L681) list of the [`WebDriverBidiProtocol`](https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/wptrunner/wptrunner/executors/executorwebdriver.py#L679C7-L679C28) class.
 
 ```python
 class WebDriverBidiProtocol(WebDriverProtocol):
@@ -320,7 +325,7 @@ promise_test(async t => {
 
 #### WebDriver BiDi
 
-You can use infra test [`test_driver.bidi.log.entry_added` as an example](https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/infrastructure/webdriver/bidi/subscription.html).
+For an example of how to write an infra test for a WebDriver BiDi command, you can refer to the existing test for [`test_driver.bidi.log.entry_added`](https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/infrastructure/webdriver/bidi/subscription.html).
 <!-- TODO: replace example with directly mapped method like `test_driver.bidi.permissions.set_permission`, once it is implemented -->
 
 ### What about testdriver-vendor.js?
@@ -365,7 +370,7 @@ async_test(t => {
 
 ### What if I need to run an async code in the action?
 
-While processing normal `actions` is blocking testdriver to backend communication, the `async_actions` can be asynchronous in a non-blocking way, like [`BidiSessionSubscribeAction`](https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/wptrunner/wptrunner/executors/asyncactions.py#L18):
+For actions that involve asynchronous operations, `async_actions` provide a non-blocking approach. Similar to the [`BidiSessionSubscribeAction`](https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/wptrunner/wptrunner/executors/asyncactions.py#L18) example:
 <!-- TODO: replace example with directly mapped method like `test_driver.bidi.permissions.set_permission`, once it is implemented -->
 ```python
     async def __call__(self, payload):

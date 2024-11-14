@@ -104,17 +104,17 @@
              */
             permissions: {
                 /**
-                 * `permissions.setPermission <https://w3c.github.io/permissions/#webdriver-bidi-command-permissions-setPermission`_
+                 * `permissions.setPermission <https://w3c.github.io/permissions/#webdriver-bidi-command-permissions-setPermission>`_
                  * command.
                  * @param {object} params - Parameters for the command.
                  * @param {PermissionDescriptor} params.descriptor - a `PermissionDescriptor
-                 *                               <https://w3c.github.io/permissions/#dom-permissiondescriptor>`_
-                 *                               or derived object.
+                 *                               <https://w3c.github.io/permissions/#dom-permissiondescriptor>`_.
                  * @param {PermissionState} params.state - a `PermissionState
                  *                          <https://w3c.github.io/permissions/#dom-permissionstate>`_
                  *                          value.
-                 * @param {string} [params.origin] - The origin to set the permission for. If
-                 *                 omitted, the permission is set for the current window's origin.
+                 * @param {string} [params.origin] - an optional `origin` string to set the
+                 *                 permission for. If omitted, the permission is set for the
+                 *                 current window's origin.
                  * @returns {Promise} fulfilled after the permission is set, or rejected if setting
                  *                    the permission fails.
                  */

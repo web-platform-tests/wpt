@@ -4,8 +4,8 @@ Adding new commands to testdriver.js
 ## Assumptions
 We assume the following in this writeup:
  - You know what web-platform-tests is and you have a working checkout and can run tests
- - You know what [WebDriver Classic](https://w3c.github.io/webdriver/) and 
-   [WebDriver BiDi](https://w3c.github.io/webdriver-bidi) protocols are
+ - You know what [WebDriver Classic](https://w3c.github.io/webdriver/) and
+  [WebDriver BiDi](https://w3c.github.io/webdriver-bidi) protocols are
  - Familiarity with JavaScript and Python
 
 ## Introduction!
@@ -90,7 +90,7 @@ We will leave this unimplemented and override it in another file. Lets do that n
 
 #### WebDriver BiDi
 
-For commands using WebDriver BiDi, add the methods to `window.test_driver.bidi`. Parameters are passed as a single object `params`. 
+For commands using WebDriver BiDi, add the methods to `window.test_driver.bidi`. Parameters are passed as a single object `params`.
 <!-- TODO: add an example link once a first bidi command (probably `test_driver.bidi.permissions.set_permission`) is implemented.-->
 
 ### [tools/wptrunner/wptrunner/testdriver-extra.js](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/testdriver-extra.js)
@@ -103,7 +103,7 @@ window.test_driver_internal.set_element_rect = function(x, y, width, height) {
 };
 ```
 
-The `create_action` helper function does the heavy lifting of setting up a postMessage to the wptrunner internals as well as returning a promise that will resolve once the call is complete. 
+The `create_action` helper function does the heavy lifting of setting up a postMessage to the wptrunner internals as well as returning a promise that will resolve once the call is complete.
 
 The action's `name` is important and will be used later when defining the corresponding Python action representation. Keep this name in mind for the next steps.
 
@@ -162,7 +162,7 @@ class SetWindowRectAction:
 
 The `name` property should match the `name` used in [tools/wptrunner/wptrunner/testdriver-extra.js](#tools-wptrunner-wptrunner-testdriver-extra-js). This name acts as the key that connects the testdriver function in JavaScript with its corresponding Python action.
 
-You can access the `SetWindowRectProtocolPart` using its name `set_window_rect_protocol_part` we defined earlier: 
+You can access the `SetWindowRectProtocolPart` using its name `set_window_rect_protocol_part` we defined earlier:
 ```python
 self.protocol.set_window_rect_protocol_part.set_window_rect(x, y, width, height)
 ```
@@ -349,7 +349,7 @@ The WebDriver command will return a [WindowRect object](https://w3c.github.io/we
 class WebDriverGetWindowRectProtocolPart(GetWindowRectProtocolPart):
     def get_window_rect(self):
         # The communication channel between testharness and backend is blocked until the end of the action.
-        return self.webdriver.get_window_rect() 
+        return self.webdriver.get_window_rect()
 ```
 
 Then a test can access the return value as follows:

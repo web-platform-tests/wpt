@@ -40,13 +40,15 @@
 <p>We assume the following in this writeup:</p>
 <ul class="simple">
 <li><p>You know what web-platform-tests is and you have a working checkout and can run tests</p></li>
-<li><p>You know what WebDriver is</p></li>
+<li><p>You know what <a class="reference external" href="https://w3c.github.io/webdriver/">WebDriver Classic</a> and
+<a class="reference external" href="https://w3c.github.io/webdriver-bidi">WebDriver BiDi</a> protocols are</p></li>
 <li><p>Familiarity with JavaScript and Python</p></li>
 </ul>
 </section>
 <section id="introduction">
 <h2>Introduction!<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
 <p>Let’s implement window resizing. We can do this via the <a class="reference external" href="https://w3c.github.io/webdriver/#set-window-rect">Set Window Rect</a> command in WebDriver.</p>
+<p>The process of extending <code class="docutils literal notranslate"><span class="pre">testdriver.js</span></code> is similar for <a class="reference external" href="https://w3c.github.io/webdriver/">WebDriver Classic</a> and <a class="reference external" href="https://w3c.github.io/webdriver-bidi">WebDriver BiDi</a> commands. This tutorial highlights the differences inline.</p>
 <p>First, we need to think of what the API will look like a little. We will be using WebDriver and Marionette for this, so we can look and see that they take in x, y coordinates, width and height integers.</p>
 <p>The first part of this will be browser agnostic, but later we will need to implement a specific layer for each browser (here we will do Firefox and Chrome).</p>
 </section>
@@ -70,6 +72,7 @@ Add testdriver.js support for the [<span class="nt">Set Window Rect command</spa
 </div>
 <p>Members of the community will then have the opportunity to comment on our proposed changes, and perhaps suggest improvements to our ideas. If all goes well it will be approved and merged in.</p>
 <p>With that said, developing a prototype implementation may help others evaluate the proposal during the RFC process, so let’s move on to writing some code.</p>
+<p>Note that for extensions to testdriver.js that directly reflect a <a class="reference external" href="https://w3c.github.io/webdriver/">WebDriver Classic</a> command, <a class="reference external" href="https://w3c.github.io/webdriver-bidi">WebDriver BiDi</a> command, or event, the <a class="reference external" href="https://github.com/web-platform-tests/rfcs">RFC</a> process isn’t required.</p>
 </section>
 <section id="code">
 <h2>Code!<a class="headerlink" href="#code" title="Link to this heading">¶</a></h2>
@@ -110,6 +113,10 @@ Add testdriver.js support for the [<span class="nt">Set Window Rect command</spa
 </pre></div>
 </div>
 <p>We will leave this unimplemented and override it in another file. Lets do that now!</p>
+<section id="webdriver-bidi">
+<h4>WebDriver BiDi<a class="headerlink" href="#webdriver-bidi" title="Link to this heading">¶</a></h4>
+<p>For commands using WebDriver BiDi, add the methods to <code class="docutils literal notranslate"><span class="pre">window.test_driver.bidi</span></code>. Parameters are passed as a single object <code class="docutils literal notranslate"><span class="pre">params</span></code>.</p>
+<!-- TODO: add an example link once a first bidi command (probably `test_driver.bidi.permissions.set_permission`) is implemented.--></section>
 </section>
 <section id="tools-wptrunner-wptrunner-testdriver-extra-js">
 <h3><a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/testdriver-extra.js">tools/wptrunner/wptrunner/testdriver-extra.js</a><a class="headerlink" href="#tools-wptrunner-wptrunner-testdriver-extra-js" title="Link to this heading">¶</a></h3>
@@ -120,15 +127,21 @@ Add testdriver.js support for the [<span class="nt">Set Window Rect command</spa
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">create_action</span></code> helper function does the heavy lifting of setting up a postMessage to the wptrunner internals as well as returning a promise that will resolve once the call is complete.</p>
-<p>Next, this is passed to the executor and protocol in wptrunner. Time to switch to Python!</p>
+<p>The action’s <code class="docutils literal notranslate"><span class="pre">name</span></code> is important and will be used later when defining the corresponding Python action representation. Keep this name in mind for the next steps.</p>
+<section id="id1">
+<h4>WebDriver BiDi<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h4>
+<p>For actions related to WebDriver BiDi, the <code class="docutils literal notranslate"><span class="pre">name</span></code> should follow the format <code class="docutils literal notranslate"><span class="pre">bidi.{MODULE_NAME}.{COMMAND}</span></code>, for example, <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/testdriver-extra.js#L202"><code class="docutils literal notranslate"><span class="pre">bidi.session.subscribe</span></code></a>.</p>
 </section>
-<section id="tools-wptrunner-wptrunner-executors-protocol-py">
-<h3><a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/protocol.py">tools/wptrunner/wptrunner/executors/protocol.py</a><a class="headerlink" href="#tools-wptrunner-wptrunner-executors-protocol-py" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SetWindowRectProtocolPart</span><span class="p">(</span><span class="n">ProtocolPart</span><span class="p">):</span>
+</section>
+<section id="protocol-part">
+<h3>Protocol part<a class="headerlink" href="#protocol-part" title="Link to this heading">¶</a></h3>
+<p>Next, this is passed to the executor and protocol in wptrunner. Time to switch to Python!</p>
+<p>To add this command, you’ll need to create a corresponding protocol part class in <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/protocol.py">tools/wptrunner/wptrunner/executors/protocol.py</a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">WindowRectProtocolPart</span><span class="p">(</span><span class="n">ProtocolPart</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Protocol part for resizing and changing location of window&quot;&quot;&quot;</span>
     <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;set_window_rect&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;window_rect&quot;</span>
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">set_window_rect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
@@ -141,11 +154,18 @@ Add testdriver.js support for the [<span class="nt">Set Window Rect command</spa
         <span class="k">pass</span>
 </pre></div>
 </div>
-<p>Next we create a representation of our new action.</p>
+<p>The protocol part’s <code class="docutils literal notranslate"><span class="pre">name</span></code> is important. It will be used when we define the action that uses this protocol part. Make a note of this name for the next steps.</p>
+<section id="id2">
+<h4>WebDriver BiDi<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h4>
+<p>When working with WebDriver BiDi, organize protocol parts by WebDriver BiDi modules. Name these parts using the prefix <code class="docutils literal notranslate"><span class="pre">Bidi{ModuleName}ProtocolPart</span></code> (e.g., <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/protocol.py#L388"><code class="docutils literal notranslate"><span class="pre">BidiScriptProtocolPart</span></code></a>) and use the prefix <code class="docutils literal notranslate"><span class="pre">bidi_</span></code> for their corresponding methods (e.g., <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/protocol.py#L392"><code class="docutils literal notranslate"><span class="pre">bidi_script</span></code></a>).</p>
 </section>
-<section id="tools-wptrunner-wptrunner-executors-actions-py">
-<h3><a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/actions.py">tools/wptrunner/wptrunner/executors/actions.py</a><a class="headerlink" href="#tools-wptrunner-wptrunner-executors-actions-py" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SetWindowRectAction</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+</section>
+<section id="action-representation">
+<h3>Action representation<a class="headerlink" href="#action-representation" title="Link to this heading">¶</a></h3>
+<p>Next create an action representation in <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/actions.py">tools/wptrunner/wptrunner/executors/actions.py</a>. This defines how the command’s parameters are processed and how the command is executed using the protocol part we defined earlier.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SetWindowRectAction</span><span class="p">:</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;set_window_rect&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">protocol</span>
@@ -154,18 +174,32 @@ Add testdriver.js support for the [<span class="nt">Set Window Rect command</spa
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">],</span> <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting window rect to be: x=</span><span class="si">%s</span><span class="s2">, y=</span><span class="si">%s</span><span class="s2">, width=</span><span class="si">%s</span><span class="s2">, height=</span><span class="si">%s</span><span class="s2">&quot;</span>
                           <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">set_window_rect</span><span class="o">.</span><span class="n">set_window_rect</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">window_rect</span><span class="o">.</span><span class="n">set_window_rect</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Then add your new class to the <code class="docutils literal notranslate"><span class="pre">actions</span> <span class="pre">=</span> <span class="pre">[...]</span></code> list at the end of the file.</p>
-<p>Don’t forget to write docs in <code class="docutils literal notranslate"><span class="pre">testdriver.md</span></code>.
-Now we write the browser specific implementations.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">name</span></code> property should match the <code class="docutils literal notranslate"><span class="pre">name</span></code> used in <a class="reference external" href="#tools-wptrunner-wptrunner-testdriver-extra-js">tools/wptrunner/wptrunner/testdriver-extra.js</a>. This name acts as the key that connects the testdriver function in JavaScript with its corresponding Python action.</p>
+<p>You can access the <code class="docutils literal notranslate"><span class="pre">WindowRectProtocolPart</span></code> using its name <code class="docutils literal notranslate"><span class="pre">window_rect</span></code> we defined earlier:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">window_rect</span><span class="o">.</span><span class="n">set_window_rect</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then add your newly created class to the <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/actions.py#L514"><code class="docutils literal notranslate"><span class="pre">actions</span> <span class="pre">=</span> <span class="pre">[...]</span></code></a> list at the end of the file.</p>
+<p>Don’t forget to write docs in <code class="docutils literal notranslate"><span class="pre">testdriver.md</span></code>.</p>
+<section id="id3">
+<h4>WebDriver BiDi<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h4>
+<p>For WebDriver BiDi actions, add the new action representation class to <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/asyncactions.py"><code class="docutils literal notranslate"><span class="pre">tools/wptrunner/wptrunner/executors/asyncactions.py</span></code></a> and include it in the <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/asyncactions.py#L35C1-L35C14"><code class="docutils literal notranslate"><span class="pre">async_actions</span> <span class="pre">=</span> <span class="pre">[...]</span></code></a> list.</p>
+<p>Note that the BiDi actions’ <code class="docutils literal notranslate"><span class="pre">__call__</span></code> can be <code class="docutils literal notranslate"><span class="pre">async</span></code>.</p>
 </section>
+</section>
+<section id="browser-specific-implementations">
+<h3>Browser specific implementations<a class="headerlink" href="#browser-specific-implementations" title="Link to this heading">¶</a></h3>
+<p>Now we write the browser specific implementations.</p>
 <section id="chrome">
-<h3>Chrome<a class="headerlink" href="#chrome" title="Link to this heading">¶</a></h3>
+<h4>Chrome<a class="headerlink" href="#chrome" title="Link to this heading">¶</a></h4>
 <p>We will modify <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/executorwebdriver.py">executorwebdriver.py</a> and use the WebDriver API.</p>
 <p>There isn’t too much work to do here, we just need to define a subclass of the protocol part we defined earlier.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">WebDriverSetWindowRectProtocolPart</span><span class="p">(</span><span class="n">SetWindowRectProtocolPart</span><span class="p">):</span>
+<section id="implement-protocol-part">
+<h5>Implement protocol part<a class="headerlink" href="#implement-protocol-part" title="Link to this heading">¶</a></h5>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">WebDriverWindowRectProtocolPart</span><span class="p">(</span><span class="n">WindowRectProtocolPart</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">webdriver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">webdriver</span>
 
@@ -181,11 +215,18 @@ Now we write the browser specific implementations.</p>
                        <span class="n">ClickProtocolPart</span><span class="p">,</span>
                        <span class="n">SendKeysProtocolPart</span><span class="p">,</span>
                        <span class="p">{</span><span class="o">...</span> <span class="n">other</span> <span class="n">protocol</span> <span class="n">parts</span><span class="p">}</span>
-                       <span class="n">SetWindowRectProtocolPart</span><span class="p">,</span> <span class="c1"># add this!</span>
+                       <span class="n">WindowRectProtocolPart</span><span class="p">,</span> <span class="c1"># add this!</span>
                        <span class="n">TestDriverProtocolPart</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Here we have the setup method which just redefines the webdriver object at this level. The important part is the <code class="docutils literal notranslate"><span class="pre">set_window_rect</span></code> function (and it’s important it is named that since we called it that earlier). This will call the WebDriver API for <a class="reference external" href="https://w3c.github.io/webdriver/#set-window-rect">set window rect</a>.</p>
+<section id="id4">
+<h6>WebDriver BiDi<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h6>
+<p>You can access the <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/webdriver/webdriver/bidi/client.py#L13">BidiSession</a> through the webdriver object using <code class="docutils literal notranslate"><span class="pre">self.webdriver.bidi_session</span></code>, similar to how it’s done for the <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/wptrunner/wptrunner/executors/executorwebdriver.py#L214C22-L214C49"><code class="docutils literal notranslate"><span class="pre">WebDriverBidiScriptProtocolPart.call_function</span></code></a>.</p>
+</section>
+</section>
+<section id="webdriver-classic-only-extend-webdriverprotocol-implementation">
+<h5>(WebDriver Classic only) Extend <code class="docutils literal notranslate"><span class="pre">WebDriverProtocol</span></code> implementation<a class="headerlink" href="#webdriver-classic-only-extend-webdriverprotocol-implementation" title="Link to this heading">¶</a></h5>
 <p>Finally, we just need to tell the WebDriverProtocol to implement this part.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">WebDriverProtocol</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="n">implements</span> <span class="o">=</span> <span class="p">[</span><span class="n">WebDriverBaseProtocolPart</span><span class="p">,</span>
@@ -194,17 +235,30 @@ Now we write the browser specific implementations.</p>
                   <span class="n">WebDriverClickProtocolPart</span><span class="p">,</span>
                   <span class="n">WebDriverSendKeysProtocolPart</span><span class="p">,</span>
                   <span class="p">{</span><span class="o">...</span> <span class="n">other</span> <span class="n">protocol</span> <span class="n">parts</span><span class="p">}</span>
-                  <span class="n">WebDriverSetWindowRectProtocolPart</span><span class="p">,</span> <span class="c1"># add this!</span>
+                  <span class="n">WebDriverWindowRectProtocolPart</span><span class="p">,</span> <span class="c1"># add this!</span>
                   <span class="n">WebDriverTestDriverProtocolPart</span><span class="p">]</span>
 </pre></div>
 </div>
 </section>
+<section id="webdriver-bidi-only-extend-webdriverbidiprotocol-implementation">
+<h5>(WebDriver BiDi only) Extend <code class="docutils literal notranslate"><span class="pre">WebDriverBidiProtocol</span></code> implementation<a class="headerlink" href="#webdriver-bidi-only-extend-webdriverbidiprotocol-implementation" title="Link to this heading">¶</a></h5>
+<p>To make this new WebDriver BiDi command available, add the newly added protocol part implementation (e.g., <code class="docutils literal notranslate"><span class="pre">WebDriverBidiScriptProtocolPart</span></code>) to the <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/wptrunner/wptrunner/executors/executorwebdriver.py#L681"><code class="docutils literal notranslate"><span class="pre">implements</span></code></a> list of the <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/wptrunner/wptrunner/executors/executorwebdriver.py#L679C7-L679C28"><code class="docutils literal notranslate"><span class="pre">WebDriverBidiProtocol</span></code></a> class.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">WebDriverBidiProtocol</span><span class="p">(</span><span class="n">WebDriverProtocol</span><span class="p">):</span>
+    <span class="n">enable_bidi</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">implements</span> <span class="o">=</span> <span class="p">[{</span><span class="o">...</span> <span class="n">other</span> <span class="n">bidi</span> <span class="n">protocol</span> <span class="n">parts</span><span class="p">},</span>
+                  <span class="n">WebDriverBidiScriptProtocolPart</span><span class="p">,</span> <span class="c1"># add this</span>
+                  <span class="o">*</span><span class="p">(</span><span class="n">part</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">WebDriverProtocol</span><span class="o">.</span><span class="n">implements</span><span class="p">)</span>
+                  <span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
 <section id="firefox">
-<h3>Firefox<a class="headerlink" href="#firefox" title="Link to this heading">¶</a></h3>
-<p>We use the <a class="reference external" href="https://firefox-source-docs.mozilla.org/python/marionette_driver.html#marionette_driver.marionette.Marionette.set_window_rect">set window rect</a> Marionette command.</p>
+<h4>Firefox<a class="headerlink" href="#firefox" title="Link to this heading">¶</a></h4>
+<!-- TODO: Document adding WebDriver BiDi protocol parts. --><p>We use the <a class="reference external" href="https://firefox-source-docs.mozilla.org/python/marionette_driver.html#marionette_driver.marionette.Marionette.set_window_rect">set window rect</a> Marionette command.</p>
 <p>We will modify <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/executormarionette.py">executormarionette.py</a> and use the Marionette Python API.</p>
 <p>We have little actual work to do here! We just need to define a subclass of the protocol part we defined earlier.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MarionetteSetWindowRectProtocolPart</span><span class="p">(</span><span class="n">SetWindowRectProtocolPart</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MarionetteWindowRectProtocolPart</span><span class="p">(</span><span class="n">WindowRectProtocolPart</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">marionette</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">marionette</span>
 
@@ -220,7 +274,7 @@ Now we write the browser specific implementations.</p>
                        <span class="n">ClickProtocolPart</span><span class="p">,</span>
                        <span class="n">SendKeysProtocolPart</span><span class="p">,</span>
                        <span class="p">{</span><span class="o">...</span> <span class="n">other</span> <span class="n">protocol</span> <span class="n">parts</span><span class="p">}</span>
-                       <span class="n">SetWindowRectProtocolPart</span><span class="p">,</span> <span class="c1"># add this!</span>
+                       <span class="n">WindowRectProtocolPart</span><span class="p">,</span> <span class="c1"># add this!</span>
                        <span class="n">TestDriverProtocolPart</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -235,14 +289,15 @@ Now we write the browser specific implementations.</p>
                   <span class="n">MarionetteClickProtocolPart</span><span class="p">,</span>
                   <span class="n">MarionetteSendKeysProtocolPart</span><span class="p">,</span>
                   <span class="p">{</span><span class="o">...</span> <span class="n">other</span> <span class="n">protocol</span> <span class="n">parts</span><span class="p">}</span>
-                  <span class="n">MarionetteSetWindowRectProtocolPart</span><span class="p">,</span> <span class="c1"># add this</span>
+                  <span class="n">MarionetteWindowRectProtocolPart</span><span class="p">,</span> <span class="c1"># add this</span>
                   <span class="n">MarionetteTestDriverProtocolPart</span><span class="p">]</span>
 </pre></div>
 </div>
 </section>
 <section id="other-browsers">
-<h3>Other Browsers<a class="headerlink" href="#other-browsers" title="Link to this heading">¶</a></h3>
+<h4>Other Browsers<a class="headerlink" href="#other-browsers" title="Link to this heading">¶</a></h4>
 <p>Other browsers (such as safari) may use executorselenium, or a completely new executor (such as servo). For these, you must change the executor in the same way as we did with chrome and firefox.</p>
+</section>
 </section>
 <section id="write-an-infra-test">
 <h3>Write an infra test<a class="headerlink" href="#write-an-infra-test" title="Link to this heading">¶</a></h3>
@@ -264,6 +319,10 @@ Now we write the browser specific implementations.</p>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
+<section id="id5">
+<h4>WebDriver BiDi<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h4>
+<p>For an example of how to write an infra test for a WebDriver BiDi command, you can refer to the existing test for <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/infrastructure/webdriver/bidi/subscription.html"><code class="docutils literal notranslate"><span class="pre">test_driver.bidi.log.entry_added</span></code></a>.</p>
+<!-- TODO: replace example with directly mapped method like `test_driver.bidi.permissions.set_permission`, once it is implemented --></section>
 </section>
 <section id="what-about-testdriver-vendor-js">
 <h3>What about testdriver-vendor.js?<a class="headerlink" href="#what-about-testdriver-vendor-js" title="Link to this heading">¶</a></h3>
@@ -272,16 +331,28 @@ run instead of testdriver-extra.js in browser-specific test environments. For ex
 </section>
 <section id="what-if-i-need-to-return-a-value-from-my-testdriver-api">
 <h3>What if I need to return a value from my testdriver API?<a class="headerlink" href="#what-if-i-need-to-return-a-value-from-my-testdriver-api" title="Link to this heading">¶</a></h3>
-<p>You can return values from testdriver by just making your Action and Protocol classes use return statements. The data being returned will be serialized into JSON and passed
-back to the test on the resolving promise. The test can then deserialize the JSON to access the return values. Here is an example of a theoretical GetWindowRect API:</p>
+<p>You can return values from testdriver by just making your Action and Protocol classes use return statements. The data being returned will be serialized into JSON and passed back to the test on the resolving promise. The test can then deserialize the JSON to access the return values. Here is an example of a theoretical GetWindowRect API:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">GetWindowRectAction</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;get_window_rect&quot;</span>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">get_window_rect</span><span class="o">.</span><span class="n">get_window_rect</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">window_rect</span><span class="o">.</span><span class="n">get_window_rect</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The WebDriver command will return a <a class="reference external" href="https://w3c.github.io/webdriver/#dfn-window-rect">WindowRect object</a>, which is a dictionary with keys <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">width</span></code>, and <code class="docutils literal notranslate"><span class="pre">height</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">WebDriverGetWindowRectProtocolPart</span><span class="p">(</span><span class="n">GetWindowRectProtocolPart</span><span class="p">):</span>
+<p>Extend pProtocol part:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">WindowRectProtocolPart</span><span class="p">(</span><span class="n">ProtocolPart</span><span class="p">):</span>
+
+    <span class="o">...</span>
+
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_window_rect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<p>And implement it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">WebDriverWindowRectProtocolPart</span><span class="p">(</span><span class="n">WindowRectProtocolPart</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">get_window_rect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># The communication channel between testharness and backend is blocked until the end of the action.</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">webdriver</span><span class="o">.</span><span class="n">get_window_rect</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -298,6 +369,16 @@ back to the test on the resolving promise. The test can then deserialize the JSO
 <span class="w">  </span><span class="p">})</span>
 <span class="p">});</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="what-if-i-need-to-run-an-async-code-in-the-action">
+<h3>What if I need to run an async code in the action?<a class="headerlink" href="#what-if-i-need-to-run-an-async-code-in-the-action" title="Link to this heading">¶</a></h3>
+<p>For actions that involve asynchronous operations, <code class="docutils literal notranslate"><span class="pre">async_actions</span></code> provide a non-blocking approach. Similar to the <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/wptrunner/wptrunner/executors/asyncactions.py#L18"><code class="docutils literal notranslate"><span class="pre">BidiSessionSubscribeAction</span></code></a> example:</p>
+<!-- TODO: replace example with directly mapped method like `test_driver.bidi.permissions.set_permission`, once it is implemented --><div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">):</span>
+        <span class="c1"># The communication channel between testharness and backend is not blocked.</span>
+        <span class="o">...</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">bidi_events</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">contexts</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

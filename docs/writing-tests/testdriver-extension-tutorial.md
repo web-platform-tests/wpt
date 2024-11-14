@@ -4,12 +4,15 @@ Adding new commands to testdriver.js
 ## Assumptions
 We assume the following in this writeup:
  - You know what web-platform-tests is and you have a working checkout and can run tests
- - You know what WebDriver is
+ - You know what [WebDriver Classic](https://w3c.github.io/webdriver/) and 
+   [WebDriver BiDi](https://w3c.github.io/webdriver-bidi) protocols are
  - Familiarity with JavaScript and Python
 
 ## Introduction!
 
 Let's implement window resizing. We can do this via the [Set Window Rect](https://w3c.github.io/webdriver/#set-window-rect) command in WebDriver.
+
+For extensions to `testdriver.js` that use a [WebDriver BiDi](https://w3c.github.io/webdriver-bidi) command, the process is similar, with any differences noted in this document.
 
 First, we need to think of what the API will look like a little. We will be using WebDriver and Marionette for this, so we can look and see that they take in x, y coordinates, width and height integers.
 
@@ -39,6 +42,8 @@ Add testdriver.js support for the [Set Window Rect command](https://w3c.github.i
 Members of the community will then have the opportunity to comment on our proposed changes, and perhaps suggest improvements to our ideas. If all goes well it will be approved and merged in.
 
 With that said, developing a prototype implementation may help others evaluate the proposal during the RFC process, so let's move on to writing some code.
+
+Note that for extensions to testdriver.js that directly reflect a [WebDriver Classic](https://w3c.github.io/webdriver/) command, [WebDriver BiDi](https://w3c.github.io/webdriver-bidi) command, or event, a formal RFC process isn't strictly required.
 
 ## Code!
 
@@ -83,6 +88,11 @@ window.test_driver_internal = {
 ```
 We will leave this unimplemented and override it in another file. Lets do that now!
 
+#### WebDriver BiDi
+
+For commands using the WebDriver BiDi protocol, the methods should be added in the `window.test_driver.bidi` object. Parameters for these methods are passed as a single object named `params`. 
+<!-- TODO: add an example link once a first bidi command (probably `test_driver.bidi.permissions.set_permission`) is implemented.-->
+
 ### [tools/wptrunner/wptrunner/testdriver-extra.js](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/testdriver-extra.js)
 
 This will be the default function called when invoking the test driver commands (sometimes it is overridden by testdriver-vendor.js, but that is outside the scope of this tutorial). In most cases this is just boilerplate:
@@ -93,18 +103,26 @@ window.test_driver_internal.set_element_rect = function(x, y, width, height) {
 };
 ```
 
-The `create_action` helper function does the heavy lifting of setting up a postMessage to the wptrunner internals as well as returning a promise that will resolve once the call is complete.
+The `create_action` helper function does the heavy lifting of setting up a postMessage to the wptrunner internals as well as returning a promise that will resolve once the call is complete. 
+
+Note the action `name`, it will be used later in the python action representation.
+
+#### WebDriver BiDi
+
+For BiDi actions, the action `name` should be in format of `bidi.{MODULE_NAME}.{COMMAND}` like [`bidi.session.subscribe`](https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/testdriver-extra.js#L202).
+
+### Protocol part
 
 Next, this is passed to the executor and protocol in wptrunner. Time to switch to Python!
 
-### [tools/wptrunner/wptrunner/executors/protocol.py](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/protocol.py)
+Create a protocol part class in [tools/wptrunner/wptrunner/executors/protocol.py](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/protocol.py): 
 
 ```python
 class SetWindowRectProtocolPart(ProtocolPart):
     """Protocol part for resizing and changing location of window"""
     __metaclass__ = ABCMeta
 
-    name = "set_window_rect"
+    name = "set_window_rect_protocol_part"
 
     @abstractmethod
     def set_window_rect(self, x, y, width, height):
@@ -117,12 +135,20 @@ class SetWindowRectProtocolPart(ProtocolPart):
         pass
 ```
 
-Next we create a representation of our new action.
+Note the protocol part `name`, it will be used later by the action.
 
-### [tools/wptrunner/wptrunner/executors/actions.py](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/actions.py)
+#### WebDriver BiDi
+
+The BiDi protocol parts are normally split by BiDi modules. They should have a prefix `Bidi{ModuleName}` and the name prefix `bidi_` like [`BidiScriptProtocolPart`](https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/protocol.py#L388) with the name [`bidi_script`](https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/protocol.py#L392).
+
+### Action representation
+
+Next we create a representation of our new action in [tools/wptrunner/wptrunner/executors/actions.py](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/actions.py).
 
 ```python
-class SetWindowRectAction(object):
+class SetWindowRectAction:
+    name = "set_window_rect"
+
     def __init__(self, logger, protocol):
         self.logger = logger
         self.protocol = protocol
@@ -131,19 +157,32 @@ class SetWindowRectAction(object):
         x, y, width, height = payload["x"], payload["y"], payload["width"], payload["height"]
         self.logger.debug("Setting window rect to be: x=%s, y=%s, width=%s, height=%s"
                           .format(x, y, width, height))
-        self.protocol.set_window_rect.set_window_rect(x, y, width, height)
+        self.protocol.set_window_rect_protocol_part.set_window_rect(x, y, width, height)
 ```
+
+The `name` should be the one used in [tools/wptrunner/wptrunner/testdriver-extra.js](#tools-wptrunner-wptrunner-testdriver-extra-js). It is the key, the `create_action` binds the testdriver actions to. 
+
+The protocol part name `set_window_rect_protocol_part` can be used to access the `SetWindowRectProtocolPart`: `self.protocol.set_window_rect_protocol_part...`.
 
 Then add your new class to the `actions = [...]` list at the end of the file.
 
 Don't forget to write docs in ```testdriver.md```.
+
+#### WebDriver BiDi
+
+The BiDi action representation should be added to the [`tools/wptrunner/wptrunner/executors/asyncactions.py`](https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/asyncactions.py) file, and this new class should be added to the [`async_actions = [...]`](https://github.com/web-platform-tests/wpt/blob/107c5fc03139b3247920a0f40983bd1fe4d1fac2/tools/wptrunner/wptrunner/executors/asyncactions.py#L35C1-L35C14).
+
+### Browser specific implementations
+
 Now we write the browser specific implementations.
 
-### Chrome
+#### Chrome
 
 We will modify [executorwebdriver.py](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/executorwebdriver.py) and use the WebDriver API.
 
 There isn't too much work to do here, we just need to define a subclass of the protocol part we defined earlier.
+
+##### Implement protocol part
 
 ```python
 class WebDriverSetWindowRectProtocolPart(SetWindowRectProtocolPart):
@@ -170,6 +209,12 @@ from .protocol import (BaseProtocolPart,
 
 Here we have the setup method which just redefines the webdriver object at this level. The important part is the `set_window_rect` function (and it's important it is named that since we called it that earlier). This will call the WebDriver API for [set window rect](https://w3c.github.io/webdriver/#set-window-rect).
 
+###### WebDriver BiDi
+
+The [BidiSession](https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/webdriver/webdriver/bidi/client.py#L13) can be accessed via `self.webdriver.bidi_session` like in [this example](https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/wptrunner/wptrunner/executors/executorwebdriver.py#L214C22-L214C49).
+
+##### (WebDriver Classic only) Extend `WebDriverProtocol` implementation
+
 Finally, we just need to tell the WebDriverProtocol to implement this part.
 
 ```python
@@ -184,8 +229,21 @@ class WebDriverProtocol(Protocol):
                   WebDriverTestDriverProtocolPart]
 ```
 
+##### (WebDriver BiDi only) Extend `WebDriverBidiProtocol` implementation
 
-### Firefox
+Extend the [`WebDriverBidiProtocol`](https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/wptrunner/wptrunner/executors/executorwebdriver.py#L679C7-L679C28)'s [`implements`](https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/wptrunner/wptrunner/executors/executorwebdriver.py#L681) list with this new protocol part implementation (eg `WebDriverBidiScriptProtocolPart`):
+
+```python
+class WebDriverBidiProtocol(WebDriverProtocol):
+    enable_bidi = True
+    implements = [{... other bidi protocol parts},
+                  WebDriverBidiScriptProtocolPart, # add this
+                  *(part for part in WebDriverProtocol.implements)
+                  ]
+```
+
+#### Firefox
+<!-- TODO: Document adding WebDriver BiDi protocol parts. -->
 We use the [set window rect](https://firefox-source-docs.mozilla.org/python/marionette_driver.html#marionette_driver.marionette.Marionette.set_window_rect) Marionette command.
 
 We will modify [executormarionette.py](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/executormarionette.py) and use the Marionette Python API.
@@ -233,7 +291,7 @@ class MarionetteProtocol(Protocol):
                   MarionetteTestDriverProtocolPart]
 ```
 
-### Other Browsers
+#### Other Browsers
 
 Other browsers (such as safari) may use executorselenium, or a completely new executor (such as servo). For these, you must change the executor in the same way as we did with chrome and firefox.
 
@@ -260,6 +318,11 @@ promise_test(async t => {
 </script>
 ```
 
+#### WebDriver BiDi
+
+You can use infra test [`test_driver.bidi.log.entry_added` as an example](https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/infrastructure/webdriver/bidi/subscription.html).
+<!-- TODO: replace example with directly mapped method like `test_driver.bidi.permissions.set_permission`, once it is implemented -->
+
 ### What about testdriver-vendor.js?
 
 The file [testdriver-vendor.js](https://github.com/web-platform-tests/wpt/blob/master/resources/testdriver-vendor.js) is the equivalent to testdriver-extra.js above, except it is
@@ -280,7 +343,8 @@ The WebDriver command will return a [WindowRect object](https://w3c.github.io/we
 ```python
 class WebDriverGetWindowRectProtocolPart(GetWindowRectProtocolPart):
     def get_window_rect(self):
-        return self.webdriver.get_window_rect()
+        # The communication channel between testharness and backend is blocked until the end of the action.
+        return self.webdriver.get_window_rect() 
 ```
 
 Then a test can access the return value as follows:
@@ -297,4 +361,15 @@ async_test(t => {
   })
 });
 </script>
+```
+
+### What if I need to run an async code in the action?
+
+While processing normal `actions` is blocking testdriver to backend communication, the `async_actions` can be asynchronous in a non-blocking way, like [`BidiSessionSubscribeAction`](https://github.com/web-platform-tests/wpt/blob/b142861632efcdec53a86ef9ca26c8b79474493b/tools/wptrunner/wptrunner/executors/asyncactions.py#L18):
+<!-- TODO: replace example with directly mapped method like `test_driver.bidi.permissions.set_permission`, once it is implemented -->
+```python
+    async def __call__(self, payload):
+        # The communication channel between testharness and backend is not blocked.
+        ...
+        return await self.protocol.bidi_events.subscribe(events, contexts)
 ```

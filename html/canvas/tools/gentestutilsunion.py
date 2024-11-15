@@ -481,7 +481,7 @@ class _Variant():
                         variant_id: int) -> None:
         """Finalize this variant by adding computed param fields."""
         self._params['id'] = variant_id
-        for param_name in ('name', 'desc', 'attributes'):
+        for param_name in ('name', 'desc', 'attributes', 'fuzzy'):
             self._render_param(jinja_env, param_name)
         self._params['file_name'] = self._get_file_name()
         self._params['canvas_types'] = self._get_canvas_types()

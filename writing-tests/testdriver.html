@@ -38,29 +38,40 @@
 <p class="topic-title">Table of Contents</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#markup" id="id3">Markup</a></p></li>
-<li><p><a class="reference internal" href="#api" id="id4">API</a></p>
+<li><p><a class="reference internal" href="#webdriver-bidi" id="id4">WebDriver BiDi</a></p>
 <ul>
-<li><p><a class="reference internal" href="#user-interaction" id="id5">User Interaction</a></p></li>
-<li><p><a class="reference internal" href="#window-state" id="id6">Window State</a></p></li>
-<li><p><a class="reference internal" href="#cookies" id="id7">Cookies</a></p></li>
-<li><p><a class="reference internal" href="#permissions" id="id8">Permissions</a></p></li>
-<li><p><a class="reference internal" href="#authentication" id="id9">Authentication</a></p></li>
-<li><p><a class="reference internal" href="#page-lifecycle" id="id10">Page Lifecycle</a></p></li>
-<li><p><a class="reference internal" href="#reporting-observer" id="id11">Reporting Observer</a></p></li>
-<li><p><a class="reference internal" href="#storage" id="id12">Storage</a></p></li>
-<li><p><a class="reference internal" href="#accessibility" id="id13">Accessibility</a></p></li>
-<li><p><a class="reference internal" href="#secure-payment-confirmation" id="id14">Secure Payment Confirmation</a></p></li>
-<li><p><a class="reference internal" href="#federated-credential-management" id="id15">Federated Credential Management</a></p></li>
-<li><p><a class="reference internal" href="#sensors" id="id16">Sensors</a></p></li>
-<li><p><a class="reference internal" href="#device-posture" id="id17">Device Posture</a></p></li>
-<li><p><a class="reference internal" href="#bounce-tracking-mitigations" id="id18">Bounce Tracking Mitigations</a></p></li>
-<li><p><a class="reference internal" href="#compute-pressure" id="id19">Compute Pressure</a></p></li>
-<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id20">Using test_driver in other browsing contexts</a></p></li>
-<li><p><a class="reference internal" href="#actions" id="id21">Actions</a></p>
+<li><p><a class="reference internal" href="#context" id="id5">Context</a></p></li>
+<li><p><a class="reference internal" href="#events" id="id6">Events</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#api" id="id7">API</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id1" id="id22">Markup</a></p></li>
-<li><p><a class="reference internal" href="#id2" id="id23">API</a></p></li>
-<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id24">Using in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#user-interaction" id="id8">User Interaction</a></p></li>
+<li><p><a class="reference internal" href="#window-state" id="id9">Window State</a></p></li>
+<li><p><a class="reference internal" href="#cookies" id="id10">Cookies</a></p></li>
+<li><p><a class="reference internal" href="#permissions" id="id11">Permissions</a></p></li>
+<li><p><a class="reference internal" href="#authentication" id="id12">Authentication</a></p></li>
+<li><p><a class="reference internal" href="#page-lifecycle" id="id13">Page Lifecycle</a></p></li>
+<li><p><a class="reference internal" href="#reporting-observer" id="id14">Reporting Observer</a></p></li>
+<li><p><a class="reference internal" href="#storage" id="id15">Storage</a></p></li>
+<li><p><a class="reference internal" href="#accessibility" id="id16">Accessibility</a></p></li>
+<li><p><a class="reference internal" href="#secure-payment-confirmation" id="id17">Secure Payment Confirmation</a></p></li>
+<li><p><a class="reference internal" href="#federated-credential-management" id="id18">Federated Credential Management</a></p></li>
+<li><p><a class="reference internal" href="#sensors" id="id19">Sensors</a></p></li>
+<li><p><a class="reference internal" href="#device-posture" id="id20">Device Posture</a></p></li>
+<li><p><a class="reference internal" href="#bounce-tracking-mitigations" id="id21">Bounce Tracking Mitigations</a></p></li>
+<li><p><a class="reference internal" href="#compute-pressure" id="id22">Compute Pressure</a></p></li>
+<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id23">Using test_driver in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#actions" id="id24">Actions</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id25">Markup</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id26">API</a></p></li>
+<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id27">Using in other browsing contexts</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#log" id="id28">Log</a></p>
+<ul>
+<li><p><a class="reference internal" href="#entry-added" id="id29">Entry added</a></p></li>
 </ul>
 </li>
 </ul>
@@ -82,6 +93,35 @@ document when using testdriver from a different context):</p>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testdriver-vendor.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
+</section>
+<section id="webdriver-bidi">
+<h2>WebDriver BiDi<a class="headerlink" href="#webdriver-bidi" title="Link to this heading">¶</a></h2>
+<p>The api in <code class="docutils literal notranslate"><span class="pre">test_driver.bidi</span></code> provides access to the
+<a class="reference external" href="https://w3c.github.io/webdriver-bidi">WebDriver BiDi</a> protocol.</p>
+<section id="context">
+<h3>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h3>
+<p>A WebDriver BiDi “browsing context” is equivalent to an
+<a class="reference external" href="https://html.spec.whatwg.org/multipage/document-sequences.html#navigable">HTML navigable</a>.
+In WebDriver BiDi, you can interact with any browsing context, regardless of whether
+it’s currently active. You can target a specific browsing context using either its
+unique string ID or its <code class="docutils literal notranslate"><span class="pre">WindowProxy</span></code> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Context<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(<em>String|WindowProxy</em>)  A browsing context. Can be specified by its ID
+(a string) or using a <cite>WindowProxy</cite> object.</p>
+</dd>
+</dl>
+</section>
+<section id="events">
+<h3>Events<a class="headerlink" href="#events" title="Link to this heading">¶</a></h3>
+<p>To receive WebDriver BiDi <a class="reference external" href="https://w3c.github.io/webdriver-bidi/#events">events</a>, you
+need to subscribe to them. Events are only emitted for browsing contexts with an
+active subscription. You can also create a global subscription to receive events from
+all the contexts.</p>
+<p>If there are
+<a class="reference external" href="https://w3c.github.io/webdriver-bidi/#log-event-buffer">buffered events</a>, they will
+be emitted before the <code class="docutils literal notranslate"><span class="pre">subcsribe</span></code> command’s promise is resolved.</p>
+</section>
 </section>
 <section id="api">
 <h2>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h2>
@@ -327,6 +367,37 @@ WebDriver command.</p>
 <p><strong>Examples:</strong></p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;background-fetch&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;denied&quot;</span><span class="p">);</span>
 <span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;push&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">userVisibleOnly</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;granted&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.permissions.set_permission">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">permissions</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">set_permission</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.permissions.set_permission" title="Link to this definition">¶</a></dt>
+<dd><p>Sets the state of a permission</p>
+<p>This function causes permission requests and queries for the status
+of a certain permission type (e.g. “push”, or “background-fetch”) to
+always return <code class="docutils literal notranslate"><span class="pre">state</span></code> for the specific origin.</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/permissions/#webdriver-bidi-command-permissions-setPermission">permissions.setPermission</a>
+WebDriver BiDi command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>object</em>) – Parameters for the command.</p></li>
+<li><p><strong>params.descriptor</strong> (<em>PermissionDescriptor</em>) – a <a class="reference external" href="https://w3c.github.io/permissions/#dom-permissiondescriptor">PermissionDescriptor</a> or derived object.</p></li>
+<li><p><strong>params.state</strong> (<em>PermissionState</em>) – a <a class="reference external" href="https://w3c.github.io/permissions/#dom-permissionstate">PermissionState</a> value.</p></li>
+<li><p><strong>params.origin</strong> (<em>string</em>) – an optional <cite>origin</cite> string to set the permission for. If omitted, the permission is set for the current window’s origin.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the permission is set, or rejected if setting the permission fails.</p>
+</dd>
+</dl>
+<p><strong>Examples:</strong></p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">permissions</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span>
+<span class="w">    </span><span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;geolocation&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="nx">state</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;granted&quot;</span><span class="p">,</span>
+<span class="p">});</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1451,6 +1522,73 @@ method on the builder:</p>
 derived from that element, and must match any explicitly set
 context. Using elements in multiple contexts in a single action chain
 is not supported.</p>
+</section>
+</section>
+<section id="log">
+<h3>Log<a class="headerlink" href="#log" title="Link to this heading">¶</a></h3>
+<p>This module corresponds to the WebDriver BiDi
+<a class="reference external" href="https://w3c.github.io/webdriver-bidi/#module-log">Log</a> module and provides access to
+browser logs.</p>
+<section id="entry-added">
+<h4>Entry added<a class="headerlink" href="#entry-added" title="Link to this heading">¶</a></h4>
+<p>This provides methods to subscribe to and listen for the
+<a class="reference external" href="https://w3c.github.io/webdriver-bidi/#event-log-entryAdded"><code class="docutils literal notranslate"><span class="pre">log.entryAdded</span></code></a> event.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">entry_added</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">();</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">log_entry_promise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">entry_added</span><span class="p">.</span><span class="nx">once</span><span class="p">();</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;some message&quot;</span><span class="p">);</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">log_entry_promise</span><span class="p">;</span>
+</pre></div>
+</div>
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.log.entry_added.subscribe">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">log</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">entry_added</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">subscribe</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.log.entry_added.subscribe" title="Link to this definition">¶</a></dt>
+<dd><p>Subscribes to the event. Events will be emitted only if
+there is a subscription for the event. This method does
+not add actual listeners. To listen to the event, use the
+<cite>on</cite> or <cite>once</cite> methods. The buffered events will be
+emitted before the command promise is resolved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>object</em>) – Parameters for the subscription.</p></li>
+<li><p><strong>params.contexts</strong> (<em>null|Array.&lt;(Context)&gt;</em>) – The optional contexts parameter specifies which browsing contexts to subscribe to the event on. It should be either an array of Context objects, or null. If null, the event will be subscribed to globally. If omitted, the event will be subscribed to on the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise.&lt;void&gt;</strong> – Resolves when the subscription is successfully done.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.log.entry_added.on">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">log</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">entry_added</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">on</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.log.entry_added.on" title="Link to this definition">¶</a></dt>
+<dd><p>Adds an event listener for the event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>callback</strong> (<em>function</em>) – The callback to be called when the event is emitted. The callback is called with the event object as a parameter.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>function</strong> – A function that removes the added event listener when called.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.log.entry_added.once">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">log</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">entry_added</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">once</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.log.entry_added.once" title="Link to this definition">¶</a></dt>
+<dd><p>Adds an event listener for the event that is only called
+once and removed afterward.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Promise.&lt;LogEntryAdded&gt;</strong> – The promise which is resolved with the event object when the event is emitted.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 </section>

@@ -438,7 +438,6 @@ class ShadowRealmInWindowHandler(HtmlWrapperHandler):
 <script>
 (async function() {
   const r = new ShadowRealm();
-  r.evaluate("globalThis.self = globalThis; undefined;");
   r.evaluate(`func => {
     globalThis.fetch_json = (resource) => {
       const thenMethod = func(resource);

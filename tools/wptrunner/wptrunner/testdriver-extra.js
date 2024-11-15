@@ -225,6 +225,14 @@
             on_event);
     };
 
+    window.test_driver_internal.bidi.permissions.set_permission = function (params) {
+        return create_action("bidi.permissions.set_permission", {
+            // Default to the current window's origin.
+            origin: window.location.origin,
+            ...params
+        });
+    };
+
     window.test_driver_internal.set_test_context = function(context) {
         if (window.__wptrunner_message_queue) {
             throw new Error("Tried to set testharness context in a window containing testharness.js");

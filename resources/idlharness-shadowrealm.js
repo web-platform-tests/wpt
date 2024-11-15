@@ -23,9 +23,6 @@ function fetch_text(url) {
 function idl_test_shadowrealm(srcs, deps) {
     promise_setup(async t => {
         const realm = new ShadowRealm();
-        // https://github.com/web-platform-tests/wpt/issues/31996
-        realm.evaluate("globalThis.self = globalThis; undefined;");
-
         realm.evaluate(`
             globalThis.self.GLOBAL = {
                 isWindow: function() { return false; },

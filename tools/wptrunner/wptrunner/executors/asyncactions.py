@@ -7,6 +7,32 @@ def do_delayed_imports():
     global webdriver
     import webdriver
 
+
+class BidiBluetoothSimulateAdapterAction:
+    name = "bidi.bluetooth.simulate_adapter"
+
+    def __init__(self, logger, protocol):
+        do_delayed_imports()
+        self.logger = logger
+        self.protocol = protocol
+
+    async def __call__(self, payload):
+        if payload["context"] is None:
+            raise ValueError("Missing required parameter: context")
+
+        context = payload["context"]
+        if isinstance(context, str):
+            pass
+        elif isinstance(context, webdriver.bidi.protocol.BidiWindow):
+            # Context can be a serialized WindowProxy.
+            context = context.browsing_context
+        else:
+            raise ValueError("Unexpected context type: %s" % context)
+
+        state = payload["state"]
+        return await self.protocol.bidi_bluetooth.simulate_adapter(context, state)
+
+
 class BidiSessionSubscribeAction:
     name = "bidi.session.subscribe"
 
@@ -49,4 +75,7 @@ class BidiPermissionsSetPermissionAction:
                                                                    origin)
 
 
-async_actions = [BidiPermissionsSetPermissionAction, BidiSessionSubscribeAction]
+async_actions = [
+    BidiBluetoothSimulateAdapterAction,
+    BidiPermissionsSetPermissionAction,
+    BidiSessionSubscribeAction]

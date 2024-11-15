@@ -385,6 +385,16 @@ class BidiEventsProtocolPart(ProtocolPart):
         pass
 
 
+class BidiPermissionsProtocolPart(ProtocolPart):
+    """Protocol part for managing BiDi events"""
+    __metaclass__ = ABCMeta
+    name = "bidi_permissions"
+
+    @abstractmethod
+    async def set_permission(self, descriptor, state, origin):
+        pass
+
+
 class BidiScriptProtocolPart(ProtocolPart):
     """Protocol part for executing BiDi scripts"""
     __metaclass__ = ABCMeta

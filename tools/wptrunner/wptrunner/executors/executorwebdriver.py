@@ -39,6 +39,7 @@ from .protocol import (BaseProtocolPart,
                        VirtualSensorProtocolPart,
                        BidiBrowsingContextProtocolPart,
                        BidiEventsProtocolPart,
+                       BidiPermissionsProtocolPart,
                        BidiScriptProtocolPart,
                        DevicePostureProtocolPart,
                        StorageProtocolPart,
@@ -216,6 +217,19 @@ class WebDriverBidiScriptProtocolPart(BidiScriptProtocolPart):
             arguments=arguments,
             target=target,
             await_promise=True)
+
+
+class WebDriverBidiPermissionsProtocolPart(BidiPermissionsProtocolPart):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.webdriver = None
+
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    async def set_permission(self, descriptor, state, origin):
+        return await self.webdriver.bidi_session.permissions.set_permission(
+            descriptor=descriptor, state=state, origin=origin)
 
 
 class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
@@ -680,6 +694,7 @@ class WebDriverBidiProtocol(WebDriverProtocol):
     enable_bidi = True
     implements = [WebDriverBidiBrowsingContextProtocolPart,
                   WebDriverBidiEventsProtocolPart,
+                  WebDriverBidiPermissionsProtocolPart,
                   WebDriverBidiScriptProtocolPart,
                   *(part for part in WebDriverProtocol.implements)
                   ]

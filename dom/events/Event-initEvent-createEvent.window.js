@@ -1,4 +1,4 @@
-// META: title=Event.initEvent
+// META: title=Event.initEvent (document.createEvent)
 
 // Author: Ms2ger <Ms2ger@gmail.com>
 

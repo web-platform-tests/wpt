@@ -278,3 +278,11 @@ const event = await log_entry_promise;
 .. js:autofunction:: test_driver.bidi.log.entry_added.on
 .. js:autofunction:: test_driver.bidi.log.entry_added.once
 ```
+
+### Bluetooth ###
+
+The module provides access to [Web Bluetooth](https://webbluetoothcg.github.io/web-bluetooth).
+
+```eval_rst
+.. js:autofunction:: test_driver.bidi.bluetooth.simulate_adapter
+```

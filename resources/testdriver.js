@@ -58,7 +58,35 @@
              * be specified by its ID (a string) or using a `WindowProxy`
              * object.
              */
-
+            /**
+             * `bluetooth <https://webbluetoothcg.github.io/web-bluetooth>`_ module.
+             */
+            bluetooth: {
+                /**
+                 * Creates a simulated bluetooth adapter with the given params. Matches the
+                 * `bluetooth.simulateAdapter <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateAdapter-command>`_
+                 * WebDriver BiDi command.
+                 *
+                 * @example
+                 * await test_driver.bidi.bluetooth.simulate_adapter({
+                 *     state: "powered-on"
+                 * });
+                 *
+                 * @param {object} params - Parameters for the command.
+                 * @param {string} params.state The state of the simulated bluetooth adapter.
+                 * Matches the
+                 * `bluetooth.SimulateAdapterParameters:state <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateAdapter-command>`_
+                 * value.
+                 * @param {Context} [params.context] The optional context parameter specifies in
+                 * which browsing context the simulated bluetooth adapter should be set. If not
+                 * provided, the current browsing context is used.
+                 * @returns {Promise} fulfilled after the simulated bluetooth adapter is created
+                 * and set, or rejected if the operation fails.
+                 */
+                simulate_adapter: function (params) {
+                    return window.test_driver_internal.bidi.bluetooth.simulate_adapter(params);
+                }
+            },
             /**
              * `log <https://w3c.github.io/webdriver-bidi/#module-log>`_ module.
              */
@@ -1287,6 +1315,12 @@
         in_automation: false,
 
         bidi: {
+            bluetooth: {
+                simulate_adapter: function () {
+                    throw new Error(
+                        "bidi.bluetooth.simulate_adapter is not implemented by testdriver-vendor.js");
+                }
+            },
             log: {
                 entry_added: {
                     async subscribe() {

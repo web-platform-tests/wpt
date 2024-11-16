@@ -208,6 +208,14 @@
 
     window.test_driver_internal.in_automation = true;
 
+    window.test_driver_internal.bidi.bluetooth.simulate_adapter = function (params) {
+        return create_action("bidi.bluetooth.simulate_adapter", {
+            // Default to the current window.
+            context: window,
+            ...params
+        });
+    }
+
     window.test_driver_internal.bidi.log.entry_added.subscribe =
         function (params) {
             return subscribe({

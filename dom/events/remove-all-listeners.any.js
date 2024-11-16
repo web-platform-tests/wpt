@@ -1,8 +1,11 @@
 // META: title=Various edge cases where listeners are removed during iteration
 
+// There is another version of this test with DOM nodes as event targets, in
+// remove-all-listeners-dom-node.window.js.
+
 test(function() {
   var type = "foo";
-  var target = document.createElement("div");
+  var target = new EventTarget();
 
   var listener1CallCount = 0;
   var listener2CallCount = 0;
@@ -41,7 +44,7 @@ test(function() {
 
 test(function() {
   var type = "foo";
-  var target = document.createElement("div");
+  var target = new EventTarget();
 
   var listener1CallCount = 0;
   var listener2CallCount = 0;

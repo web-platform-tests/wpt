@@ -1,4 +1,4 @@
-// META: title=Re-initializing events while dispatching them
+// META: title=Re-initializing events while dispatching them (DOM events)
 
 // Author: Josh Matthews <mailto:josh@joshmatthews.net>
 
@@ -27,13 +27,6 @@ var events = {
       assert_equals(ev.button, 0, "initMouseEvent button setter should short-circuit");
     }
   },
-  'CustomEvent': {
-    'constructor': function() { return new CustomEvent("type") },
-    'init': function(ev) { ev.initCustomEvent("type2", true, true, 1) },
-    'check': function(ev) {
-      assert_equals(ev.detail, null, "initCustomEvent detail setter should short-circuit");
-    }
-  },
   'UIEvent': {
     'constructor': function() { return new UIEvent("type") },
     'init': function(ev) { ev.initUIEvent("type2", true, true, window, 1) },
@@ -42,15 +35,6 @@ var events = {
       assert_equals(ev.detail, 0, "initUIEvent detail setter should short-circuit");
     }
   },
-  'Event': {
-    'constructor': function() { return new Event("type") },
-    'init': function(ev) { ev.initEvent("type2", true, true) },
-    'check': function(ev) {
-      assert_equals(ev.bubbles, false, "initEvent bubbles setter should short-circuit");
-      assert_equals(ev.cancelable, false, "initEvent cancelable setter should short-circuit");
-      assert_equals(ev.type, "type", "initEvent type setter should short-circuit");
-    }
-  }
 };
 
 var names = Object.keys(events);

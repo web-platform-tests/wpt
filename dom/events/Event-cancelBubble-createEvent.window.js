@@ -1,4 +1,4 @@
-// META: title=Event.cancelBubble
+// META: title=Event.cancelBubble (document.createEvent)
 
 // Author: Chris Rebert <http://chrisrebert.com>
 

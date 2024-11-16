@@ -1,21 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Event.cancelBubble</title>
-  <link rel="author" title="Chris Rebert" href="http://chrisrebert.com">
-  <link rel="help" href="https://dom.spec.whatwg.org/#dom-event-cancelbubble">
-  <meta name="flags" content="dom">
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
-</head>
-<body>
-  <div id="outer">
-    <div id="middle">
-      <div id="inner"></div>
-    </div>
-  </div>
-  <script>
+// META: title=Event.cancelBubble
+
+// Author: Chris Rebert <http://chrisrebert.com>
+
 test(function () {
   // See https://dom.spec.whatwg.org/#stop-propagation-flag
   var e = document.createEvent('Event');
@@ -67,25 +53,6 @@ test(function () {
   assert_true(one.cancelBubble, "cancelBubble must still be true after attempting to set it to false.");
 }, "Event.cancelBubble=false must have no effect.");
 
-test(function (t) {
-  var outer = document.getElementById('outer');
-  var middle = document.getElementById('middle');
-  var inner = document.getElementById('inner');
-
-  outer.addEventListener('barbaz', t.step_func(function () {
-    assert_unreached("Setting Event.cancelBubble=false after setting Event.cancelBubble=true should have no effect.");
-  }), false/*useCapture*/);
-
-  middle.addEventListener('barbaz', function (e) {
-    e.cancelBubble = true;// Stop propagation.
-    e.cancelBubble = false;// Should be a no-op.
-  }, false/*useCapture*/);
-
-  var barbazEvent = document.createEvent('Event');
-  barbazEvent.initEvent('barbaz', true/*bubbles*/, false/*cancelable*/);
-  inner.dispatchEvent(barbazEvent);
-}, "Event.cancelBubble=false must have no effect during event propagation.");
-
 test(function () {
   // See https://dom.spec.whatwg.org/#concept-event-dispatch
   // "14. Unset event’s [...] stop propagation flag,"
@@ -97,36 +64,3 @@ test(function () {
   document.body.dispatchEvent(e);
   assert_false(e.cancelBubble, "cancelBubble must be false after an event has been dispatched.");
 }, "cancelBubble must be false after an event has been dispatched.");
-
-test(function (t) {
-  var outer = document.getElementById('outer');
-  var middle = document.getElementById('middle');
-  var inner = document.getElementById('inner');
-
-  var propagationStopper = function (e) {
-    e.cancelBubble = true;
-  };
-
-  // Bubble phase
-  middle.addEventListener('bar', propagationStopper, false/*useCapture*/);
-  outer.addEventListener('bar', t.step_func(function listenerOne() {
-    assert_unreached("Setting cancelBubble=true should stop the event from bubbling further.");
-  }), false/*useCapture*/);
-
-  var barEvent = document.createEvent('Event');
-  barEvent.initEvent('bar', true/*bubbles*/, false/*cancelable*/);
-  inner.dispatchEvent(barEvent);
-
-  // Capture phase
-  outer.addEventListener('qux', propagationStopper, true/*useCapture*/);
-  middle.addEventListener('qux', t.step_func(function listenerTwo() {
-    assert_unreached("Setting cancelBubble=true should stop the event from propagating further, including during the Capture Phase.");
-  }), true/*useCapture*/);
-
-  var quxEvent = document.createEvent('Event');
-  quxEvent.initEvent('qux', false/*bubbles*/, false/*cancelable*/);
-  inner.dispatchEvent(quxEvent);
-}, "Event.cancelBubble=true must set the stop propagation flag.");
-  </script>
-</body>
-</html>

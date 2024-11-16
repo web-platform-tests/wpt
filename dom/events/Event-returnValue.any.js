@@ -41,7 +41,7 @@ test(function() {
 }, "returnValue should change returnValue if cancelable is true.");
 
 test(function() {
-  var ev = document.createEvent("Event");
+  var ev = new Event("foo");
   ev.returnValue = false;
   ev.initEvent("foo", true, true);
   assert_true(ev.bubbles, "bubbles");

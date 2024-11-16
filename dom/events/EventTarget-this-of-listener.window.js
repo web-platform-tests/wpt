@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>EventTarget listeners this value</title>
-<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
-<link rel="help" href="https://dom.spec.whatwg.org/#concept-event-listener-invoke">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
+// META: title=EventTarget listeners this value
 
-<script>
+// Author: Domenic Denicola <d@domenic.me>
+// https://dom.spec.whatwg.org/#concept-event-listener-invoke
+
 "use strict";
 
 test(() => {
@@ -178,5 +174,3 @@ test(() => {
   assert_equals(callCount, nodes.length);
 
 }, "handleEvent properties added to a function after addEventListener are not reached");
-
-</script>

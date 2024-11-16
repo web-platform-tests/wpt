@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>Re-initializing events while dispatching them</title>
-<link rel="author" title="Josh Matthews" href="mailto:josh@joshmatthews.net">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id="log"></div>
-<script>
+// META: title=Re-initializing events while dispatching them
+
+// Author: Josh Matthews <mailto:josh@joshmatthews.net>
+
 var events = {
   'KeyboardEvent': {
     'constructor': function() { return new KeyboardEvent("type", {key: "A"}); },
@@ -80,4 +76,3 @@ for (var i = 0; i < names.length; i++) {
   });
   t.done();
 }
-</script>

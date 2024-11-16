@@ -1,21 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Event.returnValue</title>
-  <link rel="author" title="Chris Rebert" href="http://chrisrebert.com">
-  <link rel="help" href="https://dom.spec.whatwg.org/#dom-event-returnvalue">
-  <meta name="flags" content="dom">
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
-</head>
-<body>
-  <div id="log"></div>
-  <script>
+// META: title=Event.returnValue
+
+// Author: Chris Rebert <http://chrisrebert.com>
+// https://dom.spec.whatwg.org/#dom-event-returnvalue
+
 test(function() {
   var ev = new Event("foo");
   assert_true(ev.returnValue, "returnValue");
 }, "When an event is created, returnValue should be initialized to true.");
+
 test(function() {
   var ev = new Event("foo", {"cancelable": false});
   assert_false(ev.cancelable, "cancelable (before)");
@@ -23,6 +15,7 @@ test(function() {
   assert_false(ev.cancelable, "cancelable (after)");
   assert_true(ev.returnValue, "returnValue");
 }, "preventDefault() should not change returnValue if cancelable is false.");
+
 test(function() {
   var ev = new Event("foo", {"cancelable": false});
   assert_false(ev.cancelable, "cancelable (before)");
@@ -30,6 +23,7 @@ test(function() {
   assert_false(ev.cancelable, "cancelable (after)");
   assert_true(ev.returnValue, "returnValue");
 }, "returnValue=false should have no effect if cancelable is false.");
+
 test(function() {
   var ev = new Event("foo", {"cancelable": true});
   assert_true(ev.cancelable, "cancelable (before)");
@@ -37,6 +31,7 @@ test(function() {
   assert_true(ev.cancelable, "cancelable (after)");
   assert_false(ev.returnValue, "returnValue");
 }, "preventDefault() should change returnValue if cancelable is true.");
+
 test(function() {
   var ev = new Event("foo", {"cancelable": true});
   assert_true(ev.cancelable, "cancelable (before)");
@@ -44,6 +39,7 @@ test(function() {
   assert_true(ev.cancelable, "cancelable (after)");
   assert_false(ev.returnValue, "returnValue");
 }, "returnValue should change returnValue if cancelable is true.");
+
 test(function() {
   var ev = document.createEvent("Event");
   ev.returnValue = false;
@@ -52,6 +48,7 @@ test(function() {
   assert_true(ev.cancelable, "cancelable");
   assert_true(ev.returnValue, "returnValue");
 }, "initEvent should unset returnValue.");
+
 test(function() {
   var ev = new Event("foo", {"cancelable": true});
   ev.preventDefault();
@@ -59,6 +56,3 @@ test(function() {
   assert_true(ev.defaultPrevented);
   assert_false(ev.returnValue);
 }, "returnValue=true should have no effect once the canceled flag was set.");
-  </script>
-</body>
-</html>

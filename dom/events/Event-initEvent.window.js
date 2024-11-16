@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<title>Event.initEvent</title>
-<link rel="author" title="Ms2ger" href="mailto:Ms2ger@gmail.com">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id="log"></div>
-<script>
+// META: title=Event.initEvent
+
+// Author: Ms2ger <Ms2ger@gmail.com>
+
 var booleans = [true, false];
 booleans.forEach(function(bubbles) {
   booleans.forEach(function(cancelable) {
@@ -133,4 +130,3 @@ test(function() {
   assert_false(e.bubbles, "bubbles")
   assert_false(e.cancelable, "cancelable")
 }, "Tests initEvent's default parameter values.")
-</script>

@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>Event constructors</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id="log"></div>
-<script>
+// META: title=Event constructors
+
 function assert_props(iface, event, defaults) {
   assert_true(event instanceof self[iface]);
   expected[iface].properties.forEach(function(p) {
@@ -176,4 +171,3 @@ test(function () {
     new UIEvent("x", { view: 7 })
   });
 }, "UIEvent constructor (view argument with wrong type)")
-</script>

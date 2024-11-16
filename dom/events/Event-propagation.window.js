@@ -1,10 +1,7 @@
-<!doctype html>
-<title>Event propagation tests</title>
-<link rel=author title="Aryeh Gregor" href=ayg@aryeh.name>
-<div id=log></div>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<script>
+// META: title=Event propagation tests
+
+// Author: Aryeh Gregor <ayg@aryeh.name>
+
 "use strict";
 
 function testPropagationFlag(ev, expected, desc) {
@@ -45,4 +42,3 @@ ev.cancelBubble = true;
 testPropagationFlag(ev, false, "After cancelBubble=true");
 ev.initEvent("foo", true, false);
 testPropagationFlag(ev, true, "Reinitialized after cancelBubble=true");
-</script>

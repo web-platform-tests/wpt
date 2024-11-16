@@ -1,10 +1,6 @@
-<!doctype html>
-<title>Event constants</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="../constants.js"></script>
-<div id="log"></div>
-<script>
+// META: title=Event constants
+// META: script=/dom/constants.js
+
 var objects;
 setup(function() {
   objects = [
@@ -14,10 +10,10 @@ setup(function() {
     [document.createEvent("CustomEvent"), "CustomEvent object"]
   ]
 })
+
 testConstants(objects, [
   ["NONE", 0],
   ["CAPTURING_PHASE", 1],
   ["AT_TARGET", 2],
   ["BUBBLING_PHASE", 3]
 ], "eventPhase")
-</script>

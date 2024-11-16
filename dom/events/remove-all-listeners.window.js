@@ -1,9 +1,4 @@
-<!doctype html>
-<title>Various edge cases where listeners are removed during iteration</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id="log"></div>
-<script>
+// META: title=Various edge cases where listeners are removed during iteration
 
 test(function() {
   var type = "foo";
@@ -91,5 +86,3 @@ test(function() {
   assert_equals(listener2CallCount, 1);
   assert_equals(listener3CallCount, 1);
 }, "Nested usage of once listeners should work.");
-
-</script>

@@ -2,11 +2,14 @@
 
 // https://dom.spec.whatwg.org/#callbackdef-eventlistener
 
+// There is another version of this test with DOM nodes as event targets, in
+// EventListener-handleEvent-dom-node.window.js.
+
 setup({ allow_uncaught_exception: true });
 
 test(function(t) {
     var type = "foo";
-    var target = document.createElement("div");
+    var target = new EventTarget();
     var eventListener = {
         handleEvent: function(evt) {
             var that = this;
@@ -25,7 +28,7 @@ test(function(t) {
 
 test(function(t) {
     var type = "foo";
-    var target = document.createElement("div");
+    var target = new EventTarget();
     var calls = 0;
 
     target.addEventListener(type, {
@@ -43,7 +46,7 @@ test(function(t) {
 
 test(function(t) {
     var type = "foo";
-    var target = document.createElement("div");
+    var target = new EventTarget();
     var calls = 0;
     var eventListener = function() { calls++; };
     eventListener.handleEvent = t.unreached_func("`handleEvent` method should not be called on functions");
@@ -55,7 +58,7 @@ test(function(t) {
 
 const uncaught_error_test = async (t, getHandleEvent) => {
     const type = "foo";
-    const target = document.createElement("div");
+    const target = new EventTarget();
 
     let calls = 0;
     target.addEventListener(type, {
@@ -71,7 +74,7 @@ const uncaught_error_test = async (t, getHandleEvent) => {
         });
     };
 
-    const eventWatcher = new EventWatcher(t, window, "error", timeout);
+    const eventWatcher = new EventWatcher(t, globalThis, "error", timeout);
     const errorPromise = eventWatcher.wait_for("error");
 
     target.dispatchEvent(new Event(type));
@@ -94,4 +97,4 @@ promise_test(t => {
 
 promise_test(t => {
     return promise_rejects_js(t, TypeError, uncaught_error_test(t, () => 42));
-}, "throws if `handleEvent` is thruthy and not callable");
+}, "throws if `handleEvent` is truthy and not callable");

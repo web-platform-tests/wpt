@@ -1,5 +1,8 @@
 // META: title=Event constructors
 
+// There is another version of this test with window-only events, in
+// Event-subclasses-constructors-dom-events.window.js.
+
 function assert_props(iface, event, defaults) {
   assert_true(event instanceof self[iface]);
   expected[iface].properties.forEach(function(p) {
@@ -33,77 +36,12 @@ self.SubclassedEvent = class SubclassedEvent extends Event {
   }
 }
 
-var EventModifierInit = [
-  ["ctrlKey", false, true],
-  ["shiftKey", false, true],
-  ["altKey", false, true],
-  ["metaKey", false, true],
-];
 var expected = {
   "Event": {
     "properties": [
       ["bubbles", false, true],
       ["cancelable", false, true],
       ["isTrusted", false, false],
-    ],
-  },
-
-  "UIEvent": {
-    "parent": "Event",
-    "properties": [
-      ["view", null, window],
-      ["detail", 0, 7],
-    ],
-  },
-
-  "FocusEvent": {
-    "parent": "UIEvent",
-    "properties": [
-      ["relatedTarget", null, document],
-    ],
-  },
-
-  "MouseEvent": {
-    "parent": "UIEvent",
-    "properties": EventModifierInit.concat([
-      ["screenX", 0, 40],
-      ["screenY", 0, 40],
-      ["clientX", 0, 40],
-      ["clientY", 0, 40],
-      ["button", 0, 40],
-      ["buttons", 0, 40],
-      ["relatedTarget", null, document],
-    ]),
-  },
-
-  "WheelEvent": {
-    "parent": "MouseEvent",
-    "properties": [
-      ["deltaX", 0.0, 3.1],
-      ["deltaY", 0.0, 3.1],
-      ["deltaZ", 0.0, 3.1],
-      ["deltaMode", 0, 40],
-    ],
-  },
-
-  "KeyboardEvent": {
-    "parent": "UIEvent",
-    "properties": EventModifierInit.concat([
-      ["key", "", "string"],
-      ["code", "", "string"],
-      ["location", 0, 7],
-      ["repeat", false, true],
-      ["isComposing", false, true],
-      ["charCode", 0, 7],
-      ["keyCode", 0, 7],
-      ["which", 0, 7],
-    ]),
-  },
-
-  "CompositionEvent": {
-    "parent": "UIEvent",
-    "properties": [
-      ["data", "", "string"],
     ],
   },
 
@@ -165,9 +103,3 @@ Object.keys(expected).forEach(function(iface) {
     assert_props(iface, event, false);
   }, iface + " constructor (argument with non-default values)");
 });
-
-test(function () {
-  assert_throws_js(TypeError, function() {
-    new UIEvent("x", { view: 7 })
-  });
-}, "UIEvent constructor (view argument with wrong type)")

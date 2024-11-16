@@ -1,4 +1,4 @@
-// META: title=Event.type
+// META: title=Event.type (document.createEvent)
 
 // Author: Ms2ger <Ms2ger@gmail.com>
 // https://dom.spec.whatwg.org/#dom-event-type
@@ -13,8 +13,3 @@ test(function() {
   e.initEvent("foo", false, false)
   assert_equals(e.type, "foo")
 }, "Event.type should be initialized by initEvent");
-
-test(function() {
-  var e = new Event("bar")
-  assert_equals(e.type, "bar")
-}, "Event.type should be initialized by the constructor");

@@ -1,4 +1,4 @@
-// META: title=EventTarget listeners this value
+// META: title=EventTarget listeners this value (DOM nodes)
 
 // Author: Domenic Denicola <d@domenic.me>
 // https://dom.spec.whatwg.org/#concept-event-listener-invoke

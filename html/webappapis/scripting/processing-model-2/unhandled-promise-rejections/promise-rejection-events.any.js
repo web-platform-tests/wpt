@@ -1,8 +1,9 @@
-'use strict';
+// META: title=Promise rejection events tests
+// META: global=window,worker
 
-if (self.importScripts) {
-  importScripts('/resources/testharness.js');
-}
+// https://html.spec.whatwg.org/#unhandled-promise-rejections
+
+'use strict';
 
 setup({
   allow_uncaught_exception: true

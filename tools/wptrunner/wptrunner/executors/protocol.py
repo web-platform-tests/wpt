@@ -331,6 +331,23 @@ class AccessibilityProtocolPart(ProtocolPart):
         pass
 
 
+class BidiBluetoothProtocolPart(ProtocolPart):
+    """Protocol part for managing BiDi events"""
+    __metaclass__ = ABCMeta
+    name = "bidi_bluetooth"
+
+    @abstractmethod
+    async def simulate_adapter(self,
+                               context: str,
+                               state: str) -> None:
+        """
+        Creates a simulated bluetooth adapter.
+        :param context: Browsing context to set the simulated adapter to.
+        :param state: The state of the simulated bluetooth adapter.
+        """
+        pass
+
+
 class BidiBrowsingContextProtocolPart(ProtocolPart):
     """Protocol part for managing BiDi events"""
     __metaclass__ = ABCMeta

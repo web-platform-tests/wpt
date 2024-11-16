@@ -1,4 +1,4 @@
-// META: title=Event.type set to the empty string
+// META: title=Event.type set to the empty string (createEvent, dispatched on DOM node)
 
 // Author: Ms2ger <Ms2ger@gmail.com>
 // https://dom.spec.whatwg.org/#dom-event-type
@@ -13,8 +13,8 @@ function do_test(t, e) {
   target.addEventListener("", t.step_func(function(e) {
     handled = true;
   }));
-  assert_true(target.dispatchEvent(e));
-  assert_true(handled);
+  assert_true(target.dispatchEvent(e), "dispatchEvent should return true");
+  assert_true(handled, "callback should be called");
 }
 
 async_test(function() {

@@ -3,6 +3,7 @@
 <meta http-equiv="content-security-policy" content="script-src 'self' 'nonce-abc'">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/utils.js"></script>
 </head>
 <body>
 <!-- <frame-with-csp.sub.html> without parameters corresponds to no csp.-->
@@ -62,34 +63,13 @@
   ]
 
   for (const testCase of kTestCases) {
-    const element = ("elementId" in testCase) ?
-      window.document.getElementById(testCase.elementId) : null;
-    const propertySequence = testCase.propertySequence;
-    const windowDescription = "targetWindow" in testCase ?
-      testCase.targetWindow.name : "";
-
-    const elementDescription = element ? (element.localName +
-      (element.target ? ("[target=" + element.target + "]") : "")) : null;
-
     const injectionSinkDescription =
-      (windowDescription ? (windowDescription + ".") : "") +
-      (elementDescription ? (elementDescription + ".") : "") +
-      propertySequence.join(".");
+      determineInjectionSinkDescription(testCase);
 
     promise_test(t => new Promise(resolve => {
       addSuccessAndFailureEventListeners(t, resolve);
 
-      let currentObject = element ? element : testCase.targetWindow;
-      for (let i = 0; i < propertySequence.length - 1; ++i) {
-        currentObject = currentObject[propertySequence[i]] ;
-      }
-
-      currentObject[propertySequence.at(-1)] =
-        "javascript:parent.postMessage('executed', '*');";
-
-      if ("navigationFunction" in testCase) {
-        element[testCase.navigationFunction]();
-      }
+      assignJavascriptURLToInjectionSink(testCase);
     }), `Should not have executed the javascript url for
       ${injectionSinkDescription}`);
   }

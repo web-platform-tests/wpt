@@ -3451,6 +3451,7 @@
         this.processing_callbacks = false;
 
         this.allow_uncaught_exception = false;
+        this.never_prevent_default_for_unhandled_exceptions = false;
 
         this.file_is_test = false;
         // This value is lazily initialized in order to avoid introducing a
@@ -3512,6 +3513,8 @@
                 var value = properties[p];
                 if (p == "allow_uncaught_exception") {
                     this.allow_uncaught_exception = value;
+                } else if (p == "never_prevent_default_for_unhandled_exceptions") {
+                    this.never_prevent_default_for_unhandled_exceptions = value;
                 } else if (p == "explicit_done" && value) {
                     this.wait_for_finish = true;
                 } else if (p == "explicit_timeout" && value) {
@@ -4836,6 +4839,12 @@
         };
 
         addEventListener("error", function(e) {
+            // Some user agents may terminate execution on unhandled uncaught
+            // exceptions (namely Deno). To deal with this we mark the error
+            // event as handled if the test setup allows uncaught exceptions.
+            if (tests.allow_uncaught_exception && !tests.never_prevent_default_for_unhandled_exceptions) {
+                e.preventDefault();
+            }
             var message = e.message;
             var stack;
             if (e.error && e.error.stack) {
@@ -4847,6 +4856,13 @@
         }, false);
 
         addEventListener("unhandledrejection", function(e) {
+            // Some user agents may terminate execution on unhandled uncaught
+            // rejections. Notable examples are Node and Deno. To deal with this
+            // we mark the unhandledrejection event as handled if the test setup
+            // allows uncaught exceptions.
+            if (tests.allow_uncaught_exception && !tests.never_prevent_default_for_unhandled_exceptions) {
+                e.preventDefault();
+            }
             var message;
             if (e.reason && e.reason.message) {
                 message = "Unhandled rejection: " + e.reason.message;

@@ -39,3 +39,5 @@ corsNoPreflight("Cross domain [GET] [Content-Type: multipart/form-data]", host_i
 corsNoPreflight("Cross domain [GET] [Content-Type: text/plain]", host_info.HTTP_REMOTE_ORIGIN, "GET" , "Content-Type", "text/plain");
 corsNoPreflight("Cross domain [GET] [Content-Type: text/plain;charset=utf-8]", host_info.HTTP_REMOTE_ORIGIN, "GET" , "Content-Type", "text/plain;charset=utf-8");
 corsNoPreflight("Cross domain [GET] [Content-Type: Text/Plain;charset=utf-8]", host_info.HTTP_REMOTE_ORIGIN, "GET" , "Content-Type", "Text/Plain;charset=utf-8");
+corsNoPreflight("Cross domain [GET] [Last-Event-ID: evt-14]", host_info.HTTP_REMOTE_ORIGIN, "GET", "Last-Event-ID", "evt-14");
+corsNoPreflight("Cross domain [GET] [Last-Event-ID: EvT-15]", host_info.HTTP_REMOTE_ORIGIN, "GET", "Last-Event-ID", "EvT-15");

@@ -1,10 +1,9 @@
 // META: timeout=long
-// META: variant=?XMLHttpRequest
-// META: variant=?document
-// META: script=resources/encodings.js
+// META: script=/encoding/resources/encodings.js
 
-// Note this test is similar to single-byte-textdecoder.any.js, but tests
-// decoding with APIs that are not available in all global scopes.
+// See additionally single-byte-decoder.window.js that also runs the same tests,
+// but decoding by using XHR/iframe to fetch a resource with that charset,
+// instead of using TextDecoder directly.
 
 var singleByteEncodings = encodings_table.filter(function(group) {
   return group.heading === "Legacy single-byte encodings";
@@ -40,7 +39,12 @@ var singleByteEncodings = encodings_table.filter(function(group) {
   "x-mac-cyrillic":[1040,1041,1042,1043,1044,1045,1046,1047,1048,1049,1050,1051,1052,1053,1054,1055,1056,1057,1058,1059,1060,1061,1062,1063,1064,1065,1066,1067,1068,1069,1070,1071,8224,176,1168,163,167,8226,182,1030,174,169,8482,1026,1106,8800,1027,1107,8734,177,8804,8805,1110,181,1169,1032,1028,1108,1031,1111,1033,1113,1034,1114,1112,1029,172,8730,402,8776,8710,171,187,8230,160,1035,1115,1036,1116,1109,8211,8212,8220,8221,8216,8217,247,8222,1038,1118,1039,1119,8470,1025,1105,1103,1072,1073,1074,1075,1076,1077,1078,1079,1080,1081,1082,1083,1084,1085,1086,1087,1088,1089,1090,1091,1092,1093,1094,1095,1096,1097,1098,1099,1100,1101,1102,8364]
 }
 
-// For XMLHttpRequest tests
+var buffer = new ArrayBuffer(255),
+    view = new Uint8Array(buffer)
+for(var i = 0, l = view.byteLength; i < l; i++) {
+  view[i] = i
+}
+
 function assert_decode(data, encoding) {
   if(encoding == "ISO-8859-8-I") {
     encoding = "ISO-8859-8"
@@ -55,39 +59,16 @@ function assert_decode(data, encoding) {
   }
 }
 
-var subsetTest = "";
-if (location.search) {
-  subsetTest = location.search.substr(1);
-}
-
-// Setting up all the tests
 for(var i = 0, l = singleByteEncodings.length; i < l; i++) {
   var encoding = singleByteEncodings[i]
   for(var ii = 0, ll = encoding.labels.length; ii < ll; ii++) {
     var label = encoding.labels[ii]
 
-    if (subsetTest == "XMLHttpRequest" || !subsetTest) {
-      async_test(function(t) {
-        var xhr = new XMLHttpRequest,
-            name = encoding.name // need scoped variable
-        xhr.open("GET", "resources/single-byte-raw.py?label=" + label)
-        xhr.send(null)
-        xhr.onload = t.step_func_done(function() { assert_decode(xhr.responseText, name) })
-      }, encoding.name + ": " + label + " (XMLHttpRequest)")
-    }
-
-    if (subsetTest == "document" || !subsetTest) {
-      async_test(function(t) {
-        var frame = document.createElement("iframe"),
-            name = encoding.name;
-        frame.src = "resources/text-plain-charset.py?label=" + label
-        frame.onload = t.step_func_done(function() {
-          assert_equals(frame.contentDocument.characterSet, name)
-          assert_equals(frame.contentDocument.inputEncoding, name)
-        })
-        t.add_cleanup(function() { document.body.removeChild(frame) })
-        document.body.appendChild(frame)
-      }, encoding.name + ": " + label + " (document.characterSet and document.inputEncoding)")
-    }
+    test(function() {
+      var d = new TextDecoder(label),
+          data = d.decode(view)
+      assert_equals(d.encoding, encoding.name.toLowerCase()) // ASCII names only, so safe
+      assert_decode(data, encoding.name)
+    }, encoding.name + ": " + label + " (TextDecoder)")
   }
 }

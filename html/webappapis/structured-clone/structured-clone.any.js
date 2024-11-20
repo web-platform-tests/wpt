@@ -11,4 +11,5 @@ runStructuredCloneBatteryOfTests({
     });
   },
   hasDocument: typeof document !== "undefined",
+  hasBlob: typeof Blob !== "undefined",
 });

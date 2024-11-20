@@ -19,14 +19,16 @@ function runStructuredCloneBatteryOfTests(runner) {
     preTest() {},
     postTest() {},
     teardown() {},
-    hasDocument: true
+    hasDocument: true,
+    hasBlob: true,
   };
   runner = Object.assign({}, defaultRunner, runner);
 
   let setupPromise = runner.setup();
   const allTests = structuredCloneBatteryOfTests.map(test => {
 
-    if (!runner.hasDocument && test.requiresDocument) {
+    if ((!runner.hasDocument && test.requiresDocument) ||
+        (!runner.hasBlob && test.requiresBlob)) {
       return;
     }
 

@@ -2,7 +2,7 @@
 
 structuredCloneBatteryOfTests = [];
 
-function check(description, input, callback, requiresDocument = false) {
+function check(description, input, callback, requiresDocument = false, requiresBlob = false) {
   structuredCloneBatteryOfTests.push({
     description,
     async f(runner) {
@@ -13,7 +13,8 @@ function check(description, input, callback, requiresDocument = false) {
       const copy = await runner.structuredClone(newInput);
       await callback(copy, newInput);
     },
-    requiresDocument
+    requiresDocument,
+    requiresBlob,
   });
 }
 
@@ -296,7 +297,7 @@ async function compare_Blob(actual, input, expect_File) {
 function func_Blob_basic() {
   return new Blob(['foo'], {type:'text/x-bar'});
 }
-check('Blob basic', func_Blob_basic, compare_Blob);
+check('Blob basic', func_Blob_basic, compare_Blob, false, true);
 
 function b(str) {
   return parseInt(str, 2);
@@ -322,33 +323,33 @@ function func_Blob_bytes(arr) {
     return new Blob([view]);
   };
 }
-check('Blob unpaired high surrogate (invalid utf-8)', func_Blob_bytes(encode_cesu8([0xD800])), compare_Blob);
-check('Blob unpaired low surrogate (invalid utf-8)', func_Blob_bytes(encode_cesu8([0xDC00])), compare_Blob);
-check('Blob paired surrogates (invalid utf-8)', func_Blob_bytes(encode_cesu8([0xD800, 0xDC00])), compare_Blob);
+check('Blob unpaired high surrogate (invalid utf-8)', func_Blob_bytes(encode_cesu8([0xD800])), compare_Blob, false, true);
+check('Blob unpaired low surrogate (invalid utf-8)', func_Blob_bytes(encode_cesu8([0xDC00])), compare_Blob, false, true);
+check('Blob paired surrogates (invalid utf-8)', func_Blob_bytes(encode_cesu8([0xD800, 0xDC00])), compare_Blob, false, true);
 
 function func_Blob_empty() {
   return new Blob(['']);
 }
-check('Blob empty', func_Blob_empty , compare_Blob);
+check('Blob empty', func_Blob_empty , compare_Blob, false, true);
 function func_Blob_NUL() {
   return new Blob(['\u0000']);
 }
-check('Blob NUL', func_Blob_NUL, compare_Blob);
+check('Blob NUL', func_Blob_NUL, compare_Blob, false, true);
 
-check('Array Blob object, Blob basic', [func_Blob_basic()], compare_Array(enumerate_props(compare_Blob)));
-check('Array Blob object, Blob unpaired high surrogate (invalid utf-8)', [func_Blob_bytes([0xD800])()], compare_Array(enumerate_props(compare_Blob)));
-check('Array Blob object, Blob unpaired low surrogate (invalid utf-8)', [func_Blob_bytes([0xDC00])()], compare_Array(enumerate_props(compare_Blob)));
-check('Array Blob object, Blob paired surrogates (invalid utf-8)', [func_Blob_bytes([0xD800, 0xDC00])()], compare_Array(enumerate_props(compare_Blob)));
-check('Array Blob object, Blob empty', [func_Blob_empty()], compare_Array(enumerate_props(compare_Blob)));
-check('Array Blob object, Blob NUL', [func_Blob_NUL()], compare_Array(enumerate_props(compare_Blob)));
-check('Array Blob object, two Blobs', [func_Blob_basic(), func_Blob_empty()], compare_Array(enumerate_props(compare_Blob)));
+check('Array Blob object, Blob basic', () => [func_Blob_basic()], compare_Array(enumerate_props(compare_Blob)), false, true);
+check('Array Blob object, Blob unpaired high surrogate (invalid utf-8)', () => [func_Blob_bytes([0xD800])()], compare_Array(enumerate_props(compare_Blob)), false, true);
+check('Array Blob object, Blob unpaired low surrogate (invalid utf-8)', () => [func_Blob_bytes([0xDC00])()], compare_Array(enumerate_props(compare_Blob)), false, true);
+check('Array Blob object, Blob paired surrogates (invalid utf-8)', () => [func_Blob_bytes([0xD800, 0xDC00])()], compare_Array(enumerate_props(compare_Blob)), false, true);
+check('Array Blob object, Blob empty', () => [func_Blob_empty()], compare_Array(enumerate_props(compare_Blob)), false, true);
+check('Array Blob object, Blob NUL', () => [func_Blob_NUL()], compare_Array(enumerate_props(compare_Blob)), false, true);
+check('Array Blob object, two Blobs', () => [func_Blob_basic(), func_Blob_empty()], compare_Array(enumerate_props(compare_Blob)), false, true);
 
-check('Object Blob object, Blob basic', {'x':func_Blob_basic()}, compare_Object(enumerate_props(compare_Blob)));
-check('Object Blob object, Blob unpaired high surrogate (invalid utf-8)', {'x':func_Blob_bytes([0xD800])()}, compare_Object(enumerate_props(compare_Blob)));
-check('Object Blob object, Blob unpaired low surrogate (invalid utf-8)', {'x':func_Blob_bytes([0xDC00])()}, compare_Object(enumerate_props(compare_Blob)));
-check('Object Blob object, Blob paired surrogates (invalid utf-8)', {'x':func_Blob_bytes([0xD800, 0xDC00])()  }, compare_Object(enumerate_props(compare_Blob)));
-check('Object Blob object, Blob empty', {'x':func_Blob_empty()}, compare_Object(enumerate_props(compare_Blob)));
-check('Object Blob object, Blob NUL', {'x':func_Blob_NUL()}, compare_Object(enumerate_props(compare_Blob)));
+check('Object Blob object, Blob basic', () => ({'x':func_Blob_basic()}), compare_Object(enumerate_props(compare_Blob)), false, true);
+check('Object Blob object, Blob unpaired high surrogate (invalid utf-8)', () => ({'x':func_Blob_bytes([0xD800])()}), compare_Object(enumerate_props(compare_Blob)), false, true);
+check('Object Blob object, Blob unpaired low surrogate (invalid utf-8)', () => ({'x':func_Blob_bytes([0xDC00])()}), compare_Object(enumerate_props(compare_Blob)), false, true);
+check('Object Blob object, Blob paired surrogates (invalid utf-8)', () => ({'x':func_Blob_bytes([0xD800, 0xDC00])()}), compare_Object(enumerate_props(compare_Blob)), false, true);
+check('Object Blob object, Blob empty', () => ({'x':func_Blob_empty()}), compare_Object(enumerate_props(compare_Blob)), false, true);
+check('Object Blob object, Blob NUL', () => ({'x':func_Blob_NUL()}), compare_Object(enumerate_props(compare_Blob)), false, true);
 
 async function compare_File(actual, input) {
   assert_true(actual instanceof File, 'instanceof File');
@@ -359,7 +360,7 @@ async function compare_File(actual, input) {
 function func_File_basic() {
   return new File(['foo'], 'bar', {type:'text/x-bar', lastModified:42});
 }
-check('File basic', func_File_basic, compare_File);
+check('File basic', func_File_basic, compare_File, false, true);
 
 function compare_FileList(actual, input) {
   if (typeof actual === 'string')
@@ -686,7 +687,9 @@ check(
   },
   (copy) => {
     assert_equals(Object.getPrototypeOf(copy), File.prototype, "Prototype is File, not Blob");
-  }
+  },
+  false,
+  true
 );
 
 check(

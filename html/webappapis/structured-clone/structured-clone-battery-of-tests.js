@@ -643,11 +643,11 @@ check('ObjectPrototype must lose its exotic-ness when cloned',
 structuredCloneBatteryOfTests.push({
   description: 'Serializing a non-serializable platform object fails',
   async f(runner, t) {
-    const request = new Response();
+    const ac = new AbortController();
     await promise_rejects_dom(
       t,
       "DataCloneError",
-      runner.structuredClone(request)
+      runner.structuredClone(ac)
     );
   }
 });
@@ -655,26 +655,37 @@ structuredCloneBatteryOfTests.push({
 structuredCloneBatteryOfTests.push({
   description: 'An object whose interface is deleted from the global must still deserialize',
   async f(runner) {
-    const blob = new Blob();
-    const blobInterface = globalThis.Blob;
-    delete globalThis.Blob;
+    const domException = new DOMException();
+    const domExceptionInterface = globalThis.DOMException;
+    delete globalThis.DOMException;
     try {
-      const copy = await runner.structuredClone(blob);
-      assert_true(copy instanceof blobInterface);
+      const copy = await runner.structuredClone(domException);
+      assert_true(copy instanceof domExceptionInterface);
     } finally {
-      globalThis.Blob = blobInterface;
+      globalThis.DOMException = domExceptionInterface;
     }
-  }
+  },
 });
 
 check(
   'A subclass instance will deserialize as its closest serializable superclass',
   () => {
+    class DOMExceptionSubclass extends DOMException {}
+    return new DOMExceptionSubclass([], "");
+  },
+  (copy) => {
+    assert_equals(Object.getPrototypeOf(copy), DOMException.prototype);
+  }
+);
+
+check(
+  'A subclass instance will deserialize as its closest serializable superclass when there are multiple serializable superclasses',
+  () => {
     class FileSubclass extends File {}
     return new FileSubclass([], "");
   },
   (copy) => {
-    assert_equals(Object.getPrototypeOf(copy), File.prototype);
+    assert_equals(Object.getPrototypeOf(copy), File.prototype, "Prototype is File, not Blob");
   }
 );
 

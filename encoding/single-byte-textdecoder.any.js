@@ -1,3 +1,4 @@
+// META: global=window,dedicatedworker,shadowrealm
 // META: timeout=long
 // META: script=/encoding/resources/encodings.js
 

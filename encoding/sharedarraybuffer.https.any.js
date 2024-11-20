@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 test(() => {
   const decoder = new TextDecoder('utf-8');
   const buffer = new SharedArrayBuffer(4);

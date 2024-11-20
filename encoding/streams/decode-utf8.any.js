@@ -59,7 +59,7 @@ promise_test(async () => {
   const buffer = new ArrayBuffer(3);
   const view = new Uint8Array(buffer, 1, 1);
   view[0] = 65;
-  new MessageChannel().port1.postMessage(buffer, [buffer]);
+  buffer.transfer();
   const input = readableStreamFromArray([view]);
   const output = input.pipeThrough(new TextDecoderStream());
   const array = await readableStreamToArray(output);
@@ -68,7 +68,7 @@ promise_test(async () => {
 
 promise_test(async () => {
   const buffer = new ArrayBuffer(1);
-  new MessageChannel().port1.postMessage(buffer, [buffer]);
+  buffer.transfer();
   const input = readableStreamFromArray([buffer]);
   const output = input.pipeThrough(new TextDecoderStream());
   const array = await readableStreamToArray(output);

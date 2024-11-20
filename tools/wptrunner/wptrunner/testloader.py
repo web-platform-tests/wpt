@@ -523,9 +523,7 @@ TestGroup = namedtuple("TestGroup", ["group", "subsuite", "test_type", "metadata
 GroupMetadata = Mapping[str, Any]
 
 
-class TestQueueBuilder:
-    __metaclass__ = ABCMeta
-
+class TestQueueBuilder(metaclass=ABCMeta):
     def __init__(self, **kwargs: Any):
         """Class for building a queue of groups of tests to run.
 

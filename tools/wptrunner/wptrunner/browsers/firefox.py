@@ -314,9 +314,7 @@ def setup_leak_report(leak_check, profile, env):
     return leak_report_file
 
 
-class FirefoxInstanceManager:
-    __metaclass__ = ABCMeta
-
+class FirefoxInstanceManager(metaclass=ABCMeta):
     def __init__(self, logger, binary, binary_args, profile_creator, debug_info,
                  chaos_mode_flags, headless,
                  leak_check, stackfix_dir, symbols_path, asan, e10s):

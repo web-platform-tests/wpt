@@ -20,7 +20,7 @@ def merge_dicts(target, source):
             else:
                 target[key] = source_value
 
-class Protocol:
+class Protocol(metaclass=ABCMeta):
     """Backend for a specific browser-control protocol.
 
     Each Protocol is composed of a set of ProtocolParts that implement
@@ -31,7 +31,6 @@ class Protocol:
 
     :param Executor executor: The Executor instance that's using this Protocol
     :param Browser browser: The Browser using this protocol"""
-    __metaclass__ = ABCMeta
 
     implements: ClassVar[List[Type["ProtocolPart"]]] = []
 
@@ -96,11 +95,10 @@ class Protocol:
             getattr(self, cls.name).teardown()
 
 
-class ProtocolPart:
+class ProtocolPart(metaclass=ABCMeta):
     """Base class  for all ProtocolParts.
 
     :param Protocol parent: The parent protocol"""
-    __metaclass__ = ABCMeta
 
     name: ClassVar[str]
 
@@ -126,9 +124,8 @@ class ProtocolPart:
         pass
 
 
-class BaseProtocolPart(ProtocolPart):
+class BaseProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Generic bits of protocol that are required for multiple test types"""
-    __metaclass__ = ABCMeta
 
     name = "base"
 
@@ -194,9 +191,8 @@ class BaseProtocolPart(ProtocolPart):
         pass
 
 
-class TestharnessProtocolPart(ProtocolPart):
+class TestharnessProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part required to run testharness tests."""
-    __metaclass__ = ABCMeta
 
     name = "testharness"
 
@@ -224,9 +220,8 @@ class TestharnessProtocolPart(ProtocolPart):
         """Wait until the newly opened test window has been loaded."""
 
 
-class PrefsProtocolPart(ProtocolPart):
+class PrefsProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part that allows getting and setting browser prefs."""
-    __metaclass__ = ABCMeta
 
     name = "prefs"
 
@@ -254,9 +249,8 @@ class PrefsProtocolPart(ProtocolPart):
         pass
 
 
-class StorageProtocolPart(ProtocolPart):
+class StorageProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for manipulating browser storage."""
-    __metaclass__ = ABCMeta
 
     name = "storage"
 
@@ -274,9 +268,8 @@ class StorageProtocolPart(ProtocolPart):
         :returns: A list of sites corresponding to bounce trackers whose state was removed"""
         pass
 
-class SelectorProtocolPart(ProtocolPart):
+class SelectorProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for selecting elements on the page."""
-    __metaclass__ = ABCMeta
 
     name = "select"
 
@@ -297,9 +290,8 @@ class SelectorProtocolPart(ProtocolPart):
         pass
 
 
-class ClickProtocolPart(ProtocolPart):
+class ClickProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for performing trusted clicks"""
-    __metaclass__ = ABCMeta
 
     name = "click"
 
@@ -311,9 +303,8 @@ class ClickProtocolPart(ProtocolPart):
         pass
 
 
-class AccessibilityProtocolPart(ProtocolPart):
+class AccessibilityProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for accessibility introspection"""
-    __metaclass__ = ABCMeta
 
     name = "accessibility"
 
@@ -331,9 +322,8 @@ class AccessibilityProtocolPart(ProtocolPart):
         pass
 
 
-class BidiBluetoothProtocolPart(ProtocolPart):
+class BidiBluetoothProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for managing BiDi events"""
-    __metaclass__ = ABCMeta
     name = "bidi_bluetooth"
 
     @abstractmethod
@@ -348,9 +338,8 @@ class BidiBluetoothProtocolPart(ProtocolPart):
         pass
 
 
-class BidiBrowsingContextProtocolPart(ProtocolPart):
+class BidiBrowsingContextProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for managing BiDi events"""
-    __metaclass__ = ABCMeta
     name = "bidi_browsing_context"
 
     @abstractmethod
@@ -367,9 +356,8 @@ class BidiBrowsingContextProtocolPart(ProtocolPart):
         pass
 
 
-class BidiEventsProtocolPart(ProtocolPart):
+class BidiEventsProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for managing BiDi events"""
-    __metaclass__ = ABCMeta
     name = "bidi_events"
 
     @abstractmethod
@@ -402,9 +390,8 @@ class BidiEventsProtocolPart(ProtocolPart):
         pass
 
 
-class BidiPermissionsProtocolPart(ProtocolPart):
+class BidiPermissionsProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for managing BiDi events"""
-    __metaclass__ = ABCMeta
     name = "bidi_permissions"
 
     @abstractmethod
@@ -412,9 +399,8 @@ class BidiPermissionsProtocolPart(ProtocolPart):
         pass
 
 
-class BidiScriptProtocolPart(ProtocolPart):
+class BidiScriptProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for executing BiDi scripts"""
-    __metaclass__ = ABCMeta
 
     name = "bidi_script"
 
@@ -435,9 +421,8 @@ class BidiScriptProtocolPart(ProtocolPart):
         pass
 
 
-class CookiesProtocolPart(ProtocolPart):
+class CookiesProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for managing cookies"""
-    __metaclass__ = ABCMeta
 
     name = "cookies"
 
@@ -459,9 +444,8 @@ class CookiesProtocolPart(ProtocolPart):
         pass
 
 
-class SendKeysProtocolPart(ProtocolPart):
+class SendKeysProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for performing trusted clicks"""
-    __metaclass__ = ABCMeta
 
     name = "send_keys"
 
@@ -473,9 +457,8 @@ class SendKeysProtocolPart(ProtocolPart):
         :param keys: A protocol-specific handle to a string of input keys."""
         pass
 
-class WindowProtocolPart(ProtocolPart):
+class WindowProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for manipulating the window"""
-    __metaclass__ = ABCMeta
 
     name = "window"
 
@@ -494,9 +477,8 @@ class WindowProtocolPart(ProtocolPart):
         """Minimizes the window and returns the previous rect."""
         pass
 
-class GenerateTestReportProtocolPart(ProtocolPart):
+class GenerateTestReportProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for generating test reports"""
-    __metaclass__ = ABCMeta
 
     name = "generate_test_report"
 
@@ -508,9 +490,8 @@ class GenerateTestReportProtocolPart(ProtocolPart):
         pass
 
 
-class SetPermissionProtocolPart(ProtocolPart):
+class SetPermissionProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for setting permissions"""
-    __metaclass__ = ABCMeta
 
     name = "set_permission"
 
@@ -523,9 +504,8 @@ class SetPermissionProtocolPart(ProtocolPart):
         pass
 
 
-class ActionSequenceProtocolPart(ProtocolPart):
+class ActionSequenceProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for performing trusted clicks"""
-    __metaclass__ = ABCMeta
 
     name = "action_sequence"
 
@@ -540,10 +520,9 @@ class ActionSequenceProtocolPart(ProtocolPart):
         pass
 
 
-class TestDriverProtocolPart(ProtocolPart):
+class TestDriverProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part that implements the basic functionality required for
     all testdriver-based tests."""
-    __metaclass__ = ABCMeta
 
     name = "testdriver"
 
@@ -632,10 +611,9 @@ class TestDriverProtocolPart(ProtocolPart):
         pass
 
 
-class AssertsProtocolPart(ProtocolPart):
+class AssertsProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """ProtocolPart that implements the functionality required to get a count of non-fatal
     assertions triggered"""
-    __metaclass__ = ABCMeta
 
     name = "asserts"
 
@@ -645,9 +623,8 @@ class AssertsProtocolPart(ProtocolPart):
         pass
 
 
-class LeakProtocolPart(ProtocolPart):
+class LeakProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part that checks for leaked DOM objects."""
-    __metaclass__ = ABCMeta
 
     name = "leak"
 
@@ -676,9 +653,8 @@ class LeakProtocolPart(ProtocolPart):
         return None
 
 
-class CoverageProtocolPart(ProtocolPart):
+class CoverageProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for collecting per-test coverage data."""
-    __metaclass__ = ABCMeta
 
     name = "coverage"
 
@@ -693,9 +669,8 @@ class CoverageProtocolPart(ProtocolPart):
         pass
 
 
-class VirtualAuthenticatorProtocolPart(ProtocolPart):
+class VirtualAuthenticatorProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for creating and manipulating virtual authenticators"""
-    __metaclass__ = ABCMeta
 
     name = "virtual_authenticator"
 
@@ -753,9 +728,8 @@ class VirtualAuthenticatorProtocolPart(ProtocolPart):
         pass
 
 
-class SPCTransactionsProtocolPart(ProtocolPart):
+class SPCTransactionsProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for Secure Payment Confirmation transactions"""
-    __metaclass__ = ABCMeta
 
     name = "spc_transactions"
 
@@ -766,9 +740,8 @@ class SPCTransactionsProtocolPart(ProtocolPart):
         :param str mode: The automation mode to set"""
         pass
 
-class RPHRegistrationsProtocolPart(ProtocolPart):
+class RPHRegistrationsProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for Custom Handlers registrations"""
-    __metaclass__ = ABCMeta
 
     name = "rph_registrations"
 
@@ -779,9 +752,8 @@ class RPHRegistrationsProtocolPart(ProtocolPart):
         :param str mode: The automation mode to set"""
         pass
 
-class FedCMProtocolPart(ProtocolPart):
+class FedCMProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for Federated Credential Management"""
-    __metaclass__ = ABCMeta
 
     name = "fedcm"
 
@@ -832,9 +804,8 @@ class FedCMProtocolPart(ProtocolPart):
         pass
 
 
-class PrintProtocolPart(ProtocolPart):
+class PrintProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for rendering to a PDF."""
-    __metaclass__ = ABCMeta
 
     name = "pdf_print"
 
@@ -844,9 +815,8 @@ class PrintProtocolPart(ProtocolPart):
         pass
 
 
-class DebugProtocolPart(ProtocolPart):
+class DebugProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for debugging test failures."""
-    __metaclass__ = ABCMeta
 
     name = "debug"
 
@@ -929,9 +899,8 @@ class WdspecProtocol(ConnectionlessProtocol):
             return False
 
 
-class VirtualSensorProtocolPart(ProtocolPart):
+class VirtualSensorProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for Sensors"""
-    __metaclass__ = ABCMeta
 
     name = "virtual_sensor"
 
@@ -951,9 +920,8 @@ class VirtualSensorProtocolPart(ProtocolPart):
     def get_virtual_sensor_information(self, sensor_type):
         pass
 
-class DevicePostureProtocolPart(ProtocolPart):
+class DevicePostureProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for Device Posture"""
-    __metaclass__ = ABCMeta
 
     name = "device_posture"
 
@@ -965,9 +933,8 @@ class DevicePostureProtocolPart(ProtocolPart):
     def clear_device_posture(self):
         pass
 
-class VirtualPressureSourceProtocolPart(ProtocolPart):
+class VirtualPressureSourceProtocolPart(ProtocolPart, metaclass=ABCMeta):
     """Protocol part for Virtual Pressure Source"""
-    __metaclass__ = ABCMeta
 
     name = "pressure"
 

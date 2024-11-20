@@ -45,3 +45,4 @@ function runStructuredCloneBatteryOfTests(runner) {
   });
   Promise.all(allTests).then(_ => runner.teardown());
 }
+globalThis.runStructuredCloneBatteryOfTests = runStructuredCloneBatteryOfTests;

@@ -1,9 +1,5 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="../resources/test-utils.js"></script>
-<script>
+// META: script=../resources/test-utils.js
+
 'use strict';
 
 promise_test(t => {
@@ -104,5 +100,3 @@ promise_test(t => {
                     'transforms should have been applied');
     });
 }, 'piping through transferred transforms should work');
-
-</script>

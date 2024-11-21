@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="resources/helpers.js"></script>
-<script src="../resources/test-utils.js"></script>
-<script src="../resources/recording-streams.js"></script>
-<script>
+// META: script=resources/helpers.js
+// META: script=../resources/test-utils.js
+// META: script=../resources/recording-streams.js
+
 'use strict';
 
 promise_test(t => {
@@ -143,4 +139,3 @@ promise_test(async t => {
   assert_equals(orig.events[1].name, 'DataCloneError',
                 'reason should be a DataCloneError');
 }, 'writing a unclonable object should error the stream');
-</script>

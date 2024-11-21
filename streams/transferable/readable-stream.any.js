@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="resources/helpers.js"></script>
-<script src="../resources/recording-streams.js"></script>
-<script src="../resources/test-utils.js"></script>
-<script>
+// META: script=resources/helpers.js
+// META: script=../resources/recording-streams.js
+// META: script=../resources/test-utils.js
+
 'use strict';
 
 promise_test(async () => {
@@ -256,5 +252,3 @@ promise_test(async () => {
   const {done} = await reader.read();
   assert_true(done, 'should be done');
 }, 'race between cancel() and enqueue() should be benign');
-
-</script>

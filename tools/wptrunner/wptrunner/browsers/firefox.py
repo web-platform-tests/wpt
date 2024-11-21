@@ -251,6 +251,8 @@ def update_properties():
         "swgl",
         "asan",
         "tsan",
+        "remoteAsyncEvents",
+        "sessionHistoryInParent",
         "subsuite"], {
         "os": ["version"],
         "processor": ["bits"]})

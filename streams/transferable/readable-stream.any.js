@@ -1,3 +1,4 @@
+// META: global=window,dedicatedworker,shadowrealm
 // META: script=resources/helpers.js
 // META: script=../resources/recording-streams.js
 // META: script=../resources/test-utils.js
@@ -90,11 +91,15 @@ promise_test(async () => {
   const rs = recordingReadableStream({}, { highWaterMark: 0 });
   await delay(0);
   assert_array_equals(rs.events, [], 'pull() should not have been called');
-  // Eat the message so it can't interfere with other tests.
-  addEventListener('message', () => {}, {once: true});
-  // The transfer is done manually to verify that it is posting the stream that
-  // relieves backpressure, not receiving it.
-  postMessage(rs, '*', [rs]);
+  if (GLOBAL.isShadowRealm()) {
+    structuredClone(rs, { transfer: [rs] });
+  } else {
+    // Eat the message so it can't interfere with other tests.
+    addEventListener('message', () => {}, {once: true});
+    // The transfer is done manually to verify that it is posting the stream that
+    // relieves backpressure, not receiving it.
+    postMessage(rs, '*', [rs]);
+  }
   await delay(0);
   assert_array_equals(rs.events, ['pull'], 'pull() should have been called');
 }, 'transferring a stream should relieve backpressure');

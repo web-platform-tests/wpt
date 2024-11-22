@@ -1,5 +1,6 @@
 // META: title=Promise rejection events tests
 // META: global=window,worker
+// META: script=support/promise-rejection-event-utils.js
 
 // https://html.spec.whatwg.org/#unhandled-promise-rejections
 
@@ -12,26 +13,6 @@ setup({
 //
 // Straightforward unhandledrejection tests
 //
-async_test(function(t) {
-  var e = new Error();
-  var p;
-
-  onUnhandledSucceed(t, e, function() { return p; });
-
-  p = Promise.reject(e);
-}, 'unhandledrejection: from Promise.reject');
-
-async_test(function(t) {
-  var e = new Error();
-  var p;
-
-  onUnhandledSucceed(t, e, function() { return p; });
-
-  p = new Promise(function(_, reject) {
-    reject(e);
-  });
-}, 'unhandledrejection: from a synchronous rejection in new Promise');
-
 async_test(function(t) {
   var e = new Error();
   var p;
@@ -57,22 +38,6 @@ async_test(function(t) {
     }, 1);
   });
 }, 'unhandledrejection: from a setTimeout-delayed rejection');
-
-async_test(function(t) {
-  var e = new Error();
-  var e2 = new Error();
-  var promise2;
-
-  onUnhandledSucceed(t, e2, function() { return promise2; });
-
-  var unreached = t.unreached_func('promise should not be fulfilled');
-  promise2 = Promise.reject(e).then(unreached, function(reason) {
-    t.step(function() {
-      assert_equals(reason, e);
-    });
-    throw e2;
-  });
-}, 'unhandledrejection: from a throw in a rejection handler chained off of Promise.reject');
 
 async_test(function(t) {
   var e = new Error();
@@ -124,28 +89,6 @@ async_test(function(t) {
   onUnhandledSucceed(t, e, function() { return p; });
 
   p = Promise.resolve().then(function() {
-    return Promise.reject(e);
-  });
-}, 'unhandledrejection: from returning a Promise.reject-created rejection in a fulfillment handler');
-
-async_test(function(t) {
-  var e = new Error();
-  var p;
-
-  onUnhandledSucceed(t, e, function() { return p; });
-
-  p = Promise.resolve().then(function() {
-    throw e;
-  });
-}, 'unhandledrejection: from a throw in a fulfillment handler');
-
-async_test(function(t) {
-  var e = new Error();
-  var p;
-
-  onUnhandledSucceed(t, e, function() { return p; });
-
-  p = Promise.resolve().then(function() {
     return new Promise(function(_, reject) {
       setTimeout(function() {
         reject(e);
@@ -153,15 +96,6 @@ async_test(function(t) {
     });
   });
 }, 'unhandledrejection: from returning a setTimeout-delayed rejection in a fulfillment handler');
-
-async_test(function(t) {
-  var e = new Error();
-  var p;
-
-  onUnhandledSucceed(t, e, function() { return p; });
-
-  p = Promise.all([Promise.reject(e)]);
-}, 'unhandledrejection: from Promise.reject, indirected through Promise.all');
 
 async_test(function(t) {
   var p;
@@ -184,74 +118,6 @@ async_test(function(t) {
 //
 // Negative unhandledrejection/rejectionhandled tests with immediate attachment
 //
-
-async_test(function(t) {
-  var e = new Error();
-  var p;
-
-  onUnhandledFail(t, function() { return p; });
-
-  var unreached = t.unreached_func('promise should not be fulfilled');
-  p = Promise.reject(e).then(unreached, function() {});
-}, 'no unhandledrejection/rejectionhandled: rejection handler attached synchronously to a promise from Promise.reject');
-
-async_test(function(t) {
-  var e = new Error();
-  var p;
-
-  onUnhandledFail(t, function() { return p; });
-
-  var unreached = t.unreached_func('promise should not be fulfilled');
-  p = Promise.all([Promise.reject(e)]).then(unreached, function() {});
-}, 'no unhandledrejection/rejectionhandled: rejection handler attached synchronously to a promise from ' +
-   'Promise.reject, indirecting through Promise.all');
-
-async_test(function(t) {
-  var e = new Error();
-  var p;
-
-  onUnhandledFail(t, function() { return p; });
-
-  var unreached = t.unreached_func('promise should not be fulfilled');
-  p = new Promise(function(_, reject) {
-    reject(e);
-  }).then(unreached, function() {});
-}, 'no unhandledrejection/rejectionhandled: rejection handler attached synchronously to a synchronously-rejected ' +
-   'promise created with new Promise');
-
-async_test(function(t) {
-  var e = new Error();
-  var p;
-
-  onUnhandledFail(t, function() { return p; });
-
-  var unreached = t.unreached_func('promise should not be fulfilled');
-  p = Promise.resolve().then(function() {
-    throw e;
-  }).then(unreached, function(reason) {
-    t.step(function() {
-      assert_equals(reason, e);
-    });
-  });
-}, 'no unhandledrejection/rejectionhandled: rejection handler attached synchronously to a promise created from ' +
-   'throwing in a fulfillment handler');
-
-async_test(function(t) {
-  var e = new Error();
-  var p;
-
-  onUnhandledFail(t, function() { return p; });
-
-  var unreached = t.unreached_func('promise should not be fulfilled');
-  p = Promise.resolve().then(function() {
-    return Promise.reject(e);
-  }).then(unreached, function(reason) {
-    t.step(function() {
-      assert_equals(reason, e);
-    });
-  });
-}, 'no unhandledrejection/rejectionhandled: rejection handler attached synchronously to a promise created from ' +
-   'returning a Promise.reject-created promise in a fulfillment handler');
 
 async_test(function(t) {
   var e = new Error();
@@ -911,52 +777,6 @@ function mutationObserverMicrotask(f) {
     // microtask.
     Promise.resolve().then(function() { f(); });
   }
-}
-
-function onUnhandledSucceed(t, expectedReason, expectedPromiseGetter) {
-  var l = function(ev) {
-    if (ev.promise === expectedPromiseGetter()) {
-      t.step(function() {
-        assert_equals(ev.reason, expectedReason);
-        assert_equals(ev.promise, expectedPromiseGetter());
-      });
-      t.done();
-    }
-  };
-  addEventListener('unhandledrejection', l);
-  ensureCleanup(t, l);
-}
-
-function onUnhandledFail(t, expectedPromiseGetter) {
-  var unhandled = function(evt) {
-    if (evt.promise === expectedPromiseGetter()) {
-      t.step(function() {
-        assert_unreached('unhandledrejection event is not supposed to be triggered');
-      });
-    }
-  };
-  var handled = function(evt) {
-    if (evt.promise === expectedPromiseGetter()) {
-      t.step(function() {
-        assert_unreached('rejectionhandled event is not supposed to be triggered');
-      });
-    }
-  };
-  addEventListener('unhandledrejection', unhandled);
-  addEventListener('rejectionhandled', handled);
-  ensureCleanup(t, unhandled, handled);
-  setTimeout(function() {
-    t.done();
-  }, 10);
-}
-
-function ensureCleanup(t, unhandled, handled) {
-  t.add_cleanup(function() {
-    if (unhandled)
-      removeEventListener('unhandledrejection', unhandled);
-    if (handled)
-      removeEventListener('rejectionhandled', handled);
-  });
 }
 
 done();

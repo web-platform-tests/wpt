@@ -1172,6 +1172,7 @@ class WebDriverCrashtestExecutor(CrashtestExecutor):
     def do_crashtest(self, protocol, url, timeout):
         protocol.base.load(url)
         protocol.base.execute_script(self.wait_script, asynchronous=True)
+        protocol.base.load("about:blank")
         result = {"status": "PASS", "message": None}
         if (leak_part := getattr(protocol, "leak", None)) and (counters := leak_part.check()):
             result["extra"] = {"leak_counters": counters}

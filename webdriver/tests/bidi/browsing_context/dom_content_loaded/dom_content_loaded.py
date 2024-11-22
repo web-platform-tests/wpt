@@ -159,7 +159,6 @@ async def test_new_context_not_emitted(bidi_session, subscribe_events,
 
     await bidi_session.browsing_context.create(type_hint=type_hint)
 
-    # In the future we can wait for "browsingContext.domContentLoaded" event instead.
     wait = AsyncPoll(bidi_session, timeout=0.5)
     with pytest.raises(TimeoutException):
         await wait.until(lambda _: len(events) > 0)

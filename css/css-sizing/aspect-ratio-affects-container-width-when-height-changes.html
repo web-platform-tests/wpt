@@ -14,9 +14,10 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/check-layout-th.js"></script>
 <script>
-  test(()=> {
+  promise_test(async () => {
       document.body.offsetTop;
       document.getElementById("container").style.height = "100px";
-      checkLayout("#container");
   }, "Changing height should affect the descendant widths, due to aspect ratio");
+
+  checkLayout("#container");
 </script>

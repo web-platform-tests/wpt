@@ -1,6 +1,6 @@
 (function() {
 // Test is initiated from body.onload, so explicit done() call is required.
-setup({ explicit_done: true });
+promise_setup(() => document.fonts.ready, { explicit_done: true });
 
 function checkSubtreeExpectedValues(t, parent, prefix)
 {
@@ -219,7 +219,7 @@ window.checkLayout = function(selectorList, callDone = true)
     var checkedLayout = false;
     Array.prototype.forEach.call(nodes, function(node) {
         const title = node.title == '' ? '' : `: ${node.title}`;
-        test(function(t) {
+        promise_test(async function(t) {
             var container = node.parentNode.className == 'container' ? node.parentNode : node;
             var prefix =
                 printDomOnError ? '\n' + container.outerHTML + '\n' : '';
@@ -239,13 +239,15 @@ window.checkLayout = function(selectorList, callDone = true)
                 if (node)
                   node.classList.add('testharness_error');
               }
-                checkedLayout |= !passed;
+              checkedLayout |= !passed;
             }
         }, `${selectorList} ${++testNumber}${title}`);
     });
-    if (!checkedLayout) {
-        console.error("No valid data-* attributes found in selector list : " + selectorList);
-    }
+    add_completion_callback(() => {
+        if (!checkedLayout) {
+            console.error("No valid data-* attributes found in selector list: " + selectorList);
+        }
+    });
     if (callDone)
         done();
 };

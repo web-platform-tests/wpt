@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 // https://html.spec.whatwg.org/#the-promiserejectionevent-interface
 
 'use strict';

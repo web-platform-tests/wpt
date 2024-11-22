@@ -1,9 +1,5 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<link rel="help" href="https://html.spec.whatwg.org/#the-promiserejectionevent-interface">
-<script>
+// https://html.spec.whatwg.org/#the-promiserejectionevent-interface
+
 'use strict';
 
 test(function() {
@@ -47,4 +43,3 @@ test(function() {
   assert_equals(new PromiseRejectionEvent('eventType', { bubbles: true, cancelable: true, promise: p, reason: r }).promise, p);
   assert_equals(new PromiseRejectionEvent('eventType', { bubbles: true, cancelable: true, promise: p, reason: r }).reason, r);
 }, "This tests the constructor for the PromiseRejectionEvent DOM class.");
-</script>

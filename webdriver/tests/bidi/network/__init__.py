@@ -80,8 +80,10 @@ def assert_request_data(request_data, expected_request, expected_time_range):
         {
             "bodySize": any_int_or_null,
             "cookies": any_list,
+            "destination": any_string,
             "headers": any_list,
             "headersSize": any_int,
+            "initiatorType": any_string_or_null,
             "method": any_string,
             "request": any_string,
             "timings": any_dict,
@@ -175,8 +177,8 @@ def assert_before_request_sent_event(
     expected_time_range=None,
 ):
     # Assert initiator
-    assert isinstance(event["initiator"], dict)
-    assert isinstance(event["initiator"]["type"], str)
+    if "initiator" in event:
+        assert isinstance(event["initiator"], dict)
 
     # Assert base parameters
     assert_base_parameters(

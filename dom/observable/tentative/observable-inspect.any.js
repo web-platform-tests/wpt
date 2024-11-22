@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 // Because we test that the global error handler is called at various times.
 setup({ allow_uncaught_exception: true });
 

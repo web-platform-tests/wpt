@@ -734,7 +734,7 @@ IdlArray.prototype.test = function()
 
     Object.getOwnPropertyNames(this.members).forEach(function(memberName) {
         var member = this.members[memberName];
-        if (!(member instanceof IdlInterface)) {
+        if (!(member instanceof IdlInterface || member instanceof IdlNamespace)) {
             return;
         }
 
@@ -3451,6 +3451,17 @@ IdlNamespace.prototype.test_self = function ()
 
 IdlNamespace.prototype.test = function ()
 {
+    // If the namespace object is not exposed, only test that. Members can't be
+    // tested either
+    if (!this.exposed) {
+        if (!this.untested) {
+            subsetTestByKey(this.name, test, function() {
+                assert_false(this.name in self, this.name + " namespace should not exist");
+            }.bind(this), this.name + " namespace: existence and properties of namespace object");
+        }
+        return;
+    }
+
     if (!this.untested) {
         this.test_self();
     }

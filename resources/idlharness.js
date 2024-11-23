@@ -1421,7 +1421,7 @@ IdlInterface.prototype.test = function()
         if (!this.untested)
         {
             subsetTestByKey(this.name, test, function() {
-                assert_false(this.name in self);
+                assert_false(this.name in self, this.name + " interface should not exist");
             }.bind(this), this.name + " interface: existence and properties of interface object");
         }
         return;

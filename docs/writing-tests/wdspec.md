@@ -72,9 +72,9 @@ topic](https://docs.pytest.org/en/latest/fixture.html).
 
 The wdspec tests for [WebDriver BiDi](https://w3c.github.io/webdriver-bidi) are
 located in the `tests/bidi/` and `tests/interop` directories. Tests related to
-external specifications (like [Permissions](https://www.w3.org/TR/permissions/) or
-[Web Bluetooth](https://webbluetoothcg.github.io/web-bluetooth)) are located in
-`external` subdirectories. E.g. `tests/bidi/external/permissions/`.
+external specifications are located in `external` subdirectories e.g.
+[Permissions](https://www.w3.org/TR/permissions/) tests would go in
+`tests/bidi/external/permissions/`.
 
 The `webdriver.bidi.client.BidiSession` class provides an abstraction for the BiDi
 client and contains properties corresponding to the

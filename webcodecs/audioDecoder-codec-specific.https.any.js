@@ -199,6 +199,20 @@ promise_setup(async () => {
     '?vorbis': VORBIS_DATA,
   }[location.search];
 
+  // Don't run any tests if the codec is not supported.
+  assert_equals("function", typeof AudioDecoder.isConfigSupported);
+  let supported = false;
+  try {
+    const support = await AudioDecoder.isConfigSupported({
+      codec: data.config.codec,
+      sampleRate: data.config.sampleRate,
+      numberOfChannels: data.config.numberOfChannels
+    });
+    supported = support.supported;
+  } catch (e) {
+  }
+  assert_implements_optional(supported, data.config.codec + ' unsupported');
+
   // Fetch the media data and prepare buffers.
   const response = await fetch(data.src);
   const buf = await response.arrayBuffer();

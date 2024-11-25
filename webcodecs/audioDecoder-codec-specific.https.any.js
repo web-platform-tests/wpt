@@ -219,6 +219,8 @@ promise_setup(async () => {
 
   CONFIG = {...data.config};
   if (data.config.description) {
+    // The description for decoding vorbis is expected to be in Xiph extradata format.
+    // https://w3c.github.io/webcodecs/vorbis_codec_registration.html#audiodecoderconfig-description
     if (Array.isArray(data.config.description)) {
       const length = data.config.description.reduce((sum, value) => sum + ((typeof value === 'number') ? 1 : value.size), 0);
       const description = new Uint8Array(length);

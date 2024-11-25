@@ -35,7 +35,8 @@
   <section id="wdspec-tests">
 <h1>wdspec tests<a class="headerlink" href="#wdspec-tests" title="Link to this heading">¶</a></h1>
 <p>The term “wdspec” describes a type of test in WPT which verifies some aspect of
-<a class="reference external" href="https://w3c.github.io/webdriver/">the WebDriver protocol</a>. These tests are
+<a class="reference external" href="https://w3c.github.io/webdriver/">WebDriver Classic</a> or
+<a class="reference external" href="https://w3c.github.io/webdriver-bidi">WebDriver BiDi</a> protocols. These tests are
 written in <a class="reference external" href="https://www.python.org/">the Python programming language</a> and
 structured with <a class="reference external" href="https://docs.pytest.org/en/latest/">the pytest testing
 framework</a>.</p>
@@ -92,6 +93,98 @@ a WebDriver session) are defined in terms of Pytest “fixtures” and must be
 loaded accordingly. For more detail on how to define and use test fixtures,
 please refer to <a class="reference external" href="https://docs.pytest.org/en/latest/fixture.html">the pytest project’s documentation on the
 topic</a>.</p>
+</section>
+<section id="webdriver-bidi">
+<h2>WebDriver BiDi<a class="headerlink" href="#webdriver-bidi" title="Link to this heading">¶</a></h2>
+<p>The wdspec tests for <a class="reference external" href="https://w3c.github.io/webdriver-bidi">WebDriver BiDi</a> are
+located in the <code class="docutils literal notranslate"><span class="pre">tests/bidi/</span></code> and <code class="docutils literal notranslate"><span class="pre">tests/interop</span></code> directories. Tests related to
+external specifications are located in <code class="docutils literal notranslate"><span class="pre">external</span></code> subdirectories e.g.
+<a class="reference external" href="https://www.w3.org/TR/permissions/">Permissions</a> tests would go in
+<code class="docutils literal notranslate"><span class="pre">tests/bidi/external/permissions/</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">webdriver.bidi.client.BidiSession</span></code> class provides an abstraction for the BiDi
+client and contains properties corresponding to the
+<a class="reference external" href="https://w3c.github.io/webdriver-bidi/#protocol-modules">WebDriver BiDi modules</a>. It
+can be retrieved by fixture <code class="docutils literal notranslate"><span class="pre">bidi_session</span></code>.</p>
+<section id="extending-webdriver-bidi">
+<h3>Extending WebDriver BiDi<a class="headerlink" href="#extending-webdriver-bidi" title="Link to this heading">¶</a></h3>
+<p>This section describes how to extend the WebDriver BiDi client with an example of
+adding support for <a class="reference external" href="https://www.w3.org/TR/permissions/">Permissions</a>.</p>
+<section id="adding-a-new-module">
+<h4>Adding a New Module<a class="headerlink" href="#adding-a-new-module" title="Link to this heading">¶</a></h4>
+<section id="create-bidimodule">
+<h5>Create <code class="docutils literal notranslate"><span class="pre">BidiModule</span></code><a class="headerlink" href="#create-bidimodule" title="Link to this heading">¶</a></h5>
+<p>BiDi modules are defined in the <code class="docutils literal notranslate"><span class="pre">tools/webdriver/webdriver/bidi/modules/</span></code> directory.
+To add a new module called <code class="docutils literal notranslate"><span class="pre">permissions</span></code>, declare a Python class
+<code class="docutils literal notranslate"><span class="pre">webdriver.bidi.modules.permissions.Permissions</span></code> that inherits from <code class="docutils literal notranslate"><span class="pre">BidiModule</span></code> and
+store it in <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/b81831169b8527a6c569a4ad92cf8a1baf4a7118/tools/webdriver/webdriver/bidi/modules/permissions.py#L7"><code class="docutils literal notranslate"><span class="pre">tools/webdriver/webdriver/bidi/modules/permissions.py</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Permissions</span><span class="p">(</span><span class="n">BidiModule</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</section>
+<section id="import-the-module-in-bidi-modules-init-py">
+<h5>Import the Module in <code class="docutils literal notranslate"><span class="pre">bidi/modules/__init__.py</span></code><a class="headerlink" href="#import-the-module-in-bidi-modules-init-py" title="Link to this heading">¶</a></h5>
+<p>Import this class in <code class="docutils literal notranslate"><span class="pre">tools/webdriver/webdriver/bidi/modules/__init__.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.permissions</span> <span class="kn">import</span> <span class="n">Permissions</span>
+</pre></div>
+</div>
+</section>
+<section id="create-an-instance-of-the-module-in-webdriver-bidi-client-bidisession">
+<h5>Create an Instance of the Module in <code class="docutils literal notranslate"><span class="pre">webdriver.bidi.client.BidiSession</span></code><a class="headerlink" href="#create-an-instance-of-the-module-in-webdriver-bidi-client-bidisession" title="Link to this heading">¶</a></h5>
+<p>Modify the <code class="docutils literal notranslate"><span class="pre">webdriver.bidi.client.BidiSession.__init__</span></code> method to create an instance
+of <code class="docutils literal notranslate"><span class="pre">Permissions</span></code> and store it in a <code class="docutils literal notranslate"><span class="pre">permissions</span></code> <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/b81831169b8527a6c569a4ad92cf8a1baf4a7118/tools/webdriver/webdriver/bidi/client.py#L98">property</a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">permissions</span> <span class="o">=</span> <span class="n">modules</span><span class="o">.</span><span class="n">Permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="adding-a-new-command">
+<h4>Adding a New Command<a class="headerlink" href="#adding-a-new-command" title="Link to this heading">¶</a></h4>
+<p><a class="reference external" href="https://w3c.github.io/webdriver-bidi/#commands">WebDriver BiDi commands</a> are
+represented as module methods decorated with
+<code class="docutils literal notranslate"><span class="pre">&#64;command</span></code> (<code class="docutils literal notranslate"><span class="pre">webdriver.bidi.modules._module.command</span></code>). To add a new command, add
+a method with the corresponding name (translated from camel case to snake case) to
+the module. The method should return a dictionary that represents the
+<a class="reference external" href="https://w3c.github.io/webdriver-bidi/#command-command-parameters">command parameters</a>.</p>
+<p>For example, to add the
+<a class="reference external" href="https://www.w3.org/TR/permissions/#webdriver-bidi-command-permissions-setPermission"><code class="docutils literal notranslate"><span class="pre">permissions.setPermission</span></code></a>
+command, add the following <code class="docutils literal notranslate"><span class="pre">set_permission</span></code> method to the <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/b81831169b8527a6c569a4ad92cf8a1baf4a7118/tools/webdriver/webdriver/bidi/modules/permissions.py#L9"><code class="docutils literal notranslate"><span class="pre">Permissions</span></code> class</a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">._module</span> <span class="kn">import</span> <span class="n">command</span>
+<span class="o">...</span>
+<span class="k">class</span> <span class="nc">Permissions</span><span class="p">(</span><span class="n">BidiModule</span><span class="p">):</span>
+<span class="o">...</span>
+    <span class="nd">@command</span>
+    <span class="k">def</span> <span class="nf">set_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+          <span class="n">descriptor</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">Undefined</span><span class="p">]</span> <span class="o">=</span> <span class="n">UNDEFINED</span><span class="p">,</span>
+          <span class="n">state</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Undefined</span><span class="p">]</span> <span class="o">=</span> <span class="n">UNDEFINED</span><span class="p">,</span>
+          <span class="n">origin</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Undefined</span><span class="p">]</span> <span class="o">=</span> <span class="n">UNDEFINED</span><span class="p">,</span>
+          <span class="n">user_context</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Undefined</span><span class="p">]</span> <span class="o">=</span> <span class="n">UNDEFINED</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;descriptor&quot;</span><span class="p">:</span> <span class="n">descriptor</span><span class="p">,</span>
+            <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span>
+            <span class="s2">&quot;origin&quot;</span><span class="p">:</span> <span class="n">origin</span><span class="p">,</span>
+            <span class="s2">&quot;userContext&quot;</span><span class="p">:</span> <span class="n">user_context</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">params</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="adding-tests">
+<h3>Adding Tests<a class="headerlink" href="#adding-tests" title="Link to this heading">¶</a></h3>
+<p>Generally, a single test file should contain tests for a single parameter or feature
+and stored in <code class="docutils literal notranslate"><span class="pre">webdriver/tests/bidi/{MODULE}/{METHOD}/{FEATURE}.py</span></code>
+For example, tests for
+<a class="reference external" href="https://www.w3.org/TR/permissions/#webdriver-bidi-command-permissions-setPermission"><code class="docutils literal notranslate"><span class="pre">permissions.setPermission</span></code></a>
+could be split into:</p>
+<ul class="simple">
+<li><p>Invalid parameters: <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/aa019e3ff08cc75644edca41cfb095601477cb9d/webdriver/tests/bidi/external/permissions/set_permission/invalid.py"><code class="docutils literal notranslate"><span class="pre">set_permission/invalid.py</span></code></a></p></li>
+<li><p>Common scenarios: <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/aa019e3ff08cc75644edca41cfb095601477cb9d/webdriver/tests/bidi/external/permissions/set_permission/set_permission.py"><code class="docutils literal notranslate"><span class="pre">set_permission/set_permission.py</span></code></a></p></li>
+<li><p>User context: <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/webdriver/tests/bidi/external/permissions/set_permission/user_context.py"><code class="docutils literal notranslate"><span class="pre">set_permission/user_context.py</span></code></a></p></li>
+</ul>
+<p>Tests should use <code class="docutils literal notranslate"><span class="pre">bidi_session</span></code>’s modules’ methods to send commands and verify its
+side effects.</p>
+</section>
 </section>
 </section>
 

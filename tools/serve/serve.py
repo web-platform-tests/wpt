@@ -452,7 +452,7 @@ class ShadowRealmInWindowHandler(HtmlWrapperHandler):
 
   await fetch_tests_from_shadow_realm(r);
   done();
-})();
+})().catch(e => setup(() => { throw e; }));
 </script>
 """
 
@@ -504,7 +504,7 @@ class ShadowRealmInShadowRealmHandler(HtmlWrapperHandler):
   `);
   await fetch_tests_from_shadow_realm(outer);
   done();
-})();
+})().catch(e => setup(() => { throw e; }));
 </script>
 """
 

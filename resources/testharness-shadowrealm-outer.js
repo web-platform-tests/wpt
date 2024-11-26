@@ -125,3 +125,22 @@ globalThis.setupFakeFetchOverMessagePort = function (port) {
   });
   port.start();
 }
+
+/**
+ * Returns a message suitable for posting with postMessage() that will signal to
+ * the test harness that the tests are finished and there was an error in the
+ * setup code.
+ *
+ * @param {message} string - error message
+ */
+globalThis.createSetupErrorResult = function (message) {
+  return {
+    type: "complete",
+    tests: [],
+    asserts: [],
+    status: {
+      status: 1, // TestsStatus.ERROR,
+      message,
+    },
+  };
+};

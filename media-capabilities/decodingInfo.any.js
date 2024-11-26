@@ -233,7 +233,7 @@ promise_test(t => {
       width: 800,
       height: 600,
       bitrate: 3000,
-      framerate: 24,
+      framerate: '24000/1001',
     }
   }));
 }, "Test that decodingInfo rejects framerate in the form of x/y");

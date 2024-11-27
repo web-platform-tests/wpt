@@ -1,0 +1,18 @@
+<!doctype html>
+<meta charset=utf-8>
+Waiting for move event…
+<script>
+    var base_x = window.screenX;
+    var base_y = window.screenY;
+    window.onmove = function() {
+        var new_x = window.screenX;
+        var new_y = window.screenY;
+        if (new_x != base_x || new_y != base_y) {
+            window.opener.registerResult(true);
+        } else {
+            window.opener.registerResult(false);
+        }
+        window.close();
+    };
+    window.moveBy(150,150);
+</script>

@@ -1,0 +1,18 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>window.onmove event handling</title>
+<link rel="help" href="https://drafts.csswg.org/cssom-view/#moving-viewports">
+<link rel="help" href="https://html.spec.whatwg.org/#windoweventhandlers">
+<link rel="author" title="Florian Rivoal" href="https://florian.rivoal.net">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+    var t = async_test("windowOnMove");
+    function registerResult(success) {
+        t.step(function() {
+            assert_true(success, "Coordinates of a moved window should have changed");
+        });
+        t.done();
+    }
+    window.open("resources/onmove-child.html","_blank","popup,width=200,height=100");
+</script>

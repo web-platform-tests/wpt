@@ -5,6 +5,9 @@
  * Convenience function for evaluating some async code in the ShadowRealm and
  * waiting for the result.
  *
+ * In case of error, this function intentionally exposes the stack trace (if it
+ * is available) to the hosting realm, for debugging purposes.
+ *
  * @param {ShadowRealm} realm - the ShadowRealm to evaluate the code in
  * @param {string} asyncBody - the code to evaluate; will be put in the body of
  *   an async function, and must return a value explicitly if a value is to be
@@ -15,7 +18,7 @@ globalThis.shadowRealmEvalAsync = function (realm, asyncBody) {
     (resolve, reject) => {
       (async () => {
         ${asyncBody}
-      })().then(resolve, (e) => reject(e.toString()));
+      })().then(resolve, (e) => reject(e.toString() + "\\n" + (e.stack || "")));
     }
   `));
 };

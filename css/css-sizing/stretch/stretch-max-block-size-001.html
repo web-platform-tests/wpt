@@ -56,6 +56,16 @@
 <script>
   function runTests() {
     checkLayout('[data-expected-height]');
+
+    // Add box-sizing:border-box (which shouldn't impact the actual resolved
+    // box sizes that 'stretch' produces, aside from one subtest that we skip
+    // for this pass), and retest:
+    for (let elem of document.querySelectorAll(".test")) {
+      if (!elem.hasAttribute("skip-second-pass")) {
+        elem.style.boxSizing = "border-box";
+      }
+    }
+    checkLayout('[data-expected-height]:not([skip-second-pass])');
   }
 </script>
 <body onload="runTests()">
@@ -204,10 +214,15 @@
        during the row's intrinsic-sizing pass. So the grid row ends up
        being sized to exactly fit the *unclamped* 'block-size'; and that
        row then establishes the containing block that we resolve the
-       "max-block-size:stretch" keyword against.  This ultimately means that
+       "max-block-size:stretch" keyword against. This ultimately means that
        the max-block-size happens to resolve to our unclamped block-size,
-       and hence it trivially has no clamping impact.-->
+       and hence it trivially has no clamping impact. (This also means that
+       'box-sizing' *does affect the expected size* in this subtest, unlike the
+       rest of this test's subtests! So, we use a dummy attribute to opt this
+       subtest out of this test's second pass, to avoid incorrectly asserting
+       that our data-expected-width is still the target size when 'box-sizing'
+       is tweaked.)  -->
   <div class="cb" style="display: inline-grid">
-    <div class="test" data-expected-height="65"></div>
+    <div class="test" data-expected-height="65" skip-second-pass></div>
   </div>
 </body>

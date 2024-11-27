@@ -13,7 +13,7 @@
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Running Tests on CI" href="from-ci.html" />
+    <link rel="next" title="WPE WebKit MiniBrowser" href="wpewebkit_minibrowser.html" />
     <link rel="prev" title="Safari" href="safari.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -34,28 +34,77 @@
             
   <section id="webkitgtk-minibrowser">
 <h1>WebKitGTK MiniBrowser<a class="headerlink" href="#webkitgtk-minibrowser" title="Link to this heading">¶</a></h1>
-<p>To be able to run tests with the WebKitGTK MiniBrowser you need the
-following packages installed:</p>
+<p>To be able to run tests with the <a class="reference external" href="https://webkitgtk.org/">WebKitGTK</a>
+MiniBrowser you need the following packages installed:</p>
 <ul class="simple">
-<li><p>Fedora: <code class="docutils literal notranslate"><span class="pre">webkit2gtk3-devel</span></code></p></li>
-<li><p>Debian or Ubuntu: <code class="docutils literal notranslate"><span class="pre">webkit2gtk-driver</span></code></p></li>
+<li><p>Fedora: <code class="docutils literal notranslate"><span class="pre">webkitgtk6.0</span></code></p></li>
+<li><p>Debian or Ubuntu: <code class="docutils literal notranslate"><span class="pre">webkitgtk-driver</span></code> or <code class="docutils literal notranslate"><span class="pre">webkit2gtk-driver</span></code></p></li>
+<li><p>Arch: <code class="docutils literal notranslate"><span class="pre">webkitgtk-6.0</span></code></p></li>
 </ul>
 <p>The WebKitGTK MiniBrowser is not installed on the default binary path.
 The <code class="docutils literal notranslate"><span class="pre">wpt</span></code> script will try to automatically locate it, but if you need
 to run it manually you can find it on any of this paths:</p>
 <ul class="simple">
-<li><p>Fedora: <code class="docutils literal notranslate"><span class="pre">/usr/libexec/webkit2gtk-${VERSION}/MiniBrowser</span></code></p></li>
-<li><p>Debian or Ubuntu: <code class="docutils literal notranslate"><span class="pre">/usr/lib/x86_64-linux-gnu/webkit2gtk-${VERSION}/MiniBrowser</span></code></p></li>
-<li><p>Note:</p>
+<li><p>Fedora: <code class="docutils literal notranslate"><span class="pre">/usr/libexec/webkitgtk-${APIVERSION}/MiniBrowser</span></code></p></li>
+<li><p>Arch: <code class="docutils literal notranslate"><span class="pre">/usr/lib/webkitgtk-${APIVERSION}/MiniBrowser</span></code></p></li>
+<li><p>Debian or Ubuntu: <code class="docutils literal notranslate"><span class="pre">/usr/lib/${TRIPLET}/webkitgtk-${APIVERSION}/MiniBrowser</span></code></p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">VERSION</span></code> is <code class="docutils literal notranslate"><span class="pre">4.0</span></code> or <code class="docutils literal notranslate"><span class="pre">4.1</span></code>.</p></li>
-<li><p>If not Fedora and the machine architecture is not <code class="docutils literal notranslate"><span class="pre">x86_64</span></code>, then it will
-be located inside:
-<code class="docutils literal notranslate"><span class="pre">/usr/lib/${TRIPLET}/webkit2gtk-${VERSION}/MiniBrowser</span></code>
-where <code class="docutils literal notranslate"><span class="pre">TRIPLET=$(gcc</span> <span class="pre">-dumpmachine)</span></code></p></li>
+<li><p>Note: <code class="docutils literal notranslate"><span class="pre">${TRIPLET}</span></code> is the output of the command <code class="docutils literal notranslate"><span class="pre">gcc</span> <span class="pre">-dumpmachine</span></code></p></li>
 </ul>
 </li>
 </ul>
+</section>
+<section id="nightly-universal-bundle">
+<h1>Nightly universal bundle<a class="headerlink" href="#nightly-universal-bundle" title="Link to this heading">¶</a></h1>
+<p>Alternatively you can pass to <code class="docutils literal notranslate"><span class="pre">wpt</span></code> the flags <code class="docutils literal notranslate"><span class="pre">--install-browser</span> <span class="pre">--channel=nightly</span></code>
+and then <code class="docutils literal notranslate"><span class="pre">wpt</span></code> will automatically download the last bundle and unpack it on the
+default <code class="docutils literal notranslate"><span class="pre">wpt</span></code> working directory (usually subdir <code class="docutils literal notranslate"><span class="pre">_venv3/browsers</span></code> in your <code class="docutils literal notranslate"><span class="pre">wpt</span></code> checkout)
+Then it will use the unpacked <code class="docutils literal notranslate"><span class="pre">MiniBrowser</span></code> and <code class="docutils literal notranslate"><span class="pre">WebKitWebDriver</span></code> binaries to run the tests.</p>
+<p>This universal bundles should work on any Linux distribution as they include inside
+the tarball all the system libraries and resources needed to run WebKitGTK, from libc
+up to the Mesa graphics drivers without requiring the usage of containers.</p>
+<p>If you are not using open source graphics drivers (Mesa) and you experience issues
+with this bundle then a possible workaround is to try to run the tests headless
+inside a virtualized display like <code class="docutils literal notranslate"><span class="pre">Xvfb</span></code> (see command <code class="docutils literal notranslate"><span class="pre">xvfb-run</span> <span class="pre">-a</span></code> on Debian/Ubuntu).
+You can do this also from inside a virtual machine or docker container.</p>
+</section>
+<section id="headless-mode">
+<h1>Headless mode<a class="headerlink" href="#headless-mode" title="Link to this heading">¶</a></h1>
+<p>WebKitGTK does not have a native headless mode, but you can workaround that
+by running the tests inside a virtualized display. For example you can use
+<code class="docutils literal notranslate"><span class="pre">weston</span></code> with the headless backend for a virtualized <code class="docutils literal notranslate"><span class="pre">Wayland</span></code> display,
+or you can use <code class="docutils literal notranslate"><span class="pre">Xvfb</span></code> for a virtualized <code class="docutils literal notranslate"><span class="pre">X11</span></code> display.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xvfb</span><span class="o">-</span><span class="n">run</span> <span class="o">-</span><span class="n">a</span> <span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="p">[</span><span class="n">more</span><span class="o">-</span><span class="n">options</span><span class="p">]</span> <span class="n">webkitgtk_minibrowser</span> <span class="p">[</span><span class="n">tests</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">run</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="using-a-custom-webkitgtk-build">
+<h1>Using a custom WebKitGTK build<a class="headerlink" href="#using-a-custom-webkitgtk-build" title="Link to this heading">¶</a></h1>
+<p>If you want to test with a custom WebKitGTK build the easiest way is that you
+install this build in a temporary directory and then tell wpt to run it from there.</p>
+<p>Steps:</p>
+<ol class="simple">
+<li><p>Build WebKitGTK passing the arguments <code class="docutils literal notranslate"><span class="pre">-DENABLE_MINIBROWSER=ON</span> <span class="pre">-DCMAKE_INSTALL_PREFIX=/home/user/testdir_install</span></code></p></li>
+<li><p>Install it: <code class="docutils literal notranslate"><span class="pre">ninja</span> <span class="pre">install</span></code> (or <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code>)</p></li>
+<li><p>Locate the <code class="docutils literal notranslate"><span class="pre">MiniBrowser</span></code> and <code class="docutils literal notranslate"><span class="pre">WebKitWebDriver</span></code> binaries under <code class="docutils literal notranslate"><span class="pre">/home/user/testdir_install</span></code></p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">wpt</span></code> passing this two paths like this:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">webdriver</span><span class="o">-</span><span class="n">binary</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">testdir_install</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">WebKitWebDriver</span> \
+              <span class="o">--</span><span class="n">binary</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">testdir_install</span><span class="o">/</span><span class="n">libexec</span><span class="o">/</span><span class="n">MiniBrowser</span> \
+              <span class="p">[</span><span class="n">more</span><span class="o">-</span><span class="n">options</span><span class="p">]</span> <span class="n">webkitgtk_minibrowser</span> <span class="p">[</span><span class="n">tests</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">run</span><span class="p">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Note: It is important that you build WebKitGTK against the libraries of your system.
+Do not build WebKitGTK inside Flatpak or other container unless you run <code class="docutils literal notranslate"><span class="pre">wpt</span></code> also
+from inside this container.</p></li>
+</ul>
+</section>
+<section id="running-tests-locally">
+<h1>Running tests locally<a class="headerlink" href="#running-tests-locally" title="Link to this heading">¶</a></h1>
+<p>Is a good idea that you increase the verbosity of <code class="docutils literal notranslate"><span class="pre">wpt</span></code> by passing to it the flag <code class="docutils literal notranslate"><span class="pre">--log-mach=-</span></code>
+Also, please check the documentation about <a class="reference internal" href="from-local-system.html"><span class="doc">Running Tests from the Local System</span></a>.</p>
 </section>
 
 
@@ -99,7 +148,7 @@ where <code class="docutils literal notranslate"><span class="pre">TRIPLET=$(gcc
   <li><a href="index.html">Running Tests</a><ul>
   <li><a href="from-local-system.html">Running Tests from the Local System</a><ul>
       <li>Previous: <a href="safari.html" title="previous chapter">Safari</a></li>
-      <li>Next: <a href="from-ci.html" title="next chapter">Running Tests on CI</a></li>
+      <li>Next: <a href="wpewebkit_minibrowser.html" title="next chapter">WPE WebKit MiniBrowser</a></li>
   </ul></li>
   </ul></li>
   </ul></li>

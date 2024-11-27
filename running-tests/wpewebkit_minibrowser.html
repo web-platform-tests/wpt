@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>WPE WebKit MiniBrowser &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Running Tests on CI" href="from-ci.html" />
+    <link rel="prev" title="WebKitGTK MiniBrowser" href="webkitgtk_minibrowser.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="wpe-webkit-minibrowser">
+<h1>WPE WebKit MiniBrowser<a class="headerlink" href="#wpe-webkit-minibrowser" title="Link to this heading">¶</a></h1>
+<p>To be able to run tests with the <a class="reference external" href="https://wpewebkit.org">WPE WebKit</a>
+MiniBrowser you need the following packages installed:</p>
+<ul class="simple">
+<li><p>Fedora: N/A (build your own or use the nighly bundle)</p></li>
+<li><p>Debian or Ubuntu: <code class="docutils literal notranslate"><span class="pre">wpewebkit-driver</span></code> and <code class="docutils literal notranslate"><span class="pre">libwpewebkit</span></code></p></li>
+<li><p>Arch:  <code class="docutils literal notranslate"><span class="pre">wpewebkit</span></code></p></li>
+</ul>
+<p>The WPE WebKit MiniBrowser is not installed on the default binary path.
+The <code class="docutils literal notranslate"><span class="pre">wpt</span></code> script will try to automatically locate it, but if you need
+to run it manually you can find it on any of this paths:</p>
+<ul class="simple">
+<li><p>Arch: <code class="docutils literal notranslate"><span class="pre">/usr/lib/wpe-webkit-${APIVERSION}/MiniBrowser</span></code></p></li>
+<li><p>Debian or Ubuntu: <code class="docutils literal notranslate"><span class="pre">/usr/lib/${TRIPLET}/wpe-webkit-${APIVERSION}/MiniBrowser</span></code></p>
+<ul>
+<li><p>Note: <code class="docutils literal notranslate"><span class="pre">${TRIPLET}</span></code> is the output of the command <code class="docutils literal notranslate"><span class="pre">gcc</span> <span class="pre">-dumpmachine</span></code></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="nightly-universal-bundle">
+<h1>Nightly universal bundle<a class="headerlink" href="#nightly-universal-bundle" title="Link to this heading">¶</a></h1>
+<p>Alternatively you can pass to <code class="docutils literal notranslate"><span class="pre">wpt</span></code> the flags <code class="docutils literal notranslate"><span class="pre">--install-browser</span> <span class="pre">--channel=nightly</span></code>
+and then <code class="docutils literal notranslate"><span class="pre">wpt</span></code> will automatically download the last bundle and unpack it on the
+default <code class="docutils literal notranslate"><span class="pre">wpt</span></code> working directory (usually subdir <code class="docutils literal notranslate"><span class="pre">_venv3/browsers</span></code> in your <code class="docutils literal notranslate"><span class="pre">wpt</span></code> checkout)
+Then it will use the unpacked <code class="docutils literal notranslate"><span class="pre">MiniBrowser</span></code> and <code class="docutils literal notranslate"><span class="pre">WPEWebDriver</span></code> binaries to run the tests.</p>
+<p>This universal bundles should work on any Linux distribution as they include inside
+the tarball all the system libraries and resources needed to run WebKitGTK, from libc
+up to the Mesa graphics drivers without requiring the usage of containers.</p>
+<p>If you are not using open source graphics drivers (Mesa) and you experience issues
+with this bundle then a possible workaround is to try to run the tests in headless
+mode, for that pass the flag <code class="docutils literal notranslate"><span class="pre">--headless</span></code> to <code class="docutils literal notranslate"><span class="pre">wpt</span></code></p>
+</section>
+<section id="headless-mode">
+<h1>Headless mode<a class="headerlink" href="#headless-mode" title="Link to this heading">¶</a></h1>
+<p>The WPE MiniBrowser needs a Wayland display to run, but if you don’t have one
+or you want to enable headless mode you can pass the flag <code class="docutils literal notranslate"><span class="pre">--headless</span></code> to <code class="docutils literal notranslate"><span class="pre">wpt</span></code>.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="p">[</span><span class="n">more</span><span class="o">-</span><span class="n">options</span><span class="p">]</span> <span class="o">--</span><span class="n">headless</span> <span class="n">wpewebkit_minibrowser</span> <span class="p">[</span><span class="n">tests</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">run</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="using-a-custom-wpe-webkit-build">
+<h1>Using a custom WPE WebKit build<a class="headerlink" href="#using-a-custom-wpe-webkit-build" title="Link to this heading">¶</a></h1>
+<p>If you want to test with a custom WPE WebKit build the easiest way is that you
+install this build in a temporary directory and then tell wpt to run it from there.</p>
+<p>Steps:</p>
+<ol class="simple">
+<li><p>Build WPE WebKit passing the arguments `-DENABLE_MINIBROWSER=ON -DCMAKE_INSTALL_PREFIX=/home/user/testdir_install’</p></li>
+<li><p>Install it: <code class="docutils literal notranslate"><span class="pre">ninja</span> <span class="pre">install</span></code> (or <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code>)</p></li>
+<li><p>Locate the <code class="docutils literal notranslate"><span class="pre">MiniBrowser</span></code> and <code class="docutils literal notranslate"><span class="pre">WPEWebDriver</span></code> binaries under /home/user/testdir_install`</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">wpt</span></code> passing this two paths like this:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">webdriver</span><span class="o">-</span><span class="n">binary</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">testdir_install</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">WPEWebDriver</span> \
+              <span class="o">--</span><span class="n">binary</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">testdir_install</span><span class="o">/</span><span class="n">libexec</span><span class="o">/</span><span class="n">MiniBrowser</span> \
+              <span class="p">[</span><span class="n">more</span><span class="o">-</span><span class="n">options</span><span class="p">]</span> <span class="n">webkitgtk_minibrowser</span> <span class="p">[</span><span class="n">tests</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">run</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Note: It is important that you build WPE WebKit against the libraries of your system.
+Do not build WPE WebKit inside Flatpak or other container unless you run <code class="docutils literal notranslate"><span class="pre">wpt</span></code> also
+from inside this container.</p>
+</section>
+<section id="running-tests-locally">
+<h1>Running tests locally<a class="headerlink" href="#running-tests-locally" title="Link to this heading">¶</a></h1>
+<p>Is a good idea that you increase the verbosity of <code class="docutils literal notranslate"><span class="pre">wpt</span></code> by passing to it the flag <code class="docutils literal notranslate"><span class="pre">--log-mach=-</span></code>
+Also, please check the documentation about <a class="reference internal" href="from-local-system.html"><span class="doc">Running Tests from the Local System</span></a>.</p>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../test-suite-design.html">Test Suite Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro-video-transcript.html">“Introduction to WPT” video transcript</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Running Tests</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="from-web.html">Running Tests from the Web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="from-local-system.html">Running Tests from the Local System</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="from-local-system.html#install-wpt">Install WPT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="from-ci.html">Running Tests on CI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom-runner.html">Writing Your Own Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools/certs/README.html">WPT Test Certificates</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../writing-tests/index.html">Writing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Running Tests</a><ul>
+  <li><a href="from-local-system.html">Running Tests from the Local System</a><ul>
+      <li>Previous: <a href="webkitgtk_minibrowser.html" title="previous chapter">WebKitGTK MiniBrowser</a></li>
+      <li>Next: <a href="from-ci.html" title="next chapter">Running Tests on CI</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2019, wpt contributors.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="../_sources/running-tests/wpewebkit_minibrowser.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

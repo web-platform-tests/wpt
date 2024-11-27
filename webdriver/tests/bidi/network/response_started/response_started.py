@@ -617,7 +617,7 @@ async def test_destination_initiator(
             },
         )
 
-    assert_initiator_destination(PAGE_INITIATOR["HTML"], "browser", "document")
+    assert_initiator_destination(PAGE_INITIATOR["HTML"], None, "")
     assert_initiator_destination(PAGE_INITIATOR["SCRIPT"], "script", "script")
     assert_initiator_destination(PAGE_INITIATOR["STYLESHEET"], "link", "style")
     assert_initiator_destination(PAGE_INITIATOR["IMAGE"], "img", "image")

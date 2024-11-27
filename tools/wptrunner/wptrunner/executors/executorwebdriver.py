@@ -37,8 +37,10 @@ from .protocol import (BaseProtocolPart,
                        RPHRegistrationsProtocolPart,
                        FedCMProtocolPart,
                        VirtualSensorProtocolPart,
+                       BidiBluetoothProtocolPart,
                        BidiBrowsingContextProtocolPart,
                        BidiEventsProtocolPart,
+                       BidiPermissionsProtocolPart,
                        BidiScriptProtocolPart,
                        DevicePostureProtocolPart,
                        StorageProtocolPart,
@@ -112,6 +114,21 @@ addEventListener("__test_restart", e => {e.preventDefault(); callback(true)})"""
                 self.logger.error(message)
                 break
         return False
+
+
+class WebDriverBidiBluetoothProtocolPart(BidiBluetoothProtocolPart):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.webdriver = None
+
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    async def simulate_adapter(self,
+          context: str,
+          state: str) -> None:
+        await self.webdriver.bidi_session.bluetooth.simulate_adapter(
+            context=context, state=state)
 
 
 class WebDriverBidiBrowsingContextProtocolPart(BidiBrowsingContextProtocolPart):
@@ -216,6 +233,19 @@ class WebDriverBidiScriptProtocolPart(BidiScriptProtocolPart):
             arguments=arguments,
             target=target,
             await_promise=True)
+
+
+class WebDriverBidiPermissionsProtocolPart(BidiPermissionsProtocolPart):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.webdriver = None
+
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    async def set_permission(self, descriptor, state, origin):
+        return await self.webdriver.bidi_session.permissions.set_permission(
+            descriptor=descriptor, state=state, origin=origin)
 
 
 class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
@@ -678,8 +708,10 @@ class WebDriverProtocol(Protocol):
 
 class WebDriverBidiProtocol(WebDriverProtocol):
     enable_bidi = True
-    implements = [WebDriverBidiBrowsingContextProtocolPart,
+    implements = [WebDriverBidiBluetoothProtocolPart,
+                  WebDriverBidiBrowsingContextProtocolPart,
                   WebDriverBidiEventsProtocolPart,
+                  WebDriverBidiPermissionsProtocolPart,
                   WebDriverBidiScriptProtocolPart,
                   *(part for part in WebDriverProtocol.implements)
                   ]
@@ -731,7 +763,8 @@ class WebDriverRun(TimedRunner):
                 # TODO(https://github.com/w3c/webdriver/issues/1308): The http
                 # status and status code below are chromium specific. Replace
                 # that with a standarded code once the issue is resolved.
-                if e.http_status == 500 and e.status_code == "disconnected":
+                if e.http_status == 500 and (e.status_code == "disconnected" or
+                        e.status_code == "tab crashed"):
                     status = "CRASH"
             if status is None:
                 status = "INTERNAL-ERROR" if self.protocol.is_alive() else "CRASH"

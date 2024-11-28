@@ -63,10 +63,10 @@ Then it will use the unpacked <code class="docutils literal notranslate"><span c
 <p>This universal bundles should work on any Linux distribution as they include inside
 the tarball all the system libraries and resources needed to run WebKitGTK, from libc
 up to the Mesa graphics drivers without requiring the usage of containers.</p>
-<p>If you are not using open source graphics drivers (Mesa) and you experience issues
-with this bundle then a possible workaround is to try to run the tests headless
+<p>If you are using proprietary graphics drivers (NVIDIA, AMDGPU PRO, etc) and you experience
+issues with this bundle then a possible workaround is to try to run the tests headless
 inside a virtualized display like <code class="docutils literal notranslate"><span class="pre">Xvfb</span></code> (see command <code class="docutils literal notranslate"><span class="pre">xvfb-run</span> <span class="pre">-a</span></code> on Debian/Ubuntu).
-You can do this also from inside a virtual machine or docker container.</p>
+You can do this also from inside a virtual machine or Docker container.</p>
 </section>
 <section id="headless-mode">
 <h1>Headless mode<a class="headerlink" href="#headless-mode" title="Link to this heading">¶</a></h1>
@@ -82,24 +82,28 @@ or you can use <code class="docutils literal notranslate"><span class="pre">Xvfb
 <section id="using-a-custom-webkitgtk-build">
 <h1>Using a custom WebKitGTK build<a class="headerlink" href="#using-a-custom-webkitgtk-build" title="Link to this heading">¶</a></h1>
 <p>If you want to test with a custom WebKitGTK build the easiest way is that you
-install this build in a temporary directory and then tell wpt to run it from there.</p>
+install this build in a temporary directory (<code class="docutils literal notranslate"><span class="pre">/tmp/wkgtktest</span></code> in this example),
+and then tell <code class="docutils literal notranslate"><span class="pre">wpt</span></code> to run it from there.</p>
 <p>Steps:</p>
-<ol class="simple">
-<li><p>Build WebKitGTK passing the arguments <code class="docutils literal notranslate"><span class="pre">-DENABLE_MINIBROWSER=ON</span> <span class="pre">-DCMAKE_INSTALL_PREFIX=/home/user/testdir_install</span></code></p></li>
-<li><p>Install it: <code class="docutils literal notranslate"><span class="pre">ninja</span> <span class="pre">install</span></code> (or <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code>)</p></li>
-<li><p>Locate the <code class="docutils literal notranslate"><span class="pre">MiniBrowser</span></code> and <code class="docutils literal notranslate"><span class="pre">WebKitWebDriver</span></code> binaries under <code class="docutils literal notranslate"><span class="pre">/home/user/testdir_install</span></code></p></li>
-<li><p>Run <code class="docutils literal notranslate"><span class="pre">wpt</span></code> passing this two paths like this:</p></li>
-</ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">webdriver</span><span class="o">-</span><span class="n">binary</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">testdir_install</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">WebKitWebDriver</span> \
-              <span class="o">--</span><span class="n">binary</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">testdir_install</span><span class="o">/</span><span class="n">libexec</span><span class="o">/</span><span class="n">MiniBrowser</span> \
-              <span class="p">[</span><span class="n">more</span><span class="o">-</span><span class="n">options</span><span class="p">]</span> <span class="n">webkitgtk_minibrowser</span> <span class="p">[</span><span class="n">tests</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">run</span><span class="p">]</span>
+<ol>
+<li><p>Build WebKitGTK passing these arguments to <code class="docutils literal notranslate"><span class="pre">CMake</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">DENABLE_MINIBROWSER</span><span class="o">=</span><span class="n">ON</span> <span class="o">-</span><span class="n">DCMAKE_INSTALL_PREFIX</span><span class="o">=/</span><span class="n">tmp</span><span class="o">/</span><span class="n">wkgtktest</span>
 </pre></div>
 </div>
-<ul class="simple">
-<li><p>Note: It is important that you build WebKitGTK against the libraries of your system.
+</li>
+<li><p>Install it: <code class="docutils literal notranslate"><span class="pre">ninja</span> <span class="pre">install</span></code> (or <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code>)</p></li>
+<li><p>Locate the <code class="docutils literal notranslate"><span class="pre">MiniBrowser</span></code> and <code class="docutils literal notranslate"><span class="pre">WebKitWebDriver</span></code> binaries under the install directory.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">wpt</span></code> passing these two paths like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">webdriver</span><span class="o">-</span><span class="n">binary</span><span class="o">=/</span><span class="n">tmp</span><span class="o">/</span><span class="n">wkgtktest</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">WebKitWebDriver</span> \
+          <span class="o">--</span><span class="n">binary</span><span class="o">=/</span><span class="n">tmp</span><span class="o">/</span><span class="n">wkgtktest</span><span class="o">/</span><span class="n">libexec</span><span class="o">/</span><span class="n">MiniBrowser</span> \
+          <span class="p">[</span><span class="n">more</span><span class="o">-</span><span class="n">options</span><span class="p">]</span> <span class="n">webkitgtk_minibrowser</span> <span class="p">[</span><span class="n">tests</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">run</span><span class="p">]</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Note: It is important that you build WebKitGTK against the libraries of your system.
 Do not build WebKitGTK inside Flatpak or other container unless you run <code class="docutils literal notranslate"><span class="pre">wpt</span></code> also
-from inside this container.</p></li>
-</ul>
+from inside this container.</p>
 </section>
 <section id="running-tests-locally">
 <h1>Running tests locally<a class="headerlink" href="#running-tests-locally" title="Link to this heading">¶</a></h1>

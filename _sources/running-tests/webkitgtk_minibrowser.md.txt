@@ -27,10 +27,10 @@ This universal bundles should work on any Linux distribution as they include ins
 the tarball all the system libraries and resources needed to run WebKitGTK, from libc
 up to the Mesa graphics drivers without requiring the usage of containers.
 
-If you are not using open source graphics drivers (Mesa) and you experience issues
-with this bundle then a possible workaround is to try to run the tests headless
+If you are using proprietary graphics drivers (NVIDIA, AMDGPU PRO, etc) and you experience
+issues with this bundle then a possible workaround is to try to run the tests headless
 inside a virtualized display like `Xvfb` (see command `xvfb-run -a` on Debian/Ubuntu).
-You can do this also from inside a virtual machine or docker container.
+You can do this also from inside a virtual machine or Docker container.
 
 # Headless mode
 
@@ -40,28 +40,31 @@ by running the tests inside a virtualized display. For example you can use
 or you can use `Xvfb` for a virtualized `X11` display.
 
 Example:
-   ```
-   xvfb-run -a ./wpt run [more-options] webkitgtk_minibrowser [tests-to-run]
-   ```
+
+    xvfb-run -a ./wpt run [more-options] webkitgtk_minibrowser [tests-to-run]
+
 
 # Using a custom WebKitGTK build
 
 If you want to test with a custom WebKitGTK build the easiest way is that you
-install this build in a temporary directory and then tell wpt to run it from there.
+install this build in a temporary directory (`/tmp/wkgtktest` in this example),
+and then tell `wpt` to run it from there.
 
 Steps:
 
-  1. Build WebKitGTK passing the arguments `-DENABLE_MINIBROWSER=ON -DCMAKE_INSTALL_PREFIX=/home/user/testdir_install`
-  2. Install it: `ninja install` (or `make install`)
-  3. Locate the `MiniBrowser` and `WebKitWebDriver` binaries under `/home/user/testdir_install`
-  4. Run `wpt` passing this two paths like this:
-  ```
-      ./wpt run --webdriver-binary=/home/user/testdir_install/bin/WebKitWebDriver \
-                --binary=/home/user/testdir_install/libexec/MiniBrowser \
-                [more-options] webkitgtk_minibrowser [tests-to-run]
-  ```
+1. Build WebKitGTK passing these arguments to `CMake`:
 
- * Note: It is important that you build WebKitGTK against the libraries of your system.
+       -DENABLE_MINIBROWSER=ON -DCMAKE_INSTALL_PREFIX=/tmp/wkgtktest
+
+2. Install it: `ninja install` (or `make install`)
+3. Locate the `MiniBrowser` and `WebKitWebDriver` binaries under the install directory.
+4. Run `wpt` passing these two paths like this:
+
+       ./wpt run --webdriver-binary=/tmp/wkgtktest/bin/WebKitWebDriver \
+                 --binary=/tmp/wkgtktest/libexec/MiniBrowser \
+                 [more-options] webkitgtk_minibrowser [tests-to-run]
+
+Note: It is important that you build WebKitGTK against the libraries of your system.
 Do not build WebKitGTK inside Flatpak or other container unless you run `wpt` also
 from inside this container.
 

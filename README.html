@@ -48,14 +48,16 @@ required. Each website has instructions for downloading and installing on a
 variety of systems.</p></li>
 <li><p>Download the source code. Clone this repository using the <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span></code>
 command.</p></li>
-<li><p>Install the Python dependencies. Run the following command in a terminal
-from the “docs” directory of the WPT repository:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+<li><p>Install the Python dependencies. Run the following command in a terminal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">docs</span><span class="o">/</span><span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
 </div>
 </li>
-<li><p>Build the documentation. Windows users should execute the <code class="docutils literal notranslate"><span class="pre">make.bat</span></code> batch
-file. GNU/Linux and macOS users should use the <code class="docutils literal notranslate"><span class="pre">make</span></code> command.</p></li>
+<li><p>Build the documentation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">build</span><span class="o">-</span><span class="n">docs</span>
+</pre></div>
+</div>
+</li>
 </ol>
 </section>
 </section>

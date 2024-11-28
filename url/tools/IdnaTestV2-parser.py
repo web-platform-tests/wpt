@@ -96,7 +96,7 @@ def parse(lines, exclude_ipv4_like, exclude_std3, exclude_bidi):
                 continue
 
         if exclude_std3:
-            if re.search(r"\<|\>|\$|\?|,", to_unicode):
+            if re.search(r"\<|\>|\?", to_unicode):
                 continue
 
         # Column 4 (toAsciiN; if empty, use Column 2 (toUnicode))

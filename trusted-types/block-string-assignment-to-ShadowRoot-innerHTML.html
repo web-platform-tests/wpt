@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="author" title="Luke Warlow" href="mailto:lwarlow@igalia.com">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="support/helper.sub.js"></script>
@@ -25,9 +24,9 @@
     let d = document.createElement('div');
     let s = d.attachShadow({mode: 'open'});
     document.querySelector('#container').appendChild(d);
-    s.setHTMLUnsafe(html);
+    s.innerHTML = html;
     assert_equals(s.innerHTML, RESULTS.HTML);
-  }, "shadowRoot.setHTMLUnsafe(html) assigned via policy (successful HTML transformation).");
+  }, "shadowRoot.innerHTML = html assigned via policy (successful HTML transformation).");
 
   // String assignments throw.
   test(t => {
@@ -36,10 +35,10 @@
     let s = d.attachShadow({mode: 'open'});
     container.appendChild(d);
     assert_throws_js(TypeError, _ => {
-      s.setHTMLUnsafe("Fail");
+      s.innerHTML = "Fail";
     });
     assert_equals(s.innerHTML, "");
-  }, "`shadowRoot.setHTMLUnsafe(string)` throws.");
+  }, "`shadowRoot.innerHTML = string` throws.");
 
   // Null assignment throws.
   test(t => {
@@ -48,10 +47,10 @@
     let s = d.attachShadow({mode: 'open'});
     container.appendChild(d);
     assert_throws_js(TypeError, _ => {
-      s.setHTMLUnsafe(null);
+      s.innerHTML = null;
     });
     assert_equals(s.innerHTML, "");
-  }, "`shadowRoot.setHTMLUnsafe(null)` throws.");
+  }, "`shadowRoot.innerHTML = null` throws.");
 
   // After default policy creation string assignment implicitly calls createHTML.
   test(t => {
@@ -61,19 +60,20 @@
     let d = document.createElement('div');
     let s = d.attachShadow({mode: 'open'});
     document.querySelector('#container').appendChild(d);
-    s.setHTMLUnsafe(INPUTS.HTML);
+    s.innerHTML = INPUTS.HTML;
     assert_equals(s.innerHTML, RESULTS.HTML);
-  }, "`shadowRoot.setHTMLUnsafe(string)` assigned via default policy (successful HTML transformation).");
+  }, "`shadowRoot.innerHTML = string` assigned via default policy (successful HTML transformation).");
 
   // After default policy creation null assignment implicitly calls createHTML.
+  // null is treated as an empty string.
   test(t => {
     t.add_cleanup(cleanup);
     let d = document.createElement('div');
     let s = d.attachShadow({mode: 'open'});
     container.appendChild(d);
-    s.setHTMLUnsafe(null);
-    assert_equals(s.innerHTML, "null");
-  }, "`shadowRoot.setHTMLUnsafe(string)` assigned via default policy does not throw");
+    s.innerHTML = null;
+    assert_equals(s.innerHTML, "");
+  }, "`shadowRoot.innerHTML = string` assigned via default policy does not throw");
 </script>
 </body>
 </html>

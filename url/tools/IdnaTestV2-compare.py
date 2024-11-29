@@ -8,16 +8,16 @@ import json
 def compute_differences():
     data_old = None
     data_new = None
-    with open("IdnaTestV2-old.json") as file_handle:
+    with open("IdnaTestV2-old.json", "r") as file_handle:
         data_old = json.load(file_handle)
-    
-    with open("IdnaTestV2-new.json") as file_handle:
+
+    with open("IdnaTestV2-new.json", "r") as file_handle:
         data_new = json.load(file_handle)
 
     added_tests = []
     changed_tests = []
     removed_tests = []
-    
+
     for old_test in data_old:
         if isinstance(old_test, str):
             continue
@@ -60,14 +60,14 @@ def main():
     args = parser.parse_args()
 
     differences = compute_differences()
-    
+
     output = None
 
     if args.differences:
         output = differences
     elif args.removed:
         output = differences["removed"]
-    
+
     print(json.dumps(output, sort_keys=True, allow_nan=False, indent=2, separators=(',', ': ')))
 
 main()

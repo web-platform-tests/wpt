@@ -13,7 +13,9 @@ templatedRSEmpty('ReadableStream (empty)', () => {
 });
 
 templatedRSEmptyReader('ReadableStream (empty) reader', () => {
-  return streamAndDefaultReader(new ReadableStream());
+  const stream = new ReadableStream();
+  const reader = stream.getReader();
+  return { stream, reader, read: () => reader.read() };
 });
 
 templatedRSClosed('ReadableStream (closed via call in start)', () => {

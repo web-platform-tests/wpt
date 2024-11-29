@@ -138,6 +138,10 @@ templatedRSTwoChunksClosedReader('ReadableStream (two chunks enqueued, then clos
   return result;
 }, chunks);
 
+templatedRSThrowAfterCloseOrError('ReadableStream', (extras) => {
+  return new ReadableStream({ ...extras });
+});
+
 function streamAndDefaultReader(stream) {
   return { stream, reader: stream.getReader() };
 }

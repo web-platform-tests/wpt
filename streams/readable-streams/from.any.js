@@ -268,7 +268,26 @@ promise_test(async t => {
 
   const iterable = {
     next() {
-      return 42;
+      return 42; // not a promise or an iterator result
+    },
+    [Symbol.asyncIterator]: () => iterable
+  };
+
+  const rs = ReadableStream.from(iterable);
+  const reader = rs.getReader();
+
+  await Promise.all([
+    promise_rejects_js(t, TypeError, reader.read()),
+    promise_rejects_js(t, TypeError, reader.closed)
+  ]);
+
+}, 'ReadableStream.from: stream errors when next() returns a non-object');
+
+promise_test(async t => {
+
+  const iterable = {
+    next() {
+      return Promise.resolve(42); // not an iterator result
     },
     [Symbol.asyncIterator]: () => iterable
   };

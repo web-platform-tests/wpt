@@ -199,7 +199,7 @@ async def test_partition_source_origin(
 
     await assert_partition_key(bidi_session, actual=result["partitionKey"], expected={
         "sourceOrigin": cookie1_source_origin
-    }, context=new_tab["context"])
+    })
 
     await assert_cookies_are_not_present(bidi_session, partition=cookie1_partition)
 

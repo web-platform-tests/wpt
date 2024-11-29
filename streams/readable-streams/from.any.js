@@ -150,6 +150,12 @@ const badIterables = [
   ['an object with a non-callable @@asyncIterator method', {
     [Symbol.asyncIterator]: 42
   }],
+  ['an object with an @@iterator method returning a non-object', {
+    [Symbol.iterator]: () => 42
+  }],
+  ['an object with an @@asyncIterator method returning a non-object', {
+    [Symbol.asyncIterator]: () => 42
+  }],
 ];
 
 for (const [label, iterable] of badIterables) {

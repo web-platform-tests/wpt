@@ -719,3 +719,62 @@ self.templatedRSTeeCancel = (label, factory) => {
   }, `${label}: erroring a teed stream should properly handle canceled branches`);
 
 };
+
+self.templatedRSThrowAfterCloseOrError = (label, factory) => {
+  test(() => {}, 'Running templatedRSThrowAfterCloseOrError with ' + label);
+
+  const theError = new Error('a unique string');
+
+  promise_test(async t => {
+    let controller;
+    const stream = factory({
+      start: t.step_func((c) => {
+        controller = c;
+      })
+    });
+
+    controller.close();
+
+    assert_throws_js(TypeError, () => controller.enqueue(new Uint8Array([1])));
+  }, `${label}: enqueue() throws after close()`);
+
+  promise_test(async t => {
+    let controller;
+    const stream = factory({
+      start: t.step_func((c) => {
+        controller = c;
+      })
+    });
+
+    controller.enqueue(new Uint8Array([1]));
+    controller.close();
+
+    assert_throws_js(TypeError, () => controller.enqueue(new Uint8Array([2])));
+  }, `${label}: enqueue() throws after enqueue() and close()`);
+
+  promise_test(async t => {
+    let controller;
+    const stream = factory({
+      start: t.step_func((c) => {
+        controller = c;
+      })
+    });
+
+    controller.error(theError);
+
+    assert_throws_js(TypeError, () => controller.enqueue(new Uint8Array([1])));
+  }, `${label}: enqueue() throws after error()`);
+
+  promise_test(async t => {
+    let controller;
+    const stream = factory({
+      start: t.step_func((c) => {
+        controller = c;
+      })
+    });
+
+    controller.error(theError);
+
+    assert_throws_js(TypeError, () => controller.close());
+  }, `${label}: close() throws after error()`);
+};

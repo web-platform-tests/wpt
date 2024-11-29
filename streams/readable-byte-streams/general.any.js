@@ -237,6 +237,29 @@ promise_test(t => {
 }, 'ReadableStream with byte source: Test that erroring a stream does not release a BYOB reader automatically');
 
 promise_test(async t => {
+  const rs = new ReadableStream({
+    type: 'bytes',
+    start(c) {
+      c.enqueue(new Uint8Array([1, 2, 3]));
+    }
+  });
+
+  const reader1 = rs.getReader({mode: 'byob'});
+  reader1.releaseLock();
+
+  const reader2 = rs.getReader({mode: 'byob'});
+
+  // Should be a no-op
+  reader1.releaseLock();
+
+  const result = await reader2.read(new Uint8Array([0, 0, 0]));
+  assert_typed_array_equals(result.value, new Uint8Array([1, 2, 3]),
+    'read() should still work on reader2 even after reader1 is released');
+  assert_false(result.done, 'done');
+
+}, 'ReadableStream with byte source: cannot use an already-released BYOB reader to unlock a stream again');
+
+promise_test(async t => {
   const stream = new ReadableStream({
     type: 'bytes'
   });

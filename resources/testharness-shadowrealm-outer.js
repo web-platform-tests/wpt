@@ -135,7 +135,7 @@ globalThis.setupFakeFetchOverMessagePort = function (port) {
  * the test harness that the tests are finished and there was an error in the
  * setup code.
  *
- * @param {message} string - error message
+ * @param {message} any - error
  */
 globalThis.createSetupErrorResult = function (message) {
   return {
@@ -144,7 +144,8 @@ globalThis.createSetupErrorResult = function (message) {
     asserts: [],
     status: {
       status: 1, // TestsStatus.ERROR,
-      message,
+      message: String(message),
+      stack: typeof message === "object" && message !== null && "stack" in message ? message.stack : undefined,
     },
   };
 };

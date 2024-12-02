@@ -1,5 +1,6 @@
 [
-  "This resource is focused on highlighting issues with UTS #46 ToASCII",
+  "This contains assorted IDNA tests that IdnaTestV2 might not cover.",
+  "Feel free to deduplicate with a clear commit message.",
   {
     "comment": "Label with hyphens in 3rd and 4th position",
     "input": "aa--",
@@ -198,5 +199,174 @@
   {
     "input": ">\u00AD\u0338",
     "output": "xn--hdh"
+  },
+  "Tests below are from WebKit (fast/url/idna2003.html & fast/url/idna2008.html; contributed by Chris Weber back in 2011).",
+  {
+    "input": "faß.de",
+    "output": "xn--fa-hia.de"
+  },
+  {
+    "input": "βόλος.com",
+    "output": "xn--nxasmm1c.com"
+  },
+  {
+    "input": "ශ්‍රී.com",
+    "output": "xn--10cl1a0b660p.com"
+  },
+  {
+    "input": "نامه‌ای.com",
+    "output": "xn--mgba3gch31f060k.com"
+  },
+  {
+    "input": "www.looĸout.net",
+    "output": "www.xn--looout-5bb.net"
+  },
+  {
+    "input": "ᗯᗯᗯ.lookout.net",
+    "output": "xn--1qeaa.lookout.net"
+  },
+  {
+    "input": "www.lookout.сом",
+    "output": "www.lookout.xn--l1adi"
+  },
+  {
+    "input": "www‥lookout.net",
+    "output": null
+  },
+  {
+    "input": "www.lookout‧net",
+    "output": "www.xn--lookoutnet-406e"
+  },
+  {
+    "input": "www.lookout.net⩴80",
+    "output": null
+  },
+  {
+    "input": "www .lookout.net",
+    "output": null
+  },
+  {
+    "input": " lookout.net",
+    "output": null
+  },
+  {
+    "input": "\u001flookout.net",
+    "output": null
+  },
+  {
+    "input": "look۝out.net",
+    "output": null
+  },
+  {
+    "input": "look᠎out.net",
+    "output": null
+  },
+  {
+    "input": "look⁠out.net",
+    "output": "lookout.net"
+  },
+  {
+    "input": "look﻿out.net",
+    "output": "lookout.net"
+  },
+  {
+    "input": "look🿾out.net",
+    "output": null
+  },
+  {
+    "input": "look￺out.net",
+    "output": null
+  },
+  {
+    "input": "look⿰out.net",
+    "output": null
+  },
+  {
+    "input": "looḱout.net",
+    "output": "xn--looout-kp7b.net"
+  },
+  {
+    "input": "look‮out.net",
+    "output": null
+  },
+  {
+    "input": "look⁫out.net",
+    "output": null
+  },
+  {
+    "input": "look󠀁out.net",
+    "output": null
+  },
+  {
+    "input": "look󠀠out.net",
+    "output": null
+  },
+  {
+    "input": "look־out.net",
+    "output": null
+  },
+  {
+    "input": "Bücher.de",
+    "output": "xn--bcher-kva.de"
+  },
+  {
+    "input": "♥.net",
+    "output": "xn--g6h.net"
+  },
+  {
+    "input": "͸.net",
+    "output": null
+  },
+  {
+    "input": "Ӏ.com",
+    "output": null
+  },
+  {
+    "input": "㛼.com",
+    "output": null
+  },
+  {
+    "input": "Ↄ.com",
+    "output": null
+  },
+  {
+    "input": "look͏out.net",
+    "output": "lookout.net"
+  },
+  {
+    "input": "gOoGle.com",
+    "output": "google.com"
+  },
+  {
+    "input": "ড়.com",
+    "output": "xn--15b8c.com"
+  },
+  {
+    "input": "ẞ.com",
+    "output": "xn--zca.com"
+  },
+  {
+    "input": "ẞ.foo.com",
+    "output": "xn--zca.foo.com"
+  },
+  {
+    "input": "-foo.bar.com",
+    "output": "-foo.bar.com"
+  },
+  {
+    "input": "foo-.bar.com",
+    "output": "foo-.bar.com"
+  },
+  {
+    "input": "ab--cd.com",
+    "output": "ab--cd.com"
+  },
+  {
+    "input": "xn--0.com",
+    "output": null
+  },
+  {
+    "input": "foò.bar.com",
+    "output": "xn--fo-3ja.bar.com"
   }
 ]

@@ -202,7 +202,7 @@ Short version
 #. Follow `PEP-8 <https://www.python.org/dev/peps/pep-0008/>`_ for naming.
 #. Tests are run using ``tox``::
 
-    tox -e linting,py39
+    tox -e linting,py310
 
    The test environments above are usually enough to cover most cases locally.
 
@@ -274,10 +274,10 @@ Here is a simple overview, with pytest-specific bits:
 
 #. Run all the tests
 
-   You need to have Python 3.8 or later available in your system.  Now
+   You need to have Python 3.10 or later available in your system.  Now
    running tests is as simple as issuing this command::
 
-    $ tox -e linting,py39
+    $ tox -e linting,py310
 
    This command will run tests via the "tox" tool against Python 3.9
    and also perform "lint" coding-style checks.
@@ -287,11 +287,11 @@ Here is a simple overview, with pytest-specific bits:
    You can pass different options to ``tox``. For example, to run tests on Python 3.9 and pass options to pytest
    (e.g. enter pdb on failure) to pytest you can do::
 
-    $ tox -e py39 -- --pdb
+    $ tox -e py310 -- --pdb
 
-   Or to only run tests in a particular test module on Python 3.9::
+   Or to only run tests in a particular test module on Python 3.10::
 
-    $ tox -e py39 -- testing/test_config.py
+    $ tox -e py310 -- testing/test_config.py
 
 
    When committing, ``pre-commit`` will re-format the files if necessary.

@@ -115,24 +115,24 @@ components:
     chunks-override:
       testharness: 30
 
-  tox-python3_8:
+  tox-python3_10:
     env:
-      TOXENV: py38
+      TOXENV: py310
       PY_COLORS: "0"
     install:
-      - python3.8
-      - python3.8-distutils
-      - python3.8-dev
-      - python3.8-venv
+      - python3.10
+      - python3.10-distutils
+      - python3.10-dev
+      - python3.10-venv
 
-  tox-python3_12:
+  tox-python3_13:
     env:
-      TOXENV: py312
+      TOXENV: py313
       PY_COLORS: "0"
     install:
-      - python3.12
-      - python3.12-dev
-      - python3.12-venv
+      - python3.13
+      - python3.13-dev
+      - python3.13-venv
   tests-affected:
     options:
       browser:
@@ -437,13 +437,13 @@ tasks:
           - update_built
       command: "./tools/ci/ci_built_diff.sh"
 
-  - tools/ unittests (Python 3.8):
+  - tools/ unittests (Python 3.10):
       description: >-
-        Unit tests for tools running under Python 3.8, excluding wptrunner
+        Unit tests for tools running under Python 3.10, excluding wptrunner
       use:
         - wpt-base
         - trigger-pr
-        - tox-python3_8
+        - tox-python3_10
       command: ./tools/ci/ci_tools_unittest.sh
       env:
         HYPOTHESIS_PROFILE: ci
@@ -451,13 +451,13 @@ tasks:
         run-job:
           - tools_unittest
 
-  - tools/ unittests (Python 3.12):
+  - tools/ unittests (Python 3.13):
       description: >-
-        Unit tests for tools running under Python 3.12, excluding wptrunner
+        Unit tests for tools running under Python 3.13, excluding wptrunner
       use:
         - wpt-base
         - trigger-pr
-        - tox-python3_12
+        - tox-python3_13
       command: ./tools/ci/ci_tools_unittest.sh
       env:
         HYPOTHESIS_PROFILE: ci
@@ -465,13 +465,13 @@ tasks:
         run-job:
           - tools_unittest
 
-  - tools/ integration tests (Python 3.8):
+  - tools/ integration tests (Python 3.10):
       description: >-
-        Integration tests for tools running under Python 3.8
+        Integration tests for tools running under Python 3.10
       use:
         - wpt-base
         - trigger-pr
-        - tox-python3_8
+        - tox-python3_10
       command: ./tools/ci/ci_tools_integration_test.sh
       install:
         - libnss3-tools
@@ -487,13 +487,13 @@ tasks:
         run-job:
           - wpt_integration
 
-  - tools/ integration tests (Python 3.12):
+  - tools/ integration tests (Python 3.13):
       description: >-
-        Integration tests for tools running under Python 3.12
+        Integration tests for tools running under Python 3.13
       use:
         - wpt-base
         - trigger-pr
-        - tox-python3_12
+        - tox-python3_13
       command: ./tools/ci/ci_tools_integration_test.sh
       install:
         - libnss3-tools
@@ -509,13 +509,13 @@ tasks:
         run-job:
           - wpt_integration
 
-  - resources/ tests (Python 3.8):
+  - resources/ tests (Python 3.10):
       description: >-
-        Tests for testharness.js and other files in resources/ under Python 3.8
+        Tests for testharness.js and other files in resources/ under Python 3.10
       use:
         - wpt-base
         - trigger-pr
-        - tox-python3_8
+        - tox-python3_10
       command: ./tools/ci/ci_resources_unittest.sh
       install:
         - libnss3-tools
@@ -528,13 +528,13 @@ tasks:
         run-job:
           - resources_unittest
 
-  - resources/ tests (Python 3.12):
+  - resources/ tests (Python 3.13):
       description: >-
-        Tests for testharness.js and other files in resources/ under Python 3.12
+        Tests for testharness.js and other files in resources/ under Python 3.13
       use:
         - wpt-base
         - trigger-pr
-        - tox-python3_12
+        - tox-python3_13
       command: ./tools/ci/ci_resources_unittest.sh
       install:
         - libnss3-tools

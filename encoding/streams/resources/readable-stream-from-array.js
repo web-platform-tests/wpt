@@ -10,3 +10,4 @@ function readableStreamFromArray(array) {
    }
   });
 }
+globalThis.readableStreamFromArray = readableStreamFromArray;

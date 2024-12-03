@@ -10,6 +10,7 @@ from typing import Mapping, MutableMapping
 
 from webdriver import error
 
+from .base import strip_server
 from .executorwebdriver import (
     WebDriverBaseProtocolPart,
     WebDriverCrashtestExecutor,
@@ -96,9 +97,26 @@ class ChromeDriverLeakProtocolPart(LeakProtocolPart):
 
 
 class ChromeDriverTestDriverProtocolPart(WebDriverTestDriverProtocolPart):
+    """An interface to the browser-side testdriver infrastructure that lazily settles calls."""
+
+    def setup(self):
+        super().setup()
+        self._pending_message = ""
+
+    def send_message(self, cmd_id, message_type, status, message=None):
+        message_script = self._format_send_message_script(cmd_id, message_type, status, message)
+        if message_type == "complete":
+            assert not self._pending_message, self._pending_message
+            self._pending_message = message_script
+        else:
+            self.webdriver.execute_script(message_script)
+
     def _get_next_message_classic(self, url):
         try:
-            return super()._get_next_message_classic(url)
+            message_script, self._pending_message = self._pending_message, ""
+            return self.parent.base.execute_script(message_script + self.script_resume,
+                                                   asynchronous=True,
+                                                   args=[strip_server(url)])
         except error.JavascriptErrorException as js_error:
             # TODO(crbug.com/340662810): Cycle testdriver event loop to work
             # around `testharnessreport.js` flakily not loaded.

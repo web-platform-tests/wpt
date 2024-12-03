@@ -484,14 +484,19 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
         return deserialized_message
 
     def send_message(self, cmd_id, message_type, status, message=None):
+        self.webdriver.execute_script(
+            self._format_send_message_script(cmd_id, message_type, status, message))
+
+    def _format_send_message_script(self, cmd_id, message_type, status, message=None):
         obj = {
             "cmd_id": cmd_id,
-            "type": "testdriver-%s" % str(message_type),
+            "type": f"testdriver-{message_type}",
             "status": str(status)
         }
         if message:
             obj["message"] = str(message)
-        self.webdriver.execute_script("window.postMessage(%s, '*')" % json.dumps(obj))
+        return f"window.postMessage({json.dumps(obj)}, '*');"
+
 
     def _switch_to_frame(self, index_or_elem):
         try:

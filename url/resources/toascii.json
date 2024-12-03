@@ -202,51 +202,51 @@
   },
   "Tests below are from WebKit (fast/url/idna2003.html & fast/url/idna2008.html; contributed by Chris Weber back in 2011).",
   {
-    "input": "faß.de",
+    "input": "fa\u00DF.de",
     "output": "xn--fa-hia.de"
   },
   {
-    "input": "βόλος.com",
+    "input": "\u03B2\u03CC\u03BB\u03BF\u03C2.com",
     "output": "xn--nxasmm1c.com"
   },
   {
-    "input": "ශ්‍රී.com",
+    "input": "\u0DC1\u0DCA\u200D\u0DBB\u0DD3.com",
     "output": "xn--10cl1a0b660p.com"
   },
   {
-    "input": "نامه‌ای.com",
+    "input": "\u0646\u0627\u0645\u0647\u200C\u0627\u06CC.com",
     "output": "xn--mgba3gch31f060k.com"
   },
   {
-    "input": "www.looĸout.net",
+    "input": "www.loo\u0138out.net",
     "output": "www.xn--looout-5bb.net"
   },
   {
-    "input": "ᗯᗯᗯ.lookout.net",
+    "input": "\u15EF\u15EF\u15EF.lookout.net",
     "output": "xn--1qeaa.lookout.net"
   },
   {
-    "input": "www.lookout.сом",
+    "input": "www.lookout.\u0441\u043E\u043C",
     "output": "www.lookout.xn--l1adi"
   },
   {
-    "input": "www‥lookout.net",
+    "input": "www\u2025lookout.net",
     "output": null
   },
   {
-    "input": "www.lookout‧net",
+    "input": "www.lookout\u2027net",
     "output": "www.xn--lookoutnet-406e"
   },
   {
-    "input": "www.lookout.net⩴80",
+    "input": "www.lookout.net\u2A7480",
     "output": null
   },
   {
-    "input": "www .lookout.net",
+    "input": "www\u00A0.lookout.net",
     "output": null
   },
   {
-    "input": " lookout.net",
+    "input": "\u1680lookout.net",
     "output": null
   },
   {
@@ -254,83 +254,84 @@
     "output": null
   },
   {
-    "input": "look۝out.net",
+    "input": "look\u06DDout.net",
     "output": null
   },
   {
-    "input": "look᠎out.net",
+    "input": "look\u180Eout.net",
     "output": null
   },
   {
-    "input": "look⁠out.net",
+    "input": "look\u2060out.net",
     "output": "lookout.net"
   },
   {
-    "input": "look﻿out.net",
+    "input": "look\uFEFFout.net",
     "output": "lookout.net"
   },
   {
-    "input": "look🿾out.net",
+    "input": "look\uD83F\uDFFEout.net",
     "output": null
   },
   {
-    "input": "look￺out.net",
+    "input": "look\uFFFAout.net",
     "output": null
   },
   {
-    "input": "look⿰out.net",
+    "input": "look\u2FF0out.net",
     "output": null
   },
   {
-    "input": "looḱout.net",
+    "input": "look\u0341out.net",
     "output": "xn--looout-kp7b.net"
   },
   {
-    "input": "look‮out.net",
+    "input": "look\u202Eout.net"
     "output": null
   },
   {
-    "input": "look⁫out.net",
+    "input": "look\u206Bout.net",
     "output": null
   },
   {
-    "input": "look󠀁out.net",
+    "input": "look\uDB40\uDC01out.net",
     "output": null
   },
   {
-    "input": "look󠀠out.net",
+    "input": "look\uDB40\uDC20out.net",
     "output": null
   },
   {
-    "input": "look־out.net",
+    "input": "look\u05BEout.net",
     "output": null
   },
   {
-    "input": "Bücher.de",
+    "input": "B\u00FCcher.de",
     "output": "xn--bcher-kva.de"
   },
   {
-    "input": "♥.net",
+    "input": "\u2665.net",
     "output": "xn--g6h.net"
   },
   {
-    "input": "͸.net",
+    "input": "\u0378.net",
     "output": null
   },
   {
-    "input": "Ӏ.com",
+    "input": "\u04C0.com",
     "output": null
   },
   {
-    "input": "㛼.com",
+    "comment": "This is U+2F868 (which is mapped to U+36FC starting with Unicode 16.0)"
+    "input": "\uD87E\uDC68.com",
+    "output": "xn--snl.com"
+  },
+  {
+    "input": "\u2183.com",
     "output": null
   },
   {
-    "input": "Ↄ.com",
-    "output": null
-  },
-  {
-    "input": "look͏out.net",
+    "input": "look\u034Fout.net",
     "output": "lookout.net"
   },
   {
@@ -338,15 +339,15 @@
     "output": "google.com"
   },
   {
-    "input": "ড়.com",
+    "input": "\u09dc.com",
     "output": "xn--15b8c.com"
   },
   {
-    "input": "ẞ.com",
+    "input": "\u1E9E.com",
     "output": "xn--zca.com"
   },
   {
-    "input": "ẞ.foo.com",
+    "input": "\u1E9E.foo.com",
     "output": "xn--zca.foo.com"
   },
   {
@@ -366,7 +367,7 @@
     "output": null
   },
   {
-    "input": "foò.bar.com",
+    "input": "foo\u0300.bar.com",
     "output": "xn--fo-3ja.bar.com"
   }
 ]

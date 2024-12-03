@@ -17,6 +17,7 @@ from .executorwebdriver import (
     WebDriverPrintRefTestExecutor,
     WebDriverProtocol,
     WebDriverRefTestExecutor,
+    WebDriverTestDriverProtocolPart,
     WebDriverTestharnessExecutor,
     WebDriverTestharnessProtocolPart,
 )
@@ -94,6 +95,20 @@ class ChromeDriverLeakProtocolPart(LeakProtocolPart):
         return counters
 
 
+class ChromeDriverTestDriverProtocolPart(WebDriverTestDriverProtocolPart):
+    def _get_next_message_classic(self, url):
+        try:
+            return super()._get_next_message_classic(url)
+        except error.JavascriptErrorException as js_error:
+            # TODO(crbug.com/340662810): Cycle testdriver event loop to work
+            # around `testharnessreport.js` flakily not loaded.
+            if re.search(r'window\.__wptrunner_process_next_event is not a function',
+                         js_error.message):
+                time.sleep(0.05)
+                return None
+            raise
+
+
 class ChromeDriverTestharnessProtocolPart(WebDriverTestharnessProtocolPart):
     """Implementation of `testharness.js` tests controlled by ChromeDriver.
 
@@ -156,6 +171,7 @@ class ChromeDriverProtocol(WebDriverProtocol):
         ChromeDriverBaseProtocolPart,
         ChromeDriverDevToolsProtocolPart,
         ChromeDriverFedCMProtocolPart,
+        ChromeDriverTestDriverProtocolPart,
         ChromeDriverTestharnessProtocolPart,
     ]
     for base_part in WebDriverProtocol.implements:
@@ -245,18 +261,6 @@ class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor):
         if self.reuse_window:
             self.protocol.testharness.persistent_test_window = test_window
         return test_window
-
-    def _get_next_message_classic(self, protocol, url, test_window):
-        try:
-            return super()._get_next_message_classic(protocol, url, test_window)
-        except error.JavascriptErrorException as js_error:
-            # TODO(crbug.com/340662810): Cycle testdriver event loop to work
-            # around `testharnessreport.js` flakily not loaded.
-            if re.search(r'window\.__wptrunner_process_next_event is not a function',
-                         js_error.message):
-                time.sleep(0.05)
-                return None
-            raise
 
 
 @_evaluate_sanitized_result

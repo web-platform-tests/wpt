@@ -104,6 +104,12 @@ const gCSSProperties1 = {
     types: [
     ]
   },
+  'block-step-align': {
+    // https://drafts.csswg.org/css-rhythm/#block-step-align
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'center'], ['end', 'start'], ['start', 'center'] ] }
+    ]
+  },
   'block-step-insert': {
     // https://drafts.csswg.org/css-rhythm/#block-step-insert
     types: [

@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>class alias for className</title>
+<link rel="author" title="Psychpsyo" href="mailto:psychpsyo@gmail.com">
+<link rel="help" href="https://dom.spec.whatwg.org/#dom-element-class">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<h1>Tests if the class and className IDL attributes do the same</h1>
+<div id="testDiv"></div>
+
+<script>
+test(function() {
+  assert_true(testDiv.class == "", "class must reflect \"class\"");
+  assert_true(testDiv.className == "", "className must reflect \"class\"");
+
+  testDiv.setAttribute("class", "test 1");
+  assert_true(testDiv.class == "test 1", "class must reflect changes made to \"class\"");
+  assert_true(testDiv.className == "test 1", "className must reflect changes made to \"class\"");
+});
+test(function() {
+  testDiv.className = "test 2";
+  assert_true(testDiv.class == "test 2", "setting className must be reflected by class");
+  assert_true(testDiv.className == "test 2", "setting className must be reflected by className");
+  assert_true(testDiv.getAttribute("class") == "test 2", "setting className must be reflected by \"class\"");
+});
+test(function() {
+  testDiv.class = "test 3";
+  assert_true(testDiv.class == "test 3", "setting class must be reflected by class");
+  assert_true(testDiv.className == "test 3", "setting class must be reflected by className");
+  assert_true(testDiv.getAttribute("class") == "test 3", "setting class must be reflected by \"class\"");
+});
+</script>

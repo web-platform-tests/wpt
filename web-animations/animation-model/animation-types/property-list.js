@@ -116,6 +116,12 @@ const gCSSProperties1 = {
       { type: 'discrete', options: [ [ 'margin-box', 'padding-box'], ['margin-box', 'content-box'], ['padding-box', 'content-box'] ] }
     ]
   },
+  'block-step-round': {
+    // https://drafts.csswg.org/css-rhythm/#block-step-round
+    types: [
+      { type: 'discrete', options: [ [ 'up', 'down'], ['down', 'nearest'], ['nearest', 'up'] ] }
+    ]
+  },
   'block-step-size': {
     // https://drafts.csswg.org/css-rhythm/#block-step-size
     types: [ 'length' ]

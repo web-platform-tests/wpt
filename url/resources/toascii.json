@@ -322,7 +322,7 @@
     "output": null
   },
   {
-    "comment": "This is U+2F868 (which is mapped to U+36FC starting with Unicode 16.0)"
+    "comment": "This is U+2F868 (which is mapped to U+36FC starting with Unicode 16.0)",
     "input": "\uD87E\uDC68.com",
     "output": "xn--snl.com"
   },

@@ -162,6 +162,30 @@ else {
     testFlooredMatch("-1.5 - -1.0", data.cls, event, smallerNegativeDict2);
   }
 }
+
+const dictAlwaysDouble = {
+  width: 0.111111111111,
+  height: 0.222222222222,
+};
+
+function testExactlyMatchAlwaysDouble(event, dict) {
+  test(() => {
+    assert_equals(event["width"], dict["width"]);
+  }, `PointerEvent.${event.type}.width`);
+  test(() => {
+    assert_equals(event["height"], dict["height"]);
+  }, `PointerEvent.${event.type}.height`);
+}
+
+for (const type of ["pointerdown", "pointerup", "pointermove", "pointercancel",
+                    "gotpointercapture", "lostpointercapture",
+                    "pointerrawupdate",
+                    "pointerover", "pointerout", "pointerenter", "pointerleave",
+                    "foo"]) {
+  const event = new PointerEvent(type, dictAlwaysDouble);
+  testExactlyMatchAlwaysDouble(event, dictAlwaysDouble);
+}
+
 </script>
 </head>
 <body></body>

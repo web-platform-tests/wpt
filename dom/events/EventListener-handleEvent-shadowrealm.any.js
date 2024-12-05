@@ -1,16 +1,13 @@
-<!DOCTYPE html>
-<meta charset=utf-8>
-<title>EventListener::handleEvent()</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<link rel="help" href="https://dom.spec.whatwg.org/#callbackdef-eventlistener">
-<div id=log></div>
-<script>
+// META: global=shadowrealm
+
+// The non-ShadowRealm version of this test is in
+// EventListener-handleEvent.html.
+
 setup({ allow_uncaught_exception: true });
 
 test(function(t) {
     var type = "foo";
-    var target = document.createElement("div");
+    var target = new EventTarget();
     var eventListener = {
         handleEvent: function(evt) {
             var that = this;
@@ -29,7 +26,7 @@ test(function(t) {
 
 test(function(t) {
     var type = "foo";
-    var target = document.createElement("div");
+    var target = new EventTarget();
     var calls = 0;
 
     target.addEventListener(type, {
@@ -47,7 +44,7 @@ test(function(t) {
 
 test(function(t) {
     var type = "foo";
-    var target = document.createElement("div");
+    var target = new EventTarget();
     var calls = 0;
     var eventListener = function() { calls++; };
     eventListener.handleEvent = t.unreached_func("`handleEvent` method should not be called on functions");
@@ -59,7 +56,7 @@ test(function(t) {
 
 const uncaught_error_test = async (t, getHandleEvent) => {
     const type = "foo";
-    const target = document.createElement("div");
+    const target = new EventTarget();
 
     let calls = 0;
     target.addEventListener(type, {
@@ -75,7 +72,7 @@ const uncaught_error_test = async (t, getHandleEvent) => {
         });
     };
 
-    const eventWatcher = new EventWatcher(t, window, "error", timeout);
+    const eventWatcher = new EventWatcher(t, globalThis, "error", timeout);
     const errorPromise = eventWatcher.wait_for("error");
 
     target.dispatchEvent(new Event(type));
@@ -99,4 +96,3 @@ promise_test(t => {
 promise_test(t => {
     return promise_rejects_js(t, TypeError, uncaught_error_test(t, () => 42));
 }, "throws if `handleEvent` is truthy and not callable");
-</script>

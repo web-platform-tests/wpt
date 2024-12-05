@@ -13,7 +13,7 @@ from collections import defaultdict
 from typing import (Any, Callable, Dict, IO, Iterable, List, Optional, Sequence, Set, Text, Tuple,
                     Type, TypeVar)
 
-from urllib.parse import urlsplit, urljoin
+from urllib.parse import urlsplit, urljoin, parse_qs
 
 try:
     from xml.etree import cElementTree as ElementTree
@@ -523,8 +523,7 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
     for element in source_file.root.findall(".//{http://www.w3.org/1999/xhtml}script[@src]"):
         src = element.attrib["src"]
 
-        def is_path_correct(script: Text, src: Text,
-              allow_query_params: bool = False) -> bool:
+        def is_path_correct(script: Text, src: Text) -> bool:
             if script == src:
                 # The src does not provide the full path.
                 return False
@@ -533,24 +532,59 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
                 # The src is not related to the script.
                 return True
 
-            if src == "/resources/%s" % script:
-                # The src is properly included.
-                return True
-
-            # Check if the script is properly included with query parameters.
-            return allow_query_params and ("%s" % src).startswith(
+            return src == "/resources/%s" % script or ("%s" % src).startswith(
                 "/resources/%s?" % script)
 
-        if not is_path_correct("testharness.js", src):
+        def is_query_string_correct(script: Text, src: Text,
+              allowed_query_string_params: Dict[str, List[str]] = {}):
+            if not ("%s" % src).startswith("/resources/%s?" % script):
+                # The src is not related to the script.
+                return True
+
+            try:
+                query_string = urlsplit(urljoin(source_file.url, src)).query
+                query_string_params = parse_qs(query_string,
+                                               keep_blank_values=True)
+            except ValueError as e:
+                # Parsing error means that the query string is incorrect.
+                return False
+
+            for param_name in query_string_params:
+                if ':' in param_name:
+                    # Allow for vendor-specific query parameters.
+                    continue
+
+                if param_name not in allowed_query_string_params:
+                    return False
+
+                for param_value in query_string_params[param_name]:
+                    if ':' in param_value:
+                        # Allow for vendor-specific values in query parameters.
+                        continue
+                    if param_value not in allowed_query_string_params[
+                        param_name]:
+                        return False
+            return True
+
+        if not is_path_correct("testharness.js",
+                               src) or not is_query_string_correct(
+              "testharness.js", src):
             errors.append(rules.TestharnessPath.error(path))
 
-        if not is_path_correct("testharnessreport.js", src):
+        if not is_path_correct("testharnessreport.js",
+                               src) or not is_query_string_correct(
+              "testharnessreport.js", src):
             errors.append(rules.TestharnessReportPath.error(path))
 
-        if not is_path_correct("testdriver.js", src, True):
+        if not is_path_correct("testdriver.js", src):
             errors.append(rules.TestdriverPath.error(path))
+        if not is_query_string_correct("testdriver.js", src,
+                                       {'feature': ['bidi']}):
+            errors.append(rules.TestdriverUnsupportedQueryParameter.error(path))
 
-        if not is_path_correct("testdriver-vendor.js", src):
+        if not is_path_correct("testdriver-vendor.js",
+                               src) or not is_query_string_correct(
+              "testdriver-vendor.js", src):
             errors.append(rules.TestdriverVendorPath.error(path))
 
         script_path = None

@@ -582,14 +582,12 @@ def test_testdriver_unsupported_feature():
             ]
 
 
-def test_testdriver_multiple_features():
-    pytest.xfail("Query parameter with ampersand cannot be parsed")
-
+def test_testdriver_multiple_unsupported_features():
     code = b"""
 <html xmlns="http://www.w3.org/1999/xhtml">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js?feature=bidi&feature=vendor_unsupported_feature"></script>
+<script src="/resources/testdriver.js?feature=bidi&feature=unsupported_feature"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 </html>
 """
@@ -598,11 +596,45 @@ def test_testdriver_multiple_features():
     for (filename, (errors, kind)) in error_map.items():
         check_errors(errors)
 
-        if kind in ["web-lax", "web-strict"]:
-            assert errors == []
+        if kind == "web-lax":
+            assert errors == [
+                ('TESTDRIVER-UNSUPPORTED-QUERY-PARAMETER',
+                 'testdriver.js script seen with incorrect query parameters',
+                 filename, None)
+            ]
         elif kind == "python":
             assert errors == [
-                ("PARSE-FAILED", "Unable to parse file", filename, 2),
+                ('PARSE-FAILED', 'Unable to parse file', filename, 2),
+            ]
+        elif kind == "web-strict":
+            assert errors == [
+                ('PARSE-FAILED', 'Unable to parse file', filename, None),
+            ]
+
+
+def test_testdriver_multiple_vendor_features():
+    code = b"""
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi&feature=vendor:feature"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind == "web-lax":
+            assert errors == [            ]
+        elif kind == "python":
+            assert errors == [
+                ('PARSE-FAILED', 'Unable to parse file', filename, 2),
+            ]
+        elif kind == "web-strict":
+            assert errors == [
+                ('PARSE-FAILED', 'Unable to parse file', filename, None),
             ]
 
 
@@ -611,7 +643,7 @@ def test_testdriver_vendor_feature():
 <html xmlns="http://www.w3.org/1999/xhtml">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js?feature=vendor:unsupported_feature"></script>
+<script src="/resources/testdriver.js?feature=vendor:feature"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 </html>
 """

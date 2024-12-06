@@ -6,7 +6,7 @@ from fnmatch import fnmatch
 from io import BytesIO
 from typing import (Any, BinaryIO, Callable, Deque, Dict, Iterable, List,
                     Optional, Pattern, Set, Text, Tuple, TypedDict, Union, cast)
-from urllib.parse import urlparse, parse_qs, urljoin
+from urllib.parse import parse_qs, urlparse, urljoin
 
 try:
     from xml.etree import cElementTree as ElementTree
@@ -756,7 +756,6 @@ class SourceFile:
                 return node.attrib.get("src")
 
         return None
-
 
     @cached_property
     def testdriver_features(self) -> Optional[Text]:

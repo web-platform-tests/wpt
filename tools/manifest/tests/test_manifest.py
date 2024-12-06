@@ -297,7 +297,8 @@ def test_update_from_json_modified():
     testdriver_features = ['feature_1', 'feature_2']
 
     # Update timeout, pac and testdriver_features
-    s2 = SourceFileWithTest("test1", "1" * 40, item.TestharnessTest, timeout="long", pac="proxy.pac",
+    s2 = SourceFileWithTest("test1", "1" * 40, item.TestharnessTest,
+                            timeout="long", pac="proxy.pac",
                             testdriver_features=testdriver_features)
     tree, sourcefile_mock = tree_and_sourcefile_mocks([(s2, None, True)])
     with mock.patch("tools.manifest.manifest.SourceFile", side_effect=sourcefile_mock):

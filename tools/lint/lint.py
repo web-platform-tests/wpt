@@ -568,12 +568,12 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
 
         if not is_path_correct("testharness.js",
                                src) or not is_query_string_correct(
-              "testharness.js", src):
+            "testharness.js", src):
             errors.append(rules.TestharnessPath.error(path))
 
         if not is_path_correct("testharnessreport.js",
                                src) or not is_query_string_correct(
-              "testharnessreport.js", src):
+            "testharnessreport.js", src):
             errors.append(rules.TestharnessReportPath.error(path))
 
         if not is_path_correct("testdriver.js", src):
@@ -584,7 +584,7 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
 
         if not is_path_correct("testdriver-vendor.js",
                                src) or not is_query_string_correct(
-              "testdriver-vendor.js", src):
+            "testdriver-vendor.js", src):
             errors.append(rules.TestdriverVendorPath.error(path))
 
         script_path = None

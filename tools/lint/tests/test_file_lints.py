@@ -627,7 +627,7 @@ def test_testdriver_multiple_vendor_features():
         check_errors(errors)
 
         if kind == "web-lax":
-            assert errors == [            ]
+            assert errors == []
         elif kind == "python":
             assert errors == [
                 ('PARSE-FAILED', 'Unable to parse file', filename, 2),

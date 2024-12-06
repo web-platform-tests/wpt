@@ -728,8 +728,7 @@ class SourceFile:
         return [node for node in
                 self.root.findall(".//{http://www.w3.org/1999/xhtml}script")
                 if node.attrib.get('src',
-                                   "") == '/resources/testdriver.js'
-                or
+                                   "") == '/resources/testdriver.js' or
                 node.attrib.get('src', "").startswith(
                     '/resources/testdriver.js?')]
 
@@ -741,11 +740,11 @@ class SourceFile:
             return None
         return bool(self.testdriver_nodes)
 
-    def ___get_testdriver_include_path(self):
+    def ___get_testdriver_include_path(self) -> Optional[str]:
         if self.script_metadata:
             for (meta, content) in self.script_metadata:
                 if meta.strip() == 'script' and content.startswith(
-                      '/resources/testdriver.js'):
+                        '/resources/testdriver.js'):
                     return content.strip()
 
         if self.root is None:
@@ -758,7 +757,7 @@ class SourceFile:
         return None
 
     @cached_property
-    def testdriver_features(self) -> Optional[Text]:
+    def testdriver_features(self) -> Optional[List[Text]]:
         """
         List of requested testdriver features.
         """

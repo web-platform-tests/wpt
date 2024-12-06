@@ -965,7 +965,7 @@ def test_hash():
 @pytest.mark.parametrize("file_name",
                          ["html/test.worker.js", "html/test.window.js"])
 def test_script_testdriver_missing_features(file_name):
-    contents = f"""// META: title=TEST_TITLE
+    contents = """// META: title=TEST_TITLE
 // META: script=/resources/testdriver.js
     test()""".encode("utf-8")
 
@@ -981,7 +981,7 @@ def test_script_testdriver_missing_features(file_name):
                          ["html/test.worker.js", "html/test.window.js"])
 def test_script_testdriver_features(file_name, features):
     contents = f"""// META: title=TEST_TITLE
-// META: script=/resources/testdriver.js?{"&".join('feature=' + f for f in features)}             
+// META: script=/resources/testdriver.js?{"&".join('feature=' + f for f in features)}
     test()""".encode("utf-8")
 
     s = create(file_name, contents=contents)
@@ -992,24 +992,24 @@ def test_script_testdriver_features(file_name, features):
 
 
 def test_html_testdriver_missing_features():
-    contents = f"""
+    contents = """
 <!--Required to make test type `testharness` -->
-<script src="/resources/testharness.js"></script> 
-<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testdriver.js"></script>
     """.encode("utf-8")
 
     s = create("html/test.html", contents=contents)
-    s.testdriver_features == None
+    assert s.testdriver_features is None
 
 
 @pytest.mark.parametrize("features",
-                         [[], ['feature_1'], ['feature_1', 'feature_2']])
+                         [['feature_1'], ['feature_1', 'feature_2']])
 def test_html_testdriver_features(features):
     contents = f"""
 <script src="/resources/testdriver.js?{"&".join('feature=' + f for f in features)}"></script>
 <!--Required to make test type `testharness` -->
-<script src="/resources/testharness.js?feature=bidi"></script> 
+<script src="/resources/testharness.js?feature=bidi"></script>
     """.encode("utf-8")
 
     s = create("html/test.html", contents=contents)
-    s.testdriver_features == ['bidi']
+    assert s.testdriver_features == features

@@ -536,7 +536,7 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
                 "/resources/%s?" % script)
 
         def is_query_string_correct(script: Text, src: Text,
-              allowed_query_string_params: Dict[str, List[str]] = {}):
+              allowed_query_string_params: Dict[str, List[str]] = {}) -> bool:
             if not ("%s" % src).startswith("/resources/%s?" % script):
                 # The src is not related to the script.
                 return True
@@ -545,7 +545,7 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
                 query_string = urlsplit(urljoin(source_file.url, src)).query
                 query_string_params = parse_qs(query_string,
                                                keep_blank_values=True)
-            except ValueError as e:
+            except ValueError:
                 # Parsing error means that the query string is incorrect.
                 return False
 
@@ -562,18 +562,18 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
                         # Allow for vendor-specific values in query parameters.
                         continue
                     if param_value not in allowed_query_string_params[
-                        param_name]:
+                            param_name]:
                         return False
             return True
 
         if not is_path_correct("testharness.js",
                                src) or not is_query_string_correct(
-            "testharness.js", src):
+                "testharness.js", src):
             errors.append(rules.TestharnessPath.error(path))
 
         if not is_path_correct("testharnessreport.js",
                                src) or not is_query_string_correct(
-            "testharnessreport.js", src):
+                "testharnessreport.js", src):
             errors.append(rules.TestharnessReportPath.error(path))
 
         if not is_path_correct("testdriver.js", src):
@@ -584,7 +584,7 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
 
         if not is_path_correct("testdriver-vendor.js",
                                src) or not is_query_string_correct(
-            "testdriver-vendor.js", src):
+                "testdriver-vendor.js", src):
             errors.append(rules.TestdriverVendorPath.error(path))
 
         script_path = None

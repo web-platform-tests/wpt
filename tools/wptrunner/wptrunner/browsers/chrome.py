@@ -213,7 +213,7 @@ class ChromeBrowser(WebDriverBrowser):
         super().__init__(logger, **kwargs)
         self._leak_check = leak_check
         self._actual_port = None
-        self._require_webdriver_bidi = None
+        self._require_webdriver_bidi: Optional[bool] = None
 
     def restart_on_test_type_change(self, new_test_type: str, old_test_type: str) -> bool:
         # Restart the test runner when switch from/to wdspec tests. Wdspec test

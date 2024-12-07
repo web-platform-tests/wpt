@@ -51,6 +51,7 @@ const AriaUtils = {
       }
       promise_test(async t => {
         const expectedRole = el.getAttribute("data-expectedrole");
+        assert_not_equals(expectedRole, null, `Element should have attribute \'${attributeName}\`. Element: ${el.innerHTML}`);
         const computedRole = await test_driver.get_computed_role(el);
         assert_equals(computedRole, expectedRole, el.outerHTML);
       }, `${testName}`);
@@ -143,6 +144,7 @@ const AriaUtils = {
       }
       promise_test(async t => {
         const expectedLabel = el.getAttribute("data-expectedlabel");
+        assert_not_equals(expectedLabel, null, `Element should have attribute \'data-expectedlabel\`. Element: ${el.innerHTML}`);
         let computedLabel = await test_driver.get_computed_label(el);
         assert_not_equals(computedLabel, null, `get_computed_label(el) shouldn't return null for ${el.outerHTML}`);
 

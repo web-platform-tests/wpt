@@ -591,6 +591,7 @@ const buildAndExecuteGraph = async (context, builder, graphResources) => {
   const graphInputs = graphResources.inputs;
   const graphOperators = graphResources.operators;
   const intermediateOperands = {};
+  const inputOperands = new Map();
   for (const operator of graphOperators) {
     const argumentArray = [];
     for (const argument of operator.arguments) {
@@ -598,9 +599,14 @@ const buildAndExecuteGraph = async (context, builder, graphResources) => {
         if (argumentName !== 'options') {
           if (graphInputs.hasOwnProperty(argument[argumentName])) {
             const operandName = argument[argumentName];
-            const operand = createOperand(
-                context, builder, operandName, graphInputs[operandName]);
-            argumentArray.push(operand);
+            if (!inputOperands.has(operandName)) {
+              const operand = createOperand(
+                  context, builder, operandName, graphInputs[operandName]);
+              argumentArray.push(operand);
+              inputOperands.set(operandName, operand);
+            } else {
+              argumentArray.push(inputOperands.get(operandName));
+            }
           } else if (intermediateOperands.hasOwnProperty(
                          argument[argumentName])) {
             argumentArray.push(intermediateOperands[argument[argumentName]]);

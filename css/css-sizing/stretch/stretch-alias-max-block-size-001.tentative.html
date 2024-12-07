@@ -65,12 +65,15 @@
 
     // Add box-sizing:border-box (which shouldn't impact the actual resolved
     // box sizes that 'stretch' produces, aside from one subtest that we skip
-    // for this pass), and retest:
-    for (let elem of document.querySelectorAll(".test")) {
-      if (!elem.hasAttribute("skip-second-pass")) {
-        elem.style.boxSizing = "border-box";
+    // for this pass), and retest. The `promise_setup()` is needed to guarantee
+    // `border-box` before retesting.
+    promise_setup(async () => {
+      for (let elem of document.querySelectorAll(".test")) {
+        if (!elem.hasAttribute("skip-second-pass")) {
+          elem.style.boxSizing = "border-box";
+        }
       }
-    }
+    });
     checkLayout('[data-expected-height]:not([skip-second-pass])');
   }
 </script>

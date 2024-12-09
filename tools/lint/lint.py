@@ -537,6 +537,25 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
 
         def is_query_string_correct(script: Text, src: Text,
                 allowed_query_string_params: Dict[str, List[str]]) -> bool:
+            """
+            Checks if the query string in a script tag's `src` is valid.
+
+            Specifically, it verifies that the query string parameters and their
+            values are among those allowed for the given script. It handles vendor
+            prefixes (parameters or values containing a colon) by allowing them
+            unconditionally.
+
+            :param script: the name of the script (e.g., "testharness.js"). Used
+                           to verify is the given `src` is related to the
+                           script.
+            :param src: the full `src` attribute value from the script tag.
+            :param allowed_query_string_params: A dictionary where keys are
+                                                allowed parameter names and
+                                                values are lists of allowed
+                                                values for each parameter.
+            :return: if the query string does not contain any not-allowed
+                     params.
+            """
             if not ("%s" % src).startswith("/resources/%s?" % script):
                 # The src is not related to the script.
                 return True

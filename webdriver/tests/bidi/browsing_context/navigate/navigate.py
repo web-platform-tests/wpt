@@ -7,6 +7,7 @@ from . import navigate_and_assert
 from ... import any_string
 
 pytestmark = pytest.mark.asyncio
+NAVIGATION_STARTED_EVENT = "browsingContext.navigationStarted"
 
 
 async def test_payload(bidi_session, inline, new_tab):
@@ -171,3 +172,64 @@ async def test_wait_none_with_beforeunload_prompt_in_iframe_navigate_in_top_cont
 
     assert result["url"] == url_after
     any_string(result["navigation"])
+
+
+async def test_with_new_navigation(
+      bidi_session,
+      subscribe_events,
+      inline,
+      url,
+      new_tab,
+      wait_for_event,
+      wait_for_future_safe,
+):
+    slow_page_url = url(
+        "/webdriver/tests/bidi/browsing_context/support/empty.html?pipe=trickle(d10)"
+    )
+    await subscribe_events(events=[NAVIGATION_STARTED_EVENT])
+
+    on_navigation_started = wait_for_event(NAVIGATION_STARTED_EVENT)
+    task = asyncio.ensure_future(
+        bidi_session.browsing_context.navigate(
+            context=new_tab["context"], url=slow_page_url, wait="complete"
+        )
+    )
+    await wait_for_future_safe(on_navigation_started)
+    second_url = inline("<div>foo</div>")
+
+    # Trigger the second navigation which should make the first one to succeed.
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=second_url, wait="none"
+    )
+
+    # Make sure that the first navigation succeeded.
+    await task
+
+
+async def test_with_new_navigation_inside_page(
+      bidi_session,
+      subscribe_events,
+      inline,
+      new_tab,
+      wait_for_event,
+      wait_for_future_safe,
+):
+    second_url = inline("<div>foo</div>")
+    slow_page_url = inline(
+        f"""
+<!DOCTYPE html>
+<html>
+    <body>
+        <img src="/webdriver/tests/bidi/browsing_context/support/empty.svg?pipe=trickle(d10)" />
+        <script>
+            location.href = "{second_url}"
+        </script>
+        <img src="/webdriver/tests/bidi/browsing_context/support/empty.svg?pipe=trickle(d10)" />
+    </body>
+</html>
+"""
+    )
+
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=slow_page_url, wait="complete"
+    )

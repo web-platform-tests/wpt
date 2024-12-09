@@ -44,10 +44,9 @@ def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
 
 def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite,
                     **kwargs):
-    executor_kwargs = chrome_executor_kwargs(test_type, test_environment, run_info_data,
+    executor_kwargs = chrome_executor_kwargs(logger, test_type, test_environment, run_info_data,
                                              subsuite, **kwargs)
-    capabilities = executor_kwargs["capabilities"]
-    chrome_options = capabilities["goog:chromeOptions"]
+    chrome_options = executor_kwargs["capabilities"]["goog:chromeOptions"]
     # Defaultly enable SiteIsolation in headless shell
     if "--disable-site-isolation-trials" not in chrome_options["args"]:
         chrome_options["args"].append("--site-per-process")

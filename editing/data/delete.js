@@ -3101,4 +3101,15 @@ var browserTests = [
     "<p><span contenteditable=\"false\">ab</span></p>",
     [true],
     {}],
+// Delete only first <br> to make 2 empty lines to only one line.
+["<div>abc</div><br>{}<br><div>def</div>",
+    [["delete",""]],
+    "<div>abc</div><br><div>def</div>",
+    [true],
+    {}],
+["<div><font><table><td>a</table><br>{}<br><table><td>b</table></font></div>",
+    [["delete",""]],
+    "<div><font><table><tbody><tr><td>a</td></tr></tbody></table><br><table><tbody><tr><td>b</td></tr></tbody></table></font></div>",
+    [true],
+    {}],
 ]

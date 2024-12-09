@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 import threading
-import typing
 from collections import namedtuple
-from collections.abc import Iterable, Iterator, Mapping
+from collections.abc import Iterable, Iterator
 from functools import total_ordering
 from reprlib import recursive_repr
-from typing import Any, TypeVar
+from typing import Any, Mapping, TypeVar
 
 KT = TypeVar("KT")
 VT_co = TypeVar("VT_co", covariant=True)
@@ -165,7 +164,7 @@ class CBORSimpleValue(namedtuple("CBORSimpleValue", ["value"])):
         return NotImplemented
 
 
-class FrozenDict(typing.Mapping[KT, VT_co]):
+class FrozenDict(Mapping[KT, VT_co]):
     """
     A hashable, immutable mapping type.
 

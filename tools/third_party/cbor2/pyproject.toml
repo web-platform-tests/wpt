@@ -20,13 +20,14 @@ classifiers = [
     "Typing :: Typed",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
-requires-python = ">= 3.9"
+requires-python = ">= 3.8"
 dynamic = ["version"]
 
 [project.urls]
@@ -89,7 +90,7 @@ show_missing = true
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py39, py310, py311, py312, py313, pypy3
+envlist = py38, py39, py310, py311, py312, py313, pypy3
 skip_missing_interpreters = true
 minversion = 4.0.0
 

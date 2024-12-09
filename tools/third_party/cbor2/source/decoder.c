@@ -1254,7 +1254,12 @@ parse_datetimestr(CBORDecoderObject *self, PyObject *str)
                     (offset_sign ? -1 : 1) *
                     (offset_H * 3600 + offset_M * 60), 0);
                 if (delta) {
+#if PY_VERSION_HEX >= 0x03070000
                     tz = PyTimeZone_FromOffset(delta);
+#else
+                    tz = PyObject_CallFunctionObjArgs(
+                        _CBOR2_timezone, delta, NULL);
+#endif
                     Py_DECREF(delta);
                 }
             } else

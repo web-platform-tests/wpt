@@ -525,10 +525,31 @@ error:
 int
 _CBOR2_init_timezone_utc(void)
 {
+#if PY_VERSION_HEX >= 0x03070000
     Py_INCREF(PyDateTime_TimeZone_UTC);
     _CBOR2_timezone_utc = PyDateTime_TimeZone_UTC;
     _CBOR2_timezone = NULL;
     return 0;
+#else
+    PyObject* datetime;
+
+    // from datetime import timezone
+    // utc = timezone.utc
+    datetime = PyImport_ImportModule("datetime");
+    if (!datetime)
+        goto error;
+    _CBOR2_timezone = PyObject_GetAttr(datetime, _CBOR2_str_timezone);
+    Py_DECREF(datetime);
+    if (!_CBOR2_timezone)
+        goto error;
+    _CBOR2_timezone_utc = PyObject_GetAttr(_CBOR2_timezone, _CBOR2_str_utc);
+    if (!_CBOR2_timezone_utc)
+        goto error;
+    return 0;
+error:
+    PyErr_SetString(PyExc_ImportError, "unable to import timezone from datetime");
+    return -1;
+#endif
 }
 
 

@@ -13,7 +13,7 @@ from fractions import Fraction
 from io import BytesIO
 from ipaddress import ip_address, ip_network
 from pathlib import Path
-from typing import cast
+from typing import Type, cast
 from uuid import UUID
 
 import pytest
@@ -955,7 +955,7 @@ def test_decimal_payload_unpacking(impl, data, expected):
     ],
 )
 def test_oversized_read(impl, payload: bytes, tmp_path: Path) -> None:
-    CBORDecodeEOF = cast(type[Exception], getattr(impl, "CBORDecodeEOF"))
+    CBORDecodeEOF = cast(Type[Exception], getattr(impl, "CBORDecodeEOF"))
     with pytest.raises(CBORDecodeEOF, match="premature end of stream"):
         dummy_path = tmp_path / "testdata"
         dummy_path.write_bytes(payload)

@@ -257,7 +257,7 @@ class CBOREncoder:
         return self._canonical
 
     @contextmanager
-    def disable_value_sharing(self) -> Generator[None]:
+    def disable_value_sharing(self) -> Generator[None, None, None]:
         """
         Disable value sharing in the encoder for the duration of the context
         block.
@@ -268,7 +268,7 @@ class CBOREncoder:
         self.value_sharing = old_value_sharing
 
     @contextmanager
-    def disable_string_referencing(self) -> Generator[None]:
+    def disable_string_referencing(self) -> Generator[None, None, None]:
         """
         Disable tracking of string references for the duration of the
         context block.
@@ -279,7 +279,7 @@ class CBOREncoder:
         self.string_referencing = old_string_referencing
 
     @contextmanager
-    def disable_string_namespacing(self) -> Generator[None]:
+    def disable_string_namespacing(self) -> Generator[None, None, None]:
         """
         Disable generation of new string namespaces for the duration of the
         context block.

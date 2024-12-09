@@ -3,12 +3,7 @@ Version history
 
 .. currentmodule:: cbor2
 
-This library adheres to `Semantic Versioning <https://semver.org/>`_.
-
-**UNRELEASED**
-
-- Dropped support for Python 3.8
-  (#247 <https://github.com/agronholm/cbor2/pull/247>_; PR by @hugovk)
+This library adheres to `Semantic Versioning <http://semver.org/>`_.
 
 **5.6.5** (2024-10-09)
 

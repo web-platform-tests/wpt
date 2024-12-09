@@ -164,3 +164,16 @@ promise_test(async t => {
   assert_equals(thrownError.name, 'AbortError');
 }, "reduce(): Reject with an AbortError if the subscription is aborted " +
    "before the source completes");
+
+promise_test(async () => {
+  const source = new Observable(subscriber => {
+    subscriber.complete();
+  });
+
+  const values = [{}, [], new Error("some error")];
+
+  for (let value of values) {
+    const result = await source.reduce(() => {}, value);
+    assert_equals(result, value);
+  }
+}, "reduce(): Reduces the values for different objects");

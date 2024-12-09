@@ -2992,4 +2992,15 @@ var browserTests = [
     "<div><font><table><tbody><tr><td>a</td></tr></tbody></table><br><table><tbody><tr><td>b</td></tr></tbody></table></font></div>",
     [true],
     {}],
+// Cells shouldn't be joined, but new empty inline ancestors should be deleted.
+["<table><tr><td>a<td><b>[b</b><td><b>c</b><td><b>d]</b><td>e</table>",
+    [["forwarddelete",""]],
+    "<table><tbody><tr><td>a</td><td><br></td><td><br></td><td><br></td><td>e</td></tr></tbody></table>",
+    [true],
+    {}],
+["<table><tr><th>a<th><b>[b</b><th><b>c</b><th><b>d]</b><th>e</table>",
+    [["forwarddelete",""]],
+    "<table><tbody><tr><th>a</th><th><br></th><th><br></th><th><br></th><th>e</th></tr></tbody></table>",
+    [true],
+    {}],
 ]

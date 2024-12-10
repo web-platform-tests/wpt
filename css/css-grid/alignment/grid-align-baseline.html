@@ -104,11 +104,18 @@
 
       checkLayout('.grid', false);
 
-      test(() => {assert_equals(baseline1.offsetTop + baseline1.offsetHeight, baseline2.offsetTop + baseline2.offsetHeight, "baseline1 and baseline2 should have the same baseline;")},
-                  "Additional Check 1");
-      test(() => {assert_less_than(baseline3.offsetTop, 25, "baseline3 should be above the center align-selfed item;")}, "Additional Check 2");
-      test(() => {assert_equals(baseline4.offsetTop, baseline5.offsetTop, "baseline4 and baseline5 should be top aligned with each other;")}, "Additional Check 3");
-      test(() => {assert_greater_than(baseline4.offsetTop, 0, "baseline4 and baseline5 should be below the dominant baseline;")}, "Additional Check 4");
+      promise_test(async () => {
+        assert_equals(baseline1.offsetTop + baseline1.offsetHeight, baseline2.offsetTop + baseline2.offsetHeight, "baseline1 and baseline2 should have the same baseline");
+      }, "Additional Check 1");
+      promise_test(async () => {
+        assert_less_than(baseline3.offsetTop, 25, "baseline3 should be above the center align-selfed item");
+      }, "Additional Check 2");
+      promise_test(async () => {
+        assert_equals(baseline4.offsetTop, baseline5.offsetTop, "baseline4 and baseline5 should be top aligned with each other");
+      }, "Additional Check 3");
+      promise_test(async () => {
+        assert_greater_than(baseline4.offsetTop, 0, "baseline4 and baseline5 should be below the dominant baseline");
+      }, "Additional Check 4");
 
       done();
     };

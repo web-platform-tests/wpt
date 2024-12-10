@@ -59,7 +59,7 @@
     });
 
     function is_test_context() {
-      return window.__wptrunner_message_queue !== undefined;
+      return !!window.__wptrunner_is_test_context;
     }
 
     // Code copied from /common/utils.js
@@ -242,7 +242,7 @@
     };
 
     window.test_driver_internal.set_test_context = function(context) {
-        if (window.__wptrunner_message_queue) {
+        if (is_test_context()) {
             throw new Error("Tried to set testharness context in a window containing testharness.js");
         }
         testharness_context = context;

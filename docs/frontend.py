@@ -14,6 +14,7 @@ link_dirs = [
     "tools/wptserve",
     "tools/certs",
     "tools/wptrunner",
+    "tools/webrtc",
     "tools/webtransport",
     "tools/third_party/pywebsocket3",
 ]

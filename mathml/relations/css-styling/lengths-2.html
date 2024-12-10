@@ -7,6 +7,7 @@
 <link rel="help" href="https://w3c.github.io/mathml-core/#types-for-mathml-attribute-values">
 <link rel="help" href="https://w3c.github.io/mathml-core/#legacy-mathml-style-attributes">
 <link rel="help" href="https://w3c.github.io/mathml-core/#space-mspace">
+<link rel="help" href="https://www.w3.org/TR/css-values-4/#relative-lengths">
 <meta name="assert" content="Verify various cases of the MathML length syntax.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -20,6 +21,10 @@
   math {
     font-family: TestFont;
     font-size: 10px;
+  }
+  /* For rlh. */
+  html {
+    line-height: 17px;
   }
 </style>
 <script>
@@ -35,28 +40,56 @@
   function runTests() {
     test(function() {
       assert_true(MathMLFeatureDetection.has_mspace());
-      assert_equals(getBox("unitCm").width, 96, "cm");
-      assert_equals(getBox("unitEm").width, 120, "em");
-      assert_equals(getBox("unitEx").width, 500, "ex");
-      assert_equals(getBox("unitIn").width, 288, "in");
-      assert_equals(getBox("unitMm").width, 576, "mm");
-      assert_equals(getBox("unitPc").width, 96, "pc");
-      assert_equals(getBox("unitPercentage").width, 60, "%");
-      assert_equals(getBox("unitPt").width, 96, "pt");
-      assert_equals(getBox("unitPx").width, 123, "px");
+      assert_approx_equals(getBox("unitCm").width, 96, epsilon, "cm");
+      assert_approx_equals(getBox("unitEm").width, 120, epsilon, "em");
+      assert_approx_equals(getBox("unitEx").width, 500, epsilon, "ex");
+      assert_approx_equals(getBox("unitIn").width, 288, epsilon, "in");
+      assert_approx_equals(getBox("unitMm").width, 576, epsilon, "mm");
+      assert_approx_equals(getBox("unitPc").width, 96, epsilon, "pc");
+      assert_approx_equals(getBox("unitPercentage").width, 60, epsilon, "%");
+      assert_approx_equals(getBox("unitPt").width, 96, epsilon, "pt");
+      assert_approx_equals(getBox("unitPx").width, 123, epsilon, "px");
+      assert_approx_equals(getBox("unitQ").width, 192, epsilon, "q");
+      assert_approx_equals(getBox("unitCh").width, 100, epsilon, "ch");
+      assert_approx_equals(getBox("unitCap").width, 140, epsilon, "cap");
+      assert_approx_equals(getBox("unitIc").width, 90, epsilon, "ic");
+      assert_approx_equals(getBox("unitVw").width, window.innerWidth*0.35, epsilon, "vw");
+      assert_approx_equals(getBox("unitVh").width, window.innerHeight*0.54, epsilon, "vh");
+      // The writing mode is horizontal here.
+      assert_approx_equals(getBox("unitVi").width, window.innerWidth*0.11, epsilon, "vi");
+      assert_approx_equals(getBox("unitVb").width, window.innerHeight*0.04, epsilon, "vb");
+      assert_approx_equals(getBox("unitVmin").width, Math.min(window.innerWidth, window.innerHeight)*0.27, epsilon, "vmin");
+      assert_approx_equals(getBox("unitVmax").width, Math.max(window.innerWidth, window.innerHeight)*0.34, epsilon, "vmax");
+      assert_approx_equals(getBox("unitRem").width, 128, epsilon, "rem");
+      assert_approx_equals(getBox("unitLh").width, 60, epsilon, "lh");
+      assert_approx_equals(getBox("unitRlh").width, 102, epsilon, "rlh");
     }, "Units");
 
     test(function() {
       assert_true(MathMLFeatureDetection.has_mspace());
-      assert_equals(getBox("spaceCm").width, 96, "cm");
-      assert_equals(getBox("spaceEm").width, 120, "em");
-      assert_equals(getBox("spaceEx").width, 500, "ex");
-      assert_equals(getBox("spaceIn").width, 288, "in");
-      assert_equals(getBox("spaceMm").width, 576, "mm");
-      assert_equals(getBox("spacePc").width, 96, "pc");
-      assert_equals(getBox("spacePercentage").width, 60, "%");
-      assert_equals(getBox("spacePt").width, 96, "pt");
-      assert_equals(getBox("spacePx").width, 123, "px");
+      assert_approx_equals(getBox("spaceCm").width, 96, epsilon, "cm");
+      assert_approx_equals(getBox("spaceEm").width, 120, epsilon, "em");
+      assert_approx_equals(getBox("spaceEx").width, 500, epsilon, "ex");
+      assert_approx_equals(getBox("spaceIn").width, 288, epsilon, "in");
+      assert_approx_equals(getBox("spaceMm").width, 576, epsilon, "mm");
+      assert_approx_equals(getBox("spacePc").width, 96, epsilon, "pc");
+      assert_approx_equals(getBox("spacePercentage").width, 60, epsilon, "%");
+      assert_approx_equals(getBox("spacePt").width, 96, epsilon, "pt");
+      assert_approx_equals(getBox("spacePx").width, 123, epsilon, "px");
+      assert_approx_equals(getBox("spaceQ").width, 192, epsilon, "q");
+      assert_approx_equals(getBox("spaceCh").width, 100, epsilon, "ch");
+      assert_approx_equals(getBox("spaceCap").width, 140, epsilon, "cap");
+      assert_approx_equals(getBox("spaceIc").width, 90, epsilon, "ic");
+      assert_approx_equals(getBox("spaceVw").width, window.innerWidth*0.35, epsilon, "vw");
+      assert_approx_equals(getBox("spaceVh").width, window.innerHeight*0.54, epsilon, "vh");
+      // The writing mode is horizontal here.
+      assert_approx_equals(getBox("spaceVi").width, window.innerWidth*0.11, epsilon, "vi");
+      assert_approx_equals(getBox("spaceVb").width, window.innerHeight*0.04, epsilon, "vb");
+      assert_approx_equals(getBox("spaceVmin").width, Math.min(window.innerWidth, window.innerHeight)*0.27, epsilon, "vmin");
+      assert_approx_equals(getBox("spaceVmax").width, Math.max(window.innerWidth, window.innerHeight)*0.34, epsilon, "vmax");
+      assert_approx_equals(getBox("spaceRem").width, 128, epsilon, "rem");
+      assert_approx_equals(getBox("spaceLh").width, 60, epsilon, "lh");
+      assert_approx_equals(getBox("spaceRlh").width, 102, epsilon, "rlh");
     }, "Trimming of space");
 
     test(function() {
@@ -109,14 +142,14 @@
           var mrow = document.getElementById(space);
           var boxBefore = mrow.firstElementChild.getBoundingClientRect();
           var boxAfter = mrow.lastElementChild.getBoundingClientRect();
-          assert_equals(boxAfter.left - boxBefore.right, 0, space);
+          assert_approx_equals(boxAfter.left - boxBefore.right, 0, epsilon, space);
       });
     }, "Legacy namedspaces");
 
     test(function() {
       assert_true(MathMLFeatureDetection.has_mspace());
       // These values are invalid in MathML Core.
-      assert_equals(getBox("unitNone").width, 30, "Unitless");
+      assert_approx_equals(getBox("unitNone").width, 30, epsilon, "Unitless");
       assert_approx_equals(getBox("n3").width, 0, epsilon, "n3");
       var topRef = getBox("ref").top;
       assert_approx_equals(topRef - getBox("N3").top, 0, epsilon, "N3");
@@ -139,6 +172,19 @@
       <mstyle mathsize="200%"><mspace id="unitPercentage" width="3em"/></mstyle>
       <mspace id="unitPt" width="72pt"/>
       <mspace id="unitPx" width="123px"/>
+      <mspace id="unitQ" width="203.2q"/>
+      <mspace id="unitCh" width="10ch"/>
+      <mspace id="unitCap" width="14ch"/>
+      <mspace id="unitIc" width="9ic"/>
+      <mspace id="unitVw" width="35vw"/>
+      <mspace id="unitVh" width="54vh"/>
+      <mspace id="unitVi" width="11vi"/>
+      <mspace id="unitVb" width="4vb"/>
+      <mspace id="unitVmin" width="27vmin"/>
+      <mspace id="unitVmax" width="34vmax"/>
+      <mspace id="unitRem" width="8rem"/>
+      <mspace id="unitLh" width="5lh" style="line-height: 12px;"/>
+      <mspace id="unitRlh" width="6rlh"/>
       <mstyle mathsize="5"><mspace id="unitNone" width="3em"/></mstyle>
     </math>
   </p>
@@ -153,6 +199,19 @@
       <mstyle mathsize="200%"><mspace id="spacePercentage" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;3em&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/></mstyle>
       <mspace id="spacePt" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;72pt&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
       <mspace id="spacePx" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;123px&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
+      <mspace id="spaceQ" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;203.2q&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
+      <mspace id="spaceCh" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;10ch&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
+      <mspace id="spaceCap" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;14ch&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
+      <mspace id="spaceIc" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;9ic&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
+      <mspace id="spaceVw" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;35vw&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
+      <mspace id="spaceVh" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;54vh&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
+      <mspace id="spaceVi" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;11vi&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
+      <mspace id="spaceVb" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;4vb&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
+      <mspace id="spaceVmin" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;27vmin&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
+      <mspace id="spaceVmax" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;34vmax&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
+      <mspace id="spaceRem" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;8rem&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
+      <mspace id="spaceLh" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;5lh&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;" style="line-height: 12px;"/>
+      <mspace id="spaceRlh" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;6rlh&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
     </math>
   </p>
   <p>

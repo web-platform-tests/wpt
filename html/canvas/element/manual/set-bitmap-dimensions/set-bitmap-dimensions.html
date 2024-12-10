@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CanvasRenderingContext2D set bitmap dimensions test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-set-bitmap-dimensions">
+<script>
+test(function() {
+  var canvas = document.createElement('canvas');
+  var ctx = canvas.getContext('2d');
+  ctx.fillStyle = "#FF0000"
+  ctx.fillRect(0, 0, 50, 50);
+  canvas.width += 0;
+  var pixels = ctx.getImageData(0, 0, 1, 1).data;
+  assert_array_equals(pixels, [0, 0, 0, 0]);
+}, "Test that setting the canvas width clears the output bitmap.");
+
+test(function() {
+  var canvas = document.createElement('canvas');
+  var ctx = canvas.getContext('2d');
+  ctx.rect(0, 0, 50, 50);
+  canvas.width += 0;
+  ctx.fill();
+  var pixels = ctx.getImageData(0, 0, 1, 1).data;
+  assert_array_equals(pixels, [0, 0, 0, 0]);
+}, "Test that setting the canvas width clears the current path");
+
+test(function() {
+  var canvas = document.createElement('canvas');
+  var ctx = canvas.getContext('2d');
+  ctx.fillStyle = "#FF0000";
+  var old = ctx.fillStyle;
+  ctx.save();
+  canvas.width += 0;
+  ctx.restore();
+  assert_not_equals(ctx.fillStyle, old);
+}, "Test that setting the canvas width clears the drawing state stack");
+</script>

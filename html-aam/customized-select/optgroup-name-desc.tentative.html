@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang=en>
+<head>
+  <title>Tentative: HTML-AAM Generic Role Verification Tests</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+  <style>
+    /* enable the customized select */
+    select, ::picker(select) {
+      appearance: base-select;
+    }
+  </style>
+</head>
+<body>
+
+  <p>Tests the accName for the <code>optgroup</code> element, within a customizable <code>select</code> element as defined in <a href="https://w3c.github.io/html-aam/#accessible-name-and-description-computation">HTML-AAM: Accessible Name Computations By HTML Element</a>.
+  These tests are meant to show whether an element returns a name per the naming mechanism used. See <a href="https://wpt.fyi/results/accname">wpt: accname</a> for expanded accName testing.</p>
+
+  <!--
+    Tests the expected accessible name for an optgroup 
+    see: https://github.com/w3c/aria/pull/2360
+  -->
+
+<!-- aria-labelledby tests:
+  
+test 1: name = foo
+        description = n/a
+-->
+<select>
+    <button><selectedcontent></selectedcontent></button>
+    <optgroup aria-labelledby=f data-testname="optgroup aria-labelledby" data-expectedlabel="foo" class="ex">
+       <div id=f>foo</div> <!-- invalid per content model -->
+       <option>test
+    </optgroup>
+</select>
+
+<!--
+test 2: name = foo
+        description = n/a
+-->
+<select>
+    <button><selectedcontent></selectedcontent></button>
+    <optgroup aria-labelledby=f2 aria-label=bar data-testname="optgroup aria-labelledby vs aria-label" data-expectedlabel="foo" class="ex">
+       <div id=f2>foo</div> <!-- invalid per content model -->
+       <option>test
+    </optgroup>
+</select>
+
+<!--
+test 3: name = foo
+        description = bar
+-->
+<select>
+    <button><selectedcontent></selectedcontent></button>
+    <optgroup aria-labelledby=f title=bar data-testname="optgroup aria-labelledby vs title" data-expectedlabel="foo" class="ex">
+       <div id=f>foo</div> <!-- invalid per content model -->
+       <option>test
+    </optgroup>
+</select>
+
+
+<!-- aria-label tests:
+
+test 1: name = foo
+        description = n/a
+-->
+<select>
+    <button><selectedcontent></selectedcontent></button>
+    <optgroup aria-label=foo data-testname="optgroup aria-label" data-expectedlabel="foo" class="ex">
+        <option>test
+    </optgroup>
+</select>
+
+<!--
+test 2: name = foo
+        description = bar
+-->
+<select>
+    <button><selectedcontent></selectedcontent></button>
+    <optgroup aria-label=foo title=bar data-testname="optgroup aria-label vs title" data-expectedlabel="foo" class="ex">
+        <option>test
+    </optgroup>
+</select>
+
+
+
+<!-- label attribute tests
+
+test 1: name = foo
+        description = n/a
+-->
+<select>
+    <button><selectedcontent></selectedcontent></button>
+    <optgroup label=foo data-testname="optgroup label attr" data-expectedlabel="foo" class="ex">
+        <option>test
+    </optgroup>
+</select>
+
+<!--
+test 2: name = bar
+        description = foo
+
+     aria-label provided which wins out over label attr, but label attr's value is rendered, so still
+     expose it as a description so the information is at least still available to AT 
+-->
+<select>
+    <button><selectedcontent></selectedcontent></button>
+    <optgroup aria-label=bar label=foo data-testname="optgroup aria-label vs label attr" data-expectedlabel="bar" class="ex">
+        <option>test
+    </optgroup>
+</select>
+
+<!--
+test 3: name = foo
+        description = bar
+-->
+<select>
+    <button><selectedcontent></selectedcontent></button>
+    <optgroup label=foo title=bar data-testname="optgroup label attr vs title" data-expectedlabel="foo" class="ex">
+        <option>test
+    </optgroup>
+</select>
+
+
+<!-- legend element tests
+
+test 1: name = foo 
+        description = n/a
+-->
+<select>
+    <button><selectedcontent></selectedcontent></button>
+    <optgroup data-testname="optgroup legend" data-expectedlabel="foo" class="ex">
+        <legend>foo</legend>
+        <option>test
+    </optgroup>
+</select>
+
+<!--
+test 2: name = foo 
+        description = n/a
+  label attr is not supposed to render since legend element is specified
+-->
+<select>
+    <button><selectedcontent></selectedcontent></button>
+    <optgroup label=bar data-testname="optgroup legend" data-expectedlabel="foo" class="ex">
+        <legend>foo</legend>
+        <option>test
+    </optgroup>
+</select>
+
+<!--
+test 3: name = bar 
+        description = foo
+     aria-label provided which wins out over legend, but legend is rendered, so still
+     expose it as a description so the information is at least still available to AT 
+-->
+<select>
+    <button><selectedcontent></selectedcontent></button>
+    <optgroup aria-label=bar data-testname="optgroup aria-label vs legend" data-expectedlabel="bar" class="ex">
+        <legend>foo</legend>
+        <option>test
+    </optgroup>
+</select>
+
+<!-- 
+test 4: name = bar 
+        description = foo
+     aria-labelledby provided which wins out over legend, but legend is rendered, so still
+     expose it as a description so the information is at least still available to AT 
+-->
+<select>
+    <button><selectedcontent></selectedcontent></button>
+    <optgroup aria-labelledby=b data-testname="optgroup aria-labelledby vs legend" data-expectedlabel="bar" class="ex">
+        <div id=b>bar</div> <!-- invalid per content model -->
+        <legend>foo</legend>
+        <option>test
+    </optgroup>
+</select>
+
+<!--
+test 5: name = foo 
+        description = bar
+-->
+<select>
+    <button><selectedcontent></selectedcontent></button>
+    <optgroup title=bar data-testname="optgroup legend vs title" data-expectedlabel="foo" class="ex">
+        <legend>foo</legend>
+        <option>test
+    </optgroup>
+</select>
+
+
+<!-- title attribute tests
+
+test 1: name = foo 
+        description = n/a
+-->
+<select>
+    <button><selectedcontent></selectedcontent></button>
+    <optgroup title=foo data-testname="optgroup title" data-expectedlabel="foo" class="ex">
+        <option>test
+    </optgroup>
+</select>
+
+<!--
+test 2: name = foo 
+        description = n/a
+        empty label would otherwise result in no accName - use title as fallback -->
+<select>
+    <button><selectedcontent></selectedcontent></button>
+    <optgroup label title=foo data-testname="optgroup title vs empty label attr" data-expectedlabel="foo" class="ex">
+        <option>test
+    </optgroup>
+</select>
+
+<!--
+test 3: name = foo 
+        description = n/a
+        empty legend would otherwise result in no accName - use title as fallback 
+-->
+<select>
+    <button><selectedcontent></selectedcontent></button>
+    <optgroup title=foo data-testname="optgroup title vs empty legend" data-expectedlabel="foo" class="ex">
+        <legend></legend>
+        <option>test
+    </optgroup>
+</select>
+
+<!--
+test 4: name = foo
+        description = n/a
+        empty aria-label would otherwise result in no accName - use title as fallback 
+-->
+<select>
+    <button><selectedcontent></selectedcontent></button>
+    <optgroup aria-label title=foo data-testname="optgroup title vs empty aria-label" data-expectedlabel="foo" class="ex">
+        <legend></legend>
+        <option>test
+    </optgroup>
+</select>
+
+<!--
+test 5: name = foo
+        description = n/a
+        aria-labelledby points to empty element which would otherwise result in no accName - use title as fallback 
+-->
+<select>
+    <button><selectedcontent></selectedcontent></button>
+    <optgroup aria-labelledby=f title=foo data-testname="optgroup title vs aria-labelledby pointing to empty element" data-expectedlabel="foo" class="ex">
+        <div id=f></div>
+        <legend></legend>
+        <option>test
+    </optgroup>
+</select>
+
+<script>
+AriaUtils.verifyGenericRolesBySelector(".ex-generic");
+</script>
+
+</body>
+</html>

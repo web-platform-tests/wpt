@@ -2,6 +2,7 @@
 
 import logging
 import os
+import platform
 import sys
 
 import pytest
@@ -42,12 +43,22 @@ def test_install_chrome():
     venv_path = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir())
     channel = "dev"
     dest = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "browsers", channel)
-    if sys.platform == "win32":
-        chrome_path = os.path.join(dest, "chrome-win32")
-    elif sys.platform == "darwin":
-        chrome_path = os.path.join(dest, "chrome-mac-x64")
+
+    uname = platform.uname()
+    chrome_platform = {
+        "Linux": "linux",
+        "Windows": "win",
+        "Darwin": "mac",
+    }.get(uname[0])
+
+    if chrome_platform in ("linux", "win"):
+        bits = "64" if uname.machine == "x86_64" else "32"
+    elif chrome_platform == "mac":
+        bits = "-arm64" if uname.machine == "arm64" else "-x64"
     else:
-        chrome_path = os.path.join(dest, "chrome-linux64")
+        bits = ""
+
+    chrome_path = os.path.join(dest, f"chrome-{chrome_platform}{bits}")
 
     if os.path.exists(chrome_path):
         utils.rmtree(chrome_path)

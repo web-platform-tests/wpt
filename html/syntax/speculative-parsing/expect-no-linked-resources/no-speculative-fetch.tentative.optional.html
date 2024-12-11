@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Speculative parsing, expect-no-linked-resources Document-Policy</title>
+<meta name="timeout" content="long">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/utils.js"></script>
+<script src="stash.js"></script>
+<script>
+  promise_test(t => new Promise((resolve, reject) => {
+    const uuid = token();
+    async function on_load_test_document() {
+      resolve(await get_results(uuid));
+    }
+
+    test_driver.bless('Open a URL with expect-no-linked-resources Document-Policy', () => {
+      const popup = window.open(`/html/syntax/speculative-parsing/expect-no-linked-resources/no-speculative-fetch.tentative.optional.sub.html?pipe=sub&uuid=${uuid}`, '_blank');
+      popup.addEventListener('load', on_load_test_document, false);
+    });
+  }).then(result => {
+    assert_equals(result, '', 'speculative case fetched');
+  }), `no-linked-resources speculative hint was ignored`);
+
+</script>

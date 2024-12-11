@@ -60,7 +60,7 @@ async def test_with_new_navigation(
     result = await bidi_session.browsing_context.navigate(
         context=new_tab["context"], url=slow_page_url, wait="none"
     )
-    on_navigation_failed = wait_for_event(NAVIGATION_ABORTED_EVENT)
+    on_navigation_aborted = wait_for_event(NAVIGATION_ABORTED_EVENT)
     second_url = inline("<div>foo</div>")
 
     # Trigger the second navigation which should fail the first one.

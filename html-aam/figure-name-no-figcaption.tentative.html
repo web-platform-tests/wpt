@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+  <title>HTML-AAM Figure Element Accessible Name From Author Tests</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+</head>
+<body>
+
+
+<p>Tests the accName for elements defined in <a href="https://w3c.github.io/html-aam/#accessible-name-and-description-computation">HTML-AAM: Accessible Name Computations By HTML Element</a>.
+  These tests are meant to show whether an element returns a name per the naming mechanism used. See <a href="https://wpt.fyi/results/accname">wpt: accname</a> for expanded accName testing.</p>
+
+
+<!--
+The following test can be added to names.html along with the other figure naming tests when the file is no longer considered tentative.
+-->
+
+<h2>figure element</h2>
+<figure data-testname="figure with figcaption - no name" data-expectedlabel="" class="ex">
+  x
+  <figcaption>y</figcaption>  
+</figure>
+
+<figure data-testname="figure with figcaption and aria-label" aria-label="label" data-expectedlabel="label" class="ex">
+  x
+  <figcaption>y</figcaption>
+</figure>
+<figure data-testname="figure with figcaption and aria-labelledby" aria-labelledby="labelledby" data-expectedlabel="labelledby" class="ex">
+  x
+  <figcaption>y</figcaption>
+</figure>
+  
+<figure data-testname="figure with figcaption and title" title="title" data-expectedlabel="title" class="ex">
+  x
+  <figcaption>y</figcaption>
+</figure>
+
+
+<!-- element to reference for aria-labelledby tests -->
+<div id="labelledby">labelledby</div>
+
+<script>
+AriaUtils.verifyLabelsBySelector(".ex");
+</script>
+
+</body>
+</html>

@@ -622,7 +622,7 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">VERIFY_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">repeat</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">REPEAT_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">crashtest</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">testharness</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="n">crashtest</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">subsuite</span><span class="o">-</span><span class="n">file</span> <span class="n">SUBSUITE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">subsuite</span> <span class="n">SUBSUITES</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">small</span><span class="o">-</span><span class="n">subsuite</span><span class="o">-</span><span class="n">size</span> <span class="n">SMALL_SUBSUITE_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="n">INCLUDE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">file</span> <span class="n">INCLUDE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="n">EXCLUDE</span><span class="p">]</span>
@@ -780,26 +780,6 @@ channel.) This flag overrides –browser-channel.</p>
 <dd><p>Don’t restart test runner when start a new test group</p>
 <p>Default: True</p>
 </dd>
-<dt><kbd>--verify</kbd></dt>
-<dd><p>Run a stability check on the selected tests</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--verify-no-chaos-mode</kbd></dt>
-<dd><p>Disable chaos mode when running on Firefox</p>
-<p>Default: True</p>
-</dd>
-<dt><kbd>--verify-chaos-mode</kbd></dt>
-<dd><p>Enable chaos mode when running on Firefox</p>
-<p>Default: True</p>
-</dd>
-<dt><kbd>--verify-no-output-results</kbd></dt>
-<dd><p>Prints individuals test results and messages</p>
-<p>Default: True</p>
-</dd>
-<dt><kbd>--verify-output-results</kbd></dt>
-<dd><p>Disable printing individuals test results and messages</p>
-<p>Default: True</p>
-</dd>
 <dt><kbd>--debug-build</kbd></dt>
 <dd><p>Build is a debug build (overrides any mozinfo file)</p>
 </dd>
@@ -823,6 +803,10 @@ channel.) This flag overrides –browser-channel.</p>
 <dd><p>List all tests that will run</p>
 <p>Default: False</p>
 </dd>
+<dt><kbd>--verify</kbd></dt>
+<dd><p>Run a stability check on the selected tests</p>
+<p>Default: False</p>
+</dd>
 <dt><kbd>--verify-log-full</kbd></dt>
 <dd><p>Output per-iteration test results when running verify</p>
 <p>Default: False</p>
@@ -835,6 +819,14 @@ channel.) This flag overrides –browser-channel.</p>
 <dd><p>Number of iterations, for a run that restarts the runner between each iteration</p>
 <p>Default: 5</p>
 </dd>
+<dt><kbd>--verify-no-chaos-mode</kbd></dt>
+<dd><p>Disable chaos mode when running on Firefox</p>
+<p>Default: True</p>
+</dd>
+<dt><kbd>--verify-chaos-mode</kbd></dt>
+<dd><p>Enable chaos mode when running on Firefox</p>
+<p>Default: True</p>
+</dd>
 <dt><kbd>--verify-max-time</kbd></dt>
 <dd><p>The maximum number of minutes for the job to run</p>
 </dd>
@@ -842,15 +834,23 @@ channel.) This flag overrides –browser-channel.</p>
 <dd><p>The maximum number of minutes for the test suite to attempt repeat runs</p>
 <p>Default: 100</p>
 </dd>
+<dt><kbd>--verify-no-output-results</kbd></dt>
+<dd><p>Prints individuals test results and messages</p>
+<p>Default: True</p>
+</dd>
+<dt><kbd>--verify-output-results</kbd></dt>
+<dd><p>Disable printing individuals test results and messages</p>
+<p>Default: True</p>
+</dd>
 </dl>
 </section>
 <section id="test-selection">
 <h4>Test Selection<a class="headerlink" href="#test-selection" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--test-types</kbd></dt>
-<dd><p>Possible choices: print-reftest, crashtest, reftest, wdspec, testharness</p>
+<dd><p>Possible choices: print-reftest, wdspec, reftest, testharness, crashtest</p>
 <p>Test types to run</p>
-<p>Default: {‘print-reftest’, ‘crashtest’, ‘reftest’, ‘wdspec’, ‘testharness’}</p>
+<p>Default: {‘print-reftest’, ‘wdspec’, ‘reftest’, ‘testharness’, ‘crashtest’}</p>
 </dd>
 <dt><kbd>--subsuite-file</kbd></dt>
 <dd><p>Path to JSON file containing subsuite configuration</p>

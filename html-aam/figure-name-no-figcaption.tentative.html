@@ -30,9 +30,15 @@ The following test can be added to names.html along with the other figure naming
   x
   <figcaption>y</figcaption>
 </figure>
-<figure data-testname="figure with figcaption and aria-labelledby" aria-labelledby="labelledby" data-expectedlabel="labelledby" class="ex">
+
+<figure data-testname="figure with figcaption and aria-labelledby pointing to another element" aria-labelledby="labelledby" data-expectedlabel="labelledby" class="ex">
   x
   <figcaption>y</figcaption>
+</figure>
+
+<figure data-testname="figure with aria-labelledby pointing to figcaption" aria-labelledby="fctest" data-expectedlabel="figcaption text" class="ex">
+  x
+  <figcaption id=fctest>figcaption text</figcaption>
 </figure>
   
 <figure data-testname="figure with figcaption and title" title="title" data-expectedlabel="title" class="ex">

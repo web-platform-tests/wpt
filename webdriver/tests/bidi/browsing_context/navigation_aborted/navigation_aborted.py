@@ -18,7 +18,7 @@ async def test_unsubscribe(bidi_session, inline, new_tab):
     await bidi_session.session.subscribe(events=[NAVIGATION_ABORTED_EVENT])
     await bidi_session.session.unsubscribe(events=[NAVIGATION_ABORTED_EVENT])
 
-    # Track all received browsingContext.navigationFailed events in the events array.
+    # Track all received browsingContext.navigationAborted events in the events array.
     events = []
 
     async def on_event(method, data):

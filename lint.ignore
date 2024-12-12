@@ -769,6 +769,12 @@ HTML INVALID SYNTAX: quirks/percentage-height-calculation.html
 HTML INVALID SYNTAX: trusted-types/TrustedTypePolicyFactory-getAttributeType-namespace.html
 
 # Tests which include testdriver.js but aren't testharness.js tests
+# TODO(web-platform-tests/wpt#13183): Remove this rule once support is added.
+TESTDRIVER-IN-UNSUPPORTED-TYPE: infrastructure/crashtests/testdriver.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: infrastructure/reftest/testdriver.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: infrastructure/reftest/testdriver-child.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: infrastructure/reftest/testdriver-iframe.sub.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: infrastructure/reftest/testdriver-print.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: css/css-grid/grid-model/grid-layout-stale-001.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: css/css-grid/grid-model/grid-layout-stale-002.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: css/css-scroll-anchoring/fullscreen-crash.html

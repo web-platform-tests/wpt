@@ -54,15 +54,19 @@
     case "complete":
       var tests = data.tests;
       var status = data.status;
-
-      var subtest_results = tests.map(function(x) {
-        return [x.name, x.status, x.message, x.stack];
-      });
-      payload = [status.status,
-                 status.message,
-                 status.stack,
-                 subtest_results];
-      clearTimeout(window.__wptrunner_timer);
+      if (tests && status) {
+        var subtest_results = tests.map(function(x) {
+          return [x.name, x.status, x.message, x.stack];
+        });
+        payload = [status.status,
+                   status.message,
+                   status.stack,
+                   subtest_results];
+        clearTimeout(window.__wptrunner_timer);
+      } else {
+        // Non-testharness test.
+        payload = [];
+      }
       break;
     case "action":
       payload = data;

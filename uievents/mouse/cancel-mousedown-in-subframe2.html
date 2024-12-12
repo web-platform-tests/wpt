@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="resources/utils.js"></script>
+<body>
+  <div>
+    Dragging the mouse from one child frame to another child frame causes
+    <code>mousedown</code>, <code>mousemove</code> and <code>mouseup</code>
+    events being dispatched to the first child frame, regardless of whether the
+    <code>mousedown</code> event is canceled or not.
+  </div>
+  <iframe id="child_frame0" width="300px" height="40px"
+          src="resources/mouse-event-reporter-subframe.html">
+  </iframe>
+  <iframe id="child_frame1" width="300px" height="40px"
+          src="resources/mouse-event-reporter-subframe.html">
+  </iframe>
+</body>
+<script>
+  "use strict"
+  let topframe_loaded = getEvent("load", window);
+  let subframe0_loaded = getMessageData("load", frames[0]);
+  let subframe1_loaded = getMessageData("load", frames[1]);
+
+  let subframe0_mousedown;
+  let subframe0_mousemove_drag;
+  let subframe0_mouseup;
+
+  let subframe1_mousedown;
+  let subframe1_mousemove;
+  let subframe1_mouseup;
+
+  let mouse_is_dragging;
+
+  promise_setup(async () => {
+    await topframe_loaded;
+    await subframe0_loaded;
+    await subframe1_loaded;
+
+    window.addEventListener("message", e => {
+      if (!e.data || !e.data.type)
+        return;
+
+      if (e.source == frames[0]) {
+        if (e.data.type === "mousedown") {
+          subframe0_mousedown = true;
+          mouse_is_dragging = true;
+        } else if (e.data.type === "mousemove") {
+          if (mouse_is_dragging)
+            subframe0_mousemove_drag = true;
+        } else if (e.data.type === "mouseup") {
+          subframe0_mouseup = true;
+          mouse_is_dragging = false;
+        }
+      } else if (e.source == frames[1]) {
+        if (e.data.type === "mousedown") {
+          subframe1_mousedown = true;
+        } else if (e.data.type === "mousemove") {
+          subframe1_mousemove = true;
+        } else if (e.data.type === "mouseup") {
+          subframe1_mouseup = true;
+        }
+      }
+    });
+  });
+
+  function add_promise_test(cancel_mousedown) {
+    let test_label = "Child frame 1 receives events when mousedown is " +
+        (cancel_mousedown ? "canceled" : "not canceled");
+
+    promise_test(async t => {
+      subframe0_mousedown = false;
+      subframe0_mousemove_drag = false;
+      subframe0_mouseup = false;
+
+      subframe1_mousedown = false;
+      subframe1_mousemove = false;
+      subframe1_mouseup = false;
+
+      mouse_is_dragging = false;
+
+      sendMessage(frames[0], "cancel-mousedown", cancel_mousedown);
+      const mouseup_promise   = getMessageData("mouseup", frames[0]);
+
+      const child_frame0 = document.getElementById("child_frame0");
+      const child_frame1 = document.getElementById("child_frame1");
+      const actions_promise = new test_driver.Actions()
+        .pointerMove(5, 5, {origin: child_frame0})
+        .pointerDown()
+        .pointerMove(5, 5, {origin: child_frame1})
+        .pointerUp()
+        .send();
+
+      await actions_promise;
+      await mouseup_promise;
+
+      assert_true(subframe0_mousedown,      "Child frame 1 received mousedown?");
+      assert_true(subframe0_mousemove_drag, "Child frame 1 received mousemove?");
+      assert_true(subframe0_mouseup,        "Child frame 1 received mouseup?");
+
+      assert_false(subframe1_mousedown, "Child frame 2 received mousedown?");
+      assert_false(subframe1_mousemove, "Child frame 2 received mousemove?");
+      assert_false(subframe1_mouseup,   "Child frame 2 received mouseup?");
+    }, test_label);
+  }
+
+  add_promise_test(false);
+  add_promise_test(true);
+</script>

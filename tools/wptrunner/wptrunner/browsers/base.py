@@ -91,7 +91,7 @@ class BrowserError(Exception):
 BrowserSettings = Mapping[str, Any]
 
 
-class Browser:
+class Browser(metaclass=ABCMeta):
     """Abstract class serving as the basis for Browser implementations.
 
     The Browser is used in the TestRunnerManager to start and stop the browser
@@ -99,7 +99,6 @@ class Browser:
 
     :param logger: Structured logger to use for output.
     """
-    __metaclass__ = ABCMeta
 
     init_timeout: float = 30
 
@@ -291,9 +290,7 @@ class OutputHandler:
                                    command=" ".join(self.command) if self.command else "")
 
 
-class WebDriverBrowser(Browser):
-    __metaclass__ = ABCMeta
-
+class WebDriverBrowser(Browser, metaclass=ABCMeta):
     def __init__(self,
                  logger: StructuredLogger,
                  binary: Optional[str] = None,

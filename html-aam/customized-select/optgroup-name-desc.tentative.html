@@ -251,7 +251,7 @@ test 5: name = foo
 <select>
     <button><selectedcontent></selectedcontent></button>
     <optgroup aria-labelledby=f title=foo data-testname="optgroup title vs aria-labelledby pointing to empty element" data-expectedlabel="foo" class="ex">
-        <div id=f></div>
+        <div id=f></div> <!-- no text within this, so not invalid per the content model -->
         <legend></legend>
         <option>test
     </optgroup>

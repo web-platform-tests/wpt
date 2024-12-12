@@ -83,8 +83,14 @@
 written purely using web platform APIs. Outside of automation
 contexts, it allows human operators to provide expected input
 manually (for operations which may be described in simple terms).</p>
-<p>It is currently supported only for <a class="reference internal" href="testharness.html"><span class="doc">testharness.js</span></a>
-tests.</p>
+<p>testdriver.js supports the following test types:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="testharness.html"><span class="doc">testharness.js</span></a> tests</p></li>
+<li><p><a class="reference internal" href="reftests.html"><span class="doc">reftests</span></a> and <a class="reference internal" href="print-reftests.html"><span class="doc">print-reftests</span></a> that use the
+<code class="docutils literal notranslate"><span class="pre">class=reftest-wait</span></code> attribute on the root element to control completion</p></li>
+<li><p><a class="reference internal" href="crashtest.html"><span class="doc">crashtests</span></a> that use the <code class="docutils literal notranslate"><span class="pre">class=test-wait</span></code> attribute to control
+completion</p></li>
+</ul>
 <section id="markup">
 <h2>Markup<a class="headerlink" href="#markup" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">testdriver.js</span></code> and <code class="docutils literal notranslate"><span class="pre">testdriver-vendor.js</span></code> must both be included

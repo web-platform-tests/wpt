@@ -20,7 +20,6 @@ function runTests(data) {
 }
 
 promise_test(async function() {
-  const response = await fetch('resources/urlpattern-compare-test-data.json');
-  const data = await response.json();
+  const data = await fetch_json('resources/urlpattern-compare-test-data.json');
   runTests(data);
 }, 'Loading data...');

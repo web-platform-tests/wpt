@@ -51,9 +51,14 @@
         }
     }
 
-    function test_valid_attr(property, attrString, attrValue, expectedValue) {
+    function test_valid_attr_with_namespace(property, attrString, attrValue, attrNamespace, expectedValue) {
         var elem = document.getElementById("attr");
         elem.setAttribute("data-foo", attrValue);
+        if (attrNamespace) {
+            elem.setAttributeNS(attrNamespace, "data-foo", attrValue);
+        } else {
+            elem.setAttribute("data-foo", attrValue);
+        }
         elem.style.setProperty(property, attrString);
 
         var expectedElem =  document.getElementById("expected");
@@ -68,6 +73,10 @@
 
         elem.style.setProperty(property, null);
         expectedElem.style.setProperty(property, null);
+    }
+
+    function test_valid_attr(property, attrString, attrValue, expectedValue) {
+        test_valid_attr_with_namespace(property, attrString, attrValue, null, expectedValue);
     }
 
     function test_invalid_attr(property, attrString, attrValue) {
@@ -86,10 +95,26 @@
     }
 
     test_valid_attr('content', 'attr(data-foo)', 'abc', '"abc"');
+    test_valid_attr('content', 'attr(|data-foo)', 'abc', '"abc"');
+    test_valid_attr_with_namespace('content', 'attr(data-foo)', 'abc', 'namespace', '"abc"');
+    test_valid_attr_with_namespace('content', 'attr(|data-foo)', 'abc', 'namespace', '"abc"');
+    test_valid_attr_with_namespace('content', 'attr(namespace|data-foo)', 'abc', 'namespace', '"abc"');
     test_valid_attr('content', 'attr(data-foo string)', 'abc', '"abc"');
+    test_valid_attr('content', 'attr(|data-foo string)', 'abc', '"abc"');
+    test_valid_attr_with_namespace('content', 'attr(data-foo string)', 'abc', 'namespace', '"abc"');
+    test_valid_attr_with_namespace('content', 'attr(|data-foo string)', 'abc', 'namespace', '"abc"');
+    test_valid_attr_with_namespace('content', 'attr(namespace|data-foo string)', 'abc', 'namespace', '"abc"');
     test_valid_attr('content', 'attr(data-foo,)', 'abc', '"abc"');
+    test_valid_attr('content', 'attr(|data-foo,)', 'abc', '"abc"');
+    test_valid_attr_with_namespace('content', 'attr(data-foo,)', 'abc', 'namespace', '"abc"');
+    test_valid_attr_with_namespace('content', 'attr(|data-foo,)', 'abc', 'namespace', '"abc"');
+    test_valid_attr_with_namespace('content', 'attr(namespace|data-foo,)', 'abc', 'namespace', '"abc"');
 
     test_valid_attr('content', 'attr(data-foo type(<string>))', '"abc"', '"abc"');
+    test_valid_attr('content', 'attr(|data-foo type(<string>))', '"abc"', '"abc"');
+    test_valid_attr_with_namespace('content', 'attr(data-foo type(<string>))', '"abc"', 'namespace', '"abc"');
+    test_valid_attr_with_namespace('content', 'attr(|data-foo type(<string>))', '"abc"', 'namespace', '"abc"');
+    test_valid_attr_with_namespace('content', 'attr(namespace|data-foo type(<string>))', '"abc"', 'namespace', '"abc"');
     test_valid_attr('content', 'attr(data-foo type(<string>),)', '"abc"', '"abc"');
     test_valid_attr('content', 'attr(data-foo type(<string>))', '"attr(data-foo)"', '"attr(data-foo)"');
 
@@ -106,6 +131,10 @@
     test_valid_attr('background-color', 'attr(data-foo type(<color>))', 'light-dark(#333b3c, #efefec)', 'light-dark(#333b3c, #efefec)');
 
     test_valid_attr('font-weight', 'attr(data-foo type(<number>))', '10', '10');
+    test_valid_attr('font-weight', 'attr(|data-foo type(<number>))', '10', '10');
+    test_valid_attr_with_namespace('font-weight', 'attr(data-foo type(<number>))', '10', 'namespace', '10');
+    test_valid_attr_with_namespace('font-weight', 'attr(|data-foo type(<number>))', '10', 'namespace', '10');
+    test_valid_attr_with_namespace('font-weight', 'attr(namespace|data-foo type(<number>))', '10', 'namespace', '10');
     test_valid_attr('font-weight', 'attr(data-foo type(<number>), 30)', '10px', '30');
     test_valid_attr('font-weight', 'attr(data-foo type(<number> | lighter | bold), bold)', 'lighter', 'lighter');
     test_valid_attr('font-weight', 'attr(data-foo type(<number> |  lighter | bold), lighter)', '10px', 'lighter');
@@ -143,6 +172,8 @@
     test_dimension_types_and_units();
 
     test_invalid_attr('animation-name', 'attr(data-foo type(string))', 'abc');
+    test_invalid_attr('animation-name', 'attr(| data-foo type(string))', 'abc');
+    test_invalid_attr('animation-name', 'attr(*|data-foo type(string))', 'abc');
     test_invalid_attr('animation-name', 'attr(data-foo type(< string>))', 'abc');
     test_invalid_attr('animation-name', 'attr(data-foo type(<string >))', 'abc');
 

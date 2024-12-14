@@ -205,7 +205,7 @@ def update_properties():
 
 class ChromeBrowser(WebDriverBrowser):
 
-    # Chrome browser's default startup time is 60 seconds. Use 65 seconds here
+    # Chrome browser's default startup timeout is 60 seconds. Use 65 seconds here
     # to allow error message be displayed if that happens.
     init_timeout: float = 65
 

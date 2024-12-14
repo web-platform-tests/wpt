@@ -1,3 +1,4 @@
+// META: global=window,dedicatedworker,shadowrealm
 // META: title=Event constructors
 
 test(function() {

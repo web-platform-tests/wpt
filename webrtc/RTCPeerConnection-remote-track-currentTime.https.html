@@ -49,15 +49,24 @@ async function setupMediaElementAndCheckInitialCurrentTime(t, track) {
 
 async function checkCurrentTimeProgressing(t, elem) {
   const currentTime1 = elem.currentTime;
+  // Note that when `currentTime1` was updated by the UA, it dispatched a task
+  // to fire a "timeupdate" event (per the "time marches on" algorithm in the
+  // spec). This event may not have fired yet, which is why we must wait for two
+  // such events.
   try {
     await Promise.race([
-      waitUntilEvent(elem, "timeupdate"),
+      (async () =>
+       {
+         await waitUntilEvent(elem, "timeupdate");
+         await waitUntilEvent(elem, "timeupdate");
+       }
+      )(),
       new Promise((res, rej) => t.step_timeout(rej, 3000)),
     ]);
   } catch(e) {
     assert_unreached("Timed out waiting for timeupdate");
   }
-  assert_not_equals(currentTime1, elem.currentTime);
+  assert_greater_than(elem.currentTime, currentTime1);
 }
 
 async function setSenderActive(t, sender, active) {

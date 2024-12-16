@@ -877,6 +877,18 @@ class Epiphany(BrowserSetup):
             kwargs["webdriver_binary"] = webdriver_binary
 
 
+class WebKitWinMiniBrowser(BrowserSetup):
+    name = "webkitwin_minibrowser"
+    browser_cls = browser.WebKitWinMiniBrowser
+
+    def install(self, channel=None):
+        raise NotImplementedError
+
+    def setup_kwargs(self, kwargs):
+        if kwargs["webdriver_binary"] is None:
+            raise WptrunError("Missing required argument --webdriver-binary")
+
+
 product_setup = {
     "android_webview": AndroidWebview,
     "firefox": Firefox,
@@ -898,6 +910,7 @@ product_setup = {
     "wpewebkit_minibrowser": WPEWebKitMiniBrowser,
     "epiphany": Epiphany,
     "ladybird": Ladybird,
+    "webkitwin_minibrowser": WebKitWinMiniBrowser,
 }
 
 

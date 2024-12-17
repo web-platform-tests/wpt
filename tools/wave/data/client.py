@@ -1,6 +1,6 @@
 # mypy: allow-untyped-defs
 
-class Client:
+class Client(object):
     def __init__(self, session_token):
         self.session_token = session_token
 

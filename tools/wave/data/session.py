@@ -9,8 +9,11 @@ ABORTED = "aborted"
 PENDING = "pending"
 UNKNOWN = "unknown"
 
+WMAS = "wmas"
+DPCTF = "dpctf"
 
-class Session:
+
+class Session(object):
     def __init__(
             self,
             token=None,
@@ -32,7 +35,6 @@ class Session:
             reference_tokens=None,
             browser=None,
             expiration_date=None,
-            type=None,
             malfunctioning_tests=None
     ):
         if token is None:
@@ -72,7 +74,6 @@ class Session:
         self.reference_tokens = reference_tokens
         self.browser = browser
         self.expiration_date = expiration_date
-        self.type = type
         if malfunctioning_tests is None:
             malfunctioning_tests = []
         self.malfunctioning_tests = malfunctioning_tests

@@ -743,8 +743,9 @@ class SourceFile:
     def ___get_testdriver_include_path(self) -> Optional[str]:
         if self.script_metadata:
             for (meta, content) in self.script_metadata:
-                if meta.strip() == 'script' and content.startswith(
-                        '/resources/testdriver.js'):
+                if meta.strip() == 'script' and (
+                        content == '/resources/testdriver.js' or content.startswith(
+                        '/resources/testdriver.js?')):
                     return content.strip()
 
         if self.root is None:

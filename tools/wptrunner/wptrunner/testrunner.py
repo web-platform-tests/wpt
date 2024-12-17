@@ -1,6 +1,8 @@
 # mypy: allow-untyped-defs
 
+import random
 import threading
+import time
 import traceback
 from queue import Empty
 from collections import namedtuple, defaultdict
@@ -340,7 +342,8 @@ class TestRunnerManager(threading.Thread):
                  test_implementations, stop_flag, retry_index=0, rerun=1,
                  pause_after_test=False, pause_on_unexpected=False,
                  restart_on_unexpected=True, debug_info=None,
-                 capture_stdio=True, restart_on_new_group=True, recording=None, max_restarts=5):
+                 capture_stdio=True, restart_on_new_group=True, recording=None,
+                 max_restarts=5, max_restart_backoff=0):
         """Thread that owns a single TestRunner process and any processes required
         by the TestRunner (e.g. the Firefox binary).
 
@@ -391,6 +394,7 @@ class TestRunnerManager(threading.Thread):
         self.capture_stdio = capture_stdio
         self.restart_on_new_group = restart_on_new_group
         self.max_restarts = max_restarts
+        self.max_restart_backoff = max_restart_backoff
 
         assert recording is not None
         self.recording = recording
@@ -595,6 +599,12 @@ class TestRunnerManager(threading.Thread):
         if self.state.failure_count > self.max_restarts:
             self.logger.critical("Max restarts exceeded")
             return RunnerManagerState.error()
+        elif self.state.failure_count > 0 and self.max_restart_backoff:
+            # Subtract one so we start with 2**0 (i.e., 1)
+            base_backoff = min(self.max_restart_backoff, 2**(self.state.failure_count-1))
+            used_backoff = base_backoff + random.uniform(0, 1)
+            self.logger.info(f"Waiting {used_backoff:.2f}s before restarting browser")
+            time.sleep(used_backoff)
 
         if (self.state.subsuite, self.state.test_type) != self.test_implementation_key:
             if self.browser is not None:
@@ -1049,7 +1059,8 @@ class ManagerGroup:
                  capture_stdio=True,
                  restart_on_new_group=True,
                  recording=None,
-                 max_restarts=5):
+                 max_restarts=5,
+                 max_restart_backoff=0):
         self.suite_name = suite_name
         self.test_queue_builder = test_queue_builder
         self.test_implementations = test_implementations
@@ -1064,6 +1075,7 @@ class ManagerGroup:
         self.recording = recording
         assert recording is not None
         self.max_restarts = max_restarts
+        self.max_restart_backoff = max_restart_backoff
 
         self.pool = set()
         self.stop_flag = None
@@ -1096,7 +1108,8 @@ class ManagerGroup:
                                         self.capture_stdio,
                                         self.restart_on_new_group,
                                         recording=self.recording,
-                                        max_restarts=self.max_restarts)
+                                        max_restarts=self.max_restarts,
+                                        max_restart_backoff=self.max_restart_backoff)
             manager.start()
             self.pool.add(manager)
         self.wait()

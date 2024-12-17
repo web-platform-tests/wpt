@@ -241,9 +241,9 @@ class TestEnvironment:
         for path, format_args, content_type, route in [
                 ("testharness_runner.html", {}, "text/html", "/testharness_runner.html"),
                 ("print_pdf_runner.html", {}, "text/html", "/print_pdf_runner.html"),
-                (os.path.join(here, "..", "..", "third_party", "pdf_js", "pdf.js"), {},
+                (os.path.join(here, "..", "..", "third_party_js", "pdf_js", "pdf.js"), {},
                  "text/javascript", "/_pdf_js/pdf.js"),
-                (os.path.join(here, "..", "..", "third_party", "pdf_js", "pdf.worker.js"), {},
+                (os.path.join(here, "..", "..", "third_party_js", "pdf_js", "pdf.worker.js"), {},
                  "text/javascript", "/_pdf_js/pdf.worker.js"),
                 (
                     self.options.get("testharnessreport", [

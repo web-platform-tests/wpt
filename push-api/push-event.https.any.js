@@ -79,20 +79,38 @@ promise_setup(async () => {
 promise_test(async (t) => {
   const { vapid, subscription } = await subscribe(t);
 
-  const data = await pushMessage(subscription, { vapid });
+  const event = await pushMessage(subscription, { vapid });
 
-  assert_equals(data.constructor, "PushEvent");
-  assert_equals(data.data, null);
+  assert_equals(event.constructor, "PushEvent");
+  assert_equals(event.data, null);
 }, "Posting to the push endpoint should fire push event on the service worker");
 
-promise_test(async (t) => {
-  const { vapid, subscription } = await subscribe(t);
+const entries = [
+  { isJSON: false, message: new TextEncoder().encode("Hello") },
+  { isJSON: false, message: new Uint8Array([226, 130, 40, 240, 40, 140, 188]) },
+  { isJSON: true, message: new TextEncoder().encode(JSON.stringify({ hello: "world" })) },
+  { isJSON: false, message: new Uint8Array() },
+  { isJSON: false, message: new Uint8Array([0x48, 0x69, 0x21, 0x20, 0xf0, 0x9f, 0x91, 0x80]) },
+];
 
-  const data = await pushMessage(subscription, {
-    vapid,
-    message: new TextEncoder().encode("Hello"),
-  });
+for (const { isJSON, message } of entries) {
+  promise_test(async (t) => {
+    const { vapid, subscription } = await subscribe(t);
 
-  assert_equals(data.constructor, "PushEvent");
-  assert_equals(new TextDecoder().decode(data.data), "Hello");
-}, "Posting to the push endpoint with encrypted data should fire push event on the service worker");
+    const event = await pushMessage(subscription, { vapid, message });
+
+    assert_equals(event.constructor, "PushEvent");
+    assert_array_equals(new Uint8Array(event.data.arrayBuffer), message);
+    assert_array_equals(new Uint8Array(await event.data.blob.arrayBuffer()), message);
+    assert_equals(event.data.text, new TextDecoder().decode(message));
+
+    assert_equals(event.data.json.ok, isJSON);
+    if (isJSON) {
+      assert_array_equals(
+        new TextEncoder().encode(JSON.stringify(event.data.json.value)),
+        message
+      );
+    }
+
+  }, `Posting to the push endpoint with encrypted data ${message} should fire push event on the service worker`);
+}

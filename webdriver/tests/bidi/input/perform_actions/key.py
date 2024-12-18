@@ -19,13 +19,13 @@ async def test_invalid_browsing_context(bidi_session):
         await bidi_session.input.perform_actions(actions=actions, context="foo")
 
 
-async def test_browsing_context_closed_before_key_up(bidi_session,
-        configuration, new_tab, get_test_page):
-    """
-    If the browsing context is closed during the action chain, the action
-    command should fail with `NoSuchFrame` error code.
-    """
-    url = get_test_page()
+async def test_key_down_closes_browsing_context(
+    bidi_session, configuration, new_tab, inline
+):
+    url = inline("""
+        <input onkeydown="window.close()">close</input>
+        <script>document.querySelector("input").focus();</script>
+        """)
 
     await bidi_session.browsing_context.navigate(
         context=new_tab["context"],
@@ -41,13 +41,10 @@ async def test_browsing_context_closed_before_key_up(bidi_session,
         .key_up("w")
     )
 
-    actions_command_future = bidi_session.input.perform_actions(
-        actions=actions, context=new_tab["context"])
-
-    await bidi_session.browsing_context.close(context=new_tab["context"])
-
     with pytest.raises(NoSuchFrameException):
-        await actions_command_future
+        await bidi_session.input.perform_actions(
+            actions=actions, context=new_tab["context"]
+        )
 
 
 async def test_key_backspace(bidi_session, top_context, setup_key_test):

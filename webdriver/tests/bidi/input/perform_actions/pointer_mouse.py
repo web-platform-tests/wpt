@@ -17,10 +17,14 @@ from . import (
 pytestmark = pytest.mark.asyncio
 
 
-async def test_pointer_down_closes_browsing_context(
-    bidi_session, configuration, get_element, new_tab, inline
+async def test_browsing_context_closed_before_pointer_up(
+    bidi_session, configuration, get_element, new_tab, get_test_page
 ):
-    url = inline("""<input onpointerdown="window.close()">close</input>""")
+    """
+    If the browsing context is closed during the action chain, the action
+    command should fail with `NoSuchFrame` error code.
+    """
+    url = get_test_page()
     await bidi_session.browsing_context.navigate(
         context=new_tab["context"],
         url=url,
@@ -39,10 +43,13 @@ async def test_pointer_down_closes_browsing_context(
         .pointer_up(button=0)
     )
 
+    actions_command_future = bidi_session.input.perform_actions(
+        actions=actions, context=new_tab["context"])
+
+    await bidi_session.browsing_context.close(context=new_tab["context"])
+
     with pytest.raises(NoSuchFrameException):
-        await bidi_session.input.perform_actions(
-            actions=actions, context=new_tab["context"]
-        )
+        await actions_command_future
 
 
 async def test_click_at_coordinates(bidi_session, top_context, load_static_test_page):

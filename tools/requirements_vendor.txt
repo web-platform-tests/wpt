@@ -4,10 +4,7 @@ certifi==2018.4.16
 exceptiongroup==1.2.1
 h2==4.1.0
 hpack==4.0.0
-
-# This is commit _after_ the 1.1 release, probably due to a mistake during vendoring html5lib previously.
-html5lib @ git+https://github.com/html5lib/html5lib-python.git@f4646e6ed4eeb9780f67d2083d0c09c8fffbec53
-
+html5lib==1.1
 hyperframe==6.0.1
 importlib-metadata==2.1.0
 iniconfig==1.1.1

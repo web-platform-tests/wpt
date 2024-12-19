@@ -1,0 +1,47 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "pyhpke"
+version = "0.6.1"
+description = "A Python implementation of HPKE."
+authors = ["Ajitomi Daisuke <dajiaji@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/dajiaji/pyhpke"
+
+include = [
+  "CHANGES.rst",
+  "docs",
+  "poetry.lock",
+  "tests",
+  "tox.ini",
+]
+
+exclude = [
+  "docs/_build",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4.0"
+cryptography = ">=42.0.1,<44"
+Sphinx = {version = ">=7.1,<8", optional = true, extras = ["docs"]}
+sphinx-autodoc-typehints = {version = ">=1.25.2", optional = true, extras = ["docs"]}
+sphinx-rtd-theme = {version = ">=1.2.1", optional = true, extras = ["docs"]}
+
+[tool.poetry.extras]
+docs = [
+  "Sphinx",
+  "sphinx-rtd-theme",
+  "sphinx-autodoc-typehints",
+]
+
+[tool.poetry.dev-dependencies]
+pytest = ">=7.4.2"
+pytest-cov = ">=4.1.0"
+tox = ">=4.11.3"
+pre-commit = ">=3.4.0"
+
+[tool.poetry.group.dev.dependencies]
+sphinx-rtd-theme = "^3.0.2"

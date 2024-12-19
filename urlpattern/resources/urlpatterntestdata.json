@@ -1145,7 +1145,10 @@
   {
     "pattern": [{ "protocol": "http", "port": "80 " }],
     "inputs": [{ "protocol": "http", "port": "80" }],
-    "expected_obj": "error"
+    "exactly_empty_components": ["port"],
+    "expected_match": {
+      "protocol": { "input": "http", "groups": {} }
+    }
   },
   {
     "pattern": [{ "port": "80" }],

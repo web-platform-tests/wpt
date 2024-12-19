@@ -115,8 +115,16 @@ Add testdriver.js support for the [<span class="nt">Set Window Rect command</spa
 <p>We will leave this unimplemented and override it in another file. Lets do that now!</p>
 <section id="webdriver-bidi">
 <h4>WebDriver BiDi<a class="headerlink" href="#webdriver-bidi" title="Link to this heading">¶</a></h4>
-<p>For commands using WebDriver BiDi, add the methods to <code class="docutils literal notranslate"><span class="pre">window.test_driver.bidi</span></code>. Parameters are passed as a single object <code class="docutils literal notranslate"><span class="pre">params</span></code>.</p>
-<!-- TODO: add an example link once a first bidi command (probably `test_driver.bidi.permissions.set_permission`) is implemented.--></section>
+<p>For commands using WebDriver BiDi, add the methods to <code class="docutils literal notranslate"><span class="pre">test_driver.bidi</span></code>. Parameters are passed as a single object <code class="docutils literal notranslate"><span class="pre">params</span></code>. For example <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/5ec8ba6d68f27d49a056cbf940e3bc9a8324c538/resources/testdriver.js#L183"><code class="docutils literal notranslate"><span class="pre">test_driver.bidi.permissions.set_permission</span></code></a>.</p>
+<p>Before calling <code class="docutils literal notranslate"><span class="pre">test_driver_internal</span></code> method, assert the <code class="docutils literal notranslate"><span class="pre">bidi</span></code> testdriver feature is enabled.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">set_permission</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">params</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">assertBidiIsEnabled</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">test_driver_internal</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">permissions</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">(</span>
+<span class="w">        </span><span class="nx">params</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="tools-wptrunner-wptrunner-testdriver-extra-js">
 <h3><a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/testdriver-extra.js">tools/wptrunner/wptrunner/testdriver-extra.js</a><a class="headerlink" href="#tools-wptrunner-wptrunner-testdriver-extra-js" title="Link to this heading">¶</a></h3>

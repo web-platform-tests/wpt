@@ -2370,15 +2370,24 @@
   },
   {
     "pattern": [{ "hostname": "bad#hostname" }],
-    "expected_obj": "error"
+    "exactly_empty_components": ["port"],
+    "expected_match": {
+      "hostname": { "input": "bad", "groups": {} }
+    }
   },
   {
     "pattern": [{ "hostname": "bad%hostname" }],
-    "expected_obj": "error"
+    "exactly_empty_components": ["port"],
+    "expected_match": {
+      "hostname": { "input": "bad%hostname", "groups": {} }
+    }
   },
   {
     "pattern": [{ "hostname": "bad/hostname" }],
-    "expected_obj": "error"
+    "exactly_empty_components": ["port"],
+    "expected_match": {
+      "hostname": { "input": "bad", "groups": {} }
+    }
   },
   {
     "pattern": [{ "hostname": "bad\\:hostname" }],
@@ -2422,15 +2431,24 @@
   },
   {
     "pattern": [{ "hostname": "bad\nhostname" }],
-    "expected_obj": "error"
+    "exactly_empty_components": ["port"],
+    "expected_match": {
+      "hostname": { "input": "badhostname", "groups": {} }
+    }
   },
   {
     "pattern": [{ "hostname": "bad\rhostname" }],
-    "expected_obj": "error"
+    "exactly_empty_components": ["port"],
+    "expected_match": {
+      "hostname": { "input": "badhostname", "groups": {} }
+    }
   },
   {
     "pattern": [{ "hostname": "bad\thostname" }],
-    "expected_obj": "error"
+    "exactly_empty_components": ["port"],
+    "expected_match": {
+      "hostname": { "input": "badhostname", "groups": {} }
+    }
   },
   {
     "pattern": [{}],

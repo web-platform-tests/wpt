@@ -29,7 +29,7 @@ promise_test(async t => {
   const capabilities = track.getCapabilities();
 
   assert_true("deviceId" in settings);
-  assert_equals(capabilities.deviceId, settings.deviceId);  
+  assert_equals(capabilities.deviceId, settings.deviceId);
 }, "getDisplayMedia() deviceId setting and capability");
 
 promise_test(async t => {
@@ -39,7 +39,7 @@ promise_test(async t => {
 
   const settings = track.getSettings();
   const capabilities = track.getCapabilities();
-alert(JSON.stringify(capabilities));
+
   assert_false("facingMode" in settings);
   assert_false("facingMode" in capabilities);
 }, "getDisplayMedia() and facingMode");

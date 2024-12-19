@@ -362,21 +362,7 @@ class TestRunnerManager(threading.Thread):
         self.suite_name = suite_name
         self.manager_number = index
         self.test_implementation_key = None
-
-        self.test_implementations = {}
-        for key, test_implementation in test_implementations.items():
-            browser_kwargs = test_implementation.browser_kwargs
-            if browser_kwargs.get("device_serial"):
-                browser_kwargs = browser_kwargs.copy()
-                # Assign Android device to runner according to current manager index
-                browser_kwargs["device_serial"] = browser_kwargs["device_serial"][index]
-                self.test_implementations[key] = TestImplementation(
-                    test_implementation.executor_cls,
-                    test_implementation.executor_kwargs,
-                    test_implementation.browser_cls,
-                    browser_kwargs)
-            else:
-                self.test_implementations[key] = test_implementation
+        self.test_implementations = test_implementations
 
         # Flags used to shut down this thread if we get a sigint
         self.parent_stop_flag = stop_flag
@@ -612,6 +598,7 @@ class TestRunnerManager(threading.Thread):
                 self.browser.browser.cleanup()
             impl = self.test_implementations[(self.state.subsuite, self.state.test_type)]
             browser = impl.browser_cls(self.logger,
+                                       manager_number=self.manager_number,
                                        **impl.browser_kwargs)
             browser.setup()
             self.browser = BrowserManager(self.logger,

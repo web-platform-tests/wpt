@@ -1151,6 +1151,11 @@
     }
   },
   {
+    "pattern": [{ "protocol": "http", "port": "100000" }],
+    "inputs": [{ "protocol": "http", "port": "100000" }],
+    "expected_obj": "error"
+  },
+  {
     "pattern": [{ "port": "80" }],
     "inputs": [{ "protocol": "http", "port": "80" }],
     "expected_match": null

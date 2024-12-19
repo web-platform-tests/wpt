@@ -508,7 +508,7 @@ def test_testdriver_unsupported_query_param():
         if kind in ["web-lax", "web-strict"]:
             assert errors == [
                 ("TESTDRIVER-UNSUPPORTED-QUERY-PARAMETER",
-                 "testdriver.js script seen with incorrect query parameters",
+                 "testdriver.js script seen with unsupported query parameters",
                  filename, None),
             ]
         elif kind == "python":
@@ -532,7 +532,11 @@ def test_testdriver_vendor_query_param():
         check_errors(errors)
 
         if kind in ["web-lax", "web-strict"]:
-            assert errors == []
+            assert errors == [
+                ('TESTDRIVER-UNSUPPORTED-QUERY-PARAMETER',
+                 'testdriver.js script seen with unsupported query parameters',
+                 filename, None)
+            ]
         elif kind == "python":
             assert errors == [
                 ("PARSE-FAILED", "Unable to parse file", filename, 2),
@@ -556,7 +560,7 @@ def test_testdriver_unsupported_feature():
         if kind in ["web-lax", "web-strict"]:
             assert errors == [
                 ("TESTDRIVER-UNSUPPORTED-QUERY-PARAMETER",
-                 "testdriver.js script seen with incorrect query parameters",
+                 "testdriver.js script seen with unsupported query parameters",
                  filename, None),
             ]
         elif kind == "python":
@@ -565,7 +569,7 @@ def test_testdriver_unsupported_feature():
             ]
 
 
-def test_testdriver_multiple_unsupported_features():
+def test_testdriver_multiple_with_unsupported_features():
     code = b"""
 <html xmlns="http://www.w3.org/1999/xhtml">
 <script src="/resources/testharness.js"></script>
@@ -582,7 +586,7 @@ def test_testdriver_multiple_unsupported_features():
         if kind == "web-lax":
             assert errors == [
                 ('TESTDRIVER-UNSUPPORTED-QUERY-PARAMETER',
-                 'testdriver.js script seen with incorrect query parameters',
+                 'testdriver.js script seen with unsupported query parameters',
                  filename, None)
             ]
         elif kind == "python":
@@ -660,7 +664,7 @@ def test_testdriver_unsupported_empty_feature():
         if kind in ["web-lax", "web-strict"]:
             assert errors == [
                 ("TESTDRIVER-UNSUPPORTED-QUERY-PARAMETER",
-                 "testdriver.js script seen with incorrect query parameters",
+                 "testdriver.js script seen with unsupported query parameters",
                  filename, None),
             ]
         elif kind == "python":

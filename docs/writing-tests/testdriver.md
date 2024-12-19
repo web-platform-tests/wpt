@@ -38,7 +38,7 @@ The api in `test_driver.bidi` provides access to the
 
 ### Markup ###
 
-To use WebDriver BiDi, enable the `bidi` feature in `testdriver.js` by adding
+To use WebDriver BiDi, enable the `bidi` feature in `testdriver.js` by adding the
 `feature=bidi` query string parameter. Details are in [RFC 214: Add testdriver features](https://github.com/web-platform-tests/rfcs/blob/master/rfcs/testdriver-features.md).
 ```html
 <script src="/resources/testdriver.js?feature=bidi"></script>

@@ -524,16 +524,23 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
         src = element.attrib["src"]
 
         def is_path_correct(script: Text, src: Text) -> bool:
+            """
+            If the `src` relevant to the `script`, check that the `src` is the
+            correct path for `script`.
+            :param script: the script name to check the `src` for.
+            :param src: the included path.
+            :return: if the `src` irrelevant to the `script`, or if the `src`
+                     path is the correct path.
+            """
             if script == src:
                 # The src does not provide the full path.
                 return False
 
             if "/%s" % script not in src:
-                # The src is not related to the script.
+                # The src is not relevant to the script.
                 return True
 
-            return src == "/resources/%s" % script or ("%s" % src).startswith(
-                "/resources/%s?" % script)
+            return ("%s" % src).startswith("/resources/%s" % script)
 
         def is_query_string_correct(script: Text, src: Text,
                 allowed_query_string_params: Dict[str, List[str]]) -> bool:
@@ -553,7 +560,7 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
                                                 allowed parameter names and
                                                 values are lists of allowed
                                                 values for each parameter.
-            :return: if the query string does not contain any not-allowed
+            :return: if the query string is empty or contains only allowed
                      params.
             """
             if not ("%s" % src).startswith("/resources/%s?" % script):
@@ -569,10 +576,6 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
                 return False
 
             for param_name in query_string_params:
-                if ':' in param_name:
-                    # Allow for vendor-specific query parameters.
-                    continue
-
                 if param_name not in allowed_query_string_params:
                     return False
 

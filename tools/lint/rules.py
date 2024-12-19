@@ -276,7 +276,7 @@ class TestdriverPath(Rule):
 
 class TestdriverUnsupportedQueryParameter(Rule):
     name = "TESTDRIVER-UNSUPPORTED-QUERY-PARAMETER"
-    description = "testdriver.js script seen with incorrect query parameters"
+    description = "testdriver.js script seen with unsupported query parameters"
 
 
 class TestdriverVendorPath(Rule):

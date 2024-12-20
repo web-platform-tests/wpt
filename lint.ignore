@@ -120,6 +120,7 @@ CONSOLE: service-workers/service-worker/navigation-redirect.https.html
 CONSOLE: service-workers/service-worker/resources/clients-get-other-origin.html
 CONSOLE: webrtc/tools/*
 CONSOLE: webaudio/resources/audit.js:41
+CONSOLE: webdriver/tests/classic/web_extensions/resources/extension/background.js
 
 # Intentional use of console.*
 CONSOLE: infrastructure/webdriver/bidi/subscription.html

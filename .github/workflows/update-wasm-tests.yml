@@ -13,7 +13,7 @@ jobs:
       - name: Checkout WPT repo
         uses: actions/checkout@v4
         with:
-          path: main
+          path: wpt
       - name: Checkout Wasm repo
         uses: actions/checkout@v4
         with:
@@ -30,16 +30,15 @@ jobs:
       - name: Convert WAST tests to WPT
         run: wasm-spec/test/build.py --dont-recompile --html wasm-spec/out/
       - name: Copy Wasm tests to WPT
-        # Replace wasm/core entirely and fix up testharness paths.
+        # Replace wasm/core entirely.
         run: |
-          rm -rf main/wasm/core
-          cp -r wasm-spec/out/ main/wasm/core/
-          find main/wasm/core/ -type f -name '*.html' -exec sed -i 's/\.\/js\/harness\/testharness/\/resources\/testharness/' {} \;
+          rm -rf wpt/wasm/core
+          cp -r wasm-spec/out/ wpt/wasm/core/
       - name: Commit changes
         id: commit
         continue-on-error: true
         run: |
-          cd main
+          cd wpt
           export BRANCH_NAME="$BRANCH_PREFIX-$(date +'%Y%m%d%H%M%S')"
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
           git config user.name "$GIT_AUTHOR_NAME"
@@ -56,7 +55,7 @@ jobs:
         # Check outcome for success as continue-on-error will mask failure.
         if: ${{ steps.commit.outcome == 'success' }}
         run: |
-          cd main
+          cd wpt
           git push --set-upstream origin $BRANCH_NAME
           gh pr create --title "$COMMIT_TITLE" --body "$PR_BODY" --reviewer past
         env:

@@ -24,13 +24,21 @@ def test_no_browsing_context(session, closed_frame, key_chain):
 def test_key_down_closes_browsing_context(
     session, configuration, http_new_tab, inline, key_chain
 ):
-    session.url = inline("""
+    url = inline("""
         <input onkeydown="window.close()">close</input>
         <script>document.querySelector("input").focus();</script>
         """)
+
+    # Open a new window.
+    resp = session.execute_script(f"return window.open('{url}')")
+    new_window_handle = resp.id
+
+    # Switch to the new window.
+    session.window_handle = new_window_handle
+
     with pytest.raises(NoSuchWindowException):
         key_chain.key_down("w") \
-            .pause(100 * configuration["timeout_multiplier"]) \
+            .pause(250 * configuration["timeout_multiplier"]) \
             .key_up("w") \
             .perform()
 

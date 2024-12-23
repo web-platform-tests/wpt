@@ -426,7 +426,7 @@ scheme host and port.""")
     return parser
 
 
-def set_from_config(kwargs):
+def set_from_config(kwargs, product_is_optional=False):
     if kwargs["config"] is None:
         config_path = config.path()
     else:
@@ -436,7 +436,8 @@ def set_from_config(kwargs):
 
     kwargs["config"] = config.read(kwargs["config_path"])
 
-    kwargs["product"] = products.Product(kwargs["config"], kwargs["product"])
+    if not product_is_optional or kwargs["product"] is not None:
+        kwargs["product"] = products.Product(kwargs["config"], kwargs["product"])
 
     keys = {"paths": [("prefs", "prefs_root", "path"),
                       ("run_info", "run_info", "path"),
@@ -685,7 +686,7 @@ def check_args(kwargs):
 
 
 def check_args_metadata_update(kwargs):
-    set_from_config(kwargs)
+    set_from_config(kwargs, product_is_optional=True)
 
     for item in kwargs["run_log"]:
         if os.path.isdir(item):
@@ -722,7 +723,7 @@ def create_parser_metadata_update(product_choices=None):
                                      description="Update script for web-platform-tests tests.")
     # This will be removed once all consumers are updated to the properties-file based system
     parser.add_argument("--product", choices=product_choices,
-                        default="firefox", help=argparse.SUPPRESS)
+                        help=argparse.SUPPRESS)
     parser.add_argument("--config", type=abs_path, help="Path to config file")
     parser.add_argument("--metadata", type=abs_path, dest="metadata_root",
                         help="Path to the folder containing test metadata")

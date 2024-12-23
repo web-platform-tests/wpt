@@ -1,0 +1,6 @@
+features:
+- name: streams
+  files: "**"
+- name: async-iterable-streams
+  files:
+    - async-iterator.any.js

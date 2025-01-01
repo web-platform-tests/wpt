@@ -1,66 +1,77 @@
+const globalThisStr = getGlobalThisStr();
+
 // setTimeout tests
 // TrustedScript assignments do not throw.
 async_test(t => {
-  window.timeoutTest = t;
-  let policy = createScript_policy(window, 'timeout');
-  let script = policy.createScript("window.timeoutTest.done();");
+  globalThis.timeoutTest = t;
+  let policy = createScript_policy(globalThis, 'timeout');
+  let script = policy.createScript("globalThis.timeoutTest.done();");
   setTimeout(script);
-}, "window.setTimeout assigned via policy (successful Script transformation).");
+}, `${globalThisStr}.setTimeout assigned via policy (successful Script transformation).`);
 
 // String assignments throw.
 test(t => {
-  window.timeoutTestString = t.unreached_func();
+  globalThis.timeoutTestString = t.unreached_func();
   assert_throws_js(TypeError, _ => {
-    setTimeout("window.timeoutTestString();");
+    setTimeout("globalThis.timeoutTestString();");
   });
-}, "`window.setTimeout(string)` throws.");
+}, `\`${globalThisStr}.setTimeout(string)\` throws.`);
 
 // Null assignment throws.
 test(t => {
   assert_throws_js(TypeError, _ => {
-    setTimeout(null);
+    globalThis.setTimeout(null);
   });
-}, "`window.setTimeout(null)` throws.");
+}, `\`${globalThisStr}.setTimeout(null)\` throws.`);
 
 // setInterval tests
 // TrustedScript assignments do not throw.
 async_test(t => {
-  window.intervalTest = t;
-  let policy = createScript_policy(window, 'script');
-  let script = policy.createScript("window.intervalTest.done();");
-  setInterval(script);
-}, "window.setInterval assigned via policy (successful Script transformation).");
+  globalThis.intervalTest = t;
+  let policy = createScript_policy(globalThis, 'script');
+  let script = policy.createScript("globalThis.intervalTest.done();");
+  globalThis.setInterval(script);
+}, `${globalThisStr}.setInterval assigned via policy (successful Script transformation).`);
 
 // String assignments throw.
 test(t => {
-  window.intervalTestString = t.unreached_func();
+  globalThis.intervalTestString = t.unreached_func();
   assert_throws_js(TypeError, _ => {
-    setInterval("window.intervalTestString()");
+    globalThis.setInterval("globalThis.intervalTestString()");
   });
-}, "`window.setInterval(string)` throws.");
+}, `\`${globalThisStr}.setInterval(string)\` throws.`);
 
 // Null assignment throws.
 test(t => {
   assert_throws_js(TypeError, _ => {
-    setInterval(null);
+    globalThis.setInterval(null);
   });
-}, "`window.setInterval(null)` throws.");
+}, `\`${globalThisStr}.setInterval(null)\` throws.`);
 
-let policy = window.trustedTypes.createPolicy("default", { createScript: (x, _, sink) => {
-  if (x === "timeoutTestString") {
-    assert_equals(sink, 'Window setTimeout');
-  } else if (x === "intervalTestString") {
-    assert_equals(sink, 'Window setInterval');
+const kTimeoutTestString = "timeoutTestString";
+const kIntervalTestString = "intervalTestString";
+
+let policy = globalThis.trustedTypes.createPolicy("default", { createScript: (x, _, sink) => {
+  if (x === kTimeoutTestString) {
+    assert_equals(sink, `${globalThisStr} setTimeout`);
+  } else if (x === kIntervalTestString) {
+    assert_equals(sink, `${globalThisStr} setInterval`);
   }
   return "0";
 }});
 // After default policy creation string assignment implicitly calls createScript.
 test(t => {
-  setTimeout(INPUTS.SCRIPT);
-  setInterval(INPUTS.SCRIPT);
-}, "`setTimeout(string)`, `setInterval(string)` via default policy (successful Script transformation).");
+  globalThis.setTimeout(INPUTS.SCRIPT);
+  globalThis.setInterval(INPUTS.SCRIPT);
+}, `\`${globalThisStr}.setTimeout(string)\`, \`${globalThisStr}.setInterval(string)\` via default policy (successful Script transformation).`);
 // After default policy creation null assignment implicitly calls createScript.
 test(t => {
-  setTimeout(null);
-  setInterval(null);
-}, "`setTimeout(null)`, `setInterval(null)` via default policy (successful Script transformation).");
+  globalThis.setTimeout(null);
+  globalThis.setInterval(null);
+}, `\`${globalThisStr}.setTimeout(null)\`, \`${globalThisStr}.setInterval(null)\` via default policy (successful Script transformation).`);
+
+test(t => {
+  globalThis.setTimeout(kTimeoutTestString);
+  globalThis.setInterval(kIntervalTestString);
+}, `${globalThisStr}.setTimeout and ${globalThisStr}.setInterval pass the correct sink to the default policy`
+)

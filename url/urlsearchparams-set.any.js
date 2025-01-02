@@ -13,10 +13,13 @@ test(function() {
     var params = new URLSearchParams('a=1&a=2&a=3');
     assert_true(params.has('a'), 'Search params object has name "a"');
     assert_equals(params.get('a'), '1', 'Search params object has name "a" with value "1"');
+    assert_equals(params + '', 'a=1&a=2&a=3');
     params.set('first', 4);
     assert_true(params.has('a'), 'Search params object has name "a"');
     assert_equals(params.get('a'), '1', 'Search params object has name "a" with value "1"');
+    assert_equals(params + '', 'a=1&a=2&a=3&first=4');
     params.set('a', 4);
     assert_true(params.has('a'), 'Search params object has name "a"');
     assert_equals(params.get('a'), '4', 'Search params object has name "a" with value "4"');
+    assert_equals(params + '', 'a=4&first=4');
 }, 'URLSearchParams.set');

@@ -5,6 +5,9 @@ if __name__ == "__main__":
     if sys.version_info < (3, 8):
         sys.stderr.write("wpt requires Python 3.8 or higher\n")
         sys.exit(1)
+    elif sys.version_info >= (3, 13):
+        sys.stderr.write("wpt is not compatible with Python 3.13 or higher yet, see https://github.com/web-platform-tests/wpt/issues/48585\n");
+        sys.exit(1)
 
     from tools.wpt import wpt
     wpt.main()

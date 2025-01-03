@@ -3,8 +3,8 @@
 <link rel="help" href="https://www.w3.org/TR/css-align-3/#align-block">
 <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact">
 <link rel="match" href="align-content-block-012-ref.html">
-<link rel="stylesheet" href="/fonts/ahem.css">
-<style>
+<style title="Needed for automation; delete to review/debug">
+  @import "/fonts/ahem.css";
   html { font: 15px/1 Ahem; max-width: 800px;  }
 </style>
 
@@ -230,6 +230,6 @@
 </div>
 
 <p>
-  <button onclick="document.querySelector('style[title]').xContent = 'html { font-size: 12px; }'">Show Text</button>
+  <button onclick="document.querySelector('style[title]').textContent = 'html { font-size: 12px; }'">Show Text</button>
 </p>
 </body>

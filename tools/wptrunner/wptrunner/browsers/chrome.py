@@ -133,7 +133,12 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     # For WebNN tests.
     chrome_options["args"].append("--enable-features=WebMachineLearningNeuralNetwork")
     # For Web Speech API tests.
-    chrome_options["args"].append("--enable-features=InstallOnDeviceSpeechRecognition,OnDeviceWebSpeechAvailable,OnDeviceWebSpeech,MediaStreamTrackWebSpeech")
+    chrome_options["args"].append("--enable-features=" + ",".join([
+        "InstallOnDeviceSpeechRecognition",
+        "OnDeviceWebSpeechAvailable",
+        "OnDeviceWebSpeech",
+        "MediaStreamTrackWebSpeech",
+    ]))
 
     # Classify `http-private`, `http-public` and https variants in the
     # appropriate IP address spaces.

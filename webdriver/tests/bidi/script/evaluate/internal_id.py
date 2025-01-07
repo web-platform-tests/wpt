@@ -73,13 +73,9 @@ async def test_nested_remote_values_have_same_internal_ids(evaluate):
 
     assert len(result["value"]) == 3
 
-    # key1
     internalIdKey1 = result["value"][0][1]["internalId"]
-    # key2
     internalIdKey2 = result["value"][1][1]["internalId"]
-    # nested.key3
     internalIdKey3 = result["value"][2][1]["value"][0][1]["internalId"]
-    # nested.key4
     internalIdKey4 = result["value"][2][1]["value"][1][1]["internalId"]
 
     assert internalIdKey1 != internalIdKey2

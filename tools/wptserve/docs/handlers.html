@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Handlers &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
     <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
@@ -67,10 +67,10 @@ directly, in which case the return value of the function, and the properties of
 the response object, will be ignored.</p>
 <p>The most common way to make a user function into a python handler is
 to use the provided <cite>wptserve.handlers.handler</cite> decorator:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wptserve.handlers</span> <span class="kn">import</span> <span class="n">handler</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">wptserve.handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">handler</span>
 
 <span class="nd">@handler</span>
-<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">[(</span><span class="s2">&quot;X-Test&quot;</span><span class="p">:</span> <span class="s2">&quot;PASS&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s2">&quot;text/plain&quot;</span><span class="p">)],</span> <span class="s2">&quot;test&quot;</span>
 
 <span class="c1">#Later, assuming we have a Router object called &#39;router&#39;</span>
@@ -87,10 +87,10 @@ the same as for a normal python handler, but the <cite>content</cite> part of th
 return value is JSON encoded, and a default Content-Type header of
 <cite>application/json</cite> is added. Again this handler is usually used as a
 decorator:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wptserve.handlers</span> <span class="kn">import</span> <span class="n">json_handler</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">wptserve.handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">json_handler</span>
 
 <span class="nd">@json_handler</span>
-<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;PASS&quot;</span><span class="p">}</span>
 </pre></div>
 </div>

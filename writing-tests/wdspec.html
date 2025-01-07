@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>wdspec tests &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
@@ -63,9 +63,9 @@ This practice promotes the descriptive quality of the tests and limits
 indirection that tends to obfuscate test failures.</p>
 <p>Here is an example of a test for <a class="reference external" href="https://w3c.github.io/webdriver/#element-click">the Element Click
 command</a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tests.support.asserts</span> <span class="kn">import</span> <span class="n">assert_success</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">tests.support.asserts</span><span class="w"> </span><span class="kn">import</span> <span class="n">assert_success</span>
 
-<span class="k">def</span> <span class="nf">test_null_response_value</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">inline</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_null_response_value</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">inline</span><span class="p">):</span>
     <span class="c1"># The high-level API is used to set up a document and locate a click target</span>
     <span class="n">session</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">inline</span><span class="p">(</span><span class="s2">&quot;&lt;p&gt;foo&quot;</span><span class="p">)</span>
     <span class="n">element</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">find</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -117,7 +117,7 @@ adding support for <a class="reference external" href="https://www.w3.org/TR/per
 To add a new module called <code class="docutils literal notranslate"><span class="pre">permissions</span></code>, declare a Python class
 <code class="docutils literal notranslate"><span class="pre">webdriver.bidi.modules.permissions.Permissions</span></code> that inherits from <code class="docutils literal notranslate"><span class="pre">BidiModule</span></code> and
 store it in <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/b81831169b8527a6c569a4ad92cf8a1baf4a7118/tools/webdriver/webdriver/bidi/modules/permissions.py#L7"><code class="docutils literal notranslate"><span class="pre">tools/webdriver/webdriver/bidi/modules/permissions.py</span></code></a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Permissions</span><span class="p">(</span><span class="n">BidiModule</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Permissions</span><span class="p">(</span><span class="n">BidiModule</span><span class="p">):</span>
     <span class="k">pass</span>
 </pre></div>
 </div>
@@ -125,7 +125,7 @@ store it in <a class="reference external" href="https://github.com/web-platform-
 <section id="import-the-module-in-bidi-modules-init-py">
 <h5>Import the Module in <code class="docutils literal notranslate"><span class="pre">bidi/modules/__init__.py</span></code><a class="headerlink" href="#import-the-module-in-bidi-modules-init-py" title="Link to this heading">¶</a></h5>
 <p>Import this class in <code class="docutils literal notranslate"><span class="pre">tools/webdriver/webdriver/bidi/modules/__init__.py</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.permissions</span> <span class="kn">import</span> <span class="n">Permissions</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">.permissions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Permissions</span>
 </pre></div>
 </div>
 </section>
@@ -149,12 +149,12 @@ the module. The method should return a dictionary that represents the
 <p>For example, to add the
 <a class="reference external" href="https://www.w3.org/TR/permissions/#webdriver-bidi-command-permissions-setPermission"><code class="docutils literal notranslate"><span class="pre">permissions.setPermission</span></code></a>
 command, add the following <code class="docutils literal notranslate"><span class="pre">set_permission</span></code> method to the <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/b81831169b8527a6c569a4ad92cf8a1baf4a7118/tools/webdriver/webdriver/bidi/modules/permissions.py#L9"><code class="docutils literal notranslate"><span class="pre">Permissions</span></code> class</a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">._module</span> <span class="kn">import</span> <span class="n">command</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">._module</span><span class="w"> </span><span class="kn">import</span> <span class="n">command</span>
 <span class="o">...</span>
-<span class="k">class</span> <span class="nc">Permissions</span><span class="p">(</span><span class="n">BidiModule</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Permissions</span><span class="p">(</span><span class="n">BidiModule</span><span class="p">):</span>
 <span class="o">...</span>
     <span class="nd">@command</span>
-    <span class="k">def</span> <span class="nf">set_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
           <span class="n">descriptor</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">Undefined</span><span class="p">]</span> <span class="o">=</span> <span class="n">UNDEFINED</span><span class="p">,</span>
           <span class="n">state</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Undefined</span><span class="p">]</span> <span class="o">=</span> <span class="n">UNDEFINED</span><span class="p">,</span>
           <span class="n">origin</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Undefined</span><span class="p">]</span> <span class="o">=</span> <span class="n">UNDEFINED</span><span class="p">,</span>

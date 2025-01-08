@@ -370,7 +370,7 @@ async def test_page_with_cached_script_javascript(
         wait="complete",
     )
 
-    # Expect two or three events, one for the document and the reset for javascript files.
+    # Expect two or three events, one for the document and the rest for javascript files.
     # If the browser uses memory caching there may be only single request for the javascript files,
     # see issue https://github.com/whatwg/html/issues/6110.
     wait = AsyncPoll(bidi_session, timeout=2)

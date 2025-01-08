@@ -11,9 +11,7 @@ from ..data.session import COMPLETED, ABORTED
 
 
 class TestsManager(object):
-    def initialize(
-        self, test_loader, sessions_manager, results_manager, event_dispatcher
-    ):
+    def initialize(self, test_loader, sessions_manager, results_manager, event_dispatcher):
         self._test_loader = test_loader
         self._sessions_manager = sessions_manager
         self._results_manager = results_manager
@@ -105,11 +103,7 @@ class TestsManager(object):
                 tests["pass"].append(result["test"])
             if not passes and len(tests["fail"]) < count:
                 tests["fail"].append(result["test"])
-            if (
-                len(tests["pass"]) == count
-                and len(tests["fail"]) == count
-                and len(tests["timeout"]) == count
-            ):
+            if len(tests["pass"]) == count and len(tests["fail"]) == count and len(tests["timeout"]) == count:
                 return tests
         return tests
 
@@ -142,11 +136,7 @@ class TestsManager(object):
                 return -1
             return 1
 
-        sorted_tests.sort(
-            key=functools.cmp_to_key(
-                lambda test_a, test_b: compare(self, test_a, test_b)
-            )
-        )
+        sorted_tests.sort(key=functools.cmp_to_key(lambda test_a, test_b: compare(self, test_a, test_b)))
         return sorted_tests
 
     def _get_next_test_from_list(self, tests):
@@ -217,13 +207,11 @@ class TestsManager(object):
         if test not in sorted_tests:
             return test_list
         index = sorted_tests.index(test)
-        remaining_tests = sorted_tests[index + 1 :]
+        remaining_tests = sorted_tests[index + 1:]
         remaining_tests_by_api = {}
         current_api = "___"
         for test in remaining_tests:
-            if not test.startswith("/" + current_api) and not test.startswith(
-                current_api
-            ):
+            if not test.startswith("/" + current_api) and not test.startswith(current_api):
                 current_api = next((p for p in test.split("/") if p != ""), None)
                 if current_api not in remaining_tests_by_api:
                     remaining_tests_by_api[current_api] = []
@@ -308,9 +296,7 @@ class TestsManager(object):
 
         self.update_tests(running_tests=running_tests, session=session)
 
-        self._event_dispatcher.dispatch_event(
-            dispatcher_token=session.token, event_type=TEST_COMPLETED_EVENT, data=test
-        )
+        self._event_dispatcher.dispatch_event(dispatcher_token=session.token, event_type=TEST_COMPLETED_EVENT, data=test)
 
     def update_tests(self, pending_tests=None, running_tests=None, session=None):
         if pending_tests is not None:

@@ -30,12 +30,12 @@ def generate_report(
             "--pass", "100",
             "--ref", reference_dir if reference_dir is not None else "",
             "--testsBaseUrl", tests_base_url
-            ]
+        ]
         subprocess.call(command, shell=False)
     except subprocess.CalledProcessError as e:
         info = sys.exc_info()
         raise Exception("Failed to execute wptreport: " + str(info[0].__name__) + ": " + e.output)
-    except FileNotFoundError as e:
+    except FileNotFoundError:
         raise Exception("Failed to execute wptreport: " + " ".join(command))
 
 

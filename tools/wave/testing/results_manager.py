@@ -19,7 +19,7 @@ from .wpt_report import generate_report, generate_multi_report
 from ..data.session import COMPLETED
 
 WAVE_SRC_DIR = "./tools/wave"
-RESULTS_FILE_REGEX = "^\w\w\d\d\d?\.json$"
+RESULTS_FILE_REGEX = r"^\w\w\d\d\d?\.json$"
 RESULTS_FILE_PATTERN = re.compile(RESULTS_FILE_REGEX)
 
 

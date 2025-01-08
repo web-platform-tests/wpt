@@ -15,6 +15,7 @@ from .event_dispatcher import STATUS_EVENT, RESUME_EVENT
 from ..data.exceptions.not_found_exception import NotFoundException
 from ..data.exceptions.invalid_data_exception import InvalidDataException
 from ..utils.deserializer import deserialize_session
+from ..utils.deserializer import iso_to_millis
 
 DEFAULT_TEST_TYPES = [AUTOMATIC, MANUAL]
 DEFAULT_TEST_PATHS = ["/"]
@@ -77,9 +78,9 @@ class SessionsManager(object):
             if test_type != "automatic" and test_type != "manual":
                 raise InvalidDataException("Unknown type '{}'".format(test_type))
 
-        if expiration_date is not None and type(expiration_date) != int:
+        if expiration_date is not None and not isinstance(expiration_date, int):
             expiration_date = iso_to_millis(expiration_date)
-            if type(expiration_date) != int:
+            if not isinstance(expiration_date, int):
                 raise InvalidDataException(
                     "Expected ISO string for expiration date: {}", expiration_date
                 )

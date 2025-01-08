@@ -2,10 +2,7 @@
 
 import json
 
-try:
-    from urllib.parse import urlunsplit
-except ImportError:
-    from urlparse import urlunsplit
+from urllib.parse import urlunsplit
 
 from .api_handler import ApiHandler
 from ...utils.serializer import serialize_session

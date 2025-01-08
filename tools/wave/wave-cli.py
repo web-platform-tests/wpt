@@ -2,7 +2,7 @@
 
 import sys
 import os
-import urllib2
+import urllib
 import zipfile
 
 START = "start"
@@ -30,7 +30,7 @@ REFERENCE_BROWSERS = {
 }
 
 
-def main():
+def main() -> None:
     parameters = get_run_parameters()
     configuration_file_path = None
     if ("configuration_file_path" in parameters):
@@ -72,7 +72,7 @@ def get_run_parameters():
 
 
 def download_file(url, file_path):
-    response = urllib2.urlopen(url)
+    response = urllib.request.urlopen(url)
     data = response.read()
     file = open(file_path, "wb")
     file.write(data)

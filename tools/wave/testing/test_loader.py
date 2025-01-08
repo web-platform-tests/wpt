@@ -98,7 +98,6 @@ class TestLoader(object):
         regex_patterns = []
 
         if test_list is not None and len(test_list) > 0:
-            is_valid = False
             for test in test_list:
                 test = test.split("?")[0]
                 pattern = re.compile("^" + test)

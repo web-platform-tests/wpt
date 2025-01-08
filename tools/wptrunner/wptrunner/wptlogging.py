@@ -77,7 +77,7 @@ class QueueHandler(logging.Handler):
 
     def createLock(self):
         # The queue provides its own locking
-        self.lock = None
+        self.lock = NullLock()
 
     def emit(self, record):
         msg = self.format(record)
@@ -88,6 +88,21 @@ class QueueHandler(logging.Handler):
                 "source": self.name,
                 "message": msg}
         self.queue.put(data)
+
+
+
+class NullLock:
+    def acquire(self):
+        pass
+
+    def release(self):
+        pass
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args, **kwargs):
+        pass
 
 
 class LogQueueThread(Thread):

@@ -341,8 +341,17 @@ a different set of command-line arguments.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">manifest</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tests</span><span class="o">-</span><span class="n">root</span> <span class="n">TESTS_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">url</span><span class="o">-</span><span class="n">base</span> <span class="n">URL_BASE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">download</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cache</span><span class="o">-</span><span class="n">root</span> <span class="n">CACHE_ROOT</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">parallel</span><span class="p">]</span>
+             <span class="p">[</span><span class="n">tests</span> <span class="o">...</span><span class="p">]</span>
 </pre></div>
 </div>
+<section id="positional-arguments_repeat4">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat4" title="Link to this heading">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>tests</kbd></dt>
+<dd><p>Test files or directories to update. Omit to update all items under the test root.</p>
+</dd>
+</dl>
+</section>
 <section id="named-arguments_repeat10">
 <h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat10" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
@@ -412,8 +421,8 @@ a different set of command-line arguments.</p>
                <span class="n">test_ids</span> <span class="p">[</span><span class="n">test_ids</span> <span class="o">...</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="positional-arguments_repeat4">
-<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat4" title="Link to this heading">¶</a></h4>
+<section id="positional-arguments_repeat5">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat5" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>test_ids</kbd></dt>
 <dd><p>Test ids for which to get paths</p>
@@ -622,7 +631,7 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">VERIFY_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">repeat</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">REPEAT_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">crashtest</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">crashtest</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">subsuite</span><span class="o">-</span><span class="n">file</span> <span class="n">SUBSUITE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">subsuite</span> <span class="n">SUBSUITES</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">small</span><span class="o">-</span><span class="n">subsuite</span><span class="o">-</span><span class="n">size</span> <span class="n">SMALL_SUBSUITE_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="n">INCLUDE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">file</span> <span class="n">INCLUDE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="n">EXCLUDE</span><span class="p">]</span>
@@ -689,8 +698,8 @@ a different set of command-line arguments.</p>
         <span class="n">product</span> <span class="p">[</span><span class="n">test_list</span> <span class="o">...</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="positional-arguments_repeat5">
-<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat5" title="Link to this heading">¶</a></h4>
+<section id="positional-arguments_repeat6">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat6" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>product</kbd></dt>
 <dd><p>Browser to run tests in</p>
@@ -848,9 +857,9 @@ channel.) This flag overrides –browser-channel.</p>
 <h4>Test Selection<a class="headerlink" href="#test-selection" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--test-types</kbd></dt>
-<dd><p>Possible choices: crashtest, testharness, reftest, wdspec, print-reftest</p>
+<dd><p>Possible choices: print-reftest, crashtest, testharness, reftest, wdspec</p>
 <p>Test types to run</p>
-<p>Default: {‘crashtest’, ‘testharness’, ‘reftest’, ‘wdspec’, ‘print-reftest’}</p>
+<p>Default: {‘print-reftest’, ‘crashtest’, ‘testharness’, ‘reftest’, ‘wdspec’}</p>
 </dd>
 <dt><kbd>--subsuite-file</kbd></dt>
 <dd><p>Path to JSON file containing subsuite configuration</p>
@@ -1346,8 +1355,8 @@ channel.) This flag overrides –browser-channel.</p>
            <span class="n">path</span>
 </pre></div>
 </div>
-<section id="positional-arguments_repeat6">
-<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat6" title="Link to this heading">¶</a></h4>
+<section id="positional-arguments_repeat7">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat7" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>path</kbd></dt>
 <dd><p>Path to the test file</p>
@@ -1422,8 +1431,8 @@ channel.) This flag overrides –browser-channel.</p>
                         <span class="p">[</span><span class="n">run_log</span> <span class="o">...</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="positional-arguments_repeat7">
-<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat7" title="Link to this heading">¶</a></h4>
+<section id="positional-arguments_repeat8">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat8" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>run_log</kbd></dt>
 <dd><p>Log file from run of tests</p>
@@ -1555,8 +1564,8 @@ channel.) This flag overrides –browser-channel.</p>
                   <span class="p">[</span><span class="n">revish</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="positional-arguments_repeat8">
-<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat8" title="Link to this heading">¶</a></h4>
+<section id="positional-arguments_repeat9">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat9" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>revish</kbd></dt>
 <dd><p>Commits to consider. Defaults to the commits on the current branch</p>
@@ -1596,8 +1605,8 @@ channel.) This flag overrides –browser-channel.</p>
                    <span class="p">[</span><span class="n">revish</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="positional-arguments_repeat9">
-<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat9" title="Link to this heading">¶</a></h4>
+<section id="positional-arguments_repeat10">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat10" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>revish</kbd></dt>
 <dd><p>Commits to consider. Defaults to the commits on the current branch</p>
@@ -1643,8 +1652,8 @@ channel.) This flag overrides –browser-channel.</p>
             <span class="p">{</span><span class="n">firefox</span><span class="p">,</span><span class="n">chrome</span><span class="p">,</span><span class="n">chromium</span><span class="p">,</span><span class="n">servo</span><span class="p">,</span><span class="n">safari</span><span class="p">,</span><span class="n">wktr</span><span class="p">}</span> <span class="p">{</span><span class="n">browser</span><span class="p">,</span><span class="n">webdriver</span><span class="p">}</span>
 </pre></div>
 </div>
-<section id="positional-arguments_repeat10">
-<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat10" title="Link to this heading">¶</a></h4>
+<section id="positional-arguments_repeat11">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat11" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>browser</kbd></dt>
 <dd><p>Possible choices: firefox, chrome, chromium, servo, safari, wktr</p>

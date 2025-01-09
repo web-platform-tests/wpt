@@ -74,6 +74,7 @@ class HackedSysModule:
     # will completely confuse the test of the cgi module
     argv = []
     stdin = sys.stdin
+    version_info = sys.version_info
 
 cgi.sys = HackedSysModule()
 
@@ -152,6 +153,10 @@ parse_strict_test_cases = [
       'set': ['custom'],
       })
     ]
+
+# The behaviour of urllib.parse.parse_qs with empty input changed in Python 3.11
+if sys.version_info < (3, 11):
+    parse_strict_test_cases[0] = ("", ValueError("bad query field: ''"))
 
 def norm(seq):
     return sorted(seq, key=repr)

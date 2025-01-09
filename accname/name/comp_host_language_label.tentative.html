@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Name Comp: Host Language Label</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
+    <script src="/resources/testdriver-actions.js"></script>
+    <script src="/wai-aria/scripts/aria-utils.js"></script>
+  </head>
+  <body>
+  
+    <!-- Ambiguity coming from Host Language Label in accname specs (https://www.w3.org/TR/accname-1.2/#comp_host_language_label) - PR that tries to solve it https://github.com/w3c/aria/pull/2405 -->
+    <h2>HTML input with label with role presentation</h2>
+    <h3>HTML input label/for</h3>
+    <label role="presentation" for="lrp">input label</label>
+    <input id="lrp" type="text" data-expectedlabel="input label" data-testname="html: label[for][role presentation]" class="ex">
+    <h3>HTML label encapsulation</h3>
+    <label role="presentation">
+      <span>input label</span>
+      <input type="text" data-expectedlabel="input label" data-testname="html: label[role presentation] encapsulation" class="ex">
+    </label>
+    
+    <script>
+    AriaUtils.verifyLabelsBySelector(".ex");
+    </script>
+  </body>
+</html>

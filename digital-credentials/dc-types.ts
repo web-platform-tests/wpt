@@ -18,13 +18,13 @@ export interface DigitalCredentialRequest {
  */
 export interface DigitalCredentialRequestOptions {
   /**
-   * The list of identity request providers
+   * The list of credential requests.
    */
   requests: DigitalCredentialRequest[] | any;
 }
 
 /**
- * @see https://wicg.github.io/digital-credentials/#extensions-to-credentialrequestoptions-dictionary
+ * @see https://wicg.github.io/digital-credentials/#extensions-to-credentialrequestoptions
  */
 export interface CredentialRequestOptions {
   /**

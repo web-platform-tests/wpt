@@ -31,7 +31,7 @@ export function makeGetOptions(requestsToUse, mediation = "required") {
         requests.push(makeDigitalCredentialRequest(undefined, undefined));
         break;
       default:
-        throw new Error(`Unknown provider type: ${request}`);
+        throw new Error(`Unknown request type: ${request}`);
     }
   }
   return { digital: { requests }, mediation };
@@ -50,7 +50,7 @@ function makeDigitalCredentialRequest(protocol = "protocol", data = {}) {
 }
 
 /**
- * Representation of a digital identity object with an OpenID4VP provider.
+ * Representation of an OpenID4VP request.
  *
  * @returns {DigitalCredentialRequest}
  **/

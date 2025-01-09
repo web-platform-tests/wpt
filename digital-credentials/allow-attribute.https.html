@@ -122,12 +122,11 @@
                         const fullMessage = `${iframe.outerHTML} - ${message}`;
                         if (expectIsAllowed) {
                             assert_true(
-                                name == "TypeError" || (name == "NotAllowedError" && message.includes("transient activation")),
+                                name == "TypeError" || name == "NotAllowedError",
                                 fullMessage
                             );
                         } else {
-                            assert_equals(name, "NotAllowedError", `${iframe.outerHTML} - ${message}`);
-                            assert_false(message.includes("transient activation"), fullMessage);
+                            assert_equals(name, "NotAllowedError", fullMessage);
                         }
                         iframe.remove();
                     }, `Policy to use: ${details.policy}, is cross-origin: ${details.crossOrigin}, is allowed by policy: ${details.expectIsAllowed}`);

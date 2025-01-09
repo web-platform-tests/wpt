@@ -89,7 +89,10 @@ def initlog(*allargs):
                   DeprecationWarning, stacklevel=2)
     if logfile and not logfp:
         try:
-            logfp = open(logfile, "a", encoding="locale")
+            kwargs = {}
+            if sys.version_info > (3, 9):
+                kwargs["encoding"] = "locale"
+            logfp = open(logfile, "a", **kwargs)
         except OSError:
             pass
     if not logfp:

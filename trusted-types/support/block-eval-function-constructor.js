@@ -16,6 +16,18 @@ test(t => {
 
 test(t => {
   t.add_cleanup(resetSinkName);
-  assert_throws_js(EvalError, _ => new Function("return;"));
-  assert_equals(compilationSink, "Function");
-}, `Blocked function constructor in ${globalThisStr}.`);
+  assert_throws_js(EvalError, _ => eval?.("'42'"));
+  assert_equals(compilationSink, "eval");
+}, `Blocked indirect eval in ${globalThisStr}.`);
+
+const AsyncFunction = async function() {}.constructor;
+const GeneratorFunction = function*() {}.constructor;
+const AsyncGeneratorFunction = async function*() {}.constructor;
+
+[Function, AsyncFunction, GeneratorFunction, AsyncGeneratorFunction].forEach(functionConstructor => {
+  test(t => {
+    t.add_cleanup(resetSinkName);
+    assert_throws_js(EvalError, _ => new functionConstructor("return;"));
+    assert_equals(compilationSink, "Function");
+  }, `Blocked ${functionConstructor.name} constructor in ${globalThisStr}.`);
+});

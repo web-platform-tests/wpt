@@ -119,7 +119,7 @@
                             );
                         });
                         const { name, message } = data;
-                        const fullMessage = `${iframe.outerHTML} - ${message}`;
+                        const fullMessage = `${iframe.location} - ${message}`;
                         if (expectIsAllowed) {
                             assert_true(
                                 name == "TypeError" || name == "NotAllowedError",

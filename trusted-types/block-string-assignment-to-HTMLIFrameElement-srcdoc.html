@@ -12,13 +12,12 @@
     let html = p.createHTML(INPUTS.HTML);
     let iframe = document.createElement("iframe");
     iframe.srcdoc = html;
-    assert_equals(result.textContent, RESULTS.HTML);
+    assert_equals(iframe.srcdoc, RESULTS.HTML);
   }, "iframe.srcdoc assigned via policy (successful HTML transformation).");
 
   // String assignments throw.
   test(t => {
     let iframe = document.createElement("iframe");
-    iframe.srcdoc = createHTML_policy(window, 1);
     assert_throws_js(TypeError, _ => {
       iframe.srcdoc = "A string";
     });
@@ -36,7 +35,7 @@
   test(t => {
     let p = window.trustedTypes.createPolicy("default", { createHTML:
       (value, _, sink) => {
-        assert_equals(sink, "iframe srcdoc");
+        assert_equals(sink, "HTMLIFrameElement srcdoc");
         return createHTMLJS(value);
       }
     });
@@ -50,6 +49,6 @@
   test(t => {
     let iframe = document.createElement("iframe");
     iframe.srcdoc = null;
-    assert_equals(container.innerText, "null");
+    assert_equals(iframe.srcdoc, "null");
   }, "`iframe.srcdoc = null` assigned via default policy does not throw");
 </script>

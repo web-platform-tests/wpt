@@ -46,7 +46,7 @@ async def test_params_locator_type_invalid_value(bidi_session, inline, top_conte
         )
 
 
-@pytest.mark.parametrize("type", ["css", "xpath", "innerText"])
+@pytest.mark.parametrize("type", ["css", "xpath", "innerText", "accessibility"])
 @pytest.mark.parametrize("value", [None, False, 42, {}, []])
 async def test_params_locator_value_invalid_type(
     bidi_session, inline, top_context, type, value
@@ -76,6 +76,7 @@ async def test_params_locator_accessability_value_invalid_type(
     ("xpath", ""),
     ("innerText", ""),
     ("accessibility", {})
+    ("context", {})
 ])
 async def test_params_locator_value_invalid_value(bidi_session, inline, top_context, type, value):
     await navigate_to_page(bidi_session, inline, top_context)

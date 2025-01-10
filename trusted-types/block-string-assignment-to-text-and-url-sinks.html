@@ -71,6 +71,15 @@
     assert_equals(seenSinkName, "HTMLScriptElement innerText");
   }, "Setting HTMLScriptElement.innerText to a plain string");
 
+  // innerText is not a Trusted Type sink for SVGScriptElement.
+  test(t => {
+    t.add_cleanup(resetGlobalVariables);
+    svgScriptElement.innerText = plain_string;
+    assert_equals(seenTrustedTypeName, undefined);
+    assert_equals(seenSinkName, undefined);
+    assert_equals(svgScriptElement.innerText, plain_string);
+  }, "Setting SVGScriptElement.innerText to a plain string");
+
   // textContent is not a Trusted Type sink for HTMLDivElement.
   test(t => {
     t.add_cleanup(resetGlobalVariables);
@@ -87,6 +96,15 @@
     assert_equals(seenTrustedTypeName, "TrustedScript");
     assert_equals(seenSinkName, "HTMLScriptElement textContent");
   }, "Setting HTMLScriptElement.textContent to a plain string");
+
+  // textContent is not a Trusted Type sink for SVGScriptElement.
+  test(t => {
+    t.add_cleanup(resetGlobalVariables);
+    svgScriptElement.textContent = plain_string;
+    assert_equals(seenTrustedTypeName, undefined);
+    assert_equals(seenSinkName, undefined);
+    assert_equals(svgScriptElement.textContent, plain_string);
+  }, "Setting SVGScriptElement.textContent to a plain string");
 
   // Basic test for the HTMLScriptElement.text Trusted Type sink.
   test(t => {

@@ -2,6 +2,8 @@
 
 import logging
 from threading import Thread
+from types import TracebackType
+from typing import Optional, Type
 
 from mozlog import commandline, stdadapter, set_default_logger
 from mozlog.structuredlog import StructuredLogger, log_levels
@@ -77,7 +79,7 @@ class QueueHandler(logging.Handler):
 
     def createLock(self):
         # The queue provides its own locking
-        self.lock = NullLock()
+        self.lock = NullRLock()
 
     def emit(self, record):
         msg = self.format(record)
@@ -91,18 +93,22 @@ class QueueHandler(logging.Handler):
 
 
 
-class NullLock:
-    def acquire(self):
-        pass
+class NullRLock:
+    """Implementation of the threading.RLock API that doesn't actually acquire a lock,
+    for use in cases where there is another mechanism to provide the required
+    invariants."""
 
-    def release(self):
-        pass
+    def acquire(self, blocking: bool = True, timeout: float = -1) -> bool:
+        return True
 
-    def __enter__(self):
-        return self
+    def release(self) -> None:
+        return None
 
-    def __exit__(self, *args, **kwargs):
-        pass
+    def __enter__(self) -> bool:
+        return True
+
+    def __exit__(self, t: Optional[Type[BaseException]], v: Optional[BaseException], tb: Optional[TracebackType]) -> None:
+        return None
 
 
 class LogQueueThread(Thread):

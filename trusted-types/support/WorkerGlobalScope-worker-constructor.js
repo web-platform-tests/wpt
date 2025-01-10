@@ -23,7 +23,12 @@ test(() => {
 
 test(() => {
   trustedTypes.createPolicy("default",
-    { createScriptURL: s => "defaultValue" });
+    { createScriptURL: (s, _, sink) => {
+        assert_equals(sink, 'Worker constructor');
+        return "defaultValue";
+      }
+    }
+  );
 
   new Worker("s");
 }, `Creating a Worker from a string with a default policy should not throw (${worker_type} scope)`);

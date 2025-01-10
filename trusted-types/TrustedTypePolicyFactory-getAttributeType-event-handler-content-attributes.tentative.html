@@ -11,6 +11,20 @@
 <script>
 promise_setup(async function() {
   let attributeNamesWithInterfaceName = [];
+  function isAttributeImplemented(interfaceName, name) {
+    switch (interfaceName) {
+      case 'GlobalEventHandlers':
+        return name in HTMLElement.prototype;
+      case 'WindowEventHandlers':
+        return name in HTMLBodyElement.prototype;
+      case 'HTMLMediaElement':
+        return name in HTMLMediaElement.prototype;
+      case 'SVGAnimationElement':
+        return name in SVGAnimationElement.prototype;
+      default:
+       throw "Unknown interface";
+    }
+  }
   function addOnAttributes(IDL, interfaceName) {
     // Parsing the whole IDL file is slow, so use a small regexp to extract only
     // the part that is relevant for this test.
@@ -19,7 +33,8 @@ promise_setup(async function() {
     parsedIDL.find(idl => idl.name === interfaceName)
       .members.map(member => member.name)
       .filter(name => name.length >= 3 && name.startsWith("on") &&
-              !name.startsWith("onwebkit"))
+              !name.startsWith("onwebkit") &&
+              isAttributeImplemented(interfaceName, name))
       .forEach(name => attributeNamesWithInterfaceName.push({name, interfaceName}));
   }
 
@@ -39,20 +54,6 @@ promise_setup(async function() {
   addOnAttributes(svgAnimationsIDL, "SVGAnimationElement");
 
   for (const attributeNameWithInterfaceName of attributeNamesWithInterfaceName) {
-    // Skip attributes that are not implemented in the browser.
-    if (attributeNameWithInterfaceName.interfaceName === 'GlobalEventHandlers' && !(attributeNameWithInterfaceName.name in HTMLElement.prototype)) {
-      continue;
-    }
-    if (attributeNameWithInterfaceName.interfaceName === 'WindowEventHandlers' && !(attributeNameWithInterfaceName.name in HTMLBodyElement.prototype)) {
-      continue;
-    }
-    if (attributeNameWithInterfaceName.interfaceName === 'HTMLMediaElement' && !(attributeNameWithInterfaceName.name in HTMLMediaElement.prototype)) {
-      continue;
-    }
-    if (attributeNameWithInterfaceName.interfaceName === 'SVGAnimationElement' && !(attributeNameWithInterfaceName.name in SVGAnimationElement.prototype)) {
-      continue;
-    }
-
     promise_test(async () => {
       NSURI_ARRAY.forEach(attrNs => {
         assert_equals(trustedTypes.getAttributeType(

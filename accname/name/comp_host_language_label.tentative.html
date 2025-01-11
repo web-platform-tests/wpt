@@ -10,7 +10,6 @@
     <script src="/wai-aria/scripts/aria-utils.js"></script>
   </head>
   <body>
-  
     <!-- Ambiguity coming from Host Language Label in accname specs (https://www.w3.org/TR/accname-1.2/#comp_host_language_label) - PR that tries to solve it https://github.com/w3c/aria/pull/2405 -->
     <h2>HTML input with label with role presentation</h2>
     <h3>HTML input label/for</h3>
@@ -21,9 +20,67 @@
       <span>input label</span>
       <input type="text" data-expectedlabel="input label" data-testname="html: label[role presentation] encapsulation" class="ex">
     </label>
+
+    <h2>HTML input with role="none" and label associated (presentational roles conflict resolution)</h2>
+    <h3>HTML input label/for</h3>
+    <label for="irn">input label</label>
+    <input id="irn" type="text" data-expectedlabel="input label" data-testname="html: label[for]input[role presentation]" class="ex" role="presentation">
+    <h3>HTML label encapsulation</h3>
+    <label>
+      <span>input label</span>
+      <input type="text" data-expectedlabel="input label" data-testname="html: input[role presentation] with label encapsulation" class="ex" role="presentation">
+    </label>
     
+    <h2>HTML input with role="none" and label with role presentation (presentational roles conflict resolution)</h2>
+    <h3>HTML input label/for</h3>
+    <label role="presentation" for="lirp">input label</label>
+    <input id="lirp" type="text" data-expectedlabel="input label" data-testname="html: label[for][role presentation] input[role presentation]" class="ex" role="presentation">
+    <h3>HTML label encapsulation</h3>
+    <label role="presentation">
+      <span>input label</span>
+      <input type="text" data-expectedlabel="input label" data-testname="html: input[role presentation] with label[role presentation] encapsulation" class="ex" role="presentation">
+    </label>
+
+    <h2>HTML input with role="none" and disabled with label associated</h2>
+    <h3>HTML input label/for</h3>
+    <label for="irpd">input label</label>
+    <input id="irpd" type="text" data-expectedlabel="" data-testname="html: label[for]input[role presentation][disabled]" class="ex" role="presentation" disabled>
+    <h3>HTML label encapsulation</h3>
+    <label>
+      <span>input label</span>
+      <input type="text" data-expectedlabel="" data-testname="html: input[role presentation][disabled] with label encapsulation" class="ex" role="presentation" disabled>
+    </label>
+
+    <h2>HTML img with role="presentation" and non empty alt</h2>
+    <img src="https://www.w3.org/assets/logos/w3c/w3c-no-bars.svg" role="presentation" alt="w3c logo" data-expectedlabel="" data-testname="html: img[role presentation][non-empty alt]">
+
+    <h2>SVG wrapping title with role="presentation"</h2>
+    <svg viewBox="0 0 20 10" xmlns="http://www.w3.org/2000/svg" data-expectedlabel="circle" data-testname="svg: svg wrapping title[role presentation]">
+      <circle cx="5" cy="5" r="4">
+        <title role="none">circle</title>
+      </circle>
+    </svg>
+
+    <h2>HTML fieldset wrapping legend with role="presentation"</h2>
+    <fieldset data-expectedlabel="legend" data-testname="html: fieldset wrapping legend[role presentation]"><legend role="presentation">legend</legend></fieldset>
+
+    <h2>HTML fieldset with role="presentation" wrapping legend</h2>
+    <fieldset role="presentation" data-expectedlabel="" data-testname="html: fieldset[role presentation] wrapping legend"><legend>legend</legend></fieldset>
+
+    <h2>HTML fieldset role="presentation" wrapping legend with role="presentation"</h2>
+    <fieldset role="presentation" data-expectedlabel="" data-testname="html: fieldset[role presentation] wrapping legend[role presentation]"><legend role="presentation">legend</legend></fieldset>
+
+    <h2>HTML table wrapping caption with role="presentation"</h2>
+    <table data-expectedlabel="caption" data-testname="html: table wrapping caption[role presentation]"><caption role="presentation">caption</caption></table>
+
+    <h2>HTML table with role="presentation" wrapping caption</h2>
+    <table role="presentation" data-expectedlabel="" data-testname="html: table[role presentation] wrapping caption"><caption>caption</caption></table>
+
+    <h2>HTML table role="presentation" wrapping caption with role="presentation"</h2>
+    <table role="presentation" data-expectedlabel="" data-testname="html: table[role presentation] wrapping caption[role presentation]"><caption role="presentation">caption</caption></table>
+
     <script>
-    AriaUtils.verifyLabelsBySelector(".ex");
+      AriaUtils.verifyLabelsBySelector(".ex");
     </script>
   </body>
 </html>

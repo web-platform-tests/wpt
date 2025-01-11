@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Role None Conflict Resolution Verification Tests</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
+    <script src="/resources/testdriver-actions.js"></script>
+    <script src="/wai-aria/scripts/aria-utils.js"></script>
+  </head>
+  <body>
+
+    <h2>HTML input with role="none" (presentational roles conflict resolution)</h2>
+    <label for="irn">input label</label>
+    <input id="irn" type="text" data-expectedrole="textbox" data-testname="HTML input[role presentation] but focusable" class="ex" role="presentation">
+
+    <h2>HTML input with role="none" and disabled (presentational roles conflict resolution does not apply due to disabled attr)</h2>
+    <label for="irpd">input label</label>
+    <input id="irpd" type="text" data-testname="HTML input[role presentation][disabled]" class="ex-generic" role="presentation" disabled>
+
+    <script>
+      AriaUtils.verifyRolesBySelector(".ex");
+      AriaUtils.verifyGenericRolesBySelector(".ex-generic");
+    </script>
+
+  </body>
+</html>

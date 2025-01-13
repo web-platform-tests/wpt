@@ -75,7 +75,7 @@ async def test_params_locator_accessability_value_invalid_type(
     ("css", "a*b"),
     ("xpath", ""),
     ("innerText", ""),
-    ("accessibility", {})
+    ("accessibility", {}),
     ("context", {})
 ])
 async def test_params_locator_value_invalid_value(bidi_session, inline, top_context, type, value):

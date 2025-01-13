@@ -18,6 +18,7 @@
       createScript: (input, trustedTypeName, sinkName) => {
         assert_equals(input, input_string);
         assert_equals(trustedTypeName, "TrustedScript");
+        assert_equals(seenSinkName, undefined);
         seenSinkName = sinkName;
         return output_string;
       }

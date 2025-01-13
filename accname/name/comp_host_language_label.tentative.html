@@ -21,7 +21,7 @@
       <input type="text" data-expectedlabel="input label" data-testname="html: label[role presentation] encapsulation" class="ex">
     </label>
 
-    <h2>HTML input with role="none" and label associated (presentational roles conflict resolution)</h2>
+    <h2>HTML input with role="presentation" and label associated (presentational roles conflict resolution)</h2>
     <h3>HTML input label/for</h3>
     <label for="irn">input label</label>
     <input id="irn" type="text" data-expectedlabel="input label" data-testname="html: label[for]input[role presentation]" class="ex" role="presentation">
@@ -31,7 +31,7 @@
       <input type="text" data-expectedlabel="input label" data-testname="html: input[role presentation] with label encapsulation" class="ex" role="presentation">
     </label>
     
-    <h2>HTML input with role="none" and label with role presentation (presentational roles conflict resolution)</h2>
+    <h2>HTML input with role="presentation" and label with role presentation (presentational roles conflict resolution)</h2>
     <h3>HTML input label/for</h3>
     <label role="presentation" for="lirp">input label</label>
     <input id="lirp" type="text" data-expectedlabel="input label" data-testname="html: label[for][role presentation] input[role presentation]" class="ex" role="presentation">
@@ -41,7 +41,7 @@
       <input type="text" data-expectedlabel="input label" data-testname="html: input[role presentation] with label[role presentation] encapsulation" class="ex" role="presentation">
     </label>
 
-    <h2>HTML input with role="none" and disabled with label associated</h2>
+    <h2>HTML input with role="presentation" and disabled with label associated</h2>
     <h3>HTML input label/for</h3>
     <label for="irpd">input label</label>
     <input id="irpd" type="text" data-expectedlabel="" data-testname="html: label[for]input[role presentation][disabled]" class="ex" role="presentation" disabled>
@@ -57,7 +57,7 @@
     <h2>SVG wrapping title with role="presentation"</h2>
     <svg viewBox="0 0 20 10" xmlns="http://www.w3.org/2000/svg" data-expectedlabel="circle" data-testname="svg: svg wrapping title[role presentation]">
       <circle cx="5" cy="5" r="4">
-        <title role="none">circle</title>
+        <title role="presentation">circle</title>
       </circle>
     </svg>
 

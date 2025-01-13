@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Role None Conflict Resolution Verification Tests</title>
+    <title>Role None/Presentation Conflict Resolution Verification Tests</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="/resources/testdriver.js"></script>
@@ -11,11 +11,11 @@
   </head>
   <body>
 
-    <h2>HTML input with role="none" (presentational roles conflict resolution)</h2>
+    <h2>HTML input with role="presentation" (presentational roles conflict resolution)</h2>
     <label for="irn">input label</label>
     <input id="irn" type="text" data-expectedrole="textbox" data-testname="HTML input[role presentation] but focusable" class="ex" role="presentation">
 
-    <h2>HTML input with role="none" and disabled (presentational roles conflict resolution does not apply due to disabled attr)</h2>
+    <h2>HTML input with role="presentation" and disabled (presentational roles conflict resolution does not apply due to disabled attr)</h2>
     <label for="irpd">input label</label>
     <input id="irpd" type="text" data-testname="HTML input[role presentation][disabled]" class="ex-generic" role="presentation" disabled>
 

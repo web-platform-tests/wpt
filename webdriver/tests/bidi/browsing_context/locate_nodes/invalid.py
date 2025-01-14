@@ -71,6 +71,45 @@ async def test_params_locator_accessability_value_invalid_type(
         )
 
 
+@pytest.mark.parametrize("value", [None, False, 42, "", []])
+async def test_params_locator_context_invalid_type(bidi_session, inline,
+        top_context, value):
+    await navigate_to_page(bidi_session, inline, top_context)
+
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.browsing_context.locate_nodes(
+            context=top_context["context"],
+            locator={"type": "context", "value": value}
+        )
+
+
+@pytest.mark.parametrize("value", [None, False, 42, {}, []])
+async def test_params_locator_context_value_invalid_type(bidi_session, inline,
+        top_context, value):
+    await navigate_to_page(bidi_session, inline, top_context)
+
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.browsing_context.locate_nodes(
+            context=top_context["context"],
+            locator={"type": "context", "value": {
+                "context": value
+            }}
+        )
+
+
+@pytest.mark.parametrize("value", ["non_exiting_context"])
+async def test_params_locator_context_value_invalid_context(bidi_session,
+        inline, top_context, value):
+    await navigate_to_page(bidi_session, inline, top_context)
+
+    with pytest.raises(error.NoSuchFrameException):
+        await bidi_session.browsing_context.locate_nodes(
+            context=top_context["context"],
+            locator={"type": "context", "value": {
+                "context": value
+            }}
+        )
+
 @pytest.mark.parametrize("type,value", [
     ("css", "a*b"),
     ("xpath", ""),

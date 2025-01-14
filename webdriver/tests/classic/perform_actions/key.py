@@ -30,15 +30,16 @@ def test_key_down_closes_browsing_context(
         """)
 
     # Open a new window.
-    resp = session.execute_script(f"return window.open('{url}')")
-    new_window_handle = resp.id
+    new_window = session.execute_script(f"return window.open('{url}')")
+
+    new_window_handle = new_window.id
 
     # Switch to the new window.
     session.window_handle = new_window_handle
 
     with pytest.raises(NoSuchWindowException):
         key_chain.key_down("w") \
-            .pause(250 * configuration["timeout_multiplier"]) \
+            .pause(100 * configuration["timeout_multiplier"]) \
             .key_up("w") \
             .perform()
 

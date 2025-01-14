@@ -36,8 +36,8 @@ def test_pointer_down_closes_browsing_context(
     url = inline("""<input onpointerdown="window.close()">close</input>""")
 
     # Open a new window.
-    resp = session.execute_script(f"return window.open('{url}')")
-    new_window_handle = resp.id
+    new_window = session.execute_script(f"return window.open('{url}')")
+    new_window_handle = new_window.id
 
     # Switch to the new window.
     session.window_handle = new_window_handle
@@ -48,7 +48,7 @@ def test_pointer_down_closes_browsing_context(
     with pytest.raises(NoSuchWindowException):
         pen_chain.pointer_move(0, 0, origin=origin) \
             .pointer_down(button=0) \
-            .pause(250 * configuration["timeout_multiplier"]) \
+            .pause(100 * configuration["timeout_multiplier"]) \
             .pointer_up(button=0) \
             .perform()
 

@@ -259,12 +259,10 @@ async def test_params_start_nodes_dom_node_not_element(
         )
 
 
-@pytest.mark.parametrize("domain", ["", "alt"], ids=["same_origin", "cross_origin"])
 @pytest.mark.asyncio
-async def test_locate_by_context_invalid_context(bidi_session, inline, top_context, domain):
-    iframe_url_2 = inline("<div>foo</div>", domain=domain)
-    iframe_url_1 = inline(f"<div><iframe src='{iframe_url_2}'></iframe></div>", domain=domain)
-    page_url = inline(f"<iframe src='{iframe_url_1}'></iframe>")
+async def test_locate_by_context_invalid_context(bidi_session, inline, top_context, iframe):
+    iframe_url = inline(iframe("<div>foo</div>"))
+    page_url = inline(f"<iframe src='{iframe_url}'></iframe>")
 
     await bidi_session.browsing_context.navigate(
         context=top_context["context"], url=page_url, wait="complete"

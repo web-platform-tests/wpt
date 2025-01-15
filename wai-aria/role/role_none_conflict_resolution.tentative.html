@@ -27,15 +27,17 @@
     </div>
 
     <script>
-      AriaUtils.verifyRolesBySelector(".ex");
-      AriaUtils.verifyGenericRolesBySelector(".ex-generic");
-
       //https://github.com/web-platform-tests/interop-accessibility/issues/161 starts
       const innerButton = document.createElement("button");
       innerButton.textContent = " (inner button)";
       innerButton.id = "inner-button";
+      innerButton.classList.add("ex");
+      innerButton.setAttribute('data-expectedrole','button');
+      innerButton.setAttribute('data-testname','JS injected HTML button within another HTML button');
       document.getElementById("inner-button-container").appendChild(innerButton);
 
+      AriaUtils.verifyRolesBySelector(".ex");
+      AriaUtils.verifyGenericRolesBySelector(".ex-generic");
     </script>
 
   </body>

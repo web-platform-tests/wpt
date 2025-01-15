@@ -204,9 +204,6 @@
     return p;
   }, "Trusted Type violation report: sample for script innerText assignment");
 
-  // TODO(lyf): https://crbug.com/1066791 Following tests which related to svg
-  // script element cause a flaky timeout in `linux-blink-rel`, following tests
-  // should be added back after the bug fix.
   promise_test(t => {
     let p = Promise.resolve()
         .then(promise_violation("require-trusted-types-for 'script'"))

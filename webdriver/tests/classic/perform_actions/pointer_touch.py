@@ -36,10 +36,9 @@ def test_pointer_down_closes_browsing_context(
 
     # Open a new window.
     new_window = session.execute_script(f"return window.open('{url}')")
-    new_window_handle = new_window.id
 
     # Switch to the new window.
-    session.window_handle = new_window_handle
+    session.window_handle = new_window.id
 
     # Get the input element.
     origin = session.find.css("input", all=False)

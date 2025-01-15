@@ -32,10 +32,8 @@ def test_key_down_closes_browsing_context(
     # Open a new window.
     new_window = session.execute_script(f"return window.open('{url}')")
 
-    new_window_handle = new_window.id
-
     # Switch to the new window.
-    session.window_handle = new_window_handle
+    session.window_handle = new_window.id
 
     with pytest.raises(NoSuchWindowException):
         key_chain.key_down("w") \

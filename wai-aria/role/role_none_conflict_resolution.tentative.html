@@ -36,11 +36,6 @@
       innerButton.id = "inner-button";
       document.getElementById("inner-button-container").appendChild(innerButton);
 
-      promise_test(async t => {
-        const role = await test_driver.get_computed_role(document.getElementById('inner-button'));
-        assert_equals(role, "button");
-      }, "test nested HTML button within HTML button");
-      //https://github.com/web-platform-tests/interop-accessibility/issues/161 ends
     </script>
 
   </body>

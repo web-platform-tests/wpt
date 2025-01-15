@@ -10,6 +10,8 @@
     <script src="/wai-aria/scripts/aria-utils.js"></script>
   </head>
   <body>
+    
+    <!-- ARIA specs: https://www.w3.org/TR/wai-aria-1.3/#tree_exclusion -->
     <!-- no conflict, since not focusable; inner button should be exposed as generic - children presentational - //https://github.com/web-platform-tests/interop-accessibility/issues/161 -->
     <h2>ARIA role="button" nesting ARIA role="button" (no presentational roles conflict resolution, since not focusable)</h2>
     <div role="button">

@@ -20,7 +20,7 @@ function trusted_type_violations_and_exception_for(fn) {
         e.stopPropagation();
         resolve(result);
       } else {
-	reject("Unexpected violation for directive ${e.effectiveDirective}");
+        reject(`Unexpected violation for directive ${e.effectiveDirective}`);
       }
     }
     document.addEventListener("securitypolicyviolation", handler);

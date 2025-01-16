@@ -1,8 +1,10 @@
-const trustedTypeDirectives = [
+const cspDirectives = [
   // https://w3c.github.io/trusted-types/dist/spec/#require-trusted-types-for-csp-directive
   "require-trusted-types-for",
   // https://w3c.github.io/trusted-types/dist/spec/#trusted-types-csp-directive
   "trusted-types",
+  // https://w3c.github.io/webappsec-csp/#script-src
+  "script-src",
 ];
 
 // A generic helper that runs function fn and return a promise resolving with
@@ -13,7 +15,7 @@ function trusted_type_violations_and_exception_for(fn) {
     // Listen for security policy violations.
     let result = { violations: [], exception: null };
     let handler = e => {
-      if (trustedTypeDirectives.includes(e.effectiveDirective)) {
+      if (cspDirectives.includes(e.effectiveDirective)) {
         result.violations.push(e);
       } else if (e.effectiveDirective === "object-src") {
         document.removeEventListener("securitypolicyviolation", handler);

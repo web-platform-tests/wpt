@@ -49,7 +49,7 @@ async function trusted_type_violation_for(expectedException, fn) {
   let {violations, exception} =
       await trusted_type_violations_and_exception_for(fn);
   assert_equals(violations.length, 1, "a single violation reported");
-  assert_true(exception instanceof expectedException, "TypeError exception reported");
+  assert_true(exception instanceof expectedException, `${expectedException.prototype} exception reported`);
   return violations[0];
 }
 

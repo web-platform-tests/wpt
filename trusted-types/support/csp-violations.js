@@ -54,9 +54,17 @@ async function trusted_type_violation_for(expectedException, fn) {
 }
 
 // Helper function when we expect no violation or exception.
-async function no_trusted_type_violation_report_for(fn) {
+async function no_trusted_type_violation_for(fn) {
   let {violations, exception} =
       await trusted_type_violations_and_exception_for(fn);
   assert_equals(violations.length, 0, "no violation reported");
   assert_equals(exception, null, "no exception thrown");
+}
+
+async function trusted_type_violation_without_exception_for(fn) {
+  let {violations, exception} =
+      await trusted_type_violations_and_exception_for(fn);
+  assert_equals(violations.length, 1, "a single violation reported");
+  assert_equals(exception, null, "no exception thrown");
+  return violations[0];
 }

@@ -41,7 +41,7 @@
 
   promise_test(async t => {
     let beacon = 'never_overwritten2';
-    await no_trusted_type_violation_report_for(_ =>
+    await no_trusted_type_violation_for(_ =>
       eval(scriptyPolicy.createScript('beacon="i ran"'))
     );
     assert_equals(beacon, 'i ran');

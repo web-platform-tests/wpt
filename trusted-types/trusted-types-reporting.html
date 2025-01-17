@@ -76,7 +76,7 @@
 
   promise_test(async t => {
     let {violations, exception} =
-        await trusted_type_violations_and_exception_for(_ =>
+        await trusted_type_violation_without_exception_for(_ =>
           policy_one = trustedTypes.createPolicy("one", a_policy)
         );
     assert_equals(violations.length, 1);
@@ -109,13 +109,13 @@
   }, "Trusted Type violation report: assign string to html");
 
   promise_test(async t => {
-    await no_trusted_type_violation_report_for(_ =>
+    await no_trusted_type_violation_for(_ =>
       document.getElementById("script").text = policy_one.createScript("2+2;")
     );
   }, "Trusted Type violation report: assign trusted script to script; no report");
 
   promise_test(async t => {
-    await no_trusted_type_violation_report_for(_ =>
+    await no_trusted_type_violation_for(_ =>
       document.getElementById("div").innerHTML = policy_one.createHTML("abc")
     );
   }, "Trusted Type violation report: assign trusted HTML to html; no report");

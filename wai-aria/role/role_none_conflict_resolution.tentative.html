@@ -11,12 +11,12 @@
   </head>
   <body>
     
-    <!-- ARIA specs: https://www.w3.org/TR/wai-aria-1.3/#tree_exclusion -->
+    <!-- ARIA specs: https://w3c.github.io/aria/#tree_exclusion -->
     <!-- no conflict, since not focusable; inner button should be exposed as generic - children presentational - //https://github.com/web-platform-tests/interop-accessibility/issues/161 -->
     <h2>ARIA role="button" nesting ARIA role="button" (no presentational roles conflict resolution, since not focusable)</h2>
     <div role="button">
       <span>outer button</span>
-      <span role="button" class="ex-generic" data-testname="non-focusable ARIA[role button] nesting non-focusable ARIA[role button]">Inner button</span>
+      <span role="button" class="ex-role" data-expectedrole="SPEC_AMBIGUOUS_LOG_VALUE" data-testname="non-focusable ARIA[role button] nesting non-focusable ARIA[role button]">Inner button</span>
     </div>
 
     <!-- conflict arise, since inner button is focusable - //https://github.com/web-platform-tests/interop-accessibility/issues/161-->
@@ -33,12 +33,12 @@
       const innerButton = document.createElement("button");
       innerButton.textContent = " (inner button)";
       innerButton.id = "inner-button";
-      innerButton.classList.add("ex");
+      innerButton.classList.add("ex-role");
       innerButton.setAttribute('data-expectedrole','button');
       innerButton.setAttribute('data-testname','JS injected HTML button within another HTML button');
       document.getElementById("inner-button-container").appendChild(innerButton);
 
-      AriaUtils.verifyRolesBySelector(".ex");
+      AriaUtils.verifyRolesBySelector(".ex-role");
       AriaUtils.verifyGenericRolesBySelector(".ex-generic");
     </script>
 

@@ -13,14 +13,14 @@
 
     <h2>HTML input with role="none" (presentational roles conflict resolution)</h2>
     <label for="irn">input label</label>
-    <input id="irn" type="text" data-expectedrole="textbox" data-testname="HTML input[role none] but focusable" class="ex" role="none">
+    <input id="irn" type="text" data-expectedrole="textbox" data-testname="HTML input[role none] but focusable" class="ex-role" role="none">
 
     <h2>HTML input with role="none" and disabled (presentational roles conflict resolution does not apply due to disabled attr)</h2>
     <label for="irpd">input label</label>
     <input id="irpd" type="text" data-testname="HTML input[role none][disabled]" class="ex-generic" role="none" disabled>
 
     <script>
-      AriaUtils.verifyRolesBySelector(".ex");
+      AriaUtils.verifyRolesBySelector(".ex-role");
       AriaUtils.verifyGenericRolesBySelector(".ex-generic");
     </script>
 

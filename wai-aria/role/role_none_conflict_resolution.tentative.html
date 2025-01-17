@@ -13,11 +13,19 @@
 
     <h2>HTML input with role="none" (presentational roles conflict resolution)</h2>
     <label for="irn">input label</label>
-    <input id="irn" type="text" data-expectedrole="textbox" data-testname="HTML input[role none] but focusable" class="ex-role" role="none">
+    <input id="irn" type="text" data-expectedrole="textbox" data-testname="HTML input[role=none] but focusable" class="ex-role" role="none">
 
     <h2>HTML input with role="none" and disabled (presentational roles conflict resolution does not apply due to disabled attr)</h2>
     <label for="irpd">input label</label>
-    <input id="irpd" type="text" data-testname="HTML input[role none][disabled]" class="ex-generic" role="none" disabled>
+    <input id="irpd" type="text" data-testname="HTML input[role=none][disabled]" class="ex-generic" role="none" disabled>
+
+    <h2>HTML input with role="none" and readonly (presentational roles conflict resolution)</h2>
+    <label for="irnro">input label</label>
+    <input id="irnro" type="text" data-expectedrole="textbox" data-testname="HTML input[role=none][readonly] but focusable" class="ex-role" role="none" readonly>
+
+    <h2>HTML input with role="none", disabled and readonly (presentational roles conflict resolution does not apply due to disabled attr)</h2>
+    <label for="irpdro">input label</label>
+    <input id="irpdro" type="text" data-testname="HTML input[role=none][disabled][readonly]" class="ex-generic" role="none" disabled readonly>
 
     <script>
       AriaUtils.verifyRolesBySelector(".ex-role");

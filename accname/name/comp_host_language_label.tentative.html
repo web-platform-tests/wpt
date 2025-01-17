@@ -73,13 +73,43 @@
     <fieldset role="none" data-expectedlabel="" data-testname="html: fieldset[role=none] wrapping legend[role=none]" class="ex-label"><legend role="none">legend</legend></fieldset>
 
     <h2>HTML table wrapping caption with role="none"</h2>
-    <table data-expectedlabel="caption" data-testname="html: table wrapping caption[role=none]" class="ex-label"><caption role="none">caption</caption></table>
+    <table data-expectedlabel="caption" data-testname="html: table wrapping caption[role=none]" class="ex-label">
+      <caption role="none">caption</caption>
+      <tr>
+        <th>th1</th>
+        <th>th2</th>
+      </tr>
+      <tr>
+        <td>td1</td>
+        <td>td2</td>
+      </tr>
+    </table>
 
     <h2>HTML table with role="none" wrapping caption</h2>
-    <table role="none" data-expectedlabel="" data-testname="html: table[role=none] wrapping caption" class="ex-label"><caption>caption</caption></table>
+    <table role="none" data-expectedlabel="" data-testname="html: table[role=none] wrapping caption" class="ex-label">
+      <caption>caption</caption>
+      <tr>
+        <th>th1</th>
+        <th>th2</th>
+      </tr>
+      <tr>
+        <td>td1</td>
+        <td>td2</td>
+      </tr>
+    </table>
 
     <h2>HTML table role="none" wrapping caption with role="none"</h2>
-    <table role="none" data-expectedlabel="" data-testname="html: table[role=none] wrapping caption[role=none]" class="ex-label"><caption role="none">caption</caption></table>
+    <table role="none" data-expectedlabel="" data-testname="html: table[role=none] wrapping caption[role=none]" class="ex-label">
+      <caption role="none">caption</caption>
+      <tr>
+        <th>th1</th>
+        <th>th2</th>
+      </tr>
+      <tr>
+        <td>td1</td>
+        <td>td2</td>
+      </tr>
+    </table>
 
     <script>
       AriaUtils.verifyLabelsBySelector(".ex-label");

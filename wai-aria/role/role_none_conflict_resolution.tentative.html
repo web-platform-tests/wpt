@@ -13,7 +13,7 @@
     
     <!-- ARIA specs: https://w3c.github.io/aria/#tree_exclusion -->
     <!-- no conflict, since not focusable; inner button should be exposed as generic - children presentational - //https://github.com/web-platform-tests/interop-accessibility/issues/161 -->
-    <h2>ARIA role="button" nesting ARIA role="button" (no presentational roles conflict resolution, since inner button is not focusable)</h2>
+    <h2>Non-focusable ARIA role="button" nesting non-focusable ARIA role="button" (no presentational roles conflict resolution, since inner button is not focusable)</h2>
     <div role="button">
       <span>outer button</span>
       <span role="button" class="ex-role" data-expectedrole="SPEC_AMBIGUOUS_LOG_VALUE" data-testname="non-focusable ARIA[role=button] nesting non-focusable ARIA[role=button]">Inner button</span>

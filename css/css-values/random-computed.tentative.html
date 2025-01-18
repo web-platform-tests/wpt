@@ -228,7 +228,7 @@ test(() => {
 
 test(() => {
   const style = 'width: calc(410px, 500px)';
-  
+
   const el1 = document.createElement('div');
   el1.style = style;
   document.body.appendChild(el1);
@@ -284,7 +284,7 @@ test(() => {
   document.body.appendChild(el);
   const elComputed = getComputedStyle(el)['width'];
 
-  // It is statistically improbable that all 100 elements will have 
+  // It is statistically improbable that all 100 elements will have
   // the same width when picked as a random number between 0 and 100000.
   var allSame = true;
   for (i = 0; i < 100; ++i) {

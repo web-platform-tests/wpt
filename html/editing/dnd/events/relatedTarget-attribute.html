@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+  <head>
+    <title>relatedTarget attribute for dragenter and dragleave events</title>
+    <meta name="viewport" content="width=device-width" />
+    <style>
+      #outerdiv {
+        padding: 50px;
+        background: blue;
+      }
+      #innerdiv {
+        width: 200px;
+        height: 100px;
+        background: green;
+      }
+    </style>
+  </head>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="../resources/test-helper.js"></script>
+  <body>
+    <div id="draggable" draggable="true">
+      Drag this text<br />over the green box
+    </div>
+    <div id="outerdiv">
+      <div id="innerdiv"></div>
+    </div>
+    <script>
+      async function test() {
+        await new Promise((loaded) => window.addEventListener("load", loaded));
+
+        var got_dragenter = false;
+        var got_dragleave = false;
+
+        var draggable = document.getElementById("draggable");
+        var innerdiv = document.getElementById("innerdiv");
+
+        draggable.addEventListener("dragstart", (e) => {
+          console.log("dragstart");
+          e.dataTransfer.setData("text", draggable.innerHTML);
+        });
+
+        innerdiv.addEventListener("dragenter", (e) => {
+          console.log("dragenter");
+          if (!got_dragenter) {
+            assert_equals(
+              e.relatedTarget.id,
+              "outerdiv",
+              "dragenter event should have the correct relatedTarget.",
+            );
+            got_dragenter = true;
+          }
+        });
+        innerdiv.addEventListener("dragleave", (e) => {
+          console.log("dragleave");
+          if (!got_dragleave) {
+            assert_equals(
+              e.relatedTarget.id,
+              "outerdiv",
+              "dragleave event should have the correct relatedTarget.",
+            );
+            got_dragleave = true;
+          }
+        });
+
+        function onDropCallback(event) {
+          assert_true(got_dragenter);
+          assert_true(got_dragleave);
+        }
+
+        dragDropTest(
+          draggable,
+          innerdiv,
+          onDropCallback,
+          "dragenter/dragleave events should have the correct relatedTarget",
+        );
+      }
+      test();
+    </script>
+  </body>
+</html>

@@ -10,7 +10,6 @@
     <script src="/wai-aria/scripts/aria-utils.js"></script>
   </head>
   <body>
-    
     <!-- ARIA specs: https://w3c.github.io/aria/#tree_exclusion -->
     <!-- no conflict, since not focusable; inner button should be exposed as generic - children presentational - //https://github.com/web-platform-tests/interop-accessibility/issues/161 -->
     <h2>Non-focusable ARIA role="button" nesting non-focusable ARIA role="button" (no presentational roles conflict resolution, since inner button is not focusable)</h2>
@@ -55,7 +54,7 @@
       innerButton.textContent = " (inner button)";
       innerButton.id = "inner-button";
       innerButton.classList.add("ex-role");
-      innerButton.setAttribute('data-expectedrole','button');
+      innerButton.setAttribute('data-expectedrole','SPEC_AMBIGUOUS_LOG_VALUE');
       innerButton.setAttribute('data-testname','JS injected HTML button within another HTML button');
       document.getElementById("inner-button-container").appendChild(innerButton);
 

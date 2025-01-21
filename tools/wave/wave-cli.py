@@ -1,4 +1,5 @@
 # mypy: allow-untyped-defs
+# mypy: allow-untyped-calls
 
 import sys
 import os
@@ -36,7 +37,7 @@ REFERENCE_BROWSERS = {
 }
 
 
-def main() -> None:
+def main():
     parameters = get_run_parameters()
     # configuration_file_path = None
     # if ("configuration_file_path" in parameters):

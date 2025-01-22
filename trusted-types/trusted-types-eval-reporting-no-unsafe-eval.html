@@ -37,6 +37,7 @@
     let violation = await trusted_type_violation_for(EvalError, _ =>
       eval('script_run_beacon="should not run"')
     );
+    assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
     assert_equals(script_run_beacon, 'never_overwritten');
   }, "Trusted Type violation report: evaluating a string violates both script-src and trusted-types.");
 

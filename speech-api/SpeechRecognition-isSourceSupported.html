@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<title>SpeechRecognition isSourceSupported</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+promise_test(async (t) => {
+  window.SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  // Ensure the isSourceSupported static method exists.
+  assert_true(
+    "isSourceSupported" in SpeechRecognition,
+    "SpeechRecognition should have the isSourceSupported static method.",
+  );
+
+  // Verify the resolved supported value is true and options value match when source is valid.
+  for (const source of ["microphone", "mediastreamtrack"]) {
+    const resultPromise = SpeechRecognition.isSourceSupported({ source });
+    assert_true(
+      resultPromise instanceof Promise,
+      "isSourceSupported should return a Promise.",
+    );
+
+    const { supported, options } = await resultPromise;
+    assert_true(
+      supported,
+      `The resolved supported value of the isSourceSupported promise should be true when source is "${source}".`,
+    );
+    assert_equals(
+      options.source,
+      source,
+      `The resolved options source value of the isSourceSupported promise should be equal to "${source}".`,
+    );
+  }
+
+  // Verify the resolved supported value is false and options value match when source is invalid.
+  for (const source of ["foo", "Microphone", "", null]) {
+    const resultPromise = SpeechRecognition.isSourceSupported({ source });
+    assert_true(
+      resultPromise instanceof Promise,
+      "isSourceSupported should return a Promise.",
+    );
+
+    const { supported, options } = await resultPromise;
+    assert_false(
+      supported,
+      `The resolved supported value of the isSourceSupported promise should be false when source is "${source}".`,
+    );
+    assert_equals(
+      options.source,
+      String(source),
+      `The resolved options source value of the isSourceSupported promise should be equal to "${source}".`,
+    );
+  }
+
+  // Verify promise rejects with TypeError when options is invalid.
+  for (const options of [undefined, null, {}, "foo", { source: undefined }]) {
+    await promise_rejects_js(
+      t,
+      TypeError,
+      SpeechRecognition.isSourceSupported(options),
+      `isSourceSupported promise should reject with TypeError if options is ${JSON.stringify(options)}.`,
+    );
+  }
+});
+</script>

@@ -7,40 +7,45 @@ const cspDirectives = [
   "script-src",
 ];
 
-// A generic helper that runs function fn and return a promise resolving with
-// an array of reported violations for trusted type directives and a possible
-// exception thrown.
+// A generic helper that runs function fn and returns a promise resolving with
+// an array of reported violations and a possible exception thrown. This forces
+// a "connect-src" violation before and after calling fn, to make sure we are
+// not gathering violations reported before fn, and that all the violations
+// reported by fn have been delivered. This assumes that the test file contains
+// the CSP directive connect-src 'none' and that fn is not itself triggering
+// a "connect-src" violation report.
 function trusted_type_violations_and_exception_for(fn) {
   return new Promise((resolve, reject) => {
     // Listen for security policy violations.
+    let receivedInitialConnectSrcViolation = false;
     let result = { violations: [], exception: null };
     let handler = e => {
       if (cspDirectives.includes(e.effectiveDirective)) {
-        result.violations.push(e);
-      } else if (e.effectiveDirective === "object-src") {
-        document.removeEventListener("securitypolicyviolation", handler);
-        e.stopPropagation();
-        resolve(result);
+        if (receivedInitialConnectSrcViolation) {
+          result.violations.push(e);
+        }
+      } else if (e.effectiveDirective === "connect-src") {
+        if (receivedInitialConnectSrcViolation) {
+          self.removeEventListener("securitypolicyviolation", handler);
+          e.stopPropagation();
+          resolve(result);
+        } else {
+          receivedInitialConnectSrcViolation = true;
+        }
       } else {
         reject(`Unexpected violation for directive ${e.effectiveDirective}`);
       }
     }
-    document.addEventListener("securitypolicyviolation", handler);
+    self.addEventListener("securitypolicyviolation", handler);
 
     // Run the specified function and record any exception.
+    new EventSource("/common/blank.html");
     try {
       fn();
     } catch(e) {
       result.exception = e;
     }
-
-    // Force an "object-src" violation, to make sure all the previous violations
-    // have been delivered. This assumes the test file's associated .headers
-    // file contains Content-Security-Policy: object-src 'none'.
-    var o = document.createElement('object');
-    o.type = "video/mp4";
-    o.data = "dummy.webm";
-    document.body.appendChild(o);
+    new EventSource("/common/blank.html");
   });
 }
 

@@ -110,6 +110,41 @@
     </div>
   </div>
 
+  <h2>ARIA heading impostors</h2>
+  <hr>
+
+  <button
+    role="heading"
+    aria-level="1"
+    class="ex-label ex-role"
+    data-testname="button[role=heading][aria-level=1] with text contents and invalid span[role=heading][aria-level=2] descendant should not accumulate accname from the text contents of the contained span[role=heading][aria-level=2], and should still convey heading role"
+    data-expectedlabel="Macaroni"
+    data-expectedrole="heading"
+  >Macaroni
+    <span
+      role="heading"
+      aria-level="2"
+      class="ex-label ex-role"
+      data-testname="Invalidly nested span[role=heading][aria-level=2] should have accname matching its text contents, and should still convey heading role"
+      data-expectedlabel="Cheese"
+      data-expectedrole="heading"
+    >Cheese</span>
+  </button>
+
+  <p
+    role="heading"
+    aria-level="1"
+    class="ex-label ex-role"
+    data-testname="p[role=heading][aria-level=1] with text contents and invalid span[role=heading][aria-level=2] descendant should not accumulate accname from the text contents of the contained p[role=heading][aria-level=2], and should still convey heading role"
+    data-expectedlabel="Biscuits"
+    data-expectedrole="heading"
+  >Biscuits
+    <span
+      role="heading"
+      aria-level="2"
+    >Gravy</span>
+  </p>
+
   <script>
     AriaUtils.verifyRolesAndLabelsBySelector(".ex-label.ex-role");
     verifyNoForbiddenAncestorRole(".ex-no-heading-ancestor", "heading");

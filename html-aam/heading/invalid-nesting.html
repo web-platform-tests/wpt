@@ -21,63 +21,55 @@
   <hr>
 
   <h1
-    class="ex-label"
-    data-testname="h1 with invalid h2 descendant should not inherit accname from the text contents of the contained h2"
+    class="ex-label ex-role"
+    data-testname="h1 with invalid h2 descendant should not inherit accname from the text contents of the contained h2, and should still convey heading role"
     data-expectedlabel=""
+    data-expectedrole="heading"
   >
     <h2
-      class="ex-label"
-      data-testname="Invalidly nested h2 should have accname matching its text contents"
+      class="ex-label ex-role"
+      data-testname="Invalidly nested h2 should have accname matching its text contents, and should still convey heading role"
       data-expectedlabel="Invalid h2"
+      data-expectedrole="heading"
     >Invalid h2</h2>
   </h1>
 
   <h4
-    class="ex-label"
-    data-testname="h4 with invalid h3 descendant should not inherit accname from the text contents of the contained h3"
+    class="ex-label ex-role"
+    data-testname="h4 with invalid h3 descendant should not inherit accname from the text contents of the contained h3, and should still convey heading role"
     data-expectedlabel=""
+    data-expectedrole="heading"
   >
     <h3
-      class="ex-label"
-      data-testname="Invalidly nested h3 should have accname matching its text contents"
+      class="ex-label ex-role"
+      data-testname="Invalidly nested h3 should have accname matching its text contents, and should still convey heading role"
       data-expectedlabel="Invalid h3"
+      data-expectedrole="heading"
     >Invalid h3</h3>
   </h4>
 
+  <h5
+    class="ex-label ex-role"
+    data-testname="h5 with invalid h6 descendant should not inherit accname from the text contents of the contained h6, and should still convey heading role"
+    data-expectedlabel=""
+    data-expectedrole="heading"
+  >
+    <h6
+      class="ex-label ex-role"
+      data-testname="Invalidly nested h6 should have accname matching its text contents, and should still convey heading role"
+      data-expectedlabel="Invalid h6"
+      data-expectedrole="heading"
+    >Invalid h6</h6>
+  </h5>
+
   <h1
-    class="ex-label"
-    data-testname="h1 with text contents and invalid h2 descendant should not accumulate accname from the text contents of the contained h2"
+    class="ex-label ex-role"
+    data-testname="h1 with text contents and invalid h2 descendant should not accumulate accname from the text contents of the contained h2, and should still convey heading role"
     data-expectedlabel="Chocolate"
+    data-expectedrole="heading"
   >Chocolate
     <h2>Peanut butter</h2>
   </h1>
-
-  <h2>Roles</h2>
-  <hr>
-
-  <h1
-    class="ex-role"
-    data-testname="h1 with invalid h2 descendant should still convey heading role"
-    data-expectedrole="heading"
-  >
-    <h2
-      class="ex-role"
-      data-testname="invalidly nested h2 should still convey heading role"
-      data-expectedrole="heading"
-    >Invalid h2</h2>
-  </h1>
-
-  <h4
-    class="ex-role"
-    data-testname="h4 with invalid h3 descendant should still convey heading role"
-    data-expectedrole="heading"
-  >
-    <h3
-      class="ex-role"
-      data-testname="invalidly nested h3 should still convey heading role"
-      data-expectedrole="heading"
-    >Invalid h3</h3>
-  </h4>
 
   <h2>No heading ancestors</h2>
   <hr>
@@ -95,14 +87,13 @@
   </h1>
 
   <script>
-    AriaUtils.verifyLabelsBySelector(".ex-label");
-    AriaUtils.verifyRolesBySelector(".ex-role");
-    verifyNoAncestorRole(".ex-no-heading-ancestor", "heading");
+    AriaUtils.verifyRolesAndLabelsBySelector(".ex-label.ex-role");
+    verifyNoForbiddenAncestorRole(".ex-no-heading-ancestor", "heading");
 
-    function verifyNoAncestorRole(selector, forbiddenRole) {
+    function verifyNoForbiddenAncestorRole(selector, forbiddenRole) {
       const els = document.querySelectorAll(selector);
       if (!els.length) {
-        throw `Selector passed in verifyNoAncestorRole("${selector}") should match at least one element.`;
+        throw `Selector passed in verifyNoForbiddenAncestorRole("${selector}") should match at least one element.`;
       }
       for (const el of els) {
         let testName = el.getAttribute("data-testname");

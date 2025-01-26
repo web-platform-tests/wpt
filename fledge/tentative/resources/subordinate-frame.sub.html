@@ -5,6 +5,8 @@
 <!--- Allow injected scripts to use functions in fledge-util.sub.js --->
 <base href="..">
 <script src="/resources/testharness.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="/common/utils.js"></script>
 <script src="resources/fledge-util.sub.js"></script>
 </head>
@@ -18,6 +20,26 @@
   let message_dest = window.opener;
   if (!message_dest)
     message_dest = window.parent;
+
+  // In order to use some WPT test fixture features in another frame
+  // (particularly, testdriver), we need to set the test context for the test
+  // driver. This is main window driving the test.
+  //
+  // To find that window, follow both parent and opener links to very end;
+  // keeping in mind that top-level windows' parent fields loop back to
+  // themselves.
+  let main_test_window = window;
+  while (true) {
+    if (main_test_window.opener) {
+      main_test_window = main_test_window.opener;
+    } else if (main_test_window.parent !== main_test_window) {
+      main_test_window = main_test_window.parent;
+    } else {
+      break;
+    }
+  }
+
+  test_driver.set_test_context(main_test_window);
 
   // Fake Test class that only supports adding cleanup callbacks,
   // primarily to leave interest groups once the test is complete.

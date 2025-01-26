@@ -1,4 +1,5 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.sub.js
 // META: script=/common/subset-tests.js
@@ -17,9 +18,9 @@ subsetTest(promise_test, async test => {
           `registerAdBeacon({beacon: '${createSellerBeaconURL(uuid)}'});`,
         reportWin:
           '' },
-      // expectedReportUrls:
+      // expectedReportURLs:
       [`${createSellerBeaconURL(uuid)}, body: `],
-      // renderUrlOverride:
+      // renderURLOverride:
       createRenderURL(
           uuid,
           `window.fence.reportEvent({
@@ -39,9 +40,9 @@ subsetTest(promise_test, async test => {
         reportWin:
           `registerAdBeacon({beacon: '${createBidderBeaconURL(uuid)}'});`
       },
-      // expectedReportUrls:
+      // expectedReportURLs:
       [`${createBidderBeaconURL(uuid)}, body: `],
-      // renderUrlOverride:
+      // renderURLOverride:
       createRenderURL(
           uuid,
           `window.fence.reportEvent({
@@ -60,9 +61,9 @@ subsetTest(promise_test, async test => {
           `registerAdBeacon({beacon: '${createSellerBeaconURL(uuid)}'});`,
         reportWin:
           '' },
-      // expectedReportUrls:
+      // expectedReportURLs:
       [`${createSellerBeaconURL(uuid)}, body: body`],
-      // renderUrlOverride:
+      // renderURLOverride:
       createRenderURL(
           uuid,
           `window.fence.reportEvent({
@@ -81,9 +82,9 @@ subsetTest(promise_test, async test => {
           '',
         reportWin:
           `registerAdBeacon({beacon: '${createBidderBeaconURL(uuid)}'});` },
-      // expectedReportUrls:
+      // expectedReportURLs:
       [`${createBidderBeaconURL(uuid)}, body: body`],
-      // renderUrlOverride:
+      // renderURLOverride:
       createRenderURL(
           uuid,
           `window.fence.reportEvent({
@@ -102,10 +103,10 @@ subsetTest(promise_test, async test => {
           `registerAdBeacon({beacon: '${createSellerBeaconURL(uuid)}'});`,
         reportWin:
           '' },
-      // expectedReportUrls:
+      // expectedReportURLs:
       [`${createSellerBeaconURL(uuid)}, body: body1`,
       `${createSellerBeaconURL(uuid)}, body: body2`],
-      // renderUrlOverride:
+      // renderURLOverride:
       createRenderURL(
           uuid,
           `window.fence.reportEvent({
@@ -129,10 +130,10 @@ subsetTest(promise_test, async test => {
           '',
         reportWin:
           `registerAdBeacon({beacon: '${createBidderBeaconURL(uuid)}'});` },
-      // expectedReportUrls:
+      // expectedReportURLs:
       [`${createBidderBeaconURL(uuid)}, body: body1`,
        `${createBidderBeaconURL(uuid)}, body: body2`],
-      // renderUrlOverride:
+      // renderURLOverride:
       createRenderURL(
           uuid,
           `window.fence.reportEvent({
@@ -157,10 +158,10 @@ subsetTest(promise_test, async test => {
                              beacon2: '${createSellerBeaconURL(uuid, '2')}'});`,
         reportWin:
           '' },
-      // expectedReportUrls:
+      // expectedReportURLs:
       [`${createSellerBeaconURL(uuid, '1')}, body: body1`,
        `${createSellerBeaconURL(uuid, '2')}, body: body2`],
-      // renderUrlOverride:
+      // renderURLOverride:
       createRenderURL(
           uuid,
           `window.fence.reportEvent({
@@ -186,10 +187,10 @@ subsetTest(promise_test, async test => {
           `registerAdBeacon({beacon1: '${createBidderBeaconURL(uuid, '1')}',
                              beacon2: '${createBidderBeaconURL(uuid, '2')}'});`
       },
-      // expectedReportUrls:
+      // expectedReportURLs:
       [`${createBidderBeaconURL(uuid, '1')}, body: body1`,
        `${createBidderBeaconURL(uuid, '2')}, body: body2`],
-      // renderUrlOverride:
+      // renderURLOverride:
       createRenderURL(
           uuid,
           `window.fence.reportEvent({
@@ -213,10 +214,10 @@ subsetTest(promise_test, async test => {
           `registerAdBeacon({beacon: '${createSellerBeaconURL(uuid)}'});`,
         reportWin:
           `registerAdBeacon({beacon: '${createBidderBeaconURL(uuid)}'});` },
-      // expectedReportUrls:
+      // expectedReportURLs:
       [`${createSellerBeaconURL(uuid)}, body: body`,
        `${createBidderBeaconURL(uuid)}, body: body`],
-      // renderUrlOverride:
+      // renderURLOverride:
       createRenderURL(
           uuid,
           `window.fence.reportEvent({
@@ -235,10 +236,10 @@ subsetTest(promise_test, async test => {
           `registerAdBeacon({beacon: '${createSellerBeaconURL(uuid)}'});`,
         reportWin:
           `registerAdBeacon({beacon: '${createBidderBeaconURL(uuid)}'});` },
-      // expectedReportUrls:
+      // expectedReportURLs:
       [`${createSellerBeaconURL(uuid)}, body: body1`,
        `${createBidderBeaconURL(uuid)}, body: body2`],
-      // renderUrlOverride:
+      // renderURLOverride:
       createRenderURL(
           uuid,
           `window.fence.reportEvent({
@@ -268,9 +269,9 @@ subsetTest(promise_test, async test => {
           'sellerSignals === null',
         reportWin:
           `registerAdBeacon({beacon: '${createBidderBeaconURL(uuid)}'});` },
-      // expectedReportUrls:
+      // expectedReportURLs:
       [`${createBidderBeaconURL(uuid)}, body: body`],
-      // renderUrlOverride:
+      // renderURLOverride:
       createRenderURL(
           uuid,
           `window.fence.reportEvent({
@@ -293,9 +294,9 @@ subsetTest(promise_test, async test => {
           `sendReportTo('${createBidderReportURL(uuid)}');
            registerAdBeacon({beacon: '${createBidderBeaconURL(uuid)}'});
            registerAdBeacon({beacon1: '${createBidderBeaconURL(uuid)}'});` },
-      // expectedReportUrls:
+      // expectedReportURLs:
       [`${createSellerBeaconURL(uuid)}, body: body`],
-      // renderUrlOverride:
+      // renderURLOverride:
       createRenderURL(
           uuid,
           `window.fence.reportEvent({

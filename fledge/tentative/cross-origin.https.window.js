@@ -1,4 +1,5 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=/common/subset-tests.js
 // META: script=resources/fledge-util.sub.js
@@ -356,8 +357,8 @@ subsetTest(promise_test, async test => {
                           throw "Wrong origin: " + interestGroup.owner;
                         if (!interestGroup.biddingLogicURL.startsWith("${bidderOrigin}"))
                           throw "Wrong origin: " + interestGroup.biddingLogicURL;
-                        if (interestGroup.ads[0].renderUrl != "${renderURL}")
-                          throw "Wrong renderURL: " + interestGroup.ads[0].renderUrl;
+                        if (interestGroup.ads[0].renderURL !== "${renderURL}")
+                          throw "Wrong renderURL: " + interestGroup.ads[0].renderURL;
                         if (browserSignals.seller !== "${sellerOrigin}")
                           throw "Wrong origin: " + browserSignals.seller;`,
           reportWin: `if (browserSignals.topWindowHostname !== "${document.location.hostname}")

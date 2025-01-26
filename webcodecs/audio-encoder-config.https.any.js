@@ -57,6 +57,15 @@ const invalidConfigs = [
     },
   },
   {
+    comment: 'Bit rate present but equal to zero',
+    config: {
+      codec: 'opus',
+      sampleRate: 8000,
+      numberOfChannels: 2,
+      bitrate: 0,
+    },
+  },
+  {
     comment: 'Opus complexity too big',
     config: {
       codec: 'opus',
@@ -111,6 +120,15 @@ const invalidConfigs = [
       },
     },
   },
+  {
+    comment: 'Bitrate is too low for Opus',
+    config: {
+      codec: 'opus',
+      sampleRate: 48000,
+      numberOfChannels: 2,
+      bitrate: 1,
+    },
+  },
 ];
 
 invalidConfigs.forEach(entry => {
@@ -137,15 +155,6 @@ invalidConfigs.forEach(entry => {
 });
 
 const validButUnsupportedConfigs = [
-  {
-    comment: 'Bitrate is too low',
-    config: {
-      codec: 'opus',
-      sampleRate: 48000,
-      numberOfChannels: 2,
-      bitrate: 1,
-    },
-  },
   {
     comment: 'Unrecognized codec',
     config: {
@@ -191,6 +200,14 @@ const validButUnsupportedConfigs = [
     comment: 'Possible future aac codec string',
     config: {
       codec: 'mp4a.FF.9',
+      sampleRate: 48000,
+      numberOfChannels: 2,
+    }
+  },
+  {
+    comment: 'codec with spaces',
+    config: {
+      codec: '  opus  ',
       sampleRate: 48000,
       numberOfChannels: 2,
     }
@@ -272,6 +289,8 @@ const validConfigs = [
     numberOfChannels: 2,
     opus: {
       complexity: 5,
+      signal: 'music',
+      application: 'audio',
       frameDuration: 20000,
       packetlossperc: 10,
       useinbandfec: true,
@@ -283,6 +302,8 @@ const validConfigs = [
     numberOfChannels: 2,
     opus: {
       format: 'opus',
+      signal: 'voice',
+      application: 'lowdelay',
       complexity: 10,
       frameDuration: 60000,
       packetlossperc: 20,  // Irrelevant without useinbandfec, but still valid.

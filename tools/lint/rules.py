@@ -274,9 +274,19 @@ class TestdriverPath(Rule):
     description = "testdriver.js script seen with incorrect path"
 
 
+class TestdriverUnsupportedQueryParameter(Rule):
+    name = "TESTDRIVER-UNSUPPORTED-QUERY-PARAMETER"
+    description = "testdriver.js script seen with unsupported query parameters"
+
+
 class TestdriverVendorPath(Rule):
     name = "TESTDRIVER-VENDOR-PATH"
     description = "testdriver-vendor.js script seen with incorrect path"
+
+
+class TestdriverInUnsupportedType(Rule):
+    name = "TESTDRIVER-IN-UNSUPPORTED-TYPE"
+    description = "testdriver.js included in a %s test, which doesn't support testdriver.js"
 
 
 class OpenNoMode(Rule):
@@ -322,6 +332,11 @@ class BrokenMetadata(Rule):
 class TestharnessInOtherType(Rule):
     name = "TESTHARNESS-IN-OTHER-TYPE"
     description = "testharness.js included in a %s test"
+
+
+class ReferenceInOtherType(Rule):
+    name = "REFERENCE-IN-OTHER-TYPE"
+    description = "Reference link included in a %s test"
 
 
 class DuplicateBasenamePath(Rule):

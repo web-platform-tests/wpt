@@ -3,11 +3,6 @@
 // (https://github.com/w3c/webref)
 // Source: CSS Fonts Module Level 4 (https://drafts.csswg.org/css-fonts-4/)
 
-[Exposed=Window]
-interface CSSFontFaceRule : CSSRule {
-  readonly attribute CSSStyleDeclaration style;
-};
-
 partial interface CSSRule {  const unsigned short FONT_FEATURE_VALUES_RULE = 14;
 };
 [Exposed=Window]
@@ -19,6 +14,7 @@ interface CSSFontFeatureValuesRule : CSSRule {
   readonly attribute CSSFontFeatureValuesMap swash;
   readonly attribute CSSFontFeatureValuesMap characterVariant;
   readonly attribute CSSFontFeatureValuesMap styleset;
+  readonly attribute CSSFontFeatureValuesMap historicalForms;
 };
 
 [Exposed=Window]

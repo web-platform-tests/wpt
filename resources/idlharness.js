@@ -566,6 +566,7 @@ IdlArray.prototype.is_json_type = function(type)
        case "Uint8ClampedArray":
        case "BigInt64Array":
        case "BigUint64Array":
+       case "Float16Array":
        case "Float32Array":
        case "Float64Array":
        case "ArrayBuffer":
@@ -733,7 +734,7 @@ IdlArray.prototype.test = function()
 
     Object.getOwnPropertyNames(this.members).forEach(function(memberName) {
         var member = this.members[memberName];
-        if (!(member instanceof IdlInterface)) {
+        if (!(member instanceof IdlInterface || member instanceof IdlNamespace)) {
             return;
         }
 
@@ -1420,7 +1421,7 @@ IdlInterface.prototype.test = function()
         if (!this.untested)
         {
             subsetTestByKey(this.name, test, function() {
-                assert_false(this.name in self);
+                assert_false(this.name in self, this.name + " interface should not exist");
             }.bind(this), this.name + " interface: existence and properties of interface object");
         }
         return;
@@ -3450,6 +3451,17 @@ IdlNamespace.prototype.test_self = function ()
 
 IdlNamespace.prototype.test = function ()
 {
+    // If the namespace object is not exposed, only test that. Members can't be
+    // tested either
+    if (!this.exposed) {
+        if (!this.untested) {
+            subsetTestByKey(this.name, test, function() {
+                assert_false(this.name in self, this.name + " namespace should not exist");
+            }.bind(this), this.name + " namespace: existence and properties of namespace object");
+        }
+        return;
+    }
+
     if (!this.untested) {
         this.test_self();
     }
@@ -3497,7 +3509,7 @@ function idl_test(srcs, deps, idl_setup_func) {
             "require-exposed"
         ];
         return Promise.all(
-            srcs.concat(deps).map(fetch_spec))
+            srcs.concat(deps).map(globalThis.fetch_spec))
             .then(function(results) {
                 const astArray = results.map(result =>
                     WebIDL2.parse(result.idl, { sourceName: result.spec })
@@ -3538,9 +3550,11 @@ function idl_test(srcs, deps, idl_setup_func) {
             });
     }, 'idl_test setup');
 }
+globalThis.idl_test = idl_test;
 
 /**
  * fetch_spec is a shorthand for a Promise that fetches the spec's content.
+ * Note: ShadowRealm-specific implementation in testharness-shadowrealm-inner.js
  */
 function fetch_spec(spec) {
     var url = '/interfaces/' + spec + '.idl';

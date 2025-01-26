@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>Tests pageswap dispatch on hidden Documents</title>
+<link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+  promise_test(async t => {
+    let popup;
+    onload = () => {
+      popup = window.open("resources/navigate-after-hide.html");
+      t.add_cleanup(() => popup.close());
+    };
+
+   const result = await new Promise((resolve, reject) => {
+      window.popup_done = resolve;
+      window.popup_error = reject;
+    });
+    assert_equals(result, null);
+  }, "Outbound cross-document view transition is not allowed when document is hidden");
+</script>

@@ -1,8 +1,10 @@
 # mypy: allow-untyped-defs
 
 import argparse
+import json
 import os
 import re
+import sys
 from ..wpt.testfiles import branch_point, files_changed
 
 from tools import localpaths  # noqa: F401
@@ -23,7 +25,7 @@ EXCLUDES = [
 ]
 
 # Rules are just regex on the path, with a leading ! indicating a regex that must not
-# match for the job. Paths should be kept in sync with update-built-tests.sh.
+# match for the job. Paths should be kept in sync with scripts in update_built.py.
 job_path_map = {
     "affected_tests": [".*/.*", "!resources/(?!idlharness.js)"] + EXCLUDES,
     "stability": [".*/.*", "!resources/.*"] + EXCLUDES,
@@ -32,10 +34,11 @@ job_path_map = {
     "resources_unittest": ["resources/", "tools/"],
     "tools_unittest": ["tools/"],
     "wptrunner_unittest": ["tools/"],
-    "update_built": ["update-built-tests\\.sh",
-                     "conformance-checkers/",
+    "update_built": ["conformance-checkers/",
+                     "css/css-images/",
                      "css/css-ui/",
                      "css/css-writing-modes/",
+                     "fetch/metadata/",
                      "html/",
                      "infrastructure/",
                      "mimesniff/"],
@@ -134,9 +137,14 @@ def get_jobs(paths, **kwargs):
 
 def create_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument("revish", default=None, help="Commits to consider. Defaults to the commits on the current branch", nargs="?")
-    parser.add_argument("--all", help="List all jobs unconditionally.", action="store_true")
-    parser.add_argument("--includes", default=None, help="Jobs to check for. Return code is 0 if all jobs are found, otherwise 1", nargs="*")
+    parser.add_argument("revish", nargs="?",
+                        help="Commits to consider. Defaults to the commits on the current branch")
+    parser.add_argument("--all", action="store_true",
+                        help="List all jobs unconditionally.")
+    parser.add_argument("--includes", nargs="*",
+                        help="Jobs to check for. Return code is 0 if all jobs are found, otherwise 1")
+    parser.add_argument("--json", action="store_true",
+                        help="Output jobs as JSON, instead of one per line")
     return parser
 
 
@@ -144,7 +152,11 @@ def run(**kwargs):
     paths = get_paths(**kwargs)
     jobs = get_jobs(paths, **kwargs)
     if not kwargs["includes"]:
-        for item in sorted(jobs):
-            print(item)
+        if kwargs["json"]:
+            json.dump(sorted(jobs), sys.stdout, indent=2)
+            sys.stdout.write("\n")
+        else:
+            for item in sorted(jobs):
+                print(item)
     else:
         return 0 if set(kwargs["includes"]).issubset(jobs) else 1

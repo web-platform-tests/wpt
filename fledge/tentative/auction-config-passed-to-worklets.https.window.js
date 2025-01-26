@@ -1,4 +1,5 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.sub.js
 // META: script=/common/subset-tests.js
@@ -6,7 +7,10 @@
 // META: variant=?1-5
 // META: variant=?6-10
 // META: variant=?11-15
-// META: variant=?16-last
+// META: variant=?16-20
+// META: variant=?21-25
+// META: variant=?26-30
+// META: variant=?30-35
 
 "use strict;"
 
@@ -77,6 +81,18 @@ makeTest({
   fieldName: 'seller',
   fieldValue: OTHER_ORIGIN1,
   auctionConfigOverrides: {seller: ` ${OTHER_ORIGIN1.toUpperCase()} `}
+});
+
+makeTest({
+  name: 'AuctionConfig.deprecatedRenderURLReplacements with brackets.',
+  fieldName: 'deprecatedRenderURLReplacements',
+  fieldValue: {'${EXAMPLE_MACRO}': 'SSP'},
+});
+
+makeTest({
+  name: 'AuctionConfig.deprecatedRenderURLReplacements with percents.',
+  fieldName: 'deprecatedRenderURLReplacements',
+  fieldValue: {'%%EXAMPLE_MACRO%%': 'SSP'},
 });
 
 makeTest({
@@ -205,4 +221,64 @@ makeTest({
   auctionConfigOverrides: {fieldValue:
               [{width: ' 100', height: '200.50px '},
                {width: ' 70.00sh ', height: '80.50sw'}]}
+});
+
+makeTest({
+  name: 'AuctionConfig.reportingTimeout with positive within-cap value.',
+  fieldName: 'reportingTimeout',
+  fieldValue: 100,
+});
+
+makeTest({
+  name: 'AuctionConfig.reportingTimeout above the cap value.',
+  fieldName: 'reportingTimeout',
+  fieldValue: 5000,
+  auctionConfigOverrides: {fieldValue: 1234567890}
+});
+
+makeTest({
+  name: 'AuctionConfig.reportingTimeout not provided',
+  fieldName: 'reportingTimeout',
+  fieldValue: 50,
+  auctionConfigOverrides: {fieldValue: undefined}
+});
+
+makeTest({
+  name: 'AuctionConfig.sellerSignals is null',
+  fieldName: 'sellerSignals',
+  fieldValue: undefined,
+  auctionConfigOverrides: {sellerSignals: null}
+});
+
+makeTest({
+  name: 'AuctionConfig.sellerSignals is explicit undefined',
+  fieldName: 'sellerSignals',
+  fieldValue: undefined,
+  auctionConfigOverrides: {sellerSignals: Promise.resolve(undefined)}
+});
+
+makeTest({
+  name: 'AuctionConfig.sellerSignals is "null"',
+  fieldName: 'sellerSignals',
+  fieldValue: 'null',
+});
+
+makeTest({
+  name: 'AuctionConfig.auctionSignals is null',
+  fieldName: 'auctionSignals',
+  fieldValue: undefined,
+  auctionConfigOverrides: {sellerSignals: null}
+});
+
+makeTest({
+  name: 'AuctionConfig.auctionSignals is explicit undefined',
+  fieldName: 'auctionSignals',
+  fieldValue: undefined,
+  auctionConfigOverrides: {auctionSignals: Promise.resolve(undefined)}
+});
+
+makeTest({
+  name: 'AuctionConfig.auctionSignals is "null"',
+  fieldName: 'auctionSignals',
+  fieldValue: 'null',
 });

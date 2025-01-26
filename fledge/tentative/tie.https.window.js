@@ -1,4 +1,5 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.sub.js
 // META: timeout=long
@@ -98,7 +99,7 @@ promise_test(async test => {
   auctionConfigOverrides.decisionLogicURL =
       createDecisionScriptURL(
         uuid,
-        {scoreAd: `if (browserSignals.renderURL == "${winningAdURL}")
+        {scoreAd: `if (browserSignals.renderURL === "${winningAdURL}")
                      return 0;`});
 
   // Add an abort controller, so can cancel extra auctions.

@@ -1,4 +1,5 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.sub.js
 // META: script=/common/subset-tests.js
@@ -231,31 +232,31 @@ const SIMPLE_JOIN_LEAVE_TEST_CASES = [
                      biddingWasmHelperURL: 'relative/path' }
   },
 
-  // "dailyUpdateUrl" tests
+  // "updateURL" tests
   { expectJoinSucces: true,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-                     dailyUpdateUrl: null }
+                     updateURL: null }
   },
   { expectJoinSucces: false,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-                     dailyUpdateUrl: 'https://{{hosts[][www]}}/foo.js' }
+                     updateURL: 'https://{{hosts[][www]}}/foo.js' }
   },
   { expectJoinSucces: false,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-                     dailyUpdateUrl: 'data:application/wasm,Foo' }
+                     updateURL: 'data:application/wasm,Foo' }
   },
   { expectJoinSucces: true,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-                     dailyUpdateUrl: `${window.location.origin}/foo.js`}
+                     updateURL: `${window.location.origin}/foo.js`}
   },
   { expectJoinSucces: true,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-                     dailyUpdateUrl: 'relative/path' }
+                     updateURL: 'relative/path' }
   },
 
   // "executionMode" tests

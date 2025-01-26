@@ -4,17 +4,17 @@ import argparse
 from . import browser
 
 latest_channels = {
-    'android_weblayer': 'dev',
     'android_webview': 'dev',
     'firefox': 'nightly',
     'firefox_android': 'nightly',
     'chrome': 'canary',
     'chrome_android': 'dev',
     'chromium': 'nightly',
-    'edgechromium': 'dev',
+    'edge': 'dev',
     'safari': 'preview',
     'servo': 'nightly',
     'webkitgtk_minibrowser': 'nightly',
+    'wpewebkit_minibrowser': 'nightly',
     'wktr': 'main',
 }
 
@@ -31,7 +31,7 @@ channel_by_name = {
 
 channel_args = argparse.ArgumentParser(add_help=False)
 channel_args.add_argument('--channel', choices=channel_by_name.keys(),
-                          default='nightly', action='store',
+                          default='nightly',
                           help='''
 Name of browser release channel (default: nightly). "stable" and "release" are
 synonyms for the latest browser stable release; "beta" is the beta release;
@@ -52,12 +52,12 @@ def get_parser():
                         help='name of component')
     parser.add_argument('--download-only', action="store_true",
                         help="Download the selected component but don't install it")
-    parser.add_argument('--rename', action="store", default=None,
+    parser.add_argument('--rename',
                         help="Filename, excluding extension for downloaded archive "
                         "(only with --download-only)")
     parser.add_argument('-d', '--destination',
                         help='filesystem directory to place the component')
-    parser.add_argument('--revision', default=None,
+    parser.add_argument('--revision',
                         help='Chromium revision to install from snapshots')
     return parser
 

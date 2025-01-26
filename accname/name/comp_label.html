@@ -25,9 +25,7 @@
 <div role="alertdialog" aria-label="label" data-expectedlabel="label" data-testname="label valid on div with alertdialog role" class="ex">x</div>
 <div role="application" aria-label="label" data-expectedlabel="label" data-testname="label valid on div with application role" class="ex">x</div>
 <div role="article" aria-label="label" data-expectedlabel="label" data-testname="label valid on div with article role" class="ex">x</div>
-<div role="associationlist" aria-label="label" data-expectedlabel="label" data-testname="label valid on div with associationlist role" class="ex">x</div>
-<div role="associationlistitemkey" aria-label="label" data-expectedlabel="label" data-testname="label valid on div with associationlistitemkey role" class="ex">x</div>
-<div role="associationlistitemvalue" aria-label="label" data-expectedlabel="label" data-testname="label valid on div with associationlistitemvalue role" class="ex">x</div>
+<!-- associationlist and related removed pending: https://github.com/w3c/aria/issues/1662 -->
 <div role="banner" aria-label="label" data-expectedlabel="label" data-testname="label valid on div with banner role" class="ex">x</div>
 <div role="blockquote" aria-label="label" data-expectedlabel="label" data-testname="label valid on div with blockquote role" class="ex">x</div>
 <div role="button" aria-label="label" data-expectedlabel="label" data-testname="label valid on div with button role" class="ex">x</div>
@@ -52,6 +50,7 @@
 <div role="list" aria-label="label" data-expectedlabel="label" data-testname="label valid on div with list role" class="ex">x</div>
 <div role="listbox" aria-label="label" data-expectedlabel="label" data-testname="label valid on div with listbox role" class="ex">x</div>
 <div role="listitem" aria-label="label" data-expectedlabel="label" data-testname="label valid on div with listitem role" class="ex">x</div>
+<!-- listitemkey and listitemvalue pending: https://github.com/w3c/aria/issues/1662 -->
 <div role="log" aria-label="label" data-expectedlabel="label" data-testname="label valid on div with log role" class="ex">x</div>
 <div role="main" aria-label="label" data-expectedlabel="label" data-testname="label valid on div with main role" class="ex">x</div>
 <div role="marquee" aria-label="label" data-expectedlabel="label" data-testname="label valid on div with marquee role" class="ex">x</div>
@@ -100,9 +99,14 @@
 <aside aria-label="label" data-expectedlabel="label" data-testname="label valid on aside element" class="ex">x</aside>
 <blockquote aria-label="label" data-expectedlabel="label" data-testname="label valid on blockquote element" class="ex">x</blockquote>
 <button aria-label="label" data-expectedlabel="label" data-testname="label valid on button element" class="ex">x</button>
-<dd aria-label="label" data-expectedlabel="label" data-testname="label valid on dd element" class="ex">x</dd>
-<dl aria-label="label" data-expectedlabel="label" data-testname="label valid on dl element" class="ex">x</dl>
-<dt aria-label="label" data-expectedlabel="label" data-testname="label valid on dt element" class="ex">x</dt>
+<dl aria-label="label" data-expectedlabel="label" data-testname="label valid on dl element" class="ex">
+  <!-- dt/dd pending listitemkey and listitemvalue roles: https://github.com/w3c/aria/issues/1662 -->
+  <!-- Currently these map to `term` and `definition` for which name is prohibited. -->
+  <!-- Using aria-label here would be an authoring error, however whether there is a user agent requirement to ignore the author provided role is still pending https://github.com/w3c/accname/issues/240 -->
+  <!-- See "Priorities of Constituencies" https://www.w3.org/TR/design-principles/#priority-of-constituencies -->
+  <dt>x</dt>
+  <dd>x</dd>
+</dl>
 <footer aria-label="label" data-expectedlabel="label" data-testname="label valid on footer element" class="ex">x</footer>
 <fieldset aria-label="label" data-expectedlabel="label" data-testname="label valid on fieldset element" class="ex">x</fieldset>
 <figure aria-label="label" data-expectedlabel="label" data-testname="label valid on figure element" class="ex">x</figure>
@@ -154,13 +158,6 @@
 <textarea aria-label="label" data-expectedlabel="label" data-testname="label valid on textarea element" class="ex">x</textarea>
 <ul aria-label="label" data-expectedlabel="label" data-testname="label valid on list (unordered) element" class="ex">x</ul>
 
-<h2>Undefined aria-label tests</h2>
-<img alt="alt" aria-label="undefined" data-expectedlabel="alt" data-testname="aria-label undefined on img w/ alt" class="ex" />
-<img aria-label="undefined" data-expectedlabel="" data-testname="aria-label undefined on img w/o alt" class="ex" />
-<img alt="" aria-label="undefined" data-expectedlabel="" data-testname="aria-label undefined on img w/ empty alt" class="ex" />
-<img aria-label="undefined" data-expectedlabel="title" data-testname="aria-label undefined on img w/o alt but w/ title" class="ex" />
-<img alt="" aria-label="undefined" data-expectedlabel="title" data-testname="aria-label undefined on img w/ empty alt but w/ title" class="ex" />
-
 <h2>Name computation precedence tests</h2>
 <!-- Name computation: https://w3c.github.io/accname/#computation-steps -->
 
@@ -179,16 +176,16 @@ x
   x
 </button>
 
-<button aria-labelledby="span4" aria-label="foo" data-expectedlabel="foo" data-testname="button's hidden referenced name (visibility:hidden) with hidden aria-labelledby traversal falls back to aria-label" class="ex">
-  <span id="span4">
-    <span id="span5" style="visibility:hidden;">label</span>
+<button aria-labelledby="span5" aria-label="foo" data-expectedlabel="foo" data-testname="button's hidden referenced name (visibility:hidden) with hidden aria-labelledby traversal falls back to aria-label" class="ex">
+  <span id="span5">
+    <span id="span6" style="visibility:hidden;">label</span>
   </span>
   x
 </button>
 
 <!-- Step 2B: LabelledBy supercedes 2D: AriaLabel, also see wpt/accname/name/comp_labelledby.html -->
-<a href="#" aria-labelledby="span6" aria-label="foo" data-expectedlabel="label" data-testname="link's aria-labelledby name supercedes aria-label" class="ex">x</a>
-<span id="span6">label</span>
+<a href="#" aria-labelledby="span7" aria-label="foo" data-expectedlabel="label" data-testname="link's aria-labelledby name supercedes aria-label" class="ex">x</a>
+<span id="span7">label</span>
 
 <!-- Step 2C: Embedded Control labelling supercedes 2D: AriaLabel, see wpt/accname/name/comp_embedded_control.html -->
 

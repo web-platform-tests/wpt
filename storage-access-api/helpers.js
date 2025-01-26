@@ -29,8 +29,16 @@ async function CreateFrameHelper(setUpFrame, fetchTests) {
 // Create an iframe element with content loaded from `sourceURL`, append it to
 // the document, and optionally fetch tests. Returns the loaded frame, once
 // ready.
-function CreateFrame(sourceURL, fetchTests = false) {
+function CreateFrame(
+  sourceURL, fetchTests = false, frameSandboxAttribute = undefined, frameAllowAttribute = undefined) {
   return CreateFrameHelper((frame) => {
+    if (frameSandboxAttribute !== undefined) {
+      frame.sandbox = frameSandboxAttribute;
+    }
+    if (frameAllowAttribute !== undefined) {
+      frame.setAttribute("allow", frameAllowAttribute);
+    }
+
     frame.src = sourceURL;
     document.body.appendChild(frame);
   }, fetchTests);
@@ -38,8 +46,8 @@ function CreateFrame(sourceURL, fetchTests = false) {
 
 // Create a new iframe with content loaded from `sourceURL`, and fetches tests.
 // Returns the loaded frame, once ready.
-function RunTestsInIFrame(sourceURL) {
-  return CreateFrame(sourceURL, true);
+function RunTestsInIFrame(sourceURL, frameSandboxAttribute = undefined) {
+  return CreateFrame(sourceURL, true, frameSandboxAttribute);
 }
 
 function RunTestsInNestedIFrame(sourceURL) {
@@ -221,6 +229,11 @@ function RequestStorageAccessInFrame(frame) {
       { command: "requestStorageAccess" }, frame.contentWindow);
 }
 
+function GetPermissionInFrame(frame) {
+  return PostMessageAndAwaitReply(
+    { command: "get_permission" }, frame.contentWindow);
+}
+
 // Executes test_driver.set_permission in the given frame, with the provided
 // arguments.
 function SetPermissionInFrame(frame, args = []) {
@@ -266,10 +279,17 @@ function FetchFromFrame(frame, url) {
 
 // Makes a subresource request to the provided host in the given frame with
 // the mode set to 'no-cors'
-function NoCorsSubresourceCookiesFromFrame(frame, host) {
-  const url = `${host}/storage-access-api/resources/echo-cookie-header.py`;
+function NoCorsFetchFromFrame(frame, url) {
   return PostMessageAndAwaitReply(
     { command: "no-cors fetch", url }, frame.contentWindow);
+}
+
+// Makes a subresource request to the provided host in the given frame with
+// the mode set to 'no-cors', and returns the cookies that were included in the
+// request.
+function NoCorsSubresourceCookiesFromFrame(frame, host) {
+  const url = `${host}/storage-access-api/resources/echo-cookie-header.py`;
+  return NoCorsFetchFromFrame(frame, url);
 }
 
 // Tries to set storage access policy, ignoring any errors.
@@ -285,6 +305,13 @@ async function MaybeSetStorageAccess(origin, embedding_origin, value) {
     // by default. If this failed without default blocking we'll notice it later
     // in the test.
   }
+}
+
+
+// Navigate the inner iframe using the given frame.
+function NavigateChild(frame, url) {
+  return PostMessageAndAwaitReply(
+    { command: "navigate_child", url }, frame.contentWindow);
 }
 
 // Starts a dedicated worker in the given frame.

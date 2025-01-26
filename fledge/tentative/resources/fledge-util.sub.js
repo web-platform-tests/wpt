@@ -2,7 +2,9 @@
 
 const BASE_URL = document.baseURI.substring(0, document.baseURI.lastIndexOf('/') + 1);
 const BASE_PATH = (new URL(BASE_URL)).pathname;
-const RESOURCE_PATH = `${BASE_PATH}resources/`
+
+// Allow overriding to allow other repositories to use these utility functions.
+RESOURCE_PATH = `${BASE_PATH}resources/`
 
 const DEFAULT_INTEREST_GROUP_NAME = 'default name';
 
@@ -26,6 +28,12 @@ const OTHER_ORIGIN5 = 'https://{{hosts[][www]}}:{{ports[https][1]}}';
 const OTHER_ORIGIN6 = 'https://{{hosts[alt][www]}}:{{ports[https][0]}}';
 const OTHER_ORIGIN7 = 'https://{{hosts[alt][www]}}:{{ports[https][1]}}';
 
+// Trusted signals hosted on OTHER_ORIGIN1
+const CROSS_ORIGIN_TRUSTED_BIDDING_SIGNALS_URL = OTHER_ORIGIN1 + BASE_PATH +
+    'resources/trusted-bidding-signals.py';
+const CROSS_ORIGIN_TRUSTED_SCORING_SIGNALS_URL = OTHER_ORIGIN1 + BASE_PATH +
+    'resources/trusted-scoring-signals.py';
+
 // Creates a URL that will be sent to the URL request tracker script.
 // `uuid` is used to identify the stash shard to use.
 // `dispatch` affects what the tracker script does.
@@ -33,7 +41,7 @@ const OTHER_ORIGIN7 = 'https://{{hosts[alt][www]}}:{{ports[https][1]}}';
 //     on behavior of the script; it only serves to make the URL unique.
 // `id` will always be the last query parameter.
 function createTrackerURL(origin, uuid, dispatch, id = null) {
-  let url = new URL(`${origin}${BASE_PATH}resources/request-tracker.py`);
+  let url = new URL(`${origin}${RESOURCE_PATH}request-tracker.py`);
   let search = `uuid=${uuid}&dispatch=${dispatch}`;
   if (id)
     search += `&id=${id}`;
@@ -59,6 +67,10 @@ function createSellerReportURL(uuid, id = '1', origin = window.location.origin) 
   return createTrackerURL(origin, uuid, `track_get`, `seller_report_${id}`);
 }
 
+function createHighestScoringOtherBidReportURL(uuid, highestScoringOtherBid) {
+  return createSellerReportURL(uuid) + '&highestScoringOtherBid=' + Math.round(highestScoringOtherBid);
+}
+
 // Much like above ReportURL methods, except designed for beacons, which
 // are expected to be POSTs.
 function createBidderBeaconURL(uuid, id = '1', origin = window.location.origin) {
@@ -69,7 +81,16 @@ function createSellerBeaconURL(uuid, id = '1', origin = window.location.origin) 
 }
 
 function createDirectFromSellerSignalsURL(origin = window.location.origin) {
-  let url = new URL(`${origin}${BASE_PATH}resources/direct-from-seller-signals.py`);
+  let url = new URL(`${origin}${RESOURCE_PATH}direct-from-seller-signals.py`);
+  return url.toString();
+}
+
+function createUpdateURL(params = {}) {
+  let origin = window.location.origin;
+  let url = new URL(`${origin}${RESOURCE_PATH}update-url.py`);
+  url.searchParams.append('body', params.body);
+  url.searchParams.append('uuid', params.uuid);
+
   return url.toString();
 }
 
@@ -80,7 +101,7 @@ function generateUuid(test) {
   let uuid = token();
   test.add_cleanup(async () => {
     let response = await fetch(createCleanupURL(uuid),
-                               {credentials: 'omit', mode: 'cors'});
+                               { credentials: 'omit', mode: 'cors' });
     assert_equals(await response.text(), 'cleanup complete',
                   `Sever state cleanup failed`);
   });
@@ -94,7 +115,7 @@ async function fetchTrackedData(uuid) {
   let trackedRequestsURL = createTrackerURL(window.location.origin, uuid,
                                             'tracked_data');
   let response = await fetch(trackedRequestsURL,
-                             {credentials: 'omit', mode: 'cors'});
+                             { credentials: 'omit', mode: 'cors' });
   let trackedData = await response.json();
 
   // Fail on fetch error.
@@ -118,25 +139,24 @@ async function fetchTrackedData(uuid) {
 // Elements of `expectedRequests` should either be URLs, in the case of GET
 // requests, or "<URL>, body: <body>" in the case of POST requests.
 //
+// `filter` will be applied to the array of tracked requests.
+//
 // If any other strings are received from the tracking script, or the tracker
 // script reports an error, fails the test.
-async function waitForObservedRequests(uuid, expectedRequests) {
+async function waitForObservedRequests(uuid, expectedRequests, filter) {
   // Sort array for easier comparison, as observed request order does not
   // matter, and replace UUID to print consistent errors on failure.
-  expectedRequests = expectedRequests.sort().map((url) => url.replace(uuid, '<uuid>'));
+  expectedRequests = expectedRequests.map((url) => url.replace(uuid, '<uuid>')).sort();
 
   while (true) {
     let trackedData = await fetchTrackedData(uuid);
 
     // Clean up "trackedRequests" in same manner as "expectedRequests".
-    let trackedRequests = trackedData.trackedRequests.sort().map(
-                              (url) => url.replace(uuid, '<uuid>'));
+    let trackedRequests = trackedData.trackedRequests.map(
+                              (url) => url.replace(uuid, '<uuid>')).sort();
 
-    // If expected number of requests have been observed, compare with list of
-    // all expected requests and exit.
-    if (trackedRequests.length == expectedRequests.length) {
-      assert_array_equals(trackedRequests, expectedRequests);
-      break;
+    if (filter) {
+      trackedRequests = trackedRequests.filter(filter);
     }
 
     // If fewer than total number of expected requests have been observed,
@@ -145,7 +165,26 @@ async function waitForObservedRequests(uuid, expectedRequests) {
     for (const trackedRequest of trackedRequests) {
       assert_in_array(trackedRequest, expectedRequests);
     }
+
+    // If expected number of requests have been observed, compare with list of
+    // all expected requests and exit. This check was previously before the for loop,
+    // but was swapped in order to avoid flakiness with failing tests and their
+    // respective *-expected.txt.
+    if (trackedRequests.length >= expectedRequests.length) {
+      assert_array_equals(trackedRequests, expectedRequests);
+      break;
+    }
   }
+}
+
+
+// Similar to waitForObservedRequests, but ignore forDebuggingOnly reports.
+async function waitForObservedRequestsIgnoreDebugOnlyReports(
+    uuid, expectedRequests) {
+  return waitForObservedRequests(
+      uuid,
+      expectedRequests,
+      request => !request.includes('forDebuggingOnly'));
 }
 
 // Creates a bidding script with the provided code in the method bodies. The
@@ -157,12 +196,14 @@ async function waitForObservedRequests(uuid, expectedRequests) {
 function createBiddingScriptURL(params = {}) {
   let origin = params.origin ? params.origin : new URL(BASE_URL).origin;
   let url = new URL(`${origin}${RESOURCE_PATH}bidding-logic.sub.py`);
-  // These checks use "==" to ignore null and not provided arguments, while
+  // These checks use "!=" to ignore null and not provided arguments, while
   // treating '' as a valid argument.
   if (params.generateBid != null)
     url.searchParams.append('generateBid', params.generateBid);
   if (params.reportWin != null)
     url.searchParams.append('reportWin', params.reportWin);
+  if (params.reportAdditionalBidWin != null)
+    url.searchParams.append('reportAdditionalBidWin', params.reportAdditionalBidWin);
   if (params.error != null)
     url.searchParams.append('error', params.error);
   if (params.bid != null)
@@ -191,7 +232,7 @@ function createDecisionScriptURL(uuid, params = {}) {
   let origin = params.origin ? params.origin : new URL(BASE_URL).origin;
   let url = new URL(`${origin}${RESOURCE_PATH}decision-logic.sub.py`);
   url.searchParams.append('uuid', uuid);
-  // These checks use "==" to ignore null and not provided arguments, while
+  // These checks use "!=" to ignore null and not provided arguments, while
   // treating '' as a valid argument.
   if (params.scoreAd != null)
     url.searchParams.append('scoreAd', params.scoreAd);
@@ -199,6 +240,10 @@ function createDecisionScriptURL(uuid, params = {}) {
     url.searchParams.append('reportResult', params.reportResult);
   if (params.error != null)
     url.searchParams.append('error', params.error);
+  if (params.permitCrossOriginTrustedSignals != null) {
+    url.searchParams.append('permit-cross-origin-trusted-signals',
+                            params.permitCrossOriginTrustedSignals);
+  }
   return url.toString();
 }
 
@@ -208,8 +253,8 @@ function createDecisionScriptURL(uuid, params = {}) {
 // be last.  "signalsParams" also has no effect, but is used by
 // trusted-scoring-signals.py to affect the response.
 function createRenderURL(uuid, script, signalsParams, origin) {
-  // These checks use "==" to ignore null and not provided arguments, while
-  // treating '' as a valid argument.
+  // These checks use "==" and "!=" to ignore null and not provided
+  // arguments, while treating '' as a valid argument.
   if (origin == null)
     origin = new URL(BASE_URL).origin;
   let url = new URL(`${origin}${RESOURCE_PATH}fenced-frame.sub.py`);
@@ -238,6 +283,15 @@ function createInterestGroupForOrigin(uuid, origin,
   };
 }
 
+// Waits for the join command to complete. Adds cleanup command to `test` to
+// leave the interest group when the test completes.
+async function joinInterestGroupWithoutDefaults(test, interestGroup,
+                                                durationSeconds = 60) {
+  await navigator.joinAdInterestGroup(interestGroup, durationSeconds);
+  test.add_cleanup(
+    async () => { await navigator.leaveAdInterestGroup(interestGroup); });
+}
+
 // Joins an interest group that, by default, is owned by the current frame's
 // origin, is named DEFAULT_INTEREST_GROUP_NAME, has a bidding script that
 // issues a bid of 9 with a renderURL of "https://not.checked.test/${uuid}",
@@ -249,12 +303,33 @@ function createInterestGroupForOrigin(uuid, origin,
 // interest group.
 async function joinInterestGroup(test, uuid, interestGroupOverrides = {},
                                  durationSeconds = 60) {
-  let interestGroup = createInterestGroupForOrigin(uuid, window.location.origin,
-                                                   interestGroupOverrides);
+  await joinInterestGroupWithoutDefaults(
+      test, createInterestGroupForOrigin(
+          uuid, window.location.origin, interestGroupOverrides),
+      durationSeconds);
+}
 
-  await navigator.joinAdInterestGroup(interestGroup, durationSeconds);
-  test.add_cleanup(
-      async () => {await navigator.leaveAdInterestGroup(interestGroup)});
+// Joins a negative interest group with the specified owner, name, and
+// additionalBidKey. Because these are the only valid fields for a negative
+// interest groups, this function doesn't expose an 'overrides' parameter.
+// Adds cleanup command to `test` to leave the interest group when the test
+// completes.
+async function joinNegativeInterestGroup(
+    test, owner, name, additionalBidKey) {
+  let interestGroup = {
+    owner: owner,
+    name: name,
+    additionalBidKey: additionalBidKey
+  };
+  if (owner !== window.location.origin) {
+    let iframe = await createIframe(test, owner, 'join-ad-interest-group');
+    await runInFrame(
+      test, iframe,
+      `await joinInterestGroupWithoutDefaults(` +
+          `test_instance, ${JSON.stringify(interestGroup)})`);
+  } else {
+    await joinInterestGroupWithoutDefaults(test, interestGroup);
+  }
 }
 
 // Similar to joinInterestGroup, but leaves the interest group instead.
@@ -465,6 +540,56 @@ async function runReportTest(test, uuid, codeToInsert, expectedReportURLs,
   await waitForObservedRequests(uuid, expectedReportURLs);
 }
 
+// Helper function for running a standard test of the additional bid and
+// negative targeting features. This helper verifies that the auction produces a
+// winner. It takes the following arguments:
+// - test/uuid: the test object and uuid from the test case (see generateUuid)
+// - buyers: array of strings, each a domain for a buyer participating in this
+//       auction
+// - auctionNonce: string, the auction nonce for this auction, typically
+//       retrieved from a prior call to navigator.createAuctionNonce
+// - additionalBidsPromise: promise resolving to undefined, to be resolved when
+//       the additional bids have been retrieved with fetch().
+// - highestScoringOtherBid: the amount of the second-highest bid,
+//       or zero if there's no second-highest bid
+// - winningAdditionalBidId: the label of the winning bid
+async function runAdditionalBidTest(test, uuid, buyers, auctionNonce,
+                                    additionalBidsPromise,
+                                    highestScoringOtherBid,
+                                    winningAdditionalBidId) {
+  await runBasicFledgeAuctionAndNavigate(
+      test, uuid,
+      { interestGroupBuyers: buyers,
+        auctionNonce: auctionNonce,
+        additionalBids: additionalBidsPromise,
+        decisionLogicURL: createDecisionScriptURL(
+            uuid,
+            { reportResult: `sendReportTo("${createSellerReportURL(uuid)}&highestScoringOtherBid=" + Math.round(browserSignals.highestScoringOtherBid));` })});
+
+  await waitForObservedRequests(
+      uuid, [createHighestScoringOtherBidReportURL(uuid, highestScoringOtherBid),
+             createBidderReportURL(uuid, winningAdditionalBidId)]);
+}
+
+// Similar to runAdditionalBidTest(), but expects no winner. It takes the
+// following arguments:
+// - test/uuid: the test object and uuid from the test case (see generateUuid)
+// - buyers: array of strings, each a domain for a buyer participating in this
+//       auction
+// - auctionNonce: string, the auction nonce for this auction, typically
+//       retrieved from a prior call to navigator.createAuctionNonce
+// - additionalBidsPromise: promise resolving to undefined, to be resolved when
+//       the additional bids have been retrieved with fetch().
+async function runAdditionalBidTestNoWinner(
+    test, uuid, buyers, auctionNonce, additionalBidsPromise) {
+  await runBasicFledgeTestExpectingNoWinner(test, uuid, {
+    interestGroupBuyers: buyers,
+    auctionNonce: auctionNonce,
+    additionalBids: additionalBidsPromise,
+    decisionLogicURL: createDecisionScriptURL(uuid)
+  });
+}
+
 // Runs "script" in "child_window" via an eval call. The "child_window" must
 // have been created by calling "createFrame()" below. "param" is passed to the
 // context "script" is run in, so can be used to pass objects that
@@ -476,7 +601,7 @@ async function runInFrame(test, child_window, script, param) {
 
   let promise = new Promise(function(resolve, reject) {
     function WaitForMessage(event) {
-      if (event.data.messageUuid != messageUuid)
+      if (event.data.messageUuid !== messageUuid)
         return;
       receivedResponse = event.data;
       if (event.data.result === 'success') {
@@ -504,11 +629,11 @@ async function runInFrame(test, child_window, script, param) {
 // iframe or closes the window.
 async function createFrame(test, origin, is_iframe = true, permissions = null) {
   const frameUuid = generateUuid(test);
-  const frameUrl =
+  const frameURL =
       `${origin}${RESOURCE_PATH}subordinate-frame.sub.html?uuid=${frameUuid}`;
   let promise = new Promise(function(resolve, reject) {
     function WaitForMessage(event) {
-      if (event.data.messageUuid != frameUuid)
+      if (event.data.messageUuid !== frameUuid)
         return;
       if (event.data.result === 'load complete') {
         resolve();
@@ -523,7 +648,7 @@ async function createFrame(test, origin, is_iframe = true, permissions = null) {
     let iframe = document.createElement('iframe');
     if (permissions)
       iframe.allow = permissions;
-    iframe.src = frameUrl;
+    iframe.src = frameURL;
     document.body.appendChild(iframe);
 
     test.add_cleanup(async () => {
@@ -535,7 +660,7 @@ async function createFrame(test, origin, is_iframe = true, permissions = null) {
     return iframe.contentWindow;
   }
 
-  let child_window = window.open(frameUrl);
+  let child_window = window.open(frameURL);
   test.add_cleanup(async () => {
     await runInFrame(test, child_window, "await test_instance.do_cleanup();");
     child_window.close();
@@ -576,9 +701,21 @@ async function joinInterestGroupInTopLevelWindow(
   let interestGroup = JSON.stringify(
       createInterestGroupForOrigin(uuid, origin, interestGroupOverrides));
 
-  let topLeveWindow = await createTopLevelWindow(test, origin);
-  await runInFrame(test, topLeveWindow,
+  let topLevelWindow = await createTopLevelWindow(test, origin);
+  await runInFrame(test, topLevelWindow,
                    `await joinInterestGroup(test_instance, "${uuid}", ${interestGroup})`);
+}
+
+// Opens a top-level window and calls joinCrossOriginInterestGroup() in it.
+async function joinCrossOriginInterestGroupInTopLevelWindow(
+    test, uuid, windowOrigin, interestGroupOrigin, interestGroupOverrides = {}) {
+  let interestGroup = JSON.stringify(
+      createInterestGroupForOrigin(uuid, interestGroupOrigin, interestGroupOverrides));
+
+  let topLevelWindow = await createTopLevelWindow(test, windowOrigin);
+  await runInFrame(test, topLevelWindow,
+                  `await joinCrossOriginInterestGroup(
+                        test_instance, "${uuid}", "${interestGroupOrigin}", ${interestGroup})`);
 }
 
 // Fetch directFromSellerSignals from seller and check header
@@ -610,36 +747,286 @@ function directFromSellerSignalsValidatorCode(uuid, expectedSellerSignals,
   return {
     // Seller worklets
     scoreAd:
-      `if (directFromSellerSignals === null ||
+      `if (directFromSellerSignals == null ||
            directFromSellerSignals.sellerSignals !== ${expectedSellerSignals} ||
            directFromSellerSignals.auctionSignals !== ${expectedAuctionSignals} ||
-           Object.keys(directFromSellerSignals).length != 2) {
+           Object.keys(directFromSellerSignals).length !== 2) {
               throw 'Failed to get expected directFromSellerSignals in scoreAd(): ' +
                 JSON.stringify(directFromSellerSignals);
           }`,
     reportResultSuccessCondition:
-      `directFromSellerSignals !== null &&
+      `directFromSellerSignals != null &&
            directFromSellerSignals.sellerSignals === ${expectedSellerSignals} &&
            directFromSellerSignals.auctionSignals === ${expectedAuctionSignals} &&
-           Object.keys(directFromSellerSignals).length == 2`,
+           Object.keys(directFromSellerSignals).length === 2`,
     reportResult:
       `sendReportTo("${createSellerReportURL(uuid)}");`,
 
     // Bidder worklets
     generateBid:
-      `if (directFromSellerSignals === null ||
+      `if (directFromSellerSignals == null ||
            directFromSellerSignals.perBuyerSignals !== ${expectedPerBuyerSignals} ||
            directFromSellerSignals.auctionSignals !== ${expectedAuctionSignals} ||
-           Object.keys(directFromSellerSignals).length != 2) {
+           Object.keys(directFromSellerSignals).length !== 2) {
               throw 'Failed to get expected directFromSellerSignals in generateBid(): ' +
                 JSON.stringify(directFromSellerSignals);
         }`,
     reportWinSuccessCondition:
-      `directFromSellerSignals !== null &&
+      `directFromSellerSignals != null &&
            directFromSellerSignals.perBuyerSignals === ${expectedPerBuyerSignals} &&
            directFromSellerSignals.auctionSignals === ${expectedAuctionSignals} &&
-           Object.keys(directFromSellerSignals).length == 2`,
+           Object.keys(directFromSellerSignals).length === 2`,
     reportWin:
       `sendReportTo("${createBidderReportURL(uuid)}");`,
   };
+}
+
+let additionalBidHelper = function() {
+
+  // Creates an additional bid with the given parameters. This additional bid
+  // specifies a biddingLogicURL that provides an implementation of
+  // reportAdditionalBidWin that triggers a sendReportTo() to the bidder report
+  // URL of the winning additional bid. Additional bids are described in more
+  // detail at
+  // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#6-additional-bids.
+  // Returned bids have an additional `testMetadata` field that's modified by
+  // several of the other helper functions defined below and is consumed by
+  // `fetchAdditionalBids()`. Created additional bids must be used only once,
+  // as `fetchAdditionalBids()` consumes and discards the `testMetadata` field.
+  function createAdditionalBid(uuid, seller, buyer, interestGroupName, bidAmount) {
+    return {
+      interestGroup: {
+        name: interestGroupName,
+        biddingLogicURL: createBiddingScriptURL({
+          origin: buyer,
+          reportAdditionalBidWin: `sendReportTo("${
+              createBidderReportURL(uuid, interestGroupName)}");`
+        }),
+        owner: buyer
+      },
+      bid: {ad: ['metadata'], bid: bidAmount, render: createRenderURL(uuid)},
+      seller: seller,
+      testMetadata: {}
+    };
+  }
+
+  // Sets the auction nonce that will be included by the server on the
+  // 'Ad-Auction-Additional-Bid' response header for this bid. All valid
+  // additional bids should have an auctionNonce in the header, so this
+  // should be called by most tests.
+  function setAuctionNonceInHeader(additionalBid, auctionNonce) {
+    additionalBid.testMetadata.auctionNonce = auctionNonce;
+  }
+
+  // Sets the seller nonce that will be included by the server on the
+  // 'Ad-Auction-Additional-Bid' response header for this bid.
+  function setSellerNonceInHeader(additionalBid, sellerNonce) {
+    additionalBid.testMetadata.sellerNonce = sellerNonce;
+  }
+
+  // Tells `fetchAdditionalBids` to correctly sign the additional bid with
+  // the given secret keys before returning that as a signed additional bid.
+  // The signatures aren't computed yet because `additionalBid` - whose string
+  // representation is signed - may still change between when this is called
+  // and when `fetchAdditionalBids` is called.
+  function signWithSecretKeys(additionalBid, secretKeys) {
+    additionalBid.testMetadata.secretKeysForValidSignatures = secretKeys;
+  }
+
+  // Tells the additional bid endpoint to incorrectly sign the additional bid
+  // with the given secret keys before returning that as a signed additional
+  // bid. This is used for testing the behavior when the auction encounters an
+  // invalid signature. The signatures aren't computed yet because
+  // `additionalBid` - whose string representation is signed - may still change
+  // between when this is called and when `fetchAdditionalBids` is called.
+  function incorrectlySignWithSecretKeys(additionalBid, secretKeys) {
+    additionalBid.testMetadata.secretKeysForInvalidSignatures = secretKeys;
+  }
+
+  // Takes the auctionNonce and sellerNonce as strings, and combines them with
+  // SHA256, returning the result as a base64 string.
+  async function computeBidNonce(auctionNonce, sellerNonce) {
+    // Compute the bidNonce as hashed bytes.
+    const combined_utf8 = new TextEncoder().encode(auctionNonce + sellerNonce);
+    const hashed = await crypto.subtle.digest('SHA-256',combined_utf8);
+
+    // Convert the hashed bytes to base64.
+    return btoa(String.fromCharCode(...new Uint8Array(hashed)));
+  }
+
+  // Adds a single negative interest group to an additional bid, as described at:
+  // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#622-how-additional-bids-specify-their-negative-interest-groups
+  function addNegativeInterestGroup(additionalBid, negativeInterestGroup) {
+    additionalBid.negativeInterestGroup = negativeInterestGroup;
+  }
+
+  // Adds multiple negative interest groups to an additional bid, as described at:
+  // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#622-how-additional-bids-specify-their-negative-interest-groups
+  function addNegativeInterestGroups(
+      additionalBid, negativeInterestGroups, joiningOrigin) {
+    additionalBid.negativeInterestGroups = {
+      joiningOrigin: joiningOrigin,
+      interestGroupNames: negativeInterestGroups
+    };
+  }
+
+  const _ed25519ModulePromise =
+      import('../third_party/noble-ed25519/noble-ed25519.js');
+
+  // Returns a signature entry for a signed additional bid.
+  //
+  // `message` is the additional bid text (or other text if generating an
+  // invalid signature) to sign.
+  //
+  // `base64EncodedSecretKey` is the base64-encoded Ed25519 key with which to
+  // sign the message. From this secret key, the public key can be deduced,
+  // which becomes part of the signature entry.
+  async function _generateSignature(message, base64EncodedSecretKey) {
+    const ed25519 = await _ed25519ModulePromise;
+    const secretKey =
+        Uint8Array.from(atob(base64EncodedSecretKey), c => c.charCodeAt(0));
+    const [publicKey, signature] = await Promise.all([
+      ed25519.getPublicKeyAsync(secretKey),
+      ed25519.signAsync(new TextEncoder().encode(message), secretKey)
+    ]);
+
+    return {
+      'key': btoa(String.fromCharCode(...publicKey)),
+      'signature': btoa(String.fromCharCode(...signature))
+    };
+  }
+
+  // Returns a signed additional bid given an additional bid and secret keys.
+  // `additionalBid` is the additional bid to sign. It must not contain a
+  // `testMetadata` - that should have been removed prior to calling this.
+  //
+  // `secretKeysForValidSignatures` is a list of strings, each a base64-encoded
+  // Ed25519 secret key with which to sign the additional bid, whereas
+  // `secretKeysForInvalidSignatures` is a list of strings, each a
+  // base64-encoded Ed25519 secret key with which to *incorrectly* sign the
+  // additional bid.
+  async function _signAdditionalBid(
+      additionalBid, secretKeysForValidSignatures,
+      secretKeysForInvalidSignatures) {
+    async function _signString(string, secretKeys) {
+      if (!secretKeys) {
+        return [];
+      }
+      return await Promise.all(secretKeys.map(
+             async secretKey => await _generateSignature(
+                  string, secretKey)));
+    }
+
+    assert_not_own_property(
+        additionalBid, 'testMetadata',
+        'testMetadata should be removed from additionalBid before signing');
+    const additionalBidString = JSON.stringify(additionalBid);
+    let [validSignatures, invalidSignatures] = await Promise.all([
+        _signString(additionalBidString, secretKeysForValidSignatures),
+
+        // For invalid signatures, we use the correct secret key to sign a
+        // different message - the additional bid prepended by 'invalid' - so
+        // that the signature is a structually valid signature with the correct
+        // (public) key, but can't be used to verify the additional bid.
+        _signString('invalid' + additionalBidString, secretKeysForInvalidSignatures)
+    ]);
+    return {
+        'bid': additionalBidString,
+        'signatures': validSignatures.concat(invalidSignatures)
+    };
+  }
+
+  // Given an additionalBid object, this returns a string to be used as the
+  // value of the `Ad-Auction-Additional-Bid` response header. To produce this
+  // header, this signs the signing the `additionalBid` with the signatures
+  // specified by prior calls to `signWithSecretKeys` and
+  // `incorrectlySignWithSecretKeys` above; base64-encodes the stringified
+  // `signedAdditionalBid`; and then prepends that with the `auctionNonce` and/or
+  // `sellerNonce` specified by prior calls to `setAuctionNonceInHeader` and
+  // `setSellerNonceInHeader` above, respectively.
+  async function _convertAdditionalBidToResponseHeader(additionalBid) {
+    const testMetadata = additionalBid.testMetadata;
+    delete additionalBid.testMetadata;
+
+    const signedAdditionalBid = await _signAdditionalBid(
+        additionalBid,
+        testMetadata.secretKeysForValidSignatures,
+        testMetadata.secretKeysForInvalidSignatures);
+
+
+    return [
+        testMetadata.auctionNonce,
+        testMetadata.sellerNonce,
+        btoa(JSON.stringify(signedAdditionalBid))
+    ].filter(k => k !== undefined).join(':');
+  }
+
+  // Fetch some number of fully prepared additional bid from a seller and verify
+  // that the `Ad-Auction-Additional-Bid` header is not visible in this
+  // JavaScript context. The `additionalBids` parameter is a list of additional
+  // bids objects created by `createAdditionalBid` and modified by other
+  // functions on this helper. Once passed to this method, additional bids may
+  // not be reused in a future call to `fetchAdditionalBids()`, since this
+  // mothod consumes and destroys their `testMetadata` field.
+  async function fetchAdditionalBids(seller, additionalBids) {
+    additionalBidHeaderValues = await Promise.all(additionalBids.map(
+        async additionalBid =>
+            await _convertAdditionalBidToResponseHeader(additionalBid)));
+
+    const url = new URL(`${seller}${RESOURCE_PATH}additional-bids.py`);
+    url.searchParams.append(
+        'additionalBidHeaderValues', JSON.stringify(additionalBidHeaderValues));
+    const response = await fetch(url.href, {adAuctionHeaders: true});
+
+    assert_equals(response.status, 200, 'Failed to fetch additional bid: ' + await response.text());
+    assert_false(
+        response.headers.has('Ad-Auction-Additional-Bid'),
+        'Header "Ad-Auction-Additional-Bid" should not be available in JavaScript context.');
+  }
+
+  return {
+    createAdditionalBid: createAdditionalBid,
+    setAuctionNonceInHeader: setAuctionNonceInHeader,
+    setSellerNonceInHeader: setSellerNonceInHeader,
+    signWithSecretKeys: signWithSecretKeys,
+    incorrectlySignWithSecretKeys: incorrectlySignWithSecretKeys,
+    computeBidNonce: computeBidNonce,
+    addNegativeInterestGroup: addNegativeInterestGroup,
+    addNegativeInterestGroups: addNegativeInterestGroups,
+    fetchAdditionalBids: fetchAdditionalBids
+  };
+}();
+
+
+// DeprecatedRenderURLReplacements helper function.
+// Returns an object containing sample strings both before and after the
+// replacements in 'replacements' have been applied by
+// deprecatedRenderURLReplacements. All substitution strings will appear
+// only once in the output strings.
+function createStringBeforeAndAfterReplacements(deprecatedRenderURLReplacements) {
+  let beforeReplacements = '';
+  let afterReplacements = '';
+  if(deprecatedRenderURLReplacements){
+    for (const [match, replacement] of Object.entries(deprecatedRenderURLReplacements)) {
+      beforeReplacements += match + "/";
+      afterReplacements += replacement + "/";
+    }
+  }
+  return { beforeReplacements, afterReplacements };
+}
+
+// Delete all cookies. Separate function so that can be replaced with
+// something else for testing outside of a WPT environment.
+async function deleteAllCookies() {
+  await test_driver.delete_all_cookies();
+}
+
+// Deletes all cookies (to avoid pre-existing cookies causing inconsistent
+// output on failure) and sets a cookie with name "cookie" and a value of
+// "cookie". Adds a cleanup task to delete all cookies again when the test
+// is done.
+async function setCookie(test) {
+  await deleteAllCookies();
+  document.cookie = 'cookie=cookie; path=/'
+  test.add_cleanup(deleteAllCookies);
 }

@@ -1,4 +1,5 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.sub.js
 // META: script=/common/subset-tests.js
@@ -10,7 +11,13 @@
 // META: variant=?21-25
 // META: variant=?26-30
 // META: variant=?31-35
-// META: variant=?36-last
+// META: variant=?36-40
+// META: variant=?40-45
+// META: variant=?46-50
+// META: variant=?51-55
+// META: variant=?56-60
+// META: variant=?61-65
+// META: variant=?66-last
 
 "use strict;"
 
@@ -86,6 +93,14 @@ const EXPECT_NO_WINNER = auctionResult => {
   assert_equals(auctionResult, null, 'Auction unexpected had a winner');
 };
 
+// Expect a winner (FencedFrameConfig).
+const EXPECT_WINNER =
+    auctionResult => {
+      assert_true(
+          auctionResult instanceof FencedFrameConfig,
+          'Auction did not return expected FencedFrameConfig');
+    }
+
 // Expect an exception of the given type.
 const EXPECT_EXCEPTION = exceptionType => auctionResult => {
   assert_not_equals(auctionResult, null, "got null instead of expected error");
@@ -98,6 +113,116 @@ const EXPECT_PROMISE_ERROR = auctionResult => {
   assert_true(auctionResult instanceof TypeError,
               "did not get expected error type: " + auctionResult);
 }
+
+makeTest({
+  name: 'deprecatedRenderURLReplacements without end bracket is invalid.',
+  expect: EXPECT_PROMISE_ERROR,
+  expectPromiseError: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides: {deprecatedRenderURLReplacements: {'${No_End_Bracket': 'SSP'}}
+});
+
+makeTest({
+  name: 'deprecatedRenderURLReplacements without percents and brackets.',
+  expect: EXPECT_PROMISE_ERROR,
+  expectPromiseError: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides: {deprecatedRenderURLReplacements: {'No_Wrapper': 'SSP'}}
+});
+
+makeTest({
+  name: 'deprecatedRenderURLReplacements without dollar sign.',
+  expect: EXPECT_PROMISE_ERROR,
+  expectPromiseError: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides: {deprecatedRenderURLReplacements: {'{No_Dollar_Sign}': 'SSP'}}
+});
+
+makeTest({
+  name: 'deprecatedRenderURLReplacements without start bracket is invalid.',
+  expect: EXPECT_PROMISE_ERROR,
+  expectPromiseError: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides: {deprecatedRenderURLReplacements: {'$No_Start_Bracket}': 'SSP'}}
+});
+
+makeTest({
+  name: 'deprecatedRenderURLReplacements mix and match is invalid.',
+  expect: EXPECT_PROMISE_ERROR,
+  expectPromiseError: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides: {deprecatedRenderURLReplacements: {'${Bracket_And_Percent%%': 'SSP'}}
+});
+
+makeTest({
+  name: 'deprecatedRenderURLReplacements missing start percent is invalid.',
+  expect: EXPECT_PROMISE_ERROR,
+  expectPromiseError: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides: {deprecatedRenderURLReplacements: {'%Missing_Start_Percents%%': 'SSP'}}
+});
+
+makeTest({
+  name: 'deprecatedRenderURLReplacements single percents is invalid.',
+  expect: EXPECT_PROMISE_ERROR,
+  expectPromiseError: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides: {deprecatedRenderURLReplacements: {'%Single_Percents%': 'SSP'}}
+});
+
+makeTest({
+  name: 'deprecatedRenderURLReplacements without end percents is invalid.',
+  expect: EXPECT_PROMISE_ERROR,
+  expectPromiseError: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides: {deprecatedRenderURLReplacements: {'%%No_End_Percents': 'SSP'}}
+});
+
+makeTest({
+  name: 'sellerRealTimeReportingConfig has default local reporting type',
+  expect:  EXPECT_WINNER,
+  auctionConfigOverrides: {sellerRealTimeReportingConfig:
+                            {type: 'default-local-reporting'}}
+});
+
+makeTest({
+  name: 'sellerRealTimeReportingConfig has no type',
+  expect: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides: {sellerRealTimeReportingConfig:
+                            {notType: 'default-local-reporting'}}
+});
+
+makeTest({
+  name: 'sellerRealTimeReportingConfig has unknown type',
+  expect:  EXPECT_WINNER,
+  auctionConfigOverrides: {sellerRealTimeReportingConfig: {type: 'unknown type'}}
+});
+
+makeTest({
+  name: 'perBuyerRealTimeReportingConfig',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {perBuyerRealTimeReportingConfig:
+                            {'https://example.com': {type: 'default-local-reporting'}}}
+});
+
+makeTest({
+  name: 'perBuyerRealTimeReportingConfig has invalid buyer',
+  expect: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides: {perBuyerRealTimeReportingConfig:
+                            {'http://example.com': {type: 'default-local-reporting'}}}
+});
+
+makeTest({
+  name: 'perBuyerRealTimeReportingConfig has no type',
+  expect: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides: {perBuyerRealTimeReportingConfig:
+                            {'https://example.com': {notType: 'default-local-reporting'}}}
+});
+
+makeTest({
+  name: 'perBuyerRealTimeReportingConfig has unknown type',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {perBuyerRealTimeReportingConfig:
+                            {'https://example.com': {type: 'unknown type'}}}
+});
+
+makeTest({
+  name: 'perBuyerRealTimeReportingConfig has no entry',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {perBuyerRealTimeReportingConfig: {}}
+});
 
 makeTest({
   name: 'no buyers => no winners',
@@ -130,8 +255,55 @@ makeTest({
 });
 
 makeTest({
-  name: 'trustedScoringSignalsURL is cross-origin with seller',
+  name: 'valid trustedScoringSignalsURL',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides:
+      {trustedScoringSignalsURL: window.location.origin + '/resource.json'}
+});
+
+makeTest({
+  name: 'trustedScoringSignalsURL should not have a fragment',
   expect: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides:
+      {trustedScoringSignalsURL: window.location.origin + '/resource.json#foo'}
+});
+
+makeTest({
+  name: 'trustedScoringSignalsURL with an empty fragment is not OK',
+  expect: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides:
+      {trustedScoringSignalsURL: window.location.origin + '/resource.json#'}
+});
+
+makeTest({
+  name: 'trustedScoringSignalsURL should not have a query',
+  expect: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides:
+      {trustedScoringSignalsURL: window.location.origin + '/resource.json?foo'}
+});
+
+makeTest({
+  name: 'trustedScoringSignalsURL with an empty query is not OK',
+  expect: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides:
+      {trustedScoringSignalsURL: window.location.origin + '/resource.json?'}
+});
+
+makeTest({
+  name: 'trustedScoringSignalsURL should not have embedded credentials',
+  expect: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides: {
+    trustedScoringSignalsURL: (window.location.origin + '/resource.json')
+                                  .replace('https://', 'https://user:pass@')
+  }
+});
+
+// Cross-origin trustedScoringSignalsURL is fine, but it needs extra
+// headers to actually make it work. The auction here doesn't actually
+// care if the signals don't load.
+makeTest({
+  name: 'trustedScoringSignalsURL is cross-origin with seller',
+  expect: EXPECT_WINNER,
   auctionConfigOverrides: { trustedScoringSignalsURL: "https://example.com" },
 });
 
@@ -175,27 +347,6 @@ makeTest({
   expect: EXPECT_PROMISE_ERROR,
   expectPromiseError: EXPECT_EXCEPTION(TypeError),
   auctionConfigOverrides: { sellerSignals: { sig: BigInt(13) } },
-});
-
-makeTest({
-  name: 'directFromSellerSignals is invalid',
-  expect: EXPECT_PROMISE_ERROR,
-  expectPromiseError: EXPECT_EXCEPTION(TypeError),
-  auctionConfigOverrides: { directFromSellerSignals: "https://foo:99999999999" },
-});
-
-makeTest({
-  name: 'directFromSellerSignals is cross-origin with seller',
-  expect: EXPECT_PROMISE_ERROR,
-  expectPromiseError: EXPECT_EXCEPTION(TypeError),
-  auctionConfigOverrides: { directFromSellerSignals: "https://example.com" },
-});
-
-makeTest({
-  name: 'directFromSellerSignals has nonempty query',
-  expect: EXPECT_PROMISE_ERROR,
-  expectPromiseError: EXPECT_EXCEPTION(TypeError),
-  auctionConfigOverrides: { directFromSellerSignals: window.location.origin + "?foo=bar" },
 });
 
 makeTest({
@@ -389,4 +540,143 @@ makeTest({
   auctionConfigOverrides: {allSlotsRequestedSizes:
                             [{width: '100', height: '100'},
                              {width: '200furlongs', height: '200'}]}
+});
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+
+  // The renderURL / report URLs for the first/second iterations of the auction.
+  let renderURL = createRenderURL(uuid);
+  let bidderReportURL1 = createBidderReportURL(uuid, /*id=*/ 1);
+  let bidderReportURL2 = createBidderReportURL(uuid, /*id=*/ 2);
+  let bidderDebugReportURL =
+      createBidderReportURL(uuid, /*id=*/ 'forDebuggingOnly');
+  let sellerReportURL1 = createSellerReportURL(uuid, /*id=*/ 1);
+  let sellerReportURL2 = createSellerReportURL(uuid, /*id=*/ 2);
+  let sellerDebugReportURL =
+      createSellerReportURL(uuid, /*id=*/ 'forDebuggingOnly');
+
+  // reportWin() sends "bidderReportURL1" if
+  // browserSignals.forDebuggingOnlyInCooldownOrLockout is true,
+  // "bidderReportURL2" otherwise.
+  await joinInterestGroup(test, uuid, {
+    ads: [{renderURL: renderURL}],
+    biddingLogicURL: createBiddingScriptURL({
+      generateBid: `
+        forDebuggingOnly.reportAdAuctionWin('${bidderDebugReportURL}');
+        if (!browserSignals.hasOwnProperty(
+          'forDebuggingOnlyInCooldownOrLockout')) {
+          throw "Missing forDebuggingOnlyInCooldownOrLockout in browserSignals";
+        }
+        let bid = browserSignals.forDebuggingOnlyInCooldownOrLockout ? 1 : 2;
+        return {bid: bid, render: '${renderURL}'};`,
+      reportWin: `
+        if (browserSignals.bid === 1)
+          sendReportTo('${bidderReportURL1}');
+        if (browserSignals.bid === 2)
+          sendReportTo('${bidderReportURL2}');`
+
+    })
+  });
+
+  // reportResult() sends "sellerReportURL1" if
+  // browserSignals.forDebuggingOnlyInCooldownOrLockout in scoreAd() is true,
+  // "sellerReportURL2" otherwise.
+  const auctionConfigOverrides = {
+    decisionLogicURL: createDecisionScriptURL(uuid, {
+      scoreAd: `
+        forDebuggingOnly.reportAdAuctionWin('${sellerDebugReportURL}');
+        if (!browserSignals.hasOwnProperty(
+          'forDebuggingOnlyInCooldownOrLockout')) {
+          throw "Missing forDebuggingOnlyInCooldownOrLockout in browserSignals";
+        }
+        let desirability =
+            browserSignals.forDebuggingOnlyInCooldownOrLockout ? 1 : 2;
+        return {desirability: desirability};`,
+      reportResult: `
+        if (browserSignals.desirability === 1)
+          sendReportTo('${sellerReportURL1}');
+        if (browserSignals.desirability === 2)
+          sendReportTo('${sellerReportURL2}');`
+    })
+  };
+
+  // In the first auction, browserSignals.forDebuggingOnlyInCooldownOrLockout in
+  // generateBid() and scoreAd() should both be false. After the auction,
+  // lockout and cooldowns should be updated.
+  await runBasicFledgeAuctionAndNavigate(test, uuid, auctionConfigOverrides);
+  await waitForObservedRequestsIgnoreDebugOnlyReports(
+      uuid, [bidderReportURL2, sellerReportURL2]);
+
+  // In the second auction, browserSignals.forDebuggingOnlyInCooldownOrLockout
+  // in generateBid() and scoreAd() should both be true, since both the buyer
+  // and seller called forDebuggingOnly API in the first auction, so they are in
+  // cooldowns at least (and also in lockout if a debug report is allowed to be
+  // sent).
+  await runBasicFledgeAuctionAndNavigate(test, uuid, auctionConfigOverrides);
+  await waitForObservedRequestsIgnoreDebugOnlyReports(
+    uuid,
+    [bidderReportURL2, sellerReportURL2, bidderReportURL1, sellerReportURL1]);
+}, `forDebuggingOnly lockout and cooldowns updating in one auction, read in another's.`);
+
+makeTest({
+  name: 'deprecatedRenderURLReplacements nullability',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {deprecatedRenderURLReplacements: null}
+});
+
+makeTest({
+  name: 'deprecatedRenderURLReplacements nullability 2',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides:
+      {deprecatedRenderURLReplacements: Promise.resolve(undefined)}
+});
+
+makeTest({
+  name: 'perBuyerSignals nullability',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {perBuyerSignals: null},
+});
+
+makeTest({
+  name: 'perBuyerSignals nullability 2',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {perBuyerSignals: Promise.resolve(undefined)},
+});
+
+makeTest({
+  name: 'perBuyerTimeouts nullability',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {perBuyerTimeouts: null},
+});
+
+makeTest({
+  name: 'perBuyerTimeouts nullability 2',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {perBuyerTimeouts: Promise.resolve(undefined)},
+});
+
+makeTest({
+  name: 'perBuyerCumulativeTimeouts nullability',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {perBuyerCumulativeTimeouts: null},
+});
+
+makeTest({
+  name: 'perBuyerCumulativeTimeouts nullability 2',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides:
+      {perBuyerCumulativeTimeouts: Promise.resolve(undefined)},
+});
+
+makeTest({
+  name: 'perBuyerCurrencies nullability',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {perBuyerCurrencies: null},
+});
+
+makeTest({
+  name: 'perBuyerCurrencies nullability 2',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {perBuyerCurrencies: Promise.resolve(undefined)},
 });

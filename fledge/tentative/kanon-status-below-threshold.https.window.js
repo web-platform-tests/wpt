@@ -1,4 +1,5 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.sub.js
 // META: script=/common/subset-tests.js
@@ -13,7 +14,7 @@ subsetTest(promise_test, async test => {
             `browserSignals.kAnonStatus === "belowThreshold"`,
           reportWin:
             `sendReportTo('${createBidderReportURL(uuid)}');` },
-        // expectedReportUrls:
+        // expectedReportURLs:
         [createBidderReportURL(uuid)]);
     },
     'Check kAnonStatus is "belowThreshold" when FledgeConsiderKAnonymity' +

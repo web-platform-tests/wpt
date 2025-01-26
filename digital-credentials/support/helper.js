@@ -1,14 +1,15 @@
 // @ts-check
 // Import the types from the TypeScript file
 /**
- * @typedef {import('../dc-types').ProviderType} ProviderType
+ * @typedef {import('../dc-types').Protocol} protocol
  * @typedef {import('../dc-types').DigitalCredentialRequest} DigitalCredentialRequest
  * @typedef {import('../dc-types').DigitalCredentialRequestOptions} DigitalCredentialRequestOptions
  * @typedef {import('../dc-types').CredentialRequestOptions} CredentialRequestOptions
  * @typedef {import('../dc-types').SendMessageData} SendMessageData
  */
+
 /**
- * @param {ProviderType | ProviderType[]} [requestsToUse=["default"]]
+ * @param {protocol | protocol[]} [requestsToUse=["default"]]
  * @param {CredentialMediationRequirement} [mediation="required"]
  * @returns {CredentialRequestOptions}
  */

@@ -13,7 +13,7 @@
 <p>Tests contextual computedrole mappings for the <code>LI</code> element defined in <a href="https://w3c.github.io/html-aam/">HTML-AAM</a>,
 where the returned computed role is expected to change based on whether the <code>LI</code> element is an accessibility child of a list element, or not.<p>
 
-  
+
 <li data-testname="el-li-orphaned" class="ex-generic">x</li><!-- todo: should orphaned roles be tested in a new ./roles-orphaned.html file? -->
 
 <ul role="none">
@@ -34,7 +34,7 @@ where the returned computed role is expected to change based on whether the <cod
 <div role="list">
   <li data-testname="el-li-within-explicit-role-list-parent" class="ex" data-expectedrole="listitem">x</li>
 </div>
-  
+
 <script>
 AriaUtils.verifyRolesBySelector(".ex");
 AriaUtils.verifyGenericRolesBySelector(".ex-generic");

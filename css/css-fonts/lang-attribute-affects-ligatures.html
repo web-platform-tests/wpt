@@ -9,17 +9,17 @@
 
     @font-face {
       font-family: test-font-family;
-      /* <DejaVuSerif.ttf> provides different ligatures for English and
-         Catalan. */
-      src: url(/fonts/DejaVu/DejaVuSerif.ttf);
+      /* <Lato-Medium.ttf> provides different ligatures for English and
+         Turkish. */
+      src: url(support/fonts/Lato-Medium.ttf);
     }
 
     div { font-family: test-font-family; }
   </style>
 </head>
 <body>
-  `lang="en"` should render ligatures, `lang="ca"` not.
+  `lang="en"` should render ligatures, `lang="tr"` not.
   <div lang="en">fi</div>
-  <div lang="ca">fi</div>
+  <div lang="tr">fi</div>
 </body>
 </html>

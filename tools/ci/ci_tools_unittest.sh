@@ -5,7 +5,7 @@ SCRIPT_DIR=$(cd $(dirname "$0") && pwd -P)
 WPT_ROOT=$SCRIPT_DIR/../..
 cd $WPT_ROOT
 
-if ./wpt test-jobs --includes tools_unittest; then
+if ./wpt test-jobs --all --includes tools_unittest; then
     pip install --user -U tox
     cd tools
     tox -f "$TOXENV"
@@ -14,7 +14,7 @@ else
     echo "Skipping tools unittest"
 fi
 
-if ./wpt test-jobs --includes wptrunner_unittest; then
+if ./wpt test-jobs --all --includes wptrunner_unittest; then
     cd tools/wptrunner
     tox -f "$TOXENV"
     cd $WPT_ROOT

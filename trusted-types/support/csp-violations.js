@@ -17,21 +17,14 @@ const cspDirectives = [
 function trusted_type_violations_and_exception_for(fn) {
   return new Promise((resolve, reject) => {
     // Listen for security policy violations.
-    let receivedInitialConnectSrcViolation = false;
     let result = { violations: [], exception: null };
     let handler = e => {
       if (cspDirectives.includes(e.effectiveDirective)) {
-        if (receivedInitialConnectSrcViolation) {
-          result.violations.push(e);
-        }
+        result.violations.push(e);
       } else if (e.effectiveDirective === "connect-src") {
-        if (receivedInitialConnectSrcViolation) {
-          self.removeEventListener("securitypolicyviolation", handler);
-          e.stopPropagation();
-          resolve(result);
-        } else {
-          receivedInitialConnectSrcViolation = true;
-        }
+        self.removeEventListener("securitypolicyviolation", handler);
+        e.stopPropagation();
+        resolve(result);
       } else {
         reject(`Unexpected violation for directive ${e.effectiveDirective}`);
       }
@@ -39,13 +32,20 @@ function trusted_type_violations_and_exception_for(fn) {
     self.addEventListener("securitypolicyviolation", handler);
 
     // Run the specified function and record any exception.
-    new EventSource("/common/blank.html");
     try {
       fn();
     } catch(e) {
       result.exception = e;
     }
-    new EventSource("/common/blank.html");
+    // Force a connect-src violation. WebKit additionally throws a SecurityError
+    // so ignore that.
+    try {
+      new EventSource("/common/blank.html");
+    } catch(e) {
+      if (!e instanceof DOMException || e.name !== "SecurityError") {
+	throw e;
+      }
+    }
   });
 }
 

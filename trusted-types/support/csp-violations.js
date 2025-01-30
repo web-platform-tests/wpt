@@ -38,12 +38,12 @@ function trusted_type_violations_and_exception_for(fn) {
       result.exception = e;
     }
     // Force a connect-src violation. WebKit additionally throws a SecurityError
-    // so ignore that.
+    // so ignore that. See https://bugs.webkit.org/show_bug.cgi?id=286744
     try {
       new EventSource("/common/blank.html");
     } catch(e) {
       if (!e instanceof DOMException || e.name !== "SecurityError") {
-	throw e;
+        throw e;
       }
     }
   });

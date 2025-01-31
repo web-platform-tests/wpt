@@ -170,7 +170,7 @@ async def test_nested_iframes(
     # Wait until we receive three events, one for the top context and one for
     # each of the 2 iframes.
     wait = AsyncPoll(bidi_session, timeout=2)
-    await wait.until(lambda _: len(events) == 3)
+    await wait.until(lambda _: len(events) >= 3)
     assert len(events) == 3
 
     contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])

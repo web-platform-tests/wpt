@@ -25,55 +25,55 @@
     <h2>HTML input with role="none" and label associated (presentational roles conflict resolution)</h2>
     <h3>HTML input label/for</h3>
     <label for="irn">input label</label>
-    <input id="irn" type="text" data-expectedlabel="input label" data-testname="html: label[for]input[role=none]" class="ex-label" role="none">
+    <input id="irn" type="text" data-expectedlabel="input label" data-testname="html:label[for]+input[role=none] (role invalidated due to focusability)" class="ex-label" role="none">
     <h3>HTML label encapsulation</h3>
     <label>
       <span>input label</span>
-      <input type="text" data-expectedlabel="input label" data-testname="html: input[role=none] with label encapsulation" class="ex-label" role="none">
+      <input type="text" data-expectedlabel="input label" data-testname="html: label>input[role=none] (with label encapsulation, role invalidated due to focusability)" class="ex-label" role="none">
     </label>
 
     <h2>HTML input with role="none" and label with role none (presentational roles conflict resolution)</h2>
     <h3>HTML input label/for</h3>
     <label role="none" for="lirp">input label</label>
-    <input id="lirp" type="text" data-expectedlabel="input label" data-testname="html: label[for][role=none] input[role=none]" class="ex-label" role="none">
+    <input id="lirp" type="text" data-expectedlabel="input label" data-testname="html: label[for][role=none]+input[role=none] (role invalidated due to focusability)" class="ex-label" role="none">
     <h3>HTML label encapsulation</h3>
     <label role="none">
       <span>input label</span>
-      <input type="text" data-expectedlabel="input label" data-testname="html: input[role=none] with label[role=none] encapsulation" class="ex-label" role="none">
+      <input type="text" data-expectedlabel="input label" data-testname="html: label[role=none]>input[role=none] (with label encapsulation, role invalidated due to focusability)" class="ex-label" role="none">
     </label>
 
     <!-- This test case is specifically designed to check the accessible name, but a separate test case has been created in wai-aria/role/role_none_conflict_resolution.tentative.html to check the role -->
     <h2>HTML input with role="none" and disabled with label associated</h2>
     <h3>HTML input label/for</h3>
     <label for="irpd">input label</label>
-    <input id="irpd" type="text" data-expectedlabel="" data-testname="html: label[for]input[role=none][disabled]" class="ex-label" role="none" disabled>
+    <input id="irpd" type="text" data-expectedlabel="" data-testname="html: label[for]+input[role=none][disabled] (role none applied due to disabled input)" class="ex-label" role="none" disabled>
     <h3>HTML label encapsulation</h3>
     <label>
       <span>input label</span>
-      <input type="text" data-expectedlabel="" data-testname="html: input[role=none][disabled] with label encapsulation" class="ex-label" role="none" disabled>
+      <input type="text" data-expectedlabel="" data-testname="html: label>input[role=none][disabled] (with label encapsulation, role none applied due to disabled input)" class="ex-label" role="none" disabled>
     </label>
 
     <h2>HTML img with role="none" and non empty alt</h2>
-    <img src="https://www.w3.org/assets/logos/w3c/w3c-no-bars.svg" role="none" alt="w3c logo" data-expectedlabel="" data-testname="html: img[role=none][non-empty alt]" class="ex-label">
+    <img src="https://www.w3.org/assets/logos/w3c/w3c-no-bars.svg" role="none" alt="w3c logo" data-expectedlabel="" data-testname="html: img[role=none][alt]:not([alt='']) (role none takes precedence over empty alt)" class="ex-label">
 
     <h2>SVG wrapping title with role="none"</h2>
     <svg viewBox="0 0 20 10" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="5" cy="5" r="4" data-expectedlabel="circle" data-testname="svg: svg circle title[role=none]" class="ex-label">
+      <circle cx="5" cy="5" r="4" data-expectedlabel="circle" data-testname="svg: svg>circle>title[role=none] (role none set on title doesn't affect circle acc name)" class="ex-label">
         <title role="none">circle</title>
       </circle>
     </svg>
 
     <h2>HTML fieldset wrapping legend with role="none"</h2>
-    <fieldset data-expectedlabel="legend" data-testname="html: fieldset wrapping legend[role=none]" class="ex-label"><legend role="none">legend</legend></fieldset>
+    <fieldset data-expectedlabel="legend" data-testname="html: fieldset>legend[role=none] (role none set on legend doesn't affect fieldset acc name)" class="ex-label"><legend role="none">legend</legend></fieldset>
 
     <h2>HTML fieldset with role="none" wrapping legend</h2>
-    <fieldset role="none" data-expectedlabel="" data-testname="html: fieldset[role=none] wrapping legend" class="ex-label"><legend>legend</legend></fieldset>
+    <fieldset role="none" data-expectedlabel="" data-testname="html: fieldset[role=none]>legend (role none set on fieldset affects fieldset acc name)" class="ex-label"><legend>legend</legend></fieldset>
 
     <h2>HTML fieldset role="none" wrapping legend with role="none"</h2>
-    <fieldset role="none" data-expectedlabel="" data-testname="html: fieldset[role=none] wrapping legend[role=none]" class="ex-label"><legend role="none">legend</legend></fieldset>
+    <fieldset role="none" data-expectedlabel="" data-testname="html: fieldset[role=none]>legend[role=none] (role none set on fieldset affects fieldset acc name)" class="ex-label"><legend role="none">legend</legend></fieldset>
 
     <h2>HTML table wrapping caption with role="none"</h2>
-    <table data-expectedlabel="caption" data-testname="html: table wrapping caption[role=none]" class="ex-label">
+    <table data-expectedlabel="caption" data-testname="html: table>caption[role=none] (role none set on caption doesn't affect table acc name)" class="ex-label">
       <caption role="none">caption</caption>
       <tr>
         <th>th1</th>
@@ -86,7 +86,7 @@
     </table>
 
     <h2>HTML table with role="none" wrapping caption</h2>
-    <table role="none" data-expectedlabel="" data-testname="html: table[role=none] wrapping caption" class="ex-label">
+    <table role="none" data-expectedlabel="" data-testname="html: table[role=none]>caption (role none set on table affects fieldset acc name)" class="ex-label">
       <caption>caption</caption>
       <tr>
         <th>th1</th>
@@ -99,7 +99,7 @@
     </table>
 
     <h2>HTML table role="none" wrapping caption with role="none"</h2>
-    <table role="none" data-expectedlabel="" data-testname="html: table[role=none] wrapping caption[role=none]" class="ex-label">
+    <table role="none" data-expectedlabel="" data-testname="html: table[role=none]>caption[role=none] (role none set on table affects fieldset acc name)" class="ex-label">
       <caption role="none">caption</caption>
       <tr>
         <th>th1</th>

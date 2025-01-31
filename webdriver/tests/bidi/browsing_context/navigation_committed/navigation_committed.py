@@ -19,7 +19,7 @@ PAGE_REDIRECT_HTTP_EQUIV = (
 PAGE_REDIRECTED_HTML = "/webdriver/tests/bidi/network/support/redirected.html"
 
 
-async def test_subscribe_unsubscribe_not_emitted(bidi_session):
+async def test_unsubscribe(bidi_session):
     await bidi_session.session.subscribe(events=[NAVIGATION_COMMITTED_EVENT])
     await bidi_session.session.unsubscribe(events=[NAVIGATION_COMMITTED_EVENT])
 

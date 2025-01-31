@@ -215,7 +215,7 @@ async def test_nested_iframes(
     remove_listener()
 
 
-async def test_same_document_navigation_not_emitted(bidi_session, new_tab, url, subscribe_events):
+async def test_same_document(bidi_session, new_tab, url, subscribe_events):
     await bidi_session.browsing_context.navigate(
         context=new_tab["context"], url=url(PAGE_EMPTY), wait="complete"
     )

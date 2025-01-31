@@ -412,7 +412,7 @@ async def test_navigate_history_pushstate(
 
 
 @pytest.mark.parametrize("type_hint", ["tab", "window"])
-async def test_new_context_not_emitted(bidi_session, subscribe_events, type_hint):
+async def test_new_context(bidi_session, subscribe_events, type_hint):
     await subscribe_events(events=[NAVIGATION_COMMITTED_EVENT])
 
     # Track all received browsingContext.navigationCommitted events in the events array

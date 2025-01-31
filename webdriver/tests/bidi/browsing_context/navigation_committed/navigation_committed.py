@@ -270,7 +270,7 @@ async def test_document_write(bidi_session, subscribe_events, new_tab, sandbox):
     remove_listener()
 
 
-async def test_page_with_base_tag(
+async def test_base_element(
     bidi_session, subscribe_events, inline, new_tab, wait_for_event, wait_for_future_safe
 ):
     await subscribe_events(events=[NAVIGATION_COMMITTED_EVENT])

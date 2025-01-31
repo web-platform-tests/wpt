@@ -244,7 +244,7 @@ async def test_same_document(bidi_session, new_tab, url, subscribe_events):
 
 
 @pytest.mark.parametrize("sandbox", [None, "sandbox_1"])
-async def test_document_write_not_emitted(bidi_session, subscribe_events, new_tab, sandbox):
+async def test_document_write(bidi_session, subscribe_events, new_tab, sandbox):
     await subscribe_events(events=[NAVIGATION_COMMITTED_EVENT])
 
     # Track all received browsingContext.navigationCommitted events in the events array

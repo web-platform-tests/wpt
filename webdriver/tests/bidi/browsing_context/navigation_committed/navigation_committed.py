@@ -458,7 +458,7 @@ async def test_navigate_to_about_blank(
 
 
 @pytest.mark.parametrize("url", ["", "about:blank", "about:blank?test"])
-async def test_window_open_with_about_blank_not_emitted(
+async def test_window_open_with_about_blank(
     bidi_session, subscribe_events, top_context, url
 ):
     await subscribe_events(events=[NAVIGATION_COMMITTED_EVENT])

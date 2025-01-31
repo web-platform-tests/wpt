@@ -167,7 +167,7 @@ async def test_nested_iframes(
         context=top_context["context"], url=test_page_nested_frames, wait="complete"
     )
 
-    # Wait until we receive two events, one for the top context and one for
+    # Wait until we receive three events, one for the top context and one for
     # each of the 2 iframes.
     wait = AsyncPoll(bidi_session, timeout=2)
     await wait.until(lambda _: len(events) == 3)

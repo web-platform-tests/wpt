@@ -479,7 +479,6 @@ async def test_window_open_with_about_blank(
         await_promise=False,
     )
 
-    # In the future we can wait for "browsingContext.contextCreated" event instead.
     wait = AsyncPoll(bidi_session, timeout=0.5)
     with pytest.raises(TimeoutException):
         await wait.until(lambda _: len(events) > 0)

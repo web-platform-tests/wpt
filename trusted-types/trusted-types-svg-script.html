@@ -20,7 +20,7 @@
         document.getElementById("script").innerHTML = input
       );
       assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
-      assert_equals(violation.sample, `SVGScriptElement innerHTML|${clipSampleIfNeeded(input)}`);
+      assert_equals(violation.sample, `Element innerHTML|${clipSampleIfNeeded(input)}`);
     }, "Assign String to SVGScriptElement.innerHTML.");
 
     promise_test(async t => {
@@ -29,7 +29,7 @@
         document.getElementById("script").innerHTML = policy.createHTML(input)
       );
       assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
-      assert_equals(violation.sample, `SVGScriptElement innerHTML|${clipSampleIfNeeded(input)}`);
+      assert_equals(violation.sample, `Element innerHTML|${clipSampleIfNeeded(input)}`);
     }, "Assign TrustedHTML to SVGScriptElement.innerHTML.");
 
     promise_test(async t => {
@@ -40,7 +40,7 @@
         elem.innerHTML = policy.createHTML(input)
       );
       assert_true(violation.originalPolicy.includes("require-trusted-types-for 'script'"));
-      assert_equals(violation.sample, `SVGScriptElement innerHTML|${clipSampleIfNeeded(input)}`);
+      assert_equals(violation.sample, `Element innerHTML|${clipSampleIfNeeded(input)}`);
       document.getElementById("svg").appendChild(elem);
     }, "Assign TrustedHTML to SVGScriptElement.innerHTML and execute it.");
 

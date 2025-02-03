@@ -33,6 +33,10 @@ dir, menu, ul {
   list-style-type: square;
 }
 
+li { list-style-position: inside; }
+li :is(dir, menu, ol, ul) { list-style-position: outside; }
+:is(dir, menu, ol, ul) :is(dir, menu, ol, ul, li) { list-style-position: unset; }
+
 /* preshints */
 ol[type="1"], li[type="1"] { list-style-type: decimal; }
 /* use classes due to lack of support for "s" annotation */

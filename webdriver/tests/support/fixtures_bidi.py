@@ -72,10 +72,11 @@ async def subscribe_events(bidi_session):
 
     yield subscribe_events
 
-    try:
-        await bidi_session.session.unsubscribe(subscriptions=subscriptions)
-    except (InvalidArgumentException, NoSuchFrameException):
-        pass
+    for subscription in reversed(subscriptions):
+        try:
+            await bidi_session.session.unsubscribe(subscriptions=[subscription])
+        except InvalidArgumentException:
+            pass
 
 
 @pytest_asyncio.fixture

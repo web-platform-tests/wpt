@@ -64,8 +64,13 @@ async def test_params_arguments_channel_ownership_invalid_type(bidi_session, own
         await bidi_session.script.add_preload_script(
             function_declaration="() => {}",
             arguments=[
-                {"type": "channel", "value": {
-                    "channel": "foo", "ownership": ownership}}
+                {
+                    "type": "channel",
+                    "value": {
+                        "channel": "foo",
+                        "ownership": ownership
+                    }
+                }
             ],
         )
 

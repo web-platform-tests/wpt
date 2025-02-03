@@ -155,7 +155,7 @@ def wait_for_event(bidi_session, event_loop):
 
 
 @pytest.fixture
-def wait_for_events(bidi_session):
+def wait_for_events(bidi_session, configuration):
     """Wait until the BiDi session emits events."""
 
     class Waiter:
@@ -164,10 +164,10 @@ def wait_for_events(bidi_session):
             self.remove_listeners = []
             self.events = []
 
-        async def get_events(self, predicate):
+        async def get_events(self, predicate, timeout: float = 2.0):
             wait = AsyncPoll(
                 bidi_session,
-                timeout=2,
+                timeout=timeout * configuration["timeout_multiplier"],
                 message="Didn't receive expected events"
             )
             await wait.until(lambda _: predicate(self.events))

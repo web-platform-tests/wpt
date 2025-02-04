@@ -60,8 +60,8 @@ ol[reversed][start="20"], ol[reversed][start="20xyz"], ol[reversed][start="20e10
 
 /* quirks mode styles */
 li { list-style-position: inside; }
-li :is(ul, ol) { list-style-position: outside; }
-:is(ul, ol) :is(ul, ol, li) { list-style-position: unset; }
+li :is(dir, menu, ol, ul) { list-style-position: outside; }
+:is(dir, menu, ol, ul) :is(dir, menu, ol, ul, li) { list-style-position: unset; }
 </style>
 
 <div id="log"></div>

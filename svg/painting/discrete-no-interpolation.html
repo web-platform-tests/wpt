@@ -8,20 +8,32 @@
 <body>
 <script>
 test_no_interpolation({
-  property: 'flex-direction',
+  property: 'color-interpolation',
   from: 'initial',
-  to: 'column'
+  to: 'auto'
 });
 
 test_no_interpolation({
-  property: 'flex-wrap',
+  property: 'fill-rule',
   from: 'initial',
-  to: 'wrap'
+  to: 'evenodd'
 });
 
 test_no_interpolation({
-  property: 'justify-content',
+  property: 'marker-end',
   from: 'initial',
-  to: 'center'
+  to: 'url("#ref")'
+});
+
+test_no_interpolation({
+  property: 'marker-mid',
+  from: 'initial',
+  to: 'url("#ref")'
+});
+
+test_no_interpolation({
+  property: 'marker-start',
+  from: 'initial',
+  to: 'url("#ref")'
 });
 </script>

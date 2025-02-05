@@ -494,6 +494,8 @@ class RefTestImplementation:
 
         lhs = Image.open(io.BytesIO(base64.b64decode(screenshots[0]))).convert("RGB")
         rhs = Image.open(io.BytesIO(base64.b64decode(screenshots[1]))).convert("RGB")
+        if lhs.size != rhs.size:
+            self.logger.info("Images differ in size, they'll never be equal")
         self.check_if_solid_color(lhs, urls[0])
         self.check_if_solid_color(rhs, urls[1])
         diff = ImageChops.difference(lhs, rhs)

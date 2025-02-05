@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<title>View transitions: cancel events on animations for skipped transitions</title>
+<link rel="help" href="https://github.com/WICG/view-transitions">
+<link rel="author" href="mailto:khushalsagar@chromium.org">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+/* Unset all animations since the test drives it using WA-API */
+html::view-transition-group(*),
+html::view-transition-image-pair(*),
+html::view-transition-new(*),
+html::view-transition-old(*) {
+  animation: unset;
+}
+</style>
+
+<script>
+promise_test(() => {
+  assert_implements(document.startViewTransition, "Missing document.startViewTransition");
+  return new Promise(async (resolve, reject) => {
+    let transition = document.startViewTransition();
+    transition.ready.then(() => {
+      const animation = document.documentElement.animate({ transform: ['rotate(0)', 'rotate(360deg)'] }, { duration: 10000, pseudoElement: '::view-transition'});
+      animation.addEventListener('cancel', () => {
+        resolve();
+      });
+
+      requestAnimationFrame(
+        () => requestAnimationFrame(
+          () => requestAnimationFrame(
+            () => { transition.skipTransition();})));
+    });
+  });
+}, "cancel events dispatched for skipped transitions");
+</script>

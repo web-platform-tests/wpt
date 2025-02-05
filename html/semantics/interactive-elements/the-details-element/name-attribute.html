@@ -159,7 +159,7 @@ promise_test(async t => {
   assert_element_states(elements, [0, 1, 0, 0], "states after mutation");
   assert_array_equals(toggle_event_received_ids, [], "toggle events received before awaiting promises");
   await Promise.all(toggle_event_promises);
-  assert_array_equals(toggle_event_received_ids, ["e3", "e2", "e1", "e0"], "toggle events received after awaiting promises, including toggle events from parser insertion");
+  assert_array_equals(toggle_event_received_ids, ["e0", "e3", "e2", "e1"], "toggle events received after awaiting promises, including toggle events from parser insertion");
 }, "mutation event and toggle event order");
 
 // This function is used to guard tests that test behavior that is

@@ -68,13 +68,22 @@ def test_close_browsing_context_with_accepted_beforeunload_prompt(session, url, 
 
 
 def test_close_last_browsing_context(session):
-    assert len(session.handles) == 1
-    response = close(session)
+    try:
+        assert len(session.handles) == 1
+        response = close(session)
 
-    assert_success(response, [])
+        assert_success(response, [])
 
-    # With no more open top-level browsing contexts, the session is closed.
-    session.session_id = None
+        # With no more open top-level browsing contexts, the session is closed.
+        response = session.transport.send(
+            "GET", f"session/{session.session_id}/alert/text"
+        )
+        assert_error(response, "invalid session id")
+
+    finally:
+        # Need an explicit call to session.end() to notify the test harness
+        # that a new session needs to be created for subsequent tests.
+        session.end()
 
 
 def test_element_usage_after_closing_browsing_context(session, inline):

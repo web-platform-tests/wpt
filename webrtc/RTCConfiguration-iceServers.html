@@ -301,4 +301,108 @@
       }] }));
   }, `with empty urls should throw SyntaxError`);
 
+  // Inspired from https://github.com/web-platform-tests/wpt/blob/master/url/resources/urltestdata.json
+  const validUrls = ['stun:example\t.\norg',
+             'stun:ex%61mple.net',
+             'stun:[2001::1]',
+             'stun:example(&!$)*+-.;_=~☺org',
+             'stun:example.net:',
+             'stun:example.net:0000000000000000',
+             'stun:example.net:65535',
+             'stun:example.net:\n',
+             'stun:GOO\u200b\u2060\ufeffgoo.com',
+             '\u0000\u001b\u0004\u0012 stun:example.com\u001f \u000d ',
+             'stun:www.foo。bar.com',
+             'stun:Ｇｏ.com',
+             'stun:你好你好',
+             'stun:faß.ExAmPlE',
+             'stun:%30%78%63%30%2e%30%32%35%30.01',
+             'stun:%30%78%63%30%2e%30%32%35%30.01%2e',
+             'stun:０Ｘｃ０．０２５０．０１',
+             'stun:.',
+             'stun:ho\u0009st',
+             "stun:!\"$&'()*+,-.;=_`{}~",
+             "stun:h\to\ns\rt:9\t0\n0\r0",
+             'stun:1.2.3.4.',
+             'stun:192.168.257',
+             'stun:192.168.257.com',
+             'stun:256',
+             'stun:256.com',
+             'stun:999999999',
+             'stun:192.0x00A80001',
+             'stun:0xffffffff',
+             // WebRTC API say the following are valid,
+             // but that sounds like a bug
+             'stun:example.net/foo',
+             'stun:/example.net',
+             'stun:user@example.net',
+             'stun:@example.net'
+            ];
+  const invalidUrls = ['stun:example.net:65536',
+               'stun:example.net:b',
+               'stun:example.net: ',
+               'stun:example.net: 21 ',
+               'stun:example.net:-21',
+               'stun:example.net#foo',
+               'stun:[61:24:74]:98',
+               'stun:[::127.0.0.1.]',
+               'stun:GOO\u00a0\u3000goo.com',
+               'stun:\ufdd0zyx.com',
+               'stun:%ef%b7%90zyx.com',
+               'stun:\ufffd',
+               'stun:%EF%BF%BD',
+	       "stun:\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008\u000B\u000C\u000E\u000F\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001A\u001B\u001C\u001D\u001E\u001F\u007F!\"$%&'()*+,-.;=_`{}~",
+               'stun:a.b.c.xn--pokxncvks',
+               'stun:a.b.c.XN--pokxncvks',
+               'stun:a.b.c.Xn--pokxncvks',
+               'stun:10.0.0.XN--pokxncvks',
+               'stun:10.0.0.xN--pokxncvks',
+               'stun:％４１.com',
+               'stun:％００.com',
+               'stun:%ef%bc%85%ef%bc%90%ef%bc%90.com',
+               'stun:%zz%66%a.com',
+               'stun:%25',
+               'stun:hello%00',
+               'stun:192.168.0.257',
+               'stun:%3g%78%63%30%2e%30%32%35%30%2E.01',
+               'stun:192.168.0.1 hello',
+               'stun:x x:12',
+               'stun:[example.net]',
+               'stun:[::1.2.3.4x]',
+               'stun:[::1.2.3.]',
+               'stun:[::1.2.]',
+               'stun:[::.1.2]',
+               'stun:[::1.]',
+               'stun:[::.1]',
+               'stun:[::%31]',
+               'stun:%5B::1]',
+               'stun:a\u0000b',
+               'stun:a<b',
+               'stun:a[b',
+               'stun:a\\b',
+               'stun:a^b',
+               'stun:ho%00st',
+               'stun:example.com%80',
+               'stun:10000000000',
+               'stun:0xffffffff1',
+               'stun:256.256.256.256']
+
+  for (let hostname of validUrls) {
+    config_test(makePc => {
+      makePc({ iceServers: [{
+        urls: [hostname]
+      }] });
+    }, `with valid url ${hostname} should succeed`);
+  }
+
+  for (let hostname of invalidUrls) {
+    config_test(makePc => {
+      assert_throws_dom("SyntaxError", () =>
+    makePc({ iceServers: [{
+          urls: [hostname]
+    }] }));
+    }, `with invalid URL ${hostname} should throw SyntaxError`);
+  }
+
+
 </script>

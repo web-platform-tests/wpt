@@ -1,0 +1,7 @@
+<!doctype html>
+<script>
+const channel = new BroadcastChannel(self.location.search.substr(1));
+channel.onmessage = e => {
+  parent.postMessage(e.data, '*');
+};
+</script>

@@ -15,7 +15,7 @@
 // META: variant=?41-45
 // META: variant=?46-last
 
-"use strict;"
+"use strict";
 
 // The tests in this file focus on simple auctions (one bidder, one seller, one
 // origin, one frame) which have no winning bid, either due to errors or due to

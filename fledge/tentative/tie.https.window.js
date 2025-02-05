@@ -4,7 +4,7 @@
 // META: script=resources/fledge-util.sub.js
 // META: timeout=long
 
-"use strict;"
+"use strict";
 
 // Runs one auction at a time using `auctionConfigOverrides` until the auction
 // has a winner.

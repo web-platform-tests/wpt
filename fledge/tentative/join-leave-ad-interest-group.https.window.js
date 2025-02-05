@@ -14,7 +14,7 @@
 // META: variant=?71-80
 // META: variant=?81-last
 
-"use strict;"
+"use strict";
 
 // These tests are focused on joinAdInterestGroup() and leaveAdInterestGroup().
 // Most join tests do not run auctions, but instead only check the result of

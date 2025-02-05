@@ -10,7 +10,7 @@
 // META: variant=?15-19
 // META: variant=?20-last
 
-"use strict;"
+"use strict";
 
 // This test repeatedly runs auctions to verify an update. A modified bidding script
 // continuously throws errors until it detects the expected change in the interest group

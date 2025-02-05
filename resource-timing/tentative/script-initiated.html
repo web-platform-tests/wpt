@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <head>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
@@ -8,17 +9,55 @@
   <!-- Responsible for testing Initiator Attribute -->
   <script src="../resources/test-initiator.js"></script>
 
-  <!--Script Responsible for loading various other resources  -->
-  <script src="../resources/loadingResources.js"></script>
 </head>
+
 <body>
+  <!-- Third Party Script Responsible for loading various other resources  -->
+  <script src="../resources/loadingResources.js"></script>
+  <script>
+    // Insert arbitrary resources with doc.write
+    document.write('<link rel="stylesheet" href="../resources/empty_style.css?inline-script-doc-write">');
+    document.write('<img src="/images/blue.png?inline-script-doc-write">');
+    document.write('<script src="../resources/empty.js?doc-write"><\/script>');
+
+    // Insert arbitrary resources with appendChild mechanism
+    const inline_link = document.createElement("link");
+    inline_link.rel = "stylesheet";
+    inline_link.href = "../resources/empty_style.css?inline-script";
+    document.head.appendChild(inline_link);
+
+    // Load arbitrary image with inline script
+    const inline_img = document.createElement("img");
+    inline_img.src = "/images/blue.png?inline-script";
+    document.body.appendChild(inline_img);
+  </script>
 </body>
+
 <script>
   promise_test(async (t) => {
-    const expectedInitiator = await getResourceID("loadingResources.js");
-    const resources = ["empty_style.css", "blue.png", "green.html", "empty.js"];
-    for (const resource of resources) {
-      await testResourceInitiator(resource, expectedInitiator);
+    const expected_third_party_script_initiator = await getResourceID("loadingResources.js");
+    const third_party_script_initiated_resources =
+      [
+        "empty_style.css",
+        "blue.png",
+        "empty.js"
+        // The following cases are yet not covered. ALternate mechanism need to
+        // be setup for their initiator reporting.
+        // green.html
+      ];
+    for (const resource of third_party_script_initiated_resources) {
+      await testResourceInitiator(resource, expected_third_party_script_initiator);
+    }
+    const document_initiated_resources = [
+      "empty_style.css?inline-script",
+      "blue.png?inline-script",
+      "empty.js?doc-write",
+      "empty_style.css?inline-script-doc-write",
+      "blue.png?inline-script-doc-write"
+    ];
+    const document_initiator = await getDocumentResourceID();
+    for (const resource of document_initiated_resources) {
+      await testResourceInitiator(resource, document_initiator);
     }
   }, "Ensure initiator Attribute matches with Script ResourceID");
 </script>

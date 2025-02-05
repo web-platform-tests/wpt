@@ -1,0 +1,39 @@
+<!doctype html>
+<title>`display:contents` should not prevent focus</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+div {
+  display: contents;
+}
+div > span {
+  display: block;
+  width: 100px;
+  height: 100px;
+  background: red;
+  color: green;
+}
+div:focus > span {
+  background: green;
+}
+:focus {
+  outline: none;
+}
+
+</style>
+
+<link rel=author title="Tab Atkins-Bittner" href="https://www.xanthir.com/contact/">
+<link rel="help" href="https://drafts.csswg.org/css-display/#box-generation">
+<p>Test passes if there is a filled green square.</p>
+<div tabindex=1><span></span></div>
+
+<script>
+test(()=>{
+  document.querySelector("div").focus();
+  const spanStyle = getComputedStyle(document.querySelector("span"));
+  const color = spanStyle.backgroundColor;
+  const green = spanStyle.color;
+  assert_equals(color, green);
+}, `display:contents should not prevent focusing the element`);
+
+</script>

@@ -9,8 +9,8 @@
 // More tests can be found in `fetch/private-network-access/`.
 
 const alternatePorts = {
-  httpPrivate:  "{{ports[http-private][0]}}",
-  httpsPrivate: "{{ports[https-private][0]}}",
+  httpPrivate:  "{{ports[http-local][0]}}",
+  httpsPrivate: "{{ports[https-local][0]}}",
   httpPublic:   "{{ports[http-public][0]}}",
   httpsPublic:  "{{ports[https-public][0]}}",
 };

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<title>Transform animations</title>
+<link rel="author" title="Mitsuru Oshima" href="mailto:oshima@chromium.org">
+<link rel="help" href="https://crbug.com/1156166">
+<link rel="match" href="animation-damage-ref.html">
+<meta name="assert" content="transform anmation should not leave artifacts">
+<script src="/common/reftest-wait.js"></script>
+<style type="text/css" media="screen">
+  #box {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      top: 20px;
+      left: 20px;
+      border: 1px solid black;
+      transform: none;
+  }
+  .animate {
+      animation: shrink 1s ease;
+  }
+
+  @keyframes shrink {
+      from { transform: scale(1.2); }
+      to   { transform: none; }
+  }
+</style>
+<script type="text/javascript" charset="utf-8">
+  function animationEnded() {
+      takeScreenshot();
+  }
+</script>
+<body>
+  <div id='box' class='animate' onanimationend="animationEnded()"></div>
+</body>
+</html>

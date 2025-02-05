@@ -13,6 +13,11 @@ def main(request, response):
     - Response content defined by the 'content' query parameter
       - Must be a serialized JSON string representing the desired response body
   '''
+
+  if b'origin' in request.headers:
+    origin = request.headers[b'origin']
+    response.headers.set(b'Access-Control-Allow-Origin', origin)
+
   def query_parameter_or_default(param, default):
     return request.GET.first(param) if param in request.GET else default
 

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<title>Testing scroll-behavior: smooth and user scrolls on the root of the main frame</title>
+<meta name="timeout" content="long" />
+<link rel="help" href="https://drafts.csswg.org/cssom-view/#concept-smooth-scroll">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="support/scroll-behavior.js"></script>
+<style>
+    body {
+        margin: 0;
+    }
+
+    .autoBehavior {
+        scroll-behavior: auto;
+    }
+
+    .smoothBehavior {
+        scroll-behavior: smooth;
+    }
+</style>
+<div id="log">
+</div>
+<div id="pageContent" style="position: absolute; left: 0; top: 0;">
+    <div id="elementToReveal"
+        style="position: absolute; display: inline-block; width: 10px; height: 15px; background: black;"></div>
+</div>
+<script>
+var pageLoaded = async_test("Page loaded");
+window.addEventListener("load", pageLoaded.step_func_done(function () {
+    var scrollingElement, styledElement, elementToRevealTop;
+    scrollingElement = document.scrollingElement;
+    styledElement = document.documentElement;
+    pageContent.style.width = (10 + window.innerWidth) * 5 + "px";
+    pageContent.style.height = (20 + window.innerHeight) * 6 + "px";
+    elementToRevealTop = (20 + window.innerHeight) * 4;
+    elementToReveal.style.top = elementToRevealTop + "px";
+
+    promise_test(() => {
+        resetScroll(scrollingElement);
+        setScrollBehavior(styledElement, "smoothBehavior");
+        assert_equals(scrollingElement.scrollLeft, 0);
+        assert_equals(scrollingElement.scrollTop, 0);
+
+        scrollNode(scrollingElement, "scroll", "smooth", 0, elementToRevealTop);
+        assert_less_than(scrollingElement.scrollTop, elementToRevealTop, "Smooth scroll shouldn't reach the destination immediately.");
+        // Send RIGHT key to scrollingElement. It should stop the smooth scrolling and trigger another scrolling.
+        window.test_driver.send_keys(scrollingElement, '\ue014');
+
+        return waitForScrollEnd(scrollingElement).then(() => {
+            assert_less_than(scrollingElement.scrollTop, elementToRevealTop, "The vertical smooth scroll should be interrupted.");
+            assert_greater_than(scrollingElement.scrollLeft, 0, "RIGHT key should trigger a horizontal scroll.");
+        });
+    }, "Aborting a smooth scroll with a keyboard event that causes another scroll");
+
+    promise_test(() => {
+        resetScroll(scrollingElement);
+        setScrollBehavior(styledElement, "smoothBehavior");
+        assert_equals(scrollingElement.scrollLeft, 0);
+        assert_equals(scrollingElement.scrollTop, 0);
+
+        scrollNode(scrollingElement, "scroll", "smooth", 0, elementToRevealTop);
+        assert_less_than(scrollingElement.scrollTop, elementToRevealTop, "Smooth scroll shouldn't reach the destination immediately.");
+        // Send LEFT key to scrollingElement. It should stop the smooth scrolling and not trigger other scrolling.
+        window.test_driver.send_keys(scrollingElement, '\ue012');
+
+        return waitForScrollEnd(scrollingElement).then(() => {
+            assert_less_than(scrollingElement.scrollTop, elementToRevealTop, "The vertical smooth scroll should be interrupted.");
+            assert_equals(scrollingElement.scrollLeft, 0, "LEFT key doesn't trigger horizontal scroll because the scroll position is already at the scroll limit.");
+        });
+    }, "Aborting a smooth scroll with a keyboard event that does not causes another scroll");
+}));
+</script>

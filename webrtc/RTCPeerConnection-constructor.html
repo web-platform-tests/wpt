@@ -73,4 +73,38 @@ for (const attr in initialState) {
     assert_equals(window.pc[attr], initialState[attr]);
   }, attr + ' initial value');
 }
+
+promise_test(async function(t) {
+  let connections = [];
+  try {
+    // This test will pass if either all allocations succeed, or if
+    // one is rejected with the right error code. The number 600 is arbitrary.
+    for (let i = 0; i < 600; i++) {
+      connections.push(new RTCPeerConnection);
+    }
+  } catch (err) {
+    assert_equals(err.name, 'UnknownError');
+  }
+  // Encourage garbage collection to run.
+  for (const pc of connections) {
+    pc.close();
+  }
+  connections = [];
+  await new Promise(resolve => { t.step_timeout(() => resolve(), 0) });
+}, 'Allocating many PeerConnections succeeds or fails in the correct way');
+
+promise_test(async function(t) {
+  for (let i = 0; i < 60; i++) {
+    let connections = [];
+    for (let j = 0; j < 10; j++) {
+      connections.push(new RTCPeerConnection);
+    }
+    await new Promise(resolve => { t.step_timeout(() => resolve(), 0) });
+    for (const pc of connections) {
+      pc.close();
+    }
+  }
+}, 'Allocating and deallocating PeerConnections does not cause failure');
+
+
 </script>

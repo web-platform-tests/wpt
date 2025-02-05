@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+var testScenarios = [
+    ["Test default context creation parameters: srgb/uint8",
+        {},
+        {colorSpace: "srgb", pixelFormat: "uint8"}],
+    ["Test CanvasColorSpace value srgb",
+        {colorSpace: "srgb"},
+        {colorSpace: "srgb", pixelFormat: "uint8"}],
+    ["Test CanvasColorSpace value p3, no pixel format, falls back to p3/uint8",
+        {colorSpace: "display-p3"},
+        {colorSpace: "display-p3", pixelFormat: "uint8"}],
+    ["Test CanvasPixelFormat value uint8",
+        {pixelFormat: "uint8"},
+        {colorSpace: "srgb", pixelFormat: "uint8"}],
+    ["Test CanvasPixelFormat value float16",
+        {pixelFormat: "float16"},
+        {colorSpace: "srgb", pixelFormat: "float16"}],
+    ["Test supported color settings srgb/uint8",
+        {colorSpace: "srgb", pixelFormat: "uint8"},
+        {colorSpace: "srgb", pixelFormat: "uint8"}],
+    ["Test supported color settings srgb/float16",
+        {colorSpace: "srgb", pixelFormat: "float16"},
+        {colorSpace: "srgb", pixelFormat: "float16"}],
+    ["Test supported color settings p3/uint8, falls back to srgb/uint8",
+        {colorSpace: "display-p3", pixelFormat: "uint8"},
+        {colorSpace: "display-p3", pixelFormat: "uint8"}],
+    ["Test supported color settings p3/float16",
+        {colorSpace: "display-p3", pixelFormat: "float16"},
+        {colorSpace: "display-p3", pixelFormat: "float16"}],
+];
+
+async_test(function(t) {
+    function runTestScenario(disc, contextCreationParameters, expectedContextAttributes) {
+        var canvas = document. createElement('canvas');
+        var ctx = canvas.getContext('2d', contextCreationParameters);
+        var contextAttributes = ctx.getContextAttributes();
+        assert_equals(contextAttributes.colorSpace, expectedContextAttributes.colorSpace, disc);
+        assert_equals(contextAttributes.pixelFormat, expectedContextAttributes.pixelFormat, disc);
+    }
+
+    for (let [disc, setting, expect] of testScenarios) {
+        runTestScenario(disc, setting, expect);
+    }
+    t.done();
+})
+
+</script>
+

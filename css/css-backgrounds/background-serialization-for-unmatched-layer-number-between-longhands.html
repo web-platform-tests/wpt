@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Test case for background shorthand</title>
+    <meta name="assert" content="background shorthand should return empty string if specified component longhands have different number of layers each.">
+    <link rel="author" title="Joonghun Park" href="mailto:pjh0718@gmail.com">
+    <link rel="help" href="https://drafts.csswg.org/cssom/#serializing-css-values">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <style>
+        #test {
+            background: repeat, #fafbfd no-repeat;
+            background-image: linear-gradient(to bottom, #8ab73e, #8ab73e),
+              linear-gradient(to bottom, #353535, #353535);
+            background-size: 0 1px, 100% 1px, 0 1px;
+            background-position: 50% 100%, 50% 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="log"></div>
+    <div id="test"></div>
+    <script>
+        var styleDeclaration = document.styleSheets[0].cssRules[0].style;
+
+        test(function() {
+            assert_equals(styleDeclaration.getPropertyValue("background"),
+                "", "The specified value for background should be empty string.");
+        }, "The Specified value for background");
+    </script>
+</body>
+</html>

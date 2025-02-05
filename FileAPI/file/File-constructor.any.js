@@ -92,7 +92,7 @@ if (globalThis.document !== undefined) {
 // testing the third argument
 [
   {type: 'text/plain', expected: 'text/plain'},
-  {type: 'text/plain;charset=UTF-8', expected: 'text/plain;charset=utf-8'},
+  {type: 'text/plain;charset=UTF-8', expected: 'text/plain;charset=UTF-8'},
   {type: 'TEXT/PLAIN', expected: 'text/plain'},
   {type: '𝓽𝓮𝔁𝓽/𝔭𝔩𝔞𝔦𝔫', expected: ''},
   {type: 'ascii/nonprintable\u001F', expected: ''},

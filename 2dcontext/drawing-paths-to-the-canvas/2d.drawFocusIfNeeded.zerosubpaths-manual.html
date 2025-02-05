@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>drawFocusIfNeeded with no default path defined</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <link rel="author" title="Mark Sadecki">
+    <link rel="help" href="http://www.w3.org/TR/2dcontext/#dom-context-2d-drawfocusifneeded">
+  </head>
+  <body>
+    <h1>Description</h1>
+    <p>This test verifies that no focus indicator is drawn if the current path has no default path defined (zero subpaths ).  This test passes if "zero subpaths" is empty (blank) and "one subpath" contains a focus indicator (square).</p>
+    <div>
+      <p>zero subpaths:</p>
+      <canvas height='100' width='100' id='zero'>
+	    <a href='http://www.w3.org' id='z-element'>Focus</a>
+      </canvas>
+      <p>one subpath:</p>
+      <canvas height='100' width='100' id='one'>
+	    <a href='http://www.w3.org' id='o-element'>Focus</a>
+      </canvas>
+    </div>
+    <script>
+      test(function() {
+        // zero subpaths
+        var zero = document.getElementById('zero');
+        var zelement = document.getElementById('z-element');
+        var context = zero.getContext('2d');
+        context.beginPath();
+        zelement.focus();
+        context.drawFocusIfNeeded(zelement);
+        var refImageZ = context.getImageData(0, 0, 100, 100);
+        
+        // one subpaths
+        var one = document.getElementById('one');
+        var oelement = document.getElementById('o-element');
+        var context = one.getContext('2d');
+        context.beginPath();
+        context.rect(10, 10, 80, 80);
+        context.fillStyle = "white";
+        context.fill();
+        oelement.focus();
+        context.drawFocusIfNeeded(oelement);
+        var refImageO = context.getImageData(0, 0, 100, 100);
+        
+        /*// TODO make sure the zero canvas is empty (no focus ring)
+          
+          assert_false(emptycanvas, "The canvas with zero subpaths is not empty.");
+        */
+        
+        // make sure refImageZ and refImageO are different
+          var length = 40000;
+          var index = length;
+          var identical = true;
+          while (--index > 0) {
+            if (refImageZ.data[index] != refImageO.data[index]) identical = false;
+          }
+
+          assert_false(identical, "The two canvas elements are identical.  Only the second should contain a focus ring.");
+        
+      }, 'drawFocusIfNeeded with no default path defined');
+    </script>
+    <div id="log"></div>
+  </body>
+</html>

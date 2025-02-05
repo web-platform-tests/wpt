@@ -6,7 +6,7 @@
 <body>
 <script>
 const tests = [
-  // desc, url, expected body.textContent
+  // desc, url, expected_textContent
   ['string', 'javascript:"foo"', 'foo'],
   ['empty string', 'javascript:""', ''],
   ['String object', 'javascript:new String("foo")', ''],
@@ -33,9 +33,9 @@ for (const [desc, url, expected_textContent] of tests) {
       load_events++;
       assert_equals(iframe.contentDocument.URL, 'about:blank');
       assert_equals(iframe.contentDocument.body.textContent, expected_textContent);
+      assert_equals(load_events, 1);
       if (load_events === 1) {
         t.step_timeout(() => {
-          assert_equals(load_events, 1);
           t.done();
         }, 100);
       }

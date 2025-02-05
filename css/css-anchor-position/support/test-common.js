@@ -42,3 +42,19 @@ window.checkLayoutForAnchorPos = async function(selectorList, callDone = true) {
   }
   return window.checkLayout(selectorList, callDone);
 }
+
+// This function is a thin wrapper around `promise_test` (from
+// resources/testharness.js). It also replaces `test`, but must be a
+// promise_test due to potential for awaits. See the description of
+// `checkLayoutForAnchorPos` for caveats and intended usage.
+window.testForAnchorPos = async function(func, name, properties){
+  promise_test(async ()=>{
+    if (window.CHECK_LAYOUT_DELAY) {
+      assert_equals(window.INJECTED_SCRIPT,undefined,'CHECK_LAYOUT_DELAY is only allowed when serving WPT with --injected-script.');
+      await waitUntilNextAnimationFrame();
+      await waitUntilNextAnimationFrame();
+      await waitUntilNextAnimationFrame();
+    }
+    await func();
+  }, name, properties)
+}

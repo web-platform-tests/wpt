@@ -135,6 +135,22 @@
         pc.setConfiguration({
           certificates: [cert1, cert2]
         }));
+
+      const pc2 = new RTCPeerConnection({
+        certificates: [cert1, cert2]
+      });
+
+      assert_throws('InvalidModificationError', () =>
+        pc2.setConfiguration({
+          certificates: [cert2, cert1]
+      }));
+
+      assert_throws('InvalidModificationError', () =>
+        pc2.setConfiguration({
+          certificates: undefined
+      }));
+      pc2.setConfiguration({ certificates: [cert1, cert2] });
+      pc2.setConfiguration({ });
     });
   }, 'Calling setConfiguration with different set of certs should reject with InvalidModificationError');
 

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>import() inside compiled strings via nested setTimeout</title>
+<link rel="help" href="https://github.com/whatwg/html/issues/9633">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+<base href="scripts/foo/">
+<script>
+"use strict";
+
+// Tweak the base URL of the document here to distinguish:
+// - document URL
+// - document base URL = ../
+// - This inline script's base URL = ./scripts/foo/
+document.querySelector("base").remove();
+const base = document.createElement("base");
+base.setAttribute("href", "../");
+document.body.appendChild(base);
+
+self.ran = false;
+
+promise_test(t => {
+  t.add_cleanup(() => {
+    delete self.continueTest;
+    delete self.errorTest;
+  });
+
+  const promise = new Promise((resolve, reject) => {
+    self.continueTest = resolve;
+    self.errorTest = reject;
+  });
+
+  setTimeout(`import("../../../imports-a.js?1").then(self.continueTest, self.errorTest)`, 0);
+
+  return promise;
+}, "setTimeout non-nested picks up the active script as expected");
+
+promise_test(t => {
+  t.add_cleanup(() => {
+    delete self.continueTest;
+    delete self.errorTest;
+  });
+
+  const promise = new Promise((resolve, reject) => {
+    self.continueTest = resolve;
+    self.errorTest = reject;
+  });
+
+  setTimeout(setTimeout.bind(null, `import("./imports-a.js?1").then(self.continueTest, self.errorTest)`, 0), 0);
+
+  return promise;
+}, "setTimeout nested loses the active script and falls back to the document base URL");
+</script>

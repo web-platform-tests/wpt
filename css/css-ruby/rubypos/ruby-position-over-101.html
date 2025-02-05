@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8">
+<title>ruby-position: over (v)</title>
+<meta name="assert" content="ruby-position:over will make ruby appear to the right of the base in vertical text.">
+<link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
+<link rel="help" href="http://www.w3.org/TR/css-ruby-1/#rubypos">
+<link rel="help" href="https://drafts.csswg.org/css-ruby-1/#rubypos">
+<style type="text/css">
+.test { margin: 20px;  padding: 40px; font-size: 110px; }
+.test { -webkit-writing-mode: vertical-lr; writing-mode: tb-rl; writing-mode: vertical-rl; }
+rt { color: blue; }
+</style>
+<style type="text/css">/* this is the test */
+ruby { ruby-position: over; }
+</style>
+</head>
+<body>
+<p class="instructions">Skip if the text is not vertical.<br/>Test passes if the text is vertically set and the ruby text appears to the right of the base.</p>
+<div class="test" lang="ja"><ruby>漢<rt>かん</rt>字<rt>じ</rt></ruby></div>
+<!-- Notes:
+The default position for HTML ruby is over, so it is difficult to ascertain whether this test is actually producing an effect. At least we can test that no harm is done.
+-->
+</body>
+</html>

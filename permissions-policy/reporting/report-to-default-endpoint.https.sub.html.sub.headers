@@ -1,0 +1,2 @@
+Permissions-Policy: camera=(),*;report-to=default-endpoint
+Reporting-Endpoints: default-endpoint="https://{{host}}:{{ports[https][0]}}/reporting/resources/report.py?reportID=e48410a8-4f39-4db7-aecf-dd0541c8e776"

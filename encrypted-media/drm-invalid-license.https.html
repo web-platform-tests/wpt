@@ -13,6 +13,9 @@
     <script src=/encrypted-media/util/utils.js></script>
     <script src=/encrypted-media/util/utf8.js></script>
 
+    <!-- Message handler for DRM servers -->
+    <script src=/encrypted-media/util/drm-messagehandler.js></script>
+
     <!-- The script for this specific test -->
     <script src=/encrypted-media/scripts/invalid-license.js></script>
 
@@ -22,8 +25,10 @@
 
     <script>
         var keysystem = getSupportedKeySystem(),
+            handler = new MessageHandler( keysystem ),
             config = {
-                keysystem: keysystem
+                keysystem:          keysystem,
+                servercertificate:  handler.servercertificate
             };
         runTest(config);
     </script>

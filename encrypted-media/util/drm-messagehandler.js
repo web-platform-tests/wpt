@@ -15,7 +15,8 @@ drmconfig = {
         "serverURL": "https://lic.staging.drmtoday.com/license-proxy-widevine/cenc/",
         "servertype" : "drmtoday",
         "merchant" : "w3c-eme-test",
-        "secret" : drmtodaysecret
+        "secret" : drmtodaysecret,
+        "certificate" : "Cr8CCAMSEChwNFTACPY2GK3nRD22xMgYi+f5kAUijgIwggEKAoIBAQC1IRK40F0CP8xdleLCUcHGSbQXfNjSvu81W7BnQ95mHj0qvDGCt5lG1V/cCN/pVAeBXppidLMiosf14Ge7XwrAeonUWuqUslFvB1tm74EdDSbhuaa4lPK5hXliqhccT2ZjDT5MYCcYiX9eHvm2qvWtTboqfhQXbfE0odMYW1ohisBaTEHwge//gKOgQMULCbvHQO7c2PFNZ1qRmA+Syn3cZGoGra1RAfdKDkmMwB8AUyusIXhQvZBekJI2Vrff7+9CSGdn8z72KD1PQlSrcliTkL7lWAjx1mgIDUXYk8K8ovdNYKDA0KCZPO8BYEcDM0w2OBOUhrydryT9Z6B/mtlDAgMBAAE6EnN0YWdpbmcuZ29vZ2xlLmNvbRKAA5g+MDUmdfQLpxX8JJva5dSsckmiZmUh5DZVc5Upch/4gOCq78Xie8mA2uravz/DhtCEoCyCU3hIzHU/9JewEafal3iKAOKqa4TNfXHAekjr9hYCzKWj8yAwpylcMNqRW5HcGLm8lZO43ou1Dw3twSk4uOngOc3eGPqC6BuwMmMP6VXYWlZs4VQwC/bUwb0SaWY1ayh9ZXsYzmPQ79RfxSael+qxHLVj5VZDsm/0nxCcIQGvyvNbgy8ojw2dRZYOJZ6F+10k29LPgnZMXdm/cn776chh+GkyH2reGJBfTZL5ptplNtuEdYcdFo6HC7IwPPcMbpeEyT0t6EWtgmK+fg1OLkoHWc74LRCdJZLHJCn4wBdCuuKz3srbwzw+X0uvXhbst06tuvy3xnBfep47bzlAOD+cURbSAqIMkinulpwlGXGDA7UNATDDNS4GsBTYOFQPigwifAAR4PWzjk4pjtLLMB60Vkll9VxdeXV6JQpOuchKs+ZTn2tv31aJnqKZFA=="
     } ],
     "com.microsoft.playready": [ {
         "serverURL": "http://playready-testserver.azurewebsites.net/rightsmanager.asmx",

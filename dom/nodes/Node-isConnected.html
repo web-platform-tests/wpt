@@ -85,6 +85,22 @@ test(function() {
              [nodes[0], nodes[3]]);
 }, "Test with iframes");
 
+function testInShadowTree(mode) {
+  test(function () {
+    var host = document.createElement("div");
+    document.body.appendChild(host);
+
+    const root = host.attachShadow({ mode });
+    const node = document.createElement("div");
+    root.appendChild(node);
+
+    assert_true(node.isConnected);
+  }, "Node.isConnected in a " + mode + " shadow tree");
+}
+
+testInShadowTree("open");
+testInShadowTree("closed");
+
 // This helper function is used to check whether nodes should be connected.
 function checkNodes(aConnectedNodes, aDisconnectedNodes) {
   aConnectedNodes.forEach(node => assert_true(node.isConnected));

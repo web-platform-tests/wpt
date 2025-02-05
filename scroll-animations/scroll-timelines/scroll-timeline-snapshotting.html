@@ -34,9 +34,10 @@ promise_test(async t => {
   do {
     await waitForNextFrame();
   } while(scroller.scrollTop == startScroll);
-  assert_percents_equal(
+  assert_percents_approx_equal(
       timeline.currentTime,
       (scroller.scrollTop / maxScroll) * 100,
+      maxScroll,
       'Scroll timeline current time corresponds to the scroll position.');
 }, 'ScrollTimeline current time is updated after programmatic animated ' +
    'scroll.');

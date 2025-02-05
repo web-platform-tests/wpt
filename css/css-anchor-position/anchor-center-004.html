@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<title>Tests `anchor-center` self-alignment keyword in mixed writing modes and directions</title>
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#anchor-center">
+<link rel="author" href="mailto:xiaochengh@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+<script src="support/test-common.js"></script>
+
+<style>
+.cb {
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+
+.anchor {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  top: 40px;
+  left: 60px;
+  background: orange;
+  anchor-name: --a;
+}
+
+.target {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: lime;
+  anchor-default: --a;
+  align-self: anchor-center;
+  justify-self: anchor-center;
+}
+
+.htb { writing-mode: horizontal-tb; }
+.vlr { writing-mode: vertical-lr; }
+.vrl { writing-mode: vertical-rl; }
+
+.ltr { direction: ltr; }
+.rtf { direction: rtl; }
+</style>
+
+<body onload="checkLayoutForAnchorPos('.target')">
+  <script>
+    function createTestCase(containerWM, containerDir, targetWM, targetDir) {
+      const container = document.createElement('div');
+      container.classList = `cb ${containerWM} ${containerDir}`;
+      const anchor = document.createElement('div');
+      anchor.classList = 'anchor';
+      const target = document.createElement('div');
+      target.classList = `target ${targetWM} ${targetDir}`;
+      target.setAttribute('data-offset-x', '65');
+      target.setAttribute('data-offset-y', '45');
+      container.appendChild(anchor);
+      container.appendChild(target);
+      return container;
+    }
+
+    const writingModes = ['htb', 'vlr', 'vrl'];
+    const directions = ['ltr', 'rtl'];
+    for (let containerWM of writingModes) {
+      for (let containerDir of directions) {
+        for (let targetWM of writingModes) {
+          for (let targetDir of directions) {
+            if (containerWM == targetWM && containerDir == targetDir) {
+              continue;
+            }
+            document.body.appendChild(createTestCase(containerWM, containerDir, targetWM, targetDir));
+          }
+        }
+      }
+    }
+  </script>
+</body>

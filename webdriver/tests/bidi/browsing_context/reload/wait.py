@@ -38,13 +38,12 @@ async def test_expected_url(bidi_session, inline, new_tab, wait):
         wait=wait
     )
 
-    if wait != "none":
-        assert reload_result["navigation"] != navigate_result["navigation"]
-        assert reload_result["url"] == url
+    assert reload_result["navigation"] != navigate_result["navigation"]
+    assert reload_result["url"] == url
 
-        contexts = await bidi_session.browsing_context.get_tree(
-            root=new_tab["context"], max_depth=0)
-        assert contexts[0]["url"] == url
+    contexts = await bidi_session.browsing_context.get_tree(
+        root=new_tab["context"], max_depth=0)
+    assert contexts[0]["url"] == url
 
 
 @pytest.mark.parametrize(
@@ -68,10 +67,10 @@ async def test_slow_image_blocks_load(bidi_session, inline, new_tab, wait,
     await wait_for_reload(bidi_session, new_tab["context"], wait,
                           expect_timeout)
 
-    # We cannot assert the URL for "none" by definition, and for "complete", since
-    # we expect a timeout. For the timeout case, the wait_for_navigation helper will
-    # resume after 1 second, there is no guarantee that the URL has been updated.
-    if wait == "interactive":
+    # We cannot assert the URL for "complete", since we expect a timeout. For
+    # this case, the wait_for_navigation helper will resume after 1 second,
+    # there is no guarantee that the URL has been updated.
+    if wait != "complete":
         contexts = await bidi_session.browsing_context.get_tree(
             root=new_tab["context"], max_depth=0)
         assert contexts[0]["url"] == url

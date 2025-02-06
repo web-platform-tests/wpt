@@ -440,14 +440,15 @@ async def test_with_beforeunload_prompt(
     target_url = url("/webdriver/tests/support/html/default.html", domain="alt")
 
     on_navigation_started = wait_for_event(NAVIGATION_STARTED_EVENT)
-    result = await bidi_session.browsing_context.navigate(
+
+    # Trigger navigation, but don't wait for it to be finished.
+    asyncio.create_task(bidi_session.browsing_context.navigate(
         context=new_tab["context"], url=target_url, wait="none"
-    )
+    ))
 
     event = await wait_for_future_safe(on_navigation_started)
 
     assert event["context"] == new_tab["context"]
-    assert event["navigation"] == result["navigation"]
     assert event["url"] == target_url
 
 

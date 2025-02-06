@@ -130,7 +130,7 @@ async def test_navigate_with_beforeunload_prompt(bidi_session, new_tab,
     # Wait for the prompt to open.
     await wait_for_future_safe(on_prompt_opened)
     # Make sure the navigation is not finished.
-    assert not navigated_future.done()
+    assert not navigated_future.done(), "Navigation should not be finished before prompt is handled."
 
     await bidi_session.browsing_context.handle_user_prompt(
         context=new_tab["context"], accept=accept
@@ -171,7 +171,7 @@ async def test_navigate_with_beforeunload_prompt_in_iframe(bidi_session,
     # Wait for the prompt to open.
     await wait_for_future_safe(on_prompt_opened)
     # Make sure the navigation is not finished.
-    assert not navigated_future.done()
+    assert not navigated_future.done(), "Navigation should not be finished before prompt is handled."
 
     await bidi_session.browsing_context.handle_user_prompt(
         context=new_tab["context"], accept=accept
@@ -214,7 +214,7 @@ async def test_navigate_with_beforeunload_prompt_in_iframe_navigate_in_top_conte
     # Wait for the prompt to open.
     await wait_for_future_safe(on_prompt_opened)
     # Make sure the navigation is not finished.
-    assert not navigated_future.done()
+    assert not navigated_future.done(), "Navigation should not be finished before prompt is handled."
 
     await bidi_session.browsing_context.handle_user_prompt(
         context=new_tab["context"], accept=accept

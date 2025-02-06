@@ -81,9 +81,9 @@ class BidiBluetoothSimulatePreconnectedPeripheralAction:
         address = payload["address"]
         name = payload["name"]
         manufacturer_data = payload["manufacturerData"]
-        knownService_uuids = payload["knownServiceUuids"]
+        known_service_uuids = payload["knownServiceUuids"]
         return await self.protocol.bidi_bluetooth.simulate_preconnected_peripheral(
-            context, address, name, manufacturer_data, knownService_uuids)
+            context, address, name, manufacturer_data, known_service_uuids)
 
 class BidiSessionSubscribeAction:
     name = "bidi.session.subscribe"

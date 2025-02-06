@@ -7,6 +7,31 @@ def do_delayed_imports():
     global webdriver
     import webdriver
 
+class BidiBluetoothHandleRequestDevicePrompt :
+    name = "bidi.bluetooth.handle_request_device_prompt"
+
+    def __init__(self, logger, protocol):
+        do_delayed_imports()
+        self.logger = logger
+        self.protocol = protocol
+
+    async def __call__(self, payload):
+        if payload["context"] is None:
+            raise ValueError("Missing required parameter: context")
+
+        context = payload["context"]
+        if isinstance(context, str):
+            pass
+        elif isinstance(context, webdriver.bidi.protocol.BidiWindow):
+            # Context can be a serialized WindowProxy.
+            context = context.browsing_context
+        else:
+            raise ValueError("Unexpected context type: %s" % context)
+
+        prompt = payload["prompt"]
+        accept = payload["accept"]
+        device = payload["device"]
+        return await self.protocol.bidi_bluetooth.handle_request_device_prompt(context, prompt, accept, device)
 
 class BidiBluetoothSimulateAdapterAction:
     name = "bidi.bluetooth.simulate_adapter"
@@ -32,6 +57,32 @@ class BidiBluetoothSimulateAdapterAction:
         state = payload["state"]
         return await self.protocol.bidi_bluetooth.simulate_adapter(context, state)
 
+class BidiBluetoothSimulatePreconnectedPeripheralAction:
+    name = "bidi.bluetooth.simulate_preconnected_peripheral"
+
+    def __init__(self, logger, protocol):
+        do_delayed_imports()
+        self.logger = logger
+        self.protocol = protocol
+
+    async def __call__(self, payload):
+        if payload["context"] is None:
+            raise ValueError("Missing required parameter: context")
+
+        context = payload["context"]
+        if isinstance(context, str):
+            pass
+        elif isinstance(context, webdriver.bidi.protocol.BidiWindow):
+            # Context can be a serialized WindowProxy.
+            context = context.browsing_context
+        else:
+            raise ValueError("Unexpected context type: %s" % context)
+
+        address = payload["address"]
+        name = payload["name"]
+        manufacturerData = payload["manufacturerData"]
+        knownServiceUuids = payload["knownServiceUuids"]
+        return await self.protocol.bidi_bluetooth.simulate_preconnected_peripheral(context, address, name, manufacturerData, knownServiceUuids)
 
 class BidiSessionSubscribeAction:
     name = "bidi.session.subscribe"
@@ -76,6 +127,8 @@ class BidiPermissionsSetPermissionAction:
 
 
 async_actions = [
+    BidiBluetoothHandleRequestDevicePrompt,
     BidiBluetoothSimulateAdapterAction,
+    BidiBluetoothSimulatePreconnectedPeripheralAction,
     BidiPermissionsSetPermissionAction,
     BidiSessionSubscribeAction]

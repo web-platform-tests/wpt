@@ -185,6 +185,10 @@
                     return window.test_driver_internal.bidi.bluetooth
                         .simulate_preconnected_peripheral(params);
                 },
+                /**
+                 * `bluetooth.RequestDevicePromptUpdatedParameters <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-requestdevicepromptupdated-event>`_
+                 * event.
+                 */
                 request_device_prompt_updated: {
                     /**
                      * @typedef {object} RequestDevicePromptUpdated

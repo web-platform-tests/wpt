@@ -146,12 +146,14 @@ class WebDriverBidiBluetoothProtocolPart(BidiBluetoothProtocolPart):
           context: str,
           address: str,
           name: str,
-          manufacturerData: List[Any],
-          knownServiceUuids: List[str]) -> None:
+          manufacturer_data: List[Any],
+          knownService_uuids: List[str]) -> None:
         await self.webdriver.bidi_session.bluetooth.simulate_preconnected_peripheral(
-            context=context, address=address, name=name,
-            manufacturerData=manufacturerData,
-            knownServiceUuids=knownServiceUuids)
+            context=context,
+            address=address,
+            name=name,
+            manufacturer_data=manufacturer_data,
+            knownService_uuids=knownService_uuids)
 
 
 class WebDriverBidiBrowsingContextProtocolPart(BidiBrowsingContextProtocolPart):

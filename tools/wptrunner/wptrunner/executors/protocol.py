@@ -368,15 +368,15 @@ class BidiBluetoothProtocolPart(ProtocolPart):
                                context: str,
                                address: str,
                                name: str,
-                               manufacturerData: List[Any],
-                               knownServiceUuids: List[str]) -> None:
+                               manufacturer_data: List[Any],
+                               knownService_uuids: List[str]) -> None:
         """
         Creates a simulated bluetooth peripheral.
         :param context: Browsing context to set the simulated peripheral to.
         :param address: The address of the simulated bluetooth peripheral.
         :param name: The name of the simulated bluetooth peripheral.
-        :param manufacturerData: The manufacturerData of the simulated bluetooth peripheral.
-        :param knownServiceUuids: The knownServiceUuids of the simulated bluetooth peripheral.
+        :param manufacturer_data: The manufacturer data of the simulated bluetooth peripheral.
+        :param knownService_uuids: The known service uuids of the simulated bluetooth peripheral.
         """
         pass
 

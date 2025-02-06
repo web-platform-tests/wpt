@@ -7,7 +7,7 @@ def do_delayed_imports():
     global webdriver
     import webdriver
 
-class BidiBluetoothHandleRequestDevicePrompt :
+class BidiBluetoothHandleRequestDevicePrompt:
     name = "bidi.bluetooth.handle_request_device_prompt"
 
     def __init__(self, logger, protocol):
@@ -80,9 +80,10 @@ class BidiBluetoothSimulatePreconnectedPeripheralAction:
 
         address = payload["address"]
         name = payload["name"]
-        manufacturerData = payload["manufacturerData"]
-        knownServiceUuids = payload["knownServiceUuids"]
-        return await self.protocol.bidi_bluetooth.simulate_preconnected_peripheral(context, address, name, manufacturerData, knownServiceUuids)
+        manufacturer_data = payload["manufacturerData"]
+        knownService_uuids = payload["knownServiceUuids"]
+        return await self.protocol.bidi_bluetooth.simulate_preconnected_peripheral(
+            context, address, name, manufacturer_data, knownService_uuids)
 
 class BidiSessionSubscribeAction:
     name = "bidi.session.subscribe"

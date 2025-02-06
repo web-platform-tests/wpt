@@ -143,11 +143,11 @@ class WebDriverBidiBluetoothProtocolPart(BidiBluetoothProtocolPart):
             context=context, state=state)
 
     async def simulate_preconnected_peripheral(self,
-          context: str,
-          address: str,
-          name: str,
-          manufacturer_data: List[Any],
-          known_service_uuids: List[str]) -> None:
+            context: str,
+            address: str,
+            name: str,
+            manufacturer_data: List[Any],
+            known_service_uuids: List[str]) -> None:
         await self.webdriver.bidi_session.bluetooth.simulate_preconnected_peripheral(
             context=context,
             address=address,

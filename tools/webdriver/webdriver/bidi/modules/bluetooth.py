@@ -34,7 +34,12 @@ class Bluetooth(BidiModule):
         }
 
     @command
-    def simulate_preconnected_peripheral(self, context: str, address: str, name: str, manufacturer_data: List[Any], known_service_uuids: List[str]) -> Mapping[str, Any]:
+    def simulate_preconnected_peripheral(self,
+            context: str,
+            address: str,
+            name: str,
+            manufacturer_data: List[Any],
+            known_service_uuids: List[str]) -> Mapping[str, Any]:
         """
         Represents a command `bluetooth.simulate_preconnected_peripheral` specified in
         https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateconnectedperipheral-command

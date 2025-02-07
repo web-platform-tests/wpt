@@ -23,7 +23,7 @@
 </div>
 
 <script>
-  assert_implements(window.CSSPositionTryRule, '@position-try not supported');
+  setup(() => assert_implements(window.CSSPositionTryRule, '@position-try not supported'));
 
   test(() => {
     assert_equals(host.offsetLeft, 999999);

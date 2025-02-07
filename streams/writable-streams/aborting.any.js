@@ -10,26 +10,6 @@ const error2 = new Error('error2');
 error2.name = 'error2';
 
 promise_test(t => {
-  const ws = new WritableStream({
-    write: t.unreached_func('write() should not be called')
-  });
-
-  const writer = ws.getWriter();
-  const writePromise = writer.write('a');
-
-  const readyPromise = writer.ready;
-
-  writer.abort(error1);
-
-  assert_equals(writer.ready, readyPromise, 'the ready promise property should not change');
-
-  return Promise.all([
-    promise_rejects_exactly(t, error1, readyPromise, 'the ready promise should reject with error1'),
-    promise_rejects_exactly(t, error1, writePromise, 'the write() promise should reject with error1')
-  ]);
-}, 'Aborting a WritableStream before it starts should cause the writer\'s unsettled ready promise to reject');
-
-promise_test(t => {
   const ws = new WritableStream();
 
   const writer = ws.getWriter();

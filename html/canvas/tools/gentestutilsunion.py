@@ -424,7 +424,7 @@ class _Variant():
             # dimension names (i.e. the 'file_variant_names' property below) are
             # appended to this to produce unique filenames.
             'name': '',
-            # List holding the the file variant dimension names.
+            # List holding the file variant dimension names.
             'file_variant_names': [],
             # List of this variant grid dimension names. This uniquely
             # identifies a single variant in a variant grid file.

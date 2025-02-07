@@ -23,6 +23,8 @@
 </div>
 
 <script>
+  assert_implements(window.CSSPositionTryRule, '@position-try not supported');
+
   test(() => {
     assert_equals(host.offsetLeft, 999999);
   }, "#host is initially left: 999999px");

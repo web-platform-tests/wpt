@@ -954,3 +954,139 @@ test(() => {
   assert_array_equals(addTeardownsCalled, ["teardown 1", "teardown 2"],
       "Teardowns called synchronously upon addition end up in FIFO order");
 }, "Teardowns should be called synchronously during addTeardown() if the subscription is inactive");
+
+test(() => {
+  let subscriptionCount = 0;
+  let teardownCount = 0;
+
+  const source = new Observable(subscriber => {
+    subscriptionCount++;
+    subscriber.addTeardown(() => teardownCount++);
+  })
+
+  const ac1 = new AbortController();
+  source.subscribe({}, {signal: ac1.signal});
+  assert_equals(subscriptionCount, 1, "Subscription count should be 1 time after first subscription");
+
+  const ac2 = new AbortController();
+  source.subscribe({}, {signal: ac2.signal});
+  assert_equals(subscriptionCount, 1, "Subscription count should still be 1 after second subscription");
+
+  ac1.abort();
+  assert_equals(teardownCount, 0, "Teardown count should be 0 after first subscription is aborted, because there is still a subscriber");
+
+  ac2.abort();
+  assert_equals(teardownCount, 1, "Teardown count should be 1 after second subscription is aborted, because there are no subscribers left");
+
+  assert_equals(subscriptionCount, 1, "Subscription count should still be 1 after all of this");
+
+  const ac3 = new AbortController();
+  source.subscribe({}, {signal: ac3.signal});
+  assert_equals(subscriptionCount, 2, "Subscription count should be 2 after new subscription");
+
+  ac3.abort();
+  assert_equals(teardownCount, 2, "Teardown count should be 2 after new subscription is aborted");
+
+}, "Observable subscriptions are ref-counted");
+
+test(() => {
+  const eventTarget = new EventTarget();
+
+  const source = eventTarget.when('value')
+    .map(e => {
+      const value = e.detail.value
+      if (value === 2) throw new Error('error')
+      return value
+    })
+
+  const results1 = []
+  const ac1 = new AbortController();
+  source.subscribe({
+    next: x => results1.push(x),
+    error: e => results1.push(e.message),
+    complete: () => results1.push('complete')
+  }, {signal: ac1.signal});
+
+  const results2 = []
+  const ac2 = new AbortController();
+  source.subscribe({
+    next: x => results2.push(x),
+    error: e => results2.push(e.message),
+    complete: () => results2.push('complete')
+  }, {signal: ac2.signal});
+
+  eventTarget.dispatchEvent(new CustomEvent('value', {detail: {value: 1}}))
+  assert_array_equals(results1, [1], 'first subscriber received value 1')
+  assert_array_equals(results2, [1], 'second subscriber received value 1')
+
+  eventTarget.dispatchEvent(new CustomEvent('value', {detail: {value: 2}}))
+  assert_array_equals(results1, [1, 'error'], 'first subscriber received error')
+  assert_array_equals(results2, [1, 'error'], 'second subscriber received error')
+}, "ref-counted observable notifies all subscribers of an error")
+
+test(() => {
+  const eventTarget = new EventTarget();
+
+  const source = eventTarget.when('value')
+    .take(2)
+
+  const results1 = []
+  const ac1 = new AbortController();
+  source.subscribe({
+    next: x => results1.push(x),
+    error: e => results1.push(e.message),
+    complete: () => results1.push('complete')
+  }, {signal: ac1.signal});
+
+  const results2 = []
+  const ac2 = new AbortController();
+  source.subscribe({
+    next: x => results2.push(x),
+    error: e => results2.push(e.message),
+    complete: () => results2.push('complete')
+  }, {signal: ac2.signal});
+
+  eventTarget.dispatchEvent(new CustomEvent('value', {detail: {value: 1}}))
+  assert_array_equals(results1, [1], 'first subscriber received value 1')
+  assert_array_equals(results2, [1], 'second subscriber received value 1')
+
+  eventTarget.dispatchEvent(new CustomEvent('value', {detail: {value: 2}}))
+  assert_array_equals(results1, [1, 2, 'complete'], 'first subscriber received the last value and complete')
+  assert_array_equals(results2, [1, 2, 'complete'], 'second subscriber received the last value and complete')
+}, "ref-counted observable should notify all subscribers of complete")
+
+test(() => {
+  const results = []
+
+  const source = new Observable(subscriber => {
+    subscriber.addTeardown(() => results.push('teardown'))
+    subscriber.next(1)
+    subscriber.complete()
+  })
+
+  source.subscribe({
+    next: value => results.push(value),
+    error: () => results.push('error'),
+    complete: () => results.push('complete')
+  })
+
+  assert_array_equals(results, [1, 'teardown', 'complete'], 'teardown should always occur before notification of complete')
+}, "teardown should always occur before notification of complete")
+
+test(() => {
+  const results = []
+
+  const source = new Observable(subscriber => {
+    subscriber.addTeardown(() => results.push('teardown'))
+    subscriber.next(1)
+    subscriber.error(new Error('error'))
+  })
+
+  source.subscribe({
+    next: value => results.push(value),
+    error: error => results.push(error.message),
+    complete: () => results.push('complete')
+  })
+
+  assert_array_equals(results, [1, 'teardown', 'error'], 'teardown should always occur before notification of error')
+}, "teardown should always occur before notification of error")

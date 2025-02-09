@@ -69,3 +69,9 @@ test(() => {
   target.dispatchEvent(event2);
   assert_array_equals(results, [event1, event1, event2, event2]);
 }, "EventTarget Observables can multicast subscriptions for event handling");
+
+test(() => {
+  const target = new EventTarget();
+
+  
+}, "ref-counted event target should not be re-entrant")

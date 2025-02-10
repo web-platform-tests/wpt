@@ -1,7 +1,13 @@
 # mypy: allow-untyped-defs
 
+import os
+from base64 import b64encode
+from pathlib import Path
+from shutil import copyfileobj, rmtree
+from tempfile import mkdtemp
 from typing import Dict
 from urllib import parse as urlparse
+from zipfile import ZipFile
 
 from . import error
 from . import protocol
@@ -762,6 +768,14 @@ class Session:
             if value is not None:
                 body[prop] = value
         return self.send_session_command("POST", "print", body)
+
+    @command
+    def load_web_extension(self, extension):
+        return self.send_session_command("POST", "webextension", extension)
+
+    @command
+    def unload_web_extension(self, extension_id):
+        return self.send_session_command("DELETE", "webextension/%s" % extension_id)
 
 
 class ShadowRoot:

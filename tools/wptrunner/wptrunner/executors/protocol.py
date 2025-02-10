@@ -106,6 +106,7 @@ class ProtocolPart:
 
     def __init__(self, parent):
         self.parent = parent
+        self.test_path = None
 
     @property
     def logger(self):
@@ -331,6 +332,21 @@ class AccessibilityProtocolPart(ProtocolPart):
         pass
 
 
+class WebExtensionsProtocolPart(ProtocolPart):
+    """Protocol part for managing WebExtensions"""
+    __metaclass__ = ABCMeta
+
+    name = "web_extensions"
+
+    @abstractmethod
+    def load_web_extension(self, extension):
+        pass
+
+    @abstractmethod
+    def unload_web_extension(self, extension_id):
+        pass
+
+
 class BidiBluetoothProtocolPart(ProtocolPart):
     """Protocol part for managing BiDi events"""
     __metaclass__ = ABCMeta
@@ -433,8 +449,7 @@ class BidiScriptProtocolPart(ProtocolPart):
         :param list[script.LocalValue] arguments: The arguments to pass to the script.
         """
         pass
-
-
+    
 class CookiesProtocolPart(ProtocolPart):
     """Protocol part for managing cookies"""
     __metaclass__ = ABCMeta

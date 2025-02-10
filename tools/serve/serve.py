@@ -314,6 +314,61 @@ class WindowHandler(HtmlWrapperHandler):
 <script src="%(path)s"></script>
 """
 
+class ExtensionHandler(HtmlWrapperHandler):
+    path_replace = [(".extension.html", ".extension.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+%(script)s
+<div id=log></div>
+<script>
+  let test;
+
+  setup({ explicit_done: true })
+
+  browser.test.onMessage.addListener((message, data) => {
+    switch(message) {
+      case "assert":
+        test.step(() => {
+          assert_true(data.result, data.message)
+        })
+
+        break
+      case "assert-equality":
+        test.step(() => {
+          assert_true(data.result, `Expected: ${data.expectedValue}; Actual: ${data.actualValue}; Description: ${data.message}`)
+        })
+
+        break
+      case "test-start":
+        test = async_test(data.testName)
+
+        if (!data.testsRemaining)
+            done()
+
+        break
+      case "test-finished":
+        if (data.result) {
+          test.done()
+          break
+        }
+
+        test.step(() => {
+          assert_true(false, data.message)
+          test.done()
+        })
+
+        break
+    }
+  })
+
+  browser.test.sendMessage("test-suite-setup")
+</script>
+<script src="%(path)s"></script>
+"""
+
 
 class WindowModulesHandler(HtmlWrapperHandler):
     global_type = "window-module"
@@ -775,6 +830,7 @@ class RoutesBuilder:
             ("GET", "*.worker.html", WorkersHandler),
             ("GET", "*.worker-module.html", WorkerModulesHandler),
             ("GET", "*.window.html", WindowHandler),
+            ("GET", "*.extension.html", ExtensionHandler),
             ("GET", "*.any.html", AnyHtmlHandler),
             ("GET", "*.any.sharedworker.html", SharedWorkersHandler),
             ("GET", "*.any.sharedworker-module.html", SharedWorkerModulesHandler),

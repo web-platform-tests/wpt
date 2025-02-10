@@ -1,0 +1,191 @@
+<!doctype html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+  <script>
+    // Use both "fetch" and "framing" to check how parsing is effected
+    // Fetch for network errors
+    // Framing (with XFO) to see whether a header is still interpreted as valid or not
+
+    // Insert the following chars [LF, NULL, CR, SP, TAB, COLON] at all of the following positions
+    // <first>HT<in-http>TP<before-slash>/<after-slash>1<before-dot>.<after-dot>1<after-ver> <before-num>200<after-num> <before-reason>OK<after-reason>\r
+    // <symbol><header>:<value>, <hea <symbol> der>:<value>, <header><symbol>:<value>, <header>:<symbol><value>, <header>:<val <symbol> ue>, <header>:<value><symbol>\r
+    // Content-Length: 5\r
+    // \r
+    // Test.
+
+
+    // Mapping for each char at each position what should be the outcome
+    // Fetch: Network Error or Valid
+    // Framing: Network Error, Line skipped or Valid
+    let mapping = {
+      'LF': {
+        'first': ['Network Error', 'Network Error'],
+        'in-http': ['Network Error', 'Network Error'],
+        'before-slash': ['Network Error', 'Network Error'],
+        'after-slash': ['Network Error', 'Network Error'],
+        'before-dot': ['Network Error', 'Network Error'],
+        'after-dot': ['Network Error', 'Network Error'],
+        'after-ver': ['Network Error', 'Network Error'],
+        'before-num': ['Network Error', 'Network Error'],
+        'after-num': ['Network Error', 'Network Error'],
+        'before-reason': ['Network Error', 'Network Error'],
+        'after-reason': ['Network Error', 'Network Error'],
+        'leading': ['Network Error', 'Network Error'],
+        'in-name': ['Network Error', 'Network Error'],
+        'before-colon': ['Network Error', 'Network Error'],
+        'after-colon': ['Network Error', 'Network Error'],
+        'in-value': ['Network Error', 'Network Error'],
+        'after-value': ['Network Error', 'Network Error']
+      },
+      'CR': {
+        'first': ['Network Error', 'Network Error'],
+        'in-http': ['Network Error', 'Network Error'],
+        'before-slash': ['Network Error', 'Network Error'],
+        'after-slash': ['Network Error', 'Network Error'],
+        'before-dot': ['Network Error', 'Network Error'],
+        'after-dot': ['Network Error', 'Network Error'],
+        'after-ver': ['Network Error', 'Network Error'],
+        'before-num': ['Network Error', 'Network Error'],
+        'after-num': ['Network Error', 'Network Error'],
+        'before-reason': ['Network Error', 'Network Error'],
+        'after-reason': ['Network Error', 'Network Error'],
+        'leading': ['Network Error', 'Network Error'],
+        'in-name': ['Network Error', 'Network Error'],
+        'before-colon': ['Network Error', 'Network Error'],
+        'after-colon': ['Network Error', 'Network Error'],
+        'in-value': ['Network Error', 'Network Error'],
+        'after-value': ['Network Error', 'Network Error']
+      },
+      'TAB': {
+        'first': ['Network Error', 'Network Error'],
+        'in-http': ['Network Error', 'Network Error'],
+        'before-slash': ['Network Error', 'Network Error'],
+        'after-slash': ['Network Error', 'Network Error'],
+        'before-dot': ['Network Error', 'Network Error'],
+        'after-dot': ['Network Error', 'Network Error'],
+        'after-ver': ['Network Error', 'Network Error'],
+        'before-num': ['Network Error', 'Network Error'],
+        'after-num': ['Network Error', 'Network Error'],
+        'before-reason': ['Network Error', 'Network Error'],
+        'after-reason': ['Network Error', 'Network Error'],
+        'leading': ['Network Error', 'Network Error'],
+        'in-name': ['Network Error', 'Network Error'],
+        'before-colon': ['Network Error', 'Network Error'],
+        'after-colon': ['Network Error', 'Network Error'],
+        'in-value': ['Network Error', 'Network Error'],
+        'after-value': ['Network Error', 'Network Error']
+      },
+      'SPACE': {
+        'first': ['Network Error', 'Network Error'],
+        'in-http': ['Network Error', 'Network Error'],
+        'before-slash': ['Network Error', 'Network Error'],
+        'after-slash': ['Network Error', 'Network Error'],
+        'before-dot': ['Network Error', 'Network Error'],
+        'after-dot': ['Network Error', 'Network Error'],
+        'after-ver': ['Network Error', 'Network Error'],
+        'before-num': ['Network Error', 'Network Error'],
+        'after-num': ['Network Error', 'Network Error'],
+        'before-reason': ['Network Error', 'Network Error'],
+        'after-reason': ['Network Error', 'Network Error'],
+        'leading': ['Network Error', 'Network Error'],
+        'in-name': ['Network Error', 'Network Error'],
+        'before-colon': ['Network Error', 'Network Error'],
+        'after-colon': ['Network Error', 'Network Error'],
+        'in-value': ['Network Error', 'Network Error'],
+        'after-value': ['Network Error', 'Network Error']
+      },
+      'NULL': {
+        'first': ['Network Error', 'Network Error'],
+        'in-http': ['Network Error', 'Network Error'],
+        'before-slash': ['Network Error', 'Network Error'],
+        'after-slash': ['Network Error', 'Network Error'],
+        'before-dot': ['Network Error', 'Network Error'],
+        'after-dot': ['Network Error', 'Network Error'],
+        'after-ver': ['Network Error', 'Network Error'],
+        'before-num': ['Network Error', 'Network Error'],
+        'after-num': ['Network Error', 'Network Error'],
+        'before-reason': ['Network Error', 'Network Error'],
+        'after-reason': ['Network Error', 'Network Error'],
+        'leading': ['Network Error', 'Network Error'],
+        'in-name': ['Network Error', 'Network Error'],
+        'before-colon': ['Network Error', 'Network Error'],
+        'after-colon': ['Network Error', 'Network Error'],
+        'in-value': ['Network Error', 'Network Error'],
+        'after-value': ['Network Error', 'Network Error']
+      },
+      'COLON': {
+        'first': ['Network Error', 'Network Error'],
+        'in-http': ['Network Error', 'Network Error'],
+        'before-slash': ['Network Error', 'Network Error'],
+        'after-slash': ['Network Error', 'Network Error'],
+        'before-dot': ['Network Error', 'Network Error'],
+        'after-dot': ['Network Error', 'Network Error'],
+        'after-ver': ['Network Error', 'Network Error'],
+        'before-num': ['Network Error', 'Network Error'],
+        'after-num': ['Network Error', 'Network Error'],
+        'before-reason': ['Network Error', 'Network Error'],
+        'after-reason': ['Network Error', 'Network Error'],
+        'leading': ['Network Error', 'Network Error'],
+        'in-name': ['Network Error', 'Network Error'],
+        'before-colon': ['Network Error', 'Network Error'],
+        'after-colon': ['Network Error', 'Network Error'],
+        'in-value': ['Network Error', 'Network Error'],
+        'after-value': ['Network Error', 'Network Error']
+      }
+    }
+
+    for (const [c, positions] of Object.entries(mapping)) {
+      for (const [p, outcomes] of Object.entries(positions)) {
+        const outcome_fetch = outcomes[0];
+        const outcome_framing = outcomes[1];
+        const resource = `resources/parsing_${c}_${p}.asis`
+        console.log(outcome_framing);
+
+        // Check fetching: for heavy network errors fetch should fail, otherwise fetch should succeed
+        if (outcome_fetch === "Network Error") {
+          promise_test(async (t) => {
+            await promise_rejects_js(t, TypeError, fetch(resource));
+          }, `${c} at <${p}> should result in Network Error`);
+        } else {
+          promise_test(async (t) => {
+            const response = await fetch(resource);
+            assert_true(response.ok, "Fetch should succeed");
+          }, `${c} at <${p}> should fetch without an error`);
+        }
+
+        // Check framing: for heavy network errors framing should fail (about:error or similar), for light errors (Line skipped) framing should succeed, for no-errors (Valid) framing should fail (valid XFO header blocking the framing)
+        // We do not distinguish between failure due to network errors or due to XFO here
+        if (outcome_framing === "Line skipped") {
+          reason = `${c} at <${p}> should load a frame (Header skipped)`
+        } else if (outcome_framing === "Network Error") {
+          reason = `${c} at <${p}> should result in Network Error frame`
+        } else if (outcome_framing === "Valid") {
+          reason = `${c} at <${p}> should block a frame due to XFO`
+        }
+        async_test(t => {
+          const frame = document.createElement("iframe");
+          t.add_cleanup(() => frame.remove());
+          frame.src = resource;
+          // If network errors result in load events for frames per
+          // https://github.com/whatwg/html/issues/125 and https://github.com/whatwg/html/issues/1230 this
+          // should be changed to use the load event instead.
+          t.step_timeout(() => {
+            if (outcome_framing === "Line skipped") {
+              assert_equals(window.frameLoaded, true);
+            }
+            // We currently do not distinguish between errors due to NetworkError and due to XFO
+            else {
+              assert_equals(window.frameLoaded, undefined);
+            }
+            t.done();
+          }, 1000);
+          document.body.append(frame);
+        }, reason);
+
+      }
+    }
+
+  </script>

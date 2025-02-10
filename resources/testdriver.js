@@ -1497,6 +1497,42 @@
          */
         set_protected_audience_k_anonymity: function(owner, name, hashes, context = null) {
             return window.test_driver_internal.set_protected_audience_k_anonymity(owner, name, hashes, context);
+        },
+
+         /**
+         * Loads a WebExtension.
+         *
+         * Matches the `Load Web Extension
+         * <https://github.com/w3c/webextensions/blob/main/specification/webdriver-classic.bs>`_
+         * WebDriver command.
+         *
+         * @param {String} type - A type such as "path", "archivePath", or "base64".
+         *
+         * @param {String} path - The path to the extension's resources if type "path" or "archivePath" is specified.
+         *
+         * @param {String} value - The base64 encoded value of the extension's resources if type "base64" is specified.
+         *
+         * @returns {Promise} Returns the extension identifier as defined in the spec.
+         *                    Rejected if the extension fails to load.
+         */
+        install_web_extension: function(path) {
+            return window.test_driver_internal.install_web_extension(path);
+        },
+
+        /**
+         * Unloads a WebExtension.
+         *
+         * Matches the `Unload Web Extension
+         * <https://github.com/w3c/webextensions/blob/main/specification/webdriver-classic.bs>`_
+         * WebDriver command.
+         *
+         * @param {String} extension_id - The extension idetifier.
+         *
+         * @returns {Promise} Fulfilled after the extension has been removed.
+         *                    Rejected in case the WebDriver command errors out.
+         */
+        uninstall_web_extension: function(extension) {
+            return window.test_driver_internal.uninstall_web_extension(extension);
         }
     };
 

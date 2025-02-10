@@ -523,6 +523,28 @@ class SetProtectedAudienceKAnonymityAction:
         owner, name, hashes = payload["owner"], payload["name"], payload["hashes"]
         return self.protocol.protected_audience.set_k_anonymity(owner, name, hashes)
 
+class InstallWebExtensionAction:
+    name = "install_web_extension"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("installing web extension")
+        return self.protocol.web_extensions.install_web_extension(payload["extension"])
+
+class UninstallWebExtensionAction:
+    name = "uninstall_web_extension"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("uninstalling web extension")
+        return self.protocol.web_extensions.uninstall_web_extension(payload["extension_id"])
+
 actions = [ClickAction,
            DeleteAllCookiesAction,
            GetAllCookiesAction,
@@ -563,4 +585,6 @@ actions = [ClickAction,
            CreateVirtualPressureSourceAction,
            UpdateVirtualPressureSourceAction,
            RemoveVirtualPressureSourceAction,
-           SetProtectedAudienceKAnonymityAction]
+           SetProtectedAudienceKAnonymityAction,
+           InstallWebExtensionAction,
+           UninstallWebExtensionAction]

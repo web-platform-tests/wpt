@@ -307,6 +307,14 @@
         return create_context_action("get_all_cookies", context, {});
     };
 
+    window.test_driver_internal.load_web_extension = function (params, context=null) {
+        return create_context_action("load_web_extension", context, {extension: params});
+    }
+
+    window.test_driver_internal.unload_web_extension = function (extension_id, context=null) {
+        return create_context_action("unload_web_extension", context, {extension_id});
+    }
+
     window.test_driver_internal.get_computed_label = function(element) {
         const selector = get_selector(element);
         const context = get_context(element);

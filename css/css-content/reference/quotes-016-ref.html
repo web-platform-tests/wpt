@@ -4,7 +4,11 @@
 <title>CSS Generated Content reference: quotes</title>
 <link rel="author" title="Jonathan Kew" href="mailto:jkew@mozilla.com">
 <style>
-body { font: 32px serif; }
+@font-face {
+    font-family: "Noto Serif CJK";
+    src: url("/fonts/noto/NotoSerifCJK-VF.ttf.ttc") format("truetype");
+}
+body { font: 32px "Noto Serif CJK", serif; }
 </style>
 <body>
 <p>Test passes if the quote marks in both lines match:

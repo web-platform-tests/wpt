@@ -106,6 +106,7 @@ class ProtocolPart:
 
     def __init__(self, parent):
         self.parent = parent
+        self.test_path = None
 
     @property
     def logger(self):
@@ -328,6 +329,21 @@ class AccessibilityProtocolPart(ProtocolPart):
         """Return the computed accessibility role for a specific element.
 
         :param element: A protocol-specific handle to an element."""
+        pass
+
+
+class WebExtensionsProtocolPart(ProtocolPart):
+    """Protocol part for managing WebExtensions"""
+    __metaclass__ = ABCMeta
+
+    name = "web_extensions"
+
+    @abstractmethod
+    def load_web_extension(self, extension):
+        pass
+
+    @abstractmethod
+    def unload_web_extension(self, extension_id):
         pass
 
 

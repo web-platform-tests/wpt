@@ -8,7 +8,11 @@
 <link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#quotes">
 <link rel=match href="reference/quotes-016-ref.html">
 <style>
-body { font: 32px serif; }
+@font-face {
+    font-family: "Noto Serif CJK";
+    src: url("/fonts/noto/NotoSerifCJK-VF.ttf.ttc") format("truetype");
+}
+body { font: 32px "Noto Serif CJK", serif; }
 </style>
 <body>
 <p>Test passes if the quote marks in both lines match:

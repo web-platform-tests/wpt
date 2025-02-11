@@ -14,5 +14,5 @@ Test."""
             f.write(final)
 
 
-for symbol, name in [("\n", "LF"), ("\r", "CR"), ("\t", "HTAB"), (" ", "SP"), ("\x00", "NULL"), (":", "COLON")]:
+for symbol, name in [("\n", "LF"), ("\r", "CR"), ("\t", "HTAB"), (" ", "SP"), ("\x00", "NUL"), (":", "COLON")]:
     insert_symbol(symbol, name)

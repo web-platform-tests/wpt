@@ -9,7 +9,7 @@
     // Fetch for network errors
     // Framing (with XFO) to see whether a header is still interpreted as valid or not
 
-    // Insert the following chars [LF, NULL, CR, SP, HTAB        , COLON] at all of the following positions
+    // Insert the following chars [LF, NUL, CR, SP, HTAB, COLON] at all of the following positions
     // <first>HT<in-http>TP<before-slash>/<after-slash>1<before-dot>.<after-dot>1<after-ver> <before-num>200<after-num> <before-reason>OK<after-reason>\r
     // <symbol><header>:<value>, <hea <symbol> der>:<value>, <header><symbol>:<value>, <header>:<symbol><value>, <header>:<val <symbol> ue>, <header>:<value><symbol>\r
     // Content-Length: 5\r
@@ -24,6 +24,8 @@
       'LF': {
         // https://www.rfc-editor.org/rfc/rfc9112.html#section-2.2
         // Although the line terminator for the start-line and fields is the sequence CRLF, a recipient MAY recognize a single LF as a line terminator and ignore any preceding CR.
+        // Note: Some of the following could be interpreted as Valid or Line skipped (e.g., LF before HTTP (first), or after-reason (LFCRLF in the first line, rest could be interpreted as the body))
+        // Note: Obsolete Line Folding is not considered here (https://www.rfc-editor.org/rfc/rfc9112.html#section-5.2)
         // Status Line
         'first': ['Network Error', 'Network Error'], 
         'in-http': ['Network Error', 'Network Error'],
@@ -35,8 +37,8 @@
         'before-num': ['Network Error', 'Network Error'],
         'after-num': ['Network Error', 'Network Error'],
         // Everything above is mandatory:   status-line = HTTP-version SP status-code SP [ reason-phrase ]
-        'before-reason': ['Valid', 'Valid'],
-        'after-reason': ['Valid', 'Valid'],
+        'before-reason': ['Network Error', 'Network Error'],
+        'after-reason': ['Network Error', 'Network Error'],
         // XFO-Header line
         'leading': ['Network Error', 'Network Error'],
         'in-name': ['Network Error', 'Network Error'],
@@ -48,6 +50,10 @@
       'CR': {
         // https://www.rfc-editor.org/rfc/rfc9112.html#section-2.2
         // A sender MUST NOT generate a bare CR (a CR character not immediately followed by LF) within any protocol elements other than the content. A recipient of such a bare CR MUST consider that element to be invalid or replace each bare CR with SP before processing the element or forwarding the message.
+        // Note: considering bare CR to always be invalid, replacing with SP would also b allowed by HTTP
+        // https://www.rfc-editor.org/rfc/rfc9112.html#section-4
+        // Although the status-line grammar rule requires that each of the component elements be separated by a single SP octet, recipients MAY instead parse on whitespace-delimited word boundaries and, aside from the line terminator, treat any form of whitespace as the SP separator while ignoring preceding or trailing whitespace; such whitespace includes one or more of the following octets: SP, HTAB, VT (%x0B), FF (%x0C), or bare CR. However, lenient parsing can result in response splitting security vulnerabilities if there are multiple recipients of the message and each has its own unique interpretation of robustness
+        // Note: in status-line the HTTP spec mentions that recipients MAY allow other form of whitespace
         // Status Line
         'first': ['Network Error', 'Network Error'],
         'in-http': ['Network Error', 'Network Error'],
@@ -69,9 +75,9 @@
         'in-value': ['Network Error', 'Network Error'],
         'after-value': ['Network Error', 'Network Error']
       },
-      'HTAB        ': {
+      'HTAB': {
         // https://www.rfc-editor.org/rfc/rfc9112.html#section-4
-        // Although the status-line grammar rule requires that each of the component elements be separated by a single SP octet, recipients MAY instead parse on whitespace-delimited word boundaries and, aside from the line terminator, treat any form of whitespace as the SP separator while ignoring preceding or trailing whitespace; such whitespace includes one or more of the following octets: SP, HHTAB        , VT (%x0B), FF (%x0C), or bare CR
+        // Although the status-line grammar rule requires that each of the component elements be separated by a single SP octet, recipients MAY instead parse on whitespace-delimited word boundaries and, aside from the line terminator, treat any form of whitespace as the SP separator while ignoring preceding or trailing whitespace; such whitespace includes one or more of the following octets: SP, HTAB, VT (%x0B), FF (%x0C), or bare CR
         // Status Line
         'first': ['Network Error', 'Network Error'],
         'in-http': ['Network Error', 'Network Error'],
@@ -83,17 +89,28 @@
         'before-num': ['Network Error', 'Network Error'],
         'after-num': ['Network Error', 'Network Error'],
         // Everything above is mandatory:   status-line = HTTP-version SP status-code SP [ reason-phrase ]
-        'before-reason': ['Network Error', 'Network Error'],
-        'after-reason': ['Network Error', 'Network Error'],
+        // reason-phrase  = 1*( HTAB / SP / VCHAR / obs-text ) https://www.rfc-editor.org/rfc/rfc9112.html#section-4
+        // HTAB allowed in reason-phrase
+        'before-reason': ['Valid', 'Valid'],
+        'after-reason': ['Valid', 'Valid'],
         // XFO-Header Line
+        // https://www.rfc-editor.org/rfc/rfc9112.html#section-5.1
+        // https://www.rfc-editor.org/rfc/rfc9112.html#section-2.2
+        // A recipient that receives whitespace between the start-line and the first header field MUST either reject the message as invalid or consume each whitespace-preceded line without further processing of it (i.e., ignore the entire line, along with any subsequent lines preceded by whitespace, until a properly formed header field is received or the header section is terminated).
         'leading': ['Network Error', 'Network Error'],
         'in-name': ['Network Error', 'Network Error'],
+        // "No whitespace is allowed between the field name and colon."
         'before-colon': ['Network Error', 'Network Error'],
-        'after-colon': ['Network Error', 'Network Error'],
-        'in-value': ['Network Error', 'Network Error'],
-        'after-value': ['Network Error', 'Network Error']
+        // "A field line value might be preceded and/or followed by optional whitespace (OWS)"
+        'after-colon': ['Valid', 'Valid'],
+        'in-value': ['Valid', 'Line skipped'], // DE<HTAB>NY is not a valid XFO entry
+        'after-value': ['Valid', 'Valid']
       },
       'SP': {
+        // Status Line
+        // https://www.rfc-editor.org/rfc/rfc9112.html#section-4
+        // Although the status-line grammar rule requires that each of the component elements be separated by a single SP octet, recipients MAY instead parse on whitespace-delimited word boundaries and, aside from the line terminator, treat any form of whitespace as the SP separator while ignoring preceding or trailing whitespace; such whitespace includes one or more of the following octets: SP, HTAB, VT (%x0B), FF (%x0C), or bare CR
+        // Status Line
         'first': ['Network Error', 'Network Error'],
         'in-http': ['Network Error', 'Network Error'],
         'before-slash': ['Network Error', 'Network Error'],
@@ -103,16 +120,27 @@
         'after-ver': ['Network Error', 'Network Error'],
         'before-num': ['Network Error', 'Network Error'],
         'after-num': ['Network Error', 'Network Error'],
-        'before-reason': ['Network Error', 'Network Error'],
-        'after-reason': ['Network Error', 'Network Error'],
+        // Everything above is mandatory:   status-line = HTTP-version SP status-code SP [ reason-phrase ]
+        // reason-phrase  = 1*( HTAB / SP / VCHAR / obs-text ) https://www.rfc-editor.org/rfc/rfc9112.html#section-4
+        // HTAB allowed in reason-phrase
+        'before-reason': ['Valid', 'Valid'],
+        'after-reason': ['Valid', 'Valid'],
+        // XFO-Header Line
+        // https://www.rfc-editor.org/rfc/rfc9112.html#section-5.1
+        // https://www.rfc-editor.org/rfc/rfc9112.html#section-2.2
+        // A recipient that receives whitespace between the start-line and the first header field MUST either reject the message as invalid or consume each whitespace-preceded line without further processing of it (i.e., ignore the entire line, along with any subsequent lines preceded by whitespace, until a properly formed header field is received or the header section is terminated).
         'leading': ['Network Error', 'Network Error'],
         'in-name': ['Network Error', 'Network Error'],
+        // "No whitespace is allowed between the field name and colon."
         'before-colon': ['Network Error', 'Network Error'],
-        'after-colon': ['Network Error', 'Network Error'],
-        'in-value': ['Network Error', 'Network Error'],
-        'after-value': ['Network Error', 'Network Error']
+        // "A field line value might be preceded and/or followed by optional whitespace (OWS)"
+        'after-colon': ['Valid', 'Valid'],
+        'in-value': ['Valid', 'Line skipped'], // DE<SP>NY is not a valid XFO entry
+        'after-value': ['Valid', 'Valid']
+
       },
-      'NULL': {
+      'NUL': {
+        // Status Line
         'first': ['Network Error', 'Network Error'],
         'in-http': ['Network Error', 'Network Error'],
         'before-slash': ['Network Error', 'Network Error'],
@@ -122,16 +150,21 @@
         'after-ver': ['Network Error', 'Network Error'],
         'before-num': ['Network Error', 'Network Error'],
         'after-num': ['Network Error', 'Network Error'],
+        // Everything above is mandatory:   status-line = HTTP-version SP status-code SP [ reason-phrase ]
         'before-reason': ['Network Error', 'Network Error'],
         'after-reason': ['Network Error', 'Network Error'],
+        // XFO-Header Line
         'leading': ['Network Error', 'Network Error'],
         'in-name': ['Network Error', 'Network Error'],
         'before-colon': ['Network Error', 'Network Error'],
+        // https://www.rfc-editor.org/rfc/rfc9110.html#fields.values
+        // Field values containing CR, LF, or NUL characters are invalid and dangerous, due to the varying ways that implementations might parse and interpret those characters; a recipient of CR, LF, or NUL within a field value MUST either reject the message or replace each of those characters with SP before further processing or forwarding of that message. Field values containing other CTL characters are also invalid; however, recipients MAY retain such characters for the sake of robustness when they appear within a safe context (e.g., an application-specific quoted string that will not be processed by any downstream HTTP parser).
         'after-colon': ['Network Error', 'Network Error'],
         'in-value': ['Network Error', 'Network Error'],
         'after-value': ['Network Error', 'Network Error']
       },
       'COLON': {
+        // Status Line
         'first': ['Network Error', 'Network Error'],
         'in-http': ['Network Error', 'Network Error'],
         'before-slash': ['Network Error', 'Network Error'],
@@ -141,8 +174,10 @@
         'after-ver': ['Network Error', 'Network Error'],
         'before-num': ['Network Error', 'Network Error'],
         'after-num': ['Network Error', 'Network Error'],
+        // Everything above is mandatory:   status-line = HTTP-version SP status-code SP [ reason-phrase ]
         'before-reason': ['Network Error', 'Network Error'],
         'after-reason': ['Network Error', 'Network Error'],
+        // XFO-Header Line
         'leading': ['Network Error', 'Network Error'],
         'in-name': ['Network Error', 'Network Error'],
         'before-colon': ['Network Error', 'Network Error'],

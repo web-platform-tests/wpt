@@ -19,7 +19,7 @@
 
     // Mapping for each char at each position what should be the outcome
     // Fetch: Network Error or Valid
-    // Framing: Network Error, Line skipped or Valid
+    // Framing: Network Error, no-XFO (either invalid value such as DE NY or line is ignored) or active-XFO
     let expected = {
       'LF': {
         // https://www.rfc-editor.org/rfc/rfc9112.html#section-2.2
@@ -91,8 +91,8 @@
         // Everything above is mandatory:   status-line = HTTP-version SP status-code SP [ reason-phrase ]
         // reason-phrase  = 1*( HTAB / SP / VCHAR / obs-text ) https://www.rfc-editor.org/rfc/rfc9112.html#section-4
         // HTAB allowed in reason-phrase
-        'before-reason': ['Valid', 'Valid'],
-        'after-reason': ['Valid', 'Valid'],
+        'before-reason': ['Valid', 'active-XFO'],
+        'after-reason': ['Valid', 'active-XFO'],
         // XFO-Header Line
         // https://www.rfc-editor.org/rfc/rfc9112.html#section-5.1
         // https://www.rfc-editor.org/rfc/rfc9112.html#section-2.2
@@ -102,9 +102,9 @@
         // "No whitespace is allowed between the field name and colon."
         'before-colon': ['Network Error', 'Network Error'],
         // "A field line value might be preceded and/or followed by optional whitespace (OWS)"
-        'after-colon': ['Valid', 'Valid'],
-        'in-value': ['Valid', 'Line skipped'], // DE<HTAB>NY is not a valid XFO entry
-        'after-value': ['Valid', 'Valid']
+        'after-colon': ['Valid', 'active-XFO'],
+        'in-value': ['Valid', 'no-XFO'], // DE<HTAB>NY is not a valid XFO entry
+        'after-value': ['Valid', 'active-XFO']
       },
       'SP': {
         // Status Line
@@ -123,8 +123,8 @@
         // Everything above is mandatory:   status-line = HTTP-version SP status-code SP [ reason-phrase ]
         // reason-phrase  = 1*( HTAB / SP / VCHAR / obs-text ) https://www.rfc-editor.org/rfc/rfc9112.html#section-4
         // HTAB allowed in reason-phrase
-        'before-reason': ['Valid', 'Valid'],
-        'after-reason': ['Valid', 'Valid'],
+        'before-reason': ['Valid', 'active-XFO'],
+        'after-reason': ['Valid', 'active-XFO'],
         // XFO-Header Line
         // https://www.rfc-editor.org/rfc/rfc9112.html#section-5.1
         // https://www.rfc-editor.org/rfc/rfc9112.html#section-2.2
@@ -134,9 +134,9 @@
         // "No whitespace is allowed between the field name and colon."
         'before-colon': ['Network Error', 'Network Error'],
         // "A field line value might be preceded and/or followed by optional whitespace (OWS)"
-        'after-colon': ['Valid', 'Valid'],
-        'in-value': ['Valid', 'Line skipped'], // DE<SP>NY is not a valid XFO entry
-        'after-value': ['Valid', 'Valid']
+        'after-colon': ['Valid', 'active-XFO'],
+        'in-value': ['Valid', 'no-XFO'], // DE<SP>NY is not a valid XFO entry
+        'after-value': ['Valid', 'active-XFO']
 
       },
       'NUL': {
@@ -206,13 +206,13 @@
           }, `${c} at <${p}> should fetch without an error`);
         }
 
-        // Check framing: for heavy network errors framing should fail (about:error or similar), for light errors (Line skipped) framing should succeed, for no-errors (Valid) framing should fail (valid XFO header blocking the framing)
+        // Check framing: for heavy network errors framing should fail (about:error or similar), for light errors (no-XFO) framing should succeed, for no-errors (active-XFO) framing should fail (valid XFO header blocking the framing)
         // We do not distinguish between failures due to network errors or due to XFO here (i.e., tests could pass for the wrong reasons)
-        if (outcome_framing === "Line skipped") {
+        if (outcome_framing === "no-XFO") {
           reason = `${c} at <${p}> should load a frame (XFO Header skipped)`
         } else if (outcome_framing === "Network Error") {
           reason = `${c} at <${p}> should result in Network Error frame`
-        } else if (outcome_framing === "Valid") {
+        } else if (outcome_framing === "active-XFO") {
           reason = `${c} at <${p}> should block a frame due to XFO`
         }
         async_test(t => {
@@ -226,10 +226,10 @@
           // https://github.com/whatwg/html/issues/125 and https://github.com/whatwg/html/issues/1230 this
           // should be changed to use the load event instead.
           t.step_timeout(() => {
-            // If Network Error or Valid (blocked due to XFO), frame.contentDocument should be null
+            // If Network Error or active-XFO (blocked due to XFO), frame.contentDocument should be null
             // Currently does not distinguish between Network Error and Valid (blocked due to XFO)
             // If it is possible to distinguish between blocked due to Network Error and blocked due to XFO (reliably in all browsers) change this
-            if (outcome_framing !== 'Line skipped') {
+            if (outcome_framing !== 'no-XFO') {
               assert_equals(frame.contentDocument, null);
             } 
             // If Line (XFO) is skipped, frame should be rendered and accessible as it is SameOrigin

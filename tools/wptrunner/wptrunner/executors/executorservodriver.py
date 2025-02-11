@@ -75,7 +75,6 @@ class ServoWebDriverProtocol(WebDriverProtocol):
 
 class ServoWebDriverTestharnessExecutor(WebDriverTestharnessExecutor):
     supports_testdriver = True
-    protocol_cls = ServoWebDriverProtocol
 
     def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  close_after_done=True, capabilities={}, debug_info=None,
@@ -84,6 +83,10 @@ class ServoWebDriverTestharnessExecutor(WebDriverTestharnessExecutor):
                                               timeout_multiplier, capabilities=capabilities,
                                               debug_info=debug_info, close_after_done=close_after_done,
                                               cleanup_after_test=False)
+
+    def protocol_cls(self, require_webdriver_bidi):
+        return ServoWebDriverProtocol
+
 
     def on_environment_change(self, new_environment):
         self.protocol.webdriver.extension.change_prefs(

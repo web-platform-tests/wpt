@@ -436,8 +436,15 @@ class WebDriverBrowser(Browser):
                                  "env": self.env}
 
     def settings(self, test: Test) -> BrowserSettings:
-        self._pac = test.environment.get("pac", None) if self._supports_pac else None
-        return {"pac": self._pac}
+        self._pac = test.environment.get("pac",
+                                         None) if self._supports_pac else None
+        return {
+            "pac": self._pac,
+            "require_webdriver_bidi": (
+                    test.testdriver_features is not None
+                    and 'bidi' in test.testdriver_features
+            )
+        }
 
     @property
     def pac(self) -> Optional[str]:

@@ -947,7 +947,7 @@ class TestDriverExecutorMixin:
 
 class WebDriverTestharnessExecutor(TestharnessExecutor, TestDriverExecutorMixin):
     supports_testdriver = True
-    protocol_cls = WebDriverProtocol
+    require_webdriver_bidi = False
 
     def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  close_after_done=True, capabilities=None, debug_info=None,
@@ -956,7 +956,12 @@ class WebDriverTestharnessExecutor(TestharnessExecutor, TestDriverExecutorMixin)
         TestharnessExecutor.__init__(self, logger, browser, server_config,
                                      timeout_multiplier=timeout_multiplier,
                                      debug_info=debug_info)
-        self.protocol = self.protocol_cls(self, browser, capabilities)
+
+        self.require_webdriver_bidi = kwargs.get("browser_settings", {}).get(
+            "require_webdriver_bidi", False)
+
+        self.protocol = self.protocol_cls(self.require_webdriver_bidi)(self, browser, capabilities)
+
         with open(os.path.join(here, "testharness_webdriver_resume.js")) as f:
             script_resume = f.read()
         TestDriverExecutorMixin.__init__(self, script_resume)
@@ -965,6 +970,20 @@ class WebDriverTestharnessExecutor(TestharnessExecutor, TestDriverExecutorMixin)
 
         self.close_after_done = close_after_done
         self.cleanup_after_test = cleanup_after_test
+
+    """
+    Returns a WebDriver protocol implementation to use based on the keyword
+    arguments passed to the test harness executor.
+
+    :param require_webdriver_bidi: Whether WebDriver BiDi protocol is required.
+    :return: WebDriver protocol implementation class.
+    """
+    def protocol_cls(self, require_webdriver_bidi):
+        if require_webdriver_bidi:
+            return WebDriverBidiProtocol
+        else:
+            return WebDriverProtocol
+
 
     def is_alive(self):
         return self.protocol.is_alive()
@@ -975,6 +994,12 @@ class WebDriverTestharnessExecutor(TestharnessExecutor, TestDriverExecutorMixin)
 
     def do_test(self, test):
         url = self.test_url(test)
+
+        if self.require_webdriver_bidi and not self.protocol.enable_bidi:
+            # WebDriver BiDi is required for the test, but the test is not an implementation of
+            # WebDriverBidiProtocol. The test cannot be run. Provide a meaningful error message in
+            # this case.
+            return (test.make_result("ERROR", "test requires enabled WebDriver BiDi"), [])
 
         success, data = WebDriverRun(self.logger,
                                      self.do_testharness,

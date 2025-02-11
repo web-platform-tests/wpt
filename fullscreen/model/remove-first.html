@@ -39,7 +39,7 @@
     assert_equals(document.fullscreenElement, null, "fullscreen element immediately after removal");
 
     const thirdEvent = await fullScreenChange();
-    assert_equals(document.fullscreenElement, null, "fullscreen element after third event";
+    assert_equals(document.fullscreenElement, null, "fullscreen element after third event");
     assert_equals(thirdEvent.target, document, "third fullscreenchange event target");
   });
 </script>

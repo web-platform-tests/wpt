@@ -20,7 +20,7 @@
     // Mapping for each char at each position what should be the outcome
     // Fetch: Network Error or Valid
     // Framing: Network Error, Line skipped or Valid
-    let mapping = {
+    let expected = {
       'LF': {
         // https://www.rfc-editor.org/rfc/rfc9112.html#section-2.2
         // Although the line terminator for the start-line and fields is the sequence CRLF, a recipient MAY recognize a single LF as a line terminator and ignore any preceding CR.
@@ -188,7 +188,7 @@
       }
     }
 
-    for (const [c, positions] of Object.entries(mapping)) {
+    for (const [c, positions] of Object.entries(expected)) {
       for (const [p, outcomes] of Object.entries(positions)) {
         const outcome_fetch = outcomes[0];
         const outcome_framing = outcomes[1];

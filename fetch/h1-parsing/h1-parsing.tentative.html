@@ -9,7 +9,7 @@
     // Fetch for network errors
     // Framing (with XFO) to see whether a header is still interpreted as valid or not
 
-    // Insert the following chars [LF, NULL, CR, SP, TAB, COLON] at all of the following positions
+    // Insert the following chars [LF, NULL, CR, SP, HTAB        , COLON] at all of the following positions
     // <first>HT<in-http>TP<before-slash>/<after-slash>1<before-dot>.<after-dot>1<after-ver> <before-num>200<after-num> <before-reason>OK<after-reason>\r
     // <symbol><header>:<value>, <hea <symbol> der>:<value>, <header><symbol>:<value>, <header>:<symbol><value>, <header>:<val <symbol> ue>, <header>:<value><symbol>\r
     // Content-Length: 5\r
@@ -22,7 +22,10 @@
     // Framing: Network Error, Line skipped or Valid
     let mapping = {
       'LF': {
-        'first': ['Network Error', 'Network Error'],
+        // https://www.rfc-editor.org/rfc/rfc9112.html#section-2.2
+        // Although the line terminator for the start-line and fields is the sequence CRLF, a recipient MAY recognize a single LF as a line terminator and ignore any preceding CR.
+        // Status Line
+        'first': ['Network Error', 'Network Error'], 
         'in-http': ['Network Error', 'Network Error'],
         'before-slash': ['Network Error', 'Network Error'],
         'after-slash': ['Network Error', 'Network Error'],
@@ -31,8 +34,10 @@
         'after-ver': ['Network Error', 'Network Error'],
         'before-num': ['Network Error', 'Network Error'],
         'after-num': ['Network Error', 'Network Error'],
-        'before-reason': ['Network Error', 'Network Error'],
-        'after-reason': ['Network Error', 'Network Error'],
+        // Everything above is mandatory:   status-line = HTTP-version SP status-code SP [ reason-phrase ]
+        'before-reason': ['Valid', 'Valid'],
+        'after-reason': ['Valid', 'Valid'],
+        // XFO-Header line
         'leading': ['Network Error', 'Network Error'],
         'in-name': ['Network Error', 'Network Error'],
         'before-colon': ['Network Error', 'Network Error'],
@@ -41,6 +46,9 @@
         'after-value': ['Network Error', 'Network Error']
       },
       'CR': {
+        // https://www.rfc-editor.org/rfc/rfc9112.html#section-2.2
+        // A sender MUST NOT generate a bare CR (a CR character not immediately followed by LF) within any protocol elements other than the content. A recipient of such a bare CR MUST consider that element to be invalid or replace each bare CR with SP before processing the element or forwarding the message.
+        // Status Line
         'first': ['Network Error', 'Network Error'],
         'in-http': ['Network Error', 'Network Error'],
         'before-slash': ['Network Error', 'Network Error'],
@@ -50,8 +58,10 @@
         'after-ver': ['Network Error', 'Network Error'],
         'before-num': ['Network Error', 'Network Error'],
         'after-num': ['Network Error', 'Network Error'],
+        // Everything above is mandatory:   status-line = HTTP-version SP status-code SP [ reason-phrase ]
         'before-reason': ['Network Error', 'Network Error'],
         'after-reason': ['Network Error', 'Network Error'],
+        // XFO-Header Line
         'leading': ['Network Error', 'Network Error'],
         'in-name': ['Network Error', 'Network Error'],
         'before-colon': ['Network Error', 'Network Error'],
@@ -59,7 +69,10 @@
         'in-value': ['Network Error', 'Network Error'],
         'after-value': ['Network Error', 'Network Error']
       },
-      'TAB': {
+      'HTAB        ': {
+        // https://www.rfc-editor.org/rfc/rfc9112.html#section-4
+        // Although the status-line grammar rule requires that each of the component elements be separated by a single SP octet, recipients MAY instead parse on whitespace-delimited word boundaries and, aside from the line terminator, treat any form of whitespace as the SP separator while ignoring preceding or trailing whitespace; such whitespace includes one or more of the following octets: SP, HHTAB        , VT (%x0B), FF (%x0C), or bare CR
+        // Status Line
         'first': ['Network Error', 'Network Error'],
         'in-http': ['Network Error', 'Network Error'],
         'before-slash': ['Network Error', 'Network Error'],
@@ -69,8 +82,10 @@
         'after-ver': ['Network Error', 'Network Error'],
         'before-num': ['Network Error', 'Network Error'],
         'after-num': ['Network Error', 'Network Error'],
+        // Everything above is mandatory:   status-line = HTTP-version SP status-code SP [ reason-phrase ]
         'before-reason': ['Network Error', 'Network Error'],
         'after-reason': ['Network Error', 'Network Error'],
+        // XFO-Header Line
         'leading': ['Network Error', 'Network Error'],
         'in-name': ['Network Error', 'Network Error'],
         'before-colon': ['Network Error', 'Network Error'],
@@ -78,7 +93,7 @@
         'in-value': ['Network Error', 'Network Error'],
         'after-value': ['Network Error', 'Network Error']
       },
-      'SPACE': {
+      'SP': {
         'first': ['Network Error', 'Network Error'],
         'in-http': ['Network Error', 'Network Error'],
         'before-slash': ['Network Error', 'Network Error'],

@@ -5,9 +5,9 @@
 
 <body>
   <script>
-    // Use both "fetch" and "framing" to check how parsing is effected
-    // Fetch for network errors
-    // Framing (with XFO) to see whether a header is still interpreted as valid or not
+    // Use both "fetch" and "framing" to check how parsing of invalid HTTP responses work
+    // Fetch to detect network errors
+    // Framing (with XFO) to detect whether a header is still interpreted as valid or not
 
     // Insert the following chars [LF, NUL, CR, SP, HTAB, COLON] at all of the following positions
     // <first>HT<in-http>TP<before-slash>/<after-slash>1<before-dot>.<after-dot>1<after-ver> <before-num>200<after-num> <before-reason>OK<after-reason>\r
@@ -193,13 +193,12 @@
         const outcome_fetch = outcomes[0];
         const outcome_framing = outcomes[1];
         const resource = `resources/parsing_${c}_${p}.asis`
-        console.log(outcome_framing);
 
         // Check fetching: for heavy network errors fetch should fail, otherwise fetch should succeed
         if (outcome_fetch === "Network Error") {
           promise_test(async (t) => {
             await promise_rejects_js(t, TypeError, fetch(resource));
-          }, `${c} at <${p}> should result in Network Error`);
+          }, `${c} at <${p}> should result in Network Error (fetch)`);
         } else {
           promise_test(async (t) => {
             const response = await fetch(resource);
@@ -208,9 +207,9 @@
         }
 
         // Check framing: for heavy network errors framing should fail (about:error or similar), for light errors (Line skipped) framing should succeed, for no-errors (Valid) framing should fail (valid XFO header blocking the framing)
-        // We do not distinguish between failure due to network errors or due to XFO here
+        // We do not distinguish between failures due to network errors or due to XFO here (i.e., tests could pass for the wrong reasons)
         if (outcome_framing === "Line skipped") {
-          reason = `${c} at <${p}> should load a frame (Header skipped)`
+          reason = `${c} at <${p}> should load a frame (XFO Header skipped)`
         } else if (outcome_framing === "Network Error") {
           reason = `${c} at <${p}> should result in Network Error frame`
         } else if (outcome_framing === "Valid") {
@@ -220,16 +219,22 @@
           const frame = document.createElement("iframe");
           t.add_cleanup(() => frame.remove());
           frame.src = resource;
+          // Network Errors only result in load events in Chrome
+          // Thus a lot of tests would currently time out in Safari and some in Firefox
+          // Use step_timeout for now
           // If network errors result in load events for frames per
           // https://github.com/whatwg/html/issues/125 and https://github.com/whatwg/html/issues/1230 this
           // should be changed to use the load event instead.
           t.step_timeout(() => {
-            if (outcome_framing === "Line skipped") {
-              assert_equals(window.frameLoaded, true);
-            }
-            // We currently do not distinguish between errors due to NetworkError and due to XFO
+            // If Network Error or Valid (blocked due to XFO), frame.contentDocument should be null
+            // Currently does not distinguish between Network Error and Valid (blocked due to XFO)
+            // If it is possible to distinguish between blocked due to Network Error and blocked due to XFO (reliably in all browsers) change this
+            if (outcome_framing !== 'Line skipped') {
+              assert_equals(frame.contentDocument, null);
+            } 
+            // If Line (XFO) is skipped, frame should be rendered and accessible as it is SameOrigin
             else {
-              assert_equals(window.frameLoaded, undefined);
+              assert_not_equals(frame.contentDocument, null);
             }
             t.done();
           }, 1000);

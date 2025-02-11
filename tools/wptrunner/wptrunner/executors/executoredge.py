@@ -22,7 +22,8 @@ class EdgeDriverRefTestExecutor(WebDriverRefTestExecutor):
 
 
 class EdgeDriverTestharnessExecutor(WebDriverTestharnessExecutor):
-    protocol_cls = EdgeDriverProtocol
+    def protocol_cls(self, require_webdriver_bidi):
+        return EdgeDriverProtocol
 
 
 class EdgeDriverPrintRefTestExecutor(EdgeDriverRefTestExecutor):

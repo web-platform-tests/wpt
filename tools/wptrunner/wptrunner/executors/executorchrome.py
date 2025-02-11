@@ -276,16 +276,15 @@ class ChromeDriverRefTestExecutor(WebDriverRefTestExecutor):
 class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor):
 
     def __init__(self, *args, sanitizer_enabled=False, reuse_window=False, **kwargs):
-        require_webdriver_bidi = kwargs.get("browser_settings", {}).get(
-            "require_webdriver_bidi", None)
-        if require_webdriver_bidi:
-            self.protocol_cls = ChromeDriverBidiProtocol
-        else:
-            self.protocol_cls = ChromeDriverProtocol
-
         super().__init__(*args, **kwargs)
         self.sanitizer_enabled = sanitizer_enabled
         self.reuse_window = reuse_window
+
+    def protocol_cls(self, require_webdriver_bidi):
+        if require_webdriver_bidi:
+            return ChromeDriverBidiProtocol
+        else:
+            return ChromeDriverProtocol
 
     def get_or_create_test_window(self, protocol):
         test_window = self.protocol.testharness.persistent_test_window

@@ -4,8 +4,8 @@ on:
     branches:
       - master
   pull_request:
-    paths:
-      - 'tools/**'
+    branches:
+      - ubuntu-24.04
 jobs:
   build-and-tag:
     runs-on: ubuntu-24.04
@@ -26,4 +26,4 @@ jobs:
     - name: Run manifest_build.py
       run: tools/docker/retry.py --delay 60 python tools/ci/manifest_build.py
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: dummy

@@ -31,9 +31,9 @@
     // Removing /a/ now shouldn't do anything except remove it from the top
     // layer, which causes it to no longer match :fullscreen.
     a.remove();
-    assert_equals(document.fullscreenElement, b, "fullscreen element immediately after removal");
-    assert_false(a.matches(":fullscreen"), "a matches :fullscreen immediately after removal");
-    assert_true(b.matches(":fullscreen"), "b matches :fullscreen immediately after removal");
+    assert_equals(document.fullscreenElement, b, "fullscreen element immediately after removal of a");
+    assert_false(a.matches(":fullscreen"), "a should no longer match :fullscreen immediately after removal");
+    assert_true(b.matches(":fullscreen"), "b matches :fullscreen immediately after removal of a");
 
     // No fullscreenchange event should fire. If the removal triggered exiting
     // fullscreen the event would be fired after an async section and an

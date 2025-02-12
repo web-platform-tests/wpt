@@ -31,14 +31,14 @@
     // Removing the fullscreen element (b) triggers exiting fullscreen. Some changes are
     // visible synchronously and the others come when the event fires.
     b.remove();
-    assert_equals(document.fullscreenElement, a, "fullscreen element immediately after removal");
-    assert_true(a.matches(":fullscreen"), "a matches :fullscreen immediately after removal");
-    assert_false(b.matches(":fullscreen"), "b matches :fullscreen immediately after removal");
+    assert_equals(document.fullscreenElement, a, "fullscreen element immediately after removal of b");
+    assert_true(a.matches(":fullscreen"), "a matches :fullscreen immediately after removal of b");
+    assert_false(b.matches(":fullscreen"), "b no longer matches :fullscreen immediately after removal");
 
     // A fullscreenchange event should fire and all state should be cleared.
     await fullScreenChange();
     assert_equals(document.fullscreenElement, null, "fullscreen element after event");
-    assert_false(a.matches(":fullscreen"), "a matches :fullscreen after event");
-    assert_false(b.matches(":fullscreen"), "b matches :fullscreen after event");
+    assert_false(a.matches(":fullscreen"), "a no longer matches :fullscreen after event");
+    assert_false(b.matches(":fullscreen"), "b no longer matches :fullscreen after event");
   });
 </script>

@@ -14,7 +14,7 @@ on:
       - 'tools/**'
 jobs:
   build-and-publish:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     if: github.repository == 'web-platform-tests/wpt'
     steps:
       - name: Set up Python

@@ -1,0 +1,16 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>details is keyboard focusable but the computed tabindex value is -1</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+
+<!-- This details element is focusable via keyboard but its computed tabIndex value is -1 -->
+<details id="details">Test</details>
+
+<script>
+window.onload = function() {
+  test(function() {
+      assert_equals(document.getElementById('details').tabIndex, 0, 'Check result');
+  }, "Check result");
+}
+</script>

@@ -50,6 +50,15 @@
 <section aria-label="x">
   <aside data-testname="el-aside-in-section" class="ex-generic">x</aside>
   <aside data-testname="el-aside-in-section-with-name" data-expectedrole="complementary" aria-label="x" class="ex">x</aside>
+  <aside data-testname="el-aside-in-section-empty-aria-label" class="ex-generic" aria-label="">x</aside>
+  <aside data-testname="el-aside-in-section-whitespace-aria-label" class="ex-generic" aria-label=" ">x</aside>
+  <aside data-testname="el-aside-in-section-existing-aria-labelledby" data-expectedrole="complementary" class="ex" aria-labelledby="labelledby">x</aside>
+  <aside data-testname="el-aside-in-section-non-existing-aria-labelledby" class="ex-generic" aria-labelledby="non-existing">x</aside>
+  <aside data-testname="el-aside-in-section-aria-labelledby-empty" class="ex-generic" aria-labelledby="empty">x</aside>
+  <aside data-testname="el-aside-in-section-aria-labelledby-whitespace" class="ex-generic" aria-labelledby="space">x</aside>
+  <aside data-testname="el-aside-in-section-title" data-expectedrole="complementary" title="x" class="ex">x</aside>
+  <aside data-testname="el-aside-in-section-title-empty" class="ex-generic" title="">x</aside>
+  <aside data-testname="el-aside-in-section-title-whitespace" class="ex-generic" title=" ">x</aside>
 </section>
 
 <!-- el-footer -->
@@ -66,6 +75,10 @@
 <section data-testname="el-section" aria-label="x" data-expectedrole="region" class="ex">x</section>
 <section data-testname="el-section-no-name" class="ex-generic">x</section>
 
+<!-- element to reference for aria-labelledby tests -->
+<div id="labelledby">labelledby</div>
+<div id="empty"></div>
+<div id="space"> </div>
 
 <script>
 AriaUtils.verifyRolesBySelector(".ex");

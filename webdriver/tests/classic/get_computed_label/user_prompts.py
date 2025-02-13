@@ -1,67 +1,66 @@
 # META: timeout=long
 
 import pytest
-from webdriver import error
 
-from tests.classic.perform_actions.support.refine import get_keys
 from tests.support.asserts import assert_error, assert_success, assert_dialog_handled
-from tests.support.sync import Poll
-from . import perform_actions
 
-actions = [{
-    "type": "key",
-    "id": "foobar",
-    "actions": [
-        {"type": "keyDown", "value": "a"},
-        {"type": "keyUp", "value": "a"},
-    ]
-}]
+
+def get_computed_label(session, element_id):
+    return session.transport.send(
+        "GET", "session/{session_id}/element/{element_id}/computedlabel".format(
+            session_id=session.session_id,
+            element_id=element_id))
 
 
 @pytest.fixture
-def check_user_prompt_closed_without_exception(session, create_dialog, key_chain, key_reporter):
+def check_user_prompt_closed_without_exception(session, create_dialog, inline):
     def check_user_prompt_closed_without_exception(dialog_type, retval):
+        session.url = inline("<button>ok</button>")
+        element = session.find.css("button", all=False)
+
         create_dialog(dialog_type, text="cheese")
 
-        response = perform_actions(session, actions)
-        assert_success(response)
+        response = get_computed_label(session, element.id)
+        assert_success(response, "ok")
 
-        assert_dialog_handled(session, expected_text=dialog_type, expected_retval=retval)
-
-        assert get_keys(key_reporter) == "a"
+        assert_dialog_handled(
+            session, expected_text=dialog_type, expected_retval=retval)
 
     return check_user_prompt_closed_without_exception
 
 
 @pytest.fixture
-def check_user_prompt_closed_with_exception(session, create_dialog, key_chain, key_reporter):
+def check_user_prompt_closed_with_exception(session, create_dialog, inline):
     def check_user_prompt_closed_with_exception(dialog_type, retval):
+        session.url = inline("<button>ok</button>")
+        element = session.find.css("button", all=False)
+
         create_dialog(dialog_type, text="cheese")
 
-        response = perform_actions(session, actions)
+        response = get_computed_label(session, element.id)
         assert_error(response, "unexpected alert open",
                      data={"text": "cheese"})
 
-        assert_dialog_handled(session, expected_text=dialog_type, expected_retval=retval)
-
-        assert get_keys(key_reporter) == ""
+        assert_dialog_handled(
+            session, expected_text=dialog_type, expected_retval=retval)
 
     return check_user_prompt_closed_with_exception
 
 
 @pytest.fixture
-def check_user_prompt_not_closed_but_exception(session, create_dialog, key_reporter):
+def check_user_prompt_not_closed_but_exception(session, create_dialog, inline):
     def check_user_prompt_not_closed_but_exception(dialog_type):
+        session.url = inline("<button>ok</button>")
+        element = session.find.css("button", all=False)
+
         create_dialog(dialog_type, text="cheese")
 
-        response = perform_actions(session, actions)
+        response = get_computed_label(session, element.id)
         assert_error(response, "unexpected alert open",
                      data={"text": "cheese"})
 
         assert session.alert.text == "cheese"
         session.alert.dismiss()
-
-        assert get_keys(key_reporter) == ""
 
     return check_user_prompt_not_closed_but_exception
 
@@ -119,28 +118,3 @@ def test_ignore(check_user_prompt_not_closed_but_exception, dialog_type):
 ])
 def test_default(check_user_prompt_closed_with_exception, dialog_type, retval):
     check_user_prompt_closed_with_exception(dialog_type, retval)
-
-
-def test_dismissed_beforeunload(session, url, mouse_chain):
-    page_beforeunload = url("/webdriver/tests/support/html/beforeunload.html")
-    page_target = url("/webdriver/tests/support/html/default.html")
-
-    session.url = page_beforeunload
-    input = session.find.css("input", all=False)
-    input.send_keys("bar")
-
-    link = session.find.css("a", all=False)
-
-    mouse_chain.pointer_move(0, 0, origin=link) \
-        .click() \
-        .perform()
-
-    wait = Poll(
-        session,
-        timeout=5,
-        message="Target page did not load")
-    wait.until(lambda s: s.url == page_target)
-
-    # navigation auto-dismissed beforeunload prompt
-    with pytest.raises(error.NoSuchAlertException):
-        session.alert.text

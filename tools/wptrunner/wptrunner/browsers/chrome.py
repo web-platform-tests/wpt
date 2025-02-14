@@ -186,14 +186,13 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     if kwargs["enable_experimental"]:
         chrome_options["args"].extend(["--enable-experimental-web-platform-features"])
 
-    # Copy over any other flags that were passed in via `--binary-arg`
-    for arg in kwargs.get("binary_args", []):
+    # Copy over any other flags that were passed in via `--binary-arg` or the
+    # subsuite config.
+    binary_args = kwargs.get("binary_args", []) + subsuite.config.get("binary_args", [])
+    for arg in binary_args:
         if arg not in chrome_options["args"]:
             chrome_options["args"].append(arg)
 
-    for arg in subsuite.config.get("binary_args", []):
-        if arg not in chrome_options["args"]:
-            chrome_options["args"].append(arg)
 
     # Pass the --headless=new flag to Chrome if WPT's own --headless flag was
     # set. '--headless' should always mean the new headless mode, as the old

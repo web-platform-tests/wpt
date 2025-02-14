@@ -15,16 +15,22 @@ const cspDirectives = [
 // the CSP directive connect-src 'none' and that fn is not itself triggering
 // a "connect-src" violation report.
 function trusted_type_violations_and_exception_for(fn) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     // Listen for security policy violations.
+    let initialCSPViolationReceived = false;
     let result = { violations: [], exception: null };
     let handler = e => {
       if (cspDirectives.includes(e.effectiveDirective)) {
-        result.violations.push(e);
+        if (initialCSPViolationReceived)
+          result.violations.push(e);
       } else if (e.effectiveDirective === "connect-src") {
-        self.removeEventListener("securitypolicyviolation", handler);
-        e.stopPropagation();
-        resolve(result);
+        if (initialCSPViolationReceived) {
+          self.removeEventListener("securitypolicyviolation", handler);
+          e.stopPropagation();
+          resolve(result);
+        } else {
+          initialCSPViolationReceived = true;
+        }
       } else {
         reject(`Unexpected violation for directive ${e.effectiveDirective}`);
       }
@@ -33,10 +39,22 @@ function trusted_type_violations_and_exception_for(fn) {
 
     // Run the specified function and record any exception.
     try {
-      fn();
+      new EventSource("/common/blank.html");
     } catch(e) {
-      result.exception = e;
+      if (!e instanceof DOMException || e.name !== "SecurityError") {
+        throw e;
+      }
     }
+    await new Promise(resolve => {
+      setTimeout(() => {
+        try {
+          fn();
+        } catch(e) {
+          result.exception = e;
+        }
+        resolve();
+      }, 1)
+    });
     // Force a connect-src violation. WebKit additionally throws a SecurityError
     // so ignore that. See https://bugs.webkit.org/show_bug.cgi?id=286744
     try {

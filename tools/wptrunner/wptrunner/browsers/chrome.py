@@ -92,6 +92,11 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     chrome_options = capabilities["goog:chromeOptions"]
     if kwargs["binary"] is not None:
         chrome_options["binary"] = kwargs["binary"]
+    if kwargs["debug_test"]:
+        # Give debuggers like `rr` time to terminate gracefully and dump
+        # recordings or traces. Note that older `chromedriver` versions will
+        # fail to create a session if they don't recognize this capability.
+        chrome_options["quitGracefully"] = True
 
     # Here we set a few Chrome flags that are always passed.
     # ChromeDriver's "acceptInsecureCerts" capability only controls the current

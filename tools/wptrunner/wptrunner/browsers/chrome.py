@@ -44,18 +44,6 @@ __wptrunner__ = {"product": "chrome",
 from ..wpttest import Test
 
 
-def debug_args(debug_info):
-    if debug_info.interactive:
-        # Keep in sync with:
-        # https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/tools/debug_renderer
-        return [
-            "--no-sandbox",
-            "--disable-hang-monitor",
-            "--wait-for-debugger-on-navigation",
-        ]
-    return []
-
-
 def check_args(**kwargs):
     require_arg(kwargs, "webdriver_binary")
 

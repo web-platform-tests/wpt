@@ -23,10 +23,11 @@
             manufacturerData: [],
             knownServiceUuids: []
         });
-        selectFirstDeviceOnDevicePromptUpdated();
-        let device = await requestDeviceWithTrustedClick({
+        const handle_prompt_promise = selectFirstDeviceOnDevicePromptUpdated();
+        const [device] = await Promise.all([requestDeviceWithTrustedClick({
             acceptAllDevices: true
-        });
+        }), handle_prompt_promise]);
         assert_equals(device.name, name);
     }, "simulate a preconnected peripheral.");
 </script>
+

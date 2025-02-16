@@ -43,12 +43,14 @@ async function callWithTrustedClick(callback) {
 /**
  * Register a one-time handler that selects the first device in the device
  * prompt upon a device prompt updated event.
+ * @returns {Promise} fulfilled after the bluetooth device prompt
+ * is handled, or rejected if the operation fails.
  */
 function selectFirstDeviceOnDevicePromptUpdated() {
-  test_driver.bidi.bluetooth.request_device_prompt_updated.once().then(
+  return test_driver.bidi.bluetooth.request_device_prompt_updated.once().then(
       (promptEvent) => {
         assert_greater_than_equal(promptEvent.devices.length, 0);
-        test_driver.bidi.bluetooth.handle_request_device_prompt({
+        return test_driver.bidi.bluetooth.handle_request_device_prompt({
           prompt: promptEvent.prompt,
           accept: true,
           device: promptEvent.devices[0].id
@@ -61,32 +63,8 @@ function selectFirstDeviceOnDevicePromptUpdated() {
  * @returns {Promise<BluetoothDevice>} Resolves with a Bluetooth device if
  *     successful or rejects with an error.
  */
-function requestDeviceWithTrustedClick() {
-  let args = arguments;
+function requestDeviceWithTrustedClick(...args) {
   return callWithTrustedClick(
-      () => navigator.bluetooth.requestDevice.apply(navigator.bluetooth, args));
+      () => navigator.bluetooth.requestDevice(...args));
 }
 
-/**
- * Function to test that a promise rejects with the expected error type and
- * message.
- * @param {Promise} promise
- * @param {object} expected
- * @param {string} description
- * @returns {Promise<void>} Resolves if |promise| rejected with |expected|
- *     error.
- */
-function assert_promise_rejects_with_message(promise, expected, description) {
-  return promise.then(
-      () => {
-        assert_unreached('Promise should have rejected: ' + description);
-      },
-      error => {
-        assert_equals(error.name, expected.name, 'Unexpected Error Name:');
-        if (expected.message) {
-          assert_true(
-              error.message.includes(expected.message),
-              'Unexpected Error Message:');
-        }
-      });
-}

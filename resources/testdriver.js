@@ -100,7 +100,7 @@
                  * Matches the
                  * `bluetooth.HandleRequestDevicePromptParameters:prompt <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-handlerequestdeviceprompt-command>`_
                  * value.
-                 * @param {string} params.accept - Whether to accept a bluetooth device prompt.
+                 * @param {bool} params.accept - Whether to accept a bluetooth device prompt.
                  * Matches the
                  * `bluetooth.HandleRequestDevicePromptAcceptParameters:accept <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-handlerequestdeviceprompt-command>`_
                  * value.
@@ -167,7 +167,7 @@
                  * peripheral. Matches the
                  * `bluetooth.SimulatePreconnectedPeripheralParameters:name <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateconnectedperipheral-command>`_
                  * value.
-                 * @param {string} params.manufacturerData - The manufacturerData of the
+                 * @param {Array.ManufacturerData} params.manufacturerData - The manufacturerData of the
                  * simulated bluetooth peripheral. Matches the
                  * `bluetooth.SimulatePreconnectedPeripheralParameters:manufacturerData <https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateconnectedperipheral-command>`_
                  * value.

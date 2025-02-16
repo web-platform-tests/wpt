@@ -23,36 +23,36 @@
     });
 
     promise_test(async (t) => {
-        test_driver.bidi.bluetooth.request_device_prompt_updated.once().then(
-        (promptEvent) => {
-            assert_greater_than_equal(promptEvent.devices.length, 0);
-            test_driver.bidi.bluetooth.handle_request_device_prompt({
-                prompt: promptEvent.prompt,
-                accept: true,
-                device: promptEvent.devices[0].id
-            });
-        });
-        let device = await requestDeviceWithTrustedClick({
+        let handle_prompt_promise =
+            test_driver.bidi.bluetooth.request_device_prompt_updated.once().then(
+                (promptEvent) => {
+                    assert_greater_than_equal(promptEvent.devices.length, 0);
+                    return test_driver.bidi.bluetooth.handle_request_device_prompt({
+                        prompt: promptEvent.prompt,
+                        accept: true,
+                        device: promptEvent.devices[0].id
+                    });
+                });
+        const [device] = await Promise.all([requestDeviceWithTrustedClick({
             acceptAllDevices: true
-        });
+        }), handle_prompt_promise]);
         assert_equals(device.name, name);
     }, "accept upon request_device_prompt_updated event");
 
     promise_test(async (t) => {
-        test_driver.bidi.bluetooth.request_device_prompt_updated.once().then(
-        (promptEvent) => {
-            assert_greater_than_equal(promptEvent.devices.length, 0);
-            test_driver.bidi.bluetooth.handle_request_device_prompt({
-                prompt: promptEvent.prompt,
-                accept: false,
-            });
-        });
-        assert_promise_rejects_with_message(
-            requestDeviceWithTrustedClick(
-                {filters: [{services: ['generic_access']}]}),
-            new DOMException(
-                'User cancelled the requestDevice() chooser.',
-                'NotFoundError'),
-            'No Bluetooth devices in range.');
+        let handle_prompt_promise =
+            test_driver.bidi.bluetooth.request_device_prompt_updated.once().then(
+                (promptEvent) => {
+                    return test_driver.bidi.bluetooth.handle_request_device_prompt({
+                        prompt: promptEvent.prompt,
+                        accept: false,
+                        device: ''
+                    });
+                });
+        return Promise.all([
+            promise_rejects_dom(t, 'NotFoundError',
+                requestDeviceWithTrustedClick(
+                    { acceptAllDevices: true })
+            ), handle_prompt_promise]);
     }, "cancel upon request_device_prompt_updated event");
 </script>

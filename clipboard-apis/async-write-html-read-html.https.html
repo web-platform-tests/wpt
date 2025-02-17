@@ -30,11 +30,10 @@ function reformatHtml(html) {
   elementsWithStyleAttribute.forEach((element) => { element.removeAttribute('style'); });
   const htmlString = parsedHtml.documentElement.innerHTML;
   // Remove multiple spaces and returns and replacing by one
-  // trim leading and tailing white spaces  
+  // trim leading and tailing white spaces
   const reformattedString = htmlString.replace(/\>[\s\n]*\</g, '> <').trim();
   return reformattedString;
 }
-
 
 async function readWriteTest(textInput) {
   await tryGrantReadPermission();

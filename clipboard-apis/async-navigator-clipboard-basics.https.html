@@ -156,7 +156,7 @@ promise_test(async() => {
 promise_test(async t => {
   await getPermissions();
   const item = new ClipboardItem({'image/png': 'not an image'});
-  await promise_rejects_js(t, TypeError, navigator.clipboard.write([item]));
+  await promise_rejects_dom(t, "NotAllowedError", navigator.clipboard.write([item]));
 }, 'navigator.clipboard.write(image/png DOMString) fails');
 
 promise_test(async () => {

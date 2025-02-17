@@ -13,6 +13,7 @@
 <body>
 <script>
 test_invalid_value("view-transition-name", "default"); // `default` isn't allowed by the `<custom-ident>` syntax.
+test_invalid_value("view-transition-name", "auto");
 test_invalid_value("view-transition-name", "none none");
 test_invalid_value("view-transition-name", `"none"`);
 test_invalid_value("view-transition-name", `"foo"`);

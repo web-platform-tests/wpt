@@ -22,7 +22,7 @@ function reformatHtml(html) {
   const parsedHtml = parser.parseFromString(html, 'text/html')
 
   // FIXME: The specification is ambiguous on what needs to be preserved.
-  // see https://github.com/w3c/clipboard-apis/issues/233 
+  // see https://github.com/w3c/clipboard-apis/issues/233
   // This is an attempt at a more canonical form.
   // Remove the head - not visible to users.
   // Remove the styling attribute if present.

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="UTF-8">
+    <title>Clipboard API - ClipboardEvent - events fire on TEXTAREA  - cut on document</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="support/_lib.js"></script>
+    <script>
+/** ClipboardEvent - events fire on TEXTAREA  */
+/* Events: copy cut */
+/* Test HTML: <form><textarea id="input_text" autofocus onfocus="this.select()">copied text</textarea></form>*/
+/* Targets: document 'input_text' */
+function clipboard_api_test(e, test_obj, eventType){
+    var passed = e.type === eventType;
+    passed = passed && e.target.id==='input_text';
+    return passed;
+}
+
+    </script>
+</head>
+<body>
+
+    <p>FAILED (This TC requires JavaScript enabled)</p>
+    <form><textarea id="input_text" autofocus onfocus="this.select()">copied text</textarea></form>
+    <div id="log"></div>
+    <script>
+    (function(){
+        var t = async_test()
+        var dataToPaste='';
+        var extPassCond=null;
+        var eventTarget=document;
+        var eventType='cut';
+        setup(function(){
+                setupTest(t, eventTarget, eventType, dataToPaste, extPassCond );
+            });
+    })();
+    </script>
+</body></html>

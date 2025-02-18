@@ -1,0 +1,88 @@
+<!-- Quirks Mode -->
+<title>15.3.9 Margin collapsing quirks</title>
+<link rel="help" href="https://html.spec.whatwg.org/#margin-collapsing-quirks">
+<link rel="author" title="Psychpsyo" href="mailto:psychpsyo@gmail.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+<script>
+  // prevent script from interfering with the test
+  document.head.appendChild(document.body.querySelector("script"));
+
+  const elementsWithDefaultMargins = ["BLOCKQUOTE", "DIR", "DL", "H1", "H2", "H3", "H4", "H5", "H6", "LISTING", "MENU", "OL", "P", "PLAINTEXT", "PRE", "UL", "XMP"]
+  // all these get re-used
+  const substantialFollowingSibling = document.createElement("DIV");
+  const substantialPreviousSibling = document.createElement("DIV");
+  const tdElement = document.createElement("TD");
+  const thElement = document.createElement("TD");
+
+  function testElements(parent, hasContent, withSubstantialPreviousSiblings, withSubstantialFollowingSiblings, zeroProperty, elementList = elementsWithDefaultMargins) {
+    if (withSubstantialPreviousSiblings) parent.appendChild(substantialPreviousSibling);
+    for (const tagName of elementList) {
+      const elem = document.createElement(tagName);
+      if (hasContent) elem.textContent = "content";
+      parent.appendChild(elem);
+      if (withSubstantialFollowingSiblings) parent.appendChild(substantialFollowingSibling);
+      assert_equals(
+        getComputedStyle(elem)[zeroProperty],
+        "0px",
+        `A${hasContent? "" : " blank"} <${tagName}> child of <${parent.tagName}>${withSubstantialPreviousSiblings? "" : " with no substantial previous siblings"}${withSubstantialFollowingSiblings? "" : " with no substantial following siblings"} needs a '${zeroProperty}' of 0.`
+      );
+      elem.remove();
+      if (withSubstantialFollowingSiblings) substantialFollowingSibling.remove();
+    }
+    if (withSubstantialPreviousSiblings) substantialPreviousSibling.remove();
+  }
+
+  // FIRST REQUIREMENT (body/th/td children without substantial previous siblings have 'margin-block-start' of 0)
+  test(() => {
+    testElements(document.body, true, false, true, "margin-block-start");
+
+    document.body.appendChild(tdElement);
+    testElements(tdElement, true, false, true, "margin-block-start");
+    tdElement.remove();
+
+    document.body.appendChild(thElement);
+    testElements(thElement, true, false, true, "margin-block-start");
+    thElement.remove();
+  }, "First Requirement");
+
+
+  // SECOND REQUIREMENT (blank body/th/td children without substantial previous siblings have 'margin-block-end' of 0)
+  test(() => {
+    testElements(document.body, false, false, true, "margin-block-end");
+
+    document.body.appendChild(tdElement);
+    testElements(tdElement, false, false, true, "margin-block-end");
+    tdElement.remove();
+
+    document.body.appendChild(thElement);
+    testElements(thElement, false, false, true, "margin-block-end");
+    thElement.remove();
+  }, "Second Requirement");
+
+
+  // THIRD REQUIREMENT (blank th/td children without substantial following siblings have 'margin-block-start' of 0)
+  test(() => {
+    document.body.appendChild(tdElement);
+    testElements(tdElement, false, true, false, "margin-block-start");
+    tdElement.remove();
+
+    document.body.appendChild(thElement);
+    testElements(thElement, false, true, false, "margin-block-start");
+    thElement.remove();
+  }, "Third Requirement");
+
+
+  // FOURTH REQUIREMENT (p-tag th/td children without substantial following siblings have 'margin-block-end' of 0)
+  test(() => {
+    document.body.appendChild(tdElement);
+    testElements(tdElement, true, true, false, "margin-block-end", ["P"]);
+    tdElement.remove();
+
+    document.body.appendChild(thElement);
+    testElements(thElement, true, true, false, "margin-block-end", ["P"]);
+    thElement.remove();
+  }, "Fourth Requirement");
+</script>

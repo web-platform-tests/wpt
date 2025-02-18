@@ -23,7 +23,7 @@
     });
 
     promise_test(async (t) => {
-        let handle_prompt_promise =
+        const handle_prompt_promise =
             test_driver.bidi.bluetooth.request_device_prompt_updated.once().then(
                 (promptEvent) => {
                     assert_greater_than_equal(promptEvent.devices.length, 0);
@@ -40,7 +40,7 @@
     }, "accept upon request_device_prompt_updated event");
 
     promise_test(async (t) => {
-        let handle_prompt_promise =
+        const handle_prompt_promise =
             test_driver.bidi.bluetooth.request_device_prompt_updated.once().then(
                 (promptEvent) => {
                     return test_driver.bidi.bluetooth.handle_request_device_prompt({

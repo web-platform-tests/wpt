@@ -5,7 +5,10 @@
 test_driver.set_test_context(parent);
 
 // At first, run simple unlock test without lock.
-screen.orientation?.unlock();
+try {
+  screen.orientation?.unlock();
+} catch (error) {
+}
 
 test_driver.bless("request full screen", async () => {
   const data = {};
@@ -19,7 +22,11 @@ test_driver.bless("request full screen", async () => {
     data.name = error.name;
   }
 
-  screen.orientation.unlock();
+  try {
+    screen.orientation.unlock();
+  } catch (error) {
+  }
+
   try {
     await document.exitFullscreen();
   } catch (error) {

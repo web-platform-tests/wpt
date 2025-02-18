@@ -7,7 +7,6 @@
 # TODO(50903): Delete the file in LayoutTests/bluetooth after all the tests have
 # been migrated to this directory.
 """Test that the set of gen-* files is the same as the generated files."""
-
 import fnmatch
 import os
 import sys

@@ -1,4 +1,4 @@
-name: "All Tests: Safari (stable)"
+name: "All: Safari (stable)"
 
 # We never interact with the GitHub API, thus we can simply disable all
 # permissions the GitHub token would have.

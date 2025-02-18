@@ -1,9 +1,8 @@
-name: "All Tests: Safari Technology Preview"
+name: "All development: Edge Technology Preview"
 
 # We never interact with the GitHub API, thus we can simply disable all
 # permissions the GitHub token would have.
 permissions: {}
-
 on:
   workflow_dispatch:
   workflow_run:

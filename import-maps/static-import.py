@@ -2,7 +2,7 @@
 # so that base URL resolution is the same between those test files and <script>s
 # pointing to this file.
 
-from wptserve.utils import isomorphic_decode
+import from wptserve.utils import isomorphic_decode
 
 def main(request, response):
     return (

@@ -1,0 +1,236 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Accname tests for assorted combinations of aria-owns, aria-hidden, and host language hiding techniques</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+  <style>
+    [aria-hidden="true"] {
+      outline: 3px dashed darkred;
+    }
+
+    [id^=child] {
+      font-weight: bold;
+      background-color: yellow;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Accname tests for assorted combinations of <code>aria-owns</code>, <code>aria-hidden</code>, and host language hiding techniques</h1>
+  <p><span aria-hidden="true">Text enclosed in a dashed red outline</span> is <code>aria-hidden="true"</code>.</p>
+  <p><span id="child-simulated">Bold text with a yellow background</span> is the target of another element’s <code>aria-owns</code>.</p>
+
+  <h2>Child is moved, nothing is hidden</h2>
+  <p>Expected: <q>I love cats and dogs I like birds</q></p>
+  <button
+    class="ex-label"
+    data-testname="Child is moved, nothing is hidden"
+    data-expectedlabel="I love cats and dogs I like birds"
+  >
+    <span>
+      <span aria-owns="child-1">
+        I love cats
+      </span>
+    </span>
+    <span>
+      <span>
+        I like birds
+        <span id="child-1"> and dogs</span>
+      </span>
+    </span>
+  </button>
+
+  <h2>Original parent is aria-hidden</h2>
+  <p>Expected: <q>I love cats and dogs</q></p>
+  <button
+    class="ex-label"
+    data-testname="Original parent is aria-hidden"
+    data-expectedlabel="I love cats and dogs"
+  >
+    <span>
+      <span aria-owns="child-2">
+        I love cats
+      </span>
+    </span>
+    <span>
+      <span aria-hidden="true">
+        I like birds
+        <span id="child-2"> and dogs</span>
+      </span>
+    </span>
+  </button>
+
+  <h2>Original parent is not rendered</h2>
+  <p>Expected: <q>I love cats</q></p>
+  <button
+    class="ex-label"
+    data-testname="Original parent is not rendered"
+    data-expectedlabel="I love cats"
+  >
+    <span>
+      <span aria-owns="child-3">
+        I love cats
+      </span>
+    </span>
+    <span>
+      <span style="display: none;">
+        I like birds
+        <span id="child-3"> and dogs</span>
+      </span>
+    </span>
+  </button>
+
+  <h2>New parent is aria-hidden</h2>
+  <p>Expected: <q>I like birds and dogs</q></p>
+  <button
+    class="ex-label"
+    data-testname="New parent is aria-hidden"
+    data-expectedlabel="I like birds and dogs"
+  >
+    <span>
+      <span aria-hidden="true" aria-owns="child-4">
+        I love cats
+      </span>
+    </span>
+    <span>
+      <p>
+        I like birds
+        <span id="child-4"> and dogs</span>
+      </span>
+    </span>
+  </button>
+
+  <h2>New parent is not rendered</h2>
+  <p>Expected: <q>I like birds and dogs</q></p>
+  <button
+    class="ex-label"
+    data-testname="New parent is not rendered"
+    data-expectedlabel="I like birds and dogs"
+  >
+    <span>
+      <span style="display: none;" aria-owns="child-5">
+        I love cats
+      </span>
+    </span>
+    <span>
+      <p>
+        I like birds
+        <span id="child-5"> and dogs</span>
+      </span>
+    </span>
+  </button>
+
+  <h2>Ancestor of new parent is aria-hidden</h2>
+  <p>Expected: <q>I like birds and dogs</q></p>
+  <button
+    class="ex-label"
+    data-testname="Ancestor of new parent is aria-hidden"
+    data-expectedlabel="I like birds and dogs"
+  >
+    <span aria-hidden="true">
+      <span aria-owns="child-6">
+        I love cats
+      </span>
+    </span>
+    <span>
+      <p>
+        I like birds
+        <span id="child-6"> and dogs</span>
+      </span>
+    </span>
+  </button>
+
+  <h2>Ancestor of new parent is not rendered</h2>
+  <p>Expected: <q>I like birds and dogs</q></p>
+  <button
+    class="ex-label"
+    data-testname="Ancestor of new parent is not rendered"
+    data-expectedlabel="I like birds and dogs"
+  >
+    <span style="display: none;">
+      <span aria-owns="child-7">
+        I love cats
+      </span>
+    </span>
+    <span>
+      <p>
+        I like birds
+        <span id="child-7"> and dogs</span>
+      </span>
+    </span>
+  </button>
+
+  <h2>Moved child is itself aria-hidden</h2>
+  <p>Expected: <q>I love cats I like birds</q></p>
+  <button
+    class="ex-label"
+    data-testname="Moved child is itself aria-hidden"
+    data-expectedlabel="I love cats I like birds"
+  >
+    <span>
+      <span aria-owns="child-8">
+        I love cats
+      </span>
+    </span>
+    <span>
+      <p>
+        I like birds
+        <span id="child-8" aria-hidden="true"> and dogs</span>
+      </span>
+    </span>
+  </button>
+
+  <h2>Moved child is itself not rendered</h2>
+  <p>Expected: <q>I love cats I like birds</q></p>
+  <button
+    class="ex-label"
+    data-testname="Moved child is itself not rendered"
+    data-expectedlabel="I love cats I like birds"
+  >
+    <span>
+      <span aria-owns="child-9">
+        I love cats
+      </span>
+    </span>
+    <span>
+      <p>
+        I like birds
+        <span id="child-9" style="display: none;"> and dogs</span>
+      </span>
+    </span>
+  </button>
+
+  <h2>New owner’s current child is not rendered</h2>
+  <p>Expected: <q>and dogs I like birds</q></p>
+  <button
+    class="ex-label"
+    data-testname="New owner’s current child is not rendered"
+    data-expectedlabel="and dogs I like birds"
+  >
+    <span aria-owns="child-10">
+      <span style="display: none;">
+        I love cats
+      </span>
+    </span>
+    <span>
+      <p>
+        I like birds
+        <span id="child-10"> and dogs</span>
+      </span>
+    </span>
+  </button>
+
+  <script>
+    AriaUtils.verifyLabelsBySelector(".ex-label");
+  </script>
+</body>
+
+</html>

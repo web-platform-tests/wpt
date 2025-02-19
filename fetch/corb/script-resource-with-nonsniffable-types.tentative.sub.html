@@ -49,18 +49,49 @@ function test(mime_type, is_blocking_expected) {
   }, "CORB " + action + " '" + mime_type + "'");
 }
 
-// Some mime types should be protected by CORB without any kind
-// of confirmation sniffing.
+// Some mime types should be protected by CORB without any kind of
+// confirmation sniffing.  This test aims to cover all MIME types included in
+// the definition of "opaque-blocklisted-never-sniffed MIME type" in the ORB
+// spec at https://github.com/annevk/orb
 protected_mime_types = [
+  "application/dash+xml",
   "application/gzip",
+  "application/msexcel",
+  "application/mspowerpoint",
+  "application/msword",
+  "application/msword-template",
   "application/pdf",
+  "application/vnd.apple.mpegurl",
+  "application/vnd.ces-quickpoint",
+  "application/vnd.ces-quicksheet",
+  "application/vnd.ces-quickword",
+  "application/vnd.ms-excel",
+  "application/vnd.ms-excel.sheet.macroenabled.12",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.ms-powerpoint.presentation.macroenabled.12",
+  "application/vnd.ms-word",
+  "application/vnd.ms-word.document.12",
+  "application/vnd.ms-word.document.macroenabled.12",
+  "application/vnd.msword",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "application/vnd.openxmlformats-officedocument.presentationml.template",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
+  "application/vnd.presentation-openxml",
+  "application/vnd.presentation-openxmlm",
+  "application/vnd.spreadsheet-openxml",
+  "application/vnd.wordprocessing-openxml",
   "application/x-gzip",
   "application/x-protobuf",
   "application/zip",
+  "audio/mpegurl",
   "multipart/byteranges",
   "multipart/signed",
   "text/csv",
   "text/event-stream",
+  "text/vtt",
 ]
 protected_mime_types.forEach(function(type) {
     test(type, true /* is_blocking_expected */);

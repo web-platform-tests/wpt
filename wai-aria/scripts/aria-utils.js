@@ -45,13 +45,15 @@ const AriaUtils = {
     }
     for (const el of els) {
       let role = el.getAttribute("data-expectedrole");
+      if (!role) {
+        throw `Element should have attribute \'data-expectedrole\'. Element: ${el.outerHTML}`;
+      }
       let testName = el.getAttribute("data-testname") || role; // data-testname optional if role is unique per test file
       if (typeof roleTestNamePrefix !== "undefined") {
         testName = roleTestNamePrefix + testName;
       }
       promise_test(async t => {
         const expectedRole = el.getAttribute("data-expectedrole");
-        assert_not_equals(expectedRole, null, `Element should have attribute \'${attributeName}\`. Element: ${el.innerHTML}`);
         const computedRole = await test_driver.get_computed_role(el);
         assert_equals(computedRole, expectedRole, el.outerHTML);
       }, `${testName}`);
@@ -138,13 +140,15 @@ const AriaUtils = {
     }
     for (const el of els) {
       let label = el.getAttribute("data-expectedlabel");
+      if (!label) {
+        throw `Element should have attribute \'data-expectedlabel\'. Element: ${el.outerHTML}`;
+      }
       let testName = el.getAttribute("data-testname") || label; // data-testname optional if label is unique per test file
       if (typeof labelTestNamePrefix !== "undefined") {
         testName = labelTestNamePrefix + testName;
       }
       promise_test(async t => {
         const expectedLabel = el.getAttribute("data-expectedlabel");
-        assert_not_equals(expectedLabel, null, `Element should have attribute \'data-expectedlabel\`. Element: ${el.innerHTML}`);
         let computedLabel = await test_driver.get_computed_label(el);
         assert_not_equals(computedLabel, null, `get_computed_label(el) shouldn't return null for ${el.outerHTML}`);
 

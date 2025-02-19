@@ -1615,6 +1615,36 @@ once and removed afterward.</p>
 <h3>Bluetooth<a class="headerlink" href="#bluetooth" title="Link to this heading">¶</a></h3>
 <p>The module provides access to <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth">Web Bluetooth</a>.</p>
 <dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.bluetooth.handle_request_device_prompt">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bluetooth</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">handle_request_device_prompt</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.bluetooth.handle_request_device_prompt" title="Link to this definition">¶</a></dt>
+<dd><p>Handle a bluetooth device prompt with the given params. Matches the
+<a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-handlerequestdeviceprompt-command">bluetooth.handleRequestDevicePrompt</a>
+WebDriver BiDi command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>object</em>) – Parameters for the command.</p></li>
+<li><p><strong>params.prompt</strong> (<em>string</em>) – The id of a bluetooth device prompt. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-handlerequestdeviceprompt-command">bluetooth.HandleRequestDevicePromptParameters:prompt</a> value.</p></li>
+<li><p><strong>params.accept</strong> (<em>bool</em>) – Whether to accept a bluetooth device prompt. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-handlerequestdeviceprompt-command">bluetooth.HandleRequestDevicePromptAcceptParameters:accept</a> value.</p></li>
+<li><p><strong>params.device</strong> (<em>string</em>) – The device id from a bluetooth device prompt to be accepted. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-handlerequestdeviceprompt-command">bluetooth.HandleRequestDevicePromptAcceptParameters:device</a> value.</p></li>
+<li><p><strong>params.context</strong> (<em>Context</em>) – The optional context parameter specifies in which browsing context the bluetooth device prompt should be handled. If not provided, the current browsing context is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the bluetooth device prompt is handled, or rejected if the operation fails.</p>
+</dd>
+</dl>
+<p><strong>Examples:</strong></p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">bluetooth</span><span class="p">.</span><span class="nx">handleRequestDevicePrompt</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">prompt</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;pmt-e0a234b&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">accept</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">device</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;dvc-9b3b872&quot;</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.bidi.bluetooth.simulate_adapter">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bluetooth</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">simulate_adapter</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.bluetooth.simulate_adapter" title="Link to this definition">¶</a></dt>
 <dd><p>Creates a simulated bluetooth adapter with the given params. Matches the
@@ -1638,6 +1668,48 @@ WebDriver BiDi command.</p>
 <span class="p">});</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.bluetooth.simulate_preconnected_peripheral">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bluetooth</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">simulate_preconnected_peripheral</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.bluetooth.simulate_preconnected_peripheral" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a simulated bluetooth peripheral with the given params.
+Matches the
+<a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateconnectedperipheral-command">bluetooth.simulatePreconnectedPeripheral</a>
+WebDriver BiDi command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>object</em>) – Parameters for the command.</p></li>
+<li><p><strong>params.address</strong> (<em>string</em>) – The address of the simulated bluetooth peripheral. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateconnectedperipheral-command">bluetooth.SimulatePreconnectedPeripheralParameters:address</a> value.</p></li>
+<li><p><strong>params.name</strong> (<em>string</em>) – The name of the simulated bluetooth peripheral. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateconnectedperipheral-command">bluetooth.SimulatePreconnectedPeripheralParameters:name</a> value.</p></li>
+<li><p><strong>params.manufacturerData</strong> (<em>Array.ManufacturerData</em>) – The manufacturerData of the simulated bluetooth peripheral. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateconnectedperipheral-command">bluetooth.SimulatePreconnectedPeripheralParameters:manufacturerData</a> value.</p></li>
+<li><p><strong>params.knownServiceUuids</strong> (<em>string</em>) – The knownServiceUuids of the simulated bluetooth peripheral. Matches the <a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateconnectedperipheral-command">bluetooth.SimulatePreconnectedPeripheralParameters:knownServiceUuids</a> value.</p></li>
+<li><p><strong>params.context</strong> (<em>Context</em>) – The optional context parameter specifies in which browsing context the simulated bluetooth peripheral should be set. If not provided, the current browsing context is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the simulated bluetooth peripheral is created and set, or rejected if the operation fails.</p>
+</dd>
+</dl>
+<p><strong>Examples:</strong></p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span><span class="w"> </span><span class="nx">test_driver</span><span class="p">.</span><span class="nx">bidi</span><span class="p">.</span><span class="nx">bluetooth</span><span class="p">.</span><span class="nx">simulatePreconnectedPeripheral</span><span class="p">({</span>
+<span class="w">    </span><span class="s2">&quot;address&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;09:09:09:09:09:09&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Some Device&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;manufacturerData&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="mf">17</span><span class="p">,</span><span class="w"> </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;AP8BAX8=&quot;</span><span class="p">}],</span>
+<span class="w">    </span><span class="s2">&quot;knownServiceUuids&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">         </span><span class="s2">&quot;12345678-1234-5678-9abc-def123456789&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="js staticfunction">
+<dt class="sig sig-object js" id="test_driver.bidi.bluetooth.request_device_prompt_updated">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bidi</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">bluetooth</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">request_device_prompt_updated</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bidi.bluetooth.request_device_prompt_updated" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-requestdevicepromptupdated-event">bluetooth.RequestDevicePromptUpdatedParameters</a>
+event.</p>
 </dd></dl>
 
 </section>

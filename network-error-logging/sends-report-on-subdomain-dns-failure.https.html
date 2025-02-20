@@ -26,7 +26,7 @@
       // second request, since include_subdomains policies can report on DNS
       // errors, so the collector should have received a report about it.
       assert_true(await reportExists({
-        url: getURLForResourceWithNoPolicy('nonexistent'),
+        url: getSanitizedURLForResourceWithNoPolicy('nonexistent'),
         user_agent: navigator.userAgent,
         type: "network-error",
         body: {

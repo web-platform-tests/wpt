@@ -340,16 +340,15 @@
     };
 
     window['MediaSourceUtil'] = MediaSourceUtil;
-    window['media_test'] = function(testFunction, description, options)
+    window['media_test'] = function(testFunction, description)
     {
-        options = options || {};
         return async_test(function(test)
         {
             addExtraTestMethods(test);
             testFunction(test);
-        }, description, options);
+        }, description);
     };
-    window['mediasource_test'] = function(testFunction, description, options)
+    window['mediasource_test'] = function(testFunction, description)
     {
         return media_test(function(test)
         {
@@ -372,10 +371,10 @@
             {
                 testFunction(test, mediaTag, mediaSource);
             });
-        }, description, options);
+        }, description);
     };
 
-    window['mediasource_testafterdataloaded'] = function(testFunction, description, options)
+    window['mediasource_testafterdataloaded'] = function(testFunction, description)
     {
         mediasource_test(function(test, mediaElement, mediaSource)
         {
@@ -393,7 +392,7 @@
             {
                 testFunction(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData);
             });
-        }, description, options);
+        }, description);
     }
 
     function timeRangesToString(ranges)

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Permissions API - Edge Cases</title>
+<link rel="help" href="https://www.w3.org/TR/permissions/" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<body>
+<script>
+'use strict';
+
+promise_test(async t => {
+  // Forcing the same state: "prompt" -> "prompt" again
+  await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
+  const status = await navigator.permissions.query({ name: 'geolocation' });
+  
+  let changes = 0;
+  status.addEventListener('change', () => { changes++; });
+
+  // Force the same state again
+  await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
+  await new Promise(resolve => t.step_timeout(resolve, 100));
+
+  assert_equals(changes, 0, 'No change event if state remains "prompt"');
+}, 'Reapplying the same permission state should not fire a "change" event');
+
+promise_test(async t => {
+  // Unsupported permission name
+  await promise_rejects_js(
+    t,
+    TypeError,
+    navigator.permissions.query({ name: 'not-a-real-permission' }),
+    'Querying an unsupported permission must throw TypeError'
+  );
+}, 'Unsupported permission name should reject with a TypeError');
+</script>
+</body>
+</html>

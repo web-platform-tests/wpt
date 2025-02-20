@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Permissions API in Worker - Notifications</title>
+<link rel="help" href="https://www.w3.org/TR/permissions/" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<script>
+'use strict';
+
+// Inline the Worker script
+const workerScript = `
+  onmessage = async () => {
+    try {
+      const status = await self.navigator.permissions.query({ name: 'notifications' });
+      // Send back the initial state
+      postMessage({ initialState: status.state });
+      // Listen for changes
+      status.onchange = () => {
+        postMessage({ changedState: status.state });
+      };
+    } catch (err) {
+      postMessage({ error: String(err) });
+    }
+  };
+`;
+
+promise_test(async t => {
+  // 1. Force the initial Notifications permission to "prompt".
+  //    We assume this is supported in the test environment.
+  await test_driver.set_permission({ name: 'notifications' }, 'prompt');
+
+  // 2. Create a Blob-based Worker
+  const blobUrl = URL.createObjectURL(new Blob([workerScript], { type: 'text/javascript' }));
+  const worker = new Worker(blobUrl);
+
+  const messages = [];
+  worker.onmessage = evt => messages.push(evt.data);
+
+  // 3. Start the Worker’s logic
+  worker.postMessage({});
+
+  // 4. Wait for the Worker’s initial response
+  await new Promise(resolve => t.step_timeout(resolve, 300));
+
+  // Check we got something back
+  assert_greater_than(
+    messages.length,
+    0,
+    'Worker should have sent at least one message by now'
+  );
+
+  const firstMsg = messages[0];
+  // If there's an error, the Worker likely doesn't support notifications
+  if (firstMsg.error) {
+    assert_unreached(`Worker query for notifications threw error: ${firstMsg.error}`);
+  } else {
+    assert_true(
+      'initialState' in firstMsg,
+      'Expected an `initialState` in the Worker’s first message'
+    );
+    assert_equals(
+      firstMsg.initialState, 
+      'prompt',
+      'Worker should see the permission as "prompt" initially'
+    );
+  }
+
+  // 5. Transition from "prompt" to "granted"
+  await test_driver.set_permission({ name: 'notifications' }, 'granted');
+
+  // Wait again for the Worker to detect the "change"
+  await new Promise(resolve => t.step_timeout(resolve, 300));
+
+  assert_equals(
+    messages.length,
+    2,
+    'A second message should arrive after changing permission to "granted"'
+  );
+  const secondMsg = messages[1];
+  assert_equals(
+    secondMsg.changedState,
+    'granted',
+    'Worker should see the permission changed to "granted"'
+  );
+
+  // 6. Cleanup - set back to "prompt" if desired
+  await test_driver.set_permission({ name: 'notifications' }, 'prompt');
+}, 'Worker can query {name: "notifications"} permission, see initial "prompt," and detect "granted" transition');
+</script>

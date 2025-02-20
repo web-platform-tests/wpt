@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Permissions API - Revocation Tests</title>
+<link rel="help" href="https://www.w3.org/TR/permissions/" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<body>
+<script>
+'use strict';
+
+async function setPermission(state) {
+  return test_driver.set_permission({ name: 'geolocation' }, state);
+}
+
+promise_test(async t => {
+  // "granted" -> "prompt"
+  await setPermission('granted');
+  const status = await navigator.permissions.query({ name: 'geolocation' });
+  assert_equals(status.state, 'granted', 'Started at "granted"');
+
+  let changeCount = 0;
+  status.addEventListener('change', () => changeCount++);
+
+  await setPermission('prompt');
+  await new Promise(r => t.step_timeout(r, 50));
+
+  assert_equals(changeCount, 1, 'Should have exactly one change event');
+  assert_equals(status.state, 'prompt', 'Permission is now "prompt"');
+
+  // Cleanup
+  await setPermission('prompt');
+}, 'Transition from "granted" to "prompt" fires a "change"');
+
+promise_test(async t => {
+  // "granted" -> "denied"
+  await setPermission('granted');
+  const status = await navigator.permissions.query({ name: 'geolocation' });
+  assert_equals(status.state, 'granted', 'Confirm "granted" start');
+
+  let changed = false;
+  status.addEventListener('change', () => { changed = true; });
+
+  await setPermission('denied');
+  await new Promise(r => t.step_timeout(r, 50));
+
+  assert_true(changed, 'Should have fired change event');
+  assert_equals(status.state, 'denied', 'Now "denied"');
+
+  // Cleanup
+  await setPermission('prompt');
+}, 'Transition from "granted" to "denied" fires a "change"');
+</script>
+</body>
+</html>

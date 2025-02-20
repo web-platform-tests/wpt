@@ -16,6 +16,7 @@
   const substantialPreviousSibling = document.createElement("DIV");
   const tdElement = document.createElement("TD");
   const thElement = document.createElement("TD");
+  const pElement = document.createElement("P");
 
   function testElements(parent, hasContent, withSubstantialPreviousSiblings, withSubstantialFollowingSiblings, zeroProperty, elementList = elementsWithDefaultMargins) {
     if (withSubstantialPreviousSiblings) parent.appendChild(substantialPreviousSibling);
@@ -33,6 +34,28 @@
       if (withSubstantialFollowingSiblings) substantialFollowingSibling.remove();
     }
     if (withSubstantialPreviousSiblings) substantialPreviousSibling.remove();
+  }
+
+  function testIsSubstantial(node, isSubstantial, testName) {
+    document.body.appendChild(node);
+    document.body.appendChild(pElement);
+    // non-0px margin-block-start on P means node is substantial
+    assert(
+      (getComputedStyle(pElement)["margin-block-start"] !== "0px") !== isSubstantial,
+      `${testName} must ${isSubstantial? "" : "not "}be substantial`
+    );
+    pElement.remove();
+    node.remove();
+
+    // non-0px margin-block-end on P means node is substantial (P isn't blank)
+    document.body.appendChild(pElement);
+    pElement.appendChild(node);
+    assert(
+      (getComputedStyle(pElement)["margin-block-end"] !== "0px") !== isSubstantial,
+      `a <P> containing ${testName} must ${isSubstantial? "not " : ""}be blank`
+    )
+    node.remove();
+    pElement.remove();
   }
 
   // FIRST REQUIREMENT (body/th/td children without substantial previous siblings have 'margin-block-start' of 0)
@@ -85,4 +108,16 @@
     testElements(thElement, true, true, false, "margin-block-end", ["P"]);
     thElement.remove();
   }, "Fourth Requirement");
+
+
+  // BONUS REQUIREMENT (various checks to see if certain kinds of elements are substantial)
+  test(() => {
+    testIsSubstantial(document.createTextNode(""), false, "an empty text node");
+    testIsSubstantial(document.createTextNode(" "), false, "a text node with a space");
+    testIsSubstantial(document.createTextNode("substantial"), true, "a text node with text");
+    testIsSubstantial(document.createTextNode("\u0009\u000A\u000C\u000D\u0020"), false, "a text node with ascii-whitespace");
+    testIsSubstantial(document.createTextNode("\u202F"), true, "a text node with non-ascii-whitespace (nbsp)");
+    testIsSubstantial(document.createElement("div"), true, "a <DIV>");
+    testIsSubstantial(document.createElement("span"), true, "a <SPAN>");
+  }, "Bonus Requirement");
 </script>

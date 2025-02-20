@@ -38,7 +38,16 @@
       case "Element.setAttributeNodeNS":
       case "NamedNodeMap.setNamedItem":
       case "NamedNodeMap.setNamedItemNS":
-        assert_equals(returnValue, attributeNodeInCallback);
+        if (!attributeNodeInCallback)
+            assert_equals(returnValue, attributeNodeInCallback);
+        else {
+            assert_equals(returnValue.name, attributeNodeInCallback.name);
+            assert_equals(returnValue.value, attributeNodeInCallback.value);
+            assert_equals(returnValue.localName, attributeNodeInCallback.localName);
+            assert_equals(returnValue.namespaceURI, attributeNodeInCallback.namespaceURI);
+            assert_equals(returnValue.prefix, attributeNodeInCallback.prefix);
+            assert_equals(returnValue.ownerElement, attributeNodeInCallback.ownerElement);
+        }
         break;
       case "Attr.value":
       case "Node.nodeValue":
@@ -64,7 +73,7 @@
       window.applyMutation = function() {
         element.removeAttributeNS(testData.attrNS, beforeName);
         attributeNodeInCallback = findAttribute(element, testData.attrNS,
-                                                testData.attrName);
+                                                testData.attrName).cloneNode(true);
       };
       const returnValue = setterData.runSetter(element, testData.attrNS,
                                                testData.attrName,
@@ -128,7 +137,7 @@
                                createTrustedOutput(testData.type,
                                                     other_string));
         attributeNodeInCallback = findAttribute(element, testData.attrNS,
-                                                testData.attrName);
+                                                testData.attrName).cloneNode(true);
       };
       const returnValue = setterData.runSetter(element, testData.attrNS,
                                                testData.attrName,

@@ -217,6 +217,8 @@ scheme host and port.""")
     android_group.add_argument("--adb-binary", help="Path to adb binary to use")
     android_group.add_argument("--package-name",
                                help="Android package name to run tests against")
+    android_group.add_argument("--activity-name",
+                               help="Android activity to run tests against")
     android_group.add_argument("--keep-app-data-directory", action="store_true",
                         help="Don't delete the app data directory")
     android_group.add_argument("--device-serial", action="append", default=[],

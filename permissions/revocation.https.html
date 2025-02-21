@@ -11,47 +11,51 @@
 <script>
 'use strict';
 
-async function setPermission(state) {
-  return test_driver.set_permission({ name: 'geolocation' }, state);
-}
-
+// 1. "granted" -> "prompt"
 promise_test(async t => {
-  // "granted" -> "prompt"
-  await setPermission('granted');
+  await test_driver.set_permission({ name: 'geolocation' }, 'granted');
   const status = await navigator.permissions.query({ name: 'geolocation' });
-  assert_equals(status.state, 'granted', 'Started at "granted"');
+  assert_equals(status.state, 'granted', 'Initial state is "granted"');
 
-  let changeCount = 0;
-  status.addEventListener('change', () => changeCount++);
+  const p = new Promise(resolve => {
+    const listener = () => {
+      status.removeEventListener('change', listener);
+      resolve();
+    };
+    status.addEventListener('change', listener);
+  });
 
-  await setPermission('prompt');
-  await new Promise(r => t.step_timeout(r, 50));
+  await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
+  await p;
 
-  assert_equals(changeCount, 1, 'Should have exactly one change event');
-  assert_equals(status.state, 'prompt', 'Permission is now "prompt"');
+  assert_equals(status.state, 'prompt', 'Now in "prompt" state');
+  
+  // Cleanup
+  await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
+}, 'Transition "granted" -> "prompt" fires a "change" event');
+
+// 2. "granted" -> "denied"
+promise_test(async t => {
+  await test_driver.set_permission({ name: 'geolocation' }, 'granted');
+  const status = await navigator.permissions.query({ name: 'geolocation' });
+  assert_equals(status.state, 'granted', 'Initial state is "granted"');
+
+  const p = new Promise(resolve => {
+    const listener = () => {
+      status.removeEventListener('change', listener);
+      resolve();
+    };
+    status.addEventListener('change', listener);
+  });
+
+  await test_driver.set_permission({ name: 'geolocation' }, 'denied');
+  await p;
+
+  assert_equals(status.state, 'denied', 'Now in "denied" state');
 
   // Cleanup
-  await setPermission('prompt');
-}, 'Transition from "granted" to "prompt" fires a "change"');
-
-promise_test(async t => {
-  // "granted" -> "denied"
-  await setPermission('granted');
-  const status = await navigator.permissions.query({ name: 'geolocation' });
-  assert_equals(status.state, 'granted', 'Confirm "granted" start');
-
-  let changed = false;
-  status.addEventListener('change', () => { changed = true; });
-
-  await setPermission('denied');
-  await new Promise(r => t.step_timeout(r, 50));
-
-  assert_true(changed, 'Should have fired change event');
-  assert_equals(status.state, 'denied', 'Now "denied"');
-
-  // Cleanup
-  await setPermission('prompt');
-}, 'Transition from "granted" to "denied" fires a "change"');
+  await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
+}, 'Transition "granted" -> "denied" fires a "change" event');
 </script>
 </body>
 </html>

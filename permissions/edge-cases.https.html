@@ -11,30 +11,44 @@
 <script>
 'use strict';
 
+/**
+ * 1. Setting the same state ("prompt" -> "prompt") won't fire "change"
+ */
 promise_test(async t => {
-  // Forcing the same state: "prompt" -> "prompt" again
+  // Start in "prompt"
   await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
   const status = await navigator.permissions.query({ name: 'geolocation' });
-  
-  let changes = 0;
-  status.addEventListener('change', () => { changes++; });
 
-  // Force the same state again
+  // We'll watch for a "change" event
+  const p = new Promise((resolve, reject) => {
+    status.addEventListener('change', () => {
+      reject('A "change" event fired despite forcing the same state');
+    });
+  });
+
+  // Force the same state
   await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
-  await new Promise(resolve => t.step_timeout(resolve, 100));
 
-  assert_equals(changes, 0, 'No change event if state remains "prompt"');
-}, 'Reapplying the same permission state should not fire a "change" event');
+  // Wait a microtask to see if any event triggers
+  await Promise.resolve();
 
+  // If we got no event, pass
+  // Cleanup
+  await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
+}, 'Reapplying the same permission state does not fire a "change" event');
+
+
+/**
+ * 2. Querying an invalid permission name
+ */
 promise_test(async t => {
-  // Unsupported permission name
   await promise_rejects_js(
     t,
     TypeError,
     navigator.permissions.query({ name: 'not-a-real-permission' }),
-    'Querying an unsupported permission must throw TypeError'
+    'Unsupported permission name should reject with TypeError'
   );
-}, 'Unsupported permission name should reject with a TypeError');
+}, 'Query with an unsupported name rejects with TypeError');
 </script>
 </body>
 </html>

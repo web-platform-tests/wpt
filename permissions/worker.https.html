@@ -10,14 +10,21 @@
 <script>
 'use strict';
 
-// Inline the Worker script
+/*
+  We'll assume test_driver.set_permission({ name: 'notifications' }, 'prompt')
+  is supported. If not, adapt accordingly.
+
+  The Worker script:
+    1. queries { name: 'notifications' }
+    2. posts back initialState
+    3. sets an 'onchange' to post changedState
+*/
+
 const workerScript = `
   onmessage = async () => {
     try {
       const status = await self.navigator.permissions.query({ name: 'notifications' });
-      // Send back the initial state
       postMessage({ initialState: status.state });
-      // Listen for changes
       status.onchange = () => {
         postMessage({ changedState: status.state });
       };
@@ -28,65 +35,62 @@ const workerScript = `
 `;
 
 promise_test(async t => {
-  // 1. Force the initial Notifications permission to "prompt".
-  //    We assume this is supported in the test environment.
+  // Start from "prompt"
   await test_driver.set_permission({ name: 'notifications' }, 'prompt');
 
-  // 2. Create a Blob-based Worker
+  // Create a Blob worker
   const blobUrl = URL.createObjectURL(new Blob([workerScript], { type: 'text/javascript' }));
   const worker = new Worker(blobUrl);
 
   const messages = [];
   worker.onmessage = evt => messages.push(evt.data);
 
-  // 3. Start the Worker’s logic
+  // Start the worker
   worker.postMessage({});
 
-  // 4. Wait for the Worker’s initial response
-  await new Promise(resolve => t.step_timeout(resolve, 300));
+  // Wait for the initial message
+  // Typically it should arrive almost immediately
+  await new Promise(resolve => {
+    const observer = setInterval(() => {
+      if (messages.length > 0) {
+        clearInterval(observer);
+        resolve();
+      }
+    }, 10);
+  });
 
-  // Check we got something back
-  assert_greater_than(
-    messages.length,
-    0,
-    'Worker should have sent at least one message by now'
-  );
-
+  // Check first message
   const firstMsg = messages[0];
-  // If there's an error, the Worker likely doesn't support notifications
-  if (firstMsg.error) {
-    assert_unreached(`Worker query for notifications threw error: ${firstMsg.error}`);
-  } else {
-    assert_true(
-      'initialState' in firstMsg,
-      'Expected an `initialState` in the Worker’s first message'
-    );
-    assert_equals(
-      firstMsg.initialState, 
-      'prompt',
-      'Worker should see the permission as "prompt" initially'
-    );
+  if (firstMsg && firstMsg.error) {
+    assert_unreached(`Worker got error: ${firstMsg.error}`);
   }
+  assert_true(
+    firstMsg && 'initialState' in firstMsg,
+    'Expected an "initialState" from the Worker'
+  );
+  assert_equals(
+    firstMsg.initialState,
+    'prompt',
+    'Worker sees the initial "prompt" state'
+  );
 
-  // 5. Transition from "prompt" to "granted"
+  // Now we transition to "granted"
+  const changedPromise = new Promise(resolve => {
+    const observer = setInterval(() => {
+      // If we get a second message with changedState, resolve
+      if (messages.length > 1 && 'changedState' in messages[1]) {
+        clearInterval(observer);
+        resolve(messages[1]);
+      }
+    }, 10);
+  });
+
   await test_driver.set_permission({ name: 'notifications' }, 'granted');
+  const secondMsg = await changedPromise;
+  assert_equals(secondMsg.changedState, 'granted',
+    'Worker sees the permission changed to "granted"');
 
-  // Wait again for the Worker to detect the "change"
-  await new Promise(resolve => t.step_timeout(resolve, 300));
-
-  assert_equals(
-    messages.length,
-    2,
-    'A second message should arrive after changing permission to "granted"'
-  );
-  const secondMsg = messages[1];
-  assert_equals(
-    secondMsg.changedState,
-    'granted',
-    'Worker should see the permission changed to "granted"'
-  );
-
-  // 6. Cleanup - set back to "prompt" if desired
+  // Cleanup
   await test_driver.set_permission({ name: 'notifications' }, 'prompt');
-}, 'Worker can query {name: "notifications"} permission, see initial "prompt," and detect "granted" transition');
+}, 'Worker can query the "notifications" permission and detect a transition to "granted"');
 </script>

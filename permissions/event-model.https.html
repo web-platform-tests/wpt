@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Permissions API - Event Model Tests (Simplified)</title>
+<title>Permissions API - Event Model Tests</title>
 <link rel="help" href="https://www.w3.org/TR/permissions/" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -21,49 +21,48 @@ promise_test(async t => {
   assert_equals(status.state, 'prompt', 'Initial state is "prompt"');
 
   // We'll create two promises, one for each listener
-  const changePromise1 = new Promise(resolve => {
-    status.addEventListener('change', () => {
-      resolve('listener1-fired');
-    });
+  const promise1 = new Promise(resolve => {
+    status.addEventListener('change', () => resolve('addEventListener-fired'));
   });
-  const changePromise2 = new Promise(resolve => {
-    status.onchange = () => {
-      resolve('onchange-fired');
-    };
+  const promise2 = new Promise(resolve => {
+    status.onchange = () => resolve('.onchange-fired');
   });
 
   // Trigger a single transition -> "granted"
   await test_driver.set_permission({ name: 'geolocation' }, 'granted');
 
-  // Wait for both listeners to fire
-  const results = await Promise.all([changePromise1, changePromise2]);
+  // Wait for both listeners
+  const results = await Promise.all([promise1, promise2]);
+  results.sort();
 
-  // At this point, both listeners must have fired exactly once
   assert_equals(status.state, 'granted', 'State should now be "granted"');
-  assert_array_equals(results.sort(), ['listener1-fired', 'onchange-fired'].sort(),
-    'Both addEventListener and .onchange promises resolved');
+  assert_array_equals(
+    results,
+    ['.onchange-fired', 'addEventListener-fired'].sort(),
+    'Both listeners fired exactly once'
+  );
 
   // Cleanup
   status.onchange = null;
   await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
-}, 'Multiple listeners on a single PermissionStatus should both fire on change');
+}, 'Multiple listeners on a single PermissionStatus should all fire on change');
 
 
 /**
- * 2. Multiple transitions (prompt -> granted -> denied) in sequence
+ * 2. Multiple transitions (prompt -> granted -> denied)
  */
 promise_test(async t => {
-  // Start from "prompt"
   await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
   const status = await navigator.permissions.query({ name: 'geolocation' });
   assert_equals(status.state, 'prompt', 'Initial state is "prompt"');
 
   // Step 1: prompt -> granted
   const grantedPromise = new Promise(resolve => {
-    status.addEventListener('change', function onChange() {
-      status.removeEventListener('change', onChange);
+    const listener = () => {
+      status.removeEventListener('change', listener);
       resolve();
-    });
+    };
+    status.addEventListener('change', listener);
   });
   await test_driver.set_permission({ name: 'geolocation' }, 'granted');
   await grantedPromise;
@@ -71,10 +70,11 @@ promise_test(async t => {
 
   // Step 2: granted -> denied
   const deniedPromise = new Promise(resolve => {
-    status.addEventListener('change', function onChange() {
-      status.removeEventListener('change', onChange);
+    const listener = () => {
+      status.removeEventListener('change', listener);
       resolve();
-    });
+    };
+    status.addEventListener('change', listener);
   });
   await test_driver.set_permission({ name: 'geolocation' }, 'denied');
   await deniedPromise;
@@ -94,25 +94,24 @@ promise_test(async t => {
   const statusA = await navigator.permissions.query({ name: 'geolocation' });
   const statusB = await navigator.permissions.query({ name: 'geolocation' });
 
-  // Each watcher resolves its own promise when it sees "change"
-  const pA = new Promise(resolve => {
-    statusA.addEventListener('change', () => resolve('statusA-changed'));
+  const watchA = new Promise(resolve => {
+    statusA.addEventListener('change', () => resolve('A'));
   });
-  const pB = new Promise(resolve => {
-    statusB.addEventListener('change', () => resolve('statusB-changed'));
+  const watchB = new Promise(resolve => {
+    statusB.addEventListener('change', () => resolve('B'));
   });
 
   // Now transition -> "granted"
   await test_driver.set_permission({ name: 'geolocation' }, 'granted');
 
   // Wait for both watchers
-  const results = await Promise.all([pA, pB]);
-  assert_array_equals(results.sort(), ['statusA-changed','statusB-changed'].sort(),
-    'Both watchers observed the transition');
+  const results = await Promise.all([watchA, watchB]);
+  results.sort();
+  assert_array_equals(results, ['A', 'B'], 'Both watchers observed the transition');
 
   // Cleanup
   await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
-}, 'Multiple PermissionStatus objects observe the same permission transition');
+}, 'Multiple PermissionStatus objects observe the same transition');
 
 
 /**
@@ -122,30 +121,31 @@ promise_test(async t => {
   // Start from "prompt"
   await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
 
-  let changeFired = false;
+  let eventFired = false;
   const ephemeralPromise = new Promise(resolve => {
+    // We immediately create and then lose the reference to `status`
     (async () => {
       const status = await navigator.permissions.query({ name: 'geolocation' });
       status.addEventListener('change', () => {
-        changeFired = true;
+        eventFired = true;
         resolve();
       });
     })();
-    // We do NOT retain 'status' – it goes out of scope here
+    // No returned reference, so it goes out of scope
   });
 
   // Transition -> "granted"
   await test_driver.set_permission({ name: 'geolocation' }, 'granted');
-
-  // Wait for the ephemeral object's event
   await ephemeralPromise;
 
-  assert_true(changeFired,
-    'PermissionStatus "change" event fired even after status went out of scope');
+  assert_true(
+    eventFired,
+    'PermissionStatus "change" fired even after going out of scope'
+  );
 
   // Cleanup
   await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
-}, 'PermissionStatus out of scope still fires "change" event');
+}, 'PermissionStatus out of scope should still fire "change" event');
 </script>
 </body>
 </html>

@@ -30,13 +30,13 @@
 const scopedRegistry = new CustomElementRegistry();
 const emptyRegistry = new CustomElementRegistry();
 class GlobalSomeElement extends HTMLElement {
-    internals;
+    elementInternals;
 
     constructor() {
         super();
-        this.internals = this.attachInternals();
-        if (this.internals.shadowRoot)
-            scopedRegistry.initialize(this.internals.shadowRoot);
+        this.elementInternals = this.attachInternals();
+        if (this.elementInternals.shadowRoot)
+            scopedRegistry.initialize(this.elementInternals.shadowRoot);
     }
 };
 class GlobalOtherElement extends HTMLElement {};

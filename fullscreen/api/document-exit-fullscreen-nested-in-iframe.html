@@ -9,14 +9,20 @@
 <script>
     async function fullscreenNestedElements(iframe, outer, inner) {
         // First request fullscreen for the outer element.
-        await Promise.all([fullScreenChange(iframe.contentDocument), trusted_request(outer)]);
+        await Promise.all([fullScreenChange(), fullScreenChange(iframe.contentDocument), trusted_request(outer)]);
         assert_equals(document.fullscreenElement, iframe);
         assert_equals(iframe.contentDocument.fullscreenElement, outer);
+
+        document.onfullscreenchange = t.unreached_func(
+            "fullscreenchange event should not be emitted a second time for parent document."
+        );
 
         // Then request fullscreen for the inner element.
         await Promise.all([fullScreenChange(iframe.contentDocument), trusted_request(inner)]);
         assert_equals(document.fullscreenElement, iframe);
         assert_equals(iframe.contentDocument.fullscreenElement, inner);
+
+        document.onfullscreenchange = null;
     }
 
     promise_test(async (t) => {

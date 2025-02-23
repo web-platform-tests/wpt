@@ -10,7 +10,7 @@
 // don't, so this test covers extra code paths beyond those covered by
 // resource-timing-sizes-redirect.html.
 
-const baseUrl = new URL('/resource-timing/resources/TAOResponse.py?tao=wildcard&img=true', location.href).href;
+const baseUrl = new URL('/common/CustomCorsResponse.py?' + encodeURIComponent('headers={"Timing-Allow-Origin": "*", "Content-Type", "image/png"}'), location.href).href;
 
 const expectedSize = 1010;
 

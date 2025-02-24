@@ -99,3 +99,18 @@ function tryCreatingTrustedTypePoliciesWithCSP(policyNames, cspHeaders) {
     document.head.appendChild(iframe);
   });
 }
+
+function trySendingPlainStringToTrustedTypeSink(sinkGroups, cspHeaders) {
+  return new Promise(resolve => {
+    window.addEventListener("message", event => {
+      resolve(event.data);
+    }, {once: true});
+    let iframe = document.createElement("iframe");
+    let url = `/trusted-types/support/send-plain-string-to-trusted-type-sink.html?sinkGroups=${sinkGroups.map(name => encodeURIComponent(name)).toString()}`;
+    url += "&pipe=header(Content-Security-Policy,connect-src 'none')"
+    if (cspHeaders)
+      url += `|${cspHeaders}`;
+    iframe.src = url;
+    document.head.appendChild(iframe);
+  });
+}

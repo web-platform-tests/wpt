@@ -4,6 +4,7 @@
 <link rel="author" href="mailto:masonf@chromium.org">
 <link rel="help" href="https://drafts.fxtf.org/filter-effects-2/#BackdropFilterProperty">
 <link rel="match"  href="backdrop-filter-plus-filter-ref.html">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 <meta name=fuzzy content="maxDifference=0-1; totalPixels=0-210">
 
 <p>Expected: A green box with an overlapping purple box.<br>
@@ -16,6 +17,9 @@ The overlapping portion of the boxes should be bright magenta.<br>
 
 
 <style>
+:root {
+  font: 12px/1 Ahem;
+}
 div {
   position: absolute;
   width: 100px;

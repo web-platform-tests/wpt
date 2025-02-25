@@ -4,6 +4,7 @@
 <link rel="author" href="mailto:masonf@chromium.org">
 <link rel="help" href="https://drafts.fxtf.org/filter-effects-2/#BackdropFilterProperty">
 <link rel="match"  href="backdrop-filter-non-isolation-ref.html">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 
 <div>
   <p>Expected: Two green boxes overlapped by a yellow box. The overlapped region<br>
@@ -17,6 +18,9 @@
 </div>
 
 <style>
+:root {
+  font: 12px/1 Ahem;
+}
 .box {
   position: absolute;
   width: 100px;

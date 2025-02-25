@@ -4,6 +4,7 @@
 <link rel="author" href="mailto:masonf@chromium.org">
 <link rel="help" href="https://drafts.fxtf.org/filter-effects-2/#BackdropFilterProperty">
 <link rel="match"  href="backdrop-filter-containing-block-ref.html">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 
 <p>Expected: one green square and one red square, both 200px by 200px.</p>
 <div class="container">
@@ -12,6 +13,9 @@
 </div>
 
 <style>
+:root {
+  font: 12px/1 Ahem;
+}
 .container {
   width: 200px;
   backdrop-filter: invert(1);

@@ -2567,3 +2567,21 @@ class Epiphany(Browser):
             # Tech Preview output looks like "Web 3.31.3-88-g97db4f40f"
             return output.split()[1]
         return None
+
+class WebKitWinMiniBrowser(WebKit):
+
+    def download(self, dest=None, channel=None, rename=None):
+        raise NotImplementedError
+
+    def install(self, dest=None, channel=None, prompt=True):
+        raise NotImplementedError
+
+    def find_binary(self, venv_path=None, channel=None):
+        raise NotImplementedError
+
+    def find_webdriver(self, venv_path=None, channel=None):
+        # use the command line option "--webdriver-binary"
+        raise NotImplementedError
+
+    def version(self, binary=None, webdriver_binary=None):
+        return None

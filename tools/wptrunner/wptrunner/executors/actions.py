@@ -511,6 +511,17 @@ class RemoveVirtualPressureSourceAction:
         source_type = payload["source_type"]
         return self.protocol.pressure.remove_virtual_pressure_source(source_type)
 
+class BidiWebExtensionInstallAction:
+    name = "bidi.webExtension.install"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        return {"extension": "2"}
+
+
 actions = [ClickAction,
            DeleteAllCookiesAction,
            GetAllCookiesAction,
@@ -550,4 +561,5 @@ actions = [ClickAction,
            RunBounceTrackingMitigationsAction,
            CreateVirtualPressureSourceAction,
            UpdateVirtualPressureSourceAction,
-           RemoveVirtualPressureSourceAction]
+           RemoveVirtualPressureSourceAction,
+           BidiWebExtensionInstallAction]

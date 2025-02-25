@@ -282,7 +282,9 @@ class WebDriverBidiWebExtensionProtocolPart(BiDiWebExtensionProtocolPart):
         self.webdriver = self.parent.webdriver
 
     async def install(self, extension_data):
-        return await self.webdriver.bidi_session.webExtension.install(extension_data=extension_data)
+        # TODO: temporary emulate response
+        return [{"extension": "1"}]
+        # return await self.webdriver.bidi_session.webExtension.install(extension_data=extension_data)
 
     async def uninstall(self, extension_id):
         return await self.webdriver.bidi_session.webExtension.uninstall(extension=extension_id)

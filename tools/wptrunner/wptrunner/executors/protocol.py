@@ -336,7 +336,7 @@ class BiDiWebExtensionProtocolPart(ProtocolPart):
     """Protocol part for managing WebExtensions"""
     __metaclass__ = ABCMeta
 
-    name = "bidi_webextension"
+    name = "bidi_webExtension"
 
     @abstractmethod
     def install(self, extension):

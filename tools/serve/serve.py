@@ -329,7 +329,7 @@ class ExtensionHandler(HtmlWrapperHandler):
   setup({ explicit_done: true })
 
   function runTestsWithWebExtension(extensionPath) {
-    test_driver.load_web_extension({
+    test_driver.bidi.webExtension.install({
         type: "path",
         path: extensionPath
     })
@@ -358,7 +358,7 @@ class ExtensionHandler(HtmlWrapperHandler):
             test.done()
 
             if (!data.remainingTests)
-                test_driver.unload_web_extension(result.extension)
+                test_driver.bidi.webExtension.uninstall(result.extension)
                     .then(() => {
                         done()
                     })

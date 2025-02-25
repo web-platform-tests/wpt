@@ -511,28 +511,6 @@ class RemoveVirtualPressureSourceAction:
         source_type = payload["source_type"]
         return self.protocol.pressure.remove_virtual_pressure_source(source_type)
 
-class LoadWebExtensionAction:
-    name = "load_web_extension"
-
-    def __init__(self, logger, protocol):
-        self.logger = logger
-        self.protocol = protocol
-
-    def __call__(self, payload):
-        self.logger.debug("loading web extension")
-        return self.protocol.web_extensions.load_web_extension(payload["extension"])
-
-class UnloadWebExtensionAction:
-    name = "unload_web_extension"
-
-    def __init__(self, logger, protocol):
-        self.logger = logger
-        self.protocol = protocol
-
-    def __call__(self, payload):
-        self.logger.debug("unloading web extension")
-        return self.protocol.web_extensions.unload_web_extension(payload["extension_id"])
-
 actions = [ClickAction,
            DeleteAllCookiesAction,
            GetAllCookiesAction,
@@ -572,6 +550,4 @@ actions = [ClickAction,
            RunBounceTrackingMitigationsAction,
            CreateVirtualPressureSourceAction,
            UpdateVirtualPressureSourceAction,
-           RemoveVirtualPressureSourceAction,
-           LoadWebExtensionAction,
-           UnloadWebExtensionAction]
+           RemoveVirtualPressureSourceAction]

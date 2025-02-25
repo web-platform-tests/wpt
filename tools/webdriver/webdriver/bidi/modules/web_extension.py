@@ -1,18 +1,25 @@
-from typing import Any, Mapping, MutableMapping, Optional
+from typing import Any, Mapping
 
 from ._module import BidiModule, command
 
+
 class WebExtension(BidiModule):
     @command
-    def install(self, extension_data: Mapping[str, Any]) -> Mapping[str, Any]:
-        params: MutableMapping[str, Any] = {"extensionData": extension_data}
-        return params
+    def install(self, params: Mapping[str, str]) -> Mapping[str, Any]:
+        """
+        Represents a command `webExtension.install` specified in
+        https://www.w3.org/TR/webdriver-bidi/#command-webExtension-install
+        """
 
-    @install.result
-    def _install(self, result: Mapping[str, Any]) -> Optional[str]:
-        return result.get("extension")
+        return params
 
     @command
-    def uninstall(self, extension: str) -> Mapping[str, Any]:
-        params: MutableMapping[str, Any] = {"extension": extension}
-        return params
+    def uninstall(self, extension_id) -> Mapping[str, Any]:
+        """
+        Represents a command `webExtension.Uninstall` specified in
+        https://www.w3.org/TR/webdriver-bidi/#command-webExtension-uninstall
+        """
+
+        return {
+            "extension": extension_id
+        }

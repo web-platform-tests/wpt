@@ -13,6 +13,7 @@ typing_extensions==4.12.2
 -r manifest/requirements.txt
 -r metadata/yaml/requirements.txt
 -r requirements_pytest.txt
+-r serve/requirements_dns.txt
 -r wave/requirements.txt
 -r webtransport/requirements.txt
 -r wpt/requirements_android.txt

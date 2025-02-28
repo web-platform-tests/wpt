@@ -10,7 +10,10 @@ async def test_install_from_base64(bidi_session, extension_data):
         }
     )
     try:
-        assert web_extension == extension_data["id"]
+        if extension_data["id"] is None:
+          assert isinstance(web_extension, str)
+        else:
+          assert web_extension == extension_data["id"]
     finally:
         # Clean up the extension.
         await bidi_session.web_extension.uninstall(extension=web_extension)
@@ -25,7 +28,10 @@ async def test_install_from_path(bidi_session, extension_data):
         }
     )
     try:
-        assert web_extension == extension_data["id"]
+        if extension_data["id"] is None:
+          assert isinstance(web_extension, str)
+        else:
+          assert web_extension == extension_data["id"]
     finally:
         # Clean up the extension.
         await bidi_session.web_extension.uninstall(extension=web_extension)
@@ -40,7 +46,10 @@ async def test_install_from_archive_path(bidi_session, extension_data):
         }
     )
     try:
-        assert web_extension == extension_data["id"]
+        if extension_data["id"] is None:
+          assert isinstance(web_extension, str)
+        else:
+          assert web_extension == extension_data["id"]
     finally:
         # Clean up the extension.
         await bidi_session.web_extension.uninstall(extension=web_extension)

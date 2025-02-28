@@ -6,8 +6,8 @@ import webdriver.bidi.error as error
 async def test_uninstall(bidi_session, extension_data):
     web_extension = await bidi_session.web_extension.install(
         extension_data={
-            "type": "path",
-            "path": extension_data["path"],
+            "type": "base64",
+            "value": extension_data["base64"],
         }
     )
     await bidi_session.web_extension.uninstall(

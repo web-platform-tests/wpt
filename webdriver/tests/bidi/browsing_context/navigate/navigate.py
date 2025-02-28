@@ -1,12 +1,15 @@
 import asyncio
 
 import pytest
+import webdriver.bidi.error as error
 from webdriver.bidi.modules.script import ContextTarget
 
 from . import navigate_and_assert
 from ... import any_string
 
 pytestmark = pytest.mark.asyncio
+
+USER_PROMPT_OPENED_EVENT = "browsingContext.userPromptOpened"
 
 
 async def test_payload(bidi_session, inline, new_tab):
@@ -81,12 +84,10 @@ async def test_relative_url(bidi_session, new_tab, url):
         "/webdriver/tests/bidi/browsing_context/support/empty.html"
     )
 
-    # Navigate to page1 with wait=interactive to make sure the document's base URI
-    # was updated.
-    await navigate_and_assert(bidi_session, new_tab, url_before, "interactive")
+    await navigate_and_assert(bidi_session, new_tab, url_before, "none")
 
     url_after = url_before.replace("empty.html", "other.html")
-    await navigate_and_assert(bidi_session, new_tab, url_after, "interactive")
+    await navigate_and_assert(bidi_session, new_tab, url_after, "none")
 
 
 async def test_same_document_navigation_in_before_unload(bidi_session, new_tab, url):

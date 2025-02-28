@@ -40,6 +40,7 @@ enum XRVisibilityState {
   readonly attribute Float32Array? supportedFrameRates;
   [SameObject] readonly attribute XRRenderState renderState;
   [SameObject] readonly attribute XRInputSourceArray inputSources;
+  [SameObject] readonly attribute XRInputSourceArray trackedSources;
   readonly attribute FrozenArray<DOMString> enabledFeatures;
   readonly attribute boolean isSystemKeyboardSupported;
 
@@ -178,7 +179,7 @@ interface XRInputSource {
   [SameObject] readonly attribute XRSpace targetRaySpace;
   [SameObject] readonly attribute XRSpace? gripSpace;
   [SameObject] readonly attribute FrozenArray<DOMString> profiles;
-  [SameObject] readonly attribute boolean skipRendering;
+  readonly attribute boolean skipRendering;
 };
 
 [SecureContext, Exposed=Window]

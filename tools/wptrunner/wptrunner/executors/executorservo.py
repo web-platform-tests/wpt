@@ -38,6 +38,8 @@ class ServoExecutor(ProcessTestExecutor):
         self.environment = {}
         self.protocol = ConnectionlessProtocol(self, browser)
 
+        self.wpt_prefs_path = self.find_wpt_prefs()
+
         hosts_fd, self.hosts_path = tempfile.mkstemp()
         with os.fdopen(hosts_fd, "w") as f:
             f.write(make_hosts_file(server_config, "127.0.0.1"))
@@ -64,7 +66,21 @@ class ServoExecutor(ProcessTestExecutor):
         else:
             self.logger.process_output(self.proc.pid, line, " ".join(self.command), self.test.url)
 
-    def build_servo_command(self, test, extra_args=None, debug_opts="replace-surrogates"):
+    def find_wpt_prefs(self):
+        default_path = os.path.join("resources", "wpt-prefs.json")
+        # The cwd is the servo repo for `./mach test-wpt`, but on WPT runners
+        # it is the WPT repo. The nightly tar is extracted inside the python
+        # virtual environment within the repo. This means that on WPT runners,
+        # the cwd has the `_venv3/servo` directory inside which we find the
+        # binary and the 'resources' directory.
+        for dir in [".", "./_venv3/servo"]:
+            candidate = os.path.abspath(os.path.join(dir, default_path))
+            if os.path.isfile(candidate):
+                return candidate
+        self.logger.error("Unable to find wpt-prefs.json")
+        return default_path
+
+    def build_servo_command(self, test, extra_args=None):
         args = [
             "--hard-fail", "-u", "Servo/wptrunner",
             # See https://github.com/servo/servo/issues/30080.
@@ -72,12 +88,11 @@ class ServoExecutor(ProcessTestExecutor):
             "--ignore-certificate-errors",
             "-z", self.test_url(test),
         ]
-        if debug_opts:
-            args += ["-Z", debug_opts]
         for stylesheet in self.browser.user_stylesheets:
             args += ["--user-stylesheet", stylesheet]
         for pref, value in self.environment.get('prefs', {}).items():
             args += ["--pref", f"{pref}={value}"]
+        args += ["--prefs-file", self.wpt_prefs_path]
         if self.browser.ca_certificate_path:
             args += ["--certificate-path", self.browser.ca_certificate_path]
         if extra_args:
@@ -213,13 +228,12 @@ class ServoRefTestExecutor(ServoExecutor):
         with TempFilename(self.tempdir) as output_path:
             extra_args = ["--exit",
                           "--output=%s" % output_path,
-                          "--resolution", viewport_size or "800x600"]
-            debug_opts = "disable-text-aa,load-webfonts-synchronously,replace-surrogates"
+                          "--window-size", viewport_size or "800x600"]
 
             if dpi:
                 extra_args += ["--device-pixel-ratio", dpi]
 
-            self.command = self.build_servo_command(test, extra_args, debug_opts)
+            self.command = self.build_servo_command(test, extra_args)
 
             if not self.interactive:
                 self.proc = ProcessHandler(self.command,

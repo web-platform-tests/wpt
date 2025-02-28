@@ -4,7 +4,7 @@
 // META: script=./resources/utils.js
 // META: timeout=long
 
-// https://webmachinelearning.github.io/webnn/
+// https://www.w3.org/TR/webnn/
 
 'use strict';
 
@@ -22,21 +22,15 @@ idl_test(
       ML: ['navigator.ml'],
       MLContext: ['context'],
       MLOperand: ['input', 'constant', 'output'],
-      MLActivation: ['relu'],
       MLGraphBuilder: ['builder'],
       MLGraph: ['graph']
     });
 
     self.context = await navigator.ml.createContext();
     self.builder = new MLGraphBuilder(self.context);
-    self.input =
-        builder.input('input', {dataType: 'float32', dimensions: [2, 3]});
+    self.input = builder.input('input', {dataType: 'float32', shape: [2, 3]});
     self.constant = builder.constant(
-        {dataType: 'float32', dimensions: [2, 3]},
-        new Float32Array(2 * 3).fill(1));
-
-    // Create an activation which won't be used in the graph.
-    self.relu = builder.relu();
+        {dataType: 'float32', shape: [2, 3]}, new Float32Array(2 * 3).fill(1));
 
     self.output = builder.add(input, constant);
 

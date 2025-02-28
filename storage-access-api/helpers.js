@@ -30,10 +30,13 @@ async function CreateFrameHelper(setUpFrame, fetchTests) {
 // the document, and optionally fetch tests. Returns the loaded frame, once
 // ready.
 function CreateFrame(
-  sourceURL, fetchTests = false, frameSandboxAttribute = undefined) {
+  sourceURL, fetchTests = false, frameSandboxAttribute = undefined, frameAllowAttribute = undefined) {
   return CreateFrameHelper((frame) => {
     if (frameSandboxAttribute !== undefined) {
       frame.sandbox = frameSandboxAttribute;
+    }
+    if (frameAllowAttribute !== undefined) {
+      frame.setAttribute("allow", frameAllowAttribute);
     }
 
     frame.src = sourceURL;
@@ -226,6 +229,11 @@ function RequestStorageAccessInFrame(frame) {
       { command: "requestStorageAccess" }, frame.contentWindow);
 }
 
+function GetPermissionInFrame(frame) {
+  return PostMessageAndAwaitReply(
+    { command: "get_permission" }, frame.contentWindow);
+}
+
 // Executes test_driver.set_permission in the given frame, with the provided
 // arguments.
 function SetPermissionInFrame(frame, args = []) {
@@ -269,10 +277,10 @@ function FetchFromFrame(frame, url) {
     { command: "cors fetch", url }, frame.contentWindow);
 }
 
-// Makes a subresource request to the provided host in the given frame with
-// the mode set to 'no-cors'
-function NoCorsSubresourceCookiesFromFrame(frame, host) {
-  const url = `${host}/storage-access-api/resources/echo-cookie-header.py`;
+// Makes a subresource request to the provided host in the given frame with the
+// mode set to 'no-cors'. Returns a promise that resolves with undefined, since
+// no-cors responses are opaque to JavaScript.
+function NoCorsFetchFromFrame(frame, url) {
   return PostMessageAndAwaitReply(
     { command: "no-cors fetch", url }, frame.contentWindow);
 }

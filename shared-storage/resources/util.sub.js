@@ -118,19 +118,39 @@ async function loadNestedSharedStorageFrameInNewFrame(data) {
   return {frame: frame, nestedFrame: nestedFrame, nestedFrameUrl: nestedSrc};
 }
 
-async function testCreateWorkletWithDataOption(
-    test, data_origin, key, value, is_same_origin_script, expect_success) {
+async function createWorkletAndVerifyDataOrigin(
+    t, data_origin, script_origin, expect_success, error_type) {
+  if (error_type) {
+    assert_false(expect_success);
+  }
+  const key = 'key0';
+  const value = 'value0';
   const sameOrigin = location.origin;
-  const crossOrigin = 'https://{{domains[www]}}:{{ports[https][0]}}';
   const sameOriginScriptUrl = `/shared-storage/resources/simple-module.js`;
-  const scriptOrigin = is_same_origin_script ? sameOrigin : crossOrigin;
-  const scriptUrl = is_same_origin_script ? sameOriginScriptUrl :
-                                            crossOrigin + sameOriginScriptUrl;
+  const scriptUrl = (script_origin === location.origin) ?
+      sameOriginScriptUrl :
+      script_origin + sameOriginScriptUrl;
+  let dataOrigin = sameOrigin;
+  if (data_origin === 'script-origin') {
+    dataOrigin = script_origin;
+  } else if (data_origin !== '' && data_origin !== 'context-origin') {
+    try {
+      dataOrigin = new URL(data_origin).origin;
+    } catch (e) {
+      if (e.message !== 'Failed to construct \'URL\': Invalid URL') {
+        throw e;
+      }
+      assert_false(expect_success);
+    }
+  }
+  const options = (data_origin === '') ?
+      {credentials: 'omit'} :
+      {credentials: 'omit', dataOrigin: data_origin};
+  let success = false;
+  let error = null;
 
   try {
-    // Currently the `dataOrigin` option is not hooked up.
-    const worklet = await sharedStorage.createWorklet(
-        scriptUrl, {credentials: 'omit', dataOrigin: data_origin});
+    const worklet = await sharedStorage.createWorklet(scriptUrl, options);
 
     const ancestor_key = token();
     let url0 =
@@ -148,14 +168,17 @@ async function testCreateWorkletWithDataOption(
     const result0 = await nextValueFromServer(ancestor_key);
     assert_equals(result0, 'frame0_loaded');
 
-    await verifyKeyValueForOrigin(key, value, scriptOrigin);
-    await deleteKeyForOrigin(key, scriptOrigin);
-    assert_true(expect_success, 'no error caught even though one was expected');
+    await verifyKeyValueForOrigin(key, value, dataOrigin);
+    await deleteKeyForOrigin(key, dataOrigin);
+    success = true;
   } catch (e) {
-    assert_false(
-        expect_success, 'expected success but error thrown: ' + e.toString());
-    assert_equals(e.name, 'TypeError');
+    error = e;
+    assert_equals(e.name, error_type, e.message);
   } finally {
-    test.done();
+    assert_equals(
+        expect_success, success,
+        error ? 'expected success but error thrown: ' + error.toString() :
+                'no error caught even though one was expected');
+    t.done();
   }
 }

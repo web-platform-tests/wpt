@@ -1,8 +1,9 @@
 # mypy: allow-untyped-defs
 
-from .base import cmd_arg, require_arg
+from .base import require_arg
 from .base import get_timeout_multiplier   # noqa: F401
-from .chrome import ChromeBrowser, debug_args, executor_kwargs  # noqa: F401
+from .chrome import ChromeBrowser, debug_args  # noqa: F401
+from .chrome import executor_kwargs as chrome_executor_kwargs
 from ..executors.base import WdspecExecutor  # noqa: F401
 from ..executors.executorchrome import (  # noqa: F401
     ChromeDriverCrashTestExecutor,
@@ -41,6 +42,17 @@ def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
             "debug_info": kwargs["debug_info"]}
 
 
+def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite,
+                    **kwargs):
+    executor_kwargs = chrome_executor_kwargs(logger, test_type, test_environment, run_info_data,
+                                             subsuite, **kwargs)
+    chrome_options = executor_kwargs["capabilities"]["goog:chromeOptions"]
+    # Defaultly enable SiteIsolation in headless shell
+    if "--disable-site-isolation-trials" not in chrome_options["args"]:
+        chrome_options["args"].append("--site-per-process")
+    return executor_kwargs
+
+
 def env_extras(**kwargs):
     return []
 
@@ -55,8 +67,4 @@ def update_properties():
 
 
 class HeadlessShellBrowser(ChromeBrowser):
-    def make_command(self):
-        return [self.webdriver_binary,
-                cmd_arg("port", str(self.port)),
-                cmd_arg("url-base", self.base_path),
-                cmd_arg("enable-chrome-logs")] + self.webdriver_args
+    pass

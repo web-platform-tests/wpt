@@ -1,8 +1,16 @@
 # mypy: allow-untyped-defs
 
+import re
+import time
+
+from mozlog.structuredlog import StructuredLogger
+
 from . import chrome_spki_certs
+from .base import BrowserError, BrowserSettings
 from .base import WebDriverBrowser, require_arg
 from .base import NullBrowser  # noqa: F401
+from .base import OutputHandler
+from .base import get_free_port
 from .base import get_timeout_multiplier   # noqa: F401
 from .base import cmd_arg
 from ..executors import executor_kwargs as base_executor_kwargs
@@ -13,6 +21,9 @@ from ..executors.executorchrome import (  # noqa: F401
     ChromeDriverTestharnessExecutor,
     ChromeDriverCrashTestExecutor
 )
+from ..testloader import GroupMetadata
+
+from typing import Any, List, Optional
 
 
 __wptrunner__ = {"product": "chrome",
@@ -29,6 +40,8 @@ __wptrunner__ = {"product": "chrome",
                  "env_options": "env_options",
                  "update_properties": "update_properties",
                  "timeout_multiplier": "get_timeout_multiplier",}
+
+from ..wpttest import Test
 
 
 def debug_args(debug_info):
@@ -50,18 +63,16 @@ def check_args(**kwargs):
 def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
     return {"binary": kwargs["binary"],
             "webdriver_binary": kwargs["webdriver_binary"],
-            "webdriver_args": kwargs.get("webdriver_args")}
+            "webdriver_args": kwargs.get("webdriver_args"),
+            "leak_check": kwargs.get("leak_check", False)}
 
 
 def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite,
                     **kwargs):
-    sanitizer_enabled = kwargs.get("sanitizer_enabled")
-    if sanitizer_enabled:
-        test_type = "crashtest"
     executor_kwargs = base_executor_kwargs(test_type, test_environment, run_info_data,
                                            subsuite, **kwargs)
     executor_kwargs["close_after_done"] = True
-    executor_kwargs["sanitizer_enabled"] = sanitizer_enabled
+    executor_kwargs["sanitizer_enabled"] = kwargs.get("sanitizer_enabled", False)
     executor_kwargs["reuse_window"] = kwargs.get("reuse_window", False)
 
     capabilities = {
@@ -121,6 +132,20 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     chrome_options["args"].append("--disable-infobars")
     # For WebNN tests.
     chrome_options["args"].append("--enable-features=WebMachineLearningNeuralNetwork")
+    # For Web Speech API tests.
+    chrome_options["args"].append("--enable-features=" + ",".join([
+        "InstallOnDeviceSpeechRecognition",
+        "OnDeviceWebSpeechAvailable",
+        "OnDeviceWebSpeech",
+        "MediaStreamTrackWebSpeech",
+        "WebSpeechRecognitionContext",
+    ]))
+    # For testing WebExtensions using WebDriver.
+    chrome_options["args"].append("--enable-unsafe-extension-debugging")
+    # Connection between ChromeDriver and Chrome will be over pipes.
+    # This is needed to test extensions, PWA, compilation caches that
+    # require local CDP access.
+    chrome_options["args"].append("--remote-debugging-pipe")
 
     # Classify `http-private`, `http-public` and https variants in the
     # appropriate IP address spaces.
@@ -194,8 +219,21 @@ def env_options():
 def update_properties():
     return (["debug", "os", "processor"], {"os": ["version"], "processor": ["bits"]})
 
-
 class ChromeBrowser(WebDriverBrowser):
+
+    # Chrome browser's default startup timeout is 60 seconds. Use 65 seconds here
+    # to allow error message be displayed if that happens.
+    init_timeout: float = 65
+
+    def __init__(self,
+                 logger: StructuredLogger,
+                 leak_check: bool = False,
+                 **kwargs: Any):
+        super().__init__(logger, **kwargs)
+        self._leak_check = leak_check
+        self._actual_port = None
+        self._require_webdriver_bidi: Optional[bool] = None
+
     def restart_on_test_type_change(self, new_test_type: str, old_test_type: str) -> bool:
         # Restart the test runner when switch from/to wdspec tests. Wdspec test
         # is using a different protocol class so a restart is always needed.
@@ -203,8 +241,97 @@ class ChromeBrowser(WebDriverBrowser):
             return True
         return False
 
+    def create_output_handler(self, cmd: List[str]) -> OutputHandler:
+        return ChromeDriverOutputHandler(
+            self.logger,
+            cmd,
+            init_deadline=self.init_deadline)
+
     def make_command(self):
+        # TODO(crbug.com/354135326): Don't pass port unless specified explicitly
+        # after M132.
+        port = get_free_port() if self._port is None else self._port
         return [self.webdriver_binary,
-                cmd_arg("port", str(self.port)),
+                cmd_arg("port", str(port)),
+                # TODO(crbug.com/354135326): Remove --ignore-explicit-port after
+                # M132.
+                cmd_arg("ignore-explicit-port", None),
                 cmd_arg("url-base", self.base_path),
                 cmd_arg("enable-chrome-logs")] + self.webdriver_args
+
+    @property
+    def port(self):
+        # We read the port from WebDriver on startup
+        if self._actual_port is None:
+            if self._output_handler is None or self._output_handler.port is None:
+                raise ValueError("Can't get WebDriver port from its stdout")
+            self._actual_port = self._output_handler.port
+        return self._actual_port
+
+    def start(self, group_metadata: GroupMetadata, **kwargs: Any) -> None:
+        if self._actual_port is not None:
+            raise BrowserError('Unable to start a new WebDriver instance while the old instance is still running')
+        super().start(group_metadata=group_metadata, **kwargs)
+
+    def stop(self, force: bool = False, **kwargs: Any) -> bool:
+        self._actual_port = None
+        return super().stop(force=force, **kwargs)
+
+    def executor_browser(self):
+        browser_cls, browser_kwargs = super().executor_browser()
+        return browser_cls, {**browser_kwargs, "leak_check": self._leak_check}
+
+    @property
+    def require_webdriver_bidi(self) -> Optional[bool]:
+        return self._require_webdriver_bidi
+
+    def settings(self, test: Test) -> BrowserSettings:
+        """ Required to store `require_webdriver_bidi` in browser settings."""
+        settings = super().settings(test)
+        self._require_webdriver_bidi = test.testdriver_features is not None and 'bidi' in test.testdriver_features
+
+        return {
+            **settings,
+            "require_webdriver_bidi": self._require_webdriver_bidi
+        }
+
+
+class ChromeDriverOutputHandler(OutputHandler):
+    PORT_RE = re.compile(rb'.*was started successfully on port (\d+)\.')
+    NO_PORT_RE = re.compile(rb'.*was started successfully\.')
+    REQUESTED_PORT_RE = re.compile(r'.*-port=(\d+)')
+
+    def __init__(self,
+                 logger: StructuredLogger,
+                 command: List[str],
+                 init_deadline: Optional[float] = None):
+        super().__init__(logger, command)
+        self.port = None
+        # TODO(crbug.com/354135326): Remove requested_port logic below after M132.
+        self._requested_port = None
+        for arg in command:
+            m = self.REQUESTED_PORT_RE.match(arg)
+            if m is not None:
+                self._requested_port = int(m.groups()[0])
+        self.init_deadline = init_deadline
+
+    def after_process_start(self, pid):
+        super().after_process_start(pid)
+        while self.port is None:
+            time.sleep(0.1)
+            if self.init_deadline is not None and time.time() > self.init_deadline:
+                raise TimeoutError("Failed to get WebDriver port within the timeout")
+
+    def __call__(self, line):
+        if self.port is None:
+            m = self.PORT_RE.match(line)
+            if m is not None:
+                self.port = int(m.groups()[0])
+                self.logger.info(f"Got WebDriver port {self.port}")
+            else:
+                # TODO(crbug.com/354135326): Remove requested_port logic below after M132.
+                m = self.NO_PORT_RE.match(line)
+                if m is not None:
+                    self.port = self._requested_port
+                    self.logger.info(f"Got WebDriver port {self.port}")
+        super().__call__(line)

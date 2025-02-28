@@ -102,6 +102,8 @@ components:
 
   browser-webkitgtk_minibrowser: {}
 
+  browser-wpewebkit_minibrowser: {}
+
   browser-chrome: {}
 
   browser-chromium: {}
@@ -113,7 +115,7 @@ components:
     scopes:
       - "docker-worker:capability:privileged"
     chunks-override:
-      testharness: 24
+      testharness: 30
 
   tox-python3_8:
     env:
@@ -195,7 +197,7 @@ tasks:
                 browser: chrome
                 channel: dev
               use:
-                - trigger-master
+                - trigger-weekly
                 - trigger-push
             - vars:
                 browser: chrome
@@ -223,6 +225,24 @@ tasks:
                 - trigger-push
             - vars:
                 browser: webkitgtk_minibrowser
+                channel: beta
+              use:
+                - trigger-weekly
+                - trigger-push
+            - vars:
+                browser: wpewebkit_minibrowser
+                channel: nightly
+              use:
+                - trigger-daily
+                - trigger-push
+            - vars:
+                browser: wpewebkit_minibrowser
+                channel: stable
+              use:
+                - trigger-weekly
+                - trigger-push
+            - vars:
+                browser: wpewebkit_minibrowser
                 channel: beta
               use:
                 - trigger-weekly
@@ -295,7 +315,7 @@ tasks:
                 browser: chrome
                 channel: dev
               use:
-                - trigger-master
+                - trigger-weekly
                 - trigger-push
             - vars:
                 browser: chrome

@@ -3,27 +3,10 @@
 // META: script=/resources/testdriver-vendor.js
 'use strict';
 
-test(() => {
-  let iframe = document.createElement('iframe');
-  assert_true(iframe.sandbox.supports('allow-storage-access-by-user-activation'), '`allow-storage-access-by-user-activation`' +
-    'sandbox attribute should be supported');
-}, "`allow-storage-access-by-user-activation` sandbox attribute is supported");
+const frameSourceUrl =
+    'https://{{hosts[alt][www]}}:{{ports[https][0]}}/storage-access-api/resources/sandboxed-iframe-allow-storage-access.html';
 
-(async function () {
-  const frameSourceUrl = 'https://{{hosts[alt][www]}}:{{ports[https][0]}}/storage-access-api/requestStorageAccess-sandboxed-iframe.sub.https.window.html';
+const sandboxAttribute =
+    'allow-scripts allow-same-origin allow-storage-access-by-user-activation';
 
-  let sandboxAttribute =
-    'allow-scripts allow-same-origin';
-  let testCase = 'sandboxed-iframe';
-
-  RunTestsInIFrame(
-    frameSourceUrl + `?testCase=${testCase}`,
-    sandboxAttribute);
-
-  sandboxAttribute += ' allow-storage-access-by-user-activation';
-  testCase = 'sandboxed-iframe-allow-storage-access-by-user-activation';
-
-  RunTestsInIFrame(
-    frameSourceUrl + `?testCase=${testCase}`,
-    sandboxAttribute);
-})();
+RunTestsInIFrame(frameSourceUrl, sandboxAttribute);

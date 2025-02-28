@@ -168,6 +168,21 @@ const service_and_manufacturer_data_ad_packet = {
   }
 };
 
+/**
+* An advertisement packet object that simulates a device that advertises
+* manufacturer data with special id 0x0000 and 0xffff.
+* @type {ScanResult}
+*/
+const zero_and_ffff_manufacturer_uuid_ad_packet = {
+  deviceAddress: '07:07:07:07:07:07',
+  rssi: -10,
+  scanRecord: {
+    name: 'LE Device',
+    uuids: [uuid1234],
+    manufacturerData: {0x0000: manufacturer1Data, 0xFFFF: manufacturer2Data},
+  }
+};
+
 /** Bluetooth Helpers */
 
 /**
@@ -383,8 +398,11 @@ async function setUpPreconnectedFakeDevice(setupOptionsOverride) {
 
   // Request the device if the request option isn't empty.
   if (Object.keys(setupOptions.requestDeviceOptions).length !== 0) {
-    preconnectedDevice.device =
-        await requestDeviceWithTrustedClick(setupOptions.requestDeviceOptions);
+    const prompt_promise = selectFirstDeviceOnDevicePromptUpdated();
+    [preconnectedDevice.device] = await Promise.all([
+      requestDeviceWithTrustedClick(setupOptions.requestDeviceOptions),
+      prompt_promise
+    ]);
   }
 
   // Set up services discovered state.

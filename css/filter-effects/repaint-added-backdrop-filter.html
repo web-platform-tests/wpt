@@ -5,6 +5,7 @@
 <link rel="author" href="mailto:pdr@chromium.org">
 <link rel="help" href="https://drafts.fxtf.org/filter-effects-2/#BackdropFilterProperty">
 <link rel="match" href="reference/repaint-added-backdrop-filter-ref.html">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 <script src="/common/reftest-wait.js"></script>
 
 <p>Expected: A black box.</p>
@@ -12,6 +13,9 @@
 <div id="filter"></div>
 
 <style>
+  :root {
+      font: 12px/1 Ahem;
+  }
   #filter {
     width: 100px;
     height: 100px;

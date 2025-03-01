@@ -4,6 +4,7 @@
 <link rel="author" href="mailto:masonf@chromium.org">
 <link rel="help" href="https://drafts.fxtf.org/filter-effects-2/#BackdropFilterProperty">
 <link rel="match"  href="backdrop-filter-paint-order-ref.html">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 
 <div>
   <p>Expected: A pure white box with a blue border, surrounded by green.<br>
@@ -16,6 +17,9 @@
 <div class="greenbox right"></div>
 <div class="greenbox bottom"></div>
 <style>
+:root {
+  font: 12px/1 Ahem;
+}
 .filterbox {
   position: absolute;
   width: 100px;

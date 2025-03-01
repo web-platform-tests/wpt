@@ -170,6 +170,12 @@ test(() => {
   assert_false(validity.valid);
   assert_equals(control.i.validationMessage, 'customError message');
 
+  // customError should be false if not explicitly set
+  control.i.setValidity({badInput: true}, 'error message');
+  assert_false(validity.customError);
+  assert_false(validity.valid);
+  assert_equals(control.i.validationMessage, 'error message');
+
   // Set multiple flags
   control.i.setValidity({badInput: true, customError: true}, 'multiple errors');
   assert_true(validity.badInput);

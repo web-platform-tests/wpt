@@ -30,7 +30,7 @@
       const worker = new Worker('text-lang-worker-inherit.js');
       worker.postMessage({canvas: offscreen}, [offscreen]);
 
-      const canvas = document.getElementById('canvas1');
+      const canvas = document.getElementById('canvas-' + language);
       const ctx = canvas.getContext('2d', {willReadFrequently: true});
       function checkResult() {
         // Wait until frame propagates.

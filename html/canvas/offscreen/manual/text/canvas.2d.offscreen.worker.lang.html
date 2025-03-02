@@ -1,11 +1,12 @@
 <!doctype HTML>
-<html lang="en-US">
+<html lang="en-US" class="reftest-wait">
   <meta charset="utf-8">
   <title>HTML5 Canvas Test:  The lang attribute is respected in offscreen worker canvas</title>
   <link rel="match" href="canvas.2d.offscreen.worker.lang-ref.html" />
   <link rel="author" href="mailto:schenney@chromium.org"/>
   <link rel="help" href="https://html.spec.whatwg.org/multipage/canvas.html#text-styles"/>
   <meta name="assert" content="An offscreen canvas in a worker respects the lang text attribute." />
+  <script src="/common/reftest-wait.js"></script>
   <style>
     #canvas-zh-CN {
       position: absolute;
@@ -28,7 +29,7 @@
       const worker = new Worker('text-lang-worker-' + language + '.js');
       worker.postMessage({canvas: offscreen}, [offscreen]);
 
-      const canvas = document.getElementById('canvas1');
+      const canvas = document.getElementById('canvas-' + language);
       const ctx = canvas.getContext('2d', {willReadFrequently: true});
       function checkResult() {
         // Wait until frame propagates.

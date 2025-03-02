@@ -33,9 +33,11 @@
       bitmap_ctx.transferFromImageBitmap(bitmap);
     }
 
-    drawText('zh-CN');
-    document.documentElement.setAttribute('lang', 'ja');
-    drawText('ja');
+    function runTest() {
+      drawText('zh-CN');
+      document.documentElement.setAttribute('lang', 'ja');
+      drawText('ja');
+    }
   </script>
   <body onload="runTest()">
     <canvas lang="zh-CN" id="canvas-zh-CN" width="300" height="100">

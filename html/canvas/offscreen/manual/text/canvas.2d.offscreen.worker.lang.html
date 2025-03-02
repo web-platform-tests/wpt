@@ -6,14 +6,26 @@
   <link rel="author" href="mailto:schenney@chromium.org"/>
   <link rel="help" href="https://html.spec.whatwg.org/multipage/canvas.html#text-styles"/>
   <meta name="assert" content="An offscreen canvas in a worker respects the lang text attribute." />
+  <style>
+    #canvas-zh-CN {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+    #canvas-ja {
+      position: absolute;
+      top: 120px;
+      left: 10px;
+    }
+  </style>
   <script type="text/javascript">
-    function runTest() {
+    function drawText(language) {
       const placeholder_canvas = document.createElement('canvas');
       placeholder_canvas.setAttribute('width', '300');
-      placeholder_canvas.setAttribute('height', '150');
+      placeholder_canvas.setAttribute('height', '100');
       const offscreen = placeholder_canvas.transferControlToOffscreen();
 
-      const worker = new Worker('text-lang-worker.js');
+      const worker = new Worker('text-lang-worker-' + language + '.js');
       worker.postMessage({canvas: offscreen}, [offscreen]);
 
       const canvas = document.getElementById('canvas1');
@@ -32,9 +44,16 @@
       }
       requestAnimationFrame(checkResult);
     }
+    function runTest() {
+      drawText('zh-CN');
+      drawText('ja');
+    }
   </script>
   <body onload="runTest()">
-    <canvas id="canvas1" width="300" height="150">
+    <canvas id="canvas-zh-CN" lang="zh-CN" width="300" height="100">
+      Browser does not support HTML5 Canvas.
+    </canvas>
+    <canvas id="canvas-ja" lang="ja" width="300" height="100">
       Browser does not support HTML5 Canvas.
     </canvas>
   </body>

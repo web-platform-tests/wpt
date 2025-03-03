@@ -2,6 +2,7 @@ import pytest
 from tests.support.sync import AsyncPoll
 
 from webdriver.bidi.modules.script import ContextTarget
+from ... import recursive_compare
 
 from webdriver.error import TimeoutException
 
@@ -42,12 +43,58 @@ async def test_unsubscribe(bidi_session, inline, top_context, wait_for_event,
     remove_listener()
 
 
-async def test_subscribe(bidi_session, inline, top_context, wait_for_event,
-        wait_for_future_safe):
-    await bidi_session.session.subscribe(events=[FILE_DIALOG_OPENED_EVENT])
+async def test_subscribe(bidi_session, subscribe_events, inline, top_context,
+        wait_for_event, wait_for_future_safe):
+    await subscribe_events(events=[FILE_DIALOG_OPENED_EVENT])
 
     on_entry = wait_for_event(FILE_DIALOG_OPENED_EVENT)
     url = inline("<input id=input type=file />")
+
+    await bidi_session.browsing_context.navigate(context=top_context["context"],
+                                                 url=url, wait="complete")
+
+    await bidi_session.script.evaluate(
+        expression="input.click()",
+        target=ContextTarget(top_context["context"]),
+        await_promise=False,
+        user_activation=True
+    )
+
+    event = await wait_for_future_safe(on_entry)
+    recursive_compare({
+        "context": top_context["context"],
+    }, event)
+
+
+@pytest.mark.parametrize("multiple", [True, False])
+async def test_multiple(bidi_session, subscribe_events, inline, top_context,
+        wait_for_event, wait_for_future_safe, multiple):
+    await subscribe_events(events=[FILE_DIALOG_OPENED_EVENT])
+
+    on_entry = wait_for_event(FILE_DIALOG_OPENED_EVENT)
+    url = inline(
+        f"<input id=input type=file {'multiple' if multiple else ''} />")
+
+    await bidi_session.browsing_context.navigate(context=top_context["context"],
+                                                 url=url, wait="complete")
+
+    await bidi_session.script.evaluate(
+        expression="input.click()",
+        target=ContextTarget(top_context["context"]),
+        await_promise=False,
+        user_activation=True
+    )
+    event = await wait_for_future_safe(on_entry)
+
+    assert event['multiple'] == multiple
+
+
+async def test_element(bidi_session, subscribe_events, inline, top_context,
+        wait_for_event, wait_for_future_safe):
+    await subscribe_events(events=[FILE_DIALOG_OPENED_EVENT])
+
+    on_entry = wait_for_event(FILE_DIALOG_OPENED_EVENT)
+    url = inline(f"<input id=input type=file />")
 
     await bidi_session.browsing_context.navigate(context=top_context["context"],
                                                  url=url, wait="complete")
@@ -58,13 +105,9 @@ async def test_subscribe(bidi_session, inline, top_context, wait_for_event,
         await_promise=False,
         user_activation=True
     )
-    shared_id = node["sharedId"]
 
     event = await wait_for_future_safe(on_entry)
-    assert event == {
-        'context': top_context["context"],
-        'element': {
-            'sharedId': shared_id,
-        },
-        'multiple': False,
+
+    assert event['element'] == {
+        'sharedId': node["sharedId"],
     }

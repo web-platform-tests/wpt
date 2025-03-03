@@ -28,9 +28,9 @@ def recursive_compare(expected: Any, actual: Any) -> None:
 
         expected_keys = expected.keys() - unexpected_keys
         # Actual Mapping can have more keys as part of the forwards-compat design.
-        assert (expected_keys <= actual.keys()), \
-            f"Key set should be present: {set(expected.keys()) - set(actual.keys())}"
-
+        assert (
+            expected_keys <= actual.keys()
+        ), f"Key set should be present: {set(expected_keys) - set(actual.keys())}"
         for key in expected_keys:
             recursive_compare(expected[key], actual[key])
         return
@@ -105,8 +105,7 @@ def assert_cookies(cookies, expected_cookies):
 def assert_handle(obj: Mapping[str, Any], should_contain_handle: bool) -> None:
     if should_contain_handle:
         assert "handle" in obj, f"Result should contain `handle`. Actual: {obj}"
-        assert isinstance(obj["handle"],
-                          str), f"`handle` should be a string, but was {type(obj['handle'])}"
+        assert isinstance(obj["handle"], str), f"`handle` should be a string, but was {type(obj['handle'])}"
 
         # Recursively check that handle is not found in any of the nested values.
         if "value" in obj:
@@ -161,7 +160,7 @@ async def get_element_dimensions(bidi_session, context, element):
 
 
 async def get_viewport_dimensions(bidi_session, context: str,
-        with_scrollbar: bool = True, quirk_mode: bool = False):
+      with_scrollbar: bool = True, quirk_mode: bool = False):
     if with_scrollbar:
         expression = """
             ({

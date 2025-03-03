@@ -722,6 +722,9 @@ class Edge(BrowserSetup):
             # enough capabilities to run Microsoft Edge with sandboxing. (gh-20133)
             kwargs["binary_args"].append("--no-sandbox")
 
+        # Windows CI machines do not have GPUs, so use software rendering via --enable-swiftshader
+        if platform.system() == "Windows":
+            kwargs["binary_args"].append("--enable-swiftshader")
 
 class Safari(BrowserSetup):
     name = "safari"

@@ -2,7 +2,8 @@ import pytest
 from tests.support.sync import AsyncPoll
 
 from webdriver.bidi.modules.script import ContextTarget
-from ... import recursive_compare
+from webdriver.bidi.undefined import UNDEFINED
+from . import assert_file_dialog_opened_event
 
 from webdriver.error import TimeoutException
 
@@ -46,10 +47,9 @@ async def test_unsubscribe(bidi_session, inline, top_context, wait_for_event,
 async def test_subscribe(bidi_session, subscribe_events, inline, top_context,
         wait_for_event, wait_for_future_safe):
     await subscribe_events(events=[FILE_DIALOG_OPENED_EVENT])
-
     on_entry = wait_for_event(FILE_DIALOG_OPENED_EVENT)
-    url = inline("<input id=input type=file />")
 
+    url = inline("<input id=input type=file />")
     await bidi_session.browsing_context.navigate(context=top_context["context"],
                                                  url=url, wait="complete")
 
@@ -61,20 +61,17 @@ async def test_subscribe(bidi_session, subscribe_events, inline, top_context,
     )
 
     event = await wait_for_future_safe(on_entry)
-    recursive_compare({
-        "context": top_context["context"],
-    }, event)
+    assert_file_dialog_opened_event(event, top_context["context"])
 
 
 @pytest.mark.parametrize("multiple", [True, False])
 async def test_multiple(bidi_session, subscribe_events, inline, top_context,
         wait_for_event, wait_for_future_safe, multiple):
     await subscribe_events(events=[FILE_DIALOG_OPENED_EVENT])
-
     on_entry = wait_for_event(FILE_DIALOG_OPENED_EVENT)
+
     url = inline(
         f"<input id=input type=file {'multiple' if multiple else ''} />")
-
     await bidi_session.browsing_context.navigate(context=top_context["context"],
                                                  url=url, wait="complete")
 
@@ -85,17 +82,16 @@ async def test_multiple(bidi_session, subscribe_events, inline, top_context,
         user_activation=True
     )
     event = await wait_for_future_safe(on_entry)
-
-    assert event['multiple'] == multiple
+    assert_file_dialog_opened_event(event, top_context["context"],
+                                    multiple=multiple)
 
 
 async def test_element(bidi_session, subscribe_events, inline, top_context,
         wait_for_event, wait_for_future_safe):
     await subscribe_events(events=[FILE_DIALOG_OPENED_EVENT])
-
     on_entry = wait_for_event(FILE_DIALOG_OPENED_EVENT)
-    url = inline(f"<input id=input type=file />")
 
+    url = inline("<input id=input type=file />")
     await bidi_session.browsing_context.navigate(context=top_context["context"],
                                                  url=url, wait="complete")
 
@@ -107,7 +103,31 @@ async def test_element(bidi_session, subscribe_events, inline, top_context,
     )
 
     event = await wait_for_future_safe(on_entry)
-
-    assert event['element'] == {
+    expected_element = {
         'sharedId': node["sharedId"],
     }
+    assert_file_dialog_opened_event(event, top_context["context"],
+                                    element=expected_element)
+
+
+@pytest.mark.parametrize("multiple", [True, False])
+async def test_show_open_file_picker(bidi_session, subscribe_events, inline,
+        top_context, wait_for_event, wait_for_future_safe, multiple):
+    await subscribe_events(events=[FILE_DIALOG_OPENED_EVENT])
+    on_entry = wait_for_event(FILE_DIALOG_OPENED_EVENT)
+
+    # Navigate to a page to enable file picker.
+    await bidi_session.browsing_context.navigate(context=top_context["context"],
+                                                 url=(inline("")),
+                                                 wait="complete")
+
+    await bidi_session.script.evaluate(
+        expression=f"window.showOpenFilePicker({{'multiple': {'true' if multiple else 'false'}}})",
+        target=ContextTarget(top_context["context"]),
+        await_promise=False,
+        user_activation=True
+    )
+
+    event = await wait_for_future_safe(on_entry)
+    assert_file_dialog_opened_event(event, top_context["context"],
+                                    multiple=multiple, element=UNDEFINED)

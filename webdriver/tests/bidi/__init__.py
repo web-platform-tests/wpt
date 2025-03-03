@@ -1,10 +1,12 @@
 from typing import Any, Callable, Dict, List, Mapping
 from webdriver.bidi.modules.script import ContextTarget
+from webdriver.bidi.undefined import UNDEFINED
 
 
 # Compares 2 objects recursively.
 # Actual value can have more keys as part of the forwards-compat design.
-# Expected value can be a callable delegate, asserting the value.
+# Expected value can be a value, a callable delegate, asserting the value, or UNDEFINED.
+# If expected value is UNDEFINED, the actual value should not be present.
 def recursive_compare(expected: Any, actual: Any) -> None:
     if callable(expected):
         expected(actual)
@@ -17,11 +19,19 @@ def recursive_compare(expected: Any, actual: Any) -> None:
         return
 
     if isinstance(actual, Dict) and isinstance(expected, Dict):
+
+        # Expected keys with UNDEFINED values should not be present.
+        unexpected_keys = {key: value for key, value in expected.items() if
+                             value is UNDEFINED}.keys()
+        assert not (unexpected_keys & actual.keys()), \
+            f"Keys should not be present: {unexpected_keys & actual.keys()}"
+
+        expected_keys = expected.keys() - unexpected_keys
         # Actual Mapping can have more keys as part of the forwards-compat design.
-        assert (
-            expected.keys() <= actual.keys()
-        ), f"Key set should be present: {set(expected.keys()) - set(actual.keys())}"
-        for key in expected.keys():
+        assert (expected_keys <= actual.keys()), \
+            f"Key set should be present: {set(expected.keys()) - set(actual.keys())}"
+
+        for key in expected_keys:
             recursive_compare(expected[key], actual[key])
         return
 
@@ -95,7 +105,8 @@ def assert_cookies(cookies, expected_cookies):
 def assert_handle(obj: Mapping[str, Any], should_contain_handle: bool) -> None:
     if should_contain_handle:
         assert "handle" in obj, f"Result should contain `handle`. Actual: {obj}"
-        assert isinstance(obj["handle"], str), f"`handle` should be a string, but was {type(obj['handle'])}"
+        assert isinstance(obj["handle"],
+                          str), f"`handle` should be a string, but was {type(obj['handle'])}"
 
         # Recursively check that handle is not found in any of the nested values.
         if "value" in obj:
@@ -150,7 +161,7 @@ async def get_element_dimensions(bidi_session, context, element):
 
 
 async def get_viewport_dimensions(bidi_session, context: str,
-      with_scrollbar: bool = True, quirk_mode: bool = False):
+        with_scrollbar: bool = True, quirk_mode: bool = False):
     if with_scrollbar:
         expression = """
             ({

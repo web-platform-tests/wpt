@@ -1,3 +1,4 @@
+// META: global=window,dedicatedworker,shadowrealm
 // META: script=/common/subset-tests-by-key.js
 // META: variant=?include=file
 // META: variant=?include=javascript
@@ -6,7 +7,7 @@
 
 // Keep this file in sync with url-setters-a-area.window.js.
 
-promise_test(() => fetch("resources/setters_tests.json").then(res => res.json()).then(runURLSettersTests), "Loading data…");
+promise_test(() => fetch_json("resources/setters_tests.json").then(runURLSettersTests), "Loading data…");
 
 function runURLSettersTests(all_test_cases) {
   for (var attribute_to_be_set in all_test_cases) {

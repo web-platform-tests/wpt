@@ -20,25 +20,38 @@
     }
   </style>
   <script type="text/javascript">
-    function drawText(language) {
-      const placeholder_canvas = document.createElement('canvas');
-      placeholder_canvas.setAttribute('width', '300');
-      placeholder_canvas.setAttribute('height', '100');
-      placeholder_canvas.setAttribute('lang', language);
-      const offscreen = placeholder_canvas.transferControlToOffscreen();
+    function runTest() {
+      const placeholder_canvas_zh = document.createElement('canvas');
+      placeholder_canvas_zh.setAttribute('width', '300');
+      placeholder_canvas_zh.setAttribute('height', '100');
+      placeholder_canvas_zh.setAttribute('lang', 'zh-CN');
+      const offscreen_zh = placeholder_canvas_zh.transferControlToOffscreen();
 
-      const worker = new Worker('text-lang-worker-inherit.js');
-      worker.postMessage({canvas: offscreen}, [offscreen]);
+      const worker_zh = new Worker('text-lang-worker-inherit.js');
+      worker_zh.postMessage({canvas: offscreen_zh}, [offscreen_zh]);
 
-      const canvas = document.getElementById('canvas-' + language);
-      const ctx = canvas.getContext('2d', {willReadFrequently: true});
+      const placeholder_canvas_ja = document.createElement('canvas');
+      placeholder_canvas_ja.setAttribute('width', '300');
+      placeholder_canvas_ja.setAttribute('height', '100');
+      placeholder_canvas_zh.setAttribute('lang', 'ja');
+      const offscreen_ja = placeholder_canvas_ja.transferControlToOffscreen();
+
+      const worker_ja = new Worker('text-lang-worker-inherit.js');
+      worker_ja.postMessage({canvas: offscreen_ja}, [offscreen_ja]);
+
+      const canvas_zh = document.getElementById('canvas-zh-CN');
+      const ctx_zh = canvas_zh.getContext('2d', {willReadFrequently: true});
+      const canvas_ja = document.getElementById('canvas-ja');
+      const ctx_ja = canvas_ja.getContext('2d', {willReadFrequently: true});
       function checkResult() {
         // Wait until frame propagates.
-        ctx.drawImage(placeholder_canvas, 0, 0);
-        const pixel = ctx.getImageData(0, 0, 1, 1).data;
+        ctx_zh.drawImage(placeholder_canvas_zh, 0, 0);
+        const pixel_zh = ctx_zh.getImageData(0, 0, 1, 1).data;
+        ctx_ja.drawImage(placeholder_canvas_ja, 0, 0);
+        const pixel_ja = ctx_ja.getImageData(0, 0, 1, 1).data;
 
-        if (pixel[3] == 0) {
-          // Result not available, wait longer.
+        if (pixel_zh[3] == 0 || pixel_ja[3] == 0) {
+          // Results not available, wait longer.
           requestAnimationFrame(checkResult);
         } else {
           takeScreenshot();
@@ -46,16 +59,12 @@
       }
       requestAnimationFrame(checkResult);
     }
-    function runTest() {
-      drawText('zh-CN');
-      drawText('ja');
-    }
   </script>
   <body onload="runTest()">
-    <canvas id="canvas-zh-CN" lang="zh-CN" width="300" height="100">
+    <canvas id="canvas-zh-CN" width="300" height="100">
       Browser does not support HTML5 Canvas.
     </canvas>
-    <canvas id="canvas-ja" lang="ja" width="300" height="100">
+    <canvas id="canvas-ja" width="300" height="100">
       Browser does not support HTML5 Canvas.
     </canvas>
   </body>

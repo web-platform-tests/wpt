@@ -21,12 +21,7 @@
             var xhr = new XMLHttpRequest;
             xhr.open("GET", "http://www1.{{host}}:{{ports[http][0]}}/content-security-policy/support/fail.png", false);
             xhr.send();
-            xhr.onload = function() {
-                log("Fail");
-            }
-            xhr.onerror = function() {
-                log("Fail");
-            }
+            log("Fail");
         } catch (e) {
             log("Pass");
         }

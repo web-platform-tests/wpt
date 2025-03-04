@@ -13,16 +13,12 @@
       (https://web-platform-tests.org/writing-tests/testharness.html#tests-for-other-or-multiple-globals-any-js)
       can't be used here because constructing the worker would require a trusted type.
   -->
-  <script src="support/DOMWindowTimers-setTimeout-setInterval.js"></script>
   <script>
     let test_setup_policy = trustedTypes.createPolicy("p", {
       createScriptURL: x => x
     });
 
     fetch_tests_from_worker(new Worker(test_setup_policy.createScriptURL(
-      "support/DOMWindowTimers-setTimeout-setInterval-worker.js")));
-
-    fetch_tests_from_worker(new SharedWorker(test_setup_policy.createScriptURL(
       "support/DOMWindowTimers-setTimeout-setInterval-worker.js")));
   </script>
 </body>

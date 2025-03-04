@@ -6,8 +6,6 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-actions.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
 <script src="resources/invoker-utils.js"></script>
 
 <div id="invokee" popover></div>
@@ -23,7 +21,7 @@
         fired = true;
         invokee.remove();
       });
-      await clickOn(invokerbutton);
+      invokerbutton.click();
       assert_true(fired, "command event fired");
       assert_false(invokee.isConnected, "popover no longer connected");
       assert_false(invokee.matches(":popover-open"), "invokee :popover-open");

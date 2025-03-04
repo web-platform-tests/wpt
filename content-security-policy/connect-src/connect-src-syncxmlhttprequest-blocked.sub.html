@@ -24,6 +24,8 @@
             log("Fail");
         } catch (e) {
             log("Pass");
+            assert_true(e instanceof DOMException, "Exception should be a DOMException");
+            assert_equals(e.code, DOMException.NETWORK_ERR, "Exception should be a 'NetworkError'");
         }
 
     </script>

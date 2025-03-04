@@ -3,7 +3,7 @@ self.onmessage = function(e) {
   offscreen_ctx = offscreen.getContext('2d');
 
   offscreen_ctx.font = '25px serif';
-  offscreen_ctx.lang = 'zh-CN';
+  offscreen_ctx.lang = 'ja';
   offscreen_ctx.fillText('今骨直', 5, 50);
 
   // Draw a single pixel, used to detect that the worker has completed.

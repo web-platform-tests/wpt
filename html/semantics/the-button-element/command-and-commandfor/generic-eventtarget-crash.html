@@ -2,17 +2,17 @@
 <meta charset="utf-8" />
 <meta name="author" title="Keith Cirkel" href="mailto:wpt@keithcirkel.co.uk" />
 <link rel="help" href="https://open-ui.org/components/invokers.explainer/" />
-<div id="invokee"></div>
+<div id="target"></div>
 
 <script type="module">
   const commandEvent = new CommandEvent('command', { bubbles: true });
   document.body.addEventListener('command', e => {
     e.source.toString();
   });
-  invokee.addEventListener('command', e => {
+  target.addEventListener('command', e => {
     e.source.toString();
   });
-  invokee.dispatchEvent(commandEvent);
+  target.dispatchEvent(commandEvent);
   await Promise.resolve();
   commandEvent.source.toString();
 </script>

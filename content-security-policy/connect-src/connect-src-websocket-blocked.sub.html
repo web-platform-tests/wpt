@@ -19,6 +19,7 @@
 
         var ws = new WebSocket("ws://{{domains[www1]}}:{{ports[http][0]}}/echo");
         ws.onerror = () => {
+            assert_equals(ws.readyState, WebSocket.CLOSED, "WebSocket should be closed");
             log("blocked");
         }
     </script>

@@ -19,6 +19,7 @@
 
         var es = new EventSource("http://{{domains[www1]}}:{{ports[http][0]}}/content-security-policy/connect-src/resources/simple-event-stream");
         es.onerror = () => {
+            assert_equals(es.readyState, EventSource.CLOSED, "EventSource should be closed");
             log("blocked");
         }
     </script>

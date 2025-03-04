@@ -21,7 +21,7 @@ def get_IdnaTestV2_lines():
     IdnaTestV2 = os.path.join(os.path.dirname(__file__), "IdnaTestV2.txt")
     if not os.path.exists(IdnaTestV2):
         # Download IdnaTestV2.txt if it doesn't exist yet
-        open(IdnaTestV2, "w", encoding="utf-8").write(requests.get("https://unicode.org/Public/idna/16.0.0/IdnaTestV2.txt").text)
+        open(IdnaTestV2, "w", encoding="utf-8").write(requests.get("https://unicode.org/Public/idna/latest/IdnaTestV2.txt").text)
     return open(IdnaTestV2, "r", encoding="utf-8").readlines()
 
 def remove_escapes(input):

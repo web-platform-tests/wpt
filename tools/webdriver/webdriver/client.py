@@ -763,14 +763,6 @@ class Session:
                 body[prop] = value
         return self.send_session_command("POST", "print", body)
 
-    @command
-    def load_web_extension(self, extension):
-        return self.send_session_command("POST", "webextension", extension)
-
-    @command
-    def unload_web_extension(self, extension_id):
-        return self.send_session_command("DELETE", "webextension/%s" % extension_id)
-
 
 class ShadowRoot:
     identifier = "shadow-6066-11e4-a52e-4f735466cecf"

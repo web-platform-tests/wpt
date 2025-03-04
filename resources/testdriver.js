@@ -73,6 +73,26 @@
          Represents `WebDriver BiDi <https://w3c.github.io/webdriver-bidi>`_ protocol.
          */
         bidi: {
+            webExtension: {
+                /**
+                 * Installs a WebExtension.
+                 *
+                 * Matches the `webExtension.Install <https://www.w3.org/TR/webdriver-bidi/#command-webExtension-install> command`_
+                 *
+                 */
+                install: function(params) {
+                    return window.test_driver_internal.bidi.webExtension.install(params);
+                },
+
+                /**
+                 * Uninstalls a WebExtension.
+                 *
+                 * Matches the `webExtension.Uninstall <https://www.w3.org/TR/webdriver-bidi/#command-webExtension-uninstall> command`_
+                 */
+                uninstall: function(params) {
+                    return window.test_driver_internal.bidi.webExtension.uninstall(params);
+                },
+            },
             /**
              * @typedef {(String|WindowProxy)} Context A browsing context. Can
              * be specified by its ID (a string) or using a `WindowProxy`
@@ -1473,46 +1493,6 @@
         remove_virtual_pressure_source: function(source_type, context=null) {
             return window.test_driver_internal.remove_virtual_pressure_source(source_type, context);
         },
-
-        /**
-         * Loads a WebExtension.
-         *
-         * Matches the `Load Web Extension
-         * <https://github.com/w3c/webextensions/blob/main/specification/webdriver-classic.bs>`_
-         * WebDriver command.
-         * In addition to the
-         * `webExtension.Install <https://www.w3.org/TR/webdriver-bidi/#command-webExtension-install> command`_
-         *
-         * @param {String} type - A type such as "path", "archviePath", or "base64".
-         *
-         * @param {String} path - The path to the extension's resources if type "path" or "archivePath" is specified.
-         *
-         * @param {String} value - The base64 encoded value of the extension's resources if type "base64" is specified.
-         *
-         * @returns {Promise} Returns the extension identifier as defined in the specs.
-         *                    Rejected if the extension fails to load.
-         */
-        load_web_extension: function(path) {
-            return window.test_driver_internal.load_web_extension(path);
-        },
-
-        /**
-         * Unloads a WebExtension.
-         *
-         * Matches the `Unload Web Extension
-         * <https://github.com/w3c/webextensions/blob/main/specification/webdriver-classic.bs>`_
-         * WebDriver command.
-         * In addition to the
-         * `webExtension.Uninstall <https://www.w3.org/TR/webdriver-bidi/#command-webExtension-uninstall> command`_
-         *
-         * @param {String} extension_id - The extension idetifier.
-         *
-         * @returns {Promise} Fulfilled after the extension has been removed.
-         *                    Rejected in case the WebDriver command errors out.
-         */
-        unload_web_extension: function(extension) {
-            return window.test_driver_internal.unload_web_extension(extension);
-        },
     };
 
     window.test_driver_internal = {
@@ -1525,6 +1505,16 @@
         in_automation: false,
 
         bidi: {
+            webExtension: {
+                install: function () {
+                    throw new Error(
+                        "bidi.webExtension.install is not implemented by testdriver-vendor.js");
+                },
+                uninstall: function () {
+                    throw new Error(
+                        "bidi.webExtension.uninstall is not implemented by testdriver-vendor.js");
+                }
+            },
             bluetooth: {
                 handle_request_device_prompt: function() {
                     throw new Error(

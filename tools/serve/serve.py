@@ -314,64 +314,6 @@ class WindowHandler(HtmlWrapperHandler):
 <script src="%(path)s"></script>
 """
 
-class ExtensionHandler(HtmlWrapperHandler):
-    path_replace = [(".extension.html", ".extension.js")]
-    wrapper = """<!doctype html>
-<meta charset=utf-8>
-%(meta)s
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js?feature=bidi"></script>
-<script src="/resources/testdriver-vendor.js"></script>
-%(script)s
-<div id=log></div>
-<script>
-  setup({ explicit_done: true })
-
-  function runTestsWithWebExtension(extensionPath) {
-    test_driver.load_web_extension({
-        type: "path",
-        path: extensionPath
-    })
-    .then((result) => {
-      let test;
-
-      browser.test.onMessage.addListener((message, data) => {
-        switch(message) {
-          case "assert":
-            test.step(() => {
-              assert_true(data.result, data.message)
-            })
-
-            break
-          case "assert-equality":
-            test.step(() => {
-              assert_true(data.result, `Expected: ${data.expectedValue}; Actual: ${data.actualValue}; Description: ${data.message}`)
-            })
-
-            break
-          case "test-started":
-            test = async_test(data.testName)
-
-            break
-          case "test-finished":
-            test.done()
-
-            if (!data.remainingTests)
-                test_driver.unload_web_extension(result.extension)
-                    .then(() => {
-                        done()
-                    })
-
-            break
-        }
-      })
-    })
-  }
-</script>
-<script src="%(path)s"></script>
-"""
-
 
 class WindowModulesHandler(HtmlWrapperHandler):
     global_type = "window-module"
@@ -833,7 +775,6 @@ class RoutesBuilder:
             ("GET", "*.worker.html", WorkersHandler),
             ("GET", "*.worker-module.html", WorkerModulesHandler),
             ("GET", "*.window.html", WindowHandler),
-            ("GET", "*.extension.html", ExtensionHandler),
             ("GET", "*.any.html", AnyHtmlHandler),
             ("GET", "*.any.sharedworker.html", SharedWorkersHandler),
             ("GET", "*.any.sharedworker-module.html", SharedWorkerModulesHandler),

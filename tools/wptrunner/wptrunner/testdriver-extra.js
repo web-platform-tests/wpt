@@ -217,17 +217,15 @@
 
     window.test_driver_internal.in_automation = true;
 
-    window.test_driver_internal.bidi.bluetooth.handle_request_device_prompt =
-        function(params) {
-        return create_action('bidi.bluetooth.handle_request_device_prompt', {
-            // Default to the current window.
-            context: window,
-            ...params
-        });
+    window.test_driver_internal.bidi.webExtension.install = function (params) {
+        return create_action("bidi.webExtension.install", params);
     }
 
-    window.test_driver_internal.bidi.bluetooth.simulate_adapter =
-        function(params) {
+    window.test_driver_internal.bidi.webExtension.uninstall = function (params) {
+        return create_action("bidi.webExtension.uninstall", params);
+    }
+
+    window.test_driver_internal.bidi.bluetooth.simulate_adapter = function (params) {
         return create_action("bidi.bluetooth.simulate_adapter", {
             // Default to the current window.
             context: window,
@@ -306,14 +304,6 @@
     window.test_driver_internal.get_all_cookies = function(context=null) {
         return create_context_action("get_all_cookies", context, {});
     };
-
-    window.test_driver_internal.load_web_extension = function (params, context=null) {
-        return create_context_action("load_web_extension", context, {extension: params});
-    }
-
-    window.test_driver_internal.unload_web_extension = function (extension_id, context=null) {
-        return create_context_action("unload_web_extension", context, {extension_id});
-    }
 
     window.test_driver_internal.get_computed_label = function(element) {
         const selector = get_selector(element);

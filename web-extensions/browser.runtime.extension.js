@@ -1,1 +1,0 @@
-runTestsWithWebExtension("/resources/runtime/")

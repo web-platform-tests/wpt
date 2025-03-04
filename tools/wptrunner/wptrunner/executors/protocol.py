@@ -106,7 +106,6 @@ class ProtocolPart:
 
     def __init__(self, parent):
         self.parent = parent
-        self.test_path = None
 
     @property
     def logger(self):
@@ -332,18 +331,18 @@ class AccessibilityProtocolPart(ProtocolPart):
         pass
 
 
-class WebExtensionsProtocolPart(ProtocolPart):
+class BiDiWebExtensionProtocolPart(ProtocolPart):
     """Protocol part for managing WebExtensions"""
     __metaclass__ = ABCMeta
 
-    name = "web_extensions"
+    name = "bidi_webExtension"
 
     @abstractmethod
-    def load_web_extension(self, extension):
+    def install(self, extension):
         pass
 
     @abstractmethod
-    def unload_web_extension(self, extension_id):
+    def uninstall(self, extension_id):
         pass
 
 

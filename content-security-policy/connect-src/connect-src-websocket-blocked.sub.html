@@ -18,13 +18,9 @@
         });
 
         var ws = new WebSocket("ws://{{domains[www1]}}:{{ports[http][0]}}/echo");
-
-        if (ws.readyState == WebSocket.CLOSING || ws.readyState == WebSocket.CLOSED) {
+        ws.onerror = () => {
             log("blocked");
-        } else {
-            log("allowed");
         }
-
     </script>
     <div id="log"></div>
 </body>

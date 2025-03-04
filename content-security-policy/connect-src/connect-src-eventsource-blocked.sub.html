@@ -18,14 +18,8 @@
         });
 
         var es = new EventSource("http://{{domains[www1]}}:{{ports[http][0]}}/content-security-policy/connect-src/resources/simple-event-stream");
-        if (es.readyState == EventSource.CONNECTING) {
-            setTimeout( function() {
-                es.readyState != EventSource.CLOSED ? log("allowed") : log("blocked");
-            }, 1000);
-        } else if (es.readyState == EventSource.CLOSED) {
+        es.onerror = () => {
             log("blocked");
-        } else {
-            log("allowed");
         }
     </script>
     <div id="log"></div>

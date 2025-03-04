@@ -27,7 +27,7 @@
         // Note: Some of the following could be interpreted as Valid or Line skipped (e.g., LF before HTTP (first), or after-reason (LFCRLF in the first line, rest could be interpreted as the body))
         // Note: Obsolete Line Folding is not considered here (https://www.rfc-editor.org/rfc/rfc9112.html#section-5.2)
         // Status Line
-        'first': ['Network Error', 'Network Error'], 
+        'first': ['Network Error', 'Network Error'],
         'in-http': ['Network Error', 'Network Error'],
         'before-slash': ['Network Error', 'Network Error'],
         'after-slash': ['Network Error', 'Network Error'],
@@ -231,7 +231,7 @@
             // If it is possible to distinguish between blocked due to Network Error and blocked due to XFO (reliably in all browsers) change this
             if (outcome_framing !== 'no-XFO') {
               assert_equals(frame.contentDocument, null);
-            } 
+            }
             // If Line (XFO) is skipped, frame should be rendered and accessible as it is SameOrigin
             else {
               assert_not_equals(frame.contentDocument, null);

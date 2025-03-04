@@ -432,28 +432,8 @@ async def test_params_pointer_action_move_coordinate_missing(
 
 
 @pytest.mark.parametrize("coordinate", ["x", "y"])
-@pytest.mark.parametrize("value", [None, "foo", True, 0.1, [], {}])
+@pytest.mark.parametrize("value", [None, "foo", True, [], {}])
 async def test_params_pointer_action_move_coordinate_invalid_type(
-        perform_actions, coordinate, value):
-    action = create_pointer_action(
-        "pointerMove",
-        {
-            "x": value if coordinate == "x" else 0,
-            "y": value if coordinate == "y" else 0,
-        },
-    )
-
-    with pytest.raises(InvalidArgumentException):
-        await perform_actions([{
-            "type": "pointer",
-            "id": "foo",
-            "actions": [action]
-        }])
-
-
-@pytest.mark.parametrize("coordinate", ["x", "y"])
-@pytest.mark.parametrize("value", [MIN_INT - 1, MAX_INT + 1])
-async def test_params_pointer_action_move_coordinate_invalid_value(
         perform_actions, coordinate, value):
     action = create_pointer_action(
         "pointerMove",

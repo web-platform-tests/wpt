@@ -51,6 +51,7 @@ TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.sxg
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.wbn
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.avif
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.annexb
+TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.crx
 
 ## .gitignore
 W3C-TEST.ORG: .gitignore
@@ -104,6 +105,7 @@ TRAILING WHITESPACE: webvtt/parsing/file-parsing/tests/support/*.vtt
 TRAILING WHITESPACE: xhr/resources/headers-some-are-empty.asis
 TRAILING WHITESPACE: content-security-policy/support/manifest.json
 TRAILING WHITESPACE: fetch/h1-parsing/resources/parsing_*.asis
+TRAILING WHITESPACE: dom/xslt/resources/testu1LINE.xml
 
 # Intentional use of print statements
 PRINT STATEMENT: dom/nodes/Document-createElement-namespace-tests/generate.py

@@ -9,6 +9,7 @@ const notification_args = [
       requireInteraction: true,
       silent: true,
       data: fakeCustomData,
+      actions: [{ action: "foo", title: "bar" }]
   }
 ];
 
@@ -45,4 +46,9 @@ function notification_instance_test(createFn, testTitle) {
   promise_test(async () => {
     assert_custom_data(n.data);
   }, `${testTitle}: Attribute exists with expected value: data`)
+  promise_test(async () => {
+    for (const [i, action] of n.actions.entries()) {
+      assert_object_equals(action, notification_args[1].actions[i]);
+    }
+  }, `${testTitle}: Attribute exists with expected value: actions`)
 }

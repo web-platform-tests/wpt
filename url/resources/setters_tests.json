@@ -2264,7 +2264,7 @@
             "href": "data:space  ?query#fragment",
             "new_value": "",
             "expected": {
-                "href": "data:space  #fragment",
+                "href": "data:space#fragment",
                 "search": ""
             }
         },
@@ -2272,7 +2272,7 @@
             "href": "sc:space  ?query#fragment",
             "new_value": "",
             "expected": {
-                "href": "sc:space  #fragment",
+                "href": "sc:space#fragment",
                 "search": ""
             }
         },
@@ -2429,7 +2429,7 @@
             }
         },
         {
-            "comment": "Drop trailing spaces from trailing opaque paths",
+            "comment": "Drop trailing spaces from opaque paths",
             "href": "data:space                                                                                                                                  #fragment",
             "new_value": "",
             "expected": {
@@ -2448,11 +2448,11 @@
             }
         },
         {
-            "comment": "Do not drop trailing spaces from non-trailing opaque paths",
+            "comment": "Drop trailing spaces from opaque paths",
             "href": "data:space  ?query#fragment",
             "new_value": "",
             "expected": {
-                "href": "data:space  ?query",
+                "href": "data:space?query",
                 "hash": ""
             }
         },
@@ -2460,7 +2460,7 @@
             "href": "sc:space  ?query#fragment",
             "new_value": "",
             "expected": {
-                "href": "sc:space  ?query",
+                "href": "sc:space?query",
                 "hash": ""
             }
         },

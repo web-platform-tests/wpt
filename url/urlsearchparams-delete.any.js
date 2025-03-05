@@ -52,15 +52,15 @@ test(() => {
   assert_equals(url.search, '');
   assert_equals(url.pathname, 'space');
   assert_equals(url.href, 'data:space');
-}, 'Changing the query of a URL with an opaque path can impact the path');
+}, 'Changing the query of a URL with an opaque path with trailing spaces');
 
 test(() => {
   const url = new URL('data:space    ?test#test');
   url.searchParams.delete('test');
   assert_equals(url.search, '');
-  assert_equals(url.pathname, 'space    ');
-  assert_equals(url.href, 'data:space    #test');
-}, 'Changing the query of a URL with an opaque path can impact the path if the URL has no fragment');
+  assert_equals(url.pathname, 'space');
+  assert_equals(url.href, 'data:space#test');
+}, 'Changing the query of a URL with an opaque path with trailing spaces and a fragment');
 
 test(() => {
   const params = new URLSearchParams();

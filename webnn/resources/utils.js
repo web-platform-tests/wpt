@@ -93,12 +93,17 @@ const kIntTypes =
     ['uint4', 'int4', 'uint8', 'int8', 'uint32', 'int32', 'uint64', 'int64'];
 const kFloatTypes = ['float16', 'float32'];
 
-const findCompatibleType = (dataType, supportedTypes) => {
+const findCompatibleType = (dataType, supportedTypes, castOpSupportLimits) => {
+  if (!castOpSupportLimits.input.dataTypes.includes(dataType)) {
+    // Cannot cast from `dataType` to any other type.
+    return null;
+  }
+
   for (let supportedType of supportedTypes) {
-    if (kIntTypes.includes(dataType)) {
-      if (kIntTypes.indexOf(supportedType) > kIntTypes.indexOf(dataType)) {
-        return supportedType;
-      }
+    if (kIntTypes.includes(dataType) &&
+        castOpSupportLimits.output.dataTypes.includes(dataType) &&
+        kIntTypes.indexOf(supportedType) > kIntTypes.indexOf(dataType)) {
+      return supportedType;
     }
 
     if (kFloatTypes.includes(dataType)) {
@@ -244,23 +249,22 @@ const sizeOfShape = (array) => {
 /**
  * Get bitwise of the given value.
  * @param {Number} value
- * @param {String} dataType - A data type string, like "float32", "float16",
- *     more types, please see:
- *     https://www.w3.org/TR/webnn/#enumdef-mloperanddatatype
- * @return {Number} A 64-bit signed integer.
+ * @param {String} dataType - A data type string; currently only "float32" is
+ *     supported by this function.
+ * @return {BigInt} A 64-bit signed integer.
  */
 const getBitwise = (value, dataType) => {
   const buffer = new ArrayBuffer(8);
   const int64Array = new BigInt64Array(buffer);
-  int64Array[0] = value < 0 ? ~BigInt(0) : BigInt(0);
   let typedArray;
   if (dataType === "float32") {
     typedArray = new Float32Array(buffer);
   } else {
     throw new AssertionError(`Data type ${dataType} is not supported`);
   }
-  typedArray[0] = value;
-  return int64Array[0];
+  typedArray[0] = Math.abs(value);
+  const int64 = int64Array[0];
+  return (value < 0) ? -int64 : int64;
 };
 
 /**
@@ -483,7 +487,8 @@ const createOperand = (context, builder, operandName, resources) => {
   // If input data type is not supported on current platform, attempt to use
   // a supported type to pass the data, then cast back to original type.
   if (!supportedDataTypes.includes(dataType)) {
-    const compatibleType = findCompatibleType(dataType, supportedDataTypes);
+    const compatibleType = findCompatibleType(
+        dataType, supportedDataTypes, context.opSupportLimits().cast);
     if (compatibleType) {
       descriptor.castedType = compatibleType;
       descriptor.dataType = compatibleType;
@@ -820,7 +825,8 @@ const buildAndExecuteGraph = async (context, builder, graphResources) => {
             expectedDescriptor.dataType)) {
       const compatibleType = findCompatibleType(
           expectedDescriptor.dataType,
-          context.opSupportLimits().output.dataTypes);
+          context.opSupportLimits().output.dataTypes,
+          context.opSupportLimits().cast);
       outputOperands[i] = builder.cast(outputOperands[i], compatibleType);
       expectedDescriptor.castedType = compatibleType;
     }
@@ -989,8 +995,12 @@ const getReducedElementCount =
           1;
     };
 
+// `cast_to_supported_type` will check if the graph input/output is
+// supported by current context, if not, it will try to find a compatible
+// type that's supported and use that type, then cast back to original type.
 const webnn_conformance_test =
-    (buildAndExecuteGraphFunc, toleranceFunc, testResources) => {
+    (buildAndExecuteGraphFunc, toleranceFunc, testResources,
+     cast_to_supported_type = false) => {
       promise_test(async () => {
         let context;
         try {
@@ -999,7 +1009,9 @@ const webnn_conformance_test =
           throw new AssertionError(
               `Unable to create context for ${variant} variant. ${e}`);
         }
-        validateContextSupportsGraph(context, testResources.graph);
+        if (!cast_to_supported_type) {
+          validateContextSupportsGraph(context, testResources.graph);
+        }
         const builder = new MLGraphBuilder(context);
         const {result, intermediateOperands} = await buildAndExecuteGraphFunc(
             context, builder, testResources.graph);

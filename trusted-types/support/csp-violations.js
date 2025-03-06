@@ -84,3 +84,18 @@ function clipSampleIfNeeded(sample) {
 
   return sample.substring(0, clippedSampleLength);
 }
+
+function tryCreatingTrustedTypePoliciesWithCSP(policyNames, cspHeaders) {
+  return new Promise(resolve => {
+    window.addEventListener("message", event => {
+      resolve(event.data);
+    }, {once: true});
+    let iframe = document.createElement("iframe");
+    let url = `/trusted-types/support/create-trusted-type-policies.html?policyNames=${policyNames.map(name => encodeURIComponent(name)).toString()}`;
+    url += "&pipe=header(Content-Security-Policy,connect-src 'none')"
+    if (cspHeaders)
+      url += `|${cspHeaders}`;
+    iframe.src = url;
+    document.head.appendChild(iframe);
+  });
+}

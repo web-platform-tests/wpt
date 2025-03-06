@@ -28,33 +28,8 @@
   <header data-testname="el-header-ancestormain" data-expectedrole="sectionheader" class="ex">x</header>
 </main>
 
-<!--
-  el-form
-  form elements with and without name
-  HTML AAM / ARIA in HTML states that form without name should be "form" but not "landmark".
-  Not sure what the expected role really is. Browsers diverge.
--->
-<form data-testname="el-form-no-name" class="ex-generic">x</form>
-<form data-testname="el-form-aria-label" aria-label="x" data-expectedrole="form" class="ex">x</form>
-<form data-testname="el-form-aria-label-empty" aria-label="" class="ex-generic">x</form>
-<form data-testname="el-form-aria-label-whitespace" aria-label=" " class="ex-generic">x</form>
-<form data-testname="el-form-aria-labelledby" aria-labelledby="labelledby" data-expectedrole="form" class="ex">x</form>
-<form data-testname="el-form-aria-labelledby-non-existing" aria-labelledby="non-existing" class="ex-generic">x</form>
-<form data-testname="el-form-aria-labelledby-empty" aria-labelledby="empty" class="ex-generic">x</form>
-<form data-testname="el-form-aria-labelledby-whitespace" aria-labelledby="space" class="ex-generic">x</form>
-<form data-testname="el-form-title" title="x" data-expectedrole="form" class="ex">x</form>
-<form data-testname="el-form-title-empty" title="" class="ex-generic">x</form>
-<form data-testname="el-form-title-whitespace" title=" " class="ex-generic">x</form>
-
-
-<!-- element to reference for aria-labelledby tests -->
-<div id="labelledby">labelledby</div>
-<div id="empty"></div>
-<div id="space"> </div>
-
 <script>
 AriaUtils.verifyRolesBySelector(".ex");
-AriaUtils.verifyGenericRolesBySelector(".ex-generic");
 </script>
 
 </body>

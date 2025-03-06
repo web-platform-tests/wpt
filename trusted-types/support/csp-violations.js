@@ -39,10 +39,12 @@ function trusted_type_violations_and_exception_for(fn) {
     }
     // Force a connect-src violation. WebKit additionally throws a SecurityError
     // so ignore that. See https://bugs.webkit.org/show_bug.cgi?id=286744
+    // Firefox throws a NS_ERROR_CONTENT_BLOCKED exception, so ignore that too.
+    // See https://bugzilla.mozilla.org/show_bug.cgi?id=1951698
     try {
-      new EventSource("/common/blank.html");
+      new WebSocket("ws:/common/blank.html");
     } catch(e) {
-      if (!e instanceof DOMException || e.name !== "SecurityError") {
+      if ((!e instanceof DOMException || e.name !== "SecurityError") && e.name !== "NS_ERROR_CONTENT_BLOCKED") {
         throw e;
       }
     }

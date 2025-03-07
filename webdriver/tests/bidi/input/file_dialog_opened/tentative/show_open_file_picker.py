@@ -13,7 +13,7 @@ FILE_DIALOG_OPENED_EVENT = "input.fileDialogOpened"
 async def test_show_open_file_picker(bidi_session, subscribe_events, inline,
         top_context, wait_for_event, wait_for_future_safe, multiple):
     await subscribe_events(events=[FILE_DIALOG_OPENED_EVENT])
-    on_entry = wait_for_event(FILE_DIALOG_OPENED_EVENT)
+    on_file_dialog_opened = wait_for_event(FILE_DIALOG_OPENED_EVENT)
 
     # Navigate to a page to enable file picker.
     await bidi_session.browsing_context.navigate(context=top_context["context"],
@@ -27,6 +27,6 @@ async def test_show_open_file_picker(bidi_session, subscribe_events, inline,
         user_activation=True
     )
 
-    event = await wait_for_future_safe(on_entry)
+    event = await wait_for_future_safe(on_file_dialog_opened)
     assert_file_dialog_opened_event(event, top_context["context"],
                                     multiple=multiple, element=UNDEFINED)

@@ -2,7 +2,6 @@ import pytest
 from tests.support.sync import AsyncPoll
 
 from webdriver.bidi.modules.script import ContextTarget
-from webdriver.bidi.undefined import UNDEFINED
 from . import assert_file_dialog_opened_event
 
 from webdriver.error import TimeoutException

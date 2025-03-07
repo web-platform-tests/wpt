@@ -1009,7 +1009,7 @@ class VirtualPressureSourceProtocolPart(ProtocolPart):
         pass
 
     @abstractmethod
-    def update_virtual_pressure_source(self, source_type, sample):
+    def update_virtual_pressure_source(self, source_type, sample, estimate):
         pass
 
     @abstractmethod

@@ -69,7 +69,7 @@ function testFormat(format, algorithm, keyData, keySize, usages, extractable) {
 
 // Test importKey/exportKey "alg" behaviours (https://github.com/w3c/webcrypto/pull/401)
 // - alg is ignored for ECDH import
-// - alg is checked to be the algorith.name or EdDSA for Ed25519 and Ed448 import
+// - alg is checked to be the algorithm.name or EdDSA for Ed25519 and Ed448 import
 // - alg is missing for ECDH export
 // - alg is the algorithm name for Ed25519 and Ed448 export
 function testJwkAlgBehaviours(algorithm, keyData, crv, usages) {

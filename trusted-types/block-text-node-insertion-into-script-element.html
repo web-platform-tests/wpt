@@ -33,10 +33,12 @@
     },
   };
 
+  function createScriptElement() { return document.createElement("script"); }
+
   // Original report:
   promise_test(async t => {
     // Setup: Create a <script> element with a <p> child.
-    let s = document.createElement("script");
+    let s = createScriptElement();
 
     // Sanity check: Element child content (<p>) doesn't count as source text.
     let p = document.createElement("p");
@@ -58,58 +60,53 @@
     assert_true(s.text.includes("after"));
   }, "Regression test: Bypass via insertAdjacentText, initial comment.");
 
-  const script_elements = {
-    "script": doc => doc.createElement("script"),
 
-  };
-  for (let [element, create_element] of Object.entries(script_elements)) {
-    // Like the "Original Report" test case above, but avoids use of the "text"
-    // accessor that <svg:script> doesn't support.
-    promise_test(async t => {
-      let s = create_element(document);
+  // Like the "Original Report" test case above, but avoids use of the "text"
+  // accessor that <svg:script> doesn't support.
+  promise_test(async t => {
+    let s = createScriptElement();
 
-      // Sanity check: Element child content (<p>) doesn't count as source text.
-      let p = document.createElement("p");
-      p.textContent = "hello('world');";
-      s.appendChild(p);
-      container.appendChild(s);
+    // Sanity check: Element child content (<p>) doesn't count as source text.
+    let p = document.createElement("p");
+    p.textContent = "hello('world');";
+    s.appendChild(p);
+    container.appendChild(s);
 
-      // Try to insertAdjacentText into the <script>, starting from the <p>
-      await checkMessage(_ =>
-        p.insertAdjacentText("beforebegin",
-                             "postMessage('beforebegin should be blocked', '*');")
-      );
-      assert_true(s.textContent.includes("postMessage"));
-      await checkMessage(_ =>
-        p.insertAdjacentText("afterend",
-                             "postMessage('afterend should be blocked', '*');")
-      );
-      assert_true(s.textContent.includes("after"));
-    }, "Regression test: Bypass via insertAdjacentText, initial comment. " + element);
+    // Try to insertAdjacentText into the <script>, starting from the <p>
+    await checkMessage(_ =>
+      p.insertAdjacentText("beforebegin",
+                           "postMessage('beforebegin should be blocked', '*');")
+    );
+    assert_true(s.textContent.includes("postMessage"));
+    await checkMessage(_ =>
+      p.insertAdjacentText("afterend",
+                           "postMessage('afterend should be blocked', '*');")
+    );
+    assert_true(s.textContent.includes("after"));
+  }, "Regression test: Bypass via insertAdjacentText, textContent.");
 
-    // Variant: Create a <script> element and create & insert a text node. Then
-    // insert it into the document container to make it live.
-    promise_test(async t => {
-      // Setup: Create a <script> element, and insert text via a text node.
-      let s = create_element(document);
-      let text = document.createTextNode("postMessage('appendChild with a " +
-                                         "text node should be blocked', '*');");
-      s.appendChild(text);
-      await checkMessage(_ => container.appendChild(s));
-    }, "Regression test: Bypass via appendChild into off-document script element" + element);
+  // Variant: Create a <script> element and create & insert a text node. Then
+  // insert it into the document container to make it live.
+  promise_test(async t => {
+    // Setup: Create a <script> element, and insert text via a text node.
+    let s = createScriptElement();
+    let text = document.createTextNode("postMessage('appendChild with a " +
+                                       "text node should be blocked', '*');");
+    s.appendChild(text);
+    await checkMessage(_ => container.appendChild(s));
+  }, "Regression test: Bypass via appendChild into off-document script element.");
 
-    // Variant: Create a <script> element and insert it into the document. Then
-    // create a text node and insert it into the live <script> element.
-    promise_test(async t => {
-      // Setup: Create a <script> element, insert it into the doc, and then create
-      // and insert text via a text node.
-      let s = create_element(document);
-      container.appendChild(s);
-      let text = document.createTextNode("postMessage('appendChild with a live " +
-                                         "text node should be blocked', '*');");
-      await checkMessage(_ => s.appendChild(text));
-    }, "Regression test: Bypass via appendChild into live script element " + element);
-  }
+  // Variant: Create a <script> element and insert it into the document. Then
+  // create a text node and insert it into the live <script> element.
+  promise_test(async t => {
+    // Setup: Create a <script> element, insert it into the doc, and then create
+    // and insert text via a text node.
+    let s = createScriptElement();
+    container.appendChild(s);
+    let text = document.createTextNode("postMessage('appendChild with a live " +
+                                       "text node should be blocked', '*');");
+    await checkMessage(_ => s.appendChild(text));
+  }, "Regression test: Bypass via appendChild into live script element.");
 
   promise_test(async t => {
     const inserted_script = document.getElementById("script1");
@@ -117,7 +114,7 @@
       inserted_script.innerHTML = "2+2"
     );
 
-    let new_script = document.createElement("script");
+    let new_script = createScriptElement();
     await trusted_type_violation_for(TypeError, _ =>
       new_script.innerHTML = "2+2"
     );
@@ -130,7 +127,7 @@
     );
     assert_equals(inserted_script.textContent, "3*4");
 
-    new_script = document.createElement("script");
+    new_script = createScriptElement();
     new_script.innerHTML = trusted_html;
     await trusted_type_violation_without_exception_for(_ =>
       container.appendChild(new_script)
@@ -146,25 +143,23 @@
     return Promise.resolve();
   }, "Prep for subsequent tests: Create default policy.");
 
-  for (let [element, create_element] of Object.entries(script_elements)) {
-    promise_test(async t => {
-      let s = create_element(document);
-      let text = document.createTextNode("postMessage('default', '*');");
-      s.appendChild(text);
-      await no_trusted_type_violation_for(async _ =>
-        await checkMessage(_ => container.appendChild(s), 1)
-      );
-    }, "Test that default policy applies. " + element);
+  promise_test(async t => {
+    let s = createScriptElement();
+    let text = document.createTextNode("postMessage('default', '*');");
+    s.appendChild(text);
+    await no_trusted_type_violation_for(async _ =>
+      await checkMessage(_ => container.appendChild(s), 1)
+    );
+  }, "Test that default policy applies.");
 
-    promise_test(async t => {
-      let s = create_element(document);
-      let text = document.createTextNode("fail");
-      s.appendChild(text);
-      await trusted_type_violation_without_exception_for(async _ =>
-        await checkMessage(_ => container.appendChild(s), 0)
-      );
-    }, "Test a failing default policy. " + element);
-  }
+  promise_test(async t => {
+    let s = createScriptElement();
+    let text = document.createTextNode("fail");
+    s.appendChild(text);
+    await trusted_type_violation_without_exception_for(async _ =>
+      await checkMessage(_ => container.appendChild(s), 0)
+    );
+  }, "Test a failing default policy.");
 
   promise_test(async t => {
     const inserted_script = document.getElementById("script1");
@@ -173,7 +168,7 @@
     );
     assert_equals(inserted_script.textContent, "3+3");
 
-    let new_script = document.createElement("script");
+    let new_script = createScriptElement();
     await no_trusted_type_violation_for(_ => {
       new_script.innerHTML = "2+2";
       container.appendChild(new_script);
@@ -187,7 +182,7 @@
     );
     assert_equals(inserted_script.textContent, "3*4");
 
-    new_script = document.createElement("script");
+    new_script = createScriptElement();
     await no_trusted_type_violation_for(_ => {
       new_script.innerHTML = trusted_html;
       container.appendChild(new_script);

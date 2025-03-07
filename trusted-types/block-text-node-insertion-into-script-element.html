@@ -20,15 +20,16 @@
 
   const policy = trustedTypes.createPolicy("policy", policy_dict);
 
+  let seenSinks;
+  function clearSeenSinks() { seenSinks = []; }
+  clearSeenSinks();
   const policy_dict_default = {
     createScript: (s, _, sink) => {
-      assert_equals(sink, 'HTMLScriptElement text');
+      seenSinks.push(sink);
       return (s.includes("fail") ? null : s.replace("default", "count"));
     },
     createHTML: (s, _, sink) => {
-      if (sink) {
-        assert_equals(sink, 'Element innerHTML');
-      }
+      seenSinks.push(sink);
       return s.replace(/2/g, "3");
     },
   };
@@ -144,28 +145,35 @@
   }, "Prep for subsequent tests: Create default policy.");
 
   promise_test(async t => {
+    t.add_cleanup(clearSeenSinks);
     let s = createScriptElement();
     let text = document.createTextNode("postMessage('default', '*');");
     s.appendChild(text);
     await no_trusted_type_violation_for(async _ =>
       await checkMessage(_ => container.appendChild(s), 1)
     );
+    assert_array_equals(seenSinks, ["HTMLScriptElement text"]);
   }, "Test that default policy applies.");
 
   promise_test(async t => {
+    t.add_cleanup(clearSeenSinks);
     let s = createScriptElement();
     let text = document.createTextNode("fail");
     s.appendChild(text);
     await trusted_type_violation_without_exception_for(async _ =>
       await checkMessage(_ => container.appendChild(s), 0)
     );
+    assert_array_equals(seenSinks, ["HTMLScriptElement text"]);
   }, "Test a failing default policy.");
 
   promise_test(async t => {
+    t.add_cleanup(clearSeenSinks);
     const inserted_script = document.getElementById("script1");
     await no_trusted_type_violation_for(_ =>
       inserted_script.innerHTML = "2+2"
     );
+    assert_array_equals(seenSinks, ["Element innerHTML"]);
+    clearSeenSinks();
     assert_equals(inserted_script.textContent, "3+3");
 
     let new_script = createScriptElement();
@@ -173,6 +181,8 @@
       new_script.innerHTML = "2+2";
       container.appendChild(new_script);
     });
+    assert_array_equals(seenSinks, ["Element innerHTML", "HTMLScriptElement text"]);
+    clearSeenSinks();
     assert_equals(inserted_script.textContent, "3+3");
 
     const trusted_html = default_policy.createHTML("2*4");
@@ -180,6 +190,8 @@
     await no_trusted_type_violation_for(_ =>
       inserted_script.innerHTML = trusted_html
     );
+    assert_array_equals(seenSinks, [undefined]);
+    clearSeenSinks();
     assert_equals(inserted_script.textContent, "3*4");
 
     new_script = createScriptElement();
@@ -187,6 +199,8 @@
       new_script.innerHTML = trusted_html;
       container.appendChild(new_script);
     });
+    assert_array_equals(seenSinks, ["HTMLScriptElement text"]);
+    clearSeenSinks();
     assert_equals(inserted_script.textContent, "3*4");
   }, "Spot tests around script + innerHTML interaction with default policy.");
 </script>

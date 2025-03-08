@@ -217,17 +217,15 @@
 
     window.test_driver_internal.in_automation = true;
 
-    window.test_driver_internal.bidi.bluetooth.handle_request_device_prompt =
-        function(params) {
-        return create_action('bidi.bluetooth.handle_request_device_prompt', {
-            // Default to the current window.
-            context: window,
-            ...params
-        });
+    window.test_driver_internal.bidi.webExtension.install = function (params) {
+        return create_action("bidi.webExtension.install", params);
     }
 
-    window.test_driver_internal.bidi.bluetooth.simulate_adapter =
-        function(params) {
+    window.test_driver_internal.bidi.webExtension.uninstall = function (params) {
+        return create_action("bidi.webExtension.uninstall", params);
+    }
+
+    window.test_driver_internal.bidi.bluetooth.simulate_adapter = function (params) {
         return create_action("bidi.bluetooth.simulate_adapter", {
             // Default to the current window.
             context: window,

@@ -511,6 +511,34 @@ class RemoveVirtualPressureSourceAction:
         source_type = payload["source_type"]
         return self.protocol.pressure.remove_virtual_pressure_source(source_type)
 
+# Currently, actions cannot be executor specific so this
+# action is a sync counterpart of BidiWebExtensionInstallAction
+# for executors that need to handle it in the sync way.
+class SyncBidiWebExtensionInstallAction:
+    name = "bidi.webExtension.install"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        return self.protocol.load_extension(payload)
+
+
+# Currently, actions cannot be executor specific so this
+# action is a sync counterpart of BidiWebExtensionUninstallAction:
+# for executors that need to handle it in the sync way.
+class SyncBidiWebExtensionUninstallAction:
+    name = "bidi.webExtension.uninstall"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        return self.protocol.unload_extension(payload)
+
+
 actions = [ClickAction,
            DeleteAllCookiesAction,
            GetAllCookiesAction,
@@ -550,4 +578,6 @@ actions = [ClickAction,
            RunBounceTrackingMitigationsAction,
            CreateVirtualPressureSourceAction,
            UpdateVirtualPressureSourceAction,
-           RemoveVirtualPressureSourceAction]
+           RemoveVirtualPressureSourceAction,
+           SyncBidiWebExtensionInstallAction,
+           SyncBidiWebExtensionUninstallAction]

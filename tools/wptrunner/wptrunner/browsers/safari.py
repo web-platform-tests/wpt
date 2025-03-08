@@ -14,12 +14,14 @@ from ..executors.base import WdspecExecutor  # noqa: F401
 from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,  # noqa: F401
                                            WebDriverRefTestExecutor,  # noqa: F401
                                            WebDriverCrashtestExecutor)  # noqa: F401
-
+from ..executors.executorsafari import (  # noqa: F401
+    SafariDriverTestharnessExecutor,
+)
 
 __wptrunner__ = {"product": "safari",
                  "check_args": "check_args",
                  "browser": "SafariBrowser",
-                 "executor": {"testharness": "WebDriverTestharnessExecutor",
+                 "executor": {"testharness": "SafariDriverTestharnessExecutor",
                               "reftest": "WebDriverRefTestExecutor",
                               "wdspec": "WdspecExecutor",
                               "crashtest": "WebDriverCrashtestExecutor"},

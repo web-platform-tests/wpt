@@ -48,6 +48,12 @@ RUN apt-add-repository -y ppa:deadsnakes/ppa
 RUN apt-get -qqy update \
     && apt-get install -qqy python-is-python3
 
+# Add Mozilla's PPA and set it as the preferred package over the default apt
+# version of FireFox in Ubuntu 22.04 which is simply a reference to the snap
+# version and snaps can't be installed inside docker.
+RUN add-apt-repository ppa:mozillateam/ppa
+COPY firefox-ppa-override.txt /etc/apt/preferences.d/mozilla-firefox
+
 # Installing just the deps of firefox and chrome is moderately tricky, so
 # just install the default versions of them, and some extra deps we happen
 # to know that chrome requires

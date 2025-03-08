@@ -440,9 +440,8 @@
         return create_context_action("create_virtual_sensor", context, {sensor_type, sensor_params});
     };
 
-    window.test_driver_internal.update_virtual_sensor = function(sensor_type, reading, context=null) {
-        return create_context_action("update_virtual_sensor", context, {sensor_type, reading});
-    };
+    window.test_driver_internal.update_virtual_pressure_source = function(source_type, sample, estimate = -1.0, context=null) {
+       return create_context_action("update_virtual_pressure_source", context, {source_type, sample, estimate});
 
     window.test_driver_internal.remove_virtual_sensor = function(sensor_type, context=null) {
         return create_context_action("remove_virtual_sensor", context, {sensor_type});

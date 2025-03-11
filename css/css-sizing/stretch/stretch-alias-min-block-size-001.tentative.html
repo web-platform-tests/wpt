@@ -61,10 +61,13 @@
     checkLayout('[data-expected-height]');
 
     // Add box-sizing:border-box (which shouldn't impact the actual resolved
-    // box sizes that 'stretch' produces), and retest:
-    for (let elem of document.querySelectorAll(".test")) {
-      elem.style.boxSizing = "border-box";
-    }
+    // box sizes that 'stretch' produces), and retest. The `promise_setup()` is
+    // needed to guarantee `border-box` before retesting.
+    promise_setup(async () => {
+      for (let elem of document.querySelectorAll(".test")) {
+        elem.style.boxSizing = "border-box";
+      }
+    });
     checkLayout('[data-expected-height]');
   }
 </script>

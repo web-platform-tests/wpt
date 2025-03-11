@@ -1,7 +1,25 @@
 <!doctype html>
 <meta charset=utf-8>
+<meta name="variant" content="?include=first">
+<meta name="variant" content="?include=in-http">
+<meta name="variant" content="?include=before-slash">
+<meta name="variant" content="?include=after-slash">
+<meta name="variant" content="?include=before-dot">
+<meta name="variant" content="?include=after-dot">
+<meta name="variant" content="?include=after-ver">
+<meta name="variant" content="?include=before-num">
+<meta name="variant" content="?include=after-num">
+<meta name="variant" content="?include=before-reason">
+<meta name="variant" content="?include=after-reason">
+<meta name="variant" content="?include=leading">
+<meta name="variant" content="?include=in-name">
+<meta name="variant" content="?include=before-colon">
+<meta name="variant" content="?include=after-colon">
+<meta name="variant" content="?include=in-value">
+<meta name="variant" content="?include=after-value">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/common/subset-tests-by-key.js"></script>
 
 <body>
   <script>
@@ -11,7 +29,7 @@
 
     // Insert the following chars [LF, NUL, CR, SP, HTAB, COLON] at all of the following positions
     // <first>HT<in-http>TP<before-slash>/<after-slash>1<before-dot>.<after-dot>1<after-ver> <before-num>200<after-num> <before-reason>OK<after-reason>\r
-    // <symbol><header>:<value>, <hea <symbol> der>:<value>, <header><symbol>:<value>, <header>:<symbol><value>, <header>:<val <symbol> ue>, <header>:<value><symbol>\r
+    // <leading><header>:<value>, <hea <in-name> der>:<value>, <header><before-colon>:<value>, <header>:<after-colon><value>, <header>:<val <in-value> ue>, <header>:<value><after-value>\r
     // Content-Length: 5\r
     // \r
     // Test.
@@ -196,11 +214,11 @@
 
         // Check fetching: for heavy network errors fetch should fail, otherwise fetch should succeed
         if (outcome_fetch === "Network Error") {
-          promise_test(async (t) => {
+          subsetTestByKey(p, promise_test, async (t) => {
             await promise_rejects_js(t, TypeError, fetch(resource));
           }, `${c} at <${p}> should result in Network Error (fetch)`);
         } else {
-          promise_test(async (t) => {
+          subsetTestByKey(p, promise_test, async (t) => {
             const response = await fetch(resource);
             assert_true(response.ok, "Fetch should succeed");
           }, `${c} at <${p}> should fetch without an error`);
@@ -215,7 +233,8 @@
         } else if (outcome_framing === "active-XFO") {
           reason = `${c} at <${p}> should block a frame due to XFO`
         }
-        async_test(t => {
+        subsetTestByKey(p, async_test,
+        t => {
           const frame = document.createElement("iframe");
           t.add_cleanup(() => frame.remove());
           frame.src = resource;

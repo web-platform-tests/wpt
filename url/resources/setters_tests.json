@@ -2241,12 +2241,11 @@
             }
         },
         {
-            "comment": "Drop trailing spaces from trailing opaque paths",
             "href": "data:space ?query",
             "new_value": "",
             "expected": {
-                "href": "data:space",
-                "pathname": "space",
+                "href": "data:space%20",
+                "pathname": "space%20",
                 "search": ""
             }
         },
@@ -2254,17 +2253,16 @@
             "href": "sc:space ?query",
             "new_value": "",
             "expected": {
-                "href": "sc:space",
-                "pathname": "space",
+                "href": "sc:space%20",
+                "pathname": "space%20",
                 "search": ""
             }
         },
         {
-            "comment": "Do not drop trailing spaces from non-trailing opaque paths",
             "href": "data:space  ?query#fragment",
             "new_value": "",
             "expected": {
-                "href": "data:space#fragment",
+                "href": "data:space %20#fragment",
                 "search": ""
             }
         },
@@ -2272,7 +2270,7 @@
             "href": "sc:space  ?query#fragment",
             "new_value": "",
             "expected": {
-                "href": "sc:space#fragment",
+                "href": "sc:space %20#fragment",
                 "search": ""
             }
         },

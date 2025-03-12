@@ -1,0 +1,25 @@
+<!doctype html>
+<title>Test HTTP's versioning scheme</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<div id=log></div>
+<script>
+[
+  "HTTP/0.7 280",
+  "HTTP/1.0 280",
+  "HTTP/1.11 280",
+  "HTTP/1.2 280",
+  "HTTP/1.7 280",
+  "HTTP/2.0 280",
+  "HTTP/5.garbage 280",
+  "splitonspace 280",
+  "http 280",
+  "HttP/1.1 280",
+  "HTTP/garbage 280"
+].forEach((t) => {
+  promise_test(() => fetch("resources/version.py?input=" + t).then(r => {
+    assert_equals(r.status, 280)
+    assert_equals(r.headers.get("header-parsing"), "is sad")
+  }), t)
+})
+</script>

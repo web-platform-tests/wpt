@@ -50,16 +50,16 @@ test(() => {
   url.searchParams.delete('test');
   assert_false(url.searchParams.has('test'));
   assert_equals(url.search, '');
-  assert_equals(url.pathname, 'space');
-  assert_equals(url.href, 'data:space');
+  assert_equals(url.pathname, 'space   %20');
+  assert_equals(url.href, 'data:space   %20');
 }, 'Changing the query of a URL with an opaque path with trailing spaces');
 
 test(() => {
   const url = new URL('data:space    ?test#test');
   url.searchParams.delete('test');
   assert_equals(url.search, '');
-  assert_equals(url.pathname, 'space');
-  assert_equals(url.href, 'data:space#test');
+  assert_equals(url.pathname, 'space   %20');
+  assert_equals(url.href, 'data:space   %20#test');
 }, 'Changing the query of a URL with an opaque path with trailing spaces and a fragment');
 
 test(() => {

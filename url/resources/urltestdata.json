@@ -3796,7 +3796,7 @@
   {
     "input": "non-special:opaque  ?hi",
     "base": null,
-    "href": "non-special:opaque?hi",
+    "href": "non-special:opaque %20?hi",
     "origin": "null",
     "protocol": "non-special:",
     "username": "",
@@ -3804,14 +3804,14 @@
     "host": "",
     "hostname": "",
     "port": "",
-    "pathname": "opaque",
+    "pathname": "opaque %20",
     "search": "?hi",
     "hash": ""
   },
   {
     "input": "non-special:opaque  #hi",
     "base": null,
-    "href": "non-special:opaque#hi",
+    "href": "non-special:opaque %20#hi",
     "origin": "null",
     "protocol": "non-special:",
     "username": "",
@@ -3819,7 +3819,7 @@
     "host": "",
     "hostname": "",
     "port": "",
-    "pathname": "opaque",
+    "pathname": "opaque %20",
     "search": "",
     "hash": "#hi"
   },

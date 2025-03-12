@@ -2431,8 +2431,8 @@
             "href": "data:space                                                                                                                                  #fragment",
             "new_value": "",
             "expected": {
-                "href": "data:space",
-                "pathname": "space",
+                "href": "data:space                                                                                                                                 %20",
+                "pathname": "space                                                                                                                                 %20",
                 "hash": ""
             }
         },
@@ -2440,8 +2440,8 @@
             "href": "sc:space    #fragment",
             "new_value": "",
             "expected": {
-                "href": "sc:space",
-                "pathname": "space",
+                "href": "sc:space   %20",
+                "pathname": "space   %20",
                 "hash": ""
             }
         },
@@ -2450,7 +2450,7 @@
             "href": "data:space  ?query#fragment",
             "new_value": "",
             "expected": {
-                "href": "data:space?query",
+                "href": "data:space %20?query",
                 "hash": ""
             }
         },
@@ -2458,7 +2458,7 @@
             "href": "sc:space  ?query#fragment",
             "new_value": "",
             "expected": {
-                "href": "sc:space?query",
+                "href": "sc:space %20?query",
                 "hash": ""
             }
         },

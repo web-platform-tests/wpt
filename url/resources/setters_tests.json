@@ -2427,7 +2427,7 @@
             }
         },
         {
-            "comment": "Drop trailing spaces from opaque paths",
+            "comment": "Trailing spaces and opaque paths",
             "href": "data:space                                                                                                                                  #fragment",
             "new_value": "",
             "expected": {
@@ -2446,7 +2446,7 @@
             }
         },
         {
-            "comment": "Drop trailing spaces from opaque paths",
+            "comment": "Trailing spaces and opaque paths",
             "href": "data:space  ?query#fragment",
             "new_value": "",
             "expected": {

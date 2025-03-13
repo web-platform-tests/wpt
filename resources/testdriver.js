@@ -73,6 +73,26 @@
          Represents `WebDriver BiDi <https://w3c.github.io/webdriver-bidi>`_ protocol.
          */
         bidi: {
+            webExtension: {
+                /**
+                 * Installs a WebExtension.
+                 *
+                 * Matches the `webExtension.Install <https://www.w3.org/TR/webdriver-bidi/#command-webExtension-install> command`_
+                 *
+                 */
+                install: function(params) {
+                    return window.test_driver_internal.bidi.webExtension.install(params);
+                },
+
+                /**
+                 * Uninstalls a WebExtension.
+                 *
+                 * Matches the `webExtension.Uninstall <https://www.w3.org/TR/webdriver-bidi/#command-webExtension-uninstall> command`_
+                 */
+                uninstall: function(params) {
+                    return window.test_driver_internal.bidi.webExtension.uninstall(params);
+                },
+            },
             /**
              * @typedef {(String|WindowProxy)} Context A browsing context. Can
              * be specified by its ID (a string) or using a `WindowProxy`
@@ -1472,7 +1492,7 @@
          */
         remove_virtual_pressure_source: function(source_type, context=null) {
             return window.test_driver_internal.remove_virtual_pressure_source(source_type, context);
-        }
+        },
     };
 
     window.test_driver_internal = {
@@ -1485,6 +1505,16 @@
         in_automation: false,
 
         bidi: {
+            webExtension: {
+                install: function () {
+                    throw new Error(
+                        "bidi.webExtension.install is not implemented by testdriver-vendor.js");
+                },
+                uninstall: function () {
+                    throw new Error(
+                        "bidi.webExtension.uninstall is not implemented by testdriver-vendor.js");
+                }
+            },
             bluetooth: {
                 handle_request_device_prompt: function() {
                     throw new Error(

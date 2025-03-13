@@ -45,6 +45,7 @@ from .protocol import (BaseProtocolPart,
                        DevicePostureProtocolPart,
                        StorageProtocolPart,
                        VirtualPressureSourceProtocolPart,
+                       BiDiWebExtensionProtocolPart,
                        merge_dicts)
 
 from typing import Any, List, Optional, Tuple
@@ -272,6 +273,25 @@ class WebDriverBidiPermissionsProtocolPart(BidiPermissionsProtocolPart):
     async def set_permission(self, descriptor, state, origin):
         return await self.webdriver.bidi_session.permissions.set_permission(
             descriptor=descriptor, state=state, origin=origin)
+
+class WebDriverBidiWebExtensionProtocolPart(BiDiWebExtensionProtocolPart):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.webdriver = None
+
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    async def install(self, payload):
+        result = await self.webdriver.bidi_session.web_extension.install(
+          extension_data = payload["extensionData"]
+        )
+        return {"extension": result}
+
+    async def uninstall(self, payload):
+        return await self.webdriver.bidi_session.web_extension.uninstall(
+          extension=payload["extension"]
+        )
 
 
 class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
@@ -791,6 +811,7 @@ class WebDriverBidiProtocol(WebDriverProtocol):
                   WebDriverBidiEventsProtocolPart,
                   WebDriverBidiPermissionsProtocolPart,
                   WebDriverBidiScriptProtocolPart,
+                  WebDriverBidiWebExtensionProtocolPart,
                   *(part for part in WebDriverProtocol.implements)
                   ]
 

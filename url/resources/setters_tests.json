@@ -2241,6 +2241,7 @@
             }
         },
         {
+            "comment": "Trailing spaces and opaque paths",
             "href": "data:space ?query",
             "new_value": "",
             "expected": {
@@ -2259,6 +2260,7 @@
             }
         },
         {
+            "comment": "Trailing spaces and opaque paths",
             "href": "data:space  ?query#fragment",
             "new_value": "",
             "expected": {

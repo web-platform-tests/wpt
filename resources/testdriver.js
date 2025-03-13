@@ -1450,7 +1450,7 @@
          *                    virtual pressure source of the given type does not
          *                    exist).
          */
-        update_virtual_pressure_source: function(source_type, sample, estimate = -1.0, context=null) {
+        update_virtual_pressure_source: function(source_type, sample, estimate, context=null) {
             return window.test_driver_internal.update_virtual_pressure_source(source_type, sample, estimate, context);
         },
 

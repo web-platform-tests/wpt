@@ -1,6 +1,12 @@
 features:
 - name: streams
-  files: "**"
+  files:
+    - "**"
+    - "!async-iterator.any.js"
+    - "!from.any.js"
 - name: async-iterable-streams
   files:
     - async-iterator.any.js
+- name: readablestream-from
+  files:
+    - from.any.js

@@ -4,6 +4,8 @@ features:
     - "**"
     - "!async-iterator.any.js"
     - "!from.any.js"
+    # 'owning' type is not yet standardized
+    - "!owning-type*"
 - name: async-iterable-streams
   files:
     - async-iterator.any.js

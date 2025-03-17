@@ -2736,7 +2736,6 @@
     const tm_en = ctx.measureText(text);
     const en_width = tm_en.width;
 
-    console.log(tr_width + " " + en_width);
     @assert tr_width > en_width;
   variants:
   - *load-font-variant-definition

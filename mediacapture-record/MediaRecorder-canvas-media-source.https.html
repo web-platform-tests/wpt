@@ -32,7 +32,7 @@
 <body>
   <script>
 async function createWorker(script) {
-  script = script + "self.postMessage('ready');";
+  script += "self.postMessage('ready');";
   const blob = new Blob([script], { type: 'text/javascript' });
   const url = URL.createObjectURL(blob);
   const worker = new Worker(url);

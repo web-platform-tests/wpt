@@ -1024,4 +1024,4 @@ class ProtectedAudienceProtocolPart(ProtocolPart):
 
     @abstractmethod
     def set_k_anonymity(self, owner, name, hashes):
-      pass
+        pass

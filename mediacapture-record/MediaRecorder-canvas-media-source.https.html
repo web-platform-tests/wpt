@@ -36,9 +36,7 @@ async function createWorker(script) {
   const blob = new Blob([script], { type: 'text/javascript' });
   const url = URL.createObjectURL(blob);
   const worker = new Worker(url);
-  await new Promise(resolve => worker.onmessage = () => {
-      resolve();
-  });
+  await new Promise(resolve => worker.onmessage = resolve);
   URL.revokeObjectURL(url);
   return worker;
 }

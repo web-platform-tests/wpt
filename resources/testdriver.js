@@ -1478,6 +1478,10 @@
          * Sets which hashes are considered k-anonymous for the Protected
          * Audience interest group with specified `owner` and `name`.
          *
+         * Matches the `Set Protected Audience K-Anonymity
+         * <https://wicg.github.io/turtledove/#sctn-automation-set-protected-audience-k-anonymity>
+         * WebDriver command.
+         *
          *  @param {String} owner - Origin of the owner of the interest group
          *                          to modify
          *  @param {String} name -  Name of the interest group to modify

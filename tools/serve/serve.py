@@ -1418,10 +1418,7 @@ def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, log_handl
     logger = get_logger("INFO", log_handlers)
 
     if mp_context is None:
-        if hasattr(multiprocessing, "get_context"):
-            mp_context = multiprocessing.get_context()
-        else:
-            mp_context = MpContext()
+        mp_context = multiprocessing.get_context("spawn")
 
     with build_config(logger,
                       os.path.join(repo_root, "config.json"),
@@ -1478,6 +1475,11 @@ def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, log_handl
                 server.wait(timeout=1)
                 if server.proc.exitcode == 0:
                     logger.info('Status of subprocess "%s": exited correctly', server.proc.name)
+                elif server.proc.exitcode is None:
+                    logger.warning(
+                        'Status of subprocess "%s": shutdown timed out',
+                        server.proc.name)
+                    failed_subproc += 1
                 else:
                     subproc = server.proc
                     logger.warning('Status of subprocess "%s": failed. Exit with non-zero status: %d',

@@ -1,7 +1,7 @@
 <!doctype html>
 <meta charset="utf-8" />
-<meta name="author" title="Keith Cirkel" href="mailto:keithamus@github.com" />
-<meta name="author" title="Luke Warlow" href="mailto:lwarlow@igalia.com" />
+<link rel="author" title="Keith Cirkel" href="mailto:keithamus@github.com" >
+<link rel="author" title="Luke Warlow" href="mailto:lwarlow@igalia.com" >
 <link rel="help" href="https://open-ui.org/components/interest-invokers.explainer/" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -15,46 +15,23 @@
 </div>
 <button id="interestbutton" interesttarget="interestee">Interest Invoker</button>
 <button id="otherbutton">Other button</button>
+<style>
+  [interesttarget] {
+    interest-target-delay: 0s;
+  }
+</style>
 
 <script>
-  function reset() {
-      hoverOver(otherbutton);
-      otherbutton.focus();
+  async function reset() {
+      await hoverOver(otherbutton);
       interestee.hidePopover();
-      interestbutton.removeAttribute("interestaction");
   }
-
-  // auto
-
   promise_test(async function (t) {
     t.add_cleanup(reset);
     assert_false(interestee.matches(":popover-open"));
     await hoverOver(interestbutton);
     assert_true(interestee.matches(":popover-open"));
-  }, "hover interest invoking (as auto) closed popover opens");
-
-  promise_test(async function (t) {
-    t.add_cleanup(reset);
-    interestee.showPopover();
-    assert_true(interestee.matches(":popover-open"));
-    await hoverOver(interestbutton);
-    assert_false(interestee.matches(":popover-open"));
-  }, "hover interest invoking (as auto) open popover closes");
-
-  promise_test(async function (t) {
-    t.add_cleanup(reset);
-    assert_false(interestee.matches(":popover-open"));
-    interestbutton.focus();
-    assert_true(interestee.matches(":popover-open"));
-  }, "focus interest invoking (as auto) closed popover opens");
-
-  promise_test(async function (t) {
-    t.add_cleanup(reset);
-    interestee.showPopover();
-    assert_true(interestee.matches(":popover-open"));
-    interestbutton.focus();
-    assert_false(interestee.matches(":popover-open"));
-  }, "focus interest invoking (as auto) open popover closes");
+  }, "hover interest invoking closed popover opens");
 
   promise_test(async function (t) {
     t.add_cleanup(reset);
@@ -64,50 +41,5 @@
     });
     await hoverOver(interestbutton);
     assert_false(interestee.matches(":popover-open"));
-  }, "interest invoking (as auto) closed popover with preventDefault does not open");
-
-  // togglepopover
-
-  promise_test(async function (t) {
-    t.add_cleanup(reset);
-    assert_false(interestee.matches(":popover-open"));
-    interestbutton.setAttribute("interestaction", "toggle-popover");
-    await hoverOver(interestbutton);
-    assert_true(interestee.matches(":popover-open"));
-  }, "hover interest invoking (as togglepopover) closed popover opens");
-
-  promise_test(async function (t) {
-    t.add_cleanup(reset);
-    interestee.showPopover();
-    assert_true(interestee.matches(":popover-open"));
-    interestbutton.setAttribute("interestaction", "toggle-popover");
-    await hoverOver(interestbutton);
-    assert_false(interestee.matches(":popover-open"));
-  }, "hover interest invoking (as togglepopover) open popover closes");
-
-  promise_test(async function (t) {
-    t.add_cleanup(reset);
-    assert_false(interestee.matches(":popover-open"));
-    interestbutton.setAttribute("interestaction", "toggle-popover");
-    interestbutton.focus();
-    assert_true(interestee.matches(":popover-open"));
-  }, "focus interest invoking (as togglepopover) closed popover opens");
-
-  promise_test(async function (t) {
-    t.add_cleanup(reset);
-    interestee.showPopover();
-    assert_true(interestee.matches(":popover-open"));
-    interestbutton.setAttribute("interestaction", "toggle-popover");
-    interestbutton.focus();
-    assert_false(interestee.matches(":popover-open"));
-  }, "focus interest invoking (as togglepopover) open popover closes");
-
-  promise_test(async function (t) {
-    t.add_cleanup(reset);
-    assert_false(interestee.matches(":popover-open"));
-    interestbutton.setAttribute("interestaction", "tOgGlE-pOpOvEr");
-    interestbutton.focus();
-    assert_true(interestee.matches(":popover-open"));
-  }, "interest invoking (as togglepopover - case insensitive) closed popover opens");
-
+  }, "interest invoking closed popover with preventDefault does not open");
 </script>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CSS Cascade Layers: Deep and wide layer trees</title>
+<meta name="assert" content="Test that there are no artificially low limits to layer counts and depths">
+<link rel="author" title="Antti Koivisto" href="mailto:antti@apple.com">
+<link rel="help" href="https://www.w3.org/TR/css-cascade-5/#layering">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<style>
+#target, #reference {
+  width: 100px;
+  height: 100px;
+}
+
+#reference {
+  color: green;
+}
+</style>
+
+<div id="target"></div>
+<div id="reference"></div>
+
+<script>
+// In all tests, #target should have green background color, same as #reference
+
+function makeLayers(parentCount, count) {
+    let result = "";
+    for (let i = 0; i < count; ++i) {
+        result += "@layer ";
+        for (let d = 0; d < parentCount; ++d)
+            result += `p${d}.`;
+        result += `l${i} { #target { color:red; } }\n`;
+    }
+    return result;
+}
+
+const testCases = [
+    {
+        title: 'A1: Many layers',
+        style: `${
+            makeLayers(0, 1000) }
+            @layer next { #target { color:green } }
+        `,
+    },
+    {
+        title: 'A2: Many layers',
+        style: `${
+            makeLayers(0, 1000) }
+            @layer next { #target { color:green } }
+            @layer l500.next { #target { color:red } }
+        `,
+    },
+    {
+        title: 'B1: Many deep layers',
+        style: `
+            ${ makeLayers(10, 1000) }
+            @layer p0.p1.p2.p3.next { #target { color:green } }
+        `,
+    },
+    {
+        title: 'B2: Many deep layers',
+        style: `
+            ${ makeLayers(10, 1000) }
+            @layer p0.p1.p2.p3.p4.p5.p6.p7.p8.next { #target { color:green } }
+        `,
+    },
+    {
+        title: 'B3: Many deep layers',
+        style: `
+            ${ makeLayers(10, 1000) }
+            @layer p0.p1.p2.p3.p4.p5.p6.p7.p8.p9.next { #target { color:green } }
+        `,
+    },
+    {
+        title: 'B4: Many deep layers',
+        style: `
+            ${ makeLayers(10, 1000) }
+            @layer p0.p1.p2.p3.p4.p5.p6.p7.p8.p9.l999.next { #target { color:green } }
+            @layer p0.p1.p2.p3.p4.p5.p6.p7.p8.p9.l998.next { #target { color:red } }
+        `,
+    },
+    {
+        title: 'B5: Many deep layers',
+        style: `
+            ${ makeLayers(10, 1000) }
+            @layer p0.p1.p2.p3.next { #target { color:green } }
+            @layer p0.p1.p2.p3.p4.next { #target { color:red } }
+        `,
+    },
+    {
+        title: 'B6: Many deep layers',
+        style: `
+            ${ makeLayers(10, 1000) }
+            @layer p0.p1.p2.p3.p4.p5.p6.p7.p8.p9.l999 { #target { color:green } }
+        `,
+    },
+    {
+        title: 'C1: Many layers on multiple levels',
+        style: `
+            ${ makeLayers(10, 1000) }
+            ${ makeLayers(5, 1000) }
+            ${ makeLayers(6, 1000) }
+            @layer p0.p1.p2.p3.p4.next { #target { color:green } }
+            @layer p0.p1.p2.p3.p4.p5.next { #target { color:red } }
+        `,
+    },
+    {
+        title: 'C2: Many layers on multiple levels',
+        style: `
+            ${ makeLayers(10, 1000) }
+            ${ makeLayers(5, 1000) }
+            ${ makeLayers(6, 1000) }
+            @layer p0.p1.p2.p3.p4.l999.next { #target { color:green } }
+            @layer p0.p1.p2.p3.p4.p5.l999.next { #target { color:red } }
+        `,
+    },
+    {
+        title: 'D1: Statement',
+        style: `
+            @layer l998, l999;
+            ${ makeLayers(0, 1000) }
+            @layer l997 { #target { color:green } }
+            @layer l998.child { #target { color:red } }
+        `,
+    },
+    {
+        title: 'D2: Statement',
+        style: `
+            @layer p0.p1.p2.p3.p4.p5.p6.p7.p8.p9.l998, p0.p1.p2.p3.p4.p5.p6.p7.p8.p9.l999;
+            ${ makeLayers(10, 1000) }
+            @layer p0.p1.p2.p3.p4.p5.p6.p7.p8.p9.l997 { #target { color:green } }
+            @layer p0.p1.p2.p3.p4.p5.p6.p7.p8.p9.l998.child { #target { color:red } }
+        `,
+    },
+];
+
+for (let testCase of testCases) {
+    const documentStyle = document.createElement('style');
+    documentStyle.appendChild(document.createTextNode(testCase['style']));
+    document.head.appendChild(documentStyle);
+
+    test(function () {
+        assert_equals(getComputedStyle(target).color, getComputedStyle(reference).color);
+    }, testCase['title']);
+
+   documentStyle.remove();
+}
+</script>
+</body>
+</html>

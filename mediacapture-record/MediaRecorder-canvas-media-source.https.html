@@ -110,8 +110,8 @@ async_test(test => {
   startCamera().then(async stream => {
     const videoTrack = stream.getVideoTracks()[0];
     const worker = await createWorker(`
-      const CANVAS_WIDTH = ` + CANVAS_WIDTH + `;
-      const CANVAS_HEIGHT = ` + CANVAS_HEIGHT + `;
+      const CANVAS_WIDTH = ${CANVAS_WIDTH};
+      const CANVAS_HEIGHT = ${CANVAS_HEIGHT};
       onmessage = e => {
         const videoTrack = e.data;
         const { readable: readableStream } = new MediaStreamTrackProcessor({

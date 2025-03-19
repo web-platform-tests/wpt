@@ -39,7 +39,7 @@ python_meta_re = re.compile(br"#\s*META:\s*(\w*)=(.*)$")
 
 reference_file_re = re.compile(r'(^|[\-_])(not)?ref[0-9]*([\-_]|$)')
 
-space_chars: Text = "".join(html5lib.constants.spaceCharacters)
+space_chars: Text = "".join(html5lib.constants.spaceCharacters)  # type: ignore[attr-defined]
 
 
 def replace_end(s: Text, old: Text, new: Text) -> Text:
@@ -179,8 +179,7 @@ def global_variant_url(url: Text, suffix: Text) -> Text:
 
 
 def _parse_html(f: BinaryIO) -> ElementTree.Element:
-    doc = html5lib.parse(f, treebuilder="etree", useChardet=False)
-    return cast(ElementTree.Element, doc)
+    return html5lib.parse(f, treebuilder="etree", useChardet=False)
 
 def _parse_xml(f: BinaryIO) -> ElementTree.Element:
     try:

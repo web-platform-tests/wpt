@@ -19,8 +19,9 @@
     if (window.applyMutation) {
       assert_equals(input, input_string);
       window.applyMutation();
+      return output_string;
     }
-    return output_string;
+    return input;
   }
   trustedTypes.createPolicy("default", {
     createHTML: createTrustedType,
@@ -165,9 +166,10 @@
                                                testData.attrName),
                         output_string);
           assert_equals(otherElement.attributes.length, 1);
+          // The attribute is moved to the other element before its value is updated.
           assert_equals(otherElement.getAttributeNS(testData.attrNS,
                                                     testData.attrName),
-                        output_string);
+                        other_string);
           break;
         case "Element.setAttributeNode":
         case "Element.setAttributeNodeNS":
@@ -187,21 +189,23 @@
           assert_equals(otherElement.attributes.length, 1);
           assert_equals(otherElement.getAttributeNS(testData.attrNS,
                                                     testData.attrName),
-                        output_string);
+                        input_string);
           break;
         case "Attr.value":
         case "Node.nodeValue":
         case "Node.textContent":
-          // These APIs successfully sets the attribute node value, the default
-          // policy's callback moved that node on the other element.
+          // These APIs early return when the element changes, but the default policy's
+          // callback still sets the attribute on the other element.
           returnValue = setterData.runSetter(element, testData.attrNS,
                                              testData.attrName,
-                                             input_string, testData.type);
+                                             input_string, testData.type, other_string);
+
           assert_equals(element.attributes.length, 0);
           assert_equals(otherElement.attributes.length, 1);
+          // The attribute is moved to the other element, with its initial value of an empty string.
           assert_equals(otherElement.getAttributeNS(testData.attrNS,
                                                   testData.attrName),
-                        output_string);
+                        other_string);
           break;
         default:
           assert_unreached();

@@ -30,10 +30,10 @@
 
   promise_test(async t => {
     let violation = await trusted_type_violation_without_exception_for(_ =>
-      document.getElementById("script").src = "// #abc"
+      document.getElementById("script").src = "support/namespaces.js#abc"
     );
     assert_true(violation.originalPolicy.includes("trusted-types two"));
-    assert_true(document.getElementById("script").src.endsWith("// #abc"));
+    assert_true(document.getElementById("script").src.endsWith("#abc"));
   }, "Trusted Type violation report-only: assign string to script url");
 
   promise_test(async t => {

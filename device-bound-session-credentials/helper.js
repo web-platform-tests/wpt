@@ -21,7 +21,7 @@ export async function waitForCookie(cookieAndValue, expectCookie) {
 
 export function expireCookie(cookieAndAttributes) {
   document.cookie =
-      cookieAndAttributes + '; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+      `${cookieAndAttributes}; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
 }
 
 export function addCookieAndSessionCleanup(test) {
@@ -29,6 +29,14 @@ export function addCookieAndSessionCleanup(test) {
   test.add_cleanup(async () => {
     const response = await fetch('end_session_via_clear_site_data.py');
     assert_equals(response.status, 200);
+  });
+}
+
+export async function postJson(url, obj) {
+  return await fetch(url, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(obj),
   });
 }
 

@@ -46,6 +46,9 @@
         case "get":
           promise = navigator.credentials.get(data.options);
           break;
+        case "create":
+          promise = navigator.credentials.create(data.options);
+          break;  
         case "preventSilentAccess":
           promise = navigator.credentials.preventSilentAccess();
           break;

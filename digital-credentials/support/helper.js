@@ -1,15 +1,19 @@
 // @ts-check
 // Import the types from the TypeScript file
 /**
- * @typedef {import('../dc-types').Protocol} protocol
- * @typedef {import('../dc-types').DigitalCredentialRequest} DigitalCredentialRequest
+ * @typedef {import('../dc-types').GetProtocol} GetProtocol
+ * @typedef {import('../dc-types').DigitalCredentialGetRequest} DigitalCredentialGetRequest
  * @typedef {import('../dc-types').DigitalCredentialRequestOptions} DigitalCredentialRequestOptions
  * @typedef {import('../dc-types').CredentialRequestOptions} CredentialRequestOptions
+ * @typedef {import('../dc-types').CreateProtocol} CreateProtocol 
+ * @typedef {import('../dc-types').DigitalCredentialCreateRequest} DigitalCredentialCreateRequest 
+ * @typedef {import('../dc-types').CredentialCreationOptions} CredentialCreationOptions 
+ * @typedef {import('../dc-types').DigitalCredentialCreationOptions} DigitalCredentialCreationOptions
  * @typedef {import('../dc-types').SendMessageData} SendMessageData
  */
 
 /**
- * @param {protocol | protocol[]} [requestsToUse=["default"]]
+ * @param {GetProtocol | GetProtocol[]} [requestsToUse=["default"]]
  * @param {CredentialMediationRequirement} [mediation="required"]
  * @returns {CredentialRequestOptions}
  */
@@ -29,7 +33,7 @@ export function makeGetOptions(requestsToUse, mediation = "required") {
         requests.push(makeOID4VPDict());
         break;
       case "default":
-        requests.push(makeDigitalCredentialRequest(undefined, undefined));
+        requests.push(makeDigitalCredentialGetRequest(undefined, undefined));
         break;
       default:
         throw new Error(`Unknown request type: ${request}`);
@@ -37,13 +41,44 @@ export function makeGetOptions(requestsToUse, mediation = "required") {
   }
   return { digital: { requests }, mediation };
 }
+
+/**
+ * @param {CreateProtocol | CreateProtocol[]} [requestsToUse=["default"]]
+ * @param {CredentialMediationRequirement} [mediation="required"]
+ * @returns {CredentialCreationOptions}
+ */
+export function makeCreateOptions(requestsToUse, mediation = "required") {
+  if (typeof requestsToUse === "string") {
+    if (requestsToUse === "default" || requestsToUse === "openid4vci") {
+      return makeCreateOptions([requestsToUse], mediation);
+    }
+  }
+  if (!Array.isArray(requestsToUse) || !requestsToUse?.length) {
+    return { digital: { requests: requestsToUse }, mediation };
+  }
+  const requests = [];
+  for (const request of requestsToUse) {
+    switch (request) {
+      case "openid4vci":
+        requests.push(makeOID4VCIDict());
+        break;
+      case "default":
+        requests.push(makeDigitalCredentialCreateRequest(undefined, undefined));
+        break;
+      default:
+        throw new Error(`Unknown request type: ${request}`);
+    }
+  }
+  return { digital: { requests }, mediation };
+}
+
 /**
  *
  * @param {string} protocol
  * @param {object} data
- * @returns {DigitalCredentialRequest}
+ * @returns {DigitalCredentialGetRequest}
  */
-function makeDigitalCredentialRequest(protocol = "protocol", data = {}) {
+function makeDigitalCredentialGetRequest(protocol = "protocol", data = {}) {
   return {
     protocol,
     data,
@@ -53,11 +88,35 @@ function makeDigitalCredentialRequest(protocol = "protocol", data = {}) {
 /**
  * Representation of an OpenID4VP request.
  *
- * @returns {DigitalCredentialRequest}
+ * @returns {DigitalCredentialGetRequest}
  **/
 function makeOID4VPDict() {
-  return makeDigitalCredentialRequest("openid4vp", {
+  return makeDigitalCredentialGetRequest("openid4vp", {
     // Canonical example of an OpenID4VP request coming soon.
+  });
+}
+
+/**
+ *
+ * @param {string} protocol
+ * @param {object} data
+ * @returns {DigitalCredentialCreateRequest}
+ */
+function makeDigitalCredentialCreateRequest(protocol = "protocol", data = {}) {
+  return {
+    protocol,
+    data,
+  };
+}
+
+/**
+ * Representation of an OpenID4VCI request.
+ *
+ * @returns {DigitalCredentialCreateRequest}
+ **/
+function makeOID4VCIDict() {
+  return makeDigitalCredentialCreateRequest("openid4vci", {
+    // Canonical example of an OpenID4VCI request coming soon.
   });
 }
 

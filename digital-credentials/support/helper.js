@@ -5,9 +5,9 @@
  * @typedef {import('../dc-types').DigitalCredentialGetRequest} DigitalCredentialGetRequest
  * @typedef {import('../dc-types').DigitalCredentialRequestOptions} DigitalCredentialRequestOptions
  * @typedef {import('../dc-types').CredentialRequestOptions} CredentialRequestOptions
- * @typedef {import('../dc-types').CreateProtocol} CreateProtocol 
- * @typedef {import('../dc-types').DigitalCredentialCreateRequest} DigitalCredentialCreateRequest 
- * @typedef {import('../dc-types').CredentialCreationOptions} CredentialCreationOptions 
+ * @typedef {import('../dc-types').CreateProtocol} CreateProtocol
+ * @typedef {import('../dc-types').DigitalCredentialCreateRequest} DigitalCredentialCreateRequest
+ * @typedef {import('../dc-types').CredentialCreationOptions} CredentialCreationOptions
  * @typedef {import('../dc-types').DigitalCredentialCreationOptions} DigitalCredentialCreationOptions
  * @typedef {import('../dc-types').SendMessageData} SendMessageData
  */

@@ -1,1 +1,1 @@
-Permissions-Policy: digital-credentials-get=()
+Permissions-Policy: digital-credentials-get=(), digital-credentials-create=()

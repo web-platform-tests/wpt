@@ -9,18 +9,11 @@
 
 <body>
 <script>
-'use strict';
-
-/**
- * 1. Multiple listeners on one PermissionStatus
- */
 promise_test(async t => {
-  // Start from "prompt"
   await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
   const status = await navigator.permissions.query({ name: 'geolocation' });
   assert_equals(status.state, 'prompt', 'Initial state is "prompt"');
 
-  // We'll create two promises, one for each listener
   const promise1 = new Promise(resolve => {
     status.addEventListener('change', () => resolve('addEventListener-fired'));
   });
@@ -28,10 +21,8 @@ promise_test(async t => {
     status.onchange = () => resolve('.onchange-fired');
   });
 
-  // Trigger a single transition -> "granted"
   await test_driver.set_permission({ name: 'geolocation' }, 'granted');
 
-  // Wait for both listeners
   const results = await Promise.all([promise1, promise2]);
   results.sort();
 

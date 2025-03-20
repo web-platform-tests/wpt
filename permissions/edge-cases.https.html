@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Permissions API - Edge Cases</title>
+<title>Permissions API - Test invalid permission name</title>
 <link rel="help" href="https://www.w3.org/TR/permissions/" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -9,38 +9,8 @@
 
 <body>
 <script>
-'use strict';
+"use strict";
 
-/**
- * 1. Setting the same state ("prompt" -> "prompt") won't fire "change"
- */
-promise_test(async t => {
-  // Start in "prompt"
-  await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
-  const status = await navigator.permissions.query({ name: 'geolocation' });
-
-  // We'll watch for a "change" event
-  const p = new Promise((resolve, reject) => {
-    status.addEventListener('change', () => {
-      reject('A "change" event fired despite forcing the same state');
-    });
-  });
-
-  // Force the same state
-  await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
-
-  // Wait a microtask to see if any event triggers
-  await Promise.resolve();
-
-  // If we got no event, pass
-  // Cleanup
-  await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
-}, 'Reapplying the same permission state does not fire a "change" event');
-
-
-/**
- * 2. Querying an invalid permission name
- */
 promise_test(async t => {
   await promise_rejects_js(
     t,

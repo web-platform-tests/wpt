@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <title>Permissions API - Event Model Tests</title>
 <link rel="help" href="https://www.w3.org/TR/permissions/" />
 <script src="/resources/testharness.js"></script>
@@ -8,135 +8,108 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <body>
-<script>
-promise_test(async t => {
-  await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
-  const status = await navigator.permissions.query({ name: 'geolocation' });
-  assert_equals(status.state, 'prompt', 'Initial state is "prompt"');
+    <script>
+        promise_test(async (t) => {
+            await test_driver.set_permission({ name: "geolocation" }, "prompt");
+            const status = await navigator.permissions.query({
+                name: "geolocation",
+            });
+            assert_equals(status.state, "prompt", 'Initial state is "prompt"');
 
-  const promise1 = new Promise(resolve => {
-    status.addEventListener('change', () => resolve('addEventListener-fired'));
-  });
-  const promise2 = new Promise(resolve => {
-    status.onchange = () => resolve('.onchange-fired');
-  });
+            let count = 0;
+            const promise1 = new Promise((resolve) => {
+                status.addEventListener("change", () => resolve(count++), {
+                    once: true,
+                });
+            });
 
-  await test_driver.set_permission({ name: 'geolocation' }, 'granted');
+            const promise2 = new Promise((resolve) => {
+                status.onchange = () => resolve(count++);
+            });
 
-  const results = await Promise.all([promise1, promise2]);
-  results.sort();
+            await test_driver.set_permission(
+                { name: "geolocation" },
+                "granted"
+            );
 
-  assert_equals(status.state, 'granted', 'State should now be "granted"');
-  assert_array_equals(
-    results,
-    ['.onchange-fired', 'addEventListener-fired'].sort(),
-    'Both listeners fired exactly once'
-  );
+            const results = await Promise.all([promise1, promise2]);
 
-  // Cleanup
-  status.onchange = null;
-  await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
-}, 'Multiple listeners on a single PermissionStatus should all fire on change');
+            assert_equals(
+                status.state,
+                "granted",
+                'State should now be "granted"'
+            );
+            assert_array_equals(results, [0, 1], "Both listeners fired once");
 
+            status.onchange = null;
+        }, "Multiple listeners on a single PermissionStatus should all fire on change");
 
-/**
- * 2. Multiple transitions (prompt -> granted -> denied)
- */
-promise_test(async t => {
-  await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
-  const status = await navigator.permissions.query({ name: 'geolocation' });
-  assert_equals(status.state, 'prompt', 'Initial state is "prompt"');
+        promise_test(async (t) => {
+            await test_driver.set_permission({ name: "geolocation" }, "prompt");
+            const status = await navigator.permissions.query({
+                name: "geolocation",
+            });
+            assert_equals(status.state, "prompt", 'Initial state is "prompt"');
 
-  // Step 1: prompt -> granted
-  const grantedPromise = new Promise(resolve => {
-    const listener = () => {
-      status.removeEventListener('change', listener);
-      resolve();
-    };
-    status.addEventListener('change', listener);
-  });
-  await test_driver.set_permission({ name: 'geolocation' }, 'granted');
-  await grantedPromise;
-  assert_equals(status.state, 'granted', 'Now in "granted" state');
+            const grantedPromise = new Promise((resolve) => {
+                status.addEventListener("change", resolve, { once: true });
+            });
+            await test_driver.set_permission(
+                { name: "geolocation" },
+                "granted"
+            );
+            await grantedPromise;
+            assert_equals(status.state, "granted", 'Now in "granted" state');
 
-  // Step 2: granted -> denied
-  const deniedPromise = new Promise(resolve => {
-    const listener = () => {
-      status.removeEventListener('change', listener);
-      resolve();
-    };
-    status.addEventListener('change', listener);
-  });
-  await test_driver.set_permission({ name: 'geolocation' }, 'denied');
-  await deniedPromise;
-  assert_equals(status.state, 'denied', 'Now in "denied" state');
+            const deniedPromise = new Promise((resolve) => {
+                status.addEventListener("change", resolve, { once: true });
+            });
+            await test_driver.set_permission({ name: "geolocation" }, "denied");
+            await deniedPromise;
+            assert_equals(status.state, "denied", 'Now in "denied" state');
+        }, 'Multiple transitions generate multiple "change" events');
 
-  // Cleanup
-  await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
-}, 'Multiple transitions generate multiple "change" events');
+        promise_test(async (t) => {
+            await test_driver.set_permission({ name: "geolocation" }, "prompt");
 
+            const statusA = await navigator.permissions.query({
+                name: "geolocation",
+            });
+            const statusB = await navigator.permissions.query({
+                name: "geolocation",
+            });
 
-/**
- * 3. Multiple watchers (two PermissionStatus objects for the same permission)
- */
-promise_test(async t => {
-  await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
+            const watchA = new Promise((resolve) => {
+                statusA.addEventListener("change", resolve, { once: true });
+            });
+            const watchB = new Promise((resolve) => {
+                statusB.addEventListener("change", resolve, { once: true });
+            });
 
-  const statusA = await navigator.permissions.query({ name: 'geolocation' });
-  const statusB = await navigator.permissions.query({ name: 'geolocation' });
+            await test_driver.set_permission(
+                { name: "geolocation" },
+                "granted"
+            );
+            const results = await Promise.all([watchA, watchB]);
+        }, "Multiple PermissionStatus objects observe the same transition");
 
-  const watchA = new Promise(resolve => {
-    statusA.addEventListener('change', () => resolve('A'));
-  });
-  const watchB = new Promise(resolve => {
-    statusB.addEventListener('change', () => resolve('B'));
-  });
+        promise_test(async (t) => {
+            await test_driver.set_permission({ name: "geolocation" }, "prompt");
 
-  // Now transition -> "granted"
-  await test_driver.set_permission({ name: 'geolocation' }, 'granted');
+            const ephemeralPromise = new Promise((resolve) => {
+                (async () => {
+                    const status = await navigator.permissions.query({
+                        name: "geolocation",
+                    });
+                    status.addEventListener("change", resolve, { once: true });
+                })();
+            });
 
-  // Wait for both watchers
-  const results = await Promise.all([watchA, watchB]);
-  results.sort();
-  assert_array_equals(results, ['A', 'B'], 'Both watchers observed the transition');
-
-  // Cleanup
-  await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
-}, 'Multiple PermissionStatus objects observe the same transition');
-
-
-/**
- * 4. Ephemeral scope: "out of scope" object must still receive the event
- */
-promise_test(async t => {
-  // Start from "prompt"
-  await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
-
-  let eventFired = false;
-  const ephemeralPromise = new Promise(resolve => {
-    // We immediately create and then lose the reference to `status`
-    (async () => {
-      const status = await navigator.permissions.query({ name: 'geolocation' });
-      status.addEventListener('change', () => {
-        eventFired = true;
-        resolve();
-      });
-    })();
-    // No returned reference, so it goes out of scope
-  });
-
-  // Transition -> "granted"
-  await test_driver.set_permission({ name: 'geolocation' }, 'granted');
-  await ephemeralPromise;
-
-  assert_true(
-    eventFired,
-    'PermissionStatus "change" fired even after going out of scope'
-  );
-
-  // Cleanup
-  await test_driver.set_permission({ name: 'geolocation' }, 'prompt');
-}, 'PermissionStatus out of scope should still fire "change" event');
-</script>
+            await test_driver.set_permission(
+                { name: "geolocation" },
+                "granted"
+            );
+            await ephemeralPromise;
+        }, 'PermissionStatus out of scope should still fire "change" event');
+    </script>
 </body>
-</html>

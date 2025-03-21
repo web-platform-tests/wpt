@@ -512,6 +512,17 @@ class RemoveVirtualPressureSourceAction:
         source_type = payload["source_type"]
         return self.protocol.pressure.remove_virtual_pressure_source(source_type)
 
+class SetProtectedAudienceKAnonymityAction:
+    name = "set_protected_audience_k_anonymity"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        owner, name, hashes = payload["owner"], payload["name"], payload["hashes"]
+        return self.protocol.protected_audience.set_k_anonymity(owner, name, hashes)
+
 actions = [ClickAction,
            DeleteAllCookiesAction,
            GetAllCookiesAction,
@@ -551,4 +562,5 @@ actions = [ClickAction,
            RunBounceTrackingMitigationsAction,
            CreateVirtualPressureSourceAction,
            UpdateVirtualPressureSourceAction,
-           RemoveVirtualPressureSourceAction]
+           RemoveVirtualPressureSourceAction,
+           SetProtectedAudienceKAnonymityAction]

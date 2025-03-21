@@ -34,9 +34,13 @@
   <div>
     <button id="menubutton" aria-haspopup="true" aria-controls="menu">Menu</button>
     <ul id="menu" role="menu" aria-labelledby="menubutton">
-      <li role="presentation">
+      <li>
         <a role="menuitem" href="#description" data-expectedlabel="Description" data-testname="anchor name from content with
            menuitem" class="ex">Description</a>
+      </li>
+      <li>
+        <button role="menuitem" data-expectedlabel="About" data-testname="button name from content with menuitem" class="ex">
+          About</button>
       </li>
     </ul>
   </div>

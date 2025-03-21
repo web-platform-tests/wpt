@@ -17,18 +17,11 @@
             log("violated-directive=" + e.violatedDirective);
         });
 
-        try {
-            var ws = new WebSocket("ws://{{domains[www1]}}:{{ports[http][0]}}/echo");
-
-            if (ws.readyState == WebSocket.CLOSING || ws.readyState == WebSocket.CLOSED) {
-                log("blocked");
-            } else {
-                log("allowed");
-            }
-        } catch (e) {
+        var ws = new WebSocket("ws://{{domains[www1]}}:{{ports[http][0]}}/echo");
+        ws.onerror = () => {
+            assert_equals(ws.readyState, WebSocket.CLOSED, "WebSocket should be closed");
             log("blocked");
         }
-
     </script>
     <div id="log"></div>
 </body>

@@ -21,14 +21,11 @@
             var xhr = new XMLHttpRequest;
             xhr.open("GET", "http://www1.{{host}}:{{ports[http][0]}}/content-security-policy/support/fail.png", false);
             xhr.send();
-            xhr.onload = function() {
-                log("Fail");
-            }
-            xhr.onerror = function() {
-                log("Pass");
-            }
+            log("Fail");
         } catch (e) {
             log("Pass");
+            assert_true(e instanceof DOMException, "Exception should be a DOMException");
+            assert_equals(e.code, DOMException.NETWORK_ERR, "Exception should be a 'NetworkError'");
         }
 
     </script>

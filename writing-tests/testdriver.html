@@ -1077,15 +1077,16 @@ WebDriver command.</p>
 
 <dl class="js staticfunction">
 <dt class="sig sig-object js" id="test_driver.update_virtual_pressure_source">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">update_virtual_pressure_source</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.update_virtual_pressure_source" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="n"><span class="pre">test_driver</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">update_virtual_pressure_source</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context=null</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.update_virtual_pressure_source" title="Link to this definition">¶</a></dt>
 <dd><p>Causes a virtual pressure source to report a new reading.</p>
-<p>Matches the <a class="reference external" href="https://w3c.github.io/compute-pressure/#update-virtual-pressure-source">Update virtual pressure source</a>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/compute-pressure/?experimental=1#update-virtual-pressure-source">Update virtual pressure source</a>
 WebDriver command.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>source_type</strong> (<em>String</em>) – A <a class="reference external" href="https://w3c.github.io/compute-pressure/#dom-pressuresource">virtual pressure source type</a> such as “cpu”.</p></li>
 <li><p><strong>sample</strong> (<em>String</em>) – A <a class="reference external" href="https://w3c.github.io/compute-pressure/#dom-pressurestate">virtual pressure state</a> such as “critical”.</p></li>
+<li><p><strong>estimate</strong> (<em>number</em>) – Optional, A <cite>virtual own contribution estimate</cite> &lt;<a class="reference external" href="https://w3c.github.io/compute-pressure/?experimental=1#the-owncontributionestimate-attribute">https://w3c.github.io/compute-pressure/?experimental=1#the-owncontributionestimate-attribute</a>&gt;`_</p></li>
 <li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
 </dd>

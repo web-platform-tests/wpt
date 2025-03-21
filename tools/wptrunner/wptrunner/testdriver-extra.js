@@ -477,7 +477,7 @@
     };
 
     window.test_driver_internal.set_protected_audience_k_anonymity = function(
-        owner, name, hashes, context) {
+        owner, name, hashes, context=null) {
       return create_context_action(
           'set_protected_audience_k_anonymity', context, {owner, name, hashes});
     }

@@ -1017,7 +1017,7 @@ class VirtualPressureSourceProtocolPart(ProtocolPart):
         pass
 
 class ProtectedAudienceProtocolPart(ProtocolPart):
-    """Protocol part for Protected Audiences"""
+    """Protocol part for Protected Audience"""
     __metaclass__ = ABCMeta
 
     name = "protected_audience"

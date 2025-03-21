@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+  <title>Name Comp: Name From Content</title>
+  <meta charset="utf-8">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+  <style type="text/css">
+
+     /*
+
+      Since the AccName spec is in flux about whitespace joiners, and the implementations don't match,
+      normalize the whitespace (with extra leading/trailing) space.
+
+      No point in having the same in-flux spec change cause failures the remaining unrelated tests.
+
+      See more here:
+      https://github.com/w3c/accname/issues/205
+      https://github.com/w3c/accname/projects/1#card-42288231
+
+    */
+
+
+  </style>
+</head>
+<body>
+
+<!--TODO: Add test description-->
+
+  <div>
+    <button id="menubutton" aria-haspopup="true" aria-controls="menu">Menu</button>
+    <ul id="menu" role="menu" aria-labelledby="menubutton">
+      <li role="presentation">
+        <a role="menuitem" href="#description" data-expectedlabel="Description" data-testname="anchor name from content with
+           menuitem" class="ex">Description</a>
+      </li>
+    </ul>
+  </div>
+<script>
+AriaUtils.verifyLabelsBySelector(".ex");
+</script>
+</body>
+</html>

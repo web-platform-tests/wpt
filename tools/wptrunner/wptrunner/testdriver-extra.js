@@ -468,7 +468,7 @@
         return create_context_action("create_virtual_pressure_source", context, {source_type, metadata});
     };
 
-    window.test_driver_internal.update_virtual_pressure_source = function(source_type, sample, estimate = -1.0, context=null) {
+    window.test_driver_internal.update_virtual_pressure_source = function(source_type, sample, estimate, context=null) {
         return create_context_action("update_virtual_pressure_source", context, {source_type, sample, estimate});
     };
 

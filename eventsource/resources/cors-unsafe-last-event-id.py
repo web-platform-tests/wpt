@@ -39,13 +39,6 @@ def main(request, response):
 
     # Preflight handling
     if request.method == u"OPTIONS":
-        # The first request (without any `Last-Event-ID` header) should _never_ be a
-        # preflight request, since it should be considered a "safe" request.
-        # If we _do_ send a preflight for these requests, error early.
-        if last_event_id == b"":
-            headers = [(b"Content-Type", b"text/plain")]
-            return 400, headers, b"ERROR: No Last-Event-ID header in preflight!"
-
         # We keep track of the different "tokens" we see, in order to tell whether or not
         # a client has done a preflight request. If the "stash" does not contain a token,
         # no preflight request was made.

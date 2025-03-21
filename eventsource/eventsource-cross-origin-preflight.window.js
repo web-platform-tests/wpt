@@ -1,17 +1,24 @@
 // META: title=EventSource: cross-origin preflight
 // META: script=/common/utils.js
 
-const crossdomain = location.href.replace('://', '://élève.').replace(/\/[^\/]*$/, '/');
-const origin = location.origin.replace('://', '://xn--lve-6lad.');
+const crossdomain = location.href
+  .replace("://", "://élève.")
+  .replace(/\/[^\/]*$/, "/");
+const origin = location.origin.replace("://", "://xn--lve-6lad.");
 
 [
-  ['safe `last-event-id` (no preflight)', 'safe'],
-  ['unsafe `last-event-id` (too long)', 'long'],
-  ['unsafe `last-event-id` (unsafe characters)', 'unsafe']
+  ["safe `last-event-id` (no preflight)", "safe"],
+  ["unsafe `last-event-id` (preflight because too long)", "long"],
+  ["unsafe `last-event-id` (preflight because unsafe characters)", "unsafe"],
 ].forEach(([name, fixture]) => {
-  async_test(document.title + ' - ' + name).step(function () {
+  async_test(document.title + " - " + name).step(function () {
     const uuid = token();
-    const url = crossdomain + 'resources/cors-unsafe-last-event-id.py?fixture=' + fixture + '&token=' + uuid;
+    const url =
+      crossdomain +
+      "resources/cors-unsafe-last-event-id.py?fixture=" +
+      fixture +
+      "&token=" +
+      uuid;
 
     const source = new EventSource(url);
 
@@ -20,16 +27,19 @@ const origin = location.origin.replace('://', '://xn--lve-6lad.');
 
     // 1. Event will be a `message` with `id` set to a CORS-safe value, then disconnects.
     source.addEventListener(
-      'message',
-      this.step_func((evt) => assert_equals(evt.data, fixture)),
+      "message",
+      this.step_func((evt) => assert_equals(evt.data, fixture))
     );
 
     // 2. Will emit either `success` or `failure` event. We expect `success`,
     //    which is the case if `last-event-id` is set to the same value as received above,
     //    and a preflight request has been sent for the unsafe `last-event-id` headers.
-    source.addEventListener('success', this.step_func_done());
-    source.addEventListener('failure', this.step_func_done((evt) => {
-      assert_unreached(evt.data);
-    }));
+    source.addEventListener("success", this.step_func_done());
+    source.addEventListener(
+      "failure",
+      this.step_func_done((evt) => {
+        assert_unreached(evt.data);
+      })
+    );
   });
 });

@@ -1,7 +1,15 @@
 // META: title=Detect english
 // META: global=window,worker
+// META: script=../resources/util.js
 
 'use strict';
+
+promise_test(async t => {
+  // Language detection is available after call to `create()`.
+  await ai.languageDetector.create();
+  const availability = await ai.languageDetector.availability();
+  assert_equals(availability, 'available');
+}, 'Simple AILanguageDetector.availability() call');
 
 promise_test(async t => {
   const detector = await ai.languageDetector.create();
@@ -24,11 +32,25 @@ promise_test(async t => {
 }, 'AILanguageDetectorFactory.create() call with an aborted signal.');
 
 promise_test(async t => {
+  await testAbortPromise(t, signal => {
+    return ai.languageDetector.create({signal});
+  });
+}, 'Aborting AILanguageDetectorFactory.create().');
+
+promise_test(async t => {
   const controller = new AbortController();
   controller.abort();
 
   const detector = await ai.languageDetector.create();
-  const detectPromise = await detector.detect('this string is in English');
+  const detectPromise =
+      detector.detect('this string is in English', {signal: controller.signal});
 
   await promise_rejects_dom(t, 'AbortError', detectPromise);
 }, 'AILanguageDetector.detect() call with an aborted signal.');
+
+promise_test(async t => {
+  const detector = await ai.languageDetector.create();
+  await testAbortPromise(t, signal => {
+    return detector.detect('this string is in English', {signal});
+  });
+}, 'Aborting AILanguageDetector.detect().');

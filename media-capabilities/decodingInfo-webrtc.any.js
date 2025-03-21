@@ -19,6 +19,17 @@ const minimalAudioConfiguration = {
   contentType: 'audio/opus',
 };
 
+const videoConfigurationWithDynamicRange = {
+  contentType: 'video/webm; codecs="vp09.00.10.08.00.09.16.09.00"',
+  width: 800,
+  height: 600,
+  bitrate: 3000,
+  framerate: 24,
+  hdrMetadataType: 'smpteSt2086',
+  colorGamut: 'rec2020',
+  transferFunction: 'pq',
+};
+
 promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
     type: 'webrtc',
@@ -94,7 +105,7 @@ promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
     type: 'webrtc',
     video: {
-      contentType: 'application/ogg; codec=vorbis',
+      contentType: 'application/ogg; codecs=vorbis',
       width: 800,
       height: 600,
       bitrate: 3000,
@@ -121,7 +132,7 @@ promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
     type: 'webrtc',
     audio: {
-      contentType: 'application/ogg; codec=theora',
+      contentType: 'application/ogg; codecs=theora',
       channels: 2,
     },
   }));
@@ -293,67 +304,15 @@ promise_test(t => {
     type: 'webrtc',
     audio: { contentType: 'audio/webm; foo="bar"' },
   }));
-      }, "Test that decodingInfo rejects if the audio configuration contentType has one parameter that isn't codecs");
+}, "Test that decodingInfo rejects if the audio configuration contentType has one parameter that isn't codecs");
 
 promise_test(t => {
-  // VP9 has a default color space of BT.709 in the codec string. So this will
-  // mismatch against the provided colorGamut and transferFunction.
-  let bt709Config = videoConfigurationWithDynamicRange;
   bt709Config.contentType = 'video/webm; codecs="vp09.00.10.08"';
-  return navigator.mediaCapabilities
-      .decodingInfo({
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
         type: 'webrtc',
-        video: bt709Config,
-      })
-      .then(ability => {
-        assert_equals(typeof ability.supported, 'boolean');
-        assert_equals(typeof ability.smooth, 'boolean');
-        assert_equals(typeof ability.powerEfficient, 'boolean');
-        assert_equals(typeof ability.keySystemAccess, 'object');
-        assert_false(ability.supported);
-      });
-}, 'Test that decodingInfo with mismatched codec color space is unsupported');
+        video: videoConfigurationWithDynamicRange,
+      }));
+}, "Test that decodingInfo rejects for type 'webrtc' if HDR members are set");
 
-promise_test(t => {
-  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
-    type: 'webrtc',
-    video: {
-      contentType: 'video/webm; codecs="vp09.00.10.08"',
-      width: 800,
-      height: 600,
-      bitrate: 3000,
-      framerate: 24,
-      hdrMetadataType: ""
-    },
-  }));
-}, "Test that decodingInfo rejects if the video configuration has an empty hdrMetadataType");
-
-promise_test(t => {
-  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
-    type: 'webrtc',
-    video: {
-      contentType: 'video/webm; codecs="vp09.00.10.08"',
-      width: 800,
-      height: 600,
-      bitrate: 3000,
-      framerate: 24,
-      colorGamut: true
-    },
-  }));
-}, "Test that decodingInfo rejects if the video configuration has a colorGamut set to true");
-
-promise_test(t => {
-  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
-    type: 'webrtc',
-    video: {
-      contentType: 'video/webm; codecs="vp09.00.10.08"',
-      width: 800,
-      height: 600,
-      bitrate: 3000,
-      framerate: 24,
-      transferFunction: 3
-    },
-  }));
-}, "Test that decodingInfo rejects if the video configuration has a transferFunction set to 3");
 
 

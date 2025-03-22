@@ -1439,7 +1439,6 @@
          *                          such as "critical".
          * @param {number} estimate - Optional, A `virtual own contribution estimate`
          *                          <https://w3c.github.io/compute-pressure/?experimental=1#the-owncontributionestimate-attribute>`_
-
          * @param {WindowProxy} [context=null] - Browsing context in which to
          *                                       run the call, or null for the
          *                                       current browsing context.

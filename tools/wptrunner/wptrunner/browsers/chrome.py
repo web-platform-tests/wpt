@@ -162,7 +162,9 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     chrome_options["args"].append("--disable-features=ScrollbarAnimations")
 
     # Always disable antialiasing on the Ahem font.
-    blink_features = ['DisableAhemAntialias']
+    # Always enable ViewTransitions long callback timeout to avoid erroneous
+    # failures due to implicit timeout within the API.
+    blink_features = ['DisableAhemAntialias', 'ViewTransitionLongCallbackTimeoutForTesting']
 
     if kwargs["enable_mojojs"]:
         blink_features.append('MojoJS')

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Flexbox: Test that flex container's intrinsic size is influenced by
+its items' flex-grow values</title>
+<link rel="author" title="Google Inc." href="https://www.google.com/" />
+
+<style>
+.flexbox {
+  display: flex;
+  width: 600px;
+}
+
+.small {
+  width: 200px;
+  height: 100px;
+  background-color: green;
+  flex: none;
+}
+
+.big {
+  width: 400px;
+  height: 100px;
+  background-color: blue;
+  flex: none;
+}
+</style>
+
+<body>
+
+<p>You should see a 200px wide green rectangle next to a 400px wide blue
+rectangle.</p>
+
+<div class="flexbox">
+  <div class="small"></div>
+  <div class="big"></div>
+</div>
+</body>

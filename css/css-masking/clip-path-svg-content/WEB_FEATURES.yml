@@ -1,0 +1,6 @@
+features:
+- name: clip-path-boxes
+  files:
+  - clip-path-shape-circle-003.svg
+  - clip-path-shape-circle-004.svg
+  - clip-path-shape-circle-005.svg

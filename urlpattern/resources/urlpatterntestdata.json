@@ -1236,7 +1236,7 @@
     "expected_match": {
       "port": { "input": "80", "groups": {}}
     }
-  },  
+  },
   {
     "pattern": [{ "port": "80" }],
     "inputs": [{ "port": "80x" }],

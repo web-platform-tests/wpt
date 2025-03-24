@@ -70,6 +70,12 @@ document.fonts.ready.then(()=> {
   TestingUtils.testGridTemplateColumnsRows("grid", "1000px 1fr", "700px 1fr", "1000px 0px", "700px 0px");
   TestingUtils.testGridTemplateColumnsRows("emptyGrid", "calc(50px + 50%) 1fr", "calc(50px + 50%) 1fr", "450px 350px", "350px 250px");
   TestingUtils.testGridTemplateColumnsRows("grid", "calc(50px + 50%) 1fr", "calc(50px + 50%) 1fr", "450px 350px", "350px 250px");
+  TestingUtils.testGridTemplateColumnsRows("emptyGrid", "200px calc(1fr)", "300px calc(1fr)", "200px 600px", "300px 300px");
+  TestingUtils.testGridTemplateColumnsRows("grid", "200px calc(1fr)", "300px calc(1fr)", "200px 600px", "300px 300px");
+  TestingUtils.testGridTemplateColumnsRows("emptyGrid", "250px calc(2 * 0.5fr)", "350px calc(2 * 0.5fr)", "250px 550px", "350px 250px");
+  TestingUtils.testGridTemplateColumnsRows("grid", "250px calc(2 * 0.5fr)", "350px calc(2 * 0.5fr)", "250px 550px", "350px 250px");
+  TestingUtils.testGridTemplateColumnsRows("emptyGrid", "200px calc(1fr / 2)", "300px calc(1fr / 2)", "200px 300px", "300px 150px");
+  TestingUtils.testGridTemplateColumnsRows("grid", "200px calc(1fr / 2)", "300px calc(1fr / 2)", "200px 300px", "300px 150px");
   TestingUtils.testGridTemplateColumnsRows("emptyGrid", "minmax(100px, 300px) 1fr", "minmax(100px, 200px) 1fr", "300px 500px", "200px 400px");
   TestingUtils.testGridTemplateColumnsRows("grid", "minmax(100px, 300px) 1fr", "minmax(100px, 200px) 1fr", "300px 500px", "200px 400px");
   TestingUtils.testGridTemplateColumnsRows("emptyGrid", "repeat(4, 1fr)", "repeat(4, 1fr)", ["200px 200px 200px 200px", "repeat(4, 200px)"], ["150px 150px 150px 150px", "repeat(4, 150px)"]);

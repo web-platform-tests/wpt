@@ -115,7 +115,6 @@ let scroll_fn_variants = [
 ];
 
 function runTest() {
-
   async function testScrollFn(testInfo, t) {
     await waitForCompositorCommit();
 
@@ -144,6 +143,5 @@ function runTest() {
     subsetTestByKey(testInfo.key, promise_test,
                     async (t) => testScrollFn(testInfo, t), testInfo.title);
   });
-
 }
 </script>

@@ -8,14 +8,14 @@ import subprocess
 import sys
 import tempfile
 import time
-
 from urllib.request import urlopen
 from urllib.error import URLError
 
 import pytest
 
-here = os.path.abspath(os.path.dirname(__file__))
 from tools.wpt import utils, wpt
+
+here = os.path.abspath(os.path.dirname(__file__))
 
 
 def is_port_8000_in_use():
@@ -53,6 +53,22 @@ def manifest_dir():
         shutil.copyfile(get_persistent_manifest_path(),
                         os.path.join(path, "MANIFEST.json"))
         yield path
+    finally:
+        utils.rmtree(path)
+
+
+@pytest.fixture(scope="module")
+def download_firefox():
+    print("download_firefox")
+    try:
+        path = tempfile.mkdtemp()
+        with pytest.raises(SystemExit) as excinfo:
+            wpt.main(argv=["install", "-d", path,
+                           "firefox", "browser"])
+            assert excinfo.value.code == 0
+        bin_path = os.path.join(path, "browsers", "nightly")
+        assert os.path.exists(bin_path)
+        yield bin_path
     finally:
         utils.rmtree(path)
 
@@ -120,7 +136,8 @@ def test_list_tests(manifest_dir):
 
 
 @pytest.mark.slow
-def test_list_tests_missing_manifest(manifest_dir):
+@pytest.mark.remote_network
+def test_list_tests_missing_manifest(manifest_dir, download_firefox):
     """The `--list-tests` option should not produce an error in the absence of
     a test manifest file."""
 
@@ -135,17 +152,20 @@ def test_list_tests_missing_manifest(manifest_dir):
                        # drastically reduces the time to execute the test.
                        "--tests", here,
                        "--metadata", manifest_dir,
+                       "--log-mach", "-",
                        "--list-tests",
                        "--yes",
                        # WebTransport server is not needed (web-platform-tests/wpt#41675).
                        "--no-enable-webtransport-h3",
+                       "--binary", download_firefox,
                        "firefox", "/dom/nodes/Element-tagName.html"])
 
     assert excinfo.value.code == 0
 
 
 @pytest.mark.slow
-def test_list_tests_invalid_manifest(manifest_dir):
+@pytest.mark.remote_network
+def test_list_tests_invalid_manifest(manifest_dir, download_firefox):
     """The `--list-tests` option should not produce an error in the presence of
     a malformed test manifest file."""
 
@@ -165,10 +185,12 @@ def test_list_tests_invalid_manifest(manifest_dir):
                        # drastically reduces the time to execute the test.
                        "--tests", here,
                        "--metadata", manifest_dir,
+                       "--log-mach", "-",
                        "--list-tests",
                        "--yes",
                        # WebTransport server is not needed (web-platform-tests/wpt#41675).
                        "--no-enable-webtransport-h3",
+                       "--binary", download_firefox,
                        "firefox", "/dom/nodes/Element-tagName.html"])
 
     assert excinfo.value.code == 0

@@ -278,6 +278,13 @@ class Firefox(BrowserSetup):
 
 Install Firefox or use --binary to set the binary path""")
             kwargs["binary"] = binary
+        elif os.path.isdir(kwargs["binary"]):
+            if kwargs["browser_channel"] is None:
+                kwargs["browser_channel"] = "nightly"
+                logger.info("No browser channel specified. Running nightly instead.")
+
+            kwargs["binary"] = self.browser.find_binary_path(kwargs["binary"],
+                                                             kwargs["browser_channel"])
 
         if kwargs["certutil_binary"] is None and kwargs["ssl_type"] != "none":
             certutil = self.browser.find_certutil()

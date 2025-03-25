@@ -4,6 +4,7 @@ import pytest
 from mozlog import commandline, structuredlog
 
 from .. import wptcommandline, wptlogging
+from ..formatters.wptreport import WptreportFormatter
 from ..formatters.wptscreenshot import WptscreenshotFormatter
 from .base import active_products
 
@@ -83,3 +84,18 @@ def test_wptscreenshot_api(product, formatter_factory, tmp_path):
 
     assert formatter is not None
     assert formatter.api == api
+
+
+def test_wptreport_screenshot(formatter_factory, tmp_path):
+    api = "http://test.invalid/"
+
+    formatter = formatter_factory(
+        [
+            "--log-wptreport",
+            str(tmp_path / "wpt_report.json"),
+            "--log-wptreport-screenshot",
+        ],
+        WptreportFormatter,
+    )
+
+    assert formatter.enable_screenshot == True

@@ -21,7 +21,9 @@ def replace_lone_surrogate(data):
 class WptreportFormatter(BaseFormatter):  # type: ignore
     """Formatter that produces results in the format that wptreport expects."""
 
-    def __init__(self):
+    def __init__(self, enable_screenshot=False):
+        super().__init__()
+        self.enable_screenshot = enable_screenshot
         self.raw_results = {}
         self.results = {}
 
@@ -30,6 +32,8 @@ class WptreportFormatter(BaseFormatter):  # type: ignore
         self.results['time_start'] = data['time']
         self.results["results"] = []
         self.results["subsuites"] = {}
+        if self.enable_screenshot:
+            self.results["screenshots"] = {}
 
     def add_subsuite(self, data):
         self.results["subsuites"][data["name"]] = data.get("run_info", {})
@@ -95,6 +99,13 @@ class WptreportFormatter(BaseFormatter):  # type: ignore
                 for item in data["extra"]["reftest_screenshots"]
                 if isinstance(item, dict)
             }
+            if self.enable_screenshot:
+                screenshots = {
+                    f"sha1:{item['hash']}": f"data:image/png;base64,{item['screenshot']}"
+                    for item in data["extra"]["reftest_screenshots"]
+                    if isinstance(item, dict)
+                }
+                self.results["screenshots"].update(screenshots)
         test_name = data["test"]
         subsuite = data.get("subsuite", "")
         result = {"test": test_name,

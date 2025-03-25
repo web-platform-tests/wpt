@@ -1,6 +1,7 @@
 # mypy: allow-untyped-defs
 
 import errno
+import logging
 import os
 import shutil
 import socket
@@ -13,7 +14,7 @@ from urllib.error import URLError
 
 import pytest
 
-from tools.wpt import utils, wpt
+from tools.wpt import browser, utils, wpt
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -59,15 +60,12 @@ def manifest_dir():
 
 @pytest.fixture(scope="module")
 def download_firefox():
-    print("download_firefox")
     try:
+        logger = logging.getLogger("download_firefox")
         path = tempfile.mkdtemp()
-        with pytest.raises(SystemExit) as excinfo:
-            wpt.main(argv=["install", "-d", path,
-                           "firefox", "browser"])
-            assert excinfo.value.code == 0
-        bin_path = os.path.join(path, "browsers", "nightly")
-        assert os.path.exists(bin_path)
+        firefox = browser.Firefox(logger)
+        bin_path = firefox.install(dest=path)
+        assert os.path.exists(bin_path) and os.path.isfile(bin_path)
         yield bin_path
     finally:
         utils.rmtree(path)

@@ -871,7 +871,8 @@ class TestCommandline(unittest.TestCase):
         args, _ = parser.parse_args(["--log-raw=-"])
         logger = commandline.setup_logging("test_optparse", args, {})
         self.assertEqual(len(logger.handlers), 1)
-        self.assertIsInstance(logger.handlers[0], handlers.StreamHandler)
+        self.assertIsInstance(logger.handlers[0], handlers.base.LogLevelFilter)
+        self.assertIsInstance(logger.handlers[0].inner, handlers.StreamHandler)
 
     def test_limit_formatters(self):
         parser = argparse.ArgumentParser()
@@ -894,8 +895,9 @@ class TestCommandline(unittest.TestCase):
         args, _ = parser.parse_args([u"--log-raw=-"])
         logger = commandline.setup_logging("test_optparse_unicode", args, {})
         self.assertEqual(len(logger.handlers), 1)
-        self.assertEqual(logger.handlers[0].stream, sys.stdout)
-        self.assertIsInstance(logger.handlers[0], handlers.StreamHandler)
+        self.assertIsInstance(logger.handlers[0], handlers.base.LogLevelFilter)
+        self.assertIsInstance(logger.handlers[0].inner, handlers.StreamHandler)
+        self.assertEqual(logger.handlers[0].inner.stream, sys.stdout)
 
     @unittest.skip("Failed on Windows")
     def test_logging_defaultlevel(self):

@@ -8,6 +8,6 @@ types-PyYAML==6.0.12.12
 types-requests==2.32.0.20240905
 types-setuptools==69.5.0.20240423
 types-six==1.16.21.20241105
-types-ujson==5.9.0.0
+types-ujson==5.10.0.20250326
 types-urllib3==1.26.25.14
 typing_extensions==4.12.2

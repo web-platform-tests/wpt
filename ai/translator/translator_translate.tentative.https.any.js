@@ -12,7 +12,7 @@
 
 async function createTranslator(options) {
   return await test_driver.bless('Create translator', async () => {
-    return await ai.translator.create(options);
+    return await Translator.create(options);
   });
 }
 
@@ -21,25 +21,25 @@ promise_test(async t => {
 
   // Creating the translator without user activation rejects with
   // NotAllowedError.
-  const createPromise = ai.translator.create(languagePair);
+  const createPromise = Translator.create(languagePair);
   await promise_rejects_dom(t, 'NotAllowedError', createPromise);
 
   // Creating the translator with user activation succeeds.
   await createTranslator(languagePair);
 
   // Creating it should have switched it to available.
-  const availability = await ai.translator.availability(languagePair);
+  const availability = await Translator.availability(languagePair);
   assert_equals(availability, 'available');
 
   // Now that it is available, we should no longer need user activation.
-  await ai.translator.create(languagePair);
-}, 'AITranslator.create() requires user activation when availability is "downloadable.');
+  await Translator.create(languagePair);
+}, 'Translator.create() requires user activation when availability is "downloadable.');
 
 promise_test(async t => {
   const translator =
       await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja'});
   assert_equals(await translator.translate('hello'), 'こんにちは');
-}, 'Simple AITranslator.translate() call');
+}, 'Simple Translator.translate() call');
 
 promise_test(async () => {
   const translator =
@@ -53,14 +53,14 @@ promise_test(async () => {
     result += chunk;
   }
   assert_equals(await translator.translate('hello'), 'こんにちは');
-}, 'Simple AITranslator.translateStreaming() call');
+}, 'Simple Translator.translateStreaming() call');
 
 promise_test(async t => {
   const translator =
       await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja'});
   assert_equals(translator.sourceLanguage, 'en');
   assert_equals(translator.targetLanguage, 'ja');
-}, 'AITranslator: sourceLanguage and targetLanguage are equal to their respective option passed in to AITranslatorFactory.create.');
+}, 'Translator: sourceLanguage and targetLanguage are equal to their respective option passed in to Translator.create.');
 
 promise_test(async (t) => {
   const translator =
@@ -68,7 +68,7 @@ promise_test(async (t) => {
   translator.destroy();
   await promise_rejects_dom(
       t, 'InvalidStateError', translator.translate('hello'));
-}, 'AITranslator.translate() fails after destroyed');
+}, 'Translator.translate() fails after destroyed');
 
 promise_test(async t => {
   const controller = new AbortController();
@@ -78,14 +78,14 @@ promise_test(async t => {
       {signal: controller.signal, sourceLanguage: 'en', targetLanguage: 'ja'});
 
   await promise_rejects_dom(t, 'AbortError', createPromise);
-}, 'AITranslatorFactory.create() call with an aborted signal.');
+}, 'Translator.create() call with an aborted signal.');
 
 promise_test(async t => {
   await testAbortPromise(t, signal => {
     return createTranslator(
         {signal, sourceLanguage: 'en', targetLanguage: 'ja'});
   });
-}, 'Aborting AITranslatorFactory.create().');
+}, 'Aborting Translator.create().');
 
 promise_test(async t => {
   const controller = new AbortController();
@@ -97,7 +97,7 @@ promise_test(async t => {
       translator.translate('hello', {signal: controller.signal});
 
   await promise_rejects_dom(t, 'AbortError', translatePromise);
-}, 'AITranslator.translate() call with an aborted signal.');
+}, 'Translator.translate() call with an aborted signal.');
 
 promise_test(async t => {
   const translator =
@@ -105,7 +105,7 @@ promise_test(async t => {
   await testAbortPromise(t, signal => {
     return translator.translate('hello', {signal});
   });
-}, 'Aborting AITranslator.translate().');
+}, 'Aborting Translator.translate().');
 
 promise_test(async t => {
   let monitorCalled = false;
@@ -140,11 +140,11 @@ promise_test(async t => {
   for (const progressEvent of progressEvents) {
     assert_equals(progressEvent.total, 1);
   }
-}, 'AITranslatorFactory.create() monitor option is called correctly.');
+}, 'Translator.create() monitor option is called correctly.');
 
 promise_test(async t => {
   const translator =
-      await ai.translator.create({sourceLanguage: 'en', targetLanguage: 'ja'});
+      await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja'});
 
   // Strings containing only white space are not translatable.
   const nonTranslatableStrings = ['', ' ', '     ', ' \r\n\t\f'];
@@ -171,7 +171,7 @@ promise_test(async t => {
   for (let i = 0; i < translatableStrings.length; i++) {
     assert_not_equals(translatedTranslatableString[i], translatableStrings[i]);
   }
-}, 'AITranslator.translate() echos non-translatable content');
+}, 'Translator.translate() echos non-translatable content');
 
 promise_test(async t => {
   const translator =
@@ -189,7 +189,7 @@ promise_test(async t => {
     await promise_rejects_dom(
         t, 'QuotaExceededError', translator.translate(text));
   }
-}, 'AITranslator.measureInputUsage() and inputQuota basic usage.');
+}, 'Translator.measureInputUsage() and inputQuota basic usage.');
 
 promise_test(async t => {
   const controller = new AbortController();
@@ -201,7 +201,7 @@ promise_test(async t => {
       translator.measureInputUsage('hello', {signal: controller.signal});
 
   await promise_rejects_dom(t, 'AbortError', measureInputUsagePromise);
-}, 'AITranslator.measureInputUsage() call with an aborted signal.');
+}, 'Translator.measureInputUsage() call with an aborted signal.');
 
 promise_test(async t => {
   const translator =
@@ -209,4 +209,4 @@ promise_test(async t => {
   await testAbortPromise(t, signal => {
     return translator.measureInputUsage('hello', {signal});
   });
-}, 'Aborting AITranslator.measureInputUsage().');
+}, 'Aborting Translator.measureInputUsage().');

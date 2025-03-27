@@ -20,8 +20,7 @@ class UniqueKeyLoader(yaml.SafeLoader):
 
 def load_data_to_dict(f: IO[bytes]) -> Dict[str, Any]:
     try:
-        loader = UniqueKeyLoader
-        raw_data = yaml.load(f, Loader=loader)
+        raw_data = yaml.load(f, Loader=UniqueKeyLoader)
         return SchemaValue.from_dict(raw_data)
     except Exception as e:
         raise e

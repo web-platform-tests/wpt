@@ -11,15 +11,16 @@ test(function() {
   assert_equals(point.x, 0);
   assert_equals(point.y, 0);
 
-  point.y = 2;
-
-  // Check setting valid arguments.
-  assert_equals(point.x, 0);
-  assert_equals(point.y, 2);
+  // Check setting valid point values.
+  point.x = 100;
+  assert_equals(point.x, 100);
+  point.y = 200;
+  assert_equals(point.y, 200);
 
   // Check setting invalid arguments.
-  assert_throws_js(TypeError, function() { point.x = NaN; });
-  assert_throws_js(TypeError, function() { point.x = Infinity; });
-  assert_equals(point.x, 0);
+  assert_throws_js(TypeError, () => { point.x = point; });
+  assert_throws_js(TypeError, () => { point.y = NaN; });
+  point.y = null;
+  assert_equals(point.y, 0);
 });
 </script>

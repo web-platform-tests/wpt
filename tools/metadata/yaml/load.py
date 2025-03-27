@@ -9,10 +9,10 @@ import yaml
 # https://gist.github.com/pypt/94d747fe5180851196eb?permalink_comment_id=4015118#gistcomment-4015118
 
 class UniqueKeyLoader(yaml.SafeLoader):
-    def construct_mapping(self, node, deep=False):
+    def construct_mapping(self, node: yaml.MappingNode, deep: bool = False) -> Dict[Any, Any]:
         mapping = set()
         for key_node, value_node in node.value:
-            key = self.construct_object(key_node, deep=deep)
+            key = self.construct_object(key_node, deep=deep)  # type: ignore
             if key in mapping:
                 raise ValueError(f"Duplicate {key!r} key found in YAML.")
             mapping.add(key)

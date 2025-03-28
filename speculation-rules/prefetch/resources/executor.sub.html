@@ -2,6 +2,25 @@
 <script src="/common/dispatcher/dispatcher.js" nonce="abc"></script>
 <script src="utils.sub.js" nonce="abc"></script>
 <script nonce="abc">
+// For a given string `str` that is escaped by WPT's `.sub.html` or
+// `pipe=sub(html)` functionality, return the original unescaped string.
+//
+// Concretely, for `str` as the result of `html.escape(x, quote=True)`,
+// return the original unescaped string `x`.
+// See `/tools/wptserve/wptserve/pipes.py` and
+// https://docs.python.org/3/library/html.html#html.escape.
+//
+// See https://crbug.com/404573971 for fixing the escaping issue. Right now,
+// the values in `requestHeaders` are still escaped.
+function reverse_html_escape(str) {
+  str = str.replaceAll('&lt;', '<');
+  str = str.replaceAll('&gt;', '>');
+  str = str.replaceAll('&quot;', '"');
+  str = str.replaceAll('&#x27;', "'");
+  str = str.replaceAll('&amp;', '&');
+  return str;
+}
+
 window.requestHeaders = {
   purpose: "{{header_or_default(Purpose, )}}",
   sec_purpose: "{{header_or_default(Sec-Purpose, )}}",
@@ -9,6 +28,10 @@ window.requestHeaders = {
   sec_fetch_dest: "{{header_or_default(Sec-Fetch-Dest, )}}",
   sec_fetch_mode: "{{header_or_default(Sec-Fetch-Mode, )}}",
 };
+
+// The fetch request's URL sent to the server.
+window.requestUrl = reverse_html_escape(
+    "{{location[server]}}{{location[path]}}{{location[query]}}");
 
 const uuid = new URLSearchParams(location.search).get('uuid');
 window.executor = new Executor(uuid);

@@ -8,10 +8,10 @@
 <script src="/common/get-host-info.sub.js"></script>
 <body></body>
 <script type="module">
-    import { makeGetOptions } from "/digital-credentials/support/helper.js";
+    import { makeCreateOptions } from "/digital-credentials/support/helper.js";
     const { HTTPS_REMOTE_ORIGIN } = get_host_info();
     const same_origin_src =
-        "/permissions-policy/resources/digital-credentials-get.html";
+        "/permissions-policy/resources/digital-credentials-create.html";
     const cross_origin_src = new URL(same_origin_src, HTTPS_REMOTE_ORIGIN).href;
 
     promise_test(async (test) => {
@@ -19,9 +19,9 @@
         await promise_rejects_dom(
             test,
             "NotAllowedError",
-            navigator.credentials.get(makeGetOptions([]))
+            navigator.credentials.create(makeCreateOptions([]))
         );
-    }, "Permissions-Policy header digital-credentials-get=() disallows the top-level document.");
+    }, "Permissions-Policy header digital-credentials-create=() disallows the top-level document.");
 
     promise_test(async (test) => {
         await test_feature_availability({
@@ -32,7 +32,7 @@
             is_promise_test: true,
             needs_focus: true,
         });
-    }, "Permissions-Policy header digital-credentials-get=() disallows same-origin iframes.");
+    }, "Permissions-Policy header digital-credentials-create=() disallows same-origin iframes.");
 
     promise_test(async (test) => {
         await test_feature_availability({
@@ -40,10 +40,10 @@
             test,
             src: cross_origin_src,
             expect_feature_available: expect_feature_unavailable_default,
-            feature_name: "digital-credentials-get",
+            feature_name: "digital-credentials-create",
             is_promise_test: true,
             needs_focus: true,
         });
-    }, "Permissions-Policy header digital-credentials-get=() cannot be overridden using the allow attribute.");
+    }, "Permissions-Policy header digital-credentials-create=() cannot be overridden using the allow attribute.");
 
 </script>

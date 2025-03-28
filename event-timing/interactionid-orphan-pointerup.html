@@ -22,8 +22,18 @@
     const readyToResolve = () => { return observedEntries.length >= 1; };
     const observerPromise = createPerformanceObserverPromise(['event'], callback, readyToResolve);
 
-    await interactAndObserve('orphan-pointerup', document.getElementById('testButtonId'), observerPromise);
-    assert_equals(map.get('pointerup'), 0, 'Should have a trivial interactionId for orphan pointerup event.');
+    await Promise.race([
+      interactAndObserve('orphan-pointerup', document.getElementById('testButtonId'), observerPromise),
+      // Some browsers don't fire an orphan pointerup event at all. Since
+      // `readyToResolve` won't ever return true for them, we have to have a
+      // timeout mechanism. If no events are fired in 2 seconds, treat 'no
+      // pointerup event' as a pass. 2 seconds is an arbitrary time we picked,
+      // consider changing if it's flaky.
+      new Promise(resolve => t.step_timeout(resolve, 2000))
+    ]);
+
+    // Some browsers don't fire an orphan pointerup, treat it as a pass.
+    assert_true(!map.has('pointerup') || map.get('pointerup') === 0, 'Should either have no triggered orphan pointerup event or have a trivial interactionId for orphan pointerup event.');
   }, "Event Timing: Orphan pointerup should not be measured as an interaction.");
 
 </script>

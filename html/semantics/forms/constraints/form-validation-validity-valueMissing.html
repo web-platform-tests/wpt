@@ -12,6 +12,45 @@
   <input id="messagetest" type="checkbox" required="" disabled="">
 </form>
 
+<input type=radio id=first required name="group">
+<input type=radio id=second checked name="group">
+<input type="radio" id="third" required name="group1" />
+<input type="radio" id="fourth" name="group1" />
+
+<script>
+  const first = document.getElementById("first");
+  const second = document.getElementById("second");
+  const third = document.getElementById("third");
+  const fourth = document.getElementById("fourth");
+
+  test(() => {
+    assert_equals(first.validity.valueMissing, false);
+  }, "The valueMissing of first radio should be false because some in its group were checked");
+  test(() => {
+    assert_equals(second.validity.valueMissing, false);
+  }, "The valueMissing of second radio should be false because some in its group were checked");
+
+  second.remove();
+  test(() => {
+    assert_equals(first.validity.valueMissing, true);
+  }, "The valueMissing of first radio should be true because non in its group were checked");
+
+  test(() => {
+    assert_equals(third.validity.valueMissing, true);
+  }, "The valueMissing of third radio should be true because non in its group were checked");
+  test(() => {
+    assert_equals(fourth.validity.valueMissing, true);
+  }, "The valueMissing of fourth radio should be true because non in its group were checked");
+
+  fourth.click();
+  test(() => {
+    assert_equals(third.validity.valueMissing, false);
+  }, "The valueMissing of third radio should be false because some in its group were checked");
+  test(() => {
+    assert_equals(fourth.validity.valueMissing, false);
+  }, "The valueMissing of fourth radio should be false because some in its group were checked");
+</script>
+
 <script>
   var testElements = [
     {

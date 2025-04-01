@@ -18,6 +18,7 @@ function create_audio(t) {
   audio.watcher = new EventWatcher(
     t, audio,
     [
+      'loadstart',
       'waiting',
       'error',
       'ended',
@@ -31,9 +32,27 @@ function create_audio(t) {
   return audio;
 }
 
-// This subtest is arranged to demonstrate inconsistencies between
-// implementations.  Please do not adjust implementations to make this pass as
-// https://github.com/whatwg/html/issues/11155 proposes changing the spec.
+promise_test(async t => {
+  const audio = create_audio(t);
+  audio.src = '';
+  assert_equals(audio.error, null, 'initial error attribute');
+  // Queue a volumechange event on the media element task source.
+  audio.volume = 0;
+  // The dedicated media source failure steps are described as queued, but
+  // browsers do not make state changes asynchronously.
+  // https://github.com/whatwg/html/issues/11155
+  audio.onvolumechange = t.step_func(() => {
+    assert_equals(audio.error?.code, MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED,
+                  'error code');
+    // Queue a second volumechange.  This arrives after the error event
+    // because the error event is queued immediately after the resource
+    // selection algorithm synchronous steps.
+    audio.volume = 1;
+  });
+  await audio.watcher.wait_for(
+    ['volumechange', 'loadstart', 'error', 'volumechange']);
+}, 'empty src attribute');
+
 promise_test(async t => {
   const audio = create_audio(t);
   // src is such that "the result of encoding-parsing a URL" is failure.
@@ -42,16 +61,17 @@ promise_test(async t => {
   // Queue a volumechange event on the media element task source.
   audio.volume = 0;
   // The dedicated media source failure steps are described as queued from
-  // parallel steps in the resource selection algorithm, so the volumechange
-  // would be received before a change in the error attribute would be
-  // observed and before the error event can arrive.
-  // https://html.spec.whatwg.org/multipage/media.html#concept-media-load-algorithm
+  // parallel steps in the resource selection algorithm, but browsers do not
+  // make state changes asynchronously, and they queue the error event
+  // immediately after the resource selection algorithm synchronous steps.
+  // https://github.com/whatwg/html/issues/11155
   audio.onvolumechange = t.step_func(() => {
-    assert_equals(audio.error, null, 'modified error attribute');
+    assert_equals(audio.error?.code, MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED,
+                  'error code');
+    audio.volume = 1;
   });
-  await audio.watcher.wait_for(['volumechange', 'error']);
-  assert_equals(audio.error?.code, MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED,
-                'error code');
+  await audio.watcher.wait_for(
+    ['volumechange', 'loadstart', 'error', 'volumechange']);
 }, 'urlRecord failure');
 
 let resource;
@@ -67,6 +87,7 @@ async function create_audio_with_source_buffer(t) {
   audio.source = new MediaSource();
   audio.source.watcher = new EventWatcher(t, audio.source, ['sourceopen']);
   audio.src = URL.createObjectURL(audio.source);
+  await audio.watcher.wait_for('loadstart');
   await audio.source.watcher.wait_for('sourceopen');
 
   assert_implements_optional(MediaSource.isTypeSupported(resource.type),

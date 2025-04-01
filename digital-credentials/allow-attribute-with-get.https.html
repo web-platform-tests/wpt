@@ -3,9 +3,7 @@
     <head>
         <title>
             Test allow attribute with "digital-credentials-get" and
-            CredentialsContainer's .get() method, as well as
-            "digital-credentials-create" and
-            CredentialsContainer's .create() method
+            CredentialsContainer's .get() method
         </title>
         <script src="/common/get-host-info.sub.js"></script>
         <script src="/resources/testharness.js"></script>
@@ -16,146 +14,62 @@
             const hostInfo = get_host_info();
             const iframeDetails = [
                 {
-                    action: "get",
                     policy: null,
                     crossOrigin: false,
                     expectIsAllowed: true,
                 },
                 {
-                    action: "get",
                     policy: null,
                     crossOrigin: true,
                     expectIsAllowed: false,
                 },
                 {
-                    action: "get",
                     policy: "digital-credentials-get",
                     crossOrigin: false,
                     expectIsAllowed: true,
                 },
                 {
-                    action: "get",
                     policy: "digital-credentials-get",
                     crossOrigin: true,
                     expectIsAllowed: true,
                 },
                 {
-                    action: "get",
                     policy: "digital-credentials-get *",
                     crossOrigin: false,
                     expectIsAllowed: true,
                 },
                 {
-                    action: "get",
                     policy: "digital-credentials-get *",
                     crossOrigin: true,
                     expectIsAllowed: true,
                 },
                 {
-                    action: "get",
                     policy: "digital-credentials-get 'none'",
                     crossOrigin: false,
                     expectIsAllowed: false,
                 },
                 {
-                    action: "get",
                     policy: "digital-credentials-get 'none'",
                     crossOrigin: true,
                     expectIsAllowed: false,
                 },
                 {
-                    action: "get",
                     policy: "digital-credentials-get 'self'",
                     crossOrigin: false,
                     expectIsAllowed: true,
                 },
                 {
-                    action: "get",
                     policy: "digital-credentials-get 'self'",
                     crossOrigin: true,
                     expectIsAllowed: false,
                 },
                 {
-                    action: "get",
                     policy: `digital-credentials-get ${hostInfo.HTTPS_REMOTE_ORIGIN}`,
                     crossOrigin: false,
                     expectIsAllowed: false,
                 },
                 {
-                    action: "get",
                     policy: `digital-credentials-get ${hostInfo.HTTPS_REMOTE_ORIGIN}`,
-                    crossOrigin: true,
-                    expectIsAllowed: true,
-                },
-                {
-                    action: "create",
-                    policy: null,
-                    crossOrigin: false,
-                    expectIsAllowed: true,
-                },
-                {
-                    action: "create",
-                    policy: null,
-                    crossOrigin: true,
-                    expectIsAllowed: false,
-                },
-                {
-                    action: "create",
-                    policy: "digital-credentials-create",
-                    crossOrigin: false,
-                    expectIsAllowed: true,
-                },
-                {
-                    action: "create",
-                    policy: "digital-credentials-create",
-                    crossOrigin: true,
-                    expectIsAllowed: true,
-                },
-                {
-                    action: "create",
-                    policy: "digital-credentials-create *",
-                    crossOrigin: false,
-                    expectIsAllowed: true,
-                },
-                {
-                    action: "create",
-                    policy: "digital-credentials-create *",
-                    crossOrigin: true,
-                    expectIsAllowed: true,
-                },
-                {
-                    action: "create",
-                    policy: "digital-credentials-create 'none'",
-                    crossOrigin: false,
-                    expectIsAllowed: false,
-                },
-                {
-                    action: "create",
-                    policy: "digital-credentials-create 'none'",
-                    crossOrigin: true,
-                    expectIsAllowed: false,
-                },
-                {
-                    action: "create",
-                    policy: "digital-credentials-create 'self'",
-                    crossOrigin: false,
-                    expectIsAllowed: true,
-                },
-                {
-                    action: "create",
-                    policy: "digital-credentials-create 'self'",
-                    crossOrigin: true,
-                    expectIsAllowed: false,
-                },
-                {
-                    action: "create",
-                    policy: `digital-credentials-create ${hostInfo.HTTPS_REMOTE_ORIGIN}`,
-                    crossOrigin: false,
-                    expectIsAllowed: false,
-                },
-                {
-                    action: "create",
-                    policy: `digital-credentials-create ${hostInfo.HTTPS_REMOTE_ORIGIN}`,
                     crossOrigin: true,
                     expectIsAllowed: true,
                 },
@@ -187,7 +101,7 @@
                     promise_test(async (test) => {
                         const iframe = await loadIframe(details);
                         const { expectIsAllowed } = details;
-                        const { action } = details;
+                        const action = "get";
                         const options = {
                             digital: {
                                 // Results in TypeError when allowed, NotAllowedError when disallowed
@@ -215,7 +129,7 @@
                             assert_equals(name, "NotAllowedError", fullMessage);
                         }
                         iframe.remove();
-                    }, `For action: ${details.action}, policy to use: ${details.policy}, is cross-origin: ${details.crossOrigin}, is allowed by policy: ${details.expectIsAllowed}`);
+                    }, `With Get: Policy to use: ${details.policy}, is cross-origin: ${details.crossOrigin}, is allowed by policy: ${details.expectIsAllowed}`);
                 }
             }
         </script>

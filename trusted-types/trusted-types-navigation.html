@@ -56,9 +56,10 @@
     return new expectMessage(filter);
   }
 
-  function openWindow(test, uri) {
+  function openWindowAndWaitMessages(test, uri, expectedMessages) {
     const win = window.open(uri);
     test.add_cleanup(_ => win.close());
+    return Promise.all(expectedMessages);
   }
 
   const kFormSubmission = "form-submission";
@@ -90,8 +91,7 @@
   for (const navigationElement of kNavigationElements) {
     promise_test(t => {
       const params = maybeAddFormSubmissionToSearchParams(navigationElement, {});
-      openWindow(t, `support/${joinToHref(params, kNavigationSupport)}`);
-      return Promise.all([
+      return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupport)}`, [
         expectLoadedAsMessage(params, kNavigationSupport),
         expectViolationAsMessage("Location href"),
       ]);
@@ -99,8 +99,7 @@
 
     promise_test(t => {
       const params = maybeAddFormSubmissionToSearchParams(navigationElement, {defaultpolicy: 1});
-      openWindow(t, `support/${joinToHref(params, kNavigationSupport)}`);
-      return Promise.all([
+      return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupport)}`, [
         expectLoadedAsMessage(params, kNavigationSupport),
         expectLoadedAsMessage(Object.assign({navigationattempted: 1, defaultpolicywashere: 1}, params), kNavigationSupport),
       ]);
@@ -108,8 +107,7 @@
 
     promise_test(t => {
       const params = maybeAddFormSubmissionToSearchParams(navigationElement, {});
-      openWindow(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`);
-      return Promise.all([
+      return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`, [
         expectLoadedAsMessage(params, kNavigationSupportReportOnly),
         expectLoadedAsMessage(Object.assign({navigationattempted: 1, continue: 1}, params), kNavigationSupport),
       ]);
@@ -117,8 +115,7 @@
 
     promise_test(t => {
       const params = maybeAddFormSubmissionToSearchParams(navigationElement, {defaultpolicy: 1});
-      openWindow(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`);
-      return Promise.all([
+      return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`, [
         expectLoadedAsMessage(params, kNavigationSupportReportOnly),
         expectLoadedAsMessage(Object.assign({navigationattempted: 1, defaultpolicywashere: 1}, params), kNavigationSupport),
       ]);
@@ -126,8 +123,7 @@
 
     promise_test(t => {
       const params = maybeAddFormSubmissionToSearchParams(navigationElement, {frame: 1});
-      openWindow(t, `support/${joinToHref(params, kNavigationSupport)}`);
-      return Promise.all([
+      return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupport)}`, [
         expectLoadedAsMessage(params, kNavigationSupport),
         expectViolationAsMessage("Location href"),
       ]);
@@ -136,8 +132,7 @@
     promise_test(t => {
       const params = maybeAddFormSubmissionToSearchParams(navigationElement,
         {defaultpolicy: 1, frame: 1});
-      openWindow(t, `support/${joinToHref(params, kNavigationSupport)}`);
-      return Promise.all([
+      return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupport)}`, [
         expectLoadedAsMessage(params, kNavigationSupport),
         expectLoadedAsMessage(Object.assign({navigationattempted: 1, defaultpolicywashere: 1}, params), kNavigationSupport),
       ]);
@@ -145,8 +140,7 @@
 
     promise_test(t => {
       const params = maybeAddFormSubmissionToSearchParams(navigationElement, {frame: 1})
-      openWindow(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`);
-      return Promise.all([
+      return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`, [
         expectLoadedAsMessage(params, kNavigationSupportReportOnly),
         expectLoadedAsMessage(Object.assign({navigationattempted: 1, continue: 1}, params), kNavigationSupport),
       ]);
@@ -155,8 +149,7 @@
     promise_test(t => {
       const params = maybeAddFormSubmissionToSearchParams(navigationElement,
                                                           {defaultpolicy: 1, frame: 1});
-      openWindow(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`);
-      return Promise.all([
+      return openWindowAndWaitMessages(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`, [
         expectLoadedAsMessage(params, kNavigationSupportReportOnly),
         expectLoadedAsMessage(Object.assign({navigationattempted: 1, defaultpolicywashere: 1}, params), kNavigationSupport),
       ]);

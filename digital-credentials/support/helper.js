@@ -90,7 +90,6 @@ function _makeOptionsUnified(type, requestsToUse, mediation) {
   }
 
   // 5. Handle invalid input types (neither string nor array)
-  console.warn(`Invalid 'requestsToUse' type provided to ${type} options: ${typeof actualRequestsToUse}. Returning empty requests.`);
   return { digital: { requests: [] }, mediation };
 }
 

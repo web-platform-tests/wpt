@@ -11,22 +11,24 @@
 </head>
 <body>
 <script>
-test_valid_value('font-width', 'normal');
-test_valid_value('font-width', 'ultra-condensed');
-test_valid_value('font-width', 'extra-condensed');
-test_valid_value('font-width', 'condensed');
-test_valid_value('font-width', 'semi-condensed');
-test_valid_value('font-width', 'semi-expanded');
-test_valid_value('font-width', 'expanded');
-test_valid_value('font-width', 'extra-expanded');
-test_valid_value('font-width', 'ultra-expanded');
+for (const property in ['font-width','font-stretch']) {
+    test_valid_value(property, 'normal');
+    test_valid_value(property, 'ultra-condensed');
+    test_valid_value(property, 'extra-condensed');
+    test_valid_value(property, 'condensed');
+    test_valid_value(property, 'semi-condensed');
+    test_valid_value(property, 'semi-expanded');
+    test_valid_value(property, 'expanded');
+    test_valid_value(property, 'extra-expanded');
+    test_valid_value(property, 'ultra-expanded');
 
-test_valid_value('font-width', '234.5%');
-test_valid_value('font-width', 'calc(100%)');
-test_valid_value('font-width', 'calc(0%)');
-test_valid_value('font-width', 'calc(-100%)');
-test_valid_value('font-width', 'calc(100% + 100%)', 'calc(200%)');
-test_valid_value('font-width', 'calc(100% + (sign(20cqw - 10px) * 5%))', 'calc(100% + (5% * sign(20cqw - 10px)))');
+    test_valid_value(property, '234.5%');
+    test_valid_value(property, 'calc(100%)');
+    test_valid_value(property, 'calc(0%)');
+    test_valid_value(property, 'calc(-100%)');
+    test_valid_value(property, 'calc(100% + 100%)', 'calc(200%)');
+    test_valid_value(property, 'calc(100% + (sign(20cqw - 10px) * 5%))', 'calc(100% + (5% * sign(20cqw - 10px)))');
+}
 </script>
 </body>
 </html>

@@ -20,22 +20,24 @@
   <div id="target"></div>
 </div>
 <script>
-test_computed_value('font-width', 'ultra-condensed', '50%');
-test_computed_value('font-width', 'extra-condensed', '62.5%');
-test_computed_value('font-width', 'condensed', '75%');
-test_computed_value('font-width', 'semi-condensed', '87.5%');
-test_computed_value('font-width', 'normal', '100%');
-test_computed_value('font-width', 'semi-expanded', '112.5%');
-test_computed_value('font-width', 'expanded', '125%');
-test_computed_value('font-width', 'extra-expanded', '150%');
-test_computed_value('font-width', 'ultra-expanded', '200%');
+for (const property in ['font-width','font-stretch']) {
+  test_computed_value(property, 'ultra-condensed', '50%');
+  test_computed_value(property, 'extra-condensed', '62.5%');
+  test_computed_value(property, 'condensed', '75%');
+  test_computed_value(property, 'semi-condensed', '87.5%');
+  test_computed_value(property, 'normal', '100%');
+  test_computed_value(property, 'semi-expanded', '112.5%');
+  test_computed_value(property, 'expanded', '125%');
+  test_computed_value(property, 'extra-expanded', '150%');
+  test_computed_value(property, 'ultra-expanded', '200%');
 
-test_computed_value('font-width', '234.5%');
-test_computed_value('font-width', 'calc(100%)', '100%');
-test_computed_value('font-width', 'calc(0%)', '0%');
-test_computed_value('font-width', 'calc(-100%)', '0%');
-test_computed_value('font-width', 'calc(100% + 100%)', '200%');
-test_computed_value('font-width', 'calc(100% + (sign(20cqw - 10px) * 5%))', '95%');
+  test_computed_value(property, '234.5%');
+  test_computed_value(property, 'calc(100%)', '100%');
+  test_computed_value(property, 'calc(0%)', '0%');
+  test_computed_value(property, 'calc(-100%)', '0%');
+  test_computed_value(property, 'calc(100% + 100%)', '200%');
+  test_computed_value(property, 'calc(100% + (sign(20cqw - 10px) * 5%))', '95%');
+}
 </script>
 </body>
 </html>

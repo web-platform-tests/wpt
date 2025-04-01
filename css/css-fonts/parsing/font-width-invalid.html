@@ -12,10 +12,12 @@
 </head>
 <body>
 <script>
-test_invalid_value('font-width', 'auto');
-test_invalid_value('font-width', 'normal, ultra-condensed');
-test_invalid_value('font-width', 'condensed expanded');
-test_invalid_value('font-width', '-50%');
+for (const property in ['font-width','font-stretch']) {
+    test_invalid_value(property, 'auto');
+    test_invalid_value(property, 'normal, ultra-condensed');
+    test_invalid_value(property, 'condensed expanded');
+    test_invalid_value(property, '-50%');
+}
 </script>
 </body>
 </html>

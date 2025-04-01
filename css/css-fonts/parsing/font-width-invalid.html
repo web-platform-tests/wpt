@@ -12,7 +12,7 @@
 </head>
 <body>
 <script>
-for (const property in ['font-width','font-stretch']) {
+for (const property of ['font-width','font-stretch']) {
     test_invalid_value(property, 'auto');
     test_invalid_value(property, 'normal, ultra-condensed');
     test_invalid_value(property, 'condensed expanded');

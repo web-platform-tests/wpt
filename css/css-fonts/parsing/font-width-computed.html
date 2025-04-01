@@ -20,7 +20,7 @@
   <div id="target"></div>
 </div>
 <script>
-for (const property in ['font-width','font-stretch']) {
+for (const property of ['font-width','font-stretch']) {
   test_computed_value(property, 'ultra-condensed', '50%');
   test_computed_value(property, 'extra-condensed', '62.5%');
   test_computed_value(property, 'condensed', '75%');

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Fonts Module Level 4: getComputedStyle().fontWidth</title>
+<link rel="help" href="https://www.w3.org/TR/css-fonts-4/#font-width-prop">
+<meta name="assert" content="font-width computed value is a percentage.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+<style>
+  #container {
+    container-type: inline-size;
+    width: 10px;
+  }
+</style>
+</head>
+<body>
+<div id="container">
+  <div id="target"></div>
+</div>
+<script>
+test_computed_value('font-width', 'ultra-condensed', '50%');
+test_computed_value('font-width', 'extra-condensed', '62.5%');
+test_computed_value('font-width', 'condensed', '75%');
+test_computed_value('font-width', 'semi-condensed', '87.5%');
+test_computed_value('font-width', 'normal', '100%');
+test_computed_value('font-width', 'semi-expanded', '112.5%');
+test_computed_value('font-width', 'expanded', '125%');
+test_computed_value('font-width', 'extra-expanded', '150%');
+test_computed_value('font-width', 'ultra-expanded', '200%');
+
+test_computed_value('font-width', '234.5%');
+test_computed_value('font-width', 'calc(100%)', '100%');
+test_computed_value('font-width', 'calc(0%)', '0%');
+test_computed_value('font-width', 'calc(-100%)', '0%');
+test_computed_value('font-width', 'calc(100% + 100%)', '200%');
+test_computed_value('font-width', 'calc(100% + (sign(20cqw - 10px) * 5%))', '95%');
+</script>
+</body>
+</html>

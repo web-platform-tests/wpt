@@ -503,7 +503,7 @@ class SessionTicketStore:
     def pop(self, label: bytes) -> Optional[SessionTicket]:
         return self.tickets.pop(label, None)
 
-class WebTransportCertificateGeneration(Enum):
+class WebTransportCertificateGeneration(IntEnum):
     """
     Specify, if the server should generate a certificate or use an existing certificate
      USEPREGENERATED: use existing certificate
@@ -521,7 +521,7 @@ class WebTransportH3Server:
     :param host: Host from which to serve.
     :param port: Port from which to serve.
     :param doc_root: Document root for serving handlers.
-    :paran cert_mode: The used certificate mode can be
+    :param cert_mode: The used certificate mode can be
        USEPREGENERATED or GENERATEDVALIDSERVERCERTIFICATEHASHCERT
     :param cert_path: Path to certificate file to use.
     :param key_path: Path to key file to use.
@@ -543,7 +543,7 @@ class WebTransportH3Server:
         self.cert_mode = cert_mode
         if (cert_path is None or key_path is None) and cert_mode == WebTransportCertificateGeneration.USEPREGENERATED:
             raise ValueError("Both cert_path and key_path must be provided, if cert_mode is USEPREGENERATED")
-        if (cert_hash_info is None and cert_mode == WebTransportCertificateGeneration.GENERATEDVALIDSERVERCERTIFICATEHASHCERT):
+        if cert_hash_info is None and cert_mode == WebTransportCertificateGeneration.GENERATEDVALIDSERVERCERTIFICATEHASHCERT:
             raise ValueError("cert_hash_info  must be provided, if cert_mode is GENERATEDVALIDSERVERCERTIFICATEHASHCERT")
 
         self.started = False

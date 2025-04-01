@@ -11,7 +11,7 @@
 </head>
 <body>
 <script>
-for (const property in ['font-width','font-stretch']) {
+for (const property of ['font-width','font-stretch']) {
     test_valid_value(property, 'normal');
     test_valid_value(property, 'ultra-condensed');
     test_valid_value(property, 'extra-condensed');

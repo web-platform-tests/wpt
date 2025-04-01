@@ -63,7 +63,7 @@ export function makeCreateOptions(requestsToUse, mediation = "required") {
         requests.push(makeOID4VCIDict());
         break;
       case "default":
-        requests.push(makeDigitalCredentialCreateRequest(undefined, undefined));
+        requests.push(makeDigitalCredentialCreateRequest());
         break;
       default:
         throw new Error(`Unknown request type: ${request}`);

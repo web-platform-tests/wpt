@@ -24,7 +24,6 @@ function navigateToJavascriptURL(reportOnly) {
     // loaded frame to through DOMContentLoaded. In either case there should be
     // _some_ event that we can expect.
     document.addEventListener("DOMContentLoaded", bounceEventToOpener);
-    document.addEventListener("securitypolicyviolation", bounceEventToOpener);
     // Prevent loops.
     if (params.has("navigationattempted")) {
       return;
@@ -70,5 +69,12 @@ function navigateToJavascriptURL(reportOnly) {
     }
 
     const navigationElement = getAndPreparareNavigationElement(`javascript:${target_script}`);
-    document.addEventListener("DOMContentLoaded", _ => navigationElement.click());
+    document.addEventListener("DOMContentLoaded", async _ => {
+      let {violations, exception} =
+        await trusted_type_violations_and_exception_for(_ => navigationElement.click());
+      violations.forEach(violationEvent => bounceEventToOpener(violationEvent));
+      if (!params.get("defaultpolicy") && violations.length == 0) {
+        window.opener.postMessage("No securitypolicyviolation reported!", "*");
+      }
+    });
 }

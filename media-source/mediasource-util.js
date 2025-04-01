@@ -171,7 +171,7 @@
 
             assert_true(MediaSource.isTypeSupported(manifest.type), manifest.type + " is supported.");
 
-            var mediaURL = baseURL + manifest.url;
+            var mediaURL = manifest.url;
             MediaSourceUtil.loadBinaryData(test, mediaURL, function(mediaData)
             {
                 callback(manifest.type, mediaData);

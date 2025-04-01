@@ -34,15 +34,24 @@
     return new expectMessage(filter);
   }
 
-  function expectLoadedAsMessage(uri) {
+  function expectLoadedAsMessage(searchParams, originAndPathName) {
     const filter = e => {
-      const result = (e.data.type == "DOMContentLoaded" &&
-                        (!uri || e.data.uri.endsWith(uri)));
-      if (result) {
-        assert_true(true, "Expected loaded as message: " + uri);
+      if (e.data.type != "DOMContentLoaded") {
+        return false;
+      }
+      let url = new URL(e.data.uri);
+      if (!url.pathname.endsWith(originAndPathName)) {
+        return false;
+      }
+      let keys = Object.keys(searchParams);
+      if (url.searchParams.size != keys.length ||
+          !keys.every(key =>
+            url.searchParams.get(key) === searchParams[key].toString())) {
+        return false;
       }
 
-      return result;
+      assert_true(true, `Expected loaded as message: ${joinToHref(searchParams, originAndPathName)}`);
+      return true;
     }
     return new expectMessage(filter);
   }
@@ -61,105 +70,95 @@
   ];
 
   function maybeAddFormSubmissionToSearchParams(navigationElement, searchParams) {
-    return (navigationElement == kFormSubmission) ?
-      [kFormSubmission + "=1", ...searchParams] : searchParams;
+    return Object.assign(
+      navigationElement == kFormSubmission ? {kFormSubmission: 1} : {},
+      searchParams);
   }
 
   function joinToHref(searchParams, originAndPathName) {
-    if (searchParams.length > 0) {
-      return originAndPathName + "?" + searchParams.join("&");
+    let urlSearchParams = new URLSearchParams(searchParams);
+    if (urlSearchParams.size > 0) {
+      return originAndPathName + "?" + urlSearchParams.toString();
     }
 
     return originAndPathName;
   }
 
+  const kNavigationSupport = "navigation-support.html";
+  const kNavigationSupportReportOnly = "navigation-report-only-support.html";
+
   for (const navigationElement of kNavigationElements) {
     promise_test(t => {
-      const page = joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement, []),
-        "navigation-support.html");
-      openWindow(t, `support/${page}`);
+      const params = maybeAddFormSubmissionToSearchParams(navigationElement, {});
+      openWindow(t, `support/${joinToHref(params, kNavigationSupport)}`);
       return Promise.all([
-        expectLoadedAsMessage(page),
+        expectLoadedAsMessage(params, kNavigationSupport),
         expectViolationAsMessage("Location href"),
       ]);
     }, `Navigate a window via ${navigationElement} with javascript:-urls in enforcing mode.`);
 
     promise_test(t => {
-      const page = joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement, ["defaultpolicy=1"]),
-        "navigation-support.html");
-      openWindow(t, `support/${page}`);
+      const params = maybeAddFormSubmissionToSearchParams(navigationElement, {defaultpolicy: 1});
+      openWindow(t, `support/${joinToHref(params, kNavigationSupport)}`);
       return Promise.all([
-        expectLoadedAsMessage(page),
-        expectLoadedAsMessage(page + "&" + kNavigationAttempted + "&defaultpolicywashere"),
+        expectLoadedAsMessage(params, kNavigationSupport),
+        expectLoadedAsMessage(Object.assign({navigationattempted: 1, defaultpolicywashere: 1}, params), kNavigationSupport),
       ]);
     }, `Navigate a window via ${navigationElement} with javascript:-urls w/ default policy in enforcing mode.`);
 
     promise_test(t => {
-      const page = joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement, []),
-        "navigation-report-only-support.html");
-      openWindow(t, `support/${page}`);
+      const params = maybeAddFormSubmissionToSearchParams(navigationElement, {});
+      openWindow(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`);
       return Promise.all([
-        expectLoadedAsMessage(page),
-        expectLoadedAsMessage(joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement,
-          [kNavigationAttempted, "continue"]), "navigation-support.html")),
+        expectLoadedAsMessage(params, kNavigationSupportReportOnly),
+        expectLoadedAsMessage(Object.assign({navigationattempted: 1, continue: 1}, params), kNavigationSupport),
       ]);
     }, `Navigate a window via ${navigationElement} with javascript:-urls in report-only mode.`);
 
     promise_test(t => {
-      const page = joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement, ["defaultpolicy=1"]),
-        "navigation-report-only-support.html");
-      openWindow(t, `support/${page}`);
+      const params = maybeAddFormSubmissionToSearchParams(navigationElement, {defaultpolicy: 1});
+      openWindow(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`);
       return Promise.all([
-        expectLoadedAsMessage(page),
-        expectLoadedAsMessage(joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement,
-            ["defaultpolicy=1", kNavigationAttempted, "defaultpolicywashere"]),
-          "navigation-support.html")),
+        expectLoadedAsMessage(params, kNavigationSupportReportOnly),
+        expectLoadedAsMessage(Object.assign({navigationattempted: 1, defaultpolicywashere: 1}, params), kNavigationSupport),
       ]);
     }, `Navigate a window via ${navigationElement} with javascript:-urls w/ default policy in report-only mode.`);
 
     promise_test(t => {
-      const page = joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement, ["frame=1"]),
-        "navigation-support.html");
-      openWindow(t, `support/${page}`);
+      const params = maybeAddFormSubmissionToSearchParams(navigationElement, {frame: 1});
+      openWindow(t, `support/${joinToHref(params, kNavigationSupport)}`);
       return Promise.all([
-        expectLoadedAsMessage(page),
+        expectLoadedAsMessage(params, kNavigationSupport),
         expectViolationAsMessage("Location href"),
       ]);
     }, `Navigate a frame via ${navigationElement} with javascript:-urls in enforcing mode.`);
 
     promise_test(t => {
-      const page = joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement,
-          ["defaultpolicy=1", "frame=1"]),
-        "navigation-support.html");
-      openWindow(t, `support/${page}`);
+      const params = maybeAddFormSubmissionToSearchParams(navigationElement,
+        {defaultpolicy: 1, frame: 1});
+      openWindow(t, `support/${joinToHref(params, kNavigationSupport)}`);
       return Promise.all([
-        expectLoadedAsMessage(page),
-        expectLoadedAsMessage(page + "&" + kNavigationAttempted + "&defaultpolicywashere"),
+        expectLoadedAsMessage(params, kNavigationSupport),
+        expectLoadedAsMessage(Object.assign({navigationattempted: 1, defaultpolicywashere: 1}, params), kNavigationSupport),
       ]);
     }, `Navigate a frame via ${navigationElement} with javascript:-urls w/ default policy in enforcing mode.`);
 
     promise_test(t => {
-      const page = joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement, ["frame=1"]),
-        "navigation-report-only-support.html");
-      openWindow(t, `support/${page}`);
+      const params = maybeAddFormSubmissionToSearchParams(navigationElement, {frame: 1})
+      openWindow(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`);
       return Promise.all([
-        expectLoadedAsMessage(page),
-        expectLoadedAsMessage(joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement,
-            ["frame=1", kNavigationAttempted, "continue"]),
-          "navigation-support.html")),
+        expectLoadedAsMessage(params, kNavigationSupportReportOnly),
+        expectLoadedAsMessage(Object.assign({navigationattempted: 1, continue: 1}, params), kNavigationSupport),
       ]);
     }, `Navigate a frame via ${navigationElement} with javascript:-urls in report-only mode.`);
 
     promise_test(t => {
-      const page = joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement,
-          ["defaultpolicy=1", "frame=1"]),
-          "navigation-report-only-support.html");
-      openWindow(t, `support/${page}`);
+      const params = maybeAddFormSubmissionToSearchParams(navigationElement,
+                                                          {defaultpolicy: 1, frame: 1});
+      openWindow(t, `support/${joinToHref(params, kNavigationSupportReportOnly)}`);
       return Promise.all([
-        expectLoadedAsMessage(page),
-        expectLoadedAsMessage(joinToHref(maybeAddFormSubmissionToSearchParams(navigationElement,
-            ["defaultpolicy=1", "frame=1", kNavigationAttempted, "defaultpolicywashere"]),
-          "navigation-support.html")),
+        expectLoadedAsMessage(params, kNavigationSupportReportOnly),
+        expectLoadedAsMessage(Object.assign({navigationattempted: 1, defaultpolicywashere: 1}, params), kNavigationSupport),
       ]);
     }, `Navigate a frame via ${navigationElement} with javascript:-urls w/ default policy in report-only mode.`);
   }

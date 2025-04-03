@@ -10,7 +10,6 @@
   <script src="/resources/testdriver-actions.js"></script>
   <script src="/wai-aria/scripts/aria-utils.js"></script>
   <style type="text/css">
-
      /*
 
       Since the AccName spec is in flux about whitespace joiners, and the implementations don't match,
@@ -23,27 +22,84 @@
       https://github.com/w3c/accname/projects/1#card-42288231
 
     */
-
-
   </style>
 </head>
 <body>
 
 <!--TODO: Add test description-->
+<!--  TODO: Add tests for empty strings, empty alts, hidden elements (but not aria-hidden)-->
+  <h1>Named from Content for Anchor Menuitems</h1>
+  <ul role="menu">
+    <li>
+      <a role="menuitem" href="#" data-expectedlabel="Menuitem anchor named from content" data-testname="anchor name from content with
+         menuitem" class="ex">Menuitem anchor named from content</a>
+    </li>
+    <li>
+      <a role="menuitem" href="#" class="ex" data-expectedlabel="" data-testname="anchor name from content with
+         menuitem empty string"></a>
+    </li>
+  </ul>
 
-  <div>
-    <button id="menubutton" aria-haspopup="true" aria-controls="menu">Menu</button>
-    <ul id="menu" role="menu" aria-labelledby="menubutton">
-      <li>
-        <a role="menuitem" href="#description" data-expectedlabel="Description" data-testname="anchor name from content with
-           menuitem" class="ex">Description</a>
-      </li>
-      <li>
-        <button role="menuitem" data-expectedlabel="About" data-testname="button name from content with menuitem" class="ex">
-          About</button>
-      </li>
-    </ul>
-  </div>
+  <h2>Menuitem Anchor Author Overrides</h2>
+  <ul role="menu">
+    <li>
+      <a role="menuitem" href="#" aria-label="aria-label override" data-expectedlabel="aria-label override" data-testname="anchor name from content with menuitem aria-label override" class="ex">Description</a>
+    </li>
+    <li>
+      <a role="menuitem" href="#" aria-labelledby="aria-labelledby-image" data-expectedlabel="image" data-testname="anchor name from content with menuitem aria-labelledby override" class="ex">
+        <img src="#" id="aria-labelledby-image" alt="image">
+      </a>
+    </li>
+    <li>
+      <a role="menuitem" href="#" data-expectedlabel="image" data-testname="anchor name from content with menuitem nested img with alt override" class="ex">
+        <img src="#"  alt="image">
+      </a>
+    </li>
+  </ul>
+
+  <h1>Named from Content for Button Menuitems</h1>
+  <ul role="menu">
+    <li>
+      <button role="menuitem" data-expectedlabel="Menuitem button named from content" data-testname="button name from content with menuitem" class="ex">Menuitem button named from content</button>
+    </li>
+    <li>
+      <button role="menuitem" data-expectedlabel="" data-testname="button name from content with menuitem empty string" class="ex"></button>
+    </li>
+  </ul>
+
+  <h2>Menuitem Button Author Overrides</h2>
+  <ul role="menu">
+    <li>
+      <button role="menuitem" aria-label="Menuitem button named by aria label" data-expectedlabel="Menuitem button named by aria label" data-testname="button name from content with menuitem aria-label override" class="ex">Menuitem button named from content</button>
+    </li>
+    <li>
+      <button role="menuitem" aria-labelledby="button-span" data-expectedlabel="Button Span" data-testname="button name from content with menuitem empty string" class="ex"><span id="button-span">Button Span</span></span></button>
+    </li>
+    <li>
+      <button role="menuitem" data-expectedlabel="icon" data-testname="button name from content with menuitem with nested image alt" class="ex"><img src="#" alt="icon"></button>
+    </li>
+  </ul>
+
+  <h1>Named from Content for Table Heading Menuitems</h1>
+  <table role="menu">
+    <tr role="menuitem" data-expectedlabel="Table row named from content" data-testname="table row name from content with menuitem" class="ex">
+      <th>Table row named from content</th>
+    </tr>
+    <tr role="menuitem" data-expectedlabel="Table row named from content" data-testname="table row name from content with menuitem empty string" class="ex">
+      <td></td>
+    </tr>
+  </table>
+
+  <h2>Menuitem Table Headings Author Overrides</h2>
+  <table role="menu">
+    <tr role="menuitem" aria-label="Menuitem table row named by aria label" data-expectedlabel="Menuitem table row named by aria label Table row named from content" data-testname="table row name from content with menuitem named by aria-label " class="ex">
+      <th>Table row named from content</th>
+    </tr>
+    <tr role="menuitem" data-expectedlabel="data-icon" data-testname="Menuitem table row named by image alt" class="ex">
+      <td><img src="" alt="data-icon"></td>
+    </tr>
+  </table>
+
 <script>
 AriaUtils.verifyLabelsBySelector(".ex");
 </script>

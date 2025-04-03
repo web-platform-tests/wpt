@@ -348,7 +348,7 @@ class WebDriverPrintProtocolPart(PrintProtocolPart):
         pdf_base64 = self.webdriver.print(page={"width": width, "height": height},
                                           margin={"top": margin, "right": margin, "bottom": margin,
                                                   "left": margin},
-                                          background=True,
+                                          background=False,
                                           shrink_to_fit=False)
         return pdf_base64
 

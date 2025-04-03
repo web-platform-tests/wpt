@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Input type=image with no src and no alt and dimensions auto should have border matching fallback content.</title>
+<link rel="author" href="mailto:dizhangg@chromium.org">
+<link rel="mismatch"  href="input-image-fallback-dimensions-100.html">
+
+You should see the fallback element.<br>
+<style>
+.container {
+  position: relative;
+  border: 1px dashed black;
+  height: 100px;
+  width: 100px;
+}
+
+input {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  margin: 0;
+
+  width: auto;
+  height: auto;
+}
+</style>
+
+<div class="container">
+  <input type="image">
+</div>
+

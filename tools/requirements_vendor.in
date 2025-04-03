@@ -1,0 +1,18 @@
+# This lists all the packages we use directly; these are unpinned here as we
+# can rely on the existing pinned versions in requirements_vendor.txt to
+# control when we do upgrades. It also makes this easier to audit, as
+# everything here should see actual usage outside of third_party.
+
+atomicwrites
+h2
+hpack
+html5lib
+hyperframe
+# tooltool is referenced (by path) in tools/wpt/android.py
+mozilla-tooltool-client @ git+https://github.com/mozilla-releng/tooltool.git@c1bda97eda1ec5246aa73a358c5e1d47e222380c#subdirectory=client
+packaging
+pytest-asyncio
+pytest
+pywebsocket3
+six
+websockets

@@ -387,24 +387,6 @@ class Find:
         return self.session.send_session_command("POST", route, body)
 
 
-class Cookies:
-    def __init__(self, session):
-        self.session = session
-
-    def __getitem__(self, name):
-        self.session.send_session_command("GET", "cookie/%s" % name, {})
-
-    def __setitem__(self, name, value):
-        cookie = {"name": name,
-                  "value": None}
-
-        if isinstance(name, str):
-            cookie["value"] = value
-        elif hasattr(value, "value"):
-            cookie["value"] = value.value
-        self.session.send_session_command("POST", "cookie/%s" % name, {})
-
-
 class UserPrompt:
     def __init__(self, session):
         self.session = session

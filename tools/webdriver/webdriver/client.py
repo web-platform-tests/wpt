@@ -507,6 +507,9 @@ class Session:
         if self.session_id is None:
             return
 
+        if not isinstance(self.session_id, str):
+            raise TypeError("Session.session_id must be a str or None")
+
         try:
             self.send_command("DELETE", "session/%s" % self.session_id)
         except (OSError, error.InvalidSessionIdException):
@@ -581,6 +584,9 @@ class Session:
         :raises error.WebDriverException: If the remote end returns
             an error.
         """
+        if not isinstance(self.session_id, str):
+            raise TypeError("Session.session_id must be a str to send a session command")
+
         url = urlparse.urljoin("session/%s/" % self.session_id, uri)
         return self.send_command(method, url, body, timeout)
 
@@ -661,8 +667,10 @@ class Session:
     def cookies(self, name=None):
         if name is None:
             url = "cookie"
-        else:
+        elif isinstance(name, str):
             url = "cookie/%s" % name
+        else:
+            raise TypeError("cookie name must be a str or None")
         return self.send_session_command("GET", url, {})
 
     @command
@@ -688,8 +696,10 @@ class Session:
     def delete_cookie(self, name=None):
         if name is None:
             url = "cookie"
-        else:
+        elif isinstance(name, str):
             url = "cookie/%s" % name
+        else:
+            raise TypeError("cookie name must be a str or None")
         self.send_session_command("DELETE", url, {})
 
     #[...]
@@ -766,6 +776,12 @@ class ShadowRoot:
         return cls(session, uuid)
 
     def send_shadow_command(self, method, uri, body=None):
+        if not isinstance(self.id, str):
+            raise TypeError("self.id must be a str")
+
+        if not isinstance(uri, str):
+            raise TypeError("uri must be a str")
+
         url = f"shadow/{self.id}/{uri}"
         return self.session.send_session_command(method, url, body)
 
@@ -814,6 +830,12 @@ class WebElement:
         return cls(session, uuid)
 
     def send_element_command(self, method, uri, body=None):
+        if not isinstance(self.id, str):
+            raise TypeError("WebElement.id must be a str")
+
+        if not isinstance(uri, str):
+            raise TypeError("uri must be a str")
+
         url = "element/%s/%s" % (self.id, uri)
         return self.session.send_session_command(method, url, body)
 
@@ -851,6 +873,9 @@ class WebElement:
 
     @command
     def style(self, property_name):
+        if not isinstance(property_name, str):
+            raise TypeError("property_name must be a str")
+
         return self.send_element_command("GET", "css/%s" % property_name)
 
     @property
@@ -874,6 +899,9 @@ class WebElement:
 
     @command
     def attribute(self, name):
+        if not isinstance(name, str):
+            raise TypeError("name must be a str")
+
         return self.send_element_command("GET", "attribute/%s" % name)
 
     @command
@@ -888,6 +916,9 @@ class WebElement:
     # will be overridden by this.
     @command
     def property(self, name):
+        if not isinstance(name, str):
+            raise TypeError("name must be a str")
+
         return self.send_element_command("GET", "property/%s" % name)
 
 

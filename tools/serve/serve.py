@@ -72,7 +72,7 @@ def inject_script(html, script_tag):
     error = False
     for item in tokenizer:
         if item["type"] == token_types["StartTag"]:
-            if not item["name"].lower() in after_tags:
+            if item["name"].lower() not in after_tags:
                 break
         elif item["type"] in before_tokens:
             break

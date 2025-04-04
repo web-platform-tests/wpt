@@ -60,7 +60,7 @@
         .addTick()
         .pointerMove(modelRect.x + 100, modelRect.y + 10)
         .send();
-
+      await dragStartPromise;
       const nextStyle = getComputedStyle(model);
       assert_equals(
         nextStyle.getPropertyValue("background-color"),

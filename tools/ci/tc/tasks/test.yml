@@ -20,26 +20,31 @@ components:
     maxRunTime: 10800
     vars:
       test-type: testharness
+      extra-args: --run-by-dir=3
 
   wpt-reftest:
     chunks: 6
     vars:
       test-type: reftest
+      extra-args: --run-by-dir=3
 
   wpt-print-reftest:
     chunks: 1
     vars:
       test-type: print-reftest
+      extra-args: --run-by-dir=3
 
   wpt-wdspec:
     chunks: 2
     vars:
       test-type: wdspec
+      extra-args: --run-by-dir=4
 
   wpt-crashtest:
     chunks: 1
     vars:
       test-type: crashtest
+      extra-args: --run-by-dir=3
 
   run-options:
     options:
@@ -66,6 +71,7 @@ components:
       --this-chunk=${chunks.id}
       --total-chunks=${chunks.total}
       --test-type=${vars.suite}
+      ${vars.extra_args}
 
   trigger-master:
     trigger:
@@ -115,7 +121,7 @@ components:
     scopes:
       - "docker-worker:capability:privileged"
     chunks-override:
-      testharness: 30
+      testharness: 32
 
   tox-python3_8:
     env:

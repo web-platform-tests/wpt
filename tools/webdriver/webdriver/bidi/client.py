@@ -197,7 +197,9 @@ class BidiSession:
                 exception = from_error_details(data["error"],
                                                data["message"],
                                                data.get("stacktrace"))
-                future.set_exception(exception)
+                # Only set the exception if the future is not cancelled.
+                if future.cancelled() is not True:
+                    future.set_exception(exception)
         elif data["type"] == "event":
             # This is an event
             assert isinstance(data["method"], str)

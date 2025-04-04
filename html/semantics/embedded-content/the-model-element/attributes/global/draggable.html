@@ -35,6 +35,19 @@
     promise_test(async (t) => {
       const modelRect = model.getBoundingClientRect();
       const initialStyle = getComputedStyle(model);
+      const dragStartPromise = new Promise(resolve => { 
+          model.addEventListener("dragstart", (dragEvent) => {
+            model.style.backgroundColor = "rgb(0, 255, 0)";
+            resolve();
+          });
+      });
+      
+    const dragEndPromise = new Promise(resolve => {
+      model.addEventListener("dragend", () => {
+        model.style.backgroundColor = "rgb(0, 0, 255)";
+        resolve();
+      });
+     }); 
       assert_equals(
         initialStyle.getPropertyValue("background-color"),
         "rgb(255, 0, 0)",

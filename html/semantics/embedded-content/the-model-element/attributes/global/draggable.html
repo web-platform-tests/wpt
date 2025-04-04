@@ -69,6 +69,7 @@
       );
 
       await new test_driver.Actions().pointerUp().addTick().send();
+      await dragEndPromise;
       const finalStyle = getComputedStyle(model);
       assert_equals(
         finalStye.getPropertyValue("background-color"),

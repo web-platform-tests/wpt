@@ -32,14 +32,6 @@
   <script>
     const model = document.querySelector("model");
 
-    model.addEventListener("dragstart", (dragEvent) => {
-      model.style.backgroundColor = "rgb(0, 255, 0)";
-    });
-
-    model.addEventListener("dragend", (dragEvent) => {
-      model.style.backgroundColor = "rgb(0, 0, 255)";
-    });
-
     promise_test(async (t) => {
       const modelRect = model.getBoundingClientRect();
       const initialStyle = getComputedStyle(model);

@@ -55,10 +55,10 @@ def do_delayed_imports(logger, test_paths):
 def generate_hash_certificate(host: str) -> str:
     private_key = ec.generate_private_key(ec.SECP256R1())
     subject = issuer = x509.Name([
-        x509.NameAttribute(NameOID.COUNTRY_NAME, "DE"),
-        x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, "Berlin"),
-        x509.NameAttribute(NameOID.LOCALITY_NAME, "Berlin"),
-        x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Wpt tests"),
+        x509.NameAttribute(NameOID.COUNTRY_NAME, "AA"),
+        x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, "State or Province Name (full name)"),
+        x509.NameAttribute(NameOID.LOCALITY_NAME, "Locality Name (eg, city)"),
+        x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Web Platform Tests"),
         x509.NameAttribute(NameOID.COMMON_NAME, host),
     ])
     now = datetime.datetime.now(datetime.timezone.utc)

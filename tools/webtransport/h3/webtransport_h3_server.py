@@ -8,9 +8,12 @@ import ssl
 import sys
 import threading
 import traceback
-from enum import IntEnum
+from enum import IntEnum, Enum
 from urllib.parse import urlparse
 from typing import Any, Dict, List, Optional, Tuple, cast
+
+from cryptography import x509
+from cryptography.hazmat.primitives import serialization
 
 # TODO(bashi): Remove import check suppressions once aioquic dependency is resolved.
 from aioquic.buffer import Buffer  # type: ignore
@@ -31,6 +34,7 @@ from aioquic.tls import SessionTicket  # type: ignore
 from tools import localpaths  # noqa: F401
 from wptserve import stash
 from .capsule import H3Capsule, H3CapsuleDecoder, CapsuleType
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 """
 A WebTransport over HTTP/3 server for testing.
@@ -499,6 +503,16 @@ class SessionTicketStore:
     def pop(self, label: bytes) -> Optional[SessionTicket]:
         return self.tickets.pop(label, None)
 
+class WebTransportCertificateGeneration(IntEnum):
+    """
+    Specify, if the server should generate a certificate or use an existing certificate
+     USEPREGENERATED: use existing certificate
+     GENERATEDVALIDSERVERCERTIFICATEHASHCERT: generate a certificate compatible to server cert hashes
+    """
+    USEPREGENERATED = 1,
+    GENERATEDVALIDSERVERCERTIFICATEHASHCERT = 2
+# TODO add cases for invalid certificates
+
 
 class WebTransportH3Server:
     """
@@ -507,18 +521,31 @@ class WebTransportH3Server:
     :param host: Host from which to serve.
     :param port: Port from which to serve.
     :param doc_root: Document root for serving handlers.
+    :param cert_mode: The used certificate mode can be
+       USEPREGENERATED or GENERATEDVALIDSERVERCERTIFICATEHASHCERT
     :param cert_path: Path to certificate file to use.
     :param key_path: Path to key file to use.
     :param logger: a Logger object for this server.
     """
 
-    def __init__(self, host: str, port: int, doc_root: str, cert_path: str,
-                 key_path: str, logger: Optional[logging.Logger]) -> None:
+    def __init__(self, host: str, port: int, doc_root: str, cert_mode: WebTransportCertificateGeneration,
+                 cert_path: Optional[str], key_path: Optional[str], logger: Optional[logging.Logger],
+                 cert_hash_info: Optional[Dict]) -> None:
         self.host = host
         self.port = port
         self.doc_root = doc_root
-        self.cert_path = cert_path
-        self.key_path = key_path
+        if cert_path is not None:
+            self.cert_path = cert_path
+        if key_path is not None:
+            self.key_path = key_path
+        if cert_hash_info is not None:
+            self.cert_hash_info = cert_hash_info
+        self.cert_mode = cert_mode
+        if (cert_path is None or key_path is None) and cert_mode == WebTransportCertificateGeneration.USEPREGENERATED:
+            raise ValueError("Both cert_path and key_path must be provided, if cert_mode is USEPREGENERATED")
+        if cert_hash_info is None and cert_mode == WebTransportCertificateGeneration.GENERATEDVALIDSERVERCERTIFICATEHASHCERT:
+            raise ValueError("cert_hash_info  must be provided, if cert_mode is GENERATEDVALIDSERVERCERTIFICATEHASHCERT")
+
         self.started = False
         global _doc_root
         _doc_root = self.doc_root
@@ -551,7 +578,16 @@ class WebTransportH3Server:
         _logger.info("Starting WebTransport over HTTP/3 server on %s:%s",
                      self.host, self.port)
 
-        configuration.load_cert_chain(self.cert_path, self.key_path)
+        if self.cert_mode == WebTransportCertificateGeneration.USEPREGENERATED:
+            configuration.load_cert_chain(self.cert_path, self.key_path)
+        else: # GENERATEDVALIDSERVERCERTIFICATEHASHCERT case
+            configuration.private_key =  serialization.load_pem_private_key(self.cert_hash_info["private_key"],
+                                                                            password=None
+                                                                            )
+            configuration.certificate = x509.load_pem_x509_certificate(self.cert_hash_info["certificate"])
+            configuration.certificate_chain = []
+
+
 
         ticket_store = SessionTicketStore()
 

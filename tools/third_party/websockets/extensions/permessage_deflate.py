@@ -2,9 +2,17 @@ from __future__ import annotations
 
 import dataclasses
 import zlib
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Sequence
 
-from .. import exceptions, frames
+from .. import frames
+from ..exceptions import (
+    DuplicateParameter,
+    InvalidParameterName,
+    InvalidParameterValue,
+    NegotiationError,
+    PayloadTooBig,
+    ProtocolError,
+)
 from ..typing import ExtensionName, ExtensionParameter
 from .base import ClientExtensionFactory, Extension, ServerExtensionFactory
 
@@ -36,7 +44,7 @@ class PerMessageDeflate(Extension):
         local_no_context_takeover: bool,
         remote_max_window_bits: int,
         local_max_window_bits: int,
-        compress_settings: Optional[Dict[Any, Any]] = None,
+        compress_settings: dict[Any, Any] | None = None,
     ) -> None:
         """
         Configure the Per-Message Deflate extension.
@@ -62,7 +70,8 @@ class PerMessageDeflate(Extension):
 
         if not self.local_no_context_takeover:
             self.encoder = zlib.compressobj(
-                wbits=-self.local_max_window_bits, **self.compress_settings
+                wbits=-self.local_max_window_bits,
+                **self.compress_settings,
             )
 
         # To handle continuation frames properly, we must keep track of
@@ -84,7 +93,7 @@ class PerMessageDeflate(Extension):
         self,
         frame: frames.Frame,
         *,
-        max_size: Optional[int] = None,
+        max_size: int | None = None,
     ) -> frames.Frame:
         """
         Decode an incoming frame.
@@ -128,9 +137,9 @@ class PerMessageDeflate(Extension):
         try:
             data = self.decoder.decompress(data, max_length)
         except zlib.error as exc:
-            raise exceptions.ProtocolError("decompression failed") from exc
+            raise ProtocolError("decompression failed") from exc
         if self.decoder.unconsumed_tail:
-            raise exceptions.PayloadTooBig(f"over size limit (? > {max_size} bytes)")
+            raise PayloadTooBig(f"over size limit (? > {max_size} bytes)")
 
         # Allow garbage collection of the decoder if it won't be reused.
         if frame.fin and self.remote_no_context_takeover:
@@ -156,7 +165,8 @@ class PerMessageDeflate(Extension):
             # Re-initialize per-message decoder.
             if self.local_no_context_takeover:
                 self.encoder = zlib.compressobj(
-                    wbits=-self.local_max_window_bits, **self.compress_settings
+                    wbits=-self.local_max_window_bits,
+                    **self.compress_settings,
                 )
 
         # Compress data.
@@ -174,14 +184,14 @@ class PerMessageDeflate(Extension):
 def _build_parameters(
     server_no_context_takeover: bool,
     client_no_context_takeover: bool,
-    server_max_window_bits: Optional[int],
-    client_max_window_bits: Optional[Union[int, bool]],
-) -> List[ExtensionParameter]:
+    server_max_window_bits: int | None,
+    client_max_window_bits: int | bool | None,
+) -> list[ExtensionParameter]:
     """
     Build a list of ``(name, value)`` pairs for some compression parameters.
 
     """
-    params: List[ExtensionParameter] = []
+    params: list[ExtensionParameter] = []
     if server_no_context_takeover:
         params.append(("server_no_context_takeover", None))
     if client_no_context_takeover:
@@ -197,7 +207,7 @@ def _build_parameters(
 
 def _extract_parameters(
     params: Sequence[ExtensionParameter], *, is_server: bool
-) -> Tuple[bool, bool, Optional[int], Optional[Union[int, bool]]]:
+) -> tuple[bool, bool, int | None, int | bool | None]:
     """
     Extract compression parameters from a list of ``(name, value)`` pairs.
 
@@ -207,46 +217,46 @@ def _extract_parameters(
     """
     server_no_context_takeover: bool = False
     client_no_context_takeover: bool = False
-    server_max_window_bits: Optional[int] = None
-    client_max_window_bits: Optional[Union[int, bool]] = None
+    server_max_window_bits: int | None = None
+    client_max_window_bits: int | bool | None = None
 
     for name, value in params:
         if name == "server_no_context_takeover":
             if server_no_context_takeover:
-                raise exceptions.DuplicateParameter(name)
+                raise DuplicateParameter(name)
             if value is None:
                 server_no_context_takeover = True
             else:
-                raise exceptions.InvalidParameterValue(name, value)
+                raise InvalidParameterValue(name, value)
 
         elif name == "client_no_context_takeover":
             if client_no_context_takeover:
-                raise exceptions.DuplicateParameter(name)
+                raise DuplicateParameter(name)
             if value is None:
                 client_no_context_takeover = True
             else:
-                raise exceptions.InvalidParameterValue(name, value)
+                raise InvalidParameterValue(name, value)
 
         elif name == "server_max_window_bits":
             if server_max_window_bits is not None:
-                raise exceptions.DuplicateParameter(name)
+                raise DuplicateParameter(name)
             if value in _MAX_WINDOW_BITS_VALUES:
                 server_max_window_bits = int(value)
             else:
-                raise exceptions.InvalidParameterValue(name, value)
+                raise InvalidParameterValue(name, value)
 
         elif name == "client_max_window_bits":
             if client_max_window_bits is not None:
-                raise exceptions.DuplicateParameter(name)
+                raise DuplicateParameter(name)
             if is_server and value is None:  # only in handshake requests
                 client_max_window_bits = True
             elif value in _MAX_WINDOW_BITS_VALUES:
                 client_max_window_bits = int(value)
             else:
-                raise exceptions.InvalidParameterValue(name, value)
+                raise InvalidParameterValue(name, value)
 
         else:
-            raise exceptions.InvalidParameterName(name)
+            raise InvalidParameterName(name)
 
     return (
         server_no_context_takeover,
@@ -262,20 +272,20 @@ class ClientPerMessageDeflateFactory(ClientExtensionFactory):
 
     Parameters behave as described in `section 7.1 of RFC 7692`_.
 
-    .. _section 7.1 of RFC 7692: https://www.rfc-editor.org/rfc/rfc7692.html#section-7.1
+    .. _section 7.1 of RFC 7692: https://datatracker.ietf.org/doc/html/rfc7692#section-7.1
 
     Set them to :obj:`True` to include them in the negotiation offer without a
     value or to an integer value to include them with this value.
 
     Args:
-        server_no_context_takeover: prevent server from using context takeover.
-        client_no_context_takeover: prevent client from using context takeover.
-        server_max_window_bits: maximum size of the server's LZ77 sliding window
+        server_no_context_takeover: Prevent server from using context takeover.
+        client_no_context_takeover: Prevent client from using context takeover.
+        server_max_window_bits: Maximum size of the server's LZ77 sliding window
             in bits, between 8 and 15.
-        client_max_window_bits: maximum size of the client's LZ77 sliding window
+        client_max_window_bits: Maximum size of the client's LZ77 sliding window
             in bits, between 8 and 15, or :obj:`True` to indicate support without
             setting a limit.
-        compress_settings: additional keyword arguments for :func:`zlib.compressobj`,
+        compress_settings: Additional keyword arguments for :func:`zlib.compressobj`,
             excluding ``wbits``.
 
     """
@@ -286,9 +296,9 @@ class ClientPerMessageDeflateFactory(ClientExtensionFactory):
         self,
         server_no_context_takeover: bool = False,
         client_no_context_takeover: bool = False,
-        server_max_window_bits: Optional[int] = None,
-        client_max_window_bits: Optional[Union[int, bool]] = True,
-        compress_settings: Optional[Dict[str, Any]] = None,
+        server_max_window_bits: int | None = None,
+        client_max_window_bits: int | bool | None = True,
+        compress_settings: dict[str, Any] | None = None,
     ) -> None:
         """
         Configure the Per-Message Deflate extension factory.
@@ -314,7 +324,7 @@ class ClientPerMessageDeflateFactory(ClientExtensionFactory):
         self.client_max_window_bits = client_max_window_bits
         self.compress_settings = compress_settings
 
-    def get_request_params(self) -> List[ExtensionParameter]:
+    def get_request_params(self) -> list[ExtensionParameter]:
         """
         Build request parameters.
 
@@ -338,7 +348,7 @@ class ClientPerMessageDeflateFactory(ClientExtensionFactory):
 
         """
         if any(other.name == self.name for other in accepted_extensions):
-            raise exceptions.NegotiationError(f"received duplicate {self.name}")
+            raise NegotiationError(f"received duplicate {self.name}")
 
         # Request parameters are available in instance variables.
 
@@ -364,7 +374,7 @@ class ClientPerMessageDeflateFactory(ClientExtensionFactory):
 
         if self.server_no_context_takeover:
             if not server_no_context_takeover:
-                raise exceptions.NegotiationError("expected server_no_context_takeover")
+                raise NegotiationError("expected server_no_context_takeover")
 
         # client_no_context_takeover
         #
@@ -394,9 +404,9 @@ class ClientPerMessageDeflateFactory(ClientExtensionFactory):
 
         else:
             if server_max_window_bits is None:
-                raise exceptions.NegotiationError("expected server_max_window_bits")
+                raise NegotiationError("expected server_max_window_bits")
             elif server_max_window_bits > self.server_max_window_bits:
-                raise exceptions.NegotiationError("unsupported server_max_window_bits")
+                raise NegotiationError("unsupported server_max_window_bits")
 
         # client_max_window_bits
 
@@ -412,7 +422,7 @@ class ClientPerMessageDeflateFactory(ClientExtensionFactory):
 
         if self.client_max_window_bits is None:
             if client_max_window_bits is not None:
-                raise exceptions.NegotiationError("unexpected client_max_window_bits")
+                raise NegotiationError("unexpected client_max_window_bits")
 
         elif self.client_max_window_bits is True:
             pass
@@ -421,7 +431,7 @@ class ClientPerMessageDeflateFactory(ClientExtensionFactory):
             if client_max_window_bits is None:
                 client_max_window_bits = self.client_max_window_bits
             elif client_max_window_bits > self.client_max_window_bits:
-                raise exceptions.NegotiationError("unsupported client_max_window_bits")
+                raise NegotiationError("unsupported client_max_window_bits")
 
         return PerMessageDeflate(
             server_no_context_takeover,  # remote_no_context_takeover
@@ -433,7 +443,7 @@ class ClientPerMessageDeflateFactory(ClientExtensionFactory):
 
 
 def enable_client_permessage_deflate(
-    extensions: Optional[Sequence[ClientExtensionFactory]],
+    extensions: Sequence[ClientExtensionFactory] | None,
 ) -> Sequence[ClientExtensionFactory]:
     """
     Enable Per-Message Deflate with default settings in client extensions.
@@ -462,21 +472,21 @@ class ServerPerMessageDeflateFactory(ServerExtensionFactory):
 
     Parameters behave as described in `section 7.1 of RFC 7692`_.
 
-    .. _section 7.1 of RFC 7692: https://www.rfc-editor.org/rfc/rfc7692.html#section-7.1
+    .. _section 7.1 of RFC 7692: https://datatracker.ietf.org/doc/html/rfc7692#section-7.1
 
     Set them to :obj:`True` to include them in the negotiation offer without a
     value or to an integer value to include them with this value.
 
     Args:
-        server_no_context_takeover: prevent server from using context takeover.
-        client_no_context_takeover: prevent client from using context takeover.
-        server_max_window_bits: maximum size of the server's LZ77 sliding window
+        server_no_context_takeover: Prevent server from using context takeover.
+        client_no_context_takeover: Prevent client from using context takeover.
+        server_max_window_bits: Maximum size of the server's LZ77 sliding window
             in bits, between 8 and 15.
-        client_max_window_bits: maximum size of the client's LZ77 sliding window
+        client_max_window_bits: Maximum size of the client's LZ77 sliding window
             in bits, between 8 and 15.
-        compress_settings: additional keyword arguments for :func:`zlib.compressobj`,
+        compress_settings: Additional keyword arguments for :func:`zlib.compressobj`,
             excluding ``wbits``.
-        require_client_max_window_bits: do not enable compression at all if
+        require_client_max_window_bits: Do not enable compression at all if
             client doesn't advertise support for ``client_max_window_bits``;
             the default behavior is to enable compression without enforcing
             ``client_max_window_bits``.
@@ -489,9 +499,9 @@ class ServerPerMessageDeflateFactory(ServerExtensionFactory):
         self,
         server_no_context_takeover: bool = False,
         client_no_context_takeover: bool = False,
-        server_max_window_bits: Optional[int] = None,
-        client_max_window_bits: Optional[int] = None,
-        compress_settings: Optional[Dict[str, Any]] = None,
+        server_max_window_bits: int | None = None,
+        client_max_window_bits: int | None = None,
+        compress_settings: dict[str, Any] | None = None,
         require_client_max_window_bits: bool = False,
     ) -> None:
         """
@@ -524,7 +534,7 @@ class ServerPerMessageDeflateFactory(ServerExtensionFactory):
         self,
         params: Sequence[ExtensionParameter],
         accepted_extensions: Sequence[Extension],
-    ) -> Tuple[List[ExtensionParameter], PerMessageDeflate]:
+    ) -> tuple[list[ExtensionParameter], PerMessageDeflate]:
         """
         Process request parameters.
 
@@ -532,7 +542,7 @@ class ServerPerMessageDeflateFactory(ServerExtensionFactory):
 
         """
         if any(other.name == self.name for other in accepted_extensions):
-            raise exceptions.NegotiationError(f"skipped duplicate {self.name}")
+            raise NegotiationError(f"skipped duplicate {self.name}")
 
         # Load request parameters in local variables.
         (
@@ -611,7 +621,7 @@ class ServerPerMessageDeflateFactory(ServerExtensionFactory):
         else:
             if client_max_window_bits is None:
                 if self.require_client_max_window_bits:
-                    raise exceptions.NegotiationError("required client_max_window_bits")
+                    raise NegotiationError("required client_max_window_bits")
             elif client_max_window_bits is True:
                 client_max_window_bits = self.client_max_window_bits
             elif self.client_max_window_bits < client_max_window_bits:
@@ -635,7 +645,7 @@ class ServerPerMessageDeflateFactory(ServerExtensionFactory):
 
 
 def enable_server_permessage_deflate(
-    extensions: Optional[Sequence[ServerExtensionFactory]],
+    extensions: Sequence[ServerExtensionFactory] | None,
 ) -> Sequence[ServerExtensionFactory]:
     """
     Enable Per-Message Deflate with default settings in server extensions.

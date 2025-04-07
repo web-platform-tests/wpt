@@ -3,7 +3,7 @@ from __future__ import annotations
 import enum
 import logging
 import uuid
-from typing import Generator, List, Optional, Type, Union
+from typing import Generator, Union
 
 from .exceptions import (
     ConnectionClosed,
@@ -38,6 +38,7 @@ __all__ = [
     "SEND_EOF",
 ]
 
+# Change to Request | Response | Frame when dropping Python < 3.10.
 Event = Union[Request, Response, Frame]
 """Events that :meth:`~Protocol.events_received` may return."""
 
@@ -74,10 +75,10 @@ class Protocol:
 
     Args:
         side: :attr:`~Side.CLIENT` or :attr:`~Side.SERVER`.
-        state: initial state of the WebSocket connection.
-        max_size: maximum size of incoming messages in bytes;
+        state: Initial state of the WebSocket connection.
+        max_size: Maximum size of incoming messages in bytes;
             :obj:`None` disables the limit.
-        logger: logger for this connection; depending on ``side``,
+        logger: Logger for this connection; depending on ``side``,
             defaults to ``logging.getLogger("websockets.client")``
             or ``logging.getLogger("websockets.server")``;
             see the :doc:`logging guide <../../topics/logging>` for details.
@@ -89,8 +90,8 @@ class Protocol:
         side: Side,
         *,
         state: State = OPEN,
-        max_size: Optional[int] = 2**20,
-        logger: Optional[LoggerLike] = None,
+        max_size: int | None = 2**20,
+        logger: LoggerLike | None = None,
     ) -> None:
         # Unique identifier. For logs.
         self.id: uuid.UUID = uuid.uuid4()
@@ -116,24 +117,24 @@ class Protocol:
 
         # Current size of incoming message in bytes. Only set while reading a
         # fragmented message i.e. a data frames with the FIN bit not set.
-        self.cur_size: Optional[int] = None
+        self.cur_size: int | None = None
 
         # True while sending a fragmented message i.e. a data frames with the
         # FIN bit not set.
         self.expect_continuation_frame = False
 
         # WebSocket protocol parameters.
-        self.origin: Optional[Origin] = None
-        self.extensions: List[Extension] = []
-        self.subprotocol: Optional[Subprotocol] = None
+        self.origin: Origin | None = None
+        self.extensions: list[Extension] = []
+        self.subprotocol: Subprotocol | None = None
 
         # Close code and reason, set when a close frame is sent or received.
-        self.close_rcvd: Optional[Close] = None
-        self.close_sent: Optional[Close] = None
-        self.close_rcvd_then_sent: Optional[bool] = None
+        self.close_rcvd: Close | None = None
+        self.close_sent: Close | None = None
+        self.close_rcvd_then_sent: bool | None = None
 
         # Track if an exception happened during the handshake.
-        self.handshake_exc: Optional[Exception] = None
+        self.handshake_exc: Exception | None = None
         """
         Exception to raise if the opening handshake failed.
 
@@ -146,16 +147,16 @@ class Protocol:
 
         # Parser state.
         self.reader = StreamReader()
-        self.events: List[Event] = []
-        self.writes: List[bytes] = []
+        self.events: list[Event] = []
+        self.writes: list[bytes] = []
         self.parser = self.parse()
         next(self.parser)  # start coroutine
-        self.parser_exc: Optional[Exception] = None
+        self.parser_exc: Exception | None = None
 
     @property
     def state(self) -> State:
         """
-        WebSocket connection state.
+        State of the WebSocket connection.
 
         Defined in 4.1, 4.2, 7.1.3, and 7.1.4 of :rfc:`6455`.
 
@@ -169,12 +170,12 @@ class Protocol:
         self._state = state
 
     @property
-    def close_code(self) -> Optional[int]:
+    def close_code(self) -> int | None:
         """
         `WebSocket close code`_.
 
         .. _WebSocket close code:
-            https://www.rfc-editor.org/rfc/rfc6455.html#section-7.1.5
+            https://datatracker.ietf.org/doc/html/rfc6455#section-7.1.5
 
         :obj:`None` if the connection isn't closed yet.
 
@@ -187,12 +188,12 @@ class Protocol:
             return self.close_rcvd.code
 
     @property
-    def close_reason(self) -> Optional[str]:
+    def close_reason(self) -> str | None:
         """
         `WebSocket close reason`_.
 
         .. _WebSocket close reason:
-            https://www.rfc-editor.org/rfc/rfc6455.html#section-7.1.6
+            https://datatracker.ietf.org/doc/html/rfc6455#section-7.1.6
 
         :obj:`None` if the connection isn't closed yet.
 
@@ -217,11 +218,11 @@ class Protocol:
         known only once the connection is closed.
 
         Raises:
-            AssertionError: if the connection isn't closed yet.
+            AssertionError: If the connection isn't closed yet.
 
         """
         assert self.state is CLOSED, "connection isn't closed yet"
-        exc_type: Type[ConnectionClosed]
+        exc_type: type[ConnectionClosed]
         if (
             self.close_rcvd is not None
             and self.close_sent is not None
@@ -252,7 +253,7 @@ class Protocol:
         - You should call :meth:`events_received` and process resulting events.
 
         Raises:
-            EOFError: if :meth:`receive_eof` was called earlier.
+            EOFError: If :meth:`receive_eof` was called earlier.
 
         """
         self.reader.feed_data(data)
@@ -269,10 +270,11 @@ class Protocol:
         - You aren't expected to call :meth:`events_received`; it won't return
           any new events.
 
-        Raises:
-            EOFError: if :meth:`receive_eof` was called earlier.
+        :meth:`receive_eof` is idempotent.
 
         """
+        if self.reader.eof:
+            return
         self.reader.feed_eof()
         next(self.parser)
 
@@ -292,11 +294,13 @@ class Protocol:
                 of a fragmented message and to :obj:`False` otherwise.
 
         Raises:
-            ProtocolError: if a fragmented message isn't in progress.
+            ProtocolError: If a fragmented message isn't in progress.
 
         """
         if not self.expect_continuation_frame:
             raise ProtocolError("unexpected continuation frame")
+        if self._state is not OPEN:
+            raise InvalidState(f"connection is {self.state.name.lower()}")
         self.expect_continuation_frame = not fin
         self.send_frame(Frame(OP_CONT, data, fin))
 
@@ -313,11 +317,13 @@ class Protocol:
                 a fragmented message.
 
         Raises:
-            ProtocolError: if a fragmented message is in progress.
+            ProtocolError: If a fragmented message is in progress.
 
         """
         if self.expect_continuation_frame:
             raise ProtocolError("expected a continuation frame")
+        if self._state is not OPEN:
+            raise InvalidState(f"connection is {self.state.name.lower()}")
         self.expect_continuation_frame = not fin
         self.send_frame(Frame(OP_TEXT, data, fin))
 
@@ -334,15 +340,17 @@ class Protocol:
                 a fragmented message.
 
         Raises:
-            ProtocolError: if a fragmented message is in progress.
+            ProtocolError: If a fragmented message is in progress.
 
         """
         if self.expect_continuation_frame:
             raise ProtocolError("expected a continuation frame")
+        if self._state is not OPEN:
+            raise InvalidState(f"connection is {self.state.name.lower()}")
         self.expect_continuation_frame = not fin
         self.send_frame(Frame(OP_BINARY, data, fin))
 
-    def send_close(self, code: Optional[int] = None, reason: str = "") -> None:
+    def send_close(self, code: int | None = None, reason: str = "") -> None:
         """
         Send a `Close frame`_.
 
@@ -354,12 +362,14 @@ class Protocol:
             reason: close reason.
 
         Raises:
-            ProtocolError: if a fragmented message is being sent, if the code
-                isn't valid, or if a reason is provided without a code
+            ProtocolError: If the code isn't valid or if a reason is provided
+                without a code.
 
         """
-        if self.expect_continuation_frame:
-            raise ProtocolError("expected a continuation frame")
+        # While RFC 6455 doesn't rule out sending more than one close Frame,
+        # websockets is conservative in what it sends and doesn't allow that.
+        if self._state is not OPEN:
+            raise InvalidState(f"connection is {self.state.name.lower()}")
         if code is None:
             if reason != "":
                 raise ProtocolError("cannot send a reason without a code")
@@ -368,9 +378,11 @@ class Protocol:
         else:
             close = Close(code, reason)
             data = close.serialize()
-        # send_frame() guarantees that self.state is OPEN at this point.
         # 7.1.3. The WebSocket Closing Handshake is Started
         self.send_frame(Frame(OP_CLOSE, data))
+        # Since the state is OPEN, no close frame was received yet.
+        # As a consequence, self.close_rcvd_then_sent remains None.
+        assert self.close_rcvd is None
         self.close_sent = close
         self.state = CLOSING
 
@@ -385,6 +397,9 @@ class Protocol:
             data: payload containing arbitrary binary data.
 
         """
+        # RFC 6455 allows control frames after starting the closing handshake.
+        if self._state is not OPEN and self._state is not CLOSING:
+            raise InvalidState(f"connection is {self.state.name.lower()}")
         self.send_frame(Frame(OP_PING, data))
 
     def send_pong(self, data: bytes) -> None:
@@ -398,6 +413,9 @@ class Protocol:
             data: payload containing arbitrary binary data.
 
         """
+        # RFC 6455 allows control frames after starting the closing handshake.
+        if self._state is not OPEN and self._state is not CLOSING:
+            raise InvalidState(f"connection is {self.state.name.lower()}")
         self.send_frame(Frame(OP_PONG, data))
 
     def fail(self, code: int, reason: str = "") -> None:
@@ -412,7 +430,7 @@ class Protocol:
             reason: close reason
 
         Raises:
-            ProtocolError: if the code isn't valid.
+            ProtocolError: If the code isn't valid.
         """
         # 7.1.7. Fail the WebSocket Connection
 
@@ -425,6 +443,12 @@ class Protocol:
                 data = close.serialize()
                 self.send_frame(Frame(OP_CLOSE, data))
                 self.close_sent = close
+                # If recv_messages() raised an exception upon receiving a close
+                # frame but before echoing it, then close_rcvd is not None even
+                # though the state is OPEN. This happens when the connection is
+                # closed while receiving a fragmented message.
+                if self.close_rcvd is not None:
+                    self.close_rcvd_then_sent = True
                 self.state = CLOSING
 
         # When failing the connection, a server closes the TCP connection
@@ -443,7 +467,7 @@ class Protocol:
 
     # Public method for getting incoming events after receiving data.
 
-    def events_received(self) -> List[Event]:
+    def events_received(self) -> list[Event]:
         """
         Fetch events generated from data received from the network.
 
@@ -452,14 +476,14 @@ class Protocol:
         Process resulting events, likely by passing them to the application.
 
         Returns:
-            List[Event]: Events read from the connection.
+            Events read from the connection.
         """
         events, self.events = self.events, []
         return events
 
     # Public method for getting outgoing data after receiving data or sending events.
 
-    def data_to_send(self) -> List[bytes]:
+    def data_to_send(self) -> list[bytes]:
         """
         Obtain data to send to the network.
 
@@ -473,7 +497,7 @@ class Protocol:
         connection.
 
         Returns:
-            List[bytes]: Data to write to the connection.
+            Data to write to the connection.
 
         """
         writes, self.writes = self.writes, []
@@ -490,7 +514,7 @@ class Protocol:
         short timeout if the other side hasn't already closed it.
 
         Returns:
-            bool: Whether the TCP connection is expected to close soon.
+            Whether the TCP connection is expected to close soon.
 
         """
         # We expect a TCP close if and only if we sent a close frame:
@@ -586,18 +610,18 @@ class Protocol:
         - after sending a close frame, during an abnormal closure (7.1.7).
 
         """
-        # The server close the TCP connection in the same circumstances where
-        # discard() replaces parse(). The client closes the connection later,
-        # after the server closes the connection or a timeout elapses.
-        # (The latter case cannot be handled in this Sans-I/O layer.)
-        assert (self.side is SERVER) == (self.eof_sent)
+        # After the opening handshake completes, the server closes the TCP
+        # connection in the same circumstances where discard() replaces parse().
+        # The client closes it when it receives EOF from the server or times
+        # out. (The latter case cannot be handled in this Sans-I/O layer.)
+        assert (self.state == CONNECTING or self.side is SERVER) == (self.eof_sent)
         while not (yield from self.reader.at_eof()):
             self.reader.discard()
         if self.debug:
             self.logger.debug("< EOF")
         # A server closes the TCP connection immediately, while a client
         # waits for the server to close the TCP connection.
-        if self.side is CLIENT:
+        if self.state != CONNECTING and self.side is CLIENT:
             self.send_eof()
         self.state = CLOSED
         # If discard() completes normally, execution ends here.
@@ -677,6 +701,8 @@ class Protocol:
             # 1.4. Closing Handshake: "after receiving a control frame
             # indicating the connection should be closed, a peer discards
             # any further data received."
+            # RFC 6455 allows reading Ping and Pong frames after a Close frame.
+            # However, that doesn't seem useful; websockets doesn't support it.
             self.parser = self.discard()
             next(self.parser)  # start coroutine
 
@@ -689,15 +715,13 @@ class Protocol:
     # Private methods for sending events.
 
     def send_frame(self, frame: Frame) -> None:
-        if self.state is not OPEN:
-            raise InvalidState(
-                f"cannot write to a WebSocket in the {self.state.name} state"
-            )
-
         if self.debug:
             self.logger.debug("> %s", frame)
         self.writes.append(
-            frame.serialize(mask=self.side is CLIENT, extensions=self.extensions)
+            frame.serialize(
+                mask=self.side is CLIENT,
+                extensions=self.extensions,
+            )
         )
 
     def send_eof(self) -> None:

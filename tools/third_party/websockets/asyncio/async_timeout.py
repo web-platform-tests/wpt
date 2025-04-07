@@ -9,12 +9,12 @@ from types import TracebackType
 from typing import Optional, Type
 
 
-# From https://github.com/python/typing_extensions/blob/main/src/typing_extensions.py
-# Licensed under the Python Software Foundation License (PSF-2.0)
-
 if sys.version_info >= (3, 11):
     from typing import final
 else:
+    # From https://github.com/python/typing_extensions/blob/main/src/typing_extensions.py
+    # Licensed under the Python Software Foundation License (PSF-2.0)
+
     # @final exists in 3.8+, but we backport it for all versions
     # before 3.11 to keep support for the __final__ attribute.
     # See https://bugs.python.org/issue46342
@@ -49,10 +49,21 @@ else:
             pass
         return f
 
+    # End https://github.com/python/typing_extensions/blob/main/src/typing_extensions.py
 
-# End https://github.com/aio-libs/async-timeout/blob/master/async_timeout/__init__.py
 
-__version__ = "4.0.2"
+if sys.version_info >= (3, 11):
+
+    def _uncancel_task(task: "asyncio.Task[object]") -> None:
+        task.uncancel()
+
+else:
+
+    def _uncancel_task(task: "asyncio.Task[object]") -> None:
+        pass
+
+
+__version__ = "4.0.3"
 
 
 __all__ = ("timeout", "timeout_at", "Timeout")
@@ -124,7 +135,7 @@ class Timeout:
     # The purpose is to time out as soon as possible
     # without waiting for the next await expression.
 
-    __slots__ = ("_deadline", "_loop", "_state", "_timeout_handler")
+    __slots__ = ("_deadline", "_loop", "_state", "_timeout_handler", "_task")
 
     def __init__(
         self, deadline: Optional[float], loop: asyncio.AbstractEventLoop
@@ -132,6 +143,7 @@ class Timeout:
         self._loop = loop
         self._state = _State.INIT
 
+        self._task: Optional["asyncio.Task[object]"] = None
         self._timeout_handler = None  # type: Optional[asyncio.Handle]
         if deadline is None:
             self._deadline = None  # type: Optional[float]
@@ -187,6 +199,7 @@ class Timeout:
         self._reject()
 
     def _reject(self) -> None:
+        self._task = None
         if self._timeout_handler is not None:
             self._timeout_handler.cancel()
             self._timeout_handler = None
@@ -234,11 +247,11 @@ class Timeout:
         if self._timeout_handler is not None:
             self._timeout_handler.cancel()
 
-        task = asyncio.current_task()
+        self._task = asyncio.current_task()
         if deadline <= now:
-            self._timeout_handler = self._loop.call_soon(self._on_timeout, task)
+            self._timeout_handler = self._loop.call_soon(self._on_timeout)
         else:
-            self._timeout_handler = self._loop.call_at(deadline, self._on_timeout, task)
+            self._timeout_handler = self._loop.call_at(deadline, self._on_timeout)
 
     def _do_enter(self) -> None:
         if self._state != _State.INIT:
@@ -248,15 +261,19 @@ class Timeout:
 
     def _do_exit(self, exc_type: Optional[Type[BaseException]]) -> None:
         if exc_type is asyncio.CancelledError and self._state == _State.TIMEOUT:
+            assert self._task is not None
+            _uncancel_task(self._task)
             self._timeout_handler = None
+            self._task = None
             raise asyncio.TimeoutError
         # timeout has not expired
         self._state = _State.EXIT
         self._reject()
         return None
 
-    def _on_timeout(self, task: "asyncio.Task[None]") -> None:
-        task.cancel()
+    def _on_timeout(self) -> None:
+        assert self._task is not None
+        self._task.cancel()
         self._state = _State.TIMEOUT
         # drop the reference early
         self._timeout_handler = None

@@ -3,7 +3,7 @@ from __future__ import annotations
 import functools
 import hmac
 import http
-from typing import Any, Awaitable, Callable, Iterable, Optional, Tuple, Union, cast
+from typing import Any, Awaitable, Callable, Iterable, Tuple, cast
 
 from ..datastructures import Headers
 from ..exceptions import InvalidHeader
@@ -13,6 +13,7 @@ from .server import HTTPResponse, WebSocketServerProtocol
 
 __all__ = ["BasicAuthWebSocketServerProtocol", "basic_auth_protocol_factory"]
 
+# Change to tuple[str, str] when dropping Python < 3.9.
 Credentials = Tuple[str, str]
 
 
@@ -39,14 +40,14 @@ class BasicAuthWebSocketServerProtocol(WebSocketServerProtocol):
     encoding of non-ASCII characters is undefined.
     """
 
-    username: Optional[str] = None
+    username: str | None = None
     """Username of the authenticated user."""
 
     def __init__(
         self,
         *args: Any,
-        realm: Optional[str] = None,
-        check_credentials: Optional[Callable[[str, str], Awaitable[bool]]] = None,
+        realm: str | None = None,
+        check_credentials: Callable[[str, str], Awaitable[bool]] | None = None,
         **kwargs: Any,
     ) -> None:
         if realm is not None:
@@ -66,7 +67,7 @@ class BasicAuthWebSocketServerProtocol(WebSocketServerProtocol):
             password: HTTP Basic Auth password.
 
         Returns:
-            bool: :obj:`True` if the handshake should continue;
+            :obj:`True` if the handshake should continue;
             :obj:`False` if it should fail with an HTTP 401 error.
 
         """
@@ -79,7 +80,7 @@ class BasicAuthWebSocketServerProtocol(WebSocketServerProtocol):
         self,
         path: str,
         request_headers: Headers,
-    ) -> Optional[HTTPResponse]:
+    ) -> HTTPResponse | None:
         """
         Check HTTP Basic Auth and return an HTTP 401 response if needed.
 
@@ -115,20 +116,20 @@ class BasicAuthWebSocketServerProtocol(WebSocketServerProtocol):
 
 
 def basic_auth_protocol_factory(
-    realm: Optional[str] = None,
-    credentials: Optional[Union[Credentials, Iterable[Credentials]]] = None,
-    check_credentials: Optional[Callable[[str, str], Awaitable[bool]]] = None,
-    create_protocol: Optional[Callable[..., BasicAuthWebSocketServerProtocol]] = None,
+    realm: str | None = None,
+    credentials: Credentials | Iterable[Credentials] | None = None,
+    check_credentials: Callable[[str, str], Awaitable[bool]] | None = None,
+    create_protocol: Callable[..., BasicAuthWebSocketServerProtocol] | None = None,
 ) -> Callable[..., BasicAuthWebSocketServerProtocol]:
     """
     Protocol factory that enforces HTTP Basic Auth.
 
     :func:`basic_auth_protocol_factory` is designed to integrate with
-    :func:`~websockets.server.serve` like this::
+    :func:`~websockets.legacy.server.serve` like this::
 
-        websockets.serve(
+        serve(
             ...,
-            create_protocol=websockets.basic_auth_protocol_factory(
+            create_protocol=basic_auth_protocol_factory(
                 realm="my dev server",
                 credentials=("hello", "iloveyou"),
             )
@@ -159,7 +160,7 @@ def basic_auth_protocol_factory(
         if is_credentials(credentials):
             credentials_list = [cast(Credentials, credentials)]
         elif isinstance(credentials, Iterable):
-            credentials_list = list(credentials)
+            credentials_list = list(cast(Iterable[Credentials], credentials))
             if not all(is_credentials(item) for item in credentials_list):
                 raise TypeError(f"invalid credentials argument: {credentials}")
         else:
@@ -177,6 +178,11 @@ def basic_auth_protocol_factory(
     if create_protocol is None:
         create_protocol = BasicAuthWebSocketServerProtocol
 
+    # Help mypy and avoid this error: "type[BasicAuthWebSocketServerProtocol] |
+    # Callable[..., BasicAuthWebSocketServerProtocol]" not callable  [misc]
+    create_protocol = cast(
+        Callable[..., BasicAuthWebSocketServerProtocol], create_protocol
+    )
     return functools.partial(
         create_protocol,
         realm=realm,

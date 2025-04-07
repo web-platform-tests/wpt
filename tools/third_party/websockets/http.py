@@ -1,35 +1,15 @@
 from __future__ import annotations
 
-import sys
-import typing
+import warnings
 
-from .imports import lazy_import
-from .version import version as websockets_version
-
-
-# For backwards compatibility:
+from .datastructures import Headers, MultipleValuesError  # noqa: F401
+from .legacy.http import read_request, read_response  # noqa: F401
 
 
-# When type checking, import non-deprecated aliases eagerly. Else, import on demand.
-if typing.TYPE_CHECKING:
-    from .datastructures import Headers, MultipleValuesError  # noqa: F401
-else:
-    lazy_import(
-        globals(),
-        # Headers and MultipleValuesError used to be defined in this module.
-        aliases={
-            "Headers": ".datastructures",
-            "MultipleValuesError": ".datastructures",
-        },
-        deprecated_aliases={
-            "read_request": ".legacy.http",
-            "read_response": ".legacy.http",
-        },
-    )
-
-
-__all__ = ["USER_AGENT"]
-
-
-PYTHON_VERSION = "{}.{}".format(*sys.version_info)
-USER_AGENT = f"Python/{PYTHON_VERSION} websockets/{websockets_version}"
+warnings.warn(  # deprecated in 9.0 - 2021-09-01
+    "Headers and MultipleValuesError were moved "
+    "from websockets.http to websockets.datastructures"
+    "and read_request and read_response were moved "
+    "from websockets.http to websockets.legacy.http",
+    DeprecationWarning,
+)

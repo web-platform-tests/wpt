@@ -26,11 +26,11 @@ class StreamReader:
         The return value includes the LF character.
 
         Args:
-            m: maximum number bytes to read; this is a security limit.
+            m: Maximum number bytes to read; this is a security limit.
 
         Raises:
-            EOFError: if the stream ends without a LF.
-            RuntimeError: if the stream ends in more than ``m`` bytes.
+            EOFError: If the stream ends without a LF.
+            RuntimeError: If the stream ends in more than ``m`` bytes.
 
         """
         n = 0  # number of bytes to read
@@ -58,10 +58,10 @@ class StreamReader:
         This is a generator-based coroutine.
 
         Args:
-            n: how many bytes to read.
+            n: How many bytes to read.
 
         Raises:
-            EOFError: if the stream ends in less than ``n`` bytes.
+            EOFError: If the stream ends in less than ``n`` bytes.
 
         """
         assert n >= 0
@@ -81,10 +81,10 @@ class StreamReader:
         This is a generator-based coroutine.
 
         Args:
-            m: maximum number bytes to read; this is a security limit.
+            m: Maximum number bytes to read; this is a security limit.
 
         Raises:
-            RuntimeError: if the stream ends in more than ``m`` bytes.
+            RuntimeError: If the stream ends in more than ``m`` bytes.
 
         """
         while not self.eof:
@@ -119,10 +119,10 @@ class StreamReader:
         :meth:`feed_data` cannot be called after :meth:`feed_eof`.
 
         Args:
-            data: data to write.
+            data: Data to write.
 
         Raises:
-            EOFError: if the stream has ended.
+            EOFError: If the stream has ended.
 
         """
         if self.eof:
@@ -136,7 +136,7 @@ class StreamReader:
         :meth:`feed_eof` cannot be called more than once.
 
         Raises:
-            EOFError: if the stream has ended.
+            EOFError: If the stream has ended.
 
         """
         if self.eof:

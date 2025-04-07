@@ -1,18 +1,18 @@
 from __future__ import annotations
 
 import socket
-import ssl
+import ssl as ssl_module
 import threading
-from typing import Any, Optional, Sequence, Type
+import warnings
+from typing import Any, Sequence
 
 from ..client import ClientProtocol
 from ..datastructures import HeadersLike
 from ..extensions.base import ClientExtensionFactory
 from ..extensions.permessage_deflate import enable_client_permessage_deflate
 from ..headers import validate_subprotocols
-from ..http import USER_AGENT
-from ..http11 import Response
-from ..protocol import CONNECTING, OPEN, Event
+from ..http11 import USER_AGENT, Response
+from ..protocol import CONNECTING, Event
 from ..typing import LoggerLike, Origin, Subprotocol
 from ..uri import parse_uri
 from .connection import Connection
@@ -24,7 +24,7 @@ __all__ = ["connect", "unix_connect", "ClientConnection"]
 
 class ClientConnection(Connection):
     """
-    Threaded implementation of a WebSocket client connection.
+    :mod:`threading` implementation of a WebSocket client connection.
 
     :class:`ClientConnection` provides :meth:`recv` and :meth:`send` methods for
     receiving and sending messages.
@@ -51,7 +51,7 @@ class ClientConnection(Connection):
         socket: socket.socket,
         protocol: ClientProtocol,
         *,
-        close_timeout: Optional[float] = 10,
+        close_timeout: float | None = 10,
     ) -> None:
         self.protocol: ClientProtocol
         self.response_rcvd = threading.Event()
@@ -63,9 +63,9 @@ class ClientConnection(Connection):
 
     def handshake(
         self,
-        additional_headers: Optional[HeadersLike] = None,
-        user_agent_header: Optional[str] = USER_AGENT,
-        timeout: Optional[float] = None,
+        additional_headers: HeadersLike | None = None,
+        user_agent_header: str | None = USER_AGENT,
+        timeout: float | None = None,
     ) -> None:
         """
         Perform the opening handshake.
@@ -80,19 +80,11 @@ class ClientConnection(Connection):
             self.protocol.send_request(self.request)
 
         if not self.response_rcvd.wait(timeout):
-            self.close_socket()
-            self.recv_events_thread.join()
             raise TimeoutError("timed out during handshake")
 
-        if self.response is None:
-            self.close_socket()
-            self.recv_events_thread.join()
-            raise ConnectionError("connection closed during handshake")
-
-        if self.protocol.state is not OPEN:
-            self.recv_events_thread.join(self.close_timeout)
-            self.close_socket()
-            self.recv_events_thread.join()
+        # self.protocol.handshake_exc is always set when the connection is lost
+        # before receiving a response, when the response cannot be parsed, or
+        # when the response fails the handshake.
 
         if self.protocol.handshake_exc is not None:
             raise self.protocol.handshake_exc
@@ -126,28 +118,27 @@ class ClientConnection(Connection):
 def connect(
     uri: str,
     *,
-    # TCP/TLS — unix and path are only for unix_connect()
-    sock: Optional[socket.socket] = None,
-    ssl_context: Optional[ssl.SSLContext] = None,
-    server_hostname: Optional[str] = None,
-    unix: bool = False,
-    path: Optional[str] = None,
+    # TCP/TLS
+    sock: socket.socket | None = None,
+    ssl: ssl_module.SSLContext | None = None,
+    server_hostname: str | None = None,
     # WebSocket
-    origin: Optional[Origin] = None,
-    extensions: Optional[Sequence[ClientExtensionFactory]] = None,
-    subprotocols: Optional[Sequence[Subprotocol]] = None,
-    additional_headers: Optional[HeadersLike] = None,
-    user_agent_header: Optional[str] = USER_AGENT,
-    compression: Optional[str] = "deflate",
+    origin: Origin | None = None,
+    extensions: Sequence[ClientExtensionFactory] | None = None,
+    subprotocols: Sequence[Subprotocol] | None = None,
+    additional_headers: HeadersLike | None = None,
+    user_agent_header: str | None = USER_AGENT,
+    compression: str | None = "deflate",
     # Timeouts
-    open_timeout: Optional[float] = 10,
-    close_timeout: Optional[float] = 10,
+    open_timeout: float | None = 10,
+    close_timeout: float | None = 10,
     # Limits
-    max_size: Optional[int] = 2**20,
+    max_size: int | None = 2**20,
     # Logging
-    logger: Optional[LoggerLike] = None,
+    logger: LoggerLike | None = None,
     # Escape hatch for advanced customization
-    create_connection: Optional[Type[ClientConnection]] = None,
+    create_connection: type[ClientConnection] | None = None,
+    **kwargs: Any,
 ) -> ClientConnection:
     """
     Connect to the WebSocket server at ``uri``.
@@ -157,7 +148,9 @@ def connect(
 
     :func:`connect` may be used as a context manager::
 
-        async with websockets.sync.client.connect(...) as websocket:
+        from websockets.sync.client import connect
+
+        with connect(...) as websocket:
             ...
 
     The connection is closed automatically when exiting the context.
@@ -167,7 +160,7 @@ def connect(
         sock: Preexisting TCP socket. ``sock`` overrides the host and port
             from ``uri``. You may call :func:`socket.create_connection` to
             create a suitable TCP socket.
-        ssl_context: Configuration for enabling TLS on the connection.
+        ssl: Configuration for enabling TLS on the connection.
         server_hostname: Host name for the TLS handshake. ``server_hostname``
             overrides the host name from ``uri``.
         origin: Value of the ``Origin`` header, for servers that require it.
@@ -196,6 +189,8 @@ def connect(
             the connection. Set it to a wrapper or a subclass to customize
             connection handling.
 
+    Any other keyword arguments are passed to :func:`~socket.create_connection`.
+
     Raises:
         InvalidURI: If ``uri`` isn't a valid WebSocket URI.
         OSError: If the TCP connection fails.
@@ -206,17 +201,27 @@ def connect(
 
     # Process parameters
 
+    # Backwards compatibility: ssl used to be called ssl_context.
+    if ssl is None and "ssl_context" in kwargs:
+        ssl = kwargs.pop("ssl_context")
+        warnings.warn(  # deprecated in 13.0 - 2024-08-20
+            "ssl_context was renamed to ssl",
+            DeprecationWarning,
+        )
+
     wsuri = parse_uri(uri)
-    if not wsuri.secure and ssl_context is not None:
-        raise TypeError("ssl_context argument is incompatible with a ws:// URI")
+    if not wsuri.secure and ssl is not None:
+        raise TypeError("ssl argument is incompatible with a ws:// URI")
+
+    # Private APIs for unix_connect()
+    unix: bool = kwargs.pop("unix", False)
+    path: str | None = kwargs.pop("path", None)
 
     if unix:
         if path is None and sock is None:
             raise TypeError("missing path argument")
         elif path is not None and sock is not None:
             raise TypeError("path and sock arguments are incompatible")
-    else:
-        assert path is None  # private argument, only set by unix_connect()
 
     if subprotocols is not None:
         validate_subprotocols(subprotocols)
@@ -241,13 +246,11 @@ def connect(
             if unix:
                 sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                 sock.settimeout(deadline.timeout())
-                assert path is not None  # validated above -- this is for mpypy
+                assert path is not None  # mypy cannot figure this out
                 sock.connect(path)
             else:
-                sock = socket.create_connection(
-                    (wsuri.host, wsuri.port),
-                    deadline.timeout(),
-                )
+                kwargs.setdefault("timeout", deadline.timeout())
+                sock = socket.create_connection((wsuri.host, wsuri.port), **kwargs)
             sock.settimeout(None)
 
         # Disable Nagle algorithm
@@ -258,70 +261,75 @@ def connect(
         # Initialize TLS wrapper and perform TLS handshake
 
         if wsuri.secure:
-            if ssl_context is None:
-                ssl_context = ssl.create_default_context()
+            if ssl is None:
+                ssl = ssl_module.create_default_context()
             if server_hostname is None:
                 server_hostname = wsuri.host
             sock.settimeout(deadline.timeout())
-            sock = ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+            sock = ssl.wrap_socket(sock, server_hostname=server_hostname)
             sock.settimeout(None)
 
-        # Initialize WebSocket connection
+        # Initialize WebSocket protocol
 
         protocol = ClientProtocol(
             wsuri,
             origin=origin,
             extensions=extensions,
             subprotocols=subprotocols,
-            state=CONNECTING,
             max_size=max_size,
             logger=logger,
         )
 
-        # Initialize WebSocket protocol
+        # Initialize WebSocket connection
 
         connection = create_connection(
             sock,
             protocol,
             close_timeout=close_timeout,
         )
-        # On failure, handshake() closes the socket and raises an exception.
+    except Exception:
+        if sock is not None:
+            sock.close()
+        raise
+
+    try:
         connection.handshake(
             additional_headers,
             user_agent_header,
             deadline.timeout(),
         )
-
     except Exception:
-        if sock is not None:
-            sock.close()
+        connection.close_socket()
+        connection.recv_events_thread.join()
         raise
 
     return connection
 
 
 def unix_connect(
-    path: Optional[str] = None,
-    uri: Optional[str] = None,
+    path: str | None = None,
+    uri: str | None = None,
     **kwargs: Any,
 ) -> ClientConnection:
     """
     Connect to a WebSocket server listening on a Unix socket.
 
-    This function is identical to :func:`connect`, except for the additional
-    ``path`` argument. It's only available on Unix.
+    This function accepts the same keyword arguments as :func:`connect`.
+
+    It's only available on Unix.
 
     It's mainly useful for debugging servers listening on Unix sockets.
 
     Args:
         path: File system path to the Unix socket.
         uri: URI of the WebSocket server. ``uri`` defaults to
-            ``ws://localhost/`` or, when a ``ssl_context`` is provided, to
+            ``ws://localhost/`` or, when a ``ssl`` is provided, to
             ``wss://localhost/``.
 
     """
     if uri is None:
-        if kwargs.get("ssl_context") is None:
+        # Backwards compatibility: ssl used to be called ssl_context.
+        if kwargs.get("ssl") is None and kwargs.get("ssl_context") is None:
             uri = "ws://localhost/"
         else:
             uri = "wss://localhost/"

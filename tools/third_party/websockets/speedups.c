@@ -19,7 +19,6 @@ _PyBytesLike_AsStringAndSize(PyObject *obj, PyObject **tmp, char **buffer, Py_ss
 {
     // This supports bytes, bytearrays, and memoryview objects,
     // which are common data structures for handling byte streams.
-    // websockets.framing.prepare_data() returns only these types.
     // If *tmp isn't NULL, the caller gets a new reference.
     if (PyBytes_Check(obj))
     {

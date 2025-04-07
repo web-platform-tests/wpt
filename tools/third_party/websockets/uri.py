@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import dataclasses
 import urllib.parse
-from typing import Optional, Tuple
 
-from . import exceptions
+from .exceptions import InvalidURI
 
 
 __all__ = ["parse_uri", "WebSocketURI"]
@@ -24,7 +23,7 @@ class WebSocketURI:
         username: Available when the URI contains `User Information`_.
         password: Available when the URI contains `User Information`_.
 
-    .. _User Information: https://www.rfc-editor.org/rfc/rfc3986.html#section-3.2.1
+    .. _User Information: https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.1
 
     """
 
@@ -33,8 +32,8 @@ class WebSocketURI:
     port: int
     path: str
     query: str
-    username: Optional[str] = None
-    password: Optional[str] = None
+    username: str | None = None
+    password: str | None = None
 
     @property
     def resource_name(self) -> str:
@@ -47,7 +46,7 @@ class WebSocketURI:
         return resource_name
 
     @property
-    def user_info(self) -> Optional[Tuple[str, str]]:
+    def user_info(self) -> tuple[str, str] | None:
         if self.username is None:
             return None
         assert self.password is not None
@@ -66,19 +65,19 @@ def parse_uri(uri: str) -> WebSocketURI:
         uri: WebSocket URI.
 
     Returns:
-        WebSocketURI: Parsed WebSocket URI.
+        Parsed WebSocket URI.
 
     Raises:
-        InvalidURI: if ``uri`` isn't a valid WebSocket URI.
+        InvalidURI: If ``uri`` isn't a valid WebSocket URI.
 
     """
     parsed = urllib.parse.urlparse(uri)
     if parsed.scheme not in ["ws", "wss"]:
-        raise exceptions.InvalidURI(uri, "scheme isn't ws or wss")
+        raise InvalidURI(uri, "scheme isn't ws or wss")
     if parsed.hostname is None:
-        raise exceptions.InvalidURI(uri, "hostname isn't provided")
+        raise InvalidURI(uri, "hostname isn't provided")
     if parsed.fragment != "":
-        raise exceptions.InvalidURI(uri, "fragment identifier is meaningless")
+        raise InvalidURI(uri, "fragment identifier is meaningless")
 
     secure = parsed.scheme == "wss"
     host = parsed.hostname
@@ -90,7 +89,7 @@ def parse_uri(uri: str) -> WebSocketURI:
     # urllib.parse.urlparse accepts URLs with a username but without a
     # password. This doesn't make sense for HTTP Basic Auth credentials.
     if username is not None and password is None:
-        raise exceptions.InvalidURI(uri, "username provided without password")
+        raise InvalidURI(uri, "username provided without password")
 
     try:
         uri.encode("ascii")

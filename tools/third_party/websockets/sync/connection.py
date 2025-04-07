@@ -8,10 +8,15 @@ import struct
 import threading
 import uuid
 from types import TracebackType
-from typing import Any, Dict, Iterable, Iterator, Mapping, Optional, Type, Union
+from typing import Any, Iterable, Iterator, Mapping
 
-from ..exceptions import ConnectionClosed, ConnectionClosedOK, ProtocolError
-from ..frames import DATA_OPCODES, BytesLike, CloseCode, Frame, Opcode, prepare_ctrl
+from ..exceptions import (
+    ConcurrencyError,
+    ConnectionClosed,
+    ConnectionClosedOK,
+    ProtocolError,
+)
+from ..frames import DATA_OPCODES, BytesLike, CloseCode, Frame, Opcode
 from ..http11 import Request, Response
 from ..protocol import CLOSED, OPEN, Event, Protocol, State
 from ..typing import Data, LoggerLike, Subprotocol
@@ -21,12 +26,10 @@ from .utils import Deadline
 
 __all__ = ["Connection"]
 
-logger = logging.getLogger(__name__)
-
 
 class Connection:
     """
-    Threaded implementation of a WebSocket connection.
+    :mod:`threading` implementation of a WebSocket connection.
 
     :class:`Connection` provides APIs shared between WebSocket servers and
     clients.
@@ -44,7 +47,7 @@ class Connection:
         socket: socket.socket,
         protocol: Protocol,
         *,
-        close_timeout: Optional[float] = 10,
+        close_timeout: float | None = 10,
     ) -> None:
         self.socket = socket
         self.protocol = protocol
@@ -64,9 +67,9 @@ class Connection:
         self.debug = self.protocol.debug
 
         # HTTP handshake request and response.
-        self.request: Optional[Request] = None
+        self.request: Request | None = None
         """Opening handshake request."""
-        self.response: Optional[Response] = None
+        self.response: Response | None = None
         """Opening handshake response."""
 
         # Mutex serializing interactions with the protocol.
@@ -79,18 +82,23 @@ class Connection:
         self.send_in_progress = False
 
         # Deadline for the closing handshake.
-        self.close_deadline: Optional[Deadline] = None
+        self.close_deadline: Deadline | None = None
 
         # Mapping of ping IDs to pong waiters, in chronological order.
-        self.pings: Dict[bytes, threading.Event] = {}
+        self.ping_waiters: dict[bytes, threading.Event] = {}
 
-        # Receiving events from the socket.
-        self.recv_events_thread = threading.Thread(target=self.recv_events)
+        # Receiving events from the socket. This thread is marked as daemon to
+        # allow creating a connection in a non-daemon thread and using it in a
+        # daemon thread. This mustn't prevent the interpreter from exiting.
+        self.recv_events_thread = threading.Thread(
+            target=self.recv_events,
+            daemon=True,
+        )
         self.recv_events_thread.start()
 
         # Exception raised in recv_events, to be chained to ConnectionClosed
         # in the user thread in order to show why the TCP connection dropped.
-        self.recv_events_exc: Optional[BaseException] = None
+        self.recv_exc: BaseException | None = None
 
     # Public attributes
 
@@ -121,7 +129,7 @@ class Connection:
         return self.socket.getpeername()
 
     @property
-    def subprotocol(self) -> Optional[Subprotocol]:
+    def subprotocol(self) -> Subprotocol | None:
         """
         Subprotocol negotiated during the opening handshake.
 
@@ -137,9 +145,9 @@ class Connection:
 
     def __exit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None:
         if exc_type is None:
             self.close()
@@ -163,7 +171,7 @@ class Connection:
         except ConnectionClosedOK:
             return
 
-    def recv(self, timeout: Optional[float] = None) -> Data:
+    def recv(self, timeout: float | None = None) -> Data:
         """
         Receive the next message.
 
@@ -186,21 +194,23 @@ class Connection:
             A string (:class:`str`) for a Text_ frame or a bytestring
             (:class:`bytes`) for a Binary_ frame.
 
-            .. _Text: https://www.rfc-editor.org/rfc/rfc6455.html#section-5.6
-            .. _Binary: https://www.rfc-editor.org/rfc/rfc6455.html#section-5.6
+            .. _Text: https://datatracker.ietf.org/doc/html/rfc6455#section-5.6
+            .. _Binary: https://datatracker.ietf.org/doc/html/rfc6455#section-5.6
 
         Raises:
             ConnectionClosed: When the connection is closed.
-            RuntimeError: If two threads call :meth:`recv` or
+            ConcurrencyError: If two threads call :meth:`recv` or
                 :meth:`recv_streaming` concurrently.
 
         """
         try:
             return self.recv_messages.get(timeout)
         except EOFError:
-            raise self.protocol.close_exc from self.recv_events_exc
-        except RuntimeError:
-            raise RuntimeError(
+            # Wait for the protocol state to be CLOSED before accessing close_exc.
+            self.recv_events_thread.join()
+            raise self.protocol.close_exc from self.recv_exc
+        except ConcurrencyError:
+            raise ConcurrencyError(
                 "cannot call recv while another thread "
                 "is already running recv or recv_streaming"
             ) from None
@@ -219,26 +229,29 @@ class Connection:
             An iterator of strings (:class:`str`) for a Text_ frame or
             bytestrings (:class:`bytes`) for a Binary_ frame.
 
-            .. _Text: https://www.rfc-editor.org/rfc/rfc6455.html#section-5.6
-            .. _Binary: https://www.rfc-editor.org/rfc/rfc6455.html#section-5.6
+            .. _Text: https://datatracker.ietf.org/doc/html/rfc6455#section-5.6
+            .. _Binary: https://datatracker.ietf.org/doc/html/rfc6455#section-5.6
 
         Raises:
             ConnectionClosed: When the connection is closed.
-            RuntimeError: If two threads call :meth:`recv` or
+            ConcurrencyError: If two threads call :meth:`recv` or
                 :meth:`recv_streaming` concurrently.
 
         """
         try:
-            yield from self.recv_messages.get_iter()
+            for frame in self.recv_messages.get_iter():
+                yield frame
         except EOFError:
-            raise self.protocol.close_exc from self.recv_events_exc
-        except RuntimeError:
-            raise RuntimeError(
+            # Wait for the protocol state to be CLOSED before accessing close_exc.
+            self.recv_events_thread.join()
+            raise self.protocol.close_exc from self.recv_exc
+        except ConcurrencyError:
+            raise ConcurrencyError(
                 "cannot call recv_streaming while another thread "
                 "is already running recv or recv_streaming"
             ) from None
 
-    def send(self, message: Union[Data, Iterable[Data]]) -> None:
+    def send(self, message: Data | Iterable[Data]) -> None:
         """
         Send a message.
 
@@ -246,8 +259,8 @@ class Connection:
         bytes-like object (:class:`bytes`, :class:`bytearray`, or
         :class:`memoryview`) is sent as a Binary_ frame.
 
-        .. _Text: https://www.rfc-editor.org/rfc/rfc6455.html#section-5.6
-        .. _Binary: https://www.rfc-editor.org/rfc/rfc6455.html#section-5.6
+        .. _Text: https://datatracker.ietf.org/doc/html/rfc6455#section-5.6
+        .. _Binary: https://datatracker.ietf.org/doc/html/rfc6455#section-5.6
 
         :meth:`send` also accepts an iterable of strings, bytestrings, or
         bytes-like objects to enable fragmentation_. Each item is treated as a
@@ -255,7 +268,7 @@ class Connection:
         same type, or else :meth:`send` will raise a :exc:`TypeError` and the
         connection will be closed.
 
-        .. _fragmentation: https://www.rfc-editor.org/rfc/rfc6455.html#section-5.4
+        .. _fragmentation: https://datatracker.ietf.org/doc/html/rfc6455#section-5.4
 
         :meth:`send` rejects dict-like objects because this is often an error.
         (If you really want to send the keys of a dict-like object as fragments,
@@ -273,7 +286,7 @@ class Connection:
 
         Raises:
             ConnectionClosed: When the connection is closed.
-            RuntimeError: If a connection is busy sending a fragmented message.
+            ConcurrencyError: If the connection is sending a fragmented message.
             TypeError: If ``message`` doesn't have a supported type.
 
         """
@@ -283,16 +296,16 @@ class Connection:
         if isinstance(message, str):
             with self.send_context():
                 if self.send_in_progress:
-                    raise RuntimeError(
+                    raise ConcurrencyError(
                         "cannot call send while another thread "
                         "is already running send"
                     )
-                self.protocol.send_text(message.encode("utf-8"))
+                self.protocol.send_text(message.encode())
 
         elif isinstance(message, BytesLike):
             with self.send_context():
                 if self.send_in_progress:
-                    raise RuntimeError(
+                    raise ConcurrencyError(
                         "cannot call send while another thread "
                         "is already running send"
                     )
@@ -318,20 +331,20 @@ class Connection:
                     text = True
                     with self.send_context():
                         if self.send_in_progress:
-                            raise RuntimeError(
+                            raise ConcurrencyError(
                                 "cannot call send while another thread "
                                 "is already running send"
                             )
                         self.send_in_progress = True
                         self.protocol.send_text(
-                            chunk.encode("utf-8"),
+                            chunk.encode(),
                             fin=False,
                         )
                 elif isinstance(chunk, BytesLike):
                     text = False
                     with self.send_context():
                         if self.send_in_progress:
-                            raise RuntimeError(
+                            raise ConcurrencyError(
                                 "cannot call send while another thread "
                                 "is already running send"
                             )
@@ -349,7 +362,7 @@ class Connection:
                         with self.send_context():
                             assert self.send_in_progress
                             self.protocol.send_continuation(
-                                chunk.encode("utf-8"),
+                                chunk.encode(),
                                 fin=False,
                             )
                     elif isinstance(chunk, BytesLike) and not text:
@@ -367,8 +380,9 @@ class Connection:
                     self.protocol.send_continuation(b"", fin=True)
                     self.send_in_progress = False
 
-            except RuntimeError:
+            except ConcurrencyError:
                 # We didn't start sending a fragmented message.
+                # The connection is still usable.
                 raise
 
             except Exception:
@@ -382,7 +396,7 @@ class Connection:
                 raise
 
         else:
-            raise TypeError("data must be bytes, str, or iterable")
+            raise TypeError("data must be str, bytes, or iterable")
 
     def close(self, code: int = CloseCode.NORMAL_CLOSURE, reason: str = "") -> None:
         """
@@ -416,11 +430,11 @@ class Connection:
             # They mean that the connection is closed, which was the goal.
             pass
 
-    def ping(self, data: Optional[Data] = None) -> threading.Event:
+    def ping(self, data: Data | None = None) -> threading.Event:
         """
         Send a Ping_.
 
-        .. _Ping: https://www.rfc-editor.org/rfc/rfc6455.html#section-5.5.2
+        .. _Ping: https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.2
 
         A ping may serve as a keepalive or as a check that the remote endpoint
         received all messages up to this point
@@ -440,24 +454,28 @@ class Connection:
 
         Raises:
             ConnectionClosed: When the connection is closed.
-            RuntimeError: If another ping was sent with the same data and
+            ConcurrencyError: If another ping was sent with the same data and
                 the corresponding pong wasn't received yet.
 
         """
-        if data is not None:
-            data = prepare_ctrl(data)
+        if isinstance(data, BytesLike):
+            data = bytes(data)
+        elif isinstance(data, str):
+            data = data.encode()
+        elif data is not None:
+            raise TypeError("data must be str or bytes-like")
 
         with self.send_context():
             # Protect against duplicates if a payload is explicitly set.
-            if data in self.pings:
-                raise RuntimeError("already waiting for a pong with the same data")
+            if data in self.ping_waiters:
+                raise ConcurrencyError("already waiting for a pong with the same data")
 
             # Generate a unique random payload otherwise.
-            while data is None or data in self.pings:
+            while data is None or data in self.ping_waiters:
                 data = struct.pack("!I", random.getrandbits(32))
 
             pong_waiter = threading.Event()
-            self.pings[data] = pong_waiter
+            self.ping_waiters[data] = pong_waiter
             self.protocol.send_ping(data)
             return pong_waiter
 
@@ -465,7 +483,7 @@ class Connection:
         """
         Send a Pong_.
 
-        .. _Pong: https://www.rfc-editor.org/rfc/rfc6455.html#section-5.5.3
+        .. _Pong: https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.3
 
         An unsolicited pong may serve as a unidirectional heartbeat.
 
@@ -476,7 +494,12 @@ class Connection:
             ConnectionClosed: When the connection is closed.
 
         """
-        data = prepare_ctrl(data)
+        if isinstance(data, BytesLike):
+            data = bytes(data)
+        elif isinstance(data, str):
+            data = data.encode()
+        else:
+            raise TypeError("data must be str or bytes-like")
 
         with self.send_context():
             self.protocol.send_pong(data)
@@ -504,22 +527,22 @@ class Connection:
         """
         with self.protocol_mutex:
             # Ignore unsolicited pong.
-            if data not in self.pings:
+            if data not in self.ping_waiters:
                 return
             # Sending a pong for only the most recent ping is legal.
             # Acknowledge all previous pings too in that case.
             ping_id = None
             ping_ids = []
-            for ping_id, ping in self.pings.items():
+            for ping_id, ping in self.ping_waiters.items():
                 ping_ids.append(ping_id)
                 ping.set()
                 if ping_id == data:
                     break
             else:
                 raise AssertionError("solicited pong not found in pings")
-            # Remove acknowledged pings from self.pings.
+            # Remove acknowledged pings from self.ping_waiters.
             for ping_id in ping_ids:
-                del self.pings[ping_id]
+                del self.ping_waiters[ping_id]
 
     def recv_events(self) -> None:
         """
@@ -541,10 +564,10 @@ class Connection:
                         self.logger.debug("error while receiving data", exc_info=True)
                     # When the closing handshake is initiated by our side,
                     # recv() may block until send_context() closes the socket.
-                    # In that case, send_context() already set recv_events_exc.
-                    # Calling set_recv_events_exc() avoids overwriting it.
+                    # In that case, send_context() already set recv_exc.
+                    # Calling set_recv_exc() avoids overwriting it.
                     with self.protocol_mutex:
-                        self.set_recv_events_exc(exc)
+                        self.set_recv_exc(exc)
                     break
 
                 if data == b"":
@@ -552,7 +575,7 @@ class Connection:
 
                 # Acquire the connection lock.
                 with self.protocol_mutex:
-                    # Feed incoming data to the connection.
+                    # Feed incoming data to the protocol.
                     self.protocol.receive_data(data)
 
                     # This isn't expected to raise an exception.
@@ -568,7 +591,7 @@ class Connection:
                         # set by send_context(), in case of a race condition
                         # i.e. send_context() closes the socket after recv()
                         # returns above but before send_data() calls send().
-                        self.set_recv_events_exc(exc)
+                        self.set_recv_exc(exc)
                         break
 
                     if self.protocol.close_expected():
@@ -595,7 +618,7 @@ class Connection:
             # Breaking out of the while True: ... loop means that we believe
             # that the socket doesn't work anymore.
             with self.protocol_mutex:
-                # Feed the end of the data stream to the connection.
+                # Feed the end of the data stream to the protocol.
                 self.protocol.receive_eof()
 
                 # This isn't expected to generate events.
@@ -609,9 +632,7 @@ class Connection:
             # This branch should never run. It's a safety net in case of bugs.
             self.logger.error("unexpected internal error", exc_info=True)
             with self.protocol_mutex:
-                self.set_recv_events_exc(exc)
-            # We don't know where we crashed. Force protocol state to CLOSED.
-            self.protocol.state = CLOSED
+                self.set_recv_exc(exc)
         finally:
             # This isn't expected to raise an exception.
             self.close_socket()
@@ -630,7 +651,7 @@ class Connection:
         socket::
 
             with self.send_context():
-                self.protocol.send_text(message.encode("utf-8"))
+                self.protocol.send_text(message.encode())
 
         When the connection isn't open on entry, when the connection is expected
         to close on exit, or when an unexpected error happens, terminating the
@@ -643,7 +664,7 @@ class Connection:
         # Should we close the socket and raise ConnectionClosed?
         raise_close_exc = False
         # What exception should we chain ConnectionClosed to?
-        original_exc: Optional[BaseException] = None
+        original_exc: BaseException | None = None
 
         # Acquire the protocol lock.
         with self.protocol_mutex:
@@ -651,7 +672,7 @@ class Connection:
                 # Let the caller interact with the protocol.
                 try:
                     yield
-                except (ProtocolError, RuntimeError):
+                except (ProtocolError, ConcurrencyError):
                     # The protocol state wasn't changed. Exit immediately.
                     raise
                 except Exception as exc:
@@ -668,7 +689,6 @@ class Connection:
                         wait_for_close = True
                         # If the connection is expected to close soon, set the
                         # close deadline based on the close timeout.
-
                         # Since we tested earlier that protocol.state was OPEN
                         # (or CONNECTING) and we didn't release protocol_mutex,
                         # it is certain that self.close_deadline is still None.
@@ -710,16 +730,17 @@ class Connection:
                 # original_exc is never set when wait_for_close is True.
                 assert original_exc is None
                 original_exc = TimeoutError("timed out while closing connection")
-                # Set recv_events_exc before closing the socket in order to get
+                # Set recv_exc before closing the socket in order to get
                 # proper exception reporting.
                 raise_close_exc = True
                 with self.protocol_mutex:
-                    self.set_recv_events_exc(original_exc)
+                    self.set_recv_exc(original_exc)
 
         # If an error occurred, close the socket to terminate the connection and
         # raise an exception.
         if raise_close_exc:
             self.close_socket()
+            # Wait for the protocol state to be CLOSED before accessing close_exc.
             self.recv_events_thread.join()
             raise self.protocol.close_exc from original_exc
 
@@ -745,16 +766,16 @@ class Connection:
                 except OSError:  # socket already closed
                     pass
 
-    def set_recv_events_exc(self, exc: Optional[BaseException]) -> None:
+    def set_recv_exc(self, exc: BaseException | None) -> None:
         """
-        Set recv_events_exc, if not set yet.
+        Set recv_exc, if not set yet.
 
         This method requires holding protocol_mutex.
 
         """
         assert self.protocol_mutex.locked()
-        if self.recv_events_exc is None:
-            self.recv_events_exc = exc
+        if self.recv_exc is None:  # pragma: no branch
+            self.recv_exc = exc
 
     def close_socket(self) -> None:
         """
@@ -770,4 +791,11 @@ class Connection:
         except OSError:
             pass  # socket is already closed
         self.socket.close()
+
+        # Calling protocol.receive_eof() is safe because it's idempotent.
+        # This guarantees that the protocol state becomes CLOSED.
+        self.protocol.receive_eof()
+        assert self.protocol.state is CLOSED
+
+        # Abort recv() with a ConnectionClosed exception.
         self.recv_messages.close()

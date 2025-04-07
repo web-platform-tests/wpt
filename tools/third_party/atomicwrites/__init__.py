@@ -1,4 +1,5 @@
 import contextlib
+import io
 import os
 import sys
 import tempfile
@@ -8,7 +9,13 @@ try:
 except ImportError:
     fcntl = None
 
-__version__ = '1.1.5'
+# `fspath` was added in Python 3.6
+try:
+    from os import fspath
+except ImportError:
+    fspath = None
+
+__version__ = '1.4.1'
 
 
 PY2 = sys.version_info[0] == 2
@@ -20,6 +27,9 @@ def _path_to_unicode(x):
     if not isinstance(x, text_type):
         return x.decode(sys.getfilesystemencoding())
     return x
+
+
+DEFAULT_MODE = "wb" if PY2 else "w"
 
 
 _proper_fsync = os.fsync
@@ -109,16 +119,21 @@ class AtomicWriter(object):
             f.write(...)
 
     :param path: The destination filepath. May or may not exist.
-    :param mode: The filemode for the temporary file.
+    :param mode: The filemode for the temporary file. This defaults to `wb` in
+        Python 2 and `w` in Python 3.
     :param overwrite: If set to false, an error is raised if ``path`` exists.
         Errors are only raised after the file has been written to.  Either way,
         the operation is atomic.
+    :param open_kwargs: Keyword-arguments to pass to the underlying
+        :py:func:`open` call. This can be used to set the encoding when opening
+        files in text-mode.
 
     If you need further control over the exact behavior, you are encouraged to
     subclass.
     '''
 
-    def __init__(self, path, mode='w', overwrite=False):
+    def __init__(self, path, mode=DEFAULT_MODE, overwrite=False,
+                 **open_kwargs):
         if 'a' in mode:
             raise ValueError(
                 'Appending to an existing file is not supported, because that '
@@ -131,9 +146,14 @@ class AtomicWriter(object):
         if 'w' not in mode:
             raise ValueError('AtomicWriters can only be written to.')
 
+        # Attempt to convert `path` to `str` or `bytes`
+        if fspath is not None:
+            path = fspath(path)
+
         self._path = path
         self._mode = mode
         self._overwrite = overwrite
+        self._open_kwargs = open_kwargs
 
     def open(self):
         '''
@@ -146,7 +166,7 @@ class AtomicWriter(object):
         f = None  # make sure f exists even if get_fileobject() fails
         try:
             success = False
-            with get_fileobject() as f:
+            with get_fileobject(**self._open_kwargs) as f:
                 yield f
                 self.sync(f)
             self.commit(f)
@@ -158,12 +178,20 @@ class AtomicWriter(object):
                 except Exception:
                     pass
 
-    def get_fileobject(self, dir=None, **kwargs):
+    def get_fileobject(self, suffix="", prefix=tempfile.gettempprefix(),
+                       dir=None, **kwargs):
         '''Return the temporary file to use.'''
         if dir is None:
             dir = os.path.normpath(os.path.dirname(self._path))
-        return tempfile.NamedTemporaryFile(mode=self._mode, dir=dir,
-                                           delete=False, **kwargs)
+        descriptor, name = tempfile.mkstemp(suffix=suffix, prefix=prefix,
+                                            dir=dir)
+        # io.open() will take either the descriptor or the name, but we need
+        # the name later for commit()/replace_atomic() and couldn't find a way
+        # to get the filename from the descriptor.
+        os.close(descriptor)
+        kwargs['mode'] = self._mode
+        kwargs['file'] = name
+        return io.open(**kwargs)
 
     def sync(self, f):
         '''responsible for clearing as many file caches as possible before

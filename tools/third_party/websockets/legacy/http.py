@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import asyncio
+import os
 import re
-from typing import Tuple
 
 from ..datastructures import Headers
 from ..exceptions import SecurityError
@@ -10,8 +10,8 @@ from ..exceptions import SecurityError
 
 __all__ = ["read_request", "read_response"]
 
-MAX_HEADERS = 128
-MAX_LINE = 8192
+MAX_NUM_HEADERS = int(os.environ.get("WEBSOCKETS_MAX_NUM_HEADERS", "128"))
+MAX_LINE_LENGTH = int(os.environ.get("WEBSOCKETS_MAX_LINE_LENGTH", "8192"))
 
 
 def d(value: bytes) -> str:
@@ -22,7 +22,7 @@ def d(value: bytes) -> str:
     return value.decode(errors="backslashreplace")
 
 
-# See https://www.rfc-editor.org/rfc/rfc7230.html#appendix-B.
+# See https://datatracker.ietf.org/doc/html/rfc7230#appendix-B.
 
 # Regex for validating header names.
 
@@ -42,7 +42,7 @@ _token_re = re.compile(rb"[-!#$%&\'*+.^_`|~0-9a-zA-Z]+")
 _value_re = re.compile(rb"[\x09\x20-\x7e\x80-\xff]*")
 
 
-async def read_request(stream: asyncio.StreamReader) -> Tuple[str, Headers]:
+async def read_request(stream: asyncio.StreamReader) -> tuple[str, Headers]:
     """
     Read an HTTP/1.1 GET request and return ``(path, headers)``.
 
@@ -64,7 +64,7 @@ async def read_request(stream: asyncio.StreamReader) -> Tuple[str, Headers]:
         ValueError: If the request isn't well formatted.
 
     """
-    # https://www.rfc-editor.org/rfc/rfc7230.html#section-3.1.1
+    # https://datatracker.ietf.org/doc/html/rfc7230#section-3.1.1
 
     # Parsing is simple because fixed values are expected for method and
     # version and because path isn't checked. Since WebSocket software tends
@@ -91,7 +91,7 @@ async def read_request(stream: asyncio.StreamReader) -> Tuple[str, Headers]:
     return path, headers
 
 
-async def read_response(stream: asyncio.StreamReader) -> Tuple[int, str, Headers]:
+async def read_response(stream: asyncio.StreamReader) -> tuple[int, str, Headers]:
     """
     Read an HTTP/1.1 response and return ``(status_code, reason, headers)``.
 
@@ -111,7 +111,7 @@ async def read_response(stream: asyncio.StreamReader) -> Tuple[int, str, Headers
         ValueError: If the response isn't well formatted.
 
     """
-    # https://www.rfc-editor.org/rfc/rfc7230.html#section-3.1.2
+    # https://datatracker.ietf.org/doc/html/rfc7230#section-3.1.2
 
     # As in read_request, parsing is simple because a fixed value is expected
     # for version, status_code is a 3-digit number, and reason can be ignored.
@@ -150,12 +150,12 @@ async def read_headers(stream: asyncio.StreamReader) -> Headers:
     Non-ASCII characters are represented with surrogate escapes.
 
     """
-    # https://www.rfc-editor.org/rfc/rfc7230.html#section-3.2
+    # https://datatracker.ietf.org/doc/html/rfc7230#section-3.2
 
     # We don't attempt to support obsolete line folding.
 
     headers = Headers()
-    for _ in range(MAX_HEADERS + 1):
+    for _ in range(MAX_NUM_HEADERS + 1):
         try:
             line = await read_line(stream)
         except EOFError as exc:
@@ -193,9 +193,9 @@ async def read_line(stream: asyncio.StreamReader) -> bytes:
     # Security: this is bounded by the StreamReader's limit (default = 32 KiB).
     line = await stream.readline()
     # Security: this guarantees header values are small (hard-coded = 8 KiB)
-    if len(line) > MAX_LINE:
+    if len(line) > MAX_LINE_LENGTH:
         raise SecurityError("line too long")
-    # Not mandatory but safe - https://www.rfc-editor.org/rfc/rfc7230.html#section-3.5
+    # Not mandatory but safe - https://datatracker.ietf.org/doc/html/rfc7230#section-3.5
     if not line.endswith(b"\r\n"):
         raise EOFError("line without CRLF")
     return line[:-2]

@@ -22,7 +22,7 @@ if sys.platform == "win32":
         """
         Enable VT-100 for console output on Windows.
 
-        See also https://bugs.python.org/issue29059.
+        See also https://github.com/python/cpython/issues/73245.
 
         """
         import ctypes

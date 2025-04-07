@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import time
-from typing import Optional
 
 
 __all__ = ["Deadline"]
@@ -16,19 +15,19 @@ class Deadline:
 
     """
 
-    def __init__(self, timeout: Optional[float]) -> None:
-        self.deadline: Optional[float]
+    def __init__(self, timeout: float | None) -> None:
+        self.deadline: float | None
         if timeout is None:
             self.deadline = None
         else:
             self.deadline = time.monotonic() + timeout
 
-    def timeout(self, *, raise_if_elapsed: bool = True) -> Optional[float]:
+    def timeout(self, *, raise_if_elapsed: bool = True) -> float | None:
         """
         Calculate a timeout from a deadline.
 
         Args:
-            raise_if_elapsed (bool): Whether to raise :exc:`TimeoutError`
+            raise_if_elapsed: Whether to raise :exc:`TimeoutError`
                 if the deadline lapsed.
 
         Raises:

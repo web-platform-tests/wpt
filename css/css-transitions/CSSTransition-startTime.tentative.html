@@ -63,6 +63,7 @@ test(t => {
   const timelineTime = animation.timeline.currentTime;
   animation.startTime = timelineTime;
 
+  // This isn't stable!
   assert_times_equal(
     animation.startTime,
     timelineTime,

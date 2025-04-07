@@ -21,7 +21,7 @@ context.fillRect(0, 0, canvas.width, canvas.height);
 
 window.onload = () => {
   const image = new Image();
-  image.src = "support/image-with-nested-data-url-images.svg";
+  image.src = "support/image-with-nested-data-url-images.svg?" + Math.random().toString();
   image.onload = () => {
     context.drawImage(image, 0, 0, canvas.width, canvas.height);
     const resultImage = document.getElementById("result");

@@ -1,0 +1,34 @@
+<!doctype html>
+<title>Test whether namespace prefixes are lowercased</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<style>
+@namespace xhtml "http://www.w3.org/1999/xhtml";
+
+xhtml|span {
+    color: rgb(0, 128, 128);
+}
+
+XHTML|span {
+    color: rgb(255, 165, 0);
+}
+</style>
+<span></span>
+<div></div>
+<!--
+
+This is specifically testing whether the namespace prefix gets lowercased when
+comparing element type selectors on HTML elements in HTML documents.
+
+i.e., whether the entire CSS qualified name is lowercased, or whether it's just
+the local part (see element-selectors.html for tests about case-sensitivity of
+the local part)
+
+-->
+<script>
+test(function() {
+  let span = document.querySelector("span");
+  let cs = window.getComputedStyle(span);
+  assert_equals(cs.color, "rgb(0, 128, 128)");
+}, "element selector");
+</script>

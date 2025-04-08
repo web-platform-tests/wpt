@@ -214,6 +214,16 @@ async def get_document_dimensions(bidi_session, context: str):
     return remote_mapping_to_dict(result["value"])
 
 
+async def get_context_origin(bidi_session, context: Mapping[str, Any]) -> str:
+    result = await bidi_session.script.call_function(
+        function_declaration="""() => {
+          return window.location.origin;
+        }""",
+        target=ContextTarget(context["context"]),
+        await_promise=False)
+    return result["value"]
+
+
 def remote_mapping_to_dict(js_object) -> Dict:
     obj = {}
     for key, value in js_object:

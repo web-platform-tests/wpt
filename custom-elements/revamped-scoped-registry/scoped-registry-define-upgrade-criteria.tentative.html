@@ -9,9 +9,9 @@
 <body>
 
 <script>
-function attachShadowForTest(t, registry) {
+function attachShadowForTest(t, customElementRegistry) {
   const host = document.createElement('div');
-  const shadow = host.attachShadow({mode: 'open', registry});
+  const shadow = host.attachShadow({mode: 'open', customElementRegistry});
   document.body.appendChild(host);
   t.add_cleanup(() => host.remove());
   return shadow;
@@ -155,7 +155,7 @@ test(t => {
 
   const iframe = createIFrameForTest(t);
   const host2 = iframe.contentDocument.createElement('div');
-  const shadow2 = host2.attachShadow({mode: 'open', registry});
+  const shadow2 = host2.attachShadow({mode: 'open', customElementRegistry: registry});
   const node2 = shadow2.appendChild(iframe.contentDocument.createElement(name));
   iframe.contentDocument.body.appendChild(host2);
 
@@ -173,7 +173,7 @@ test(t => {
   t.add_cleanup(() => newWindow.close());
 
   const host = newWindow.document.createElement('div');
-  const shadow = host.attachShadow({mode: 'open', registry: window.customElements});
+  const shadow = host.attachShadow({mode: 'open', customElementRegistry: window.customElements});
   const node = shadow.appendChild(newWindow.document.createElement(name));
   newWindow.document.body.appendChild(host);
 
@@ -252,7 +252,4 @@ promise_test(async t => {
 
   assert_false(node instanceof TestElement);
 }, 'Adding definition to scoped registry should not upgrade nodes in closed windows');
-
 </script>
-
-</body>

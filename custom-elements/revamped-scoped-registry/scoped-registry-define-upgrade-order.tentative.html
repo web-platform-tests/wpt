@@ -25,7 +25,7 @@ function nextCustomElementDefinition() {
 function attachShadowForTest(t, {parent, registry}) {
   parent = parent || document.body;
   const host = parent.ownerDocument.createElement('div');
-  const shadow = host.attachShadow({mode: 'open', registry});
+  const shadow = host.attachShadow({mode: 'open', customElementRegistry: registry});
   parent.appendChild(host);
   t.add_cleanup(() => host.remove());
   return shadow;
@@ -214,4 +214,3 @@ test(t => {
 }, 'Elements in the "owner" window of a scoped registry are not always upgraded first');
 
 </script>
-</body>

@@ -227,6 +227,7 @@ async def get_context_origin(bidi_session, context: Mapping[str, Any]) -> str:
 def remote_mapping_to_dict(js_object) -> Dict:
     obj = {}
     for key, value in js_object:
-        obj[key] = value["value"]
+        if value["type"] != "null":
+            obj[key] = value["value"]
 
     return obj

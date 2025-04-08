@@ -245,7 +245,7 @@ promise_test(async t => {
   newWindow.close();
 
   // `window.close()` is async. Wait a while until it's fully closed
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise(resolve => t.step_timeout(resolve, 500));
 
   class TestElement extends HTMLElement {};
   window.customElements.define(name, TestElement);

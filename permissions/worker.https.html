@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<title>Permissions API in Worker - Notifications</title>
+<meta charset="utf-8" />
+<title>Permissions API in Worker</title>
 <link rel="help" href="https://www.w3.org/TR/permissions/" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -8,89 +8,52 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <script>
-'use strict';
+    const workerScript = `
+      async function setup() {
+          const status = await self.navigator.permissions.query({
+              name: "geolocation",
+          });
+          status.addEventListener("change", () => {
+              postMessage({ event: "change", state: status.state });
+          });
+          self.postMessage({ event: "ready", state: status.state });
+      }
 
-/*
-  We'll assume test_driver.set_permission({ name: 'notifications' }, 'prompt')
-  is supported. If not, adapt accordingly.
+      setup();
+    `;
 
-  The Worker script:
-    1. queries { name: 'notifications' }
-    2. posts back initialState
-    3. sets an 'onchange' to post changedState
-*/
-
-const workerScript = `
-  onmessage = async () => {
-    try {
-      const status = await self.navigator.permissions.query({ name: 'notifications' });
-      postMessage({ initialState: status.state });
-      status.onchange = () => {
-        postMessage({ changedState: status.state });
-      };
-    } catch (err) {
-      postMessage({ error: String(err) });
+    function messageFrom(worker, message) {
+        const abortController = new AbortController();
+        return new Promise((resolve) => {
+            worker.addEventListener(
+                "message",
+                (event) => {
+                    if (event.data.event == message) {
+                        abortController.abort();
+                        resolve(event.data);
+                    }
+                },
+                { signal: abortController.signal }
+            );
+        });
     }
-  };
-`;
 
-promise_test(async t => {
-  // Start from "prompt"
-  await test_driver.set_permission({ name: 'notifications' }, 'prompt');
+    promise_test(async (t) => {
+        await test_driver.set_permission({ name: "geolocation" }, "prompt");
+        const blobUrl = URL.createObjectURL(
+            new Blob([workerScript], { type: "text/javascript" })
+        );
+        const worker = new Worker(blobUrl);
+        const  { state:initialState }  = await messageFrom(worker, "ready");
+        assert_equals(initialState, "prompt", "Worker sees the initial permission state as 'prompt'");
 
-  // Create a Blob worker
-  const blobUrl = URL.createObjectURL(new Blob([workerScript], { type: 'text/javascript' }));
-  const worker = new Worker(blobUrl);
-
-  const messages = [];
-  worker.onmessage = evt => messages.push(evt.data);
-
-  // Start the worker
-  worker.postMessage({});
-
-  // Wait for the initial message
-  // Typically it should arrive almost immediately
-  await new Promise(resolve => {
-    const observer = setInterval(() => {
-      if (messages.length > 0) {
-        clearInterval(observer);
-        resolve();
-      }
-    }, 10);
-  });
-
-  // Check first message
-  const firstMsg = messages[0];
-  if (firstMsg && firstMsg.error) {
-    assert_unreached(`Worker got error: ${firstMsg.error}`);
-  }
-  assert_true(
-    firstMsg && 'initialState' in firstMsg,
-    'Expected an "initialState" from the Worker'
-  );
-  assert_equals(
-    firstMsg.initialState,
-    'prompt',
-    'Worker sees the initial "prompt" state'
-  );
-
-  // Now we transition to "granted"
-  const changedPromise = new Promise(resolve => {
-    const observer = setInterval(() => {
-      // If we get a second message with changedState, resolve
-      if (messages.length > 1 && 'changedState' in messages[1]) {
-        clearInterval(observer);
-        resolve(messages[1]);
-      }
-    }, 10);
-  });
-
-  await test_driver.set_permission({ name: 'notifications' }, 'granted');
-  const secondMsg = await changedPromise;
-  assert_equals(secondMsg.changedState, 'granted',
-    'Worker sees the permission changed to "granted"');
-
-  // Cleanup
-  await test_driver.set_permission({ name: 'notifications' }, 'prompt');
-}, 'Worker can query the "notifications" permission and detect a transition to "granted"');
+        const setPermissionPromise = test_driver.set_permission({ name: "geolocation" }, "granted");
+        const changePromise = messageFrom(worker, "change");
+        const [{state:changedState}] = await Promise.all([messagePromise, setPermissionPromise]);
+        assert_equals(
+            changedState,
+            "granted",
+            "Worker detects the permission state change to 'granted'"
+        );
+    }, "Worker can query the 'geolocation' permission and detect a transition to 'granted'");
 </script>

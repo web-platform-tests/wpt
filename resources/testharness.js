@@ -1787,6 +1787,11 @@
                "expected a number but got a ${type_actual}",
                {type_actual:typeof actual});
 
+        assert(typeof actual === typeof expected,
+               "assert_less_than", description,
+               "expected a ${type_expected} but got a ${type_actual}",
+               {type_expected:typeof expected, type_actual:typeof actual});
+
         assert(actual < expected,
                "assert_less_than", description,
                "expected a number less than ${expected} but got ${actual}",
@@ -1810,6 +1815,11 @@
                "assert_greater_than", description,
                "expected a number but got a ${type_actual}",
                {type_actual:typeof actual});
+
+        assert(typeof actual === typeof expected,
+               "assert_less_than", description,
+               "expected a ${type_expected} but got a ${type_actual}",
+               {type_expected:typeof expected, type_actual:typeof actual});
 
         assert(actual > expected,
                "assert_greater_than", description,
@@ -1837,6 +1847,16 @@
                "expected a number but got a ${type_actual}",
                {type_actual:typeof actual});
 
+        assert(typeof actual === typeof lower,
+               "assert_less_than", description,
+               "expected a ${type_lower} but got a ${type_actual}",
+               {type_lower:typeof lower, type_actual:typeof actual});
+
+        assert(typeof actual === typeof upper,
+               "assert_less_than", description,
+               "expected a ${type_upper} but got a ${type_actual}",
+               {type_upper:typeof upper, type_actual:typeof actual});
+
         assert(actual > lower && actual < upper,
                "assert_between_exclusive", description,
                "expected a number greater than ${lower} " +
@@ -1863,6 +1883,11 @@
                "expected a number but got a ${type_actual}",
                {type_actual:typeof actual});
 
+        assert(typeof actual === typeof expected,
+               "assert_less_than", description,
+               "expected a ${type_expected} but got a ${type_actual}",
+               {type_expected:typeof expected, type_actual:typeof actual});
+
         assert(actual <= expected,
                "assert_less_than_equal", description,
                "expected a number less than or equal to ${expected} but got ${actual}",
@@ -1887,6 +1912,11 @@
                "assert_greater_than_equal", description,
                "expected a number but got a ${type_actual}",
                {type_actual:typeof actual});
+
+        assert(typeof actual === typeof expected,
+               "assert_less_than", description,
+               "expected a ${type_expected} but got a ${type_actual}",
+               {type_expected:typeof expected, type_actual:typeof actual});
 
         assert(actual >= expected,
                "assert_greater_than_equal", description,
@@ -1913,6 +1943,16 @@
                "assert_between_inclusive", description,
                "expected a number but got a ${type_actual}",
                {type_actual:typeof actual});
+
+        assert(typeof actual === typeof lower,
+               "assert_less_than", description,
+               "expected a ${type_lower} but got a ${type_actual}",
+               {type_lower:typeof lower, type_actual:typeof actual});
+
+        assert(typeof actual === typeof upper,
+               "assert_less_than", description,
+               "expected a ${type_upper} but got a ${type_actual}",
+               {type_upper:typeof upper, type_actual:typeof actual});
 
         assert(actual >= lower && actual <= upper,
                "assert_between_inclusive", description,

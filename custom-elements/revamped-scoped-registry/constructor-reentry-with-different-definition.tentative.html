@@ -12,9 +12,9 @@
 <script>
 setup({allow_uncaught_exception : true});
 
-function createShadowForTest(t, registry) {
+function createShadowForTest(t, customElementRegistry) {
   const host = document.createElement('div');
-  const shadow = host.attachShadow({mode: 'open', registry});
+  const shadow = host.attachShadow({mode: 'open', customElementRegistry});
   document.body.appendChild(host);
   t.add_cleanup(() => host.remove());
   return shadow;

@@ -3472,7 +3472,7 @@
         this.all_done_callbacks = [];
 
         this.hide_test_state = false;
-        this.pending_remotes = [];
+        this.remotes = [];
 
         this.current_test = null;
         this.asserts_run = [];
@@ -3643,11 +3643,11 @@
     };
 
     Tests.prototype.all_done = function() {
-        return (this.tests.length > 0 || this.pending_remotes.length > 0) &&
+        return (this.tests.length > 0 || this.remotes.length > 0) &&
                 test_environment.all_loaded &&
                 (this.num_pending === 0 || this.is_aborted) && !this.wait_for_finish &&
                 !this.processing_callbacks &&
-                !this.pending_remotes.some(function(w) { return w.running; });
+                !this.remotes.some(function(w) { return w.running; });
     };
 
     Tests.prototype.start = function() {
@@ -3876,7 +3876,7 @@
         }
 
         var remoteContext = this.create_remote_worker(worker);
-        this.pending_remotes.push(remoteContext);
+        this.remotes.push(remoteContext);
         return remoteContext.done;
     };
 
@@ -3899,7 +3899,7 @@
         }
 
         var remoteContext = this.create_remote_window(remote);
-        this.pending_remotes.push(remoteContext);
+        this.remotes.push(remoteContext);
         return remoteContext.done;
     };
 

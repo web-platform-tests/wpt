@@ -11,11 +11,11 @@
   <input id="input2" placeholder="input2"/>
 </body>
 <script>
-// Tentative due to https://github.com/whatwg/html/issues/11177
-
 // This test tests calling focus() in the "focus" event
 // listener on the element again when the focus has
 // moved away.
+
+// This is for https://github.com/whatwg/html/pull/11182
 promise_test((t) => {
   let previouslyCalled = false;
   let counter = 0;
@@ -26,16 +26,16 @@ promise_test((t) => {
         input2.focus();
         previouslyCalled = true;
       }
+
       input1.focus();
 
-      // In a success run, counter can only be 2 here
-      // because focus() synchronously fire the event listener.
-      if (counter == 2) {
+      // If `lock-for-focus` is implemented, the above input1.focus()
+      // shouldn't work, so the counter should never be 2.
+      if (counter === 2) {
         r();
       }
     });
   });
-
   input1.focus();
   return p;
 }, "Element.focus() in focus listener when focus has moved away");

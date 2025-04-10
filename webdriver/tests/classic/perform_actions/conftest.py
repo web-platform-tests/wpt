@@ -5,7 +5,7 @@ from webdriver.error import NoSuchWindowException
 
 
 @pytest.fixture
-def session_new_window(capabilities, session):
+def session_new_window(session):
     # Prevent unreleased dragged elements by running the test in a new window.
     original_handle = session.window_handle
     session.window_handle = session.new_window()

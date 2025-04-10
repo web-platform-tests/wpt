@@ -42,24 +42,32 @@ def pytest_sessionfinish():
 
 
 @pytest.fixture
-def default_capabilities():
+def default_capabilities(full_configuration):
     """Default capabilities to use for a new WebDriver session."""
-    return {}
+    assert isinstance(full_configuration["capabilities"], dict)
+    caps = copy.deepcopy(full_configuration["capabilities"])
+    if caps and "alwaysMatch" in caps or "firstMatch" in caps:
+        return caps
+    else:
+        return {"alwaysMatch": caps}
 
 
 @pytest.fixture
 def capabilities(request, default_capabilities):
     """Merges default capabilities with any test-specific capabilities from a marker."""
+    caps = default_capabilities
+
     marker = request.node.get_closest_marker("capabilities")
     if marker and marker.args:
         # Ensure the first positional argument is a dictionary
+        marker_caps = marker.args[0]
         assert isinstance(
-            marker.args[0], dict), "capabilities marker must use a dictionary"
-        caps = copy.deepcopy(default_capabilities)
-        deep_update(caps, marker.args[0])
-        return caps
+            marker_caps, dict), "capabilities marker must use a dictionary"
+        if marker_caps and "alwaysMatch" not in marker_caps and "firstMatch" not in marker_caps:
+            marker_caps = {"alwaysMatch": marker_caps}
+        deep_update(caps, marker_caps)
 
-    return default_capabilities  # Use defaults if no marker is present
+    return caps
 
 
 @pytest.fixture
@@ -92,11 +100,12 @@ def server_config(full_configuration):
 
 @pytest.fixture(scope="session")
 def configuration(full_configuration):
-    """Configuation minus server config.
+    """Configuation minus server config and capabilities.
 
     This makes logging easier to read."""
 
     config = full_configuration.copy()
+    del config["capabilities"]
     del config["wptserve"]
 
     return config
@@ -165,19 +174,13 @@ async def session(capabilities, configuration):
     """
     global _current_session
 
-    # Update configuration capabilities with custom ones from the
-    # capabilities fixture, which can be set by tests
-    caps = copy.deepcopy(configuration["capabilities"])
-    deep_update(caps, capabilities)
-    caps = {"alwaysMatch": caps}
-
-    await reset_current_session_if_necessary(caps)
+    await reset_current_session_if_necessary(capabilities)
 
     if _current_session is None:
         _current_session = webdriver.Session(
             configuration["host"],
             configuration["port"],
-            capabilities=caps)
+            capabilities=capabilities)
 
     try:
         _current_session.start()
@@ -216,20 +219,18 @@ async def bidi_session(capabilities, configuration):
     """
     global _current_session
 
-    # Update configuration capabilities with custom ones from the
-    # capabilities fixture, which can be set by tests
-    caps = copy.deepcopy(configuration["capabilities"])
-    caps.update({"webSocketUrl": True})
-    deep_update(caps, capabilities)
-    caps = {"alwaysMatch": caps}
+    # Ensure we have the webSocketUrl capability set before we reset the current
+    # session.
+    capabilities = copy.deepcopy(capabilities)
+    capabilities.setdefault("alwaysMatch", {})["webSocketUrl"] = True
 
-    await reset_current_session_if_necessary(caps)
+    await reset_current_session_if_necessary(capabilities)
 
     if _current_session is None:
         _current_session = webdriver.Session(
             configuration["host"],
             configuration["port"],
-            capabilities=caps,
+            capabilities=capabilities,
             enable_bidi=True)
 
     try:

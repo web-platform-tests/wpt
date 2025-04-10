@@ -68,6 +68,25 @@
     }, `invalid tt-policy-name name "${trustedTypePolicyName}"`);
   });
 
+  // If a trusted-types directive is non-ASCII then the CSP parser will discard
+  // it per https://w3c.github.io/webappsec-csp/#parse-serialized-policy
+  const nonASCIITrustedTypePolicyNames = [
+    "política",
+    // "ポリシー", https://github.com/web-platform-tests/wpt/issues/51928
+  ];
+  nonASCIITrustedTypePolicyNames.forEach(trustedTypePolicyName => {
+    promise_test(async t => {
+      let results = await tryCreatingTrustedTypePoliciesWithCSP(
+        [trustedTypePolicyName],
+        `header(Content-Security-Policy,trusted-types ${encodeURIComponent(trustedTypePolicyName)},True)`
+      );
+      assert_equals(results.length, 1);
+      assert_equals(results[0].name, trustedTypePolicyName);
+      assert_equals(results[0].exception, null);
+      assert_equals(results[0].violatedPolicies.length, 0);
+    }, `non-ASCII trusted-types directives are discarded ("${trustedTypePolicyName}")`);
+  });
+
   // tt-expressions can be separated by any ASCII whitespace per the spec's
   // ABNF:
   // https://w3c.github.io/trusted-types/dist/spec/#serialized-tt-configuration

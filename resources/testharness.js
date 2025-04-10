@@ -88,7 +88,7 @@
                                                  status: harness_status.structured_clone(),
                                                  asserts: asserts.map(assert => assert.structured_clone())});
                          }]
-        }
+        };
 
         on_event(window, 'load', function() {
           setTimeout(() => {
@@ -203,7 +203,7 @@
             }
         });
         this.message_events = new_events;
-    }
+    };
 
     WindowTestEnvironment.prototype.next_default_test_name = function() {
         var suffix = this.name_counter > 0 ? " " + this.name_counter : "";
@@ -487,7 +487,7 @@
         this.all_loaded = false;
         this.on_loaded_callback = null;
         Promise.resolve().then(function() {
-            this.all_loaded = true
+            this.all_loaded = true;
             if (this.on_loaded_callback) {
                 this.on_loaded_callback();
             }
@@ -810,7 +810,7 @@
         return bring_promise_to_current_realm(promise)
             .then(test.unreached_func("Should have rejected: " + description))
             .catch(function(e) {
-                assert_throws_js_impl(constructor, function() { throw e },
+                assert_throws_js_impl(constructor, function() { throw e; },
                                       description, "promise_rejects_js");
             });
     }
@@ -862,7 +862,7 @@
         return bring_promise_to_current_realm(promise)
             .then(test.unreached_func("Should have rejected: " + description))
             .catch(function(e) {
-                assert_throws_dom_impl(type, function() { throw e }, description,
+                assert_throws_dom_impl(type, function() { throw e; }, description,
                                        "promise_rejects_dom", constructor);
             });
     }
@@ -881,7 +881,7 @@
         return bring_promise_to_current_realm(promise)
             .then(test.unreached_func("Should have rejected: " + description))
             .catch(function(e) {
-                assert_throws_exactly_impl(exception, function() { throw e },
+                assert_throws_exactly_impl(exception, function() { throw e; },
                                            description, "promise_rejects_exactly");
             });
     }
@@ -2196,7 +2196,7 @@
             assert(maybeDescription === undefined,
                    "Too many args passed to no-constructor version of assert_throws_dom, or accidentally explicitly passed undefined");
         }
-        assert_throws_dom_impl(type, func, description, "assert_throws_dom", constructor)
+        assert_throws_dom_impl(type, func, description, "assert_throws_dom", constructor);
     }
     expose_assert(assert_throws_dom, "assert_throws_dom");
 
@@ -2459,7 +2459,7 @@
     function assert_implements(condition, description) {
         assert(!!condition, "assert_implements", description);
     }
-    expose_assert(assert_implements, "assert_implements")
+    expose_assert(assert_implements, "assert_implements");
 
     /**
      * Assert that an optional feature is implemented, based on a 'truthy' condition.
@@ -2573,11 +2573,11 @@
         2: "Timeout",
         3: "Not Run",
         4: "Optional Feature Unsupported",
-    }
+    };
 
     Test.prototype.format_status = function() {
         return this.status_formats[this.status];
-    }
+    };
 
     Test.prototype.structured_clone = function()
     {
@@ -2887,7 +2887,7 @@
         return new Promise(resolve => {
             this.step_wait_func(cond, resolve, description, timeout, interval);
         });
-    }
+    };
 
     /*
      * Private method for registering cleanup functions. `testharness.js`
@@ -3120,7 +3120,7 @@
             throw new Error("AbortController is not supported in this browser");
         }
         return this._abortController.signal;
-    }
+    };
 
     /**
      * A RemoteTest object mirrors a Test object on a remote worker. The
@@ -3196,11 +3196,11 @@
                 function(callback) {
                     callback();
                 });
-    }
+    };
 
     RemoteTest.prototype.format_status = function() {
         return Test.prototype.status_formats[this.status];
-    }
+    };
 
     /*
      * A RemoteContext listens for test events from a remote test context, such
@@ -3731,14 +3731,14 @@
     };
 
     Tests.prototype.set_assert = function(assert_name, args) {
-        this.asserts_run.push(new AssertRecord(this.current_test, assert_name, args))
-    }
+        this.asserts_run.push(new AssertRecord(this.current_test, assert_name, args));
+    };
 
     Tests.prototype.set_assert_status = function(index, status, stack) {
         let assert_record = this.asserts_run[index];
         assert_record.status = status;
         assert_record.stack = stack;
-    }
+    };
 
     /**
      * Update the harness status to reflect an unrecoverable harness error that
@@ -4607,7 +4607,7 @@
         }
 
         return lines.slice(i).join("\n");
-    }
+    };
 
     function OptionalFeatureUnsupportedError(message)
     {

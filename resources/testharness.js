@@ -3626,11 +3626,14 @@
 
     Tests.prototype.push = function(test)
     {
+        if (this.phase == this.phases.COMPLETE) {
+            return;
+        }
         if (this.phase < this.phases.HAVE_TESTS) {
             this.start();
         }
         this.num_pending++;
-        test.index = this.tests.push(test);
+        test.index = this.tests.push(test) - 1;
         this.notify_test_state(test);
     };
 

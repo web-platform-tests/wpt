@@ -385,10 +385,9 @@ class Session:
                  extension=None):
 
         if enable_bidi:
-            if capabilities is not None:
-                capabilities.setdefault("alwaysMatch", {}).update({"webSocketUrl": True})
-            else:
-                capabilities = {"alwaysMatch": {"webSocketUrl": True}}
+            if capabilities is None:
+                capabilities = {}
+            capabilities.setdefault("alwaysMatch", {})["webSocketUrl"] = True
 
         self.transport = transport.HTTPWireProtocol(host, port, url_prefix)
         self.requested_capabilities = capabilities
@@ -397,7 +396,7 @@ class Session:
         self.timeouts = None
         self.window = None
         self.find = None
-        self.enable_bidi = enable_bidi
+        self.enable_bidi = enable_bidi or capabilities.get("alwaysMatch", {}).get("webSocketUrl", False)
         self.bidi_session = None
         self.extension = None
         self.extension_cls = extension

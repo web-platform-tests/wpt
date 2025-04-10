@@ -3719,7 +3719,8 @@
                   function(test, testDone)
                   {
                       if (test.phase === test.phases.INITIAL) {
-                          test.phase = test.phases.COMPLETE;
+                          test.phase = test.phases.HAS_RESULT;
+                          test.done();
                           testDone();
                       } else {
                           add_test_done_callback(test, testDone);

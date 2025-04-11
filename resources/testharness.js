@@ -1817,7 +1817,7 @@
                {type_actual:typeof actual});
 
         assert(typeof actual === typeof expected,
-               "assert_less_than", description,
+               "assert_greater_than", description,
                "expected a ${type_expected} but got a ${type_actual}",
                {type_expected:typeof expected, type_actual:typeof actual});
 
@@ -1848,12 +1848,12 @@
                {type_actual:typeof actual});
 
         assert(typeof actual === typeof lower,
-               "assert_less_than", description,
+               "assert_between_exclusive", description,
                "expected a ${type_lower} but got a ${type_actual}",
                {type_lower:typeof lower, type_actual:typeof actual});
 
         assert(typeof actual === typeof upper,
-               "assert_less_than", description,
+               "assert_between_exclusive", description,
                "expected a ${type_upper} but got a ${type_actual}",
                {type_upper:typeof upper, type_actual:typeof actual});
 
@@ -1884,7 +1884,7 @@
                {type_actual:typeof actual});
 
         assert(typeof actual === typeof expected,
-               "assert_less_than", description,
+               "assert_less_than_equal", description,
                "expected a ${type_expected} but got a ${type_actual}",
                {type_expected:typeof expected, type_actual:typeof actual});
 
@@ -1914,7 +1914,7 @@
                {type_actual:typeof actual});
 
         assert(typeof actual === typeof expected,
-               "assert_less_than", description,
+               "assert_greater_than_equal", description,
                "expected a ${type_expected} but got a ${type_actual}",
                {type_expected:typeof expected, type_actual:typeof actual});
 
@@ -1945,12 +1945,12 @@
                {type_actual:typeof actual});
 
         assert(typeof actual === typeof lower,
-               "assert_less_than", description,
+               "assert_between_inclusive", description,
                "expected a ${type_lower} but got a ${type_actual}",
                {type_lower:typeof lower, type_actual:typeof actual});
 
         assert(typeof actual === typeof upper,
-               "assert_less_than", description,
+               "assert_between_inclusive", description,
                "expected a ${type_upper} but got a ${type_actual}",
                {type_upper:typeof upper, type_actual:typeof actual});
 

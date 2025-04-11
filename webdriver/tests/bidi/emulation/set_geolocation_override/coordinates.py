@@ -193,3 +193,4 @@ async def test_persists_on_navigation(
     )
 
     assert await get_current_geolocation(bidi_session, new_tab) == test_coordinates
+#Test

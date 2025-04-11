@@ -752,6 +752,9 @@ class ProfileCreator:
 
         if self.test_type == "wdspec":
             profile.set_preferences({"remote.prefs.recommended": True})
+            profile.set_preferences({
+                "geo.provider.network.url": "https://web-platform.test:8444/webdriver/tests/support/http_handlers/geolocation_override.py"
+            })
 
         if self.debug_test:
             profile.set_preferences({"devtools.console.stdout.content": True})

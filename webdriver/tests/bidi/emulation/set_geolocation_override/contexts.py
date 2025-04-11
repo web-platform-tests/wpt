@@ -103,3 +103,4 @@ async def test_multiple_contexts(
     assert (
         await get_current_geolocation(bidi_session, new_context) == default_coordinates
     )
+#Test

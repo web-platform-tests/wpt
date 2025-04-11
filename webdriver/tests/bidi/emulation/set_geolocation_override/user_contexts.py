@@ -261,3 +261,4 @@ async def test_set_to_user_context_and_then_to_context(
         await get_current_geolocation(bidi_session, context_in_user_context_1)
         == default_coordinates
     )
+#Test

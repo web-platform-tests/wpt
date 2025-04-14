@@ -1,3 +1,4 @@
 setup({ single_test: true });
-setTimeout(done, Math.pow(2, 32));
-setTimeout(assert_unreached, 100);
+var otherTimeout;
+setTimeout(() => { clearTimeout(otherTimeout); done(); }, Math.pow(2, 32));
+otherTimeout = setTimeout(assert_unreached, 100);

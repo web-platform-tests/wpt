@@ -69,8 +69,9 @@
   for (let img of Array.from(document.querySelectorAll("img"))) {
     img.src = pngSrc;
   }
-  test(_ => {
+  checkLayout("table", false);
+  promise_test(async () => {
     assert_equals(window.getComputedStyle(document.querySelector("#notitalic")).fontStyle, "normal");
   }, "decoration does not propagate into table");
-  checkLayout("table");
+  done();
 </script>

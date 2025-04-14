@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>Signed exchange should be deliverable via service worker</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="../resources/sxg-util.js"></script>
+<body>
+<script>
+promise_test(async (t) => {
+  const sxgUrl = '/signed-exchange/resources/sxg/sxg-location.sxg';
+
+  await registerServiceWorkerAndWaitUntilActivated('../resources/distributor-service-worker.js');
+
+  for (test of ['fetch', 'clone', 'blob', 'transform']) {
+    const message = await openSXGInIframeAndWaitForMessage(t,
+        `../resources/sxg?test=${test}&url=${encodeURIComponent(sxgUrl)}`);
+    assert_equals(
+        message.location,
+        innerURLOrigin() + '/signed-exchange/resources/inner-url.html',
+        `inner response should load, test=${test}`);
+  }
+}, 'Signed exchange should be deliverable via service worker.');
+</script>
+</body>

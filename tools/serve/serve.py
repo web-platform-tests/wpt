@@ -8,6 +8,7 @@ import logging
 import multiprocessing
 import os
 import platform
+import posixpath
 import subprocess
 import sys
 import threading
@@ -183,7 +184,8 @@ class WrapperHandler:
         :param request: The Request being processed.
         """
         for key, value in self._get_metadata(request):
-            replacement = self._script_replacement(key, value)
+            path = self._get_path(request.url_parts.path, True)
+            replacement = self._script_replacement(key, value, path)
             if replacement:
                 yield replacement
 
@@ -205,6 +207,13 @@ class WrapperHandler:
     def _meta_replacement(self, key, value):
         # Get the string to insert into the wrapper document, given
         # a specific metadata key: value pair.
+        pass
+
+    @abc.abstractmethod
+    def _script_replacement(self, key, value, path):
+        # Get the string to insert into the script part of the wrapper
+        # document, given a specific metadata key: value pair and the path of
+        # the document.
         pass
 
     @abc.abstractmethod
@@ -238,7 +247,7 @@ class HtmlWrapperHandler(WrapperHandler):
             return '<title>%s</title>' % value
         return None
 
-    def _script_replacement(self, key, value):
+    def _script_replacement(self, key, value, path):
         if key == "script":
             attribute = value.replace("&", "&amp;").replace('"', "&quot;")
             return '<script src="%s"></script>' % attribute
@@ -456,9 +465,14 @@ class ShadowRealmInWindowHandler(HtmlWrapperHandler):
 </script>
 """
 
-    def _script_replacement(self, key, value):
+    def _script_replacement(self, key, value, path):
         if key == "script":
-            return 'await import("%s");' % value
+            # ShadowRealm does not share the outer realm's base URI
+            module_specifier = (
+                value
+                if posixpath.isabs(value)
+                else posixpath.join(posixpath.dirname(path), value))
+            return 'await import("%s");' % module_specifier
         return None
 
 
@@ -508,9 +522,14 @@ class ShadowRealmInShadowRealmHandler(HtmlWrapperHandler):
 </script>
 """
 
-    def _script_replacement(self, key, value):
+    def _script_replacement(self, key, value, path):
         if key == "script":
-            return 'await import("%s");' % value
+            # ShadowRealm does not share the outer realm's base URI
+            module_specifier = (
+                value
+                if posixpath.isabs(value)
+                else posixpath.join(posixpath.dirname(path), value))
+            return 'await import("%s");' % module_specifier
         return None
 
 
@@ -569,15 +588,15 @@ class BaseWorkerHandler(WrapperHandler):
         return None
 
     @abc.abstractmethod
-    def _create_script_import(self, attribute):
-        # Take attribute (a string URL to a JS script) and return JS source to import the script
-        # into the worker.
+    def _create_script_import(self, attribute, path):
+        # Take attribute (a string URL to a JS script) and path (the document's
+        # path) and return JS source to import the script into the worker.
         pass
 
-    def _script_replacement(self, key, value):
+    def _script_replacement(self, key, value, path):
         if key == "script":
             attribute = value.replace("\\", "\\\\").replace('"', '\\"')
-            return self._create_script_import(attribute)
+            return self._create_script_import(attribute, path)
         if key == "title":
             value = value.replace("\\", "\\\\").replace('"', '\\"')
             return 'self.META_TITLE = "%s";' % value
@@ -598,7 +617,7 @@ importScripts("%(path)s");
 done();
 """
 
-    def _create_script_import(self, attribute):
+    def _create_script_import(self, attribute, path):
         return 'importScripts("%s")' % attribute
 
 
@@ -616,7 +635,7 @@ import "%(path)s";
 done();
 """
 
-    def _create_script_import(self, attribute):
+    def _create_script_import(self, attribute, path):
         return 'import "%s";' % attribute
 
 
@@ -649,8 +668,13 @@ importScripts("/resources/testharness-shadowrealm-outer.js");
 })();
 """
 
-    def _create_script_import(self, attribute):
-        return 'await import("%s");' % attribute
+    def _create_script_import(self, attribute, path):
+        # ShadowRealm does not share the outer realm's base URI
+        module_specifier = (
+            attribute
+            if posixpath.isabs(attribute)
+            else posixpath.join(posixpath.dirname(path), attribute))
+        return 'await import("%s");' % module_specifier
 
 
 class ShadowRealmServiceWorkerWrapperHandler(BaseWorkerHandler):
@@ -685,7 +709,8 @@ importScripts("/resources/testharness-shadowrealm-outer.js");
 })();
 """
 
-    def _create_script_import(self, attribute):
+    def _create_script_import(self, attribute, path):
+        # fakeDynamicImport uses the outer realm's base URI
         return 'await fakeDynamicImport("%s");' % attribute
 
 
@@ -720,7 +745,8 @@ TestRunner.prototype.createShadowRealmAndStartTests = async function() {
 }
 """
 
-    def _create_script_import(self, attribute):
+    def _create_script_import(self, attribute, path):
+        # fakeDynamicImport uses the outer realm's base URI
         return 'await fakeDynamicImport("%s");' % attribute
 
 

@@ -11,7 +11,8 @@ def main(request, response):
     return status, [(b"content-type", b"text/html")], b'''
 <!DOCTYPE html>
 <script>
-onmessage = event => {
+onmessage = async (event) => {
+  await fetch('./subresource');
   window.parent.postMessage(
       {
         id: event.data.id,

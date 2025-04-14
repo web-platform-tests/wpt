@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>for alias for htmlFor</title>
+<link rel="author" title="Psychpsyo" href="mailto:psychpsyo@gmail.com">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-label-for">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-output-for">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<h1>Tests if the for and htmlFor IDL attributes on &lt;label&gt; and &lt;output&gt; and do the same</h1>
+
+<script>
+const elements = [document.createElement("label"), document.createElement("output")]
+test(function() {
+  for (const elem of elements) {
+    assert_true(elem.for == "", "for must reflect \"for\"");
+    assert_true(elem.htmlFor == "", "htmlFor must reflect \"for\"");
+
+    elem.setAttribute("for", "test1");
+    assert_true(elem.for == "test1", "for must reflect changes made to \"for\"");
+    assert_true(elem.htmlFor == "test1", "htmlFor must reflect changes made to \"for\"");
+  }
+});
+test(function() {
+  for (const elem of elements) {
+    elem.htmlFor = "test2";
+    assert_true(elem.for == "test2", "setting htmlFor must be reflected by for");
+    assert_true(elem.htmlFor == "test2", "setting htmlFor must be reflected by htmlFor");
+  }
+});
+test(function() {
+  for (const elem of elements) {
+    elem.for = "test3";
+    assert_true(elem.for == "test3", "setting for must be reflected by for");
+    assert_true(elem.htmlFor == "test3", "setting for must be reflected by htmlFor");
+  }
+});
+</script>

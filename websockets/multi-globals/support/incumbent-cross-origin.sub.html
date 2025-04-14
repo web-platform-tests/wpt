@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>Incumbent page used as a test helper</title>
+
+<iframe id="r" src="http://{{hosts[][www1]}}:{{ports[http][1]}}/websockets/multi-globals/support/relevant-cross-origin.sub.html"></iframe>
+
+<script>
+"use strict";
+
+document.domain = "{{hosts[][]}}";
+
+const relevant = document.querySelector("#r").contentWindow;
+
+window.setupWebSocket = fn => {
+    const wsocket = new relevant.WebSocket("ws://{{host}}:{{ports[ws][0]}}/origin");
+
+    wsocket.addEventListener("message", ev => {
+        fn(ev);
+    });
+};
+
+</script>

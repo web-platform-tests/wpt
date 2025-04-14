@@ -62,7 +62,7 @@ def dump_test_parameters(selection):
 
 
 def get_test_filename(spec_directory, spec_json, selection):
-    '''Returns the filname for the main test HTML file'''
+    '''Returns the filename for the main test HTML file'''
 
     selection_for_filename = copy.deepcopy(selection)
     # Use 'unset' rather than 'None' in test filenames.
@@ -84,7 +84,7 @@ def get_csp_value(value):
     # Test-related scripts like testharness.js and inline scripts containing
     # test bodies.
     # 'unsafe-inline' is added as a workaround here. This is probably not so
-    # bad, as it shouldn't intefere non-inline-script requests that we want to
+    # bad, as it shouldn't interfere non-inline-script requests that we want to
     # test.
     if value == 'script-src-wildcard':
         return "script-src * 'unsafe-inline'"
@@ -186,7 +186,7 @@ def generate_selection(spec_json, selection):
     del selection['delivery_value']
 
     # Parse source context list and policy deliveries of source contexts.
-    # `util.ShouldSkip()` exceptions are raised if e.g. unsuppported
+    # `util.ShouldSkip()` exceptions are raised if e.g. unsupported
     # combinations of source contexts and policy deliveries are used.
     source_context_list_scheme = spec_json['source_context_list_schema'][
         selection['source_context_list']]

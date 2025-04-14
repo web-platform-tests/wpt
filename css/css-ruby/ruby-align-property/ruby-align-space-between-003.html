@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8">
+<title>ruby-align: space-between, long base, one word latin annotation</title>
+<meta name="assert" content="For a narrow-cell annotation containing no spaces over a wider base, ruby-align:space-between will centre the annotation.">
+<link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
+<link rel="help" href="http://www.w3.org/TR/css-ruby-1/#rubypos">
+<link rel="help" href="https://drafts.csswg.org/css-ruby-1/#rubypos">
+<style type="text/css">/* this is not part of the test */
+.test { margin: 20px;  padding: 40px; font-size: 110px; }
+rt { color: blue; }
+</style>
+<style type="text/css">/* this is the test */
+ruby { ruby-align: space-between; }
+</style>
+</head>
+<body>
+<p class="instructions">Test passes if the annotation is centred in the box.</p>
+<div class="test" lang="ja"><ruby><rb>萬國碼</rb><rt>Unicode</rt></ruby></div>
+<div class="test" lang="zh-hant"><ruby><rb>萬國碼</rb><rt>Unicode</rt></ruby></div>
+</body>
+</html>

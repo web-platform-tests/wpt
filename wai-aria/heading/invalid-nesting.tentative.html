@@ -1,0 +1,176 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>WAI-ARIA tests for invalidly nested elements with heading role</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/wai-aria/scripts/aria-utils.js"></script>
+</head>
+
+<body>
+
+  <h1>WAI-ARIA tests for invalidly nested heading elements</h1>
+  <p>Equivalent ARIA patterns tested in <code>/html-aam/heading/invalid-nesting.html</code>.</p>
+
+  <h2>Accessible names and roles</h2>
+  <hr>
+
+  <div
+    role="heading"
+    aria-level="1"
+    class="ex-label ex-role"
+    data-testname="div[role=heading][aria-level=1] with invalid div[role=heading][aria-level=2] descendant should not inherit accname from the text contents of the contained div[role=heading][aria-level=2], and should still convey heading role"
+    data-expectedlabel=""
+    data-expectedrole="heading"
+  >
+    <div
+      role="heading"
+      aria-level="2"
+      class="ex-label ex-role"
+      data-testname="Invalidly nested div[role=heading][aria-level=2] should have accname matching its text contents, and should still convey heading role"
+      data-expectedlabel="Invalid div[role=heading][aria-level=2]"
+      data-expectedrole="heading"
+    >Invalid div[role=heading][aria-level=2]</div>
+  </div>
+
+  <div
+    role="heading"
+    aria-level="4"
+    class="ex-label ex-role"
+    data-testname="div[role=heading][aria-level=4] with invalid div[role=heading][aria-level=3] descendant should not inherit accname from the text contents of the contained div[role=heading][aria-level=3], and should still convey heading role"
+    data-expectedlabel=""
+    data-expectedrole="heading"
+  >
+    <div
+      role="heading"
+      aria-level="3"
+      class="ex-label ex-role"
+      data-testname="Invalidly nested div[role=heading][aria-level=3] should have accname matching its text contents, and should still convey heading role"
+      data-expectedlabel="Invalid div[role=heading][aria-level=3]"
+      data-expectedrole="heading"
+    >Invalid div[role=heading][aria-level=3]</div>
+  </div>
+
+  <div
+    role="heading"
+    aria-level="5"
+    class="ex-label ex-role"
+    data-testname="div[role=heading][aria-level=5] with invalid div[role=heading][aria-level=6] descendant should not inherit accname from the text contents of the contained div[role=heading][aria-level=6], and should still convey heading role"
+    data-expectedlabel=""
+    data-expectedrole="heading"
+  >
+    <div
+      role="heading"
+      aria-level="6"
+      class="ex-label ex-role"
+      data-testname="Invalidly nested div[role=heading][aria-level=6] should have accname matching its text contents, and should still convey heading role"
+      data-expectedlabel="Invalid div[role=heading][aria-level=6]"
+      data-expectedrole="heading"
+    >Invalid div[role=heading][aria-level=6]</div>
+  </div>
+
+  <div
+    role="heading"
+    aria-level="1"
+    class="ex-label ex-role"
+    data-testname="div[role=heading][aria-level=1] with text contents and invalid div[role=heading][aria-level=2] descendant should not accumulate accname from the text contents of the contained div[role=heading][aria-level=2], and should still convey heading role"
+    data-expectedlabel="Chocolate"
+    data-expectedrole="heading"
+  >Chocolate
+    <div
+      role="heading"
+      aria-level="2"
+    >Peanut butter</div>
+  </div>
+
+  <h2>No heading ancestors</h2>
+  <hr>
+
+  <div
+    role="heading"
+    aria-level="1"
+  >One
+    <div
+      role="heading"
+      aria-level="2"
+      class="ex-no-heading-ancestor"
+      data-testname="div[role=heading][aria-level=2] invalidly nested inside div[role=heading][aria-level=1] should not, after parsing, have any DOM ancestor with a heading role"
+    >Two
+      <div
+        role="heading"
+        aria-level="3"
+        class="ex-no-heading-ancestor"
+        data-testname="div[role=heading][aria-level=3] invalidly nested inside div[role=heading][aria-level=1] > div[role=heading][aria-level=2] should not, after parsing, have any DOM ancestor with a heading role"
+      >Three</div>
+    </div>
+  </div>
+
+  <h2>ARIA heading impostors</h2>
+  <hr>
+
+  <button
+    role="heading"
+    aria-level="1"
+    class="ex-label ex-role"
+    data-testname="button[role=heading][aria-level=1] with text contents and invalid span[role=heading][aria-level=2] descendant should not accumulate accname from the text contents of the contained span[role=heading][aria-level=2], and should still convey heading role"
+    data-expectedlabel="Macaroni"
+    data-expectedrole="heading"
+  >Macaroni
+    <span
+      role="heading"
+      aria-level="2"
+      class="ex-label ex-role"
+      data-testname="Invalidly nested span[role=heading][aria-level=2] should have accname matching its text contents, and should still convey heading role"
+      data-expectedlabel="Cheese"
+      data-expectedrole="heading"
+    >Cheese</span>
+  </button>
+
+  <p
+    role="heading"
+    aria-level="1"
+    class="ex-label ex-role"
+    data-testname="p[role=heading][aria-level=1] with text contents and invalid span[role=heading][aria-level=2] descendant should not accumulate accname from the text contents of the contained p[role=heading][aria-level=2], and should still convey heading role"
+    data-expectedlabel="Biscuits"
+    data-expectedrole="heading"
+  >Biscuits
+    <span
+      role="heading"
+      aria-level="2"
+    >Gravy</span>
+  </p>
+
+  <script>
+    AriaUtils.verifyRolesAndLabelsBySelector(".ex-label.ex-role");
+    verifyNoForbiddenAncestorRole(".ex-no-heading-ancestor", "heading");
+
+    function verifyNoForbiddenAncestorRole(selector, forbiddenRole) {
+      const els = document.querySelectorAll(selector);
+      if (!els.length) {
+        throw `Selector passed in verifyNoForbiddenAncestorRole("${selector}") should match at least one element.`;
+      }
+      for (const el of els) {
+        let testName = el.getAttribute("data-testname");
+        let ancestors = [];
+        let ancestor = el.parentNode;
+        promise_test(async t => {
+          // Get computed role of each ancestor up to but excluding the root.
+          while (ancestor && ancestor != document.documentElement) {
+            const computedRole = await test_driver.get_computed_role(ancestor);
+            ancestors.push(computedRole);
+            ancestor = ancestor.parentNode;
+          }
+          assert_false(ancestors.includes(forbiddenRole));
+        }, `${testName}`);
+      }
+    }
+
+  </script>
+</body>
+
+</html>

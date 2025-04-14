@@ -97,6 +97,7 @@
     "html/attributes/accesskey/multi-character-key-label-novalid.html": "Bad value \u201ca b \u307b\u3052\u201d for attribute \u201caccesskey\u201d on element \u201ca\u201d: Bad key label list: Key label has multiple characters. Each key label must be a single character.",
     "html/attributes/data/no-characters-after-hyphen-novalid.html": "Attribute \u201cdata-\u201d not allowed on element \u201cp\u201d at this point.",
     "html/attributes/data/not-xml-serializable-novalid.html": "\u201cdata-*\u201d attribute names must be XML 1.0 4th ed. plus Namespaces NCNames.",
+    "html/attributes/enterkeyhint/value-bad-novalid.html": "Attribute \u201centerkeyhint\u201d not allowed on element \u201cinput\u201d at this point.",
     "html/attributes/lang/deprecated-tag-haswarn.html": "Bad value \u201cmo\u201d for attribute \u201clang\u201d on element \u201cbody\u201d: Bad language tag: The language subtag \u201cmo\u201d is deprecated. Use \u201cro\u201d instead.",
     "html/attributes/lang/extlang-bad-novalid.html": "Bad value \u201cbat-smg\u201d for attribute \u201clang\u201d on element \u201cbody\u201d: Bad language tag: Bad extlang subtag \u201csmg\u201d.",
     "html/attributes/lang/xmllang-different-value-novalid.html": "When the attribute \u201cxml:lang\u201d in no namespace is specified, the element must also have the attribute \u201clang\u201d present with the same value.",

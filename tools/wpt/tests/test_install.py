@@ -43,7 +43,7 @@ def test_install_chrome():
     channel = "dev"
     dest = os.path.join(wpt.localpaths.repo_root, wpt.venv_dir(), "browsers", channel)
     if sys.platform == "win32":
-        chrome_path = os.path.join(dest, "chrome-win32")
+        chrome_path = os.path.join(dest, "chrome-win64")
     elif sys.platform == "darwin":
         chrome_path = os.path.join(dest, "chrome-mac-x64")
     else:

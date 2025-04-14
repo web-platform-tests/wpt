@@ -91,5 +91,12 @@
       "requirements.txt",
       "requirements_android.txt"
     ]
+  },
+  "build-test-list": {
+    "path": "build-test-list.py",
+    "script": "run",
+    "parser": "get_parser",
+    "help": "Build list of tests from wpt-metadata",
+    "virtualenv": false
   }
 }

@@ -15,6 +15,7 @@ import time
 import traceback
 import urllib
 import uuid
+import datetime
 from collections import defaultdict, OrderedDict
 from io import IOBase
 from itertools import chain, product
@@ -991,7 +992,7 @@ def start_servers(logger, host, ports, paths, routes, bind_address, config,
             continue
 
         # Skip WebTransport over HTTP/3 server unless if is enabled explicitly.
-        if scheme == 'webtransport-h3' and not kwargs.get("webtransport_h3"):
+        if scheme in ['webtransport-h3', 'webtransport-h3-cert-hash'] and not kwargs.get("webtransport_h3"):
             continue
 
         for port in ports:
@@ -1009,6 +1010,7 @@ def start_servers(logger, host, ports, paths, routes, bind_address, config,
                 "ws": start_ws_server,
                 "wss": start_wss_server,
                 "webtransport-h3": start_webtransport_h3_server,
+                "webtransport-h3-cert-hash": start_webtransport_h3_server_cert_hash,
             }[scheme]
 
             server_proc = ServerProc(mp_context, scheme=scheme)
@@ -1174,16 +1176,38 @@ def start_webtransport_h3_server(logger, host, port, paths, routes, bind_address
     try:
         # TODO(bashi): Move the following import to the beginning of this file
         # once WebTransportH3Server is enabled by default.
-        from webtransport.h3.webtransport_h3_server import WebTransportH3Server  # type: ignore
+        from webtransport.h3.webtransport_h3_server import WebTransportH3Server, WebTransportCertificateGeneration  # type: ignore
         return WebTransportH3Server(host=host,
                                     port=port,
                                     doc_root=paths["doc_root"],
+                                    cert_mode=WebTransportCertificateGeneration.USEPREGENERATED,
                                     cert_path=config.ssl_config["cert_path"],
                                     key_path=config.ssl_config["key_path"],
-                                    logger=logger)
+                                    logger=logger,
+                                    cert_hash_info=None
+                                    )
     except Exception as error:
         logger.critical(
             f"Failed to start WebTransport over HTTP/3 server: {error}")
+        sys.exit(0)
+
+def start_webtransport_h3_server_cert_hash(logger, host, port, paths, routes, bind_address, config, **kwargs):
+    try:
+        # TODO(bashi): Move the following import to the beginning of this file
+        # once WebTransportH3Server is enabled by default.
+        from webtransport.h3.webtransport_h3_server import WebTransportH3Server, WebTransportCertificateGeneration
+        return WebTransportH3Server(host=host,
+                                    port=port,
+                                    doc_root=paths["doc_root"],
+                                    cert_mode=WebTransportCertificateGeneration.GENERATEDVALIDSERVERCERTIFICATEHASHCERT,
+                                    cert_path=None,
+                                    key_path=None,
+                                    logger=logger,
+                                    cert_hash_info=config["cert_hash_info"]
+                                    )
+    except Exception as error:
+        logger.critical(
+            f"Failed to start WebTransport over HTTP/3 server with certificate hashes: {error}")
         sys.exit(0)
 
 
@@ -1249,6 +1273,7 @@ class ConfigBuilder(config.ConfigBuilder):
             "ws": ["auto"],
             "wss": ["auto"],
             "webtransport-h3": ["auto"],
+            "webtransport-h3-cert-hash": ["auto"],
         },
         "check_subdomains": True,
         "bind_address": True,
@@ -1372,7 +1397,7 @@ def get_parser():
     parser.add_argument("--no-h2", action="store_false", dest="h2", default=None,
                         help="Disable the HTTP/2.0 server")
     parser.add_argument("--webtransport-h3", action="store_true",
-                        help="Enable WebTransport over HTTP/3 server")
+                        help="Enable WebTransport over HTTP/3 servers")
     parser.add_argument("--exit-after-start", action="store_true",
                         help="Exit after starting servers")
     parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")

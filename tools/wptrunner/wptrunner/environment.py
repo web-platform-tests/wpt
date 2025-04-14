@@ -9,7 +9,13 @@ import signal
 import socket
 import sys
 import time
+import datetime
 from typing import Optional
+
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.x509.oid import NameOID
+from cryptography import x509
 
 import mozprocess
 from mozlog import get_default_logger, handlers
@@ -46,6 +52,37 @@ def do_delayed_imports(logger, test_paths):
             (", ".join(failed), serve_root))
         sys.exit(1)
 
+def generate_hash_certificate(host: str) -> str:
+    private_key = ec.generate_private_key(ec.SECP256R1())
+    subject = issuer = x509.Name([
+        x509.NameAttribute(NameOID.COUNTRY_NAME, "DE"),
+        x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, "Berlin"),
+        x509.NameAttribute(NameOID.LOCALITY_NAME, "Berlin"),
+        x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Wpt tests"),
+        x509.NameAttribute(NameOID.COMMON_NAME, host),
+    ])
+    now = datetime.datetime.now(datetime.timezone.utc)
+    certificate = (
+        x509.CertificateBuilder()
+        .subject_name(subject)
+        .issuer_name(issuer)
+        .public_key(private_key.public_key())
+        .serial_number(x509.random_serial_number())
+        .not_valid_before(now)
+        .not_valid_after(now + datetime.timedelta(days=13))
+        .sign(private_key, hashes.SHA256())
+    )
+    fingerprint = certificate.fingerprint(hashes.SHA256())
+    server_certificate_hash = ":".join(f"{byte:02x}" for byte in fingerprint)
+    return { "certificate": certificate.public_bytes(
+             encoding=serialization.Encoding.PEM
+             ),
+             "private_key": private_key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.TraditionalOpenSSL,
+                encryption_algorithm=serialization.NoEncryption()),
+             "hash": server_certificate_hash
+            }
 
 def serve_path(test_paths):
     return test_paths["/"].tests_path
@@ -150,7 +187,8 @@ class TestEnvironment:
                                    self.get_routes(),
                                    mp_context=mpcontext.get_context(),
                                    log_handlers=[server_log_handler],
-                                   webtransport_h3=self.enable_webtransport)
+                                   webtransport_h3=self.enable_webtransport,
+                                   webtransport_h3_cert_hash=self.enable_webtransport)
 
         if self.options.get("supports_debugger") and self.debug_info and self.debug_info.interactive:
             self._stack.enter_context(self.ignore_interrupts())
@@ -197,6 +235,7 @@ class TestEnvironment:
             "wss": [8889],
             "h2": [9000],
             "webtransport-h3": [11000],
+            "webtransport-h3-cert-hash": [11001],
         }
         config.ports = ports
 
@@ -220,6 +259,8 @@ class TestEnvironment:
         config.server_host = self.options.get("server_host", None)
         config.doc_root = serve_path(self.test_paths)
         config.inject_script = self.inject_script
+
+        config.cert_hash_info = generate_hash_certificate(config.server_host)
 
         if self.suppress_handler_traceback is not None:
             config.logging["suppress_handler_traceback"] = self.suppress_handler_traceback
@@ -323,9 +364,14 @@ class TestEnvironment:
             for port, server in self.servers.get("webtransport-h3", []):
                 if not webtranport_h3_server_is_running(host, port, timeout=5):
                     pending.append((host, port))
+            for port, server in self.servers.get("webtransport-h3-cert-hash", []):
+                if not webtranport_h3_server_is_running(host, port, timeout=5):
+                    pending.append((host, port))
 
             for scheme, servers in self.servers.items():
                 if scheme == "webtransport-h3":
+                    continue
+                if scheme == "webtransport-h3-cert-hash":
                     continue
                 for port, server in servers:
                     s = socket.socket()

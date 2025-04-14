@@ -10,6 +10,9 @@
 div {
   overlay: auto;
 }
+div::before {
+  overlay: auto;
+}
 </style>
 
 <body>
@@ -19,6 +22,7 @@ test(() => {
   document.body.appendChild(div);
   div.style.overlay = 'auto';
   assert_equals(getComputedStyle(div).overlay, 'none');
+  assert_equals(getComputedStyle(div, '::before').overlay, 'none');
 }, 'HTML elements should have overlay:none !important from the user-agent.');
 
 test(() => {

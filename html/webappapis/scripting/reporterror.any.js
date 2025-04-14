@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,shadowrealm
+
 setup({ allow_uncaught_exception:true });
 
 [
@@ -9,7 +11,7 @@ setup({ allow_uncaught_exception:true });
     let happened = false;
     self.addEventListener("error", t.step_func(e => {
       assert_true(e.message !== "");
-      assert_equals(e.filename, new URL("reporterror.any.js", location.href).href);
+      assert_equals(e.filename, location ? new URL("reporterror.any.js", location.href).href : "");
       assert_greater_than(e.lineno, 0);
       assert_greater_than(e.colno, 0);
       assert_equals(e.error, throwable);

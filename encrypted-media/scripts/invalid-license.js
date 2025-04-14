@@ -12,6 +12,8 @@ function runTest(config)
             initData = getInitData(initDataType);
             return access.createMediaKeys();
         }).then(function (mediaKeys) {
+            return setCertificate(mediaKeys, config.servercertificate);
+        }).then(function (mediaKeys) {
             var keySession = mediaKeys.createSession();
             var eventWatcher = new EventWatcher(test, keySession, ['message']);
             var promise = eventWatcher.wait_for('message');

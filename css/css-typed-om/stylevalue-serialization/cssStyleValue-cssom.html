@@ -27,7 +27,7 @@ test(t => {
 
 test(t => {
   const result = createComputedStyleMap(t, 'background: blue').get('background');
-  assert_equals(result.toString(), 'rgb(0, 0, 255) none repeat scroll 0% 0% / auto padding-box border-box');
+  assert_equals(result.toString(), 'rgb(0, 0, 255)');
 }, 'Shorthand CSSStyleValue from computed CSSOM serializes correctly');
 
 </script>

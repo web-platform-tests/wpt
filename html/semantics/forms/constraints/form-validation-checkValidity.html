@@ -27,7 +27,149 @@
         {conditions: {}, expected: true, name: "[target] no constraint"},
         {conditions: {maxLength: "20", value: "http://www.example.com"}, expected: true, name: "[target] suffering from being too long", dirty: true},
         {conditions: {pattern: "http://www.example.com", value: "http://www.example.net"}, expected: false, name: "[target] suffering from a pattern mismatch"},
-        {conditions: {value: "abc"}, expected: false, name: "[target] suffering from a type mismatch"},
+        {conditions: {value: "abc"}, expected: false, name: "[target] <abc> suffering from a type mismatch"},
+        // fragment-backslash
+        {conditions: {value: "#\\"}, expected: false, name: "[target] <#\\> suffering from a type mismatch"},
+        // fragment-contains-hash
+        {conditions: {value: "http://foo/path#f#g"}, expected: false, name: "[target] <http://foo/path#f#g> suffering from a type mismatch"},
+        // fragment-empty-hash-only-no-path
+        {conditions: {value: "c#"}, expected: false, name: "[target] <c#> suffering from a type mismatch"},
+        // fragment-leading-space
+        {conditions: {value: "http://f:21/b# e"}, expected: false, name: "[target] <http://f:21/b# e> suffering from a type mismatch"},
+        // fragment-non-ascii-relative
+        {conditions: {value: "#\u03b2"}, expected: false, name: "[target] <#\u03b2> suffering from a type mismatch"},
+        // fragment-semicolon-question-mark-relative
+        {conditions: {value: "#;?"}, expected: false, name: "[target] <#;?> suffering from a type mismatch"},
+        // fragment-slash-relative
+        {conditions: {value: "c#/"}, expected: false, name: "[target] <c#/> suffering from a type mismatch"},
+        // host-double-percent-encoded
+        {conditions: {value: "http://\uff05\uff14\uff11.com"}, expected: false, name: "[target] <http://\uff05\uff14\uff11.com> suffering from a type mismatch"},
+        // host-double-percent-encoded-percent-encoded
+        {conditions: {value: "http://%ef%bc%85%ef%bc%94%ef%bc%91.com"}, expected: false, name: "[target] <http://%ef%bc%85%ef%bc%94%ef%bc%91.com> suffering from a type mismatch"},
+        // host-empty
+        {conditions: {value: "http://"}, expected: false, name: "[target] <http://> suffering from a type mismatch"},
+        // host-empty-userinfo-empty
+        {conditions: {value: "http://@/www.example.com"}, expected: false, name: "[target] <http://@/www.example.com> suffering from a type mismatch"},
+        // host-empty-with-userinfo
+        {conditions: {value: "http://user:pass@/"}, expected: false, name: "[target] <http://user:pass@/> suffering from a type mismatch"},
+        // host-hostname-in-brackets
+        {conditions: {value: "http://[www.google.com]/"}, expected: false, name: "[target] <http://[www.google.com]/> suffering from a type mismatch"},
+        // host-invalid-unicode
+        {conditions: {value: "http://\ufdd0zyx.com"}, expected: false, name: "[target] <http://\ufdd0zyx.com> suffering from a type mismatch"},
+        // host-invalid-unicode-percent-encoded
+        {conditions: {value: "http://%ef%b7%90zyx.com"}, expected: false, name: "[target] <http://%ef%b7%90zyx.com> suffering from a type mismatch"},
+        // host-newline (value-sanitization algorithm strips the newline; so this is equivalent to http://example.org)
+        {conditions: {value: "http://example.\norg"}, expected: true, name: "[target] <http://example.\\norg> suffering from a type mismatch"},
+        // host-space
+        {conditions: {value: "http://example .org"}, expected: false, name: "[target] <http://example .org> suffering from a type mismatch"},
+        // host-square-brackets-port-contains-colon
+        {conditions: {value: "http://[1::2]:3:4"}, expected: false, name: "[target] <http://[1::2]:3:4> suffering from a type mismatch"},
+        // host-tab
+        {conditions: {value: "http://example\t.org"}, expected: false, name: "[target] <http://example\\t.org> suffering from a type mismatch"},
+        // host-u0000-percent-encoded
+        {conditions: {value: "http://\uff05\uff10\uff10.com"}, expected: false, name: "[target] <http://\uff05\uff10\uff10.com> suffering from a type mismatch"},
+        // host-u0000-percent-encoded-percent-encoded
+        {conditions: {value: "http://%ef%bc%85%ef%bc%90%ef%bc%90.com"}, expected: false, name: "[target] <http://%ef%bc%85%ef%bc%90%ef%bc%90.com> suffering from a type mismatch"},
+        // path-bare-percent-sign
+        {conditions: {value: "http://example.com/foo%"}, expected: false, name: "[target] <http://example.com/foo%> suffering from a type mismatch"},
+        // path-contains-space
+        {conditions: {value: "c/a/ /c"}, expected: false, name: "[target] <c/a/ /c> suffering from a type mismatch"},
+        // path-leading-backslash-at-sign
+        {conditions: {value: "http://foo.com/\\@"}, expected: false, name: "[target] <http://foo.com/\\@> suffering from a type mismatch"},
+        // path-leading-colon-backslash
+        {conditions: {value: ":\\"}, expected: false, name: "[target] <:\\> suffering from a type mismatch"},
+        // path-leading-colon-chars-backslash
+        {conditions: {value: ":foo.com\\"}, expected: false, name: "[target] <:foo.com\\> suffering from a type mismatch"},
+        // path-leading-space
+        {conditions: {value: "http://f:21/ b"}, expected: false, name: "[target] <http://f:21/ b> suffering from a type mismatch"},
+        // path-percent-encoded-malformed
+        {conditions: {value: "http://example.com/foo/%2e%2"}, expected: false, name: "[target] <http://example.com/foo/%2e%2> suffering from a type mismatch"},
+        // path-percent-encoded-slash-plus-slashes-relative
+        {conditions: {value: "/a/%2f/c"}, expected: false, name: "[target] </a/%2f/c> suffering from a type mismatch"},
+        // path-percent-encoded-slash-relative
+        {conditions: {value: "/a%2fc"}, expected: false, name: "[target] </a%2fc> suffering from a type mismatch"},
+        // path-relative-square-brackets
+        {conditions: {value: "[61:24:74]:98"}, expected: false, name: "[target] <[61:24:74]:98> suffering from a type mismatch"},
+        // path-simple-relative
+        {conditions: {value: "/a/b/c"}, expected: false, name: "[target] </a/b/c> suffering from a type mismatch"},
+        // path-slash-only-relative
+        {conditions: {value: "/"}, expected: false, name: "[target] </> suffering from a type mismatch"},
+        // path-tab
+        {conditions: {value: "http://example.com/foo\tbar"}, expected: false, name: "[target] <http://example.com/foo\\tbar> suffering from a type mismatch"},
+        // path-trailing-space
+        {conditions: {value: "http://f:21/b ?"}, expected: false, name: "[target] <http://f:21/b ?> suffering from a type mismatch"},
+        // path-u0091
+        {conditions: {value: "http://example.com/foo\t\u0091%91"}, expected: false, name: "[target] <http://example.com/foo\t\u0091%91> suffering from a type mismatch"},
+        // port-999999
+        {conditions: {value: "http://f:999999/c"}, expected: false, name: "[target] <http://f:999999/c> suffering from a type mismatch"},
+        // port-leading-colon-bracket-colon
+        {conditions: {value: "http://2001::1]:80"}, expected: false, name: "[target] <http://2001::1]:80> suffering from a type mismatch"},
+        // port-leading-colon
+        {conditions: {value: "http://2001::1"}, expected: false, name: "[target] <http://2001::1> suffering from a type mismatch"},
+        // port-leading-dash
+        {conditions: {value: "http://foo:-80/"}, expected: false, name: "[target] <http://foo:-80/> suffering from a type mismatch"},
+        // port-multiple-letters
+        {conditions: {value: "http://f:fifty-two/c"}, expected: false, name: "[target] <http://f:fifty-two/c> suffering from a type mismatch"},
+        // port-newline (value-sanitization algorithm strips the newline; so this is equivalent to http://f:/c)
+        {conditions: {value: "http://f:\n/c"}, expected: true, name: "[target] <http://f:\\n/c> suffering from a type mismatch"},
+        // port-single-letter
+        {conditions: {value: "http://f:b/c"}, expected: false, name: "[target] <http://f:b/c> suffering from a type mismatch"},
+        // port-space
+        {conditions: {value: "http://f: /c"}, expected: false, name: "[target] <http://f: /c> suffering from a type mismatch"},
+        // port-tab
+        {conditions: {value: "http://f:\t/c"}, expected: false, name: "[target] <http://f:\\t/c> suffering from a type mismatch"},
+        // query-empty-no-path-relative
+        {conditions: {value: "c?"}, expected: false, name: "[target] <c?> suffering from a type mismatch"},
+        // query-leading-space
+        {conditions: {value: "http://f:21/b? d"}, expected: false, name: "[target] <http://f:21/b? d> suffering from a type mismatch"},
+        // query-trailing-space
+        {conditions: {value: "http://f:21/b?d #"}, expected: false, name: "[target] <http://f:21/b?d #> suffering from a type mismatch"},
+        // scheme-data-contains-fragment
+        {conditions: {value: "data:text/html,test#test"}, expected: false, name: "[target] <data:text/html,test#test> suffering from a type mismatch"},
+        // scheme-data-single-slash
+        {conditions: {value: "data:/example.com/"}, expected: false, name: "[target] <data:/example.com/> suffering from a type mismatch"},
+        // scheme-file-single-slash-c-bar
+        {conditions: {value: "file:/C|/foo/bar"}, expected: false, name: "[target] <file:/C|/foo/bar> suffering from a type mismatch"},
+        // scheme-file-slash-slash-abc-bar
+        {conditions: {value: "file://abc|/foo/bar"}, expected: false, name: "[target] <file://abc|/foo/bar> suffering from a type mismatch"},
+        // scheme-file-triple-slash-c-bar
+        {conditions: {value: "file:///C|/foo/bar"}, expected: false, name: "[target] <file:///C|/foo/bar> suffering from a type mismatch"},
+        // scheme-ftp-no-slash
+        {conditions: {value: "ftp:example.com/"}, expected: false, name: "[target] <ftp:example.com/> suffering from a type mismatch"},
+        // scheme-ftp-single-slash
+        {conditions: {value: "ftp:/example.com/"}, expected: false, name: "[target] <ftp:/example.com/> suffering from a type mismatch"},
+        // scheme-http-backslash
+        {conditions: {value: "http:\\\\foo.com\\"}, expected: false, name: "[target] <http:\\\\foo.com\\> suffering from a type mismatch"},
+        // scheme-http-no-slash-colon
+        {conditions: {value: "http::@c:29"}, expected: false, name: "[target] <http::@c:29> suffering from a type mismatch"},
+        // scheme-http-no-slash
+        {conditions: {value: "http:foo.com"}, expected: false, name: "[target] <http:foo.com> suffering from a type mismatch"},
+        // scheme-http-no-slash-square-bracket
+        {conditions: {value: "http:[61:27]/:foo"}, expected: false, name: "[target] <http:[61:27]/:foo> suffering from a type mismatch"},
+        // scheme-http-single-slash
+        {conditions: {value: "http:/example.com/"}, expected: false, name: "[target] <http:/example.com/> suffering from a type mismatch"},
+        // scheme-https-no-slash
+        {conditions: {value: "https:example.com/"}, expected: false, name: "[target] <https:example.com/> suffering from a type mismatch"},
+        // scheme-https-single-slash
+        {conditions: {value: "https:/example.com/"}, expected: false, name: "[target] <https:/example.com/> suffering from a type mismatch"},
+        // scheme-schemeless-relative
+        {conditions: {value: "//foo/bar"}, expected: false, name: "[target] <//foo/bar> suffering from a type mismatch"},
+        // scheme-trailing-newline (value-sanitization algorithm strips the newline; so this is equivalent to ca:foo.com)
+        {conditions: {value: "ca:\nfoo.com"}, expected: true, name: "[target] <ca:\\nfoo.com> suffering from a type mismatch"},
+        // scheme-trailing-space
+        {conditions: {value: "ca: foo.com"}, expected: false, name: "[target] <ca: foo.com> suffering from a type mismatch"},
+        // scheme-trailing-tab
+        {conditions: {value: "ca:\tfoo.com"}, expected: false, name: "[target] <ca:\tfoo.com> suffering from a type mismatch"},
+        // userinfo-backslash
+        {conditions: {value: "http://a\\b:c\\d@foo.com"}, expected: false, name: "[target] <http://a\\b:c\\d@foo.com> suffering from a type mismatch"},
+        // userinfo-password-bad-chars
+        {conditions: {value: "http://&a:foo(b]c@d:2/"}, expected: false, name: "[target] <http://&a:foo(b]c@d:2/> suffering from a type mismatch"},
+        // userinfo-password-contains-pile-of-poo
+        {conditions: {value: "http://foo:\ud83d\udca9@example.com"}, expected: false, name: "[target] <http://foo:\ud83d\udca9@example.com> suffering from a type mismatch"},
+        // userinfo-username-contains-at-sign
+        {conditions: {value: "http://::@c@d:2"}, expected: false, name: "[target] <http://::@c@d:2> suffering from a type mismatch"},
+        // userinfo-username-contains-pile-of-poo
+        {conditions: {value: "http://\ud83d\udca9:foo@example.com"}, expected: false, name: "[target] <http://\ud83d\udca9:foo@example.com> suffering from a type mismatch"},
         {conditions: {required: true, value: ""}, expected: false, name: "[target] suffering from being missing"}
       ]
     },

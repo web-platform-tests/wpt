@@ -9,8 +9,8 @@
 <link id="main" rel="stylesheet" type="text/css" href="support/main/main.css" />
 <link id="main_utf16be" rel="stylesheet" type="text/css" href="support/main/main.utf16be.css" />
 <link id="alt" rel="stylesheet" type="text/css" href="support/alt/alt.css" />
-<div id=target>
-    <div id=inner></div>
+<div id="target">
+    <div id="inner"></div>
 </div>
 <script>
 function parse_url(urlstr) {
@@ -133,5 +133,15 @@ test(function() {
     target.style = 'background-image: var(--reg-utf16be-func);';
     assert_base_path_equal(get_bg_url(target), main_utf16be.sheet.href);
 }, 'Registered UTF16BE-encoded var reference resolve against sheet (URL function)');
+
+test(function () {
+    target.style = 'background-image: var(--reg-non-inherited-initial-value-only-url);';
+    assert_base_path_equal(get_bg_url(target), document.baseURI);
+}, 'Registered non-inherited <url> with only an initial value resolves against document (URL token)');
+
+test(function () {
+    target.style = 'background-image: var(--reg-non-inherited-initial-value-only-func);';
+    assert_base_path_equal(get_bg_url(target), document.baseURI);
+}, 'Registered non-inherited <url>  with only an initial value resolves against document (URL function)');
 
 </script>

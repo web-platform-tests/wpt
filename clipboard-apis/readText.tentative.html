@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Clipboard API: navigator.clipboard.readText()</title>
+<title>Clipboard API: navigator.clipboard.readText() - negative test</title>
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
 <body>
-  <h1>Test for navigator.clipboard.readText()</h1>
+  <h1>Negative Test for navigator.clipboard.readText() without permission</h1>
 
   <script>
     promise_test(async t => {
+      await navigator.permissions.revoke({ name: "clipboard-read" }); // ensure permission is not granted
       try {
-        const text = await navigator.clipboard.readText();
-        assert_equals(typeof text, "string", "readText() should resolve to a string");
+        await navigator.clipboard.readText();
+        assert_unreached("readText() should not resolve without permission");
       } catch (e) {
-        assert_unreached("Clipboard readText() threw an error: " + e.message);
+        assert_equals(e.name, "NotAllowedError", "Should throw NotAllowedError without clipboard permission");
       }
-    }, "navigator.clipboard.readText() resolves with a string");
+    }, "navigator.clipboard.readText() throws NotAllowedError without permission");
   </script>
 </body>

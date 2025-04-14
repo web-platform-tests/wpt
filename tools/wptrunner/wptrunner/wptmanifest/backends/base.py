@@ -6,9 +6,7 @@ from ..node import NodeVisitor
 from ..parser import parse
 
 
-class Compiler(NodeVisitor):
-    __metaclass__ = abc.ABCMeta
-
+class Compiler(NodeVisitor, metaclass=abc.ABCMeta):
     def compile(self, tree, data_cls_getter=None, **kwargs):
         self._kwargs = kwargs
         return self._compile(tree, data_cls_getter, **kwargs)

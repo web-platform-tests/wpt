@@ -247,7 +247,7 @@ class TimedRunner:
         raise NotImplementedError
 
 
-class TestExecutor:
+class TestExecutor(metaclass=ABCMeta):
     """Abstract Base class for object that actually executes the tests in a
     specific browser. Typically there will be a different TestExecutor
     subclass for each test type and method of executing tests.
@@ -259,7 +259,6 @@ class TestExecutor:
     :param timeout_multiplier: Multiplier relative to base timeout to use
                                when setting test timeout.
     """
-    __metaclass__ = ABCMeta
 
     test_type: ClassVar[str]
     # convert_result is a class variable set to a callable converter

@@ -1,7 +1,7 @@
 "use strict";
 importScripts("/resources/testharness.js");
 
-setup({ allow_uncaught_exception: true });
+setup({ allow_uncaught_exception: true, never_prevent_default_for_unhandled_exceptions: true });
 
 promise_test(t => {
   self.onerror = t.step_func((...args) => {

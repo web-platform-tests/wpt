@@ -33,8 +33,9 @@ tests can freely rely on these assumptions being true:
 
 Tests for printing behavior make some further assumptions:
 
- * The UA is set to print background colors and, if it supports
-   graphics, background images.
+ * The UA is in economy mode by default, meaning that background
+   colors and (if it supports graphics) background images will only
+   be visible if `print-color-adjust:exact` is specified in the test.
  * The UA implements reasonable page-breaking behavior; e.g., it is
    assumed that UAs will not break at every opportunity, but only near
    the end of a page unless a page break is forced.

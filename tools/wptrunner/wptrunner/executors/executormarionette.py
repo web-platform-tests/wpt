@@ -631,7 +631,7 @@ class MarionettePrintProtocolPart(PrintProtocolPart):
                 "bottom": margin,
             },
             "shrinkToFit": False,
-            "background": True,
+            "background": False,
         }
         return self.marionette._send_message("WebDriver:Print", body, key="value")
 

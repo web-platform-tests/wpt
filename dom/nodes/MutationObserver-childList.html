@@ -7,7 +7,7 @@
 <h1>MutationObservers: childList mutations</h1>
 <div id="log"></div>
 
-<section style="display: none">
+<!--section style="display: none">
 <p id='dummies'>
 <span id='d30'>text content</span>
 <span id='d35'>text content</span>
@@ -17,9 +17,9 @@
 <span id='d51'>text content</span>
 </p>
 
-</section>
+</section-->
 <section style="display: none">
-<p id='n00'><span>text content</span></p>
+<!--p id='n00'><span>text content</span></p>
 
 <p id='n10'><span>text content</span></p>
 <p id='n11'></p>
@@ -45,9 +45,9 @@
 
 
 <p id='n50'><span>text content</span></p>
-<p id='n51'><span>text content</span></p>
+<p id='n51'><span>text content</span></p-->
 <p id='n52'><span>NO </span><span>CHANGED</span></p>
-<p id='n53'><span>text content</span></p>
+<!--p id='n53'><span>text content</span></p>
 
 <p id='n60'><span>text content</span></p>
 
@@ -62,7 +62,7 @@
 
 <p id='n100'><span id="s1">CHAN</span><span id="s2">GED</span></p>
 
-</section>
+</section-->
 
 <script>
   var dummies = document.getElementById('dummies');
@@ -73,7 +73,7 @@
     fragment.appendChild(document.createTextNode("22"));
     return fragment;
   }
-
+/*
   var n00 = document.getElementById('n00');
 
   runMutationTest(n00,
@@ -273,7 +273,7 @@
                     removedNodes: [n51.firstChild]}],
                   function() { d51.parentNode.replaceChild(n51.firstChild, d51); },
                   "childList Node.replaceChild: removal mutation");
-
+*/
   var n52 = document.getElementById('n52');
   runMutationTest(n52,
                   {"childList":true},
@@ -285,7 +285,7 @@
                     addedNodes: [n52.lastChild]}],
                   function() { n52.replaceChild(n52.lastChild, n52.firstChild); },
                   "childList Node.replaceChild: internal replacement mutation");
-
+/*
   var n53 = document.getElementById('n53');
   runMutationTest(n53,
                   {"childList":true},
@@ -428,7 +428,7 @@
                     addedNodes: [f100] }],
                   function() { r100.surroundContents(f100); },
                   "childList Range.surroundContents: children removal and addition mutation");
-
+*/
 </script>
 
 

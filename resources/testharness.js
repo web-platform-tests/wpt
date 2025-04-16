@@ -225,8 +225,8 @@
     WindowTestEnvironment.prototype.test_timeout = function() {
         var metas = document.getElementsByTagName("meta");
         for (var i = 0; i < metas.length; i++) {
-            if (metas[i].name == "timeout") {
-                if (metas[i].content == "long") {
+            if (metas[i].name === "timeout") {
+                if (metas[i].content === "long") {
                     return settings.harness_timeout.long;
                 }
                 break;
@@ -563,7 +563,7 @@
         // The worker object may be from another execution context,
         // so do not use instanceof here.
         return 'ServiceWorker' in global_scope &&
-            Object.prototype.toString.call(worker) == '[object ServiceWorker]';
+            Object.prototype.toString.call(worker) === '[object ServiceWorker]';
     }
 
     var seen_func_name = Object.create(null);
@@ -907,7 +907,7 @@
      */
     function EventWatcher(test, watchedNode, eventTypes, timeoutPromise)
     {
-        if (typeof eventTypes == 'string') {
+        if (typeof eventTypes === 'string') {
             eventTypes = [eventTypes];
         }
 
@@ -972,7 +972,7 @@
             if (waitingFor) {
                 return Promise.reject('Already waiting for an event or events');
             }
-            if (typeof types == 'string') {
+            if (typeof types === 'string') {
                 types = [types];
             }
             if (options && options.record && options.record === 'all') {
@@ -987,7 +987,7 @@
 
                     // This should always fail, otherwise we should have
                     // resolved the promise.
-                    assert_true(waitingFor.types.length == 0,
+                    assert_true(waitingFor.types.length === 0,
                                 'Timed out waiting for ' + waitingFor.types.join(', '));
                     var result = recordedEvents;
                     recordedEvents = null;
@@ -1423,11 +1423,11 @@
                 case Node.COMMENT_NODE:
                     return "Comment node <!--" + truncate(val.data, 60) + "-->";
                 case Node.DOCUMENT_NODE:
-                    return "Document node with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
+                    return "Document node with " + val.childNodes.length + (val.childNodes.length === 1 ? " child" : " children");
                 case Node.DOCUMENT_TYPE_NODE:
                     return "DocumentType node";
                 case Node.DOCUMENT_FRAGMENT_NODE:
-                    return "DocumentFragment node with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
+                    return "DocumentFragment node with " + val.childNodes.length + (val.childNodes.length === 1 ? " child" : " children");
                 default:
                     return "Node object of unknown type";
                 }
@@ -2121,7 +2121,7 @@
                    {func:func});
 
             // Basic sanity-check on the passed-in constructor
-            assert(typeof constructor == "function",
+            assert(typeof constructor === "function",
                    assertion_type, description,
                    "${constructor} is not a constructor",
                    {constructor:constructor});
@@ -2229,8 +2229,8 @@
                    {func:func});
 
             // Sanity-check our type
-            assert(typeof type == "number" ||
-                   typeof type == "string",
+            assert(typeof type === "number" ||
+                   typeof type === "string",
                    assertion_type, description,
                    "${type} is not a number or string",
                    {type:type});
@@ -3514,26 +3514,26 @@
         for (var p in properties) {
             if (properties.hasOwnProperty(p)) {
                 var value = properties[p];
-                if (p == "allow_uncaught_exception") {
+                if (p === "allow_uncaught_exception") {
                     this.allow_uncaught_exception = value;
-                } else if (p == "explicit_done" && value) {
+                } else if (p === "explicit_done" && value) {
                     this.wait_for_finish = true;
-                } else if (p == "explicit_timeout" && value) {
+                } else if (p === "explicit_timeout" && value) {
                     this.timeout_length = null;
                     if (this.timeout_id)
                     {
                         clearTimeout(this.timeout_id);
                     }
-                } else if (p == "single_test" && value) {
+                } else if (p === "single_test" && value) {
                     this.set_file_is_test();
-                } else if (p == "timeout_multiplier") {
+                } else if (p === "timeout_multiplier") {
                     this.timeout_multiplier = value;
                     if (this.timeout_length) {
                          this.timeout_length *= this.timeout_multiplier;
                     }
-                } else if (p == "hide_test_state") {
+                } else if (p === "hide_test_state") {
                     this.hide_test_state = value;
-                } else if (p == "output") {
+                } else if (p === "output") {
                     this.output = value;
                 } else if (p === "debug") {
                     settings.debug = value;
@@ -3626,7 +3626,7 @@
 
     Tests.prototype.push = function(test)
     {
-        if (this.phase == this.phases.COMPLETE) {
+        if (this.phase === this.phases.COMPLETE) {
             return;
         }
         if (this.phase < this.phases.HAVE_TESTS) {
@@ -4115,8 +4115,8 @@
             } else {
                 var root = output_document.documentElement;
                 var is_html = (root &&
-                               root.namespaceURI == "http://www.w3.org/1999/xhtml" &&
-                               root.localName == "html");
+                               root.namespaceURI === "http://www.w3.org/1999/xhtml" &&
+                               root.localName === "html");
                 var is_svg = (output_document.defaultView &&
                               "SVGSVGElement" in output_document.defaultView &&
                               root instanceof output_document.defaultView.SVGSVGElement);
@@ -4561,7 +4561,7 @@
      */
     function AssertionError(message)
     {
-        if (typeof message == "string") {
+        if (typeof message === "string") {
             message = sanitize_unpaired_surrogates(message);
         }
         this.message = message;

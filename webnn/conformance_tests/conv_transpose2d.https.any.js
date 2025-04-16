@@ -1,5 +1,5 @@
 // META: title=test WebNN API convTranspose2d operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -1473,6 +1473,108 @@ const convTranspose2dTests = [
             -0.8578650951385498
           ],
           'descriptor': {shape: [1, 1, 5, 5], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'convTranspose2d same output size different padding (padding=1, outputPadding=0))',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            1, 2, 3,
+            4, 5, 6,
+            7, 8, 9
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            1, 1, 1,
+            1, 1, 1,
+            1, 1, 1
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'},
+          {'options': {
+            'strides': [3, 3],
+            'padding': [1, 1, 1, 1],
+            'outputPadding': [0, 0]
+          }}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            1, 1, 2, 2, 2, 3, 3,
+            1, 1, 2, 2, 2, 3, 3,
+            4, 4, 5, 5, 5, 6, 6,
+            4, 4, 5, 5, 5, 6, 6,
+            4, 4, 5, 5, 5, 6, 6,
+            7, 7, 8, 8, 8, 9, 9,
+            7, 7, 8, 8, 8, 9, 9
+          ],
+          'descriptor': {shape: [1, 1, 7, 7], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'convTranspose2d same output size different padding (padding=2, outputPadding=2))',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            1, 2, 3,
+            4, 5, 6,
+            7, 8, 9
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            1, 1, 1,
+            1, 1, 1,
+            1, 1, 1
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'},
+          {'options': {
+            'strides': [3, 3],
+            'padding': [2, 2, 2, 2],
+            'outputPadding': [2, 2]
+          }}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            1, 2, 2, 2, 3, 3, 3,
+            4, 5, 5, 5, 6, 6, 6,
+            4, 5, 5, 5, 6, 6, 6,
+            4, 5, 5, 5, 6, 6, 6,
+            7, 8, 8, 8, 9, 9, 9,
+            7, 8, 8, 8, 9, 9, 9,
+            7, 8, 8, 8, 9, 9, 9
+          ],
+          'descriptor': {shape: [1, 1, 7, 7], dataType: 'float32'}
         }
       }
     }

@@ -22,7 +22,7 @@ async function clickOn(element) {
 async function sendTab() {
   await waitForRender();
   const kTab = '\uE004';
-  await new test_driver.send_keys(document.activeElement || document.documentElement, kTab);
+  await test_driver.send_keys(document.activeElement || document.documentElement, kTab);
   await waitForRender();
 }
 async function sendShiftTab() {
@@ -39,12 +39,12 @@ async function sendShiftTab() {
 }
 async function sendEscape() {
   await waitForRender();
-  await new test_driver.send_keys(document.activeElement || document.documentElement,'\uE00C'); // Escape
+  await test_driver.send_keys(document.activeElement || document.documentElement,'\uE00C'); // Escape
   await waitForRender();
 }
 async function sendEnter() {
   await waitForRender();
-  await new test_driver.send_keys(document.activeElement || document.documentElement,'\uE007'); // Enter
+  await test_driver.send_keys(document.activeElement || document.documentElement,'\uE007'); // Enter
   await waitForRender();
 }
 function isElementVisible(el) {
@@ -142,4 +142,18 @@ function assertNotAPopover(nonPopover) {
   assertPopoverVisibility(nonPopover, /*isPopover*/false, expectVisible, 'Calling hidePopover on a non-popover should leave it visible');
   assert_throws_dom("NotSupportedError",() => nonPopover.togglePopover(),'Calling togglePopover on a non-popover should throw NotSupported');
   assertPopoverVisibility(nonPopover, /*isPopover*/false, expectVisible, 'Calling togglePopover on a non-popover should leave it visible');
+}
+
+async function verifyFocusOrder(order,description) {
+  order[0].focus();
+  for(let i=0;i<order.length;++i) {
+    const control = order[i];
+    assert_equals(document.activeElement,control,`${description}: Step ${i+1}`);
+    await sendTab();
+  }
+  for(let i=order.length-1;i>=0;--i) {
+    const control = order[i];
+    await sendShiftTab();
+    assert_equals(document.activeElement,control,`${description}: Step ${i+1} (backwards)`);
+  }
 }

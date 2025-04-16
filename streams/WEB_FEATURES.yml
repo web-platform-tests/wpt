@@ -1,0 +1,7 @@
+features:
+# This should match the scope of streams in web-features, which is roughly the
+# originally interoperable subset of streams:
+# https://github.com/web-platform-dx/web-features/blob/main/features/streams.yml
+- name: streams
+  files:
+  - queuing-*

@@ -15,3 +15,13 @@ test(() => {
   assert_equals(element.customElementRegistry, registry);
   assert_true(element.matches(":defined"));  
 }, `"custom" :defined doesn't care about your registry`);
+
+test(() => {
+  const otherDocument = new Document();
+  const element = otherDocument.createElementNS("http://www.w3.org/1999/xhtml", "sw-r2d2");
+  assert_false(element.matches(":defined"));
+  const registry = new CustomElementRegistry();
+  registry.define("sw-r2d2", class extends HTMLElement {});
+  registry.upgrade(element);
+  assert_true(element.matches(":defined"));
+});

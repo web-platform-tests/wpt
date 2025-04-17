@@ -22,6 +22,8 @@ test(() => {
   assert_false(element.matches(":defined"));
   const registry = new CustomElementRegistry();
   registry.define("sw-r2d2", class extends HTMLElement {});
+  registry.initialize(element);
+  assert_false(element.matches(":defined"));  
   registry.upgrade(element);
   assert_true(element.matches(":defined"));
 });

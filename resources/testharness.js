@@ -1847,15 +1847,15 @@
                "expected a number but got a ${type_actual}",
                {type_actual:typeof actual});
 
+        assert(typeof lower === typeof upper,
+               "assert_between_exclusive", description,
+               "expected lower (${type_lower}) and upper (${type_upper}) types to match",
+               {type_lower:typeof lower, type_upper:typeof upper});
+
         assert(typeof actual === typeof lower,
                "assert_between_exclusive", description,
                "expected a ${type_lower} but got a ${type_actual}",
                {type_lower:typeof lower, type_actual:typeof actual});
-
-        assert(typeof actual === typeof upper,
-               "assert_between_exclusive", description,
-               "expected a ${type_upper} but got a ${type_actual}",
-               {type_upper:typeof upper, type_actual:typeof actual});
 
         assert(actual > lower && actual < upper,
                "assert_between_exclusive", description,
@@ -1944,15 +1944,15 @@
                "expected a number but got a ${type_actual}",
                {type_actual:typeof actual});
 
+        assert(typeof lower === typeof upper,
+               "assert_between_inclusive", description,
+               "expected lower (${type_lower}) and upper (${type_upper}) types to match",
+               {type_lower:typeof lower, type_upper:typeof upper});
+
         assert(typeof actual === typeof lower,
                "assert_between_inclusive", description,
                "expected a ${type_lower} but got a ${type_actual}",
                {type_lower:typeof lower, type_actual:typeof actual});
-
-        assert(typeof actual === typeof upper,
-               "assert_between_inclusive", description,
-               "expected a ${type_upper} but got a ${type_actual}",
-               {type_upper:typeof upper, type_actual:typeof actual});
 
         assert(actual >= lower && actual <= upper,
                "assert_between_inclusive", description,

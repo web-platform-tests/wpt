@@ -40,41 +40,43 @@
   });
 
   const dangling_resource = "404?type=text/javascript&\n<"
+  const dangling_resource_expected = "404?type=text/javascript&%3C"
   const api_calls = [
     [`const xhr = new XMLHttpRequest();
      xhr.open("GET", \`${"xhr" + dangling_resource}\`);
      xhr.send(null);`, "xhr"],
-    [`new EventSource(\`${"EventSource" + dangling_resource}\`)`,"EventSource"],
+    [`new EventSource(\`${"EventSource" + dangling_resource}\`)`, "EventSource"],
     [`fetch(\`${"fetch" + dangling_resource}\`).catch(()=>{})`, "fetch"],
     [`new Worker(\`${"Worker" + dangling_resource}\`)`, "Worker"],
     [`let text = \`try{importScripts(\\\`${location.href + "/../importScripts" + dangling_resource}\\\`)}catch(e){}\`;
      let blob = new Blob([text], {type : 'text/javascript'});
      let url = URL.createObjectURL(blob);
-     new Worker(url)`, "importScripts"],
-
+     new Worker(url)`, "importScripts"]
   ];
 
   navigator.serviceWorker.register('service-worker.js');
   const iframe = document.createElement('iframe');
   iframe.src = "resources/empty.html";
   document.body.appendChild(iframe);
+  let number_api_calls = 0;
   api_calls.forEach(call => {
     promise_test(t => {
       return new Promise(resolve => {
         navigator.serviceWorker.ready.then(t.step_func(registration => {
           iframe.contentWindow.eval(call[0]);
-          get_requests(registration.active, 0).then(t.step_func(requests => {
-            resolve(assert_true(requests.has(call[1] + dangling_resource)));
+          number_api_calls += 1;
+          get_requests(registration.active, number_api_calls).then(t.step_func(requests => {
+            console.log(requests);
+            resolve(assert_true(requests.has(call[1] + dangling_resource_expected)));
           }));
         }));
       });
     }, `Does not block ${call[1]}`);
   });
 
-  async_test(t => {
+  test(t => {
     let url = new URL(location.origin + "/" + dangling_url);
     // Newlines are removed by the URL parser.
     assert_true(url.href.endsWith(encodeURI(dangling_url.replace("\n",""))));
-    t.done();
   }, `Does not block new URL()`);
 </script>

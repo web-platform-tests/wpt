@@ -66,7 +66,6 @@
           iframe.contentWindow.eval(call[0]);
           number_api_calls += 1;
           get_requests(registration.active, number_api_calls).then(t.step_func(requests => {
-            console.log(requests);
             resolve(assert_true(requests.has(call[1] + dangling_resource_expected)));
           }));
         }));

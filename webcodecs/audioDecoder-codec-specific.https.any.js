@@ -371,7 +371,7 @@ promise_test(async t => {
 
   await decoder.flush();
   assert_equals(outputs, CONFIG.codec === 'vorbis' ? 1 : 2, 'outputs');
-}, 'Test decoding a with negative timestamp');
+}, 'Test decoding a with a negative timestamp');
 
 promise_test(async t => {
   const callbacks = {};
@@ -394,7 +394,7 @@ promise_test(async t => {
 
   await decoder.flush();
   assert_equals(outputs, CONFIG.codec === 'vorbis' ? 1 : 2, 'outputs');
-}, 'Test decoding a with positive timestamp');
+}, 'Test decoding a with a positive timestamp');
 
 promise_test(async t => {
   const callbacks = {};

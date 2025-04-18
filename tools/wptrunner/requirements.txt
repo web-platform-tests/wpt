@@ -8,4 +8,4 @@ pillow==10.4.0; python_version < '3.9'
 pillow==11.1.0; python_version >= '3.9'
 requests==2.32.3
 six==1.16.0
-urllib3==2.2.2
+urllib3==2.2.3

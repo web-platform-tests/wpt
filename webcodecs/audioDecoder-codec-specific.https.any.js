@@ -356,6 +356,9 @@ promise_test(async t => {
 
   let outputs = 0;
   callbacks.output = frame => {
+    if (outputs === 0) {
+      assert_equals(frame.timestamp, -42);
+    }
     outputs++;
     frame.close();
   };
@@ -376,6 +379,9 @@ promise_test(async t => {
 
   let outputs = 0;
   callbacks.output = frame => {
+    if (outputs === 0) {
+      assert_equals(frame.timestamp, 42);
+    }
     outputs++;
     frame.close();
   };

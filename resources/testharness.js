@@ -1842,15 +1842,15 @@
         /*
          * Test if a primitive number (or bigint) is between two others
          */
+        assert(typeof lower === typeof upper,
+               "assert_between_exclusive", description,
+               "expected lower (${type_lower}) and upper (${type_upper}) types to match (test error)",
+               {type_lower:typeof lower, type_upper:typeof upper});
+
         assert(typeof actual === "number" || typeof actual === "bigint",
                "assert_between_exclusive", description,
                "expected a number but got a ${type_actual}",
                {type_actual:typeof actual});
-
-        assert(typeof lower === typeof upper,
-               "assert_between_exclusive", description,
-               "expected lower (${type_lower}) and upper (${type_upper}) types to match",
-               {type_lower:typeof lower, type_upper:typeof upper});
 
         assert(typeof actual === typeof lower,
                "assert_between_exclusive", description,
@@ -1939,15 +1939,15 @@
         /*
          * Test if a primitive number (or bigint) is between to two others or equal to either of them
          */
+        assert(typeof lower === typeof upper,
+               "assert_between_inclusive", description,
+               "expected lower (${type_lower}) and upper (${type_upper}) types to match (test error)",
+               {type_lower:typeof lower, type_upper:typeof upper});
+
         assert(typeof actual === "number" || typeof actual === "bigint",
                "assert_between_inclusive", description,
                "expected a number but got a ${type_actual}",
                {type_actual:typeof actual});
-
-        assert(typeof lower === typeof upper,
-               "assert_between_inclusive", description,
-               "expected lower (${type_lower}) and upper (${type_upper}) types to match",
-               {type_lower:typeof lower, type_upper:typeof upper});
 
         assert(typeof actual === typeof lower,
                "assert_between_inclusive", description,

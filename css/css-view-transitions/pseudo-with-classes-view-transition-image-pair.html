@@ -18,12 +18,24 @@
 }
 
 ::view-transition-group(*) {
-  animation-duration: 1s;
+  animation-play-state: paused;
 }
 
 ::view-transition-image-pair(target.cls) {
   transform: translateX(100px);
+  animation-play-state: paused;
 }
+
+::view-transition-old(*) {
+  animation: unset;
+  opacity: 1;
+}
+
+::view-transition-new(*) {
+  animation: unset;
+  opacity: 0;
+}
+
 
 </style>
 <div id=target></div>

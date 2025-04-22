@@ -21,13 +21,24 @@
   }
 
   ::view-transition-group(*) {
-    animation-duration: 1s;
+    animation-play-state: paused;
   }
 
   ::view-transition-new(.cls),
   ::view-transition-old(.cls) {
     left: 100px;
   }
+
+::view-transition-old(*) {
+  animation: unset;
+  opacity: 1;
+}
+
+::view-transition-new(*) {
+  animation: unset;
+  opacity: 0;
+}
+
 </style>
 <div id=target></div>
 

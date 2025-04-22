@@ -9,7 +9,7 @@
 <style>
 #cb {
   width: 400px;
-  height: 400px;
+  height: 399px;
   margin: 100px;
   transform: scale(1);
   outline: 1px solid black;
@@ -36,25 +36,25 @@
   position: absolute;
   background: green;
   position-anchor: --a;
-  position-try-options: --f1, --f2;
+  position-try-fallbacks: --f1, --f2;
   width: 100px; height: 100px;
   /* Above the anchor */
-  left: anchor(--a left);
-  bottom: anchor(--a top);
+  left: anchor(left);
+  bottom: anchor(top);
 }
 
 @position-try --f1 {
   /* Left of the anchor */
-  right: anchor(--a left);
-  top: anchor(--a top);
+  right: anchor(left);
+  top: anchor(top);
   bottom: auto;
   left: auto;
 }
 
 @position-try --f2 {
   /* Right of the anchor */
-  left: anchor(--a right);
-  top: anchor(--a top);
+  left: anchor(right);
+  top: anchor(top);
   bottom: auto;
 }
 
@@ -86,15 +86,23 @@ promise_test(async () => {
 }, 'Scroll further down, making the first fallback position overflow by 1px');
 
 promise_test(async () => {
-  scroller.scrollTop = 200;
+  scroller.scrollTop = 1;
+  await waitUntilNextAnimationFrame();
+  // The first option now fits again, but the current option also still fits, so
+  // stay there.
+  assert_fallback_position(anchored, anchor, 'left');
+}, 'Scroll back up so that both the first and second options fit.');
+
+promise_test(async () => {
+  scroller.scrollTop = 0;
   await waitUntilNextAnimationFrame();
   assert_fallback_position(anchored, anchor, 'top');
-}, 'Scroll back up to reuse the first fallback position');
+}, 'Scroll further up, where the second option no longer fits');
 
 promise_test(async () => {
   scroller.scrollTop = 249;
   scroller.scrollLeft = 51;
   await waitUntilNextAnimationFrame();
   assert_fallback_position(anchored, anchor, 'right');
-}, 'Scroll bottom-right to make the first three fallback positions overflow');
+}, 'Scroll bottom-right to make the first two options overflow');
 </script>

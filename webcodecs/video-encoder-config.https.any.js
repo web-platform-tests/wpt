@@ -51,6 +51,15 @@ const invalidConfigs = [
       height: 480,
     },
   },
+  {
+    comment: 'bitrate is present but zero',
+    config: {
+      codec: 'vp8',
+      width: 640,
+      height: 480,
+      bitrate: 0
+    },
+  },
 ];
 
 invalidConfigs.forEach(entry => {
@@ -126,8 +135,8 @@ const validButUnsupportedConfigs = [
     config: {
       codec: 'vp8',
       hardwareAcceleration: 'prefer-hardware',
-      width: 20000,
-      height: 20000,
+      width: 30000,
+      height: 30000,
       bitrate: 1,
       framerate: 240,
     }
@@ -174,6 +183,14 @@ const validButUnsupportedConfigs = [
       height: 480,
     },
   },
+  {
+    comment: 'codec with spaces',
+    config: {
+      codec: '  vp09.00.10.08  ',
+      width: 640,
+      height: 480,
+    }
+  }
 ];
 
 validButUnsupportedConfigs.forEach(entry => {

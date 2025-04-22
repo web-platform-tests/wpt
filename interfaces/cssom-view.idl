@@ -84,8 +84,12 @@ interface Screen {
 partial interface Document {
   Element? elementFromPoint(double x, double y);
   sequence<Element> elementsFromPoint(double x, double y);
-  CaretPosition? caretPositionFromPoint(double x, double y, ShadowRoot... shadowRoots);
+  CaretPosition? caretPositionFromPoint(double x, double y, optional CaretPositionFromPointOptions options = {});
   readonly attribute Element? scrollingElement;
+};
+
+dictionary CaretPositionFromPointOptions {
+  sequence<ShadowRoot> shadowRoots = [];
 };
 
 [Exposed=Window]
@@ -99,7 +103,10 @@ enum ScrollLogicalPosition { "start", "center", "end", "nearest" };
 dictionary ScrollIntoViewOptions : ScrollOptions {
   ScrollLogicalPosition block = "start";
   ScrollLogicalPosition inline = "nearest";
+  ScrollIntoViewContainer container = "all";
 };
+
+enum ScrollIntoViewContainer { "all", "nearest" };
 
 dictionary CheckVisibilityOptions {
     boolean checkOpacity = false;

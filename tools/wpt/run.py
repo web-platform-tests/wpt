@@ -46,11 +46,9 @@ def create_parser():
     from wptrunner import wptcommandline
 
     parser = argparse.ArgumentParser(add_help=False, parents=[install.channel_args])
-    parser.add_argument("product", action="store",
-                        help="Browser to run tests in")
-    parser.add_argument("--affected", action="store", default=None,
-                        help="Run affected tests since revish")
-    parser.add_argument("--yes", "-y", dest="prompt", action="store_false", default=True,
+    parser.add_argument("product", help="Browser to run tests in")
+    parser.add_argument("--affected", help="Run affected tests since revish")
+    parser.add_argument("--yes", "-y", dest="prompt", action="store_false",
                         help="Don't prompt before installing components")
     parser.add_argument("--install-browser", action="store_true",
                         help="Install the browser from the release channel specified by --channel "
@@ -58,7 +56,7 @@ def create_parser():
     parser.add_argument("--install-webdriver", action="store_true",
                         help="Install WebDriver from the release channel specified by --channel "
                         "(or the nightly channel by default).")
-    parser.add_argument("--logcat-dir", action="store", default=None,
+    parser.add_argument("--logcat-dir",
                         help="Directory to write Android logcat files to")
     parser._add_container_actions(wptcommandline.create_parser())
     return parser
@@ -112,7 +110,7 @@ otherwise install OpenSSL and ensure that it's on your $PATH.""")
 
 def check_environ(product):
     if product not in ("android_webview", "chrome", "chrome_android", "chrome_ios",
-                       "content_shell", "edge", "firefox", "firefox_android",
+                       "edge", "firefox", "firefox_android", "headless_shell",
                        "ladybird", "servo", "wktr"):
         config_builder = serve.build_config(os.path.join(wpt_root, "config.json"))
         # Override the ports to avoid looking for free ports
@@ -521,9 +519,9 @@ class Chrome(BrowserSetup):
             kwargs["binary_args"].append("--no-sandbox")
 
 
-class ContentShell(BrowserSetup):
-    name = "content_shell"
-    browser_cls = browser.ContentShell
+class HeadlessShell(BrowserSetup):
+    name = "headless_shell"
+    browser_cls = browser.HeadlessShell
     experimental_channels = ("dev", "canary", "nightly")
 
     def setup_kwargs(self, kwargs):
@@ -533,7 +531,7 @@ class ContentShell(BrowserSetup):
             if binary:
                 kwargs["binary"] = binary
             else:
-                raise WptrunError(f"Unable to locate {self.name.capitalize()} binary")
+                raise WptrunError(f"Unable to locate {self.name!r} binary")
 
         if kwargs["mojojs_path"]:
             kwargs["enable_mojojs"] = True
@@ -544,7 +542,13 @@ class ContentShell(BrowserSetup):
                            "Provide '--mojojs-path' explicitly instead.")
             logger.warning("MojoJS is disabled for this run.")
 
-        kwargs["enable_webtransport_h3"] = True
+        # Never pause after test, since headless shell is not interactive.
+        kwargs["pause_after_test"] = False
+        # Don't add a `--headless` switch.
+        kwargs["headless"] = False
+
+        if kwargs["enable_webtransport_h3"] is None:
+            kwargs["enable_webtransport_h3"] = True
 
 
 class Chromium(Chrome):
@@ -810,9 +814,8 @@ class WebKitTestRunner(BrowserSetup):
             kwargs["binary"] = binary
 
 
-class WebKitGTKMiniBrowser(BrowserSetup):
-    name = "webkitgtk_minibrowser"
-    browser_cls = browser.WebKitGTKMiniBrowser
+class WebKitGlibBaseMiniBrowser(BrowserSetup):
+    """ Base class for WebKitGTKMiniBrowser and WPEWebKitMiniBrowser """
 
     def install(self, channel=None):
         if self.prompt_install(self.name):
@@ -832,8 +835,23 @@ class WebKitGTKMiniBrowser(BrowserSetup):
                 venv_path=self.venv.path, channel=kwargs["browser_channel"])
 
             if webdriver_binary is None:
-                raise WptrunError("Unable to find WebKitWebDriver in PATH")
+                raise WptrunError('Unable to find "%s" binary in PATH' % self.browser_cls.WEBDRIVER_BINARY_NAME)
             kwargs["webdriver_binary"] = webdriver_binary
+
+
+class WebKitGTKMiniBrowser(WebKitGlibBaseMiniBrowser):
+    name = "webkitgtk_minibrowser"
+    browser_cls = browser.WebKitGTKMiniBrowser
+
+
+class WPEWebKitMiniBrowser(WebKitGlibBaseMiniBrowser):
+    name = "wpewebkit_minibrowser"
+    browser_cls = browser.WPEWebKitMiniBrowser
+
+    def setup_kwargs(self, kwargs):
+        if kwargs["headless"]:
+            kwargs["binary_args"].append("--headless")
+        super().setup_kwargs(kwargs)
 
 
 class Epiphany(BrowserSetup):
@@ -867,8 +885,8 @@ product_setup = {
     "chrome_android": ChromeAndroid,
     "chrome_ios": ChromeiOS,
     "chromium": Chromium,
-    "content_shell": ContentShell,
     "edge": Edge,
+    "headless_shell": HeadlessShell,
     "safari": Safari,
     "servo": Servo,
     "servodriver": ServoWebDriver,
@@ -877,6 +895,7 @@ product_setup = {
     "webkit": WebKit,
     "wktr": WebKitTestRunner,
     "webkitgtk_minibrowser": WebKitGTKMiniBrowser,
+    "wpewebkit_minibrowser": WPEWebKitMiniBrowser,
     "epiphany": Epiphany,
     "ladybird": Ladybird,
 }
@@ -955,7 +974,7 @@ def setup_wptrunner(venv, **kwargs):
 
     if kwargs["install_browser"]:
         logger.info("Installing browser")
-        kwargs["binary"] = setup_cls.install(channel=channel)
+        kwargs["binary"] = setup_cls.install(channel=kwargs["browser_channel"])
 
     setup_cls.setup(kwargs)
 

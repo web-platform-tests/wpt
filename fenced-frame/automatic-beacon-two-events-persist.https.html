@@ -14,7 +14,6 @@
 <body>
 <script>
 promise_test(async(t) => {
-  const actions = new test_driver.Actions();
   const fencedframe = await attachFencedFrameContext(
       {generator_api: 'fledge', register_beacon: true,
        origin: get_host_info().HTTPS_REMOTE_ORIGIN});
@@ -29,19 +28,23 @@ promise_test(async(t) => {
 
   // The first click should trigger the automatic beacon, but the beacon data
   // should not be cleared out.
-  await actions.pointerMove(0, 0, {origin: fencedframe.element})
+  await new test_driver.Actions()
+               .pointerMove(0, 0, {origin: fencedframe.element})
                .pointerDown()
                .pointerUp()
                .send();
-  await verifyBeaconData(beacon_event.eventType, beacon_event.eventData);
+  await verifyBeaconData(beacon_event.eventType, beacon_event.eventData,
+      get_host_info().HTTPS_REMOTE_ORIGIN);
 
   // The second click should still have associated automatic beacon data, and a
   // beacon should be sent.
-  await actions.pointerMove(0, 0, {origin: fencedframe.element})
+  await new test_driver.Actions()
+               .pointerMove(0, 0, {origin: fencedframe.element})
                .pointerDown()
                .pointerUp()
                .send();
-  await verifyBeaconData(beacon_event.eventType, beacon_event.eventData);
+  await verifyBeaconData(beacon_event.eventType, beacon_event.eventData,
+      get_host_info().HTTPS_REMOTE_ORIGIN);
 }, 'Set persisting automatic beacon but trigger two events in a click handler');
 
 </script>

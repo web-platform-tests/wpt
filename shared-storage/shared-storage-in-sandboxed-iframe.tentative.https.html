@@ -58,6 +58,20 @@
     async_test(t => {
       test_shared_storage_in_sandboxed_iframe(t,
         /*sandbox_flags=*/'allow-scripts allow-same-origin',
+        /*method=*/'createWorkletScriptOrigin',
+        /*expect_success=*/true);
+    }, 'test sharedStorage.createWorklet() with dataOrigin "script-origin" in sandboxed iframe with "allow-same-origin"');
+
+    async_test(t => {
+      test_shared_storage_in_sandboxed_iframe(t,
+        /*sandbox_flags=*/'allow-scripts',
+        /*method=*/'createWorkletScriptOrigin',
+        /*expect_success=*/true);
+    }, 'test sharedStorage.createWorklet() with dataOrigin "script-origin" in sandboxed iframe without "allow-same-origin"');
+
+    async_test(t => {
+      test_shared_storage_in_sandboxed_iframe(t,
+        /*sandbox_flags=*/'allow-scripts allow-same-origin',
         /*method=*/'addModule',
         /*expect_success=*/true);
     }, 'test sharedStorage.worklet.addModule() in sandboxed iframe with "allow-same-origin"');

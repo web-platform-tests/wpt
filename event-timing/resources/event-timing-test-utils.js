@@ -378,6 +378,32 @@ async function pressKey(target, key) {
   await test_driver.send_keys(target, key);
 }
 
+async function flingAndTapInTarget(target) {
+  const actions = new test_driver.Actions();
+  return actions.addPointer("pointer1", "touch")
+        .pointerMove(0, 0, {origin: target})
+        .pointerDown()
+        .pointerMove(0, -50, {origin: target})
+        .pointerMove(0, -50, {origin: target})
+        .pointerUp()
+        .pause(60)
+        .pointerMove(0, 0, {origin: target})
+        .pointerDown()
+        .pointerUp()
+        .send();
+}
+
+async function textSelectionInTarget(target) {
+  const actions = new test_driver.Actions();
+  return actions.addPointer("pointer1", "mouse")
+        .pointerMove(0, 0, {origin: target})
+        .pointerDown({button: actions.ButtonType.LEFT})
+        .pointerMove(20, 60, {origin: target})
+        .pointerMove(20, 120, {origin: target})
+        .pointerUp()
+        .send();
+}
+
 // The testdriver.js, testdriver-vendor.js need to be included to use this
 // function.
 async function addListenersAndPress(target, key, events) {
@@ -416,11 +442,59 @@ async function createPerformanceObserverPromise(observeTypes, callback, readyToR
   });
 }
 
+const ENTER_KEY = '\uE007';
+const SPACE_KEY = '\uE00D';
+
+async function blockPointerDownEventListener(target, duration, count) {
+  return new Promise(resolve => {
+    target.addEventListener("pointerdown", () => {
+      event_count++;
+      mainThreadBusy(duration);
+      if (event_count == count)
+        resolve();
+    });
+  });
+}
+
+async function blockCapturePointerDownEventListener(target, duration) {
+  return new Promise(resolve => {
+    target.addEventListener("pointerdown", (e) => {
+      mainThreadBusy(duration);
+      target.setPointerCapture(e.pointerId);
+      resolve();
+    });
+  });
+}
+
+async function flingTapAndBlockMain(target, duration) {
+  return Promise.all([
+    blockPointerDownEventListener(target, duration, 2),
+    blockNextEventListener(target, "pointercancel", duration),
+    blockNextEventListener(target, "scroll", duration),
+    flingAndTapInTarget(target),
+  ]);
+}
+
+async function textSelectionAndBlockMain(target, duration) {
+  return Promise.all([
+    blockCapturePointerDownEventListener(target, "pointerdown", duration),
+    blockNextEventListener(target, "pointermove", duration),
+    blockNextEventListener(target, "scroll", duration),
+    blockNextEventListener(target, "pointerup", 10),
+    textSelectionInTarget(target),
+    // afterNextPaint(),
+  ]);
+}
+
 // The testdriver.js, testdriver-vendor.js need to be included to use this
 // function.
-async function interactAndObserve(interactionType, target, observerPromise) {
+async function interactAndObserve(interactionType, target, observerPromise, key = '') {
   let interactionPromise;
   switch (interactionType) {
+    case 'key': {
+      addListeners(target, ['keydown', 'keyup']);
+      interactionPromise = pressKey(target, key);
+    }
     case 'tap': {
       addListeners(target, ['pointerdown', 'pointerup']);
       interactionPromise = tap(target);
@@ -453,6 +527,24 @@ async function interactAndObserve(interactionType, target, observerPromise) {
     case 'orphan-pointerup': {
       addListeners(target, ['pointerup']);
       interactionPromise = pointerup(target);
+      break;
+    }
+    case 'space-key-simulated-click': {
+      addListeners(target, ['keydown', 'click']);
+      interactionPromise = interact('key', target, SPACE_KEY);
+      break;
+    }
+    case 'enter-key-simulated-click': {
+      addListeners(target, ['keydown', 'click']);
+      interactionPromise = interact('key', target, ENTER_KEY);
+      break;
+    }
+    case 'fling-tap': {
+      interactionPromise = flingTapAndBlockMain(target, 30);
+      break;
+    }
+    case 'selection-scroll': {
+      interactionPromise = textSelectionAndBlockMain(target, 30);
       break;
     }
   }

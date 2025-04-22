@@ -15,9 +15,8 @@
       outline: 3px dashed darkred;
     }
 
-    [id^=child] {
-      font-weight: bold;
-      background-color: yellow;
+    [id] {
+      outline: 1px dashed green;
     }
   </style>
 </head>
@@ -26,207 +25,122 @@
 
   <h1>Accname tests for assorted combinations of <code>aria-owns</code>, <code>aria-hidden</code>, and host language hiding techniques</h1>
   <p><span aria-hidden="true">Text enclosed in a dashed red outline</span> is <code>aria-hidden="true"</code>.</p>
-  <p><span id="child-simulated">Bold text with a yellow background</span> is the target of another element’s <code>aria-owns</code>.</p>
+  <p><span id="foo">Bold text with a yellow background</span> is the target of another element’s <code>aria-owns</code>.</p>
 
-  <h2>Child is moved, nothing is hidden</h2>
-  <p>Expected: <q>I love cats and dogs I like birds</q></p>
+  <h2>A button using aria-owns to specify its label</h2>
   <button
     class="ex-label"
-    data-testname="Child is moved, nothing is hidden"
-    data-expectedlabel="I love cats and dogs I like birds"
+    data-testname="A button using aria-owns to specify its label"
+    data-expectedlabel="Play"
+    aria-owns="play"
   >
-    <span>
-      <span aria-owns="child-1">
-        I love cats
-      </span>
-    </span>
-    <span>
-      <span>
-        I like birds
-        <span id="child-1"> and dogs</span>
-      </span>
-    </span>
+    <div aria-hidden="true">
+      <span id="play">Play</span>
+      <span id="pause" class="hidden-visually">Pause</span>
+    </div>
   </button>
 
-  <h2>Original parent is aria-hidden</h2>
-  <p>Expected: <q>I love cats and dogs</q></p>
-  <button
+  <h2>A link using aria-owns to concatenate extra text</h2>
+  <a
     class="ex-label"
-    data-testname="Original parent is aria-hidden"
-    data-expectedlabel="I love cats and dogs"
+    data-testname="A link using aria-owns to concatenate extra text"
+    data-expectedlabel="World Wide Web Consortium (opens in a new window)"
+    href="https://www.w3.org/"
+    target="_blank"
+    aria-owns="new-window-warning-1"
   >
-    <span>
-      <span aria-owns="child-2">
-        I love cats
-      </span>
-    </span>
-    <span>
-      <span aria-hidden="true">
-        I like birds
-        <span id="child-2"> and dogs</span>
-      </span>
-    </span>
-  </button>
+    World Wide Web Consortium
+  </a>
+  <div aria-hidden="true" class="hidden-visually">
+    <span id="new-window-warning-1"> (opens in a new window)</span>
+  </div>
 
-  <h2>Original parent is not rendered</h2>
-  <p>Expected: <q>I love cats</q></p>
-  <button
+  <!--
+    Re: https://github.com/w3c/aria/pull/1839
+    “User agents MUST NOT resolve aria-owns when it is set on an element that
+    has been excluded from the accessibility tree.”
+  -->
+  <h2>A hidden element failing to re-parent text using aria-owns</h2>
+  <h3
     class="ex-label"
-    data-testname="Original parent is not rendered"
-    data-expectedlabel="I love cats"
+    data-testname="A hidden element failing to re-parent text using aria-owns"
+    data-expectedlabel="treasure"
   >
-    <span>
-      <span aria-owns="child-3">
-        I love cats
-      </span>
+    <span hidden aria-owns="treasure">
+      This ninja can’t steal the...
     </span>
-    <span>
-      <span style="display: none;">
-        I like birds
-        <span id="child-3"> and dogs</span>
-      </span>
-    </span>
-  </button>
+    <mark id="treasure">treasure</mark>
+  </h3>
 
-  <h2>New parent is aria-hidden</h2>
-  <p>Expected: <q>I like birds and dogs</q></p>
-  <button
+  <!--
+    Re: https://github.com/w3c/aria/pull/1839
+    “User agents MUST NOT resolve aria-owns when it is set on an element that
+    has been excluded from the accessibility tree.”
+  -->
+  <h2>An aria-hidden element failing to re-parent text using aria-owns</h2>
+  <h3
     class="ex-label"
-    data-testname="New parent is aria-hidden"
-    data-expectedlabel="I like birds and dogs"
+    data-testname="An aria-hidden element failing to re-parent text using aria-owns"
+    data-expectedlabel="reflection"
   >
-    <span>
-      <span aria-hidden="true" aria-owns="child-4">
-        I love cats
-      </span>
+    <span aria-hidden="true" aria-owns="reflection">
+      This vampire can’t see its...
     </span>
-    <span>
-      <p>
-        I like birds
-        <span id="child-4"> and dogs</span>
-      </span>
-    </span>
-  </button>
+    <mark id="reflection">reflection</mark>
+  </h3>
 
-  <h2>New parent is not rendered</h2>
-  <p>Expected: <q>I like birds and dogs</q></p>
-  <button
+  <!--
+    Re: https://github.com/w3c/aria/pull/1839
+    “User agents MUST NOT resolve aria-owns when it references an element
+    that is, or has a DOM ancestor that is, hidden from all users.”
+  -->
+  <h2>A link failing to concatenate hidden text using aria-owns</h2>
+  <a
     class="ex-label"
-    data-testname="New parent is not rendered"
-    data-expectedlabel="I like birds and dogs"
+    data-testname="A link failing to concatenate hidden text using aria-owns"
+    data-expectedlabel="World Wide Web Consortium"
+    href="https://www.w3.org/"
+    aria-owns="new-window-warning-2"
   >
-    <span>
-      <span style="display: none;" aria-owns="child-5">
-        I love cats
-      </span>
-    </span>
-    <span>
-      <p>
-        I like birds
-        <span id="child-5"> and dogs</span>
-      </span>
-    </span>
-  </button>
+    World Wide Web Consortium
+  </a>
+  <div>
+    <span id="new-window-warning-2" hidden> (opens in a new window)</span>
+  </div>
 
-  <h2>Ancestor of new parent is aria-hidden</h2>
-  <p>Expected: <q>I like birds and dogs</q></p>
-  <button
+  <!--
+    Re: https://github.com/w3c/aria/pull/1839
+    “User agents MUST NOT resolve aria-owns when it references an element
+    that is, or has a DOM ancestor that is, hidden from all users.”
+  -->
+  <h2>A link failing to concatenate text from a hidden ancestor using aria-owns</h2>
+  <a
     class="ex-label"
-    data-testname="Ancestor of new parent is aria-hidden"
-    data-expectedlabel="I like birds and dogs"
+    data-testname="A link failing to concatenate text from a hidden ancestor using aria-owns"
+    data-expectedlabel="World Wide Web Consortium"
+    href="https://www.w3.org/"
+    aria-owns="new-window-warning-3"
   >
-    <span aria-hidden="true">
-      <span aria-owns="child-6">
-        I love cats
-      </span>
-    </span>
-    <span>
-      <p>
-        I like birds
-        <span id="child-6"> and dogs</span>
-      </span>
-    </span>
-  </button>
+    World Wide Web Consortium
+  </a>
+  <div hidden>
+    <span id="new-window-warning-3"> (opens in a new window)</span>
+  </div>
 
-  <h2>Ancestor of new parent is not rendered</h2>
-  <p>Expected: <q>I like birds and dogs</q></p>
-  <button
-    class="ex-label"
-    data-testname="Ancestor of new parent is not rendered"
-    data-expectedlabel="I like birds and dogs"
-  >
-    <span style="display: none;">
-      <span aria-owns="child-7">
-        I love cats
-      </span>
-    </span>
-    <span>
-      <p>
-        I like birds
-        <span id="child-7"> and dogs</span>
-      </span>
-    </span>
-  </button>
 
-  <h2>Moved child is itself aria-hidden</h2>
-  <p>Expected: <q>I love cats I like birds</q></p>
-  <button
+  <h2>A link failing to concatenate aria-hidden text using aria-owns</h2>
+  <a
     class="ex-label"
-    data-testname="Moved child is itself aria-hidden"
-    data-expectedlabel="I love cats I like birds"
+    data-testname="A link failing to concatenate aria-hidden text using aria-owns"
+    data-expectedlabel="World Wide Web Consortium"
+    href="https://www.w3.org/"
+    aria-owns="new-window-warning-4"
   >
-    <span>
-      <span aria-owns="child-8">
-        I love cats
-      </span>
-    </span>
-    <span>
-      <p>
-        I like birds
-        <span id="child-8" aria-hidden="true"> and dogs</span>
-      </span>
-    </span>
-  </button>
-
-  <h2>Moved child is itself not rendered</h2>
-  <p>Expected: <q>I love cats I like birds</q></p>
-  <button
-    class="ex-label"
-    data-testname="Moved child is itself not rendered"
-    data-expectedlabel="I love cats I like birds"
-  >
-    <span>
-      <span aria-owns="child-9">
-        I love cats
-      </span>
-    </span>
-    <span>
-      <p>
-        I like birds
-        <span id="child-9" style="display: none;"> and dogs</span>
-      </span>
-    </span>
-  </button>
-
-  <h2>New owner’s current child is not rendered</h2>
-  <p>Expected: <q>and dogs I like birds</q></p>
-  <button
-    class="ex-label"
-    data-testname="New owner’s current child is not rendered"
-    data-expectedlabel="and dogs I like birds"
-  >
-    <span aria-owns="child-10">
-      <span style="display: none;">
-        I love cats
-      </span>
-    </span>
-    <span>
-      <p>
-        I like birds
-        <span id="child-10"> and dogs</span>
-      </span>
-    </span>
-  </button>
+    World Wide Web Consortium
+  </a>
+  <div>
+    <span id="new-window-warning-4" aria-hidden="true"> (opens in a new window)</span>
+  </div>
 
   <script>
     AriaUtils.verifyLabelsBySelector(".ex-label");

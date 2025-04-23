@@ -25,6 +25,8 @@ A_05_03_02_T01.step(unit(function (ctx) {
 
     var roots = createTestMediaPlayer(d);
 
+    // window.setTimeout(function (){
+
     roots.playerShadowRoot.querySelector('.volume-slider').focus();
 
     //expected result of what relative target should be see
@@ -44,6 +46,9 @@ A_05_03_02_T01.step(unit(function (ctx) {
     assert_true(invoked, 'Event listener was not invoked');
 
     A_05_03_02_T01.done();
+
+      
+    // },2000)
 }));
 
 

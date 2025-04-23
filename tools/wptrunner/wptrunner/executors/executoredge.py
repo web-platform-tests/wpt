@@ -3,43 +3,33 @@
 import os
 
 from .executorwebdriver import (
-    WebDriverCrashtestExecutor,
     WebDriverRefTestExecutor,
     WebDriverRun,
     WebDriverTestharnessExecutor,
 )
 
-from .executorchrome import (
-    ChromeDriverProtocol,
-    make_sanitizer_mixin,
-)
+from .executorchrome import ChromeDriverProtocol
 
 here = os.path.dirname(__file__)
-
-_SanitizerMixin = make_sanitizer_mixin(WebDriverCrashtestExecutor)
 
 
 class EdgeDriverProtocol(ChromeDriverProtocol):
     vendor_prefix = "ms"
 
 
-class EdgeDriverRefTestExecutor(WebDriverRefTestExecutor, _SanitizerMixin):  # type: ignore
+class EdgeDriverRefTestExecutor(WebDriverRefTestExecutor):
     protocol_cls = EdgeDriverProtocol
 
 
-class EdgeDriverTestharnessExecutor(WebDriverTestharnessExecutor, _SanitizerMixin):  # type: ignore
+class EdgeDriverTestharnessExecutor(WebDriverTestharnessExecutor):
     protocol_cls = EdgeDriverProtocol
-
-    def __init__(self, *args, reuse_window=False, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.protocol.reuse_window = reuse_window
 
 
 class EdgeDriverPrintRefTestExecutor(EdgeDriverRefTestExecutor):
     protocol_cls = EdgeDriverProtocol
 
-    def setup(self, runner):
-        super().setup(runner)
+    def setup(self, runner, protocol=None):
+        super().setup(runner, protocol)
         self.protocol.pdf_print.load_runner()
         self.has_window = False
         with open(os.path.join(here, "reftest.js")) as f:

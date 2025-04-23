@@ -225,7 +225,18 @@ test(function() {
   assert_equals(serialize(root), '<div xmlns="http://www.w3.org/1999/xhtml"></div><span xmlns="http://www.w3.org/1999/xhtml"></span>');
 }, 'Check if document fragment serializes.');
 
+test(function () {
+  const root = document.createElement("img");
+  root.append(document.createElement("style"));
+  root.append(document.createElement("style"));
+  assert_equals(serialize(root), '<img xmlns=\"http://www.w3.org/1999/xhtml\"><style></style><style></style></img>');
+}, 'Check children were included for void elements');
 
+test(function () {
+  const root = parse('<root xmlns="" xmlns:foo="urn:bar"/>');
+  root.setAttributeNS(XMLNS_URI, 'xmlns:foo', '');
+  assert_equals(serialize(root), '<root xmlns="" xmlns:foo=""/>');
+}, 'Check if a prefix bound to an empty namespace URI ("no namespace") serialize');
 </script>
  </body>
 </html>

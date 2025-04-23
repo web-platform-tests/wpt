@@ -24,7 +24,8 @@ function getRemoteContextURL(origin) {
   return new URL(REMOTE_EXECUTOR_URL, origin);
 }
 
-async function runSelectRawURL(href, resolve_to_config = false) {
+async function runSelectRawURL(
+    href, resolve_to_config = false, register_beacon = false) {
   try {
     await sharedStorage.worklet.addModule(
       "/shared-storage/resources/simple-module.js");
@@ -35,14 +36,17 @@ async function runSelectRawURL(href, resolve_to_config = false) {
     // in a try/catch so that if it runs a second time in a test, it will
     // gracefully fail rather than bring the whole test down.
   }
+  let operation = {url: href};
+  if (register_beacon) {
+    operation.reportingMetadata = {
+      'reserved.top_navigation_start':
+          BEACON_URL + '?type=reserved.top_navigation_start',
+      'reserved.top_navigation_commit':
+          BEACON_URL + '?type=reserved.top_navigation_commit',
+    };
+  }
   return await sharedStorage.selectURL(
-      'test-url-selection-operation', [{url: href,
-          reportingMetadata: {
-            'reserved.top_navigation_start': BEACON_URL +
-                "?type=reserved.top_navigation_start",
-            'reserved.top_navigation_commit': BEACON_URL +
-                "?type=reserved.top_navigation_commit",
-          }}], {
+      'test-url-selection-operation', [operation], {
         data: {'mockResult': 0},
         resolveToConfig: resolve_to_config,
         keepAlive: true,
@@ -71,9 +75,10 @@ async function runSelectRawURL(href, resolve_to_config = false) {
 // needs to be enabled for `selectURL()` to return a fenced frame config.
 // Otherwise `selectURL()` will fall back to the old behavior that returns an
 // urn:uuid.
-async function runSelectURL(href, keylist = [], resolve_to_config = false) {
+async function runSelectURL(
+    href, keylist = [], resolve_to_config = false, register_beacon = false) {
   const full_url = generateURL(href, keylist);
-  return await runSelectRawURL(full_url, resolve_to_config);
+  return await runSelectRawURL(full_url, resolve_to_config, register_beacon);
 }
 
 async function generateURNFromFledgeRawURL(
@@ -211,7 +216,7 @@ function generateRemoteContextURL(headers, origin) {
   // Transform the headers into the expected format.
   // https://web-platform-tests.org/writing-tests/server-pipes.html#headers
   function escape(s) {
-    return s.replace('(', '\\(').replace(')', '\\)');
+    return s.replace('(', '\\(').replace(')', '\\)').replace(',', '\\,');
   }
   const formatted_headers = headers.map((header) => {
     return `header(${escape(header[0])}, ${escape(header[1])})`;
@@ -283,13 +288,13 @@ function attachContext(object_constructor, html, headers, origin) {
 async function attachOpaqueContext(
     generator_api, resolve_to_config, ad_with_size, requested_size,
     register_beacon, object_constructor, html, headers, origin,
-    num_components) {
+    component_origin, num_components) {
   const [uuid, url] = generateRemoteContextURL(headers, origin);
 
   let components_list = [];
   for (let i = 0; i < num_components; i++) {
     let [component_uuid, component_url] =
-        generateRemoteContextURL(headers, origin);
+        generateRemoteContextURL(headers, component_origin);
     // This field will be read by attachComponentFrameContext() in order to
     // know what uuid to point to when building the remote context.
     html += '<input type=\'hidden\' id=\'component_uuid_' + i + '\' value=\'' +
@@ -302,20 +307,21 @@ async function attachOpaqueContext(
           generateURNFromFledge(
               url, [], components_list, resolve_to_config, ad_with_size,
               requested_size, register_beacon) :
-          runSelectURL(url, [], resolve_to_config));
+          runSelectURL(url, [], resolve_to_config, register_beacon));
   const object = object_constructor(id);
   return buildRemoteContextForObject(object, uuid, html);
 }
 
 function attachPotentiallyOpaqueContext(
     generator_api, resolve_to_config, ad_with_size, requested_size,
-    register_beacon, frame_constructor, html, headers, origin, num_components) {
+    register_beacon, frame_constructor, html, headers, origin,
+    component_origin, num_components) {
   generator_api = generator_api.toLowerCase();
   if (generator_api == 'fledge' || generator_api == 'sharedstorage') {
     return attachOpaqueContext(
         generator_api, resolve_to_config, ad_with_size, requested_size,
         register_beacon, frame_constructor, html, headers, origin,
-        num_components);
+        component_origin, num_components);
   } else {
     return attachContext(frame_constructor, html, headers, origin);
   }
@@ -324,7 +330,7 @@ function attachPotentiallyOpaqueContext(
 function attachFrameContext(
     element_name, generator_api, resolve_to_config, ad_with_size,
     requested_size, register_beacon, html, headers, attributes, origin,
-    num_components) {
+    component_origin, num_components) {
   frame_constructor = (id) => {
     frame = document.createElement(element_name);
     attributes.forEach(attribute => {
@@ -344,7 +350,7 @@ function attachFrameContext(
   return attachPotentiallyOpaqueContext(
       generator_api, resolve_to_config, ad_with_size, requested_size,
       register_beacon, frame_constructor, html, headers, origin,
-      num_components);
+      component_origin, num_components);
 }
 
 // Performs a content-initiated navigation of a frame proxy. This navigated page
@@ -420,12 +426,13 @@ function attachFencedFrameContext({
   headers = [],
   attributes = [],
   origin = '',
+  component_origin = '',
   num_components = 0
 } = {}) {
   return attachFrameContext(
       'fencedframe', generator_api, resolve_to_config, ad_with_size,
       requested_size, register_beacon, html, headers, attributes, origin,
-      num_components);
+      component_origin, num_components);
 }
 
 // Attach an iframe that waits for scripts to execute.
@@ -437,12 +444,13 @@ function attachIFrameContext({
   headers = [],
   attributes = [],
   origin = '',
+  component_origin = '',
   num_components = 0
 } = {}) {
   return attachFrameContext(
       'iframe', generator_api, resolve_to_config = false, ad_with_size = false,
       requested_size = null, register_beacon, html, headers, attributes, origin,
-      num_components);
+      component_origin, num_components);
 }
 
 // Open a window that waits for scripts to execute.
@@ -517,9 +525,11 @@ async function stringToStashKey(string) {
 // Create a fenced frame. Then navigate it using the given `target`, which can
 // be either an urn:uuid or a fenced frame config object.
 function attachFencedFrame(target) {
-  assert_implements(
-      window.HTMLFencedFrameElement,
-      'The HTMLFencedFrameElement should be exposed on the window object');
+  if (window.test_driver) {
+    assert_implements(
+        window.HTMLFencedFrameElement,
+        'The HTMLFencedFrameElement should be exposed on the window object');
+  }
 
   const fenced_frame = document.createElement('fencedframe');
 
@@ -623,15 +633,6 @@ async function writeValueToServer(key, value, origin = '') {
 
   const serverURL = `${origin}${STORE_URL}?key=${key}&value=${value}`;
   await fetch(serverURL, {"mode": "no-cors"});
-}
-
-// Simulates a user gesture.
-async function simulateGesture() {
-  // Wait until the window size is initialized.
-  while (window.innerWidth == 0) {
-    await new Promise(resolve => requestAnimationFrame(resolve));
-  }
-  await test_driver.bless('simulate gesture');
 }
 
 // Fenced frames are always put in the public IP address space which is the

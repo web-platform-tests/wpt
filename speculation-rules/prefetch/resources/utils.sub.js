@@ -42,9 +42,16 @@ class PrefetchAgent extends RemoteContext {
   // occur despite heuristic matching, etc., and await the completion of the
   // prefetch.
   async forceSinglePrefetch(url, extra = {}, wait_for_completion = true) {
-    await this.execute_script((url, extra) => {
-      insertSpeculationRules({ prefetch: [{source: 'list', urls: [url], ...extra}] });
-    }, [url, extra]);
+    return this.forceSpeculationRules(
+      {
+        prefetch: [{source: 'list', urls: [url], ...extra}]
+      }, wait_for_completion);
+  }
+
+  async forceSpeculationRules(rules, wait_for_completion = true) {
+    await this.execute_script((rules) => {
+      insertSpeculationRules(rules);
+    }, [rules]);
     if (!wait_for_completion) {
       return Promise.resolve();
     }
@@ -54,22 +61,25 @@ class PrefetchAgent extends RemoteContext {
   // `url` is the URL to navigate.
   //
   // `expectedDestinationUrl` is the expected URL after navigation.
-  // When omitted, `url` is used.
+  // When omitted, `url` is used. When explicitly null, the destination URL is
+  // not validated.
   async navigate(url, {expectedDestinationUrl} = {}) {
     await this.execute_script((url) => {
       window.executor.suspend(() => {
         location.href = url;
       });
     }, [url]);
-    if (!expectedDestinationUrl) {
+    if (expectedDestinationUrl === undefined) {
       expectedDestinationUrl = url;
     }
-    expectedDestinationUrl.username = '';
-    expectedDestinationUrl.password = '';
-    assert_equals(
-        await this.execute_script(() => location.href),
-        expectedDestinationUrl.toString(),
-        "expected navigation to reach destination URL");
+    if (expectedDestinationUrl) {
+      expectedDestinationUrl.username = '';
+      expectedDestinationUrl.password = '';
+      assert_equals(
+          await this.execute_script(() => location.href),
+          expectedDestinationUrl.toString(),
+          "expected navigation to reach destination URL");
+    }
     await this.execute_script(() => {});
   }
 

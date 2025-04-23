@@ -1,10 +1,12 @@
 from typing import Any, Callable, Dict, List, Mapping
 from webdriver.bidi.modules.script import ContextTarget
+from webdriver.bidi.undefined import UNDEFINED
 
 
 # Compares 2 objects recursively.
 # Actual value can have more keys as part of the forwards-compat design.
-# Expected value can be a callable delegate, asserting the value.
+# Expected value can be a value, a callable delegate, asserting the value, or UNDEFINED.
+# If expected value is UNDEFINED, the actual value should not be present.
 def recursive_compare(expected: Any, actual: Any) -> None:
     if callable(expected):
         expected(actual)
@@ -17,11 +19,19 @@ def recursive_compare(expected: Any, actual: Any) -> None:
         return
 
     if isinstance(actual, Dict) and isinstance(expected, Dict):
+
+        # Expected keys with UNDEFINED values should not be present.
+        unexpected_keys = {key: value for key, value in expected.items() if
+                             value is UNDEFINED}.keys()
+        assert not (unexpected_keys & actual.keys()), \
+            f"Keys should not be present: {unexpected_keys & actual.keys()}"
+
+        expected_keys = expected.keys() - unexpected_keys
         # Actual Mapping can have more keys as part of the forwards-compat design.
         assert (
-            expected.keys() <= actual.keys()
-        ), f"Key set should be present: {set(expected.keys()) - set(actual.keys())}"
-        for key in expected.keys():
+            expected_keys <= actual.keys()
+        ), f"Key set should be present: {set(expected_keys) - set(actual.keys())}"
+        for key in expected_keys:
             recursive_compare(expected[key], actual[key])
         return
 
@@ -40,6 +50,10 @@ def any_int(actual: Any) -> None:
     assert isinstance(actual, int)
 
 
+def any_number(actual: Any) -> None:
+    assert isinstance(actual, int) or isinstance(actual, float)
+
+
 def any_int_or_null(actual: Any) -> None:
     if actual is not None:
         any_int(actual)
@@ -54,6 +68,14 @@ def any_list_or_null(actual: Any) -> None:
         any_list(actual)
 
 
+def any_positive_int(actual):
+    def _(actual: Any) -> None:
+        any_int(actual)
+        assert actual > 0
+
+    return _
+
+
 def any_string(actual: Any) -> None:
     assert isinstance(actual, str)
 
@@ -66,6 +88,14 @@ def any_string_or_null(actual: Any) -> None:
 def int_interval(start: int, end: int) -> Callable[[Any], None]:
     def _(actual: Any) -> None:
         any_int(actual)
+        assert start <= actual <= end
+
+    return _
+
+
+def number_interval(start: float, end: float) -> Callable[[Any], None]:
+    def _(actual: Any) -> None:
+        any_number(actual)
         assert start <= actual <= end
 
     return _
@@ -137,8 +167,9 @@ async def get_element_dimensions(bidi_session, context, element):
     return remote_mapping_to_dict(result["value"])
 
 
-async def get_viewport_dimensions(bidi_session, context: str, with_scrollbar: bool = True):
-    if with_scrollbar == True:
+async def get_viewport_dimensions(bidi_session, context: str,
+      with_scrollbar: bool = True, quirk_mode: bool = False):
+    if with_scrollbar:
         expression = """
             ({
                 height: window.innerHeight,
@@ -146,11 +177,17 @@ async def get_viewport_dimensions(bidi_session, context: str, with_scrollbar: bo
             });
         """
     else:
-        expression = """
-            ({
-                height: document.documentElement.clientHeight,
-                width: document.documentElement.clientWidth,
-            });
+        # The way the viewport height without the scrollbar can be calculated
+        # is different in quirks mode. In quirks mode, the viewport height is
+        # the height of the body element, while in standard mode it is the
+        # height of the document element.
+        element_expression = \
+            "document.body" if quirk_mode else "document.documentElement"
+        expression = f"""
+            ({{
+                height: {element_expression}.clientHeight,
+                width: {element_expression}.clientWidth,
+            }});
         """
     result = await bidi_session.script.evaluate(
         expression=expression,
@@ -177,9 +214,20 @@ async def get_document_dimensions(bidi_session, context: str):
     return remote_mapping_to_dict(result["value"])
 
 
+async def get_context_origin(bidi_session, context: Mapping[str, Any]) -> str:
+    result = await bidi_session.script.call_function(
+        function_declaration="""() => {
+          return window.location.origin;
+        }""",
+        target=ContextTarget(context["context"]),
+        await_promise=False)
+    return result["value"]
+
+
 def remote_mapping_to_dict(js_object) -> Dict:
     obj = {}
     for key, value in js_object:
-        obj[key] = value["value"]
+        if value["type"] != "null":
+            obj[key] = value["value"]
 
     return obj

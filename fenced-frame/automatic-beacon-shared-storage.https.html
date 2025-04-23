@@ -18,7 +18,8 @@ promise_test(async(t) => {
   const actions = new test_driver.Actions();
   const fencedframe = await attachFencedFrameContext(
       {generator_api: 'sharedstorage',
-       origin: get_host_info().HTTPS_REMOTE_ORIGIN});
+       origin: get_host_info().HTTPS_REMOTE_ORIGIN,
+       register_beacon: true});
 
   let start_event = {
     eventType: "reserved.top_navigation_start",
@@ -37,8 +38,10 @@ promise_test(async(t) => {
                .pointerUp()
                .send();
 
-  await verifyBeaconData(start_event.eventType, start_event.eventData);
-  await verifyBeaconData(commit_event.eventType, commit_event.eventData);
+  await verifyBeaconData(start_event.eventType, start_event.eventData,
+      get_host_info().HTTPS_REMOTE_ORIGIN);
+  await verifyBeaconData(commit_event.eventType, commit_event.eventData,
+      get_host_info().HTTPS_REMOTE_ORIGIN);
 }, 'Set and trigger an automatic beacon in a click handler for SharedStorage');
 
 </script>

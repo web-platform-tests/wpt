@@ -20,8 +20,11 @@ div {
   view-transition-name: target;
 }
 
-::view-transition-group(*) {
-  animation-duration: 1s;
+::view-transition-group(*),
+::view-transition-image-pair(*),
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation-play-state: paused;
 }
 
 ::view-transition-new(target.cls.some-div),

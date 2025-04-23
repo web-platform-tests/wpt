@@ -12,41 +12,25 @@ promise_test(async () => {
   assert_equals(value, 2);
 }, "last(): Promise resolves to last value");
 
-promise_test(async () => {
+promise_test(async (t) => {
   const error = new Error("error from source");
   const source = new Observable(subscriber => {
     subscriber.error(error);
   });
 
-  let rejection = null;
-  try {
-    await source.last();
-  } catch (e) {
-    rejection = e;
-  }
-
-  assert_equals(rejection, error);
+  return promise_rejects_exactly(t, error, source.last());
 }, "last(): Promise rejects with emitted error");
 
-promise_test(async () => {
+promise_test(async (t) => {
   const source = new Observable(subscriber => {
     subscriber.complete();
   });
 
-  let rejection = null;
-  try {
-    await source.last();
-  } catch (e) {
-    rejection = e;
-  }
-
-  assert_true(rejection instanceof RangeError,
-      "Promise rejects with RangeError");
-  assert_equals(rejection.message, "No values in Observable");
+  return promise_rejects_js(t, RangeError, source.last());
 }, "last(): Promise rejects with RangeError when source Observable " +
    "completes without emitting any values");
 
-promise_test(async () => {
+promise_test(async (t) => {
   const source = new Observable(subscriber => {});
 
   const controller = new AbortController();
@@ -54,18 +38,7 @@ promise_test(async () => {
 
   controller.abort();
 
-  let rejection = null;
-  try {
-    await promise;
-  } catch (e) {
-    rejection = e;
-  }
-
-  assert_true(rejection instanceof DOMException,
-      "Promise rejects with a DOMException for abortion");
-  assert_equals(rejection.name, "AbortError",
-      "Rejected with 'AbortError' DOMException");
-  assert_equals(rejection.message, "signal is aborted without reason");
+  return promise_rejects_dom(t, "AbortError", promise, "Promise rejects with a DOMException for abortion");
 }, "last(): Aborting a signal rejects the Promise with an AbortError DOMException");
 
 promise_test(async () => {
@@ -91,8 +64,8 @@ promise_test(async () => {
     "before source next 1",
     "after source next 1",
     "before source complete",
-    "source teardown",
     "source abort",
+    "source teardown",
     "after source complete",
   ], "Array values after last() is called");
 
@@ -105,8 +78,8 @@ promise_test(async () => {
     "before source next 1",
     "after source next 1",
     "before source complete",
-    "source teardown",
     "source abort",
+    "source teardown",
     "after source complete",
     "last resolved with: 1",
   ], "Array values after Promise is awaited");

@@ -10,6 +10,7 @@ from urllib.parse import urlunsplit
 
 from tests.support import defaults
 from tests.support.helpers import cleanup_session, deep_update
+from tests.support.web_extension import EXTENSION_DATA
 from tests.support.inline import build_inline
 from tests.support.http_request import HTTPRequest
 from tests.support.keys import Keys
@@ -41,16 +42,24 @@ def pytest_sessionfinish():
 
 
 @pytest.fixture
-def capabilities():
+def default_capabilities():
     """Default capabilities to use for a new WebDriver session."""
     return {}
 
 
-def pytest_generate_tests(metafunc):
-    if "capabilities" in metafunc.fixturenames:
-        marker = metafunc.definition.get_closest_marker(name="capabilities")
-        if marker:
-            metafunc.parametrize("capabilities", marker.args, ids=None)
+@pytest.fixture
+def capabilities(request, default_capabilities):
+    """Merges default capabilities with any test-specific capabilities from a marker."""
+    marker = request.node.get_closest_marker("capabilities")
+    if marker and marker.args:
+        # Ensure the first positional argument is a dictionary
+        assert isinstance(
+            marker.args[0], dict), "capabilities marker must use a dictionary"
+        caps = copy.deepcopy(default_capabilities)
+        deep_update(caps, marker.args[0])
+        return caps
+
+    return default_capabilities  # Use defaults if no marker is present
 
 
 @pytest.fixture
@@ -174,12 +183,8 @@ async def session(capabilities, configuration):
 
     # Enforce a fixed default window size and position
     if _current_session.capabilities.get("setWindowRect"):
-        # Only resize and reposition if needed to workaround a bug for Chrome:
-        # https://bugs.chromium.org/p/chromedriver/issues/detail?id=4642#c4
-        if _current_session.window.size != defaults.WINDOW_SIZE:
-            _current_session.window.size = defaults.WINDOW_SIZE
-        if _current_session.window.position != defaults.WINDOW_POSITION:
-            _current_session.window.position = defaults.WINDOW_POSITION
+        _current_session.window.size = defaults.WINDOW_SIZE
+        _current_session.window.position = defaults.WINDOW_POSITION
 
     # Set default timeouts
     multiplier = configuration["timeout_multiplier"]
@@ -226,12 +231,8 @@ async def bidi_session(capabilities, configuration):
 
     # Enforce a fixed default window size and position
     if _current_session.capabilities.get("setWindowRect"):
-        # Only resize and reposition if needed to workaround a bug for Chrome:
-        # https://bugs.chromium.org/p/chromedriver/issues/detail?id=4642#c4
-        if _current_session.window.size != defaults.WINDOW_SIZE:
-            _current_session.window.size = defaults.WINDOW_SIZE
-        if _current_session.window.position != defaults.WINDOW_POSITION:
-            _current_session.window.position = defaults.WINDOW_POSITION
+        _current_session.window.size = defaults.WINDOW_SIZE
+        _current_session.window.position = defaults.WINDOW_POSITION
 
     yield _current_session.bidi_session
 
@@ -242,6 +243,11 @@ async def bidi_session(capabilities, configuration):
 @pytest.fixture(scope="function")
 def current_session():
     return _current_session
+
+
+@pytest.fixture
+def target_platform(configuration):
+    return configuration["target_platform"]
 
 
 @pytest.fixture
@@ -289,6 +295,13 @@ def inline(url):
         return build_inline(url, src, **kwargs)
 
     return inline
+
+
+@pytest.fixture
+def extension_data(current_session):
+    browser_name = current_session.capabilities["browserName"]
+
+    return EXTENSION_DATA[browser_name]
 
 
 @pytest.fixture

@@ -63,7 +63,15 @@ async def test_params_arguments_channel_ownership_invalid_type(bidi_session, own
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.script.add_preload_script(
             function_declaration="() => {}",
-            arguments=[{"type": "channel", "value": {"ownership": ownership}}],
+            arguments=[
+                {
+                    "type": "channel",
+                    "value": {
+                        "channel": "foo",
+                        "ownership": ownership
+                    }
+                }
+            ],
         )
 
 
@@ -71,8 +79,12 @@ async def test_params_arguments_channel_ownership_invalid_value(bidi_session):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.script.add_preload_script(
             function_declaration="() => {}",
-            arguments=[{"type": "channel", "value": {
-                "ownership": "_UNKNOWN_"}}],
+            arguments=[
+                {
+                    "type": "channel",
+                    "value": {"channel": "foo", "ownership": "_UNKNOWN_"},
+                }
+            ],
         )
 
 
@@ -86,7 +98,10 @@ async def test_params_arguments_channel_serialization_options_invalid_type(
             arguments=[
                 {
                     "type": "channel",
-                    "value": {"serializationOptions": serialization_options},
+                    "value": {
+                        "channel": "foo",
+                        "serializationOptions": serialization_options,
+                    },
                 }
             ],
         )
@@ -102,7 +117,10 @@ async def test_params_arguments_channel_max_dom_depth_invalid_type(
             arguments=[
                 {
                     "type": "channel",
-                    "value": {"serializationOptions": {"maxDomDepth": max_dom_depth}},
+                    "value": {
+                        "channel": "foo",
+                        "serializationOptions": {"maxDomDepth": max_dom_depth},
+                    },
                 }
             ],
         )
@@ -115,7 +133,10 @@ async def test_params_arguments_channel_max_dom_depth_invalid_value(bidi_session
             arguments=[
                 {
                     "type": "channel",
-                    "value": {"serializationOptions": {"maxDomDepth": -1}},
+                    "value": {
+                        "channel": "foo",
+                        "serializationOptions": {"maxDomDepth": -1},
+                    },
                 }
             ],
         )
@@ -132,7 +153,8 @@ async def test_params_arguments_channel_max_object_depth_invalid_type(
                 {
                     "type": "channel",
                     "value": {
-                        "serializationOptions": {"maxObjectDepth": max_object_depth}
+                        "channel": "foo",
+                        "serializationOptions": {"maxObjectDepth": max_object_depth},
                     },
                 }
             ],
@@ -146,7 +168,10 @@ async def test_params_arguments_channel_max_object_depth_invalid_value(bidi_sess
             arguments=[
                 {
                     "type": "channel",
-                    "value": {"serializationOptions": {"maxObjectDepth": -1}},
+                    "value": {
+                        "channel": "foo",
+                        "serializationOptions": {"maxObjectDepth": -1},
+                    },
                 }
             ],
         )
@@ -163,9 +188,10 @@ async def test_params_arguments_channel_include_shadow_tree_invalid_type(
                 {
                     "type": "channel",
                     "value": {
+                        "channel": "foo",
                         "serializationOptions": {
                             "includeShadowTree": include_shadow_tree
-                        }
+                        },
                     },
                 }
             ],
@@ -180,27 +206,26 @@ async def test_params_arguments_channel_include_shadow_tree_invalid_value(bidi_s
                 {
                     "type": "channel",
                     "value": {
-                        "serializationOptions": {"includeShadowTree": "_UNKNOWN_"}
+                        "channel": "foo",
+                        "serializationOptions": {"includeShadowTree": "_UNKNOWN_"},
                     },
                 }
             ],
         )
 
 
-@pytest.mark.parametrize("contexts", [False, 42, '_UNKNOWN_', {}])
+@pytest.mark.parametrize("contexts", [False, 42, "_UNKNOWN_", {}])
 async def test_params_contexts_invalid_type(bidi_session, contexts):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.script.add_preload_script(
-            function_declaration="() => {}",
-            contexts=contexts
+            function_declaration="() => {}", contexts=contexts
         ),
 
 
 async def test_params_contexts_empty_list(bidi_session):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.script.add_preload_script(
-            function_declaration="() => {}",
-            contexts=[]
+            function_declaration="() => {}", contexts=[]
         ),
 
 
@@ -208,8 +233,7 @@ async def test_params_contexts_empty_list(bidi_session):
 async def test_params_contexts_context_invalid_type(bidi_session, value):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.script.add_preload_script(
-            function_declaration="() => {}",
-            contexts=[value]
+            function_declaration="() => {}", contexts=[value]
         ),
 
 
@@ -217,12 +241,13 @@ async def test_params_contexts_context_invalid_type(bidi_session, value):
 async def test_params_contexts_context_invalid_value(bidi_session, value):
     with pytest.raises(error.NoSuchFrameException):
         await bidi_session.script.add_preload_script(
-            function_declaration="() => {}",
-            contexts=[value]
+            function_declaration="() => {}", contexts=[value]
         ),
 
 
-async def test_params_contexts_context_non_top_level(bidi_session, new_tab, test_page_same_origin_frame):
+async def test_params_contexts_context_non_top_level(
+    bidi_session, new_tab, test_page_same_origin_frame
+):
     await bidi_session.browsing_context.navigate(
         context=new_tab["context"],
         url=test_page_same_origin_frame,
@@ -237,8 +262,7 @@ async def test_params_contexts_context_non_top_level(bidi_session, new_tab, test
 
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.script.add_preload_script(
-            function_declaration="() => {}",
-            contexts=[child_info['context']]
+            function_declaration="() => {}", contexts=[child_info["context"]]
         ),
 
 
@@ -248,3 +272,44 @@ async def test_params_sandbox_invalid_type(bidi_session, sandbox):
         await bidi_session.script.add_preload_script(
             function_declaration="() => {}", sandbox=sandbox
         ),
+
+
+@pytest.mark.parametrize("user_contexts", [False, 42, "_UNKNOWN_", {}])
+async def test_params_user_contexts_invalid_type(bidi_session, user_contexts):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.script.add_preload_script(
+            function_declaration="() => {}", user_contexts=user_contexts
+        ),
+
+
+async def test_params_user_contexts_empty_list(bidi_session):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.script.add_preload_script(
+            function_declaration="() => {}", user_contexts=[]
+        ),
+
+
+@pytest.mark.parametrize("value", [None, False, 42, {}, []])
+async def test_params_user_contexts_entry_invalid_type(bidi_session, value):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.script.add_preload_script(
+            function_declaration="() => {}", user_contexts=[value]
+        ),
+
+
+@pytest.mark.parametrize("value", ["", "somestring"])
+async def test_params_user_contexts_entry_invalid_value(bidi_session, value):
+    with pytest.raises(error.NoSuchUserContextException):
+        await bidi_session.script.add_preload_script(
+            function_declaration="() => {}", user_contexts=[value]
+        ),
+
+
+@pytest.mark.asyncio
+async def test_params_user_context_and_contexts(bidi_session, top_context):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.script.add_preload_script(
+            function_declaration="() => {}",
+            user_contexts=["default"],
+            contexts=[top_context["context"]]
+        )

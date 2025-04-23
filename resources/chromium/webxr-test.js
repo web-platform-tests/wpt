@@ -5,14 +5,14 @@ import {GamepadHand, GamepadMapping} from '/gen/device/gamepad/public/mojom/game
 // This polyfill library implements the WebXR Test API as specified here:
 // https://github.com/immersive-web/webxr-test-api
 
-const defaultMojoFromFloor = {
+const defaultMojoFromStage = {
   matrix: [1, 0,     0, 0,
            0, 1,     0, 0,
            0, 0,     1, 0,
            0, -1.65, 0, 1]
 };
 const default_stage_parameters = {
-  mojoFromFloor: defaultMojoFromFloor,
+  mojoFromStage: defaultMojoFromStage,
   bounds: null
 };
 
@@ -512,8 +512,8 @@ class MockRuntime {
       this.stageParameters_.bounds = this.bounds_;
     }
 
-    // floorOrigin is passed in as mojoFromFloor.
-    this.stageParameters_.mojoFromFloor =
+    // floorOrigin is passed in as mojoFromStage.
+    this.stageParameters_.mojoFromStage =
         {matrix: getMatrixFromTransform(floorOrigin)};
 
     this._onStageParametersUpdated();
@@ -928,15 +928,17 @@ class MockRuntime {
         }
 
         const frameData = {
-          mojoFromViewer: this.pose_,
-          views: frame_views,
+          renderInfo: {
+            frameId: this.next_frame_id_,
+            mojoFromViewer: this.pose_,
+            views: frame_views
+          },
           mojoSpaceReset: mojo_space_reset,
           inputState: input_state,
           timeDelta: {
             // window.performance.now() is in milliseconds, so convert to microseconds.
             microseconds: BigInt(Math.floor(window.performance.now() * 1000)),
           },
-          frameId: this.next_frame_id_,
           bufferHolder: null,
           cameraImageSize: this.cameraImage_ ? {
             width: this.cameraImage_.width,
@@ -1188,20 +1190,27 @@ class MockRuntime {
 
         const enabled_features = [];
         for (let i = 0; i < sessionOptions.requiredFeatures.length; i++) {
-          if (this.supportedFeatures_.indexOf(sessionOptions.requiredFeatures[i]) !== -1) {
-            enabled_features.push(sessionOptions.requiredFeatures[i]);
+          const feature = sessionOptions.requiredFeatures[i];
+          if (this._runtimeSupportsFeature(feature, sessionOptions)) {
+            enabled_features.push(feature);
           } else {
             return Promise.resolve({session: null});
           }
         }
 
         for (let i =0; i < sessionOptions.optionalFeatures.length; i++) {
-          if (this.supportedFeatures_.indexOf(sessionOptions.optionalFeatures[i]) !== -1) {
-            enabled_features.push(sessionOptions.optionalFeatures[i]);
+          const feature = sessionOptions.optionalFeatures[i];
+          if (this._runtimeSupportsFeature(feature, sessionOptions)) {
+            enabled_features.push(feature);
           }
         }
 
         this.enabledFeatures_ = enabled_features;
+
+        let selectedDepthType;
+        if (sessionOptions.depthOptions && sessionOptions.depthOptions.depthTypeRequest.length != 0) {
+          selectedDepthType = sessionOptions.depthOptions.depthTypeRequest[0];
+        }
 
         return Promise.resolve({
           session: {
@@ -1215,9 +1224,12 @@ class MockRuntime {
               depthConfiguration: enabled_features.includes(
                                       xrSessionMojom.XRSessionFeature.DEPTH) ?
                   {
+                    // TODO(https://crbug.com/409806803): Update support via
+                    // a webxr-test-api method.
                     depthUsage: xrSessionMojom.XRDepthUsage.kCPUOptimized,
                     depthDataFormat:
                         xrSessionMojom.XRDepthDataFormat.kLuminanceAlpha,
+                    depthType: selectedDepthType,
                   } :
                   null,
               views: this._getDefaultViews(),
@@ -1234,18 +1246,30 @@ class MockRuntime {
 
   _runtimeSupportsSession(options) {
     let result = this.supportedModes_.includes(options.mode);
-
-    if (options.requiredFeatures.includes(xrSessionMojom.XRSessionFeature.DEPTH)
-    || options.optionalFeatures.includes(xrSessionMojom.XRSessionFeature.DEPTH)) {
-      result &= options.depthOptions.usagePreferences.includes(
-          xrSessionMojom.XRDepthUsage.kCPUOptimized);
-      result &= options.depthOptions.dataFormatPreferences.includes(
-          xrSessionMojom.XRDepthDataFormat.kLuminanceAlpha);
-    }
-
     return Promise.resolve({
       supportsSession: result,
     });
+  }
+
+  _runtimeSupportsFeature(feature, options) {
+    if (this.supportedFeatures_.indexOf(feature) === -1) {
+      return false;
+    }
+
+    switch (feature) {
+      case xrSessionMojom.XRSessionFeature.DEPTH:
+        // This matches what Chrome can currently support.
+        // TODO(https://crbug.com/409806803): Add a webxr-test-api for this.
+        return options.depthOptions &&
+               (options.depthOptions.usagePreferences.length == 0 ||
+                options.depthOptions.usagePreferences.includes(
+                  xrSessionMojom.XRDepthUsage.kCPUOptimized)) &&
+               (options.depthOptions.dataFormatPreferences.length == 0 ||
+                options.depthOptions.dataFormatPreferences.includes(
+                 xrSessionMojom.XRDepthDataFormat.kLuminanceAlpha));
+      default:
+        return true;
+    }
   }
 
   // Private functions - utilities:
@@ -1627,11 +1651,11 @@ class MockRuntime {
         case vrMojom.XRReferenceSpaceType.kLocal:
           return XRMathHelper.identity();
         case vrMojom.XRReferenceSpaceType.kLocalFloor:
-          if (this.stageParameters_ == null || this.stageParameters_.mojoFromFloor == null) {
+          if (this.stageParameters_ == null || this.stageParameters_.mojoFromStage == null) {
             console.warn("Standing transform not available.");
             return null;
           }
-          return this.stageParameters_.mojoFromFloor.matrix;
+          return this.stageParameters_.mojoFromStage.matrix;
         case vrMojom.XRReferenceSpaceType.kViewer:
           return mojo_from_viewer;
         case vrMojom.XRReferenceSpaceType.kBoundedFloor:

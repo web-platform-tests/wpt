@@ -85,55 +85,54 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
          "matchType": "full",
          "maxDepth": 0,
          "value": "foobarbarbaz"
-     }, ["body"]),
+     }, ["html"]),
     ({
          "type": "innerText",
          "ignoreCase": False,
          "matchType": "full",
          "maxDepth": 0,
          "value": "foobarBARbaz"
-     }, ["body"]),
+     }, ["html"]),
     ({
          "type": "innerText",
          "ignoreCase": True,
          "matchType": "partial",
          "maxDepth": 0,
          "value": "bar"
-     }, ["body"]),
+     }, ["html"]),
     ({
          "type": "innerText",
          "ignoreCase": False,
          "matchType": "partial",
          "maxDepth": 0,
          "value": "BAR"
-     }, ["body"]),
+     }, ["html"]),
     ({
-
          "type": "innerText",
          "ignoreCase": True,
          "matchType": "full",
-         "maxDepth": 1,
+         "maxDepth": 2,
          "value": "foobarbarbaz"
      }, ["div"]),
     ({
          "type": "innerText",
          "ignoreCase": False,
          "matchType": "full",
-         "maxDepth": 1,
+         "maxDepth": 2,
          "value": "foobarBARbaz"
      }, ["div"]),
     ({
          "type": "innerText",
          "ignoreCase": True,
          "matchType": "partial",
-         "maxDepth": 1,
+         "maxDepth": 2,
          "value": "bar"
      }, ["div"]),
     ({
          "type": "innerText",
          "ignoreCase": False,
          "matchType": "partial",
-         "maxDepth": 1,
+         "maxDepth": 2,
          "value": "BAR"
      }, ["div"]),
 ], ids=[
@@ -145,10 +144,10 @@ async def test_find_by_locator(bidi_session, inline, top_context, type, value):
     "ignore_case_false_full_match_max_depth_zero",
     "ignore_case_true_partial_match_max_depth_zero",
     "ignore_case_false_partial_match_max_depth_zero",
-    "ignore_case_true_full_match_max_depth_one",
-    "ignore_case_false_full_match_max_depth_one",
-    "ignore_case_true_partial_match_max_depth_one",
-    "ignore_case_false_partial_match_max_depth_one",
+    "ignore_case_true_full_match_max_depth_two",
+    "ignore_case_false_full_match_max_depth_two",
+    "ignore_case_true_partial_match_max_depth_two",
+    "ignore_case_false_partial_match_max_depth_two",
 ])
 @pytest.mark.asyncio
 async def test_find_by_inner_text(bidi_session, inline, top_context, locator, expected_nodes_values):
@@ -235,5 +234,122 @@ async def test_locate_by_accessibility_attributes(
         context=top_context["context"],
         locator={"type": "accessibility", "value": locator_value},
     )
+
+    recursive_compare(expected, result["nodes"])
+
+
+@pytest.mark.parametrize("domain", ["", "alt"], ids=["same_origin", "cross_origin"])
+@pytest.mark.asyncio
+async def test_locate_by_context(bidi_session, inline, top_context, domain):
+    iframe_url_1 = inline("<div>foo</div>", domain=domain)
+    page_url = inline(f"<iframe id='target' src='{iframe_url_1}'></iframe>")
+
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"], url=page_url, wait="complete"
+    )
+
+    contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])
+    iframe_context = contexts[0]["children"][0]
+
+    result = await bidi_session.browsing_context.locate_nodes(
+        context=top_context["context"],
+        locator={"type": "context", "value": { "context": iframe_context["context"] }}
+    )
+
+    expected = [
+        {
+            "type": "node",
+            "sharedId": any_string,
+            "value": {
+                "attributes": {"src": any_string, "id": "target"},
+                "childNodeCount": 0,
+                "localName": "iframe",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "nodeType": 1,
+            }
+        }
+    ]
+
+    recursive_compare(expected, result["nodes"])
+
+
+@pytest.mark.parametrize("domain", ["", "alt"], ids=["same_origin", "cross_origin"])
+@pytest.mark.asyncio
+async def test_locate_by_context_in_iframe(bidi_session, inline, top_context, domain):
+    iframe_url_2 = inline("<div>foo</div>", domain=domain)
+    iframe_url_1 = inline(f"<div><iframe id='target' src='{iframe_url_2}'></iframe></div>")
+    page_url = inline(f"<iframe src='{iframe_url_1}'></iframe>")
+
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"], url=page_url, wait="complete"
+    )
+
+    contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])
+    iframe1_context = contexts[0]["children"][0]
+    iframe2_context = contexts[0]["children"][0]["children"][0]
+
+    result = await bidi_session.browsing_context.locate_nodes(
+        context=iframe1_context["context"],
+        locator={"type": "context", "value": { "context": iframe2_context["context"] }}
+    )
+
+    expected = [
+        {
+            "type": "node",
+            "sharedId": any_string,
+            "value": {
+                "attributes": {"src": any_string, "id": "target"},
+                "childNodeCount": 0,
+                "localName": "iframe",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "nodeType": 1,
+            }
+        }
+    ]
+
+    recursive_compare(expected, result["nodes"])
+
+
+@pytest.mark.parametrize("domain", ["", "alt"], ids=["same_origin", "cross_origin"])
+@pytest.mark.parametrize("mode", ["open", "closed"])
+@pytest.mark.asyncio
+async def test_locate_by_context_in_shadow_dom(bidi_session, inline, top_context, domain, mode):
+    iframe_url_1 = inline(f"<div>foo</div>", domain=domain)
+    page_url = inline(f"""
+      <div id="host"></div>
+      <script>
+        const host = document.querySelector('#host');
+        const shadow = host.attachShadow({{ mode: '{mode}' }});
+        const div = document.createElement('div');
+        div.innerHTML = "<iframe id='target' src='{iframe_url_1}'></iframe>";
+        shadow.appendChild(div);
+      </script>
+    """)
+
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"], url=page_url, wait="complete"
+    )
+
+    contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])
+    iframe1_context = contexts[0]["children"][0]
+
+    result = await bidi_session.browsing_context.locate_nodes(
+        context=top_context["context"],
+        locator={"type": "context", "value": { "context": iframe1_context["context"] }}
+    )
+
+    expected = [
+        {
+            "type": "node",
+            "sharedId": any_string,
+            "value": {
+                "attributes": {"src": any_string, "id": "target"},
+                "childNodeCount": 0,
+                "localName": "iframe",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "nodeType": 1,
+            }
+        }
+    ]
 
     recursive_compare(expected, result["nodes"])

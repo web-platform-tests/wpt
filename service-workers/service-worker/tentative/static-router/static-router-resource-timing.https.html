@@ -6,8 +6,8 @@
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/test-helpers.sub.js"></script>
-<script src="resources/static-router-helpers.sub.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script src="/service-workers/service-worker/resources/static-router-helpers.sub.js"></script>
 <body>
 <script>
 const ROUTER_RULE_KEY = 'condition-urlpattern-constructed-source-network';
@@ -17,20 +17,19 @@ const ROUTER_RULE_KEY_REQUEST_CACHE = 'condition-request-navigate-source-cache';
 const ROUTER_RULE_KEY_URL_PATTERN_CONSTRUCTED_MATCH_ALL_CACHE =
   'condition-urlpattern-constructed-match-all-source-cache';
 const ROUTER_RULE_KEY_REQUEST_FETCH = 'condition-urlpattern-string-source-fetch-event';
-const REGISTERED_ROUTE = 'resources/direct.txt';
-const CACHED_ROUTE = 'resources/cache.txt';
-const NON_REGISTERED_ROUTE = 'resources/simple.html';
+const REGISTERED_ROUTE = '/service-workers/service-worker/resources/direct.txt';
+const CACHED_ROUTE = '/service-workers/service-worker/resources/cache.txt';
+const NON_REGISTERED_ROUTE = '/service-workers/service-worker/resources/simple.html';
 
 const RACE_ROUTER_KEY =
   'condition-urlpattern-string-source-race-network-and-fetch-handler';
-const RACE_SW_SRC = 'resources/static-router-race-network-and-fetch-handler-sw.js';
-const RACE_ROUTE = 'resources/direct.py';
+const RACE_SW_SRC = '/service-workers/service-worker/resources/static-router-race-network-and-fetch-handler-sw.js';
+const RACE_ROUTE = '/service-workers/service-worker/resources/direct.py';
 
 const host_info = get_host_info();
-const path = new URL(".", window.location).pathname;
 
 function resourceUrl(resource) {
-  return `${host_info['HTTPS_ORIGIN']}${path}${resource}`;
+  return `${host_info['HTTPS_ORIGIN']}${resource}`;
 }
 
 // Verify existance of a PerformanceEntry and the order between the timings of
@@ -48,8 +47,8 @@ function test_resource_timing(options) {
   assert_equals(entryList.length, 1, description);
   const entry = entryList[0];
 
-  assert_equals(entry.matchedSourceType, options.matched_source_type, description);
-  assert_equals(entry.finalSourceType, options.final_source_type, description);
+  assert_equals(entry.workerMatchedSourceType, options.matched_source_type, description);
+  assert_equals(entry.workerFinalSourceType, options.final_source_type, description);
 
   assert_greater_than(entry.workerRouterEvaluationStart, 0, description);
   switch (entry.matchedSouceType) {
@@ -57,20 +56,24 @@ function test_resource_timing(options) {
       assert_equals(entry.workerStart, 0, description);
       assert_equals(entry.workerCacheLookupStart, 0, description);
       assert_less_than_equal(entry.workerRouterEvaluationStart, entry.fetchStart, description);
+      assert_greater_than(entry.encodedBodySize, 0, description);
       break;
     case 'cache':
       assert_equals(entry.workerStart, 0, description);
       assert_greater_than_equal(entry.workerCacheLookupStart, entry.workerRouterEvaluationStart, description);
-      if (entry.finalSourceType === 'cache') {
-        assert_equals(entry.fetchStart, 0, description);
+      assert_greater_than(entry.encodedBodySize, 0, description);
+      if (entry.workerFinalSourceType === 'cache') {
+        assert_equals(entry.fetchStart, entry.responseStart, description);
         assert_less_than_equal(entry.workerCacheLookupStart, entry.responseStart, description);
+        assert_equals(entry.deliveryType, 'cache-storage', description);
       } else {
         assert_less_than_equal(entry.workerCacheLookupStart, entry.fetchStart, description);
       }
       break;
-    case 'race-network-and-fetch':
+    case 'race-network-and-fetch-handler':
       assert_equals(entry.workerCacheLookupStart, 0, description);
-      if (entry.finalSourceType === 'network') {
+      assert_greater_than(entry.encodedBodySize, 0, description);
+      if (entry.workerFinalSourceType === 'network') {
         assert_equals(entry.workerStart, 0, description);
         assert_less_than_equal(entry.workerRouterEvaluationStart, entry.fetchStart, description);
       } else {
@@ -79,6 +82,8 @@ function test_resource_timing(options) {
       }
       break;
     case 'fetch-event':
+      assert_greater_than(entry.encodedBodySize, 0, description);
+      break;
     case '':  // i.e. no matching rules
       assert_equals(entry.workerCacheLookupStart, 0, description);
       assert_greater_than_equal(entry.workerStart, entry.workerRouterEvaluationStart, description);
@@ -261,7 +266,7 @@ promise_test(async t => {
   test_resource_timing({
     performance: iframe.contentWindow.performance,
     url: url,
-    matched_source_type: 'race-network-and-fetch',
+    matched_source_type: 'race-network-and-fetch-handler',
     final_source_type: 'fetch-event',
     description: "race as source on main resource, and fetch-event wins"
   });
@@ -280,7 +285,7 @@ promise_test(async t => {
   test_resource_timing({
     performance: iframe.contentWindow.performance,
     url: url,
-    matched_source_type: 'race-network-and-fetch',
+    matched_source_type: 'race-network-and-fetch-handler',
     final_source_type: 'network',
     description: "race as source on main resource, and network wins"
   });
@@ -301,7 +306,7 @@ promise_test(async t => {
   test_resource_timing({
     performance: iframe.contentWindow.performance,
     url: `${RACE_ROUTE}${subresource}`,
-    matched_source_type: 'race-network-and-fetch',
+    matched_source_type: 'race-network-and-fetch-handler',
     final_source_type: 'fetch-event',
     description: "race as source on subresource and fetch wins"
   });
@@ -323,7 +328,7 @@ promise_test(async t => {
   test_resource_timing({
     performance: iframe.contentWindow.performance,
     url: `${RACE_ROUTE}${subresource}`,
-    matched_source_type: 'race-network-and-fetch',
+    matched_source_type: 'race-network-and-fetch-handler',
     final_source_type: 'network',
     description: "race as source on subresource and network wins"
   });

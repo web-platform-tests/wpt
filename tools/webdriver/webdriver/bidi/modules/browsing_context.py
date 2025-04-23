@@ -7,7 +7,6 @@ from .script import SerializationOptions
 from ..undefined import UNDEFINED, Undefined
 
 
-
 class ElementOptions(Dict[str, Any]):
     def __init__(self, element: Mapping[str, Any]):
         self["type"] = "element"
@@ -69,11 +68,13 @@ class BrowsingContext(BidiModule):
         return base64.b64decode(result["data"])
 
     @command
-    def close(self, context: Optional[str] = None) -> Mapping[str, Any]:
+    def close(self, context: Optional[str] = None, prompt_unload: Optional[bool] = None) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {}
 
         if context is not None:
             params["context"] = context
+        if prompt_unload is not None:
+            params["promptUnload"] = prompt_unload
 
         return params
 
@@ -226,18 +227,20 @@ class BrowsingContext(BidiModule):
 
     @command
     def set_viewport(self,
-                     context: str,
+                     context: Optional[str] = None,
                      viewport: Union[Optional[Mapping[str, Any]], Undefined] = UNDEFINED,
-                     device_pixel_ratio: Union[Optional[float], Undefined] = UNDEFINED) -> Mapping[str, Any]:
-        params: MutableMapping[str, Any] = {
-            "context": context,
-        }
+                     device_pixel_ratio: Union[Optional[float], Undefined] = UNDEFINED,
+                     user_contexts: Optional[List[str]] = None) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {}
 
+        if context is not None:
+            params["context"] = context
         if viewport is not UNDEFINED:
             params["viewport"] = viewport
-
         if device_pixel_ratio is not UNDEFINED:
             params["devicePixelRatio"] = device_pixel_ratio
+        if user_contexts is not None:
+            params["userContexts"] = user_contexts
 
         return params
 

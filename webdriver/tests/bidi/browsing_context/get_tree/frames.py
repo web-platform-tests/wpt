@@ -29,6 +29,7 @@ async def test_multiple_frames(
         children=2,
         parent=None,
         url=test_page_multiple_frames,
+        client_window=top_context["clientWindow"],
     )
 
     child1_info = root_info["children"][0]
@@ -36,9 +37,10 @@ async def test_multiple_frames(
         child1_info,
         context=None,
         children=0,
-        is_root=False,
+        parent_expected=False,
         parent=None,
         url=test_page,
+        client_window=top_context["clientWindow"],
     )
     assert child1_info["context"] != root_info["context"]
 
@@ -47,9 +49,10 @@ async def test_multiple_frames(
         child2_info,
         context=None,
         children=0,
-        is_root=False,
+        parent_expected=False,
         parent=None,
         url=test_page2,
+        client_window=top_context["clientWindow"],
     )
     assert child2_info["context"] != root_info["context"]
     assert child2_info["context"] != child1_info["context"]
@@ -77,6 +80,7 @@ async def test_cross_origin(
         children=1,
         parent=None,
         url=test_page_cross_origin_frame,
+        client_window=top_context["clientWindow"],
     )
 
     child1_info = root_info["children"][0]
@@ -84,9 +88,10 @@ async def test_cross_origin(
         child1_info,
         context=None,
         children=0,
-        is_root=False,
+        parent_expected=False,
         parent=None,
         url=test_page_cross_origin,
+        client_window=top_context["clientWindow"],
     )
     assert child1_info["context"] != root_info["context"]
 
@@ -98,11 +103,12 @@ async def test_user_context(
     create_user_context,
     subscribe_events,
     wait_for_event,
+    wait_for_future_safe,
     inline,
     user_context,
     domain,
 ):
-    await subscribe_events(["browsingContext.load"])
+    await subscribe_events(["browsingContext.contextCreated", "browsingContext.load"])
 
     user_context_id = (
         await create_user_context() if user_context == "new" else user_context
@@ -114,9 +120,11 @@ async def test_user_context(
         f"<iframe src='{iframe_url_1}'></iframe><iframe src='{iframe_url_2}'></iframe>"
     )
 
+    on_context_created = wait_for_event("browsingContext.contextCreated")
     context = await bidi_session.browsing_context.create(
         type_hint="tab", user_context=user_context_id
     )
+    context_info = await wait_for_future_safe(on_context_created)
 
     # Record all load events.
     events = []
@@ -146,6 +154,7 @@ async def test_user_context(
         parent=None,
         url=page_url,
         user_context=user_context_id,
+        client_window=context_info["clientWindow"],
     )
 
     # The contexts can be returned in any order, find the info matching iframe_url_1
@@ -158,10 +167,11 @@ async def test_user_context(
         child1_info,
         context=None,
         children=0,
-        is_root=False,
+        parent_expected=False,
         parent=None,
         url=iframe_url_1,
         user_context=user_context_id,
+        client_window=context_info["clientWindow"],
     )
     assert child1_info["context"] != root_info["context"]
 
@@ -174,10 +184,11 @@ async def test_user_context(
         child2_info,
         context=None,
         children=0,
-        is_root=False,
+        parent_expected=False,
         parent=None,
         url=iframe_url_2,
         user_context=user_context_id,
+        client_window=context_info["clientWindow"],
     )
     assert child2_info["context"] != root_info["context"]
     assert child2_info["context"] != child1_info["context"]

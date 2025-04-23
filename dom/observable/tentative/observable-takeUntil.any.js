@@ -179,10 +179,10 @@ promise_test(async t => {
   assert_array_equals(results, [
     "notifier subscribed",
     "source subscribed",
-    "notifier teardown",
     "notifier signal abort",
-    "source teardown",
+    "notifier teardown",
     "source signal abort",
+    "source teardown",
     "complete callback",
   ]);
 }, "takeUntil: notifier next() unsubscribes from notifier & source observable");
@@ -235,10 +235,10 @@ promise_test(async t => {
   assert_array_equals(results, [
     "notifier subscribed",
     "source subscribed",
-    "notifier teardown",
     "notifier signal abort",
+    "notifier teardown",
+    "source signal abort",
     "source teardown",
-    "source signal abort"
   ]);
 }, "takeUntil()'s AbortSignal unsubscribes from notifier & source observable");
 
@@ -347,7 +347,7 @@ promise_test(async t => {
 
   assert_false(errorCallbackCalled);
   assert_true(errorReported !== null, "Exception was reported to global");
-  assert_equals(errorReported.message, "Uncaught error 2", "Error message matches");
+  assert_true(errorReported.message.includes("error 2"), "Error message matches");
   assert_greater_than(errorReported.lineno, 0, "Error lineno is greater than 0");
   assert_greater_than(errorReported.colno, 0, "Error lineno is greater than 0");
   assert_equals(errorReported.error, 'error 2', "Error object is equivalent (just a string)");

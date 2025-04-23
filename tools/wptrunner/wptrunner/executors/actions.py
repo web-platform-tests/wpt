@@ -464,6 +464,86 @@ class ClearDevicePostureAction:
     def __call__(self, payload):
         return self.protocol.device_posture.clear_device_posture()
 
+class RunBounceTrackingMitigationsAction:
+    name = "run_bounce_tracking_mitigations"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("Running bounce tracking mitigations")
+        return self.protocol.storage.run_bounce_tracking_mitigations()
+
+class CreateVirtualPressureSourceAction:
+    name = "create_virtual_pressure_source"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        source_type = payload["source_type"]
+        metadata = payload["metadata"]
+        self.logger.debug("Creating %s pressure source with %s values" % (source_type, metadata))
+        return self.protocol.pressure.create_virtual_pressure_source(source_type, metadata)
+
+class UpdateVirtualPressureSourceAction:
+    name = "update_virtual_pressure_source"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        source_type = payload["source_type"]
+        sample = payload["sample"]
+        own_contribution_estimate = payload["own_contribution_estimate"]
+        return self.protocol.pressure.update_virtual_pressure_source(source_type, sample, own_contribution_estimate)
+
+class RemoveVirtualPressureSourceAction:
+    name = "remove_virtual_pressure_source"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        source_type = payload["source_type"]
+        return self.protocol.pressure.remove_virtual_pressure_source(source_type)
+
+class SetProtectedAudienceKAnonymityAction:
+    name = "set_protected_audience_k_anonymity"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        owner, name, hashes = payload["owner"], payload["name"], payload["hashes"]
+        return self.protocol.protected_audience.set_k_anonymity(owner, name, hashes)
+
+class SetDisplayFeaturesAction:
+    name = "set_display_features"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        features = payload["features"]
+        return self.protocol.display_features.set_display_features(features)
+
+class ClearDisplayFeaturesAction:
+    name = "clear_display_features"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        return self.protocol.display_features.clear_display_features()
+
 actions = [ClickAction,
            DeleteAllCookiesAction,
            GetAllCookiesAction,
@@ -499,4 +579,11 @@ actions = [ClickAction,
            RemoveVirtualSensorAction,
            GetVirtualSensorInformationAction,
            SetDevicePostureAction,
-           ClearDevicePostureAction]
+           ClearDevicePostureAction,
+           RunBounceTrackingMitigationsAction,
+           CreateVirtualPressureSourceAction,
+           UpdateVirtualPressureSourceAction,
+           RemoveVirtualPressureSourceAction,
+           SetProtectedAudienceKAnonymityAction,
+           SetDisplayFeaturesAction,
+           ClearDisplayFeaturesAction]

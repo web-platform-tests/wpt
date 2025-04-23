@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<title>TestDriver bidi.emulation.set_geolocation_override method</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<script>
+    promise_setup(async () => {
+        // Ensure permission is granted before proceeding.
+        await test_driver.bidi.permissions.set_permission({
+            descriptor: {name: "geolocation"},
+            state: "granted",
+        });
+
+        // Clear any previously set geolocation emulations.
+        await test_driver.bidi.emulation.set_geolocation_override({});
+    });
+
+    /** Get the current geolocation or error */
+    function get_current_geolocation() {
+        return new Promise(
+            resolve => window.navigator.geolocation.getCurrentPosition(
+                position => resolve(position.coords.toJSON()),
+                error => resolve({code: error.code, message: error.message}),
+                {timeout: 500}
+            ))
+    }
+
+    function assert_equal_coordinates(actual, expected) {
+        for (const key in expected) {
+            assert_equals(actual[key], expected[key],
+                `"${key}" should match the expected value ${expected[key]}`);
+        }
+    }
+
+    const COORDINATES = {
+        latitude: 52.51,
+        longitude: 13.39,
+        accuracy: 0.5,
+        altitude: 34,
+        altitudeAccuracy: 0.75,
+        heading: 180,
+        speed: 2.77
+    };
+
+    promise_test(async (t) => {
+        // Get the original geolocation
+        const original_coords = await get_current_geolocation();
+
+        // Set the geolocation override
+        await test_driver.bidi.emulation.set_geolocation_override({
+            coordinates: COORDINATES
+        });
+
+        // Get the geolocation after setting the override
+        const coords = await get_current_geolocation();
+
+        if (coords.code !== undefined) {
+            assert_unreached(
+                `Geolocation retrieval failed with code ${coords.code}: ${coords.message}`);
+        }
+
+        assert_equal_coordinates(coords, COORDINATES);
+
+        // Set the geolocation override
+        await test_driver.bidi.emulation.set_geolocation_override({});
+        // Assert original coordinates are set back
+        assert_equal_coordinates(await get_current_geolocation(),
+            original_coords);
+
+    }, "emulate geolocation");
+</script>

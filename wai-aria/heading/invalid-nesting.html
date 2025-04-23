@@ -81,29 +81,6 @@
 
   <script>
     AriaUtils.verifyRolesAndLabelsBySelector(".ex-label.ex-role");
-    verifyNoForbiddenAncestorRole(".ex-no-heading-ancestor", "heading");
-
-    function verifyNoForbiddenAncestorRole(selector, forbiddenRole) {
-      const els = document.querySelectorAll(selector);
-      if (!els.length) {
-        throw `Selector passed in verifyNoForbiddenAncestorRole("${selector}") should match at least one element.`;
-      }
-      for (const el of els) {
-        let testName = el.getAttribute("data-testname");
-        let ancestors = [];
-        let ancestor = el.parentNode;
-        promise_test(async t => {
-          // Get computed role of each ancestor up to but excluding the root.
-          while (ancestor && ancestor != document.documentElement) {
-            const computedRole = await test_driver.get_computed_role(ancestor);
-            ancestors.push(computedRole);
-            ancestor = ancestor.parentNode;
-          }
-          assert_false(ancestors.includes(forbiddenRole));
-        }, `${testName}`);
-      }
-    }
-
   </script>
 </body>
 

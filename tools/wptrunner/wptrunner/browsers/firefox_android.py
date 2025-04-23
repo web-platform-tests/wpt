@@ -137,10 +137,8 @@ def get_environ(chaos_mode_flags, env_extras=None):
     env = {}
     if env_extras is not None:
         env.update(env_extras)
-
-    if "MINIDUMP_SAVE_PATH" in os.environ:
+    if os.environ.get("MINIDUMP_SAVE_PATH"):
         env["MINIDUMP_SAVE_PATH"] = os.environ["MINIDUMP_SAVE_PATH"]
-
     env["MOZ_CRASHREPORTER"] = "1"
     env["MOZ_CRASHREPORTER_SHUTDOWN"] = "1"
     env["MOZ_DISABLE_NONLOCAL_CONNECTIONS"] = "1"
@@ -282,10 +280,12 @@ class FirefoxAndroidBrowser(Browser):
 
         self.leak_report_file = None
 
-        debug_args, cmd = browser_command(self.package_name,
-                                          self.binary_args if self.binary_args else [] +
-                                          [cmd_arg("marionette"), "about:blank"],
-                                          self.debug_info)
+        args = self.binary_args[:] if self.binary_args else []
+        args += [cmd_arg("marionette"),
+                 cmd_arg("remote-allow-system-access"), "about:blank"]
+
+        debug_args, cmd = browser_command(
+            self.package_name, args, self.debug_info)
 
         env = get_environ(self.chaos_mode_flags, self.env_extras)
 
@@ -356,7 +356,8 @@ class FirefoxAndroidBrowser(Browser):
                                  # We never want marionette to install extensions because
                                  # that doesn't work on Android; instead they are in the profile
                                  "extensions": [],
-                                 "supports_devtools": False}
+                                 "supports_devtools": False,
+                                 "supports_window_resize": False}
 
     def check_crash(self, process, test):
         if not os.environ.get("MINIDUMP_STACKWALK", "") and self.stackwalk_binary:

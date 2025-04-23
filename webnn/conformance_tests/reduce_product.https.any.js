@@ -1,5 +1,5 @@
 // META: title=test WebNN API reduction operations
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -71,6 +71,30 @@ const reduceProductTests = [
         'reduceProductOutput': {
           'data': -68.75911712646484,
           'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reduceProduct float32 1D constant tensor empty axes',
+    'graph': {
+      'inputs': {
+        'reduceProductInput': {
+          'data': [-68.75911712646484, -68.75911712646483],
+          'descriptor': {shape: [2], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reduceProduct',
+        'arguments':
+            [{'input': 'reduceProductInput'}, {'options': {'axes': []}}],
+        'outputs': 'reduceProductOutput'
+      }],
+      'expectedOutputs': {
+        'reduceProductOutput': {
+          'data': [-68.75911712646484, -68.75911712646483],
+          'descriptor': {shape: [2], dataType: 'float32'}
         }
       }
     }

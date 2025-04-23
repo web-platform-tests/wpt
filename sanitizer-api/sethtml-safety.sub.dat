@@ -42,8 +42,14 @@ script
 #data
 <img src="https://{{host}}/test-image" onclick="2+2" one="two">
 #config
-{ "attributes": ["src", "onclick", "one"]}
+{ "elements": ["img"], "attributes": ["src", "onclick", "one"]}
 #document
 | <img>
 |   one="two"
 |   src="https://{{host}}/test-image"
+
+#data
+<p data-x="1" data-y="2" data-z="3">
+#document
+| <p>
+

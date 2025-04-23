@@ -332,3 +332,56 @@ async def test_new_user_context(
     )
 
     remove_listener()
+
+
+async def test_with_user_context_subscription(
+    bidi_session,
+    subscribe_events,
+    create_user_context,
+    wait_for_events
+):
+    user_context = await create_user_context()
+
+    await subscribe_events(
+        events=[CONTEXT_DESTROYED_EVENT], user_contexts=[user_context]
+    )
+
+    context = await bidi_session.browsing_context.create(
+        type_hint="tab", user_context=user_context
+    )
+
+    with wait_for_events([CONTEXT_DESTROYED_EVENT]) as waiter:
+        await bidi_session.browsing_context.close(context=context["context"])
+        events = await waiter.get_events(lambda events: len(events) >= 1)
+        assert len(events) == 1
+
+        assert_browsing_context(
+            events[0][1],
+            context["context"],
+            children=0,
+            url="about:blank",
+            parent=None,
+            user_context=user_context,
+        )
+
+
+@pytest.mark.parametrize("type_hint", ["tab", "window"])
+async def test_client_window(bidi_session, wait_for_event, wait_for_future_safe, subscribe_events, type_hint):
+    await subscribe_events([CONTEXT_DESTROYED_EVENT])
+
+    on_entry = wait_for_event(CONTEXT_DESTROYED_EVENT)
+    top_level_context = await bidi_session.browsing_context.create(type_hint=type_hint)
+    contexts = await bidi_session.browsing_context.get_tree(root=top_level_context["context"])
+
+    await bidi_session.browsing_context.close(context=top_level_context["context"])
+    context_info = await wait_for_future_safe(on_entry)
+
+    assert_browsing_context(
+        context_info,
+        top_level_context["context"],
+        children=0,
+        url="about:blank",
+        parent=None,
+        user_context="default",
+        client_window=contexts[0]["clientWindow"]
+    )

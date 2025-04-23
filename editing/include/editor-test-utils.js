@@ -30,6 +30,11 @@ class EditorTestUtils {
     return this.window.getSelection();
   }
 
+  // Return a modifier to delete per word.
+  get deleteWordModifier() {
+    return this.window.navigator.platform.includes("Mac") ? this.kAlt : this.kControl;
+  }
+
   sendKey(key, modifier) {
     if (!modifier) {
       // send_keys requires element in the light DOM.
@@ -74,6 +79,26 @@ class EditorTestUtils {
   sendArrowRightKey(modifier) {
     const kArrowRight = "\uE014";
     return this.sendKey(kArrowRight, modifier);
+  }
+
+  sendMoveWordLeftKey(modifier) {
+    const kArrowLeft = "\uE012";
+    return this.sendKey(
+      kArrowLeft,
+      this.window.navigator.platform.includes("Mac")
+        ? this.kAlt
+        : this.kControl
+    );
+  }
+
+  sendMoveWordRightKey(modifier) {
+    const kArrowRight = "\uE014";
+    return this.sendKey(
+      kArrowRight,
+      this.window.navigator.platform.includes("Mac")
+        ? this.kAlt
+        : this.kControl
+    );
   }
 
   sendHomeKey(modifier) {

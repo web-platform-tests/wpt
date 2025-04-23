@@ -14,6 +14,11 @@ async function clickOn(element) {
       .send();
   await waitForRender();
 }
+async function focusOn(element) {
+  element.focus();
+  await waitForRender();
+  assert_equals(document.activeElement,element,'focus should be on element');
+}
 async function hoverOver(element) {
   await waitForRender();
   let rect = element.getBoundingClientRect();
@@ -25,37 +30,40 @@ async function hoverOver(element) {
       .send();
   await waitForRender();
 }
-let mousemoveInfo;
-function mouseOverAndRecord(element) {
-  mousemoveInfo?.controller.abort();
+function mouseOverAndRecord(t,element) {
+  let mouseMoveInfo;
+  t.add_cleanup(() => mouseMoveInfo?.controller.abort());
   const controller = new AbortController();
-  mousemoveInfo = {element, controller, moved: false, started: performance.now()};
-  document.addEventListener("mousemove", (e) => {mousemoveInfo.moved = true;}, {signal: controller.signal});
+  mouseMoveInfo = {element, controller, moved: false, started: performance.now()};
+  document.addEventListener("mousemove", (e) => {mouseMoveInfo.moved = true;}, {signal: controller.signal});
   return (new test_driver.Actions())
-    .pointerMove(0, 0, {origin: element})
-    .send();
+      .pointerMove(0, 0, {origin: element})
+      .send()
+      .then(() => mouseMoveInfo);
 }
 // Note that this may err on the side of being too large (reporting a number
 // that is larger than the actual time since the mouseover happened), due to how
 // `mousemoveInfo.started` is initialized, on first mouse move. However, this
 // function is intended to be used as a detector for the test harness taking too
 // long for some tests, so it's ok to be conservative.
-function msSinceMouseOver() {
-  return performance.now() - mousemoveInfo.started;
-}
-function assertMouseStillOver(element) {
-  assert_equals(mousemoveInfo.element, element, 'Broken test harness');
-  assert_false(mousemoveInfo.moved,'Broken test harness');
+function msSinceMouseOver(mouseMoveInfo) {
+  return performance.now() - mouseMoveInfo.started;
 }
 async function waitForHoverTime(hoverWaitTimeMs) {
   await new Promise(resolve => step_timeout(resolve,hoverWaitTimeMs));
   await waitForRender();
 };
 
-function createPopoverAndInvokerForHoverTests(test, showdelayMs, hideDelayMs) {
+async function createPopoverAndInvokerForHoverTests(test, showdelayMs, hideDelayMs) {
+  const unrelated = document.createElement('div');
+  document.body.appendChild(unrelated);
+  unrelated.textContent = 'Unrelated';
+  unrelated.setAttribute('style','position:fixed; top:0;');
+  // Ensure we never hover over an active interesttarget element.
+  await hoverOver(unrelated);
   const popover = document.createElement('div');
   popover.popover = 'auto';
-  popover.setAttribute('style','top: 200px;');
+  popover.setAttribute('style','inset:auto; top: 100px;');
   popover.textContent = 'Popover';
   document.body.appendChild(popover);
   let invoker = document.createElement('button');
@@ -63,8 +71,8 @@ function createPopoverAndInvokerForHoverTests(test, showdelayMs, hideDelayMs) {
   invoker.setAttribute('style',`
     interest-target-show-delay: ${showdelayMs}ms;
     interest-target-hide-delay: ${hideDelayMs}ms;
-    position:relative;
-    top:100px;
+    position:fixed;
+    top:200px;
     width:fit-content;
     height:fit-content;
     `);
@@ -74,15 +82,31 @@ function createPopoverAndInvokerForHoverTests(test, showdelayMs, hideDelayMs) {
   assert_equals(actualShowDelay,showdelayMs,'interest-target-show-delay is incorrect');
   const actualHideDelay = Number(getComputedStyle(invoker).interestTargetHideDelay.slice(0,-1))*1000;
   assert_equals(actualHideDelay,hideDelayMs,'interest-target-hide-delay is incorrect');
-  const unrelated = document.createElement('div');
-  document.body.appendChild(unrelated);
-  unrelated.textContent = 'Unrelated';
-  unrelated.setAttribute('style','position:relative; top:0;');
   test.add_cleanup(async () => {
     popover.remove();
     invoker.remove();
     unrelated.remove();
     await waitForRender();
   });
+  assert_false(popover.matches(':popover-open'),'The popover should start out closed');
   return {popover, invoker, unrelated};
+}
+async function sendLoseInterestHotkey() {
+  const kEscape = '\uE00C';
+  await new test_driver.Actions()
+    .keyDown(kEscape)
+    .keyUp(kEscape)
+    .send();
+  await waitForRender();
+}
+async function sendShowInterestHotkey() {
+  const kAlt = "\uE00A";
+  const kArrowUp = '\uE013';
+  await new test_driver.Actions()
+    .keyDown(kAlt)
+    .keyDown(kArrowUp)
+    .keyUp(kArrowUp)
+    .keyUp(kAlt)
+    .send();
+  await waitForRender();
 }

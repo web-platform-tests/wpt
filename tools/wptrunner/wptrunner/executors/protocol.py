@@ -453,7 +453,7 @@ class BidiEmulationProtocolPart(ProtocolPart):
     @abstractmethod
     async def set_geolocation_override(self,
             coordinates: Optional[Mapping[str, Any]],
-            contexts: List[str]):
+            contexts: List[str]) -> None:
         pass
 
 

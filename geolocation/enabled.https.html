@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<script>
+    promise_setup(async () => {
+        // Ensure permission is granted before proceeding.
+        await test_driver.bidi.permissions.set_permission({
+            descriptor: {name: "geolocation"},
+            state: "granted",
+        });
+
+        // Ensure any previously set geolocation emulations are cleared.
+        await test_driver.bidi.emulation.set_geolocation_override(
+            {coordinates: null});
+    });
+
+    promise_test(async (t) => {
+        function hasGeolocationProperty()
+        {
+            for (var property in navigator) {
+                if (property == "geolocation")
+                    return true;
+            }
+            return false;
+        }
+
+        assert_equals(typeof navigator.geolocation, 'object');
+        assert_true(hasGeolocationProperty());
+        assert_true('geolocation' in navigator);
+    }, "Tests that the navigator.geolocation object is present");
+</script>

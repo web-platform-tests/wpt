@@ -14,6 +14,7 @@
     overflow: scroll;
     background: silver;
     border: solid thick;
+    scrollbar-width: none;
   }
 
   .relative {
@@ -49,21 +50,15 @@
   <div class="container relative" data-expected-scroll-width="100" data-expected-scroll-height="100">
     <div style="transform: translate(-300px, -300px);" class="element absolute">
     </div>
-    <div class="element">
-    </div>
   </div>
 
   <div class="container relative" data-expected-scroll-width="100" data-expected-scroll-height="100">
     <div style="transform: translate(300px, -300px);" class="element absolute">
     </div>
-    <div class="element">
-    </div>
   </div>
 
   <div class="container relative" data-expected-scroll-width="100" data-expected-scroll-height="100">
     <div style="transform: translate(-300px, 300px);" class="element absolute">
-    </div>
-    <div class="element">
     </div>
   </div>
 

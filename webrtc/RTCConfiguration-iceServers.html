@@ -301,4 +301,15 @@
       }] }));
   }, `with empty urls should throw SyntaxError`);
 
+  test(() => {
+    const pc = new RTCPeerConnection({ iceServers: [{
+      urls: 'stun:stun1.example.net'
+    }] });
+    let config = pc.getConfiguration();
+    assert_equals(config.iceServers.length, 1);
+    pc.setConfiguration({});
+    config = pc.getConfiguration();
+    assert_equals(config.iceServers.length, 0);
+  }, `setConfiguration(config) - without iceServers removes ice servers`);
+
 </script>

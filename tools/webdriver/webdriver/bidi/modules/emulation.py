@@ -35,11 +35,16 @@ class Emulation(BidiModule):
     def set_geolocation_override(
         self,
         coordinates: Union[CoordinatesOptions, Undefined] = UNDEFINED,
+        error: Union[CoordinatesOptions, Undefined] = UNDEFINED,
         contexts: Optional[List[str]] = None,
         user_contexts: Optional[List[str]] = None,
     ) -> Mapping[str, Any]:
-        params: MutableMapping[str, Any] = {"coordinates": coordinates}
+        params: MutableMapping[str, Any] = {}
 
+        if coordinates is not UNDEFINED:
+            params["coordinates"] = coordinates
+        if error is not UNDEFINED:
+            params["error"] = error
         if contexts is not None:
             params["contexts"] = contexts
         if user_contexts is not None:

@@ -4,7 +4,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js?feature=bidi"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<script src="support.js"></script>
 
 <script>
     promise_setup(async () => {
@@ -28,7 +27,14 @@
             coordinates: {latitude, longitude, accuracy}
         });
 
-        const position = await getCurrentGeolocation();
+        const positionPromise = new Promise(
+            (resolve, reject) =>
+                window.navigator.geolocation.getCurrentPosition(
+                    position => resolve(position.coords.toJSON()),
+                    error => reject(error),
+                    {timeout: 200}
+                ))
+        const position = await positionPromise;
 
         assert_equals(position.latitude, latitude);
         assert_equals(position.longitude, longitude);

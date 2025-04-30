@@ -28,18 +28,3 @@ var errorToString = function(err) {
   }
   return '[code: ' + codeString + ' (' + err.code + '), message: ' + (err.message ? err.message : '(empty)') + ']';
 };
-
-/**
- * Returns the current geolocation or throws error.
- *
- * @param {number} timeout - Timeout in milliseconds, default is 200ms.
- */
-function getCurrentGeolocation(timeout = 200) {
-  return new Promise(
-      (resolve, reject) => window.navigator.geolocation.getCurrentPosition(
-          position => resolve(position.coords.toJSON()),
-          error => reject(error),
-          // Fail fast if geolocation is not available.
-          {timeout}
-      ))
-}

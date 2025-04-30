@@ -4,6 +4,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js?feature=bidi"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="support.js"></script>
 
 <script>
     promise_setup(async () => {
@@ -18,29 +19,19 @@
             {coordinates: null});
     });
 
-    promise_test(async (t) => {
-        const mockLatitude = 51.478;
-        const mockLongitude = -0.166;
-        const mockAccuracy = 100;
+    promise_test(async () => {
+        const latitude = 51.478;
+        const longitude = -0.166;
+        const accuracy = 100;
 
-        let position;
-
-        await test_driver.bidi.emulation.set_geolocation_override(
-            {
-                coordinates: {
-                    latitude: mockLatitude,
-                    longitude: mockLongitude,
-                    accuracy: mockAccuracy
-                }
-            });
-
-        navigator.geolocation.getCurrentPosition(function (p) {
-            position = p;
-            assert_equals(position.coords.latitude, mockLatitude);
-            assert_equals(position.coords.longitude, mockLongitude);
-            assert_equals(position.coords.accuracy, mockAccuracy);
-        }, function (e) {
-            assert_unreached('Error callback invoked unexpectedly');
+        await test_driver.bidi.emulation.set_geolocation_override({
+            coordinates: {latitude, longitude, accuracy}
         });
+
+        const position = await getCurrentGeolocation();
+
+        assert_equals(position.latitude, latitude);
+        assert_equals(position.longitude, longitude);
+        assert_equals(position.accuracy, accuracy);
     }, "Tests Geolocation success callback");
 </script>

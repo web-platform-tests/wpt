@@ -36,23 +36,7 @@
    * based on 60Hz display.
    */
   function Actions(defaultTickDuration=16) {
-    this.sourceTypes = new Map([["key", KeySource],
-                                ["pointer", PointerSource],
-                                ["wheel", WheelSource],
-                                ["none", GeneralSource]]);
-    this.sources = new Map();
-    this.sourceOrder = [];
-    for (let sourceType of this.sourceTypes.keys()) {
-      this.sources.set(sourceType, new Map());
-    }
-    this.currentSources = new Map();
-    for (let sourceType of this.sourceTypes.keys()) {
-      this.currentSources.set(sourceType, null);
-    }
-    this.createSource("none");
-    this.tickIdx = 0;
-    this.defaultTickDuration = defaultTickDuration;
-    this.context = null;
+    this.initialize();
   }
 
   Actions.prototype = {
@@ -63,6 +47,36 @@
       BACK: 3,
       FORWARD: 4,
     },
+
+    /**
+     * Initialize the object.
+     */
+    initialize() {
+      this.sourceTypes = new Map([["key", KeySource],
+                                  ["pointer", PointerSource],
+                                  ["wheel", WheelSource],
+                                  ["none", GeneralSource]]);
+      this.sources = new Map();
+      this.sourceOrder = [];
+      for (let sourceType of this.sourceTypes.keys()) {
+        this.sources.set(sourceType, new Map());
+      }
+      this.currentSources = new Map();
+      for (let sourceType of this.sourceTypes.keys()) {
+        this.currentSources.set(sourceType, null);
+      }
+      this.createSource("none");
+      this.tickIdx = 0;
+      this.defaultTickDuration = defaultTickDuration;
+      this.context = null;
+    }
+
+    /**
+     * Reet the object to its original state.
+     */
+    reset() {
+      this.initialize();
+    }
 
     /**
      * Generate the action sequence suitable for passing to
@@ -93,6 +107,7 @@
       let actions;
       try {
         actions = this.serialize();
+        this.reset();
       } catch(e) {
         return Promise.reject(e);
       }

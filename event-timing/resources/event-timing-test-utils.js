@@ -382,7 +382,7 @@ async function auxPointerdown(target) {
 // The testdriver.js, testdriver-vendor.js need to be included to use this
 // function.
 async function pressKey(target, key) {
-  await test_driver.send_keys(target, key);
+  return test_driver.send_keys(target, key);
 }
 
 async function flingAndTapInTarget(target) {

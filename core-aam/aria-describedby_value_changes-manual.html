@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-valuetext value changes</title>
+    <title>aria-describedby value changes</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
     <script src="/resources/testharness.js"></script>
@@ -14,11 +14,11 @@
     {
    "steps" : [
       {
-         "attribute" : "aria-valuetext",
+         "attribute" : "aria-describedby",
          "element" : "test",
          "title" : "step 1",
          "type" : "attribute",
-         "value" : "great"
+         "value" : "item2"
       },
       {
          "element" : "test",
@@ -28,7 +28,7 @@
                   "event",
                   "type",
                   "is",
-                  "object:property-change:accessible-value"
+                  "object:property-change:accessible-description"
                ]
             ],
             "AXAPI" : [
@@ -36,7 +36,7 @@
                   "event",
                   "type",
                   "is",
-                  "AXValueChanged"
+                  "AXDescribedByChanged"
                ]
             ],
             "MSAA" : [
@@ -44,7 +44,7 @@
                   "event",
                   "type",
                   "is",
-                  "EVENT_OBJECT_VALUECHANGE"
+                  "EVENT_OBJECT_DESCRIPTIONCHANGE"
                ]
             ],
             "UIA" : [
@@ -60,15 +60,17 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-valuetext value changes"
+   "title" : "aria-describedby value changes"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-valuetext value changes.</p>
-     <div role='slider' id='test'>content</div>
+  <p>This test examines platform accessibility events for changes to the value of aria-describedby.</p>
+    <div id="test" aria-describedby="item1"></div>
+    <div id="item1">First Description</div>
+    <div id="item2">Second Description</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

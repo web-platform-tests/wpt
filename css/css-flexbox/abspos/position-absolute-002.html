@@ -151,7 +151,7 @@ var afterPosition = absolute.getBoundingClientRect();
 
 // Positioned element should not change position when the height of it's parent flexbox is changed.
 for (key in beforePosition) {
-    test(function() {
+    promise_test(async function() {
         assert_equals(beforePosition[key], afterPosition[key]);
     }, 'position of ' + key);
 }

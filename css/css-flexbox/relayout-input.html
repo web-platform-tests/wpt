@@ -7,7 +7,7 @@
   <input id="target" style="position: relative; height: 20px; flex: 1; width: 0px;" data-expected-width="100" />
 </div>
 <script>
-test(function() {
+promise_test(async function() {
   document.body.offsetTop;
   document.getElementById('target').value = 'text';
   checkLayout('#target');

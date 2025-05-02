@@ -1,5 +1,5 @@
 // META: title=Encoding API: Streaming decode
-// META: global=window,worker
+// META: global=window,worker,shadowrealm
 // META: script=resources/encodings.js
 // META: script=/common/sab.js
 

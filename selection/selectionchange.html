@@ -1,0 +1,58 @@
+<!doctype html>
+<title>CustomEvent</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+
+<span id="span">outside a content editable</span>
+
+<section id="contenteditableSection" style="border:1px solid" contenteditable>inside a content editable</section>
+
+<textarea id="textarea">inside a textarea</textarea>
+
+<input id="input" type="text" value="inside an input">
+
+<script>
+  window.addEventListener('load', function(){
+    // iterate over all of our different kinds of selectable elements
+    [span, contenteditableSection, textarea, input].forEach(id => {
+      // make a promise test for it
+      promise_test(function(t) {
+        return new Promise(function(resolve){
+          // bind to the doc's selectionchange event
+          document.addEventListener('selectionchange', t.step_func(function(){
+
+            // if this node type has a value property (i.e text input or textarea)
+            // then use the selectionStart/End APIs and compare to the value length
+            // otherwise, use getSelection and compare it to the elem's textContent
+            if(id.value) {
+              assert_equals(id.selectionStart, 0, "the beginning of the selection");
+              assert_equals(id.selectionEnd, id.value.length, "the end of the selection");
+            } else {
+              assert_equals(getSelection().toString(), id.textContent,"successfully selected the text in a " + id.nodeName);
+            }
+            resolve();
+          }));
+
+          // select the text and trigger the selectionchange event callback
+          // if the node type has a select method (i.e text input or textarea)
+          // then use the select method to trigger, otherwise, use getSelection.
+          id.select ? id.select() : getSelection().selectAllChildren(id);
+        })
+      }, "selection changed in " + id.nodeName);
+    });
+  });
+/*
+  TODO
+  Add tests for:
+    * test for invoking selection api without changing the selection
+    * test that selection change does not fire in a document without a browsing context (i.e. document.implementation.createHTMLDocument)
+    * test which document does this fire in when it happens in an iframe
+
+  Other strange things encounered:
+    * selectAllChildren works on textareas in chrome and not firefox, while textContent works in firefox but not chrome
+    * textarea innerText and textContent seem to behave differently in chrome and FF
+    * When selectAllChildren runs, firefox synchronously fires the event, while chrome ques a task.
+*/
+
+</script>

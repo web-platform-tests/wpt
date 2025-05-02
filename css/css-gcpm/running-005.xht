@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Test: content moved with running() becomes position:static</title>
+  <link rel="author" title="Mike Bremford" href="http://bfo.com"/>
+  <link rel="help" href="https://drafts.csswg.org/css-gcpm/#running-syntax"/>
+  <link rel="match" href="reference/running-001-ref.xht"/>
+  <meta name="flags" content="paged" />
+  <meta name="assert" content="Content moved with the running() function becomes position: static"/>
+  <style>
+  @page {
+      margin: 72px;
+      @top-center {
+          content: element(foo, last);
+      }
+  }
+  .set {
+      position: running(foo);
+      text-align: center;
+      left: 1000px;
+  }
+  </style>
+ </head>
+ <body>
+  <div class="set">This should say pass: PASS</div>
+  <p>The above text should be centered in the middle of the page.</p>
+ </body>
+</html>

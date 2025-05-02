@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Reftest reference</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+
+        <style type="text/css">
+            div
+            {
+                border: solid black;
+                padding: 100px;
+            }
+
+            span#first-box, span#last-box
+            {
+                color: silver;
+            }
+
+            span#tl-control
+            {
+                background-image: url("../support/swatch-green.png");
+                background-position: top left;
+                background-repeat: no-repeat;
+                background-size: 35px 30px;
+                padding-top: 50px;
+            }
+
+            span#br-control
+            {
+                background-image: url("../support/swatch-green.png");
+                background-position: bottom right;
+                background-repeat: no-repeat;
+                background-size: 35px 30px;
+                padding-bottom: 50px;
+            }
+
+            span#test
+            {
+                border: 5px solid silver;
+                padding: 50px;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is <strong>no red</strong>.</p>
+        <div>
+          <span id="tl-control">
+            <span id="br-control">
+              <span id="test">
+                <span id="first-box">First inline</span>
+                <span id="last-box">Last inline</span>
+              </span>
+            </span>
+          </span>
+        </div>
+    </body>
+</html>
